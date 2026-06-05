@@ -69,9 +69,9 @@
 			<label>Enable Static Asset Management</label>
 			<description><![CDATA[When enabled, the agent gains <code>manage_static_asset</code> for listing, reading,
 				uploading, and deleting files in <code>$OPENHAB_CONF/html</code> (the folder served at
-				<code>/static/*</code> and used for plan-page backgrounds, custom widget icons, CSS overrides, etc.).
-				Useful alongside <code>enableUiDesign</code> so the agent can upload a floor plan and then reference it
-				from a new plan page in the same conversation. Writes go directly to disk &mdash; there is no REST API
+				<code>/static/*</code> and used for SVG icons, images, CSS overrides, and other static files the UI
+				references by URL). Useful alongside <code>enableUiDesign</code> so the agent can author an SVG icon or
+				upload an image and then reference it from a page or widget in the same conversation. Writes go directly to disk &mdash; there is no REST API
 				to gate this &mdash; so the bundle enforces <strong>administrator</strong> scope itself by probing an
 				admin-gated REST endpoint with the session's bearer token before each call. Filenames are sanitized
 				(including symlinks pointing outside the root), extensions are whitelisted, and uploads are capped at

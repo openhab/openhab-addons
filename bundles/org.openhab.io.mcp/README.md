@@ -1,6 +1,6 @@
 # openHAB MCP Server
 
-The openHAB MCP add-on lets AI assistants — Claude Desktop, Claude Code, ChatGPT, and other [Model Context Protocol](https://modelcontextprotocol.io) (MCP) clients — read and control your openHAB smart home.
+The openHAB MCP add-on lets AI assistants — Claude Desktop, Claude Code, ChatGPT, and other [Model Context Protocol](https://modelcontextprotocol.io) (MCP) clients read and control your openHAB smart home.
 
 Once you've connected a client, you can say things like:
 
@@ -9,6 +9,7 @@ Once you've connected a client, you can say things like:
 - _"Turn on the porch light every day at sunset."_
 - _"Let me know if the garage door opens while we're talking."_
 - _"Turn off the kitchen light at 10pm tonight."_
+- _"Modernize all my openHAB UI Pages."_
 
 The assistant uses your home's semantic model (rooms, equipment, devices) along with fuzzy matching logic to understand which items you mean to monitor or control without having to use the exact item name.
 
@@ -21,17 +22,18 @@ Every connection must present an openHAB bearer token (see [Authentication](#aut
 
 ## Settings
 
-| Setting                | Default | Advanced | Description                                                                                                                                                                                                           |
-| ---------------------- | ------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `enabled`              | `true`  | NO       | Turn the server on or off without uninstalling.                                                                                                                                                                       |
-| `enableFullApiAccess`  | `false` | NO       | Give the assistant access to the **full openHAB REST API** — including destructive endpoints. Only turn this on if you trust the assistant with that scope. See [Full REST API access](#full-rest-api-access-opt-in). |
-| `enableScripting`      | `false` | NO       | Let the assistant include JavaScript snippets as rule actions/conditions and run scripts ad-hoc via `execute_script`. Requires the `openhab-automation-jsscripting` add-on. See [Scripting](#scripting-opt-in).       |
-| `enableLoggingAccess`  | `false` | NO       | Give the assistant tools to read recent log entries and adjust logger verbosity for diagnostics. Level changes require an ADMIN-scoped token. See [Diagnostic logging](#diagnostic-logging-opt-in).                   |
-| `enableStaticAssets`   | `false` | NO       | Let the assistant list, read, upload, and delete files in `$OPENHAB_CONF/html` (the folder served at `/static/*`). Useful for uploading plan-page backgrounds and custom widget icons. ADMIN-scoped token required. See [Static assets](#static-assets-opt-in). |
-| `registerCloudWebhook` | `false` | NO       | Let remote MCP clients reach this server through openHAB Cloud (`myopenhab.org`) with no port forwarding. Requires the openHAB Cloud add-on. See [openHAB Cloud](#2-openhab-cloud) under Connecting a client.         |
-| `exposeUntaggedItems`  | `false` | YES      | Also include items that aren't assigned to a Location/Equipment/Point. Most people leave this off.                                                                                                                    |
-| `maxItemsPerPage`      | `100`   | YES      | Maximum items returned in one paginated response.                                                                                                                                                                     |
-| `resourceCoalesceMs`   | `500`   | YES      | Rate-limit update notifications for chatty items like power meters.                                                                                                                                                   |
+| Setting                | Default | Advanced | Description                                                                                                                                                                                                                                                                        |
+| ---------------------- | ------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `enabled`              | `true`  | NO       | Turn the server on or off without uninstalling.                                                                                                                                                                                                                                    |
+| `enableFullApiAccess`  | `false` | NO       | Give the assistant access to the **full openHAB REST API** — including destructive endpoints. Only turn this on if you trust the assistant with that scope. See [Full REST API access](#full-rest-api-access-opt-in).                                                              |
+| `enableScripting`      | `false` | NO       | Let the assistant include JavaScript snippets as rule actions/conditions and run scripts ad-hoc via `execute_script`. Requires the `openhab-automation-jsscripting` add-on. See [Scripting](#scripting-opt-in).                                                                    |
+| `enableLoggingAccess`  | `false` | NO       | Give the assistant tools to read recent log entries and adjust logger verbosity for diagnostics. Level changes require an ADMIN-scoped token. See [Diagnostic logging](#diagnostic-logging-opt-in).                                                                                |
+| `enableUiDesign`       | `false` | NO       | Let the assistant design Main UI pages and reusable custom widgets via `list_widgets`, `describe_widget`, `get_page_skeleton`, `manage_ui_component`, and `validate_ui_component`. Writes require an ADMIN-scoped token. See [Main UI design](#main-ui-design-opt-in).             |
+| `enableStaticAssets`   | `false` | NO       | Let the assistant list, read, upload, and delete files in `$OPENHAB_CONF/html` (the folder served at `/static/*`). Useful for SVG icons, images, CSS overrides, and other static files the UI references. ADMIN-scoped token required. See [Static assets](#static-assets-opt-in). |
+| `registerCloudWebhook` | `false` | NO       | Let remote MCP clients reach this server through openHAB Cloud (`myopenhab.org`) with no port forwarding. Requires the openHAB Cloud add-on. See [openHAB Cloud](#2-openhab-cloud) under Connecting a client.                                                                      |
+| `exposeUntaggedItems`  | `false` | YES      | Also include items that aren't assigned to a Location/Equipment/Point. Most people leave this off.                                                                                                                                                                                 |
+| `maxItemsPerPage`      | `100`   | YES      | Maximum items returned in one paginated response.                                                                                                                                                                                                                                  |
+| `resourceCoalesceMs`   | `500`   | YES      | Rate-limit update notifications for chatty items like power meters.                                                                                                                                                                                                                |
 
 ## Authentication
 
@@ -202,14 +204,14 @@ Requires a paid ChatGPT plan (Plus, Pro, Business, Enterprise, Education).
 
 ### Items
 
-| Tool                 | What it does                                                                                                                                                                                                                                                             |
-| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `get_semantic_model` | Returns the home layout: Locations → Equipment → Points. The assistant usually calls this first to orient itself.                                                                                                                                                        |
-| `search_items`       | Fuzzy search across names, labels, and synonyms. Tolerates typos and word reordering.                                                                                                                                                                                    |
-| `get_item`           | Current state and details for one or more items by exact name.                                                                                                                                                                                                           |
-| `manage_item`        | Create, update, or delete an item. `action='create'` (requires `name`+`type`), `action='update'` (label/tags/groups), `action='delete'` (also removes its links).                                                                                                        |
-| `set_item`           | Change an item's value. `action='command'` sends a command to control the device (ON/OFF, dimmer levels, etc.); `action='state'` sends an update to the item.                                                                                                            |
-| `get_home_status`    | A single snapshot: security (open doors/windows), active lights, climate, energy, device health.                                                                                                                                                                         |
+| Tool                 | What it does                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `get_semantic_model` | Returns the home layout: Locations → Equipment → Points. The assistant usually calls this first to orient itself.                                                                                                                                                                                                                                                                                                                                    |
+| `search_items`       | Fuzzy search across names, labels, and synonyms. Tolerates typos and word reordering.                                                                                                                                                                                                                                                                                                                                                                |
+| `get_item`           | Current state and details for one or more items by exact name.                                                                                                                                                                                                                                                                                                                                                                                       |
+| `manage_item`        | Create, update, or delete an item. `action='create'` (requires `name`+`type`), `action='update'` (label/tags/groups), `action='delete'` (also removes its links).                                                                                                                                                                                                                                                                                    |
+| `set_item`           | Change an item's value. `action='command'` sends a command to control the device (ON/OFF, dimmer levels, etc.); `action='state'` sends an update to the item.                                                                                                                                                                                                                                                                                        |
+| `get_home_status`    | A single snapshot: security (open doors/windows), active lights, climate, energy, device health.                                                                                                                                                                                                                                                                                                                                                     |
 | `get_system_info`    | openHAB version, item/thing/rule counts, installed bindings, and the server's current date/time + timezone. Relative offsets like `"+30s"` or `"+1h"` on a `datetime` trigger are resolved server-side, so this tool isn't needed for simple "in N minutes" scheduling — the assistant calls it when it needs the server's wall-clock for reasoning ("is it morning?", "what day is it?") or for absolute scheduling against an unfamiliar timezone. |
 
 ### Things & links
@@ -311,7 +313,8 @@ Setting `enableScripting=true` does two things:
 | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `execute_script` | Runs a JavaScript snippet immediately against the openHAB scripting engine and returns its result. Primary use is to **dry-run a script before adding it as a `script` action in a scheduled rule** — syntax and runtime errors come back structured so the assistant can fix them now rather than discover them when the rule fires at 3am. |
 
-Scripts get the full openhab-js environment (`items`, `actions`, `things`, `rules`, `cache`, `time`, …). Requires the `openhab-automation-jsscripting` add-on.
+Scripts get the full openhab-js environment (`items`, `actions`, `things`, `rules`, `cache`, `time`, …).
+Requires the `openhab-automation-jsscripting` add-on.
 
 Things you can ask once scripting is on:
 
@@ -321,7 +324,8 @@ Things you can ask once scripting is on:
 
 ## Diagnostic logging (opt-in)
 
-> **Note:** Reading logs is gated by `enableLoggingAccess` alone. Changing log levels additionally requires the connected user's bearer token to have **administrator** scope — openHAB's REST API enforces this, the MCP server just forwards the token.
+> **Note:** Reading logs is gated by `enableLoggingAccess` alone.
+> Changing log levels additionally requires the connected user's bearer token to have **administrator** scope — openHAB's REST API enforces this, the MCP server just forwards the token.
 
 Setting `enableLoggingAccess=true` exposes two tools:
 
@@ -337,11 +341,13 @@ Things you can ask once this is enabled:
 - _"Turn on DEBUG logging for the Hue binding for a few minutes so I can reproduce something."_
 - _"Has anything errored out in the last hour?"_
 
-The assistant will scope log reads to the relevant binding by default. When increasing log verbosity, it auto-reverts after 30 minutes so DEBUG won't be left on overnight by accident. It's also instructed to **ask for confirmation** before bumping infrastructure loggers (`org.eclipse.jetty.*`, `org.apache.karaf.*`, `org.apache.cxf.*`, `org.ops4j.pax.web.*`) since those can flood logs or hurt performance.
+The assistant will scope log reads to the relevant binding by default. When increasing log verbosity, it auto-reverts after 30 minutes so DEBUG won't be left on overnight by accident.
+It's also instructed to **ask for confirmation** before bumping infrastructure loggers (`org.eclipse.jetty.*`, `org.apache.karaf.*`, `org.apache.cxf.*`, `org.ops4j.pax.web.*`) since those can flood logs or hurt performance.
 
 ## Main UI design (opt-in)
 
-Setting `enableUiDesign=true` lets the assistant design your Main UI: create pages, edit existing ones, and build reusable custom widgets. The assistant knows about every page type (layout, home, tabbed, chart, map, floorplan), all the standard cards (toggle, slider, color picker, etc.), how to wire them to your items, and how to compose them — so you can describe what you want in plain English instead of editing YAML.
+Setting `enableUiDesign=true` lets the assistant design your Main UI: create pages, edit existing ones, and build reusable custom widgets.
+The assistant knows about every page type (layout, home, tabbed, chart, map, floorplan), all the standard cards (toggle, slider, color picker, etc.), how to wire them to your items, and how to compose them — so you can describe what you want in plain English instead of editing YAML.
 
 Things you can ask once this is enabled:
 
@@ -364,11 +370,11 @@ The five UI tools the assistant has available (you don't need to call these dire
 | `manage_ui_component`   | Create / read / update / patch / delete pages and custom widgets through `/rest/ui/components/{namespace}`. Single-field edits use an efficient patch path instead of re-sending the whole component. |
 | `validate_ui_component` | Pre-check a composed page or widget against the schema before saving — catches typos, missing required props, and bad slot names.                                                                     |
 
-**Custom widgets:** when the assistant creates a custom widget, it lives in the `widget` namespace and can be reused across any page as `widget:<your-uid>`. The widget can declare its own parameters (item name, color, threshold, etc.) so a single widget definition serves many devices.
+**Custom widgets:** when the assistant creates a custom widget, it lives in the `widget` namespace and can be reused across any page as `widget:<your-uid>`.
+The widget can declare its own parameters (item name, color, threshold, etc.) so a single widget definition serves many devices.
 
-**Tip — visual verification:** if your agent also has a browser-automation server connected (e.g. Claude in Chrome, Playwright MCP), the assistant will offer to screenshot the rendered page so you can both see what was built. It'll ask you once for the URL you use to reach openHAB (e.g. `http://openhab.local:8080`) since the internal hostname isn't always reachable from a remote browser.
-
-The catalog of available components is fetched live from the openhab-webui bundle when present, with a bundled fallback for older Main UI versions — so you'll always see the components your installation actually supports.
+**Tip — visual verification:** if your agent also has a browser-automation server connected (e.g. Claude in Chrome, Playwright MCP), the assistant will offer to screenshot the rendered page so you can both see what was built.
+It'll ask you once for the URL you use to reach openHAB (e.g. `http://openhab.local:8080`) since the internal hostname isn't always reachable from a remote browser.
 
 > **UI Design Token Usage:** UI design uses noticeably more of an agent's context window than simple item control. Pages and especially custom widgets are large JSON structures (tens of KB each), and the assistant often reads, edits, and re-reads them several times in one design session. Expect to start fresh chats more often when working on the UI — particularly for big dashboards or multi-widget projects. The assistant has been tuned to keep responses small (minimal write confirmations, in-place edits instead of full rewrites) but the underlying data is inherently large.
 >
@@ -376,22 +382,26 @@ The catalog of available components is fetched live from the openhab-webui bundl
 
 ## Static assets (opt-in)
 
-Setting `enableStaticAssets=true` lets the assistant manage the files in `$OPENHAB_CONF/html` — the folder served at `http://<your-openhab>:8080/static/*` and used for plan-page background images, custom widget icons, CSS overrides, and any other static asset that a Main UI component references by URL. Pairs naturally with `enableUiDesign` so the assistant can upload a floor plan and then drop it onto a new plan page in the same conversation.
+Setting `enableStaticAssets=true` lets the assistant manage the files in `$OPENHAB_CONF/html`, which is the folder served at `http://<your-openhab>:8080/static/*`.
+These are static assets: SVGs, images (PNG/JPG/GIF/WebP/ICO), CSS overrides, and small text/JS files — anything a Main UI component or rule references by URL.
+
+> SVGs can be particularly useful for agents to manipulate, the assistant can author and edit the markup directly, and openHAB can bind to elements inside an SVG to make it dynamic, so you can ask for a custom icon or diagram and have it react to item states.
+
+Pairs naturally with `enableUiDesign`, but mind the split: this flag manages the **asset** (the image or SVG file), while the **page or widget** that displays it is a Main UI component handled by the design tools.
 
 Things you can ask once this is enabled (typically combined with UI design):
 
-- _"Use the attached image as the background of a new plan page called 'Upstairs'."_ — the assistant uploads the image to `/static/plans/upstairs.png` and creates an `oh-plan-page` pointing at it.
-- _"What floor plans do I already have?"_ — lists the contents of `plans/` so you can pick one to reuse.
+- _"Draw an SVG icon for a garage door and upload it as `icons/garage-door.svg`."_ — the assistant writes the SVG markup and uploads it, ready to reference from a widget.
+- _"Upload the attached photo to `images/living-room.jpg`."_
+- _"What images do I have under `images/`?"_ — lists the folder so you can reuse one.
 - _"Replace my custom CSS with this update."_ — reads the current `css/custom.css`, applies the change, writes it back.
-- _"Delete the test floor plan you uploaded yesterday."_
+- _"Delete the test icon you uploaded yesterday."_
 
-| Tool                  | What it does                                                                                                                                                            |
-| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `manage_static_asset` | List / read / upload / delete files under `$OPENHAB_CONF/html`. Action-dispatched (`action='list'\|'get'\|'put'\|'delete'`). Uploads are capped at 10 MB per call.       |
+| Tool                  | What it does                                                                                           |
+| --------------------- | ------------------------------------------------------------------------------------------------------ |
+| `manage_static_asset` | List, read, upload, and delete files under `$OPENHAB_CONF/html`. Uploads are capped at 10 MB per call. |
 
-The tool sanitizes paths (no `..`, no absolute paths, no hidden files), whitelists file extensions to common asset types (PNG/JPG/GIF/WebP/SVG/ICO/CSS/JS/HTML/JSON/TXT/MD), and requires an ADMIN-scoped bearer token on every call — it verifies admin scope by probing an openHAB REST endpoint with the token before touching the filesystem.
-
-> **Heads-up — XSS surface:** files served from `/static/` execute in the browser context of anyone viewing the Main UI when their extension is `.html`, `.htm`, `.svg`, or `.js`. The tool will upload them on request (they're legitimate static assets) but the assistant has been told to confirm with you first before writing any of those types. Treat this flag with the same care as `enableScripting`.
+Only common asset types are allowed (images, SVG, CSS, JS, and a few text formats), and the assistant needs an ADMIN-scoped token to use the tool at all.
 
 ## Real-time subscriptions (advanced)
 

@@ -35,8 +35,9 @@ ACTIONS
   `mimeType` and `lastModified`.
 
 - `delete` — remove one file. Required: `path`. Returns
-  `{success, action, path}`. Empty parent directories are NOT
-  auto-cleaned (a follow-up `list` will show the now-empty subtree).
+  `{success, action, path}`. Parent directories left empty by the
+  delete are pruned automatically up to (but not including) the
+  `html` root, so no empty subtree is left behind.
 
 PATH RULES
 
