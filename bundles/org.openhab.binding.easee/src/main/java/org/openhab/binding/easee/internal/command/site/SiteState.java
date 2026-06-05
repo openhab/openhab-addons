@@ -89,6 +89,10 @@ public class SiteState extends AbstractCommand {
                     processChargerStateData(chargerData.getAsJsonObject());
                 }
             }
+            // a successful site poll is the health signal of the bridge, so update the bridge status as well.
+            // Otherwise the bridge would only recover on the next token refresh/login (which can be up to an hour
+            // later) while the chargers already went back online via setOnline().
+            processResult(jsonObject);
         }
     }
 
