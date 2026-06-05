@@ -20,6 +20,8 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -70,6 +72,7 @@ import org.json.JSONObject;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.events.AbstractEvent;
+import org.openhab.core.io.rest.Webhook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -157,6 +160,20 @@ public class CloudClient {
      * This variable indicates if connection to the openHAB Cloud is currently in an established state
      */
     private boolean isConnected;
+
+    /*
+     * Webhook emit operations queued while disconnected; drained on next onConnect()
+     * or failed in shutdown().
+     */
+    private record PendingWebhookEmit(CompletableFuture<?> future, Runnable emit) {
+    }
+
+    private final ConcurrentLinkedDeque<PendingWebhookEmit> pendingWebhookEmits = new ConcurrentLinkedDeque<>();
+
+    /*
+     * Max time a queued webhook operation will wait for the cloud to (re)connect before failing.
+     */
+    private static final int WEBHOOK_QUEUE_WAIT_SECONDS = 60;
 
     /*
      * This variable holds instance of Socket.IO client class which provides communication
@@ -408,6 +425,35 @@ public class CloudClient {
                 this.localBaseUrl);
         reconnectBackoff.reset();
         isConnected = true;
+        drainPendingWebhookEmits();
+    }
+
+    private void drainPendingWebhookEmits() {
+        if (pendingWebhookEmits.isEmpty()) {
+            return;
+        }
+        logger.debug("Draining {} queued webhook operation(s) after cloud connect", pendingWebhookEmits.size());
+        PendingWebhookEmit pending;
+        while ((pending = pendingWebhookEmits.poll()) != null) {
+            try {
+                pending.emit().run();
+            } catch (RuntimeException e) {
+                logger.debug("Queued webhook emit threw: {}", e.getMessage(), e);
+            }
+        }
+    }
+
+    private void failPendingWebhookEmits(String reason) {
+        if (pendingWebhookEmits.isEmpty()) {
+            return;
+        }
+        logger.debug("Failing {} queued webhook operation(s): {}", pendingWebhookEmits.size(), reason);
+        PendingWebhookEmit pending;
+        while ((pending = pendingWebhookEmits.poll()) != null) {
+            if (!pending.future().isDone()) {
+                pending.future().completeExceptionally(new IOException(reason));
+            }
+        }
     }
 
     /**
@@ -878,11 +924,22 @@ public class CloudClient {
      * Register a webhook with the openHAB Cloud for the given local path.
      *
      * @param localPath the local path to forward webhook requests to
-     * @param future the future to complete with the webhook URL or an error
+     * @param future the future to complete with the {@link Webhook} or an error
      */
-    public void registerWebhook(String localPath, CompletableFuture<String> future) {
-        emitWebhookEvent("webhook:register", localPath, future, response -> response.getString("webhookUrl"),
+    protected void registerWebhook(String localPath, CompletableFuture<Webhook> future) {
+        emitWebhookEvent("webhook:register", localPath, future, CloudClient::toWebhook,
                 "Webhook registration timed out");
+    }
+
+    private static Webhook toWebhook(JSONObject response) {
+        try {
+            URL url = new URL(response.getString("webhookUrl"));
+            Instant expiresAt = response.has("expiresAt") ? Instant.parse(response.getString("expiresAt"))
+                    : Instant.now().plus(Duration.ofDays(30));
+            return new Webhook(url, expiresAt);
+        } catch (MalformedURLException e) {
+            throw new IllegalArgumentException("Invalid webhook URL from openHAB Cloud", e);
+        }
     }
 
     /**
@@ -897,13 +954,28 @@ public class CloudClient {
 
     private <T> void emitWebhookEvent(String eventName, String localPath, CompletableFuture<T> future,
             Function<JSONObject, T> successHandler, String timeoutMessage) {
-        if (!isConnected()) {
-            future.completeExceptionally(new IOException("Not connected to openHAB Cloud"));
+        Runnable emit = () -> doEmitWebhookEvent(eventName, localPath, future, successHandler, timeoutMessage);
+        if (isConnected()) {
+            emit.run();
             return;
         }
+        // Cloud connection is bouncing (e.g. during CloudService.modified()); queue and let onConnect drain.
+        logger.debug("Queueing {} for localPath {} until cloud is connected", eventName, localPath);
+        PendingWebhookEmit pending = new PendingWebhookEmit(future, emit);
+        pendingWebhookEmits.add(pending);
+        scheduler.schedule(() -> {
+            if (pendingWebhookEmits.remove(pending) && !future.isDone()) {
+                future.completeExceptionally(new IOException("Timed out waiting for cloud connection"));
+            }
+        }, WEBHOOK_QUEUE_WAIT_SECONDS, TimeUnit.SECONDS);
+    }
+
+    private <T> void doEmitWebhookEvent(String eventName, String localPath, CompletableFuture<T> future,
+            Function<JSONObject, T> successHandler, String timeoutMessage) {
         try {
             JSONObject data = new JSONObject();
             data.put("localPath", localPath);
+            logger.debug("Emitting {} for localPath {}", eventName, localPath);
             socket.emit(eventName, data, (io.socket.client.Ack) args -> {
                 try {
                     if (args == null || args.length == 0 || !(args[0] instanceof JSONObject)) {
@@ -911,12 +983,16 @@ public class CloudClient {
                         return;
                     }
                     JSONObject response = (JSONObject) args[0];
-                    if (response.optBoolean("success")) {
+                    boolean success = response.optBoolean("success");
+                    logger.debug("{} for {} success={}{}", eventName, localPath, success,
+                            response.has("expiresAt") ? " expiresAt=" + response.optString("expiresAt") : "");
+                    if (success) {
                         future.complete(successHandler.apply(response));
                     } else {
                         future.completeExceptionally(new IOException(response.optString("error", "Unknown error")));
                     }
-                } catch (JSONException | ClassCastException e) {
+                } catch (RuntimeException e) {
+                    logger.debug("Failed to parse {} response for {}", eventName, localPath, e);
                     future.completeExceptionally(new IOException("Invalid response from cloud", e));
                 }
             });
@@ -943,6 +1019,7 @@ public class CloudClient {
     public void shutdown() {
         logger.info("Shutting down openHAB Cloud service connection");
         reconnectFuture.get().ifPresent(future -> future.cancel(true));
+        failPendingWebhookEmits("Cloud connector shut down");
         socket.disconnect();
     }
 
