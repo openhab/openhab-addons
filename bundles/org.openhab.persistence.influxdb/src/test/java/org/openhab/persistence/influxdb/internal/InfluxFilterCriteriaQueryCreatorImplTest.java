@@ -85,6 +85,7 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
                 from(bucket:"origin")
                 \t|> range(start:-100y, stop:100y)
                 \t|> filter(fn: (r) => r["_measurement"] == "sampleItem")
+                \t|> group(columns:["_measurement"])
                 \t|> sort(desc:true, columns:["_time"])
                 \t|> keep(columns:["_measurement", "_time", "_value"])"""));
     }
@@ -108,6 +109,7 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
                 from(bucket:"origin")
                 \t|> range(start:%s, stop:%s)
                 \t|> filter(fn: (r) => r["_measurement"] == "sampleItem")
+                \t|> group(columns:["_measurement"])
                 \t|> sort(desc:true, columns:["_time"])
                 \t|> keep(columns:["_measurement", "_time", "_value"])""",
                 INFLUX2_DATE_FORMATTER.format(now.toInstant()), INFLUX2_DATE_FORMATTER.format(tomorrow.toInstant()));
@@ -130,6 +132,7 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
                 \t|> range(start:-100y, stop:100y)
                 \t|> filter(fn: (r) => r["_measurement"] == "sampleItem")
                 \t|> filter(fn: (r) => (r["_field"] == "value" and r["_value"] <= 90))
+                \t|> group(columns:["_measurement"])
                 \t|> sort(desc:true, columns:["_time"])
                 \t|> keep(columns:["_measurement", "_time", "_value"])"""));
     }
@@ -149,6 +152,7 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
                 from(bucket:"origin")
                 \t|> range(start:-100y, stop:100y)
                 \t|> filter(fn: (r) => r["_measurement"] == "sampleItem")
+                \t|> group(columns:["_measurement"])
                 \t|> sort(desc:true, columns:["_time"])
                 \t|> limit(n:10, offset:20)
                 \t|> keep(columns:["_measurement", "_time", "_value"])"""));
@@ -168,6 +172,7 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
                 from(bucket:"origin")
                 \t|> range(start:-100y, stop:100y)
                 \t|> filter(fn: (r) => r["_measurement"] == "sampleItem")
+                \t|> group(columns:["_measurement"])
                 \t|> sort(desc:false, columns:["_time"])
                 \t|> keep(columns:["_measurement", "_time", "_value"])"""));
     }
@@ -178,10 +183,13 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
         criteria.setOrdering(FilterCriteria.Ordering.DESCENDING);
         criteria.setPageSize(1);
         String queryV2 = instanceV2.createQuery(criteria, RETENTION_POLICY, null);
+        // group() collapses the per-series tables so last() returns the single most recent point
+        // across the whole measurement; group() + last() pushes down as one ReadGroupAggregate.
         assertThat(queryV2, equalTo("""
                 from(bucket:"origin")
                 \t|> range(start:-100y, stop:100y)
                 \t|> filter(fn: (r) => r["_measurement"] == "sampleItem")
+                \t|> group(columns:["_measurement"])
                 \t|> last()
                 \t|> keep(columns:["_measurement", "_time", "_value"])"""));
     }
@@ -201,8 +209,28 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
                 \t|> range(start:-100y, stop:100y)
                 \t|> filter(fn: (r) => r["_measurement"] == "measurementName")
                 \t|> filter(fn: (r) => r["item"] == "aliasName")
+                \t|> group(columns:["_measurement"])
                 \t|> sort(desc:true, columns:["_time"])
                 \t|> keep(columns:["_measurement", "_time", "_value", "item"])"""));
+    }
+
+    @Test
+    public void testPageSizeOneWithOffsetDoesNotUseLast() {
+        // pageSize == 1 but pageNumber > 0 needs an offset, so the last() optimization must not
+        // kick in; it would ignore the offset and always return the most recent point.
+        FilterCriteria criteria = createBaseCriteria();
+        criteria.setOrdering(FilterCriteria.Ordering.DESCENDING);
+        criteria.setPageSize(1);
+        criteria.setPageNumber(3);
+        String queryV2 = instanceV2.createQuery(criteria, RETENTION_POLICY, null);
+        assertThat(queryV2, equalTo("""
+                from(bucket:"origin")
+                \t|> range(start:-100y, stop:100y)
+                \t|> filter(fn: (r) => r["_measurement"] == "sampleItem")
+                \t|> group(columns:["_measurement"])
+                \t|> sort(desc:true, columns:["_time"])
+                \t|> limit(n:1, offset:3)
+                \t|> keep(columns:["_measurement", "_time", "_value"])"""));
     }
 
     private FilterCriteria createBaseCriteria() {
@@ -229,6 +257,7 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
                 \t|> range(start:-100y, stop:100y)
                 \t|> filter(fn: (r) => r["_measurement"] == "measurementName")
                 \t|> filter(fn: (r) => r["item"] == "sampleItem")
+                \t|> group(columns:["_measurement"])
                 \t|> sort(desc:true, columns:["_time"])
                 \t|> keep(columns:["_measurement", "_time", "_value", "item"])"""));
         when(metadataRegistry.get(metadataKey))
@@ -243,6 +272,7 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
                 from(bucket:"origin")
                 \t|> range(start:-100y, stop:100y)
                 \t|> filter(fn: (r) => r["_measurement"] == "sampleItem")
+                \t|> group(columns:["_measurement"])
                 \t|> sort(desc:true, columns:["_time"])
                 \t|> keep(columns:["_measurement", "_time", "_value"])"""));
     }

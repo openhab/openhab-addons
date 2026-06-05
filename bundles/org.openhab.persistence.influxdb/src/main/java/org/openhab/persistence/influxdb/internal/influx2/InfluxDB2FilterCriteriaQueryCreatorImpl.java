@@ -83,9 +83,9 @@ public class InfluxDB2FilterCriteriaQueryCreatorImpl implements FilterCriteriaQu
             flux = flux.filter(restrictions);
         }
 
-        // Apply ordering/pagination before keep() so that last()/sort()/limit() can benefit
-        // from InfluxDB's pushdown optimisations. Applying keep() first drops _field, which
-        // both prevents state-value filtering from working correctly and blocks last() pushdown.
+        // Apply grouping/ordering/pagination before keep() so they can push down to the storage
+        // layer, and so that the state-value filter above (which relies on _field) still sees that
+        // column. keep() runs last, purely to project the output columns.
         flux = applyOrderingAndPageSize(criteria, flux);
 
         if (needsItemTag) {
@@ -99,8 +99,21 @@ public class InfluxDB2FilterCriteriaQueryCreatorImpl implements FilterCriteriaQu
     }
 
     private Flux applyOrderingAndPageSize(FilterCriteria criteria, Flux flux) {
+        // Only the first page may use last(); pageNumber > 0 requires an offset, which last()
+        // cannot express (it would always return the most recent point), so fall back to
+        // sort()/limit() in that case.
         var lastOptimization = criteria.getOrdering() == FilterCriteria.Ordering.DESCENDING
-                && criteria.getPageSize() == 1;
+                && criteria.getPageSize() == 1 && criteria.getPageNumber() == 0;
+
+        // A single measurement can map to several InfluxDB series: incidental tags such as
+        // category/type/label, or schema changes over the item's lifetime, split the data into
+        // distinct series under the same measurement. last(), sort() and limit() all operate per
+        // series, so collapse the series into a single per-measurement table first; otherwise
+        // last() returns one (arbitrary, possibly stale) row per series and sort()/limit()/offset
+        // are applied per series, corrupting ordering and pagination. group() stays adjacent to
+        // the storage read, so the query still pushes down (group() + last() in particular fuses
+        // into a single ReadGroupAggregate that seeks straight to the most recent point).
+        flux = flux.groupBy(new String[] { FIELD_MEASUREMENT_NAME });
 
         if (lastOptimization) {
             flux = flux.last();
