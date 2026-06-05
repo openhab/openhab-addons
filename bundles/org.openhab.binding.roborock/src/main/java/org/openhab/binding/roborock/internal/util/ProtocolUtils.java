@@ -51,10 +51,15 @@ public final class ProtocolUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProtocolUtils.class);
     private static final String SHA_256_ALGORITHM = "SHA-256";
     private static final String AES_GCM_NO_PADDING = "AES/GCM/NoPadding";
+    private static final String AES_CBC_PKCS5_PADDING = "AES/CBC/PKCS5Padding";
     private static final int GCM_TAG_LENGTH_BITS = 128;
     private static final int PROTOCOL_GENERAL_REQUEST = 4;
     private static final int PROTOCOL_GENERAL_RESPONSE = 5;
     private static final String VERSION_L01 = "L01";
+    private static final String VERSION_B01 = "B01";
+    // "\x81S\x19" uses identical B01 crypto
+    private static final String VERSION_B01_ALT = "\u0081S\u0019";
+    private static final String B01_SALT = "5wwh9ikChRjASpMU8cxg7o1d2E";
     private static final int MAX_GZIP_DECOMPRESSED_SIZE_BYTES = 10 * 1024 * 1024;
     private static final int GZIP_DECOMPRESSION_BUFFER_SIZE_BYTES = 8192;
 
@@ -179,8 +184,75 @@ public final class ProtocolUtils {
         return aad;
     }
 
+    // ---------- B01 (AES-128-CBC) ----------
+
+    /**
+     * Encrypts a payload for the B01 protocol (used by Q7 and similar models).
+     * The "\x81S\x19" protocol variant uses identical crypto.
+     *
+     * @param payload the plaintext bytes
+     * @param localKey the device local key (must be exactly 16 UTF-8 bytes)
+     * @param random the 32-bit random value from the frame header
+     */
+    public static byte[] encryptB01(byte[] payload, String localKey, int random) throws RoborockException {
+        byte[] keyBytes = localKey.getBytes(StandardCharsets.UTF_8);
+        if (keyBytes.length != 16) {
+            throw new RoborockException(
+                    "B01 localKey must be exactly 16 bytes (UTF-8) but was " + keyBytes.length + ".");
+        }
+        try {
+            SecretKeySpec key = new SecretKeySpec(keyBytes, "AES");
+            IvParameterSpec iv = deriveB01IV(random);
+            Cipher cipher = Cipher.getInstance(AES_CBC_PKCS5_PADDING);
+            cipher.init(Cipher.ENCRYPT_MODE, key, iv);
+            return cipher.doFinal(payload);
+        } catch (GeneralSecurityException e) {
+            throw new RoborockException("Failed to encrypt data using AES/CBC/PKCS5Padding (B01).", e);
+        }
+    }
+
+    /**
+     * Decrypts a B01 protocol payload.
+     *
+     * @param payload the encrypted bytes from the frame
+     * @param localKey the device local key (must be exactly 16 UTF-8 bytes)
+     * @param random the 32-bit random value from the frame header
+     */
+    public static byte[] decryptB01(byte[] payload, String localKey, int random) throws RoborockException {
+        byte[] keyBytes = localKey.getBytes(StandardCharsets.UTF_8);
+        if (keyBytes.length != 16) {
+            throw new RoborockException(
+                    "B01 localKey must be exactly 16 bytes (UTF-8) but was " + keyBytes.length + ".");
+        }
+        try {
+            SecretKeySpec key = new SecretKeySpec(keyBytes, "AES");
+            IvParameterSpec iv = deriveB01IV(random);
+            Cipher cipher = Cipher.getInstance(AES_CBC_PKCS5_PADDING);
+            cipher.init(Cipher.DECRYPT_MODE, key, iv);
+            return cipher.doFinal(payload);
+        } catch (GeneralSecurityException e) {
+            throw new RoborockException("Failed to decrypt data using AES/CBC/PKCS5Padding (B01).", e);
+        }
+    }
+
+    /**
+     * Derives the 16-byte IV for B01 encryption/decryption.
+     *
+     * Algorithm (matches cryptoEngine.ts#deriveB01IV in the ioBroker reference implementation):
+     * 1. Encode {@code random} as big-endian 4 bytes, hex-encode to 8 lowercase chars
+     * 2. Concatenate with B01_SALT
+     * 3. MD5 the result to a 32-char lowercase hex string
+     * 4. Take chars [9, 25) as UTF-8 bytes — that is the IV
+     */
+    private static IvParameterSpec deriveB01IV(int random) {
+        String randomHex = String.format("%08x", random);
+        String md5 = md5Hex(randomHex + B01_SALT);
+        String ivStr = md5.substring(9, 25);
+        return new IvParameterSpec(ivStr.getBytes(StandardCharsets.UTF_8));
+    }
+
     private static String bytesToString(byte[] data, int start, int length) {
-        return new String(data, start, length, StandardCharsets.UTF_8);
+        return new String(data, start, length, StandardCharsets.ISO_8859_1);
     }
 
     /**
@@ -376,6 +448,8 @@ public final class ProtocolUtils {
                 }
                 decryptedResult = decryptL01(payload, localKey, header.timestamp, header.sequence, header.random,
                         connectNonce, ackNonce);
+            } else if (VERSION_B01.equals(header.version) || VERSION_B01_ALT.equals(header.version)) {
+                decryptedResult = decryptB01(payload, localKey, header.random);
             } else {
                 String encryptionKey = encodeTimestamp(header.timestamp) + localKey + SALT;
                 decryptedResult = decrypt(payload, encryptionKey);
@@ -423,7 +497,8 @@ public final class ProtocolUtils {
         }
 
         MessageHeader header = parseMessageHeader(message);
-        if (!VERSION_1_0.equals(header.version) && !VERSION_L01.equals(header.version)) {
+        if (!VERSION_1_0.equals(header.version) && !VERSION_L01.equals(header.version)
+                && !VERSION_B01.equals(header.version) && !VERSION_B01_ALT.equals(header.version)) {
             LOGGER.debug("Received unsupported message version: {}", header.version);
             return new IgnoredResponse();
         }
