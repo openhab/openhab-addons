@@ -20,8 +20,10 @@ import java.time.format.DateTimeParseException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.http.HttpStatus.Code;
 import org.openhab.binding.easee.internal.model.ConfigurationException;
 import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -118,6 +120,26 @@ public final class Utils {
     public static @Nullable Boolean getAsBool(@Nullable JsonObject jsonObject, String key) {
         JsonElement json = jsonObject == null ? null : jsonObject.get(key);
         return (json == null || json instanceof JsonNull) ? null : json.getAsBoolean();
+    }
+
+    /**
+     * maps an HTTP status code of a failed request to the matching {@link ThingStatusDetail}. Only genuine
+     * authentication/configuration problems (e.g. bad credentials) are reported as configuration error, everything
+     * else (timeouts, gateway errors, server errors, ...) is treated as a communication error.
+     *
+     * @param httpCode the HTTP status code of the failed request
+     * @return the matching ThingStatusDetail
+     */
+    public static ThingStatusDetail getStatusDetailFromHttpCode(Code httpCode) {
+        switch (httpCode) {
+            case BAD_REQUEST:
+            case UNAUTHORIZED:
+            case FORBIDDEN: // e.g. wrong site id
+            case NOT_FOUND: // e.g. wrong user name
+                return ThingStatusDetail.CONFIGURATION_ERROR;
+            default:
+                return ThingStatusDetail.COMMUNICATION_ERROR;
+        }
     }
 
     /**
