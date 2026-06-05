@@ -33,12 +33,12 @@ public class ShellyThingConfiguration {
     private int favoriteUP = 0; // Roller position favorite when control channel receives ON, 0=none
     private int favoriteDOWN = 0; // Roller position favorite when control channel receives OFF, 0=none
 
-    public boolean eventsButton; // true: register for Relay btn_xxx events
-    public boolean eventsSwitch = true; // true: register for device out_xxx events
-    public boolean eventsPush = true; // true: register for short/long push events
-    public boolean eventsRoller = true; // true: register for short/long push events
-    public boolean eventsSensorReport = true; // true: register for sensor events
-    public boolean eventsCoIoT; // true: use CoIoT events (based on COAP)
+    private boolean eventsButton; // true: register for Relay btn_xxx events
+    private boolean eventsSwitch = true; // true: register for device out_xxx events
+    private boolean eventsPush = true; // true: register for short/long push events
+    private boolean eventsRoller = true; // true: register for short/long push events
+    private boolean eventsSensorReport = true; // true: register for sensor events
+    private boolean eventsCoIoT; // true: use CoIoT events (based on COAP)
 
     // Gen2
     private Boolean enableBluGateway = false;

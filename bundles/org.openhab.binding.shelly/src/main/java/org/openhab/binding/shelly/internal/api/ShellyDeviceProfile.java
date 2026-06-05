@@ -103,7 +103,7 @@ public class ShellyDeviceProfile {
     public boolean isDW; // true for Door Window sensor
     public boolean isButton; // true for a Shelly Button 1
     public boolean isMultiButton; // true for a Shelly BLU Wall Switch 4 or RC Button 4
-    public boolean isMotion;// true if thing is a Shelly Motion
+    public boolean isMotion; // true if thing is a Shelly Motion
     public boolean isDistance; // true if thing is a Shelly BLU Distance
     public boolean isRemote; // true if thing is a Shelly BLU Remote
     public boolean isIX; // true for a Shelly IX
