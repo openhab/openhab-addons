@@ -354,7 +354,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         }
         b01 = true;
         String name = getThing().getProperties().getOrDefault(THING_PROPERTY_DEVICE_NAME, "");
-        String nameUpper = name.toUpperCase();
+String nameUpper = name.toUpperCase(java.util.Locale.ROOT);
         if (nameUpper.contains("Q7")) {
             q7 = true;
         }
