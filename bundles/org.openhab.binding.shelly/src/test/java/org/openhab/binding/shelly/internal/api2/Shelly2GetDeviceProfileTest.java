@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.shelly.internal.api2;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.SHELLYRPC_METHOD_GETCONFIG;
@@ -299,7 +299,7 @@ public class Shelly2GetDeviceProfileTest {
     }
 
     @Test
-    void discovery_noDevInfo_profileDevicePopulatedFromArgument() throws ShellyApiException {
+    void discovery_devInfoArgument_populatesProfileDevice() throws ShellyApiException {
         Gson gson = new Gson();
         StubApiClient client = new StubApiClient(discoveryConfig(), minimalConfig(gson));
         ShellySettingsDevice dev = deviceInfo();
@@ -318,8 +318,8 @@ public class Shelly2GetDeviceProfileTest {
     }
 
     @Test
-    void thingHandler_profileMarkedInitializedViaInitProfile() throws ShellyApiException {
-        // Verify that initProfile itself marks the profile (and then getDeviceProfile also sets initialized).
+    void discovery_getDeviceProfile_marksProfileInitialized() throws ShellyApiException {
+        // initProfile() populates the profile; getDeviceProfile() is responsible for setting profile.initialized.
         // We test this through the discovery path since initProfile is shared.
         Gson gson = new Gson();
         StubApiClient client = new StubApiClient(discoveryConfig(), minimalConfig(gson));
