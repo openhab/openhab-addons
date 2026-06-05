@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bluetooth.bluez.internal;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -73,6 +74,9 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
     // Device from native lib
     private @Nullable BluetoothDevice device = null;
 
+    // Bridge handler kept to allow re-resolving a stale BlueZ device object on demand.
+    private final BlueZBridgeHandler bridgeHandler;
+
     /**
      * Constructor
      *
@@ -81,12 +85,24 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
      */
     public BlueZBluetoothDevice(BlueZBridgeHandler adapter, BluetoothAddress address) {
         super(adapter, address);
+        this.bridgeHandler = adapter;
         logger.debug("Creating DBusBlueZ device with address '{}'", address);
     }
 
     @SuppressWarnings("PMD.CompareObjectsWithEquals")
     public synchronized void updateBlueZDevice(@Nullable BluetoothDevice blueZDevice) {
-        if (this.device != null && this.device == blueZDevice) {
+        BluetoothDevice cachedDevice = this.device;
+        if (cachedDevice != null && cachedDevice == blueZDevice) {
+            // Same cached BlueZ object as last time. Normally nothing to do, but the GATT may have
+            // resolved since we first saw it (e.g. a connect that completed after this object was
+            // already cached). If we're connected but still have no services, fall through and
+            // re-run service discovery instead of short-circuiting forever.
+            if (!Boolean.TRUE.equals(cachedDevice.isConnected()) || !getServices().isEmpty()) {
+                return;
+            }
+            logger.debug("Re-evaluating services for already-cached connected device {}", address);
+            setConnectionState(ConnectionState.CONNECTED);
+            discoverServices();
             return;
         }
         logger.debug("updateBlueZDevice({})", blueZDevice);
@@ -160,6 +176,10 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
         BluetoothDevice dev = device;
         if (dev != null) {
             if (Boolean.FALSE.equals(dev.isConnected())) {
+                // BlueZ Device.Connect() is unreliable while the adapter is actively discovering
+                // (the call blocks / does not complete). Pause discovery first; the bridge's periodic
+                // refresh job resumes it shortly after.
+                bridgeHandler.stopDiscovery();
                 try {
                     boolean ret = dev.connect();
                     logger.debug("Connect result: {}", ret);
@@ -205,12 +225,34 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
         return false;
     }
 
+    /**
+     * Returns the device's GATT services, refreshing the underlying bluez-dbus cache first if it is
+     * empty while the device is connected. bluez-dbus latches its service list on the first
+     * {@code getGattServices()} call and never re-queries; after a reconnect the cache can be left
+     * empty, which makes every characteristic lookup fail with "characteristic is missing" even
+     * though the device is connected and the GATT is resolved. Forcing a refresh here lets reads and
+     * notifications recover without recreating the Thing.
+     */
+    private List<BluetoothGattService> getGattServicesRefreshed(BluetoothDevice dev) {
+        List<BluetoothGattService> services = dev.getGattServices();
+        if (services.isEmpty() && Boolean.TRUE.equals(dev.isConnected())) {
+            try {
+                logger.debug("GATT service cache empty while connected for {}; refreshing before lookup", address);
+                dev.refreshGattServices();
+                services = dev.getGattServices();
+            } catch (RuntimeException ex) {
+                logger.debug("Failed to refresh GATT services for {}: {}", address, ex.getMessage());
+            }
+        }
+        return services;
+    }
+
     private @Nullable BluetoothGattCharacteristic getDBusBlueZCharacteristicByUUID(String uuid) {
         BluetoothDevice dev = device;
         if (dev == null) {
             return null;
         }
-        for (BluetoothGattService service : dev.getGattServices()) {
+        for (BluetoothGattService service : getGattServicesRefreshed(dev)) {
             for (BluetoothGattCharacteristic characteristic : service.getGattCharacteristics()) {
                 if (characteristic != null && uuid.equalsIgnoreCase(characteristic.getUuid())) {
                     return characteristic;
@@ -225,7 +267,7 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
         if (dev == null) {
             return null;
         }
-        for (BluetoothGattService service : dev.getGattServices()) {
+        for (BluetoothGattService service : getGattServicesRefreshed(dev)) {
             if (dBusPath.startsWith(service.getDbusPath())) {
                 for (BluetoothGattCharacteristic characteristic : service.getGattCharacteristics()) {
                     if (characteristic != null && dBusPath.startsWith(characteristic.getDbusPath())) {
@@ -386,6 +428,21 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
         BluetoothDevice dev = device;
         if (dev == null) {
             return false;
+        }
+        // bluez-dbus caches the GATT service list: getGattServices() latches `servicesDiscovered`
+        // true on its first call and never re-queries afterwards. The bridge's periodic refresh
+        // calls this before the device is connected, so the cache gets latched EMPTY and stays
+        // empty even after a later connect resolves the GATT. Whenever BlueZ reports the device
+        // connected but our cached service list is empty, force a re-query. (We don't gate on
+        // isServicesResolved(): that property is not always surfaced by the wrapper even when the
+        // GATT is in fact resolved, and refreshGattServices() is a harmless no-op when it isn't.)
+        try {
+            if (dev.getGattServices().isEmpty() && Boolean.TRUE.equals(dev.isConnected())) {
+                logger.debug("GATT service cache is empty while connected for {}; refreshing", address);
+                dev.refreshGattServices();
+            }
+        } catch (RuntimeException ex) {
+            logger.debug("Failed to refresh GATT services for {}: {}", address, ex.getMessage());
         }
         if (dev.getGattServices().size() > getServices().size()) {
             for (BluetoothGattService dBusBlueZService : dev.getGattServices()) {
