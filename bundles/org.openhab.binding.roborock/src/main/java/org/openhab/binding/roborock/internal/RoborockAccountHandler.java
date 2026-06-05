@@ -818,8 +818,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
                 mqttWatchdog.noteOutboundPublish(Instant.now());
                 return id;
             } catch (MqttException e) {
-                // Connection reset during router reboot or brief outage — transient, not a bug
-                logger.warn("B01 MQTT publish failed (transient): {}", e.getMessage());
+                logger.debug("B01 MQTT publish failed (transient): {}", e.getMessage(), e);
                 return -1;
             }
         } else {
