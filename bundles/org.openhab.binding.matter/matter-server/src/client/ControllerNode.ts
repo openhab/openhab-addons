@@ -77,6 +77,11 @@ export class ControllerNode {
         this.nodeObservers.clear();
         this.observers?.close();
         await this.commissioningController?.close();
+        // Close any environment services we created lazily (e.g. DclOtaUpdateService). These own their own
+        // storage and must be released, otherwise the OTA blob storage lock file is leaked and can block the
+        // next startup. Mirrors how matter.js's own DclBehavior disposes its dependent services.
+        await this.#services?.close();
+        this.#services = undefined;
         this.nodes.clear();
     }
 
