@@ -369,7 +369,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         }
         bridgeHandler = accountHandler;
         b01 = isB01Device();
-        cloudTransport = new CloudMqttTransport(accountHandler, config.duid, nonce, b01, q7);
+        cloudTransport = new CloudMqttTransport(accountHandler, config.duid, nonce, b01, q7, q10);
         LocalDirectTransport localDirectTransport = new LocalDirectTransport();
         localDirectTransport.setMessageConsumer(this::handleMessage);
         directTransport = localDirectTransport;
@@ -1787,7 +1787,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         if (dp101.has("25"))
             logger.trace("Q10 dp101.25 quiet_is_open: {}", dp101.get("25"));
         if (dp101.has("26"))
-            logger.trace("Q10 dp101.26 volume: {}", dp101.get("25"));
+            logger.trace("Q10 dp101.26 volume: {}", dp101.get("26"));
         if (dp101.has("32"))
             logger.trace("Q10 dp101.32 local_timer_blob: {}", dp101.get("32"));
         if (dp101.has("33"))
