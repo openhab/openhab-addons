@@ -18,7 +18,6 @@ import static org.openhab.binding.rachio.internal.RachioUtils.getTimestamp;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.OptionalDouble;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -97,26 +96,8 @@ public class RachioScheduleHandler extends AbstractRachioThingHandler {
                 }
                 return;
             }
-            if (channel.equals(CHANNEL_SCHEDULE_START) && command == OnOffType.ON) {
-                handler.startScheduleRule(scheduleRuleId);
-                updateChannel(CHANNEL_SCHEDULE_START, OnOffType.OFF);
-            } else if (channel.equals(CHANNEL_SCHEDULE_SKIP) && command == OnOffType.ON) {
-                handler.skipScheduleRule(scheduleRuleId);
-                updateChannel(CHANNEL_SCHEDULE_SKIP, OnOffType.OFF);
-            } else if (channel.equals(CHANNEL_SCHEDULE_SEASONAL_ADJUSTMENT)) {
-                OptionalDouble adjustment = RachioQuantityTypes.dimensionless(command);
-                if (adjustment.isPresent()) {
-                    double value = adjustment.getAsDouble();
-                    handler.setScheduleRuleSeasonalAdjustment(scheduleRuleId, value);
-                    scheduleRule.seasonalAdjustment = value;
-                    updateChannel(CHANNEL_SCHEDULE_SEASONAL_ADJUSTMENT, RachioQuantityTypes.fractionOrUndef(value));
-                } else {
-                    logger.debug("{}: Seasonal adjustment command value is not dimensionless: {}", thingId, command);
-                }
-            } else if (channel.equals(CHANNEL_SCHEDULE_SKIP_FORWARD_ZONE_RUN) && command == OnOffType.ON) {
-                handler.skipForwardZoneRun(scheduleRuleId);
-                updateChannel(CHANNEL_SCHEDULE_SKIP_FORWARD_ZONE_RUN, OnOffType.OFF);
-            }
+            RachioScheduleCommandSupport.handleCommand(this, logger, handler, scheduleRuleId, channel, command,
+                    value -> scheduleRule.seasonalAdjustment = value);
         } catch (RachioApiException e) {
             logger.debug("{}: Schedule command failed: {}", thingId, e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());

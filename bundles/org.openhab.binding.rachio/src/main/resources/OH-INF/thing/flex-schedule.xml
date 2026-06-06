@@ -10,7 +10,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Rachio Flex Schedule Rule</label>
-		<description>A read-only Rachio flex schedule rule.</description>
+		<description>A Rachio flex schedule rule.</description>
 
 		<channels>
 			<channel id="name" typeId="schedule-name"/>
@@ -21,6 +21,9 @@
 			<channel id="next-run" typeId="schedule-next-run"/>
 			<channel id="zones" typeId="schedule-zones"/>
 			<channel id="seasonal-adjustment" typeId="schedule-seasonal-adjustment"/>
+			<channel id="start" typeId="schedule-start"/>
+			<channel id="skip" typeId="schedule-skip"/>
+			<channel id="skip-forward-zone-run" typeId="schedule-skip-forward-zone-run"/>
 			<channel id="last-update" typeId="last-update"/>
 		</channels>
 

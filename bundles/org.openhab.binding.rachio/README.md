@@ -20,7 +20,7 @@ Controller, zone, schedule, flex schedule, Smart Hose Timer base station, valve,
 | `device`        | Rachio irrigation controller.                                                                                                 |
 | `zone`          | Irrigation zone for a controller.                                                                                             |
 | `schedule`      | Fixed schedule rule.                                                                                                          |
-| `flex-schedule` | Flex schedule rule with read-only status channels.                                                                            |
+| `flex-schedule` | Flex schedule rule with status and ScheduleRuleService control channels.                                                      |
 | `base-station`  | Smart Hose Timer Wi-Fi hub.                                                                                                   |
 | `valve`         | Smart Hose Timer valve with manual start/stop and default runtime control.                                                    |
 | `valve-program` | Schedule-like Smart Hose Timer API resource associated with a valve/base station, not a physical device.                      |
@@ -254,7 +254,7 @@ Rachio API identifiers are real UUIDs from the API; a controller `deviceId` is n
 - Zone discovery and zone start/stop
 - Multiple-zone start
 - Fixed schedule discovery and basic control
-- Flex schedule discovery and read-only status
+- Flex schedule discovery, status, and basic control
 - Current schedule
 - Forecast
 - Recent controller events
@@ -485,7 +485,13 @@ When only a Program ID and timestamp are available, it falls back to the Program
 
 Fixed schedule rules are represented by `schedule` Things.
 
-Flex schedules are represented by read-only `flex-schedule` Things.
+Flex schedules are represented by `flex-schedule` Things.
+
+Fixed schedule metadata is read through Rachio's ScheduleRuleService, while flex schedule metadata is read through
+FlexScheduleRuleService.
+
+Both Thing types execute `start`, `skip`, `seasonal-adjustment`, and `skip-forward-zone-run` commands through
+ScheduleRuleService using their schedule rule ID.
 
 | Channel                 | Description                                                                                                                                                  |
 | :---                    | :---                                                                                                                                                         |

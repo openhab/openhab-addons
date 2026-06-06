@@ -41,7 +41,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Handles read-only Rachio FlexScheduleRule Things.
+ * Handles Rachio FlexScheduleRule Things.
  *
  * @author openHAB Contributors - Initial contribution
  */
@@ -82,10 +82,25 @@ public class RachioFlexScheduleHandler extends AbstractRachioThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command == RefreshType.REFRESH) {
-            if (refreshFlexScheduleRule()) {
-                updateStatus(ThingStatus.ONLINE);
+        String channel = channelUID.getId();
+
+        try {
+            if (command == RefreshType.REFRESH) {
+                if (refreshFlexScheduleRule()) {
+                    updateStatus(ThingStatus.ONLINE);
+                }
+                return;
             }
+            RachioBridgeHandler handler = cloudHandler;
+            if (handler == null) {
+                logger.debug("{}: Cloud handler is not initialized", thingId);
+                return;
+            }
+            RachioScheduleCommandSupport.handleCommand(this, logger, handler, flexScheduleRuleId, channel, command,
+                    value -> scheduleRule.seasonalAdjustment = value);
+        } catch (RachioApiException e) {
+            logger.debug("{}: Flex schedule command failed: {}", thingId, e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 

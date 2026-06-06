@@ -20,6 +20,10 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_SCHEDULE_SEASONAL_ADJUSTMENT;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_SCHEDULE_SKIP;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_SCHEDULE_SKIP_FORWARD_ZONE_RUN;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_SCHEDULE_START;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.PROPERTY_FLEX_SCHEDULE_RULE_ID;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_TYPE_FLEX_SCHEDULE;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_TYPE_SCHEDULE;
@@ -38,6 +42,9 @@ import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager.PRIORITY
 import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager.RateLimitThrottleException;
 import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager.RequestPurpose;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -102,6 +109,25 @@ class RachioScheduleHandlerStatusTest {
         handler.publicGoOnline();
 
         verify(callback).statusUpdated(eq(thing), argThat(status -> status.getStatus() == ThingStatus.ONLINE));
+    }
+
+    @Test
+    void flexScheduleHandlerUsesScheduleRuleServiceCommands() throws RachioApiException {
+        ThingUID thingUID = new ThingUID(THING_TYPE_FLEX_SCHEDULE, "bridge", "flex");
+        RachioFlexScheduleHandler handler = new RachioFlexScheduleHandler(thing(thingUID));
+        RachioBridgeHandler bridgeHandler = Mockito.mock(RachioBridgeHandler.class);
+        handler.cloudHandler = bridgeHandler;
+        handler.flexScheduleRuleId = "flex-id";
+
+        handler.handleCommand(new ChannelUID(thingUID, CHANNEL_SCHEDULE_START), OnOffType.ON);
+        handler.handleCommand(new ChannelUID(thingUID, CHANNEL_SCHEDULE_SKIP), OnOffType.ON);
+        handler.handleCommand(new ChannelUID(thingUID, CHANNEL_SCHEDULE_SKIP_FORWARD_ZONE_RUN), OnOffType.ON);
+        handler.handleCommand(new ChannelUID(thingUID, CHANNEL_SCHEDULE_SEASONAL_ADJUSTMENT), new DecimalType("0.75"));
+
+        verify(bridgeHandler).startScheduleRule("flex-id");
+        verify(bridgeHandler).skipScheduleRule("flex-id");
+        verify(bridgeHandler).skipForwardZoneRun("flex-id");
+        verify(bridgeHandler).setScheduleRuleSeasonalAdjustment("flex-id", 0.75);
     }
 
     @Test
