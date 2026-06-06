@@ -55,7 +55,7 @@ import org.openhab.core.thing.binding.ThingHandlerCallback;
 @NonNullByDefault
 @SuppressWarnings({ "null" })
 class RachioDeviceHandlerStatusTest {
-    private static final String DEVICE_ID = "fc284477-53a1-4fa7-8afd-ed057a8ff2ea";
+    private static final String DEVICE_ID = "device-id";
 
     @Test
     void initializationDefersLocalWebhookThrottleButAllowsOnlineControllerToBecomeOnline() throws Exception {

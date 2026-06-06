@@ -112,20 +112,20 @@ Manual Things are supported, but only if the correct Rachio UUIDs are configured
 The recommended callback URL for myopenHAB.org is:
 
 ```text
-https://home.myopenhab.org/rachio/webhook
+https://your-public-host.example/rachio/webhook
 ```
 
 New configurations should use separate callback fields:
 
 ```text
-callbackUrl="https://home.myopenhab.org/rachio/webhook"
-callbackUsername="user@example.com"
-callbackPassword="raw-password-with-special-characters"
+callbackUrl="https://your-public-host.example/rachio/webhook"
+callbackUsername="webhook-user"
+callbackPassword="webhook-password"
 ```
 
 Enter raw username and password values. The binding percent-encodes them internally before registering the webhook URL with Rachio.
 
-Legacy `callbackUrl` values with already-encoded embedded credentials, such as `https://user%40example.com:pass%3Fword@home.myopenhab.org/rachio/webhook`, remain supported for backward compatibility.
+Legacy `callbackUrl` values with already-encoded embedded credentials remain supported for backward compatibility.
 
 `callbackUsername` and `callbackPassword` take precedence when both models are configured.
 
@@ -169,16 +169,16 @@ Create `conf/things/rachio.things` and configure the Cloud Connector:
 
 ```text
 Bridge rachio:cloud:1 [
-    apikey="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxx",
+    apikey="your-rachio-api-key",
     pollingInterval=600,
     defaultRuntime=120,
     eventHistoryLookbackHours=24,
     forecastUnits="METRIC",
     hoseSummaryLookbackDays=2,
     hoseSummaryLookaheadDays=7,
-    callbackUrl="https://home.myopenhab.org/rachio/webhook",
-    callbackUsername="user@example.com",
-    callbackPassword="raw-password-with-special-characters",
+    callbackUrl="https://your-public-host.example/rachio/webhook",
+    callbackUsername="webhook-user",
+    callbackPassword="webhook-password",
     clearAllCallbacks=false
 ]
 ```
@@ -214,9 +214,9 @@ Cloud Connector Thing configuration > deprecated binding-level fallback > built-
 For users of [openHAB Cloud](https://www.openhab.org/docs/configuration/openhab-cloud.html) or [myopenHAB.org](https://www.myopenhab.org/), configure the public callback URL and Basic Auth credentials separately:
 
 ```text
-callbackUrl="https://home.myopenhab.org/rachio/webhook"
-callbackUsername="user@example.com"
-callbackPassword="raw-password-with-special-characters"
+callbackUrl="https://your-public-host.example/rachio/webhook"
+callbackUsername="webhook-user"
+callbackPassword="webhook-password"
 ```
 
 Webhook forwarding through openHAB Cloud / myopenHAB.org does not require exposing any Items in the Cloud Connector configuration.
@@ -393,18 +393,18 @@ Manual creation is supported when the real Rachio IDs are configured:
 
 ```text
 Thing base-station hosehub "Hose Timer Hub" [
-    baseStationId="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+    baseStationId="base-station-id"
 ]
 
 Thing valve garden "Garden Hose Valve" [
-    valveId="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-    baseStationId="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+    valveId="valve-id",
+    baseStationId="base-station-id"
 ]
 
 Thing valve-program morninghose "Morning Hose Program" [
-    programId="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-    valveId="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-    baseStationId="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+    programId="program-id",
+    valveId="valve-id",
+    baseStationId="base-station-id"
 ]
 ```
 
@@ -493,6 +493,8 @@ FlexScheduleRuleService.
 Both Thing types execute `start`, `skip`, `seasonal-adjustment`, and `skip-forward-zone-run` commands through
 ScheduleRuleService using their schedule rule ID.
 
+The channel table below applies to both `schedule` and `flex-schedule` Things.
+
 | Channel                 | Description                                                                                                                                                  |
 | :---                    | :---                                                                                                                                                         |
 | `name`                  | Schedule rule name.                                                                                                                                          |
@@ -513,6 +515,9 @@ Manual schedule creation requires `scheduleRuleId`.
 Manual flex schedule creation requires `flexScheduleRuleId`.
 
 Discovery creates schedule and flex schedule Things when the Rachio controller payload includes the corresponding rule IDs.
+
+Schedule command support depends on the Rachio API accepting the relevant fixed or flex schedule rule ID for the
+ScheduleRuleService command endpoint.
 
 ## Webhook Events
 
@@ -548,43 +553,43 @@ The implemented API layer can list properties for a user, retrieve a property by
 
 ```text
 Bridge rachio:cloud:1 @ "Sprinkler" [
-    apikey="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+    apikey="your-rachio-api-key",
     pollingInterval=600,
     defaultRuntime=120,
-    callbackUrl="https://home.myopenhab.org/rachio/webhook",
-    callbackUsername="user@example.com",
-    callbackPassword="raw-password-with-special-characters",
+    callbackUrl="https://your-public-host.example/rachio/webhook",
+    callbackUsername="webhook-user",
+    callbackPassword="webhook-password",
     clearAllCallbacks=false
 ] {
     Thing device controller "Rachio Controller" @ "Sprinkler" [
-        deviceId="811aea42-2bf5-4761-9f97-900108d6f04e"
+        deviceId="controller-id"
     ]
 
     Thing zone controller-zone1 "Front Lawn" @ "Sprinkler" [
-        zoneId="a4f319e9-f88e-476f-b341-0ea571a202a0"
+        zoneId="zone-id"
     ]
 
     Thing schedule morning "Morning Schedule" @ "Sprinkler" [
-        scheduleRuleId="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+        scheduleRuleId="fixed-schedule-rule-id"
     ]
 
     Thing flex-schedule flex "Flex Schedule" @ "Sprinkler" [
-        flexScheduleRuleId="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+        flexScheduleRuleId="flex-schedule-rule-id"
     ]
 
     Thing base-station hosehub "Hose Timer Hub" @ "Garden" [
-        baseStationId="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+        baseStationId="base-station-id"
     ]
 
     Thing valve gardenhose "Garden Hose Valve" @ "Garden" [
-        valveId="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-        baseStationId="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+        valveId="valve-id",
+        baseStationId="base-station-id"
     ]
 
     Thing valve-program morninghose "Morning Hose Program" @ "Garden" [
-        programId="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-        valveId="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-        baseStationId="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+        programId="program-id",
+        valveId="valve-id",
+        baseStationId="base-station-id"
     ]
 }
 ```

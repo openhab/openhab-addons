@@ -95,9 +95,12 @@ class RachioZoneChannelTest {
     }
 
     @Test
-    void flexScheduleThingDeclaresScheduleRuleServiceCommandChannels() throws IOException, URISyntaxException {
-        String xml = readThingXml("flex-schedule.xml");
+    void scheduleThingsDeclareScheduleRuleServiceCommandChannels() throws IOException, URISyntaxException {
+        assertScheduleCommandChannels(readThingXml("schedule.xml"));
+        assertScheduleCommandChannels(readThingXml("flex-schedule.xml"));
+    }
 
+    private void assertScheduleCommandChannels(String xml) {
         assertThat(xml, containsString("<channel id=\"start\" typeId=\"schedule-start\"/>"));
         assertThat(xml, containsString("<channel id=\"skip\" typeId=\"schedule-skip\"/>"));
         assertThat(xml,

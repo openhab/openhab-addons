@@ -27,26 +27,26 @@ class RachioHttpSanitizerTest {
     @Test
     void sanitizeForLoggingMasksCallbackUrlCredentials() {
         String input = """
-                {"url":"https://user@example.com:secret-password@home.myopenhab.org/rachio/webhook"}
+                {"url":"https://webhook-user:webhook-password@host.example/rachio/webhook"}
                 """;
 
         String sanitized = RachioHttp.sanitizeForLogging(input);
 
-        assertThat(sanitized.contains("user@example.com"), is(false));
-        assertThat(sanitized.contains("secret-password"), is(false));
-        assertThat(sanitized.contains("https://***:***@home.myopenhab.org/rachio/webhook"), is(true));
+        assertThat(sanitized.contains("webhook-user"), is(false));
+        assertThat(sanitized.contains("webhook-password"), is(false));
+        assertThat(sanitized.contains("https://***:***@host.example/rachio/webhook"), is(true));
     }
 
     @Test
     void sanitizeForLoggingMasksEscapedCallbackUrlCredentials() {
         String input = """
-                {"url":"https:\\/\\/user:password@home.myopenhab.org\\/rachio\\/webhook"}
+                {"url":"https:\\/\\/webhook-user:webhook-password@host.example\\/rachio\\/webhook"}
                 """;
 
         String sanitized = RachioHttp.sanitizeForLogging(input);
 
-        assertThat(sanitized.contains("user:password"), is(false));
-        assertThat(sanitized.contains("https:\\/\\/***:***@home.myopenhab.org"), is(true));
+        assertThat(sanitized.contains("webhook-user:webhook-password"), is(false));
+        assertThat(sanitized.contains("https:\\/\\/***:***@host.example"), is(true));
     }
 
     @Test

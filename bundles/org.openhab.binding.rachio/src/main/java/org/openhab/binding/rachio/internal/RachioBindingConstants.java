@@ -312,7 +312,7 @@ public class RachioBindingConstants {
     public static final String APIURL_SCHEDULE_RULE_PUT_SKIP = "schedulerule/skip";
     public static final String APIURL_SCHEDULE_RULE_PUT_SEASONAL_ADJUSTMENT = "schedulerule/seasonal_adjustment";
     public static final String APIURL_SCHEDULE_RULE_PUT_SKIP_FORWARD_ZONE_RUN = "schedulerule/skip_forward_zone_run";
-    public static final String APIURL_GET_FLEX_SCHEDULE_RULE = "flex" + "schedulerule";
+    public static final String APIURL_GET_FLEX_SCHEDULE_RULE = "flexschedulerule";
 
     public static final String DEFAULT_IP_FILTER_LIST = "192.168.0.0/16;10.0.0.0/8;172.16.0.0/12";
 

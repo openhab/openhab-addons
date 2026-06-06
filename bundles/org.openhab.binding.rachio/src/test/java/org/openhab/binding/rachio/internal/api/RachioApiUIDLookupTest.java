@@ -53,7 +53,7 @@ class RachioApiUIDLookupTest {
 
     @Test
     void bindDeviceByRachioIdMatchesRandomThingUID() {
-        RachioDevice device = device("811aea42-2bf5-4761-9f97-900108d6f04e", "009D6BC04DAC", "serial-number");
+        RachioDevice device = device("configured-device-id", "009D6BC04DAC", "serial-number");
         RachioApi api = apiWithDevice(device);
         ThingUID customThingUID = new ThingUID(THING_TYPE_DEVICE, BRIDGE_UID, "809c1a9736");
 
@@ -76,7 +76,7 @@ class RachioApiUIDLookupTest {
 
     @Test
     void getDevByUIDMatchesConfiguredDeviceIdWithCanonicalDiscoveryThingUID() {
-        RachioDevice device = device("811aea42-2bf5-4761-9f97-900108d6f04e", "009D6BC04DAC", "serial-number");
+        RachioDevice device = device("configured-device-id", "009D6BC04DAC", "serial-number");
         RachioApi api = apiWithDevice(device);
         ThingUID thingUID = new ThingUID(THING_TYPE_DEVICE, BRIDGE_UID, "009D6BC04DAC");
 
@@ -89,7 +89,7 @@ class RachioApiUIDLookupTest {
 
     @Test
     void getDevByUIDMatchesConfiguredDeviceIdWithArbitraryThingUID() {
-        RachioDevice device = device("811aea42-2bf5-4761-9f97-900108d6f04e", "009D6BC04DAC", "serial-number");
+        RachioDevice device = device("configured-device-id", "009D6BC04DAC", "serial-number");
         RachioApi api = apiWithDevice(device);
         ThingUID customThingUID = new ThingUID(THING_TYPE_DEVICE, BRIDGE_UID, "a283238ad8");
 

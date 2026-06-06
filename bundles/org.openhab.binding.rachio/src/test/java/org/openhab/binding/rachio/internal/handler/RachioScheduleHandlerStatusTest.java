@@ -131,6 +131,48 @@ class RachioScheduleHandlerStatusTest {
     }
 
     @Test
+    void scheduleHandlerUsesScheduleRuleServiceCommands() throws RachioApiException {
+        ThingUID thingUID = new ThingUID(THING_TYPE_SCHEDULE, "bridge", "fixed");
+        RachioScheduleHandler handler = new RachioScheduleHandler(thing(thingUID));
+        RachioBridgeHandler bridgeHandler = Mockito.mock(RachioBridgeHandler.class);
+        handler.cloudHandler = bridgeHandler;
+        handler.scheduleRuleId = "fixed-id";
+
+        handler.handleCommand(new ChannelUID(thingUID, CHANNEL_SCHEDULE_START), OnOffType.ON);
+        handler.handleCommand(new ChannelUID(thingUID, CHANNEL_SCHEDULE_SKIP), OnOffType.ON);
+        handler.handleCommand(new ChannelUID(thingUID, CHANNEL_SCHEDULE_SKIP_FORWARD_ZONE_RUN), OnOffType.ON);
+        handler.handleCommand(new ChannelUID(thingUID, CHANNEL_SCHEDULE_SEASONAL_ADJUSTMENT), new DecimalType("0.75"));
+
+        verify(bridgeHandler).startScheduleRule("fixed-id");
+        verify(bridgeHandler).skipScheduleRule("fixed-id");
+        verify(bridgeHandler).skipForwardZoneRun("fixed-id");
+        verify(bridgeHandler).setScheduleRuleSeasonalAdjustment("fixed-id", 0.75);
+    }
+
+    @Test
+    void scheduleHandlersUseTheirSeparateMetadataReadServices() throws RachioApiException {
+        RachioBridgeHandler bridgeHandler = Mockito.mock(RachioBridgeHandler.class);
+        RachioScheduleRuleResponse fixedResponse = new RachioScheduleRuleResponse();
+        RachioFlexScheduleRuleResponse flexResponse = new RachioFlexScheduleRuleResponse();
+        when(bridgeHandler.getScheduleRuleForInitialization("fixed-id")).thenReturn(fixedResponse);
+        when(bridgeHandler.getFlexScheduleRuleForInitialization("flex-id")).thenReturn(flexResponse);
+
+        RachioScheduleHandler fixedHandler = new RachioScheduleHandler(
+                thing(new ThingUID(THING_TYPE_SCHEDULE, "bridge", "fixed")));
+        fixedHandler.cloudHandler = bridgeHandler;
+        fixedHandler.scheduleRuleId = "fixed-id";
+        RachioFlexScheduleHandler flexHandler = new RachioFlexScheduleHandler(
+                thing(new ThingUID(THING_TYPE_FLEX_SCHEDULE, "bridge", "flex")));
+        flexHandler.cloudHandler = bridgeHandler;
+        flexHandler.flexScheduleRuleId = "flex-id";
+
+        assertThat(fixedHandler.loadScheduleRule(), is(fixedResponse));
+        assertThat(flexHandler.loadFlexScheduleRule(), is(flexResponse));
+        verify(bridgeHandler).getScheduleRuleForInitialization("fixed-id");
+        verify(bridgeHandler).getFlexScheduleRuleForInitialization("flex-id");
+    }
+
+    @Test
     void scheduleHandlerDefersInitializationAfterLocalThrottleAndRecovers() {
         Thing thing = thing(new ThingUID(THING_TYPE_SCHEDULE, "bridge", "schedule"));
         RetryingScheduleHandler handler = new RetryingScheduleHandler(thing, true);

@@ -26,7 +26,7 @@ import org.openhab.binding.rachio.internal.api.json.RachioZoneGsonDTO.RachioClou
 public class RachioDeviceGsonDTO {
     public static class RachioCloudDevice {
         public long createDate = -1; // "createDate":1494626927000,
-        public String id = ""; // "id":"xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxx",
+        public String id = "";
         public String status = ""; // "status":"ONLINE",
         public ArrayList<RachioCloudZone> zones = new ArrayList<>();
         public double latitude = 0.0; // "latitude":24.928539276123,
@@ -47,7 +47,7 @@ public class RachioDeviceGsonDTO {
     }
 
     public static class RachioCloudScheduleRule {
-        public String id = ""; // "id":"xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxx",
+        public String id = "";
         public ArrayList<RachioCloudScheduleRuleZone> zones = new ArrayList<>(); // "zones":[]
         public ArrayList<String> scheduleJobTypes = new ArrayList<>(); // "scheduleJobTypes":["DAY_OF_WEEK_6","DAY_OF_WEEK_1","DAY_OF_WEEK_4"],
         public int startHour = 0; // "startHour":2,
@@ -70,30 +70,30 @@ public class RachioDeviceGsonDTO {
     }
 
     public static class RachioCloudScheduleRuleZone {
-        public String zoneId = ""; // "zoneId":"xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxx",
+        public String zoneId = "";
         public int duration = 0; // "duration":1211,
         public int sortOrder = 0; // "sortOrder":2
     }
 
     public static class RachioCloudScheduleStatus {
         public String scheduleName = ""; // "scheduleName" : "Quick Run",
-        public String routingId = ""; // "routingId" : "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxx",
+        public String routingId = "";
         public String icon = ""; // "icon" : "SCHEDULE",
         public String description = ""; // "description" : "Quick Run ran for 2 minutes.",
         public String endTimeForSummary = ""; // "endTimeForSummary" : "06:11 PM (EDT)",
         public String type = ""; // "type" : "SCHEDULE_STATUS",
         public String title = ""; // "title" : "Schedule Completed",
-        public String deviceId = ""; // "deviceId" : "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxx",
+        public String deviceId = "";
         public int duration = 0; // "duration" : 120,
         public String pushTitle = ""; // "pushTitle" : "Schedule Completed",
         public String startTime = ""; // "startTime" : "2018-04-09T22:09:07.134Z",
-        public String id = ""; // "id" : "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxx",
-        public String iconUrl = ""; // "iconUrl" : "https://media.rach.io/v3_prod_event_icons/quick_run",
+        public String id = "";
+        public String iconUrl = "";
         public String timestamp = ""; // "timestamp" : "2018-04-09T22:11:11Z",
         public String summary = ""; // "summary" : "Quick Run ran for 2 minutes.",
         public int durationInMinutes = 0; // "durationInMinutes" : 2,
         public String timeZone = ""; // "timeZone" : "America/New_York",
-        public String externalId = ""; // "externalId" : "xxxxxxx-xxxx-xxxx-xxxxx-´xxxxxxxx",
+        public String externalId = "";
         public String timeForSummary = ""; // "timeForSummary" : "06:09 PM (EDT)",
         public String eventType = ""; // eventType" : "SCHEDULE_COMPLETED_EVENT",
         public String dateForSummary = ""; // "dateForSummary" : "4/09",
@@ -105,21 +105,21 @@ public class RachioDeviceGsonDTO {
 
     public static class RachioCloudRainDelay {
         public String summary = ""; // "summary" : "Scheduled waterings will now run on controller
-        public String routingId = ""; // "routingId" : "d3beb3ab-b85a-49fe-a45d-37c4d95ea9a8",
+        public String routingId = "";
         public String icon = ""; // "icon" : "SCHEDULE",
         public String timeZone = ""; // "timeZone" : "America/New_York",
-        public String externalId = ""; // "externalId" : "cc765dfb-d095-4ceb-8062-b9d88dcce911",
+        public String externalId = "";
         public String eventType = ""; // "eventType" : "RAIN_DELAY_EVENT",
         public String type = ""; // "type" : "RAIN_DELAY",
         public String title = ""; // "title" : "Delay Watering OFF",
-        public String deviceId = ""; // "deviceId" : "d3beb3ab-b85a-49fe-a45d-37c4d95ea9a8",
+        public String deviceId = "";
         public String deviceName = ""; // "deviceName" : "My Rachio",
         public String dateTimeForSummary = ""; // "dateTimeForSummary" : "Wednesday, December 31 07:00 PM (EST)",
         public String startTime = ""; // "startTime" : "2018-04-10T00:59:49.899Z",
         public String subType = ""; // "subType" : "RAIN_DELAY_OFF",
         public String endTime = ""; // "endTime" : "1970-01-01T00:00:00Z",
-        public String id = ""; // "id" : "bc528ada-2054-38d3-982c-6450ebe65c0b",
-        public String iconUrl = ""; // "iconUrl" : "https://media.rach.io/v3_prod_event_icons/delay_water",
+        public String id = "";
+        public String iconUrl = "";
         public String category = ""; // "category" : "DEVICE",
     }
 

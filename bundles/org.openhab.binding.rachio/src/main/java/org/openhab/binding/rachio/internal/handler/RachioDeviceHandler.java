@@ -215,7 +215,7 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
                 }
             } else if (channel.equals(RachioBindingConstants.CHANNEL_DEVICE_STOP)) {
                 if (command == OnOffType.ON) {
-                    logger.info("STOP watering for device '{}'", d.name);
+                    logger.debug("STOP watering for device '{}'", d.name);
                     handler.stopWatering(d.id);
                     updateState(RachioBindingConstants.CHANNEL_DEVICE_STOP, OnOffType.OFF);
                 }
@@ -223,7 +223,7 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
                 OptionalInt delaySeconds = RachioQuantityTypes.durationSeconds(command);
                 if (delaySeconds.isPresent()) {
                     int duration = delaySeconds.getAsInt();
-                    logger.info("Start rain delay cycle for {} sec", duration);
+                    logger.debug("Start rain delay cycle for {} sec", duration);
                     d.setRainDelayTime(duration);
                     handler.startRainDelay(d.id, duration);
                 } else {
@@ -231,12 +231,12 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
                 }
             } else if (channel.equals(RachioBindingConstants.CHANNEL_DEVICE_PAUSED)) {
                 if (command == OnOffType.ON) {
-                    logger.info("Pause active zone run for device '{}' for {} sec", d.name, d.getPauseDuration());
+                    logger.debug("Pause active zone run for device '{}' for {} sec", d.name, d.getPauseDuration());
                     handler.pauseZoneRun(d.id, d.getPauseDuration());
                     d.setPaused(true);
                     updateChannel(RachioBindingConstants.CHANNEL_DEVICE_PAUSED, OnOffType.ON);
                 } else if (command == OnOffType.OFF) {
-                    logger.info("Resume active zone run for device '{}'", d.name);
+                    logger.debug("Resume active zone run for device '{}'", d.name);
                     handler.resumeZoneRun(d.id);
                     d.setPaused(false);
                     updateChannel(RachioBindingConstants.CHANNEL_DEVICE_PAUSED, OnOffType.OFF);
@@ -479,7 +479,7 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
                 }
                 if ("ZONE_CYCLING".equals(state)) {
                     if (!d.paused) {
-                        logger.info("{}: Device detected external pause for zone {}.", thingId,
+                        logger.debug("{}: Device detected external pause for zone {}.", thingId,
                                 zone != null ? zone.name : event.zoneName);
                         d.setPaused(true);
                         devicePauseChanged = true;
@@ -487,7 +487,7 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
                 } else if ("ZONE_STARTED".equals(state) || "ZONE_STOPPED".equals(state)
                         || "ZONE_COMPLETED".equals(state) || "ZONE_CYCLING_COMPLETED".equals(state)) {
                     if (d.paused) {
-                        logger.info("{}: Device detected external resume for zone {}.", thingId,
+                        logger.debug("{}: Device detected external resume for zone {}.", thingId,
                                 zone != null ? zone.name : event.zoneName);
                         d.setPaused(false);
                         devicePauseChanged = true;
@@ -504,7 +504,7 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
             if (event.subType.equals("RAIN_DELAY_ON")) {
                 handleRainDelayOnEvent(event, d);
             } else if (event.subType.equals("RAIN_DELAY_OFF")) {
-                logger.info("{}: Device reported Rain Delay OFF.", thingId);
+                logger.debug("{}: Device reported Rain Delay OFF.", thingId);
                 d.setRainDelayTime(0);
             } else if (etype.equals("DEVICE_STATUS")) {
                 // sub types:
@@ -518,33 +518,33 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
                     if (d.network != null) {
                         String networkDetails = String.format("ip=%s/%s, gw=%s, dns=%s/%s, wifi rssi=%s", d.network.ip,
                                 d.network.nm, d.network.gw, d.network.dns1, d.network.dns2, d.network.rssi);
-                        logger.info("{}: Device {} was restarted, {}.", thingId, d.name, networkDetails);
+                        logger.debug("{}: Device {} was restarted, {}.", thingId, d.name, networkDetails);
                     } else {
-                        logger.info("{}: Device {} was restarted (network information unavailable).", thingId, d.name);
+                        logger.debug("{}: Device {} was restarted (network information unavailable).", thingId, d.name);
                     }
                 } else if (event.subType.equals("ONLINE")) {
-                    logger.info("Rachio controller '{}' reports ONLINE.", d.id);
+                    logger.debug("Rachio controller '{}' reports ONLINE.", d.id);
                     dev.setStatus(event.subType);
                 } else if (event.subType.equals("OFFLINE") || event.subType.equals("OFFLINE_NOTIFICATION")) {
-                    logger.info("Rachio controller '{}' reports OFFLINE.", d.id);
+                    logger.debug("Rachio controller '{}' reports OFFLINE.", d.id);
                     dev.setStatus("OFFLINE");
                 } else if (event.subType.equals("SLEEP_MODE_ON")) {
-                    logger.info("{}: Device switch to sleep mode.", thingId);
+                    logger.debug("{}: Device switch to sleep mode.", thingId);
                     dev.setSleepMode(event.subType);
                 } else if (event.subType.equals("SLEEP_MODE_OFF")) {
-                    logger.info("{}: Device was resumed (exit from sleep mode).", thingId);
+                    logger.debug("{}: Device was resumed (exit from sleep mode).", thingId);
                     dev.setSleepMode(event.subType);
                 } else if (event.subType.equals("RAIN_SENSOR_DETECTION_ON")) {
-                    logger.info("{}: Device reported Rain Sensor ON.", thingId);
+                    logger.debug("{}: Device reported Rain Sensor ON.", thingId);
                     d.rainSensorTripped = true;
                 } else if (event.subType.equals("RAIN_SENSOR_DETECTION_OFF")) {
-                    logger.info("{}: Device reported Rain Sensor OFF.", thingId);
+                    logger.debug("{}: Device reported Rain Sensor OFF.", thingId);
                     d.rainSensorTripped = false;
                 } else {
                     update = false; // details missing
                 }
             } else if (event.type.equals("SCHEDULE_STATUS")) {
-                logger.info("{}: Status {} for schedule {}: {} (start={}, end={}, duration={}min)", thingId,
+                logger.debug("{}: Status {} for schedule {}: {} (start={}, end={}, duration={}min)", thingId,
                         event.subType, event.scheduleName, event.summary, event.startTime, event.endTime,
                         event.durationInMinutes);
                 d.currentScheduleId = event.scheduleId;
@@ -592,10 +592,10 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
     private void handleRainDelayOnEvent(RachioEventGsonDTO event, RachioDevice device) {
         int rainDelaySeconds = event.getRainDelaySecondsRemaining();
         if (rainDelaySeconds >= 0) {
-            logger.info("{}: Device reported Rain Delay ON for {} sec.", thingId, rainDelaySeconds);
+            logger.debug("{}: Device reported Rain Delay ON for {} sec.", thingId, rainDelaySeconds);
             device.setRainDelayTime(rainDelaySeconds);
         } else {
-            logger.info("{}: Device reported Rain Delay ON without duration details; refreshing device state.",
+            logger.debug("{}: Device reported Rain Delay ON without duration details; refreshing device state.",
                     thingId);
             refreshRainDelayState();
         }
@@ -635,7 +635,7 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
         }
 
         if (scheduled) {
-            logger.info(
+            logger.debug(
                     "Webhook registration for controller '{}' deferred because the local Rachio API budget guard is active; retrying later.",
                     deviceId);
             logger.debug("{}: Deferred webhook registration retry for controller '{}' scheduled in {} seconds: {}",
@@ -682,11 +682,11 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
             }
         }
 
-        logger.info("Retrying deferred webhook registration for controller '{}'.", device.id);
+        logger.debug("Retrying deferred webhook registration for controller '{}'.", device.id);
         try {
             handler.registerWebHook(device.id, RequestPurpose.BACKGROUND_REFRESH);
             clearPendingWebhookRegistration();
-            logger.info("Deferred webhook registration for controller '{}' completed successfully.", device.id);
+            logger.debug("Deferred webhook registration for controller '{}' completed successfully.", device.id);
             updateThingStatusFromDeviceStatus();
         } catch (RachioApiThrottledException e) {
             deferWebhookRegistration(device.id, e);
@@ -735,14 +735,14 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
         ThingStatus reportedStatus = device.getStatus();
         if (reportedStatus == ThingStatus.ONLINE) {
             if (getThing().getStatus() != ThingStatus.ONLINE) {
-                logger.info("Rachio controller '{}' reports ONLINE.", device.id);
+                logger.debug("Rachio controller '{}' reports ONLINE.", device.id);
             }
             updateStatus(ThingStatus.ONLINE);
             return;
         }
 
         if (getThing().getStatus() != ThingStatus.OFFLINE) {
-            logger.info("Rachio controller '{}' reports OFFLINE.", device.id);
+            logger.debug("Rachio controller '{}' reports OFFLINE.", device.id);
         }
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, CONTROLLER_OFFLINE_STATUS_DESCRIPTION);
     }

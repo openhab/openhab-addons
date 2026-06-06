@@ -135,7 +135,7 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
                 }
             }
 
-            logger.info("RachioCloud: Connector initialized");
+            logger.debug("RachioCloud: Connector initialized");
             updateStatus(ThingStatus.ONLINE);
             triggerPostInitializationDiscovery();
         } catch (RachioApiException e) {
@@ -261,7 +261,7 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
                 RachioDevice checkDev = de.getValue();
                 RachioDevice dev = deviceList.get(checkDev.id);
                 if (dev == null) {
-                    logger.info("RachioCloud: New device detected: {} - {}", checkDev.id, checkDev.name);
+                    logger.debug("RachioCloud: New device detected: {} - {}", checkDev.id, checkDev.name);
                 } else {
                     RachioDeviceHandler deviceHandler = dev.getThingHandler();
                     if (!dev.compare(checkDev)) {
@@ -328,7 +328,7 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
 
     @Override
     public void shutdown() {
-        logger.info("RachioCloud: Shutting down");
+        logger.debug("RachioCloud: Shutting down");
         super.shutdown();
     }
 

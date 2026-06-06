@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class RachioZoneGsonDTO {
     public static class RachioCloudZone {
-        public String id = ""; // "id":"xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxx",
+        public String id = "";
         public int zoneNumber = 0; // "zoneNumber":6,
         public String name = ""; // "name":"Zone 6 - Garage back",
         public boolean enabled = true; // "enabled":true,
@@ -31,7 +31,7 @@ public class RachioZoneGsonDTO {
         public double managementAllowedDepletion = 0.0; // "managementAllowedDepletion":0.5,
         public double efficiency = 0.0; // "efficiency":0.8,
         public int yardAreaSquareFeet = 0; // "yardAreaSquareFeet":500,
-        public String imageUrl = ""; // "imageUrl":"https://prod-media-photo.rach.io/daf89bd1-0744-4603-a5b4-32218fceaae6",
+        public String imageUrl = "";
         public long lastWateredDate = -1; // "lastWateredDate":1523129743000,
         public boolean scheduleDataModified = false; // "scheduleDataModified":false,
         public int fixedRuntime = 0; // "fixedRuntime":0,
