@@ -27,7 +27,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * {@link ClientRateLimitManager} maintains a running average of recent API calls and provides
  * throttling guidance based on rate limit headers.
  *
- * @author Jeff James - Initial rate limit management concept
+ * @author Jeff James - Initial contribution
  * @author Kovacs Istvan - Adaptation and integration into the openHAB 5.1+ Rachio binding
  */
 @NonNullByDefault

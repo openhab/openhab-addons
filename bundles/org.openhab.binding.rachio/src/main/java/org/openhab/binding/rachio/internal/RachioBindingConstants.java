@@ -221,16 +221,16 @@ public class RachioBindingConstants {
     public static final String CHANNEL_VALVE_PROGRAM_LAST_RAIN_SKIP_CANCELED_START = "last-rain-skip-canceled-planned-run-start-time";
 
     // Default for config options / thing settings
-    public static int DEFAULT_POLLING_INTERVAL_SEC = 120;
-    public static int DEFAULT_ZONE_RUNTIME_SEC = 300;
-    public static int DEFAULT_EVENT_HISTORY_LOOKBACK_HOURS = 24;
-    public static int MAX_EVENT_HISTORY_LOOKBACK_HOURS = 168;
-    public static int DEFAULT_HOSE_SUMMARY_LOOKBACK_DAYS = 2;
-    public static int DEFAULT_HOSE_SUMMARY_LOOKAHEAD_DAYS = 7;
-    public static int MAX_HOSE_SUMMARY_WINDOW_DAYS = 31;
+    public static final int DEFAULT_POLLING_INTERVAL_SEC = 120;
+    public static final int DEFAULT_ZONE_RUNTIME_SEC = 300;
+    public static final int DEFAULT_EVENT_HISTORY_LOOKBACK_HOURS = 24;
+    public static final int MAX_EVENT_HISTORY_LOOKBACK_HOURS = 168;
+    public static final int DEFAULT_HOSE_SUMMARY_LOOKBACK_DAYS = 2;
+    public static final int DEFAULT_HOSE_SUMMARY_LOOKAHEAD_DAYS = 7;
+    public static final int MAX_HOSE_SUMMARY_WINDOW_DAYS = 31;
     public static final String DEFAULT_FORECAST_UNITS = "METRIC";
     public static final int HTTP_TIMOUT_MS = 15000;
-    public static int BINDING_DISCOVERY_TIMEOUT_SEC = 60;
+    public static final int BINDING_DISCOVERY_TIMEOUT_SEC = 60;
 
     // --------------- Rachio Cloud API
     public static final String APIURL_BASE = "https://api.rach.io/1/public/";

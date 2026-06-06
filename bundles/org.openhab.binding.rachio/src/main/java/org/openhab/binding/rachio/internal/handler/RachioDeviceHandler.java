@@ -447,7 +447,7 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
         try {
             String etype = event.type;
             RachioZone zone = null;
-            if (etype.equals("ZONE_STATUS")) {
+            if ("ZONE_STATUS".equals(etype)) {
                 RachioZoneStatus runStatus = event.zoneRunStatus;
                 if (runStatus != null) {
                     zone = d.getZoneByNumber(runStatus.zoneNumber);
@@ -466,7 +466,7 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
 
             boolean devicePauseChanged = false;
             boolean activeZoneChanged = false;
-            if (etype.equals("ZONE_STATUS")) {
+            if ("ZONE_STATUS".equals(etype)) {
                 RachioZoneStatus runStatus = event.zoneRunStatus;
                 String state = runStatus != null ? runStatus.state : event.subType;
                 int zoneNumber = runStatus != null ? runStatus.zoneNumber : event.zoneNumber;
@@ -506,7 +506,7 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
             } else if (event.subType.equals("RAIN_DELAY_OFF")) {
                 logger.debug("{}: Device reported Rain Delay OFF.", thingId);
                 d.setRainDelayTime(0);
-            } else if (etype.equals("DEVICE_STATUS")) {
+            } else if ("DEVICE_STATUS".equals(etype)) {
                 // sub types:
                 // COLD_REBOOT, ONLINE, OFFLINE, OFFLINE_NOTIFICATION, SLEEP_MODE_ON, SLEEP_MODE_OFF, BROWNOUT_VALVE
                 // RAIN_SENSOR_DETECTION_ON, RAIN_SENSOR_DETECTION_OFF, RAIN_DELAY_ON, RAIN_DELAY_OFF

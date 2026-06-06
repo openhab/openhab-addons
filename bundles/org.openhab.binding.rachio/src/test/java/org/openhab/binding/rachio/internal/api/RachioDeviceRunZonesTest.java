@@ -19,6 +19,7 @@ import static org.hamcrest.Matchers.not;
 
 import java.util.Objects;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.rachio.internal.api.json.RachioDeviceGsonDTO.RachioCloudDevice;
 import org.openhab.binding.rachio.internal.api.json.RachioZoneGsonDTO.RachioCloudZone;
@@ -28,6 +29,7 @@ import org.openhab.binding.rachio.internal.api.json.RachioZoneGsonDTO.RachioClou
  *
  * @author openHAB Contributors - Initial contribution
  */
+@NonNullByDefault
 class RachioDeviceRunZonesTest {
     @Test
     void multiZonePayloadUsesControllerRunTimeForEverySelectedZone() {

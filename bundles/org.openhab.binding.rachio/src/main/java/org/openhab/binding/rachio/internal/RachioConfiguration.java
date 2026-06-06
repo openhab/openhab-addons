@@ -19,6 +19,7 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -140,7 +141,7 @@ public class RachioConfiguration {
         }
         for (Map.Entry<String, @Nullable Object> ce : config.entrySet()) {
             String key = ce.getKey();
-            if (key.equalsIgnoreCase("component.name") || key.equalsIgnoreCase("component.id")) {
+            if ("component.name".equalsIgnoreCase(key) || "component.id".equalsIgnoreCase(key)) {
                 continue;
             }
             if (ce.getValue() == null) {
@@ -150,7 +151,7 @@ public class RachioConfiguration {
             Object configValue = ce.getValue();
             String value = configValue != null ? configValue.toString() : "";
 
-            if (key.equalsIgnoreCase("service.pid")) {
+            if ("service.pid".equalsIgnoreCase(key)) {
                 logger.debug("Rachio: Binding configuration:");
             }
             logger.debug("  {}={}", key, sanitizeValueForLogging(key, value));
@@ -174,8 +175,7 @@ public class RachioConfiguration {
             } else if (parameterName.equals(PARAM_CALLBACK_PASSWORD)) {
                 this.callbackPassword = value;
             } else if (parameterName.equals(PARAM_CLEAR_CALLBACK)) {
-                String str = value;
-                this.clearAllCallbacks = str.toLowerCase().equals("true");
+                this.clearAllCallbacks = "true".equalsIgnoreCase(value);
             } else if (parameterName.equals(PARAM_EVENT_HISTORY_LOOKBACK_HOURS)) {
                 this.eventHistoryLookbackHours = parseEventHistoryLookbackHours(value);
             } else if (parameterName.equals(PARAM_FORECAST_UNITS)) {
@@ -281,7 +281,7 @@ public class RachioConfiguration {
     }
 
     private String parseForecastUnits(String value) {
-        String normalizedValue = value.trim().toUpperCase();
+        String normalizedValue = value.trim().toUpperCase(Locale.ROOT);
         if ("METRIC".equals(normalizedValue) || "US".equals(normalizedValue)) {
             return normalizedValue;
         }

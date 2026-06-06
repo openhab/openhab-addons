@@ -271,18 +271,17 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
             return false;
         }
         try {
-
             String zoneName = event.zoneName;
             String evt = event.subType.isEmpty() ? event.type : event.subType;
             z.setEvent(evt, getTimestamp()); // and funnel all zone events to the device
             if (event.type.equals("ZONE_STATUS")) {
                 RachioZoneStatus runStatus = event.zoneRunStatus;
                 String state = runStatus != null ? runStatus.state : event.subType;
-                if (state.equals("ZONE_STARTED")) {
+                if ("ZONE_STARTED".equals(state)) {
                     logger.debug("{}: Zone {} STARTED watering ({}).", thingId, zoneName, event.timestamp);
                     zoneRunState = OnOffType.ON;
                     updateChannel(CHANNEL_ZONE_RUN, zoneRunState);
-                } else if (state.equals("ZONE_STOPPED") || state.equals("ZONE_COMPLETED")) {
+                } else if ("ZONE_STOPPED".equals(state) || "ZONE_COMPLETED".equals(state)) {
                     logger.debug(
                             "{}: Zoned {} STOPPED watering (timestamp={}, current={}, duration={}sec/{}min, flowVolume={}).",
                             thingId, zoneName, event.timestamp, event.zoneCurrent, event.duration,

@@ -96,7 +96,7 @@ public class RachioSmartIrrigationGsonDTO {
             }
             String currentStatus = firstNonBlank(status, readString(schedule, "status"),
                     readString(currentSchedule, "status"));
-            return currentStatus.equalsIgnoreCase("RUNNING") || currentStatus.equalsIgnoreCase("STARTED")
+            return "RUNNING".equalsIgnoreCase(currentStatus) || "STARTED".equalsIgnoreCase(currentStatus)
                     || !getScheduleId().isBlank() || !getScheduleName().isBlank();
         }
     }

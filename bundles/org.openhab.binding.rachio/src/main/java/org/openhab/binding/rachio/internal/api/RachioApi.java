@@ -116,7 +116,7 @@ public class RachioApi {
     protected @Nullable ThingUID bridgeUID;
 
     protected RachioApiResult lastApiResult = new RachioApiResult();
-    private static final Map<String, ClientRateLimitManager> rateLimitManagers = new ConcurrentHashMap<>();
+    private static final Map<String, ClientRateLimitManager> RATE_LIMIT_MANAGERS = new ConcurrentHashMap<>();
     private ClientRateLimitManager rateLimitManager = new ClientRateLimitManager(10, Duration.ofSeconds(30));
 
     private HashMap<String, RachioDevice> deviceList = new HashMap<String, RachioDevice>();
@@ -260,7 +260,7 @@ public class RachioApi {
             throws RachioApiException {
         this.apikey = apikey;
         this.bridgeUID = bridgeUID;
-        this.rateLimitManager = Objects.requireNonNull(rateLimitManagers.computeIfAbsent(apikey,
+        this.rateLimitManager = Objects.requireNonNull(RATE_LIMIT_MANAGERS.computeIfAbsent(apikey,
                 key -> new ClientRateLimitManager(10, Duration.ofSeconds(30))));
         httpApi = new RachioHttp(this.apikey);
         if (!initializePersonId(priority, requestPurpose) || !initializeDevices(bridgeUID, priority, requestPurpose)
@@ -654,7 +654,7 @@ public class RachioApi {
     }
 
     public RachioForecastResponse getDeviceForecast(String deviceId, String units) throws RachioApiException {
-        String normalizedUnits = units.equalsIgnoreCase("US") ? "US" : "METRIC";
+        String normalizedUnits = "US".equalsIgnoreCase(units) ? "US" : "METRIC";
         logger.debug("Load forecast for device '{}' using {} units.", deviceId, normalizedUnits);
         String json = httpGet(APIURL_BASE + APIURL_GET_DEVICE + "/" + deviceId + "/" + APIURL_GET_DEVICE_FORECAST,
                 "units=" + urlEncode(normalizedUnits), PRIORITY.LOW).resultString;
@@ -1597,9 +1597,6 @@ public class RachioApi {
                         f.setAccessible(true);
                         t.setAccessible(true);
                         t.set(toObj, a != null ? a.clone() : null);
-                    } else {
-                        // logger.debug("RachioApiInternal: Unable to update field '{}', '{}'", t.getName(),
-                        // t.getType());
                     }
                 }
             } catch (NoSuchFieldException ex) {

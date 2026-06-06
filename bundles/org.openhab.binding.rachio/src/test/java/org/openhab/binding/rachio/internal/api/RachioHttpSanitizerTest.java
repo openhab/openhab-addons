@@ -15,6 +15,7 @@ package org.openhab.binding.rachio.internal.api;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -22,6 +23,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author openHAB Contributors - Initial contribution
  */
+@NonNullByDefault
 class RachioHttpSanitizerTest {
 
     @Test

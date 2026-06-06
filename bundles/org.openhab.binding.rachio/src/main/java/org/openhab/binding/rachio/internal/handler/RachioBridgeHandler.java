@@ -18,6 +18,7 @@ import static org.openhab.binding.rachio.internal.RachioUtils.getString;
 import java.net.UnknownHostException;
 import java.text.MessageFormat;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -578,8 +579,8 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
     }
 
     public RachioValveDayViewsResponse getValveDayViews(String valveId) throws RachioApiException {
-        LocalDate end = LocalDate.now().plusDays(getHoseSummaryLookaheadDays());
-        LocalDate start = LocalDate.now().minusDays(getHoseSummaryLookbackDays());
+        LocalDate end = LocalDate.now(ZoneId.systemDefault()).plusDays(getHoseSummaryLookaheadDays());
+        LocalDate start = LocalDate.now(ZoneId.systemDefault()).minusDays(getHoseSummaryLookbackDays());
         return rachioApi.getValveDayViews(valveId, start, end);
     }
 

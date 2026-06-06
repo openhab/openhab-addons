@@ -31,6 +31,7 @@ import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_T
 
 import java.util.Objects;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.openhab.binding.rachio.internal.api.RachioDevice;
@@ -48,6 +49,7 @@ import org.openhab.core.thing.ThingUID;
  *
  * @author openHAB Contributors - Initial contribution
  */
+@NonNullByDefault
 class RachioDiscoveryServiceTest {
     private static final ThingUID BRIDGE_UID = new ThingUID(THING_TYPE_CLOUD, "bridge");
 

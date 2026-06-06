@@ -131,7 +131,6 @@ public class RachioHttp {
      */
     protected RachioApiResult httpRequest(String method, String url, @Nullable String urlParameters,
             @Nullable String reqDatas) throws RachioApiException {
-
         RachioApiResult result = new RachioApiResult();
         try {
             apiCalls++;

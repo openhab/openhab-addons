@@ -32,6 +32,7 @@ import static org.openhab.binding.rachio.internal.RachioConfiguration.Configurat
 
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -39,6 +40,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author openHAB Contributors - Initial contribution
  */
+@NonNullByDefault
 class RachioConfigurationTest {
     @Test
     void invalidEventHistoryLookbackUsesDefault() {

@@ -470,7 +470,7 @@ public class RachioDevice extends RachioCloudDevice {
     }
 
     public String getAllRunZonesJson(int defaultRuntime) {
-        boolean flAll = runList.isEmpty() || runList.equalsIgnoreCase("ALL");
+        boolean flAll = runList.isEmpty() || "ALL".equalsIgnoreCase(runList);
         int runtime = getMultiZoneRunTime(defaultRuntime);
         StringBuilder resolvedDurations = new StringBuilder();
 

@@ -32,7 +32,7 @@ import org.openhab.core.types.State;
 /**
  * Base class for Rachio child thing handlers with common bridge lookup, cached refresh, and status propagation logic.
  *
- * @author Jeff James - Initial architectural concept
+ * @author Jeff James - Initial contribution
  * @author Kovacs Istvan - Adaptation and integration into the openHAB 5.1+ Rachio binding
  */
 @NonNullByDefault
