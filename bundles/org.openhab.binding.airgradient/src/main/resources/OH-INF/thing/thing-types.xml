@@ -90,7 +90,7 @@
 			<property name="firmwareVersion"/>
 			<property name="serialNumber"/>
 			<property name="modelId"/>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 		<representation-property>serialNumber</representation-property>
 
@@ -140,7 +140,7 @@
 			<property name="firmwareVersion"/>
 			<property name="serialNumber"/>
 			<property name="modelId"/>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 		<representation-property>location</representation-property>
 
