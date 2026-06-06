@@ -48,19 +48,19 @@
 	</channel-type>
 
 	<channel-type id="wlanSignalStrength">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="dBm">Number:Power</item-type>
 		<label>WLAN Signal Strength</label>
-		<description>Wi-Fi signal strength in dBm</description>
+		<description>Wi-Fi signal strength</description>
 		<category>QualityOfService</category>
-		<state readOnly="true" pattern="%.0f dBm"/>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="cellularSignalStrength">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="dBm">Number:Power</item-type>
 		<label>Cellular Signal Strength</label>
 		<description>Cellular (LTE) signal strength in dBm</description>
 		<category>QualityOfService</category>
-		<state readOnly="true" pattern="%.0f dBm"/>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="uptime">
@@ -68,11 +68,11 @@
 		<label>Uptime</label>
 		<description>Device uptime in seconds since last reboot</description>
 		<category>QualityOfService</category>
-		<state readOnly="true" pattern="%.0f s"/>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="phaseCount">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type>Number</item-type>
 		<label>Phase Count</label>
 		<description>Number of electrical phases the charger is connected to (1 or 3)</description>
 		<category>Energy</category>
