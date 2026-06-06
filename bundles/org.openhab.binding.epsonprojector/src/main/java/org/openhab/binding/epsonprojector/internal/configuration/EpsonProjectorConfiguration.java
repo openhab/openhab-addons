@@ -48,7 +48,12 @@ public class EpsonProjectorConfiguration {
     public int maxVolume = 20;
 
     /**
-     * Boolean to indicate if source list should be retrieved from projector
+     * Boolean to indicate if source list should be retrieved from projector.
      */
     public boolean loadSourceList;
+
+    /**
+     * 'Monitor' password used to authenticate with the projector.
+     */
+    public String password = "";
 }
