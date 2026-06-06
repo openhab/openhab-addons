@@ -1,18 +1,16 @@
-import { LevelControlServer } from "@matter/main/behaviors";
 import { LevelControl } from "@matter/main/clusters";
 import { Endpoint } from "@matter/node";
 import { DimmableLightDevice } from "@matter/node/devices/dimmable-light";
-import { GenericDeviceType } from "./GenericDeviceType";
+import { CustomLevelControlServer, CustomOnOffServer } from "../behaviors";
+import { BaseDeviceType } from "./BaseDeviceType";
 
-const LevelControlType = LevelControlServer.with(LevelControl.Feature.Lighting);
-
-export class DimmableDeviceType extends GenericDeviceType {
+export class DimmableDeviceType extends BaseDeviceType {
     override createEndpoint(clusterValues: Record<string, any>) {
         const endpoint = new Endpoint(
             DimmableLightDevice.with(
-                this.createOnOffServer(),
-                this.createLevelControlServer().with(LevelControl.Feature.Lighting),
-                ...this.defaultClusterServers(),
+                CustomOnOffServer,
+                CustomLevelControlServer.with(LevelControl.Feature.Lighting),
+                ...this.baseClusterServers,
             ),
             {
                 ...this.endPointDefaults(),
@@ -24,12 +22,8 @@ export class DimmableDeviceType extends GenericDeviceType {
 
     override defaultClusterValues() {
         return {
-            levelControl: {
-                currentLevel: 254,
-            },
-            onOff: {
-                onOff: false,
-            },
+            levelControl: { ...CustomLevelControlServer.DEFAULTS },
+            onOff: { ...CustomOnOffServer.DEFAULTS },
         };
     }
 }

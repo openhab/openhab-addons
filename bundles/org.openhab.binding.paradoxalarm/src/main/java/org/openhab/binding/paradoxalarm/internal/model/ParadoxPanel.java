@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -46,6 +46,10 @@ public class ParadoxPanel implements IDataUpdateListener {
     private double batteryLevel;
     private double dcLevel;
     private ZonedDateTime panelTime;
+    private boolean acTrouble;
+    private boolean batteryTrouble;
+    private boolean moduleSupervisionTrouble;
+    private boolean communicationTrouble;
 
     public ParadoxPanel() {
         this.parser = new EvoParser();
@@ -87,6 +91,10 @@ public class ParadoxPanel implements IDataUpdateListener {
         }
 
         ZoneStateFlags zoneStateFlags = communicator.getZoneStateFlags();
+        if (zoneStateFlags == null) {
+            logger.debug("Zone state flags not yet available, skipping zone update.");
+            return;
+        }
         for (int i = 0; i < zones.size(); i++) {
             Zone zone = zones.get(i);
             zone.setZoneState(parser.calculateZoneState(zone.getId(), zoneStateFlags));
@@ -97,6 +105,15 @@ public class ParadoxPanel implements IDataUpdateListener {
         vdcLevel = Math.max(0, (firstRamPage[25] & 0xFF) * (20.3 - 1.4) / 255.0 + 1.4);
         dcLevel = Math.max(0, (firstRamPage[27] & 0xFF) * 22.8 / 255);
         batteryLevel = Math.max(0, (firstRamPage[26] & 0xFF) * 22.8 / 255);
+
+        parseTroubleFlags(communicator.getMemoryMap().getElement(0));
+    }
+
+    public void parseTroubleFlags(byte[] ramBlock1) {
+        moduleSupervisionTrouble = (ramBlock1[13] & 0x08) != 0;
+        batteryTrouble = (ramBlock1[14] & 0x02) != 0;
+        acTrouble = (ramBlock1[14] & 0x01) != 0;
+        communicationTrouble = (ramBlock1[15] & 0x20) != 0;
     }
 
     protected ZonedDateTime constructPanelTime(byte[] firstPage) {
@@ -115,8 +132,11 @@ public class ParadoxPanel implements IDataUpdateListener {
         zones = new ArrayList<>();
         Map<Integer, String> zoneLabels = communicator.getZoneLabels();
         for (int i = 0; i < zoneLabels.size(); i++) {
-            Zone zone = new Zone(this, i + 1, zoneLabels.get(i));
-            zones.add(zone);
+            String label = zoneLabels.get(i);
+            if (label == null || label.isBlank()) {
+                label = "Zone " + (i + 1);
+            }
+            zones.add(new Zone(this, i + 1, label));
         }
         return zones;
     }
@@ -125,7 +145,11 @@ public class ParadoxPanel implements IDataUpdateListener {
         partitions = new ArrayList<>();
         Map<Integer, String> partitionLabels = communicator.getPartitionLabels();
         for (int i = 0; i < partitionLabels.size(); i++) {
-            Partition partition = new Partition(this, i + 1, partitionLabels.get(i));
+            String label = partitionLabels.get(i);
+            if (label == null || label.isBlank()) {
+                label = "Partition " + (i + 1);
+            }
+            Partition partition = new Partition(this, i + 1, label);
             partitions.add(partition);
             logger.debug("Partition {}:\t{}", i + 1, partition.getState().getMainState());
         }
@@ -184,6 +208,22 @@ public class ParadoxPanel implements IDataUpdateListener {
 
     public ZonedDateTime getPanelTime() {
         return panelTime;
+    }
+
+    public boolean isAcTrouble() {
+        return acTrouble;
+    }
+
+    public boolean isBatteryTrouble() {
+        return batteryTrouble;
+    }
+
+    public boolean isModuleSupervisionTrouble() {
+        return moduleSupervisionTrouble;
+    }
+
+    public boolean isCommunicationTrouble() {
+        return communicationTrouble;
     }
 
     public void setCommunicator(IParadoxCommunicator communicator) {

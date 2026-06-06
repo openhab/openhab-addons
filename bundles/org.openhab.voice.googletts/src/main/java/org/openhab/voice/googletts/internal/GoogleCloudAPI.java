@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -368,17 +368,25 @@ class GoogleCloudAPI {
                 .withContent(gson.toJson(request), MimeTypes.Type.APPLICATION_JSON.name());
 
         try {
-            SynthesizeSpeechResponse synthesizeSpeechResponse = gson.fromJson(builder.getContentAsString(),
+            String responseBody = builder.getContentAsString();
+            SynthesizeSpeechResponse synthesizeSpeechResponse = gson.fromJson(responseBody,
                     SynthesizeSpeechResponse.class);
 
             if (synthesizeSpeechResponse == null) {
+                logger.warn("Google Cloud TTS returned null response");
                 return null;
             }
 
-            byte[] encodedBytes = synthesizeSpeechResponse.getAudioContent().getBytes(StandardCharsets.UTF_8);
+            String audioContent = synthesizeSpeechResponse.getAudioContent();
+            if (audioContent == null || audioContent.isEmpty()) {
+                logger.warn("Google Cloud TTS returned empty audio content. Response: {}", responseBody);
+                return null;
+            }
+
+            byte[] encodedBytes = audioContent.getBytes(StandardCharsets.UTF_8);
             return Base64.getDecoder().decode(encodedBytes);
         } catch (JsonSyntaxException e) {
-            // do nothing
+            logger.warn("Google Cloud TTS returned invalid JSON: {}", e.getMessage());
         } catch (IOException e) {
             throw new CommunicationException(String.format("An unexpected IOException occurred: %s", e.getMessage()));
         }

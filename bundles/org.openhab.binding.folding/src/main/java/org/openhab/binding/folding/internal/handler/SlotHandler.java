@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,10 +12,15 @@
  */
 package org.openhab.binding.folding.internal.handler;
 
+import static org.openhab.binding.folding.internal.FoldingBindingConstants.*;
+
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.folding.internal.dto.SlotInfo;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -33,6 +38,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Marius Bjørnstad - Initial contribution
  */
+@NonNullByDefault
 public class SlotHandler extends BaseThingHandler implements SlotUpdateListener {
 
     private Logger logger = LoggerFactory.getLogger(SlotHandler.class);
@@ -43,11 +49,19 @@ public class SlotHandler extends BaseThingHandler implements SlotUpdateListener 
 
     @Override
     public void initialize() {
-        getBridgeHandler().registerSlot(myId(), this);
+        try {
+            getBridgeHandler().registerSlot(myId(), this);
+        } catch (IllegalStateException e) {
+            logger.debug("Unable to register slot handler to Folding client bridge", e);
+            updateStatus(ThingStatus.OFFLINE);
+        }
     }
 
-    private FoldingClientHandler getBridgeHandler() {
-        return (FoldingClientHandler) super.getBridge().getHandler();
+    private FoldingClientHandler getBridgeHandler() throws IllegalStateException {
+        if (super.getBridge() instanceof Bridge bridge && bridge.getHandler() instanceof FoldingClientHandler handler) {
+            return handler;
+        }
+        throw new IllegalStateException("Slot handler without Folding client bridge");
     }
 
     private String myId() {
@@ -57,13 +71,13 @@ public class SlotHandler extends BaseThingHandler implements SlotUpdateListener 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
-            if ("run".equals(channelUID.getId())) {
+            if (CHANNEL_RUN.equals(channelUID.getId())) {
                 if (command == OnOffType.ON) {
                     getBridgeHandler().sendCommand("unpause " + myId());
                 } else if (command == OnOffType.OFF) {
                     getBridgeHandler().sendCommand("pause " + myId());
                 }
-            } else if ("finish".equals(channelUID.getId())) {
+            } else if (CHANNEL_FINISH.equals(channelUID.getId())) {
                 if (command == OnOffType.ON) {
                     getBridgeHandler().sendCommand("finish " + myId());
                 } else if (command == OnOffType.OFF) {
@@ -80,11 +94,11 @@ public class SlotHandler extends BaseThingHandler implements SlotUpdateListener 
     @Override
     public void refreshed(SlotInfo si) {
         updateStatus(ThingStatus.ONLINE);
-        updateState(getThing().getChannel("status").getUID(), new StringType(si.status));
+        updateState(CHANNEL_STATUS, new StringType(si.status));
         boolean finishing = "FINISHING".equals(si.status);
         boolean run = finishing || "READY".equals(si.status) || "RUNNING".equals(si.status);
-        updateState(getThing().getChannel("finish").getUID(), OnOffType.from(finishing));
-        updateState(getThing().getChannel("run").getUID(), OnOffType.from(run));
-        updateState(getThing().getChannel("description").getUID(), new StringType(si.description));
+        updateState(CHANNEL_FINISH, OnOffType.from(finishing));
+        updateState(CHANNEL_RUN, OnOffType.from(run));
+        updateState(CHANNEL_DESCRIPTION, new StringType(si.description));
     }
 }

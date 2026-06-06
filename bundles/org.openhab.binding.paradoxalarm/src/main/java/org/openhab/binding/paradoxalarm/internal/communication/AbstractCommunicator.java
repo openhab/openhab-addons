@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -120,7 +120,11 @@ public abstract class AbstractCommunicator implements IParadoxInitialLoginCommun
             byte[] packetBytes = request.getRequestPacket().getBytes();
             ParadoxUtil.printPacket("Tx Packet:", packetBytes);
             tx.write(packetBytes);
-            syncQueue.moveRequest();
+            if (request.isResponseExpected()) {
+                syncQueue.moveRequest();
+            } else {
+                syncQueue.removeSendRequest();
+            }
         } catch (SocketException e) {
             logger.debug("Socket time out occurred. Informing listener. Request={}. Exception=", request, e);
             syncQueue.removeSendRequest();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -150,11 +150,11 @@ public class RemoteGetUiFlgResponseDTO {
          * @return This DTO
          */
         public static UiFlgResponseCommmands fromResponseString(String commandString) {
-            var values = commandString.split(ArgoDeviceStatus.HMI_ELEMENT_SEPARATOR);
+            String[] values = commandString.split(ArgoDeviceStatus.HMI_ELEMENT_SEPARATOR);
             if (values.length != ArgoDeviceStatus.HMI_COMMAND_ELEMENT_COUNT) {
                 throw new IllegalArgumentException("commandString");
             }
-            return new UiFlgResponseCommmands(Arrays.asList(values));
+            return new UiFlgResponseCommmands(Arrays.stream(values).toList());
         }
 
         /**

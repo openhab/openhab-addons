@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.fsinternetradio.internal.radio;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Internal constants for the frontier silicon radio.
  *
  * @author Markus Rathgeb - Initial contribution, moved the constants to separate class
  */
+@NonNullByDefault
 public class FrontierSiliconRadioConstants {
 
     public static final String REQUEST_SET_POWER = "SET/netRemote.sys.power";

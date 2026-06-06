@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -71,51 +71,51 @@ public class FanControlConverter extends GenericConverter<FanControlCluster> {
 
             List<StateOption> modeOptions = new ArrayList<>();
 
-            modeOptions.add(new StateOption(FanControlCluster.FanModeEnum.OFF.value.toString(),
-                    FanControlCluster.FanModeEnum.OFF.label));
+            modeOptions.add(new StateOption(FanControlCluster.FanModeEnum.OFF.getValue().toString(),
+                    FanControlCluster.FanModeEnum.OFF.getLabel()));
 
             switch (initializingCluster.fanModeSequence) {
                 case OFF_HIGH:
-                    modeOptions.add(new StateOption(FanControlCluster.FanModeEnum.HIGH.value.toString(),
-                            FanControlCluster.FanModeEnum.HIGH.label));
+                    modeOptions.add(new StateOption(FanControlCluster.FanModeEnum.HIGH.getValue().toString(),
+                            FanControlCluster.FanModeEnum.HIGH.getLabel()));
                     break;
                 case OFF_HIGH_AUTO:
-                    modeOptions.add(new StateOption(FanControlCluster.FanModeEnum.HIGH.value.toString(),
-                            FanControlCluster.FanModeEnum.HIGH.label));
-                    modeOptions.add(new StateOption(FanControlCluster.FanModeEnum.AUTO.value.toString(),
-                            FanControlCluster.FanModeEnum.AUTO.label));
+                    modeOptions.add(new StateOption(FanControlCluster.FanModeEnum.HIGH.getValue().toString(),
+                            FanControlCluster.FanModeEnum.HIGH.getLabel()));
+                    modeOptions.add(new StateOption(FanControlCluster.FanModeEnum.AUTO.getValue().toString(),
+                            FanControlCluster.FanModeEnum.AUTO.getLabel()));
                     break;
                 case OFF_LOW_HIGH_AUTO:
-                    modeOptions.add(new StateOption(FanControlCluster.FanModeEnum.LOW.value.toString(),
-                            FanControlCluster.FanModeEnum.LOW.label));
-                    modeOptions.add(new StateOption(FanControlCluster.FanModeEnum.HIGH.value.toString(),
-                            FanControlCluster.FanModeEnum.HIGH.label));
-                    modeOptions.add(new StateOption(FanControlCluster.FanModeEnum.AUTO.value.toString(),
-                            FanControlCluster.FanModeEnum.AUTO.label));
+                    modeOptions.add(new StateOption(FanControlCluster.FanModeEnum.LOW.getValue().toString(),
+                            FanControlCluster.FanModeEnum.LOW.getLabel()));
+                    modeOptions.add(new StateOption(FanControlCluster.FanModeEnum.HIGH.getValue().toString(),
+                            FanControlCluster.FanModeEnum.HIGH.getLabel()));
+                    modeOptions.add(new StateOption(FanControlCluster.FanModeEnum.AUTO.getValue().toString(),
+                            FanControlCluster.FanModeEnum.AUTO.getLabel()));
                     break;
                 case OFF_LOW_MED_HIGH_AUTO:
-                    modeOptions.add(new StateOption(FanControlCluster.FanModeEnum.LOW.value.toString(),
-                            FanControlCluster.FanModeEnum.LOW.label));
-                    modeOptions.add(new StateOption(FanControlCluster.FanModeEnum.MEDIUM.value.toString(),
-                            FanControlCluster.FanModeEnum.MEDIUM.label));
-                    modeOptions.add(new StateOption(FanControlCluster.FanModeEnum.HIGH.value.toString(),
-                            FanControlCluster.FanModeEnum.HIGH.label));
-                    modeOptions.add(new StateOption(FanControlCluster.FanModeEnum.AUTO.value.toString(),
-                            FanControlCluster.FanModeEnum.AUTO.label));
+                    modeOptions.add(new StateOption(FanControlCluster.FanModeEnum.LOW.getValue().toString(),
+                            FanControlCluster.FanModeEnum.LOW.getLabel()));
+                    modeOptions.add(new StateOption(FanControlCluster.FanModeEnum.MEDIUM.getValue().toString(),
+                            FanControlCluster.FanModeEnum.MEDIUM.getLabel()));
+                    modeOptions.add(new StateOption(FanControlCluster.FanModeEnum.HIGH.getValue().toString(),
+                            FanControlCluster.FanModeEnum.HIGH.getLabel()));
+                    modeOptions.add(new StateOption(FanControlCluster.FanModeEnum.AUTO.getValue().toString(),
+                            FanControlCluster.FanModeEnum.AUTO.getLabel()));
 
                     break;
                 case OFF_LOW_HIGH:
-                    modeOptions.add(new StateOption(FanControlCluster.FanModeEnum.LOW.value.toString(),
-                            FanControlCluster.FanModeEnum.LOW.label));
-                    modeOptions.add(new StateOption(FanControlCluster.FanModeEnum.HIGH.value.toString(),
-                            FanControlCluster.FanModeEnum.HIGH.label));
+                    modeOptions.add(new StateOption(FanControlCluster.FanModeEnum.LOW.getValue().toString(),
+                            FanControlCluster.FanModeEnum.LOW.getLabel()));
+                    modeOptions.add(new StateOption(FanControlCluster.FanModeEnum.HIGH.getValue().toString(),
+                            FanControlCluster.FanModeEnum.HIGH.getLabel()));
                     break;
                 default:
                     break;
             }
 
-            StateDescription stateDescriptionMode = StateDescriptionFragmentBuilder.create().withPattern("%d")
-                    .withOptions(modeOptions).build().toStateDescription();
+            StateDescription stateDescriptionMode = StateDescriptionFragmentBuilder.create().withOptions(modeOptions)
+                    .build().toStateDescription();
 
             channels.put(modeChannel, stateDescriptionMode);
         }
@@ -138,13 +138,19 @@ public class FanControlConverter extends GenericConverter<FanControlCluster> {
                 }
             } else if (command instanceof PercentType percentType) {
                 handler.writeAttribute(endpointNumber, FanControlCluster.CLUSTER_NAME,
-                        FanControlCluster.ATTRIBUTE_PERCENT_SETTING, percentType.toString());
+                        FanControlCluster.ATTRIBUTE_PERCENT_SETTING, percentType.toString()).exceptionally(e -> {
+                            logger.debug("Failed to set percent setting: {}", e.getMessage());
+                            return Void.TYPE.cast(null);
+                        });
             }
         }
         if (channelUID.getIdWithoutGroup().equals(CHANNEL_ID_FANCONTROL_MODE)) {
             if (command instanceof DecimalType decimalType) {
                 handler.writeAttribute(endpointNumber, FanControlCluster.CLUSTER_NAME,
-                        FanControlCluster.ATTRIBUTE_FAN_MODE, decimalType.toString());
+                        FanControlCluster.ATTRIBUTE_FAN_MODE, decimalType.toString()).exceptionally(e -> {
+                            logger.debug("Failed to set fan mode: {}", e.getMessage());
+                            return Void.TYPE.cast(null);
+                        });
             }
         }
         super.handleCommand(channelUID, command);
@@ -155,7 +161,7 @@ public class FanControlConverter extends GenericConverter<FanControlCluster> {
         switch (message.path.attributeName) {
             case FanControlCluster.ATTRIBUTE_FAN_MODE:
                 if (message.value instanceof FanControlCluster.FanModeEnum fanMode) {
-                    updateState(CHANNEL_ID_FANCONTROL_MODE, new DecimalType(fanMode.value));
+                    updateState(CHANNEL_ID_FANCONTROL_MODE, new DecimalType(fanMode.getValue()));
                 }
                 break;
             case FanControlCluster.ATTRIBUTE_PERCENT_SETTING:
@@ -172,7 +178,7 @@ public class FanControlConverter extends GenericConverter<FanControlCluster> {
     @Override
     public void initState() {
         updateState(CHANNEL_ID_FANCONTROL_MODE,
-                initializingCluster.fanMode != null ? new DecimalType(initializingCluster.fanMode.value)
+                initializingCluster.fanMode != null ? new DecimalType(initializingCluster.fanMode.getValue())
                         : UnDefType.NULL);
         updateState(CHANNEL_ID_FANCONTROL_PERCENT,
                 initializingCluster.percentSetting != null ? new PercentType(initializingCluster.percentSetting)

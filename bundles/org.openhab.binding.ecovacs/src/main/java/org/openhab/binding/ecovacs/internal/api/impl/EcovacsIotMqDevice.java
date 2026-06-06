@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -38,7 +38,6 @@ import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.PortalC
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.PortalLoginResponse;
 import org.openhab.binding.ecovacs.internal.api.model.CleanLogRecord;
 import org.openhab.binding.ecovacs.internal.api.model.DeviceCapability;
-import org.openhab.binding.ecovacs.internal.api.util.DataParsingException;
 import org.openhab.core.io.net.http.TrustAllTrustManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -120,7 +119,7 @@ public class EcovacsIotMqDevice implements EcovacsDevice {
             return Optional.empty();
         }
         boolean needsSigning = hasCapability(DeviceCapability.USES_CLEAN_RESULTS_LOG_API);
-        return Optional.of(api.downloadCleanMapImage(record.mapImageUrl.get(), needsSigning));
+        return api.downloadCleanMapImage(device, record.mapImageUrl.get(), needsSigning);
     }
 
     @Override
@@ -179,7 +178,7 @@ public class EcovacsIotMqDevice implements EcovacsDevice {
                     String eventName = receivedTopic.split("/")[2].toLowerCase();
                     logger.trace("{}: Got MQTT message on topic {}: {}", getSerialNumber(), receivedTopic, payload);
                     parser.handleMessage(eventName, payload);
-                } catch (DataParsingException e) {
+                } catch (Exception e) {
                     listener.onEventStreamFailure(this, e);
                 }
             };

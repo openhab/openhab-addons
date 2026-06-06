@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,7 +30,7 @@ import org.openhab.binding.foobot.internal.FoobotApiException;
 import org.openhab.binding.foobot.internal.FoobotBindingConstants;
 import org.openhab.binding.foobot.internal.config.FoobotAccountConfiguration;
 import org.openhab.binding.foobot.internal.discovery.FoobotAccountDiscoveryService;
-import org.openhab.binding.foobot.internal.json.FoobotDevice;
+import org.openhab.binding.foobot.internal.dto.FoobotDevice;
 import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.Bridge;

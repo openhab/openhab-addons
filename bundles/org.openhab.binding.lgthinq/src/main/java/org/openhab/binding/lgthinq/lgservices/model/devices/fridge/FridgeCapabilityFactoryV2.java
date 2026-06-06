@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -57,7 +57,7 @@ public class FridgeCapabilityFactoryV2 extends AbstractFridgeCapabilityFactory {
 
     private void loadGenericFeatNode(JsonNode featNode, Map<String, String> capMap,
             final Map<String, String> constantsMap) {
-        featNode.fields().forEachRemaining(f -> {
+        featNode.properties().forEach(f -> {
             // for each node like ' "1": {"index" : 1, "label" : "7", "_comment" : ""} '
             if (!"IGNORE".equals(f.getKey())) {
                 String translatedValue = constantsMap.get(f.getValue().path("label").asText());

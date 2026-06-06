@@ -13,7 +13,7 @@ The following things types are available:
 | ThingType        | Description                                                                                                              |
 |------------------|--------------------------------------------------------------------------------------------------------------------------|
 | miio:generic     | Generic type for discovered devices. Once the token is available and the device model is determined, this ThingType will automatically change to the appropriate ThingType |
-| miio:vacuum      | For Xiaomi/RoboRock Robot Vacuum products                                                                                         |
+| miio:vacuum      | For Xiaomi/Roborock Robot Vacuum products                                                                                         |
 | miio:basic       | For most other devices like yeelights, airpurifiers. Channels and commands are determined by database configuration   |
 | miio:gateway     | Similar to basic, but with the Bridge feature, it can support to forward commands for connected devices                  |
 | miio:lumi        | Thing type for subdevices connected to the gateway. Note, these devices require a defined gateway to function            |
@@ -70,7 +70,7 @@ The binding also supports the discovery of devices via the cloud. This may be us
 
 ## Thing Configuration
 
-Each Xiaomi device (thing) needs the IP address and token configured to be able to communicate. See discovery for details.
+Each Xiaomi device (Thing) needs the IP address and token configured to be able to communicate. See discovery for details.
 Optional configuration is the refresh interval and the deviceID. Note that the deviceID is automatically retrieved when it is left blank.
 The configuration for model is automatically retrieved from the device in normal operation.
 However, for devices that are unsupported, you may override the value and try to use a model string from a similar device to experimentally use your device with the binding.
@@ -110,14 +110,14 @@ The binding allows to try/test if your new device is working with database files
 
 There are 3 ways to get unsupported devices working:
 
-- by overriding the model with the model of a similar supported device. E.g. this works great for roborock vacuum devices and yeelight devices). See [Substitute model for unsupported devices](#substitute-model-for-unsupported-devices)
+- by overriding the model with the model of a similar supported device. E.g. this works great for Roborock vacuum devices and yeelight devices). See [Substitute model for unsupported devices](#substitute-model-for-unsupported-devices)
 - by switching on the `(experimental) Create channels for new/unsupported devices (MIOT protocol)` channel, this works for most newer devices. See [Create support for new devices based on online published spec database](#create-support-for-new-devices-based-on-online-published-spec-database)
 - by switching on the `(experimental) Create channels / test properties for unsupported devices (legacy protocol)` channel. This works for older / legacy devices. It test all known properties to see which are supported by your device. See [Supported property test for unsupported devices](#supported-property-test-for-unsupported-devices)
 
 ## Substitute model for unsupported devices
 
 Replace the model with the model which is already supported.
-For this, first remove your unsupported thing. Manually add a miio:basic thing.
+For this, first remove your unsupported Thing. Manually add a miio:basic Thing.
 Besides the regular configuration (like ip address, token) the modelId needs to be provided.
 Normally the modelId is populated with the model of your device, however in this case, use the modelId of a similar device.
 Look at the openHAB forum, or the openHAB GitHub repository or this readme for the modelId of similar devices.
@@ -128,7 +128,7 @@ The unsupported device has a `(experimental) Create channels for new/unsupported
 It will test all properties are in the spec for your device, which may take few minutes.
 A test report will be shown in the log and is saved in the `userdata/miio` folder with a filename `test-[your model]-[timestamp].txt`.
 The experimental database file is saved to the conf/misc/miio folder (see below chapter).
-The thing will go offline and will come back online as basic device, supporting the found channels.
+The Thing will go offline and will come back online as basic device, supporting the found channels.
 If this does not happen automatically, restart the binding or restart openHAB in order to have the new database file picked up.
 
 Please validate and feedback if all channels and actions are working, and share the logfile and json files on the openHAB forum or the openHAB GitHub to build future support for this model.
@@ -138,7 +138,7 @@ Please validate and feedback if all channels and actions are working, and share 
 The unsupported device has a test channel with switch. When switching on, all known properties are tested, this may take few minutes.
 A test report will be shown in the log and is saved in the `userdata/miio` folder with a filename `test-[your model]-[timestamp].txt`.
 If supported properties are found, an experimental database file is saved to the conf/misc/miio folder (see below chapter).
-The thing will go offline and will come back online as basic device, supporting the found channels.
+The Thing will go offline and will come back online as basic device, supporting the found channels.
 The database file may need to be modified to display the right channel names.
 After validation, please share the logfile and json files on the openHAB forum or the openHAB GitHub to build future support for this model.
 
@@ -183,7 +183,7 @@ Alternatively as described above, double check for multiple connections for sing
 _Your device is on a different subnet?_
 This is in most cases not working.
 Firmware of the device don't accept commands coming from other subnets.
-Set the communication in the thing configuration to 'cloud'.
+Set the communication in the Thing configuration to 'cloud'.
 
 _Cloud connectivity is not working_
 The most common problem is a wrong or missing userId/password. Update your Xiaomi cloud userId & password in the [miio binding configuration screen](#binding-configuration).
@@ -229,7 +229,7 @@ All devices have available the following channels (marked as advanced) besides t
 note: the ADVANCED  `actions#commands` and `actions#rpc` channels can be used to send commands that are not automated via the binding. This is available for all devices
 e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enable a pre-configured timer. See <https://github.com/marcelrv/XiaomiRobotVacuumProtocol> for all known available commands.
 
-### Robo Rock vacuum Channels
+### Roborock Vacuum Channels
 
 | Type    | Channel                           | Description                |
 |---------|-----------------------------------|----------------------------|
@@ -273,7 +273,7 @@ The way to customize this is to create a file with the name `mapConfig.json` in 
 If the binding finds this file it will read the map rendering preferences from there.
 If the file is available but invalid json, it will create a new file with all the default values for you to customize.
 This allows you to control the colors, if logo is displayed, if and what text is rendered etc.
-To (re-)read the file either restart openHAB, restart the binding or alternatively edit the thing and make (any) minor change.
+To (re-)read the file either restart openHAB, restart the binding or alternatively edit the Thing and make (any) minor change.
 Note, cropping is disabled (hence showing like the maps in OH3.1 and earlier) for any `cropBorder` value < 0.
 Note, not all the values need to be in the json file, e.g. a subset of the parameters also works, the parameters not in the `mapConfig.json` will take the default values.
 
@@ -281,7 +281,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 
 !!!channelList
 
-## Example item file Rockrobo vacuum
+## Example item file Roborock vacuum
 
 ```java
 Group  gVac     "Xiaomi Robot Vacuum"      <fan>

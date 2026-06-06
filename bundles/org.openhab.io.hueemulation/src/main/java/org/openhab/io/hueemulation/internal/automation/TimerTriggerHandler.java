@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -115,7 +115,9 @@ public class TimerTriggerHandler extends BaseTriggerModuleHandler implements Cal
 
     @Override
     public Duration call() {
-        ((TriggerHandlerCallback) callback).triggered(module, Map.of());
+        if (callback instanceof TriggerHandlerCallback triggerHandlerCallback) {
+            triggerHandlerCallback.triggered(module, Map.of());
+        }
         config.repeat -= 1;
         if (config.repeat == 0) {
             schedule = null;

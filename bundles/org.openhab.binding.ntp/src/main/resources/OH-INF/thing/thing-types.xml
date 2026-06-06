@@ -67,7 +67,7 @@
 		<config-description>
 			<parameter name="DateTimeFormat" type="text" required="false">
 				<label>Date Time Format</label>
-				<description>Formattting of the date and time.</description>
+				<description>Formatting of the date and time.</description>
 				<default>yyyy-MM-dd HH:mm:ss z</default>
 			</parameter>
 		</config-description>

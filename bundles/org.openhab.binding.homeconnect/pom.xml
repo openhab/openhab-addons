@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>5.1.0-SNAPSHOT</version>
+    <version>5.2.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.binding.homeconnect</artifactId>
@@ -15,7 +15,7 @@
   <name>openHAB Add-ons :: Bundles :: Home Connect Binding</name>
 
   <properties>
-    <bnd.importpackage>android.*;resolution:="optional",com.android.*;resolution:="optional",dalvik.*;resolution:="optional",org.apache.harmony.*;resolution:="optional",org.conscrypt.*;resolution:="optional",sun.*;resolution:="optional",javax.annotation.meta.*;resolution:="optional",com.fasterxml.jackson.*;resolution:="optional",com.sun.jdi.*;resolution:="optional"</bnd.importpackage>
+    <bnd.importpackage>android.*;resolution:="optional",com.android.*;resolution:="optional",dalvik.*;resolution:="optional",org.apache.harmony.*;resolution:="optional",org.conscrypt.*;resolution:="optional",sun.*;resolution:="optional",javax.annotation.meta.*;resolution:="optional",com.fasterxml.jackson.*;resolution:="optional",com.sun.jdi.*;resolution:="optional",com.sun.tools.attach.*;resolution:="optional",jakarta.servlet.*;resolution:="optional",jdk.internal.module.*;resolution:="optional"</bnd.importpackage>
   </properties>
 
   <dependencies>
@@ -24,30 +24,25 @@
     <dependency>
       <groupId>org.thymeleaf</groupId>
       <artifactId>thymeleaf</artifactId>
-      <version>3.0.11.RELEASE</version>
+      <version>3.1.4.RELEASE</version>
       <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.thymeleaf.extras</groupId>
-      <artifactId>thymeleaf-extras-java8time</artifactId>
-      <version>3.0.4.RELEASE</version>
     </dependency>
     <dependency>
       <groupId>ognl</groupId>
       <artifactId>ognl</artifactId>
-      <version>3.1.12</version>
+      <version>3.3.4</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.javassist</groupId>
       <artifactId>javassist</artifactId>
-      <version>3.20.0-GA</version>
+      <version>3.29.0-GA</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.attoparser</groupId>
       <artifactId>attoparser</artifactId>
-      <version>2.0.5.RELEASE</version>
+      <version>2.0.7.RELEASE</version>
       <scope>compile</scope>
     </dependency>
     <dependency>

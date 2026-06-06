@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -70,6 +70,14 @@ public class Daytemps {
         }
         this.responseStatus = false;
         // do nothing leave dc_ and ac_ temperature values as they are.
+    }
+
+    public int getCode() {
+        return this.code;
+    }
+
+    public String getMsg() {
+        return this.msg;
     }
 
     public String toString() {

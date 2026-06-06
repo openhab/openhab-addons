@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,8 +14,12 @@ package org.openhab.binding.shelly.internal.handler;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.util.ShellyUtils;
 
 /***
@@ -25,32 +29,39 @@ import org.openhab.binding.shelly.internal.util.ShellyUtils;
  */
 @NonNullByDefault
 public class ShellyDeviceStats {
-    public long lastUptime = 0;
-    public long restarts = 0;
-    public long timeoutErrors = 0;
-    public long timeoutsRecorvered = 0;
-    public long remainingWatchdog = 0;
-    public long alarms = 0;
-    public String lastAlarm = "";
-    public long lastAlarmTs = 0;
-    public long protocolMessages = 0;
-    public long protocolErrors = 0;
-    public int wifiRssi = 0;
-    public int maxInternalTemp = 0;
+
+    public record ShellyDeviceAlarm(String message, long timeStamp) {
+    }
+
+    public final AtomicLong lastUptime = new AtomicLong(0);
+    public final AtomicLong restarts = new AtomicLong(0);
+    public final AtomicInteger timeoutErrors = new AtomicInteger(0);
+    public final AtomicInteger timeoutsRecovered = new AtomicInteger(0);
+    public final AtomicLong remainingWatchdog = new AtomicLong(0);
+    public final AtomicLong alarms = new AtomicLong(0);
+    public final AtomicReference<@Nullable ShellyDeviceAlarm> lastAlarm = new AtomicReference<>();
+    public final AtomicLong protocolMessages = new AtomicLong(0);
+    public final AtomicInteger protocolErrors = new AtomicInteger(0);
+    public final AtomicInteger wifiRssi = new AtomicInteger(0);
+    public final AtomicInteger maxInternalTemp = new AtomicInteger(0);
 
     public Map<String, String> asProperties() {
         Map<String, String> prop = new HashMap<>();
         prop.put("lastUptime", String.valueOf(lastUptime));
         prop.put("deviceRestarts", String.valueOf(restarts));
         prop.put("timeoutErrors", String.valueOf(timeoutErrors));
-        prop.put("timeoutsRecovered", String.valueOf(timeoutsRecorvered));
+        prop.put("timeoutsRecovered", String.valueOf(timeoutsRecovered));
         prop.put("remainingWatchdog", String.valueOf(remainingWatchdog));
         prop.put("alarmCount", String.valueOf(alarms));
-        prop.put("lastAlarm", lastAlarm);
-        prop.put("lastAlarmTs", ShellyUtils.convertTimestamp(lastAlarmTs));
+        ShellyDeviceAlarm alarm = lastAlarm.get();
+        if (alarm != null) {
+            prop.put("lastAlarm", alarm.message);
+            prop.put("lastAlarmTs", ShellyUtils.convertTimestamp(alarm.timeStamp));
+        }
         prop.put("protocolMessages", String.valueOf(protocolMessages));
         prop.put("protocolErrors", String.valueOf(protocolErrors));
         prop.put("wifiRssi", String.valueOf(wifiRssi));
+        prop.put("maxInternalTemp", String.valueOf(maxInternalTemp.get()));
         return prop;
     }
 }

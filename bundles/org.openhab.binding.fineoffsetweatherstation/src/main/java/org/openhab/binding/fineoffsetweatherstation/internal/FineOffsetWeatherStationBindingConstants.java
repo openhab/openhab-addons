@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -43,7 +43,9 @@ public class FineOffsetWeatherStationBindingConstants {
     public static final ChannelTypeUID CHANNEL_TYPE_UV_INDEX = new ChannelTypeUID(BINDING_ID, "uv-index");
     public static final ChannelTypeUID CHANNEL_TYPE_UV_RADIATION = new ChannelTypeUID(BINDING_ID, "uv-radiation");
     public static final ChannelTypeUID CHANNEL_TYPE_RAIN_RATE = new ChannelTypeUID(BINDING_ID, "rain-rate");
+    public static final ChannelTypeUID CHANNEL_TYPE_PM1 = new ChannelTypeUID(BINDING_ID, "pm1");
     public static final ChannelTypeUID CHANNEL_TYPE_PM25 = new ChannelTypeUID(BINDING_ID, "pm25");
+    public static final ChannelTypeUID CHANNEL_TYPE_PM4 = new ChannelTypeUID(BINDING_ID, "pm4");
     public static final ChannelTypeUID CHANNEL_TYPE_PM10 = new ChannelTypeUID(BINDING_ID, "pm10");
     public static final ChannelTypeUID CHANNEL_TYPE_CO2 = new ChannelTypeUID(BINDING_ID, "co2");
     public static final ChannelTypeUID CHANNEL_TYPE_WATER_LEAK_DETECTION = new ChannelTypeUID(BINDING_ID,

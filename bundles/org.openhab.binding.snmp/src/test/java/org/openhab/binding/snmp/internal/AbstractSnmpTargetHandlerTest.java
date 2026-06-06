@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -116,7 +116,7 @@ public abstract class AbstractSnmpTargetHandlerTest extends JavaTest {
 
         PDU responsePDU = new PDU(PDU.RESPONSE,
                 List.of(new VariableBinding(new OID(TEST_OID), new OctetString(TEST_STRING))));
-        ResponseEvent event = new ResponseEvent("test", null, null, responsePDU, null);
+        ResponseEvent<?> event = new ResponseEvent<>("test", null, null, responsePDU, null, 0L);
 
         thingHandler.onResponse(event);
 
@@ -132,7 +132,7 @@ public abstract class AbstractSnmpTargetHandlerTest extends JavaTest {
         setup(SnmpBindingConstants.CHANNEL_TYPE_UID_SWITCH, channelMode, datatype, onValue, offValue);
 
         PDU responsePDU = new PDU(PDU.RESPONSE, List.of(new VariableBinding(new OID(TEST_OID), value)));
-        ResponseEvent event = new ResponseEvent("test", null, null, responsePDU, null);
+        ResponseEvent<?> event = new ResponseEvent<>("test", null, null, responsePDU, null, 0L);
 
         thingHandler.onResponse(event);
 

@@ -43,5 +43,12 @@
 				such latency value is found in the ping command output, the time to execute the ping command is used as fallback
 				latency. If disabled, the time to execute the ping command is always used as latency value.</description>
 		</parameter>
+		<parameter name="numberOfDiscoveryThreads" type="integer" min="0" step="10">
+			<default>100</default>
+			<label>Number of Discovery Threads</label>
+			<description>The number of threads to use when scanning for network devices. Fewer threads, results in lower memory
+				consumption but a slower operation. Use 0 for unlimited.</description>
+			<advanced>true</advanced>
+		</parameter>
 	</config-description>
 </addon:addon>

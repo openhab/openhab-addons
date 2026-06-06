@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -58,8 +58,7 @@ public enum CommandType {
     LAN_REMOVE_GW(249),
     LAN_CHECK_GW_UPDATE(250),
     LAN_GW_UPDATE(251),
-    LAN_SET_GW_CHANNEL(252),
-    DP_QUERY_NOT_SUPPORTED(-1); // this is an internal value
+    LAN_SET_GW_CHANNEL(252);
 
     private final int code;
 

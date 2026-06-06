@@ -4,8 +4,8 @@
 	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
 
 	<type>binding</type>
-	<name>Hayward OmniLogix Binding</name>
-	<description>Binding for the Hayward OmniLogix swimming pool automation controller.</description>
+	<name>Hayward OmniLogic Binding</name>
+	<description>Binding for the Hayward OmniLogic swimming pool automation controller.</description>
 	<connection>cloud</connection>
 
 </addon:addon>

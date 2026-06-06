@@ -40,12 +40,15 @@
 			<channel id="fineDustConc02_5" typeId="pm2_5"/>
 			<channel id="fineDustConc10" typeId="pm10"/>
 			<channel id="pressure" typeId="pressure"/>
+			<channel id="radon" typeId="radon"/>
 			<channel id="so2" typeId="so2"/>
 			<channel id="sound" typeId="sound"/>
 			<channel id="temperature" typeId="temperature"/>
 			<channel id="timestamp" typeId="timestamp"/>
 			<channel id="tvoc" typeId="tvoc"/>
 			<channel id="uptime" typeId="uptime"/>
+			<channel id="virus_free" typeId="virus_free"/>
+			<channel id="mold_free" typeId="mold_free"/>
 
 			<!-- Maximum error -->
 			<channel id="fineDustCnt00_3_maxerr" typeId="cnt0_3_maxerr"/>
@@ -71,6 +74,8 @@
 			<channel id="sound_maxerr" typeId="sound_maxerr"/>
 			<channel id="temperature_maxerr" typeId="temperature_maxerr"/>
 			<channel id="tvoc_maxerr" typeId="tvoc_maxerr"/>
+			<channel id="virus_free_maxerr" typeId="virus_free_maxerr"/>
+			<channel id="mold_free_maxerr" typeId="mold_free_maxerr"/>
 
 			<!-- configuration data -->
 			<channel id="wifi" typeId="Wifi"/>
@@ -120,7 +125,7 @@
 			<property name="sensorList">Unknown sensor list</property>
 			<property name="sensorInfo">No info about sensors</property>
 			<property name="industry">No industry info</property>
-			<property name="thingTypeVersion">2</property>
+			<property name="thingTypeVersion">4</property>
 		</properties>
 
 		<config-description>
@@ -312,6 +317,16 @@
 		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 
+	<channel-type id="radon" advanced="false">
+		<item-type unitHint="Bq/m³">Number:RadiationSpecificActivity</item-type>
+		<label>Radon</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Radon</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"></state>
+	</channel-type>
+
 	<channel-type id="so2" advanced="false">
 		<item-type>Number</item-type>
 		<label>SO₂ Concentration</label>
@@ -346,6 +361,18 @@
 		<item-type>Number:Time</item-type>
 		<label>Uptime</label>
 		<state readOnly="true" pattern="%d %unit%"></state>
+	</channel-type>
+
+	<channel-type id="virus_free" advanced="false">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Virus-Free Index</label>
+		<state readOnly="true" pattern="%.2f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="mold_free" advanced="false">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Mold-Free Index</label>
+		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 
 	<!-- Maximum error -->
@@ -484,6 +511,20 @@
 	<channel-type id="tvoc_maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Max. Error VOC Conc.</label>
+		<state readOnly="true" pattern="± %.2f %%"></state>
+	</channel-type>
+
+	<channel-type id="virus_free_maxerr" advanced="true">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Max. Error Virus-Free</label>
+		<description>Maximum tolerated error in the Virus-Free Index measurement.</description>
+		<state readOnly="true" pattern="± %.2f %%"></state>
+	</channel-type>
+
+	<channel-type id="mold_free_maxerr" advanced="true">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Max. Error Mold-Free</label>
+		<description>Maximum tolerated error in the Mold-Free Index measurement.</description>
 		<state readOnly="true" pattern="± %.2f %%"></state>
 	</channel-type>
 

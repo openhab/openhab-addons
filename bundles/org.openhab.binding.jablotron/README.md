@@ -5,7 +5,7 @@ This is the binding for Jablotron alarms.
 
 ## Supported Things
 
-| thing   | note                                      |
+| Thing   | note                                      |
 |---------|-------------------------------------------|
 | bridge  | the bridge to your Jablonet cloud account |
 | JA-80   | the OASIS alarm                           |
@@ -14,15 +14,16 @@ This is the binding for Jablotron alarms.
 
 ## Discovery
 
-This binding supports auto discovery. Just manually add a bridge thing and supply login & password to your Jablonet account.
+This binding supports auto discovery.
+First, manually add a bridge Thing and supply the username and password to your Jablonet account.
 
 ## Binding Configuration
 
-Binding itself doesn't require specific configuration.
+The binding itself doesn't require any specific configuration.
 
 ## Thing Configuration
 
-| thing                | config parameter name | description                                                                        | type                  |
+| Thing                | config parameter name | description                                                                        | type                  |
 |----------------------|-----------------------|------------------------------------------------------------------------------------|-----------------------|
 | bridge               | login                 | the login to your Jablonet account                                                 | mandatory             |
 | bridge               | password              | the password to your Jablonet account                                              | mandatory             |
@@ -34,7 +35,7 @@ Binding itself doesn't require specific configuration.
 
 ## Channels
 
-| thing                | channel name     | item type          | description                                               |
+| Thing                | channel name     | item type          | description                                               |
 |----------------------|------------------|--------------------|-----------------------------------------------------------|
 | bridge               | N/A              | N/A                | the bridge does not expose any channels                   |
 | JA-80                | statusA          | Switch             | the status of the A section                               |
@@ -60,11 +61,11 @@ Binding itself doesn't require specific configuration.
 
 The state, pgm, thermometer, thermostat, sec and pg channels for the JA-100/JA-100F alarms are dynamically created according to your configuration.
 
-- The sections are represented by String channels (with possible values "set", "unset", "partialSet" for JA-100 and possible values "ARM", "PARTIAL_ARM" and "DISARM" for JA100-F)
+- The sections are represented by String channels (with possible values "set", "unset", and "partialSet" for JA-100 and possible values "ARM", "PARTIAL_ARM", and "DISARM" for JA-100F)
 
 ## Full Example
 
-# items file for JA80
+### Items file for JA-80
 
 ```java
 String  HouseAlarm "Alarm [%s]" <alarm>
@@ -74,14 +75,14 @@ Switch ArmSectionAB "1st floor arming" <jablotron> (Alarm) { channel="jablotron:
 Switch ArmSectionABC "2nd floor arming" <jablotron> (Alarm) { channel="jablotron:oasis:8c93a5ed:50139:statusABC" }
 String LastEvent "Last event code [%s]" <jablotron> { channel="jablotron:oasis:8c93a5ed:50139:lastEvent" }
 String LastEventClass "Last event class [%s]" <jablotron> { channel="jablotron:oasis:8c93a5ed:50139:lastEventClass" }
-String LastEventInvoker "Last event class [%s]" <jablotron> { channel="jablotron:oasis:8c93a5ed:50139:lastEventInvoker" }
+String LastEventInvoker "Last event invoker [%s]" <jablotron> { channel="jablotron:oasis:8c93a5ed:50139:lastEventInvoker" }
 DateTime LastEventTime "Last event [%1$td.%1$tm.%1$tY %1$tR]" <clock> { channel="jablotron:oasis:8c93a5ed:50139:lastEventTime" }
 DateTime LastCheckTime "Last check [%1$td.%1$tm.%1$tY %1$tR]" <clock> { channel="jablotron:oasis:8c93a5ed:50139:lastCheckTime" }
 Switch ArmControlPGX "PGX" <jablotron> (Alarm) { channel="jablotron:oasis:8c93a5ed:50139:statusPGX" }
 Switch ArmControlPGY "PGY" <jablotron> (Alarm) { channel="jablotron:oasis:8c93a5ed:50139:statusPGY" }
 ```
 
-# sitemap example for JA80
+### Sitemap example for JA-80
 
 ```java
 Text item=HouseAlarm icon="alarm" {
@@ -100,7 +101,7 @@ Text item=HouseAlarm icon="alarm" {
       }
 ```
 
-# rule example for JA80
+### Rule example for JA-80
 
 ```java
 rule "Alarm"

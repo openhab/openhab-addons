@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,7 @@ package org.openhab.binding.sunsynk.internal.handler;
 
 import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.*;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
@@ -27,6 +27,7 @@ import org.openhab.binding.sunsynk.internal.api.dto.Battery;
 import org.openhab.binding.sunsynk.internal.api.dto.Daytemps;
 import org.openhab.binding.sunsynk.internal.api.dto.Daytempsreturn;
 import org.openhab.binding.sunsynk.internal.api.dto.Grid;
+import org.openhab.binding.sunsynk.internal.api.dto.PlantSummary;
 import org.openhab.binding.sunsynk.internal.api.dto.RealTimeInData;
 import org.openhab.binding.sunsynk.internal.api.dto.Settings;
 import org.openhab.binding.sunsynk.internal.api.exception.SunSynkAuthenticateException;
@@ -34,6 +35,7 @@ import org.openhab.binding.sunsynk.internal.api.exception.SunSynkDeviceControlle
 import org.openhab.binding.sunsynk.internal.api.exception.SunSynkGetStatusException;
 import org.openhab.binding.sunsynk.internal.api.exception.SunSynkSendCommandException;
 import org.openhab.binding.sunsynk.internal.config.SunSynkInverterConfig;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
@@ -51,8 +53,9 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * The {@link SunSynkInverterHandler} is responsible for handling commands, which are
- * sent to one of the Inverter channels.
+ * The {@link SunSynkInverterHandler} is responsible for handling updating channels with
+ * the latest state of the concrete inverter and sending commands from a input channel to
+ * the concrete inverter.
  *
  * @author Lee Charlton - Initial contribution
  */
@@ -61,16 +64,22 @@ import com.google.gson.JsonSyntaxException;
 public class SunSynkInverterHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SunSynkInverterHandler.class);
-    private @Nullable ZonedDateTime lockoutTimer = null;
-    private DeviceController inverter = new DeviceController();
+    private @Nullable Instant lockoutTimer = null;
+    private @Nullable DeviceController inverter;
     private @Nullable ScheduledFuture<?> refreshTask;
     private boolean batterySettingsUpdated = false;
     private SunSynkInverterConfig config = new SunSynkInverterConfig();
-    public Settings tempInverterChargeSettings = inverter.tempInverterChargeSettings; // Holds modified
-                                                                                      // battery settings.
+    private final TimeZoneProvider timeZoneProvider;
+    private static final int INVERTERFLAGS = DeviceController.GRIDREALTIME | DeviceController.BATTERYREALTIME
+            | DeviceController.INVERTERDAYTEMPS | DeviceController.REALTIMEIN;
+    private static final int SUMMARYFLAGS = DeviceController.PLANTSUMMARY;
+    private static final int ALLFLAGS = INVERTERFLAGS | SUMMARYFLAGS;
+    private int statusFlags = 0;
+    public @Nullable Settings tempInverterChargeSettings; // Holds modified battery settings.
 
-    public SunSynkInverterHandler(Thing thing) {
+    public SunSynkInverterHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
         super(thing);
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -80,132 +89,144 @@ public class SunSynkInverterHandler extends BaseThingHandler {
             logger.debug("Failed to find associated SunSynk Bridge.");
             return;
         }
+        // Null check to satisfy the compiler
+        DeviceController inv = this.inverter;
+        if (inv == null) {
+            logger.debug("Cannot handle command: Inverter not yet initialized.");
+            return;
+        }
 
         if (command instanceof RefreshType) {
             refreshStateAndUpdate();
         } else {
-            this.tempInverterChargeSettings = inverter.getBatteryChargeSettings();
+            // Null checks to satisfy the compiler
+            Settings settingsCharge = inv.getBatteryChargeSettings();
+            String commandString = command.toString();
+            if (settingsCharge == null || commandString == null) {
+                logger.debug("Cannot handle command: Settings or Command not yet initialized.");
+                return;
+            }
             switch (channelUID.getIdWithoutGroup()) {
                 // Grid charge
                 case CHANNEL_BATTERY_INTERVAL_1_GRID_CHARGE:
-                    this.tempInverterChargeSettings.setIntervalGridTimerOn(command.equals(OnOffType.ON), 1);
+                    settingsCharge.setIntervalGridTimerOn(command.equals(OnOffType.ON), 1);
                     break;
                 case CHANNEL_BATTERY_INTERVAL_2_GRID_CHARGE:
-                    this.tempInverterChargeSettings.setIntervalGridTimerOn(command.equals(OnOffType.ON), 2);
+                    settingsCharge.setIntervalGridTimerOn(command.equals(OnOffType.ON), 2);
                     break;
                 case CHANNEL_BATTERY_INTERVAL_3_GRID_CHARGE:
-                    this.tempInverterChargeSettings.setIntervalGridTimerOn(command.equals(OnOffType.ON), 3);
+                    settingsCharge.setIntervalGridTimerOn(command.equals(OnOffType.ON), 3);
                     break;
                 case CHANNEL_BATTERY_INTERVAL_4_GRID_CHARGE:
-                    this.tempInverterChargeSettings.setIntervalGridTimerOn(command.equals(OnOffType.ON), 4);
+                    settingsCharge.setIntervalGridTimerOn(command.equals(OnOffType.ON), 4);
                     break;
                 case CHANNEL_BATTERY_INTERVAL_5_GRID_CHARGE:
-                    this.tempInverterChargeSettings.setIntervalGridTimerOn(command.equals(OnOffType.ON), 5);
+                    settingsCharge.setIntervalGridTimerOn(command.equals(OnOffType.ON), 5);
                     break;
                 case CHANNEL_BATTERY_INTERVAL_6_GRID_CHARGE:
-                    this.tempInverterChargeSettings.setIntervalGridTimerOn(command.equals(OnOffType.ON), 6);
+                    settingsCharge.setIntervalGridTimerOn(command.equals(OnOffType.ON), 6);
                     break;
                 // Gen charge
                 case CHANNEL_BATTERY_INTERVAL_1_GEN_CHARGE:
-                    this.tempInverterChargeSettings.setIntervalGenTimerOn(command.equals(OnOffType.ON), 1);
+                    settingsCharge.setIntervalGenTimerOn(command.equals(OnOffType.ON), 1);
                     break;
                 case CHANNEL_BATTERY_INTERVAL_2_GEN_CHARGE:
-                    this.tempInverterChargeSettings.setIntervalGenTimerOn(command.equals(OnOffType.ON), 2);
+                    settingsCharge.setIntervalGenTimerOn(command.equals(OnOffType.ON), 2);
                     break;
                 case CHANNEL_BATTERY_INTERVAL_3_GEN_CHARGE:
-                    this.tempInverterChargeSettings.setIntervalGenTimerOn(command.equals(OnOffType.ON), 3);
+                    settingsCharge.setIntervalGenTimerOn(command.equals(OnOffType.ON), 3);
                     break;
                 case CHANNEL_BATTERY_INTERVAL_4_GEN_CHARGE:
-                    this.tempInverterChargeSettings.setIntervalGenTimerOn(command.equals(OnOffType.ON), 4);
+                    settingsCharge.setIntervalGenTimerOn(command.equals(OnOffType.ON), 4);
                     break;
                 case CHANNEL_BATTERY_INTERVAL_5_GEN_CHARGE:
-                    this.tempInverterChargeSettings.setIntervalGenTimerOn(command.equals(OnOffType.ON), 5);
+                    settingsCharge.setIntervalGenTimerOn(command.equals(OnOffType.ON), 5);
                     break;
                 case CHANNEL_BATTERY_INTERVAL_6_GEN_CHARGE:
-                    this.tempInverterChargeSettings.setIntervalGenTimerOn(command.equals(OnOffType.ON), 6);
+                    settingsCharge.setIntervalGenTimerOn(command.equals(OnOffType.ON), 6);
                     break;
                 // Interval time
                 case CHANNEL_BATTERY_INTERVAL_1_TIME:
-                    this.tempInverterChargeSettings.setIntervalTime(command.toString(), 1);
+                    settingsCharge.setIntervalTime(commandString, 1);
                     break;
                 case CHANNEL_BATTERY_INTERVAL_2_TIME:
-                    this.tempInverterChargeSettings.setIntervalTime(command.toString(), 2);
+                    settingsCharge.setIntervalTime(commandString, 2);
                     break;
                 case CHANNEL_BATTERY_INTERVAL_3_TIME:
-                    this.tempInverterChargeSettings.setIntervalTime(command.toString(), 3);
+                    settingsCharge.setIntervalTime(commandString, 3);
                     break;
                 case CHANNEL_BATTERY_INTERVAL_4_TIME:
-                    this.tempInverterChargeSettings.setIntervalTime(command.toString(), 4);
+                    settingsCharge.setIntervalTime(commandString, 4);
                     break;
                 case CHANNEL_BATTERY_INTERVAL_5_TIME:
-                    this.tempInverterChargeSettings.setIntervalTime(command.toString(), 5);
+                    settingsCharge.setIntervalTime(commandString, 5);
                     break;
                 case CHANNEL_BATTERY_INTERVAL_6_TIME:
-                    this.tempInverterChargeSettings.setIntervalTime(command.toString(), 6);
+                    settingsCharge.setIntervalTime(commandString, 6);
                     break;
                 // Charge target
                 case CHANNEL_BATTERY_INTERVAL_1_CAPACITY:
-                    this.tempInverterChargeSettings.setIntervalBatteryCapacity(Integer.valueOf(command.toString()), 1);
+                    settingsCharge.setIntervalBatteryCapacity(Integer.valueOf(commandString), 1);
                     break;
                 case CHANNEL_BATTERY_INTERVAL_2_CAPACITY:
-                    this.tempInverterChargeSettings.setIntervalBatteryCapacity(Integer.valueOf(command.toString()), 2);
+                    settingsCharge.setIntervalBatteryCapacity(Integer.valueOf(commandString), 2);
                     break;
                 case CHANNEL_BATTERY_INTERVAL_3_CAPACITY:
-                    this.tempInverterChargeSettings.setIntervalBatteryCapacity(Integer.valueOf(command.toString()), 3);
+                    settingsCharge.setIntervalBatteryCapacity(Integer.valueOf(commandString), 3);
                     break;
                 case CHANNEL_BATTERY_INTERVAL_4_CAPACITY:
-                    this.tempInverterChargeSettings.setIntervalBatteryCapacity(Integer.valueOf(command.toString()), 4);
+                    settingsCharge.setIntervalBatteryCapacity(Integer.valueOf(commandString), 4);
                     break;
                 case CHANNEL_BATTERY_INTERVAL_5_CAPACITY:
-                    this.tempInverterChargeSettings.setIntervalBatteryCapacity(Integer.valueOf(command.toString()), 5);
+                    settingsCharge.setIntervalBatteryCapacity(Integer.valueOf(commandString), 5);
                     break;
                 case CHANNEL_BATTERY_INTERVAL_6_CAPACITY:
-                    this.tempInverterChargeSettings.setIntervalBatteryCapacity(Integer.valueOf(command.toString()), 6);
+                    settingsCharge.setIntervalBatteryCapacity(Integer.valueOf(commandString), 6);
                     break;
                 // Battery charging power limit
                 case CHANNEL_BATTERY_INTERVAL_1_POWER_LIMIT:
-                    this.tempInverterChargeSettings.setIntervalBatteryPowerLimit(Integer.valueOf(command.toString()),
-                            1);
+                    settingsCharge.setIntervalBatteryPowerLimit(Integer.valueOf(commandString), 1);
                     break;
                 case CHANNEL_BATTERY_INTERVAL_2_POWER_LIMIT:
-                    this.tempInverterChargeSettings.setIntervalBatteryPowerLimit(Integer.valueOf(command.toString()),
-                            2);
+                    settingsCharge.setIntervalBatteryPowerLimit(Integer.valueOf(commandString), 2);
                     break;
                 case CHANNEL_BATTERY_INTERVAL_3_POWER_LIMIT:
-                    this.tempInverterChargeSettings.setIntervalBatteryPowerLimit(Integer.valueOf(command.toString()),
-                            3);
+                    settingsCharge.setIntervalBatteryPowerLimit(Integer.valueOf(commandString), 3);
                     break;
                 case CHANNEL_BATTERY_INTERVAL_4_POWER_LIMIT:
-                    this.tempInverterChargeSettings.setIntervalBatteryPowerLimit(Integer.valueOf(command.toString()),
-                            4);
+                    settingsCharge.setIntervalBatteryPowerLimit(Integer.valueOf(commandString), 4);
                     break;
                 case CHANNEL_BATTERY_INTERVAL_5_POWER_LIMIT:
-                    this.tempInverterChargeSettings.setIntervalBatteryPowerLimit(Integer.valueOf(command.toString()),
-                            5);
+                    settingsCharge.setIntervalBatteryPowerLimit(Integer.valueOf(commandString), 5);
                     break;
                 case CHANNEL_BATTERY_INTERVAL_6_POWER_LIMIT:
-                    this.tempInverterChargeSettings.setIntervalBatteryPowerLimit(Integer.valueOf(command.toString()),
-                            6);
+                    settingsCharge.setIntervalBatteryPowerLimit(Integer.valueOf(commandString), 6);
                     break;
                 // Inverter control
                 case CHANNEL_INVERTER_CONTROL_TIMER:
-                    this.tempInverterChargeSettings.setPeakAndValley(Integer.valueOf(command.toString()));
+                    settingsCharge.setPeakAndValley(Integer.valueOf(commandString));
                     break;
                 case CHANNEL_INVERTER_CONTROL_ENERGY_PATTERN:
-                    this.tempInverterChargeSettings.setEnergyMode(Integer.valueOf(command.toString()));
+                    settingsCharge.setEnergyMode(Integer.valueOf(commandString));
                     break;
                 case CHANNEL_INVERTER_CONTROL_WORK_MODE:
-                    this.tempInverterChargeSettings.setSysWorkMode(Integer.valueOf(command.toString()));
+                    settingsCharge.setSysWorkMode(Integer.valueOf(commandString));
                     break;
             }
-
+            this.tempInverterChargeSettings = settingsCharge;
             this.batterySettingsUpdated = true; // true = update battery settings from API at next interval
         }
     }
 
     private void sendSettingsCommandToInverter() {
+        DeviceController inv = this.inverter;
+        Settings settingsCharge = this.tempInverterChargeSettings;
+        if (inv == null || settingsCharge == null) {
+            logger.debug("Cannot handle command: Inverter or settings not yet initialized.");
+            return;
+        }
         try {
-            inverter.sendSettings(this.tempInverterChargeSettings);
+            inv.sendSettings(settingsCharge);
         } catch (SunSynkSendCommandException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Could not send command to inverter " + config.getAlias() + ". Authentication Failure !");
@@ -228,14 +249,14 @@ public class SunSynkInverterHandler extends BaseThingHandler {
         updateStatus(ThingStatus.UNKNOWN);
         config = getThing().getConfiguration().as(SunSynkInverterConfig.class);
         logger.debug("Inverter Config: {}", config);
-
         if (config.getRefresh() < 60) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Refresh time " + config.getRefresh() + " is not valid. Refresh time must be at least 60 seconds.");
             return;
         }
         this.batterySettingsUpdated = false;
-        inverter = new DeviceController(config);
+        this.inverter = new DeviceController(config, timeZoneProvider);
+        this.tempInverterChargeSettings = inverter.tempInverterChargeSettings;
         startAutomaticRefresh();
     }
 
@@ -248,14 +269,12 @@ public class SunSynkInverterHandler extends BaseThingHandler {
     }
 
     public void refreshStateAndUpdate() {
-        ZonedDateTime lockoutTimer = this.lockoutTimer;
-
-        if (lockoutTimer != null && lockoutTimer.isAfter(ZonedDateTime.now())) { // lockout calls that come
-                                                                                 // too fast
+        Instant lockoutTimer = this.lockoutTimer;
+        if (lockoutTimer != null && lockoutTimer.isAfter(Instant.now())) { // lockout calls that come too fast
             logger.debug("API call too frequent, ignored {} ", lockoutTimer);
             return;
         }
-        lockoutTimer = ZonedDateTime.now().plusMinutes(1); // lockout time 1 min
+        this.lockoutTimer = Instant.now().plusSeconds(60); // lockout time 1 min
 
         Optional<SunSynkAccountHandler> checkBridge = getSafeBridge();
         if (!checkBridge.isPresent()) {
@@ -267,10 +286,10 @@ public class SunSynkInverterHandler extends BaseThingHandler {
             bridgeHandler.refreshAccount(); // check account token
         } catch (SunSynkAuthenticateException e) {
             if (logger.isDebugEnabled()) {
-                String message = Objects.requireNonNullElse(e.getMessage(), "unkown error message");
+                String message = Objects.requireNonNullElse(e.getMessage(), "unknown error message");
                 Throwable cause = e.getCause();
-                String causeMessage = cause != null ? Objects.requireNonNullElse(cause.getMessage(), "unkown cause")
-                        : "unkown cause";
+                String causeMessage = cause != null ? Objects.requireNonNullElse(cause.getMessage(), "unknown cause")
+                        : "unknown cause";
                 logger.debug("Sun Synk account refresh failed: Msg = {}. Cause = {}.", message, causeMessage);
             }
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Sun Synk account refresh failed");
@@ -281,10 +300,30 @@ public class SunSynkInverterHandler extends BaseThingHandler {
             sendSettingsCommandToInverter(); // update the battery settings
         }
         try {
-            inverter.sendGetState(this.batterySettingsUpdated); // get inverter settings
+            statusFlags = inverter.sendGetState(this.batterySettingsUpdated); // get inverter settings
+            if ((statusFlags & DeviceController.COMMONSETTINGS) != DeviceController.COMMONSETTINGS) {
+                logger.debug("API call for common settings skipped or failed at plant {} for Inverter {} serial {}.",
+                        this.config.getPlantId(), this.config.getAlias(), this.config.getSerialnumber());
+            }
+            if ((statusFlags & SUMMARYFLAGS) != SUMMARYFLAGS) {
+                logger.debug(
+                        "API call failed at plant {} for Inverter {} serial {} Check plant ID in the inverter Thing configuration.",
+                        this.config.getPlantId(), this.config.getAlias(), this.config.getSerialnumber());
+            }
+            if ((statusFlags & INVERTERFLAGS) != INVERTERFLAGS) {
+                logger.debug(
+                        "API calls failed at plant {} for Inverter {} serial {}. Check inverter serial number in the inverter Thing configuration.",
+                        this.config.getPlantId(), this.config.getAlias(), this.config.getSerialnumber());
+            }
+            if ((statusFlags & ALLFLAGS) == 0) {
+                logger.debug(
+                        "All API calls failure for plant {}, Inverter {} serial {}. Its likely Sun Synk Connect is down, will retry.",
+                        this.config.getPlantName(), this.config.getAlias(), this.config.getSerialnumber());
+                throw new SunSynkGetStatusException("API calls failed at plant " + this.config.getPlantName()
+                        + " for Inverter " + this.config.getAlias() + " serial " + this.config.getSerialnumber());
+            }
         } catch (SunSynkGetStatusException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Could not get state of inverter " + config.getAlias() + ". Authentication Failure !");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             return;
         } catch (JsonSyntaxException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -295,6 +334,9 @@ public class SunSynkInverterHandler extends BaseThingHandler {
                     "Could not get state of inverter " + config.getAlias() + ". DeviceController Failure !");
             return;
         }
+        logger.debug("Successfully got and parsed new data for Inverter {} serial {} at plant {} {}",
+                this.config.getAlias(), this.config.getSerialnumber(), this.config.getPlantName(),
+                this.config.getPlantId());
         logger.debug("Retrieved state of inverter {}.", config.getAlias());
         this.batterySettingsUpdated = false; // set to get settings from API
         bridgeHandler.setBridgeOnline();
@@ -309,11 +351,18 @@ public class SunSynkInverterHandler extends BaseThingHandler {
 
     private void publishChannels() {
         logger.debug("Updating Channels");
-        updateSettings();
-        updateGrid();
-        updateBattery();
-        updateTemperature();
-        updateSolar();
+        if ((statusFlags & DeviceController.COMMONSETTINGS) == DeviceController.COMMONSETTINGS) {
+            updateSettings();
+        }
+        if ((statusFlags & INVERTERFLAGS) == INVERTERFLAGS) {
+            updateGrid();
+            updateBattery();
+            updateTemperature();
+            updateSolar();
+        }
+        if ((statusFlags & SUMMARYFLAGS) == SUMMARYFLAGS) {
+            updateSummary();
+        }
     }
 
     private void updateSettings() {
@@ -382,6 +431,7 @@ public class SunSynkInverterHandler extends BaseThingHandler {
         updateState(CHANNEL_INVERTER_GRID_POWER, new DecimalType(inverterGrid.getGridPower()));
         updateState(CHANNEL_INVERTER_GRID_VOLTAGE, new DecimalType(inverterGrid.getGridVoltage()));
         updateState(CHANNEL_INVERTER_GRID_CURRENT, new DecimalType(inverterGrid.getGridCurrent()));
+        updateState(CHANNEL_INVERTER_GRID_FREQUENCY, new DecimalType(inverterGrid.getGridFrequecy()));
     }
 
     private void updateBattery() {
@@ -406,8 +456,22 @@ public class SunSynkInverterHandler extends BaseThingHandler {
 
     private void updateSolar() {
         RealTimeInData solar = inverter.getRealtimeSolarStatus();
-        updateState(CHANNEL_INVERTER_SOLAR_ENERGY_TODAY, new DecimalType(solar.getetoday()));
-        updateState(CHANNEL_INVERTER_SOLAR_ENERGY_TOTAL, new DecimalType(solar.getetotal()));
-        updateState(CHANNEL_INVERTER_SOLAR_POWER_NOW, new DecimalType(solar.getPVIV()));
+        updateState(CHANNEL_INVERTER_SOLAR_STRING_VOLTAGE_1, new DecimalType(solar.getString1Voltage()));
+        updateState(CHANNEL_INVERTER_SOLAR_STRING_VOLTAGE_2, new DecimalType(solar.getString2Voltage()));
+        updateState(CHANNEL_INVERTER_SOLAR_STRING_CURRENT_1, new DecimalType(solar.getString1Current()));
+        updateState(CHANNEL_INVERTER_SOLAR_STRING_CURRENT_2, new DecimalType(solar.getString2Current()));
+        updateState(CHANNEL_INVERTER_SOLAR_STRING_POWER_1, new DecimalType(solar.getString1Power()));
+        updateState(CHANNEL_INVERTER_SOLAR_STRING_POWER_2, new DecimalType(solar.getString2Power()));
+    }
+
+    private void updateSummary() {
+        PlantSummary plantSummary = inverter.getPlantSummary();
+        updateState(CHANNEL_INVERTER_SOLAR_ENERGY_TODAY, new DecimalType(plantSummary.getEtoday()));
+        updateState(CHANNEL_INVERTER_SOLAR_ENERGY_MONTH, new DecimalType(plantSummary.getEmonth()));
+        updateState(CHANNEL_INVERTER_SOLAR_ENERGY_YEAR, new DecimalType(plantSummary.getEyear()));
+        updateState(CHANNEL_INVERTER_SOLAR_ENERGY_TOTAL, new DecimalType(plantSummary.getEtotal()));
+        updateState(CHANNEL_INVERTER_RATED_AC_OUTPUT, new DecimalType(plantSummary.getCapacity()));
+        updateState(CHANNEL_INVERTER_SOLAR_POWER, new DecimalType(plantSummary.getPac()));
+        updateState(CHANNEL_INVERTER_SOLAR_EFFICIENCY, new DecimalType(plantSummary.getEfficiency()));
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,7 +42,6 @@ public class A5_3F_7F_EltakoFRM extends _4BSMessage {
     static final int BOTTOM = 0x00;
 
     public A5_3F_7F_EltakoFRM() {
-        super();
     }
 
     public A5_3F_7F_EltakoFRM(ERP1Message packet) {

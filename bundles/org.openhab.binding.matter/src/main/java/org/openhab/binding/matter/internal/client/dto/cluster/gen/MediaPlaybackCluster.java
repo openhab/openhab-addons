@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -33,7 +32,6 @@ public class MediaPlaybackCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0506;
     public static final String CLUSTER_NAME = "MediaPlayback";
     public static final String CLUSTER_PREFIX = "mediaPlayback";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_CURRENT_STATE = "currentState";
     public static final String ATTRIBUTE_START_TIME = "startTime";
@@ -47,7 +45,6 @@ public class MediaPlaybackCluster extends BaseCluster {
     public static final String ATTRIBUTE_ACTIVE_TEXT_TRACK = "activeTextTrack";
     public static final String ATTRIBUTE_AVAILABLE_TEXT_TRACKS = "availableTextTracks";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * Indicates the current playback state of media.
@@ -73,29 +70,29 @@ public class MediaPlaybackCluster extends BaseCluster {
      * SampledPosition attribute shall be updated whenever a change in either the playback speed or the playback
      * position is triggered outside the normal playback of the media. The events which may cause this to happen
      * include:
-     * • Starting or resumption of playback
-     * • Seeking
-     * • Skipping forward or backward
-     * • Fast-forwarding or rewinding
-     * • Updating of playback speed as a result of explicit request, or as a result of buffering events
+     * - Starting or resumption of playback
+     * - Seeking
+     * - Skipping forward or backward
+     * - Fast-forwarding or rewinding
+     * - Updating of playback speed as a result of explicit request, or as a result of buffering events
      */
     public PlaybackPositionStruct sampledPosition; // 3 PlaybackPositionStruct R V
     /**
      * Indicates the speed at which the current media is being played. The new PlaybackSpeed shall be reflected in this
      * attribute whenever any of the following occurs:
-     * • Starting of playback
-     * • Resuming of playback
-     * • Fast-forwarding
-     * • Rewinding
+     * - Starting of playback
+     * - Resuming of playback
+     * - Fast-forwarding
+     * - Rewinding
      * The PlaybackSpeed shall reflect the ratio of time elapsed in the media to the actual time taken for the playback
      * assuming no changes to media playback (for example buffering events or requests to pause/rewind/forward).
-     * • A value for PlaybackSpeed of 1 shall indicate normal playback where, for example, playback for 1 second causes
+     * - A value for PlaybackSpeed of 1 shall indicate normal playback where, for example, playback for 1 second causes
      * the media to advance by 1 second within the duration of the media.
-     * • A value for PlaybackSpeed which is greater than 0 shall indicate that as playback is happening the media is
+     * - A value for PlaybackSpeed which is greater than 0 shall indicate that as playback is happening the media is
      * currently advancing in time within the duration of the media.
-     * • A value for PlaybackSpeed which is less than 0 shall indicate that as playback is happening the media is
+     * - A value for PlaybackSpeed which is less than 0 shall indicate that as playback is happening the media is
      * currently going back in time within the duration of the media.
-     * • A value for PlaybackSpeed of 0 shall indicate that the media is currently not playing back. When the
+     * - A value for PlaybackSpeed of 0 shall indicate that the media is currently not playing back. When the
      * CurrentState attribute has the value of PAUSED, NOT_PLAYING or BUFFERING, the PlaybackSpeed shall be set to 0 to
      * reflect that the media is not playing.
      * Following examples illustrate the PlaybackSpeed attribute values in various conditions.
@@ -106,12 +103,12 @@ public class MediaPlaybackCluster extends BaseCluster {
      * of the media. When the media has an associated StartTime, a value of null shall indicate that a seek forward is
      * valid only until the current time within the media, using a position computed from the difference between the
      * current time offset and StartTime, in milliseconds from start of the media, truncating fractional milliseconds
-     * towards 0. A value of Nas when StartTime is not specified shall indicate that seeking forward is not allowed.
+     * towards 0. A value of NULL when StartTime is not specified shall indicate that seeking forward is not allowed.
      */
     public BigInteger seekRangeEnd; // 5 uint64 R V
     /**
      * Indicates the earliest valid position to which a client may seek back, in milliseconds from start of the media. A
-     * value of Nas shall indicate that seeking backwards is not allowed.
+     * value of NULL shall indicate that seeking backwards is not allowed.
      */
     public BigInteger seekRangeStart; // 6 uint64 R V
     /**
@@ -141,7 +138,7 @@ public class MediaPlaybackCluster extends BaseCluster {
      * If supported, this event shall be generated when there is a change in any of the supported attributes of the
      * Media Playback cluster.
      */
-    public class StateChanged {
+    public static class StateChanged {
         /**
          * This field shall indicate the updated playback state as defined by the CurrentState attribute, and has the
          * same constraint as that attribute.
@@ -150,16 +147,20 @@ public class MediaPlaybackCluster extends BaseCluster {
         /**
          * This field shall indicate the updated start time as defined by the StartTime attribute, and has the same
          * constraint as that attribute.
+         * This field value shall be 0 when the value of the StartTime attribute is NULL.
          */
         public BigInteger startTime; // epoch-us
         /**
          * This field shall indicate the updated duration as defined by the Duration attribute, and has the same
          * constraint as that attribute.
+         * This field value shall be 0 when the value of the Duration attribute is NULL.
          */
         public BigInteger duration; // uint64
         /**
          * This field shall indicate the updated position of playback as defined by the SampledPosition attribute, and
          * has the same constraint as that attribute.
+         * The UpdatedAt field value of the PlaybackPositionStruct shall be 0, and the Position field value of the
+         * PlaybackPositionStruct shall be NULL, when the value of the SampledPosition attribute is NULL.
          */
         public PlaybackPositionStruct sampledPosition; // PlaybackPositionStruct
         /**
@@ -170,11 +171,13 @@ public class MediaPlaybackCluster extends BaseCluster {
         /**
          * This field shall indicate the updated start of the seek range end as defined by the SeekRangeEnd attribute,
          * and has the same constraint as that attribute.
+         * This field value shall be 0 when the value of the SeekRangeEnd attribute is NULL.
          */
         public BigInteger seekRangeEnd; // uint64
         /**
          * This field shall indicate the updated start of the seek range start as defined by the SeekRangeStart
          * attribute, and has the same constraint as that attribute.
+         * This field value shall be 0 when the value of the SeekRangeStart attribute is NULL.
          */
         public BigInteger seekRangeStart; // uint64
         /**
@@ -209,7 +212,7 @@ public class MediaPlaybackCluster extends BaseCluster {
     /**
      * This structure defines a playback position within a media stream being played.
      */
-    public class PlaybackPositionStruct {
+    public static class PlaybackPositionStruct {
         /**
          * This field shall indicate the time when the position was last updated.
          */
@@ -233,7 +236,7 @@ public class MediaPlaybackCluster extends BaseCluster {
     /**
      * This structure defines a uniquely identifiable Text Track or Audio Track.
      */
-    public class TrackStruct {
+    public static class TrackStruct {
         /**
          * This field shall indicate the Identifier for the Track which is unique within the Track catalog. The Track
          * catalog contains all the Text/Audio tracks corresponding to the main media content.
@@ -253,7 +256,7 @@ public class MediaPlaybackCluster extends BaseCluster {
     /**
      * This structure includes the attributes associated with a Text/Audio Track
      */
-    public class TrackAttributesStruct {
+    public static class TrackAttributesStruct {
         /**
          * The value is a String containing one of the standard Tags for Identifying Languages RFC 5646, which
          * identifies the primary language used in the Track.
@@ -285,8 +288,8 @@ public class MediaPlaybackCluster extends BaseCluster {
         NOT_PLAYING(2, "Not Playing"),
         BUFFERING(3, "Buffering");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private PlaybackStateEnum(Integer value, String label) {
             this.value = value;
@@ -312,8 +315,8 @@ public class MediaPlaybackCluster extends BaseCluster {
         SPEED_OUT_OF_RANGE(4, "Speed Out Of Range"),
         SEEK_OUT_OF_RANGE(5, "Seek Out Of Range");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private StatusEnum(Integer value, String label) {
             this.value = value;
@@ -351,8 +354,8 @@ public class MediaPlaybackCluster extends BaseCluster {
         EMERGENCY(16, "Emergency"),
         KARAOKE(17, "Karaoke");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private CharacteristicEnum(Integer value, String label) {
             this.value = value;
@@ -376,7 +379,7 @@ public class MediaPlaybackCluster extends BaseCluster {
          * 
          * This feature provides access to the time offset location within current playback media and allows for jumping
          * to a specific location using time offsets. This enables clients to implement more advanced media seeking
-         * behavior in their user interface, for instance a &quot;seek bar&quot;.
+         * behavior in their user interface, for instance a "seek bar".
          */
         public boolean advancedSeek;
         /**
@@ -423,6 +426,7 @@ public class MediaPlaybackCluster extends BaseCluster {
 
     // commands
     /**
+     * This command is used to start playback of the media.
      * Upon receipt, this shall play media. If content is currently in a FastForward or Rewind state. Play shall return
      * media to normal playback speed.
      */
@@ -431,6 +435,7 @@ public class MediaPlaybackCluster extends BaseCluster {
     }
 
     /**
+     * This command is used to pause playback of the media.
      * Upon receipt, this shall pause playback of the media.
      */
     public static ClusterCommand pause() {
@@ -438,6 +443,7 @@ public class MediaPlaybackCluster extends BaseCluster {
     }
 
     /**
+     * This command is used to stop playback of the media.
      * Upon receipt, this shall stop playback of the media. User-visible outcome is context-specific. This may navigate
      * the user back to the location from where the media was originally launched.
      */
@@ -446,6 +452,7 @@ public class MediaPlaybackCluster extends BaseCluster {
     }
 
     /**
+     * This command is used to start playback of the media from the beginning.
      * Upon receipt, this shall Start Over with the current media playback item.
      */
     public static ClusterCommand startOver() {
@@ -453,32 +460,34 @@ public class MediaPlaybackCluster extends BaseCluster {
     }
 
     /**
-     * Upon receipt, this shall cause the handler to be invoked for &quot;Previous&quot;. User experience is
-     * context-specific. This will often Go back to the previous media playback item.
+     * This command is used to go back to the previous media playback item.
+     * Upon receipt, this shall cause the handler to be invoked for "Previous". User experience is context-specific.
+     * This will often Go back to the previous media playback item.
      */
     public static ClusterCommand previous() {
         return new ClusterCommand("previous");
     }
 
     /**
-     * Upon receipt, this shall cause the handler to be invoked for &quot;Next&quot;. User experience is
-     * context-specific. This will often Go forward to the next media playback item.
+     * This command is used to go to the next media playback item.
+     * Upon receipt, this shall cause the handler to be invoked for "Next". User experience is context-specific. This
+     * will often Go forward to the next media playback item.
      */
     public static ClusterCommand next() {
         return new ClusterCommand("next");
     }
 
     /**
+     * This command is used to rewind the media.
      * Upon receipt, this shall start playback of the media backward in case the media is currently playing in the
      * forward direction or is not playing. If the playback is already happening in the backwards direction receipt of
      * this command shall increase the speed of the media playback backwards.
-     * Different &quot;rewind&quot; speeds may be reflected on the media playback device based upon the number of
-     * sequential calls to this function and the capability of the device. This is to avoid needing to define every
-     * speed (multiple fast, slow motion, etc). If the PlaybackSpeed attribute is supported it shall be updated to
-     * reflect the new speed of playback. If the playback speed cannot be changed for the media being played(for
-     * example, in live streaming content not supporting seek), the status of NOT_ALLOWED shall be returned. If the
-     * playback speed has reached the maximum supported speed for media playing backwards, the status of
-     * SPEED_OUT_OF_RANGE shall be returned.
+     * Different "rewind" speeds may be reflected on the media playback device based upon the number of sequential calls
+     * to this function and the capability of the device. This is to avoid needing to define every speed (multiple fast,
+     * slow motion, etc). If the PlaybackSpeed attribute is supported it shall be updated to reflect the new speed of
+     * playback. If the playback speed cannot be changed for the media being played(for example, in live streaming
+     * content not supporting seek), the status of NOT_ALLOWED shall be returned. If the playback speed has reached the
+     * maximum supported speed for media playing backwards, the status of SPEED_OUT_OF_RANGE shall be returned.
      */
     public static ClusterCommand rewind(Boolean audioAdvanceUnmuted) {
         Map<String, Object> map = new LinkedHashMap<>();
@@ -489,16 +498,16 @@ public class MediaPlaybackCluster extends BaseCluster {
     }
 
     /**
+     * This command is used to fast forward the media.
      * Upon receipt, this shall start playback of the media in the forward direction in case the media is currently
      * playing in the backward direction or is not playing. If the playback is already happening in the forward
      * direction receipt of this command shall increase the speed of the media playback.
-     * Different &quot;fast-forward&quot; speeds may be reflected on the media playback device based upon the number of
-     * sequential calls to this function and the capability of the device. This is to avoid needing to define every
-     * speed (multiple fast, slow motion, etc). If the PlaybackSpeed attribute is supported it shall be updated to
-     * reflect the new speed of playback. If the playback speed cannot be changed for the media being played(for
-     * example, in live streaming content not supporting seek), the status of NOT_ALLOWED shall be returned. If the
-     * playback speed has reached the maximum supported speed for media playing forward, the status of
-     * SPEED_OUT_OF_RANGE shall be returned.
+     * Different "fast-forward" speeds may be reflected on the media playback device based upon the number of sequential
+     * calls to this function and the capability of the device. This is to avoid needing to define every speed (multiple
+     * fast, slow motion, etc). If the PlaybackSpeed attribute is supported it shall be updated to reflect the new speed
+     * of playback. If the playback speed cannot be changed for the media being played(for example, in live streaming
+     * content not supporting seek), the status of NOT_ALLOWED shall be returned. If the playback speed has reached the
+     * maximum supported speed for media playing forward, the status of SPEED_OUT_OF_RANGE shall be returned.
      */
     public static ClusterCommand fastForward(Boolean audioAdvanceUnmuted) {
         Map<String, Object> map = new LinkedHashMap<>();
@@ -509,6 +518,7 @@ public class MediaPlaybackCluster extends BaseCluster {
     }
 
     /**
+     * This command is used to skip forward in the media.
      * Upon receipt, this shall Skip forward in the media by the given number of milliseconds.
      */
     public static ClusterCommand skipForward(BigInteger deltaPositionMilliseconds) {
@@ -520,6 +530,7 @@ public class MediaPlaybackCluster extends BaseCluster {
     }
 
     /**
+     * This command is used to skip backward in the media.
      * Upon receipt, this shall Skip backward in the media by the given number of milliseconds.
      */
     public static ClusterCommand skipBackward(BigInteger deltaPositionMilliseconds) {
@@ -531,6 +542,7 @@ public class MediaPlaybackCluster extends BaseCluster {
     }
 
     /**
+     * This command is used to seek to a specific position in the media.
      * Upon receipt, this shall change the playback position in the media to the given position.
      */
     public static ClusterCommand seek(BigInteger position) {
@@ -542,6 +554,7 @@ public class MediaPlaybackCluster extends BaseCluster {
     }
 
     /**
+     * This command is used to activate a specific Audio Track for the media being played.
      * Upon receipt, the server shall set the active Audio Track to the one identified by the TrackID in the Track
      * catalog for the streaming media. If the TrackID does not exist in the Track catalog, OR does not correspond to
      * the streaming media OR no media is being streamed at the time of receipt of this command, the server will return
@@ -559,6 +572,7 @@ public class MediaPlaybackCluster extends BaseCluster {
     }
 
     /**
+     * This command is used to activate a specific Text Track for the media being played.
      * Upon receipt, the server shall set the active Text Track to the one identified by the TrackID in the Track
      * catalog for the streaming media. If the TrackID does not exist in the Track catalog, OR does not correspond to
      * the streaming media OR no media is being streamed at the time of receipt of this command, the server shall return
@@ -573,6 +587,7 @@ public class MediaPlaybackCluster extends BaseCluster {
     }
 
     /**
+     * This command is used to deactivate a specific Text Track for the media being played.
      * If a Text Track is active (i.e. being displayed), upon receipt of this command, the server shall stop displaying
      * it.
      */
@@ -583,7 +598,6 @@ public class MediaPlaybackCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "currentState : " + currentState + "\n";
         str += "startTime : " + startTime + "\n";

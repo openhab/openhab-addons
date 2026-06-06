@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,6 +23,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -60,7 +61,6 @@ public class HttpHelper {
     private static final String BEARER = "Bearer ";
     private static final int OAUTH_EXPIRE_BUFFER = 10;
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-    private static final JsonParser JSON_PARSER = new JsonParser();
     private static final Map<String, Bucket> BUCKET_MAP = new HashMap<>();
     private static final Object AUTHORIZATION_HEADER_MONITOR = new Object();
     private static final Object BUCKET_MONITOR = new Object();
@@ -107,14 +107,16 @@ public class HttpHelper {
                     String lastToken = lastAccessToken;
                     if (lastToken == null) {
                         LoggerFactory.getLogger(HttpHelper.class).debug("The used access token was created at {}",
-                                LocalDateTime.ofInstant(accessTokenResponse.getCreatedOn(), ZoneId.systemDefault())
+                                LocalDateTime
+                                        .ofInstant(Objects.requireNonNullElse(accessTokenResponse.getCreatedOn(),
+                                                Instant.now()), ZoneId.systemDefault())
                                         .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
                     } else if (!lastToken.equals(accessTokenResponse.getAccessToken())) {
                         LoggerFactory.getLogger(HttpHelper.class)
-                                .debug("The access token changed. New one created at {}",
-                                        LocalDateTime
-                                                .ofInstant(accessTokenResponse.getCreatedOn(), ZoneId.systemDefault())
-                                                .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+                                .debug("The access token changed. New one created at {}", LocalDateTime
+                                        .ofInstant(Objects.requireNonNullElse(accessTokenResponse.getCreatedOn(),
+                                                Instant.now()), ZoneId.systemDefault())
+                                        .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
                     }
                     lastAccessToken = accessTokenResponse.getAccessToken();
 
@@ -136,7 +138,7 @@ public class HttpHelper {
     }
 
     public static JsonElement parseString(String json) {
-        return JSON_PARSER.parse(json);
+        return JsonParser.parseString(json);
     }
 
     private static Bucket getBucket(String clientId) {

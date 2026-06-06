@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -94,6 +94,13 @@ public class IppPrinterDiscoveryParticipant implements MDNSDiscoveryParticipant 
             String label = service.getName();
             int port = service.getPort();
             String uuid = service.getPropertyString("UUID");
+
+            if (uuid == null) {
+                logger.debug(
+                        "Discovered ipp printer with missing UUID, ignoring: uid: {}, inetAddress: {}, port: {}, rp: {}",
+                        uid, inetAddress, port, rp);
+                return null;
+            }
 
             Map<String, Object> properties = Map.of( //
                     PRINTER_PARAMETER_URL, "http://" + inetAddress + ":" + port + "/" + rp, //

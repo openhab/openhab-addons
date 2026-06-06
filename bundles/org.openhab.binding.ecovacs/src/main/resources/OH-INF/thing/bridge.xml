@@ -11,17 +11,15 @@
 		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<config-description>
-			<parameter name="email" type="text">
+			<parameter name="email" type="text" required="true">
 				<label>Email</label>
 				<context>email</context>
 				<description>Email address for logging in to Ecovacs server</description>
-				<required>true</required>
 			</parameter>
-			<parameter name="password" type="text">
+			<parameter name="password" type="text" required="true">
 				<label>Password</label>
 				<context>password</context>
 				<description>Password for logging in to Ecovacs server</description>
-				<required>true</required>
 			</parameter>
 			<parameter name="continent" type="text">
 				<label>Continent</label>

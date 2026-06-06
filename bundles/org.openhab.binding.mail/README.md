@@ -31,7 +31,7 @@ For authentication `username` and `password` also need to be supplied.
 
 The `refresh`, `security`, `port`, `username` and `password` parameters are optional.
 
-The `refresh` parameter is the time in seconds between two refreshes of the thing's channels.
+The `refresh` parameter is the time in seconds between two refreshes of the Thing's channels.
 If omitted, the default of 60s is used.
 The `security` parameter defines the transport security and can be set to `PLAIN` (default), `STARTTLS` or `SSL` (for implicit SSL/TLS).
 The `port` parameter is used to change the default ports for the SMTP server.
@@ -39,7 +39,7 @@ Default ports are `143` (for `PLAIN` and `STARTTLS`) and `993` (for `SSL`) in th
 
 ## Channels
 
-There are no channels for the `smtp` thing.
+There are no channels for the `smtp` Thing.
 The `imap` and `pop3` things can be extended with `mailcount`- and `content`-type channels.
 
 ### Type `mailcount`
@@ -133,7 +133,7 @@ Both functions return a boolean as the result of the operation.
 
 `recipient` can be a single address (`mail@example.com`) or a list of addresses, concatenated by a comma (`mail@example.com, mail2@example.com`).
 
-Since there is a separate rule action instance for each `smtp` thing, this needs to be retrieved through `getActions(scope, thingUID)` (DSL) or `actions.get(scope, thingUID)` (Javascript).
+Since there is a separate rule action instance for each `smtp` Thing, this needs to be retrieved through `getActions(scope, thingUID)` (DSL) or `actions.get(scope, thingUID)` (Javascript).
 The first parameter always has to be `mail` and the second is the full Thing UID of the SMTP server that should be used.
 Once this action instance is retrieved, you can invoke the action method on it.
 

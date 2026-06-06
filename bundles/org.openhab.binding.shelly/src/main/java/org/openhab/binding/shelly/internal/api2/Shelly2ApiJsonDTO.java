@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,10 +14,12 @@ package org.openhab.binding.shelly.internal.api2;
 
 import java.util.ArrayList;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DevConfigBle.Shelly2DevConfigBleObserver;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DevConfigBle.Shelly2DevConfigBleRpc;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcBaseMessage.Shelly2RpcMessageError;
+import org.openhab.binding.shelly.internal.api2.ShellyBluJsonDTO.Shelly2NotifyBluEventData;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -30,6 +32,7 @@ import com.google.gson.annotations.SerializedName;
  */
 public class Shelly2ApiJsonDTO {
     public static final String SHELLYRPC_ENDPOINT = "/rpc";
+    public static final String SHELLY2_JSONRPC_VERSION = "2.0";
 
     public static final String SHELLYRPC_METHOD_CLASS_SHELLY = "Shelly";
     public static final String SHELLYRPC_METHOD_CLASS_SWITCH = "Switch";
@@ -135,6 +138,7 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLY2_EVENT_LPUSH = "long_push";
     public static final String SHELLY2_EVENT_SLPUSH = "short_long_push";
     public static final String SHELLY2_EVENT_LSPUSH = "long_short_push";
+    public static final String SHELLY2_EVENT_HOLDING = "holding";
 
     public static final String SHELLY2_EVENT_SLEEP = "sleep";
     public static final String SHELLY2_EVENT_CFGCHANGED = "config_changed";
@@ -144,12 +148,6 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLY2_EVENT_RESTART = "scheduled_restart";
     public static final String SHELLY2_EVENT_WIFICONNFAILED = "sta_connect_fail";
     public static final String SHELLY2_EVENT_WIFIDISCONNECTED = "sta_disconnected";
-
-    // BLU events
-    public static final String SHELLY2_BLU_GWSCRIPT = "oh-blu-scanner.js";
-    public static final String SHELLY2_EVENT_BLUPREFIX = "oh-blu.";
-    public static final String SHELLY2_EVENT_BLUSCAN = SHELLY2_EVENT_BLUPREFIX + "scan_result";
-    public static final String SHELLY2_EVENT_BLUDATA = SHELLY2_EVENT_BLUPREFIX + "data";
 
     // Error Codes
     public static final String SHELLY2_ERROR_OVERPOWER = "overpower";
@@ -174,6 +172,9 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLY2_POWERLED_OFF = "off";
     public static final String SHELLY2_POWERLED_MATCH = "match_output";
     public static final String SHELLY2_POWERLED_INVERT = "inverted_output";
+
+    public static final String SHELLY2_DEFAULT_USERID = "admin"; // Gen2 devices only accept user admin
+    public static final String SHELLY2_DEFAULT_PASSWORD = "admin";
 
     public static class Shelly2DevConfigBle {
         public static class Shelly2DevConfigBleRpc {
@@ -307,7 +308,7 @@ public class Shelly2ApiJsonDTO {
             @SerializedName("factory_reset")
             public Boolean factoryReset;
             @SerializedName("report_thr")
-            public Double reportTreshold; // only for type analog
+            public Double reportThreshold; // only for type analog
         }
 
         public class Shelly2DevConfigSwitch {
@@ -352,7 +353,7 @@ public class Shelly2ApiJsonDTO {
             @SerializedName("blink_mode_selector")
             public String blinkModeSelector;
             @SerializedName("phase_selector")
-            public String phase_selector;
+            public String phaseSelector;
             @SerializedName("monitor_phase_sequence")
             public Boolean monitorPhaseSequence;
         }
@@ -365,7 +366,7 @@ public class Shelly2ApiJsonDTO {
         public class Shelly2DevConfigCover {
             public class Shelly2DeviceConfigCoverMotor {
                 @SerializedName("idle_power_thr")
-                public Double idle_powerThr;
+                public Double idlePowerThr;
             }
 
             public class Shelly2DeviceConfigCoverSafetySwitch {
@@ -895,7 +896,7 @@ public class Shelly2ApiJsonDTO {
             @SerializedName("fs_free")
             public Long fsFree;
             @SerializedName("cfg_rev")
-            public Integer cfg_rev;
+            public Integer cfgRev;
             @SerializedName("available_updates")
             public Shelly2DeviceStatusSysAvlUpdate availableUpdates;
             @SerializedName("webhook_rev")
@@ -1135,6 +1136,7 @@ public class Shelly2ApiJsonDTO {
             public String message;
         }
 
+        public @Nullable String jsonrpc;
         public Integer id;
         public String src;
         public String dst;
@@ -1161,12 +1163,12 @@ public class Shelly2ApiJsonDTO {
         public Shelly2RpcMessageError error;
     }
 
-    public static String SHELLY2_AUTHDEF_USER = "admin";
-    public static String SHELLY2_AUTHTTYPE_DIGEST = "digest";
-    public static String SHELLY2_AUTHTTYPE_STRING = "string";
-    public static String SHELLY2_AUTHALG_SHA256 = "SHA-256";
+    public static final String SHELLY2_AUTHDEF_USER = "admin";
+    public static final String SHELLY2_AUTHTTYPE_DIGEST = "digest";
+    public static final String SHELLY2_AUTHTTYPE_STRING = "string";
+    public static final String SHELLY2_AUTHALG_SHA256 = "SHA-256";
     // = ':auth:'+HexHash("dummy_method:dummy_uri");
-    public static String SHELLY2_AUTH_NOISE = "6370ec69915103833b5222b368555393393f098bfbfbb59f47e0590af135f062";
+    public static final String SHELLY2_AUTH_NOISE = "6370ec69915103833b5222b368555393393f098bfbfbb59f47e0590af135f062";
 
     public static class Shelly2AuthChallenge { // on 401 message contains the auth info
         @SerializedName("auth_type")
@@ -1189,55 +1191,13 @@ public class Shelly2ApiJsonDTO {
         public String authType;
     }
 
-    // BTHome samples
-    // BLU Button 1
-    // {"component":"script:2", "id":2, "event":"oh-blu.scan_result",
-    // "data":{"addr":"bc:02:6e:c3:a6:c7","rssi":-62,"tx_power":-128}, "ts":1682877414.21}
-    // {"component":"script:2", "id":2, "event":"oh-blu.data",
-    // "data":{"encryption":false,"BTHome_version":2,"pid":205,"Battery":100,"Button":1,"addr":"b4:35:22:fd:b3:81","rssi":-68},
-    // "ts":1682877399.22}
-    //
-    // BLU Door Window
-    // {"component":"script:2", "id":2, "event":"oh-blu.scan_result",
-    // "data":{"addr":"bc:02:6e:c3:a6:c7","rssi":-62,"tx_power":-128}, "ts":1682877414.21}
-    // {"component":"script:2", "id":2, "event":"oh-blu.data",
-    // "data":{"encryption":false,"BTHome_version":2,"pid":38,"Battery":100,"Illuminance":0,"Window":1,"Rotation":0,"addr":"bc:02:6e:c3:a6:c7","rssi":-62},
-    // "ts":1682877414.25}
-
-    public class Shelly2NotifyEventMessage {
-        public String addr;
-        public String name;
-        public Boolean encryption;
-        @SerializedName("BTHome_version")
-        public Integer bthVersion;
-        public Integer pid;
-        @SerializedName("Battery")
-        public Integer battery;
-        @SerializedName("Button")
-        public Integer buttonEvent;
-        @SerializedName("Illuminance")
-        public Integer illuminance;
-        @SerializedName("Window")
-        public Integer windowState;
-        @SerializedName("Rotation")
-        public Double rotation;
-        @SerializedName("Motion")
-        public Integer motionState;
-        @SerializedName("Temperature")
-        public Double temperature;
-        @SerializedName("Humidity")
-        public Double humidity;
-
-        public Integer rssi;
-        public Integer tx_power;
-    }
-
     public class Shelly2NotifyEvent {
         public Integer id;
         public Double ts;
         public String component;
         public String event;
-        public Shelly2NotifyEventMessage data;
+        @SerializedName("data")
+        public Shelly2NotifyBluEventData blu;
         public String msg;
         public Integer reason;
         @SerializedName("cfg_rev")

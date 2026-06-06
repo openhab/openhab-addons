@@ -90,7 +90,7 @@
 	<channel-type id="maxPlayers">
 		<item-type>Number</item-type>
 		<label>Max Players</label>
-		<description>The maxumum number of players on the server.</description>
+		<description>The maximum number of players on the server.</description>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -116,7 +116,7 @@
 	<channel-type id="playerLevel">
 		<item-type>Number</item-type>
 		<label>Level</label>
-		<description>The players current level.</description>
+		<description>The player's current level.</description>
 	</channel-type>
 
 	<channel-type id="playerTotalExperience" advanced="true">
@@ -136,20 +136,20 @@
 	<channel-type id="playerHealth">
 		<item-type>Number</item-type>
 		<label>Health</label>
-		<description>The health of player.</description>
+		<description>The health of the player.</description>
 	</channel-type>
 
 	<channel-type id="playerWalkSpeed" advanced="true">
 		<item-type>Number</item-type>
 		<label>Speed</label>
-		<description>The speed of player.</description>
+		<description>The speed of the player.</description>
 		<state min="0" max="1" step="0.05" pattern="%.2f"/>
 	</channel-type>
 
 	<channel-type id="playerGameMode" advanced="true">
 		<item-type>String</item-type>
 		<label>Game Mode</label>
-		<description>The players current game mode.</description>
+		<description>The player's current game mode.</description>
 		<state readOnly="false">
 			<options>
 				<option value="CREATIVE">creative</option>
@@ -163,7 +163,7 @@
 	<channel-type id="signActive">
 		<item-type>Switch</item-type>
 		<label>Online</label>
-		<description>Shows if the sign has powered redstone below it.</description>
+		<description>Indicates if the sign has powered redstone below it.</description>
 		<category>Switch</category>
 	</channel-type>
 

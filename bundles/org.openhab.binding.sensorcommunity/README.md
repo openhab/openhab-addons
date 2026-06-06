@@ -6,13 +6,14 @@ With this binding you can integrate your sensor, a sensor nearby or even any sen
 
 ## Supported Things
 
-Three Things are supported
+Following sensor things are supported
 
-| Name               | Thing Type ID | Description                                                                                            |
-|--------------------|---------------|--------------------------------------------------------------------------------------------------------|
-| Particulate Sensor | particulate   | measure particulate matter PM2.5 and PM10                                                              |
-| Conditions Sensor  | condition     | measures environment conditions like temperature, humidity and some also provides atmospheric pressure |
-| Noise Sensor       | noise         | measures noise exposures in the environment                                                            |
+| Name               | Thing Type ID | Description                                              |
+|--------------------|---------------|----------------------------------------------------------|
+| Particulate Sensor | particulate   | Sensor to measure Particulate Matter (PM)                |
+| Conditions Sensor  | conditions    | Sensor to measure Temperature and Humidity conditions    |
+| Noise Sensor       | noise         | Sensor to measure noise on location                      |
+| Radiation Sensor   | radiation     | Sensor to measure radiation on location                  |
 
 ## Discovery
 
@@ -22,10 +23,15 @@ There's no auto discovery. See Thing configuration how to setup a Sensor.
 
 Choose either a local IP address of your personal owned sensor _or_ a sensor id of an external one.
 
-| Parameter       | Description                                                          |
-|-----------------|----------------------------------------------------------------------|
-| ipAddress       | Local IP address of your personal owned sensor                       |
-| sensorid        | Sensor ID obtained from <https://deutschland.maps.sensor.community/>   |
+| Parameter         | Description                                                                   | Default   |
+|-------------------|-------------------------------------------------------------------------------|-----------|
+| ipAddress         | Local IP address of your personal owned sensor                                | N/A       |
+| sensorid          | Sensor ID obtained from <https://deutschland.maps.sensor.community/>          | N/A       |
+| conversionFactor  | Sensor specific conversion factor to transform counts per minute to Sievert   | 0.00136   |
+
+`conversionFactor` is only relevant for `radiation` sensors to convert the decay count per minute into Sievert per hour.
+Default value fits to _EcoCurious Si22G_.
+Check your datasheet and configure it if needed.
 
 ### Local Sensor
 
@@ -40,7 +46,7 @@ Perform the following steps to get the appropriate Sensor ID
 - Go to to [Sensor.Community map](https://deutschland.maps.sensor.community/)
 - Choose your desired value in bottom list - now only the Sensors are displayed which are supporting this
 - Click on your / any Sensor and the ID is displayed in the top right corner. Note: Sensor ID is just the number without beginning hash #
-- Enter this Sensor ID into the thing configuration
+- Enter this Sensor ID into the Thing configuration
 
 ![Sensor.Community Logo](doc/SensorCommunity-Map.png)
 
@@ -48,19 +54,19 @@ Perform the following steps to get the appropriate Sensor ID
 
 ### Particulate Sensor
 
-| Channel ID           | Item Type            | Description                              |
-|----------------------|----------------------|------------------------------------------|
-| pm25                 | Number:Density       | [Ultrafine particulates](https://en.wikipedia.org/wiki/Particulates#Size,_shape_and_solubility_matter) microgram per cubic meter |
-| pm100                | Number:Density       | [Coarse particulate matter](https://en.wikipedia.org/wiki/Particulates#Size,_shape_and_solubility_matter) microgram per cubic meter  |
+| Channel ID | Item Type      | Description                                                                                                                         |
+|------------|----------------|-------------------------------------------------------------------------------------------------------------------------------------|
+| pm25       | Number:Density | [Ultrafine particulates](https://en.wikipedia.org/wiki/Particulates#Size,_shape_and_solubility_matter) microgram per cubic meter    |
+| pm100      | Number:Density | [Coarse particulate matter](https://en.wikipedia.org/wiki/Particulates#Size,_shape_and_solubility_matter) microgram per cubic meter |
 
 ### Conditions Sensor
 
-| Channel ID           | Item Type            | Description                              |
-|----------------------|----------------------|------------------------------------------|
-| temperature          | Number:Temperature   | current temperature                      |
-| humidity             | Number:Dimensionless | current humidity percent                 |
-| pressure             | Number:Pressure      | Atmospheric Pressure (not supported by all sensors) |
-| pressure-sea         | Number:Pressure      | Atmospheric Pressure on sea level (not supported by all sensors)  |
+| Channel ID   | Item Type            | Description                                                      |
+|--------------|----------------------|------------------------------------------------------------------|
+| temperature  | Number:Temperature   | current temperature                                              |
+| humidity     | Number:Dimensionless | current humidity percent                                         |
+| pressure     | Number:Pressure      | Atmospheric Pressure (not supported by all sensors)              |
+| pressure-sea | Number:Pressure      | Atmospheric Pressure on sea level (not supported by all sensors) |
 
 ### Noise Sensor
 
@@ -69,6 +75,26 @@ Perform the following steps to get the appropriate Sensor ID
 | noise-eq             | Number:Dimensionless | Average noise in db                                  |
 | noise-min            | Number:Dimensionless | Minimum noise covered in the last 2.5 minutes in db  |
 | noise-main           | Number:Dimensionless | Maximum noise covered in the last 2.5 minutes in db  |
+
+### Radiation Sensor
+
+| Channel ID            | Item Type                         | Description                                          |
+|-----------------------|-----------------------------------|------------------------------------------------------|
+| radiation             | Number:RadiationDoseRate          | Radiation measure in micro-Sievert per hour          |
+| radiation-level       | Number                            | Severity level of radiation dose                     |
+| counts-per-minute     | Number                            | Number of decay events in one minute                 |
+| hv-pulses             | Number                            | Number of high voltage pulses in measurement period  |
+
+The `radiation level` shows 5 severity levels
+
+- 0 = Normal (radiation < 0.15 μSv/h)
+- 1 = Elevated (radiation < 0.4 μSv/h)
+- 2 = High (radiation < 1 μSv/h)
+- 3 = Action Level (radiation < 100 μSv/h)
+- 4 = Dangerous (radiation >= 100 μSv/h)
+
+The `hv-pulses` shows the high voltage pulses generated by the sensor in the last measurement period.
+If these values are deviating too much from period to period it's an indication of a hardware problem.
 
 ## Full Example
 

@@ -11,10 +11,15 @@
 
 		<channels>
 			<channel id="generalWaste" typeId="collectionDateGeneralWaste"/>
-			<channel id="leightweightPackaging" typeId="collectionDateLeightweightPackaging"/>
+			<channel id="lightweightPackaging" typeId="collectionDateLightweightPackaging"/>
 			<channel id="bioWaste" typeId="collectionDateBioWaste"/>
 			<channel id="paper" typeId="collectionDatePaper"/>
+			<channel id="christmasTree" typeId="collectionDateChristmasTree"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">2</property>
+		</properties>
 
 		<config-description>
 			<parameter name="commune" type="text" required="true">
@@ -53,10 +58,10 @@
 		</tags>
 		<state readOnly="true" pattern="%1$tF"/>
 	</channel-type>
-	<channel-type id="collectionDateLeightweightPackaging">
+	<channel-type id="collectionDateLightweightPackaging">
 		<item-type>DateTime</item-type>
-		<label>Leightweight Packaging</label>
-		<description>Next collection day for leightweight packaging</description>
+		<label>Lightweight Packaging</label>
+		<description>Next collection day for lightweight packaging</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Timestamp</tag>
@@ -83,6 +88,15 @@
 		</tags>
 		<state readOnly="true" pattern="%1$tF"/>
 	</channel-type>
-
+	<channel-type id="collectionDateChristmasTree">
+		<item-type>DateTime</item-type>
+		<label>Christmas Tree</label>
+		<description>Next collection day for Christmas trees</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true" pattern="%1$tF"/>
+	</channel-type>
 
 </thing:thing-descriptions>

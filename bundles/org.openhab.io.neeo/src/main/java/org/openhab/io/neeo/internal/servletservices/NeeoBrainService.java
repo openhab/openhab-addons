@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -119,7 +119,7 @@ public class NeeoBrainService extends DefaultServletService {
         Objects.requireNonNull(context, "context cannot be null");
 
         this.context = context;
-        this.itemConverter = new NeeoItemValueConverter(context);
+        this.itemConverter = new NeeoItemValueConverter();
         this.api = api;
         this.api.addPropertyChangeListener(NeeoApi.CONNECTED, listener);
         scheduler.execute(() -> {
@@ -167,7 +167,6 @@ public class NeeoBrainService extends DefaultServletService {
                 handleDirectory(req, resp, pathInfo);
             } else {
                 logger.debug("Unknown/unhandled brain service device route (POST): {}", String.join("/", paths));
-
             }
         } else {
             logger.debug("Unknown/unhandled brain service route (POST): {}", String.join("/", paths));
@@ -228,7 +227,6 @@ public class NeeoBrainService extends DefaultServletService {
                     default:
                         logger.debug("Unknown action: {}", action);
                 }
-
             } else {
                 logger.debug("Unknown/unhandled brain service route (GET): {}", String.join("/", paths));
             }

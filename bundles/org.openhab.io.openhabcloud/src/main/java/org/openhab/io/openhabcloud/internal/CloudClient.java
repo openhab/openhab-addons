@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,33 +18,61 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.WeakHashMap;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.HttpConversation;
+import org.eclipse.jetty.client.HttpRequest;
+import org.eclipse.jetty.client.HttpResponse;
+import org.eclipse.jetty.client.HttpResponseException;
+import org.eclipse.jetty.client.ProtocolHandler;
+import org.eclipse.jetty.client.ResponseNotifier;
 import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.api.Response;
+import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.BytesContentProvider;
 import org.eclipse.jetty.http.HttpField;
 import org.eclipse.jetty.http.HttpFields;
+import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
+import org.eclipse.jetty.io.AbstractConnection;
+import org.eclipse.jetty.io.ByteBufferPool;
+import org.eclipse.jetty.io.Connection;
+import org.eclipse.jetty.io.EndPoint;
+import org.eclipse.jetty.io.RetainableByteBuffer;
 import org.eclipse.jetty.util.BufferUtil;
+import org.eclipse.jetty.util.Callback;
 import org.eclipse.jetty.util.URIUtil;
+import org.eclipse.jetty.util.thread.Locker;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.common.ThreadPoolManager;
+import org.openhab.core.events.AbstractEvent;
+import org.openhab.core.io.rest.Webhook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,6 +100,7 @@ import okhttp3.logging.HttpLoggingInterceptor.Level;
  * @author Victor Belov - Initial contribution
  * @author Kai Kreuzer - migrated code to new Jetty client and ESH APIs
  * @author Dan Cunningham - Extended notification enhancements
+ * @author Miguel Álvarez Díez - Proxy upgraded WebSocket connections
  */
 public class CloudClient {
 
@@ -117,11 +146,34 @@ public class CloudClient {
      * This map holds HTTP requests to local openHAB which are currently running
      */
     private final Map<Integer, Request> runningRequests = new ConcurrentHashMap<>();
+    /*
+     * This weak map holds HTTP requests identifiers
+     */
+    private final Map<Request, Integer> requestIds = Collections.synchronizedMap(new WeakHashMap<>());
+    /*
+     * This weak map holds HTTP requests upgraded websocket connection
+     */
+    private final Map<HttpRequest, OpenHABWebSocketConnection> websocketConnections = Collections
+            .synchronizedMap(new WeakHashMap<>());
 
     /*
      * This variable indicates if connection to the openHAB Cloud is currently in an established state
      */
     private boolean isConnected;
+
+    /*
+     * Webhook emit operations queued while disconnected; drained on next onConnect()
+     * or failed in shutdown().
+     */
+    private record PendingWebhookEmit(CompletableFuture<?> future, Runnable emit) {
+    }
+
+    private final ConcurrentLinkedDeque<PendingWebhookEmit> pendingWebhookEmits = new ConcurrentLinkedDeque<>();
+
+    /*
+     * Max time a queued webhook operation will wait for the cloud to (re)connect before failing.
+     */
+    private static final int WEBHOOK_QUEUE_WAIT_SECONDS = 60;
 
     /*
      * This variable holds instance of Socket.IO client class which provides communication
@@ -175,6 +227,9 @@ public class CloudClient {
         this.remoteAccessEnabled = remoteAccessEnabled;
         this.exposedItems = exposedItems;
         this.jettyClient = httpClient;
+        // configure websocket upgrade handler
+        jettyClient.getProtocolHandlers()
+                .put(new WebSocketProxyUpgrade(() -> socket, requestIds, websocketConnections, httpClient));
         reconnectBackoff.setMin(RECONNECT_MIN);
         reconnectBackoff.setMax(RECONNECT_MAX);
         reconnectBackoff.setJitter(RECONNECT_JITTER);
@@ -207,7 +262,7 @@ public class CloudClient {
             options.callFactory = okHttpBuilder.build();
             options.webSocketFactory = okHttpBuilder.build();
             socket = IO.socket(baseURL, options);
-            URL parsed = new URL(baseURL);
+            URL parsed = URI.create(baseURL).toURL();
             protocol = parsed.getProtocol();
         } catch (URISyntaxException e) {
             logger.error("Error creating Socket.IO: {}", e.getMessage());
@@ -354,6 +409,7 @@ public class CloudClient {
                 .on(Socket.EVENT_PING, args -> logger.debug("Socket.IO ping"))//
                 .on(Socket.EVENT_PONG, args -> logger.debug("Socket.IO pong: {} ms", args[0]))//
                 .on("request", args -> onEvent("request", (JSONObject) args[0]))//
+                .on("websocket", args -> onWSEvent((Integer) args[0], (byte[]) args[1]))//
                 .on("cancel", args -> onEvent("cancel", (JSONObject) args[0]))//
                 .on("command", args -> onEvent("command", (JSONObject) args[0]))//
         ;
@@ -369,6 +425,35 @@ public class CloudClient {
                 this.localBaseUrl);
         reconnectBackoff.reset();
         isConnected = true;
+        drainPendingWebhookEmits();
+    }
+
+    private void drainPendingWebhookEmits() {
+        if (pendingWebhookEmits.isEmpty()) {
+            return;
+        }
+        logger.debug("Draining {} queued webhook operation(s) after cloud connect", pendingWebhookEmits.size());
+        PendingWebhookEmit pending;
+        while ((pending = pendingWebhookEmits.poll()) != null) {
+            try {
+                pending.emit().run();
+            } catch (RuntimeException e) {
+                logger.debug("Queued webhook emit threw: {}", e.getMessage(), e);
+            }
+        }
+    }
+
+    private void failPendingWebhookEmits(String reason) {
+        if (pendingWebhookEmits.isEmpty()) {
+            return;
+        }
+        logger.debug("Failing {} queued webhook operation(s): {}", pendingWebhookEmits.size(), reason);
+        PendingWebhookEmit pending;
+        while ((pending = pendingWebhookEmits.poll()) != null) {
+            if (!pending.future().isDone()) {
+                pending.future().completeExceptionally(new IOException(reason));
+            }
+        }
     }
 
     /**
@@ -401,6 +486,36 @@ public class CloudClient {
             } else {
                 logger.warn("Unsupported event from openHAB Cloud: {}", event);
             }
+        } else {
+            logger.warn("Ignoring incoming {} event, remote access not enabled", event);
+        }
+    }
+
+    /**
+     * Callback method for socket.io client which handles the websocket connection data events,
+     * it writes the data to the upgraded request connection.
+     */
+    public void onWSEvent(int requestId, byte[] data) {
+        logger.trace("on({}): websocket incoming {} bytes", requestId, data.length);
+        var request = runningRequests.get(requestId);
+        if (request == null) {
+            logger.debug("Received ws data for missed request {}", requestId);
+            return;
+        }
+        OpenHABWebSocketConnection webSocketConnection = websocketConnections.get(request);
+        if (webSocketConnection == null) {
+            logger.debug("WebSocket connection missed for request {}", requestId);
+            return;
+        }
+        if (remoteAccessEnabled) {
+            try {
+                webSocketConnection.write(ByteBuffer.wrap(data));
+            } catch (IOException e) {
+                logger.debug("IOException writing WebSocket data: {}", e.getMessage());
+                webSocketConnection.close();
+            }
+        } else {
+            logger.warn("Ignoring incoming WebSocket data, remote access not enabled");
         }
     }
 
@@ -426,16 +541,33 @@ public class CloudClient {
             logger.debug("Query {}", requestQueryJson.toString());
             // Create URI builder with base request URI of openHAB and path from request
             String newPath = URIUtil.addPaths(localBaseUrl, requestPath);
+
+            String source = null;
+            if (requestHeadersJson.has("x-openhab-source")) {
+                source = requestHeadersJson.getString("x-openhab-source");
+            }
+            if (source == null && requestQueryJson.has("source")) {
+                source = requestQueryJson.getString("source");
+            }
+            String userId = null;
+            if (data.has("userId")) {
+                userId = data.getString("userId");
+            }
+            requestHeadersJson.put("x-openhab-source",
+                    AbstractEvent.buildDelegatedSource(source, CloudService.CLOUD_EVENT_SOURCE, userId));
+
             Iterator<String> queryIterator = requestQueryJson.keys();
             // Add query parameters to URI builder, if any
-            newPath += "?";
-            while (queryIterator.hasNext()) {
-                String queryName = queryIterator.next();
-                newPath += queryName;
-                newPath += "=";
-                newPath += URLEncoder.encode(requestQueryJson.getString(queryName), "UTF-8");
-                if (queryIterator.hasNext()) {
-                    newPath += "&";
+            if (queryIterator.hasNext()) {
+                newPath += "?";
+                while (queryIterator.hasNext()) {
+                    String queryName = queryIterator.next();
+                    newPath += queryName;
+                    newPath += "=";
+                    newPath += URLEncoder.encode(requestQueryJson.getString(queryName), "UTF-8");
+                    if (queryIterator.hasNext()) {
+                        newPath += "&";
+                    }
                 }
             }
             // Finally get the future request URI
@@ -528,6 +660,8 @@ public class CloudClient {
             // If successfully submitted request to http client, add it to the list of currently
             // running requests to be able to cancel it if needed
             runningRequests.put(requestId, request);
+            // To recover id from request instance
+            requestIds.put(request, requestId);
         } catch (JSONException | IOException | URISyntaxException e) {
             logger.debug("{}", e.getMessage());
         }
@@ -558,7 +692,12 @@ public class CloudClient {
             // Find and abort running request
             Request request = runningRequests.get(requestId);
             if (request != null) {
-                request.abort(new InterruptedException());
+                var webSocketConnection = websocketConnections.get((HttpRequest) request);
+                if (webSocketConnection == null) {
+                    request.abort(new InterruptedException());
+                } else {
+                    webSocketConnection.closeQuietly();
+                }
                 runningRequests.remove(requestId);
             }
         } catch (JSONException e) {
@@ -572,7 +711,8 @@ public class CloudClient {
             try {
                 logger.debug("Received command {} for item {}.", data.getString("command"), itemName);
                 if (this.listener != null) {
-                    this.listener.sendCommand(itemName, data.getString("command"));
+                    this.listener.sendCommand(itemName, data.getString("command"), data.getString("source"),
+                            data.getString("userId"));
                 }
             } catch (JSONException e) {
                 logger.debug("{}", e.getMessage());
@@ -781,6 +921,92 @@ public class CloudClient {
     }
 
     /**
+     * Register a webhook with the openHAB Cloud for the given local path.
+     *
+     * @param localPath the local path to forward webhook requests to
+     * @param future the future to complete with the {@link Webhook} or an error
+     */
+    protected void registerWebhook(String localPath, CompletableFuture<Webhook> future) {
+        emitWebhookEvent("webhook:register", localPath, future, CloudClient::toWebhook,
+                "Webhook registration timed out");
+    }
+
+    private static Webhook toWebhook(JSONObject response) {
+        try {
+            URL url = new URL(response.getString("webhookUrl"));
+            Instant expiresAt = response.has("expiresAt") ? Instant.parse(response.getString("expiresAt"))
+                    : Instant.now().plus(Duration.ofDays(30));
+            return new Webhook(url, expiresAt);
+        } catch (MalformedURLException e) {
+            throw new IllegalArgumentException("Invalid webhook URL from openHAB Cloud", e);
+        }
+    }
+
+    /**
+     * Remove a webhook from the openHAB Cloud for the given local path.
+     *
+     * @param localPath the local path whose webhook should be removed
+     * @param future the future to complete when the webhook is removed or on error
+     */
+    public void removeWebhook(String localPath, CompletableFuture<Void> future) {
+        emitWebhookEvent("webhook:remove", localPath, future, response -> null, "Webhook removal timed out");
+    }
+
+    private <T> void emitWebhookEvent(String eventName, String localPath, CompletableFuture<T> future,
+            Function<JSONObject, T> successHandler, String timeoutMessage) {
+        Runnable emit = () -> doEmitWebhookEvent(eventName, localPath, future, successHandler, timeoutMessage);
+        if (isConnected()) {
+            emit.run();
+            return;
+        }
+        // Cloud connection is bouncing (e.g. during CloudService.modified()); queue and let onConnect drain.
+        logger.debug("Queueing {} for localPath {} until cloud is connected", eventName, localPath);
+        PendingWebhookEmit pending = new PendingWebhookEmit(future, emit);
+        pendingWebhookEmits.add(pending);
+        scheduler.schedule(() -> {
+            if (pendingWebhookEmits.remove(pending) && !future.isDone()) {
+                future.completeExceptionally(new IOException("Timed out waiting for cloud connection"));
+            }
+        }, WEBHOOK_QUEUE_WAIT_SECONDS, TimeUnit.SECONDS);
+    }
+
+    private <T> void doEmitWebhookEvent(String eventName, String localPath, CompletableFuture<T> future,
+            Function<JSONObject, T> successHandler, String timeoutMessage) {
+        try {
+            JSONObject data = new JSONObject();
+            data.put("localPath", localPath);
+            logger.debug("Emitting {} for localPath {}", eventName, localPath);
+            socket.emit(eventName, data, (io.socket.client.Ack) args -> {
+                try {
+                    if (args == null || args.length == 0 || !(args[0] instanceof JSONObject)) {
+                        future.completeExceptionally(new IOException("Missing or invalid response from openHAB Cloud"));
+                        return;
+                    }
+                    JSONObject response = (JSONObject) args[0];
+                    boolean success = response.optBoolean("success");
+                    logger.debug("{} for {} success={}{}", eventName, localPath, success,
+                            response.has("expiresAt") ? " expiresAt=" + response.optString("expiresAt") : "");
+                    if (success) {
+                        future.complete(successHandler.apply(response));
+                    } else {
+                        future.completeExceptionally(new IOException(response.optString("error", "Unknown error")));
+                    }
+                } catch (RuntimeException e) {
+                    logger.debug("Failed to parse {} response for {}", eventName, localPath, e);
+                    future.completeExceptionally(new IOException("Invalid response from cloud", e));
+                }
+            });
+            scheduler.schedule(() -> {
+                if (!future.isDone()) {
+                    future.completeExceptionally(new IOException(timeoutMessage));
+                }
+            }, 30, TimeUnit.SECONDS);
+        } catch (JSONException e) {
+            future.completeExceptionally(new IOException("Failed to build webhook request", e));
+        }
+    }
+
+    /**
      * Returns true if openHAB Cloud connection is active
      */
     public boolean isConnected() {
@@ -793,6 +1019,7 @@ public class CloudClient {
     public void shutdown() {
         logger.info("Shutting down openHAB Cloud service connection");
         reconnectFuture.get().ifPresent(future -> future.cancel(true));
+        failPendingWebhookEmits("Cloud connector shut down");
         socket.disconnect();
     }
 
@@ -843,5 +1070,309 @@ public class CloudClient {
             return "*******";
         }
         return secret.substring(0, 2) + "..." + secret.substring(secret.length() - 2, secret.length());
+    }
+
+    /**
+     * A {@link ProtocolHandler} implementation that intercept websocket upgraded connections and
+     * creates {@link OpenHABWebSocketConnection} instances to proxy the WebSocket data between the Cloud Connector
+     * and the OpenHAB server.
+     *
+     * @author Miguel Álvarez Díez - Initial contribution
+     */
+    private static class WebSocketProxyUpgrade implements ProtocolHandler {
+        private final Logger logger = LoggerFactory.getLogger(WebSocketProxyUpgrade.class);
+        private final String name = "upgrade";
+        private final List<String> protocols = List.of("websocket");
+        private final Supplier<Socket> ioSocketSupplier;
+        private final Map<Request, Integer> requestIds;
+        private final Map<HttpRequest, OpenHABWebSocketConnection> websocketConnections;
+        private final HttpClient client;
+
+        public WebSocketProxyUpgrade(Supplier<Socket> ioSocketSupplier, Map<Request, Integer> requestIds,
+                Map<HttpRequest, OpenHABWebSocketConnection> websocketConnections, HttpClient httpClient) {
+            this.ioSocketSupplier = ioSocketSupplier;
+            this.requestIds = requestIds;
+            this.websocketConnections = websocketConnections;
+            this.client = httpClient;
+        }
+
+        @Override
+        public String getName() {
+            return name;
+        }
+
+        @Override
+        public boolean accept(Request request, Response response) {
+            boolean upgraded = HttpStatus.SWITCHING_PROTOCOLS_101 == response.getStatus();
+            return upgraded && checkProtocol(request);
+        }
+
+        protected boolean checkProtocol(Request request) {
+            HttpField requestUpgrade = request.getHeaders().getField(HttpHeader.UPGRADE);
+            return requestUpgrade != null && protocols.stream().anyMatch(requestUpgrade::contains);
+        }
+
+        @Override
+        public Response.Listener getResponseListener() {
+            return new Response.Listener.Adapter() {
+                @Override
+                public void onComplete(Result result) {
+                    HttpResponse response = (HttpResponse) result.getResponse();
+                    HttpRequest request = (HttpRequest) response.getRequest();
+                    if (result.isSucceeded()) {
+                        if (!requestIds.containsKey(request)) {
+                            throw new HttpResponseException("Upgrade without request id", response);
+                        }
+                        int requestId = requestIds.get(request);
+                        logger.debug("Upgrading request {}", requestId);
+                        try {
+                            HttpConversation conversation = request.getConversation();
+                            EndPoint endPoint = (EndPoint) conversation.getAttribute(EndPoint.class.getName());
+                            if (endPoint == null) {
+                                throw new HttpResponseException("Upgrade without " + EndPoint.class.getSimpleName(),
+                                        response);
+                            }
+                            OpenHABWebSocketConnection ohWebSocketConnection = new OpenHABWebSocketConnection(requestId,
+                                    endPoint, response, ioSocketSupplier, client);
+                            websocketConnections.put(request, ohWebSocketConnection);
+                            endPoint.upgrade(ohWebSocketConnection);
+                            // disable further request listeners
+                            conversation.updateResponseListeners(null);
+                        } catch (Throwable x) {
+                            forwardFailureComplete(request, null, response, x);
+                        }
+                    } else {
+                        forwardFailureComplete(request, result.getRequestFailure(), response,
+                                result.getResponseFailure());
+                    }
+                }
+            };
+        }
+
+        private void forwardFailureComplete(HttpRequest request, Throwable requestFailure, Response response,
+                Throwable responseFailure) {
+            HttpConversation conversation = request.getConversation();
+            conversation.updateResponseListeners(null);
+            List<Response.ResponseListener> responseListeners = conversation.getResponseListeners();
+            ResponseNotifier notifier = new ResponseNotifier();
+            notifier.forwardFailure(responseListeners, response, responseFailure);
+            notifier.notifyComplete(responseListeners, new Result(request, requestFailure, response, responseFailure));
+        }
+    }
+
+    /**
+     * A {@link Connection} implementation used to proxy WebSocket connections between OpenHAB and the Cloud connector.
+     * It emits the response headers to the connector on initialization, then emits the incoming socket data and
+     * allows to write to the socket.
+     */
+    private static class OpenHABWebSocketConnection extends AbstractConnection
+            implements Runnable, Connection.UpgradeTo {
+        private final Logger logger = LoggerFactory.getLogger(OpenHABWebSocketConnection.class);
+        private final int requestId;
+        private final EndPoint endPoint;
+        private final HttpResponse upgradeResponse;
+        private final Supplier<Socket> socketIOSupplier;
+        private final Locker lock;
+        private final ByteBufferPool byteBufferPool;
+        private final AtomicBoolean isFilling = new AtomicBoolean(false);
+        private final AtomicBoolean writing = new AtomicBoolean(false);
+        private final ConcurrentLinkedDeque<ByteBuffer> writeQueue = new ConcurrentLinkedDeque<>();
+        private @Nullable RetainableByteBuffer networkBuffer;
+
+        public OpenHABWebSocketConnection(int requestId, EndPoint endPoint, HttpResponse upgradeResponse,
+                Supplier<Socket> socketIOSupplier, HttpClient client) {
+            super(endPoint, client.getExecutor());
+            this.requestId = requestId;
+            this.endPoint = endPoint;
+            this.upgradeResponse = upgradeResponse;
+            this.socketIOSupplier = socketIOSupplier;
+            this.byteBufferPool = client.getByteBufferPool();
+            this.lock = new Locker();
+            setInputBufferSize(4 * 1024); // Default jetty WebSocket network transport read size
+            emitUpgradeHeaders();
+        }
+
+        private void emitUpgradeHeaders() {
+            logger.debug("onUpgradeHeaders {}", requestId);
+            JSONObject upgradeJson = new JSONObject();
+            JSONObject headersJSON = new JSONObject();
+            try {
+                for (HttpField field : upgradeResponse.getHeaders()) {
+                    headersJSON.put(field.getName(), field.getValue());
+                }
+                upgradeJson.put("id", requestId);
+                upgradeJson.put("headers", headersJSON);
+                upgradeJson.put("responseStatusCode", upgradeResponse.getStatus());
+                upgradeJson.put("responseStatusText", upgradeResponse.getReason());
+            } catch (JSONException e) {
+                logger.debug("Error writing upgrade headers: {}", e.getMessage());
+                close();
+                return;
+            }
+            var socketIO = socketIOSupplier.get();
+            if (socketIO == null || !socketIO.connected()) {
+                logger.warn("Missing socket");
+                close();
+                return;
+            }
+            socketIO.emit("responseHeader", upgradeJson);
+        }
+
+        public synchronized void write(ByteBuffer byteBuffer) throws IOException {
+            if (writing.compareAndSet(false, true)) {
+                // No write in progress — write directly
+                endPoint.write(Callback.from(this::writeNext, this::onWriteError), byteBuffer);
+            } else {
+                // Write in progress — queue for later
+                writeQueue.add(byteBuffer);
+            }
+        }
+
+        private synchronized void writeNext() {
+            if (writeQueue.isEmpty()) {
+                writing.set(false);
+            } else {
+                endPoint.write(Callback.from(this::writeNext, this::onWriteError), writeQueue.pollFirst());
+            }
+        }
+
+        private void onWriteError(Throwable throwable) {
+            logger.warn("WebSocket write error: {}", throwable.getMessage());
+            close();
+        }
+
+        @Override
+        public void run() {
+            startReadAsync();
+        }
+
+        private void startReadAsync() {
+            acquireNetworkBuffer();
+            try {
+                int totalRead = 0;
+                while (true) {
+                    if (!getEndPoint().isOpen()) {
+                        releaseNetworkBuffer();
+                        return;
+                    }
+                    assert (networkBuffer != null);
+                    int read = endPoint.fill(networkBuffer.getBuffer());
+                    if (read == 0) {
+                        emitDataToConnector(networkBuffer.getBuffer(), totalRead);
+                        releaseNetworkBuffer();
+                        isFilling.set(false);
+                        fillInterested();
+                        return;
+                    } else if (read > 0) {
+                        if (networkBuffer.hasRemaining()) {
+                            totalRead += read;
+                        } else {
+                            emitDataToConnector(networkBuffer.getBuffer(), networkBuffer.getBuffer().limit());
+                            networkBuffer.getBuffer().clear();
+                            totalRead = 0;
+                        }
+                    } else {
+                        logger.debug("WebSocket {} is closed, stop reading", requestId);
+                        releaseNetworkBuffer();
+                        isFilling.set(false);
+                        return;
+                    }
+                }
+            } catch (IOException e) {
+                logger.warn("IOException reading socket data");
+                releaseNetworkBuffer();
+                isFilling.set(false);
+            }
+        }
+
+        private void emitDataToConnector(ByteBuffer dataBuffer, int length) {
+            byte[] data = new byte[length];
+            dataBuffer.get(0, data, 0, length);
+            var socket = socketIOSupplier.get();
+            if (socket != null) {
+                socket.emit("websocket", requestId, data);
+            }
+        }
+
+        @Override
+        public void onFillable() {
+            if (isFilling.compareAndSet(false, true)) {
+                getExecutor().execute(this);
+            }
+        }
+
+        @Override
+        public boolean onIdleExpired() {
+            // no idle timeout for websocket
+            return false;
+        }
+
+        @Override
+        protected boolean onReadTimeout(Throwable timeout) {
+            // no read timeout for websocket
+            return false;
+        }
+
+        @Override
+        public EndPoint getEndPoint() {
+            return endPoint;
+        }
+
+        @Override
+        public void close() {
+            logger.debug("Closing websocket connection {}", requestId);
+            // emit websocketClose to notify the connector
+            JSONObject responseJson = new JSONObject();
+            try {
+                responseJson.put("id", requestId);
+                var socketIO = socketIOSupplier.get();
+                if (socketIO != null && socketIO.connected()) {
+                    socketIO.emit("websocketClose", responseJson);
+                }
+            } catch (JSONException e) {
+                logger.debug("{}", e.getMessage());
+            }
+            super.close();
+        }
+
+        /**
+         * Close the connection without emitting an event to the connector.
+         * Used for server-initiated cancels to prevent event ping-pong.
+         */
+        public void closeQuietly() {
+            logger.debug("Quietly closing websocket connection {}", requestId);
+            super.close();
+        }
+
+        @Override
+        public void onUpgradeTo(ByteBuffer byteBuffer) {
+            // Handle data emitted on endPoint upgrade
+            emitDataToConnector(byteBuffer, byteBuffer.limit());
+        }
+
+        @Override
+        public void onOpen() {
+            super.onOpen();
+            // start data read
+            fillInterested();
+        }
+
+        private void acquireNetworkBuffer() {
+            try (var l = lock.lock()) {
+                if (networkBuffer == null) {
+                    networkBuffer = new RetainableByteBuffer(byteBufferPool, getInputBufferSize());
+                }
+            }
+        }
+
+        private void releaseNetworkBuffer() {
+            try (var l = lock.lock()) {
+                if (networkBuffer == null) {
+                    throw new IllegalStateException();
+                }
+                networkBuffer.release();
+                networkBuffer = null;
+            }
+        }
     }
 }

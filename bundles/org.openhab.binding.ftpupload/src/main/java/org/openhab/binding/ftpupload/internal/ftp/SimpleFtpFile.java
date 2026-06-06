@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,8 @@ import java.io.OutputStream;
 import java.util.List;
 
 import org.apache.ftpserver.ftplet.FtpFile;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,17 +30,24 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pauli Anttila - Initial contribution
  */
+@NonNullByDefault
 public class SimpleFtpFile implements FtpFile {
     private Logger logger = LoggerFactory.getLogger(SimpleFtpFile.class);
 
+    @Nullable
     MyOutputStream file;
 
     public byte[] getData() {
+        MyOutputStream file = this.file;
+        if (file == null) {
+            logger.debug("No data");
+            return new byte[0];
+        }
         return file.getData();
     }
 
     @Override
-    public InputStream createInputStream(long arg0) throws IOException {
+    public @Nullable InputStream createInputStream(long arg0) throws IOException {
         logger.trace("createInputStream: {}", arg0);
         return null;
     }
@@ -46,8 +55,7 @@ public class SimpleFtpFile implements FtpFile {
     @Override
     public OutputStream createOutputStream(long arg0) throws IOException {
         logger.trace("createOutputStream: {}", arg0);
-        file = new MyOutputStream();
-        return file;
+        return this.file = new MyOutputStream();
     }
 
     @Override
@@ -69,7 +77,7 @@ public class SimpleFtpFile implements FtpFile {
     }
 
     @Override
-    public String getGroupName() {
+    public @Nullable String getGroupName() {
         logger.trace("getGroupName");
         return null;
     }
@@ -93,7 +101,7 @@ public class SimpleFtpFile implements FtpFile {
     }
 
     @Override
-    public String getOwnerName() {
+    public @Nullable String getOwnerName() {
         logger.trace("getOwnerName");
         return null;
     }
@@ -141,7 +149,7 @@ public class SimpleFtpFile implements FtpFile {
     }
 
     @Override
-    public List<FtpFile> listFiles() {
+    public @Nullable List<FtpFile> listFiles() {
         logger.trace("listFiles");
         return null;
     }
@@ -153,7 +161,7 @@ public class SimpleFtpFile implements FtpFile {
     }
 
     @Override
-    public boolean move(FtpFile arg0) {
+    public boolean move(@Nullable FtpFile arg0) {
         logger.trace("move: {}", arg0);
         return false;
     }
@@ -165,7 +173,7 @@ public class SimpleFtpFile implements FtpFile {
     }
 
     @Override
-    public Object getPhysicalFile() {
+    public @Nullable Object getPhysicalFile() {
         logger.trace("getPhysicalFile");
         return null;
     }
@@ -186,7 +194,7 @@ public class SimpleFtpFile implements FtpFile {
             } catch (IllegalArgumentException e) {
                 logger.debug("Exception occurred during data conversion: {}", e.getMessage());
             }
-            return null;
+            return new byte[0];
         }
     }
 }

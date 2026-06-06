@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,7 +29,8 @@ import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Component;
 
 /**
- * This discovery participant is able to recognize ruuvitag devices and create discovery results for them.
+ * This discovery participant is able to recognize Ruuvi devices (RuuviTag and Ruuvi Air) and create discovery results
+ * for them.
  *
  * @author Sami Salonen - Initial contribution
  *
@@ -61,7 +62,7 @@ public class RuuviTagDiscoveryParticipant implements BluetoothDiscoveryParticipa
         if (thingUID == null) {
             return null;
         }
-        String label = "Ruuvi Tag";
+        String label = "Ruuvi Beacon";
         Map<String, Object> properties = new HashMap<>();
         properties.put(BluetoothBindingConstants.CONFIGURATION_ADDRESS, device.getAddress().toString());
         properties.put(Thing.PROPERTY_VENDOR, "Ruuvi Innovations Ltd (Oy)");

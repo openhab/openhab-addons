@@ -1,16 +1,16 @@
 # Serial Button Binding
 
-This is a binding for probably one of the simplest devices possible: A simple push button which short-cuts two pins on a serial port.
+This is a binding for probably one of the simplest devices possible: a simple push button which shorts two pins on a serial port.
 
 ## Supported Things
 
-The binding defines a single thing type called `button`.
+The binding defines a single Thing type called `button`.
 
 A button requires the single configuration parameter `port`, which specifies the serial port that should be used.
 
 The only available channel is a `SYSTEM_RAWBUTTON` channel called `button`, which emits `PRESSED` events (no `RELEASED` events though) whenever data is available on the serial port (which will be read and discarded).
 
-The use case is simple: Connect any push button to pins 2 and 7 of an RS-232 interface as short-cutting those will signal that data is available.
+The use case is simple: Connect any push button to pins 2 and 7 of an RS-232 interface; shorting those will signal that data is available.
 Using the default toggle profile, this means that you can use this channel to toggle any Switch item through the button.
 
 ## Full Example

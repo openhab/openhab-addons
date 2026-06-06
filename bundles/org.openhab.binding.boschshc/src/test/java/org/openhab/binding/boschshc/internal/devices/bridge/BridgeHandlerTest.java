@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -1066,7 +1066,7 @@ class BridgeHandlerTest {
     void initializeNoIpAddress() {
         bridgeConfiguration.setProperties(new HashMap<String, Object>());
 
-        fixture.initialize();
+        fixture.thingUpdated(thing);
 
         ThingStatusInfo expectedStatus = ThingStatusInfoBuilder
                 .create(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR)
@@ -1080,7 +1080,7 @@ class BridgeHandlerTest {
         properties.put("ipAddress", "localhost");
         bridgeConfiguration.setProperties(properties);
 
-        fixture.initialize();
+        fixture.thingUpdated(thing);
 
         ThingStatusInfo expectedStatus = ThingStatusInfoBuilder
                 .create(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR)

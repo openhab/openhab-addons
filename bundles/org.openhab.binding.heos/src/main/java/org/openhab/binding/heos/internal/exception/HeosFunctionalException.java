@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,6 +24,8 @@ import org.openhab.binding.heos.internal.json.dto.HeosErrorCode;
  */
 @NonNullByDefault
 public class HeosFunctionalException extends IOException {
+    private static final long serialVersionUID = 1L;
+
     private final HeosErrorCode code;
 
     public HeosFunctionalException(HeosErrorCode code) {

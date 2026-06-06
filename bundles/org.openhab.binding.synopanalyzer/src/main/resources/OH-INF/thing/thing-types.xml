@@ -20,6 +20,7 @@
 			<channel id="attenuation-factor" typeId="attenuation-factor"/>
 			<channel id="horizontal-visibility" typeId="horizontal-visibility"/>
 			<channel id="time-utc" typeId="time-utc"/>
+			<channel id="wind-barb" typeId="wind-barb"/>
 		</channels>
 
 		<config-description>
@@ -31,6 +32,7 @@
 			</parameter>
 			<parameter name="stationId" type="integer" required="true">
 				<label>Station Number</label>
+				<description>WMO station number</description>
 			</parameter>
 		</config-description>
 
@@ -40,7 +42,7 @@
 		<item-type>Number</item-type>
 		<label>Beaufort</label>
 		<description>Wind speed in Beaufort Scale</description>
-		<category>Wind</category>
+		<category>oh:synopanalyzer:beaufort</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Speed</tag>
@@ -83,15 +85,18 @@
 		<item-type>Number</item-type>
 		<label>Octa</label>
 		<description>Cloud cover estimation.</description>
-		<category>sun_clouds</category>
+		<category>oh:synopanalyzer:octa</category>
 		<state readOnly="true" pattern="%d/8" min="0" max="8"/>
 	</channel-type>
 
 	<channel-type id="attenuation-factor" advanced="true">
 		<item-type>Number</item-type>
-		<label>Mitigation Factor</label>
-		<description>Cloud layer mitigation factor</description>
+		<label>Attenuation Factor</label>
+		<description>Cloud layer attenuation factor</description>
 		<category>sun_clouds</category>
+		<tags>
+			<tag>Calculation</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f" max="1" min="0"/>
 	</channel-type>
 
@@ -128,6 +133,17 @@
 		<label>Observation Time</label>
 		<description>Timestamp when data was observed</description>
 		<category>time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="wind-barb">
+		<item-type>Image</item-type>
+		<label>Wind Barb</label>
+		<description>Graph of the wind speed and direction</description>
 		<state readOnly="true"/>
 	</channel-type>
 

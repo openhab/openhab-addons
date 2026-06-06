@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,12 +23,20 @@ import org.openhab.binding.danfossairunit.internal.protocol.Parameter;
  * @author Jacob Laursen - Initial contribution
  */
 @NonNullByDefault
-public interface CommunicationController {
-    void connect() throws IOException;
+public interface CommunicationController extends AutoCloseable {
+    /**
+     * Closes any open connection. Should be called when the controller is no longer needed.
+     */
+    @Override
+    void close();
 
-    void disconnect();
-
+    /**
+     * Sends a request to the air unit. The implementation will establish a connection on demand.
+     */
     byte[] sendRobustRequest(Parameter parameter) throws IOException;
 
+    /**
+     * Sends a request to the air unit. The implementation will establish a connection on demand.
+     */
     byte[] sendRobustRequest(Parameter parameter, byte[] value) throws IOException;
 }

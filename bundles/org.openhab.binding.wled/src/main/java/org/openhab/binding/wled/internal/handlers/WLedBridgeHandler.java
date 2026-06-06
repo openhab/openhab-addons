@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,6 +28,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.wled.internal.WLedActions;
 import org.openhab.binding.wled.internal.WLedConfiguration;
+import org.openhab.binding.wled.internal.WLedHelper;
 import org.openhab.binding.wled.internal.WLedSegmentDiscoveryService;
 import org.openhab.binding.wled.internal.WledDynamicStateDescriptionProvider;
 import org.openhab.binding.wled.internal.api.ApiException;
@@ -232,6 +233,12 @@ public class WLedBridgeHandler extends BaseBridgeHandler {
             if (localApi == null) {
                 api = localApi = apiFactory.getApi(this);
                 localApi.initialize();
+
+                String response = localApi.sendGetRequest("/json");
+                String macAddress = WLedHelper.getMacAddress(response);
+                if (!macAddress.isBlank()) {
+                    updateProperty(Thing.PROPERTY_MAC_ADDRESS, macAddress);
+                }
             }
             localApi.update();
             updateStatus(ThingStatus.ONLINE);

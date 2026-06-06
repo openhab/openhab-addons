@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * @author Jonathan Gilbert - Initial contribution
  * @author Florian Hotze - Improve logger name, Fix memory leak caused by exception logging
  */
-class DebuggingGraalScriptEngine<T extends ScriptEngine & Invocable & AutoCloseable & Compilable & Lock>
+public class DebuggingGraalScriptEngine<T extends ScriptEngine & Invocable & AutoCloseable & Compilable & Lock>
         extends InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable<T> implements Lock {
 
     private static final int STACK_TRACE_LENGTH = 5;
@@ -111,15 +111,15 @@ class DebuggingGraalScriptEngine<T extends ScriptEngine & Invocable & AutoClosea
 
         String identifier = "stack";
         if (fileName != null) {
-            identifier = fileName.toString().replaceAll("^.*[/\\\\]", "");
+            identifier = "file." + fileName.toString().replaceAll("^.*[/\\\\]", "");
         } else if (ruleUID != null) {
-            identifier = ruleUID.toString();
+            identifier = "rule." + ruleUID;
         } else if (ohEngineIdentifier != null
                 && ohEngineIdentifier.toString().startsWith(OPENHAB_TRANSFORMATION_SCRIPT)) {
             identifier = ohEngineIdentifier.toString().replaceAll(OPENHAB_TRANSFORMATION_SCRIPT, "transformation.");
         }
 
-        logger = LoggerFactory.getLogger("org.openhab.automation.script.javascript." + identifier);
+        logger = LoggerFactory.getLogger("org.openhab.automation.jsscripting." + identifier);
     }
 
     @Override

@@ -4,8 +4,8 @@
 	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
 
 	<type>binding</type>
-	<name>YamahaReceiver Binding</name>
-	<description>This is the binding for network enabled Yamaha receivers (without MusicCast support).</description>
+	<name>Yamaha Receiver Binding</name>
+	<description>This is the binding for network-enabled Yamaha receivers (without MusicCast support).</description>
 	<connection>local</connection>
 
 	<discovery-methods>

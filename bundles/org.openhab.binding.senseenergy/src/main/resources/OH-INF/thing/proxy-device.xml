@@ -31,12 +31,11 @@
 					rage".</description>
 			</parameter>
 
-			<parameter name="voltage" type="decimal" unit="V">
+			<parameter name="voltage" type="decimal" unit="V" required="true">
 				<label>Voltage</label>
 				<description>Supply voltage for device.</description>
 				<unitLabel>V</unitLabel>
 				<default>120</default>
-				<required>true</required>
 			</parameter>
 
 			<parameter name="macAddress" type="text">

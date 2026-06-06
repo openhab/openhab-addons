@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -30,9 +29,6 @@ public class LowPowerCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0508;
     public static final String CLUSTER_NAME = "LowPower";
     public static final String CLUSTER_PREFIX = "lowPower";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
-
-    public Integer clusterRevision; // 65533 ClusterRevision
 
     public LowPowerCluster(BigInteger nodeId, int endpointId) {
         super(nodeId, endpointId, 1288, "LowPower");
@@ -53,7 +49,6 @@ public class LowPowerCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         return str;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,16 +21,18 @@ import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
+import java.time.Instant;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.CoIotDescrBlk;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.CoIotDescrSen;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.CoIotSensor;
 import org.openhab.binding.shelly.internal.handler.ShellyColorUtils;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.unit.SIUnits;
@@ -353,7 +355,7 @@ public class Shelly1CoIoTVersion2 extends Shelly1CoIoTProtocol implements Shelly
                 reason = getString(s.valueStr);
                 updateChannel(updates, CHANNEL_GROUP_ROL_CONTROL, CHANNEL_ROL_CONTROL_STOPR, getStringType(reason));
                 if (!reason.isEmpty() && !reason.equalsIgnoreCase(SHELLY_API_STOPR_NORMAL)) {
-                    thingHandler.postEvent("ROLLER_" + reason.toUpperCase(), true);
+                    thingHandler.postEvent("ROLLER_" + reason.toUpperCase(Locale.ROOT), true);
                 }
             case "6106": // A, flood, 0/1, -1
                 updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_FLOOD, OnOffType.from(value == 1));
@@ -363,17 +365,17 @@ public class Shelly1CoIoTVersion2 extends Shelly1CoIoTProtocol implements Shelly
                 // {"I":6107,"T":"A","D":"motion","R":["0/1","-1"],"L":1},
                 updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MOTION, OnOffType.from(value == 1));
                 break;
-            case "3119": // Motion timestamp (timestamp os GMT, not adapted to the adapted timezone)
+            case "3119": // Motion timestamp (timestamp is GMT, not adapted to the adapted timezone)
                 // {"I":3119,"T":"S","D":"timestamp","U":"s","R":["U32","-1"],"L":1},
                 if (s.value != 0) {
                     updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MOTION_TS,
-                            getTimestamp(getString("GMT"), (long) s.value));
+                            new DateTimeType(Instant.ofEpochSecond((long) s.value)));
                 }
                 break;
-            case "3120": // motionActive (timestamp os GMT, not adapted to the adapted timezone)
+            case "3120": // motionActive (timestamp is GMT, not adapted to the adapted timezone)
                 // {"I":3120,"T":"S","D":"motionActive","R":["0/1","-1"],"L":1},
                 updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MOTION_ACT,
-                        getTimestamp("GMT", (long) s.value));
+                        new DateTimeType(Instant.ofEpochSecond((long) s.value)));
                 break;
 
             case "6108": // A, gas, none/mild/heavy/test or unknown
@@ -406,8 +408,8 @@ public class Shelly1CoIoTVersion2 extends Shelly1CoIoTProtocol implements Shelly
     }
 
     @Override
-    public CoIotDescrSen fixDescription(@Nullable CoIotDescrSen sen, Map<String, CoIotDescrBlk> blkMap) {
-        return super.fixDescription(sen, blkMap);
+    public CoIotDescrSen fixDescription(CoIotDescrSen sen, Map<String, CoIotDescrBlk> blkMap) {
+        return sen;
     }
 
     private static final String ID_4101_DESCR = "{ \"I\":4101, \"T\":\"P\", \"D\":\"power\",  \"U\": \"W\",    \"R\":\"0/3500\", \"L\": 1}";

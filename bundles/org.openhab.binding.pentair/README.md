@@ -8,12 +8,12 @@ Further, if there is interest to improve functionality or address issues with an
 
 ## Hardware Setup
 
-> REQUISITE DISCLAIMER: CONNECTING 3RD PARTY DEVICES TO THE PENTAIR SYSTEM BUS COULD CAUSE SERIOUS DAMAGE TO THE SYSTEM SHOULD SOMETHING MALFUNCTION.  IT IS NOT ENDORSED BY PENTAIR AND COULD VOID WARRENTY. IF YOU DECIDE TO USE THIS BINDING TO INTERFACE TO A PENTAIR CONTROLLER, THE AUTHOR(S) CAN NOT BE HELD RESPONSIBLE.
+> REQUISITE DISCLAIMER: CONNECTING 3RD PARTY DEVICES TO THE PENTAIR SYSTEM BUS COULD CAUSE SERIOUS DAMAGE TO THE SYSTEM SHOULD SOMETHING MALFUNCTION. IT IS NOT ENDORSED BY PENTAIR AND COULD VOID WARRANTY. IF YOU DECIDE TO USE THIS BINDING TO INTERFACE TO A PENTAIR CONTROLLER, THE AUTHOR(S) CANNOT BE HELD RESPONSIBLE.
 
 This binding requires an adapter to interface to the Pentair system bus.
 This bus/wire runs between the Pentair control system, indoor control panels, IntelliFlo pumps, etc.
-It is a standard RS-485 bus running at 9600,8N1 so any RS-485 adapter should work and you should be able to buy one for under $30.
-Pentair does not publish any information on the protocol so this binding was developed using the great reverse-engineering efforts of others made available on the internet.
+It is a standard RS-485 bus running at 9600,8N1, so any RS-485 adapter should work and you should be able to buy one for under $30.
+Pentair does not publish any information on the protocol, so this binding was developed using the great reverse-engineering efforts of others made available on the internet.
 I have cited several of those in the References section below.
 
 ### Connecting adapter to your system
@@ -21,19 +21,19 @@ I have cited several of those in the References section below.
 A USB or serial RS-485 interface or IP based interface can be used to interface to the Pentair system bus.
 The binding includes 2 different Bridges depending on which type of interface you use, serial_bridge or ip_bridge.
 
-If your openHAB system is physically located far from your Pentair equipment or indoor control panel, you can use a Raspberry Pi or other computer to redirect USB/serial port traffic over the internet using a program called ser2sock (see Reference section).
-An example setup would run the following command: "ser2sock -p 10000 -s /dev/ttyUSB1 -b 9600 -d".
+If your openHAB system is physically located far from your Pentair equipment or indoor control panel, you can use a Raspberry Pi or other computer to redirect USB/serial port traffic over the internet using a program called ser2sock (see References section).
+An example setup would run the following command: `ser2sock -p 10000 -s /dev/ttyUSB1 -b 9600 -d`.
 
 Note: This is the setup utilized for the majority of my testing of this binding.
 
 Once you have the interface connected to your system, it is best to test basic connectivity.
 Note the protocol is a binary protocol (not ASCII text based) and in order to view the communication packets, one must use a program capable of a binary/HEX mode.
-If connected properly, you will see a periodic traffic with packets staring with FF00FFA5.
+If connected properly, you will see periodic traffic with packets starting with FF00FFA5.
 This is the preamble for Pentair's communication packet.
 
 After you see this traffic, you can proceed to configuring the Pentair binding in openHAB.
 
-Note: Many adapters use A and B to represent Data+ and Data-. There is no reliable standard for determining which is Data+ and Data-. If you connect the system in reverse, you will still see serial data, however it will be corrupted. Look at your data coming from your device and look for a repeated "FFa5". If you don't see that preamble reliably, you may try switching your data lines."
+Note: Many adapters use A and B to represent Data+ and Data-. There is no reliable standard for determining which is Data+ and Data-. If you connect the system in reverse, you will still see serial data; however, it will be corrupted. Look at your data coming from your device and look for a repeated "FFa5". If you don't see that preamble reliably, you may try switching your data lines.
 
 #### USB/Serial interface
 
@@ -50,16 +50,16 @@ In order for the Pentair controller to receive commands from this binding, you m
 
 ## Supported Things
 
-This binding supports the following thing types:
+This binding supports the following Thing types:
 
-| ThingType UID   | Thing Type | Description                             |
-| --------------- | :--------: | --------------------------------------- |
-| ip_bridge       |   Bridge   | A TCP network RS-485 bridge device.     |
-| serial_bridge   |   Bridge   | A USB or serial RS-485 device.          |
-| controller      |   Thing    | Pentair EasyTouch, SunTouch, or IntelliTouch pool controller.      |
-| intelliflo      |   Thing    | Pentair IntelliFlo variable speed pump. |
-| intellichlor    |   Thing    | Pentair IntelliChlor chlorinator.       |
-| intellichem     |   Thing    | Pentair IntelliChem.                     |
+| ThingType UID | Thing Type | Description                                                   |
+|---------------|------------|---------------------------------------------------------------|
+| ip_bridge     | Bridge     | A TCP network RS-485 bridge device.                           |
+| serial_bridge | Bridge     | A USB or serial RS-485 device.                                |
+| controller    | Thing      | Pentair EasyTouch, SunTouch, or IntelliTouch pool controller. |
+| intelliflo    | Thing      | Pentair IntelliFlo variable speed pump.                       |
+| intellichlor  | Thing      | Pentair IntelliChlor chlorinator.                             |
+| intellichem   | Thing      | Pentair IntelliChem.                                          |
 
 ## Binding Configuration
 
@@ -71,15 +71,15 @@ A Bridge item must first be configured to gain access to the Pentair bus.
 This can be done via the interactive setup pages in openHAB or manually through a .thing configuration file.
 The following table shows the parameters for each Bridge.
 
-| Thing         | Configuration Parameters                                     |
-| ------------- | ------------------------------------------------------------ |
-| ip_bridge     | address - IP address for the RS-485 adapter - Required.      |
-|               | port - TCP port for the RS-485 adapter - Not Required - default = 10000. |
-|               | id - ID to use when communicating on Pentair control bus - default = 34. |
-| serial_bridge | serialPort - Serial port for the IT-100s bridge - Required.  |
-|               | baud - Baud rate of the IT-100 bridge - Not Required - default = 9600. |
-|               | pollPeriod - Period of time in minutes between the poll command being sent to the IT-100 bridge - Not Required - default=1. |
-|               | id - ID to use when communicating on Pentair control bus - default = 34. |
+| Thing         | Configuration Parameters                                                                                                    |
+|---------------|-----------------------------------------------------------------------------------------------------------------------------|
+| ip_bridge     | address - IP address for the RS-485 adapter - Required.                                                                     |
+|               | port - TCP port for the RS-485 adapter - Not Required - default = 10000.                                                    |
+|               | id - ID to use when communicating on Pentair control bus - default = 34.                                                    |
+| serial_bridge | serialPort - Serial port for the RS-485 bridge - Required.                                                                  |
+|               | baud - Baud rate of the RS-485 bridge - Not Required - default = 9600.                                                      |
+|               | pollPeriod - Period of time in minutes between the poll command being sent to the RS-485 bridge - Not Required - default=1. |
+|               | id - ID to use when communicating on Pentair control bus - default = 34.                                                    |
 
 ```java
 Bridge pentair:ip_bridge:1 [ address="192.168.1.202", port=10001 ] {
@@ -105,34 +105,35 @@ Bridge pentair:serial_bridge:1 [ serialPort="/dev/ttyUSB0" ] {
 
 ### Thing: Controller
 
-Represents and interfaces with a Pentair pool controller in the system.  This binding should work for both Intellitouch and EasyTouch systems.
-Feature availability is dependent on the version of hardware and firmware versions of your specific controller.
+Represents and interfaces with a Pentair pool controller in the system.
+This binding should work for both IntelliTouch and EasyTouch systems.
+Feature availability is dependent on the hardware and firmware versions of your specific controller.
 
 #### Synchronize Time
 
 This configuration setting will instruct the binding to automatically update the controller's clock every 24 hours with the value from the openHAB server.
 This is useful to keep the pool system clock set correct and automatically adjust for daylight savings time.
 
-| Channel Group                     | Channel           | Type               |     | Description  |
-| :------------------------------:  | :-------:         | :----:             | :-: | :--------------: |
-| pool, spa, aux[1-8], feature[1-8] | switch            | Switch             | RW  | Indicates the particulcar circuit or feature is on or off.  |
-| "                                 | name              | String             | R   | Name of circuit |
-| "                                 | feature           | String             | R   | Feature of ciruit |
-| poolheat, spaheat                 | setpoint          | Number:Temperature | RW  | Temperature setpoint |
-| "                                 | temperature       | Number:Temperature | R   | Current water temperature.  Note, the temperature is only valid while in either pool or spa mode. |
-| "                                 | heatmode          | String             | R   | Heat mode configured.  Values: NONE, HEATER, SOLARPREFERRED, SOLAR |
-| schedule[1-9]                     | schedule          | String             | RW  | Summary string of schedule.  |
-| "                                 | type              | String             | RW  | Type of schedule.  Note, to actually write the program to the controller, this channel must be written to with the same value 2 times within 5s. Values: NONE, NORMAL, EGGTIMER, ONCE ONLY |
-| "                                 | start             | Number:Time        | RW  | Time of day to start schedule expressed in minutes.  |
-| "                                 | end               | Number:Time        | RW  | Time of day to end schedule expressed in minutes. In the case of EGG TIMER, this shoud be the duration. |
-| "                                 | circuit           | Number             | RW  | Circuit/Feature the schedule will control. |
-| "                                 | days              | String             | RW  | The days the schedule will run.  S=Sunday, M=Monday, T=Tuesday, W=Wednesday, R=Thursday, F=Friday, Y=Saturday |
-| status                            | lightmode         | String             | RW  | Light mode. Values: OFF, ON, COLORSYNC, COLORSWIM, COLORSET, PARTY, ROMANCE, CARIBBEAN, AMERICAN, SUNSET, ROYAL, BLUE, GREEN, RED, WHITE, MAGENTA |
-| "                                 | solartemperature  | Number:Temperature | R   | Solar temperature sensor reading. |
-| "                                 | airtemperature    | Number:Temperature | R   | Air temperature sensor reading. |
-| "                                 | servicemode       | Switch             | R   | Indicates whether controller is in service mode. |
-| "                                 | solaron           | Switch             | R   | Indicates whether solar heat is on. |
-| "                                 | heateron          | Switch             | R   | Indicates whether heater is on. |
+| Channel Group                     | Channel          | Type               |    | Description                                                                                                                                       |
+|-----------------------------------|------------------|--------------------|----|---------------------------------------------------------------------------------------------------------------------------------------------------|
+| pool, spa, aux[1-8], feature[1-8] | switch           | Switch             | RW | Indicates the particulcar circuit or feature is on or off.                                                                                        |
+| "                                 | name             | String             | R  | Name of circuit                                                                                                                                   |
+| "                                 | feature          | String             | R  | Feature of ciruit                                                                                                                                 |
+| poolheat, spaheat                 | setpoint         | Number:Temperature | RW | Temperature setpoint                                                                                                                              |
+| "                                 | temperature      | Number:Temperature | R  | Current water temperature.  Note, the temperature is only valid while in either pool or spa mode.                                                 |
+| "                                 | heatmode         | String             | R  | Heat mode configured.  Values: NONE, HEATER, SOLARPREFERRED, SOLAR                                                                                |
+| schedule[1-9]                     | schedule         | String             | RW | Summary string of schedule.                                                                                                                       |
+| "                                 | type             | String             | RW | Type of schedule. To write to controller, send same value twice within 5s. Values: NONE, NORMAL, EGGTIMER, ONCE ONLY                              |
+| "                                 | start            | Number:Time        | RW | Time of day to start schedule expressed in minutes.                                                                                               |
+| "                                 | end              | Number:Time        | RW | Time of day to end schedule expressed in minutes. In the case of EGG TIMER, this shoud be the duration.                                           |
+| "                                 | circuit          | Number             | RW | Circuit/Feature the schedule will control.                                                                                                        |
+| "                                 | days             | String             | RW | The days the schedule will run.  S=Sunday, M=Monday, T=Tuesday, W=Wednesday, R=Thursday, F=Friday, Y=Saturday                                     |
+| status                            | lightmode        | String             | RW | Light mode. Values: OFF, ON, COLORSYNC, COLORSWIM, COLORSET, PARTY, ROMANCE, CARIBBEAN, AMERICAN, SUNSET, ROYAL, BLUE, GREEN, RED, WHITE, MAGENTA |
+| "                                 | solartemperature | Number:Temperature | R  | Solar temperature sensor reading.                                                                                                                 |
+| "                                 | airtemperature   | Number:Temperature | R  | Air temperature sensor reading.                                                                                                                   |
+| "                                 | servicemode      | Switch             | R  | Indicates whether controller is in service mode.                                                                                                  |
+| "                                 | solaron          | Switch             | R  | Indicates whether solar heat is on.                                                                                                               |
+| "                                 | heateron         | Switch             | R  | Indicates whether heater is on.                                                                                                                   |
 
 #### Working with schedules
 
@@ -144,19 +145,19 @@ To prevent erroneous writes to the schedules though, one must write to the `type
 
 Represents an Intellichlor module connected in your system.  Currently, the values here are readonly.
 
-| Channel              | Type                       |     | Description |
-| :------------------: | :----:                     | :-: | :---------- |
-| saltOutput           | Number:Dimensionless       | R   | Current salt output %. |
-| salinity             | Number:Dimensionless       | R   | Salinity (ppm). |
-| ok                   | Switch                     | R   | System is operating normally. |
-| lowFlow              | Switch                     | R   | Water flow rate is low. |
-| lowSalt              | Switch                     | R   | Low salt level. |
-| veryLowSalt          | Switch                     | R   | Very low salt level. |
-| highCurrent          | Switch                     | R   | High current level. |
-| cleanCell            | Switch                     | R   | Clean cell. |
-| lowVoltage           | Switch                     | R   | Low voltage. |
-| lowWaterTemp         | Switch                     | R   | Water temperature is too low for chlorine generation. |
-| commError            | Switch                     | R   | Communication error. |
+| Channel      | Type                 |   | Description                                           |
+|--------------|----------------------|---|-------------------------------------------------------|
+| saltOutput   | Number:Dimensionless | R | Current salt output %.                                |
+| salinity     | Number:Dimensionless | R | Salinity (ppm).                                       |
+| ok           | Switch               | R | System is operating normally.                         |
+| lowFlow      | Switch               | R | Water flow rate is low.                               |
+| lowSalt      | Switch               | R | Low salt level.                                       |
+| veryLowSalt  | Switch               | R | Very low salt level.                                  |
+| highCurrent  | Switch               | R | High current level.                                   |
+| cleanCell    | Switch               | R | Clean cell.                                           |
+| lowVoltage   | Switch               | R | Low voltage.                                          |
+| lowWaterTemp | Switch               | R | Water temperature is too low for chlorine generation. |
+| commError    | Switch               | R | Communication error.                                  |
 
 ### Thing: IntelliFlo
 
@@ -164,15 +165,15 @@ Represents and interfaces to an Intelliflo pump.
 When a controller is active in the system all pump values are read only since the pump can only have one master at a time.
 If no controller is present or the controller is in service mode, the pump can be controlled directly from OpenHab.
 
-| Channel              | Type                       |     | Description |
-| :------------------: | :----:                     | :-: | :---------- |
-| run                  | Switch                     | RW  | Indicates whether the pump is running. |
-| rpm                  | Number                     | RW  | Pump RPM |
-| gpm                  | Number:VolumetricFlowRate  | R   | Pump GPM (only valid for VF pumps) |
-| power                | Number:Power               | R   | Pump power (Watt) |
-| status1              | Number                     | R   | Pump status1. (not reversed engineered) |
-| status2              | Number                     | R   | Pump status2. (not reversed engineered) |
-| runProgram           | Number                     | RW  | Run program (0 to stop, # to run) |
+| Channel    | Type                      |    | Description                             |
+|------------|---------------------------|----|-----------------------------------------|
+| run        | Switch                    | RW | Indicates whether the pump is running.  |
+| rpm        | Number                    | RW | Pump RPM                                |
+| gpm        | Number:VolumetricFlowRate | R  | Pump GPM (only valid for VF pumps)      |
+| power      | Number:Power              | R  | Pump power (Watt)                       |
+| status1    | Number                    | R  | Pump status1. (not reversed engineered) |
+| status2    | Number                    | R  | Pump status2. (not reversed engineered) |
+| runProgram | Number                    | RW | Run program (0 to stop, # to run)       |
 
 ### Thing: IntelliChem
 
@@ -180,37 +181,37 @@ Represents and interfaces to an IntelliChem unit.
 This is for monitoring of values only and IntelliChem cannot be directly controlled through this binding.
 Note: This has limited testing since I don't own an IntelliChem
 
-| Channel                       | Type                   |     | Description |
-| :------------------:          | :----:                 | :-: | :---------- |
-| phReading                     | Number                 | R   | Current PH reading. |
-| orpReading                    | Number                 | R   | Current Oxidation Reduction Potential (ORP) reading. |
-| phSetPoint                    | Number                 | R   | Current PH set point. |
-| orpSetPoint                   | Number                 | R   | Oxidation Reduction Potential (ORP) set point. |
-| tank1Level                    | Number                 | R   | Tank 1 level (1-7). |
-| tank2Level                    | Number                 | R   | Tank 2 level (1-7). |
-| calciumHardness               | Number:Dimensionless   | R   | Calcium hardness PPM (mg/L). |
-| cyaReading                    | Number                 | R   | Cyanuric acid reading. |
-| alkalinity                    | Number                 | R   | Alkalinity reading. |
-| phDoserType                   | String                 | R   | The doser type for PH (None, CO2, Acid). |
-| orpDOserType                  | String                 | R   | The doser type for ORP (None, ORP). |
-| phDoserStatus                 | Switch                 | R   | Whether the chemical is currently dosing. |
-| orpDoserStatus                | Switch                 | R   | Whether the chemical is currently dosing. |
-| phDoseTime                    | Number:Time            | R   | The time a particular chemical has been dosing. |
-| orpdoseTime                   | Number:Time            | R   | The time a particular chemical has been dosing. |
-| lsi                           | Number                 | R   | Langelier Saturation Index. |
-| saltLevel                     | Number:Dimensionless   | R   | Current salt content reading of the water (PPM). |
-| temperature                   | Number:Temperature     | R   | Current temperature. |
-| alarmWaterFlow                | Switch                 | R   | Water flow alarm (on = no water flow). |
-| alarmPh                       | Switch                 | R   | PH alarm reported. |
-| alarmOrp                      | Switch                 | R   | ORP alarm reported. |
-| alarmPhTank                   | Switch                 | R   | PH tank alarm reported. |
-| alarmOrpTank                  | Switch                 | R   | ORP tank alarm reported. |
-| alarmProbeFault               | Switch                 | R   | Probe fault alarm reported. |
-| warningPhLockout              | Switch                 | R   | Unit is in PH Lockout. |
-| warningPhDailyLimitReached    | Switch                 | R   | Daily limit of PH dosing has been reached. |
-| warningOrpDailLimitReached    | Switch                 | R   | Daily limit of ORP dosing has been reached. |
-| warningInvalidSetup           | Switch                 | R   | Invalid setup for the unit. |
-| warningChlorinatorCommError   | Switch                 | R   | Error in communicating with the Chlorinator. |
+| Channel                     | Type                 |   | Description                                          |
+|-----------------------------|----------------------|---|------------------------------------------------------|
+| phReading                   | Number               | R | Current PH reading.                                  |
+| orpReading                  | Number               | R | Current Oxidation Reduction Potential (ORP) reading. |
+| phSetPoint                  | Number               | R | Current PH set point.                                |
+| orpSetPoint                 | Number               | R | Oxidation Reduction Potential (ORP) set point.       |
+| tank1Level                  | Number               | R | Tank 1 level (1-7).                                  |
+| tank2Level                  | Number               | R | Tank 2 level (1-7).                                  |
+| calciumHardness             | Number:Dimensionless | R | Calcium hardness PPM (mg/L).                         |
+| cyaReading                  | Number               | R | Cyanuric acid reading.                               |
+| alkalinity                  | Number               | R | Alkalinity reading.                                  |
+| phDoserType                 | String               | R | The doser type for PH (None, CO2, Acid).             |
+| orpDOserType                | String               | R | The doser type for ORP (None, ORP).                  |
+| phDoserStatus               | Switch               | R | Whether the chemical is currently dosing.            |
+| orpDoserStatus              | Switch               | R | Whether the chemical is currently dosing.            |
+| phDoseTime                  | Number:Time          | R | The time a particular chemical has been dosing.      |
+| orpdoseTime                 | Number:Time          | R | The time a particular chemical has been dosing.      |
+| lsi                         | Number               | R | Langelier Saturation Index.                          |
+| saltLevel                   | Number:Dimensionless | R | Current salt content reading of the water (PPM).     |
+| temperature                 | Number:Temperature   | R | Current temperature.                                 |
+| alarmWaterFlow              | Switch               | R | Water flow alarm (on = no water flow).               |
+| alarmPh                     | Switch               | R | PH alarm reported.                                   |
+| alarmOrp                    | Switch               | R | ORP alarm reported.                                  |
+| alarmPhTank                 | Switch               | R | PH tank alarm reported.                              |
+| alarmOrpTank                | Switch               | R | ORP tank alarm reported.                             |
+| alarmProbeFault             | Switch               | R | Probe fault alarm reported.                          |
+| warningPhLockout            | Switch               | R | Unit is in PH Lockout.                               |
+| warningPhDailyLimitReached  | Switch               | R | Daily limit of PH dosing has been reached.           |
+| warningOrpDailyLimitReached | Switch               | R | Daily limit of ORP dosing has been reached.          |
+| warningInvalidSetup         | Switch               | R | Invalid setup for the unit.                          |
+| warningChlorinatorCommError | Switch               | R | Error in communicating with the Chlorinator.         |
 
 ## Example setup
 

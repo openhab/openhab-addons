@@ -50,6 +50,16 @@
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
+	<channel-type id="energy-to-max-soc">
+		<item-type unitHint="kWh">Number:Energy</item-type>
+		<label>Energy to Maximum SoC</label>
+		<description>Energy needed to reach maximum state of charge</description>
+		<tags>
+			<tag>Calculation</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
 	<channel-type id="range-fuel">
 		<item-type unitHint="km,mi">Number:Length</item-type>
 		<label>Fuel Range</label>

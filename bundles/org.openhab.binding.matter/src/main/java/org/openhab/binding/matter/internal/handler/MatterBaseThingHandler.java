@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -44,8 +44,10 @@ import org.openhab.binding.matter.internal.client.dto.cluster.gen.BasicInformati
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.BridgedDeviceBasicInformationCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.GeneralDiagnosticsCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.GeneralDiagnosticsCluster.NetworkInterface;
+import org.openhab.binding.matter.internal.client.dto.cluster.gen.OperationalCredentialsCluster;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.EventTriggeredMessage;
+import org.openhab.binding.matter.internal.client.dto.ws.OtaUpdateAvailableMessage;
 import org.openhab.binding.matter.internal.controller.MatterControllerClient;
 import org.openhab.binding.matter.internal.controller.devices.converter.GenericConverter;
 import org.openhab.binding.matter.internal.controller.devices.types.DeviceType;
@@ -101,6 +103,7 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
     protected final TranslationService translationService;
     protected Map<Integer, DeviceType> devices = new HashMap<>();
     protected @Nullable MatterControllerClient cachedClient;
+    private int currentFabricIndex = 0;
     private @Nullable ScheduledFuture<?> pollingTask;
 
     public MatterBaseThingHandler(Thing thing, BaseThingHandlerFactory thingHandlerFactory,
@@ -173,6 +176,14 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
     }
 
     @Override
+    public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
+        super.handleConfigurationUpdate(configurationParameters);
+        // Delegate configuration updates to all device types/converters
+        Configuration config = getThing().getConfiguration();
+        devices.values().forEach(deviceType -> deviceType.handleConfigurationUpdate(config));
+    }
+
+    @Override
     protected ThingBuilder editThing() {
         return ThingBuilder.create(getDynamicThingTypeUID(), getThing().getUID()).withBridge(getThing().getBridgeUID())
                 .withChannels(getThing().getChannels()).withConfiguration(getThing().getConfiguration())
@@ -188,6 +199,11 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
         } else {
             startPolling();
         }
+    }
+
+    @Override
+    protected void updateStatus(ThingStatus status) {
+        updateStatus(status, ThingStatusDetail.NONE, null);
     }
 
     @Override
@@ -234,6 +250,19 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
     }
 
     /**
+     * Check if a channel is linked.
+     *
+     * @param endpointNumber The endpoint number.
+     * @param channelId The channel ID.
+     * @return True if the channel is linked, false otherwise.
+     */
+    public boolean isLinked(int endpointNumber, String channelId) {
+        ChannelGroupUID channelGroupUID = new ChannelGroupUID(getThing().getUID(), String.valueOf(endpointNumber));
+        ChannelUID channelUID = new ChannelUID(channelGroupUID, channelId);
+        return isLinked(channelUID);
+    }
+
+    /**
      * Set the thing status of the endpoint.
      *
      * @param status The status to set.
@@ -271,10 +300,11 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
      * @param attributeName The attribute name.
      * @param value The value to write.
      */
-    public void writeAttribute(Integer endpointId, String clusterName, String attributeName, String value) {
+    public CompletableFuture<Void> writeAttribute(Integer endpointId, String clusterName, String attributeName,
+            String value) {
         MatterControllerClient ws = getClient();
         if (ws != null) {
-            ws.clusterWriteAttribute(getNodeId(), endpointId, clusterName, attributeName, value);
+            return ws.clusterWriteAttribute(getNodeId(), endpointId, clusterName, attributeName, value);
         } else {
             throw new IllegalStateException("Client is null");
         }
@@ -331,6 +361,36 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
     }
 
     /**
+     * Add a property to the thing. Null values will remove the property.
+     * 
+     * @param properties The properties of the thing to update.
+     * @param key The key of the property to add.
+     * @param value The value of the property to add.
+     * @return The updated properties.
+     */
+    private Map<String, String> addProperty(Map<String, String> properties, String key, @Nullable String value) {
+        if (value != null) {
+            properties.put(key, value);
+        } else {
+            properties.remove(key);
+        }
+        return properties;
+    }
+
+    /**
+     * Update the property of the thing for a given cluster and attribute name. Null values will remove the property.
+     * 
+     * @param properties The properties of the thing to update.
+     * @param clusterName The name of the cluster.
+     * @param attributeName The name of the attribute.
+     * @param value The value of the attribute.
+     */
+    public Map<String, String> updateClusterAttributeProperty(Map<String, String> properties, String clusterName,
+            String attributeName, @Nullable Object value) {
+        return addProperty(properties, clusterName + "-" + attributeName, value != null ? value.toString() : null);
+    }
+
+    /**
      * Update the property of the thing for a given cluster and attribute name. Null values will remove the property.
      * 
      * @param clusterName The name of the cluster.
@@ -338,7 +398,8 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
      * @param value The value of the attribute.
      */
     public void updateClusterAttributeProperty(String clusterName, String attributeName, @Nullable Object value) {
-        getThing().setProperty(clusterName + "-" + attributeName, value != null ? value.toString() : null);
+        getThing().setProperties(updateClusterAttributeProperty(new HashMap<>(getThing().getProperties()), clusterName,
+                attributeName, value));
     }
 
     public synchronized void updateConfiguration(Map<String, Object> entries) {
@@ -396,6 +457,24 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
         return translationService.getTranslation(key);
     }
 
+    public final String getTranslation(String key, Object... args) {
+        return translationService.getTranslation(key, args);
+    }
+
+    public int getCurrentFabricIndex() {
+        return currentFabricIndex;
+    }
+
+    /**
+     * Handle the OTA update available message.
+     * This should be overridden by the subclass to handle the OTA update available message.
+     * 
+     * @param message The OTA update available message.
+     */
+    protected void handleOtaUpdateAvailable(OtaUpdateAvailableMessage message) {
+        logger.debug("OtaUpdateAvailableMessage onEvent: node {} is {}", message.nodeId, message);
+    }
+
     protected @Nullable ControllerHandler controllerHandler() {
         Bridge bridge = getBridge();
         while (bridge != null) {
@@ -410,40 +489,41 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
         return null;
     }
 
-    protected void updateRootProperties(Endpoint root) {
+    protected synchronized void updateRootProperties(Endpoint root) {
+        Thing thing = getThing();
+        // Clean up any old properties that are no longer relevant from previous versions of the binding
+        Map<String, String> properties = new HashMap<>(thing.getProperties());
+        thing.getProperties().forEach((key, value) -> {
+            if (key.startsWith(BasicInformationCluster.CLUSTER_NAME)
+                    || key.startsWith(BridgedDeviceBasicInformationCluster.CLUSTER_NAME)
+                    || key.startsWith(GeneralDiagnosticsCluster.CLUSTER_NAME)) {
+                properties.remove(key);
+            }
+        });
         BaseCluster cluster = root.clusters.get(BasicInformationCluster.CLUSTER_NAME);
         if (cluster != null && cluster instanceof BasicInformationCluster basicCluster) {
-            updateClusterAttributeProperty(BasicInformationCluster.CLUSTER_NAME, Thing.PROPERTY_SERIAL_NUMBER,
-                    basicCluster.serialNumber);
-            updateClusterAttributeProperty(BasicInformationCluster.CLUSTER_NAME, Thing.PROPERTY_FIRMWARE_VERSION,
-                    basicCluster.softwareVersionString);
-            updateClusterAttributeProperty(BasicInformationCluster.CLUSTER_NAME, Thing.PROPERTY_VENDOR,
-                    basicCluster.vendorName);
-            updateClusterAttributeProperty(BasicInformationCluster.CLUSTER_NAME, Thing.PROPERTY_MODEL_ID,
-                    basicCluster.productName);
-            updateClusterAttributeProperty(BasicInformationCluster.CLUSTER_NAME, Thing.PROPERTY_HARDWARE_VERSION,
-                    basicCluster.hardwareVersionString);
+            addProperty(properties, Thing.PROPERTY_SERIAL_NUMBER, basicCluster.serialNumber);
+            // This is used for OTA firmware updates
+            addProperty(properties, Thing.PROPERTY_FIRMWARE_VERSION, basicCluster.softwareVersionString);
+            addProperty(properties, Thing.PROPERTY_VENDOR, basicCluster.vendorName);
+            addProperty(properties, Thing.PROPERTY_MODEL_ID, basicCluster.productName);
+            addProperty(properties, Thing.PROPERTY_HARDWARE_VERSION, basicCluster.hardwareVersionString);
         } else {
             cluster = root.clusters.get(BridgedDeviceBasicInformationCluster.CLUSTER_NAME);
             if (cluster != null && cluster instanceof BridgedDeviceBasicInformationCluster basicCluster) {
-                updateClusterAttributeProperty(BridgedDeviceBasicInformationCluster.CLUSTER_NAME,
-                        Thing.PROPERTY_SERIAL_NUMBER, basicCluster.serialNumber);
-                updateClusterAttributeProperty(BridgedDeviceBasicInformationCluster.CLUSTER_NAME,
-                        Thing.PROPERTY_FIRMWARE_VERSION, basicCluster.softwareVersionString);
-                updateClusterAttributeProperty(BridgedDeviceBasicInformationCluster.CLUSTER_NAME, Thing.PROPERTY_VENDOR,
-                        basicCluster.vendorName);
-                updateClusterAttributeProperty(BridgedDeviceBasicInformationCluster.CLUSTER_NAME,
-                        Thing.PROPERTY_MODEL_ID, basicCluster.productName);
-                updateClusterAttributeProperty(BridgedDeviceBasicInformationCluster.CLUSTER_NAME,
-                        Thing.PROPERTY_HARDWARE_VERSION, basicCluster.hardwareVersionString);
+                addProperty(properties, Thing.PROPERTY_SERIAL_NUMBER, basicCluster.serialNumber);
+                addProperty(properties, Thing.PROPERTY_FIRMWARE_VERSION, basicCluster.softwareVersionString);
+                addProperty(properties, Thing.PROPERTY_VENDOR, basicCluster.vendorName);
+                addProperty(properties, Thing.PROPERTY_MODEL_ID, basicCluster.productName);
+                addProperty(properties, Thing.PROPERTY_HARDWARE_VERSION, basicCluster.hardwareVersionString);
             }
         }
         cluster = root.clusters.get(GeneralDiagnosticsCluster.CLUSTER_NAME);
-        if (cluster != null && cluster instanceof GeneralDiagnosticsCluster generalCluster) {
+        if (cluster instanceof GeneralDiagnosticsCluster generalCluster && generalCluster.networkInterfaces != null) {
             List<String> allIpv6Addresses = new ArrayList<>();
             List<String> allIpv4Addresses = new ArrayList<>();
             for (NetworkInterface ni : generalCluster.networkInterfaces) {
-                updateClusterAttributeProperty(GeneralDiagnosticsCluster.CLUSTER_NAME, Thing.PROPERTY_MAC_ADDRESS,
+                addProperty(properties, Thing.PROPERTY_MAC_ADDRESS,
                         MatterLabelUtils.formatMacAddress(ni.hardwareAddress));
                 if (!ni.iPv6Addresses.isEmpty()) {
                     allIpv6Addresses.addAll(ni.iPv6Addresses.stream().map(MatterLabelUtils::formatIPv6Address)
@@ -455,19 +535,25 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
                 }
             }
             if (!allIpv6Addresses.isEmpty()) {
-                updateClusterAttributeProperty(GeneralDiagnosticsCluster.CLUSTER_NAME,
+                updateClusterAttributeProperty(properties, GeneralDiagnosticsCluster.CLUSTER_NAME,
                         GeneralDiagnosticsCluster.ATTRIBUTE_NETWORK_INTERFACES + "-ipv6",
                         String.join(",", allIpv6Addresses));
             }
             if (!allIpv4Addresses.isEmpty()) {
-                updateClusterAttributeProperty(GeneralDiagnosticsCluster.CLUSTER_NAME,
+                updateClusterAttributeProperty(properties, GeneralDiagnosticsCluster.CLUSTER_NAME,
                         GeneralDiagnosticsCluster.ATTRIBUTE_NETWORK_INTERFACES + "-ipv4",
                         String.join(",", allIpv4Addresses));
             }
-            // todo remove this after cleanup
-            getThing().setProperty("ipv6Address", null);
-            getThing().setProperty("ipv4Address", null);
         }
+
+        cluster = root.clusters.get(OperationalCredentialsCluster.CLUSTER_NAME);
+        if (cluster != null && cluster instanceof OperationalCredentialsCluster operationalCredentialsCluster) {
+            updateClusterAttributeProperty(properties, OperationalCredentialsCluster.CLUSTER_NAME,
+                    OperationalCredentialsCluster.ATTRIBUTE_CURRENT_FABRIC_INDEX,
+                    operationalCredentialsCluster.currentFabricIndex);
+            currentFabricIndex = operationalCredentialsCluster.currentFabricIndex;
+        }
+        thing.setProperties(properties);
     }
 
     /**

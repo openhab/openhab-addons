@@ -118,7 +118,7 @@
 
 			<parameter name="lwtRetain" type="boolean">
 				<label>Last Will Retain</label>
-				<description>True if last Will should be retained (defaults to false)</description>
+				<description>True if the last will message should be retained (defaults to true)</description>
 				<default>true</default>
 				<advanced>true</advanced>
 			</parameter>

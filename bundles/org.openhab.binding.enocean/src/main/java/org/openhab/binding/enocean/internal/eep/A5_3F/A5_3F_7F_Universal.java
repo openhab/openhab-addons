@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,7 +35,6 @@ public class A5_3F_7F_Universal extends _4BSMessage {
     // This class is currently not used => instead use Generic4BS
 
     public A5_3F_7F_Universal() {
-        super();
     }
 
     public A5_3F_7F_Universal(ERP1Message packet) {

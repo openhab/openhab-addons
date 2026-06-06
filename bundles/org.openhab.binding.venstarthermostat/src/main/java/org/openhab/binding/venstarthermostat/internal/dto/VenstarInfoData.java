@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,13 +32,11 @@ public class VenstarInfoData {
     private int tempunits;
 
     public VenstarInfoData() {
-        super();
     }
 
     public VenstarInfoData(double cooltemp, double heattemp, VenstarSystemState state, VenstarSystemMode mode,
             VenstarAwayMode away, VenstarFanMode fan, VenstarFanState fanstate, VenstarScheduleMode schedule,
             VenstarSchedulePart schedulepart) {
-        super();
         this.cooltemp = cooltemp;
         this.heattemp = heattemp;
         this.state = state;

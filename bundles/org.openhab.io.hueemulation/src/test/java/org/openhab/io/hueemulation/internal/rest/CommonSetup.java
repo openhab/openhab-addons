@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -128,6 +128,7 @@ public class CommonSetup {
             cs = new ConfigStoreWithoutMetadata(networkAddressService, configAdmin, scheduler);
         }
         cs.activate(Map.of("uuid", "a668dc9b-7172-49c3-832f-acb07dda2a20"));
+        cs.useSemanticModel = false;
         cs.switchFilter = Set.of("Switchable");
         cs.whiteFilter = Set.of("Switchable");
         cs.colorFilter = Set.of("ColorLighting");

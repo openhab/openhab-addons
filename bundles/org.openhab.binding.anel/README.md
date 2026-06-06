@@ -221,4 +221,4 @@ end
 
 ## Reference Documentation
 
-The UDP protocol of Anel devices is explained [here](https://forum.anel.eu/viewtopic.php?f=16&t=207).
+The UDP protocol of Anel devices is explained in the [Anel forum documentation](https://forum.anel.eu/viewtopic.php?f=16&t=207).

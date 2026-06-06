@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -60,7 +60,6 @@ public class D2_50 extends _VLDMessage {
     protected static final byte THRESHOLD_NOACTION = 127;
 
     public D2_50() {
-        super();
     }
 
     public D2_50(ERP1Message packet) {
@@ -153,9 +152,9 @@ public class D2_50 extends _VLDMessage {
                 return new QuantityType<>(-63 + ((bytes[8] & 0xff) >>> 4) + ((bytes[7] & 0b111) << 4), SIUnits.CELSIUS);
             case CHANNEL_SUPPLYAIRFANAIRFLOWRATE:
                 return new QuantityType<>(((bytes[9] & 0xff) >>> 2) + ((bytes[8] & 0b1111) << 6),
-                        Units.CUBICMETRE_PER_MINUTE);
+                        Units.CUBICMETRE_PER_HOUR);
             case CHANNEL_EXHAUSTAIRFANAIRFLOWRATE:
-                return new QuantityType<>((bytes[10] & 0xff) + ((bytes[9] & 0b11) << 8), Units.CUBICMETRE_PER_MINUTE);
+                return new QuantityType<>((bytes[10] & 0xff) + ((bytes[9] & 0b11) << 8), Units.CUBICMETRE_PER_HOUR);
             case CHANNEL_SUPPLYFANSPEED:
                 return new DecimalType(((bytes[12] & 0xff) >>> 4) + (bytes[11] << 4));
             case CHANNEL_EXHAUSTFANSPEED:

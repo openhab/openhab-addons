@@ -16,7 +16,7 @@ If your weather station came with a LCD screen instead of the IP Observer, you c
 
 ## Supported Things
 
-There is only one thing that can be added and is called `weatherstation`.
+There is only one Thing that can be added and is called `weatherstation`.
 
 ## Discovery
 

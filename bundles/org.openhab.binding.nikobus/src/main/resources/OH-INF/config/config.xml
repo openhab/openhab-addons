@@ -11,7 +11,7 @@
 		</parameter>
 		<parameter name="delay" type="integer" min="0" unit="ms">
 			<label>Delay</label>
-			<description>Delay in milliseconds before triggered</description>
+			<description>Delay in milliseconds before triggering</description>
 			<default>0</default>
 		</parameter>
 		<parameter name="period" type="integer" min="0" unit="ms">
@@ -42,11 +42,12 @@
 		</parameter>
 		<parameter name="delay" type="integer" min="0" unit="s">
 			<label>Delay</label>
-			<description>Delay specifying how many seconds after duration module's output is set to OFF. Defaults to 5 seconds</description>
+			<description>Delay specifying how many seconds after duration the module's output is set to OFF. Defaults to 5
+				seconds.</description>
 		</parameter>
 		<parameter name="reverse" type="boolean">
 			<label>Reverse Direction</label>
-			<description>Reverse direction of rollershutters. Defaults to false</description>
+			<description>Reverse direction of rollershutters. Defaults to false.</description>
 		</parameter>
 	</config-description>
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,14 +12,22 @@
  */
 package org.openhab.binding.astro.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * All season names.
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public enum SeasonName {
     SPRING,
     SUMMER,
     AUTUMN,
-    WINTER
+    WINTER;
+
+    public SeasonName next() {
+        SeasonName[] values = values();
+        return values[(this.ordinal() + 1) % values.length];
+    }
 }

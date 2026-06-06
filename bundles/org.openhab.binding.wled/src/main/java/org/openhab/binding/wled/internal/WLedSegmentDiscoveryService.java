@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,7 +26,6 @@ import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
-import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerService;
@@ -61,11 +60,10 @@ public class WLedSegmentDiscoveryService extends AbstractThingHandlerDiscoverySe
         }
         String newThingUID = localBridgeUID.getId() + "-" + segmentIndex;
         ThingUID thingUID = new ThingUID(THING_TYPE_SEGMENT, localBridgeUID, newThingUID);
-        Map<String, Object> properties = Map.of(Thing.PROPERTY_SERIAL_NUMBER, newThingUID, CONFIG_SEGMENT_INDEX,
-                segmentIndex);
+        Map<String, Object> properties = Map.of(CONFIG_SEGMENT_INDEX, segmentIndex);
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withLabel(segmentName)
-                .withProperties(properties).withBridge(bridgeUID)
-                .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER).build();
+                .withProperties(properties).withBridge(bridgeUID).withRepresentationProperty(CONFIG_SEGMENT_INDEX)
+                .build();
         thingDiscovered(discoveryResult);
     }
 

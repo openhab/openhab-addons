@@ -9,6 +9,10 @@
 		<description>Gets weather forecasts from SMHI</description>
 		<semantic-equipment-tag>WeatherService</semantic-equipment-tag>
 		<channel-groups>
+			<channel-group id="timeseries" typeId="hourlyForecast">
+				<label>Complete Forecast</label>
+				<description>Complete forecast as TimeSeries (requires configuration)</description>
+			</channel-group>
 			<channel-group id="hour_0" typeId="hourlyForecast">
 				<label>Current Hour</label>
 				<description>Forecast for the current hour</description>

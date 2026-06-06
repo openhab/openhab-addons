@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,7 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -70,6 +71,15 @@ public class ThingDiscoveryService extends AbstractThingHandlerDiscoveryService<
     @Activate
     public ThingDiscoveryService() {
         super(DeconzBridgeHandler.class, SUPPORTED_THING_TYPES_UIDS, 30);
+    }
+
+    /**
+     * Constructor for tests only.
+     *
+     * @param scheduler the {@link ScheduledExecutorService} to use during testing.
+     */
+    public ThingDiscoveryService(ScheduledExecutorService scheduler) {
+        super(scheduler, DeconzBridgeHandler.class, SUPPORTED_THING_TYPES_UIDS, 30, true, null, null);
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.homeconnect.internal.client.model;
+
+import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.DEFAULT_LOCALE;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -28,14 +30,12 @@ public enum PowerStateAccess {
     READ_WRITE;
 
     public static PowerStateAccess fromString(String access) {
-        switch (access.toLowerCase()) {
-            case "read":
-                return READ_ONLY;
-            case "readwrite":
-                return READ_WRITE;
-            default:
+        return switch (access.toLowerCase(DEFAULT_LOCALE)) {
+            case "read" -> READ_ONLY;
+            case "readwrite" -> READ_WRITE;
+            default ->
                 // Default to READ_ONLY if the access type is not recognized
-                return READ_ONLY;
-        }
+                READ_ONLY;
+        };
     }
 }

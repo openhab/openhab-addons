@@ -7,14 +7,14 @@
 	<config-description uri="profile:basic-profiles:time-range-command">
 		<parameter name="inRangeValue" type="integer" min="0" max="100" step="1">
 			<label>In Range Value</label>
-			<description>The value which will be send when the profile detects ON and current time is between start time and end
-				time.</description>
+			<description>The value that will be sent when the profile detects ON and the current time is between the start time
+				and the time.</description>
 			<default>100</default>
 		</parameter>
 		<parameter name="outOfRangeValue" type="integer" min="0" max="100" step="1">
 			<label>Out Of Range Value</label>
-			<description>The value which will be send when the profile detects ON and current time is NOT between start time and
-				end time.</description>
+			<description>The value that will be sent when the profile detects ON and the current time is NOT between the start
+				time and end time.</description>
 			<default>30</default>
 		</parameter>
 		<parameter name="start" type="text" pattern="^([0-1][0-9]|2[0-3])(:[0-5][0-9])$" required="true">

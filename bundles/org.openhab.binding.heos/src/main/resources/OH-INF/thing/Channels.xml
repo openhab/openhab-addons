@@ -34,6 +34,10 @@
 			<tag>Mode</tag>
 		</tags>
 	</channel-type>
+	<channel-type id="chPlayer">
+		<item-type>Switch</item-type>
+		<label>Player</label>
+	</channel-type>
 	<channel-type id="playlists" advanced="true">
 		<item-type>String</item-type>
 		<label>Playlists</label>

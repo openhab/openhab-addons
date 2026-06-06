@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -66,6 +66,8 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
     // Our BT address
     private @Nullable BluetoothAddress adapterAddress;
 
+    private boolean lazyScan;
+
     private @Nullable ScheduledFuture<?> discoveryJob;
 
     private final DeviceManagerFactory deviceManagerFactory;
@@ -94,6 +96,7 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "address not set");
             return;
         }
+        this.lazyScan = configuration.lazyScan;
 
         logger.debug("Creating BlueZ adapter with address '{}'", adapterAddress);
         updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Initializing");
@@ -108,13 +111,17 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
 
         Future<?> job = discoveryJob;
         if (job != null) {
-            job.cancel(false);
+            job.cancel(true);
             discoveryJob = null;
         }
 
         BluetoothAdapter adapter = this.adapter;
         if (adapter != null) {
-            adapter.stopDiscovery();
+            try {
+                adapter.stopDiscovery();
+            } catch (DBusExecutionException e) {
+                logger.debug("Failed to stop discovery on adapter during disposal", e);
+            }
             this.adapter = null;
         }
 
@@ -176,6 +183,8 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
                 return;
             }
 
+            deviceManager.setLazyScan(this.lazyScan);
+
             BluetoothAdapter localAdapter = prepareAdapter(deviceManager);
             if (localAdapter == null) {
                 // adapter isn't prepared yet
@@ -200,6 +209,26 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
             // scheduler loop doesn't get terminated
             logger.warn("Unknown exception", ex);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
+        }
+    }
+
+    /**
+     * Temporarily stops the adapter's discovery. BlueZ's {@code Device.Connect()} is unreliable
+     * (slow / blocking) while the adapter is actively discovering, so callers pause discovery around
+     * a connect attempt. Discovery is automatically resumed by the periodic
+     * {@link #initializeAndRefreshDevices()} job (every 10s), which calls {@code startDiscovery()}.
+     */
+    public void stopDiscovery() {
+        BluetoothAdapter localAdapter = this.adapter;
+        if (localAdapter != null) {
+            try {
+                if (Boolean.TRUE.equals(localAdapter.isDiscovering())) {
+                    localAdapter.stopDiscovery();
+                    logger.debug("Paused discovery for a connect attempt");
+                }
+            } catch (RuntimeException ex) {
+                logger.debug("Failed to pause discovery", ex);
+            }
         }
     }
 

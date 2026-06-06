@@ -1,0 +1,107 @@
+[
+	{
+		"place_id": 134029169,
+		"licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+		"osm_type": "node",
+		"osm_id": 2459919676,
+		"lat": "52.5252949",
+		"lon": "13.3706843",
+		"class": "railway",
+		"type": "proposed",
+		"place_rank": 30,
+		"importance": 0.5309436952669682,
+		"addresstype": "railway",
+		"name": "Hauptbahnhof (Tunnel)",
+		"display_name": "Hauptbahnhof (Tunnel), Friedrich-List-Ufer, Europacity, Moabit, Mitte, Berlin, 10557, Germany",
+		"boundingbox": [
+			"52.5252449",
+			"52.5253449",
+			"13.3706343",
+			"13.3707343"
+		]
+	},
+	{
+		"place_id": 134029231,
+		"licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+		"osm_type": "node",
+		"osm_id": 3856100106,
+		"lat": "52.5251951",
+		"lon": "13.3693321",
+		"class": "railway",
+		"type": "halt",
+		"place_rank": 30,
+		"importance": 0.5309436952669682,
+		"addresstype": "railway",
+		"name": "Hauptbahnhof",
+		"display_name": "Hauptbahnhof, 1, Europaplatz, Europacity, Moabit, Mitte, Berlin, 10557, Germany",
+		"boundingbox": [
+			"52.5251451",
+			"52.5252451",
+			"13.3692821",
+			"13.3693821"
+		]
+	},
+	{
+		"place_id": 133999171,
+		"licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+		"osm_type": "relation",
+		"osm_id": 3600565,
+		"lat": "52.5250175",
+		"lon": "13.3694480",
+		"class": "building",
+		"type": "train_station",
+		"place_rank": 30,
+		"importance": 0.5309436952669682,
+		"addresstype": "building",
+		"name": "Berlin Hauptbahnhof",
+		"display_name": "Berlin Hauptbahnhof, Washingtonplatz, Europacity, Moabit, Mitte, Berlin, 10557, Germany",
+		"boundingbox": [
+			"52.5242887",
+			"52.5257400",
+			"13.3682756",
+			"13.3706245"
+		]
+	},
+	{
+		"place_id": 134076080,
+		"licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+		"osm_type": "node",
+		"osm_id": 2459919675,
+		"lat": "52.5246361",
+		"lon": "13.3698610",
+		"class": "railway",
+		"type": "station",
+		"place_rank": 30,
+		"importance": 0.5309436952669682,
+		"addresstype": "railway",
+		"name": "Berlin Hauptbahnhof (tief)",
+		"display_name": "Berlin Hauptbahnhof (tief), 1, Europaplatz, Europacity, Moabit, Mitte, Berlin, 10557, Germany",
+		"boundingbox": [
+			"52.5196361",
+			"52.5296361",
+			"13.3648610",
+			"13.3748610"
+		]
+	},
+	{
+		"place_id": 132382003,
+		"licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+		"osm_type": "node",
+		"osm_id": 3856100103,
+		"lat": "52.5249451",
+		"lon": "13.3696614",
+		"class": "railway",
+		"type": "station",
+		"place_rank": 30,
+		"importance": 0.5309436952669682,
+		"addresstype": "railway",
+		"name": "Berlin Central Station",
+		"display_name": "Berlin Central Station, 1, Europaplatz, Europacity, Moabit, Mitte, Berlin, 10557, Germany",
+		"boundingbox": [
+			"52.5199451",
+			"52.5299451",
+			"13.3646614",
+			"13.3746614"
+		]
+	}
+]

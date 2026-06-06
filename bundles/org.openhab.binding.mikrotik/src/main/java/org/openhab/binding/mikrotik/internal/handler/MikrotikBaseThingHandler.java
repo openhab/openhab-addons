@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -83,21 +83,27 @@ public abstract class MikrotikBaseThingHandler<C extends ConfigValidation> exten
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Handling command = {} for channel = {}", command, channelUID);
-        if (getThing().getStatus() == ONLINE) {
-            RouterosDevice routeros = getRouterOs();
-            if (routeros != null) {
-                if (command == REFRESH) {
-                    refreshCache.getValue();
-                    refreshChannel(channelUID);
-                } else {
-                    try {
-                        executeCommand(channelUID, command);
-                    } catch (RuntimeException e) {
-                        logger.warn("Unexpected error handling command = {} for channel = {} : {}", command, channelUID,
-                                e.getMessage());
-                    }
-                }
-            }
+        if (getThing().getStatus() != ONLINE) {
+            return;
+        }
+
+        RouterosDevice routeros = getRouterOs();
+        if (routeros == null) {
+            return;
+        }
+
+        if (command == REFRESH) {
+            refreshCache.getValue();
+            refreshChannel(channelUID);
+
+            return;
+        }
+
+        try {
+            executeCommand(channelUID, command);
+        } catch (RuntimeException e) {
+            logger.warn("Unexpected error handling command = {} for channel = {} : {}", command, channelUID,
+                    e.getMessage());
         }
     }
 
@@ -199,7 +205,8 @@ public abstract class MikrotikBaseThingHandler<C extends ConfigValidation> exten
             try {
                 refreshChannel(channel.getUID());
             } catch (RuntimeException e) {
-                logger.warn("Unhandled exception while refreshing the {} Mikrotik thing", getThing().getUID(), e);
+                logger.warn("Unhandled exception while refreshing the channel {} of {} Mikrotik thing:{}",
+                        channel.getUID(), getThing().getUID(), e.getMessage());
                 updateStatus(OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }

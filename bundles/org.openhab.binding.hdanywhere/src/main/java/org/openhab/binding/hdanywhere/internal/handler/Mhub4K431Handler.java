@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,6 +22,8 @@ import java.util.Properties;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hdanywhere.internal.HDanywhereBindingConstants.Port;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.DecimalType;
@@ -43,6 +45,7 @@ import com.google.gson.reflect.TypeToken;
  *
  * @author Karel Goderis - Initial contribution
  */
+@NonNullByDefault
 public class Mhub4K431Handler extends BaseThingHandler {
 
     // List of Configurations constants
@@ -52,11 +55,11 @@ public class Mhub4K431Handler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(Mhub4K431Handler.class);
 
-    private ScheduledFuture<?> pollingJob;
+    private @Nullable ScheduledFuture<?> pollingJob;
     protected final Gson gson = new Gson();
 
-    private final int timeout = 5000;
-    private final int numberOfPorts = 4;
+    private static final int TIMEOUT = 5000;
+    private static final int NUMBER_OF_PORTS = 4;
 
     public Mhub4K431Handler(Thing thing) {
         super(thing);
@@ -66,19 +69,19 @@ public class Mhub4K431Handler extends BaseThingHandler {
     public void initialize() {
         logger.debug("Initializing HDanywhere MHUB 4K (4×3+1) matrix handler.");
 
-        if (pollingJob == null || pollingJob.isCancelled()) {
-            int pollingInterval = ((BigDecimal) getConfig().get(POLLING_INTERVAL)).intValue();
-            pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 1, pollingInterval, TimeUnit.SECONDS);
-        }
+        int pollingInterval = ((BigDecimal) getConfig().get(POLLING_INTERVAL)).intValue();
+        pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 1, pollingInterval, TimeUnit.SECONDS);
+
         updateStatus(ThingStatus.UNKNOWN);
     }
 
     @Override
     public void dispose() {
         logger.debug("Disposing HDanywhere matrix handler.");
+        ScheduledFuture<?> pollingJob = this.pollingJob;
         if (pollingJob != null && !pollingJob.isCancelled()) {
             pollingJob.cancel(true);
-            pollingJob = null;
+            this.pollingJob = null;
         }
     }
 
@@ -91,20 +94,31 @@ public class Mhub4K431Handler extends BaseThingHandler {
             String content = "{tag:ptn}";
             InputStream stream = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
 
-            String response = HttpUtil.executeUrl(httpMethod, url, null, stream, null, timeout);
-            response = response.trim();
-            response = response.substring(1, response.length() - 1);
+            String response = HttpUtil.executeUrl(httpMethod, url, null, stream, null, TIMEOUT);
 
             if (response != null) {
+                response = response.trim();
+                response = response.substring(1, response.length() - 1);
                 updateStatus(ThingStatus.ONLINE);
 
                 java.lang.reflect.Type type = new TypeToken<Map<String, String>>() {
                 }.getType();
+
                 Map<String, String> map = gson.fromJson(response, type);
+                if (map == null) {
+                    logger.trace("Received null map from HDanywhere matrix. Response was '{}'", response);
+                    updateStatus(ThingStatus.OFFLINE);
+                    return;
+                }
 
                 String inputChannel = map.get("Inputchannel");
+                if (inputChannel == null) {
+                    logger.trace("Received null input channel from HDanywhere matrix. Response was '{}'", response);
+                    updateStatus(ThingStatus.OFFLINE);
+                    return;
+                }
 
-                for (int i = 0; i < numberOfPorts; i++) {
+                for (int i = 0; i < NUMBER_OF_PORTS; i++) {
                     DecimalType decimalType = new DecimalType(String.valueOf(inputChannel.charAt(i)));
                     updateState(new ChannelUID(getThing().getUID(), Port.get(i + 1).channelID()), decimalType);
                 }
@@ -129,14 +143,14 @@ public class Mhub4K431Handler extends BaseThingHandler {
             int sourcePort = Integer.valueOf(command.toString());
             int outputPort = Port.get(channelID).toNumber();
 
-            if (sourcePort > numberOfPorts) {
+            if (sourcePort > NUMBER_OF_PORTS) {
                 // nice try - we can switch to a port that does not physically exist
                 logger.warn("Source port {} goes beyond the physical number of {} ports available on the matrix {}",
-                        new Object[] { sourcePort, numberOfPorts, host });
-            } else if (outputPort > numberOfPorts) {
+                        new Object[] { sourcePort, NUMBER_OF_PORTS, host });
+            } else if (outputPort > NUMBER_OF_PORTS) {
                 // nice try - we can switch to a port that does not physically exist
                 logger.warn("Output port {} goes beyond the physical number of {} ports available on the matrix {}",
-                        new Object[] { outputPort, numberOfPorts, host });
+                        new Object[] { outputPort, NUMBER_OF_PORTS, host });
             } else {
                 String httpMethod = "POST";
                 String url = "http://" + host + "/cgi-bin/MMX32_Keyvalue.cgi";
@@ -152,7 +166,7 @@ public class Mhub4K431Handler extends BaseThingHandler {
 
                 try {
                     HttpUtil.executeUrl(httpMethod, url, httpHeaders, stream,
-                            "application/x-www-form-urlencoded; charset=UTF-8", timeout);
+                            "application/x-www-form-urlencoded; charset=UTF-8", TIMEOUT);
                 } catch (IOException e) {
                     logger.debug("Communication with device failed", e);
                     updateStatus(ThingStatus.OFFLINE);

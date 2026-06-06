@@ -14,6 +14,7 @@
 			<channel id="soc" typeId="soc"/>
 			<channel id="charged" typeId="charged"/>
 			<channel id="uncharged" typeId="uncharged"/>
+			<channel id="energy-to-max-soc" typeId="energy-to-max-soc"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,6 +25,7 @@ import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.Bat
  * The Sensors supported by the gateway.
  *
  * @author Andreas Berger - Initial contribution
+ * @author Giovanni Fabiani - Add support for WS85 sensor
  */
 @NonNullByDefault
 public enum Sensor {
@@ -43,7 +44,8 @@ public enum Sensor {
     WH65(LOW_HIGH),
     WH68(VOLTAGE_FINE_STEPS),
     WH80(VOLTAGE_FINE_STEPS),
-    WH90(VOLTAGE_FINE_STEPS);
+    WH90(VOLTAGE_FINE_STEPS),
+    WS85(LOW_HIGH);
 
     private final BatteryStatus.Type batteryStatusTpe;
 

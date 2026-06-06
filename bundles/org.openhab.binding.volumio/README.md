@@ -39,10 +39,10 @@ The devices support the following channels:
 | albumArt          | Image  | R          | Cover Art for the currently played track.                                                                            |
 | track-type        | String | R          | Track type of the currently played track.                                                                            |
 | play-radiostream  | String | RW         | Play the given radio stream.                                                                                         |
-| play-playlist     | String | RW         | Play a playlist identified  by its name.                                                                             |
+| play-playlist     | String | RW         | Play a playlist identified by its name.                                                                              |
 | clear-queue       | Switch | RW         | Clear the current queue.                                                                                             |
 | play-uri          | String | RW         | Play the stream at given uri.                                                                                        |
-| play-file         | String | RW         | Play a file, located on your Volumio device at the given absolute path, e.g."mnt/INTERNAL/song.mp3"                  |
+| play-file         | String | RW         | Play a file, located on your Volumio device at the given absolute path, e.g. "mnt/INTERNAL/song.mp3"                 |
 | random            | Switch | RW         | Activate random mode.                                                                                                |
 | repeat            | Switch | RW         | Activate repeat mode.                                                                                                |
 | system-command    | String | RW         | Sends a system command to shutdown or reboot the Volumio device. Use "shutdown" or "reboot" as string command.       |

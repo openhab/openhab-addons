@@ -11,12 +11,12 @@ This binding supports two types of things, the Konnected Alarm Panel and the Kon
 
 ## Discovery
 
-The binding will auto discover The Konnected Alarm Panels which are attached to the same network as the server running openHAB via UPnP.
+The binding will auto-discover the Konnected Alarm Panels that are attached to the same network as the server running openHAB via UPnP.
 The binding will then create things for each module discovered which can be added.
 
 ## Thing Configuration
 
-The binding attempts to discover The Konnected Alarm Panels via the UPnP service.
+The binding attempts to discover the Konnected Alarm Panels via the UPnP service.
 The auto-discovery service of the binding will detect the base URL of the Konnected Alarm Panel.
 When manually adding things, the base URL of the Konnected Alarm Panel will need to be configured.
 The base URL should include scheme, address and port (for example `http://192.168.1.123:9123`).
@@ -27,7 +27,7 @@ Auto-discovery of the callback URL will fail if you are using reverse proxies an
 In this case you will need to configure the callback URL in the advanced configuration section.
 The callback URL will normally end with /konnected (for example `https://192.168.1.2/konnected`).
 
-In addition you can also turn off discovery which when this setting is synced to the module will cause the device to no longer respond to UPnP requests as documented.
+In addition, you can also turn off discovery which, when this setting is synced to the module, will cause the device to no longer respond to UPnP requests as documented.
 <https://help.konnected.io/support/solutions/articles/32000023968-disabling-device-discovery>
 Please use this setting with caution and do not disable until a static ip address has been provided for your Konnected Alarm Panel via DHCP, router or otherwise.
 
@@ -44,7 +44,7 @@ You will need to add channels for the zones that you have connected and configur
 | Temperature-(wifi/pro)  | Number:Temperature   | Zone Number, DHT22, Poll Interval, DS18b20 Address | This is the channel for sensors which measure temperature (DHT22 and DS18B20). The DHT22 setting should be set to true when the channel is monitoring a zone connected to a DHT22 sensor and false if the zone is connected to a DS1820B sensor |
 | Humidity-(wifi/pro)    | Number:Dimensionless | Zone Number                                        | This is the channel type for the humidity sensor on a connected DHT22 sensor                                                                                                                                                                    |
 
-You will need to configure each channel with the appropriate zone number corresponding to the zone on The Konnected Alarm Panel.
+You will need to configure each channel with the appropriate zone number corresponding to the zone on the Konnected Alarm Panel.
 Then you need to link the corresponding item to the channel.
 
 Switches and actuators can be configured as high or low level triggered.
@@ -60,14 +60,14 @@ A beep/blink switch is like a momentary switch that repeats either a specified n
 This is commonly used with a piezo buzzer to make a "beep beep" sound when a door is opened, or to make a repeating beep pattern for an alarm or audible warning.
 It can also be used to blink lights.
 
-A note about the Alarm Panel Pro.
+**Note about the Alarm Panel Pro:**
 Zones 1-8 can be configured for any Channel-Types.
 Zones 9-12, out1, alarm1 and out2/alarm2 can only be configured as an actuator.
 For more information, see: <https://help.konnected.io/support/solutions/articles/32000028978-alarm-panel-pro-inputs-and-outputs>
 
-DSB1820 temperature probes.
-These are one wire devices which can all be Konnected to the same "Zone" on the Konnected Alarm Panel.
-As part of its transmission  the module will include an unique "address" property of each sensor probe that will be logged to the debug log when received.
+**DS18B20 temperature probes:**
+These are one-wire devices which can all be connected to the same "Zone" on the Konnected Alarm Panel.
+As part of its transmission, the module will include a unique "address" property of each sensor probe that will be logged to the debug log when received.
 This needs to be added to the channel if there are multiple probes connected.
 The default behavior in absence of this configuration will be to simply log the address of the received event.
 A channel should be added for each probe, as indicated above and configured with the appropriate address.

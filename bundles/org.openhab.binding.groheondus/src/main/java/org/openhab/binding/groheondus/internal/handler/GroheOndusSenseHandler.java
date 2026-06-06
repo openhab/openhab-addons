@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,11 +15,11 @@ package org.openhab.binding.groheondus.internal.handler;
 import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.CHANNEL_BATTERY;
 import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.CHANNEL_HUMIDITY;
 import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.CHANNEL_NAME;
+import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.CHANNEL_PAUSE;
 import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.CHANNEL_TEMPERATURE;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.Comparator;
@@ -28,6 +28,7 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.groheondus.internal.GroheOndusBindingConstants;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -57,8 +58,6 @@ import io.github.floriansw.ondus.api.model.sense.ApplianceData.Measurement;
 @NonNullByDefault
 public class GroheOndusSenseHandler<T, M> extends GroheOndusBaseHandler<Appliance, Measurement> {
 
-    private static final int DEFAULT_POLLING_INTERVAL = 900;
-
     private final Logger logger = LoggerFactory.getLogger(GroheOndusSenseHandler.class);
 
     public GroheOndusSenseHandler(Thing thing, int thingCounter) {
@@ -70,7 +69,7 @@ public class GroheOndusSenseHandler<T, M> extends GroheOndusBaseHandler<Applianc
         if (config.pollingInterval > 0) {
             return config.pollingInterval;
         }
-        return DEFAULT_POLLING_INTERVAL;
+        return GroheOndusBindingConstants.DEFAULT_POLLING_INTERVAL;
     }
 
     @Override
@@ -97,6 +96,9 @@ public class GroheOndusSenseHandler<T, M> extends GroheOndusBaseHandler<Applianc
                     newState = new DecimalType(batteryStatus);
                 }
                 break;
+            case CHANNEL_PAUSE:
+                newState = getPauseState();
+                break;
             default:
                 throw new IllegalArgumentException("Channel " + channelUID + " not supported.");
         }
@@ -116,7 +118,7 @@ public class GroheOndusSenseHandler<T, M> extends GroheOndusBaseHandler<Applianc
             return new Measurement();
         }
         List<Measurement> measurementList = applianceData.getData().getMeasurement();
-        Collections.sort(measurementList, Comparator.comparing(e -> ZonedDateTime.parse(e.timestamp)));
+        Collections.sort(measurementList, Comparator.comparing(e -> e.date));
         return measurementList.isEmpty() ? new Measurement() : measurementList.get(measurementList.size() - 1);
     }
 
@@ -174,6 +176,9 @@ public class GroheOndusSenseHandler<T, M> extends GroheOndusBaseHandler<Applianc
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             updateChannels();
+            return;
         }
+
+        handlePauseCommand(channelUID, command);
     }
 }

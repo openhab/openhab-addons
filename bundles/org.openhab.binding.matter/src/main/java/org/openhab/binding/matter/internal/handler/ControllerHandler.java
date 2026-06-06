@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,6 +32,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.matter.internal.MatterFirmwareProvider;
 import org.openhab.binding.matter.internal.actions.MatterControllerActions;
 import org.openhab.binding.matter.internal.client.MatterClientListener;
 import org.openhab.binding.matter.internal.client.MatterWebsocketService;
@@ -40,7 +41,10 @@ import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage
 import org.openhab.binding.matter.internal.client.dto.ws.BridgeEventMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.EventTriggeredMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.NodeDataMessage;
+import org.openhab.binding.matter.internal.client.dto.ws.NodeState;
 import org.openhab.binding.matter.internal.client.dto.ws.NodeStateMessage;
+import org.openhab.binding.matter.internal.client.dto.ws.OtaUpdateAvailableMessage;
+import org.openhab.binding.matter.internal.client.dto.ws.PhysicalDeviceProperties;
 import org.openhab.binding.matter.internal.config.ControllerConfiguration;
 import org.openhab.binding.matter.internal.controller.MatterControllerClient;
 import org.openhab.binding.matter.internal.discovery.MatterDiscoveryHandler;
@@ -76,10 +80,26 @@ import org.slf4j.LoggerFactory;
 public class ControllerHandler extends BaseBridgeHandler implements MatterClientListener, MatterDiscoveryHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ControllerHandler.class);
-    private static final int CONNECTION_TIMEOUT_MS = 180000; // 3 minutes
+    private static final int CONNECTION_TIMEOUT_MS = 300000; // 5 minutes to allow for slow devices to connect (like
+                                                             // thread powered devices)
+    private static final int DATA_REQUEST_TIMEOUT_MS = 300000;
     private final MatterWebsocketService websocketService;
     // Set of nodes we are waiting to connect to
     private Set<BigInteger> outstandingNodeRequests = Collections.synchronizedSet(new HashSet<>());
+    // Nodes with an existing requestAllNodeData call
+    private final Map<BigInteger, ScheduledFuture<?>> pendingDataRequests = Collections
+            .synchronizedMap(new HashMap<>());
+    // Per-node grace-period timers that flip the Thing OFFLINE after a Reconnecting/Disconnected event,
+    // unless cancelled by a subsequent Connected event. Lets sleepy devices ride out normal heartbeat
+    // timeouts (~30-240s for ICDs) without flapping the Thing.
+    private final Map<BigInteger, ScheduledFuture<?>> offlineTimers = Collections.synchronizedMap(new HashMap<>());
+    // PhysicalDeviceProperties arriving on Connected events before the NodeHandler is linked;
+    // drained in childHandlerInitialized.
+    private final Map<BigInteger, PhysicalDeviceProperties> pendingPhysicalProperties = Collections
+            .synchronizedMap(new HashMap<>());
+    // Nodes whose full attribute set has already been read once. Used to skip requestAllNodeData
+    // on reconnect for sleepy devices; cleared on WebSocket reconnect since the bridge may have been restarted.
+    private final Set<BigInteger> enumeratedNodes = Collections.synchronizedSet(new HashSet<>());
     // Set of nodes we need to try reconnecting to
     private Set<BigInteger> disconnectedNodes = Collections.synchronizedSet(new HashSet<>());
     // Nodes that we have linked to a handler
@@ -89,14 +109,16 @@ public class ControllerHandler extends BaseBridgeHandler implements MatterClient
     private MatterControllerClient client;
     private boolean ready = false;
     private final TranslationService translationService;
+    private final MatterFirmwareProvider firmwareProvider;
 
     public ControllerHandler(Bridge bridge, MatterWebsocketService websocketService,
-            TranslationService translationService) {
+            TranslationService translationService, MatterFirmwareProvider firmwareProvider) {
         super(bridge);
         client = new MatterControllerClient();
         client.addListener(this);
         this.websocketService = websocketService;
         this.translationService = translationService;
+        this.firmwareProvider = firmwareProvider;
     }
 
     @Override
@@ -117,6 +139,16 @@ public class ControllerHandler extends BaseBridgeHandler implements MatterClient
         client.removeListener(this);
         cancelReconnect();
         outstandingNodeRequests.clear();
+        synchronized (pendingDataRequests) {
+            pendingDataRequests.values().forEach(t -> t.cancel(false));
+            pendingDataRequests.clear();
+        }
+        synchronized (offlineTimers) {
+            offlineTimers.values().forEach(t -> t.cancel(false));
+            offlineTimers.clear();
+        }
+        pendingPhysicalProperties.clear();
+        enumeratedNodes.clear();
         disconnectedNodes.clear();
         linkedNodes.clear();
         client.disconnect();
@@ -133,6 +165,10 @@ public class ControllerHandler extends BaseBridgeHandler implements MatterClient
         if (childHandler instanceof NodeHandler handler) {
             BigInteger nodeId = handler.getNodeId();
             linkedNodes.put(nodeId, handler);
+            PhysicalDeviceProperties pending = pendingPhysicalProperties.remove(nodeId);
+            if (pending != null) {
+                handler.applyPhysicalProperties(pending);
+            }
             updateNode(nodeId);
         }
     }
@@ -148,7 +184,10 @@ public class ControllerHandler extends BaseBridgeHandler implements MatterClient
             removeNode(handler.getNodeId());
             try {
                 client.disconnectNode(handler.getNodeId()).get();
-            } catch (InterruptedException | ExecutionException e) {
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                logger.debug("Could not disconnect node {}", handler.getNodeId(), e);
+            } catch (ExecutionException e) {
                 logger.debug("Could not disconnect node {}", handler.getNodeId(), e);
             }
 
@@ -194,14 +233,20 @@ public class ControllerHandler extends BaseBridgeHandler implements MatterClient
         logger.debug("Node onEvent: node {} is {}", message.nodeId, message.state);
         switch (message.state) {
             case CONNECTED:
+                cancelOfflineTimer(message.nodeId);
+                PhysicalDeviceProperties props = message.physicalProperties;
+                if (props != null) {
+                    handlePhysicalProperties(message.nodeId, props);
+                }
                 updateEndpointStatuses(message.nodeId, ThingStatus.UNKNOWN, ThingStatusDetail.NONE,
                         translationService.getTranslation(THING_STATUS_DETAIL_CONTROLLER_WAITING_FOR_DATA));
-                client.requestAllNodeData(message.nodeId);
+                requestAllNodeDataIfNeeded(message.nodeId);
                 break;
             case STRUCTURECHANGED:
                 updateNode(message.nodeId);
                 break;
             case DECOMMISSIONED:
+                cancelOfflineTimer(message.nodeId);
                 updateEndpointStatuses(message.nodeId, ThingStatus.OFFLINE, ThingStatusDetail.GONE,
                         "Node " + message.state);
                 removeNode(message.nodeId);
@@ -213,8 +258,8 @@ public class ControllerHandler extends BaseBridgeHandler implements MatterClient
                 // fall through
             case RECONNECTING:
             case WAITINGFORDEVICEDISCOVERY:
-                updateEndpointStatuses(message.nodeId, ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Node " + message.state);
+                scheduleOffline(message.nodeId, message.state);
+                clearPendingDataRequest(message.nodeId);
                 break;
             default:
         }
@@ -243,7 +288,19 @@ public class ControllerHandler extends BaseBridgeHandler implements MatterClient
     @Override
     public void onEvent(NodeDataMessage message) {
         logger.debug("NodeDataMessage onEvent: node {} is {}", message.node.id, message.node);
+        clearPendingDataRequest(message.node.id);
+        enumeratedNodes.add(message.node.id);
         updateNode(message.node);
+    }
+
+    @Override
+    public void onEvent(OtaUpdateAvailableMessage message) {
+        logger.debug("OtaUpdateAvailableMessage onEvent: node {} is {}", message.nodeId, message);
+        firmwareProvider.updateFirmwareInfo(message.nodeId, message);
+        NodeHandler handler = linkedNodes.get(message.nodeId);
+        if (handler != null) {
+            handler.handleOtaUpdateAvailable(message);
+        }
     }
 
     @Override
@@ -286,6 +343,10 @@ public class ControllerHandler extends BaseBridgeHandler implements MatterClient
         logger.debug("removing node {}", nodeId);
         disconnectedNodes.remove(nodeId);
         outstandingNodeRequests.remove(nodeId);
+        clearPendingDataRequest(nodeId);
+        cancelOfflineTimer(nodeId);
+        pendingPhysicalProperties.remove(nodeId);
+        enumeratedNodes.remove(nodeId);
         linkedNodes.remove(nodeId);
     }
 
@@ -310,7 +371,6 @@ public class ControllerHandler extends BaseBridgeHandler implements MatterClient
 
         return client.initializeNode(id, CONNECTION_TIMEOUT_MS).thenAccept((Void) -> {
             disconnectedNodes.remove(id);
-            client.requestAllNodeData(id);
             logger.debug("updateNode END {}", id);
         }).exceptionally(e -> {
             logger.debug("Could not update node {}", id, e);
@@ -327,8 +387,99 @@ public class ControllerHandler extends BaseBridgeHandler implements MatterClient
     }
 
     /**
-     * Update the endpoints (devices) for a node
+     * Request a full data refresh for a node, deduplicating against any in flight request for the same node.
+     * requestAllData is expensive (reads every attribute of every cluster of every endpoint from the device), so
+     * overlapping calls can overwhelm slow Thread meshes or constrained hardware.
      * 
+     * @param nodeId
+     */
+    private void requestAllNodeData(BigInteger nodeId) {
+        synchronized (pendingDataRequests) {
+            if (pendingDataRequests.containsKey(nodeId)) {
+                logger.debug("requestAllNodeData for {} already in progress, skipping", nodeId);
+                return;
+            }
+            ScheduledFuture<?> timeout = scheduler.schedule(() -> {
+                logger.debug("requestAllNodeData for {} timed out waiting for NodeData, removing request", nodeId);
+                pendingDataRequests.remove(nodeId);
+            }, DATA_REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+            pendingDataRequests.put(nodeId, timeout);
+        }
+        client.requestAllNodeData(nodeId).whenComplete((v, e) -> {
+            if (e != null) {
+                logger.debug("requestAllNodeData for {} failed: {}", nodeId, e.getMessage());
+                clearPendingDataRequest(nodeId);
+            }
+        });
+    }
+
+    private void clearPendingDataRequest(BigInteger nodeId) {
+        ScheduledFuture<?> timeout = pendingDataRequests.remove(nodeId);
+        if (timeout != null) {
+            timeout.cancel(false);
+        }
+    }
+
+    /**
+     * Skip the expensive {@code requestAllNodeData} re-enumeration for sleepy/ICD nodes that have
+     * already been fully enumerated once in this session. Subsequent attribute changes arrive via
+     * matter.js subscriptions, so re-reading every cluster on every reconnect wastes radio time
+     * and is what drove the 2-3 minute offline/online flap on Thread door locks.
+     */
+    private void requestAllNodeDataIfNeeded(BigInteger nodeId) {
+        NodeHandler handler = linkedNodes.get(nodeId);
+        boolean skip = enumeratedNodes.contains(nodeId) && handler != null && !handler.shouldRefreshOnReconnect();
+        if (skip) {
+            logger.debug("Skipping requestAllNodeData for {} (already enumerated, sleepy)", nodeId);
+            updateEndpointStatuses(nodeId, ThingStatus.ONLINE, ThingStatusDetail.NONE, "");
+            return;
+        }
+        requestAllNodeData(nodeId);
+    }
+
+    /**
+     * Schedule the OFFLINE update for a node on a grace timer rather than firing immediately,
+     * giving sleepy devices time to re-establish their CASE session. Idempotent within a
+     * down-cycle: subsequent Reconnecting/WaitingForDeviceDiscovery ticks are no-ops so retransmit
+     * chatter can't keep pushing the OFFLINE moment further out.
+     */
+    private void scheduleOffline(BigInteger nodeId, NodeState state) {
+        synchronized (offlineTimers) {
+            if (offlineTimers.containsKey(nodeId)) {
+                return;
+            }
+            NodeHandler handler = linkedNodes.get(nodeId);
+            int graceSec = handler != null ? handler.getOfflineGraceSeconds() : 60;
+            logger.debug("Scheduling OFFLINE for node {} in {}s (state={})", nodeId, graceSec, state);
+            ScheduledFuture<?> future = scheduler.schedule(() -> {
+                offlineTimers.remove(nodeId);
+                updateEndpointStatuses(nodeId, ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Node " + state);
+            }, graceSec, TimeUnit.SECONDS);
+            offlineTimers.put(nodeId, future);
+        }
+    }
+
+    private void cancelOfflineTimer(BigInteger nodeId) {
+        ScheduledFuture<?> f = offlineTimers.remove(nodeId);
+        if (f != null) {
+            f.cancel(false);
+        }
+    }
+
+    private void handlePhysicalProperties(BigInteger nodeId, PhysicalDeviceProperties props) {
+        NodeHandler handler = linkedNodes.get(nodeId);
+        if (handler != null) {
+            handler.applyPhysicalProperties(props);
+        } else {
+            // CONNECTED can arrive before childHandlerInitialized links the NodeHandler.
+            pendingPhysicalProperties.put(nodeId, props);
+        }
+    }
+
+    /**
+     * Update the endpoints (devices) for a node
+     *
      * @param node
      */
     private synchronized void updateNode(Node node) {
@@ -431,6 +582,9 @@ public class ControllerHandler extends BaseBridgeHandler implements MatterClient
 
     private void setOffline(@Nullable String message) {
         logger.debug("setOffline {}", message);
+        // The bridge may have been restarted independently while we were disconnected; the next
+        // reconnect must perform a full enumeration even for sleepy nodes.
+        enumeratedNodes.clear();
         client.disconnect();
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
         reconnect();

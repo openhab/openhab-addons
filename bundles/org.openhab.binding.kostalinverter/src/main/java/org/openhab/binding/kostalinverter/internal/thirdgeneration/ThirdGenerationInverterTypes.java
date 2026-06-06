@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.kostalinverter.internal.thirdgeneration;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link ThirdGenerationInverterTypes} contains the list of supported devices
  * Each one is represented by a dedicated thing
  *
  * @author René Stakemeier - Initial contribution
  */
+@NonNullByDefault
 public enum ThirdGenerationInverterTypes {
     PLENTICORE_PLUS_42_WITH_BATTERY,
     PLENTICORE_PLUS_42_WITHOUT_BATTERY,

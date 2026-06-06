@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -33,7 +32,6 @@ public class EnergyEvseCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0099;
     public static final String CLUSTER_NAME = "EnergyEvse";
     public static final String CLUSTER_PREFIX = "energyEvse";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_STATE = "state";
     public static final String ATTRIBUTE_SUPPLY_STATE = "supplyState";
@@ -59,18 +57,17 @@ public class EnergyEvseCluster extends BaseCluster {
     public static final String ATTRIBUTE_SESSION_ENERGY_CHARGED = "sessionEnergyCharged";
     public static final String ATTRIBUTE_SESSION_ENERGY_DISCHARGED = "sessionEnergyDischarged";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * Indicates the current status of the EVSE. This higher-level status is partly derived from the signaling protocol
      * as communicated between the EVSE and the vehicle through the pilot signal.
      * The State attribute shall change when the EVSE detects change of condition of the EV (plugged in or unplugged,
      * whether the vehicle is asking for demand or not, and if it is charging or discharging).
-     * &gt; [!NOTE]
-     * &gt; SessionEnding is not really a state but a transition. However, the transition period may take a few seconds
-     * and is useful for some clean up purposes.
-     * The Fault state is used to indicate that the FaultState attribute is not NoError. A null value shall indicate
-     * that the state cannot be determined.
+     * > [!NOTE]
+     * > NOTE: SessionEnding is not really a state but a transition. However, the transition period may take a few
+     * seconds and is useful for some clean up purposes.
+     * The Fault state is used to indicate that the FaultState attribute is not NoError.
+     * A null value shall indicate that the state cannot be determined.
      */
     public StateEnum state; // 0 StateEnum R V
     /**
@@ -109,8 +106,8 @@ public class EnergyEvseCluster extends BaseCluster {
      */
     public BigInteger circuitCapacity; // 5 amperage-mA R V
     /**
-     * Indicates the minimum current that can be delivered by the EVSE to the EV. The attribute can be set using the
-     * EnableCharging command.
+     * Indicates the minimum current that can be delivered by the EVSE to the EV.
+     * The attribute can be set using the EnableCharging command.
      */
     public BigInteger minimumChargeCurrent; // 6 amperage-mA R V
     /**
@@ -120,20 +117,19 @@ public class EnergyEvseCluster extends BaseCluster {
      * the battery, such as temperature and state of charge.
      * The attribute can be initially set using the EnableCharging command or by adjusting the UserMaximumChargeCurrent
      * attribute.
-     * This attribute value shall be the minimum of:
-     * • CircuitCapacity - Electrician’s installation setting
-     * • CableAssemblyCurrentLimit (detected by the EVSE when the cable is plugged in)
-     * • MaximumChargeCurrent field in the EnableCharging command
-     * • UserMaximumChargeCurrent attribute
+     * > [!NOTE]
+     * > This attribute value shall be the minimum of: - CircuitCapacity - Electrician's installation setting -
+     * CableAssemblyCurrentLimit (detected by the EVSE when the cable is plugged in) - MaximumChargeCurrent field in the
+     * EnableCharging command - UserMaximumChargeCurrent attribute
      */
     public BigInteger maximumChargeCurrent; // 7 amperage-mA R V
     /**
-     * Indicates the maximum current that can be received by the EVSE from the EV. This attribute can be set using the
-     * EnableDischarging command.
-     * This attribute value shall be the minimum of:
-     * • CircuitCapacity - Electrician’s installation setting
-     * • CableAssemblyCurrentLimit (detected by the EVSE when the cable is plugged in)
-     * • MaximumDischargeCurrent field in the EnableDischarging command
+     * Indicates the maximum current that can be received by the EVSE from the EV.
+     * This attribute can be set using the EnableDischarging command.
+     * > [!NOTE]
+     * > This attribute value shall be the minimum of: - CircuitCapacity - Electrician's installation setting -
+     * CableAssemblyCurrentLimit (detected by the EVSE when the cable is plugged in) - MaximumDischargeCurrent field in
+     * the EnableDischarging command
      */
     public BigInteger maximumDischargeCurrent; // 8 amperage-mA R V
     /**
@@ -141,8 +137,7 @@ public class EnergyEvseCluster extends BaseCluster {
      * charging rate. This may be desirable if the home owner has a solar PV or battery storage system which may only be
      * able to deliver a limited amount of power. The consumer can manually control how much they allow the EV to take.
      * This attribute value shall be limited by the EVSE to be in the range of:
-     * MinimumChargeCurrent &lt;&#x3D; UserMaximumChargeCurrent &lt;&#x3D; MaximumChargeCurrent where
-     * MinimumChargeCurrent and MaximumChargeCurrent are the values received in the EnableCharging command.
+     * where MinimumChargeCurrent and MaximumChargeCurrent are the values received in the EnableCharging command.
      * Its default value SHOULD be initialized to the same as the CircuitCapacity attribute. This value shall be
      * persisted across reboots to ensure it does not cause charging issues during temporary power failures.
      */
@@ -194,16 +189,12 @@ public class EnergyEvseCluster extends BaseCluster {
      * This is value is stored in km per kWh multiplied by a scaling factor of 1000.
      * A null value indicates that the EV efficiency is unknown and the NextChargeRequiredEnergy attribute cannot be
      * converted from Wh to miles or km.
-     * To convert from Wh into Range:
-     * AddedRange (km) &#x3D; AddedEnergy (Wh) x ApproxEVEfficiency (km/kWh x 1000) AddedRange (Miles) &#x3D;
-     * AddedEnergy (Wh) x ApproxEVEfficiency (km/kWh x 1000) x 0.6213
-     * Example:
-     * ApproxEVEfficiency (km/kWh x 1000): 4800 (i.e. 4.8km/kWh x 1000)
-     * ### AddedEnergy (Wh): 10,000
-     * AddedRange (km) &#x3D; 10,000 x 4800 / 1,000,000 &#x3D; 48 km
-     * AddedRange (Miles) &#x3D; AddedEnergy (Wh) x ApproxEVEfficiency (km/kWh x 1000) x
-     * 0.6213
-     * &#x3D; 29.82 Miles
+     * > [!NOTE]
+     * > To convert from Wh into Range: AddedRange (km) = AddedEnergy (Wh) x ApproxEVEfficiency (km/kWh x 1000)
+     * AddedRange (Miles) = AddedEnergy (Wh) x ApproxEVEfficiency (km/kWh x 1000) x 0.6213 Example: ApproxEVEfficiency
+     * (km/kWh x 1000): 4800 (i.e. 4.8km/kWh x 1000) AddedEnergy (Wh): 10,000 AddedRange (km) = 10,000 x 4800 /
+     * 1,000,000 = 48 km AddedRange (Miles) = AddedEnergy (Wh) x ApproxEVEfficiency (km/kWh x 1000) x 0.6213 = 29.82
+     * Miles
      */
     public Integer approximateEvEfficiency; // 39 uint16 RW VM
     /**
@@ -219,8 +210,8 @@ public class EnergyEvseCluster extends BaseCluster {
     /**
      * Indicates the vehicle ID read by the EVSE via ISO-15118 using the PNC feature, if the EVSE supports this
      * capability.
-     * The field may be based on the e-Mobility Account Identifier (EMAID). A null value shall indicate that this is
-     * unknown.
+     * The field may be based on the e-Mobility Account Identifier (EMAID).
+     * A null value shall indicate that this is unknown.
      */
     public String vehicleId; // 50 string R V
     public Integer sessionId; // 64 uint32 R V
@@ -232,7 +223,7 @@ public class EnergyEvseCluster extends BaseCluster {
     /**
      * This event shall be generated when the EV is plugged in.
      */
-    public class EvConnected {
+    public static class EvConnected {
         /**
          * This is the new session ID created after the vehicle is plugged in.
          */
@@ -247,7 +238,7 @@ public class EnergyEvseCluster extends BaseCluster {
      * This event shall be generated when the EV is unplugged or not detected (having been previously plugged in). When
      * the vehicle is unplugged then the session is ended.
      */
-    public class EvNotDetected {
+    public static class EvNotDetected {
         /**
          * This field shall indicate the current value of the SessionID attribute.
          */
@@ -290,7 +281,7 @@ public class EnergyEvseCluster extends BaseCluster {
      * between charging and discharging under the control of the PowerAdjustment feature of the Device Energy Management
      * cluster of the associated Device Energy Management device.
      */
-    public class EnergyTransferStarted {
+    public static class EnergyTransferStarted {
         /**
          * This field shall indicate the value of the SessionID attribute at the time the event was generated.
          */
@@ -327,7 +318,7 @@ public class EnergyEvseCluster extends BaseCluster {
      * between charging and discharging under the control of the PowerAdjustment feature of the Device Energy Management
      * cluster of the associated Device Energy Management device.
      */
-    public class EnergyTransferStopped {
+    public static class EnergyTransferStopped {
         /**
          * This field shall indicate the value of the SessionID attribute prior to the energy transfer stopping.
          */
@@ -370,7 +361,7 @@ public class EnergyEvseCluster extends BaseCluster {
      * EVSE device shall set the FaultState attribute to NoError and the SupplyState attribute shall be set back to its
      * previous state.
      */
-    public class Fault {
+    public static class Fault {
         /**
          * This field shall indicate the value of the SessionID attribute prior to the Fault State being changed. A
          * value of null indicates no sessions have occurred before the fault occurred.
@@ -402,7 +393,7 @@ public class EnergyEvseCluster extends BaseCluster {
      * This event shall be generated when a RFID card has been read. This allows a controller to register the card ID
      * and use this to authenticate and start the charging session.
      */
-    public class Rfid {
+    public static class Rfid {
         /**
          * The UID field (ISO 14443A UID) is either 4, 7 or 10 bytes.
          */
@@ -419,11 +410,12 @@ public class EnergyEvseCluster extends BaseCluster {
      * local generation (solar PV) into account to provide the cheapest and cleanest energy to the EV.
      * The optimization strategy is not defined here, however in simple terms, the AddedEnergy requirement can be
      * fulfilled by knowing the charging Power (W) and the time needed to charge.
-     * To compute the Charging Time: Required Energy (Wh) &#x3D; Power (W) x ChargingTime (s) / 3600 Therefore:
-     * ChargingTime (s) &#x3D; (3600 x RequiredEnergy (wH)) / Power (W)
-     * To compute the charging time: Charging StartTime &#x3D; TargetTimeMinutesPastMidnight - ChargingTime
+     * > [!NOTE]
+     * > To compute the Charging Time: Required Energy (Wh) = Power (W) x ChargingTime (s) / 3600 Therefore:
+     * ChargingTime (s) = (3600 x RequiredEnergy (wH)) / Power (W) To compute the charging time: Charging StartTime =
+     * TargetTimeMinutesPastMidnight - ChargingTime
      */
-    public class ChargingTargetStruct {
+    public static class ChargingTargetStruct {
         /**
          * This field shall indicate the desired charging completion time of the associated day. The time will be
          * represented by a 16 bits unsigned integer to designate the minutes since midnight. For example, 6am will be
@@ -448,15 +440,15 @@ public class EnergyEvseCluster extends BaseCluster {
          * This field represents the target SoC that the vehicle should be charged to before the
          * TargetTimeMinutesPastMidnight.
          * If the EVSE supports the SOC feature and can obtain the SoC of the vehicle:
-         * • the TargetSoC field shall take precedence over the AddedEnergy field.
-         * • the EVSE SHOULD charge to the TargetSoC and then stop the charging automatically when it reaches that
+         * - the TargetSoC field shall take precedence over the AddedEnergy field.
+         * - the EVSE SHOULD charge to the TargetSoC and then stop the charging automatically when it reaches that
          * point.
-         * • if the TargetSoC value is set to 100% then the EVSE SHOULD continue to charge the vehicle until the vehicle
+         * - if the TargetSoC value is set to 100% then the EVSE SHOULD continue to charge the vehicle until the vehicle
          * decides to stop charging.
          * If the EVSE does not support the SOC feature or cannot obtain the SoC of the vehicle:
-         * • the AddedEnergy field shall take precedence over the TargetSoC field, and if the EVSE does not support the
+         * - the AddedEnergy field shall take precedence over the TargetSoC field, and if the EVSE does not support the
          * SOC feature then the TargetSoC field may only take the values null or 100%.
-         * • if the AddedEnergy field has not been provided, the EVSE SHOULD assume the vehicle is empty and charge
+         * - if the AddedEnergy field has not been provided, the EVSE SHOULD assume the vehicle is empty and charge
          * until the vehicle stops demanding a charge.
          */
         public Integer targetSoC; // percent
@@ -471,10 +463,10 @@ public class EnergyEvseCluster extends BaseCluster {
          * vehicle stops demanding charge (i.e. it is full). Therefore the maximum value should be set based on typical
          * battery size of the vehicles on the market (e.g. 70000Wh), however this is up to the client to carefully
          * choose a value.
-         * &gt; [!NOTE]
-         * &gt; If the EVSE can obtain the Battery Capacity of the vehicle, it SHOULD NOT limit this AddedEnergy value
-         * to the Battery Capacity of the vehicle, since the EV may also require energy for heating and cooling of the
-         * battery during charging, or for heating or cooling the cabin.
+         * > [!NOTE]
+         * > NOTE: If the EVSE can obtain the Battery Capacity of the vehicle, it SHOULD NOT limit this AddedEnergy
+         * value to the Battery Capacity of the vehicle, since the EV may also require energy for heating and cooling of
+         * the battery during charging, or for heating or cooling the cabin.
          */
         public BigInteger addedEnergy; // energy-mWh
 
@@ -488,7 +480,7 @@ public class EnergyEvseCluster extends BaseCluster {
     /**
      * This represents a set of user specified charging targets for an EV for a set of specified days.
      */
-    public class ChargingTargetScheduleStruct {
+    public static class ChargingTargetScheduleStruct {
         /**
          * This field shall indicate the days of the week that the charging targets SHOULD be associated to. This field
          * is a bitmap and therefore the associated targets could be applied to multiple days.
@@ -516,8 +508,8 @@ public class EnergyEvseCluster extends BaseCluster {
         SESSION_ENDING(5, "Session Ending"),
         FAULT(6, "Fault");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private StateEnum(Integer value, String label) {
             this.value = value;
@@ -543,8 +535,8 @@ public class EnergyEvseCluster extends BaseCluster {
         DISABLED_DIAGNOSTICS(4, "Disabled Diagnostics"),
         ENABLED(5, "Enabled");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private SupplyStateEnum(Integer value, String label) {
             this.value = value;
@@ -581,8 +573,8 @@ public class EnergyEvseCluster extends BaseCluster {
         OVER_TEMPERATURE(15, "Over Temperature"),
         OTHER(255, "Other");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private FaultStateEnum(Integer value, String label) {
             this.value = value;
@@ -605,8 +597,8 @@ public class EnergyEvseCluster extends BaseCluster {
         EVSE_STOPPED(1, "Evse Stopped"),
         OTHER(2, "Other");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private EnergyTransferStoppedReasonEnum(Integer value, String label) {
             this.value = value;
@@ -650,15 +642,15 @@ public class EnergyEvseCluster extends BaseCluster {
         /**
          * 
          * Since some EVSEs cannot obtain the SoC from the vehicle, some EV charging solutions allow the consumer to
-         * specify a daily charging target (for adding energy to the EV’s battery). This feature allows the consumer to
+         * specify a daily charging target (for adding energy to the EV's battery). This feature allows the consumer to
          * specify how many miles or km of additional range they need for their typical daily commute. This range
          * requirement can be converted into a daily energy demand with a target charging completion time.
          * The EVSE itself can use this information (or may allow a controller such as an EMS) to compute an optimized
-         * charging schedule.
+         * charging schedule. For example, an optimizer may be able to use the Commodity Price cluster to determine the
+         * cheapest and lowest GHG based charging schedule for the vehicle.
          * An EVSE device which includes a Device Energy Management device with the Device Energy Management cluster PFR
-         * (Power Forecast Reporting) feature can use the charging preferences information to produce its power
-         * forecast.
-         * EVSE devices that support the Device Energy Management cluster’s FA feature can have their charging profiles
+         * (PowerForecastReporting) feature can use the charging preferences information to produce its power forecast.
+         * EVSE devices that support the Device Energy Management cluster's FA feature can have their charging profiles
          * set by a controller device such as an EMS. For example, if the EVSE advertises a simple power forecast which
          * allows the EMS to adjust over a wide range of power and time durations, then the EVSE may allow the EMS to
          * propose a revised optimized forecast (which is the charging profile). For example, a solar PV ESA may also
@@ -702,7 +694,7 @@ public class EnergyEvseCluster extends BaseCluster {
          * to the home or grid.
          * The charging and discharging may be controlled by a home Energy Management System (EMS) using the Device
          * Energy Management cluster of the associated Device Energy Management device. For example, an EMS may use the
-         * PA (Power Adjustment) feature to continually adjust the charge/discharge current to/from the EV so as to
+         * PA (PowerAdjustment) feature to continually adjust the charge/discharge current to/from the EV so as to
          * minimise the energy flow from/to the grid as the demand in the home and the solar supply to the home both
          * fluctuate.
          */
@@ -804,7 +796,6 @@ public class EnergyEvseCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "state : " + state + "\n";
         str += "supplyState : " + supplyState + "\n";

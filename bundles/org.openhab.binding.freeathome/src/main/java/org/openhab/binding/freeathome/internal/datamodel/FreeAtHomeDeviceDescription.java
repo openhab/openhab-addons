@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.freeathome.internal.datamodel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
@@ -62,8 +63,9 @@ public class FreeAtHomeDeviceDescription {
         // set the device invalid at first
         validDevice = false;
 
-        sceneIsDetected = id.toLowerCase().startsWith("ffff48");
-        ruleIsDetected = id.toLowerCase().startsWith("ffff4a");
+        final String idLowerCase = id.toLowerCase(Locale.ROOT);
+        sceneIsDetected = idLowerCase.startsWith("ffff48");
+        ruleIsDetected = idLowerCase.startsWith("ffff4a");
 
         JsonObject jsonObjectOfId = jsonObject.getAsJsonObject(id);
 
@@ -75,14 +77,14 @@ public class FreeAtHomeDeviceDescription {
 
         if (jsonObjectOfInterface != null) {
             String interfaceString = jsonObjectOfInterface.getAsString();
-
-            if (interfaceString.toLowerCase().startsWith("vdev:")) {
+            final String interfaceStringLowerCase = interfaceString.toLowerCase(Locale.ROOT);
+            if (interfaceStringLowerCase.startsWith("vdev:")) {
                 interfaceType = DEVICE_INTERFACE_VIRTUAL_TYPE;
-            } else if (interfaceString.toLowerCase().startsWith("hue")) {
+            } else if (interfaceStringLowerCase.startsWith("hue")) {
                 interfaceType = DEVICE_INTERFACE_HUE_TYPE;
-            } else if (interfaceString.toLowerCase().startsWith("rf")) {
+            } else if (interfaceStringLowerCase.startsWith("rf")) {
                 interfaceType = DEVICE_INTERFACE_WIRELESS_TYPE;
-            } else if (interfaceString.toLowerCase().startsWith("tp")) {
+            } else if (interfaceStringLowerCase.startsWith("tp")) {
                 interfaceType = DEVICE_INTERFACE_WIRED_TYPE;
             } else {
                 interfaceType = DEVICE_INTERFACE_UNKNOWN_TYPE;

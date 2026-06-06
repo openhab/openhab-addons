@@ -10,7 +10,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Switch Module</label>
-		<description>Nikobus Switch module</description>
+		<description>Nikobus switch module</description>
 		<semantic-equipment-tag>WallSwitch</semantic-equipment-tag>
 
 		<channels>

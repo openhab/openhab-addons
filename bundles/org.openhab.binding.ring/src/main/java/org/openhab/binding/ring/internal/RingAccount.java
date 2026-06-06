@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import java.util.Collection;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.ring.internal.device.RingDevice;
 
 /**
@@ -31,4 +32,38 @@ public interface RingAccount {
 
     @Nullable
     RingDevice getDevice(String id);
+
+    /**
+     * Get the timestamp of the last camera snapshot
+     *
+     * @param id the device id of the Ring cameras
+     * @return a long of the timestamp of the last snapsnot
+     * @throws AuthenticationException when request is invalid.
+     */
+    long getSnapshotTimestamp(String id);
+
+    /**
+     * Get the image from the camera
+     *
+     * @param id the device id of the Ring cameras
+     * @return a byte array of the camera image
+     * @throws AuthenticationException when request is invalid.
+     */
+    byte[] getSnapshot(String id);
+
+    /**
+     * Send a command to the Ring API
+     *
+     * @param url to be sent to the Ring API
+     */
+    void sendCommand(String url);
+
+    /**
+     * Send a command with a payload to the Ring API
+     *
+     * @param url to be sent to the Ring API
+     * @param HTTP method (ie patch, get, put) to be sent to the Ring API
+     * @param payload to be sent to the Ring API
+     */
+    void sendCommand(String url, HttpMethod httpMethod, String payload);
 }

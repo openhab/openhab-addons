@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -428,7 +428,7 @@ public class DsChannelTypeProvider extends BaseDsI18n implements ChannelTypeProv
     }
 
     private Set<String> getSimpleTags(String channelID, Locale locale) {
-        return new HashSet<>(Arrays.asList(getText(channelID, locale), getText(channelID, locale)));
+        return new HashSet<>(Arrays.asList(getText(channelID, locale)));
     }
 
     /**

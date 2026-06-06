@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -420,6 +420,8 @@ public class NetatmoConstants {
         DEVICE_NOT_FOUND,
         @SerializedName("10")
         MISSING_ARGUMENTS,
+        @SerializedName("11")
+        CONCURRENCY_LIMIT_TIMED_OUT,
         @SerializedName("13")
         OPERATION_FORBIDDEN,
         @SerializedName("19")

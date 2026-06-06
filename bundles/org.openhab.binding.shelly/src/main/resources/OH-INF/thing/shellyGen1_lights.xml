@@ -6,7 +6,7 @@
 
 	<thing-type id="shellybulb">
 		<label>Shelly Bulb</label>
-		<description>@text/thing-type.shelly.shellybulb.description</description>
+		<description>Shelly Bulb (Dimmable RGB+W Bulb)</description>
 		<category>Lightbulb</category>
 		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 		<channel-groups>
@@ -22,7 +22,7 @@
 
 	<thing-type id="shellybulbduo">
 		<label>Shelly Duo</label>
-		<description>@text/thing-type.shelly.shellybulbduo.description</description>
+		<description>Shelly Duo (Dimmable RGB+W/CW Bulb)</description>
 		<category>Lightbulb</category>
 		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 		<channel-groups>
@@ -38,7 +38,7 @@
 
 	<thing-type id="shellycolorbulb">
 		<label>Shelly Color Bulb</label>
-		<description>@text/thing-type.shelly.shellycolorbulb.description</description>
+		<description>Shelly Color Bulb (Dimmable RGB+W Bulb)</description>
 		<category>ColorLight</category>
 		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 		<channel-groups>
@@ -55,7 +55,7 @@
 
 	<thing-type id="shellyvintage">
 		<label>Shelly Vintage</label>
-		<description>@text/thing-type.shelly.shellyvintage.description</description>
+		<description>Shelly Vintage (Dimmable Vintage Bulb)</description>
 		<category>Lightbulb</category>
 		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 		<channel-groups>
@@ -71,7 +71,7 @@
 
 	<thing-type id="shellyrgbw2-color">
 		<label>Shelly RGBW2 Color Mode</label>
-		<description>@text/thing-type.shelly.shellyrgbw2-color.description</description>
+		<description>Shelly RGBW2 (LED Controller in Color Mode)</description>
 		<category>ColorLight</category>
 		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 		<channel-groups>
@@ -87,22 +87,22 @@
 
 	<thing-type id="shellyrgbw2-white">
 		<label>Shelly RGBW2 White Mode</label>
-		<description>@text/thing-type.shelly.shellyrgbw2-white.description</description>
+		<description>Shelly RGBW2 (LED Controller in White Mode, 4 strips)</description>
 		<category>Lightbulb</category>
 		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="control" typeId="rgbw2WhiteControl"/>
 			<channel-group id="channel1" typeId="rgbw2Channel">
-				<label>@text/channel-group-type.shelly.rgbw2Channel1.label</label>
+				<label>Channel 1</label>
 			</channel-group>
 			<channel-group id="channel2" typeId="rgbw2Channel">
-				<label>@text/channel-group-type.shelly.rgbw2Channel2.label</label>
+				<label>Channel 2</label>
 			</channel-group>
 			<channel-group id="channel3" typeId="rgbw2Channel">
-				<label>@text/channel-group-type.shelly.rgbw2Channel3.label</label>
+				<label>Channel 3</label>
 			</channel-group>
 			<channel-group id="channel4" typeId="rgbw2Channel">
-				<label>@text/channel-group-type.shelly.rgbw2Channel4.label</label>
+				<label>Channel 4</label>
 			</channel-group>
 			<channel-group id="meter" typeId="meter"/>
 			<channel-group id="device" typeId="deviceStatus"/>
@@ -113,8 +113,8 @@
 	</thing-type>
 
 	<channel-group-type id="bulbControl">
-		<label>@text/channel-group-type.shelly.bulbControl.label</label>
-		<description>@text/channel-group-type.shelly.bulbControl.description</description>
+		<label>Light Control</label>
+		<description>Control your light</description>
 		<channels>
 			<channel id="power" typeId="system.power"/>
 			<channel id="mode" typeId="colorMode"/>
@@ -122,23 +122,23 @@
 	</channel-group-type>
 
 	<channel-group-type id="duoControl">
-		<label>@text/channel-group-type.shelly.duoControl.label</label>
-		<description>@text/channel-group-type.shelly.duoControl.description</description>
+		<label>Light Control</label>
+		<description>Control your light</description>
 	</channel-group-type>
 
 	<channel-group-type id="rgbw2ColorControl">
-		<label>@text/channel-group-type.shelly.rgbw2ColorControl.label</label>
-		<description>@text/channel-group-type.shelly.rgbw2ColorControl.description</description>
+		<label>LED Strip Control (RGBW)</label>
+		<description>Control your LED stripes in color mode</description>
 	</channel-group-type>
 
 	<channel-group-type id="rgbw2WhiteControl">
-		<label>@text/channel-group-type.shelly.rgbw2WhiteControl.label</label>
-		<description>@text/channel-group-type.shelly.rgbw2WhiteControl.description</description>
+		<label>LED Strip Control (White)</label>
+		<description>Control your LED stripes in white mode</description>
 	</channel-group-type>
 
 	<channel-group-type id="colorSettingsBulb">
-		<label>@text/channel-group-type.shelly.colorSettingsBulb.label</label>
-		<description>@text/channel-group-type.shelly.colorSettingsBulb.description</description>
+		<label>Colors</label>
+		<description>Light colors</description>
 		<channels>
 			<channel id="hsb" typeId="system.color"/>
 			<channel id="full" typeId="colorFull"/>
@@ -152,8 +152,8 @@
 	</channel-group-type>
 
 	<channel-group-type id="colorSettingsRGBW2">
-		<label>@text/channel-group-type.shelly.colorSettingsRGBW2.label</label>
-		<description>@text/channel-group-type.shelly.colorSettingsRGBW2.description</description>
+		<label>Colors</label>
+		<description>Light colors</description>
 		<channels>
 			<channel id="hsb" typeId="system.color"/>
 			<channel id="full" typeId="colorFull"/>
@@ -167,19 +167,19 @@
 	</channel-group-type>
 
 	<channel-group-type id="whiteSettings">
-		<label>@text/channel-group-type.shelly.whiteSettings.label</label>
-		<description>@text/channel-group-type.shelly.whiteSettings.description</description>
+		<label>White settings</label>
+		<description>Adjust colors when device is in white mode</description>
 	</channel-group-type>
 
 	<channel-group-type id="rgbw2Channel">
-		<label>@text/channel-group-type.shelly.rgbw2Channel.label</label>
-		<description>@text/channel-group-type.shelly.rgbw2Channel.description</description>
+		<label>LED Channel</label>
+		<description>Control LED channel and adjust settings</description>
 	</channel-group-type>
 
 	<channel-type id="colorMode">
 		<item-type>Switch</item-type>
-		<label>@text/channel-type.shelly.colorMode.label</label>
-		<description>@text/channel-type.shelly.colorMode.description</description>
+		<label>Mode (ON=color, OFF=white)</label>
+		<description>ON: Device is in color mode, OFF: Device is in White Mode</description>
 		<tags>
 			<tag>Switch</tag>
 			<tag>Mode</tag>
@@ -188,112 +188,113 @@
 
 	<channel-type id="colorFull">
 		<item-type>String</item-type>
-		<label>@text/channel-type.shelly.colorFull.label</label>
-		<description>@text/channel-type.shelly.colorFull.description</description>
+		<label>Full Color</label>
+		<description>Setting this channel sets the selected color to 255, all others to 0</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>Color</tag>
 		</tags>
 		<state>
 			<options>
-				<option value="red">@text/channel-type.shelly.colorFull.state.option.red</option>
-				<option value="green">@text/channel-type.shelly.colorFull.state.option.green</option>
-				<option value="blue">@text/channel-type.shelly.colorFull.state.option.blue</option>
-				<option value="yellow">@text/channel-type.shelly.colorFull.state.option.yellow</option>
-				<option value="white">@text/channel-type.shelly.colorFull.state.option.white</option>
+				<option value="red">Red</option>
+				<option value="green">Green</option>
+				<option value="blue">Blue</option>
+				<option value="yellow">Yellow</option>
+				<option value="white">White</option>
 			</options>
 		</state>
 	</channel-type>
 
 	<channel-type id="colorRed" advanced="true">
 		<item-type>Dimmer</item-type>
-		<label>@text/channel-type.shelly.colorRed.label</label>
-		<description>@text/channel-type.shelly.colorRed.description</description>
-		<state min="0" max="255" step="1" readOnly="false"></state>
+		<label>Red</label>
+		<description>Red (0-255), applies only in Color Mode</description>
+		<state min="0" max="255" step="1" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="colorGreen" advanced="true">
 		<item-type>Dimmer</item-type>
-		<label>@text/channel-type.shelly.colorGreen.label</label>
-		<description>@text/channel-type.shelly.colorGreen.description</description>
-		<state min="0" max="255" step="1" readOnly="false"></state>
+		<label>Green</label>
+		<description>Green (0-255), applies only in Color Mode</description>
+		<state min="0" max="255" step="1" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="colorBlue" advanced="true">
 		<item-type>Dimmer</item-type>
-		<label>@text/channel-type.shelly.colorBlue.label</label>
-		<description>@text/channel-type.shelly.colorBlue.description</description>
-		<state min="0" max="255" step="1" readOnly="false"></state>
+		<label>Blue</label>
+		<description>Blue (0-255), applies only in Color Mode</description>
+		<state min="0" max="255" step="1" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="colorWhite">
 		<item-type>Dimmer</item-type>
-		<label>@text/channel-type.shelly.colorWhite.label</label>
-		<description>@text/channel-type.shelly.colorWhite.description</description>
+		<label>White</label>
+		<description>White (0-255), applies only in Color Mode</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>ColorTemperature</tag>
 		</tags>
-		<state min="0" max="255" step="1" readOnly="false"></state>
+		<state min="0" max="255" step="1" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="colorGain">
 		<item-type>Dimmer</item-type>
-		<label>@text/channel-type.shelly.colorGain.label</label>
-		<description>@text/channel-type.shelly.colorGain.description</description>
-		<state min="0" max="100" step="1" readOnly="false"></state>
+		<label>Gain</label>
+		<description>Gain for all channels (0-100%), applies only in Color Mode</description>
+		<state min="0" max="100" step="1" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="whiteTemp">
 		<item-type>Dimmer</item-type>
-		<label>@text/channel-type.shelly.whiteTemp.label</label>
-		<description>@text/channel-type.shelly.whiteTemp.description</description>
+		<label>Light Temperature</label>
+		<description>Light Temperature (Bulb/RGBW2: 3000K-6500K; Duo: 2700K-6500K)</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>ColorTemperature</tag>
 		</tags>
-		<state min="3000" max="6500" step="10" readOnly="false"></state>
+		<state min="3000" max="6500" step="10" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="whiteBrightness">
 		<item-type>Dimmer</item-type>
-		<label>@text/channel-type.shelly.whiteBrightness.label</label>
-		<description>@text/channel-type.shelly.whiteBrightness.description</description>
+		<label>Brightness</label>
+		<description>Brightness (0-100%, 0=OFF)</description>
 		<category>Light</category>
 		<tags>
 			<tag>Control</tag>
 			<tag>Brightness</tag>
 		</tags>
-		<state min="0" max="100" step="1" readOnly="false"></state>
+		<state min="0" max="100" step="1" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="colorEffectBulb">
 		<item-type>Number</item-type>
-		<label>@text/channel-type.shelly.colorEffectBulb.label</label>
-		<description>@text/channel-type.shelly.colorEffectBulb.description</description>
+		<label>Effect</label>
+		<description>Currently applied effect, description: 0: Off, 1: Meteor Shower, 2: Gradual Change, 3: Breath, 4: Flash,
+			5: On/Off Gradual, 6: Red/Green Change</description>
 		<state>
 			<options>
-				<option value="0">@text/channel-type.shelly.colorEffectBulb.option.0</option>
-				<option value="1">@text/channel-type.shelly.colorEffectBulb.option.1</option>
-				<option value="2">@text/channel-type.shelly.colorEffectBulb.option.2</option>
-				<option value="3">@text/channel-type.shelly.colorEffectBulb.option.3</option>
-				<option value="4">@text/channel-type.shelly.colorEffectBulb.option.4</option>
-				<option value="5">@text/channel-type.shelly.colorEffectBulb.option.5</option>
-				<option value="6">@text/channel-type.shelly.colorEffectBulb.option.6</option>
+				<option value="0">Off</option>
+				<option value="1">Meteor Shower</option>
+				<option value="2">Gradual Change</option>
+				<option value="3">Breath</option>
+				<option value="4">Flash</option>
+				<option value="5">On/Off Gradual</option>
+				<option value="6">Red/Green Change</option>
 			</options>
 		</state>
 	</channel-type>
 
 	<channel-type id="colorEffectRGBW2">
 		<item-type>Number</item-type>
-		<label>@text/channel-type.shelly.colorEffectRGBW2.label</label>
-		<description>@text/channel-type.shelly.colorEffectRGBW2.description</description>
+		<label>Effect</label>
+		<description>Currently applied effect, description: 0: Off, 1: Meteor Shower, 2: Gradual Change, 3: Flash</description>
 		<state>
 			<options>
-				<option value="0">@text/channel-type.shelly.colorEffectRGBW2.option.0</option>
-				<option value="1">@text/channel-type.shelly.colorEffectRGBW2.option.1</option>
-				<option value="2">@text/channel-type.shelly.colorEffectRGBW2.option.2</option>
-				<option value="3">@text/channel-type.shelly.colorEffectRGBW2.option.3</option>
+				<option value="0">Off</option>
+				<option value="1">Meteor Shower</option>
+				<option value="2">Gradual Change</option>
+				<option value="3">Flash</option>
 			</options>
 		</state>
 	</channel-type>

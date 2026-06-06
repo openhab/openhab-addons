@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,11 +12,10 @@
  */
 package org.openhab.binding.netatmo.internal.handler.capability;
 
-import java.time.Duration;
-import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,10 +28,9 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ParentUpdateCapability extends Capability {
-    private static final Duration DEFAULT_DELAY = Duration.ofSeconds(2);
-
     private final Logger logger = LoggerFactory.getLogger(ParentUpdateCapability.class);
-    private Optional<ScheduledFuture<?>> job = Optional.empty();
+
+    private @Nullable ScheduledFuture<?> job;
 
     public ParentUpdateCapability(CommonInterface handler) {
         super(handler);
@@ -40,19 +38,36 @@ public class ParentUpdateCapability extends Capability {
 
     @Override
     public void initialize() {
-        job = handler.schedule(() -> {
+        if (job != null) {
+            logger.debug("Data update is already requested for '{}'", thingUID);
+            return;
+        }
+
+        this.job = handler.schedule(() -> {
             logger.debug("Requesting parents data update for Thing '{}'", thingUID);
-            CommonInterface bridgeHandler = handler.getBridgeHandler();
-            if (bridgeHandler != null) {
+            if (handler.getBridgeHandler() instanceof CommonInterface bridgeHandler) {
                 bridgeHandler.expireData();
             }
-        }, DEFAULT_DELAY);
+            job = null;
+        }, RefreshCapability.ASAP);
+    }
+
+    @Override
+    protected void beforeNewData() {
+        super.beforeNewData();
+        cancelJob();
+    }
+
+    private void cancelJob() {
+        if (job instanceof ScheduledFuture local) {
+            local.cancel(true);
+            this.job = null;
+        }
     }
 
     @Override
     public void dispose() {
-        job.ifPresent(j -> j.cancel(true));
-        job = Optional.empty();
+        cancelJob();
         super.dispose();
     }
 }

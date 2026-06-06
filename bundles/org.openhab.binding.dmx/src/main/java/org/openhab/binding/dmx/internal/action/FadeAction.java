@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -51,8 +51,6 @@ public class FadeAction extends BaseAction {
      * @param holdTime time in ms to hold the color before moving to the next action. -1 is indefinite.
      */
     public FadeAction(int fadeTime, int targetValue, int holdTime) {
-        super();
-
         this.fadeTime = fadeTime;
         this.targetValue = Util.toDmxValue(targetValue) << 8;
         this.holdTime = holdTime;

@@ -9,14 +9,14 @@ must be configured as `Enabled` or `Permissive`.
 
 ## Supported Things
 
-There are two supported thing types, which represent either a standalone Roku device or a Roku TV.
+There are two supported Thing types, which represent either a standalone Roku device or a Roku TV.
 A supported Roku streaming media player or streaming stick uses the `roku_player` id and a supported Roku TV uses the `roku_tv` id.
 The Roku TV type adds additional channels and button commands to the button channel dropdown for TV specific functionality.
-Multiple Things can be added if more than one Roku is to be controlled.
+Multiple Things can be added if more than one Roku device is to be controlled.
 
 ## Discovery
 
-Auto-discovery is supported if the Roku can be located on the local network using SSDP.
+Auto-discovery is supported if the Roku device can be located on the local network using UPnP.
 Otherwise the Thing must be manually added.
 
 ## Binding Configuration
@@ -25,12 +25,12 @@ The binding has no configuration options, all configuration is done at Thing lev
 
 ## Thing Configuration
 
-The thing has a few configuration parameters:
+The Thing has a few configuration parameters:
 
 | Parameter | Description                                                                                                              |
 |-----------|--------------------------------------------------------------------------------------------------------------------------|
 | hostName  | The host name or IP address of the Roku device. Mandatory.                                                               |
-| port      | The port on the Roku that listens for http connections. Default 8060                                                     |
+| port      | The port on the Roku device that listens for http connections. Default 8060.                                             |
 | refresh   | Overrides the refresh interval for player status updates. Optional, the default is 10 seconds and minimum is 1 second.   |
 
 ## Channels
@@ -40,28 +40,30 @@ The following channels are available:
 | Channel ID         | Item Type            | Description                                                                                                                                                     |
 |--------------------|----------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | activeApp          | String               | A dropdown containing a list of all apps installed on the Roku. The app currently running is automatically selected. The list updates every 10 minutes.         |
-| activeAppName      | String               | The name of the current app (ReadOnly).                                                                                                                         |
-| button             | String               | Sends a remote control command the Roku. See list of available commands below. (WriteOnly)                                                                      |
+| activeAppName      | String               | The name of the current app (Read-only).                                                                                                                        |
+| button             | String               | Sends a remote control command the Roku. See list of available commands below. (Write-only)                                                                     |
 | control            | Player               | Control Playback e.g. play/pause/next/previous                                                                                                                  |
-| playMode           | String               | The current playback mode ie: stop, play, pause (ReadOnly).                                                                                                     |
-| timeElapsed        | Number:Time          | The total number of seconds of playback time elapsed for the current playing title (ReadOnly).                                                                  |
-| timeTotal          | Number:Time          | The total length of the current playing title in seconds (ReadOnly). This data is not provided by all streaming apps.                                           |
-| endTime            | DateTime             | The date/time when the currently playing media will end (ReadOnly). N/A if timeTotal is not provided by the current streaming app.                              |
-| progress           | Dimmer               | The current progress [0-100%] of playing media (ReadOnly). N/A if timeTotal is not provided by the current streaming app.                                       |
+| playMode           | String               | The current playback mode e.g. stop, play, pause (Read-only).                                                                                                   |
+| timeElapsed        | Number:Time          | The total number of seconds of playback time elapsed for the current playing title (Read-only).                                                                 |
+| timeTotal          | Number:Time          | The total length of the current playing title in seconds (Read-only). This data is not provided by all streaming apps.                                          |
+| endTime            | DateTime             | The date/time when the currently playing media will end (Read-only). N/A if timeTotal is not provided by the current streaming app.                             |
+| progress           | Dimmer               | The current progress [0-100%] of playing media (Read-only). N/A if timeTotal is not provided by the current streaming app.                                      |
+| power              | Switch               | Controls the power for a Roku TV Thing only.                                                                                                                    |
+| powerState         | String               | The current power state for the Roku TV Thing. (Read-only - e.g. PowerOn, DisplayOff, Ready, Offline)                                                           |
 | activeChannel      | String               | A dropdown containing a list of available TV channels on the Roku TV. The channel currently tuned is automatically selected. The list updates every 10 minutes. |
-| signalMode         | String               | The signal type of the current TV channel, ie: 1080i (ReadOnly).                                                                                                |
-| signalQuality      | Number:Dimensionless | The signal quality of the current TV channel, 0-100% (ReadOnly).                                                                                                |
-| channelName        | String               | The name of the channel currently selected (ReadOnly).                                                                                                          |
-| programTitle       | String               | The name of the current TV program (ReadOnly).                                                                                                                  |
-| programDescription | String               | The description of the current TV program (ReadOnly).                                                                                                           |
-| programRating      | String               | The TV parental guideline rating of the current TV program (ReadOnly).                                                                                          |
-| power              | Switch               | Controls the power for the TV.                                                                                                                                  |
-| powerState         | String               | The current power state for the TV. (ReadOnly - ie PowerOn, DisplayOff, Ready, etc.)                                                                            |
+| signalMode         | String               | The signal type of the current TV channel, e.g. 1080i (Read-only).                                                                                              |
+| signalQuality      | Number:Dimensionless | The signal quality of the current TV channel, 0-100% (Read-only).                                                                                               |
+| channelName        | String               | The name of the channel currently selected (Read-only).                                                                                                         |
+| programTitle       | String               | The name of the current TV program (Read-only).                                                                                                                 |
+| programDescription | String               | The description of the current TV program (Read-only).                                                                                                          |
+| programRating      | String               | The TV parental guideline rating of the current TV program (Read-only).                                                                                         |
 
 Some Notes:
 
 - The values for `activeApp`, `activeAppName`, `playMode`, `timeElapsed`, `timeTotal`, `activeChannel`, `signalMode`, `signalQuality`, `channelName`, `programTitle`, `programDescription`, `programRating`, `power` & `powerState` refresh automatically per the configured `refresh` interval.
 - The `endTime` and `progress` channels may not be accurate for some streaming apps especially 'live' streams where the `timeTotal` value constantly increases.
+- After being switched off for 10 minutes, a Roku TV will shut down its network interface causing the Thing to go OFFLINE.
+- If the following setting: **Settings-> System-> Power-> Fast TV Start** is set to `On`, then the Roku TV Thing will always stay ONLINE even when the TV is switched off.
 
 **List of available button commands for Roku streaming devices:**
 
@@ -98,6 +100,11 @@ Some Notes:
 - PowerOff
 - POWERON _(NOTE: POWERON needs to be completely capitalized due to a bug with older Roku devices)_
 
+**Sending characters via button commands:**
+
+- Printable ASCII characters that are URL-safe can be transmitted without encoding using the "Lit_" prefix (e.g., "Lit_R" for the letter R).
+- Characters that are not URL-safe (including spaces, reserved URL characters, and non-ASCII characters) should be URL-encoded (e.g., "Lit_%20" for a space and "Lit_%E2%82%AC" for the euro symbol).
+
 ## Full Example
 
 ### `roku.things` Example
@@ -128,27 +135,27 @@ Dimmer Player_Progress         "Progress [%.0f%%]"             { channel="roku:r
 
 // Roku TV items:
 
-Switch Player_Power              "Power [%s]"                  { channel="roku:roku_tv:mytv1:power" }
-String Player_PowerState         "Power State [%s]"            { channel="roku:roku_tv:mytv1:powerState" }
-String Player_ActiveApp          "Current App [%s]"            { channel="roku:roku_tv:mytv1:activeApp" }
-String Player_ActiveAppName      "Current App Name [%s]"       { channel="roku:roku_tv:mytv1:activeAppName" }
-String Player_Button             "Send Command to Roku"        { channel="roku:roku_tv:mytv1:button" }
-Player Player_Control            "Control"                     { channel="roku:roku_tv:mytv1:control" }
-String Player_PlayMode           "Status [%s]"                 { channel="roku:roku_tv:mytv1:playMode" }
-Number:Time Player_TimeElapsed   "Elapsed Time [%s]"           { channel="roku:roku_tv:mytv1:timeElapsed" }
-Number:Time Player_TimeTotal     "Total Time [%s]"             { channel="roku:roku_tv:mytv1:timeTotal" }
-DateTime Player_EndTime          "End Time [%s]"               { channel="roku:roku_tv:mytv1:endTime" }
-Dimmer Player_Progress           "Progress [%.0f%%]"           { channel="roku:roku_tv:mytv1:progress" }
-String Player_ActiveChannel      "Current Channel [%s]"        { channel="roku:roku_tv:mytv1:activeChannel" }
-String Player_SignalMode         "Signal Mode [%s]"            { channel="roku:roku_tv:mytv1:signalMode" }
-Number Player_SignalQuality      "Signal Quality [%d %%]"      { channel="roku:roku_tv:mytv1:signalQuality" }
-String Player_ChannelName        "Channel Name [%s]"           { channel="roku:roku_tv:mytv1:channelName" }
-String Player_ProgramTitle       "Program Title [%s]"          { channel="roku:roku_tv:mytv1:programTitle" }
-String Player_ProgramDescription "Program Description [%s]"    { channel="roku:roku_tv:mytv1:programDescription" }
-String Player_ProgramRating      "Program Rating [%s]"         { channel="roku:roku_tv:mytv1:programRating" }
+Switch Tv_Power                "Power [%s]"                    { channel="roku:roku_tv:mytv1:power" }
+String Tv_PowerState           "Power State [%s]"              { channel="roku:roku_tv:mytv1:powerState" }
+String Player_ActiveApp        "Current App [%s]"              { channel="roku:roku_tv:mytv1:activeApp" }
+String Player_ActiveAppName    "Current App Name [%s]"         { channel="roku:roku_tv:mytv1:activeAppName" }
+String Player_Button           "Send Command to Roku"          { channel="roku:roku_tv:mytv1:button" }
+Player Player_Control          "Control"                       { channel="roku:roku_tv:mytv1:control" }
+String Player_PlayMode         "Status [%s]"                   { channel="roku:roku_tv:mytv1:playMode" }
+Number:Time Player_TimeElapsed "Elapsed Time [%s]"             { channel="roku:roku_tv:mytv1:timeElapsed" }
+Number:Time Player_TimeTotal   "Total Time [%s]"               { channel="roku:roku_tv:mytv1:timeTotal" }
+DateTime Player_EndTime        "End Time [%s]"                 { channel="roku:roku_tv:mytv1:endTime" }
+Dimmer Player_Progress         "Progress [%.0f%%]"             { channel="roku:roku_tv:mytv1:progress" }
+String Tv_ActiveChannel        "Current Channel [%s]"          { channel="roku:roku_tv:mytv1:activeChannel" }
+String Tv_SignalMode           "Signal Mode [%s]"              { channel="roku:roku_tv:mytv1:signalMode" }
+Number Tv_SignalQuality        "Signal Quality [%d %%]"        { channel="roku:roku_tv:mytv1:signalQuality" }
+String Tv_ChannelName          "Channel Name [%s]"             { channel="roku:roku_tv:mytv1:channelName" }
+String Tv_ProgramTitle         "Program Title [%s]"            { channel="roku:roku_tv:mytv1:programTitle" }
+String Tv_ProgramDescription   "Program Description [%s]"      { channel="roku:roku_tv:mytv1:programDescription" }
+String Tv_ProgramRating        "Program Rating [%s]"           { channel="roku:roku_tv:mytv1:programRating" }
 
 // A virtual switch used to trigger a rule to start a given app
-Switch Player_StartYouTube       "Start YouTube"
+Switch Player_StartYouTube     "Start YouTube"
 ```
 
 ### `roku.sitemap` Example
@@ -167,15 +174,15 @@ sitemap roku label="Roku" {
         Text item=Player_EndTime icon="time"
         Slider item=Player_Progress icon="time"
         // The following items apply to Roku TVs only
-        Switch item=Player_Power
-        Text item=Player_PowerState
-        Selection item=Player_ActiveChannel icon="screen"
-        Text item=Player_SignalMode
-        Text item=Player_SignalQuality
-        Text item=Player_ChannelName
-        Text item=Player_ProgramTitle
-        Text item=Player_ProgramDescription
-        Text item=Player_ProgramRating
+        Switch item=Tv_Power
+        Text item=Tv_PowerState
+        Selection item=Tv_ActiveChannel icon="screen"
+        Text item=Tv_SignalMode
+        Text item=Tv_SignalQuality
+        Text item=Tv_ChannelName
+        Text item=Tv_ProgramTitle
+        Text item=Tv_ProgramDescription
+        Text item=Tv_ProgramRating
 
         // Virtual switch/button to trigger a rule to start a given app
         // The ON value displays as the button label

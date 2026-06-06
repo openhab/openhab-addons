@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,8 +22,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -46,8 +48,8 @@ import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyApiResult;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api.ShellyHttpClient;
+import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
-import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyDeviceStats;
 import org.openhab.binding.shelly.internal.handler.ShellyManagerInterface;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
@@ -79,15 +81,14 @@ public class ShellyManagerPage {
     private final ShellyHandlerFactory handlerFactory;
     protected final HttpClient httpClient;
     protected final ConfigurationAdmin configurationAdmin;
-    protected final ShellyBindingConfiguration bindingConfig = new ShellyBindingConfiguration();
     protected final String localIp;
     protected final int localPort;
 
     protected final Map<String, String> htmlTemplates = new HashMap<>();
     protected final Gson gson = new Gson();
 
-    protected final ShellyManagerCache<String, FwRepoEntry> firmwareRepo = new ShellyManagerCache<>(15 * 60 * 1000);
-    protected final ShellyManagerCache<String, FwArchList> firmwareArch = new ShellyManagerCache<>(15 * 60 * 1000);
+    protected final ShellyManagerCache<String, FwRepoEntry> firmwareRepo;
+    protected final ShellyManagerCache<String, FwArchList> firmwareArch;
 
     public static class ShellyMgrResponse {
         public @Nullable Object data = "";
@@ -145,13 +146,16 @@ public class ShellyManagerPage {
     }
 
     public ShellyManagerPage(ConfigurationAdmin configurationAdmin, ShellyTranslationProvider translationProvider,
-            HttpClient httpClient, String localIp, int localPort, ShellyHandlerFactory handlerFactory) {
+            HttpClient httpClient, String localIp, int localPort, ShellyHandlerFactory handlerFactory,
+            ShellyManagerCache<String, FwRepoEntry> firmwareRepo, ShellyManagerCache<String, FwArchList> firmwareArch) {
         this.configurationAdmin = configurationAdmin;
         this.resources = translationProvider;
         this.handlerFactory = handlerFactory;
         this.httpClient = httpClient;
         this.localIp = localIp;
         this.localPort = localPort;
+        this.firmwareRepo = firmwareRepo;
+        this.firmwareArch = firmwareArch;
     }
 
     public ShellyMgrResponse generateContent(String path, Map<String, String[]> parameters) throws ShellyApiException {
@@ -170,7 +174,7 @@ public class ShellyManagerPage {
         if (cl != null) {
             try (InputStream inputStream = cl.getResourceAsStream(file)) {
                 if (inputStream != null) {
-                    html = new BufferedReader(new InputStreamReader(inputStream)).lines()
+                    html = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8)).lines()
                             .collect(Collectors.joining("\n"));
                     htmlTemplates.put(template, html);
                 }
@@ -189,9 +193,10 @@ public class ShellyManagerPage {
 
     protected Map<String, String> fillProperties(Map<String, String> properties, String uid,
             ShellyManagerInterface th) {
+        ShellyBindingConfiguration bindingConfig = new ShellyBindingConfiguration();
         try {
             Configuration serviceConfig = configurationAdmin.getConfiguration("binding." + BINDING_ID);
-            bindingConfig.updateFromProperties(serviceConfig.getProperties());
+            bindingConfig = ShellyBindingConfiguration.fromProperties(serviceConfig.getProperties());
         } catch (IOException e) {
             logger.debug("ShellyManager: Unable to get bindingConfig");
         }
@@ -208,7 +213,7 @@ public class ShellyManagerPage {
         properties.put(ATTRIBUTE_UID, uid);
 
         ShellyDeviceProfile profile = th.getProfile();
-        ShellyThingConfiguration config = thing.getConfiguration().as(ShellyThingConfiguration.class);
+        ShellyApiConfiguration config = th.getApiConfig();
         ShellyDeviceStats stats = th.getStats();
         properties.putAll(stats.asProperties());
 
@@ -230,10 +235,10 @@ public class ShellyManagerPage {
                     !deviceName.isEmpty() ? deviceName : getString(properties.get(PROPERTY_SERVICE_NAME)));
         }
 
-        if (config.userId.isEmpty()) {
-            // Get defauls from Binding Config
-            properties.put("userId", bindingConfig.defaultUserId);
-            properties.put("password", bindingConfig.defaultPassword);
+        if (config.getUserId().isBlank()) {
+            // Get defaults from Binding Config
+            properties.put("userId", bindingConfig.getDefaultUserId());
+            properties.put("password", bindingConfig.getDefaultPassword());
         }
 
         addAttribute(properties, th, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_RSSI);
@@ -261,8 +266,9 @@ public class ShellyManagerPage {
                 (tz.isEmpty() ? "n/a" : tz) + ", auto-detect: " + getBool(profile.settings.tzautodetect));
         properties.put(ATTRIBUTE_ACTIONS_SKIPPED,
                 profile.status.astats != null ? String.valueOf(profile.status.astats.skipped) : "n/a");
-        properties.put(ATTRIBUTE_MAX_ITEMP, stats.maxInternalTemp > 0 ? stats.maxInternalTemp + " °C" : "n/a");
-        if (stats.maxInternalTemp == 0) {
+        int maxInternalTemp = stats.maxInternalTemp.get();
+        properties.put(ATTRIBUTE_MAX_ITEMP, maxInternalTemp > 0 ? maxInternalTemp + " °C" : "n/a");
+        if (maxInternalTemp == 0) {
             properties.replace(CHANNEL_DEVST_ITEMP, "n/a");
         }
 
@@ -288,8 +294,8 @@ public class ShellyManagerPage {
         if ((profile.settings.coiot != null) && (profile.settings.coiot.enabled != null)) {
             coiotEnabled = profile.settings.coiot.enabled;
         }
-        properties.put(ATTRIBUTE_COIOT_STATUS,
-                !coiotEnabled ? "Disbaled in settings" : "Events are " + (config.eventsCoIoT ? "enabled" : "disabled"));
+        properties.put(ATTRIBUTE_COIOT_STATUS, !coiotEnabled ? "Disabled in settings"
+                : "Events are " + (config.getEnableCoIOT() ? "enabled" : "disabled"));
         properties.put(ATTRIBUTE_COIOT_PEER,
                 (profile.settings.coiot != null) && !getString(profile.settings.coiot.peer).isEmpty()
                         ? profile.settings.coiot.peer
@@ -329,7 +335,7 @@ public class ShellyManagerPage {
             default:
                 statusIcon = ts.toString();
         }
-        properties.put(ATTRIBUTE_STATUS_ICON, statusIcon.toLowerCase());
+        properties.put(ATTRIBUTE_STATUS_ICON, statusIcon.toLowerCase(Locale.ROOT));
 
         return properties;
     }
@@ -393,10 +399,11 @@ public class ShellyManagerPage {
 
     protected FwRepoEntry getFirmwareRepoEntry(String deviceType, String mode) throws ShellyApiException {
         logger.debug("ShellyManager: Load firmware list from {}", FWREPO_PROD_URL);
-        FwRepoEntry fw = null;
-        if (firmwareRepo.containsKey(deviceType)) {
-            fw = firmwareRepo.get(deviceType);
+        FwRepoEntry fw = firmwareRepo.get(deviceType);
+        if (fw != null) {
+            return fw;
         }
+
         String json = httpGet(FWREPO_PROD_URL); // returns a strange JSON format so we are parsing this manually
         String entry = substringBetween(json, "\"" + deviceType + "\":{", "}");
         if (!entry.isEmpty()) {
@@ -434,14 +441,10 @@ public class ShellyManagerPage {
     }
 
     protected FwArchList getFirmwareArchiveList(String deviceType) throws ShellyApiException {
-        FwArchList list;
         String json = "";
-
-        if (firmwareArch.contains(deviceType)) {
-            list = firmwareArch.get(deviceType); // return from cache
-            if (list != null) {
-                return list;
-            }
+        FwArchList list = firmwareArch.get(deviceType); // return from cache
+        if (list != null) {
+            return list;
         }
 
         try {
@@ -489,15 +492,13 @@ public class ShellyManagerPage {
     }
 
     protected String httpRequest(HttpMethod method, String url) throws ShellyApiException {
-        ShellyApiResult apiResult = new ShellyApiResult();
-
         try {
             Request request = httpClient.newRequest(url).method(method).timeout(SHELLY_API_TIMEOUT_MS,
                     TimeUnit.MILLISECONDS);
             request.header(HttpHeader.ACCEPT, ShellyHttpClient.CONTENT_TYPE_JSON);
             logger.trace("{}: HTTP {} {}", LOG_PREFIX, method, url);
             ContentResponse contentResponse = request.send();
-            apiResult = new ShellyApiResult(contentResponse);
+            ShellyApiResult apiResult = ShellyApiResult.builder(contentResponse).build();
             String response = contentResponse.getContentAsString().replace("\t", "").replace("\r\n", "").trim();
             logger.trace("{}: HTTP Response {}: {}", LOG_PREFIX, contentResponse.getStatus(), response);
 
@@ -558,7 +559,7 @@ public class ShellyManagerPage {
         return option.toString();
     }
 
-    protected static String getDisplayName(Map<String, String> properties) {
+    protected static String getDisplayName(Map<String, String> properties, Thing thing) {
         String name = getString(properties.get(PROPERTY_DEV_NAME));
         if (name.isEmpty()) {
             name = getString(properties.get(PROPERTY_SERVICE_NAME));
@@ -566,17 +567,13 @@ public class ShellyManagerPage {
         if (name.isEmpty()) {
             name = getString(properties.get(PROPERTY_MAC_ADDRESS));
         }
-        return name;
-    }
-
-    protected ShellyThingConfiguration getThingConfig(ShellyManagerInterface th, Map<String, String> properties) {
-        Thing thing = th.getThing();
-        ShellyThingConfiguration config = thing.getConfiguration().as(ShellyThingConfiguration.class);
-        if (config.userId.isEmpty()) {
-            config.userId = getString(properties.get("userId"));
-            config.password = getString(properties.get("password"));
+        if (name.isEmpty()) {
+            name = thing.getLabel();
         }
-        return config;
+        if (name == null || name.isEmpty()) {
+            name = thing.getUID().getId();
+        }
+        return name;
     }
 
     protected void scheduleUpdate(ShellyManagerInterface th, String name, int delay) {

@@ -126,6 +126,10 @@
 			<channel id="ecovent_mode" typeId="ecovent_mode"/>
 		</channels>
 
+		<properties>
+			<property name="thingTypeVersion">2</property>
+		</properties>
+
 		<config-description>
 			<parameter name="ip" type="text" required="true">
 				<context>network-address</context>
@@ -278,6 +282,10 @@
 			<channel id="ecovent_output_y1" typeId="ecovent_output_y1"/>
 			<channel id="ecovent_mode" typeId="ecovent_mode"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">2</property>
+		</properties>
 
 		<config-description>
 			<parameter name="ip" type="text" required="true">

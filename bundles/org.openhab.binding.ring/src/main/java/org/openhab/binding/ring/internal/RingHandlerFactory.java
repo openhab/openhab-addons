@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,12 +17,14 @@ import static org.openhab.binding.ring.RingBindingConstants.*;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.WWWAuthenticationProtocolHandler;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.ring.internal.handler.AccountHandler;
 import org.openhab.binding.ring.internal.handler.ChimeHandler;
 import org.openhab.binding.ring.internal.handler.DoorbellHandler;
 import org.openhab.binding.ring.internal.handler.OtherDeviceHandler;
 import org.openhab.binding.ring.internal.handler.StickupcamHandler;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.net.HttpServiceUtil;
 import org.openhab.core.net.NetworkAddressService;
@@ -61,6 +63,7 @@ public class RingHandlerFactory extends BaseThingHandlerFactory {
 
     private final HttpClient httpClient;
     private final RingVideoServlet servlet;
+    private TimeZoneProvider timeZoneProvider;
     private int httpPort;
 
     public final Gson gson = new Gson();
@@ -68,7 +71,7 @@ public class RingHandlerFactory extends BaseThingHandlerFactory {
     @Activate
     public RingHandlerFactory(@Reference NetworkAddressService networkAddressService,
             @Reference RingVideoServlet servlet, @Reference HttpClientFactory httpClientFactory,
-            ComponentContext componentContext) throws Exception {
+            @Reference TimeZoneProvider timeZoneProvider, ComponentContext componentContext) throws Exception {
         super.activate(componentContext);
         httpPort = HttpServiceUtil.getHttpServicePort(componentContext.getBundleContext());
         if (httpPort == -1) {
@@ -76,11 +79,13 @@ public class RingHandlerFactory extends BaseThingHandlerFactory {
         }
         this.servlet = servlet;
         this.networkAddressService = networkAddressService;
+        this.timeZoneProvider = timeZoneProvider;
 
         logger.debug("Using OH HTTP port {}", httpPort);
 
         httpClient = httpClientFactory.createHttpClient("ring", new SslContextFactory.Client());
         httpClient.start();
+        httpClient.getProtocolHandlers().remove(WWWAuthenticationProtocolHandler.NAME);
     }
 
     @Deactivate
@@ -105,11 +110,11 @@ public class RingHandlerFactory extends BaseThingHandlerFactory {
                 return null;
             }
         } else if (thingTypeUID.equals(THING_TYPE_DOORBELL)) {
-            return new DoorbellHandler(thing);
+            return new DoorbellHandler(thing, timeZoneProvider);
         } else if (thingTypeUID.equals(THING_TYPE_CHIME)) {
             return new ChimeHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_STICKUPCAM)) {
-            return new StickupcamHandler(thing);
+            return new StickupcamHandler(thing, timeZoneProvider);
         } else if (thingTypeUID.equals(THING_TYPE_OTHERDEVICE)) {
             return new OtherDeviceHandler(thing);
         }

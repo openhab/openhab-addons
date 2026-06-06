@@ -1,7 +1,0 @@
-{
-  "access_token": "some_token_string",
-  "token_type": "Bearer",
-  "expires_in": 28799,
-  "refresh_token": "another_token_string",
-  "scope": "authenticate_user vehicle_data remote_services"
-}

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,12 +13,13 @@
 package org.openhab.binding.dirigera.internal.mock;
 
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.openhab.binding.dirigera.internal.Constants.PROPERTY_DEVICE_ID;
+import static org.openhab.binding.dirigera.internal.interfaces.Model.JSON_KEY_DEVICE_ID;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -26,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -41,17 +43,23 @@ import org.openhab.core.types.UnDefType;
  * The {@link DirigeraAPISimu} basic DeviceHandler for all devices
  *
  * @author Bernd Weymann - Initial contribution
+ * @author Bernd Weymann - add device set handling
  */
 @NonNullByDefault
 public class DirigeraAPISimu implements DirigeraAPI {
-    private static JSONObject model = new JSONObject();
+    private JSONObject model = new JSONObject();
 
-    public static String fileName = "src/test/resources/home/home.json";
-    public static Map<String, String> patchMap = new HashMap<>();
+    private String fileName = "src/test/resources/home/home.json";
+    private Map<String, String> patchMap = new HashMap<>();
+    private Map<String, String> setPatchMap = new HashMap<>();
     public static List<String> scenesAdded = new ArrayList<>();
     public static List<String> scenesDeleted = new ArrayList<>();
 
     public DirigeraAPISimu(HttpClient client, Gateway gateway) {
+    }
+
+    public DirigeraAPISimu(HttpClient client, Gateway gateway, String homeFile) {
+        fileName = homeFile;
     }
 
     @Override
@@ -69,7 +77,7 @@ public class DirigeraAPISimu implements DirigeraAPI {
             Iterator<Object> entries = devices.iterator();
             while (entries.hasNext()) {
                 JSONObject entry = (JSONObject) entries.next();
-                if (deviceId.equals(entry.get(PROPERTY_DEVICE_ID))) {
+                if (deviceId.equals(entry.get(JSON_KEY_DEVICE_ID))) {
                     return entry;
                 }
             }
@@ -84,8 +92,35 @@ public class DirigeraAPISimu implements DirigeraAPI {
     @Override
     public int sendAttributes(String id, JSONObject attributes) {
         JSONObject data = new JSONObject();
-        data.put(Model.ATTRIBUTES, attributes);
+        data.put(Model.JSON_KEY_ATTRIBUTES, attributes);
         return sendPatch(id, data);
+    }
+
+    @Override
+    public int sendSetAttributes(String id, JSONObject attributes) {
+        JSONObject data = new JSONObject();
+        data.put(Model.JSON_KEY_ATTRIBUTES, attributes);
+        synchronized (setPatchMap) {
+            setPatchMap.put(id, data.toString());
+            setPatchMap.notifyAll();
+        }
+        return 200;
+    }
+
+    public @Nullable String getSetPatch(String id) {
+        Instant endTime = Instant.now().plusSeconds(10);
+        synchronized (setPatchMap) {
+            String patch = setPatchMap.get(id);
+            while (patch == null && Instant.now().isBefore(endTime)) {
+                try {
+                    setPatchMap.wait(100);
+                    patch = setPatchMap.get(id);
+                } catch (InterruptedException e) {
+                    fail();
+                }
+            }
+            return patch;
+        }
     }
 
     @Override
@@ -117,7 +152,7 @@ public class DirigeraAPISimu implements DirigeraAPI {
             Iterator<Object> entries = devices.iterator();
             while (entries.hasNext()) {
                 JSONObject entry = (JSONObject) entries.next();
-                if (sceneId.equals(entry.get(PROPERTY_DEVICE_ID))) {
+                if (sceneId.equals(entry.get(JSON_KEY_DEVICE_ID))) {
                     return entry;
                 }
             }
@@ -136,15 +171,49 @@ public class DirigeraAPISimu implements DirigeraAPI {
         scenesDeleted.add(uuid);
     }
 
-    public static void waitForPatch() {
+    public @Nullable String getPatch(String id) {
+        Instant endTime = Instant.now().plusSeconds(10);
         synchronized (patchMap) {
-            if (patchMap.isEmpty()) {
+            String patch = patchMap.get(id);
+            while (patch == null && Instant.now().isBefore(endTime)) {
                 try {
-                    patchMap.wait(5000);
+                    patchMap.wait(100);
+                    patch = patchMap.get(id);
                 } catch (InterruptedException e) {
                     fail();
                 }
             }
+            return patch;
         }
+    }
+
+    /**
+     * Returns the patch for the given id immediately without waiting (returns null if not present).
+     * Use this when asserting that a patch was NOT sent.
+     */
+    public @Nullable String peekPatch(String id) {
+        synchronized (patchMap) {
+            return patchMap.get(id);
+        }
+    }
+
+    /**
+     * Clears all recorded device and set patches. Convenience method so tests do not need
+     * to call patchMap and setPatchMap individually — adding a new patch map in the future
+     * only requires updating this single method.
+     */
+    public void clearPatches() {
+        synchronized (patchMap) {
+            patchMap.clear();
+        }
+        synchronized (setPatchMap) {
+            setPatchMap.clear();
+        }
+    }
+
+    public void clear() {
+        clearPatches();
+        scenesAdded.clear();
+        scenesDeleted.clear();
     }
 }

@@ -10,7 +10,7 @@ The heating and cooling program schedules on the thermostat can also be configur
 
 ## Supported Things
 
-There is exactly one supported thing type, which represents any of the supported thermostat models.
+There is exactly one supported Thing type, which represents any of the supported thermostat models.
 It has the `rtherm` id.
 Multiple Things can be added if more than one thermostat is to be controlled.
 
@@ -21,17 +21,18 @@ Otherwise the Thing must be manually added.
 
 ## Thing Configuration
 
-The thing has a few configuration parameters:
+The Thing has a few configuration parameters:
 
-|    Parameter    | Description                                                                                                                                                                                                                                                                                                                |
-|-----------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| hostName        | The host name or IP address of the thermostat. Mandatory.                                                                                                                                                                                                                                                                  |
-| refresh         | Overrides the refresh interval of the thermostat data. Optional, the default is 2 minutes.                                                                                                                                                                                                                                 |
-| logRefresh      | Overrides the refresh interval of the run-time logs & humidity data. Optional, the default is 10 minutes.                                                                                                                                                                                                                  |
-| isCT80          | Flag to enable additional features only available on the CT80 thermostat. Optional, the default is false.                                                                                                                                                                                                                  |
-| disableLogs     | Disable retrieval of run-time logs from the thermostat. Optional, the default is false.                                                                                                                                                                                                                                    |
-| setpointMode    | Controls temporary or absolute setpoint mode. In "temporary" mode the thermostat will temporarily maintain the given setpoint until the next scheduled setpoint time period. In "absolute" mode the thermostat will ignore its program and maintain the given setpoint indefinitely. Optional, the default is "temporary". |
-| clockSync       | Flag to enable the binding to sync the internal clock on the thermostat to match the openHAB host's system clock. Sync occurs at binding startup and every hour thereafter. Optional, the default is **true**.                                                                                                             |
+|    Parameter       | Description                                                                                                                                                                                                                                                                                                                |
+|--------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| hostName           | The host name or IP address of the thermostat. Mandatory.                                                                                                                                                                                                                                                                  |
+| refresh            | Overrides the refresh interval of the thermostat data. Optional, the default is 2 minutes.                                                                                                                                                                                                                                 |
+| logRefresh         | Overrides the refresh interval of the run-time logs & humidity data. Optional, the default is 10 minutes.                                                                                                                                                                                                                  |
+| isCT80             | Flag to enable additional features only available on the CT80 thermostat. Optional, the default is **false**.                                                                                                                                                                                                              |
+| disableLogs        | Disable retrieval of run-time logs from the thermostat. Optional, the default is **false**.                                                                                                                                                                                                                                |
+| setpointMode       | Controls temporary or absolute setpoint mode. In "temporary" mode the thermostat will temporarily maintain the given setpoint until the next scheduled setpoint time period. In "absolute" mode the thermostat will ignore its program and maintain the given setpoint indefinitely. Optional, the default is "temporary". |
+| clockSync          | Flag to enable the binding to sync the internal clock on the thermostat to match the openHAB host's system clock. Sync occurs at binding startup and every hour thereafter. Optional, the default is **true**.                                                                                                             |
+| remoteTempDeadband | Flag to enable rounding of the value received by the `remote_temp` channel, see notes and rule example below. Optional, the default is **false**.                                                                                                                                                                          |
 
 ### Schedule Configuration
 
@@ -52,22 +53,28 @@ In that case, the existing schedule on the thermostat will remain untouched.
 The MyRadioThermostat/EnergyHub cloud service that previously enabled remote control and scheduling of the thermostat is now defunct.
 As such, disabling cloud connectivity on a thermostat that was previously connected to the cloud service may slightly improve the speed and reliability of accessing the local API.
 
-The thermostat can de-provisioned from the cloud by issuing the following `curl` commands:
+The thermostat can be deprovisioned from the cloud by issuing the following `curl` commands:
 
 ```shell
 curl http://$THERMOSTAT_IP/cloud -d '{"enabled":0}'
 curl http://$THERMOSTAT_IP/cloud -d '{"authkey":""}'
 ```
 
-### Some notes
+### Some Notes
 
-- The main caveat for using this binding is to keep in mind that the web server in the thermostat is very slow. Do not over load it with excessive amounts of simultaneous commands.
+- The main caveat for using this binding is to keep in mind that the web server in the thermostat is very slow. Do not overload it with excessive amounts of simultaneous commands.
 - When changing the thermostat mode, the current temperature set point is cleared and a refresh of the thermostat data is done to get the new mode's set point.
 - Since retrieving the thermostat's data is the slowest operation, it will take several seconds after changing the mode before the new set point is displayed.
 - Clock sync will not occur while the `override` flag is on (i.e. the program setpoint has been manually overridden) because syncing time will reset the temperature back to the program setpoint.
 - The `override` flag is not reported correctly on older thermostat versions (i.e. /tstat/model reports v1.09)
-- The 'Program Mode' command is untested and according to the published API is only available on a CT80 Rev B.
+- The Program Mode command is untested and according to the published API is only available on a CT80 Rev B.
 - Humidity information is available only when using a CT80 thermostat.
+- The `remote_temp` channel can be used to send a temperature reading from a remote sensor to override the internal temperature reading of the thermostat in 1 degree increments.
+- An example use case for a thermostat that is located in a hallway would be to place a sensor in a bedroom to provide more accurate temperature regulation in the bedroom.
+- The temperature value from the sensor should be sent to the thermostat once per minute and with care taken to reset the thermostat to internal temperature mode in the case that the sensor stops updating.
+- If the `remoteTempDeadband` configuration parameter is set to **true** the value received by the `remote_temp` channel will be rounded up or down depending on the thermostat's current state.
+- This rounding allows the deadband/temperature swing to work properly for any remote temperature value (including those with decimal places) sent.
+- For example, if the heat setpoint is 70°F, the heat will not energize until the temperature drops to 69.0°F and should stay on until the temperature reaches 70.0°F again. The reverse is true for cooling.
 - If `remote_temp` or `message` channels are used, their values in the thermostat will be cleared during binding shutdown.
 
 ## Channels
@@ -185,7 +192,7 @@ String Therm_Message              "Message: [%s]"                               
 Number:Temperature Therm_Rtemp    "Remote Temperature [%d]" <temperature>         { channel="radiothermostat:rtherm:mytherm1:remote_temp" }
 
 // A virtual switch used to trigger a rule to send a json command to the thermostat
-Switch Therm_mysetting   "Send my preferred setting"
+Switch Therm_mysetting            "Send my preferred setting"
 ```
 
 ### `radiotherm.sitemap` Example
@@ -208,8 +215,8 @@ sitemap radiotherm label="My Thermostat" {
         Text item=Therm_NextTemp icon="temperature"
         Text item=Therm_NextTime icon="time"
 
-        // Example of overriding the thermostat's temperature reading
-        Switch item=Therm_Rtemp label="Remote Temp" icon="temperature" mappings=[60="60", 75="75", 80="80", -1="Reset"]
+        // Example of overriding the thermostat's temperature reading - TEST USE ONLY!
+        // Switch item=Therm_Rtemp label="Remote Temp" icon="temperature" mappings=[60="60", 75="75", 80="80", -1="Reset"]
 
         // Virtual switch/button to trigger a rule to send a custom command
         // The ON value displays in the button
@@ -236,7 +243,7 @@ when
   Item Therm_mysetting received command
 then
   val actions = getActions("radiothermostat","radiothermostat:rtherm:mytherm1")
-  if(null === actions) {
+  if (null === actions) {
       logInfo("actions", "Actions not found, check thing ID")
       return
   }
@@ -258,6 +265,20 @@ then
 
 end
 
+rule "Send remote temperature sensor readings to the thermostat"
+when
+  // An item containing the temperature from a remote sensor
+  // The item should be made to expire (e.g. expire="10m" in the item definition) in case the sensor should stop updating
+  // Must set the `remoteTempDeadband` configuration parameter to true and the `refresh` configuration parameter to 1
+  Item RemoteSensorTemp received update
+then
+  if (RemoteSensorTemp.state != NULL && RemoteSensorTemp.state != UNDEF) {
+      Therm_Rtemp.sendCommand(RemoteSensorTemp.state)
+  } else {
+      Therm_Rtemp.sendCommand(-1)
+  }
+end
+
 rule "Display outside temp in thermostat message area"
 when
   // An item containing the current outside temperature
@@ -268,7 +289,7 @@ then
   // Sends empty string to clear the number and restore the time display if OutsideTemp is undefined
   var temp = ""
 
-  if (newState != null && newState != UNDEF) {
+  if (newState != NULL && newState != UNDEF) {
       temp = Math.round((newState as DecimalType).doubleValue).intValue.toString
   }
 

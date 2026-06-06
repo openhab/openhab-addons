@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -262,6 +262,10 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                             if (command == OnOffType.OFF) {
                                 isPowerOn = false;
                                 isInitialQuery = false;
+                                if (!BLANK.equals(currentPlayMode)) {
+                                    currentPlayMode = BLANK;
+                                    clearStatusChannels(true);
+                                }
                             }
                         }
                         break;
@@ -368,11 +372,16 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
      * Close the connection with the Oppo player
      */
     private synchronized void closeConnection() {
+        if (!BLANK.equals(currentPlayMode)) {
+            currentPlayMode = BLANK;
+            clearStatusChannels(true);
+        }
+
         if (connector.isConnected()) {
             connector.close();
-            connector.removeEventListener(this);
             logger.debug("closeConnection(): disconnected");
         }
+        connector.removeEventListener(this);
     }
 
     /**
@@ -400,7 +409,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                         // Player sent a time code update ie: 000 000 T 00:00:01
                         // g1 = title(movie only; cd always 000), g2 = chapter(movie)/track(cd), g3 = time display code,
                         // g4 = time
-                        Matcher matcher = TIME_CODE_PATTERN.matcher(updateData);
+                        final Matcher matcher = TIME_CODE_PATTERN.matcher(updateData);
                         if (matcher.find()) {
                             // only update these when chapter/track changes to prevent spamming the channels with
                             // unnecessary updates
@@ -434,7 +443,10 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                     case QPW:
                         updateChannelState(CHANNEL_POWER, updateData);
                         if (OFF.equals(updateData)) {
-                            currentPlayMode = BLANK;
+                            if (!BLANK.equals(currentPlayMode)) {
+                                currentPlayMode = BLANK;
+                                clearStatusChannels(true);
+                            }
                             isPowerOn = false;
                         } else {
                             isPowerOn = true;
@@ -443,7 +455,10 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                     case UPW:
                         updateChannelState(CHANNEL_POWER, ONE.equals(updateData) ? ON : OFF);
                         if (ZERO.equals(updateData)) {
-                            currentPlayMode = BLANK;
+                            if (!BLANK.equals(currentPlayMode)) {
+                                currentPlayMode = BLANK;
+                                clearStatusChannels(true);
+                            }
                             isPowerOn = false;
                             isInitialQuery = false;
                         } else {
@@ -470,7 +485,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                         break;
                     case QTK:
                         // example: 02/10, split off both numbers
-                        String[] track = updateData.split(SLASH);
+                        final String[] track = updateData.split(SLASH);
                         if (track.length == 2) {
                             updateChannelState(CHANNEL_CURRENT_TITLE, track[0]);
                             updateChannelState(CHANNEL_TOTAL_TITLE, track[1]);
@@ -478,7 +493,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                         break;
                     case QCH:
                         // example: 03/03, split off the both numbers
-                        String[] chapter = updateData.split(SLASH);
+                        final String[] chapter = updateData.split(SLASH);
                         if (chapter.length == 2) {
                             updateChannelState(CHANNEL_CURRENT_CHAPTER, chapter[0]);
                             updateChannelState(CHANNEL_TOTAL_CHAPTER, chapter[1]);
@@ -487,28 +502,20 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                     case UPL:
                     case QPL:
                         // try to normalize the slightly different responses between UPL and QPL
-                        String playStatus = OppoStatusCodes.PLAYBACK_STATUS.get(updateData);
-                        if (playStatus == null) {
-                            playStatus = updateData;
-                        }
+                        currentPlayMode = OppoStatusCodes.PLAYBACK_STATUS.getOrDefault(updateData, updateData);
 
                         // if playback has stopped, we have to zero out Time, Title and Track info and so on manually
-                        if (NO_DISC.equals(playStatus) || LOADING.equals(playStatus) || OPEN.equals(playStatus)
-                                || CLOSE.equals(playStatus) || STOP.equals(playStatus)) {
-                            updateChannelState(CHANNEL_CURRENT_TITLE, ZERO);
-                            updateChannelState(CHANNEL_TOTAL_TITLE, ZERO);
-                            updateChannelState(CHANNEL_CURRENT_CHAPTER, ZERO);
-                            updateChannelState(CHANNEL_TOTAL_CHAPTER, ZERO);
-                            updateChannelState(CHANNEL_TIME_DISPLAY, UNDEF);
-                            updateChannelState(CHANNEL_AUDIO_TYPE, UNDEF);
-                            updateChannelState(CHANNEL_SUBTITLE_TYPE, UNDEF);
+                        if (NO_DISC.equals(currentPlayMode) || LOADING.equals(currentPlayMode)
+                                || OPEN.equals(currentPlayMode) || CLOSE.equals(currentPlayMode)
+                                || STOP.equals(currentPlayMode)) {
+                            clearStatusChannels(false);
                         }
-                        updateChannelState(CHANNEL_PLAY_MODE, playStatus);
+                        updateChannelState(CHANNEL_PLAY_MODE, currentPlayMode);
                         updateState(CHANNEL_CONTROL,
-                                PLAY.equals(playStatus) ? PlayPauseType.PLAY : PlayPauseType.PAUSE);
+                                PLAY.equals(currentPlayMode) ? PlayPauseType.PLAY : PlayPauseType.PAUSE);
 
                         // ejecting the disc does not produce a UDT message, so clear disc type manually
-                        if (OPEN.equals(playStatus) || NO_DISC.equals(playStatus)) {
+                        if (OPEN.equals(currentPlayMode) || NO_DISC.equals(currentPlayMode)) {
                             updateChannelState(CHANNEL_DISC_TYPE, UNKNOW_DISC);
                             currentDiscType = BLANK;
                         }
@@ -516,10 +523,9 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                         // if switching to play mode and not a CD then query the subtitle type...
                         // because if subtitles were on when playback stopped, they got nulled out above
                         // and the subtitle update message ("UST") is not sent when play starts like it is for audio
-                        if (PLAY.equals(playStatus) && !CDDA.equals(currentDiscType)) {
+                        if (PLAY.equals(currentPlayMode) && !CDDA.equals(currentDiscType)) {
                             connector.sendCommand(OppoCommand.QUERY_SUBTITLE_TYPE);
                         }
-                        currentPlayMode = playStatus;
                         break;
                     case QRP:
                         updateChannelState(CHANNEL_REPEAT_MODE, updateData);
@@ -530,8 +536,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                     case UDT:
                     case QDT:
                         // try to normalize the slightly different responses between UDT and QDT
-                        final String discType = OppoStatusCodes.DISC_TYPE.get(updateData);
-                        currentDiscType = (discType != null ? discType : updateData);
+                        currentDiscType = OppoStatusCodes.DISC_TYPE.getOrDefault(updateData, updateData);
                         updateChannelState(CHANNEL_DISC_TYPE, currentDiscType);
                         break;
                     case UAT:
@@ -559,7 +564,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                         break;
                     case UVO:
                         // example: _480I60 1080P60 - 1st source res, 2nd output res
-                        String[] resolution = updateData.replace(UNDERSCORE, BLANK).split(SPACE);
+                        final String[] resolution = updateData.replace(UNDERSCORE, BLANK).split(SPACE);
                         if (resolution.length == 2) {
                             updateChannelState(CHANNEL_SOURCE_RESOLUTION, resolution[0]);
                             updateChannelState(CHANNEL_OUTPUT_RESOLUTION, resolution[1]);
@@ -592,6 +597,22 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                 logger.debug("Exception processing event from player: {}", e.getMessage());
             }
         }
+    }
+
+    /**
+     * Clears the status channels
+     */
+    private void clearStatusChannels(boolean clearPlayMode) {
+        if (clearPlayMode) {
+            updateChannelState(CHANNEL_PLAY_MODE, null);
+        }
+        updateChannelState(CHANNEL_CURRENT_TITLE, null);
+        updateChannelState(CHANNEL_TOTAL_TITLE, null);
+        updateChannelState(CHANNEL_CURRENT_CHAPTER, null);
+        updateChannelState(CHANNEL_TOTAL_CHAPTER, null);
+        updateChannelState(CHANNEL_TIME_DISPLAY, null);
+        updateChannelState(CHANNEL_AUDIO_TYPE, null);
+        updateChannelState(CHANNEL_SUBTITLE_TYPE, null);
     }
 
     /**
@@ -764,12 +785,12 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
      * @param channel the channel
      * @param value the value to be updated
      */
-    private void updateChannelState(String channel, String value) {
+    private void updateChannelState(String channel, @Nullable String value) {
         if (!isLinked(channel)) {
             return;
         }
 
-        if (UNDEF.equals(value)) {
+        if (value == null) {
             updateState(channel, UnDefType.UNDEF);
             return;
         }

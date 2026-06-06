@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,6 +35,7 @@ public class FroniusBindingConstants {
     public static final ThingTypeUID THING_TYPE_INVERTER = new ThingTypeUID(BINDING_ID, "powerinverter");
     public static final ThingTypeUID THING_TYPE_METER = new ThingTypeUID(BINDING_ID, "meter");
     public static final ThingTypeUID THING_TYPE_OHMPILOT = new ThingTypeUID(BINDING_ID, "ohmpilot");
+    public static final ThingTypeUID THING_TYPE_BATTERY = new ThingTypeUID(BINDING_ID, "battery");
 
     // Inverter channels
     public static final String INVERTER_DATA_CHANNEL_DAY_ENERGY = "inverterdatachanneldayenergy";
@@ -97,17 +98,34 @@ public class FroniusBindingConstants {
     public static final String OHMPILOT_ERROR_CODE = "errorcode";
     public static final String OHMPILOT_STATE_CODE = "statecode";
 
+    // Battery channels
+    public static final String BATTERY_CAPACITY_MAXIMUM = "maximumCapacity";
+    public static final String BATTERY_DESIGNED_CAPACITY = "designedCapacity";
+    public static final String BATTERY_CURRENT_DC = "currentDc";
+    public static final String BATTERY_VOLTAGE_DC = "voltageDc";
+    public static final String BATTERY_STATE_OF_CHARGE = "soc";
+    public static final String BATTERY_STATUS_BATTERY_CELL = "status";
+    public static final String BATTERY_ENABLE = "enable";
+    public static final String BATTERY_TEMPERATURE_CELL = "temperature";
+    public static final String BATTERY_TIMESTAMP = "timestamp";
+
     // List of all Urls
     public static final String INVERTER_REALTIME_DATA_URL = "%SCHEME%://%IP%/solar_api/v1/GetInverterRealtimeData.cgi?Scope=Device&DeviceId=%DEVICEID%&DataCollection=CommonInverterData";
+    public static final String INVERTER_INFO_URL = "%SCHEME%://%IP%/solar_api/v1/GetInverterInfo.cgi";
     public static final String POWERFLOW_REALTIME_DATA_URL = "%SCHEME%://%IP%/solar_api/v1/GetPowerFlowRealtimeData.fcgi";
     public static final String METER_REALTIME_DATA_URL = "%SCHEME%://%IP%/solar_api/v1/GetMeterRealtimeData.cgi?Scope=Device&DeviceId=%DEVICEID%&DataCollection=MeterRealtimeData";
     public static final String OHMPILOT_REALTIME_DATA_URL = "%SCHEME%://%IP%/solar_api/v1/GetOhmPilotRealtimeData.cgi?Scope=Device&DeviceId=%DEVICEID%";
+    public static final String BATTERY_REALTIME_DATA_URL = "%SCHEME%://%IP%/solar_api/v1/GetStorageRealtimeData.cgi?Scope=Device&DeviceId=%DEVICEID%&DataCollection=StorageRealtimeData";
 
     public static final int API_TIMEOUT = 5000;
     public static final int DEFAULT_REFRESH_PERIOD = 10;
 
     public static String getInverterDataUrl(String scheme, String ip, int deviceId) {
         return parseUrl(INVERTER_REALTIME_DATA_URL, scheme, ip, deviceId);
+    }
+
+    public static String getInverterInfoUrl(String scheme, String ip) {
+        return parseUrl(INVERTER_INFO_URL, scheme, ip);
     }
 
     public static String getPowerFlowDataUrl(String scheme, String ip) {
@@ -120,6 +138,10 @@ public class FroniusBindingConstants {
 
     public static String getOhmPilotDataUrl(String scheme, String ip, int deviceId) {
         return parseUrl(OHMPILOT_REALTIME_DATA_URL, scheme, ip, deviceId);
+    }
+
+    public static String getBatteryDataUrl(String scheme, String ip, int deviceId) {
+        return parseUrl(BATTERY_REALTIME_DATA_URL, scheme, ip, deviceId);
     }
 
     public static String parseUrl(String url, String scheme, String ip) {

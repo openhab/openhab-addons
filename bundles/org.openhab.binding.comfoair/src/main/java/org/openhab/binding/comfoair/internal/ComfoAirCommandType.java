@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -840,7 +840,7 @@ public enum ComfoAirCommandType {
      *
      * @return all ComfoAirCommand's identified by keys
      */
-    public static Collection<ComfoAirCommand> getReadCommandsByEventTypes(List<String> keys) {
+    public static Collection<ComfoAirCommand> getReadCommandsByEventTypes(Set<String> keys) {
         Map<Integer, ComfoAirCommand> commands = new HashMap<>();
         for (ComfoAirCommandType entry : values()) {
             if (keys.contains(entry.key)) {

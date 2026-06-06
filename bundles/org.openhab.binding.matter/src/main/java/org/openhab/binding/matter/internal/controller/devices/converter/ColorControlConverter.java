@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,6 @@ import static org.openhab.binding.matter.internal.MatterBindingConstants.*;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -227,7 +226,7 @@ public class ColorControlConverter extends GenericConverter<ColorControlCluster>
                 EnhancedColorModeEnum newColorMode = lastColorMode;
                 if (message.value instanceof ColorControlCluster.ColorModeEnum colorMode) {
                     try {
-                        newColorMode = MatterEnum.fromValue(EnhancedColorModeEnum.class, colorMode.value);
+                        newColorMode = MatterEnum.fromValue(EnhancedColorModeEnum.class, colorMode.getValue());
                     } catch (IllegalArgumentException e) {
                         logger.debug("Unknown color mode: {}", numberValue);
                     }
@@ -287,8 +286,13 @@ public class ColorControlConverter extends GenericConverter<ColorControlCluster>
             }
         }
         lastHSB = new HSBType(lastHSB.getHue(), lastHSB.getSaturation(), ValueUtils.levelToPercent(brightness));
-        lastColorMode = Optional.ofNullable(initializingCluster.enhancedColorMode).orElseGet(
-                () -> MatterEnum.fromValue(EnhancedColorModeEnum.class, initializingCluster.colorMode.value));
+        EnhancedColorModeEnum enhancedColorMode = initializingCluster.enhancedColorMode;
+        ColorControlCluster.ColorModeEnum colorMode = initializingCluster.colorMode;
+        if (enhancedColorMode != null) {
+            lastColorMode = enhancedColorMode;
+        } else if (colorMode != null) {
+            lastColorMode = MatterEnum.fromValue(EnhancedColorModeEnum.class, colorMode.getValue());
+        }
         lastOnOff = onOff;
         lastX = initializingCluster.currentX != null ? initializingCluster.currentX : 0;
         lastY = initializingCluster.currentY != null ? initializingCluster.currentY : 0;

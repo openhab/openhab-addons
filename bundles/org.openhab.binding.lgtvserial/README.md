@@ -6,19 +6,19 @@ See below for a list of supported channels.
 
 ## Supported Things
 
-Supports one TV, monitor or projector per thing, also corresponding to a unique serial port.
+Supports one TV, monitor or projector per Thing, also corresponding to a unique serial port.
 The protocol supports daisy-chaining of serial devices.
 
-This binding supports the following thing types:
+This binding supports the following Thing types:
 
 | Thing ID          | Description                                                                                           |
 |-------------------|-------------------------------------------------------------------------------------------------------|
-| lgtv              | Generic LG TV thing. This thing should be used when there is no proper thing defined for your device. |
-| lgtv-LV-series    | This thing supports the LED LCD TV models LV and LW except \*LV255C, \*LV355B, \*LV355C                  |
-| lgtv-LVx55-series | This thing supports the \*LV255C, \*LV355B, \*LV355C models                                              |
-| lgtv-LK-series    | This thing supports the LCD TV models LK                                                              |
-| lgtv-PW-series    | This thing supports the PLASMA TV models PW                                                           |
-| lgtv-M6503C       | This thing supports the M6503C monitor                                                                |
+| lgtv              | Generic LG TV Thing. This Thing should be used when there is no proper Thing defined for your device. |
+| lgtv-LV-series    | This Thing supports the LED LCD TV models LV and LW except \*LV255C, \*LV355B, \*LV355C                  |
+| lgtv-LVx55-series | This Thing supports the \*LV255C, \*LV355B, \*LV355C models                                              |
+| lgtv-LK-series    | This Thing supports the LCD TV models LK                                                              |
+| lgtv-PW-series    | This Thing supports the PLASMA TV models PW                                                           |
+| lgtv-M6503C       | This Thing supports the M6503C monitor                                                                |
 
 The LG serial command set appears to be similar on many models ([\[1\]](#ref1), [\[5\]](#ref5)), but not all commands will work on all models.
 
@@ -41,7 +41,7 @@ No discovery supported; manual configuration is required.
 
 ## Thing Configuration
 
-The thing has the following configuration parameters:
+The Thing has the following configuration parameters:
 
 | Parameter Label        | Parameter ID         | Description                                                                     | Accepted values       |
 |------------------------|----------------------|---------------------------------------------------------------------------------|-----------------------|
@@ -69,7 +69,7 @@ The following channels are common to most TVs, taken from [\[4\]](#ref4).
 | volume-mute     | k e     | Switch    | Set mute on or off                               |
 
 As for others, please refer to the documentation of your device in the section named "Controlling the multiple product", "External control" or any section that refers to RS-232.
-If your device documentation doesn't give such information, you can refer to the [LG protocol references](#lg-protocol-references) below and use the "Generic LG TV" thing which should contain all the different possible channels/commands.
+If your device documentation doesn't give such information, you can refer to the [LG protocol references](#lg-protocol-references) below and use the "Generic LG TV" Thing which should contain all the different possible channels/commands.
 
 Note: Devices might not respond or return an error to some command when the device is powered off which can put items in an incorrect state until the device is turned on.
 For instance, getting the volume status when the device is off makes no sense.

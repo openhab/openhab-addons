@@ -10,7 +10,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Rollershutter Module</label>
-		<description>Nikobus Rollershutter module</description>
+		<description>Nikobus rollershutter module</description>
 		<semantic-equipment-tag>Blinds</semantic-equipment-tag>
 
 		<channels>

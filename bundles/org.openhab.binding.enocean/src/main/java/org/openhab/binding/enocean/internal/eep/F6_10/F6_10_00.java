@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,7 +40,6 @@ public class F6_10_00 extends _RPSMessage {
     public static final byte TILTED = (byte) 0xD0; // 1101xxxx
 
     public F6_10_00() {
-        super();
     }
 
     public F6_10_00(ERP1Message packet) {

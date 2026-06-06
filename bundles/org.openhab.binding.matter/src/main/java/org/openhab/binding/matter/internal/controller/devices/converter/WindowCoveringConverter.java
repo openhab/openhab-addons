@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -78,7 +78,7 @@ public class WindowCoveringConverter extends GenericConverter<WindowCoveringClus
                     break;
             }
         } else if (command instanceof PercentType percentType) {
-            moveCommand(WindowCoveringCluster.goToLiftPercentage(percentType.intValue()));
+            moveCommand(WindowCoveringCluster.goToLiftPercentage(percentType.intValue() * 100));
         }
         super.handleCommand(channelUID, command);
     }

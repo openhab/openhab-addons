@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,7 +27,9 @@ public class SerialBindingConstants {
     private static final String BINDING_ID = "serial";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "serialBridge");
+    public static final ThingTypeUID THING_TYPE_SERIAL_BRIDGE = new ThingTypeUID(BINDING_ID, "serialBridge");
+    public static final ThingTypeUID THING_TYPE_TCP_BRIDGE = new ThingTypeUID(BINDING_ID, "tcpBridge");
+    public static final ThingTypeUID THING_TYPE_TCP_SERVER_BRIDGE = new ThingTypeUID(BINDING_ID, "tcpServerBridge");
     public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "serialDevice");
 
     // List of all Channel ids

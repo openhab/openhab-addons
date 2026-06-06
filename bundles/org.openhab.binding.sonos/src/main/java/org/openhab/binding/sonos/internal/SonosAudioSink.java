@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -133,6 +133,8 @@ public class SonosAudioSink extends AudioSinkSync {
             StreamServed streamServed;
             try {
                 streamServed = audioHTTPServer.serve(audioStream, 10, true);
+                logger.debug("Audio stream accessible through HTTP served at {} for Sonos playback",
+                        streamServed.url());
             } catch (IOException e) {
                 try {
                     audioStream.close();

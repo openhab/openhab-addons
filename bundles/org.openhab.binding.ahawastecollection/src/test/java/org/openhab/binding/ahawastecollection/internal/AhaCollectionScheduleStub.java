@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,11 +12,13 @@
  */
 package org.openhab.binding.ahawastecollection.internal;
 
+import static java.util.Map.entry;
+
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -29,19 +31,23 @@ import org.openhab.binding.ahawastecollection.internal.CollectionDate.WasteType;
 public final class AhaCollectionScheduleStub implements AhaCollectionSchedule {
 
     public static final Date GENERAL_WASTE_DATE = new GregorianCalendar(2021, 2, 19).getTime();
-    public static final Date LEIGHTWEIGHT_PACKAGING_DATE = new GregorianCalendar(2021, 2, 20).getTime();
+    public static final Date LIGHTWEIGHT_PACKAGING_DATE = new GregorianCalendar(2021, 2, 20).getTime();
     public static final Date BIO_WASTE_DATE = new GregorianCalendar(2021, 2, 21).getTime();
     public static final Date PAPER_DATE = new GregorianCalendar(2021, 2, 22).getTime();
+    public static final Date CHRISTMAS_TREE_DATE = new GregorianCalendar(2022, 1, 6).getTime();
 
     @Override
     public Map<WasteType, CollectionDate> getCollectionDates() throws IOException {
-        final Map<WasteType, CollectionDate> result = new LinkedHashMap<>(4);
-        result.put(WasteType.GENERAL_WASTE,
-                new CollectionDate(WasteType.GENERAL_WASTE, Arrays.asList(GENERAL_WASTE_DATE)));
-        result.put(WasteType.LIGHT_PACKAGES,
-                new CollectionDate(WasteType.GENERAL_WASTE, Arrays.asList(LEIGHTWEIGHT_PACKAGING_DATE)));
-        result.put(WasteType.BIO_WASTE, new CollectionDate(WasteType.GENERAL_WASTE, Arrays.asList(BIO_WASTE_DATE)));
-        result.put(WasteType.PAPER, new CollectionDate(WasteType.GENERAL_WASTE, Arrays.asList(PAPER_DATE)));
-        return result;
+        return Map.ofEntries(
+                entry(WasteType.GENERAL_WASTE,
+                        new CollectionDate(WasteType.GENERAL_WASTE, new ArrayList<>(List.of(GENERAL_WASTE_DATE)))),
+                entry(WasteType.LIGHT_PACKAGES,
+                        new CollectionDate(WasteType.LIGHT_PACKAGES,
+                                new ArrayList<>(List.of(LIGHTWEIGHT_PACKAGING_DATE)))),
+                entry(WasteType.BIO_WASTE,
+                        new CollectionDate(WasteType.BIO_WASTE, new ArrayList<>(List.of(BIO_WASTE_DATE)))),
+                entry(WasteType.PAPER, new CollectionDate(WasteType.PAPER, new ArrayList<>(List.of(PAPER_DATE)))),
+                entry(WasteType.CHRISTMAS_TREES,
+                        new CollectionDate(WasteType.CHRISTMAS_TREES, new ArrayList<>(List.of(CHRISTMAS_TREE_DATE)))));
     }
 }

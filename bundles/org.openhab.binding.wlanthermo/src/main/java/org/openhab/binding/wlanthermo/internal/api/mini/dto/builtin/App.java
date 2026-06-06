@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -64,7 +64,6 @@ public class App {
      * @param timestamp
      */
     public App(String tempUnit, Pit pit, Pit pit2, Double cpuLoad, Double cpuTemp, Channel channel, String timestamp) {
-        super();
         this.tempUnit = tempUnit;
         this.pit = pit;
         this.pit2 = pit2;

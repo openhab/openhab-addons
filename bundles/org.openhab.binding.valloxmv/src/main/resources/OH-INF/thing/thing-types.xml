@@ -51,11 +51,11 @@
 			<parameter name="ip" type="text" required="true">
 				<label>IP Address</label>
 				<context>network-address</context>
-				<description>IP address or host name of online interface of ventilation unit</description>
+				<description>Hostname or IP address of the ventilation unit's web interface</description>
 			</parameter>
-			<parameter name="updateinterval" type="integer" required="false">
+			<parameter name="updateinterval" type="integer" required="false" min="15" unit="s">
 				<label>Update Interval</label>
-				<description>Data update interval in seconds (default: 60s)</description>
+				<description>Data update interval in seconds (minimum: 15s; default: 60s)</description>
 				<default>60</default>
 			</parameter>
 		</config-description>
@@ -97,7 +97,7 @@
 			<tag>Measurement</tag>
 			<tag>Speed</tag>
 		</tags>
-		<state readOnly="true" min="0" max="1" pattern="%d %unit%"/>
+		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="fanspeedextract" advanced="true">

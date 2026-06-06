@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,6 +35,7 @@ public class TapoThingConstants {
     /*** LIST OF SUPPORTED DEVICE NAMES ***/
     public static final String DEVICE_BRIDGE = "bridge";
     public static final String DEVICE_H100 = "H100";
+    public static final String DEVICE_HS200 = "HS200";
     public static final String DEVICE_P100 = "P100";
     public static final String DEVICE_P105 = "P105";
     public static final String DEVICE_P110 = "P110";
@@ -66,10 +67,12 @@ public class TapoThingConstants {
     public static final String DEVICE_DESCRIPTION_MOTION_SENSOR = "Motion-Sensor";
     public static final String DEVICE_DESCRIPTION_TEMP_SENSOR = "Temperature-Sensor";
     public static final String DEVICE_DESCRIPTION_SMART_SWITCH = "Smart-Switch";
+    public static final String DEVICE_DESCRIPTION_LIGHT_SWITCH = "Light-Switch";
 
     /*** LIST OF SUPPORTED THING UIDS ***/
     public static final ThingTypeUID BRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_BRIDGE);
     public static final ThingTypeUID H100_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_H100);
+    public static final ThingTypeUID HS200_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_HS200);
     public static final ThingTypeUID P100_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_P100);
     public static final ThingTypeUID P105_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_P105);
     public static final ThingTypeUID P110_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_P110);
@@ -107,23 +110,26 @@ public class TapoThingConstants {
     public static final Set<ThingTypeUID> SUPPORTED_MOTION_SENSORS = Set.of();
     public static final Set<ThingTypeUID> SUPPORTED_WEATHER_SENSORS = Set.of(T310_THING_TYPE, T315_THING_TYPE);
     public static final Set<ThingTypeUID> SUPPORTED_SMART_SWITCHES = Set.of(S210_THING_TYPE, S220_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_LIGHT_SWITCH_UIDS = Set.of(HS200_THING_TYPE);
 
     /*** SET OF ALL SUPPORTED THINGS ***/
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
-            Stream.of(SUPPORTED_BRIDGE_UIDS, SUPPORTED_HUB_UIDS, SUPPORTED_SOCKET_UIDS, SUPPORTED_SOCKET_STRIP_UIDS,
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream
+            .of(SUPPORTED_BRIDGE_UIDS, SUPPORTED_HUB_UIDS, SUPPORTED_SOCKET_UIDS, SUPPORTED_SOCKET_STRIP_UIDS,
                     SUPPORTED_WHITE_BULB_UIDS, SUPPORTED_COLOR_BULB_UIDS, SUPPORTED_LIGHT_STRIP_UIDS,
                     SUPPORTED_SMART_CONTACTS, SUPPORTED_MOTION_SENSORS, SUPPORTED_WEATHER_SENSORS,
-                    SUPPORTED_SMART_SWITCHES).flatMap(Set::stream).collect(Collectors.toSet()));
+                    SUPPORTED_SMART_SWITCHES, SUPPORTED_LIGHT_SWITCH_UIDS)
+            .flatMap(Set::stream).collect(Collectors.toSet()));
 
     /*** THINGS WITH ENERGY DATA ***/
     public static final Set<ThingTypeUID> SUPPORTED_ENERGY_DATA_UIDS = Set.of(P110_THING_TYPE, P115_THING_TYPE);
 
     /*** THINGS WITH CHANNEL GROUPS ***/
-    public static final Set<ThingTypeUID> CHANNEL_GROUP_THING_SET = Collections.unmodifiableSet(
-            Stream.of(SUPPORTED_BRIDGE_UIDS, SUPPORTED_HUB_UIDS, SUPPORTED_SOCKET_UIDS, SUPPORTED_SOCKET_STRIP_UIDS,
+    public static final Set<ThingTypeUID> CHANNEL_GROUP_THING_SET = Collections.unmodifiableSet(Stream
+            .of(SUPPORTED_BRIDGE_UIDS, SUPPORTED_HUB_UIDS, SUPPORTED_SOCKET_UIDS, SUPPORTED_SOCKET_STRIP_UIDS,
                     SUPPORTED_WHITE_BULB_UIDS, SUPPORTED_COLOR_BULB_UIDS, SUPPORTED_LIGHT_STRIP_UIDS,
                     SUPPORTED_SMART_CONTACTS, SUPPORTED_MOTION_SENSORS, SUPPORTED_WEATHER_SENSORS,
-                    SUPPORTED_SMART_SWITCHES).flatMap(Set::stream).collect(Collectors.toSet()));
+                    SUPPORTED_SMART_SWITCHES, SUPPORTED_LIGHT_SWITCH_UIDS)
+            .flatMap(Set::stream).collect(Collectors.toSet()));
 
     public static final String CHILD_REPRESENTATION_PROPERTY = "serialNumber";
 

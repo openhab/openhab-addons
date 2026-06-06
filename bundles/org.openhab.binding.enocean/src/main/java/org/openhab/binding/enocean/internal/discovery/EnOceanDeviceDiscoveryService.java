@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.enocean.internal.discovery;
 
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -85,7 +86,10 @@ public class EnOceanDeviceDiscoveryService extends AbstractDiscoveryService impl
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypes() {
-        return SUPPORTED_DEVICE_THING_TYPES_UIDS;
+        // Exclude manual-only thing types (datagramInjector) from discovery
+        Set<ThingTypeUID> discoverableTypes = new HashSet<>(SUPPORTED_DEVICE_THING_TYPES_UIDS);
+        discoverableTypes.remove(THING_TYPE_DATAGRAMINJECTOR);
+        return discoverableTypes;
     }
 
     @Override

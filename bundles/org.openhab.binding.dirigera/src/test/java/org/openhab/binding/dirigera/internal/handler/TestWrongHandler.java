@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -51,6 +51,7 @@ class TestWrongHandler {
         handler.handleConfigurationUpdate(config);
 
         handler.initialize();
+        callback.waitForStatus(ThingStatus.OFFLINE);
         ThingStatusInfo status = callback.getStatus();
         assertEquals(ThingStatus.OFFLINE, status.getStatus(), "OFFLINE");
         assertEquals(ThingStatusDetail.CONFIGURATION_ERROR, status.getStatusDetail(), "Config Error");
@@ -78,6 +79,7 @@ class TestWrongHandler {
         handler.handleConfigurationUpdate(config);
 
         handler.initialize();
+        callback.waitForStatus(ThingStatus.OFFLINE);
         ThingStatusInfo status = callback.getStatus();
         assertEquals(ThingStatus.OFFLINE, status.getStatus(), "OFFLINE");
         assertEquals(ThingStatusDetail.GONE, status.getStatusDetail(), "Device disappeared");

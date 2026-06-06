@@ -9,7 +9,7 @@ moment of writing the _Omniksol-3.0k-TL2_ has been tested.
 
 ## Discovery
 
-No autodiscovery available
+No auto-discovery available
 
 ## Thing Configuration
 
@@ -34,9 +34,9 @@ No autodiscovery available
 | currentAC1      | Number:ElectricCurrent   | The current for feed 1 to the grid, in ampere by default                                                         |
 | currentAC2      | Number:ElectricCurrent   | The current for feed 2 to the grid, in ampere by default                                                         |
 | currentAC3      | Number:ElectricCurrent   | The current for feed 3 to the grid, in ampere by default                                                         |
-| frequencyAC1    | Number:Frequency         | The frequrence of feed 1 of the grid, in hertz by default                                                        |
-| frequencyAC2    | Number:Frequency         | The frequrence of feed 2 of the grid, in hertz by default                                                        |
-| frequencyAC3    | Number:Frequency         | The frequrence of feed 3 of the grid, in hertz by default                                                        |
+| frequencyAC1    | Number:Frequency         | The frequency of feed 1 of the grid, in hertz by default                                                         |
+| frequencyAC2    | Number:Frequency         | The frequency of feed 2 of the grid, in hertz by default                                                         |
+| frequencyAC3    | Number:Frequency         | The frequency of feed 3 of the grid, in hertz by default                                                         |
 | currentPV1      | Number:ElectricCurrent   | The current generation for input string 1, in ampere by default                                                  |
 | currentPV2      | Number:ElectricCurrent   | The current generation for input string 2, in ampere by default                                                  |
 | currentPV3      | Number:ElectricCurrent   | The current generation for input string 3, in ampere by default                                                  |

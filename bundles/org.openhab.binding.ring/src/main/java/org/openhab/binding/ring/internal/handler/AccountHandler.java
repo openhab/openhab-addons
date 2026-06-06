@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,13 +24,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.ring.internal.RestClient;
 import org.openhab.binding.ring.internal.RingAccount;
 import org.openhab.binding.ring.internal.RingDeviceRegistry;
@@ -45,6 +46,7 @@ import org.openhab.binding.ring.internal.discovery.RingDiscoveryService;
 import org.openhab.binding.ring.internal.errors.AuthenticationException;
 import org.openhab.binding.ring.internal.utils.RingUtils;
 import org.openhab.core.OpenHAB;
+import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
@@ -106,7 +108,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
      */
     private int eventIndex = 0;
 
-    private @Nullable ExecutorService videoExecutorService;
+    private @Nullable ScheduledExecutorService videoExecutorService;
 
     /*
      * The number of video files to keep when auto-downloading
@@ -133,6 +135,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         this.registry = new RingDeviceRegistry();
         this.restClient = new RestClient(httpClient);
         this.servlet = ringVideoServlet;
+        this.videoExecutorService = ThreadPoolManager.getScheduledPool("ring");
     }
 
     @Override
@@ -279,9 +282,8 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
             }
         } catch (JsonParseException e) {
-            logger.debug("Invalid response from api.ring.com when initializing Ring Account handler{}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Invalid response from api.ring.com");
+                    "@text/offline.comm-error.invalid-response");
         }
         logger.debug("doLogin RT: {}", getRefreshTokenFromFile());
         try {
@@ -289,12 +291,10 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
             updateStatus(ThingStatus.ONLINE);
         } catch (AuthenticationException ae) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "AuthenticationException response from ring.com");
-            logger.debug("RestClient reported AuthenticationException in finally block: {}", ae.getMessage());
+                    "@text/offline.comm-error.auth-exception");
         } catch (JsonParseException pe1) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "JsonParseException response from ring.com");
-            logger.debug("RestClient reported JsonParseException in finally block: {}", pe1.getMessage());
         }
     }
 
@@ -445,7 +445,27 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                     updateState(CHANNEL_EVENT_DOORBOT_ID, new StringType(lastEvents.getFirst().doorbot.id));
                     updateState(CHANNEL_EVENT_DOORBOT_DESCRIPTION,
                             new StringType(lastEvents.getFirst().doorbot.description));
-                    ExecutorService service = videoExecutorService;
+                    String detectionType = lastEvents.getFirst().cvProperties.detectionType;
+                    if (detectionType == null) {
+                        detectionType = "";
+                    }
+                    if (lastEvents.getFirst().kind.equals("motion")) {
+                        switch (detectionType) {
+                            case "human":
+                                updateState(CHANNEL_EVENT_EXTENDED_DESCRIPTION, new StringType(
+                                        "There is a Person at your " + lastEvents.getFirst().doorbot.description));
+                                break;
+                            case "vehicle":
+                                updateState(CHANNEL_EVENT_EXTENDED_DESCRIPTION, new StringType(
+                                        "There is a Vehicle at your " + lastEvents.getFirst().doorbot.description));
+                                break;
+                            default:
+                                updateState(CHANNEL_EVENT_EXTENDED_DESCRIPTION, new StringType(
+                                        "There is motion at your " + lastEvents.getFirst().doorbot.description));
+                                break;
+                        }
+                    }
+                    ScheduledExecutorService service = videoExecutorService;
                     if (service != null) {
                         service.submit(() -> getVideo(lastEvents.getFirst()));
                     }
@@ -457,7 +477,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "AuthenticationException response from ring.com");
             logger.debug(
-                    "RestClient reported AuthenticationExceptionfrom api.ring.com when retrying refreshRegistry for the second time: {}",
+                    "RestClient reported AuthenticationException from api.ring.com when retrying refreshRegistry for the second time: {}",
                     ex.getMessage());
         } catch (JsonParseException ignored) {
             logger.debug(
@@ -546,11 +566,6 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
 
         stopSessionRefresh();
         stopAutomaticRefresh();
-        ExecutorService service = this.videoExecutorService;
-        if (service != null) {
-            service.shutdownNow();
-        }
-        this.videoExecutorService = null;
         super.dispose();
     }
 
@@ -563,6 +578,50 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     @Override
     public @Nullable RingDevice getDevice(String id) {
         return registry.getRingDevice(id);
+    }
+
+    @Override
+    public long getSnapshotTimestamp(String id) {
+        try {
+            return restClient.getSnapshotTimestamp(id, tokens);
+        } catch (AuthenticationException ae) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.comm-error.invalid-response");
+            return -1;
+        }
+    }
+
+    @Override
+    public byte[] getSnapshot(String id) {
+        try {
+            return restClient.getSnapshot(id, tokens);
+        } catch (AuthenticationException ae) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.comm-error.auth-exception");
+        }
+        return new byte[0];
+    }
+
+    @Override
+    public void sendCommand(String url) {
+        try {
+            logger.debug("sending url {} to Ring API", url);
+            restClient.sendCommand(url, tokens);
+        } catch (AuthenticationException ae) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.comm-error.invalid-response");
+        }
+    }
+
+    @Override
+    public void sendCommand(String url, HttpMethod httpMethod, String payload) {
+        try {
+            logger.trace("sending url {} with payload {} to Ring API", url, payload);
+            restClient.sendCommand(url, httpMethod, payload, tokens);
+        } catch (AuthenticationException ae) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.comm-error.invalid-response");
+        }
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -114,7 +114,7 @@ public class CallMonitor {
                 BufferedReader reader = null;
                 try {
                     logger.debug("Call Monitor thread [{}] attempting connection to FRITZ!Box on {}:{}.",
-                            Thread.currentThread().getId(), ip, MONITOR_PORT);
+                            Thread.currentThread().threadId(), ip, MONITOR_PORT);
                     socket = new Socket(ip, MONITOR_PORT);
                     reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                     // reset the retry interval

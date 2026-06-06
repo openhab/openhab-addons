@@ -1,0 +1,34 @@
+{
+	"osm_id": 2703044030,
+	"place_rank": 30,
+	"licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+	"boundingbox": [
+		"40.7415108",
+		"40.7416108",
+		"-73.9900812",
+		"-73.9899812"
+	],
+	"address": {
+		"country": "United States",
+		"country_code": "us",
+		"road": "West 23rd Street",
+		"city": "City of New York",
+		"neighbourhood": "Flatiron District",
+		"ISO3166-2-lvl4": "US-NY",
+		"county": "New York County",
+		"postcode": "10010",
+		"suburb": "Manhattan",
+		"house_number": "6",
+		"state": "New York"
+	},
+	"importance": 0.00009175936522464359,
+	"lon": "-73.9900312",
+	"type": "house",
+	"display_name": "6, West 23rd Street, Flatiron District, Manhattan Community Board 5, Manhattan, New York County, City of New York, New York, 10010, United States",
+	"osm_type": "node",
+	"name": "",
+	"addresstype": "place",
+	"category": "place",
+	"place_id": 330964168,
+	"lat": "40.7415608"
+}

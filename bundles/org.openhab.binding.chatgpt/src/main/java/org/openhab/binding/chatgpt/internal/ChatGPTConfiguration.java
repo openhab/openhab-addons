@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,4 +33,5 @@ public class ChatGPTConfiguration {
     public String systemMessage = "";
     public Integer keepContext = 2;
     public Integer contextThreshold = 10000;
+    public Integer requestTimeout = ChatGPTHandler.DEFAULT_REQUEST_TIMEOUT_S;
 }

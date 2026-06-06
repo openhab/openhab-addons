@@ -24,7 +24,7 @@
 	<channel-type id="sound-field-zr5">
 		<item-type>String</item-type>
 		<label>Sound Field</label>
-		<description>Select the Sound Field for the receiver</description>
+		<description>Select the Sound Field for the speaker</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>MediaControl</tag>
@@ -47,7 +47,7 @@
 	<!-- SRS-ZR5 Thing Type -->
 	<thing-type id="SRS-ZR5">
 		<label>SONY Wireless Speaker SRS-ZR5</label>
-		<description>SONY wireless Speaker SRS-ZR5</description>
+		<description>SONY Wireless Speaker SRS-ZR5</description>
 		<semantic-equipment-tag>Speaker</semantic-equipment-tag>
 		<channels>
 			<channel id="power" typeId="power"/>

@@ -682,6 +682,11 @@
 		<description>Indicates whether sentry mode is currently available</description>
 		<state readOnly="true"></state>
 	</channel-type>
+	<channel-type id="share" advanced="true">
+		<item-type>String</item-type>
+		<label>Share</label>
+		<description>Send an address to the vehicle's navigation system</description>
+	</channel-type>
 	<channel-type id="shiftstate" advanced="true">
 		<item-type>String</item-type>
 		<label>Shift State</label>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -52,7 +52,7 @@ public class GetPodDetailsResponseTest extends AbstractSerializationDeserializat
     public void testDeserialize() throws IOException {
         final PodDetailsDTO rsp = wireHelper.deSerializeResponse("/get_pod_details_response.json", PodDetailsDTO.class);
 
-        assertEquals("MA:C:AD:DR:ES:S0", rsp.macAddress);
+        assertEquals("AA:BB:CC:DD:EE:FF", rsp.macAddress);
         assertEquals("IN010056", rsp.firmwareVersion);
         assertEquals("cc3100_stm32f0", rsp.firmwareType);
         assertEquals("SERIALNUMASSTRING", rsp.serialNumber);

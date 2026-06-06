@@ -7,7 +7,7 @@
 	<thing-type id="car">
 
 		<label>Renault Car</label>
-		<description>A MyRenault registered car.</description>
+		<description>A MyRenault-registered car.</description>
 		<semantic-equipment-tag>Vehicle</semantic-equipment-tag>
 
 		<channels>
@@ -104,6 +104,11 @@
 				<description>Access code for MyRenault Services.</description>
 				<default>YjkKtHmGfaceeuExUDKGxrLZGGvtVS0J</default>
 			</parameter>
+			<parameter name="gigyaApiKey" type="text">
+				<label>Gigya API Key</label>
+				<description>Configure a Gigya API Key to override the hard coded value for your region.</description>
+				<default></default>
+			</parameter>
 		</config-description>
 	</thing-type>
 
@@ -127,7 +132,7 @@
 	<channel-type id="plugstatus">
 		<item-type>String</item-type>
 		<label>Plug Status</label>
-		<description>Status of charging plug.</description>
+		<description>Status of the charging plug.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Power</tag>
@@ -172,7 +177,6 @@
 		</tags>
 		<state readOnly="false">
 			<options>
-				<option value="UNKNOWN">Unknown</option>
 				<option value="SCHEDULE_MODE">Schedule mode</option>
 				<option value="ALWAYS_CHARGING">Instant charge</option>
 			</options>
@@ -235,7 +239,7 @@
 	<channel-type id="externaltemperature" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>External Temperature</label>
-		<description>Temperature outside of the car</description>
+		<description>Temperature outside of the car.</description>
 		<category>Temperature</category>
 		<tags>
 			<tag>Measurement</tag>

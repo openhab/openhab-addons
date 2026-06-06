@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -61,7 +61,6 @@ public abstract class D2_01 extends _VLDMessage {
     protected static final byte STATUS_DIMMING_100 = 0x64;
 
     public D2_01() {
-        super();
     }
 
     public D2_01(ERP1Message packet) {

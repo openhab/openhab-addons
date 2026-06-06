@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -137,9 +137,9 @@ public class VeluxBindingHandler extends ExtendedBaseThingHandler {
         if (this.isInitialized()) {
             logger.trace("updateVisibleInformation(): updating thing status.");
             if (currentNumberOfBridges < 1) {
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING, bridgeCountToString());
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING);
             } else {
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, bridgeCountToString());
+                updateStatus(ThingStatus.ONLINE);
             }
             logger.trace("updateVisibleInformation(): updating all channels.");
             for (Channel channel : thing.getChannels()) {

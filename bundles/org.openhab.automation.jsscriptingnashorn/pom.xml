@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>5.1.0-SNAPSHOT</version>
+    <version>5.2.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.automation.jsscriptingnashorn</artifactId>
@@ -16,7 +16,6 @@
 
   <properties>
     <bnd.importpackage>jdk.dynalink.*;resolution:=optional</bnd.importpackage>
-    <asm.version>9.8</asm.version>
   </properties>
 
   <dependencies>
@@ -30,26 +29,31 @@
       <groupId>org.ow2.asm</groupId>
       <artifactId>asm</artifactId>
       <version>${asm.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.ow2.asm</groupId>
       <artifactId>asm-analysis</artifactId>
       <version>${asm.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.ow2.asm</groupId>
       <artifactId>asm-commons</artifactId>
       <version>${asm.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.ow2.asm</groupId>
       <artifactId>asm-tree</artifactId>
       <version>${asm.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.ow2.asm</groupId>
       <artifactId>asm-util</artifactId>
       <version>${asm.version}</version>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 

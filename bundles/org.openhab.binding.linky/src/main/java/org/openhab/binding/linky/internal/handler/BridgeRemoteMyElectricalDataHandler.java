@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -49,6 +49,8 @@ public class BridgeRemoteMyElectricalDataHandler extends BridgeRemoteApiHandler 
     private static final String CONTACT_URL = BASE_URL + "contact/%s/cache/";
     private static final String ADDRESS_URL = BASE_URL + "addresses/%s/cache/";
     private static final String MEASURE_DAILY_CONSUMPTION_URL = BASE_URL + "daily_consumption/%s/start/%s/end/%s/cache";
+    private static final String MEASURE_DAILY_INDEX_URL = MEASURE_DAILY_CONSUMPTION_URL;
+
     private static final String MEASURE_MAX_POWER_URL = BASE_URL
             + "daily_consumption_max_power/%s/start/%s/end/%s/cache";
     private static final String LOAD_CURVE_CONSUMPTION_URL = BASE_URL
@@ -190,6 +192,11 @@ public class BridgeRemoteMyElectricalDataHandler extends BridgeRemoteApiHandler 
     @Override
     public String getDailyConsumptionUrl() {
         return MEASURE_DAILY_CONSUMPTION_URL;
+    }
+
+    @Override
+    public String getDailyIndexUrl() {
+        return MEASURE_DAILY_INDEX_URL;
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,7 +29,6 @@ import org.openhab.core.test.TestPortUtil;
 import org.openhab.core.test.java.JavaTest;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
-import com.github.tomakehurst.wiremock.extension.responsetemplating.ResponseTemplateTransformer;
 
 /**
  * The {@link AbstractWireMockTest} implements tests for the {@link RateLimitedHttpClient}
@@ -47,7 +46,7 @@ public abstract class AbstractWireMockTest extends JavaTest {
     public void initAll() throws Exception {
         port = TestPortUtil.findFreePort();
 
-        wireMockServer = new WireMockServer(options().port(port).extensions(new ResponseTemplateTransformer(false)));
+        wireMockServer = new WireMockServer(options().port(port).globalTemplating(false));
         wireMockServer.start();
 
         httpClient = new HttpClient();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -45,10 +45,11 @@ public class VelbusModule {
             THING_TYPE_VMBELPIR, THING_TYPE_VMBGP1, THING_TYPE_VMBGP1_2, THING_TYPE_VMBGP1_20, THING_TYPE_VMBGP2,
             THING_TYPE_VMBGP2_2, THING_TYPE_VMBGP2_20, THING_TYPE_VMBGP4, THING_TYPE_VMBGP4_2, THING_TYPE_VMBGP4_20,
             THING_TYPE_VMBGP4PIR, THING_TYPE_VMBGP4PIR_2, THING_TYPE_VMBGP4PIR_20, THING_TYPE_VMBGPO,
-            THING_TYPE_VMBGPOD, THING_TYPE_VMBGPOD_2, THING_TYPE_VMBGPO_20, THING_TYPE_VMBIN, THING_TYPE_VMBKP));
+            THING_TYPE_VMBGPOD, THING_TYPE_VMBGPOD_2, THING_TYPE_VMBGPO_20, THING_TYPE_VMBIN, THING_TYPE_VMBKP,
+            THING_TYPE_VMB4RYLD_20, THING_TYPE_VMB4RYNO_20, THING_TYPE_VMB2DC_20, THING_TYPE_VMBPSUMNGR_20));
 
     private static final Set<ThingTypeUID> PIR_WITH_SENSOR_THING_TYPES = new HashSet<>(
-            Arrays.asList(THING_TYPE_VMBPIRO, THING_TYPE_VMBPIRO_10));
+            Arrays.asList(THING_TYPE_VMBPIRO, THING_TYPE_VMBPIRO_10, THING_TYPE_VMBPIRO_20));
 
     private VelbusModuleAddress velbusModuleAddress;
     private byte highByteOfSerialNumber;

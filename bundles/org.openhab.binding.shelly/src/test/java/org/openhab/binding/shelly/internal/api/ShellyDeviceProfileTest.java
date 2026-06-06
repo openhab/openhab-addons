@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.shelly.internal.api;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 
@@ -28,9 +27,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyInputState;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDevice;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsGlobal;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRgbwLight;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
 import org.openhab.core.thing.ThingTypeUID;
 
 import com.google.gson.Gson;
@@ -42,7 +43,6 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class ShellyDeviceProfileTest {
-
     private final Gson gson = new Gson();
 
     @ParameterizedTest
@@ -104,6 +104,13 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYPLUSI4DC, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUSEM, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUS3EM63, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUSDIMMER, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUSDIMMERUS, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUSDIMMER10V, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUSHT, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUSSMOKE, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUSWALLDISPLAY, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUSBLUGW, true, false), //
 
                 // Shelly Mini series
                 Arguments.of(THING_TYPE_SHELLYMINI_1, true, false), //
@@ -112,11 +119,14 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYMINI_EM, true, false), //
 
                 // Shelly BLU
-                Arguments.of(THING_TYPE_SHELLYBLUBUTTON, true, true), //
+                Arguments.of(THING_TYPE_SHELLYBLUBUTTON1, true, true), //
+                Arguments.of(THING_TYPE_SHELLYBLUWALLSWITCH4, true, true), //
+                Arguments.of(THING_TYPE_SHELLYBLURCBUTTON4, true, true), //
+                Arguments.of(THING_TYPE_SHELLYBLUHT, true, true), //
                 Arguments.of(THING_TYPE_SHELLYBLUDW, true, true), //
                 Arguments.of(THING_TYPE_SHELLYBLUMOTION, true, true), //
-                Arguments.of(THING_TYPE_SHELLYBLUHT, true, true), //
-                Arguments.of(THING_TYPE_SHELLYPLUSBLUGW, true, false), //
+                Arguments.of(THING_TYPE_SHELLYBLUDISTANCE, true, true), //
+                Arguments.of(THING_TYPE_SHELLYBLUREMOTE, true, true), //
 
                 // Shelly Pro series
                 Arguments.of(THING_TYPE_SHELLYPRO1, true, false), //
@@ -128,47 +138,19 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYPRO3EM, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPROEM50, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPRO4PM, true, false), //
-                Arguments.of(THING_TYPE_SHELLYPLUSDIMMER, true, false), //
-                Arguments.of(THING_TYPE_SHELLYPLUSDIMMERUS, true, false), //
-                Arguments.of(THING_TYPE_SHELLYPLUSDIMMER10V, true, false), //
-                Arguments.of(THING_TYPE_SHELLYPLUSHT, true, false), //
-                Arguments.of(THING_TYPE_SHELLYPLUSSMOKE, true, false), //
-                Arguments.of(THING_TYPE_SHELLYPLUSWALLDISPLAY, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPRO3EM, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPRO3EM63, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPRO3EM400, true, false), //
 
                 Arguments.of(THING_TYPE_SHELLYPROTECTED, false, false), // password protected device
                 Arguments.of(THING_TYPE_SHELLYUNKNOWN, false, false)); // unknown device
     }
 
     @ParameterizedTest
-    @MethodSource("provideTestCasesForBuildBluServiceName")
-    void buildBluServiceName(String name, String mac, String expectedServiceName) {
-        String actualServiceName = ShellyDeviceProfile.buildBluServiceName(name, mac);
-        assertThat(actualServiceName, is(equalTo(expectedServiceName)));
-    }
-
-    private static Stream<Arguments> provideTestCasesForBuildBluServiceName() {
-        return Stream.of( //
-                Arguments.of("SBBT", "001A2B3C4D5E", "shellyblubutton-001a2b3c4d5e"), //
-                Arguments.of("SBBT-02C", "001A2B3C4D5E", "shellyblubutton-001a2b3c4d5e"), //
-                Arguments.of("SBBT-02C-03D", "001A2B3C4D5E", "shellyblubutton-001a2b3c4d5e"), //
-                Arguments.of("SBDW", "001A2B3C4D5E", "shellybludw-001a2b3c4d5e"), //
-                Arguments.of("SBMO", "001A2B3C4D5E", "shellyblumotion-001a2b3c4d5e"), //
-                Arguments.of("SBHT", "001A2B3C4D5E", "shellybluht-001a2b3c4d5e"), //
-                Arguments.of("SBHT", "00:1A:2B:3C:4D:5E", "shellybluht-001a2b3c4d5e"));
-    }
-
-    @Test
-    void buildBluServiceNameWhenNameUnknownThrowIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            ShellyDeviceProfile.buildBluServiceName("sbbt", "001A2B3C4D5E");
-        });
-    }
-
-    @ParameterizedTest
     @MethodSource("provideTestCasesForGetControlGroup")
     void getControlGroup(ThingTypeUID thingTypeUID, String mode, int numRollers, int numOutputs, int numLights,
             int index, String expectedControlGroup) throws ShellyApiException {
-        ShellyDeviceProfile deviceProfile = new ShellyDeviceProfile();
+        ShellyDeviceProfile deviceProfile = new ShellyDeviceProfile(thingTypeUID);
         ShellySettingsGlobal settingsGlobal = new ShellySettingsGlobal();
         ShellySettingsDevice settingsDevice = new ShellySettingsDevice();
 
@@ -204,7 +186,7 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYBULB, "", 0, 0, 2, 3, CHANNEL_GROUP_LIGHT_CONTROL),
                 Arguments.of(THING_TYPE_SHELLYBUTTON1, "", 0, 0, 0, 5, CHANNEL_GROUP_STATUS),
                 Arguments.of(THING_TYPE_SHELLYBUTTON2, "", 0, 0, 0, 5, CHANNEL_GROUP_STATUS),
-                Arguments.of(THING_TYPE_SHELLYBLUBUTTON, "", 0, 0, 0, 5, CHANNEL_GROUP_STATUS),
+                Arguments.of(THING_TYPE_SHELLYBLUBUTTON1, "", 0, 0, 0, 5, CHANNEL_GROUP_STATUS),
                 Arguments.of(THING_TYPE_SHELLYHT, "", 0, 0, 0, 5, CHANNEL_GROUP_SENSOR),
                 Arguments.of(THING_TYPE_SHELLYFLOOD, "", 0, 0, 0, 5, CHANNEL_GROUP_SENSOR),
                 Arguments.of(THING_TYPE_SHELLYDOORWIN, "", 0, 0, 0, 5, CHANNEL_GROUP_SENSOR),
@@ -215,5 +197,57 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYSENSE, "", 0, 0, 0, 5, CHANNEL_GROUP_SENSOR),
                 Arguments.of(THING_TYPE_SHELLYTRV, "", 0, 0, 0, 5, CHANNEL_GROUP_SENSOR),
                 Arguments.of(THING_TYPE_SHELLYPLUSWALLDISPLAY, "", 0, 0, 0, 5, CHANNEL_GROUP_SENSOR));
+    }
+
+    @Test
+    void updateFromStatusHasRelays() {
+        ShellyDeviceProfile deviceProfile = new ShellyDeviceProfile(THING_TYPE_SHELLYUNKNOWN);
+        deviceProfile.hasRelays = true;
+        deviceProfile.numInputs = -1;
+
+        ShellySettingsStatus status = new ShellySettingsStatus();
+        status.inputs = new ArrayList<>();
+        status.inputs.add(new ShellyInputState());
+        status.inputs.add(new ShellyInputState());
+
+        deviceProfile.updateFromStatus(status);
+        assertThat(deviceProfile.numInputs, is(equalTo(2)));
+    }
+
+    @Test
+    void updateFromStatusHasRelaysNoInputs() {
+        ShellyDeviceProfile deviceProfile = new ShellyDeviceProfile(THING_TYPE_SHELLYUNKNOWN);
+        deviceProfile.hasRelays = true;
+        deviceProfile.numInputs = -1;
+
+        ShellySettingsStatus status = new ShellySettingsStatus();
+
+        deviceProfile.updateFromStatus(status);
+        assertThat(deviceProfile.numInputs, is(equalTo(-1)));
+    }
+
+    @Test
+    void updateFromStatusInput() {
+        ShellyDeviceProfile deviceProfile = new ShellyDeviceProfile(THING_TYPE_SHELLYUNKNOWN);
+        deviceProfile.hasRelays = false;
+        deviceProfile.numInputs = -1;
+
+        ShellySettingsStatus status = new ShellySettingsStatus();
+        status.input = 7;
+
+        deviceProfile.updateFromStatus(status);
+        assertThat(deviceProfile.numInputs, is(equalTo(1)));
+    }
+
+    @Test
+    void updateFromStatusNoInput() {
+        ShellyDeviceProfile deviceProfile = new ShellyDeviceProfile(THING_TYPE_SHELLYUNKNOWN);
+        deviceProfile.hasRelays = false;
+        deviceProfile.numInputs = -1;
+
+        ShellySettingsStatus status = new ShellySettingsStatus();
+
+        deviceProfile.updateFromStatus(status);
+        assertThat(deviceProfile.numInputs, is(equalTo(-1)));
     }
 }

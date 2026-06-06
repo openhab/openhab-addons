@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -54,8 +54,7 @@ class ThermostatConverterTest extends BaseMatterConverterTest {
     @BeforeEach
     void setUp() {
         super.setUp();
-        mockCluster.featureMap = new ThermostatCluster.FeatureMap(true, true, true, false, false, true, false, false,
-                false);
+        mockCluster.featureMap = new ThermostatCluster.FeatureMap(true, true, true, true, false, false, false);
         mockCluster.absMinHeatSetpointLimit = 500; // 5°C
         mockCluster.absMaxHeatSetpointLimit = 3000; // 30°C
         mockCluster.absMinCoolSetpointLimit = 1500; // 15°C
@@ -124,7 +123,7 @@ class ThermostatConverterTest extends BaseMatterConverterTest {
         message.value = ThermostatCluster.SystemModeEnum.HEAT;
         converter.onEvent(message);
         verify(mockHandler, times(1)).updateState(eq(1), eq("thermostat-systemmode"),
-                eq(new DecimalType(ThermostatCluster.SystemModeEnum.HEAT.value)));
+                eq(new DecimalType(ThermostatCluster.SystemModeEnum.HEAT.getValue())));
     }
 
     @Test
@@ -139,7 +138,7 @@ class ThermostatConverterTest extends BaseMatterConverterTest {
         verify(mockHandler, times(1)).updateState(eq(1), eq("thermostat-localtemperature"),
                 eq(new QuantityType<>(20.0, SIUnits.CELSIUS)));
         verify(mockHandler, times(1)).updateState(eq(1), eq("thermostat-systemmode"),
-                eq(new DecimalType(mockCluster.systemMode.value)));
+                eq(new DecimalType(mockCluster.systemMode.getValue())));
         verify(mockHandler, times(1)).updateState(eq(1), eq("thermostat-occupiedheating"),
                 eq(new QuantityType<>(22.0, SIUnits.CELSIUS)));
         verify(mockHandler, times(1)).updateState(eq(1), eq("thermostat-occupiedcooling"),

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="bluelink"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="account">
+		<label>Bluelink Account</label>
+		<description>Account for accessing connected vehicle services (Hyundai Bluelink, Genesis Connected Services, or Kia
+			Connect).</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
+
+		<config-description>
+			<parameter name="username" type="text" required="false">
+				<label>Username</label>
+				<description>Your Bluelink/Connect account email address (not required for EU region)</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<label>Password</label>
+				<description>Your Bluelink/Connect account password (for EU: refresh token)</description>
+				<context>password</context>
+			</parameter>
+			<parameter name="pin" type="text" required="false">
+				<label>PIN</label>
+				<description>Your Bluelink/Connect service PIN (required for lock/unlock commands)</description>
+				<context>password</context>
+			</parameter>
+			<parameter name="region" type="text" required="false">
+				<label>Region</label>
+				<description>API region. If not set, auto-detected from system locale.</description>
+				<options>
+					<option value="US">United States</option>
+					<option value="CA">Canada</option>
+					<option value="EU">Europe</option>
+				</options>
+			</parameter>
+			<parameter name="brand" type="text" required="false">
+				<label>Brand</label>
+				<description>Vehicle brand. Required for Canada and EU regions.</description>
+				<options>
+					<option value="HYUNDAI">Hyundai</option>
+					<option value="KIA">Kia</option>
+					<option value="GENESIS">Genesis</option>
+				</options>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+</thing:thing-descriptions>

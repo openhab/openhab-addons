@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,6 +24,7 @@ import javax.jmdns.ServiceInfo;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.hue.internal.HueBridgeModel;
 import org.openhab.binding.hue.internal.connection.Clip2Bridge;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -109,6 +110,7 @@ public class HueBridgeMDNSDiscoveryParticipant implements MDNSDiscoveryParticipa
 
     @Override
     public @Nullable DiscoveryResult createResult(ServiceInfo service) {
+        logger.debug("Discovered mDNS service: {}", service.getNiceTextString());
         if (isAutoDiscoveryEnabled) {
             ThingUID uid = getThingUID(service);
             if (Objects.nonNull(uid)) {
@@ -132,8 +134,7 @@ public class HueBridgeMDNSDiscoveryParticipant implements MDNSDiscoveryParticipa
                         .withProperty(HOST, host) //
                         .withProperty(Thing.PROPERTY_MODEL_ID, service.getPropertyString(MDNS_PROPERTY_MODEL_ID)) //
                         .withProperty(Thing.PROPERTY_SERIAL_NUMBER, serial.toLowerCase()) //
-                        .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER) //
-                        .withTTL(120L);
+                        .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER);
 
                 if (Objects.nonNull(legacyThingUID)) {
                     builder = builder.withProperty(PROPERTY_LEGACY_THING_UID, legacyThingUID);
@@ -160,7 +161,19 @@ public class HueBridgeMDNSDiscoveryParticipant implements MDNSDiscoveryParticipa
         String id = service.getPropertyString(MDNS_PROPERTY_BRIDGE_ID);
         if (id != null && !id.isBlank()) {
             id = id.toLowerCase();
+            String modelId = service.getPropertyString(MDNS_PROPERTY_MODEL_ID);
+            int generation = modelId != null ? HueBridgeModel.getGeneration(modelId) : 0;
+            if (generation >= 3) {
+                return new ThingUID(THING_TYPE_BRIDGE_API2, id);
+            } else if (generation == 1) {
+                // The original Hue Bridge (round white) does not support CLIP 2,
+                // so we can directly return the ThingUID for the original bridge without further checks.
+                return new ThingUID(THING_TYPE_BRIDGE, id);
+            }
             try {
+                // For square white bridges of generation 2, we need to check if CLIP 2 is supported
+                // to determine the correct ThingTypeUID. This is because some bridges could still
+                // be running older firmware without CLIP 2 support.
                 return Clip2Bridge.isClip2Supported(service.getHostAddresses()[0])
                         ? new ThingUID(THING_TYPE_BRIDGE_API2, id)
                         : new ThingUID(THING_TYPE_BRIDGE, id);

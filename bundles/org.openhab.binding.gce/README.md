@@ -12,7 +12,7 @@ IPX800 is a 8 relay webserver from gce-electronics with a lot of possibilities:
 Each IPX800 connected to openHAB must be configured with the setting 'Send data on status changed' on the website in M2M > TCP client.
 
 To make it simple, IPX800 is a simple device that drives output and retrieves input.
-On input we generally connect push buttons (for instance house switchs), on ouputs we can connect light bulbs for instance.
+On input we generally connect push buttons (for instance house switches), on outputs we can connect light bulbs for instance.
 
 Features of the binding:
 

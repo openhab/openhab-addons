@@ -70,7 +70,12 @@
 
 		<channel-groups>
 			<channel-group id="automation" typeId="automation"/>
+			<channel-group id="software" typeId="software"/>
 		</channel-groups>
+
+		<properties>
+			<property name="thingTypeVersion">2</property>
+		</properties>
 
 		<representation-property>serialNumber</representation-property>
 
@@ -94,7 +99,7 @@
 			<parameter name="useSelfSignedCertificate" type="boolean">
 				<label>Use Self-Signed Certificate</label>
 				<description>Use self-signed certificate for HTTPS connection to Hue Bridge.</description>
-				<default>true</default>
+				<default>false</default>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>

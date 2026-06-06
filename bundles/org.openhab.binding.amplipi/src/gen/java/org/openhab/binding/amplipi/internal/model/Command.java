@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,14 +22,14 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(description = "A command to execute on a stream ")
 public class Command {
 
-    @Schema(required = true)
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     @SerializedName("stream_id")
     /**
      * Stream to execute the command on
      **/
     private Integer streamId;
 
-    @Schema(required = true)
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     /**
      * Command to execute
      **/

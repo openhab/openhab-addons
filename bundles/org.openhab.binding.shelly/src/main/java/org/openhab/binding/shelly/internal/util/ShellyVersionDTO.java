@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.shelly.internal.util;
+
+import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -162,7 +164,9 @@ public class ShellyVersionDTO {
         if (version == null) {
             return false;
         }
-        return version.isEmpty() || version.contains("???") || version.toLowerCase().contains("master")
-                || (version.toLowerCase().contains("-rc") || version.toLowerCase().contains("beta"));
+        String lowVersion;
+        return version.isEmpty() || version.contains("???")
+                || (lowVersion = version.toLowerCase(Locale.ROOT)).contains("master")
+                || (lowVersion.contains("-rc") || lowVersion.contains("beta"));
     }
 }

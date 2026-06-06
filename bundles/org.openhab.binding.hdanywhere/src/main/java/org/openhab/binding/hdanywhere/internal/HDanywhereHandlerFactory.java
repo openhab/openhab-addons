@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,6 +19,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hdanywhere.internal.handler.Mhub4K431Handler;
 import org.openhab.binding.hdanywhere.internal.handler.MultiroomPlusHandler;
 import org.openhab.core.config.core.Configuration;
@@ -36,6 +38,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Karel Goderis - Initial contribution
  */
+@NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.hdanywhere")
 public class HDanywhereHandlerFactory extends BaseThingHandlerFactory {
 
@@ -48,7 +51,7 @@ public class HDanywhereHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_MULTIROOMPLUS)) {
@@ -63,8 +66,8 @@ public class HDanywhereHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    public Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration, ThingUID thingUID,
-            ThingUID bridgeUID) {
+    public @Nullable Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration,
+            @Nullable ThingUID thingUID, @Nullable ThingUID bridgeUID) {
         if (HDanywhereBindingConstants.THING_TYPE_MULTIROOMPLUS.equals(thingTypeUID)) {
             ThingUID matrixUID = getMultiroomPlusUID(thingTypeUID, thingUID, configuration);
             return super.createThing(thingTypeUID, configuration, matrixUID, null);
@@ -77,7 +80,8 @@ public class HDanywhereHandlerFactory extends BaseThingHandlerFactory {
                 "The thing type " + thingTypeUID + " is not supported by the HDanywhere binding.");
     }
 
-    private ThingUID getMultiroomPlusUID(ThingTypeUID thingTypeUID, ThingUID thingUID, Configuration configuration) {
+    private ThingUID getMultiroomPlusUID(ThingTypeUID thingTypeUID, @Nullable ThingUID thingUID,
+            Configuration configuration) {
         String ipAddress = (String) configuration.get(MultiroomPlusHandler.IP_ADDRESS);
 
         if (thingUID == null) {
@@ -86,7 +90,8 @@ public class HDanywhereHandlerFactory extends BaseThingHandlerFactory {
         return thingUID;
     }
 
-    private ThingUID getMhub4K431UID(ThingTypeUID thingTypeUID, ThingUID thingUID, Configuration configuration) {
+    private ThingUID getMhub4K431UID(ThingTypeUID thingTypeUID, @Nullable ThingUID thingUID,
+            Configuration configuration) {
         String ipAddress = (String) configuration.get(Mhub4K431Handler.IP_ADDRESS);
 
         if (thingUID == null) {

@@ -4,7 +4,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
 
 	<type>transformation</type>
-	<name>Exec transformation</name>
+	<name>Exec Transformation</name>
 	<description>Transforms an input string with an external program.</description>
 	<connection>none</connection>
 

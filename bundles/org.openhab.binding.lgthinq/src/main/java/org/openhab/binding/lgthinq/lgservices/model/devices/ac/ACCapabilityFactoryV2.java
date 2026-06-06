@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -131,7 +131,7 @@ public class ACCapabilityFactoryV2 extends AbstractACCapabilityFactory {
     @Override
     protected Map<String, String> extractFeatureOptions(JsonNode optionsNode) {
         Map<String, String> options = new HashMap<>();
-        optionsNode.fields().forEachRemaining(o -> {
+        optionsNode.properties().forEach(o -> {
             options.put(o.getKey(), o.getValue().path("label").asText());
         });
         return options;

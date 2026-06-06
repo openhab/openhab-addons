@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="tapocontrol"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- HS200 THING-TYPE (LIGHT SWITCH) -->
+	<thing-type id="HS200">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>HS200 Smart Light Switch</label>
+		<description>TP-Link HS200 Kasa Smart Wi-Fi Light Switch</description>
+		<semantic-equipment-tag>WallSwitch</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="actuator" typeId="lightSwitch"/>
+			<channel-group id="device" typeId="deviceState"/>
+		</channel-groups>
+		<representation-property>macAddress</representation-property>
+
+		<config-description-ref uri="thing-type:tapo:device"/>
+	</thing-type>
+</thing:thing-descriptions>

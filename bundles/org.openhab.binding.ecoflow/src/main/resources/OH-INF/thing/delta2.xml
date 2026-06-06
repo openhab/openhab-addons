@@ -21,6 +21,10 @@
 			<channel-group id="dc-output" typeId="delta-dc-output"/>
 		</channel-groups>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<representation-property>serialNumber</representation-property>
 
 		<config-description-ref uri="thing-type:ecoflow:device"/>

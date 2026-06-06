@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,17 +12,12 @@
  */
 package org.openhab.binding.groheondus.internal.handler;
 
-import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.CHANNEL_CONFIG_TIMEFRAME;
-import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.CHANNEL_NAME;
-import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.CHANNEL_PRESSURE;
-import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.CHANNEL_TEMPERATURE_GUARD;
-import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.CHANNEL_VALVE_OPEN;
-import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.CHANNEL_WATERCONSUMPTION;
-import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.CHANNEL_WATERCONSUMPTION_SINCE_MIDNIGHT;
+import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
@@ -99,6 +94,9 @@ public class GroheOndusSenseGuardHandler<T, M> extends GroheOndusBaseHandler<App
             case CHANNEL_TEMPERATURE_GUARD:
                 newState = new QuantityType<>(lastMeasurement.getTemperatureGuard(), SIUnits.CELSIUS);
                 break;
+            case CHANNEL_PAUSE:
+                newState = getPauseState();
+                break;
             case CHANNEL_VALVE_OPEN:
                 OnOffType valveOpenType = getValveOpenType(appliance);
                 if (valveOpenType != null) {
@@ -122,8 +120,8 @@ public class GroheOndusSenseGuardHandler<T, M> extends GroheOndusBaseHandler<App
         ZonedDateTime latestWithdrawal = earliestWithdrawal.plus(1, ChronoUnit.DAYS);
 
         Double waterConsumption = dataPoint.getWithdrawals().stream()
-                .filter(e -> earliestWithdrawal.isBefore(e.starttime.toInstant().atZone(ZoneId.systemDefault()))
-                        && latestWithdrawal.isAfter(e.starttime.toInstant().atZone(ZoneId.systemDefault())))
+                .filter(e -> earliestWithdrawal.isBefore(LocalDate.parse(e.date).atStartOfDay(ZoneId.systemDefault()))
+                        && latestWithdrawal.isAfter(LocalDate.parse(e.date).atStartOfDay(ZoneId.systemDefault())))
                 .mapToDouble(withdrawal -> withdrawal.getWaterconsumption()).sum();
         return new QuantityType<>(waterConsumption, Units.LITRE);
     }
@@ -175,8 +173,8 @@ public class GroheOndusSenseGuardHandler<T, M> extends GroheOndusBaseHandler<App
             return new Data();
         }
         Data data = applianceData.getData();
-        Collections.sort(data.measurement, Comparator.comparing(e -> ZonedDateTime.parse(e.timestamp)));
-        Collections.sort(data.withdrawals, Comparator.comparing(e -> e.starttime));
+        Collections.sort(data.measurement, Comparator.comparing(e -> e.date));
+        Collections.sort(data.withdrawals, Comparator.comparing(e -> e.date));
         return data;
     }
 
@@ -236,6 +234,10 @@ public class GroheOndusSenseGuardHandler<T, M> extends GroheOndusBaseHandler<App
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             updateChannels();
+            return;
+        }
+
+        if (handlePauseCommand(channelUID, command)) {
             return;
         }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,12 +10,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
 
 import java.math.BigInteger;
+import java.nio.charset.Charset;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNull;
@@ -35,6 +35,20 @@ public class BaseCluster {
     public int endpointId;
     public int id;
     public String name;
+
+    // Global cluster attribute name constants
+    public static final String ATTRIBUTE_ACCEPTED_COMMAND_LIST = "acceptedCommandList";
+    public static final String ATTRIBUTE_ATTRIBUTE_LIST = "attributeList";
+    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
+    public static final String ATTRIBUTE_EVENT_LIST = "eventList";
+    public static final String ATTRIBUTE_GENERATED_COMMAND_LIST = "generatedCommandList";
+
+    // Global cluster attributes (present in all clusters per Matter spec)
+    public List<Integer> acceptedCommandList; // 65529 list
+    public List<Integer> attributeList; // 65531 list
+    public Integer clusterRevision; // 65533 uint16
+    public List<Integer> eventList; // 65530
+    public List<Integer> generatedCommandList; // 65528 list
 
     public interface MatterEnum {
         Integer getValue();
@@ -70,6 +84,10 @@ public class BaseCluster {
             this.value = value;
         }
 
+        public OctetString(String string, Charset charset) {
+            this.value = string.getBytes(charset);
+        }
+
         public OctetString(String hexString) {
             int length = hexString.length();
             value = new byte[length / 2];
@@ -97,17 +115,17 @@ public class BaseCluster {
     }
 
     // Structs
-    public class AtomicAttributeStatusStruct {
+    public static class AtomicAttributeStatusStruct {
         public Integer attributeId; // attrib-id
-        public Integer statusCode; // status
+        public Status statusCode; // status
 
-        public AtomicAttributeStatusStruct(Integer attributeId, Integer statusCode) {
+        public AtomicAttributeStatusStruct(Integer attributeId, Status statusCode) {
             this.attributeId = attributeId;
             this.statusCode = statusCode;
         }
     }
 
-    public class MeasurementAccuracyRangeStruct {
+    public static class MeasurementAccuracyRangeStruct {
         public BigInteger rangeMin; // int64
         public BigInteger rangeMax; // int64
         public Integer percentMax; // percent100ths
@@ -131,7 +149,7 @@ public class BaseCluster {
         }
     }
 
-    public class MeasurementAccuracyStruct {
+    public static class MeasurementAccuracyStruct {
         public MeasurementTypeEnum measurementType; // MeasurementTypeEnum
         public Boolean measured; // bool
         public BigInteger minMeasuredValue; // int64
@@ -149,21 +167,44 @@ public class BaseCluster {
         }
     }
 
-    public class Date {
-        public Integer year; // uint8
-        public Integer month; // uint8
-        public Integer day; // uint8
-        public Integer dayOfWeek; // uint8
+    public static class PowerThresholdStruct {
+        public BigInteger powerThreshold; // power-mW
+        public BigInteger apparentPowerThreshold; // power-mVA
+        public PowerThresholdSourceEnum powerThresholdSource; // PowerThresholdSourceEnum
 
-        public Date(Integer year, Integer month, Integer day, Integer dayOfWeek) {
-            this.year = year;
-            this.month = month;
-            this.day = day;
-            this.dayOfWeek = dayOfWeek;
+        public PowerThresholdStruct(BigInteger powerThreshold, BigInteger apparentPowerThreshold,
+                PowerThresholdSourceEnum powerThresholdSource) {
+            this.powerThreshold = powerThreshold;
+            this.apparentPowerThreshold = apparentPowerThreshold;
+            this.powerThresholdSource = powerThresholdSource;
         }
     }
 
-    public class Locationdesc {
+    public static class ViewportStruct {
+        public Integer x1; // uint16
+        public Integer y1; // uint16
+        public Integer x2; // uint16
+        public Integer y2; // uint16
+
+        public ViewportStruct(Integer x1, Integer y1, Integer x2, Integer y2) {
+            this.x1 = x1;
+            this.y1 = y1;
+            this.x2 = x2;
+            this.y2 = y2;
+        }
+    }
+
+    public static class Currency {
+        public Integer currency; // uint16
+        public Integer decimalPoints; // uint8
+
+        public Currency(Integer currency, Integer decimalPoints) {
+            this.currency = currency;
+            this.decimalPoints = decimalPoints;
+        }
+    }
+
+    public static class Locationdesc {
         public String locationName; // string
         public Integer floorNumber; // int16
         public Integer areaType; // tag
@@ -175,31 +216,27 @@ public class BaseCluster {
         }
     }
 
-    public class Semtag {
+    public static class Price {
+        public BigInteger amount; // money
+        public Currency currency; // currency
+
+        public Price(BigInteger amount, Currency currency) {
+            this.amount = amount;
+            this.currency = currency;
+        }
+    }
+
+    public static class Semtag {
         public Integer mfgCode; // vendor-id
-        public Integer namespaceId; // namespace
+        public Namespace namespaceId; // namespace
         public Integer tag; // tag
         public String label; // string
 
-        public Semtag(Integer mfgCode, Integer namespaceId, Integer tag, String label) {
+        public Semtag(Integer mfgCode, Namespace namespaceId, Integer tag, String label) {
             this.mfgCode = mfgCode;
             this.namespaceId = namespaceId;
             this.tag = tag;
             this.label = label;
-        }
-    }
-
-    public class Tod {
-        public Integer hours; // uint8
-        public Integer minutes; // uint8
-        public Integer seconds; // uint8
-        public Integer hundredths; // uint8
-
-        public Tod(Integer hours, Integer minutes, Integer seconds, Integer hundredths) {
-            this.hours = hours;
-            this.minutes = minutes;
-            this.seconds = seconds;
-            this.hundredths = hundredths;
         }
     }
 
@@ -243,12 +280,39 @@ public class BaseCluster {
         FREQUENCY(11, "Frequency"),
         POWER_FACTOR(12, "PowerFactor"),
         NEUTRAL_CURRENT(13, "NeutralCurrent"),
-        ELECTRICAL_ENERGY(14, "ElectricalEnergy");
+        ELECTRICAL_ENERGY(14, "ElectricalEnergy"),
+        REACTIVE_ENERGY(15, "ReactiveEnergy"),
+        APPARENT_ENERGY(16, "ApparentEnergy"),
+        SOIL_MOISTURE(17, "SoilMoisture");
 
         public final Integer value;
         public final String label;
 
         private MeasurementTypeEnum(Integer value, String label) {
+            this.value = value;
+            this.label = label;
+        }
+
+        @Override
+        public Integer getValue() {
+            return value;
+        }
+
+        @Override
+        public String getLabel() {
+            return label;
+        }
+    }
+
+    public enum PowerThresholdSourceEnum implements MatterEnum {
+        CONTRACT(0, "Contract"),
+        REGULATOR(1, "Regulator"),
+        EQUIPMENT(2, "Equipment");
+
+        public final Integer value;
+        public final String label;
+
+        private PowerThresholdSourceEnum(Integer value, String label) {
             this.value = value;
             this.label = label;
         }
@@ -274,6 +338,151 @@ public class BaseCluster {
         public final String label;
 
         private SoftwareVersionCertificationStatusEnum(Integer value, String label) {
+            this.value = value;
+            this.label = label;
+        }
+
+        @Override
+        public Integer getValue() {
+            return value;
+        }
+
+        @Override
+        public String getLabel() {
+            return label;
+        }
+    }
+
+    public enum StreamUsageEnum implements MatterEnum {
+        INTERNAL(0, "Internal"),
+        RECORDING(1, "Recording"),
+        ANALYSIS(2, "Analysis"),
+        LIVE_VIEW(3, "LiveView");
+
+        public final Integer value;
+        public final String label;
+
+        private StreamUsageEnum(Integer value, String label) {
+            this.value = value;
+            this.label = label;
+        }
+
+        @Override
+        public Integer getValue() {
+            return value;
+        }
+
+        @Override
+        public String getLabel() {
+            return label;
+        }
+    }
+
+    public enum TariffPriceTypeEnum implements MatterEnum {
+        STANDARD(0, "Standard"),
+        CRITICAL(1, "Critical"),
+        VIRTUAL(2, "Virtual"),
+        INCENTIVE(3, "Incentive"),
+        INCENTIVE_SIGNAL(4, "IncentiveSignal");
+
+        public final Integer value;
+        public final String label;
+
+        private TariffPriceTypeEnum(Integer value, String label) {
+            this.value = value;
+            this.label = label;
+        }
+
+        @Override
+        public Integer getValue() {
+            return value;
+        }
+
+        @Override
+        public String getLabel() {
+            return label;
+        }
+    }
+
+    public enum TariffUnitEnum implements MatterEnum {
+        K_WH(0, "KWh"),
+        KV_AH(1, "KVAh");
+
+        public final Integer value;
+        public final String label;
+
+        private TariffUnitEnum(Integer value, String label) {
+            this.value = value;
+            this.label = label;
+        }
+
+        @Override
+        public Integer getValue() {
+            return value;
+        }
+
+        @Override
+        public String getLabel() {
+            return label;
+        }
+    }
+
+    public enum ThreeLevelAutoEnum implements MatterEnum {
+        AUTO(0, "Auto"),
+        LOW(1, "Low"),
+        MEDIUM(2, "Medium"),
+        HIGH(3, "High");
+
+        public final Integer value;
+        public final String label;
+
+        private ThreeLevelAutoEnum(Integer value, String label) {
+            this.value = value;
+            this.label = label;
+        }
+
+        @Override
+        public Integer getValue() {
+            return value;
+        }
+
+        @Override
+        public String getLabel() {
+            return label;
+        }
+    }
+
+    public enum Namespace implements MatterEnum {
+        COMMON_CLOSURE(1, "CommonClosure"),
+        COMMON_COMPASS_DIRECTION(2, "CommonCompassDirection"),
+        COMMON_COMPASS_LOCATION(3, "CommonCompassLocation"),
+        COMMON_DIRECTION(4, "CommonDirection"),
+        COMMON_LEVEL(5, "CommonLevel"),
+        COMMON_LOCATION(6, "CommonLocation"),
+        COMMON_NUMBER(7, "CommonNumber"),
+        COMMON_POSITION(8, "CommonPosition"),
+        ELECTRICAL_MEASUREMENT(10, "ElectricalMeasurement"),
+        COMMODITY_TARIFF_CHRONOLOGY(11, "CommodityTariffChronology"),
+        COMMODITY_TARIFF_COMMODITY(13, "CommodityTariffCommodity"),
+        LAUNDRY(14, "Laundry"),
+        POWER_SOURCE(15, "PowerSource"),
+        COMMON_AREA_NAMESPACE(16, "CommonAreaNamespace"),
+        COMMON_LANDMARK_NAMESPACE(17, "CommonLandmarkNamespace"),
+        COMMON_RELATIVE_POSITION(18, "CommonRelativePosition"),
+        COMMODITY_TARIFF_FLOW(19, "CommodityTariffFlow"),
+        REFRIGERATOR(65, "Refrigerator"),
+        ROOM_AIR_CONDITIONER(66, "RoomAirConditioner"),
+        SWITCHES(67, "Switches"),
+        CLOSURE(68, "Closure"),
+        CLOSURE_PANEL(69, "ClosurePanel"),
+        CLOSURE_COVERING(70, "ClosureCovering"),
+        CLOSURE_WINDOW(71, "ClosureWindow"),
+        CLOSURE_CABINET(72, "ClosureCabinet");
+
+        public final Integer value;
+        public final String label;
+
+        private Namespace(Integer value, String label) {
             this.value = value;
             this.label = label;
         }
@@ -345,7 +554,10 @@ public class BaseCluster {
         INVALID_IN_STATE(203, "InvalidInState"),
         NO_COMMAND_RESPONSE(204, "NoCommandResponse"),
         TERMS_AND_CONDITIONS_CHANGED(205, "TermsAndConditionsChanged"),
-        MAINTENANCE_REQUIRED(206, "MaintenanceRequired");
+        MAINTENANCE_REQUIRED(206, "MaintenanceRequired"),
+        DYNAMIC_CONSTRAINT_ERROR(207, "DynamicConstraintError"),
+        ALREADY_EXISTS(208, "AlreadyExists"),
+        INVALID_TRANSPORT_TYPE(209, "InvalidTransportType");
 
         public final Integer value;
         public final String label;
@@ -371,7 +583,7 @@ public class BaseCluster {
         public boolean wildcardSkipRootNode;
         public boolean wildcardSkipGlobalAttributes;
         public boolean wildcardSkipAttributeList;
-        public boolean reserved;
+        public boolean doNotUse;
         public boolean wildcardSkipCommandLists;
         public boolean wildcardSkipCustomElements;
         public boolean wildcardSkipFixedAttributes;
@@ -379,13 +591,13 @@ public class BaseCluster {
         public boolean wildcardSkipDiagnosticsClusters;
 
         public WildcardPathFlagsBitmap(boolean wildcardSkipRootNode, boolean wildcardSkipGlobalAttributes,
-                boolean wildcardSkipAttributeList, boolean reserved, boolean wildcardSkipCommandLists,
+                boolean wildcardSkipAttributeList, boolean doNotUse, boolean wildcardSkipCommandLists,
                 boolean wildcardSkipCustomElements, boolean wildcardSkipFixedAttributes,
                 boolean wildcardSkipChangesOmittedAttributes, boolean wildcardSkipDiagnosticsClusters) {
             this.wildcardSkipRootNode = wildcardSkipRootNode;
             this.wildcardSkipGlobalAttributes = wildcardSkipGlobalAttributes;
             this.wildcardSkipAttributeList = wildcardSkipAttributeList;
-            this.reserved = reserved;
+            this.doNotUse = doNotUse;
             this.wildcardSkipCommandLists = wildcardSkipCommandLists;
             this.wildcardSkipCustomElements = wildcardSkipCustomElements;
             this.wildcardSkipFixedAttributes = wildcardSkipFixedAttributes;

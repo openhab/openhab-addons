@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -32,17 +31,14 @@ public class ContentAppObserverCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0510;
     public static final String CLUSTER_NAME = "ContentAppObserver";
     public static final String CLUSTER_PREFIX = "contentAppObserver";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
-
-    public Integer clusterRevision; // 65533 ClusterRevision
 
     // Enums
     public enum StatusEnum implements MatterEnum {
         SUCCESS(0, "Success"),
         UNEXPECTED_DATA(1, "Unexpected Data");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private StatusEnum(Integer value, String label) {
             this.value = value;
@@ -89,7 +85,6 @@ public class ContentAppObserverCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         return str;
     }
 }

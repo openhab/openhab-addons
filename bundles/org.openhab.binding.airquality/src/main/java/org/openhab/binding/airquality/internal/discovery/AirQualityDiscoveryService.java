@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -69,7 +69,7 @@ public class AirQualityDiscoveryService extends AbstractThingHandlerDiscoverySer
         if (provider != null) {
             PointType location = provider.getLocation();
             AirQualityBridgeHandler bridge = this.thingHandler;
-            if (location == null || bridge == null) {
+            if (location == null) {
                 logger.info("openHAB server location is not defined, will not provide any discovery results");
                 return;
             }

@@ -27,7 +27,7 @@ Optionally, a refresh interval (in seconds) can be defined.
 | `port`           | Port            | Port number used by meter.                                 | no       | 9522            |
 | `pollingPeriod`  | Polling Period  | Polling period used to publish meter reading (in seconds). | no       | 30              |
 
-The polling period parameter is used to trigger readout of meter. In case if two consecutive readout attempts fail thing will report offline status.
+The polling period parameter is used to trigger readout of meter. In case if two consecutive readout attempts fail Thing will report offline status.
 
 ## Channels
 

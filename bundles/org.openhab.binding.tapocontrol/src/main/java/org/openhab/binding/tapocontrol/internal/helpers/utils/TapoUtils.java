@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -107,6 +107,7 @@ public class TapoUtils {
      * @return mac address without any division chars
      */
     public static String unformatMac(String mac) {
+        mac = mac.toLowerCase();
         mac = mac.replace("-", "");
         mac = mac.replace(":", "");
         mac = mac.replace(".", "");
@@ -136,7 +137,12 @@ public class TapoUtils {
             deviceModel = deviceModel.replace("Series", "");
             deviceModel = deviceModel.trim();
             deviceModel = deviceModel.replace(" ", "_");
-            deviceModel = deviceModel.substring(0, 4);
+            if (deviceModel.startsWith(DEVICE_HS200)) {
+                deviceModel = DEVICE_HS200;
+            } else {
+                // Keep legacy behavior of only first 4 characters
+                deviceModel = deviceModel.substring(0, 4);
+            }
             return deviceModel;
         } catch (Exception e) {
             return "";
@@ -174,6 +180,8 @@ public class TapoUtils {
                 deviceLabel = DEVICE_DESCRIPTION_MOTION_SENSOR;
             } else if (SUPPORTED_WEATHER_SENSORS.contains(deviceUID)) {
                 deviceLabel = DEVICE_DESCRIPTION_TEMP_SENSOR;
+            } else if (SUPPORTED_LIGHT_SWITCH_UIDS.contains(deviceUID)) {
+                deviceLabel = DEVICE_DESCRIPTION_LIGHT_SWITCH;
             }
             if (alias.length() > 0) {
                 return String.format("%s %s %s (%s)", DEVICE_VENDOR, deviceModel, deviceLabel, alias);

@@ -103,7 +103,7 @@
 	<channel-type id="energyToday" advanced="true">
 		<item-type>Number:Energy</item-type>
 		<label>Energy Today</label>
-		<description>Todays power consumption</description>
+		<description>Today's power consumption</description>
 		<category>Energy</category>
 		<state pattern="%.0f %unit%"/>
 	</channel-type>
@@ -118,7 +118,7 @@
 
 	<channel-type id="standByLimit" advanced="true">
 		<item-type>Number:Power</item-type>
-		<label>StandBy Limit</label>
+		<label>Standby Limit</label>
 		<description>Minimum energy draw to register device as switched on</description>
 		<category>Energy</category>
 		<state pattern="%.0f %unit%"/>
@@ -248,25 +248,25 @@
 	<channel-type id="faderEnabled" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Fader OFF/ON</label>
-		<description>Allows to switch the fader ON/OFF</description>
+		<description>Switch the fader ON/OFF</description>
 	</channel-type>
 
 	<channel-type id="timerStart" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Timer OFF/ON</label>
-		<description>Allows to switch the timer ON/OFF</description>
+		<description>Switch the timer ON/OFF</description>
 	</channel-type>
 
 	<channel-type id="nightMode" advanced="true">
 		<item-type>Switch</item-type>
-		<label>NightMode OFF/ON</label>
-		<description>Allows to switch the nightMode ON/OFF</description>
+		<label>Night Mode OFF/ON</label>
+		<description>Switch night mode ON/OFF</description>
 	</channel-type>
 
 	<channel-type id="startTime" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>NightMode Start Time</label>
-		<description>Time when the Night Mode starts</description>
+		<description>Time when the night mode starts</description>
 		<category>Time</category>
 		<state pattern="%1$tR" readOnly="true"/>
 	</channel-type>
@@ -274,7 +274,7 @@
 	<channel-type id="endTime" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>NightMode End Time</label>
-		<description>Time when the Night Mode ends</description>
+		<description>Time when the night mode ends</description>
 		<category>Time</category>
 		<state pattern="%1$tR" readOnly="true"/>
 	</channel-type>
@@ -472,7 +472,7 @@
 		<state readOnly="false">
 			<options>
 				<option value="OFF">Not Running</option>
-				<option value="FROSTPROTECT">Running at FrostProtect</option>
+				<option value="FROSTPROTECT">Running at frost-protect</option>
 				<option value="HIGH">Running at high level</option>
 				<option value="LOW">Running at low level</option>
 				<option value="ECO">Running in Eco mode</option>

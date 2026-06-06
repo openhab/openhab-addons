@@ -42,7 +42,7 @@
 				<advanced>true</advanced>
 				<label>The Protocol Mode to Use</label>
 				<default>SML</default>
-				<description>Can be SML (PUSH mode), Mode A,B,C (PULL)or D (PUSH)</description>
+				<description>Can be SML (PUSH mode), Mode A, B, C (PULL), or D (PUSH)</description>
 			</parameter>
 			<parameter name="conformity" type="text">
 				<advanced>true</advanced>

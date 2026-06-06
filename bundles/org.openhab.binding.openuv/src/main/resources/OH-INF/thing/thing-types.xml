@@ -124,7 +124,7 @@
 		<label>Safe Exposure</label>
 		<description>Safe exposure duration for Fitzpatrick Skin Types.</description>
 		<category>Time</category>
-		<state readOnly="true" pattern="%d %unit%"/>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 		<config-description>
 			<parameter name="index" type="text">
 				<label>Skin Type</label>

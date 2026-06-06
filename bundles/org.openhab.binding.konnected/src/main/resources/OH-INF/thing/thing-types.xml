@@ -152,15 +152,15 @@
 			</parameter>
 			<parameter name="momentary" type="integer">
 				<label>Momentary</label>
-				<description>The duration of the pulse in millisecods</description>
+				<description>The duration of the pulse in milliseconds</description>
 			</parameter>
 			<parameter name="pause" type="integer">
 				<label>Pause</label>
-				<description>The time between pulses in millisecods</description>
+				<description>The time between pulses in milliseconds</description>
 			</parameter>
 			<parameter name="times" type="integer">
 				<label>Times</label>
-				<description>is the number of times to repeat or `-1` for an infinitely repeating pulse</description>
+				<description>The number of times to repeat or `-1` for an infinitely repeating pulse</description>
 			</parameter>
 		</config-description>
 	</channel-type>

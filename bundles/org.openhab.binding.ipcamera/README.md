@@ -32,7 +32,7 @@ Some cameras allow the key frame to be created every second or a different amoun
 
 ### ESP32 Cameras
 
-These cameras do not have the ability to create H.264 streams and hence can not be used with HLS, however all other features should work.
+These cameras do not have the ability to create H.264 streams and hence cannot be used with HLS, however all other features should work.
 Due to many custom firmwares available, you may need to ask the firmware developer what the URLs are for snapshots and MJPEG streams if they have changed the defaults from what the Arduino IDE sample code uses.
 Another limitation is that they can only provide a single stream at a time, so you need to setup the `ffmpegInput` to use the ipcamera.mjpeg feed from the openHAB server and change `ffmpegInputOptions` to "-f mjpeg" so FFmpeg knows the input is MJPEG format and not H.264.
 
@@ -41,7 +41,6 @@ Example:
 ```java
 Thing ipcamera:generic:Esp32Cam
 [
-    ipAddress="192.168.1.181",
     gifPreroll=1,
     snapshotUrl="http://192.168.1.181/capture",
     mjpegUrl="http://192.168.1.181:81/stream",
@@ -53,7 +52,7 @@ Thing ipcamera:generic:Esp32Cam
 
 ### Amcrest
 
-It is better to always setup your Amcrest camera as a `dahua` thing type.
+It is better to always setup your Amcrest camera as a `dahua` Thing type.
 The old alarm polling based method is used if you setup as `amcrest`, and the newer/better event based method is used if you setup as `dahua` instead.
 All other features should be the same between the two.
 
@@ -140,19 +139,19 @@ The binding needs to use UDP port 3702 to discover the cameras with, so this por
 To use the discovery, just press the `+` icon located in the Inbox, then select the IpCamera binding from the list of installed bindings.
 The binding will only search using openHAB's currently selected primary network address.
 If your camera is not found after a few searches, it may not be ONVIF and in this case you will need to manually add the camera via the UI.
-Cameras that are not ONVIF should be added as a `generic` thing type and you will need to provide the URLs manually.
+Cameras that are not ONVIF should be added as a `generic` Thing type and you will need to provide the URLs manually.
 
 ## Supported Things
 
 If using openHAB's textual configuration, or when needing to setup HABpanel/sitemaps, you may need to know what your camera is as a "thing type".
 
-Example: The thing type for a camera with no ONVIF support is "generic".
+Example: The Thing type for a camera with no ONVIF support is "generic".
 
 | Thing Type ID | Description |
 |-|-|
 | `generic` | For any camera that is not ONVIF compatible, yet has working RTSP or HTTP URLs. |
 | `onvif` | Use for all ONVIF cameras that do not have an API. |
-| `amcrest` | Only use for if your Amcrest cameras wont work as a `dahua` thing. This uses an older polling based method for alarms that is not as efficient as the newer method used in `dahua`. Amcrest are made by Dahua and hence the API is similar. |
+| `amcrest` | Only use for if your Amcrest cameras wont work as a `dahua` Thing. This uses an older polling based method for alarms that is not as efficient as the newer method used in `dahua`. Amcrest are made by Dahua and hence the API is similar. |
 | `dahua` | Use for all Dahua and Amcrest cameras that support the API. |
 | `doorbird` | Use for all current Doorbird cameras as they support an API as well as ONVIF. |
 | `foscam` | Use for all current Foscam HD cameras as they support an API as well as ONVIF. |
@@ -397,7 +396,7 @@ This is always the best option if it works.
 - Request a snapshot with the URL `http://openhabIP:8080/ipcamera/{cameraUID}/ipcamera.jpg`.
 The IP is for your openHAB server not the camera.
 If you find the snapshot is old, you can set the `gifPreroll` to a number above 0 and this forces the camera to keep updating the stored JPG in RAM.
-The ipcamera.jpg can also be cast, as most cameras can not directly cast their snapshots.
+The ipcamera.jpg can also be cast, as most cameras cannot directly cast their snapshots.
 - Use the `http://openHAB:8080/ipcamera/{cameraUID}/snapshots.mjpeg` to request a stream of snapshots to be delivered in MJPEG format.
 - Use the record GIF action and use a `gifPreroll` value > 0.
 This creates a number of snapshots in the FFmpeg output folder called snapshotXXX.jpg where XXX starts at 0 and increases each `pollTime`.
@@ -725,7 +724,7 @@ The widgets in the link above are the easiest way to get an advanced stream work
 
 ## Group Displays
 
-The `group` thing allows up to 4 cameras to be displayed like they are a single camera that rotates from one to the next.
+The `group` Thing allows up to 4 cameras to be displayed like they are a single camera that rotates from one to the next.
 The display order can be allowed to change if one or more of the cameras detects motion.
 
 Some additional checks to get it working are:

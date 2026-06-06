@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -67,7 +67,6 @@ import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.PortalI
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.PortalIotCommandXmlResponse;
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.PortalIotProductResponse;
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.PortalLoginResponse;
-import org.openhab.binding.ecovacs.internal.api.util.DataParsingException;
 import org.openhab.binding.ecovacs.internal.api.util.HashUtil;
 import org.openhab.core.OpenHAB;
 import org.slf4j.Logger;
@@ -306,7 +305,7 @@ public final class EcovacsApiImpl implements EcovacsApi {
         }
         try {
             return command.convertResponse(commandResponse, desc.protoVersion, gson);
-        } catch (DataParsingException e) {
+        } catch (Exception e) {
             logger.debug("Converting response for command {} failed", command, e);
             throw new EcovacsApiException(e);
         }
@@ -346,10 +345,16 @@ public final class EcovacsApiImpl implements EcovacsApi {
         return responseObj.records;
     }
 
-    public byte[] downloadCleanMapImage(String url, boolean useSigning)
+    public Optional<byte[]> downloadCleanMapImage(Device device, String url, boolean useSigning)
             throws EcovacsApiException, InterruptedException {
         Request request = useSigning ? createSignedAppRequest(url) : httpClient.newRequest(url).method(HttpMethod.GET);
-        return executeRequest(request).getContent();
+        ContentResponse response = executeRequest(request);
+        if ("application/json".equals(response.getMediaType())) {
+            logger.warn("{}: Could not download map image {}: {}", device.getName(), url,
+                    response.getContentAsString());
+            return Optional.empty();
+        }
+        return Optional.of(response.getContent());
     }
 
     private PortalAuthRequestParameter createAuthData() {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -94,6 +94,7 @@ public class ThingCallbackListener implements ThingHandlerCallback {
                 try {
                     updatesReceived.wait(50);
                 } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
                     fail();
                 }
             }

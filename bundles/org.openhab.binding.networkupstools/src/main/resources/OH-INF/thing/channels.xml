@@ -42,7 +42,7 @@
 	<channel-type id="ups-status">
 		<item-type>String</item-type>
 		<label>UPS Status</label>
-		<description>Status of the UPS: OFF, OL,OB,LB,RB,OVER,TRIM,BOOST,CAL,BYPASS,NULL</description>
+		<description>Status flags for the UPS.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Mode</tag>

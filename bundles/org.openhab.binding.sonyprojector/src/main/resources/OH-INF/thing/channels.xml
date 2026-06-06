@@ -15,7 +15,7 @@
 			<options>
 				<option value="STANDBY">Standby</option>
 				<option value="START_UP">Start Up</option>
-				<option value="STARTUP_LAMP">Sartup Lamp</option>
+				<option value="STARTUP_LAMP">Startup Lamp</option>
 				<option value="POWER_ON">Power On</option>
 				<option value="COOLING1">Cooling 1</option>
 				<option value="COOLING2">Cooling 2</option>
@@ -149,13 +149,13 @@
 	<channel-type id="blocknr" advanced="true">
 		<item-type>String</item-type>
 		<label>Block Noise Reduction</label>
-		<description>Reduce digital noise that appears in mosaic-like pattern</description>
+		<description>Reduce digital noise that appears in a mosaic-like pattern</description>
 	</channel-type>
 
 	<channel-type id="mosquitonr" advanced="true">
 		<item-type>String</item-type>
 		<label>Mosquito Noise Reduction</label>
-		<description>Reduce digital noise that appears near the outline of the picture</description>
+		<description>Reduce digital noise that appears near the edges of the picture</description>
 	</channel-type>
 
 	<channel-type id="mpegnr" advanced="true">
@@ -185,7 +185,7 @@
 	<channel-type id="overscan" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Overscan</label>
-		<description>Hide or not the edges of the picture</description>
+		<description>Hide the edges of the picture</description>
 	</channel-type>
 
 	<channel-type id="pictureposition" advanced="true">

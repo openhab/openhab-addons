@@ -18,9 +18,9 @@
 		</channels>
 		<config-description>
 			<parameter name="resourceId" type="text" required="true">
-				<label>Ressource ID</label>
-				<description>The ID which represents the current meter. You can find it in the pixometer browser app while editing a
-					specific meter. It should look like this: "https://pixometer.io/portal/#/meters/XXXXX/edit"</description>
+				<label>Resource ID</label>
+				<description>The ID that represents the current meter. You can find it in the Pixometer web app while editing a
+					specific meter. It looks like this: "https://pixometer.io/portal/#/meters/XXXXX/edit"</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -32,6 +32,6 @@
 			<tag>Measurement</tag>
 			<tag>Water</tag>
 		</tags>
-		<state pattern="%.3f  %unit%" readOnly="true"/>
+		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

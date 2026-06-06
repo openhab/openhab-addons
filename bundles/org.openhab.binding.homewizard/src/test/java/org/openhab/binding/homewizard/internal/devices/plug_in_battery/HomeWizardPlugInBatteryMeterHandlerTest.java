@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -46,7 +47,7 @@ public class HomeWizardPlugInBatteryMeterHandlerTest extends HomeWizardHandlerTe
                 .thenReturn(new ThingUID(HomeWizardBindingConstants.THING_TYPE_HWE_P1, "homewizard-test-thing-bat"));
         when(thing.getThingTypeUID()).thenReturn(HomeWizardBindingConstants.THING_TYPE_HWE_BAT);
 
-        when(thing.getConfiguration()).thenReturn(CONFIG);
+        when(thing.getConfiguration()).thenReturn(CONFIG_V2);
 
         final List<Channel> channelList = Arrays.asList(
                 mockChannel(thing.getUID(), HomeWizardBindingConstants.CHANNEL_GROUP_ENERGY,
@@ -76,7 +77,8 @@ public class HomeWizardPlugInBatteryMeterHandlerTest extends HomeWizardHandlerTe
             doReturn(DataUtil.fromFile("response-device-information-plug-in-battery.json")).when(handler)
                     .getDeviceInformationData();
             doReturn(DataUtil.fromFile("response-measurement-plug-in-battery.json")).when(handler).getMeasurementData();
-        } catch (Exception e) {
+            doReturn(DataUtil.fromFile("response-system.json")).when(handler).getSystemData();
+        } catch (IOException ex) {
             assertFalse(true);
         }
 
@@ -99,7 +101,7 @@ public class HomeWizardPlugInBatteryMeterHandlerTest extends HomeWizardHandlerTe
                     getState(1.5, Units.AMPERE));
             verify(callback).stateUpdated(getEnergyChannelUid(thing, HomeWizardBindingConstants.CHANNEL_POWER),
                     getState(123, Units.WATT));
-            verify(callback).stateUpdated(getEnergyChannelUid(thing, HomeWizardBindingConstants.CHANNEL_VOLTAGE_L1),
+            verify(callback).stateUpdated(getEnergyChannelUid(thing, HomeWizardBindingConstants.CHANNEL_VOLTAGE),
                     getState(230, Units.VOLT));
 
             verify(callback).stateUpdated(getEnergyChannelUid(thing, HomeWizardBindingConstants.CHANNEL_ENERGY_EXPORT),
@@ -109,6 +111,20 @@ public class HomeWizardPlugInBatteryMeterHandlerTest extends HomeWizardHandlerTe
 
             verify(callback).stateUpdated(getEnergyChannelUid(thing, HomeWizardBindingConstants.CHANNEL_FREQUENCY),
                     getState(50.0, Units.HERTZ));
+
+            verify(callback).stateUpdated(
+                    getSystemChannelUid(thing, HomeWizardBindingConstants.CHANNEL_SYSTEM_WIFI_SSID),
+                    getState("My Wi-Fi"));
+            verify(callback).stateUpdated(
+                    getSystemChannelUid(thing, HomeWizardBindingConstants.CHANNEL_SYSTEM_WIFI_RSSI), getState(-77));
+            verify(callback).stateUpdated(getSystemChannelUid(thing, HomeWizardBindingConstants.CHANNEL_SYSTEM_UPTIME),
+                    getState(356, Units.SECOND));
+            verify(callback).stateUpdated(
+                    getSystemChannelUid(thing, HomeWizardBindingConstants.CHANNEL_SYSTEM_CLOUD_ENABLED),
+                    getState(true));
+            verify(callback).stateUpdated(
+                    getSystemChannelUid(thing, HomeWizardBindingConstants.CHANNEL_SYSTEM_STATUS_LED_BRIGHTNESS),
+                    getState(100));
         } finally {
             handler.dispose();
         }

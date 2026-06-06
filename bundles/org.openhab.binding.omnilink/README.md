@@ -41,7 +41,7 @@ An Omni or Lumina controller requires the IP address (`ipAddress`), optional por
 The hexadecimal pairs in the encryption keys are typically delimited using a colon`:`, but dashes `-`, spaces ` ` or no delimiter may be used.
 <!-- markdownlint-enable MD038 -->
 
-In the thing file, this looks like:
+In the Thing file, this looks like:
 
 ```java
 Bridge omnilink:controller:home [ ipAddress="127.0.0.1", port=4369, key1="XXXXXXXXXXXXXXXX", key2="XXXXXXXXXXXXXXXX" ] {
@@ -147,7 +147,7 @@ The devices support some of the following trigger channels:
 ## Rule Actions
 
 This binding includes a rule action, which allows synchronizing the controller time to match the openHAB system time with a user specified zone.
-There is a separate instance for each contoller, which can be retrieved through:
+There is a separate instance for each controller, which can be retrieved through:
 
 :::: tabs
 
@@ -254,13 +254,13 @@ Switch    AlarmFreeze        "Freeze Alarm [%s]"                 (Alarms)    {ch
 Switch    AlarmWater         "Water Alarm [%s]"                  (Alarms)    {channel="omnilink:area:home:MainArea:alarm_water"}
 Switch    AlarmDuress        "Duress Alarm [%s]"                 (Alarms)    {channel="omnilink:area:home:MainArea:alarm_duress"}
 Switch    AlarmTemperature   "Temperature Alarm [%s]"            (Alarms)    {channel="omnilink:area:home:MainArea:alarm_temperature"}
-Number    AlarmModeDisarm                                                    {channel="omnilink:area:home:MainArea:disarm"}
-Number    AlarmModeDay                                                       {channel="omnilink:area:home:MainArea:day"}
-Number    AlarmModeNight                                                     {channel="omnilink:area:home:MainArea:night"}
-Number    AlarmModeAway                                                      {channel="omnilink:area:home:MainArea:away"}
-Number    AlarmModeVacation                                                  {channel="omnilink:area:home:MainArea:vacation"}
-Number    AlarmModeDayInstant                                                {channel="omnilink:area:home:MainArea:day_instant"}
-Number    AlarmModeNightDelayed                                              {channel="omnilink:area:home:MainArea:night_delayed"}
+String    AlarmModeDisarm                                                    {channel="omnilink:area:home:MainArea:disarm"}
+String    AlarmModeDay                                                       {channel="omnilink:area:home:MainArea:day"}
+String    AlarmModeNight                                                     {channel="omnilink:area:home:MainArea:night"}
+String    AlarmModeAway                                                      {channel="omnilink:area:home:MainArea:away"}
+String    AlarmModeVacation                                                  {channel="omnilink:area:home:MainArea:vacation"}
+String    AlarmModeDayInstant                                                {channel="omnilink:area:home:MainArea:day_instant"}
+String    AlarmModeNightDelayed                                              {channel="omnilink:area:home:MainArea:night_delayed"}
 
 /*
  * Lights

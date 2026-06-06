@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,7 +32,7 @@ import com.google.gson.JsonObject;
  * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
-public class OccupancySensorDevice extends GenericDevice {
+public class OccupancySensorDevice extends BaseDevice {
 
     public OccupancySensorDevice(MetadataRegistry metadataRegistry, MatterBridgeClient client, GenericItem item) {
         super(metadataRegistry, client, item);
@@ -68,7 +68,7 @@ public class OccupancySensorDevice extends GenericDevice {
                 occupiedState(primaryItem.getState()));
     }
 
-    private JsonObject occupiedState(State state) {
+    public static JsonObject occupiedState(State state) {
         boolean occupied = false;
         if (state instanceof OnOffType onOffType) {
             occupied = onOffType == OnOffType.ON;

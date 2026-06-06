@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,8 +42,8 @@ import org.openhab.core.library.unit.Units;
 @ExtendWith(MockitoExtension.class)
 public class DanfossAirUnitTest {
 
-    private @NonNullByDefault({}) @Mock CommunicationController communicationController;
-    private @NonNullByDefault({}) @Mock TimeZoneProvider timeZoneProvider;
+    private @Mock @NonNullByDefault({}) CommunicationController communicationController;
+    private @Mock @NonNullByDefault({}) TimeZoneProvider timeZoneProvider;
 
     @Test
     void getUnitNameIsReturned() throws IOException {

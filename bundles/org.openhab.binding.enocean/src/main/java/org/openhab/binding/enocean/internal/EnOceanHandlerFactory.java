@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,8 +26,10 @@ import org.openhab.binding.enocean.internal.handler.EnOceanBaseActuatorHandler;
 import org.openhab.binding.enocean.internal.handler.EnOceanBaseSensorHandler;
 import org.openhab.binding.enocean.internal.handler.EnOceanBridgeHandler;
 import org.openhab.binding.enocean.internal.handler.EnOceanClassicDeviceHandler;
+import org.openhab.binding.enocean.internal.handler.EnOceanDatagramInjectorHandler;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.io.transport.serial.SerialPortManager;
+import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingManager;
@@ -62,15 +64,18 @@ public class EnOceanHandlerFactory extends BaseThingHandlerFactory {
     private final SerialPortManager serialPortManager;
     private final ThingManager thingManager;
     private final ItemChannelLinkRegistry itemChannelLinkRegistry;
+    private final StorageService storageService;
 
     @Activate
     public EnOceanHandlerFactory(final @Reference SerialPortManager serialPortManager,
             final @Reference ThingManager thingManager,
-            final @Reference ItemChannelLinkRegistry itemChannelLinkRegistry) {
-        // Obtain references to thes service using an OSGi reference
+            final @Reference ItemChannelLinkRegistry itemChannelLinkRegistry,
+            final @Reference StorageService storageService) {
+        // Obtain references to these services using an OSGi reference
         this.serialPortManager = serialPortManager;
         this.thingManager = thingManager;
         this.itemChannelLinkRegistry = itemChannelLinkRegistry;
+        this.storageService = storageService;
     }
 
     @Override
@@ -86,11 +91,13 @@ public class EnOceanHandlerFactory extends BaseThingHandlerFactory {
             registerDeviceDiscoveryService(bridgeHandler);
             return bridgeHandler;
         } else if (EnOceanBaseActuatorHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
-            return new EnOceanBaseActuatorHandler(thing, itemChannelLinkRegistry);
+            return new EnOceanBaseActuatorHandler(thing, itemChannelLinkRegistry, storageService);
         } else if (EnOceanBaseSensorHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             return new EnOceanBaseSensorHandler(thing, itemChannelLinkRegistry);
         } else if (EnOceanClassicDeviceHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
-            return new EnOceanClassicDeviceHandler(thing, itemChannelLinkRegistry);
+            return new EnOceanClassicDeviceHandler(thing, itemChannelLinkRegistry, storageService);
+        } else if (EnOceanDatagramInjectorHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
+            return new EnOceanDatagramInjectorHandler(thing, itemChannelLinkRegistry);
         }
 
         return null;

@@ -1,6 +1,6 @@
 {
 	"vehicle": [
-		"doorLockStatusOverall",
+		"doorlockstatusvehicle",
 		"windowStatusOverall",
 		"doorStatusOverall",
 		"ignitionstate",

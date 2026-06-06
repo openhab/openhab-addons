@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -62,33 +62,33 @@ public class ThermostatConverter extends GenericConverter<ThermostatCluster> {
 
         List<StateOption> modeOptions = new ArrayList<>();
 
-        modeOptions.add(new StateOption(ThermostatCluster.SystemModeEnum.OFF.value.toString(),
-                ThermostatCluster.SystemModeEnum.OFF.label));
+        modeOptions.add(new StateOption(ThermostatCluster.SystemModeEnum.OFF.getValue().toString(),
+                ThermostatCluster.SystemModeEnum.OFF.getLabel()));
         if (initializingCluster.featureMap.autoMode) {
-            modeOptions.add(new StateOption(ThermostatCluster.SystemModeEnum.AUTO.value.toString(),
-                    ThermostatCluster.SystemModeEnum.AUTO.label));
+            modeOptions.add(new StateOption(ThermostatCluster.SystemModeEnum.AUTO.getValue().toString(),
+                    ThermostatCluster.SystemModeEnum.AUTO.getLabel()));
         }
         if (initializingCluster.featureMap.cooling) {
-            modeOptions.add(new StateOption(ThermostatCluster.SystemModeEnum.COOL.value.toString(),
-                    ThermostatCluster.SystemModeEnum.COOL.label));
-            modeOptions.add(new StateOption(ThermostatCluster.SystemModeEnum.PRECOOLING.value.toString(),
-                    ThermostatCluster.SystemModeEnum.PRECOOLING.label));
+            modeOptions.add(new StateOption(ThermostatCluster.SystemModeEnum.COOL.getValue().toString(),
+                    ThermostatCluster.SystemModeEnum.COOL.getLabel()));
+            modeOptions.add(new StateOption(ThermostatCluster.SystemModeEnum.PRECOOLING.getValue().toString(),
+                    ThermostatCluster.SystemModeEnum.PRECOOLING.getLabel()));
         }
         if (initializingCluster.featureMap.heating) {
-            modeOptions.add(new StateOption(ThermostatCluster.SystemModeEnum.HEAT.value.toString(),
-                    ThermostatCluster.SystemModeEnum.HEAT.label));
-            modeOptions.add(new StateOption(ThermostatCluster.SystemModeEnum.EMERGENCY_HEAT.value.toString(),
-                    ThermostatCluster.SystemModeEnum.EMERGENCY_HEAT.label));
+            modeOptions.add(new StateOption(ThermostatCluster.SystemModeEnum.HEAT.getValue().toString(),
+                    ThermostatCluster.SystemModeEnum.HEAT.getLabel()));
+            modeOptions.add(new StateOption(ThermostatCluster.SystemModeEnum.EMERGENCY_HEAT.getValue().toString(),
+                    ThermostatCluster.SystemModeEnum.EMERGENCY_HEAT.getLabel()));
         }
-        modeOptions.add(new StateOption(ThermostatCluster.SystemModeEnum.FAN_ONLY.value.toString(),
-                ThermostatCluster.SystemModeEnum.FAN_ONLY.label));
-        modeOptions.add(new StateOption(ThermostatCluster.SystemModeEnum.DRY.value.toString(),
-                ThermostatCluster.SystemModeEnum.DRY.label));
-        modeOptions.add(new StateOption(ThermostatCluster.SystemModeEnum.SLEEP.value.toString(),
-                ThermostatCluster.SystemModeEnum.SLEEP.label));
+        modeOptions.add(new StateOption(ThermostatCluster.SystemModeEnum.FAN_ONLY.getValue().toString(),
+                ThermostatCluster.SystemModeEnum.FAN_ONLY.getLabel()));
+        modeOptions.add(new StateOption(ThermostatCluster.SystemModeEnum.DRY.getValue().toString(),
+                ThermostatCluster.SystemModeEnum.DRY.getLabel()));
+        modeOptions.add(new StateOption(ThermostatCluster.SystemModeEnum.SLEEP.getValue().toString(),
+                ThermostatCluster.SystemModeEnum.SLEEP.getLabel()));
 
-        StateDescription stateDescriptionMode = StateDescriptionFragmentBuilder.create().withPattern("%d")
-                .withOptions(modeOptions).build().toStateDescription();
+        StateDescription stateDescriptionMode = StateDescriptionFragmentBuilder.create().withOptions(modeOptions)
+                .build().toStateDescription();
         channels.put(channel, stateDescriptionMode);
 
         if (!initializingCluster.featureMap.localTemperatureNotExposed) {
@@ -169,12 +169,12 @@ public class ThermostatConverter extends GenericConverter<ThermostatCluster> {
                     .create(new ChannelUID(channelGroupUID, CHANNEL_ID_THERMOSTAT_RUNNINGMODE), CoreItemFactory.NUMBER)
                     .withType(CHANNEL_THERMOSTAT_RUNNINGMODE).build();
             List<StateOption> options = new ArrayList<>();
-            options.add(new StateOption(ThermostatCluster.ThermostatRunningModeEnum.OFF.value.toString(),
-                    ThermostatCluster.ThermostatRunningModeEnum.OFF.label));
-            options.add(new StateOption(ThermostatCluster.ThermostatRunningModeEnum.HEAT.value.toString(),
-                    ThermostatCluster.ThermostatRunningModeEnum.HEAT.label));
-            options.add(new StateOption(ThermostatCluster.ThermostatRunningModeEnum.COOL.value.toString(),
-                    ThermostatCluster.ThermostatRunningModeEnum.COOL.label));
+            options.add(new StateOption(ThermostatCluster.ThermostatRunningModeEnum.OFF.getValue().toString(),
+                    ThermostatCluster.ThermostatRunningModeEnum.OFF.getLabel()));
+            options.add(new StateOption(ThermostatCluster.ThermostatRunningModeEnum.HEAT.getValue().toString(),
+                    ThermostatCluster.ThermostatRunningModeEnum.HEAT.getLabel()));
+            options.add(new StateOption(ThermostatCluster.ThermostatRunningModeEnum.COOL.getValue().toString(),
+                    ThermostatCluster.ThermostatRunningModeEnum.COOL.getLabel()));
             StateDescription stateDescription = StateDescriptionFragmentBuilder.create().withOptions(options).build()
                     .toStateDescription();
             channels.put(tempChannel, stateDescription);
@@ -188,18 +188,27 @@ public class ThermostatConverter extends GenericConverter<ThermostatCluster> {
         if (!(command instanceof RefreshType)) {
             String id = channelUID.getIdWithoutGroup();
             if (id.equals(CHANNEL_ID_THERMOSTAT_SYSTEMMODE)) {
-                handler.writeAttribute(endpointNumber, ThermostatCluster.CLUSTER_NAME, "systemMode",
-                        command.toString());
+                handler.writeAttribute(endpointNumber, ThermostatCluster.CLUSTER_NAME, "systemMode", command.toString())
+                        .exceptionally(e -> {
+                            logger.debug("Failed to set system mode: {}", e.getMessage());
+                            return Void.TYPE.cast(null);
+                        });
                 return;
             }
             if (id.equals(CHANNEL_ID_THERMOSTAT_OCCUPIEDHEATING)) {
                 handler.writeAttribute(endpointNumber, ThermostatCluster.CLUSTER_NAME, "occupiedHeatingSetpoint",
-                        String.valueOf(ValueUtils.temperatureToValue(command)));
+                        String.valueOf(ValueUtils.temperatureToValue(command))).exceptionally(e -> {
+                            logger.debug("Failed to set occupied heating setpoint: {}", e.getMessage());
+                            return Void.TYPE.cast(null);
+                        });
                 return;
             }
             if (id.equals(CHANNEL_ID_THERMOSTAT_OCCUPIEDCOOLING)) {
                 handler.writeAttribute(endpointNumber, ThermostatCluster.CLUSTER_NAME, "occupiedCoolingSetpoint",
-                        String.valueOf(ValueUtils.temperatureToValue(command)));
+                        String.valueOf(ValueUtils.temperatureToValue(command))).exceptionally(e -> {
+                            logger.debug("Failed to set occupied cooling setpoint: {}", e.getMessage());
+                            return Void.TYPE.cast(null);
+                        });
                 return;
             }
         }
@@ -213,7 +222,7 @@ public class ThermostatConverter extends GenericConverter<ThermostatCluster> {
         switch (message.path.attributeName) {
             case ThermostatCluster.ATTRIBUTE_SYSTEM_MODE:
                 if (message.value instanceof ThermostatCluster.SystemModeEnum systemModeEnum) {
-                    updateState(CHANNEL_ID_THERMOSTAT_SYSTEMMODE, new DecimalType(systemModeEnum.value));
+                    updateState(CHANNEL_ID_THERMOSTAT_SYSTEMMODE, new DecimalType(systemModeEnum.getValue()));
                 }
                 break;
             case ThermostatCluster.ATTRIBUTE_OCCUPIED_HEATING_SETPOINT:
@@ -254,7 +263,7 @@ public class ThermostatConverter extends GenericConverter<ThermostatCluster> {
                         ? ValueUtils.valueToTemperature(initializingCluster.outdoorTemperature)
                         : UnDefType.NULL);
         updateState(CHANNEL_ID_THERMOSTAT_SYSTEMMODE,
-                initializingCluster.systemMode != null ? new DecimalType(initializingCluster.systemMode.value)
+                initializingCluster.systemMode != null ? new DecimalType(initializingCluster.systemMode.getValue())
                         : UnDefType.NULL);
         updateState(CHANNEL_ID_THERMOSTAT_OCCUPIEDHEATING,
                 initializingCluster.occupiedHeatingSetpoint != null
@@ -274,7 +283,7 @@ public class ThermostatConverter extends GenericConverter<ThermostatCluster> {
                         : UnDefType.NULL);
         updateState(CHANNEL_ID_THERMOSTAT_RUNNINGMODE,
                 initializingCluster.thermostatRunningMode != null
-                        ? new DecimalType(initializingCluster.thermostatRunningMode.value)
+                        ? new DecimalType(initializingCluster.thermostatRunningMode.getValue())
                         : UnDefType.NULL);
     }
 }

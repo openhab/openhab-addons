@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -557,6 +557,8 @@ public class DSCAlarmMessage {
         DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.HomeAutomationTrouble,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
         DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.HomeAutomationTroubleRestore,
+                new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.WirelessSensorLowBatteryRestore,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
         DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.TroubleLEDOn,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, true, false));

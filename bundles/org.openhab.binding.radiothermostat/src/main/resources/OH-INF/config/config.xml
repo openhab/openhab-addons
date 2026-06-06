@@ -51,8 +51,14 @@
 		</parameter>
 		<parameter name="clockSync" type="boolean">
 			<label>Enable Thermostat Clock Sync</label>
-			<description>Optional Flag to sync the thermostat's clock with the host system clock</description>
+			<description>Optional flag to sync the thermostat's clock with the host system clock</description>
 			<default>true</default>
+		</parameter>
+
+		<parameter name="remoteTempDeadband" type="boolean">
+			<label>Enable Remote Temperature Deadband</label>
+			<description>Optional flag to round the value received by the Remote Temperature channel</description>
+			<default>false</default>
 		</parameter>
 
 		<parameter name="monMorningHeatTime" type="text" pattern="([01]?[0-9]|2[0-3]):[0-5][0-9]"

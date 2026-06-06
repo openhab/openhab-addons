@@ -3,10 +3,10 @@
 This is an openHAB binding for Tellstick devices produced by Telldus, a Swedish company based in Lund.
 
 The original Tellstick focused on controlling 433 MHz devices like switches, dimmers and reading sensors from different brands.
-Many of the supported devices are cheaper and "low-end" and support have been made by reverse engineer the transmission protocols.
-All of these 433 MHz devices is one-way, so some versions of the Tellstick monitoring the air to keep the state of all devices.
+Many of the supported devices are cheaper and "low-end" and support has been made by reverse engineering the transmission protocols.
+All of these 433 MHz devices are one-way, so some versions of the Tellstick monitor the air to keep the state of all devices.
 
-The latest versions have also implemented Z-Wave as transmission protocol which open up for more robust transmission due two-ways communication.
+The latest versions have also implemented Z-Wave as a transmission protocol which opens up for more robust transmission due to two-way communication.
 
 ![Tellstick Duo device](doc/tellstick_duo.jpg)
 
@@ -14,7 +14,7 @@ The latest versions have also implemented Z-Wave as transmission protocol which 
 
 ## Supported Things
 
-This binding supports the following thing types:
+This binding supports the following Thing types:
 
 - _Dimmable Device_ - Usually for controlling lamps.  `dimmer`
 - _Switchable Device_ - On/Off only could be lamps or other electronic equipment. `switch`
@@ -28,14 +28,14 @@ Additionally the binding have two types of bridge things which correspond to ava
 
 ### Switchbased sensors workaround
 
-- Some 433MHz magnetic & PIR sensors, for example, magnetic door sensors, are detected as regular `switch` Things instead of type `contact`. There is technically no way of distinguish them apart from regulur `switch` Things. For using them as sensors only (not paired to a lamp) please consult the workaround in the channel section.
+- Some 433MHz magnetic & PIR sensors, for example, magnetic door sensors, are detected as regular `switch` Things instead of type `contact`. There is technically no way to distinguish them apart from regular `switch` Things. For using them as sensors only (not paired to a lamp) please consult the workaround in the channel section.
 
 ## Discovery
 
-Devices which is added to _Telldus Core_, _Telldus Live_ and _Telldus Local_ can be discovered by openHAB.
+Devices which are added to _Telldus Core_, _Telldus Live_ and _Telldus Local_ can be discovered by openHAB.
 
 When you add this binding it will try to discover the _Telldus Core Bridge_.
-If it is installed correct its devices will show up.
+If it is installed correctly its devices will show up.
 
 If you want to use the _Telldus Live_ or _Telldus Local_, their bridges, _Telldus Live bridge_ or _Tellstick Local_, needs to be added manually.
 
@@ -153,11 +153,11 @@ Actuators (dimmer/switch) support the following channels:
 
 Sensors (sensor) support the following channels:
 
-| Channel Type ID | Item Type           | Description                                                 |
-|-----------------|---------------------|-------------------------------------------------------------|
-| humidity        | Number:Dimensionless| This channel reports the current humidity in percentage.    |
-| temperature     | Number:Temperature  | This channel reports the current temperature.               |
-| timestamp       | DateTime            | This channel reports the last time this sensor was updates. |
+| Channel Type ID | Item Type            | Description                                                 |
+|-----------------|----------------------|-------------------------------------------------------------|
+| humidity        | Number:Dimensionless | This channel reports the current humidity in percentage.    |
+| temperature     | Number:Temperature   | This channel reports the current temperature.               |
+| timestamp       | DateTime             | This channel reports the last time this sensor was updated. |
 
 PowerSensors ([powersensor]) support the following channels:
 
@@ -165,7 +165,7 @@ PowerSensors ([powersensor]) support the following channels:
 |-----------------|------------------------|-------------------------------------------------------------|
 | watt            | Number:Power           | This channel reports the current watt.                      |
 | ampere          | Number:ElectricCurrent | This channel reports the current ampere.                    |
-| timestamp       | DateTime               | This channel reports the last time this sensor was updates. |
+| timestamp       | DateTime               | This channel reports the last time this sensor was updated. |
 
 WindSensors ([windsensor]) support the following channels:
 
@@ -179,7 +179,7 @@ RainSensors ([rainsensor]) support the following channels:
 
 | Channel Type ID | Item Type     | Description                |
 |-----------------|---------------|----------------------------|
-| rainrate        | Number:Length | This current rate of rain. |
+| rainrate        | Number:Length | The current rate of rain.  |
 | raintotal       | Number:Length | The total rain.            |
 
 ### Switchbased sensor workaround

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -148,7 +148,7 @@ public class AmsDeviceHandler extends BaseThingHandler {
                     }
                     return trayType;
                 })//
-                        .map(Enum::name)//
+                        .map(AmsChannel.TrayType::getTypeName)//
                         .map(value -> (State) StringType.valueOf(value));
             case CHANNEL_TRAY_COLOR -> key.map(StateParserHelper::parseColor);
             case CHANNEL_NOZZLE_TEMPERATURE_MAX -> key.flatMap(StateParserHelper::parseTemperatureType);

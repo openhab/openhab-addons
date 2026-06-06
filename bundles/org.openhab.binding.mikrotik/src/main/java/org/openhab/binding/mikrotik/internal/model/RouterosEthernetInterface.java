@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -46,7 +46,7 @@ public class RouterosEthernetInterface extends RouterosInterfaceBase {
 
     @Override
     public boolean hasMonitor() {
-        // PowerLine interfaces are of ehter type too
+        // PowerLine interfaces are of ether type too
         String name = getDefaultName();
         return name != null && !name.startsWith("pwr");
     }
@@ -61,5 +61,17 @@ public class RouterosEthernetInterface extends RouterosInterfaceBase {
 
     public @Nullable String getState() {
         return getProp("status");
+    }
+
+    public @Nullable String getPOEOutState() {
+        return getProp("poe-out");
+    }
+
+    public @Nullable String getPOEOutStatus() {
+        return getProp("poe-out-status");
+    }
+
+    public @Nullable Float getPOEOutPower() {
+        return getFloatProp("poe-out-power");
     }
 }

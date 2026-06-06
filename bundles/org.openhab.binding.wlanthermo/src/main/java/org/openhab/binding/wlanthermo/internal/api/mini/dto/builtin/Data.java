@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -68,7 +68,6 @@ public class Data {
      */
     public Data(Double temp, String color, String state, Double tempMin, Double tempMax, String name, Boolean alert,
             Boolean show) {
-        super();
         this.temp = temp;
         this.color = color;
         this.state = state;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -45,7 +45,7 @@ public class PLCDigitalConfiguration extends PLCCommonConfiguration {
 
     @Override
     public String getChannelType() {
-        boolean isInput = kind.equalsIgnoreCase(I_DIGITAL) || kind.equalsIgnoreCase(NI_DIGITAL);
+        final var isInput = kind.equalsIgnoreCase(I_DIGITAL) || kind.equalsIgnoreCase(NI_DIGITAL);
         return isInput ? DIGITAL_INPUT_ITEM : DIGITAL_OUTPUT_ITEM;
     }
 }

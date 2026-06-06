@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,7 +29,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
@@ -102,7 +101,7 @@ public final class WakeOnLanUtil {
 
         List<InetAddress> broadcastAddresses = Collections.list(NetworkInterface.getNetworkInterfaces()).stream()
                 .filter(IS_NOT_LOOPBACK).map(NetworkInterface::getInterfaceAddresses).flatMap(Collection::stream)
-                .map(InterfaceAddress::getBroadcast).filter(Objects::nonNull).collect(Collectors.toList());
+                .map(InterfaceAddress::getBroadcast).filter(Objects::nonNull).toList();
 
         for (InetAddress broadcast : broadcastAddresses) {
             DatagramPacket packet = new DatagramPacket(bytes, bytes.length, broadcast, WOL_PORT);

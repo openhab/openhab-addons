@@ -1,0 +1,15 @@
+{
+	"errors": [],
+	"data": [
+		{
+			"id": "02517791-3140-485f-abd7-27de3ac98c5d",
+			"owner": {
+				"rid": "7da8bcc7-6e69-46c4-a2e1-e0c2de8e2270",
+				"rtype": "device"
+			},
+			"state": "no_update",
+			"problems": [],
+			"type": "device_software_update"
+		}
+	]
+}

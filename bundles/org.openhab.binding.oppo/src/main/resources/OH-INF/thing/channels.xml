@@ -77,8 +77,8 @@
 			</parameter>
 			<parameter name="verboseMode" type="boolean" required="false">
 				<label>Verbose Mode</label>
-				<description>If true, the player will send time updates every second. If false, the binding polls the player evey 10
-					seconds</description>
+				<description>If true, the player will send time updates every second. If false, the binding polls the player every
+					10 seconds</description>
 				<default>false</default>
 				<advanced>true</advanced>
 			</parameter>
@@ -139,7 +139,7 @@
 			<tag>Status</tag>
 			<tag>Duration</tag>
 		</tags>
-		<state readOnly="true" pattern="%1$tT"/>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="current_title">

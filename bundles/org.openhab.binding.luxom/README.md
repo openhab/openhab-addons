@@ -11,7 +11,7 @@ The API implementation is based on the following documentation:
 
 ## Supported Things
 
-This binding currently supports the following thing types:
+This binding currently supports the following Thing types:
 
 - **ipbridge** - The Lutron main repeater/processor/hub
 - **dimmer** - Light dimmer
@@ -21,7 +21,7 @@ This binding currently supports the following thing types:
 
 ### Bridge
 
-The Bridge thing has two parameters:
+The Bridge Thing has two parameters:
 
 - ipAddress: This is the IP address of the IP interface module
 - port: The listening port (optional, defaults to 2300)
@@ -49,7 +49,7 @@ Dimmers support the optional advanced parameters `onLevel`, `onToLast` and `step
 - The `onToLast` parameter is a boolean that defaults to false. If set to "true", the dimmer will go to its last non-zero level when sent an ON command. If the last non-zero level cannot be determined, the value of `onLevel` will be used instead.
 - The `stepPercentage` specifies the in-/decrease in percentage of brightness. Default is 5.
 
-A **dimmer** thing has a single channel _Lighting.Brightness_ with type Dimmer and category DimmableLight.
+A **dimmer** Thing has a single channel _Lighting.Brightness_ with type Dimmer and category DimmableLight.
 
 Thing configuration file example:
 
@@ -60,7 +60,7 @@ Thing dimmer dimmerLightLiving1 [address="A,02", onLevel="50", onToLast="false",
 #### Switches
 
 Switches take no additional parameters.
-A _switch_ thing has a single channel **switch** with type Switch and category Switch.
+A _switch_ Thing has a single channel **switch** with type Switch and category Switch.
 
 Thing configuration file example:
 

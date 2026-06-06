@@ -7,17 +7,17 @@
 
 	<config-description uri="io:homekit">
 		<parameter-group name="core">
-			<label>Core Configuration.</label>
+			<label>Core Configuration</label>
 			<advanced>false</advanced>
 		</parameter-group>
 		<parameter-group name="thermostat">
 			<label>Thermostat Settings</label>
-			<description>Advanced thermostat settings.</description>
+			<description>Advanced thermostat settings</description>
 			<advanced>true</advanced>
 		</parameter-group>
 		<parameter-group name="network">
 			<label>Network Settings</label>
-			<description>Advanced network settings.</description>
+			<description>Advanced network settings</description>
 			<advanced>true</advanced>
 		</parameter-group>
 		<parameter name="name" type="text" required="false" groupName="core">
@@ -28,7 +28,7 @@
 		<parameter name="qrCode" type="text" required="false" groupName="core">
 			<label>HomeKit QR Code</label>
 			<context>qrcode</context>
-			<description>Scan QR code with home app to add openHAB as HomeKit bridge.</description>
+			<description>Scan QR code with Home app to add openHAB as HomeKit bridge.</description>
 		</parameter>
 		<parameter name="port" type="integer" required="true" groupName="network">
 			<label>Port</label>
@@ -44,8 +44,8 @@
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="pin" type="text" pattern="\d{3}-\d{2}-\d{3}" required="true" groupName="core">
-			<label>Pin</label>
-			<description>Defines the pin, used for pairing, in the form ###-##-###.</description>
+			<label>PIN</label>
+			<description>Defines the PIN used for pairing in the form ###-##-###.</description>
 			<default>031-45-154</default>
 		</parameter>
 		<parameter name="setupId" type="text" pattern="[0-9A-Z]{4}" required="false" groupName="core">
@@ -60,23 +60,22 @@
 		</parameter>
 		<parameter name="useDummyAccessories" type="boolean" required="true" groupName="core">
 			<label>Use Dummy Accessories</label>
-			<description><![CDATA[Create dummy accessories when an item is missing. See <a href="https://www.openhab.org/addons/integrations/homekit/#dummy-accessories">the documentation</a> for more information.
-			]]></description>
+			<description><![CDATA[Create dummy accessories when an item is missing. See <a href="https://www.openhab.org/addons/integrations/homekit/#dummy-accessories">the documentation</a> for more information.]]></description>
 			<default>false</default>
 		</parameter>
 		<parameter name="useFahrenheitTemperature" type="boolean" required="true" groupName="thermostat">
 			<label>Use Fahrenheit Temperature</label>
-			<description>Defines whether or not to direct HomeKit clients to use fahrenheit temperatures instead of celsius.</description>
+			<description>Defines whether or not to direct HomeKit clients to use Fahrenheit temperatures instead of Celsius.</description>
 			<default>false</default>
 		</parameter>
 		<parameter name="useOHmDNS" type="boolean" required="false" groupName="network">
-			<label>Use openHAB mDNS service</label>
-			<description>Defines whether mDNS service of openHAB or a separate instance of mDNS should be used.</description>
+			<label>Use openHAB mDNS Service</label>
+			<description>Defines whether the mDNS service of openHAB or a separate instance of mDNS should be used.</description>
 			<default>false</default>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="blockUserDeletion" type="boolean" required="false" groupName="core">
-			<label>Block deletion of the HomeKit user</label>
+			<label>Block Deletion of the HomeKit User</label>
 			<description>Block deletion of the HomeKit user information from openHAB and the unpairing of devices.</description>
 			<default>false</default>
 			<advanced>true</advanced>

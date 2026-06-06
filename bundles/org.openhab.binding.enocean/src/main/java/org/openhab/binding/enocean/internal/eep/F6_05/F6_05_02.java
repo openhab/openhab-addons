@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,7 +37,6 @@ public class F6_05_02 extends _RPSMessage {
     protected static final byte ENERGY_LOW = 0x30;
 
     public F6_05_02() {
-        super();
     }
 
     public F6_05_02(ERP1Message packet) {

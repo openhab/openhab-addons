@@ -1,67 +1,67 @@
 # Venstar Thermostat Binding
 
-The Venstar Thermostat binding supports an interface to WiFi enabled ColorTouch and Explorer thermostats manufactured by [Venstar](https://www.venstar.com).
+The Venstar Thermostat binding supports an interface to Wi‑Fi enabled ColorTouch and Explorer thermostats manufactured by [Venstar](https://www.venstar.com).
 
-Venstar WiFi enabled thermostats provide a local API that this binding uses
+Venstar Wi‑Fi enabled thermostats provide a local API that this binding uses
 to communicate with the thermostat. This binding does not require "cloud"
 access and may be used independently of Venstar's Skyport cloud services.
 
 The Local API is not enabled by default, so you will need to set up your
-thermostat by configuring its WiFi connection and enabling the Local API. In
+thermostat by configuring its Wi‑Fi connection and enabling the Local API. In
 order for the binding to connect, you will need to enable HTTPS support and
 set a username and password. While it is possible to enable the Local API
-without HTTPS and authentication, the binding doesn't support it, in an effort
+without HTTPS and authentication, the binding does not support it, in an effort
 to provide as secure an installation as possible.
 
-When you've set the username and password, make a note of these, as you'll need
+When you've set the username and password, make a note of these, as you will need
 to enter them in the thermostat configuration in openHAB.
 
 ## Supported Things
 
-| Thing Type           | Description                                                                       |
-|----------------------|-----------------------------------------------------------------------------------|
+| Thing Type           | Description                                                                        |
+|----------------------|------------------------------------------------------------------------------------|
 | colorTouchThermostat | A Venstar [ColorTouch](https://www.venstar.com/thermostats/colortouch/) thermostat |
 
 ## Discovery
 
-Once the binding is installed it will attempt to auto discover Venstar thermostats located on the local network.
+Once the binding is installed it will attempt to automatically discover Venstar thermostats located on the local network.
 These will appear as Things in the system Inbox.
-After adding the Inbox item, enter the user name and password from the physical thermostat in the Thing's configuration.
+After adding the Inbox item, enter the username and password from the physical thermostat in the Thing's configuration.
 
 ## Thing Configuration
 
 ### ColorTouch Thermostat
 
-| Parameter | Description                                                                  | Required |
-|-----------|------------------------------------------------------------------------------|----------|
-| username  | The username set on the thermostats configuration screen (typically 'admin') | yes      |
-| password  | The password set set on the thermostats configuration screen                 | yes      |
-| url       | URL of the thermostat in the format 'proto://host'                           | yes      |
-| refresh   | The frequency in which the binding will pool for update information          | no       |
+| Parameter | Description                                                                   | Required |
+|-----------|-------------------------------------------------------------------------------|----------|
+| username  | The username set on the thermostat's configuration screen (typically 'admin') | yes      |
+| password  | The password set on the thermostat's configuration screen                     | yes      |
+| url       | URL of the thermostat in the format `https://host`                            | yes      |
+| refresh   | The frequency at which the binding will poll for update information (seconds) | no       |
 
 ### Channels
 
-| Channel            | Type               | Description                           | Notes                                                  |
-|--------------------|--------------------|---------------------------------------|--------------------------------------------------------|
-| awayMode           | String             | Home or Away Mode                     |                                                        |
-| awayModeRaw        | Number             | Away Mode Raw (Read Only)             | 0 (Home) 1 (Away)                                      |
-| systemMode         | String             | System Mode                           |                                                        |
-| systemModeRaw      | Number             | System Mode Raw (Read Only)           | 0 (Off) 1 (Heat) 2 (Cool) 3 (Auto)                     |
-| systemState        | String             | System State (Read Only)              |                                                        |
-| systemStateRaw     | Number             | System State Raw (Read Only)          | 0 (Idle) 1 (Heating) 2 (Cooling) 3 (Lockout) 4 (Error) |
-| heatingSetpoint    | Number:Temperature | Heating Set Point                     |                                                        |
-| coolingSetpoint    | Number:Temperature | Cooling Set Point                     |                                                        |
-| temperature        | Number:Temperature | Current Temperature                   |                                                        |
-| outdoorTemperature | Number:Temperature | Outdoor Temperature                   |                                                        |
-| humidity           | Number             | Humidity                              |                                                        |
-| fanMode            | String             | Fan Mode                              |                                                        |
-| fanModeRaw         | Number             | Fan Mode Raw (Read Only)              | 0 (Auto) 1 (On)                                        |
-| fanState           | Switch             | Fan State (Read Only)                 |                                                        |
-| fanStateRaw        | Number             | Fan State Raw (Read Only)             | 0 (Off) 1 (On)                                         |
-| scheduleMode       | String             | Current Schedule Mode                 |                                                        |
-| scheduleModeRaw    | Number             | Current Schedule mode Raw (Read Only) | 0(Disabled) 1(Enabled)                                 |
-| schedulePart       | String             | Current Schedule Part                 |                                                        |
-| schedulePartRaw    | Number             | Schedule Part Raw (Read Only)         | 0(Morning) 1(Day) 2(Evening) 3 (Night) 255 (Inactive)  |
+| Channel            | Type               | Description                           | Notes                                                    |
+|--------------------|--------------------|---------------------------------------|----------------------------------------------------------|
+| awayMode           | String             | Home or Away Mode                     |                                                          |
+| awayModeRaw        | Number             | Away Mode Raw (Read Only)             | 0 (Home) 1 (Away)                                        |
+| systemMode         | String             | System Mode                           |                                                          |
+| systemModeRaw      | Number             | System Mode Raw (Read Only)           | 0 (Off) 1 (Heat) 2 (Cool) 3 (Auto)                       |
+| systemState        | String             | System State (Read Only)              |                                                          |
+| systemStateRaw     | Number             | System State Raw (Read Only)          | 0 (Idle) 1 (Heating) 2 (Cooling) 3 (Lockout) 4 (Error)   |
+| heatingSetpoint    | Number:Temperature | Heating Setpoint                      |                                                          |
+| coolingSetpoint    | Number:Temperature | Cooling Setpoint                      |                                                          |
+| temperature        | Number:Temperature | Current Temperature                   |                                                          |
+| outdoorTemperature | Number:Temperature | Outdoor Temperature                   |                                                          |
+| humidity           | Number             | Humidity                              |                                                          |
+| fanMode            | String             | Fan Mode                              |                                                          |
+| fanModeRaw         | Number             | Fan Mode Raw (Read Only)              | 0 (Auto) 1 (On)                                          |
+| fanState           | Switch             | Fan State (Read Only)                 |                                                          |
+| fanStateRaw        | Number             | Fan State Raw (Read Only)             | 0 (Off) 1 (On)                                           |
+| scheduleMode       | String             | Current Schedule Mode                 |                                                          |
+| scheduleModeRaw    | Number             | Current Schedule Mode Raw (Read Only) | 0 (Disabled) 1 (Enabled)                                 |
+| schedulePart       | String             | Current Schedule Part                 |                                                          |
+| schedulePartRaw    | Number             | Schedule Part Raw (Read Only)         | 0 (Morning) 1 (Day) 2 (Evening) 3 (Night) 255 (Inactive) |
 
 ### Runtime data
 
@@ -69,34 +69,34 @@ The Venstar thermostat provides data about how many minutes the system has been 
 A time stamp is provided with each runtime data set which represents the end of each day.
 The binding reads the runtime data and time stamps and provides them all as separate channels.
 
-| Channel                | Type                 | Description                                  | Notes                                                      |
-|------------------------|----------------------|----------------------------------------------|------------------------------------------------------------|
-| timestampDay0          | DateTime             | Time Stamp of last runtime update            | This is always the current time today                      |
-| timestampDay1          | DateTime             | Time Stamp of 00:00, end of yesterday        | This represents the end of 1 day ago                       |
-| timestampDay2          | DateTime             | Time Stamp of 00:00 end of 2 days ago        | This represents the end of 2 days ago                      |
-| timestampDay3          | DateTime             | Time Stamp of 00:00, end of 3 days ago       | This represents the end of 3 days ago                      |
-| timestampDay4          | DateTime             | Time Stamp of 00:00, end of 4 days ago       | This represents the end of 4 days ago                      |
-| timestampDay5          | DateTime             | Time Stamp of 00:00, end of 5 days ago       | This represents the end of 5 days ago                      |
-| timestampDay6          | DateTime             | Time Stamp of 00:00, end of 6 days ago       | This represents the end of 6 days ago                      |
-| heat1RuntimeDay0       | Number:Dimensionless | Runtime in heat1 mode (minutes) today        | This is the runtime between the Day 1 and Day 0 timestamps |
-| heat1RuntimeDay1       | Number:Dimensionless | Runtime in heat1 mode (minutes) yesterday    | This is the runtime between the Day 2 and Day 1 timestamps |
-| heat1RuntimeDay2       | Number:Dimensionless | Runtime in heat1 mode (minutes) 2 days ago   | This is the runtime between the Day 3 and Day 2 timestamps |
-| heat1RuntimeDay3       | Number:Dimensionless | Runtime in heat1 mode (minutes) 3 days ago   | This is the runtime between the Day 4 and Day 3 timestamps |
-| heat1RuntimeDay4       | Number:Dimensionless | Runtime in heat1 mode (minutes) 4 days ago   | This is the runtime between the Day 5 and Day 4 timestamps |
-| heat1RuntimeDay5       | Number:Dimensionless | Runtime in heat1 mode (minutes) 5 days ago   | This is the runtime between the Day 6 and Day 5 timestamps |
-| heat1RuntimeDay6       | Number:Dimensionless | Runtime in heat1 mode (minutes) 6 days ago   | This is the runtime in the 24hrs up to the Day 6 timestamp |
-|                        |                      |                                              |                                                            |
-| heat2RuntimeDay0..6    | Number:Dimensionless | Similar Runtimes in heat2 mode (minutes)     |                                                            |
-|                        |                      |                                              |                                                            |
-| cool1RuntimeDay0..6    | Number:Dimensionless | Similar Runtimes in cool1 mode (minutes)     |                                                            |
-|                        |                      |                                              |                                                            |
-| cool2RuntimeDay0..6    | Number:Dimensionless | Similar Runtimes in cool2 mode (minutes)     |                                                            |
-|                        |                      |                                              |                                                            |
-| aux1RuntimeDay0..6     | Number:Dimensionless | Similar Runtimes in aux1 mode (minutes)      |                                                            |
-|                        |                      |                                              |                                                            |
-| aux2RuntimeDay0..6     | Number:Dimensionless | Similar Runtimes in aux2 mode (minutes)      |                                                            |
-|                        |                      |                                              |                                                            |
-| freeCoolRuntimeDay0..6 | Number:Dimensionless | Similar Runtimes in free cool mode (minutes) |                                                            |
+| Channel                | Type                 | Description                                  | Notes                                                         |
+|------------------------|----------------------|----------------------------------------------|---------------------------------------------------------------|
+| timestampDay0          | DateTime             | Timestamp of last runtime update             | This is always the current time today                         |
+| timestampDay1          | DateTime             | Timestamp of 00:00, end of yesterday         | This represents the end of 1 day ago                          |
+| timestampDay2          | DateTime             | Timestamp of 00:00, end of 2 days ago        | This represents the end of 2 days ago                         |
+| timestampDay3          | DateTime             | Timestamp of 00:00, end of 3 days ago        | This represents the end of 3 days ago                         |
+| timestampDay4          | DateTime             | Timestamp of 00:00, end of 4 days ago        | This represents the end of 4 days ago                         |
+| timestampDay5          | DateTime             | Timestamp of 00:00, end of 5 days ago        | This represents the end of 5 days ago                         |
+| timestampDay6          | DateTime             | Timestamp of 00:00, end of 6 days ago        | This represents the end of 6 days ago                         |
+| heat1RuntimeDay0       | Number:Dimensionless | Runtime in heat1 mode (minutes) today        | This is the runtime between the Day 1 and Day 0 timestamps    |
+| heat1RuntimeDay1       | Number:Dimensionless | Runtime in heat1 mode (minutes) yesterday    | This is the runtime between the Day 2 and Day 1 timestamps    |
+| heat1RuntimeDay2       | Number:Dimensionless | Runtime in heat1 mode (minutes) 2 days ago   | This is the runtime between the Day 3 and Day 2 timestamps    |
+| heat1RuntimeDay3       | Number:Dimensionless | Runtime in heat1 mode (minutes) 3 days ago   | This is the runtime between the Day 4 and Day 3 timestamps    |
+| heat1RuntimeDay4       | Number:Dimensionless | Runtime in heat1 mode (minutes) 4 days ago   | This is the runtime between the Day 5 and Day 4 timestamps    |
+| heat1RuntimeDay5       | Number:Dimensionless | Runtime in heat1 mode (minutes) 5 days ago   | This is the runtime between the Day 6 and Day 5 timestamps    |
+| heat1RuntimeDay6       | Number:Dimensionless | Runtime in heat1 mode (minutes) 6 days ago   | This is the runtime in the 24 hours up to the Day 6 timestamp |
+|                        |                      |                                              |                                                               |
+| heat2RuntimeDay0..6    | Number:Dimensionless | Similar Runtimes in heat2 mode (minutes)     |                                                               |
+|                        |                      |                                              |                                                               |
+| cool1RuntimeDay0..6    | Number:Dimensionless | Similar Runtimes in cool1 mode (minutes)     |                                                               |
+|                        |                      |                                              |                                                               |
+| cool2RuntimeDay0..6    | Number:Dimensionless | Similar Runtimes in cool2 mode (minutes)     |                                                               |
+|                        |                      |                                              |                                                               |
+| aux1RuntimeDay0..6     | Number:Dimensionless | Similar Runtimes in aux1 mode (minutes)      |                                                               |
+|                        |                      |                                              |                                                               |
+| aux2RuntimeDay0..6     | Number:Dimensionless | Similar Runtimes in aux2 mode (minutes)      |                                                               |
+|                        |                      |                                              |                                                               |
+| freeCoolRuntimeDay0..6 | Number:Dimensionless | Similar Runtimes in free cool mode (minutes) |                                                               |
 
 ## Example
 

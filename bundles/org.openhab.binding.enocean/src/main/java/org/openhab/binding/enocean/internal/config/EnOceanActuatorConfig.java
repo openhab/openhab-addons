@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,6 +24,7 @@ public class EnOceanActuatorConfig extends EnOceanBaseConfig {
 
     public int channel;
     public @Nullable Integer senderIdOffset = null;
+    public @Nullable String senderId = null;
     public String manufacturerId = "";
     public String teachInType = "";
 

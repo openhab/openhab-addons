@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,8 +12,10 @@
  */
 package org.openhab.binding.shelly.internal.api2;
 
+import java.net.InetSocketAddress;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcNotifyEvent;
+import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcNotifyStatus;
 
 /**
@@ -24,15 +26,15 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcNoti
 @NonNullByDefault
 public interface Shelly2RpctInterface {
 
-    void onConnect(String deviceIp, boolean connected);
+    void onConnect(InetSocketAddress deviceSocketAddr, boolean connected);
 
-    void onMessage(String decodedmessage);
+    void onNotifyStatus(Shelly2RpcNotifyStatus message) throws ShellyApiException;
 
-    void onNotifyStatus(Shelly2RpcNotifyStatus message);
+    void onNotifyEvent(String json) throws ShellyApiException;
 
-    void onNotifyEvent(Shelly2RpcNotifyEvent message);
+    void onPong();
 
-    void onClose(int statusCode, String reason);
+    void onClose(boolean inbound, int statusCode, String reason);
 
     void onError(Throwable cause);
 }

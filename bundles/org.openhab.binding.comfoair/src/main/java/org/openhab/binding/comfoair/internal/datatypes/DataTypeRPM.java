@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -64,7 +64,7 @@ public class DataTypeRPM implements ComfoAirDataType {
         float rpm;
 
         if (value instanceof QuantityType<?> qt) {
-            QuantityType<?> qtRpm = ((QuantityType<?>) value).toUnit(Units.RPM);
+            QuantityType<?> qtRpm = qt.toUnit(Units.RPM);
 
             if (qtRpm != null) {
                 rpm = qtRpm.floatValue();

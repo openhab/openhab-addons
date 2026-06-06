@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,8 +32,8 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpField;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpStatus;
-import org.openhab.binding.foobot.internal.json.FoobotDevice;
-import org.openhab.binding.foobot.internal.json.FoobotJsonData;
+import org.openhab.binding.foobot.internal.dto.FoobotDevice;
+import org.openhab.binding.foobot.internal.dto.FoobotJsonData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

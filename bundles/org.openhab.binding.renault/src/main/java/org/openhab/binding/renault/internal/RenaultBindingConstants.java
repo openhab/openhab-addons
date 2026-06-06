@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.renault.internal;
+
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
@@ -47,4 +49,14 @@ public class RenaultBindingConstants {
     public static final String CHANNEL_LOCKED = "locked";
     public static final String CHANNEL_ODOMETER = "odometer";
     public static final String CHANNEL_PLUG_STATUS = "plugstatus";
+
+    public static final List<String> HVAC_CHANNELS = List.of(CHANNEL_HVAC_STATUS, CHANNEL_HVAC_TARGET_TEMPERATURE);
+    public static final List<String> BATTERY_CHANNELS = List.of(CHANNEL_BATTERY_AVAILABLE_ENERGY, CHANNEL_BATTERY_LEVEL,
+            CHANNEL_BATTERY_STATUS_UPDATED, CHANNEL_CHARGING_MODE, CHANNEL_CHARGING_STATUS,
+            CHANNEL_CHARGING_REMAINING_TIME);
+    public static final List<String> ALL_CHANNELS = List.of(CHANNEL_IMAGE, CHANNEL_LOCATION, CHANNEL_LOCATION_UPDATED,
+            CHANNEL_ODOMETER, CHANNEL_LOCKED, CHANNEL_HVAC_STATUS, CHANNEL_HVAC_TARGET_TEMPERATURE,
+            CHANNEL_EXTERNAL_TEMPERATURE, CHANNEL_PLUG_STATUS, CHANNEL_CHARGING_STATUS, CHANNEL_BATTERY_LEVEL,
+            CHANNEL_ESTIMATED_RANGE, CHANNEL_BATTERY_AVAILABLE_ENERGY, CHANNEL_CHARGING_REMAINING_TIME,
+            CHANNEL_BATTERY_STATUS_UPDATED, CHANNEL_CHARGING_MODE);
 }

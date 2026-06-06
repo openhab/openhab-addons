@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,17 +22,21 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.config.core.ConfigurableService;
+import org.openhab.core.events.AbstractEvent;
 import org.openhab.core.events.Event;
 import org.openhab.core.events.EventFilter;
 import org.openhab.core.events.EventPublisher;
 import org.openhab.core.events.EventSubscriber;
 import org.openhab.core.id.InstanceUUID;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.io.rest.Webhook;
+import org.openhab.core.io.rest.WebhookService;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemNotFoundException;
 import org.openhab.core.items.ItemRegistry;
@@ -65,11 +69,11 @@ import org.slf4j.LoggerFactory;
  * @author Kai Kreuzer - migrated code to new Jetty client and ESH APIs
  * @author Dan Cunningham - Extended notification enhancements
  */
-@Component(service = { CloudService.class, EventSubscriber.class,
-        ActionService.class }, configurationPid = "org.openhab.openhabcloud", property = Constants.SERVICE_PID
+@Component(service = { CloudService.class, EventSubscriber.class, ActionService.class,
+        WebhookService.class }, configurationPid = "org.openhab.openhabcloud", property = Constants.SERVICE_PID
                 + "=org.openhab.openhabcloud")
 @ConfigurableService(category = "io", label = "openHAB Cloud", description_uri = CloudService.CONFIG_URI)
-public class CloudService implements ActionService, CloudClientListener, EventSubscriber {
+public class CloudService implements ActionService, CloudClientListener, EventSubscriber, WebhookService {
 
     protected static final String CONFIG_URI = "io:openhabcloud";
 
@@ -81,6 +85,7 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
     private static final int DEFAULT_LOCAL_OPENHAB_MAX_CONCURRENT_REQUESTS = 200;
     private static final int DEFAULT_LOCAL_OPENHAB_REQUEST_TIMEOUT = 30000;
     private static final String HTTPCLIENT_NAME = "openhabcloud";
+    public static final String CLOUD_EVENT_SOURCE = "org.openhab.io.openhabcloud";
 
     private final Logger logger = LoggerFactory.getLogger(CloudService.class);
 
@@ -237,7 +242,7 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
 
     private void checkJavaVersion() {
         String version = System.getProperty("java.version");
-        if (version.charAt(2) == '8') {
+        if (version != null && version.charAt(2) == '8') {
             // we are on Java 8, let's check the update
             String update = version.substring(version.indexOf('_') + 1);
             try {
@@ -256,7 +261,10 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
     @Deactivate
     protected void deactivate() {
         logger.debug("openHAB Cloud connector deactivated");
-        cloudClient.shutdown();
+        NotificationAction.unsetCloudService(this);
+        if (cloudClient != null) {
+            cloudClient.shutdown();
+        }
         try {
             httpClient.stop();
         } catch (Exception e) {
@@ -266,20 +274,20 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
 
     @Modified
     protected void modified(Map<String, ?> config) {
-        if (config != null && config.get(CFG_MODE) != null) {
-            remoteAccessEnabled = "remote".equals(config.get(CFG_MODE));
+        if (config != null && config.get(CFG_MODE) instanceof String cfgMode) {
+            remoteAccessEnabled = "remote".equals(cfgMode);
         } else {
             logger.debug("remoteAccessEnabled is not set, keeping value '{}'", remoteAccessEnabled);
         }
 
-        if (config.get(CFG_BASE_URL) != null) {
-            cloudBaseUrl = (String) config.get(CFG_BASE_URL);
+        if (config != null && config.get(CFG_BASE_URL) instanceof String cfgBaseUrl) {
+            cloudBaseUrl = cfgBaseUrl;
         } else {
             cloudBaseUrl = DEFAULT_URL;
         }
 
         exposedItems = new HashSet<>();
-        Object expCfg = config.get(CFG_EXPOSE);
+        Object expCfg = config == null ? null : config.get(CFG_EXPOSE);
         if (expCfg instanceof String value) {
             while (value.startsWith("[")) {
                 value = value.substring(1);
@@ -317,7 +325,39 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
                 remoteAccessEnabled, exposedItems);
         cloudClient.connect();
         cloudClient.setListener(this);
-        NotificationAction.cloudService = this;
+        NotificationAction.setCloudService(this);
+    }
+
+    @Override
+    public CompletableFuture<Webhook> requestWebhook(String localPath) {
+        CompletableFuture<Webhook> future = new CompletableFuture<>();
+        if (localPath.isBlank() || !localPath.startsWith("/")) {
+            future.completeExceptionally(new IllegalArgumentException("localPath must start with '/'"));
+            return future;
+        }
+        CloudClient client = cloudClient;
+        if (client != null) {
+            client.registerWebhook(localPath, future);
+        } else {
+            future.completeExceptionally(new IllegalStateException("Cloud connector is not initialized"));
+        }
+        return future;
+    }
+
+    @Override
+    public CompletableFuture<Void> removeWebhook(String localPath) {
+        CompletableFuture<Void> future = new CompletableFuture<>();
+        if (localPath.isBlank() || !localPath.startsWith("/")) {
+            future.completeExceptionally(new IllegalArgumentException("localPath must start with '/'"));
+            return future;
+        }
+        CloudClient client = cloudClient;
+        if (client != null) {
+            client.removeWebhook(localPath, future);
+        } else {
+            future.completeExceptionally(new IllegalStateException("Cloud connector is not initialized"));
+        }
+        return future;
     }
 
     @Override
@@ -350,7 +390,10 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
 
     private void writeFile(File file, String content) {
         // create intermediary directories
-        file.getParentFile().mkdirs();
+        File parentFile = file.getParentFile();
+        if (parentFile != null) {
+            parentFile.mkdirs();
+        }
         try {
             Files.writeString(file.toPath(), content, StandardCharsets.UTF_8);
             logger.debug("Created file '{}' with content '{}'", file.getAbsolutePath(), censored(content));
@@ -390,7 +433,7 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
     }
 
     @Override
-    public void sendCommand(String itemName, String commandString) {
+    public void sendCommand(String itemName, String commandString, @Nullable String source, @Nullable String userId) {
         try {
             Item item = itemRegistry.getItem(itemName);
             Command command = null;
@@ -413,7 +456,8 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
             }
             if (command != null) {
                 logger.debug("Received command '{}' for item '{}'", commandString, itemName);
-                eventPublisher.post(ItemEventFactory.createCommandEvent(itemName, command));
+                eventPublisher.post(ItemEventFactory.createCommandEvent(itemName, command,
+                        AbstractEvent.buildDelegatedSource(source, CLOUD_EVENT_SOURCE, userId)));
             } else {
                 logger.warn("Received invalid command '{}' for item '{}'", commandString, itemName);
             }

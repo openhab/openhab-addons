@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayDeque;
@@ -27,6 +28,7 @@ import java.util.Collection;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -103,11 +105,14 @@ import com.google.gson.GsonBuilder;
 public class ApiBridgeHandler extends BaseBridgeHandler {
     private static final int TIMEOUT_S = 20;
     private static final int API_LIMIT_INTERVAL_S = 3600;
+    private static final int MAX_REQUESTS_PER_SECOND = 5;
+    private static final long ONE_SECOND_IN_NANOS = TimeUnit.SECONDS.toNanos(1);
 
     private final Logger logger = LoggerFactory.getLogger(ApiBridgeHandler.class);
     private final AuthenticationApi connectApi = new AuthenticationApi(this);
     private final Map<Class<? extends RestManager>, RestManager> managers = new HashMap<>();
     private final Deque<Instant> requestsTimestamps = new ArrayDeque<>(200);
+    private final Deque<Long> requestsWindowInNanos = new ArrayDeque<>(MAX_REQUESTS_PER_SECOND);
     private final BindingConfiguration bindingConf;
     private final HttpClient httpClient;
     private final OAuthFactory oAuthFactory;
@@ -116,9 +121,9 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     private final ChannelUID requestCountChannelUID;
 
     private @Nullable OAuthClientService oAuthClientService;
-    private Optional<ScheduledFuture<?>> connectJob = Optional.empty();
-    private Optional<WebhookServlet> webHookServlet = Optional.empty();
-    private Optional<GrantServlet> grantServlet = Optional.empty();
+    private @Nullable ScheduledFuture<?> connectJob;
+    private @Nullable WebhookServlet webHookServlet;
+    private @Nullable GrantServlet grantServlet;
 
     public ApiBridgeHandler(Bridge bridge, HttpClient httpClient, NADeserializer deserializer,
             BindingConfiguration configuration, HttpService httpService, OAuthFactory oAuthFactory) {
@@ -161,15 +166,18 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         }
 
         logger.debug("Connected to Netatmo API.");
+        freeConnectJob();
 
         ApiHandlerConfiguration configuration = getConfiguration();
         if (!configuration.webHookUrl.isBlank()
                 && getRestManager(SecurityApi.class) instanceof SecurityApi securityApi) {
-            webHookServlet.ifPresent(servlet -> servlet.dispose());
-            WebhookServlet servlet = new WebhookServlet(this, httpService, deserializer, securityApi,
+            WebhookServlet webHookServlet = this.webHookServlet;
+            if (webHookServlet != null) {
+                webHookServlet.dispose();
+            }
+            webHookServlet = this.webHookServlet = new WebhookServlet(this, httpService, deserializer, securityApi,
                     configuration.webHookUrl, configuration.webHookPostfix);
-            servlet.startListening();
-            this.webHookServlet = Optional.of(servlet);
+            webHookServlet.startListening();
         }
 
         updateStatus(ThingStatus.ONLINE);
@@ -197,7 +205,11 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             startAuthorizationFlow();
             return false;
         } catch (IOException e) {
-            prepareReconnection(getConfiguration().reconnectInterval, e.getMessage(), code, redirectUri);
+            String message = e.getMessage();
+            if (message == null) {
+                message = e.getClass().getName();
+            }
+            prepareReconnection(message, code, redirectUri);
             return false;
         }
 
@@ -207,17 +219,17 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             return false;
         }
 
-        connectApi.setAccessToken(accessTokenResponse.getAccessToken(), accessTokenResponse.getScope());
+        connectApi.setAccessToken(accessTokenResponse.getAccessToken(),
+                Objects.requireNonNullElse(accessTokenResponse.getScope(), ""));
         return true;
     }
 
     private void startAuthorizationFlow() {
-        GrantServlet servlet = new GrantServlet(this, httpService);
-        servlet.startListening();
-        grantServlet = Optional.of(servlet);
+        GrantServlet grantServlet = this.grantServlet = new GrantServlet(this, httpService);
+        grantServlet.startListening();
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                 "@text/conf-error-grant-needed [ \"http(s)://<YOUROPENHAB>:<YOURPORT>%s\" ]"
-                        .formatted(servlet.getPath()));
+                        .formatted(grantServlet.getPath()));
         connectApi.dispose();
     }
 
@@ -225,33 +237,44 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         return getConfigAs(ApiHandlerConfiguration.class);
     }
 
-    private void prepareReconnection(int delay, @Nullable String message, @Nullable String code,
+    private void prepareReconnection(String message, @Nullable String code, @Nullable String redirectUri) {
+        prepareReconnection(message, getConfiguration().getReconnectInterval(), code, redirectUri);
+    }
+
+    private void prepareReconnection(String message, Duration delay, @Nullable String code,
             @Nullable String redirectUri) {
         if (!ThingStatus.OFFLINE.equals(thing.getStatus())) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
         }
         connectApi.dispose();
         freeConnectJob();
-        connectJob = Optional.of(scheduler.schedule(() -> openConnection(code, redirectUri), delay, TimeUnit.SECONDS));
+        connectJob = scheduler.schedule(() -> openConnection(code, redirectUri), delay.toSeconds(), TimeUnit.SECONDS);
         logger.debug("Reconnection scheduled in {} seconds", delay);
     }
 
     private void freeConnectJob() {
-        connectJob.ifPresent(j -> j.cancel(true));
-        connectJob = Optional.empty();
+        if (connectJob instanceof ScheduledFuture job) {
+            job.cancel(true);
+        }
+        this.connectJob = null;
     }
 
     private void freeGrantServlet() {
-        grantServlet.ifPresent(servlet -> servlet.dispose());
-        grantServlet = Optional.empty();
+        if (grantServlet instanceof GrantServlet servlet) {
+            servlet.dispose();
+        }
+        this.grantServlet = null;
     }
 
     @Override
     public void dispose() {
         logger.debug("Shutting down Netatmo API bridge handler.");
 
-        webHookServlet.ifPresent(servlet -> servlet.dispose());
-        webHookServlet = Optional.empty();
+        WebhookServlet webHookServlet = this.webHookServlet;
+        if (webHookServlet != null) {
+            webHookServlet.dispose();
+        }
+        this.webHookServlet = null;
 
         freeGrantServlet();
 
@@ -294,39 +317,28 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
 
     public synchronized <T> T executeUri(URI uri, HttpMethod method, Class<T> clazz, @Nullable String payload,
             @Nullable String contentType, int retryCount) throws NetatmoException {
+        if (connectJob != null) {
+            throw new NetatmoException("Connection pending, no other request accepted in the meantime.");
+        }
+
+        logger.debug("executeUri {}  {} ", method.toString(), uri);
+
+        Request request = httpClient.newRequest(uri).method(method).timeout(TIMEOUT_S, TimeUnit.SECONDS);
+
         try {
-            logger.debug("executeUri {}  {} ", method.toString(), uri);
-
-            Request request = httpClient.newRequest(uri).method(method).timeout(TIMEOUT_S, TimeUnit.SECONDS);
-
             if (!authenticate(null, null)) {
-                prepareReconnection(getConfiguration().reconnectInterval, "@text/status-bridge-offline", null, null);
+                prepareReconnection("@text/status-bridge-offline", null, null);
                 throw new NetatmoException("Not authenticated");
             }
             connectApi.getAuthorization().ifPresent(auth -> request.header(HttpHeader.AUTHORIZATION, auth));
 
-            if (payload != null && contentType != null
-                    && (HttpMethod.POST.equals(method) || HttpMethod.PUT.equals(method))) {
-                InputStream stream = new ByteArrayInputStream(payload.getBytes(StandardCharsets.UTF_8));
-                try (InputStreamContentProvider inputStreamContentProvider = new InputStreamContentProvider(stream)) {
-                    request.content(inputStreamContentProvider, contentType);
-                    request.header(HttpHeader.ACCEPT, MediaType.APPLICATION_JSON);
-                }
-                logger.trace(" -with payload: {} ", payload);
-            }
-
-            if (isLinked(requestCountChannelUID)) {
-                Instant now = Instant.now();
-                requestsTimestamps.addLast(now);
-                Instant oneHourAgo = now.minus(1, ChronoUnit.HOURS);
-                while (requestsTimestamps.getFirst().isBefore(oneHourAgo)) {
-                    requestsTimestamps.removeFirst();
-                }
-                updateState(requestCountChannelUID, new DecimalType(requestsTimestamps.size()));
-            }
+            handlePayload(method, payload, contentType, request);
+            handleRequestCounter();
 
             logger.trace(" -with headers: {} ",
                     String.join(", ", request.getHeaders().stream().map(HttpField::toString).toList()));
+
+            throttleApiRequestRate();
             ContentResponse response = request.send();
 
             Code statusCode = HttpStatus.getCode(response.getStatus());
@@ -349,10 +361,23 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
                             "Error deserializing error: %s".formatted(statusCode.getMessage()));
                 }
             }
-            if (statusCode == Code.TOO_MANY_REQUESTS
-                    || exception.getStatusCode() == ServiceError.MAXIMUM_USAGE_REACHED) {
-                prepareReconnection(API_LIMIT_INTERVAL_S,
-                        "@text/maximum-usage-reached [ \"%d\" ]".formatted(API_LIMIT_INTERVAL_S), null, null);
+            if (statusCode == Code.TOO_MANY_REQUESTS) {
+                String message = null;
+                String delayStr = response.getHeaders().get(HttpHeader.RETRY_AFTER);
+                int delay = delayStr != null ? Integer.valueOf(delayStr) : Integer.MAX_VALUE;
+                if (exception.getStatusCode() == ServiceError.CONCURRENCY_LIMIT_TIMED_OUT) {
+                    if (retryCount > 0) {
+                        logger.debug("Concurrency limited section, retry counter: {}", retryCount);
+                        return executeUri(uri, method, clazz, payload, contentType, retryCount - 1);
+                    } else {
+                        delay = Math.min(delay, TIMEOUT_S);
+                        message = "@text/concurrency-limit-timed-out [ \"%d\" ]";
+                    }
+                } else { // ServiceError.MAXIMUM_USAGE_REACHED
+                    delay = Math.min(delay, API_LIMIT_INTERVAL_S);
+                    message = "@text/maximum-usage-reached [ \"%d\" ]";
+                }
+                prepareReconnection(message.formatted(delay), Duration.ofSeconds(delay), null, null);
             }
             throw exception;
         } catch (InterruptedException e) {
@@ -364,8 +389,58 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
                 logger.debug("Request error, retry counter: {}", retryCount);
                 return executeUri(uri, method, clazz, payload, contentType, retryCount - 1);
             }
-            prepareReconnection(getConfiguration().reconnectInterval, "@text/request-time-out", null, e.getMessage());
+            prepareReconnection("@text/request-time-out", null, e.getMessage());
             throw new NetatmoException("%s: \"%s\"".formatted(e.getClass().getName(), e.getMessage()));
+        }
+    }
+
+    private void handleRequestCounter() {
+        if (!isLinked(requestCountChannelUID)) {
+            return;
+        }
+
+        Instant now = Instant.now();
+        requestsTimestamps.addLast(now);
+        Instant oneHourAgo = now.minus(1, ChronoUnit.HOURS);
+        requestsTimestamps.removeIf(t -> t.isBefore(oneHourAgo));
+        updateState(requestCountChannelUID, new DecimalType(requestsTimestamps.size()));
+    }
+
+    private void handlePayload(HttpMethod method, @Nullable String payload, @Nullable String contentType,
+            Request request) {
+        if (payload == null || contentType == null
+                || !(HttpMethod.POST.equals(method) || HttpMethod.PUT.equals(method))) {
+            return;
+        }
+
+        InputStream stream = new ByteArrayInputStream(payload.getBytes(StandardCharsets.UTF_8));
+        try (InputStreamContentProvider inputStreamContentProvider = new InputStreamContentProvider(stream)) {
+            request.content(inputStreamContentProvider, contentType);
+            request.header(HttpHeader.ACCEPT, MediaType.APPLICATION_JSON);
+        }
+        logger.trace(" -with payload: {} ", payload);
+    }
+
+    private void throttleApiRequestRate() throws InterruptedException {
+        while (true) {
+            long now = System.nanoTime();
+            long threshold = now - ONE_SECOND_IN_NANOS;
+
+            while (!requestsWindowInNanos.isEmpty() && requestsWindowInNanos.getFirst() <= threshold) {
+                requestsWindowInNanos.removeFirst();
+            }
+
+            if (requestsWindowInNanos.size() < MAX_REQUESTS_PER_SECOND) {
+                requestsWindowInNanos.addLast(now);
+                return;
+            }
+
+            long waitNanos = requestsWindowInNanos.getFirst() + ONE_SECOND_IN_NANOS - now;
+            if (waitNanos > 0) {
+                logger.trace("Rate limit reached ({} req/s), waiting {} ms", MAX_REQUESTS_PER_SECOND,
+                        TimeUnit.NANOSECONDS.toMillis(waitNanos));
+                TimeUnit.NANOSECONDS.sleep(waitNanos);
+            }
         }
     }
 
@@ -451,6 +526,10 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     }
 
     public Optional<WebhookServlet> getWebHookServlet() {
-        return webHookServlet;
+        return Optional.ofNullable(webHookServlet);
+    }
+
+    public @Nullable Duration getIdleTime() {
+        return connectJob instanceof ScheduledFuture job ? Duration.ofSeconds(job.getDelay(TimeUnit.SECONDS)) : null;
     }
 }

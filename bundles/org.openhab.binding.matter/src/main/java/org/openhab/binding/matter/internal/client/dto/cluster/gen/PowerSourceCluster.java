@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -30,7 +29,6 @@ public class PowerSourceCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x002F;
     public static final String CLUSTER_NAME = "PowerSource";
     public static final String CLUSTER_PREFIX = "powerSource";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_STATUS = "status";
     public static final String ATTRIBUTE_ORDER = "order";
@@ -65,7 +63,6 @@ public class PowerSourceCluster extends BaseCluster {
     public static final String ATTRIBUTE_ACTIVE_BAT_CHARGE_FAULTS = "activeBatChargeFaults";
     public static final String ATTRIBUTE_ENDPOINT_LIST = "endpointList";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * Indicates the participation of this power source in providing power to the Node as specified in
@@ -75,14 +72,14 @@ public class PowerSourceCluster extends BaseCluster {
     /**
      * Indicates the relative preference with which the Node will select this source to provide power. A source with a
      * lower order shall be selected by the Node to provide power before any other source with a higher order, if the
-     * lower order source is available (see Status).
+     * lower order source is available (see Section 11.7.7.1, "Status Attribute").
      * Note, Order is read-only and therefore NOT intended to allow clients control over power source selection.
      */
     public Integer order; // 1 uint8 R V
     /**
      * This attribute shall provide a user-facing description of this source, used to distinguish it from other power
-     * sources, e.g. &quot;DC Power&quot;, &quot;Primary Battery&quot; or &quot;Battery back-up&quot;. This attribute
-     * shall NOT be used to convey information such as battery form factor, or chemistry.
+     * sources, e.g. "DC Power", "Primary Battery" or "Battery back-up". This attribute shall NOT be used to convey
+     * information such as battery form factor, or chemistry.
      */
     public String description; // 2 string R V
     /**
@@ -109,12 +106,12 @@ public class PowerSourceCluster extends BaseCluster {
      */
     public Integer wiredAssessedCurrent; // 6 uint32 R V
     /**
-     * Indicates the nominal voltage, printed as part of the Node’s regulatory compliance label in mV (millivolts),
+     * Indicates the nominal voltage, printed as part of the Node's regulatory compliance label in mV (millivolts),
      * expected to be provided by the hard-wired source.
      */
     public Integer wiredNominalVoltage; // 7 uint32 R V
     /**
-     * Indicates the maximum current, printed as part of the Node’s regulatory compliance label in mA (milliamps),
+     * Indicates the maximum current, printed as part of the Node's regulatory compliance label in mA (milliamps),
      * expected to be provided by the hard-wired source.
      */
     public Integer wiredMaximumCurrent; // 8 uint32 R V
@@ -143,8 +140,8 @@ public class PowerSourceCluster extends BaseCluster {
      * provide power to the Node. Values are expressed in half percent units, ranging from 0 to 200. E.g. a value of 48
      * is equivalent to 24%. A value of NULL shall indicate the Node is currently unable to assess the value.
      * Changes to this attribute shall only be marked as reportable in the following cases:
-     * • At most once every 10 seconds, or
-     * • When it changes from null to any other value and vice versa.
+     * - At most once every 10 seconds, or
+     * - When it changes from null to any other value and vice versa.
      * Since reporting consumes power, devices SHOULD be careful not to over-report.
      */
     public Integer batPercentRemaining; // 12 uint8 R V
@@ -152,8 +149,8 @@ public class PowerSourceCluster extends BaseCluster {
      * Indicates the estimated time in seconds before the battery will no longer be able to provide power to the Node. A
      * value of NULL shall indicate the Node is currently unable to assess the value.
      * Changes to this attribute shall only be marked as reportable in the following cases:
-     * • At most once every 10 seconds, or
-     * • When it changes from null to any other value and vice versa.
+     * - At most once every 10 seconds, or
+     * - When it changes from null to any other value and vice versa.
      * Since reporting consumes power, devices SHOULD be careful not to over-report.
      */
     public Integer batTimeRemaining; // 13 uint32 R V
@@ -169,7 +166,7 @@ public class PowerSourceCluster extends BaseCluster {
      */
     public Boolean batReplacementNeeded; // 15 bool R V
     /**
-     * This attribute shall indicate the replaceability of the battery as specified in BatReplaceabilityEnum.
+     * Indicates the replaceability of the battery as specified in BatReplaceabilityEnum.
      */
     public BatReplaceabilityEnum batReplaceability; // 16 BatReplaceabilityEnum R V
     /**
@@ -225,8 +222,8 @@ public class PowerSourceCluster extends BaseCluster {
      * Indicates the estimated time in seconds before the battery source will be at full charge. A value of NULL shall
      * indicate the Node is currently unable to assess the value.
      * Changes to this attribute shall only be marked as reportable in the following cases:
-     * • At most once every 10 seconds, or
-     * • When it changes from null to any other value and vice versa.
+     * - At most once every 10 seconds, or
+     * - When it changes from null to any other value and vice versa.
      * Since reporting consumes power, devices SHOULD be careful not to over-report.
      */
     public Integer batTimeToFullCharge; // 27 uint32 R V
@@ -260,12 +257,26 @@ public class PowerSourceCluster extends BaseCluster {
      * A cluster instance with a non-empty list shall include the endpoint, upon which the cluster instance resides.
      * The above rules allow that some endpoints can have an unknown power source, and therefore would not be indicated
      * by any instance of this cluster.
-     * Typically, there is one power source for the node. Also common is mains power for the node with battery backup
-     * power for the node. In both these common cases, for each cluster instance described, the list is empty.
-     * A node has a mains power source with Order as 0 (zero), but some application endpoints (not all) have a battery
-     * back up source with Order as 1, which means this list is empty for the Power Source cluster associated with the
-     * mains power, because it indicates the entire node, but the Power Source cluster instance associated with the
-     * battery backup would list the endpoints that have a battery backup.
+     * > [!NOTE]
+     * > Legacy Implementations Legacy implementations of this cluster before revision 2, before this attribute was
+     * defined, would have implemented this cluster on an application endpoint without indicating it in EndpointList
+     * (since that attribute did not exist in revision 1), because it represented a power source for the endpoint, not
+     * the entire node. For example: Bridge implementations support endpoints for bridged devices that have different
+     * power sources. Such implementations followed device type requirements and semantics outside of this cluster,
+     * because this attribute did not exist. Future updates of such a cluster instance on the same endpoint, would allow
+     * that same endpoint to be an entry in the EndpointList attribute. Therefore it is valid to list the endpoint upon
+     * which the cluster instance exists.
+     * ### Empty list examples
+     * : Typically, there is one power source for the node.
+     * Also common is mains power for the node with battery backup power for the node.
+     * In both these common cases, for each cluster instance described, the list is empty.
+     * ### Populated list example
+     * : A node has a mains power source with Order as 0 (zero), but some application endpoints (not all) have a battery
+     * back up source with Order as 1,
+     * which means this list is empty for the Power Source cluster associated with the mains power,
+     * because it indicates the entire node,
+     * but the Power Source cluster instance associated with the battery backup would list the endpoints that have a
+     * battery backup.
      */
     public List<Integer> endpointList; // 31 list R V
 
@@ -274,7 +285,7 @@ public class PowerSourceCluster extends BaseCluster {
      * The WiredFaultChange Event shall be generated when the set of wired faults currently detected by the Node on this
      * wired power source changes. This event shall correspond to a change in value of ActiveWiredFaults.
      */
-    public class WiredFaultChange {
+    public static class WiredFaultChange {
         /**
          * This field shall represent the set of faults currently detected, as per ActiveWiredFaults.
          */
@@ -294,7 +305,7 @@ public class PowerSourceCluster extends BaseCluster {
      * The BatFaultChange Event shall be generated when the set of battery faults currently detected by the Node on this
      * battery power source changes. This event shall correspond to a change in value of ActiveBatFaults.
      */
-    public class BatFaultChange {
+    public static class BatFaultChange {
         /**
          * This field shall represent the set of faults currently detected, as per ActiveBatFaults.
          */
@@ -314,7 +325,7 @@ public class PowerSourceCluster extends BaseCluster {
      * The BatChargeFaultChange Event shall be generated when the set of charge faults currently detected by the Node on
      * this battery power source changes. This event shall correspond to a change in value of ActiveBatChargeFaults.
      */
-    public class BatChargeFaultChange {
+    public static class BatChargeFaultChange {
         /**
          * This field shall represent the set of faults currently detected, as per ActiveBatChargeFaults.
          */
@@ -337,8 +348,8 @@ public class PowerSourceCluster extends BaseCluster {
         OVER_VOLTAGE(1, "Over Voltage"),
         UNDER_VOLTAGE(2, "Under Voltage");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private WiredFaultEnum(Integer value, String label) {
             this.value = value;
@@ -361,8 +372,8 @@ public class PowerSourceCluster extends BaseCluster {
         OVER_TEMP(1, "Over Temp"),
         UNDER_TEMP(2, "Under Temp");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private BatFaultEnum(Integer value, String label) {
             this.value = value;
@@ -393,8 +404,8 @@ public class PowerSourceCluster extends BaseCluster {
         CHARGER_UNDER_VOLTAGE(9, "Charger Under Voltage"),
         SAFETY_TIMEOUT(10, "Safety Timeout");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private BatChargeFaultEnum(Integer value, String label) {
             this.value = value;
@@ -418,8 +429,8 @@ public class PowerSourceCluster extends BaseCluster {
         STANDBY(2, "Standby"),
         UNAVAILABLE(3, "Unavailable");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private PowerSourceStatusEnum(Integer value, String label) {
             this.value = value;
@@ -441,8 +452,8 @@ public class PowerSourceCluster extends BaseCluster {
         AC(0, "Ac"),
         DC(1, "Dc");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private WiredCurrentTypeEnum(Integer value, String label) {
             this.value = value;
@@ -465,8 +476,8 @@ public class PowerSourceCluster extends BaseCluster {
         WARNING(1, "Warning"),
         CRITICAL(2, "Critical");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private BatChargeLevelEnum(Integer value, String label) {
             this.value = value;
@@ -490,8 +501,8 @@ public class PowerSourceCluster extends BaseCluster {
         USER_REPLACEABLE(2, "User Replaceable"),
         FACTORY_REPLACEABLE(3, "Factory Replaceable");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private BatReplaceabilityEnum(Integer value, String label) {
             this.value = value;
@@ -592,8 +603,8 @@ public class PowerSourceCluster extends BaseCluster {
         V26650(79, "26650"),
         V32600(80, "32600");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private BatCommonDesignationEnum(Integer value, String label) {
             this.value = value;
@@ -646,8 +657,8 @@ public class PowerSourceCluster extends BaseCluster {
         ZINC_BROMIDE(31, "Zinc Bromide"),
         ZINC_CERIUM(32, "Zinc Cerium");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private BatApprovedChemistryEnum(Integer value, String label) {
             this.value = value;
@@ -671,8 +682,8 @@ public class PowerSourceCluster extends BaseCluster {
         IS_AT_FULL_CHARGE(2, "Is At Full Charge"),
         IS_NOT_CHARGING(3, "Is Not Charging");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private BatChargeStateEnum(Integer value, String label) {
             this.value = value;
@@ -732,7 +743,6 @@ public class PowerSourceCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "status : " + status + "\n";
         str += "order : " + order + "\n";

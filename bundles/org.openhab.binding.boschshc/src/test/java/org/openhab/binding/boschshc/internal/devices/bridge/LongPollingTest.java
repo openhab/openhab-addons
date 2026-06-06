@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,41 +12,21 @@
  */
 package org.openhab.binding.boschshc.internal.devices.bridge;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.ArgumentMatchers.same;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.AbstractExecutorService;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Delayed;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.api.Response.CompleteListener;
@@ -60,7 +40,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.DeviceServiceData;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.LongPollResult;
@@ -70,6 +49,7 @@ import org.openhab.binding.boschshc.internal.devices.bridge.dto.UserDefinedState
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.exceptions.LongPollingFailedException;
 import org.openhab.binding.boschshc.internal.tests.common.CommonTestUtils;
+import org.openhab.core.util.SameThreadExecutorService;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
@@ -84,148 +64,25 @@ import com.google.gson.JsonSyntaxException;
 @ExtendWith(MockitoExtension.class)
 class LongPollingTest {
 
-    /**
-     * A dummy implementation of {@link ScheduledFuture}.
-     * <p>
-     * This is required because we can not return <code>null</code> in the executor service test implementation (see
-     * below).
-     *
-     * @author David Pace - Initial contribution
-     *
-     * @param <T> The result type returned by this Future
-     */
-    private static class NullScheduledFuture<T> implements ScheduledFuture<T> {
-
-        @Override
-        public long getDelay(@Nullable TimeUnit unit) {
-            return 0;
-        }
-
-        @Override
-        public int compareTo(@Nullable Delayed o) {
-            return 0;
-        }
-
-        @Override
-        public boolean cancel(boolean mayInterruptIfRunning) {
-            return false;
-        }
-
-        @Override
-        public boolean isCancelled() {
-            return false;
-        }
-
-        @Override
-        public boolean isDone() {
-            return false;
-        }
-
-        @Override
-        public T get() throws InterruptedException, ExecutionException {
-            return null;
-        }
-
-        @Override
-        public T get(long timeout, @Nullable TimeUnit unit)
-                throws InterruptedException, ExecutionException, TimeoutException {
-            return null;
-        }
-    }
-
-    /**
-     * Executor service implementation that runs all runnables in the same thread in order to enable deterministic
-     * testing.
-     *
-     * @author David Pace - Initial contribution
-     *
-     */
-    private static class SameThreadExecutorService extends AbstractExecutorService implements ScheduledExecutorService {
-
-        private volatile boolean terminated;
-
-        @Override
-        public void shutdown() {
-            terminated = true;
-        }
-
-        @NonNullByDefault({})
-        @Override
-        public List<Runnable> shutdownNow() {
-            return Collections.emptyList();
-        }
-
-        @Override
-        public boolean isShutdown() {
-            return terminated;
-        }
-
-        @Override
-        public boolean isTerminated() {
-            return terminated;
-        }
-
-        @Override
-        public boolean awaitTermination(long timeout, @Nullable TimeUnit unit) throws InterruptedException {
-            shutdown();
-            return terminated;
-        }
-
-        @Override
-        public void execute(@Nullable Runnable command) {
-            if (command != null) {
-                // execute in the same thread in unit tests
-                command.run();
-            }
-        }
-
-        @Override
-        public ScheduledFuture<?> schedule(@Nullable Runnable command, long delay, @Nullable TimeUnit unit) {
-            // not used in this tests
-            return new NullScheduledFuture<>();
-        }
-
-        @Override
-        public <V> ScheduledFuture<V> schedule(@Nullable Callable<V> callable, long delay, @Nullable TimeUnit unit) {
-            return new NullScheduledFuture<>();
-        }
-
-        @Override
-        public ScheduledFuture<?> scheduleAtFixedRate(@Nullable Runnable command, long initialDelay, long period,
-                @Nullable TimeUnit unit) {
-            if (command != null) {
-                command.run();
-            }
-            return new NullScheduledFuture<>();
-        }
-
-        @Override
-        public ScheduledFuture<?> scheduleWithFixedDelay(@Nullable Runnable command, long initialDelay, long delay,
-                @Nullable TimeUnit unit) {
-            if (command != null) {
-                command.run();
-            }
-            return new NullScheduledFuture<>();
-        }
-    }
-
     private @NonNullByDefault({}) LongPolling fixture;
 
     private @NonNullByDefault({}) BoschHttpClient httpClient;
 
-    private @Mock @NonNullByDefault({}) Consumer<@NonNull LongPollResult> longPollHandler;
+    private @NonNullByDefault({}) Consumer<@NonNull LongPollResult> longPollHandler;
 
-    private @Mock @NonNullByDefault({}) Consumer<@NonNull Throwable> failureHandler;
+    private @NonNullByDefault({}) Consumer<@NonNull Throwable> failureHandler;
 
+    @SuppressWarnings("unchecked")
     @BeforeEach
     void beforeEach() {
-        fixture = new LongPolling(new SameThreadExecutorService(), longPollHandler, failureHandler);
         httpClient = mock(BoschHttpClient.class);
+        longPollHandler = mock(Consumer.class);
+        failureHandler = mock(Consumer.class);
+        fixture = new LongPolling(new SameThreadExecutorService(), longPollHandler, failureHandler);
     }
 
     @Test
     void start() throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
-        // when(httpClient.getBoschSmartHomeUrl(anyString())).thenCallRealMethod();
         when(httpClient.getBoschShcUrl(anyString())).thenCallRealMethod();
 
         Request subscribeRequest = mock(Request.class);

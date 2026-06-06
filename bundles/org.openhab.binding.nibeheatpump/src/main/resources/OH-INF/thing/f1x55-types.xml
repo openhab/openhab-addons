@@ -3262,21 +3262,21 @@
 	<channel-type id="f1x55-43416">
 		<item-type>Number</item-type>
 		<label>Compressor Starts EB100-EP14</label>
-		<description>Number of compressorer starts</description>
+		<description>Number of compressor starts</description>
 		<state pattern="%d" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="f1x55-43420">
 		<item-type>Number</item-type>
 		<label>Tot. Op.time Compr. EB100-EP14</label>
-		<description>Total compressorer operation time</description>
+		<description>Total compressor operation time</description>
 		<state pattern="%d h" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="f1x55-43424">
 		<item-type>Number</item-type>
 		<label>Tot. HW Op.time Compr. EB100-EP14</label>
-		<description>Total compressorer operation time in hot water mode</description>
+		<description>Total compressor operation time in hot water mode</description>
 		<state pattern="%d h" readOnly="true">
 		</state>
 	</channel-type>
@@ -3324,7 +3324,7 @@
 	<channel-type id="f1x55-43435" advanced="true">
 		<item-type>String</item-type>
 		<label>Cpr Status EP14</label>
-		<description>Status of the compressor. 1=on,0=off 0=Off 1=On</description>
+		<description>Status of the compressor; 0 = Off, 1 = On</description>
 		<state pattern="%d" readOnly="true">
 			<options>
 				<option value="1">on</option>
@@ -4442,11 +4442,11 @@
 	<channel-type id="f1x55-47138" advanced="true">
 		<item-type>String</item-type>
 		<label>Operational Mode Heat Medium Pump</label>
-		<description>10=Intermittent 20=Continous 30=Economy 40=Auto</description>
+		<description>10 = Intermittent, 20 = Continuous, 30 = Economy, 40 = Auto</description>
 		<state min="10" max="40" step="1" pattern="%d" readOnly="false">
 			<options>
 				<option value="10">Intermittent</option>
-				<option value="20">Continous</option>
+				<option value="20">Continuous</option>
 				<option value="30">Economy</option>
 				<option value="40">Auto</option>
 			</options>
@@ -4727,19 +4727,19 @@
 	<channel-type id="f1x55-47302" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Climate System 2 Accessory</label>
-		<description>Activates the climate system 2 accessory 0=Off 1=On</description>
+		<description>Activates the climate system 2 accessory; 0 = Off, 1 = On</description>
 		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="f1x55-47303" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Climate System 3 Accessory</label>
-		<description>Activates the climate system 3 accessory 0=Off 1=On</description>
+		<description>Activates the climate system 3 accessory; 0 = Off, 1 = On</description>
 		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="f1x55-47304" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Climate System 4 Accessory</label>
-		<description>Activates the climate system 4 accessory 0=Off 1=On</description>
+		<description>Activates the climate system 4 accessory; 0 = Off, 1 = On</description>
 		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="f1x55-47305" advanced="true">
@@ -4788,7 +4788,7 @@
 		<item-type>Switch</item-type>
 		<label>FLM Pump 1</label>
 		<description>Operating mode for the FLM pump 1|Operating mode for the FLM pump 2|Operating mode for the FLM pump
-			3|Operating mode for the FLM pump 4 0=Off 1=On
+			3|Operating mode for the FLM pump 4; 0 = Off, 1 = On
 		</description>
 		<state readOnly="false"></state>
 	</channel-type>
@@ -5089,7 +5089,7 @@
 	<channel-type id="f1x55-47382" advanced="true">
 		<item-type>String</item-type>
 		<label>High Brine In</label>
-		<description>Activates the High brine in temperature alarm. 0=Off 1=On</description>
+		<description>Activates the high brine-in temperature alarm; 0 = Off, 1 = On</description>
 		<state min="1" max="1" step="1" pattern="%d" readOnly="false">
 			<options>
 				<option value="0">Off</option>
@@ -5134,48 +5134,47 @@
 	<channel-type id="f1x55-47387" advanced="true">
 		<item-type>Switch</item-type>
 		<label>HW Production</label>
-		<description>Activates hot water production where applicable 0=Off 1=On</description>
+		<description>Activates hot water production where applicable; 0 = Off, 1 = On</description>
 		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="f1x55-47388" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Alarm Lower Room Temp.</label>
-		<description>Lowers the room temperature during red light alarms to notify the occupants of the building that
-			something is the matter 0=Off 1=On
+		<description>Lowers the room temperature during red light alarms to notify the occupants of the building; 0 = Off, 1 =
+			On
 		</description>
 		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="f1x55-47389" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Alarm Lower HW Temp.</label>
-		<description>Lowers the hot water temperature during red light alarms to notify the occupants of the building
-			that
-			something is the matter 0=Off 1=On
+		<description>Lowers the hot water temperature during red light alarms to notify the occupants of the building; 0 =
+			Off, 1 = On
 		</description>
 		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="f1x55-47391" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Use Room Sensor S4</label>
-		<description>When activated the system uses the room sensor 0=Off 1=On</description>
+		<description>When activated, the system uses the room sensor; 0 = Off, 1 = On</description>
 		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="f1x55-47392" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Use Room Sensor S3</label>
-		<description>When activated the system uses the room sensor 0=Off 1=On</description>
+		<description>When activated, the system uses the room sensor; 0 = Off, 1 = On</description>
 		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="f1x55-47393" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Use Room Sensor S2</label>
-		<description>When activated the system uses the room sensor 0=Off 1=On</description>
+		<description>When activated, the system uses the room sensor; 0 = Off, 1 = On</description>
 		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="f1x55-47394" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Use Room Sensor S1</label>
-		<description>When activated the system uses the room sensor 0=Off 1=On</description>
+		<description>When activated, the system uses the room sensor; 0 = Off, 1 = On</description>
 		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="f1x55-47395" advanced="true">

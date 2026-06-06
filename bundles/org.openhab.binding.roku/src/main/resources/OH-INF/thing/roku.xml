@@ -31,7 +31,7 @@
 			<property name="Serial Number">unknown</property>
 			<property name="Device Id">unknown</property>
 			<property name="Software Version">unknown</property>
-			<property name="thingTypeVersion">4</property>
+			<property name="thingTypeVersion">5</property>
 		</properties>
 
 		<representation-property>uuid</representation-property>
@@ -75,7 +75,7 @@
 			<property name="Serial Number">unknown</property>
 			<property name="Device Id">unknown</property>
 			<property name="Software Version">unknown</property>
-			<property name="thingTypeVersion">4</property>
+			<property name="thingTypeVersion">5</property>
 		</properties>
 
 		<representation-property>uuid</representation-property>
@@ -318,6 +318,7 @@
 				<option value="PowerOn">Power On</option>
 				<option value="DisplayOff">Display Off</option>
 				<option value="Ready">Ready</option>
+				<option value="Offline">Offline</option>
 			</options>
 		</state>
 	</channel-type>

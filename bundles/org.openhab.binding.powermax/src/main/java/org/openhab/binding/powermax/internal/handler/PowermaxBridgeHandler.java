@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -143,25 +143,22 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
         }
 
         if (errorMsg == null) {
-            ScheduledFuture<?> job = globalJob;
-            if (job == null || job.isCancelled()) {
-                // Delay the startup in case the handler is restarted immediately
-                globalJob = scheduler.scheduleWithFixedDelay(() -> {
-                    try {
-                        logger.trace("Powermax job...");
-                        updateMotionSensorState();
-                        updateRingingState();
-                        if (isConnected()) {
-                            checkKeepAlive();
-                            retryDownloadSetup();
-                        } else {
-                            tryReconnect();
-                        }
-                    } catch (Exception e) {
-                        logger.warn("Exception in scheduled job: {}", e.getMessage(), e);
+            // Delay the startup in case the handler is restarted immediately
+            globalJob = scheduler.scheduleWithFixedDelay(() -> {
+                try {
+                    logger.trace("Powermax job...");
+                    updateMotionSensorState();
+                    updateRingingState();
+                    if (isConnected()) {
+                        checkKeepAlive();
+                        retryDownloadSetup();
+                    } else {
+                        tryReconnect();
                     }
-                }, 10, JOB_REPEAT, TimeUnit.SECONDS);
-            }
+                } catch (Exception e) {
+                    logger.warn("Exception in scheduled job: {}", e.getMessage(), e);
+                }
+            }, 10, JOB_REPEAT, TimeUnit.SECONDS);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
         }
@@ -225,7 +222,7 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
     public void dispose() {
         logger.debug("Handler disposed for thing {}", getThing().getUID());
         ScheduledFuture<?> job = globalJob;
-        if (job != null && !job.isCancelled()) {
+        if (job != null) {
             job.cancel(true);
             globalJob = null;
         }

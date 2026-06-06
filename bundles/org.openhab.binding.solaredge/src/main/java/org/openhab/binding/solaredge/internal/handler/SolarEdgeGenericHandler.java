@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -160,15 +160,16 @@ public class SolarEdgeGenericHandler extends BaseThingHandler implements SolarEd
     }
 
     private void updateOnlineStatus(CommunicationStatus status) {
+        String detailMessage = status.getUserFacingMessage();
         switch (status.getHttpCode()) {
             case SERVICE_UNAVAILABLE:
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, status.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, detailMessage);
                 break;
             case OK:
                 updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
                 break;
             default:
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, status.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, detailMessage);
         }
     }
 

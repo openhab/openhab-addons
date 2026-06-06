@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -56,7 +56,8 @@ public class Constants {
     public static final ChannelTypeUID CHANNEL_TYPE_THERMOSTATMODE = new ChannelTypeUID(BINDING_ID, "thermostatMode");
     public static final ChannelTypeUID CHANNEL_TYPE_AIR_QUALITY_INDOOR_AIR_QUALITY = new ChannelTypeUID(BINDING_ID,
             "indoorAirQuality");
-    public static final ChannelTypeUID CHANNEL_TYPE_AIR_QUALITY_HUMIDITY = new ChannelTypeUID(BINDING_ID, "humidity");
+    public static final ChannelTypeUID CHANNEL_TYPE_AIR_QUALITY_HUMIDITY = new ChannelTypeUID(BINDING_ID,
+            "relativeHumidity");
     public static final ChannelTypeUID CHANNEL_TYPE_AIR_QUALITY_PM25 = new ChannelTypeUID(BINDING_ID, "pm25");
     public static final ChannelTypeUID CHANNEL_TYPE_AIR_QUALITY_CARBON_MONOXIDE = new ChannelTypeUID(BINDING_ID,
             "carbonMonoxide");

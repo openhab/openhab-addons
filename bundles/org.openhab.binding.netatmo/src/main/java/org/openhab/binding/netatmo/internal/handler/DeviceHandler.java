@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,13 +12,11 @@
  */
 package org.openhab.binding.netatmo.internal.handler;
 
-import java.time.ZoneId;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.handler.capability.CapabilityMap;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -42,11 +40,9 @@ import org.slf4j.LoggerFactory;
 public class DeviceHandler extends BaseBridgeHandler implements CommonInterface {
     private final Logger logger = LoggerFactory.getLogger(DeviceHandler.class);
     private final CapabilityMap capabilities = new CapabilityMap();
-    private final TimeZoneProvider timeZoneProvider;
 
-    public DeviceHandler(Bridge bridge, TimeZoneProvider timeZoneProvider) {
+    public DeviceHandler(Bridge bridge) {
         super(bridge);
-        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -121,10 +117,5 @@ public class DeviceHandler extends BaseBridgeHandler implements CommonInterface 
     @Override
     public ScheduledExecutorService getScheduler() {
         return scheduler;
-    }
-
-    @Override
-    public ZoneId getSystemTimeZone() {
-        return timeZoneProvider.getTimeZone();
     }
 }

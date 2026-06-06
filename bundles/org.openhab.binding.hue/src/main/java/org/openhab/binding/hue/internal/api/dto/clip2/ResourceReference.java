@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,7 +42,7 @@ public class ResourceReference {
     @Override
     public boolean equals(@Nullable Object obj) {
         String rid = this.rid;
-        return (obj instanceof ResourceReference) && (rid != null) && rid.equals(((ResourceReference) obj).rid);
+        return obj instanceof ResourceReference resourceRef && rid != null && rid.equals(resourceRef.rid);
     }
 
     public @Nullable String getId() {

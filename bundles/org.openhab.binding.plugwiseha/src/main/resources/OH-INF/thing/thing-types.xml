@@ -128,7 +128,7 @@
 		<channels>
 			<channel id="power" typeId="system.power">
 				<label>Power</label>
-				<description>Switch the Plugwise Smart plug ON or OFF</description>
+				<description>Turn the Plugwise smart plug on or off</description>
 			</channel>
 			<channel id="lock" typeId="lock"/>
 			<channel id="powerUsage" typeId="system.electric-power">

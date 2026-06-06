@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.dirigera.internal.handler.controller;
 
-import static org.openhab.binding.dirigera.internal.Constants.PROPERTY_DEVICE_ID;
+import static org.openhab.binding.dirigera.internal.interfaces.Model.JSON_KEY_DEVICE_ID;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -86,10 +86,7 @@ public class BaseShortcutController extends BaseHandler {
     @Override
     public void dispose() {
         sceneMapping.forEach((key, value) -> {
-            BaseHandler proxy = child;
-            if (proxy != null) {
-                gateway().unregisterDevice(proxy, value);
-            }
+            gateway().unregisterDevice(child, value);
         });
         super.dispose();
     }
@@ -98,10 +95,7 @@ public class BaseShortcutController extends BaseHandler {
     public void handleRemoval() {
         sceneMapping.forEach((key, value) -> {
             // cleanup storage and hub
-            BaseHandler proxy = child;
-            if (proxy != null) {
-                gateway().deleteDevice(proxy, value);
-            }
+            gateway().deleteDevice(child, value);
             gateway().api().deleteScene(value);
             storage.remove(key);
         });
@@ -124,9 +118,9 @@ public class BaseShortcutController extends BaseHandler {
     @Override
     public void handleUpdate(JSONObject update) {
         super.handleUpdate(update);
-        if (update.has(PROPERTY_DEVICE_ID) && update.has("triggers")) {
+        if (update.has(JSON_KEY_DEVICE_ID) && update.has("triggers")) {
             // first check if trigger happened
-            String sceneId = update.getString(PROPERTY_DEVICE_ID);
+            String sceneId = update.getString(JSON_KEY_DEVICE_ID);
             JSONArray triggers = update.getJSONArray("triggers");
             boolean triggered = false;
             for (int i = 0; i < triggers.length(); i++) {

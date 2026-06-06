@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -105,7 +105,7 @@ public class EpsonProjectorDevice {
     }
 
     public EpsonProjectorDevice(EpsonProjectorConfiguration config) {
-        connection = new EpsonProjectorTcpConnector(config.host, config.port);
+        connection = new EpsonProjectorTcpConnector(config.host, config.port, config.password);
     }
 
     public boolean isReady() {
@@ -680,5 +680,19 @@ public class EpsonProjectorDevice {
             logger.debug("getSourceList(): {}", e.getMessage());
         }
         return sourceListOptions;
+    }
+
+    /*
+     * Projector Model
+     */
+    public String getModel() throws EpsonProjectorCommandException, EpsonProjectorException {
+        return queryString("PJINFO?");
+    }
+
+    /*
+     * Projector Serial Number
+     */
+    public String getSerialNumber() throws EpsonProjectorCommandException, EpsonProjectorException {
+        return queryString("SNO?");
     }
 }

@@ -13,6 +13,10 @@
 			<channel-group id="output" typeId="output"/>
 		</channel-groups>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<representation-property>location</representation-property>
 
 		<config-description>
@@ -21,12 +25,6 @@
 				<label>@text/locationLabel</label>
 				<context>location</context>
 				<description>@text/locationDescription</description>
-			</parameter>
-
-			<parameter name="observation-period" type="integer" min="0" max="6" required="true">
-				<label>@text/observationLabel</label>
-				<description>@text/observationDescription</description>
-				<default>6</default>
 			</parameter>
 
 		</config-description>
@@ -73,6 +71,7 @@
 				<description>@text/tempTrendDescription</description>
 			</channel>
 			<channel id="timestamp" typeId="timestamp"/>
+			<channel id="reliability" typeId="reliability"/>
 		</channels>
 	</channel-group-type>
 
@@ -237,6 +236,17 @@
 			<tag>Wind</tag>
 		</tags>
 		<state min="0" max="12" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="reliability" advanced="true">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>@text/reliabilityLabel</label>
+		<description>@text/reliabilityDescription</description>
+		<tags>
+			<tag>Calculation</tag>
+		</tags>
+		<state min="0" step="0.1" max="100" pattern="%.0f %unit%" readOnly="true"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 </thing:thing-descriptions>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,7 +36,7 @@ public class ShellyChannelCache {
     private final ShellyThingInterface thingHandler;
     private final Map<String, State> channelData = new ConcurrentHashMap<>();
     private String thingName = "";
-    private boolean enabled = false;
+    private boolean enabled;
 
     public ShellyChannelCache(ShellyThingInterface thingHandler) {
         this.thingHandler = thingHandler;

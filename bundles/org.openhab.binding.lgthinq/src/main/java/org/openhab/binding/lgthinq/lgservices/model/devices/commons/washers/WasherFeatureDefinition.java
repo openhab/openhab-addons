@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -48,7 +48,7 @@ public class WasherFeatureDefinition {
         JsonNode valuesMappingNode = featureNode.path("option");
         if (!valuesMappingNode.isMissingNode()) {
             Map<String, String> valuesMapping = new HashMap<>();
-            valuesMappingNode.fields().forEachRemaining(e -> {
+            valuesMappingNode.properties().forEach(e -> {
                 // collect values as:
                 //
                 // "option":{

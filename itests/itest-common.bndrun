@@ -43,7 +43,7 @@ Export-Package:
 
 -runproperties: \
 	org.ops4j.pax.logging.DefaultServiceLog.level=WARN,\
-	org.osgi.framework.bootdelegation="jdk.internal.access,jdk.internal.module"
+	org.osgi.framework.bootdelegation="jdk.internal.access,jdk.internal.module,org.mockito.internal.creation.bytebuddy.inject"
 
 -runvm.java9plus: \
 	--add-opens=java.base/java.io=ALL-UNNAMED,\

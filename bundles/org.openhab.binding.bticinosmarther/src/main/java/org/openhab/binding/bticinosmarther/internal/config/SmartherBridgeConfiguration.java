@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,6 @@
 package org.openhab.binding.bticinosmarther.internal.config;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -185,7 +184,7 @@ public class SmartherBridgeConfiguration {
      * @return the current Bridge notifications list
      */
     public List<String> getNotifications() {
-        return (notifications != null) ? notifications : Collections.emptyList();
+        return (notifications != null) ? notifications : List.of();
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -73,7 +73,7 @@ public class TeslaVehicleDiscoveryService extends AbstractThingHandlerDiscoveryS
             ThingUID thingUID = new ThingUID(type, thingHandler.getThing().getUID(), vehicle.vin);
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withLabel(vehicle.displayName)
                     .withBridge(thingHandler.getThing().getUID()).withProperty(TeslaBindingConstants.VIN, vehicle.vin)
-                    .build();
+                    .withRepresentationProperty(TeslaBindingConstants.VIN).build();
             thingDiscovered(discoveryResult);
         }
     }

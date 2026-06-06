@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -29,12 +28,10 @@ public class ThermostatUserInterfaceConfigurationCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0204;
     public static final String CLUSTER_NAME = "ThermostatUserInterfaceConfiguration";
     public static final String CLUSTER_PREFIX = "thermostatUserInterfaceConfiguration";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_TEMPERATURE_DISPLAY_MODE = "temperatureDisplayMode";
     public static final String ATTRIBUTE_KEYPAD_LOCKOUT = "keypadLockout";
     public static final String ATTRIBUTE_SCHEDULE_PROGRAMMING_VISIBILITY = "scheduleProgrammingVisibility";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     /**
      * Indicates the units of the temperature displayed on the thermostat screen.
      */
@@ -58,8 +55,8 @@ public class ThermostatUserInterfaceConfigurationCluster extends BaseCluster {
         CELSIUS(0, "Celsius"),
         FAHRENHEIT(1, "Fahrenheit");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private TemperatureDisplayModeEnum(Integer value, String label) {
             this.value = value;
@@ -88,8 +85,8 @@ public class ThermostatUserInterfaceConfigurationCluster extends BaseCluster {
         LOCKOUT4(4, "Lockout 4"),
         LOCKOUT5(5, "Lockout 5");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private KeypadLockoutEnum(Integer value, String label) {
             this.value = value;
@@ -111,8 +108,8 @@ public class ThermostatUserInterfaceConfigurationCluster extends BaseCluster {
         SCHEDULE_PROGRAMMING_PERMITTED(0, "Schedule Programming Permitted"),
         SCHEDULE_PROGRAMMING_DENIED(1, "Schedule Programming Denied");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ScheduleProgrammingVisibilityEnum(Integer value, String label) {
             this.value = value;
@@ -142,7 +139,6 @@ public class ThermostatUserInterfaceConfigurationCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "temperatureDisplayMode : " + temperatureDisplayMode + "\n";
         str += "keypadLockout : " + keypadLockout + "\n";
         str += "scheduleProgrammingVisibility : " + scheduleProgrammingVisibility + "\n";

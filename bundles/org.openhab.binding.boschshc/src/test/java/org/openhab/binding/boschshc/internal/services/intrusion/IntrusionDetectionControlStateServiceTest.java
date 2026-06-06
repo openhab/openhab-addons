@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -78,7 +78,7 @@ class IntrusionDetectionControlStateServiceTest {
     }
 
     @Test
-    void setState() throws InterruptedException, TimeoutException, ExecutionException {
+    void setState() throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
         fixture.setState(testState);
         verify(bridgeHandler).putState(BoschSHCBindingConstants.SERVICE_INTRUSION_DETECTION,
                 "IntrusionDetectionControl", testState);

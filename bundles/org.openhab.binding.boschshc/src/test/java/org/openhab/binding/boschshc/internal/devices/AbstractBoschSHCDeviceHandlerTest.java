@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -90,7 +90,7 @@ public abstract class AbstractBoschSHCDeviceHandlerTest<T extends BoschSHCDevice
     @Test
     void initializeInvalidDeviceId() {
         getFixture().getThing().getConfiguration().remove("id");
-        getFixture().initialize();
+        getFixture().thingUpdated(getThing());
 
         verify(getCallback()).statusUpdated(any(Thing.class),
                 argThat(status -> status.getStatus().equals(ThingStatus.OFFLINE)

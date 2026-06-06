@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -73,8 +73,7 @@ public enum ModuleType {
             new ChannelGroup(ApiBridgeChannelHelper.class, GROUP_MONITORING)),
 
     HOME(FeatureArea.NONE, "NAHome", 1, "home", ACCOUNT,
-            Set.of(DeviceCapability.class, HomeCapability.class, ChannelHelperCapability.class,
-                    RefreshCapability.class),
+            Set.of(HomeCapability.class, ChannelHelperCapability.class, RefreshCapability.class),
             new ChannelGroup(SecurityChannelHelper.class, GROUP_SECURITY_EVENT, GROUP_SECURITY),
             new ChannelGroup(EnergyChannelHelper.class, GROUP_ENERGY)),
 

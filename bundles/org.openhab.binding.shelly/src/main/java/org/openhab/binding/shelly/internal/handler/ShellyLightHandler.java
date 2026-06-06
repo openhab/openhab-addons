@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,11 +17,13 @@ import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRgbwLight;
@@ -30,7 +32,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortLig
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusLight;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusLightChannel;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapServer;
-import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
+import org.openhab.binding.shelly.internal.config.ShellyBindingRuntimeConfig;
 import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.core.library.types.DecimalType;
@@ -59,9 +61,9 @@ public class ShellyLightHandler extends ShellyBaseHandler {
     private final Map<Integer, ShellyColorUtils> channelColors;
 
     public ShellyLightHandler(final Thing thing, final ShellyTranslationProvider translationProvider,
-            final ShellyBindingConfiguration bindingConfig, final ShellyThingTable thingTable,
-            final Shelly1CoapServer coapServer, final HttpClient httpClient) {
-        super(thing, translationProvider, bindingConfig, thingTable, coapServer, httpClient);
+            final ShellyBindingRuntimeConfig bindingConfig, final ShellyThingTable thingTable,
+            final Shelly1CoapServer coapServer, final HttpClient httpClient, WebSocketClient webSocketClient) {
+        super(thing, translationProvider, bindingConfig, thingTable, coapServer, httpClient, webSocketClient);
         channelColors = new TreeMap<>();
     }
 
@@ -216,7 +218,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                 }
 
                 // send changed colors to the device
-                sendColors(profile, lightId, oldCol, col, config.brightnessAutoOn);
+                sendColors(profile, lightId, oldCol, col, config.getBrightnessAutoOn());
             }
             return true;
         } catch (ShellyApiException e) {
@@ -276,7 +278,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
     }
 
     private boolean handleFullColor(ShellyColorUtils col, Command command) throws IllegalArgumentException {
-        String color = command.toString().toLowerCase();
+        String color = command.toString().toLowerCase(Locale.ROOT);
         if (color.contains(",")) {
             col.fromRGBW(color);
         } else if (color.equals(SHELLY_COLOR_RED)) {

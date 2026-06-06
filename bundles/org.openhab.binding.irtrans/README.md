@@ -9,7 +9,7 @@ This binding supports the following Thing types
 | Thing    | Thing Type | Description                                                                |
 |----------|------------|----------------------------------------------------------------------------|
 | ethernet | Bridge     | Ethernet (PoE) IRtrans transceiver equipped with an on-board IRDB database |
-| blaster  | Thing      | Child thing representing an IR Blaster                                     |
+| blaster  | Thing      | Child Thing representing an IR Blaster                                     |
 
 ## Discovery
 

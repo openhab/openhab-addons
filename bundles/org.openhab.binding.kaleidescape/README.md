@@ -10,14 +10,14 @@ See [Kaleidescape-System-Control-Protocol-Reference-Manual.pdf](https://support.
 ## Supported Things
 
 All movie player components including the original K-Player series, M Class Players, Cinema One, Alto, and Strato are supported.
-It is important to choose the correct thing type to ensure the available channels are correct for the component being used.
+It is important to choose the correct Thing type to ensure the available channels are correct for the component being used.
 
-The supported thing types are:
+The supported Thing types are:
 
 - `player` Any KPlayer, M Class [M300, M500, M700] or Cinema One 1st Gen player
 - `cinemaone` Cinema One (2nd Gen)
 - `alto`
-- `strato` Includes Strato, Strato S, Strato C, Strato V or Strato M
+- `strato` Includes Strato, Strato S, Strato C, Strato V, Strato M, or Strato E
 
 The binding supports either a TCP/IP connection or direct serial port connection (19200-8-N-1) to the Kaleidescape component.
 
@@ -25,22 +25,22 @@ The binding supports either a TCP/IP connection or direct serial port connection
 
 Auto-discovery is supported for Alto and Strato components if the device can be located on the local network using SDDP.
 Manually initiated discovery will locate all legacy Premiere line components if they are on the same IP subnet of the openHAB server.
-In the Inbox, select Search For Things and then choose the Kaleidescape Binding to initiate a discovery scan.
+In the Inbox, select Search for Things and then choose the Kaleidescape Binding to initiate a discovery scan.
 
 ## Thing Configuration
 
-The thing has the following configuration parameters:
+The Thing has the following configuration parameters:
 
 | Parameter Label                   | Parameter ID           | Description                                                                                                                             | Accepted values                                      |
 |-----------------------------------|------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------|
 | Address                           | host                   | Host name or IP address of the Kaleidescape component                                                                                   | A host name or IP address                            |
 | Port                              | port                   | Communication port of the IP connection                                                                                                 | 10000 (default - should not need to change)          |
-| Serial Port                       | serialPort             | Serial port for connecting directly a component                                                                                         | Serial port name (optional)                          |
+| Serial Port                       | serialPort             | Serial port for connecting directly to a component                                                                                      | Serial port name (optional)                          |
 | Update Period                     | updatePeriod           | Tells the component how often time status updates should be sent (see notes below)                                                      | 0 or 1 are the currently accepted values (default 0) |
 | Advanced Volume Control Enabled   | volumeEnabled          | Enable the volume and mute controls in the K iPad & phone apps; when enabled the volume and mute channels described below are active    | Boolean (default false)                              |
 | Initial Volume Setting            | initialVolume          | Initial volume level set when the binding starts up                                                                                     | 0 to 75 (default 25)                                 |
 | Basic Volume Control Enabled      | volumeBasicEnabled     | Enables stateless volume up/down and mute controls in the K apps; cannot be used when `volumeEnabled` is true (see rules example below) | Boolean (default false)                              |
-| Load Highlighted Details          | loadHighlightedDetails | When enabled the binding will automatically load the the metadata channels when the selected item in the UI (Movie or Album) changes    | Boolean (default false)                              |
+| Load Highlighted Details          | loadHighlightedDetails | When enabled the binding will automatically load the metadata channels when the selected item in the UI (Movie or Album) changes        | Boolean (default false)                              |
 | Load Album Details                | loadAlbumDetails       | When enabled the binding will automatically load the metadata channels for the currently playing Album                                  | Boolean (default false) N/A for Alto and Strato      |
 
 Some notes:
@@ -94,12 +94,13 @@ The following channels are available:
 | ui#cinemascape_mode        | String      | Identifies the CinemaScape mode currently active                                                                                |
 | ui#ui_state                | String      | Provides information about which screen is visible in the Kaleidescape user interface                                           |
 | ui#child_mode_state        | String      | Indicates if the onscreen display is displaying the child user interface                                                        |
-| ui#readiness_state         | String      | Indicates the system's current idle mode (Not available on Premiere system players)                                             |
+| ui#readiness_state         | String      | Indicates the system's current idle mode or if the Thing is offline (Not available on Premiere system players)                  |
 | ui#highlighted_selection   | String      | Specifies the handle of the movie or album currently selected on the user interface                                             |
 | ui#user_defined_event      | String      | Will contain custom event messages generated by scripts, sent from another component, or system events                          |
 | ui#user_input              | String      | Indicates if the user is being prompted for input, what type of input, and any currently entered characters                     |
 | ui#user_input_prompt       | String      | Indicates user input prompt info and properties currently shown on screen                                                       |
-| ui#sendcmd                 | String      | Sends a raw command to the Kaleidescape player (WriteOnly)                                                                      |
+| ui#sendcmd                 | String      | Sends a raw command to the Kaleidescape player (write-only)                                                                     |
+| ui#search                  | String      | Executes a movie title search in the UI for the given string (write-only)                                                       |
 | -- music channels (not available on Alto and Strato) --                                                                                                                    |||
 | music#control              | Player      | Control Music Playback e.g. play/pause/next/previous/ffward/rewind                                                              |
 | music#repeat               | Switch      | Controls repeat playback for music                                                                                              |
@@ -194,6 +195,7 @@ String z1_Ui_UserDefinedEvent "User Defined Event: [%s]" { channel="kaleidescape
 String z1_Ui_UserInput "User Input: [%s]" { channel="kaleidescape:player:myzone1:ui#user_input" }
 String z1_Ui_UserInputPrompt "User Input Prompt[%s]" { channel="kaleidescape:player:myzone1:ui#user_input_prompt" }
 String z1_Ui_Sendcmd "Send Command" { channel="kaleidescape:player:myzone1:ui#sendcmd" }
+String z1_Ui_MovieSearch "Movie Search" { channel="kaleidescape:player:myzone1:ui#search" }
 
 // Music Channels (not available on Alto or Strato)
 Player z1_Music_Control "Music Control" { channel="kaleidescape:player:myzone1:music#control" }
@@ -212,7 +214,7 @@ String z1_Music_TrackHandle "Track Handle: [%s]" { channel="kaleidescape:player:
 String z1_Music_AlbumHandle "Album Handle: [%s]" { channel="kaleidescape:player:myzone1:music#album_handle" }
 String z1_Music_NowplayHandle "Now Playing Handle: [%s]" { channel="kaleidescape:player:myzone1:music#nowplay_handle" }
 
-// Metatdata Display Channels (Album Title, Artist & Review are not available on Alto or Strato)
+// Metadata Display Channels (Album Title, Artist & Review are not available on Alto or Strato)
 String z1_Detail_Type "Metadata type: [%s]" { channel="kaleidescape:player:myzone1:detail#type" }
 String z1_Detail_Title "Title: [%s]" { channel="kaleidescape:player:myzone1:detail#title" }
 String z1_Detail_AlbumTitle "Album: [%s]" { channel="kaleidescape:player:myzone1:detail#album_title" }
@@ -233,7 +235,6 @@ String z1_Detail_ColorDescription "Color Description: [%s]" { channel="kaleidesc
 String z1_Detail_Country "Country: [%s]" { channel="kaleidescape:player:myzone1:detail#country" }
 String z1_Detail_AspectRatio "Aspect Ratio: [%s]" { channel="kaleidescape:player:myzone1:detail#aspect_ratio" }
 String z1_Detail_DiscLocation "Disc Location: [%s]" { channel="kaleidescape:player:myzone1:detail#disc_location" }
-String z1_MovieSearch "Movie Search"
 ```
 
 ### `kaleidescape.sitemap` Example
@@ -258,7 +259,7 @@ sitemap kaleidescape label="Kaleidescape" {
         Text item=z1_Detail_Country visibility=[z1_Detail_Type=="movie"] icon="none"
         Text item=z1_Detail_AspectRatio visibility=[z1_Detail_Type=="movie"] icon="none"
         Text item=z1_Detail_DiscLocation visibility=[z1_Detail_Type=="movie", z1_Detail_Type=="album"] icon="player"
-        Input item=z1_MovieSearch label="Movie Search" staticIcon=zoom inputHint="text"
+        Input item=z1_Ui_MovieSearch label="Movie Search" staticIcon=zoom inputHint="text"
 
         Text label="Now Playing - Movie" icon="screen" {
             Switch item=z1_Ui_Power
@@ -360,11 +361,11 @@ then
     // *RELEASE events are not used in this example
 
     if (volEvt == "VOLUME_UP" || volEvt == "VOLUME_UP_PRESS") {
-        logInfo("k rules", "Volumne Up received")
+        logInfo("k rules", "Volume Up received")
     }
 
     if (volEvt == "VOLUME_DOWN" || volEvt == "VOLUME_DOWN_PRESS") {
-        logInfo("k rules", "Volumne Down received")
+        logInfo("k rules", "Volume Down received")
     }
 
     if (volEvt == "TOGGLE_MUTE") {
@@ -379,7 +380,7 @@ when
     Item z1_Ui_UserDefinedEvent received update
 then
     if (z1_Ui_UserDefinedEvent.state.toString == "DO_THE_NEEDFUL") {
-        logInfo("k rules", "handing the NEEDFUL script command...")
+        logInfo("k rules", "handling the NEEDFUL script command...")
     }
 end
 
@@ -413,9 +414,11 @@ then
     logInfo("k rules", "intermission over")
 end
 
+// The following rule is no longer needed as the `search` channel implements this functionality internally.
+
 rule "Movie Search"
 when
-    Item z1_MovieSearch received update
+    Item z1_Ui_MovieSearch received update
 then
     if (newState != NULL && newState.toString.length > 0) {
         z1_Ui_Sendcmd.sendCommand("GO_MOVIE_LIST")

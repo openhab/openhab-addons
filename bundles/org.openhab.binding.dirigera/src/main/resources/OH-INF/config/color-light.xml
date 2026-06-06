@@ -23,5 +23,15 @@
 			</options>
 			<default>0</default>
 		</parameter>
+		<parameter name="colorTemperatureMin" type="integer" required="false">
+			<label>Color Temperature Min</label>
+			<description>Overwrite minimum color temperature from light device in kelvin</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="colorTemperatureMax" type="integer" required="false">
+			<label>Color Temperature Max</label>
+			<description>Overwrite maximum color temperature from light device in kelvin</description>
+			<advanced>true</advanced>
+		</parameter>
 	</config-description>
 </config-description:config-descriptions>

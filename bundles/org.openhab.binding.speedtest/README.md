@@ -26,9 +26,9 @@ The Speedtest Binding is using the following functionality, provided by Ookla's 
 
 ## What interfaces does the Speedtest Binding offer?
 
-The Speedtest Binding provides the Ookla's Speedtest functionality via the following openHAB interface:
+The Speedtest Binding provides Ookla's Speedtest functionality via the following openHAB interfaces:
 
-- Execute Speedtest time based or triggered
+- Execute Speedtest time-based or triggered
 - Provide results via openHAB Channels
 - List available Ookla Speedtest servers that can be used for testing (optional)
 
@@ -43,7 +43,7 @@ You can find the latest version of those terms at the following webpages:
 
 ## Supported Things
 
-Speedtest thing.
+Speedtest Thing.
 
 ## Binding Configuration
 
@@ -54,11 +54,11 @@ To install Ookla's version of Speedtest, head to <https://www.speedtest.net/apps
 
 ## Thing Configuration
 
-| Parameter         |  Description                                                                                                                 | Default |
-|-------------------|------------------------------------------------------------------------------------------------------------------------------|---------|
-| `refreshInterval` | How often to test network speed, in minutes                                                                                  | `60`    |
-| `execPath`        | The path of the Ookla Speedtest executable.<br/>Linux machines may leave this blank and it defaults to `/usr/bin/speedtest`. |         |
-| `serverID`        | Optional: A specific server that shall be used for testing. You can pick the server ID from the "Thing Properties".<br/>If this is left blank the best option will be selected by Ookla.          |         |
+| Parameter         | Description                                                                                                                                                                              | Default |
+|-------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|
+| `refreshInterval` | How often to test network speed, in minutes                                                                                                                                              | `60`    |
+| `execPath`        | The path of the Ookla Speedtest executable.<br/>Linux machines may leave this blank and it defaults to `/usr/bin/speedtest`.                                                             |         |
+| `serverID`        | Optional: A specific server that shall be used for testing. You can pick the server ID from the "Thing Properties".<br/>If this is left blank the best option will be selected by Ookla. |         |
 
 The `refreshInterval` parameter can also be set to `0` which means "Do not test automatically".
 This can be used if you want to use the "Trigger Test" channel in order to test via rules, or an item instead.
@@ -67,9 +67,9 @@ Ensure that the user that openHAB is running with, has the permissions to access
 
 ## Properties
 
-| Property            | Description                                                                                                |
-|---------------------|------------------------------------------------------------------------------------------------------------|
-| Server List 1...10  | A List of Ookla Speedtest servers that can be used in order to specify a specific server for the Speedtest.<br/>Configure the Server ID via the `serverID` Thing Configuration Parameter. |
+| Property           | Description                                                                                                                                                                               |
+|--------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Server List 1...10 | A List of Ookla Speedtest servers that can be used in order to specify a specific server for the Speedtest.<br/>Configure the Server ID via the `serverID` Thing Configuration Parameter. |
 
 ## Channels
 

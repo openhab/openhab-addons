@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,11 +13,11 @@
 package org.openhab.binding.boschshc.internal.discovery;
 
 import java.time.Instant;
-import java.util.AbstractMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -62,59 +62,62 @@ public class ThingDiscoveryService extends AbstractThingHandlerDiscoveryService<
      */
     static final String DEVICE_MODEL_LIGHT_CONTROL_CHILD_DEVICE = "MICROMODULE_LIGHT_ATTACHED";
 
-    protected static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(
-            BoschSHCBindingConstants.THING_TYPE_INWALL_SWITCH, BoschSHCBindingConstants.THING_TYPE_TWINGUARD,
-            BoschSHCBindingConstants.THING_TYPE_WINDOW_CONTACT, BoschSHCBindingConstants.THING_TYPE_WINDOW_CONTACT_2,
-            BoschSHCBindingConstants.THING_TYPE_MOTION_DETECTOR, BoschSHCBindingConstants.THING_TYPE_SHUTTER_CONTROL,
-            BoschSHCBindingConstants.THING_TYPE_THERMOSTAT, BoschSHCBindingConstants.THING_TYPE_CLIMATE_CONTROL,
-            BoschSHCBindingConstants.THING_TYPE_WALL_THERMOSTAT, BoschSHCBindingConstants.THING_TYPE_CAMERA_360,
-            BoschSHCBindingConstants.THING_TYPE_CAMERA_EYES,
-            BoschSHCBindingConstants.THING_TYPE_INTRUSION_DETECTION_SYSTEM,
-            BoschSHCBindingConstants.THING_TYPE_SMART_PLUG_COMPACT, BoschSHCBindingConstants.THING_TYPE_SMART_BULB,
-            BoschSHCBindingConstants.THING_TYPE_SMOKE_DETECTOR);
-
     // @formatter:off
     public static final Map<String, ThingTypeUID> DEVICEMODEL_TO_THINGTYPE_MAP = Map.ofEntries(
-            new AbstractMap.SimpleEntry<>("BBL", BoschSHCBindingConstants.THING_TYPE_SHUTTER_CONTROL),
-            new AbstractMap.SimpleEntry<>("TWINGUARD", BoschSHCBindingConstants.THING_TYPE_TWINGUARD),
-            new AbstractMap.SimpleEntry<>("BSM", BoschSHCBindingConstants.THING_TYPE_INWALL_SWITCH),
-            new AbstractMap.SimpleEntry<>("PSM", BoschSHCBindingConstants.THING_TYPE_SMART_PLUG_COMPACT),
-            new AbstractMap.SimpleEntry<>("PLUG_COMPACT", BoschSHCBindingConstants.THING_TYPE_SMART_PLUG_COMPACT),
-            new AbstractMap.SimpleEntry<>("CAMERA_360", BoschSHCBindingConstants.THING_TYPE_CAMERA_360),
-            new AbstractMap.SimpleEntry<>("CAMERA_EYES", BoschSHCBindingConstants.THING_TYPE_CAMERA_EYES),
-            new AbstractMap.SimpleEntry<>("BWTH", BoschSHCBindingConstants.THING_TYPE_WALL_THERMOSTAT), // wall thermostat
-            new AbstractMap.SimpleEntry<>("THB", BoschSHCBindingConstants.THING_TYPE_WALL_THERMOSTAT), // wall thermostat with batteries
-            new AbstractMap.SimpleEntry<>("SD", BoschSHCBindingConstants.THING_TYPE_SMOKE_DETECTOR),
-            new AbstractMap.SimpleEntry<>("MD", BoschSHCBindingConstants.THING_TYPE_MOTION_DETECTOR),
-            new AbstractMap.SimpleEntry<>("ROOM_CLIMATE_CONTROL", BoschSHCBindingConstants.THING_TYPE_CLIMATE_CONTROL),
-            new AbstractMap.SimpleEntry<>("INTRUSION_DETECTION_SYSTEM", BoschSHCBindingConstants.THING_TYPE_INTRUSION_DETECTION_SYSTEM),
-            new AbstractMap.SimpleEntry<>("HUE_LIGHT", BoschSHCBindingConstants.THING_TYPE_SMART_BULB),
-            new AbstractMap.SimpleEntry<>("LEDVANCE_LIGHT", BoschSHCBindingConstants.THING_TYPE_SMART_BULB),
-            new AbstractMap.SimpleEntry<>("SWD", BoschSHCBindingConstants.THING_TYPE_WINDOW_CONTACT),
-            new AbstractMap.SimpleEntry<>("SWD2", BoschSHCBindingConstants.THING_TYPE_WINDOW_CONTACT_2),
-            new AbstractMap.SimpleEntry<>("SWD2_PLUS", BoschSHCBindingConstants.THING_TYPE_WINDOW_CONTACT_2_PLUS),
-            new AbstractMap.SimpleEntry<>("TRV", BoschSHCBindingConstants.THING_TYPE_THERMOSTAT),
-            new AbstractMap.SimpleEntry<>("WRC2", BoschSHCBindingConstants.THING_TYPE_UNIVERSAL_SWITCH),
-            new AbstractMap.SimpleEntry<>("SWITCH2", BoschSHCBindingConstants.THING_TYPE_UNIVERSAL_SWITCH_2),
-            new AbstractMap.SimpleEntry<>("SMOKE_DETECTOR2", BoschSHCBindingConstants.THING_TYPE_SMOKE_DETECTOR_2),
-            new AbstractMap.SimpleEntry<>("MICROMODULE_SHUTTER", BoschSHCBindingConstants.THING_TYPE_SHUTTER_CONTROL_2),
-            new AbstractMap.SimpleEntry<>("MICROMODULE_AWNING", BoschSHCBindingConstants.THING_TYPE_SHUTTER_CONTROL_2),
-            new AbstractMap.SimpleEntry<>("MICROMODULE_LIGHT_CONTROL", BoschSHCBindingConstants.THING_TYPE_LIGHT_CONTROL_2),
-            new AbstractMap.SimpleEntry<>("MICROMODULE_DIMMER", BoschSHCBindingConstants.THING_TYPE_DIMMER),
-            new AbstractMap.SimpleEntry<>("WLS", BoschSHCBindingConstants.THING_TYPE_WATER_DETECTOR),
-            new AbstractMap.SimpleEntry<>("MICROMODULE_RELAY", BoschSHCBindingConstants.THING_TYPE_RELAY)
+            Map.entry("BBL", BoschSHCBindingConstants.THING_TYPE_SHUTTER_CONTROL),
+            Map.entry("TWINGUARD", BoschSHCBindingConstants.THING_TYPE_TWINGUARD),
+            Map.entry("BSM", BoschSHCBindingConstants.THING_TYPE_INWALL_SWITCH),
+            Map.entry("PSM", BoschSHCBindingConstants.THING_TYPE_SMART_PLUG_COMPACT),
+            Map.entry("PLUG_COMPACT", BoschSHCBindingConstants.THING_TYPE_SMART_PLUG_COMPACT),
+            Map.entry("CAMERA_360", BoschSHCBindingConstants.THING_TYPE_CAMERA_360),
+            Map.entry("CAMERA_EYES", BoschSHCBindingConstants.THING_TYPE_CAMERA_EYES),
+            Map.entry("BWTH", BoschSHCBindingConstants.THING_TYPE_WALL_THERMOSTAT), // wall thermostat
+            Map.entry("THB", BoschSHCBindingConstants.THING_TYPE_WALL_THERMOSTAT), // wall thermostat with batteries
+            Map.entry("SD", BoschSHCBindingConstants.THING_TYPE_SMOKE_DETECTOR),
+            Map.entry("MD", BoschSHCBindingConstants.THING_TYPE_MOTION_DETECTOR),
+            Map.entry("ROOM_CLIMATE_CONTROL", BoschSHCBindingConstants.THING_TYPE_CLIMATE_CONTROL),
+            Map.entry("INTRUSION_DETECTION_SYSTEM", BoschSHCBindingConstants.THING_TYPE_INTRUSION_DETECTION_SYSTEM),
+            Map.entry("HUE_LIGHT", BoschSHCBindingConstants.THING_TYPE_SMART_BULB),
+            Map.entry("LEDVANCE_LIGHT", BoschSHCBindingConstants.THING_TYPE_SMART_BULB),
+            Map.entry("SWD", BoschSHCBindingConstants.THING_TYPE_WINDOW_CONTACT),
+            Map.entry("SWD2", BoschSHCBindingConstants.THING_TYPE_WINDOW_CONTACT_2),
+            Map.entry("SWD2_PLUS", BoschSHCBindingConstants.THING_TYPE_WINDOW_CONTACT_2_PLUS),
+            Map.entry("SWD2_DUAL", BoschSHCBindingConstants.THING_TYPE_WINDOW_CONTACT_2_MATTER),
+            Map.entry("TRV", BoschSHCBindingConstants.THING_TYPE_THERMOSTAT),
+            Map.entry("TRV_GEN2", BoschSHCBindingConstants.THING_TYPE_THERMOSTAT_2),
+            Map.entry("TRV_GEN2_DUAL", BoschSHCBindingConstants.THING_TYPE_THERMOSTAT_2_MATTER),
+            Map.entry("WRC2", BoschSHCBindingConstants.THING_TYPE_UNIVERSAL_SWITCH),
+            Map.entry("SWITCH2", BoschSHCBindingConstants.THING_TYPE_UNIVERSAL_SWITCH_2),
+            Map.entry("SMOKE_DETECTOR2", BoschSHCBindingConstants.THING_TYPE_SMOKE_DETECTOR_2),
+            Map.entry("MICROMODULE_SHUTTER", BoschSHCBindingConstants.THING_TYPE_SHUTTER_CONTROL_2),
+            Map.entry("MICROMODULE_AWNING", BoschSHCBindingConstants.THING_TYPE_SHUTTER_CONTROL_2),
+            Map.entry("MICROMODULE_LIGHT_CONTROL", BoschSHCBindingConstants.THING_TYPE_LIGHT_CONTROL_2),
+            Map.entry("MICROMODULE_DIMMER", BoschSHCBindingConstants.THING_TYPE_DIMMER),
+            Map.entry("WLS", BoschSHCBindingConstants.THING_TYPE_WATER_DETECTOR),
+            Map.entry("MICROMODULE_RELAY", BoschSHCBindingConstants.THING_TYPE_RELAY),
+            Map.entry("PRESENCE_SIMULATION_SERVICE", BoschSHCBindingConstants.THING_TYPE_PRESENCE_SIMULATION)
 // Future Extension: map deviceModel names to BoschSHC Thing Types when they are supported
-//            new AbstractMap.SimpleEntry<>("SMOKE_DETECTION_SYSTEM", BoschSHCBindingConstants.),
-//            new AbstractMap.SimpleEntry<>("PRESENCE_SIMULATION_SERVICE", BoschSHCBindingConstants.),
-//            new AbstractMap.SimpleEntry<>("VENTILATION_SERVICE", BoschSHCBindingConstants.),
-//            new AbstractMap.SimpleEntry<>("HUE_BRIDGE", BoschSHCBindingConstants.)
-//            new AbstractMap.SimpleEntry<>("HUE_BRIDGE_MANAGER*", BoschSHCBindingConstants.)
-//            new AbstractMap.SimpleEntry<>("HUE_LIGHT_ROOM_CONTROL", BoschSHCBindingConstants.)
+//            Map.entry("SMOKE_DETECTION_SYSTEM", BoschSHCBindingConstants.),
+//            Map.entry("VENTILATION_SERVICE", BoschSHCBindingConstants.),
+//            Map.entry("HUE_BRIDGE", BoschSHCBindingConstants.)
+//            Map.entry("HUE_BRIDGE_MANAGER*", BoschSHCBindingConstants.)
+//            Map.entry("HUE_LIGHT_ROOM_CONTROL", BoschSHCBindingConstants.)
             );
     // @formatter:on
 
+    protected static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.copyOf(DEVICEMODEL_TO_THINGTYPE_MAP.values());
+
     public ThingDiscoveryService() {
         super(BridgeHandler.class, SUPPORTED_THING_TYPES, SEARCH_TIME);
+    }
+
+    /**
+     * Constructor for tests only.
+     *
+     * @param scheduler the {@link ScheduledExecutorService} to use during testing.
+     */
+    ThingDiscoveryService(ScheduledExecutorService scheduler) {
+        super(scheduler, BridgeHandler.class, SUPPORTED_THING_TYPES, SEARCH_TIME, true, null, null);
     }
 
     @Override
@@ -255,7 +258,7 @@ public class ThingDiscoveryService extends AbstractThingHandlerDiscoveryService<
      * Translates a Bosch device ID to an openHAB-compliant thing ID.
      * <p>
      * Characters that are not allowed in thing IDs are replaced by underscores.
-     * 
+     *
      * @param deviceId the Bosch device ID
      * @return the translated openHAB-compliant thing ID
      */

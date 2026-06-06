@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,6 +40,11 @@ public class EnergiDataServiceConfiguration {
      * Global Location Number of the Grid Company.
      */
     public String gridCompanyGLN = "";
+
+    /**
+     * Recalculate spot prices to hourly average based on quarter-hourly.
+     */
+    public boolean hourlySpotPrices = false;
 
     /**
      * Global Location Number of Energinet.

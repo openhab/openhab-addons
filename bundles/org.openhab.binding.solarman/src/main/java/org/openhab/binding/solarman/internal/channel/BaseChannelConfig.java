@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,4 +27,5 @@ public class BaseChannelConfig {
     public Integer rule = 1;
     public BigDecimal offset = BigDecimal.ZERO;
     public String registers = "";
+    public boolean readOnly = true;
 }

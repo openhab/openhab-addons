@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,20 +19,11 @@ import org.eclipse.jdt.annotation.Nullable;
  * The {@link AutomowerConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Markus Pfleger - Initial contribution
+ * @author MikeTheTux - API Extension, WSS Support, Refactoring
  */
 @NonNullByDefault
 public class AutomowerConfiguration {
-    public @Nullable String mowerId;
     public @Nullable String mowerZoneId;
-
-    @Nullable
-    public String getMowerId() {
-        return mowerId;
-    }
-
-    public void setMowerId(String mowerId) {
-        this.mowerId = mowerId;
-    }
 
     @Nullable
     public String getMowerZoneId() {

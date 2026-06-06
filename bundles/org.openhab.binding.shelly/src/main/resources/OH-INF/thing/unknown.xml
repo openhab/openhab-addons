@@ -6,22 +6,22 @@
 
 	<thing-type id="shellydevice">
 		<label>Shelly Device</label>
-		<description>@text/thing-type.shelly.shellydevice.description</description>
+		<description>A password protected or unknown device</description>
 
 		<representation-property>serviceName</representation-property>
 		<config-description>
 			<parameter name="deviceIp" type="text" required="true">
-				<label>@text/thing-type.config.shelly.deviceIp.label</label>
-				<description>@text/thing-type.config.shelly.deviceIp.description</description>
+				<label>IP Address</label>
+				<description>IP Address of the Shelly device</description>
 				<context>network-address</context>
 			</parameter>
 			<parameter name="userId" type="text" required="false">
-				<label>@text/thing-type.config.shelly.userId.label</label>
-				<description>@text/thing-type.config.shelly.userId.description</description>
+				<label>User ID</label>
+				<description>User ID for API access</description>
 			</parameter>
 			<parameter name="password" type="text" required="false">
-				<label>@text/thing-type.config.shelly.password.label</label>
-				<description>@text/thing-type.config.shelly.password.description</description>
+				<label>Password</label>
+				<description>Password for API access</description>
 				<context>password</context>
 			</parameter>
 		</config-description>
@@ -29,7 +29,7 @@
 
 	<thing-type id="shellyunknown">
 		<label>Unknown Shelly Device</label>
-		<description>@text/thing-type.shelly.shellyunknown.description</description>
+		<description>This device is currently not supported</description>
 		<representation-property>deviceName</representation-property>
 	</thing-type>
 

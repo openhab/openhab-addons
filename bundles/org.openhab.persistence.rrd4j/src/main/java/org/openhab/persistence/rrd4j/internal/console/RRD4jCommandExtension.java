@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,13 +14,13 @@ package org.openhab.persistence.rrd4j.internal.console;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map.Entry;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -77,7 +77,7 @@ public class RRD4jCommandExtension extends AbstractConsoleCommandExtension imple
             return;
         }
         if (args.length == 1 && CMD_LIST.equalsIgnoreCase(args[0])) {
-            List<String> filenames = persistenceService.getRrdFiles();
+            List<String> filenames = new ArrayList<>(persistenceService.getRrdFiles());
             Collections.sort(filenames, Comparator.naturalOrder());
             console.println("Existing RRD files...");
             filenames.forEach(filename -> console.println("  - " + filename));
@@ -108,14 +108,13 @@ public class RRD4jCommandExtension extends AbstractConsoleCommandExtension imple
         if (itemName != null) {
             filenames = List.of(itemName + ".rrd");
         } else {
-            filenames = persistenceService.getRrdFiles();
+            filenames = new ArrayList<>(persistenceService.getRrdFiles());
             Collections.sort(filenames, Comparator.naturalOrder());
         }
 
         PersistenceServiceConfiguration config = persistenceServiceConfigurationRegistry
                 .get(RRD4jPersistenceService.SERVICE_ID);
-        Stream<Entry<String, String>> aliases = config != null ? config.getAliases().entrySet().stream()
-                : Stream.empty();
+        Map<String, String> aliases = config == null ? Map.of() : Map.copyOf(config.getAliases());
 
         console.println((checkOnly ? "Checking" : "Cleaning") + " RRD files...");
         int nb = 0;
@@ -128,8 +127,8 @@ public class RRD4jCommandExtension extends AbstractConsoleCommandExtension imple
                 boolean itemFound;
                 try {
                     // Map alias back to item
-                    String item = Objects.requireNonNull(
-                            aliases.filter(e -> name.equals(e.getValue())).findAny().map(e -> e.getKey()).orElse(name));
+                    String item = Objects.requireNonNull(aliases.entrySet().stream()
+                            .filter(e -> name.equals(e.getValue())).findAny().map(e -> e.getKey()).orElse(name));
                     itemRegistry.getItem(item);
                     itemFound = true;
                 } catch (ItemNotFoundException e) {

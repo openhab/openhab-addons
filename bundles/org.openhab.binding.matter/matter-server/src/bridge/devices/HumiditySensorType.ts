@@ -1,10 +1,10 @@
 import { Endpoint } from "@matter/node";
 import { HumiditySensorDevice } from "@matter/node/devices/humidity-sensor";
-import { GenericDeviceType } from "./GenericDeviceType";
+import { BaseDeviceType } from "./BaseDeviceType";
 
-export class HumiditySensorType extends GenericDeviceType {
+export class HumiditySensorType extends BaseDeviceType {
     override createEndpoint(clusterValues: Record<string, any>) {
-        const endpoint = new Endpoint(HumiditySensorDevice.with(...this.defaultClusterServers()), {
+        const endpoint = new Endpoint(HumiditySensorDevice.with(...this.baseClusterServers), {
             ...this.endPointDefaults(),
             ...clusterValues,
         });

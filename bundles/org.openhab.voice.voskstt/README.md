@@ -4,6 +4,7 @@ Vosk STT Service uses [vosk-api](https://github.com/alphacep/vosk-api) to perfor
 
 [Vosk](https://alphacephei.com/vosk/) is an offline open source speech recognition toolkit.
 It enables speech recognition for 20+ languages and dialects - English, Indian English, German, French, Spanish, Portuguese, Chinese, Russian, Turkish, Vietnamese, Italian, Dutch, Catalan, Arabic, Greek, Farsi, Filipino, Ukrainian, Kazakh, Swedish, Japanese, Esperanto.
+For more information about Vosk, see the [Vosk speech recognition toolkit website](https://alphacephei.com/vosk/).
 More to come.
 
 ## Supported platforms
@@ -22,7 +23,7 @@ The following platforms are supported:
 ## Configuring the model
 
 Before you can use this service you should configure your language model.
-You can download it from [here](https://alphacephei.com/vosk/models).
+You can download it from [Vosk language models](https://alphacephei.com/vosk/models).
 You should unzip the contained folder into '\<openHAB userdata\>/vosk/' and rename it to model for the add-on to work.
 
 ## Configuration

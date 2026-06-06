@@ -1,0 +1,7 @@
+{
+	"access_token": "junitTestToken",
+	"refresh_token": "RfrshTkn",
+	"id_token": "idTkn",
+	"token_type": "Bearer",
+	"expires_in": 14399
+}

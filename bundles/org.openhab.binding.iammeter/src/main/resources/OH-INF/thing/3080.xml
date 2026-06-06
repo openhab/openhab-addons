@@ -21,7 +21,7 @@
 	<channel-type id="voltage">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Voltage</label>
-		<description>voltage for phase A</description>
+		<description>Voltage for phase A</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Voltage</tag>
@@ -31,7 +31,7 @@
 	<channel-type id="current">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Current</label>
-		<description>current for phase A</description>
+		<description>Current for phase A</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Current</tag>
@@ -41,7 +41,7 @@
 	<channel-type id="power">
 		<item-type>Number:Power</item-type>
 		<label>Power</label>
-		<description>power for phase A</description>
+		<description>Power for phase A</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Power</tag>
@@ -50,8 +50,8 @@
 	</channel-type>
 	<channel-type id="importenergy">
 		<item-type>Number:Energy</item-type>
-		<label>ImportEnergy</label>
-		<description>importenergy for phase A</description>
+		<label>Import Energy</label>
+		<description>Import energy for phase A</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
@@ -60,8 +60,8 @@
 	</channel-type>
 	<channel-type id="exportgrid">
 		<item-type>Number:Energy</item-type>
-		<label>Exportgrid</label>
-		<description>exportgrid for phase A</description>
+		<label>Export Energy</label>
+		<description>Export energy for phase A</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>

@@ -1,0 +1,55 @@
+{
+	"errors": [],
+	"data": [
+		{
+			"id": "b5a25bdc-4963-4a7d-b2fa-a415fa0f147f",
+			"name": "Motion area",
+			"group": {
+				"rid": "9741138b-6865-4521-af37-59a9097633d2",
+				"rtype": "room"
+			},
+			"participants": [
+				{
+					"resource": {
+						"rid": "23c51b36-8768-4f70-9535-f877bfdcfbe7",
+						"rtype": "motion_area_candidate"
+					},
+					"status": {
+						"health": "healthy"
+					}
+				},
+				{
+					"resource": {
+						"rid": "e602ee06-1709-4e3e-b062-8635f661fb6d",
+						"rtype": "motion_area_candidate"
+					},
+					"status": {
+						"health": "healthy"
+					}
+				},
+				{
+					"resource": {
+						"rid": "e48b5046-c761-43a9-b9f0-5b7010452a39",
+						"rtype": "motion_area_candidate"
+					},
+					"status": {
+						"health": "healthy"
+					}
+				}
+			],
+			"services": [
+				{
+					"rid": "13bec9ab-f096-4ccd-a50f-2158158e6a75",
+					"rtype": "convenience_area_motion"
+				},
+				{
+					"rid": "eec4e35f-9480-4c9a-b466-1b176df08b0c",
+					"rtype": "security_area_motion"
+				}
+			],
+			"health": "healthy",
+			"enabled": true,
+			"type": "motion_area_configuration"
+		}
+	]
+}
