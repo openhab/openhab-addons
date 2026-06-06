@@ -68,7 +68,8 @@ public class EnergiDataServiceBindingConstants {
             CHANNEL_CO2_EMISSION_REALTIME);
 
     public static final Set<String> SUBSCRIPTION_CHANNELS = Stream
-            .concat(ELECTRICITY_CHANNELS.stream(), CO2_EMISSION_CHANNELS.stream()).collect(Collectors.toSet());
+            .concat(ELECTRICITY_CHANNELS.stream(), CO2_EMISSION_CHANNELS.stream())
+            .collect(Collectors.toUnmodifiableSet());
 
     // List of all properties
     public static final String PROPERTY_REMAINING_CALLS = "remainingCalls";
