@@ -809,7 +809,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
         }
         String topic = "rr/m/i/" + rriot.u + "/" + mqttUser + "/" + thingID;
         if (localMqttClient != null && localMqttClient.isConnected()) {
-            logger.debug("Publishing B01 {} ({}) message to {})", method, b01Method, topic);
+            logger.debug("Publishing B01 {} ({}) message to {}", method, b01Method, topic);
             try {
                 MqttMessage message = new MqttMessage(messageBytes);
                 message.setQos(1);

@@ -647,9 +647,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                     if (normalised != null) {
                         dispatchNormalisedResponse(normalised);
                     }
-                    // Do NOT return here for Q10 — the same frame may also carry flat DPs below
-                    if (!q10)
-                        return;
                 } else {
                     dispatchNormalisedResponse(jsonString);
                     return;
@@ -1488,8 +1485,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
      * <p>
      * Each DP is checked independently — a single push frame can carry any
      * combination of them simultaneously.
-     */
-    /**
+     *
      * Handles unsolicited flat DP pushes from B01 devices.
      *
      * <p>
@@ -1803,9 +1799,9 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         if (dp101.has("40"))
             logger.trace("Q10 dp101.40 mop_state: {}", dp101.get("40"));
         if (dp101.has("45"))
-            logger.trace("Q10 dp101.45 carpet_boost: {}", dp101.get("40"));
+            logger.trace("Q10 dp101.45 carpet_boost: {}", dp101.get("45"));
         if (dp101.has("47"))
-            logger.trace("Q10 dp101.47 child_lock: {}", dp101.get("40"));
+            logger.trace("Q10 dp101.47 child_lock: {}", dp101.get("47"));
         if (dp101.has("50"))
             logger.trace("Q10 dp101.50 dust_setting: {}", dp101.get("50"));
         if (dp101.has("51"))

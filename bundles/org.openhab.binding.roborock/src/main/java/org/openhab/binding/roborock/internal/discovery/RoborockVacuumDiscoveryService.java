@@ -115,14 +115,20 @@ public class RoborockVacuumDiscoveryService extends AbstractThingHandlerDiscover
     private void discover() {
         HomeData homeData = getHomeData();
 
-        if (homeData != null && homeData.result != null) {
-            for (int i = 0; i < homeData.result.products.length; i++) {
-                Devices devices[] = homeData.result.devices;
-                findDevice(homeData.result.products[i].name, homeData.result.products[i].id, devices);
-                // also check for shared devices
-                Devices receivedDevices[] = homeData.result.receivedDevices;
-                findDevice(homeData.result.products[i].name, homeData.result.products[i].id, receivedDevices);
+        if (homeData == null || homeData.result == null || homeData.result.products == null) {
+            return;
+        }
+
+        Devices[] devices = homeData.result.devices != null ? homeData.result.devices : new Devices[0];
+        Devices[] receivedDevices = homeData.result.receivedDevices != null ? homeData.result.receivedDevices
+                : new Devices[0];
+
+        for (HomeData.Products product : homeData.result.products) {
+            if (product == null) {
+                continue;
             }
+            findDevice(product.name, product.id, devices);
+            findDevice(product.name, product.id, receivedDevices);
         }
     }
 
