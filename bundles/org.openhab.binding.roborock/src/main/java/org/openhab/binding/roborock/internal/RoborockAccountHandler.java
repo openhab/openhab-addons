@@ -663,7 +663,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
      * @param id message sequence ID
      * @return the message ID on success, -1 on failure
      */
-    public int sendB01RPCCommand(String method, String params, String thingID, String localKey, int id, boolean q7) {
+    public int sendB01RPCCommand(String method, String params, String thingID, String localKey, int id) {
         int timestamp = (int) Instant.now().getEpochSecond();
         MqttClient localMqttClient = mqttClient;
 
@@ -809,7 +809,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
         }
         String topic = "rr/m/i/" + rriot.u + "/" + mqttUser + "/" + thingID;
         if (localMqttClient != null && localMqttClient.isConnected()) {
-            logger.debug("Publishing B01 {} ({}) message to {} (q7={})", method, b01Method, topic, q7);
+            logger.debug("Publishing B01 {} ({}) message to {}", method, b01Method, topic);
             try {
                 MqttMessage message = new MqttMessage(messageBytes);
                 message.setQos(1);
@@ -824,6 +824,54 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
         } else {
             logger.debug("Failed to publish B01 {} message to {}, mqttClient not connected", method, topic);
             return -1;
+        }
+    }
+
+    /**
+     * Sends a Q10 native DP write by publishing a raw data-point map directly to the device,
+     * bypassing the RPC method/msgId envelope used by V1 and Q7.
+     *
+     * <p>
+     * Unlike {@link #sendB01RPCCommand}, no RPC envelope is added and the DP map is
+     * placed directly at the top level of {@code dps} — NOT nested under
+     * {@code 10000} as with RPC commands. The correct wire format is:
+     * {@code {"t":N,"dps":{"201":{"cmd":1}}}}
+     *
+     * @param thingID device DUID
+     * @param localKey device local key (16 UTF-8 bytes)
+     * @param dps the data-point map to publish, e.g. {@code {"201": {"cmd":1}}}
+     */
+    public void sendB01DpCommand(String thingID, String localKey, Map<String, Object> dps) {
+        int timestamp = (int) Instant.now().getEpochSecond();
+        MqttClient localMqttClient = mqttClient;
+
+        Map<String, Object> payloadMap = new HashMap<>();
+        payloadMap.put("t", timestamp);
+        payloadMap.put("dps", dps);
+
+        String payload = gson.toJson(payloadMap);
+        logger.trace("B01 DP payload = {}", payload);
+
+        byte[] messageBytes = buildB01(localKey, payload.getBytes(StandardCharsets.UTF_8));
+        if (messageBytes.length == 0) {
+            logger.debug("Failed to build B01 DP message (empty frame), not publishing");
+            return;
+        }
+
+        String topic = "rr/m/i/" + rriot.u + "/" + mqttUser + "/" + thingID;
+        if (localMqttClient != null && localMqttClient.isConnected()) {
+            logger.debug("Publishing B01 DP command to {}: {}", topic, dps);
+            try {
+                MqttMessage message = new MqttMessage(messageBytes);
+                message.setQos(1);
+                message.setRetained(false);
+                localMqttClient.publish(topic, message);
+                mqttWatchdog.noteOutboundPublish(Instant.now());
+            } catch (MqttException e) {
+                logger.debug("B01 DP publish failed (transient): {}", e.getMessage(), e);
+            }
+        } else {
+            logger.debug("Failed to publish B01 DP message to {}, mqttClient not connected", topic);
         }
     }
 
