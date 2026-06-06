@@ -72,6 +72,14 @@
 		<item-type>String</item-type>
 		<label>Communicator Command</label>
 		<description>Send Command</description>
+		<state>
+			<options>
+				<option value="LOGIN">Login</option>
+				<option value="LOGOUT">Logout</option>
+				<option value="RESET">Reset</option>
+				<option value="SYNC_TIME">Sync Panel Time</option>
+			</options>
+		</state>
 	</channel-type>
 	<channel-type id="communicationState">
 		<item-type>String</item-type>

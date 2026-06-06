@@ -132,7 +132,7 @@ public class GenericCommunicator extends AbstractCommunicator implements IRespon
         } else if (type == RequestType.EPROM) {
             receiveEpromResponse(response);
         } else {
-            logger.debug("Probably wrong sender in the request. Request type is not one of the supported methods.");
+            logger.debug("Received response for unhandled request type: {}", type);
         }
     }
 }
