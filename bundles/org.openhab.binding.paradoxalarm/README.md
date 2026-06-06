@@ -41,18 +41,23 @@ Currently binding supports the following panels: EVO192, EVO48 (not tested), EVO
 
 ### IP150 Bridge Channels
 
-| Channel              | Description                                                                                           |
-|----------------------|-------------------------------------------------------------------------------------------------------|
-| communicationCommand | Possible values [LOGOUT, LOGIN, RESET]                                                                |
-| communicationState   | Shows the communication status to Paradox (may differ from Bridge status). Values: [Offline, Online]. |
+| Channel              | Description                                                                                                                            |
+|----------------------|----------------------------------------------------------------------------------------------------------------------------------------|
+| communicationCommand | Possible values [LOGOUT, LOGIN, RESET, SYNC_TIME]                                                                                      |
+| communicationState   | Shows the communication status to Paradox (may differ from Bridge status). Values: [Offline, Online].                                 |
 
 #### Communication Command Values
 
-| Value  | Description                                                                                                            |
-|--------|------------------------------------------------------------------------------------------------------------------------|
-| LOGOUT | Logs out and disconnects from Paradox alarm system.                                                                    |
-| LOGIN  | Creates socket if necessary, connects to Paradox system, and uses the logon data from the Thing parameters to connect. |
-| RESET  | Does logout and then login with recreation of communicator objects inside the code.                                    |
+| Value     | Description                                                                                                                    |
+|-----------|--------------------------------------------------------------------------------------------------------------------------------|
+| LOGOUT    | Logs out and disconnects from Paradox alarm system.                                                                            |
+| LOGIN     | Creates socket if necessary, connects to Paradox system, and uses the logon data from the Thing parameters to connect.        |
+| RESET     | Does logout and then login with recreation of communicator objects inside the code.                                            |
+| SYNC_TIME | Pushes the current openHAB host time to the panel clock on demand.                                                             |
+
+**Note on SYNC_TIME timezone:** The time sent to the panel uses the JVM default timezone of the openHAB host (i.e. the timezone configured for the Java process or the OS).
+If the host runs in UTC (e.g. a Docker container without an explicit timezone setting) but the panel is installed in a different timezone, the panel clock will be set to the wrong local time.
+To avoid this, ensure the openHAB host timezone matches the timezone where the panel is located — for example, by setting the `TZ` environment variable on the container.
 
 ### Entities (zones, partitions) Configuration
 
@@ -183,7 +188,7 @@ Currently binding supports the following panels: EVO192, EVO48 (not tested), EVO
     Text label="Security" icon="lock" {
         Frame label="IP150 communication" {
             Text item=panelState valuecolor=[panelState=="Online"="green", panelState=="Offline"="red"]
-            Selection item=paradoxSendCommand mappings=["LOGOUT"="Logout", "LOGIN"="Login", "RESET"="Reset"]
+            Selection item=paradoxSendCommand mappings=["LOGOUT"="Logout", "LOGIN"="Login", "RESET"="Reset", "SYNC_TIME"="Sync Time"]
         }
         Frame label="Panel" {
             Text item=paradoxTime

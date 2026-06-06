@@ -15,6 +15,7 @@ package org.openhab.binding.paradoxalarm.internal.communication;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -28,6 +29,7 @@ import org.openhab.binding.paradoxalarm.internal.communication.messages.HeaderMe
 import org.openhab.binding.paradoxalarm.internal.communication.messages.IPayload;
 import org.openhab.binding.paradoxalarm.internal.communication.messages.ParadoxIPPacket;
 import org.openhab.binding.paradoxalarm.internal.communication.messages.RamRequestPayload;
+import org.openhab.binding.paradoxalarm.internal.communication.messages.SyncTimePayload;
 import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxException;
 import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxRuntimeException;
 import org.openhab.binding.paradoxalarm.internal.model.EntityType;
@@ -326,6 +328,9 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
                 CommunicationState.LOGOUT.runPhase(this);
                 scheduler.schedule(this::startLoginSequence, 5, TimeUnit.SECONDS);
                 return;
+            case SYNC_TIME:
+                syncTime(ZonedDateTime.now());
+                return;
             default:
                 logger.debug("Command {} not implemented.", command);
         }
@@ -365,6 +370,15 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
         for (int i = 0; i < maxZones; i++) {
             retrieveZoneLabel(i);
         }
+    }
+
+    @Override
+    public void syncTime(ZonedDateTime time) {
+        logger.debug("Submitting SYNC_TIME request for {}", time);
+        IPayload payload = new SyncTimePayload(time);
+        ParadoxIPPacket packet = createSerialPassthroughPacket(payload);
+        IRequest request = new SyncTimeRequest(packet, this);
+        submitRequest(request);
     }
 
     public static class EvoCommunicatorBuilder implements ICommunicatorBuilder {
