@@ -47,6 +47,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.util.ColorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -243,10 +244,11 @@ public class AmbilightService implements PhilipsTVService {
 
         ObjectNode rootNode = OBJECT_MAPPER.createObjectNode();
 
+        int[] rgb = ColorUtil.hsbToRgb(hsb);
         ObjectNode pixel = OBJECT_MAPPER.createObjectNode();
-        pixel.put("r", hsb.getRed().intValue());
-        pixel.put("g", hsb.getGreen().intValue());
-        pixel.put("b", hsb.getBlue().intValue());
+        pixel.put("r", rgb[0]);
+        pixel.put("g", rgb[1]);
+        pixel.put("b", rgb[2]);
 
         ObjectNode sidePixels = OBJECT_MAPPER.createObjectNode();
         // pixel declaration in json start with 0
