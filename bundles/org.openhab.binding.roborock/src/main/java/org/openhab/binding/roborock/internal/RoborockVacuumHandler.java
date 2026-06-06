@@ -296,12 +296,16 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             if (channelUID.getId().equals(RobotCapabilities.SEGMENT_CLEAN.getChannel()) && !command.toString().isEmpty()
                     && !command.toString().contentEquals("-")) {
                 if (q10) {
-                    // Room IDs arrive as a comma-separated string or single integer
-                    List<Integer> roomIds = java.util.Arrays.stream(command.toString().split(",")).map(String::trim)
-                            .filter(s -> !s.isEmpty()).map(Integer::parseInt)
-                            .collect(java.util.stream.Collectors.toList());
-                    // Note: "clean_paramters" is a typo in the Q10 protocol — do not correct it
-                    sendQ10DpCommand(Map.of("201", Map.of("cmd", 2, "clean_paramters", roomIds)));
+                    try {
+                        // Room IDs arrive as a comma-separated string or single integer
+                        List<Integer> roomIds = java.util.Arrays.stream(command.toString().split(",")).map(String::trim)
+                                .filter(s -> !s.isEmpty()).map(Integer::parseInt)
+                                .collect(java.util.stream.Collectors.toList());
+                        // Note: "clean_paramters" is a typo in the Q10 protocol — do not correct it
+                        sendQ10DpCommand(Map.of("201", Map.of("cmd", 2, "clean_paramters", roomIds)));
+                    } catch (NumberFormatException e) {
+                        logger.warn("Invalid Q10 room id list '{}': {}", command, e.getMessage());
+                    }
                 } else {
                     sendRPCCommand(COMMAND_START_SEGMENT, "[" + command.toString() + "]");
                 }
@@ -436,9 +440,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                         if (home != null) {
                             rrHomeId = Integer.toString(home.data.rrHomeId);
                         }
-                        if (q10) {
-                            sendQ10DpCommand(Map.of("102", Map.of("cmd", 1)));
-                        }
                     }
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
@@ -491,6 +492,10 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 if (localKey.isEmpty()) {
                     localKey = devices[i].localKey;
                     refreshTransportContext();
+                    if (q10) {
+                        sendQ10DpCommand(Map.of("102", Map.of("cmd", 1)));
+                    }
+
                 }
                 if (devices[i].online) {
                     if (!q10) {
@@ -1515,7 +1520,12 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         // DP 121 — vacuum state ID (shared: Q7 and Q10)
         if (dpsRoot.has("121")) {
             int stateInt = dpsRoot.get("121").getAsInt();
-            updateStateIdAndRequestStatusIfChanged(stateInt, true);
+            // On the Q10, status updates are provided automatically, so just update the channel.
+            if (q10) {
+                updateState(CHANNEL_STATE_ID, new DecimalType(stateInt));
+            } else {
+                updateStateIdAndRequestStatusIfChanged(stateInt, true);
+            }
         }
 
         // DP 122 — battery % (shared: Q7 and Q10)

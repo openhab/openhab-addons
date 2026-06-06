@@ -87,26 +87,41 @@ public class RoborockVacuumDiscoveryService extends AbstractThingHandlerDiscover
         return thingHandler.getHomeData();
     }
 
-    private void findDevice(String name, String id, Devices devices[]) {
+    private void findDevice(String name, String id, Devices[] devices) {
+        if (id == null || name == null || devices == null) {
+            logger.debug("Skipping device discovery: product id, name, or devices array is null.");
+            return;
+        }
+
         ThingUID bridgeUID = thingHandler.getThing().getUID();
-        for (int i = 0; i < devices.length; i++) {
-            if (id.equals(devices[i].productId)) {
-                if (("1.0".equals(devices[i].pv)) || ("B01".equals(devices[i].pv))) {
+        if (bridgeUID == null) {
+            return;
+        }
+
+        for (Devices device : devices) {
+            if (device == null || device.productId == null || device.duid == null) {
+                continue;
+            }
+
+            if (id.equals(device.productId)) {
+                if ("1.0".equals(device.pv) || "B01".equals(device.pv)) {
                     Configuration configuration = new Configuration();
-                    configuration.put(THING_CONFIG_DUID, devices[i].duid);
-                    configuration.put(THING_PROPERTY_PROTOCOL, devices[i].pv);
+                    configuration.put(THING_CONFIG_DUID, device.duid);
+                    configuration.put(THING_PROPERTY_PROTOCOL, device.pv);
                     configuration.put(THING_PROPERTY_DEVICE_NAME, name);
-                    configuration.put(THING_PROPERTY_SN, (devices[i].sn != null) ? devices[i].sn : "N/A");
+                    configuration.put(THING_PROPERTY_SN, (device.sn != null) ? device.sn : "N/A");
+
+                    String label = (device.name != null) ? device.name : "Roborock Vacuum";
 
                     DiscoveryResult result = DiscoveryResultBuilder
-                            .create(new ThingUID(ROBOROCK_VACUUM, bridgeUID, devices[i].duid))
-                            .withProperties(configuration.getProperties()).withLabel(devices[i].name)
+                            .create(new ThingUID(ROBOROCK_VACUUM, bridgeUID, device.duid))
+                            .withProperties(configuration.getProperties()).withLabel(label)
                             .withRepresentationProperty(THING_CONFIG_DUID).withBridge(bridgeUID).build();
 
                     thingDiscovered(result);
                 } else {
-                    logger.info("Vacuum with duid {}, not added as protocol {} is not (yet) supported.",
-                            devices[i].duid, devices[i].pv);
+                    logger.info("Vacuum with duid {}, not added as protocol {} is not (yet) supported.", device.duid,
+                            device.pv);
                 }
             }
         }
