@@ -19,8 +19,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smartthings.internal.SmartThingsBindingConstants;
 import org.openhab.binding.smartthings.internal.type.SmartThingsTypeRegistry;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A factory for creating converters based on the itemType.
@@ -32,12 +30,8 @@ import org.slf4j.LoggerFactory;
 public class SmartThingsConverterFactory {
     private static Map<String, SmartThingsConverter> converterCache = new HashMap<>();
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SmartThingsConverterFactory.class);
-
     public static void registerConverters(SmartThingsTypeRegistry typeRegistry) {
-        LOGGER.info("registerConverters1");
         if (converterCache.isEmpty()) {
-            LOGGER.info("registerConverters2");
             registerConverter(SmartThingsBindingConstants.CHANNEL_NAME_COLOR,
                     new SmartThingsColorConverter(typeRegistry));
             registerConverter(SmartThingsBindingConstants.CHANNEL_NAME_HUE,

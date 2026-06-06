@@ -16,7 +16,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -30,8 +29,6 @@ import org.openhab.binding.smartthings.internal.dto.SmartThingsStatus;
 import org.openhab.binding.smartthings.internal.dto.SmartThingsStatusCapabilities;
 import org.openhab.binding.smartthings.internal.dto.SmartThingsStatusComponent;
 import org.openhab.binding.smartthings.internal.dto.SmartThingsStatusProperties;
-import org.openhab.binding.smartthings.internal.statehandler.SmartThingsStateHandler;
-import org.openhab.binding.smartthings.internal.statehandler.SmartThingsStateHandlerFactory;
 import org.openhab.binding.smartthings.internal.type.SmartThingsException;
 import org.openhab.binding.smartthings.internal.type.SmartThingsTypeRegistryImpl;
 import org.openhab.core.thing.Bridge;
@@ -59,14 +56,12 @@ public class SmartThingsThingHandler extends BaseThingHandler {
     private String smartThingsName;
 
     private String deviceId;
-    private String deviceCategory;
 
     private @Nullable ScheduledFuture<?> pollingJob = null;
     private long lastRefresh = System.nanoTime();
 
     public SmartThingsThingHandler(Thing thing) {
         super(thing);
-        deviceCategory = "";
         deviceId = "";
         smartThingsName = ""; // Initialize here so it can be NonNull but it should always get a value in initialize()
     }
@@ -121,13 +116,6 @@ public class SmartThingsThingHandler extends BaseThingHandler {
             Object value) throws SmartThingsException {
         String channelName = SmartThingsTypeRegistryImpl.getChannelName(attr);
 
-        // String groupId = deviceType + "_" + componentId + "_";
-
-        // if (!"".equals(namespace)) {
-        // groupId = groupId + namespace + "_";
-        // }
-        // groupId = groupId + capaKey;
-
         String groupId = componentId;
 
         ChannelUID channelUID = new ChannelUID(this.getThing().getUID(), groupId, channelName);
@@ -136,17 +124,10 @@ public class SmartThingsThingHandler extends BaseThingHandler {
 
         // channelUID
         SmartThingsConverter converter = SmartThingsConverterFactory.getConverter(channelUID.getIdWithoutGroup());
-        SmartThingsStateHandler stateHandler = SmartThingsStateHandlerFactory.getStateHandler(deviceCategory);
 
         if (converter != null) {
             State state = converter.convertToOpenHab(thing, channelUID, value);
             updateState(channelUID, state);
-
-            if (stateHandler != null) {
-                logger.trace("refreshDevice called: stateHandler:{}", stateHandler);
-                stateHandler.handleStateChange(this.getThing().getUID(), channelUID, deviceType, componentId, state,
-                        this);
-            }
         }
     }
 
@@ -304,29 +285,11 @@ public class SmartThingsThingHandler extends BaseThingHandler {
             return;
         }
 
-        SmartThingsStateHandlerFactory.registerStateHandler();
-
-        Map<String, String> properties = getThing().getProperties();
-
-        SmartThingsThingConfig config = getConfigAs(SmartThingsThingConfig.class);
-
-        if (properties.get(SmartThingsBindingConstants.DEVICE_ID) != null) {
-            deviceId = Objects.requireNonNull(properties.get(SmartThingsBindingConstants.DEVICE_ID));
-        }
-
-        if (!config.deviceId.isBlank()) {
-            deviceId = config.deviceId;
-        }
+        deviceId = (String) getConfig().get(SmartThingsBindingConstants.DEVICE_ID);
 
         if (deviceId.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Device ID is not configured");
             return;
-        }
-
-        if (properties.get(SmartThingsBindingConstants.DEVICE_CATEGORY) != null) {
-            deviceCategory = Objects.requireNonNull(properties.get(SmartThingsBindingConstants.DEVICE_CATEGORY));
-        } else {
-            deviceCategory = "";
         }
 
         refreshDevice();
