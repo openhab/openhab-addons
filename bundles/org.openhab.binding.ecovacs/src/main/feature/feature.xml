@@ -8,6 +8,8 @@
 		<bundle dependency="true">mvn:org.igniterealtime.smack/smack-extensions/4.5.0-rc1</bundle>
 		<bundle dependency="true">mvn:org.igniterealtime.smack/smack-im/4.5.0-rc1</bundle>
 		<bundle dependency="true">mvn:org.igniterealtime.smack/smack-tcp/4.5.0-rc1</bundle>
+		<bundle dependency="true">mvn:org.igniterealtime.smack/smack-xmlparser/4.5.0-rc1</bundle>
+		<bundle dependency="true">mvn:org.igniterealtime.smack/smack-streammanagement/4.5.0-rc1</bundle>
 		<bundle dependency="true">mvn:org.jxmpp/jxmpp-core/1.1.0</bundle>
 		<bundle dependency="true">mvn:org.jxmpp/jxmpp-jid/1.1.0</bundle>
 		<bundle dependency="true">mvn:org.jxmpp/jxmpp-util-cache/1.1.0</bundle>
