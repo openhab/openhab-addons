@@ -28,7 +28,7 @@
     <dependency>
       <groupId>org.jacoco</groupId>
       <artifactId>org.jacoco.agent</artifactId>
-      <version>0.8.14</version>
+      <version>0.8.15</version>
       <classifier>runtime</classifier>
       <scope>test</scope>
     </dependency>
@@ -69,7 +69,7 @@
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.8.14</version>
+        <version>0.8.15</version>
         <configuration>
           <excludes>
             <exclude>com/tomgibara/**/*</exclude>
