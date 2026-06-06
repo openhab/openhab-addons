@@ -26,7 +26,7 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public interface SmartThingsNetworkConnector {
 
-    public <T> T doRequest(Class<T> resultClass, String req, @Nullable SmartThingsNetworkCallback<T> callback,
+    public <T> @Nullable T doRequest(Class<T> resultClass, String req, @Nullable SmartThingsNetworkCallback<T> callback,
             String accessToken, @Nullable String data, HttpMethod method) throws SmartThingsException;
 
     public <T> @Nullable String doBasicRequest(Class<T> resultClass, String uri,

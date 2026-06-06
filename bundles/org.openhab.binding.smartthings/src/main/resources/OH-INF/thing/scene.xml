@@ -15,11 +15,11 @@
 		</supported-bridge-type-refs>
 		<label>SmartThings Scene</label>
 		<description>Executes a SmartThings scene. Send ON to the trigger channel to run the scene.</description>
-		
+
 		<channel-groups>
 			<channel-group typeId="main-group-type-generic-scene" id="main"/>
 		</channel-groups>
-		
+
 		<config-description>
 			<parameter name="sceneId" type="text" required="true">
 				<label>Scene ID</label>
@@ -32,17 +32,17 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-	
+
 	<channel-group-type id="main-group-type-generic-scene">
-			<label>Main group type Generic Scene</label>
-			<channels>
-				<channel id="trigger" typeId="sceneTrigger">
-					<properties>
-						<property name="component">main</property>	
-						<property name="capability">switch</property>	
-						<property name="attribute">switch</property>	
-					</properties>
-				</channel>
+		<label>Main group type Generic Scene</label>
+		<channels>
+			<channel id="trigger" typeId="sceneTrigger">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">switch</property>
+					<property name="attribute">switch</property>
+				</properties>
+			</channel>
 		</channels>
 	</channel-group-type>
 

@@ -141,12 +141,12 @@ public class SmartThingsApi {
         }
     }
 
-    public SmartThingsCapability getCapability(String capabilityId, String version,
+    public @Nullable SmartThingsCapability getCapability(String capabilityId, String version,
             @Nullable SmartThingsNetworkCallback<SmartThingsCapability> cb) throws SmartThingsException {
         try {
             String uri = baseUrl + capabilitiesEndPoint + "/" + capabilityId + "/" + version;
-            SmartThingsCapability capabilitie = doRequest(SmartThingsCapability.class, uri, cb);
-            return capabilitie;
+            SmartThingsCapability capability = doRequest(SmartThingsCapability.class, uri, cb);
+            return capability;
         } catch (final Exception e) {
             throw new SmartThingsException(
                     String.format("SmartThingsApi : Unable to retrieve capability : %s", capabilityId), e);
@@ -313,20 +313,20 @@ public class SmartThingsApi {
     }
 
     public <T> T doRequest(Class<T> resultClass, String uri) throws SmartThingsException {
-        return doRequest(HttpMethod.GET, resultClass, uri, null, null);
+        return requireResponse(doRequest(HttpMethod.GET, resultClass, uri, null, null), uri);
     }
 
-    public <T> T doRequest(Class<T> resultClass, String uri, @Nullable SmartThingsNetworkCallback<T> callback)
+    public <T> @Nullable T doRequest(Class<T> resultClass, String uri, @Nullable SmartThingsNetworkCallback<T> callback)
             throws SmartThingsException {
         return doRequest(HttpMethod.GET, resultClass, uri, null, callback);
     }
 
     public <T> T doRequest(HttpMethod httpMethod, Class<T> resultClass, String uri, @Nullable String body)
             throws SmartThingsException {
-        return doRequest(httpMethod, resultClass, uri, body, null);
+        return requireResponse(doRequest(httpMethod, resultClass, uri, body, null), uri);
     }
 
-    public <T> T doRequest(HttpMethod httpMethod, Class<T> resultClass, String uri, @Nullable String body,
+    public <T> @Nullable T doRequest(HttpMethod httpMethod, Class<T> resultClass, String uri, @Nullable String body,
             @Nullable SmartThingsNetworkCallback<T> callback) throws SmartThingsException {
         try {
             return networkConnector.doRequest(resultClass, uri, callback, getToken(), body, httpMethod);
@@ -334,6 +334,13 @@ public class SmartThingsApi {
             logger.trace("Request failed : {}", uri);
             throw new SmartThingsException("SmartThingsApi : Unable to do request", e);
         }
+    }
+
+    private <T> T requireResponse(@Nullable T response, String uri) throws SmartThingsException {
+        if (response == null) {
+            throw new SmartThingsException("SmartThingsApi : Empty response for request " + uri);
+        }
+        return response;
     }
 
     public boolean registerSSESubscription() {
@@ -364,8 +371,8 @@ public class SmartThingsApi {
 
             String body = gson.toJson(evtReg);
 
-            JsonObject result = networkConnector.doRequest(JsonObject.class, subscriptionUri, null, getToken(), body,
-                    HttpMethod.POST);
+            JsonObject result = requireResponse(networkConnector.doRequest(JsonObject.class, subscriptionUri, null,
+                    getToken(), body, HttpMethod.POST), subscriptionUri);
 
             String uri = result.get("registrationUrl").getAsString();
 

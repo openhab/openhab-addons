@@ -35,7 +35,6 @@ import org.openhab.binding.smartthings.internal.statehandler.SmartThingsStateHan
 import org.openhab.binding.smartthings.internal.type.SmartThingsException;
 import org.openhab.binding.smartthings.internal.type.SmartThingsTypeRegistryImpl;
 import org.openhab.core.thing.Bridge;
-import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -101,8 +100,6 @@ public class SmartThingsThingHandler extends BaseThingHandler {
                 refreshDevice();
             } else {
                 try {
-                    Channel can = this.thing.getChannel(channelUID);
-
                     if (converter != null) {
                         jsonMsg = converter.convertToSmartThings(thing, channelUID, command);
                     }
@@ -111,7 +108,6 @@ public class SmartThingsThingHandler extends BaseThingHandler {
                     if (api == null) {
                         return;
                     }
-                    Map<String, String> properties = this.getThing().getProperties();
                     api.sendCommand(deviceId, jsonMsg);
                 } catch (SmartThingsException ex) {
                     logger.error("Unable to send command: {}", ex.toString());

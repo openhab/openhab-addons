@@ -15,11 +15,11 @@
 		</supported-bridge-type-refs>
 		<label>SmartThings Presence Sensor</label>
 		<description>A SmartThings presence sensor or mobile phone showing home/away state.</description>
-		
+
 		<channel-groups>
 			<channel-group typeId="main-group-type-generic-presence-detector" id="main"/>
 		</channel-groups>
-		
+
 		<config-description>
 			<parameter name="deviceId" type="text" required="true">
 				<label>Device ID</label>
@@ -27,17 +27,17 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-	
+
 	<channel-group-type id="main-group-type-generic-presence-detector">
-			<label>Main group type Generic Presence Dectector</label>
-			<channels>
-				<channel id="presence" typeId="presence">
-					<properties>
-						<property name="component">main</property>	
-						<property name="capability">switch</property>	
-						<property name="attribute">switch</property>	
-					</properties>
-				</channel>
+		<label>Main group type Generic Presence Dectector</label>
+		<channels>
+			<channel id="presence" typeId="presence">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">switch</property>
+					<property name="attribute">switch</property>
+				</properties>
+			</channel>
 		</channels>
 	</channel-group-type>
 

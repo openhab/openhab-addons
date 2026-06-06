@@ -15,11 +15,11 @@
 		</supported-bridge-type-refs>
 		<label>SmartThings Light Bulb</label>
 		<description>A SmartThings light bulb.</description>
-		
+
 		<channel-groups>
 			<channel-group typeId="main-group-type-generic-light-bulb" id="main"/>
 		</channel-groups>
-		
+
 		<config-description>
 			<parameter name="deviceId" type="text" required="true">
 				<label>Device ID</label>
@@ -27,25 +27,25 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-	
+
 	<channel-group-type id="main-group-type-generic-light-bulb">
-			<label>Main group type Light Bulb</label>
-			<channels>
-				<channel id="switch" typeId="system.power">
-					<properties>
-						<property name="component">main</property>	
-						<property name="capability">switch</property>	
-						<property name="attribute">switch</property>	
-					</properties>
-				</channel>
-				<channel id="level" typeId="system.brightness">
-					<properties>
-						<property name="component">main</property>	
-						<property name="capability">switchLevel</property>	
-						<property name="attribute">level</property>	
-					</properties>
-				</channel>
-			</channels>
+		<label>Main group type Light Bulb</label>
+		<channels>
+			<channel id="switch" typeId="system.power">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">switch</property>
+					<property name="attribute">switch</property>
+				</properties>
+			</channel>
+			<channel id="level" typeId="system.brightness">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">switchLevel</property>
+					<property name="attribute">level</property>
+				</properties>
+			</channel>
+		</channels>
 	</channel-group-type>
 
 

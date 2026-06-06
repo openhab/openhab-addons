@@ -21,6 +21,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -44,7 +45,7 @@ public class SmartThingsLocalCallbackListener {
 
     @FunctionalInterface
     public interface ResponseHandlerListener {
-        String handle(String path, String query);
+        String handle(String path, @Nullable String query);
     }
 
     private @Nullable ResponseHandlerListener listener;
@@ -77,12 +78,13 @@ public class SmartThingsLocalCallbackListener {
                         String url = parts[1];
 
                         URI uri = new URI(url);
-                        String path = uri.getPath();
+                        String path = Objects.requireNonNullElse(uri.getPath(), "");
                         String query = uri.getQuery();
 
                         String responseBody = "";
-                        if (listener != null) {
-                            responseBody = listener.handle(path, query);
+                        ResponseHandlerListener responseHandler = listener;
+                        if (responseHandler != null) {
+                            responseBody = responseHandler.handle(path, query);
                         }
                         byte[] bytes = responseBody.getBytes(StandardCharsets.UTF_8);
 

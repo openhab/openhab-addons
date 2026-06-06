@@ -16,11 +16,11 @@
 		</supported-bridge-type-refs>
 		<label>SmartThings Television</label>
 		<description>A Samsung Smart TV connected via SmartThings Cloud.</description>
-		
+
 		<channel-groups>
 			<channel-group typeId="main-group-type-generic-tvset" id="main"/>
 		</channel-groups>
-		
+
 		<config-description>
 			<parameter name="deviceId" type="text" required="true">
 				<label>Device ID</label>
@@ -28,95 +28,95 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-	
+
 	<channel-group-type id="main-group-type-generic-tvset">
-			<label>Main group type generic TvSet</label>
-			<channels>
-				<channel id="switch" typeId="system.power">
-					<properties>
-						<property name="component">main</property>	
-						<property name="capability">switch</property>	
-						<property name="attribute">switch</property>	
-					</properties>
-				</channel>
-				<channel id="tvVolume" typeId="tvVolume">
-					<properties>
-						<property name="component">main</property>	
-						<property name="capability">audioVolume</property>	
-						<property name="attribute">volume</property>	
-					</properties>
-				</channel>
-				<channel id="tvMute" typeId="tvMute">
-					<properties>
-						<property name="component">main</property>	
-						<property name="capability">mute</property>	
-						<property name="attribute">mute</property>	
-					</properties>
-				</channel>
-				<channel id="inputSource" typeId="inputSource">
-					<properties>
-						<property name="component">main</property>	
-						<property name="capability">inputSource</property>	
-						<property name="attribute">inputSource</property>	
-					</properties>
-				</channel>
-				<channel id="tvChannel" typeId="tvChannel">
-					<properties>
-						<property name="component">main</property>	
-						<property name="capability">tvChannel</property>	
-						<property name="attribute">tvChannel</property>	
-					</properties>
-				</channel>
-				<channel id="tvChannelName" typeId="tvChannelName">
-					<properties>
-						<property name="component">main</property>	
-						<property name="capability">tvChannel</property>	
-						<property name="attribute">tvChannelName</property>	
-					</properties>
-				</channel>
-				<channel id="channelUp" typeId="channelUp">
-					<properties>
-						<property name="component">main</property>	
-						<property name="capability">tvChannel</property>	
-						<property name="attribute">channelUp</property>	
-					</properties>
-				</channel>
-				<channel id="channelDown" typeId="channelDown">
-					<properties>
-						<property name="component">main</property>	
-						<property name="capability">tvChannel</property>	
-						<property name="attribute">channelDown</property>	
-					</properties>
-				</channel>
-				<channel id="pictureMode" typeId="pictureMode">
-					<properties>
-						<property name="component">main</property>	
-						<property name="capability">custom.pictureMode</property>	
-						<property name="attribute">pictureMode</property>	
-					</properties>
-				</channel>
-				<channel id="soundMode" typeId="soundMode">
-					<properties>
-						<property name="component">main</property>	
-						<property name="capability">custom.soundmode</property>	
-						<property name="attribute">soundMode</property>	
-					</properties>
-				</channel>
-				<channel id="playbackStatus" typeId="playbackStatus">
-					<properties>
-						<property name="component">main</property>	
-						<property name="capability">mediaPlayback</property>	
-						<property name="attribute">playbackStatus</property>	
-					</properties>
-				</channel>
-				<channel id="onlineStatus" typeId="onlineStatus">
-					<properties>
-						<property name="component">main</property>	
-						<property name="capability">switch</property>	
-						<property name="attribute">switch</property>	
-					</properties>
-				</channel>
-			</channels>
+		<label>Main group type generic TvSet</label>
+		<channels>
+			<channel id="switch" typeId="system.power">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">switch</property>
+					<property name="attribute">switch</property>
+				</properties>
+			</channel>
+			<channel id="tvVolume" typeId="tvVolume">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">audioVolume</property>
+					<property name="attribute">volume</property>
+				</properties>
+			</channel>
+			<channel id="tvMute" typeId="tvMute">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">mute</property>
+					<property name="attribute">mute</property>
+				</properties>
+			</channel>
+			<channel id="inputSource" typeId="inputSource">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">inputSource</property>
+					<property name="attribute">inputSource</property>
+				</properties>
+			</channel>
+			<channel id="tvChannel" typeId="tvChannel">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">tvChannel</property>
+					<property name="attribute">tvChannel</property>
+				</properties>
+			</channel>
+			<channel id="tvChannelName" typeId="tvChannelName">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">tvChannel</property>
+					<property name="attribute">tvChannelName</property>
+				</properties>
+			</channel>
+			<channel id="channelUp" typeId="channelUp">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">tvChannel</property>
+					<property name="attribute">channelUp</property>
+				</properties>
+			</channel>
+			<channel id="channelDown" typeId="channelDown">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">tvChannel</property>
+					<property name="attribute">channelDown</property>
+				</properties>
+			</channel>
+			<channel id="pictureMode" typeId="pictureMode">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">custom.pictureMode</property>
+					<property name="attribute">pictureMode</property>
+				</properties>
+			</channel>
+			<channel id="soundMode" typeId="soundMode">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">custom.soundmode</property>
+					<property name="attribute">soundMode</property>
+				</properties>
+			</channel>
+			<channel id="playbackStatus" typeId="playbackStatus">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">mediaPlayback</property>
+					<property name="attribute">playbackStatus</property>
+				</properties>
+			</channel>
+			<channel id="onlineStatus" typeId="onlineStatus">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">switch</property>
+					<property name="attribute">switch</property>
+				</properties>
+			</channel>
+		</channels>
 	</channel-group-type>
 
 	<!-- Television channel types -->

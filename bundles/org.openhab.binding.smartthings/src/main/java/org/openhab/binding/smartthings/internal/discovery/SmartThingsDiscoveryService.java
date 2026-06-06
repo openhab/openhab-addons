@@ -144,11 +144,16 @@ public class SmartThingsDiscoveryService extends AbstractDiscoveryService
         if (deviceType == null) {
             deviceType = device.deviceTypeName;
         }
+        if (deviceType == null) {
+            logger.warn("Unexpectedly received data for device {} with no type", device.deviceId);
+            return;
+        }
 
         deviceType = UidUtils.sanitizeId(deviceType);
         SmartThingsTypeRegistry registry = this.typeRegistry;
+        SmartThingsBridgeHandler bridgeHandler = smartThingsBridgeHandler;
 
-        if (registry != null && smartThingsBridgeHandler != null && smartThingsBridgeHandler.useDynamicThings()) {
+        if (registry != null && bridgeHandler != null && bridgeHandler.useDynamicThings()) {
             registry.register(deviceCategory, deviceType, device);
         }
         if (addDevice) {

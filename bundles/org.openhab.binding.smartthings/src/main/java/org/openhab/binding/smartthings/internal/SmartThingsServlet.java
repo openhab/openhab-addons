@@ -246,7 +246,7 @@ public class SmartThingsServlet extends HttpServlet
     }
 
     @Override
-    public String handle(String path, String query) {
+    public String handle(String path, @Nullable String query) {
         return handleTemplate(path, query);
     }
 

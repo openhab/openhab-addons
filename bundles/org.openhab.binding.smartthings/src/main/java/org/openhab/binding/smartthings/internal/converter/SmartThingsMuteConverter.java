@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.smartthings.internal.converter;
 
-import java.util.regex.Pattern;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.smartthings.internal.SmartThingsBindingConstants;
 import org.openhab.binding.smartthings.internal.dto.SmartThingsAttribute;
@@ -26,8 +24,6 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Converter class for SmartThings "Color" capability and not the "Color Control" capability.
@@ -39,10 +35,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SmartThingsMuteConverter extends SmartThingsConverter {
-
-    private Pattern rgbInputPattern = Pattern.compile("^#[0-9a-fA-F]{6}");
-
-    private final Logger logger = LoggerFactory.getLogger(SmartThingsMuteConverter.class);
 
     public SmartThingsMuteConverter(SmartThingsTypeRegistry typeRegistry) {
         super(typeRegistry);
@@ -79,10 +71,10 @@ public class SmartThingsMuteConverter extends SmartThingsConverter {
             return UnDefType.UNDEF;
         }
 
-        if (value.equals("muted")) {
+        if ("muted".equals(value)) {
             return OnOffType.ON;
         }
-        if (value.equals("unmuted")) {
+        if ("unmuted".equals(value)) {
             return OnOffType.OFF;
         }
 

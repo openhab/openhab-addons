@@ -470,7 +470,9 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
                                         capa = api.getCapability(cap.id, cap.version, null);
 
                                         logger.trace("capa is: {}", gson.toJson(capa));
-                                        registerCapability(capa);
+                                        if (capa != null) {
+                                            registerCapability(capa);
+                                        }
                                     } catch (SmartThingsException ex) {
                                         logger.error("Exception during capa reading:{}", ex.toString(), ex);
                                     }
@@ -529,13 +531,16 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
             }
 
             SmartThingsSchema schema = attr.schema;
-            Hashtable<String, SmartThingsProperty> propsMap = schema.properties;
+            Map<String, SmartThingsProperty> propsMap = schema.properties;
 
             SmartThingsProperty prop = propsMap.get("value");
+            if (prop == null) {
+                continue;
+            }
 
             String propType = prop.type;
 
-            Hashtable<String, SmartThingsProperty> subPropList = prop.properties;
+            Map<String, SmartThingsProperty> subPropList = prop.properties;
 
             ChannelProperty channelProp = getChannelProperty(capa, attrKey, attr, prop);
 

@@ -15,11 +15,11 @@
 		</supported-bridge-type-refs>
 		<label>SmartThings Light Sensor</label>
 		<description>A SmartThings illuminance/light sensor reporting lux and brightness level.</description>
-		
+
 		<channel-groups>
 			<channel-group typeId="main-group-type-generic-light-sensor" id="main"/>
 		</channel-groups>
-		
+
 		<config-description>
 			<parameter name="deviceId" type="text" required="true">
 				<label>Device ID</label>
@@ -27,27 +27,27 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-	
+
 	<channel-group-type id="main-group-type-generic-light-sensor">
-			<label>Main group type Generic Light Sensor</label>
-			<channels>
-				<channel id="illuminance" typeId="illuminance">
-					<properties>
-						<property name="component">main</property>	
-						<property name="capability">switch</property>	
-						<property name="attribute">switch</property>	
-					</properties>
-				</channel>
-				<channel id="brightnessLevel" typeId="brightnessLevel">
-					<properties>
-						<property name="component">main</property>	
-						<property name="capability">switch</property>	
-						<property name="attribute">switch</property>	
-					</properties>
-				</channel>
+		<label>Main group type Generic Light Sensor</label>
+		<channels>
+			<channel id="illuminance" typeId="illuminance">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">switch</property>
+					<property name="attribute">switch</property>
+				</properties>
+			</channel>
+			<channel id="brightnessLevel" typeId="brightnessLevel">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">switch</property>
+					<property name="attribute">switch</property>
+				</properties>
+			</channel>
 		</channels>
 	</channel-group-type>
-	
+
 	<channel-type id="illuminance">
 		<item-type>Number:Illuminance</item-type>
 		<label>Illuminance</label>

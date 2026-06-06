@@ -216,7 +216,7 @@ public class SmartThingsNetworkConnectorImpl implements SmartThingsNetworkConnec
     }
 
     @Override
-    public <T> T doRequest(Class<T> resultClass, String req, @Nullable SmartThingsNetworkCallback<T> callback,
+    public <T> @Nullable T doRequest(Class<T> resultClass, String req, @Nullable SmartThingsNetworkCallback<T> callback,
             String accessToken, @Nullable String data, HttpMethod method) throws SmartThingsException {
         String response = doBasicRequest(resultClass, req, callback, accessToken, data, method);
 

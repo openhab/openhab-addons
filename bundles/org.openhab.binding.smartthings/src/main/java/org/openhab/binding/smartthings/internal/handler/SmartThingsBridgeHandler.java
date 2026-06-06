@@ -159,8 +159,6 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
             return;
         }
 
-        BundleContext ctx = FrameworkUtil.getBundle(getClass()).getBundleContext();
-
         registerCloudWebhook();
         SmartThingsConverterFactory.registerConverters(typeRegistry);
         registerOAuth(false);
@@ -310,8 +308,9 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
                 setupWebHookUrl();
             }, WEBHOOK_REFRESH_INTERVAL_HOURS, WEBHOOK_REFRESH_INTERVAL_HOURS, TimeUnit.HOURS);
 
-            if (cloudWebHook != null) {
-                updateWebhookProperties(cloudWebHook);
+            String currentCloudWebHook = cloudWebHook;
+            if (currentCloudWebHook != null) {
+                updateWebhookProperties(currentCloudWebHook);
             }
         } else {
             removeRefreshTask();
@@ -336,8 +335,9 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
         logger.info("try register webhook");
 
         try {
-            if (webHookService != null) {
-                Webhook webHook = webHookService.requestWebhook(SmartThingsBindingConstants.SMARTTHINGS_CB_ALIAS).get();
+            WebhookService service = webHookService;
+            if (service != null) {
+                Webhook webHook = service.requestWebhook(SmartThingsBindingConstants.SMARTTHINGS_CB_ALIAS).get();
 
                 URL result = webHook.url();
                 String urlSt = result.toString();
@@ -352,8 +352,9 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
     }
 
     private void removeCloudWebhooks() {
-        if (webHookService != null) {
-            webHookService.removeWebhook(SmartThingsBindingConstants.SMARTTHINGS_CB_ALIAS).join();
+        WebhookService service = webHookService;
+        if (service != null) {
+            service.removeWebhook(SmartThingsBindingConstants.SMARTTHINGS_CB_ALIAS).join();
         }
     }
 

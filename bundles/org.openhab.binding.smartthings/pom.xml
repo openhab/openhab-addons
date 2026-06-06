@@ -45,6 +45,7 @@
 Bundle-SymbolicName: org.openhab.binding.smartthings
   
 Import-Package: \
+ !com.google.errorprone.annotations,\
  org.openhab.io.openhabcloud;resolution:=optional,\
  org.openhab.io.openhabcloud.*;resolution:=optional,\
  *
