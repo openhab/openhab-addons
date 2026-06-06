@@ -15,6 +15,7 @@
   <name>openHAB Add-ons :: Bundles :: Voice :: Google Cloud Speech to Text</name>
   <properties>
     <bnd.importpackage>!*opencensus*,!org.bouncycastle*,!*jboss*,!javax.annotation.*,!net.jpountz.*,!lzma.sdk.*,org.eclipse.jetty.*;resolution:=optional,com.ning.*;resolution:=optional,com.jcraft.*;resolution:=optional,com.google.re2j.*;resolution:=optional,com.google.api.client.*;resolution:=optional,org.conscrypt.*;resolution:=optional,!io.grpc.census.*,com.sun.jndi.dns.*;resolution:=optional,org.apache.log.*;resolution:=optional,org.apache.http.*;resolution:=optional,sun.security.*;resolution:=optional,com.oracle.svm.core.annotate.*;resolution:=optional,*blockhound*;resolution:=optional,com.google.protobuf.nano.*;resolution:=optional,io.grpc.*;resolution:=optional,com.google.protobuf.*;resolution:=optional,io.perfmark.*;resolution:=optional,com.google.api.gax.nativeimage;resolution:=optional,org.graalvm.*;resolution:=optional,com.aayushatharva.brotli4j.*;resolution:=optional,com.github.luben.*;resolution:=optional,com.google.auth.appengine;resolution:=optional,com.google.errorprone.annotations;resolution:=optional,com.google.gson.*;resolution:=optional</bnd.importpackage>
+    <grpc.version>1.81.0</grpc.version>
   </properties>
   <dependencies>
     <dependency>
@@ -97,67 +98,67 @@
     <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-api</artifactId>
-      <version>1.53.0</version>
+      <version>${grpc.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-protobuf</artifactId>
-      <version>1.53.0</version>
+      <version>${grpc.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-protobuf-lite</artifactId>
-      <version>1.53.0</version>
+      <version>${grpc.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-alts</artifactId>
-      <version>1.53.0</version>
+      <version>${grpc.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-core</artifactId>
-      <version>1.53.0</version>
+      <version>${grpc.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-grpclb</artifactId>
-      <version>1.53.0</version>
+      <version>${grpc.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-auth</artifactId>
-      <version>1.53.0</version>
+      <version>${grpc.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-context</artifactId>
-      <version>1.53.0</version>
+      <version>${grpc.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-netty-shaded</artifactId>
-      <version>1.75.0</version>
+      <version>${grpc.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-xds</artifactId>
-      <version>1.53.0</version>
+      <version>${grpc.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-services</artifactId>
-      <version>1.53.0</version>
+      <version>${grpc.version}</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>
