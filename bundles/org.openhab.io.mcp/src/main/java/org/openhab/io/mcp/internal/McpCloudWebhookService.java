@@ -13,16 +13,13 @@
 package org.openhab.io.mcp.internal;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.URI;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.function.Function;
+import java.util.function.Supplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -30,10 +27,9 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.core.common.ThreadPoolManager;
+import org.openhab.core.io.rest.Webhook;
+import org.openhab.core.io.rest.WebhookService;
 import org.openhab.io.mcp.internal.tools.McpToolUtils;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,14 +37,16 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * Registers the MCP servlet path with the openHAB Cloud {@code WebhookService},
+ * Registers the MCP servlet path with the openHAB Cloud {@link WebhookService},
  * exposing it publicly at {@code https://<cloudhost>/api/hooks/<uuid>/...} so remote
  * MCP clients can reach this openHAB instance without port forwarding or a reverse
  * proxy.
  * <p>
- * The openHAB Cloud {@code WebhookService} is looked up via reflection so this bundle
- * has no compile-time or class-loading dependency on the cloud add-on; if the cloud
- * add-on isn't installed, registration is silently skipped.
+ * The {@link WebhookService} interface lives in {@code org.openhab.core.io.rest}, so no
+ * compile-time dependency on the openHAB Cloud add-on is required. The provider OSGi
+ * service is injected into {@link McpService} as an optional/dynamic reference and
+ * handed to this class via a supplier; if no provider is installed we skip registration
+ * silently.
  * <p>
  * Registrations have a 30-day TTL on the cloud side; a scheduled daily refresh keeps
  * the mapping alive as long as the MCP bundle is active.
@@ -59,14 +57,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class McpCloudWebhookService {
 
     private static final long REFRESH_INTERVAL_HOURS = 24;
-    private static final String WEBHOOK_SERVICE_CLASS = "org.openhab.io.openhabcloud.WebhookService";
     private static final int REQUEST_TIMEOUT_SECONDS = 30;
     private static final String PROXY_URL_PATH = "/api/v1/proxyurl";
 
     private final Logger logger = LoggerFactory.getLogger(McpCloudWebhookService.class);
     private final ObjectMapper jackson = McpToolUtils.jackson();
 
-    private final BundleContext bundleContext;
+    private final Supplier<@Nullable WebhookService> webhookServiceSupplier;
     private final String localPath;
     private final HttpClient httpClient;
     private final ScheduledExecutorService scheduler;
@@ -76,8 +73,9 @@ public class McpCloudWebhookService {
     private volatile @Nullable String browserBaseUrl;
     private @Nullable ScheduledFuture<?> refreshTask;
 
-    public McpCloudWebhookService(BundleContext bundleContext, String localPath, HttpClient httpClient) {
-        this.bundleContext = bundleContext;
+    public McpCloudWebhookService(Supplier<@Nullable WebhookService> webhookServiceSupplier, String localPath,
+            HttpClient httpClient) {
+        this.webhookServiceSupplier = webhookServiceSupplier;
         this.localPath = localPath;
         this.httpClient = httpClient;
         this.scheduler = ThreadPoolManager.getScheduledPool("mcp-cloud-webhook");
@@ -117,10 +115,10 @@ public class McpCloudWebhookService {
     public void unregister() {
         synchronized (lock) {
             stopRefresh();
-            withWebhookService(ws -> {
-                invokeRemoveWebhook(ws);
-                return null;
-            });
+            WebhookService ws = webhookServiceSupplier.get();
+            if (ws != null) {
+                removeHook(ws);
+            }
             publicUrl = null;
             browserBaseUrl = null;
         }
@@ -215,42 +213,13 @@ public class McpCloudWebhookService {
     }
 
     private @Nullable String fetchWebhookUrl() {
-        return withWebhookService(this::invokeRequestWebhook);
-    }
-
-    private <T> @Nullable T withWebhookService(Function<Object, @Nullable T> action) {
-        try {
-            ServiceReference<?>[] refs = bundleContext.getAllServiceReferences(WEBHOOK_SERVICE_CLASS, null);
-            if (refs == null || refs.length == 0) {
-                return null;
-            }
-            ServiceReference<?> ref = refs[0];
-            Object service = bundleContext.getService(ref);
-            if (service == null) {
-                return null;
-            }
-            try {
-                return action.apply(service);
-            } finally {
-                bundleContext.ungetService(ref);
-            }
-        } catch (InvalidSyntaxException e) {
-            logger.debug("Could not look up openHAB Cloud WebhookService: {}", e.getMessage());
+        WebhookService ws = webhookServiceSupplier.get();
+        if (ws == null) {
             return null;
         }
-    }
-
-    private @Nullable String invokeRequestWebhook(Object webhookService) {
         try {
-            Method method = webhookService.getClass().getMethod("requestWebhook", String.class);
-            Object result = method.invoke(webhookService, localPath);
-            if (!(result instanceof CompletableFuture<?> future)) {
-                logger.debug("requestWebhook returned unexpected type: {}",
-                        result != null ? result.getClass() : "null");
-                return null;
-            }
-            Object value = future.get(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
-            return value instanceof String s ? s : null;
+            Webhook hook = ws.requestWebhook(localPath).get(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            return hook.url().toString();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             return null;
@@ -260,11 +229,12 @@ public class McpCloudWebhookService {
         }
     }
 
-    private void invokeRemoveWebhook(Object webhookService) {
+    private void removeHook(WebhookService webhookService) {
         try {
-            Method method = webhookService.getClass().getMethod("removeWebhook", String.class);
-            method.invoke(webhookService, localPath);
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            webhookService.removeWebhook(localPath).get(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } catch (Exception e) {
             logger.debug("Failed to remove cloud webhook for {}: {}", localPath, e.getMessage());
         }
     }

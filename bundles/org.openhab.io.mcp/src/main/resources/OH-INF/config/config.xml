@@ -34,6 +34,53 @@
 				agent calls.]]></description>
 			<default>false</default>
 		</parameter>
+		<parameter name="enableScripting" type="boolean" required="false">
+			<label>Enable JavaScript Scripting</label>
+			<description><![CDATA[When enabled, the agent can include JavaScript snippets as rule actions or conditions
+				(<code>type: "script"</code>) and gains an <code>execute_script</code> tool that runs JS immediately
+				against openHAB's script engine - useful for dry-running a script before adding it to a scheduled rule.
+				Scripts have the same full system access as any openHAB script (every item, HTTP requests, Exec, OSGi
+				services, rule creation). Requires the <code>openhab-automation-jsscripting</code> add-on.]]></description>
+			<default>false</default>
+		</parameter>
+		<parameter name="enableLoggingAccess" type="boolean" required="false">
+			<label>Enable Diagnostic Logging Tools</label>
+			<description><![CDATA[When enabled, the agent gains two tools (<code>get_logs</code> and
+				<code>manage_log_level</code> with actions <code>get</code>/<code>set</code>) for reading recent log
+				entries and adjusting logger verbosity to troubleshoot bindings, rules, or things. Log level changes
+				are sent through the openHAB REST API and require the caller's bearer token to have
+				<strong>administrator</strong> scope; log reads only require this flag to be on. Verbosity bumps
+				auto-revert after 30 minutes by default so DEBUG won't be left on by accident.]]></description>
+			<default>false</default>
+		</parameter>
+		<parameter name="enableUiDesign" type="boolean" required="false">
+			<label>Enable Main UI Design Tools</label>
+			<description><![CDATA[When enabled, the agent gains five tools (<code>list_widgets</code>,
+				<code>describe_widget</code>, <code>get_page_skeleton</code>, <code>manage_ui_component</code>,
+				<code>validate_ui_component</code>) for creating, modifying, and deleting Main UI pages and custom widgets.
+				The tools ship with a curated widget catalog and an embedded reference for the expression language
+				(<code>=items.X.state</code>), action grammar, visibility rules, and slot conventions so the agent
+				produces valid YAML rather than hallucinating component names or prop keys. CRUD writes go through the
+				openHAB REST API at <code>/rest/ui/components/</code> and require the caller's bearer token to have
+				<strong>administrator</strong> scope; reads are gated by this flag alone.]]></description>
+			<default>false</default>
+		</parameter>
+		<parameter name="enableStaticAssets" type="boolean" required="false">
+			<label>Enable Static Asset Management</label>
+			<description><![CDATA[When enabled, the agent gains <code>manage_static_asset</code> for listing, reading,
+				uploading, and deleting files in <code>$OPENHAB_CONF/html</code> (the folder served at
+				<code>/static/*</code> and used for SVG icons, images, CSS overrides, and other static files the UI
+				references by URL). Useful alongside <code>enableUiDesign</code> so the agent can author an SVG icon or
+				upload an image and then reference it from a page or widget in the same conversation. Writes go directly to disk &mdash; there is no REST API
+				to gate this &mdash; so the bundle enforces <strong>administrator</strong> scope itself by probing an
+				admin-gated REST endpoint with the session's bearer token before each call. Filenames are sanitized
+				(including symlinks pointing outside the root), extensions are whitelisted, and uploads are capped at
+				10 MB per call. Note that <code>.html</code>, <code>.htm</code>, <code>.svg</code>, and <code>.js</code>
+				files served from <code>/static/</code> execute in the browser, so an agent that writes those becomes an
+				XSS vector against your Main UI; the tool description warns about this but the operator should treat this
+				flag like <code>enableScripting</code>.]]></description>
+			<default>false</default>
+		</parameter>
 		<parameter name="exposeUntaggedItems" type="boolean" required="false">
 			<label>Expose Untagged Items</label>
 			<description>Whether to include items that are not part of the semantic model in search results.</description>

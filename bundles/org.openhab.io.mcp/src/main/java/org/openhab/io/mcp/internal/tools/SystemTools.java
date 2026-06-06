@@ -14,8 +14,10 @@ package org.openhab.io.mcp.internal.tools;
 
 import static org.openhab.io.mcp.internal.tools.McpToolUtils.*;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -80,8 +82,13 @@ public class SystemTools {
      * @return the MCP tool definition for getting system information
      */
     public McpSchema.Tool getSystemInfoTool() {
-        return McpSchema.Tool.builder().name("get_system_info").description(
-                "Get openHAB system information including version, item count, thing count, rule count, and installed bindings.")
+        return McpSchema.Tool.builder().name("get_system_info").description("""
+                Get openHAB system information: version, item/thing/rule counts, installed bindings, and the \
+                openHAB server's current local date/time and timezone. For simple 'in N minutes/hours' scheduling \
+                you do NOT need to call this first — create_rule's datetime trigger accepts relative offsets like \
+                '+5m' that the server resolves itself. Use this tool when you need the server's wall-clock time \
+                for reasoning ('is it morning?', 'what day is it?') or for absolute scheduling against an \
+                unfamiliar timezone.""")
                 .inputSchema(new McpSchema.JsonSchema("object", Map.of(), List.of(), null, null, null)).build();
     }
 
@@ -93,8 +100,16 @@ public class SystemTools {
      * @return a result containing the system information
      */
     public CallToolResult handleGetSystemInfo(McpSchema.CallToolRequest request) {
-        Map<String, Object> info = new HashMap<>();
+        Map<String, Object> info = new LinkedHashMap<>();
         info.put("version", OpenHAB.getVersion());
+
+        ZoneId zone = ZoneId.systemDefault();
+        ZonedDateTime now = ZonedDateTime.now(zone);
+        info.put("currentDateTime", now.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+        info.put("timeZone", zone.getId());
+        info.put("utcOffset", now.getOffset().getId());
+        info.put("epochMillis", now.toInstant().toEpochMilli());
+
         info.put("itemCount", StreamSupport.stream(itemRegistry.getItems().spliterator(), false).count());
         info.put("thingCount", thingRegistry.getAll().size());
         info.put("ruleCount", ruleRegistry.getAll().size());

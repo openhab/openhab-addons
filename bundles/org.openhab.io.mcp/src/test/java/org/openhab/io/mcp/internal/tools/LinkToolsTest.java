@@ -95,7 +95,7 @@ class LinkToolsTest {
         ItemChannelLink link2 = mockLink("Item2", "zwave:device:ctrl:node5:switch");
         when(Objects.requireNonNull(linkRegistry).getAll()).thenReturn(List.of(link1, link2));
 
-        CallToolResult result = tools().handleGetLinks(createRequest(Map.of()));
+        CallToolResult result = tools().handleManageLink(createRequest(Map.of("action", "get")));
         assertSuccess(result);
 
         Map<String, Object> parsed = parseResult(result);
@@ -112,7 +112,7 @@ class LinkToolsTest {
         ItemChannelLink link2 = mockLink("Item2", "zwave:device:ctrl:node5:switch");
         when(Objects.requireNonNull(linkRegistry).getAll()).thenReturn(List.of(link1, link2));
 
-        CallToolResult result = tools().handleGetLinks(createRequest(Map.of("itemName", "Item1")));
+        CallToolResult result = tools().handleManageLink(createRequest(Map.of("action", "get", "itemName", "Item1")));
         Map<String, Object> parsed = parseResult(result);
         List<Map<String, Object>> links = (List<Map<String, Object>>) parsed.get("links");
         assertNotNull(links);
@@ -127,7 +127,7 @@ class LinkToolsTest {
         ItemChannelLink link2 = mockLink("Item2", "zwave:device:ctrl:node5:switch");
         when(Objects.requireNonNull(linkRegistry).getAll()).thenReturn(List.of(link1, link2));
 
-        CallToolResult result = tools().handleGetLinks(createRequest(Map.of("channelUID", "hue:")));
+        CallToolResult result = tools().handleManageLink(createRequest(Map.of("action", "get", "channelUID", "hue:")));
         Map<String, Object> parsed = parseResult(result);
         List<Map<String, Object>> links = (List<Map<String, Object>>) parsed.get("links");
         assertNotNull(links);
@@ -136,7 +136,6 @@ class LinkToolsTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     void createLinkSuccess() throws Exception {
         Item item = mock(Item.class);
         when(Objects.requireNonNull(itemRegistry).getItem("MyItem")).thenReturn(item);
@@ -146,10 +145,11 @@ class LinkToolsTest {
         when(Objects.requireNonNull(thingRegistry).getChannel(channelUID)).thenReturn(channel);
 
         Map<String, Object> args = new HashMap<>();
+        args.put("action", "create");
         args.put("itemName", "MyItem");
         args.put("channelUID", "hue:0210:bridge:lamp1:color");
 
-        CallToolResult result = tools().handleCreateLink(createRequest(args));
+        CallToolResult result = tools().handleManageLink(createRequest(args));
         assertSuccess(result);
 
         Map<String, Object> parsed = parseResult(result);
@@ -164,10 +164,11 @@ class LinkToolsTest {
         when(Objects.requireNonNull(itemRegistry).getItem("Missing")).thenThrow(new ItemNotFoundException("Missing"));
 
         Map<String, Object> args = new HashMap<>();
+        args.put("action", "create");
         args.put("itemName", "Missing");
         args.put("channelUID", "hue:0210:bridge:lamp1:color");
 
-        CallToolResult result = tools().handleCreateLink(createRequest(args));
+        CallToolResult result = tools().handleManageLink(createRequest(args));
         assertErrorContains(result, "not found");
     }
 
@@ -180,27 +181,40 @@ class LinkToolsTest {
         when(Objects.requireNonNull(thingRegistry).getChannel(channelUID)).thenReturn(null);
 
         Map<String, Object> args = new HashMap<>();
+        args.put("action", "create");
         args.put("itemName", "MyItem");
         args.put("channelUID", "hue:0210:bridge:lamp1:missing");
 
-        CallToolResult result = tools().handleCreateLink(createRequest(args));
+        CallToolResult result = tools().handleManageLink(createRequest(args));
         assertErrorContains(result, "not found");
     }
 
     @Test
     void createLinkMissingParams() throws Exception {
-        CallToolResult result = tools().handleCreateLink(createRequest(Map.of()));
+        CallToolResult result = tools().handleManageLink(createRequest(Map.of("action", "create")));
         assertErrorContains(result, "required");
     }
 
     @Test
     void createLinkMissingChannelUID() throws Exception {
-        CallToolResult result = tools().handleCreateLink(createRequest(Map.of("itemName", "MyItem")));
+        CallToolResult result = tools()
+                .handleManageLink(createRequest(Map.of("action", "create", "itemName", "MyItem")));
         assertErrorContains(result, "required");
     }
 
     @Test
-    @SuppressWarnings("unchecked")
+    void manageLinkMissingAction() throws Exception {
+        CallToolResult result = tools().handleManageLink(createRequest(Map.of()));
+        assertErrorContains(result, "action");
+    }
+
+    @Test
+    void manageLinkUnknownAction() throws Exception {
+        CallToolResult result = tools().handleManageLink(createRequest(Map.of("action", "purge")));
+        assertErrorContains(result, "Invalid action");
+    }
+
+    @Test
     void deleteLinkSuccess() throws Exception {
         String channelUIDStr = "hue:0210:bridge:lamp1:color";
         String linkId = ItemChannelLink.getIDFor("MyItem", new ChannelUID(channelUIDStr));
@@ -208,10 +222,11 @@ class LinkToolsTest {
         when(Objects.requireNonNull(linkRegistry).remove(linkId)).thenReturn(link);
 
         Map<String, Object> args = new HashMap<>();
+        args.put("action", "delete");
         args.put("itemName", "MyItem");
         args.put("channelUID", channelUIDStr);
 
-        CallToolResult result = tools().handleDeleteLink(createRequest(args));
+        CallToolResult result = tools().handleManageLink(createRequest(args));
         assertSuccess(result);
 
         Map<String, Object> parsed = parseResult(result);
@@ -225,16 +240,17 @@ class LinkToolsTest {
         when(Objects.requireNonNull(linkRegistry).remove(linkId)).thenReturn(null);
 
         Map<String, Object> args = new HashMap<>();
+        args.put("action", "delete");
         args.put("itemName", "MyItem");
         args.put("channelUID", channelUIDStr);
 
-        CallToolResult result = tools().handleDeleteLink(createRequest(args));
+        CallToolResult result = tools().handleManageLink(createRequest(args));
         assertErrorContains(result, "not found");
     }
 
     @Test
     void deleteLinkMissingParams() throws Exception {
-        CallToolResult result = tools().handleDeleteLink(createRequest(Map.of()));
+        CallToolResult result = tools().handleManageLink(createRequest(Map.of("action", "delete")));
         assertErrorContains(result, "required");
     }
 }

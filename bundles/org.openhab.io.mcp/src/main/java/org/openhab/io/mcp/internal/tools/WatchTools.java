@@ -17,6 +17,7 @@ import static org.openhab.io.mcp.internal.tools.McpToolUtils.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -55,74 +56,70 @@ public class WatchTools {
     }
 
     /**
-     * Returns the {@code watch_items} tool schema.
-     * Defines a tool that starts watching specified items for state changes within the current session.
+     * Returns the {@code watch_items} tool schema. Single entry point for starting or stopping
+     * item subscriptions in the current session; dispatches on {@code action}.
      *
      * @return the {@code watch_items} tool definition
      */
     public McpSchema.Tool getWatchItemsTool() {
         Map<String, Object> props = new HashMap<>();
+        props.put("action",
+                Map.of("type", "string", "description",
+                        "start: begin watching items; stop: stop watching items (omit itemNames to stop all).", "enum",
+                        List.of("start", "stop")));
         props.put("itemNames", Map.of("type", "array", "items", Map.of("type", "string"), "description",
-                "Exact item names to start watching."));
+                "Exact item names. Required for action='start'; for action='stop' omit to stop watching everything."));
         return McpSchema.Tool.builder().name("watch_items").description("""
-                Start watching the given items for state changes in this session. \
-                Call get_events periodically (or when the user asks about changes) to retrieve \
-                buffered change events. Use when the user says things like 'let me know if X \
-                changes' or 'watch the garage door'. Watches are scoped to the current MCP session \
-                and persist until unwatch_items is called or the session ends.""")
-                .inputSchema(new McpSchema.JsonSchema("object", props, List.of("itemNames"), null, null, null)).build();
+                Start or stop watching items for state changes in this session. \
+                Use action='start' with itemNames when the user says things like 'let me know if X \
+                changes' or 'watch the garage door' — then call get_events periodically (or when the \
+                user asks about changes) to retrieve buffered events. Use action='stop' to unsubscribe \
+                (omit itemNames to stop all). Watches are scoped to the current MCP session and persist \
+                until stopped or the session ends.""")
+                .inputSchema(new McpSchema.JsonSchema("object", props, List.of("action"), null, null, null)).build();
     }
 
     /**
-     * Handles a {@code watch_items} call.
-     * Registers the requested item names for watching and returns the list of added and all watched items.
+     * Handles a {@code watch_items} call. Dispatches to start / stop based on {@code action}.
      *
      * @param exchange the server exchange providing the session identity
-     * @param request the tool request containing the {@code itemNames} argument
-     * @return the result with added watches and the full watched-item list
+     * @param request the tool request
+     * @return the result for the dispatched action
      */
     public CallToolResult handleWatchItems(McpSyncServerExchange exchange, McpSchema.CallToolRequest request) {
-        List<String> itemNames = getStringListArg(request.arguments(), "itemNames");
+        Map<String, Object> args = request.arguments();
+        String action = getStringArg(args, "action");
+        if (action == null || action.isBlank()) {
+            return errorResult("'action' is required (one of: start, stop).");
+        }
+        return switch (action.toLowerCase(Locale.ROOT)) {
+            case "start" -> startWatch(exchange, args);
+            case "stop" -> stopWatch(exchange, args);
+            default -> errorResult("Invalid action '" + action + "'. Use one of: start, stop.");
+        };
+    }
+
+    private CallToolResult startWatch(McpSyncServerExchange exchange, Map<String, Object> args) {
+        List<String> itemNames = getStringListArg(args, "itemNames");
         if (itemNames == null || itemNames.isEmpty()) {
-            return errorResult("'itemNames' is required and must be a non-empty array.");
+            return errorResult("'itemNames' is required and must be a non-empty array when action='start'.");
         }
         List<String> added = subscriptions.watch(exchange.sessionId(), itemNames);
         Map<String, Object> out = new HashMap<>();
+        out.put("action", "start");
         out.put("added", added);
         out.put("allWatched", new ArrayList<>(subscriptions.watched(exchange.sessionId())));
         return textResult(jsonMapper, out);
     }
 
-    /**
-     * Returns the {@code unwatch_items} tool schema.
-     * Defines a tool that stops watching specified items, or all items if none are specified.
-     *
-     * @return the {@code unwatch_items} tool definition
-     */
-    public McpSchema.Tool getUnwatchItemsTool() {
-        Map<String, Object> props = new HashMap<>();
-        props.put("itemNames", Map.of("type", "array", "items", Map.of("type", "string"), "description",
-                "Item names to stop watching. Omit to unwatch all."));
-        return McpSchema.Tool.builder().name("unwatch_items")
-                .description("Stop watching the given items for state changes. Omit itemNames to unwatch all.")
-                .inputSchema(new McpSchema.JsonSchema("object", props, List.of(), null, null, null)).build();
-    }
-
-    /**
-     * Handles an {@code unwatch_items} call.
-     * Removes the specified items from the watch list, or all items if none are provided.
-     *
-     * @param exchange the server exchange providing the session identity
-     * @param request the tool request containing the optional {@code itemNames} argument
-     * @return the result with removed watches and the remaining watched-item list
-     */
-    public CallToolResult handleUnwatchItems(McpSyncServerExchange exchange, McpSchema.CallToolRequest request) {
-        List<String> itemNames = getStringListArg(request.arguments(), "itemNames");
+    private CallToolResult stopWatch(McpSyncServerExchange exchange, Map<String, Object> args) {
+        List<String> itemNames = getStringListArg(args, "itemNames");
         if (itemNames == null || itemNames.isEmpty()) {
             itemNames = new ArrayList<>(subscriptions.watched(exchange.sessionId()));
         }
         List<String> removed = subscriptions.unwatch(exchange.sessionId(), itemNames);
         Map<String, Object> out = new HashMap<>();
+        out.put("action", "stop");
         out.put("removed", removed);
         out.put("remaining", new ArrayList<>(subscriptions.watched(exchange.sessionId())));
         return textResult(jsonMapper, out);

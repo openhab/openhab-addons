@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -66,32 +67,55 @@ public class LinkTools {
     }
 
     /**
-     * Returns the {@code get_links} tool schema. Lists item-channel links with
-     * optional filtering by item name or channel UID prefix.
+     * Returns the {@code manage_link} tool schema. Single CRUD entry point for item-channel
+     * link management; dispatches on {@code action}.
      *
      * @return the tool definition
      */
-    public McpSchema.Tool getLinksTool() {
+    public McpSchema.Tool getManageLinkTool() {
         Map<String, Object> props = new LinkedHashMap<>();
-        props.put("itemName", Map.of("type", "string", "description", "Filter links for this item name (exact match)"));
+        props.put("action", Map.of("type", "string", "description",
+                "get: list matching links; create: wire an item to a channel; delete: remove an item-channel link.",
+                "enum", List.of("get", "create", "delete")));
+        props.put("itemName", Map.of("type", "string", "description",
+                "Item name. get: optional exact-match filter; create/delete: required."));
         props.put("channelUID", Map.of("type", "string", "description",
-                "Filter links whose channel UID starts with this value (prefix match — use a thing UID to see all its links)"));
+                "Channel UID (e.g. hue:0210:1:bulb1:color). get: optional prefix-match filter (pass a thing UID to "
+                        + "see all its links); create/delete: required."));
+        props.put("configuration", Map.of("type", "object", "description",
+                "create only: optional link configuration properties (profile, etc.)."));
 
-        return McpSchema.Tool.builder().name("get_links")
-                .description("List item-channel links. Filter by item name and/or channel UID prefix. "
-                        + "Use this to see how items are wired to thing channels before creating or removing links.")
-                .inputSchema(new McpSchema.JsonSchema("object", props, List.of(), null, null, null)).build();
+        return McpSchema.Tool.builder().name("manage_link").description("""
+                List, create, or delete item-channel links. Action-dispatched: \
+                action='get' returns matching links (filter by itemName exact and/or channelUID prefix; \
+                use get_thing_details to find available channel UIDs); \
+                action='create' wires an item to a channel (requires itemName + channelUID); \
+                action='delete' removes the link (requires itemName + channelUID).""")
+                .inputSchema(new McpSchema.JsonSchema("object", props, List.of("action"), null, null, null)).build();
     }
 
     /**
-     * Handles a {@code get_links} call. Returns matching links with their item name,
-     * channel UID, and any link-level configuration.
+     * Handles a {@code manage_link} call. Dispatches to get / create / delete based on
+     * the {@code action} argument.
      *
      * @param request the tool call request
-     * @return links matching the filter criteria
+     * @return the result for the dispatched action
      */
-    public CallToolResult handleGetLinks(McpSchema.CallToolRequest request) {
+    public CallToolResult handleManageLink(McpSchema.CallToolRequest request) {
         Map<String, Object> args = request.arguments();
+        String action = getStringArg(args, "action");
+        if (action == null || action.isBlank()) {
+            return errorResult("'action' is required (one of: get, create, delete).");
+        }
+        return switch (action.toLowerCase(Locale.ROOT)) {
+            case "get" -> getLinks(args);
+            case "create" -> createLink(args);
+            case "delete" -> deleteLink(args);
+            default -> errorResult("Invalid action '" + action + "'. Use one of: get, create, delete.");
+        };
+    }
+
+    private CallToolResult getLinks(Map<String, Object> args) {
         String itemName = getStringArg(args, "itemName");
         String channelPrefix = getStringArg(args, "channelUID");
 
@@ -119,41 +143,11 @@ public class LinkTools {
         return textResult(jsonMapper, response);
     }
 
-    /**
-     * Returns the {@code create_link} tool schema. Wires an item to a thing channel.
-     *
-     * @return the tool definition
-     */
-    public McpSchema.Tool getCreateLinkTool() {
-        Map<String, Object> props = new LinkedHashMap<>();
-        props.put("itemName", Map.of("type", "string", "description", "Name of the item to link"));
-        props.put("channelUID",
-                Map.of("type", "string", "description", "Full channel UID (e.g. hue:0210:1:bulb1:color)"));
-        props.put("configuration",
-                Map.of("type", "object", "description", "Optional link configuration properties (profile, etc.)"));
-
-        return McpSchema.Tool.builder().name("create_link")
-                .description("Create an item-channel link to wire an item to a thing's channel. "
-                        + "Use get_thing_details to find available channel UIDs, and get_links to check existing wiring.")
-                .inputSchema(
-                        new McpSchema.JsonSchema("object", props, List.of("itemName", "channelUID"), null, null, null))
-                .build();
-    }
-
-    /**
-     * Handles a {@code create_link} call. Validates that both the item and channel
-     * exist before creating the link.
-     *
-     * @param request the tool call request
-     * @return success confirmation or an error if item/channel not found
-     */
-    @SuppressWarnings("unchecked")
-    public CallToolResult handleCreateLink(McpSchema.CallToolRequest request) {
-        Map<String, Object> args = request.arguments();
+    private CallToolResult createLink(Map<String, Object> args) {
         String itemName = getStringArg(args, "itemName");
         String channelUIDStr = getStringArg(args, "channelUID");
-        if (itemName == null || channelUIDStr == null) {
-            return errorResult("'itemName' and 'channelUID' are required.");
+        if (itemName == null || itemName.isBlank() || channelUIDStr == null || channelUIDStr.isBlank()) {
+            return errorResult("'itemName' and 'channelUID' are required when action='create'.");
         }
 
         try {
@@ -179,40 +173,17 @@ public class LinkTools {
 
         Map<String, Object> result = new HashMap<>();
         result.put("success", true);
+        result.put("action", "create");
         result.put("itemName", itemName);
         result.put("channelUID", channelUIDStr);
         return textResult(jsonMapper, result);
     }
 
-    /**
-     * Returns the {@code delete_link} tool schema. Removes a specific item-channel link.
-     *
-     * @return the tool definition
-     */
-    public McpSchema.Tool getDeleteLinkTool() {
-        Map<String, Object> props = new LinkedHashMap<>();
-        props.put("itemName", Map.of("type", "string", "description", "Name of the linked item"));
-        props.put("channelUID", Map.of("type", "string", "description", "Full channel UID of the link to remove"));
-
-        return McpSchema.Tool.builder().name("delete_link")
-                .description("Remove an item-channel link. Use get_links to find existing links first.")
-                .inputSchema(
-                        new McpSchema.JsonSchema("object", props, List.of("itemName", "channelUID"), null, null, null))
-                .build();
-    }
-
-    /**
-     * Handles a {@code delete_link} call. Returns an error if the link doesn't exist.
-     *
-     * @param request the tool call request
-     * @return success confirmation or an error if link not found
-     */
-    public CallToolResult handleDeleteLink(McpSchema.CallToolRequest request) {
-        Map<String, Object> args = request.arguments();
+    private CallToolResult deleteLink(Map<String, Object> args) {
         String itemName = getStringArg(args, "itemName");
         String channelUIDStr = getStringArg(args, "channelUID");
-        if (itemName == null || channelUIDStr == null) {
-            return errorResult("'itemName' and 'channelUID' are required.");
+        if (itemName == null || itemName.isBlank() || channelUIDStr == null || channelUIDStr.isBlank()) {
+            return errorResult("'itemName' and 'channelUID' are required when action='delete'.");
         }
 
         String linkId = ItemChannelLink.getIDFor(itemName, new ChannelUID(channelUIDStr));
@@ -225,6 +196,7 @@ public class LinkTools {
 
         Map<String, Object> result = new HashMap<>();
         result.put("success", true);
+        result.put("action", "delete");
         result.put("itemName", itemName);
         result.put("channelUID", channelUIDStr);
         return textResult(jsonMapper, result);
