@@ -809,7 +809,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
         }
         String topic = "rr/m/i/" + rriot.u + "/" + mqttUser + "/" + thingID;
         if (localMqttClient != null && localMqttClient.isConnected()) {
-            logger.debug("Publishing B01 {} ({}) message to {} )", method, b01Method, topic);
+            logger.debug("Publishing B01 {} ({}) message to {})", method, b01Method, topic);
             try {
                 MqttMessage message = new MqttMessage(messageBytes);
                 message.setQos(1);
@@ -832,8 +832,10 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
      * bypassing the RPC method/msgId envelope used by V1 and Q7.
      *
      * <p>
-     * Unlike {@link #sendB01RPCCommand}, no RPC method/msgId envelope is added —
-     * the DP map is placed directly under {@code dps.10000}.
+     * Unlike {@link #sendB01RPCCommand}, no RPC envelope is added and the DP map is
+     * placed directly at the top level of {@code dps} — NOT nested under
+     * {@code 10000} as with RPC commands. The correct wire format is:
+     * {@code {"t":N,"dps":{"201":{"cmd":1}}}}
      *
      * @param thingID device DUID
      * @param localKey device local key (16 UTF-8 bytes)
@@ -843,12 +845,9 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
         int timestamp = (int) Instant.now().getEpochSecond();
         MqttClient localMqttClient = mqttClient;
 
-        Map<String, Object> outerDps = new HashMap<>();
-        outerDps.put("10000", dps);
-
         Map<String, Object> payloadMap = new HashMap<>();
         payloadMap.put("t", timestamp);
-        payloadMap.put("dps", outerDps);
+        payloadMap.put("dps", dps);
 
         String payload = gson.toJson(payloadMap);
         logger.trace("B01 DP payload = {}", payload);

@@ -376,7 +376,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         refreshTransportContext();
         hasChannelStructure = false;
         applyCloudOnlyCapabilityPolicies();
-
         initTask.setNamePrefix(getThing().getUID().getId());
         pollTask.setNamePrefix(getThing().getUID().getId());
         statusPollTask.setNamePrefix(getThing().getUID().getId());
@@ -436,6 +435,9 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                         Home home = localBridgeHandler.getHomeDetail();
                         if (home != null) {
                             rrHomeId = Integer.toString(home.data.rrHomeId);
+                        }
+                        if (q10) {
+                            sendQ10DpCommand(Map.of("102", Map.of("cmd", 1)));
                         }
                     }
                 } else {
@@ -1487,6 +1489,30 @@ public class RoborockVacuumHandler extends BaseThingHandler {
      * Each DP is checked independently — a single push frame can carry any
      * combination of them simultaneously.
      */
+    /**
+     * Handles unsolicited flat DP pushes from B01 devices.
+     *
+     * <p>
+     * Top-level DP mappings for Q10 (from Q10ShadowDataService.applyQ10ShadowDpPayload):
+     * 
+     * <pre>
+     *   121 = status (vacuum state ID)
+     *   122 = battery
+     *   123 = fan_power
+     *   124 = water_box_mode
+     *   125 = main_brush_life   (consumable remaining life — NOT clean area)
+     *   126 = side_brush_life   (consumable remaining life — NOT clean time)
+     *   127 = filter_life       (consumable remaining life — NOT clean percent)
+     *   136 = clean_times       (number of cleans completed in this session)
+     *   137 = clean_mode        (current cleaning mode)
+     *   138 = clean_task_type   (type of cleaning task — NOT dock state)
+     *   139 = back_type         (return-to-dock trigger type)
+     *   141 = cleaning_progress (0–100%)
+     *   142 = fleeing_goods     (obstacle avoidance active flag)
+     * </pre>
+     * 
+     * Clean area and time arrive inside dps.101 sub-keys 7 and 6 respectively.
+     */
     private void handleFlatDpPush(JsonObject dpsRoot) {
         // DP 121 — vacuum state ID (shared: Q7 and Q10)
         if (dpsRoot.has("121")) {
@@ -1514,32 +1540,66 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             updateState(RobotCapabilities.WATERBOX_MODE.getChannel(), new DecimalType(dpsRoot.get("124").getAsInt()));
         }
 
-        // DP 125 — clean area in cm²; convert to mm² so / 1000000D gives m²
+        // DP 125 — main brush remaining life
+        // Value is either already remaining-hours (<=100) or seconds-used (>100).
+        // Convert to seconds-used for ConsumablesType.remainingHours compatibility.
         if (dpsRoot.has("125")) {
-            long areaMm2 = dpsRoot.get("125").getAsLong() * 10000L;
-            updateState(CHANNEL_CLEAN_AREA, new QuantityType<>(areaMm2 / 1000000D, SIUnits.SQUARE_METRE));
+            int workTimeSecs = q10ConsumableToSecondsUsed(dpsRoot.get("125").getAsLong(), ConsumablesType.MAIN_BRUSH);
+            updateState(CHANNEL_CONSUMABLE_MAIN_TIME, new QuantityType<>(
+                    ConsumablesType.remainingHours(workTimeSecs, ConsumablesType.MAIN_BRUSH), Units.HOUR));
+            updateState(CHANNEL_CONSUMABLE_MAIN_PERC,
+                    new DecimalType(ConsumablesType.remainingPercent(workTimeSecs, ConsumablesType.MAIN_BRUSH)));
         }
 
-        // DP 126 — clean time in seconds
+        // DP 126 — side brush remaining life (same encoding as DP 125)
         if (dpsRoot.has("126")) {
-            updateState(CHANNEL_CLEAN_TIME,
-                    new QuantityType<>(TimeUnit.SECONDS.toMinutes(dpsRoot.get("126").getAsLong()), Units.MINUTE));
+            int workTimeSecs = q10ConsumableToSecondsUsed(dpsRoot.get("126").getAsLong(), ConsumablesType.SIDE_BRUSH);
+            updateState(CHANNEL_CONSUMABLE_SIDE_TIME, new QuantityType<>(
+                    ConsumablesType.remainingHours(workTimeSecs, ConsumablesType.SIDE_BRUSH), Units.HOUR));
+            updateState(CHANNEL_CONSUMABLE_SIDE_PERC,
+                    new DecimalType(ConsumablesType.remainingPercent(workTimeSecs, ConsumablesType.SIDE_BRUSH)));
         }
 
-        // DP 127 — clean percent (0–100); purpose confirmed from Q10DpDispatcher known keys
-        if (dpsRoot.has("127") && deviceCapabilities.containsKey(RobotCapabilities.CLEAN_PERCENT)) {
-            updateState(CHANNEL_CLEAN_PERCENT, new DecimalType(dpsRoot.get("127").getAsInt()));
+        // DP 127 — filter remaining life (same encoding as DP 125)
+        if (dpsRoot.has("127")) {
+            int workTimeSecs = q10ConsumableToSecondsUsed(dpsRoot.get("127").getAsLong(), ConsumablesType.FILTER);
+            updateState(CHANNEL_CONSUMABLE_FILTER_TIME, new QuantityType<>(
+                    ConsumablesType.remainingHours(workTimeSecs, ConsumablesType.FILTER), Units.HOUR));
+            updateState(CHANNEL_CONSUMABLE_FILTER_PERC,
+                    new DecimalType(ConsumablesType.remainingPercent(workTimeSecs, ConsumablesType.FILTER)));
         }
 
-        // DPs 136–139, 141, 142 — present in Q10 known-key set but purpose not yet confirmed.
-        // Logged at trace so captures can be used to identify them.
-        for (String unknownDp : new String[] { "136", "137", "138", "139", "141", "142" }) {
-            if (dpsRoot.has(unknownDp)) {
-                logger.trace("Q10 unhandled flat DP {}: {}", unknownDp, dpsRoot.get(unknownDp));
-            }
+        // DP 136 — clean_times: number of cleaning passes completed in this task
+        if (dpsRoot.has("136")) {
+            logger.debug("Q10 dp136 clean_times: {}", dpsRoot.get("136").getAsInt());
         }
 
-        // DP 101 — nested object containing map, carpet, network, and settings sub-keys
+        // DP 137 — clean_mode: current cleaning mode integer
+        if (dpsRoot.has("137")) {
+            logger.debug("Q10 dp137 clean_mode: {}", dpsRoot.get("137").getAsInt());
+        }
+
+        // DP 138 — clean_task_type: type of cleaning task currently running (not dock state)
+        if (dpsRoot.has("138")) {
+            logger.debug("Q10 dp138 clean_task_type: {}", dpsRoot.get("138").getAsInt());
+        }
+
+        // DP 139 — back_type: what triggered the return-to-dock (e.g. finished, low battery)
+        if (dpsRoot.has("139")) {
+            logger.debug("Q10 dp139 back_type: {}", dpsRoot.get("139").getAsInt());
+        }
+
+        // DP 141 — cleaning_progress: 0–100% completion of current task
+        if (dpsRoot.has("141") && deviceCapabilities.containsKey(RobotCapabilities.CLEAN_PERCENT)) {
+            updateState(CHANNEL_CLEAN_PERCENT, new DecimalType(dpsRoot.get("141").getAsInt()));
+        }
+
+        // DP 142 — fleeing_goods: obstacle avoidance active (0=inactive, non-zero=active)
+        if (dpsRoot.has("142")) {
+            logger.debug("Q10 dp142 fleeing_goods: {}", dpsRoot.get("142").getAsInt());
+        }
+
+        // DP 101 — nested object containing map, carpet, network, settings, and live metrics
         JsonElement dp101Element = dpsRoot.get("101");
         if (dp101Element != null && dp101Element.isJsonObject()) {
             handleQ10Dp101(dp101Element.getAsJsonObject());
@@ -1547,39 +1607,147 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     /**
-     * Handles the Q10's nested {@code dps.101} object, which carries map metadata,
-     * carpet zones, network info, voice settings, and other configuration sub-keys.
+     * Converts a Q10 shadow consumable value to seconds-used for use with
+     * {@link ConsumablesType#remainingHours} and {@link ConsumablesType#remainingPercent}.
      *
      * <p>
-     * Known sub-keys (from Q10DpDispatcher knownCommonKeys):
-     * 6, 7, 25–33, 36–37, 40, 45, 47, 50–53, 60–61, 64–65, 67, 76, 78–79, 81,
-     * 83, 86–88, 90, 92–93, 96, 104–106, 108–109, 207
+     * Q10 shadow DPs 125/126/127 encode consumable life in one of two ways:
+     * <ul>
+     * <li>Value &le; 100: already a remaining-hours figure — convert to seconds-used
+     * by subtracting from the lifespan and multiplying by 3600.</li>
+     * <li>Value &gt; 100: already seconds-used — pass through directly.</li>
+     * </ul>
+     *
+     * <p>
+     * Lifespan values (from Q10ShadowDataService): main brush 300h, side brush 200h,
+     * filter 150h, sensor 30h.
+     */
+    private int q10ConsumableToSecondsUsed(long rawValue, ConsumablesType type) {
+        if (rawValue <= 100) {
+            // Value is remaining hours — derive seconds used from known lifespan
+            final long lifespanHours;
+            switch (type) {
+                case MAIN_BRUSH:
+                    lifespanHours = 300;
+                    break;
+                case SIDE_BRUSH:
+                    lifespanHours = 200;
+                    break;
+                case FILTER:
+                    lifespanHours = 150;
+                    break;
+                case SENSOR:
+                    lifespanHours = 30;
+                    break;
+                default:
+                    lifespanHours = 0;
+                    break;
+            }
+            if (lifespanHours == 0)
+                return 0;
+            long remainingSecs = rawValue * 3600L;
+            long lifespanSecs = lifespanHours * 3600L;
+            return (int) Math.max(0, lifespanSecs - remainingSecs);
+        }
+        // Value is already seconds used
+        return (int) Math.min(rawValue, Integer.MAX_VALUE);
+    }
+
+    /**
+     * Handles the Q10's nested {@code dps.101} object, which carries live metrics,
+     * map metadata, carpet zones, network info, consumables, and settings sub-keys.
+     *
+     * <p>
+     * Sub-key mappings (from Q10ShadowDataService.applyQ10ShadowDpPayload commonMap):
+     * *
+     * 
+     * <pre>
+     * 6   = clean_time       7   = clean_area       25  = quiet_is_open
+     * 26  = volume           29  = total_clean_area  30  = total_clean_count
+     * 31  = total_clean_time 32  = local timer blob  33  = not-disturb data
+     * 36  = voice_language   37  = dust_switch       40  = mop_state
+     * 45  = auto_boost       47  = child_lock        50  = dust_setting
+     * 51  = map_save_switch  52  = clean record list 53  = recent_clean_record
+     * 55  = command ack      57  = virtual walls     59  = customized cleaning flag
+     * 60  = multi_map_switch 61  = map list         65  = carpet zones
+     * 67  = sensor_dirty_time 76  = carpet_clean_type 78 = clean_path_preference
+     * 79  = time zone        80  = custom setting mode 81  = network info
+     * 83  = robot_type       86  = laser obstacle   87  = cleaning_progress
+     * 88  = ground_clean     90  = fault code       91  = current room IDs
+     * 92  = disturb settings 93  = timer_type       96  = add_clean_state
+     * 98  = easycard points  100 = threshold points 103 = cliff points
+     * 104 = breakpoint_clean 105 = valley_point_charging  106 = valley charging time
+     * 112 = ultra_high_suction_mode 113 = deep_mop_preference 207 = user_plan
+     * </pre>
      */
     private void handleQ10Dp101(JsonObject dp101) {
-        // Sub-key 81 — network info: {ssid, bssid, ip, signal (RSSI)}
-        // Mirrors the V1 get_network_info response; update the same channels.
+        // Sub-key 6 — clean_time: current session clean time in seconds
+        if (dp101.has("6")) {
+            updateState(CHANNEL_CLEAN_TIME,
+                    new QuantityType<>(TimeUnit.SECONDS.toMinutes(dp101.get("6").getAsLong()), Units.MINUTE));
+        }
+
+        // Sub-key 7 — clean_area: current session clean area in cm²; convert to m²
+        if (dp101.has("7")) {
+            long areaMm2 = dp101.get("7").getAsLong() * 10000L;
+            updateState(CHANNEL_CLEAN_AREA, new QuantityType<>(areaMm2 / 1000000D, SIUnits.SQUARE_METRE));
+        }
+
+        // Sub-key 29 — total_clean_area: lifetime total clean area in m²
+        if (dp101.has("29")) {
+            long totalAreaMm2 = dp101.get("29").getAsLong() * 10000L;
+            updateState(CHANNEL_HISTORY_TOTALAREA, new QuantityType<>(totalAreaMm2 / 1000000D, SIUnits.SQUARE_METRE));
+        }
+
+        // Sub-key 30 — total_clean_count: lifetime total clean cycles
+        if (dp101.has("30")) {
+            updateState(CHANNEL_HISTORY_COUNT, new DecimalType(dp101.get("30").getAsLong()));
+        }
+
+        // Sub-key 31 — total_clean_time: lifetime total clean time in seconds
+        if (dp101.has("31")) {
+            updateState(CHANNEL_HISTORY_TOTALTIME,
+                    new QuantityType<>(TimeUnit.SECONDS.toMinutes(dp101.get("31").getAsLong()), Units.MINUTE));
+        }
+
+        // Sub-key 67 — sensor_dirty_time: sensor consumable seconds used
+        if (dp101.has("67")) {
+            int sensorSecs = dp101.get("67").getAsInt();
+            updateState(CHANNEL_CONSUMABLE_SENSOR_TIME,
+                    new QuantityType<>(ConsumablesType.remainingHours(sensorSecs, ConsumablesType.SENSOR), Units.HOUR));
+            updateState(CHANNEL_CONSUMABLE_SENSOR_PERC,
+                    new DecimalType(ConsumablesType.remainingPercent(sensorSecs, ConsumablesType.SENSOR)));
+        }
+
+        // Sub-key 87 — cleaning_progress: 0–100% completion of current task
+        if (dp101.has("87") && deviceCapabilities.containsKey(RobotCapabilities.CLEAN_PERCENT)) {
+            updateState(CHANNEL_CLEAN_PERCENT, new DecimalType(dp101.get("87").getAsInt()));
+        }
+
+        // Sub-key 90 — fault: current error/fault code
+        if (dp101.has("90")) {
+            int errorCode = dp101.get("90").getAsInt();
+            updateState(CHANNEL_ERROR_CODE, new StringType(VacuumErrorType.getType(errorCode).getDescription()));
+            updateState(CHANNEL_ERROR_ID, new DecimalType(errorCode));
+        }
+
+        // Sub-key 81 — network info: {wifiName, ipAdress, mac, signal}
+        // Note: Q10 uses "wifiName"/"ipAdress" (with typo) rather than "ssid"/"ip"
         if (dp101.has("81") && dp101.get("81").isJsonObject()) {
             JsonObject net = dp101.get("81").getAsJsonObject();
-            if (net.has("ssid"))
-                updateState(CHANNEL_SSID, new StringType(net.get("ssid").getAsString()));
-            if (net.has("bssid"))
-                updateState(CHANNEL_BSSID, new StringType(net.get("bssid").getAsString()));
+            if (net.has("wifiName"))
+                updateState(CHANNEL_SSID, new StringType(net.get("wifiName").getAsString()));
+            if (net.has("mac"))
+                updateState(CHANNEL_BSSID, new StringType(net.get("mac").getAsString()));
             if (net.has("signal"))
                 updateState(CHANNEL_RSSI, new DecimalType(net.get("signal").getAsInt()));
-            if (net.has("ip") && localIP.isEmpty()) {
-                localIP = net.get("ip").getAsString();
+            if (net.has("ipAdress") && localIP.isEmpty()) {
+                localIP = net.get("ipAdress").getAsString();
                 refreshTransportContext();
             }
         }
 
-        // FIXME
-        // Sub-key 78 — clean_path_preference (0=standard, 1=deep, 2=custom)
-        // if (dp101.has("78") && deviceCapabilities.containsKey(RobotCapabilities.CORNER_CLEAN_MODE)) {
-        // updateState(RobotCapabilities.CORNER_CLEAN_MODE.getChannel(), new DecimalType(dp101.get("78").getAsInt()));
-        // }
-
         // Sub-key 61 — map list: {data:[...]}
-        // Trigger a map refresh rather than parsing inline; full map data arrives as a separate binary blob.
         if (dp101.has("61") && dp101.get("61").isJsonObject()) {
             JsonObject mapList = dp101.get("61").getAsJsonObject();
             if (mapList.has("data") && mapList.get("data").isJsonArray()) {
@@ -1593,13 +1761,10 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             JsonObject carpets = dp101.get("65").getAsJsonObject();
             if (carpets.has("data") && carpets.get("data").isJsonArray()) {
                 logger.debug("Q10 dp101.65 carpet zone push: {} zones", carpets.get("data").getAsJsonArray().size());
-                // TODO: update carpet zone channel if capability is present
             }
         }
 
-        // Sub-key 52 — clean record selector/list
-        // op="select" result=1 means a record was selected (ack only, no data).
-        // op="list" carries the record list array.
+        // Sub-key 52 — clean record list: {op:"list", data:[...]} or {op:"select", result:1}
         if (dp101.has("52") && dp101.get("52").isJsonObject()) {
             JsonObject dp52 = dp101.get("52").getAsJsonObject();
             String op = dp52.has("op") ? dp52.get("op").getAsString() : "";
@@ -1610,16 +1775,95 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             }
         }
 
-        // Sub-keys 36, 108, 109 — voice/locale settings; logged at trace until purpose is confirmed
-        if (dp101.has("36"))
-            logger.trace("Q10 dp101.36 voice_lang: {}", dp101.get("36"));
-        if (dp101.has("108"))
-            logger.trace("Q10 dp101.108 voice_ver: {}", dp101.get("108"));
-        if (dp101.has("109"))
-            logger.trace("Q10 dp101.109 country: {}", dp101.get("109"));
+        // Sub-key 55 — command ack: base64 [cmd_byte, result_byte]; result=0x00 means success
+        if (dp101.has("55")) {
+            try {
+                byte[] ackBytes = java.util.Base64.getDecoder().decode(dp101.get("55").getAsString());
+                if (ackBytes.length >= 2) {
+                    logger.debug("Q10 dp101.55 command ack: cmd={} result={}", ackBytes[0] & 0xFF, ackBytes[1] & 0xFF);
+                }
+            } catch (IllegalArgumentException e) {
+                logger.trace("Q10 dp101.55 ack decode failed: {}", e.getMessage());
+            }
+        }
 
-        // All other sub-keys logged at trace for identification from captures
-        Set<String> handledKeys = Set.of("52", "61", "65", "78", "81", "36", "108", "109");
+        // Sub-keys logged at trace — known but no channel mapping yet
+        if (dp101.has("25"))
+            logger.trace("Q10 dp101.25 quiet_is_open: {}", dp101.get("25"));
+        if (dp101.has("26"))
+            logger.trace("Q10 dp101.26 volume: {}", dp101.get("25"));
+        if (dp101.has("32"))
+            logger.trace("Q10 dp101.32 local_timer_blob: {}", dp101.get("32"));
+        if (dp101.has("33"))
+            logger.trace("Q10 dp101.33 dnd_data_blob: {}", dp101.get("33"));
+        if (dp101.has("36"))
+            logger.trace("Q10 dp101.36 voice_language: {}", dp101.get("36"));
+        if (dp101.has("37"))
+            logger.trace("Q10 dp101.37 dust_switch: {}", dp101.get("37"));
+        if (dp101.has("40"))
+            logger.trace("Q10 dp101.40 mop_state: {}", dp101.get("40"));
+        if (dp101.has("45"))
+            logger.trace("Q10 dp101.45 carpet_boost: {}", dp101.get("40"));
+        if (dp101.has("47"))
+            logger.trace("Q10 dp101.47 child_lock: {}", dp101.get("40"));
+        if (dp101.has("50"))
+            logger.trace("Q10 dp101.50 dust_setting: {}", dp101.get("50"));
+        if (dp101.has("51"))
+            logger.trace("Q10 dp101.51 map_save_switch: {}", dp101.get("51"));
+        if (dp101.has("53"))
+            logger.trace("Q10 dp101.53 recent_clean_record: {}", dp101.get("53"));
+        if (dp101.has("57"))
+            logger.trace("Q10 dp101.57 virtual_walls_blob: {}", dp101.get("57"));
+        if (dp101.has("59"))
+            logger.trace("Q10 dp101.59 customized_clean_flag: {}", dp101.get("59"));
+        if (dp101.has("60"))
+            logger.trace("Q10 dp101.60 multi_map_switch: {}", dp101.get("60"));
+        if (dp101.has("76"))
+            logger.trace("Q10 dp101.76 carpet_clean_type: {}", dp101.get("76"));
+        if (dp101.has("79"))
+            logger.trace("Q10 dp101.79 time_zone: {}", dp101.get("79"));
+        if (dp101.has("80"))
+            logger.trace("Q10 dp101.80 custom_setting_mode: {}", dp101.get("80"));
+        if (dp101.has("83"))
+            logger.trace("Q10 dp101.83 robot_type: {}", dp101.get("83"));
+        if (dp101.has("86"))
+            logger.trace("Q10 dp101.86 line_laser_obstacle_avoidance: {}", dp101.get("86"));
+        if (dp101.has("88"))
+            logger.trace("Q10 dp101.88 ground_clean: {}", dp101.get("88"));
+        if (dp101.has("92"))
+            logger.trace("Q10 dp101.92 disturb_settings: {}", dp101.get("92"));
+        if (dp101.has("93"))
+            logger.trace("Q10 dp101.93 timer_type: {}", dp101.get("93"));
+        if (dp101.has("96"))
+            logger.trace("Q10 dp101.96 add_clean_state: {}", dp101.get("96"));
+        if (dp101.has("98"))
+            logger.trace("Q10 dp101.98 easycard_points: {}", dp101.get("98"));
+        if (dp101.has("100"))
+            logger.trace("Q10 dp101.100 threshold_points: {}", dp101.get("100"));
+        if (dp101.has("103"))
+            logger.trace("Q10 dp101.103 cliff_points: {}", dp101.get("103"));
+        if (dp101.has("104"))
+            logger.trace("Q10 dp101.104 breakpoint_clean: {}", dp101.get("104"));
+        if (dp101.has("105"))
+            logger.trace("Q10 dp101.105 valley_point_charging: {}", dp101.get("105"));
+        if (dp101.has("106"))
+            logger.trace("Q10 dp101.106 valley_charging_time: {}", dp101.get("106"));
+        if (dp101.has("108"))
+            logger.trace("Q10 dp101.108 voice_version: {}", dp101.get("108"));
+        if (dp101.has("109"))
+            logger.trace("Q10 dp101.109 robot_country_code: {}", dp101.get("109"));
+        if (dp101.has("112"))
+            logger.trace("Q10 dp101.112 ultra_high_suction_mode: {}", dp101.get("112"));
+        if (dp101.has("113"))
+            logger.trace("Q10 dp101.113 deep_mop_preference: {}", dp101.get("113"));
+        if (dp101.has("207"))
+            logger.trace("Q10 dp101.207 user_plan: {}", dp101.get("207"));
+
+        // All remaining sub-keys logged at trace for identification from captures
+        Set<String> handledKeys = Set.of("6", "7", "25", "26", "29", "30", "31", "32", "33", "36", "37", "40", "45",
+                "47", "50", "51", "52", "53", "55", "57", "59", "60", "61", "65", "67", "76", "78", "79", "80", "81",
+                "83", "86", "87", "88", "90", "92", "93", "96", "98", "100", "103", "104", "105", "106", "108", "109",
+                "112", "113", "207");
         for (Map.Entry<String, JsonElement> entry : dp101.entrySet()) {
             if (!handledKeys.contains(entry.getKey())) {
                 logger.trace("Q10 dp101 unhandled sub-key {}: {}", entry.getKey(), entry.getValue());
