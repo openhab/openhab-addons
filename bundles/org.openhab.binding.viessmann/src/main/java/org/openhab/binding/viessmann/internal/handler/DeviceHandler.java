@@ -75,7 +75,6 @@ import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.StateOption;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
-import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,7 +91,6 @@ import com.google.gson.JsonSyntaxException;
  * @author Ronny Grun - Initial contribution
  */
 @NonNullByDefault
-@Component(service = DeviceHandler.class)
 public class DeviceHandler extends ViessmannThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(DeviceHandler.class);
