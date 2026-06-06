@@ -45,7 +45,6 @@ public class SmartThingsMuteConverter extends SmartThingsConverter {
             SmartThingsCapability capa, SmartThingsAttribute attr, String componentKey, String capaKey, String attrKey,
             String targetType) throws SmartThingsException {
         if (command instanceof OnOffType onOffType) {
-
             String cmdName = SmartThingsBindingConstants.CMD_SET_MUTE;
             Object[] arguments = new Object[1];
             if (onOffType == OnOffType.OFF) {

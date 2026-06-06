@@ -40,6 +40,8 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.jaxrs.client.SseEventSourceFactory;
 import org.slf4j.Logger;
@@ -70,7 +72,7 @@ public class SmartThingsHandlerFactory extends BaseThingHandlerFactory implement
     private final SmartThingsTypeRegistry typeRegistry;
     private final ClientBuilder clientBuilder;
     private final SseEventSourceFactory eventSourceFactory;
-    private final WebhookService webHookService;
+    private volatile @Nullable WebhookService webHookService;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -83,7 +85,7 @@ public class SmartThingsHandlerFactory extends BaseThingHandlerFactory implement
             final @Reference TranslationProvider translationProvider, final @Reference OAuthFactory oAuthFactory,
             final @Reference HttpClientFactory httpClientFactory,
             final @Reference SmartThingsTypeRegistry typeRegistery, final @Reference ClientBuilder clientBuilder,
-            final @Reference SseEventSourceFactory eventSourceFactory, final @Reference WebhookService webHookService) {
+            final @Reference SseEventSourceFactory eventSourceFactory) {
         this.httpService = httpService;
         this.authService = authService;
         this.translationProvider = translationProvider;
@@ -92,7 +94,25 @@ public class SmartThingsHandlerFactory extends BaseThingHandlerFactory implement
         this.typeRegistry = typeRegistery;
         this.clientBuilder = clientBuilder;
         this.eventSourceFactory = eventSourceFactory;
+    }
+
+    @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
+    protected void setWebHookService(WebhookService webHookService) {
         this.webHookService = webHookService;
+        SmartThingsBridgeHandler handler = bridgeHandler;
+        if (handler != null) {
+            handler.setWebHookService(webHookService);
+        }
+    }
+
+    protected void unsetWebHookService(WebhookService webHookService) {
+        if (webHookService.equals(this.webHookService)) {
+            SmartThingsBridgeHandler handler = bridgeHandler;
+            if (handler != null) {
+                handler.unsetWebHookService(webHookService);
+            }
+            this.webHookService = null;
+        }
     }
 
     @Override

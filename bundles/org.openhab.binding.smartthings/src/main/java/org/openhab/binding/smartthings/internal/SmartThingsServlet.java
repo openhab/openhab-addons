@@ -303,7 +303,6 @@ public class SmartThingsServlet extends HttpServlet
 
                                 replaceMap.put(KEY_AUTHORIZATION_URI, Encode.forHtml(authorizationUri));
                                 replaceMap.put(KEY_AUTHORIZATION_URI_JS, Encode.forJavaScript(authorizationUriJs));
-
                             } else if ("step2".equals(reqState)) {
                                 template = confirmTemplate;
 
@@ -315,7 +314,6 @@ public class SmartThingsServlet extends HttpServlet
                                     logger.warn("Api is null on step2 authentification");
                                     replaceMap.put(KEY_LOCATION, "Unknow location");
                                     replaceMap.put(KEY_DEVICES_COUNT, "0");
-
                                 } else {
                                     SmartThingsDevice[] devices = api.getAllDevices();
                                     SmartThingsLocation[] locations = api.getAllLocations();
@@ -388,7 +386,6 @@ public class SmartThingsServlet extends HttpServlet
             } catch (SmartThingsException ex) {
                 replaceMap.put(KEY_BRIDGE_URI, "Error during oauth");
             }
-
         }
 
         return replaceKeysFromMap(template, replaceMap);
@@ -475,7 +472,6 @@ public class SmartThingsServlet extends HttpServlet
                     logger.info("Can't find device for EVENT: {} {} {} {} {}", deviceId, componentId, capa, attr,
                             value);
                 }
-
             } else if (eventType.equals(SmartThingsBindingConstants.EVENT_TYPE_CONFIRMATION)) {
                 String confirmUrl = resultObj.confirmationData.confirmationUrl();
 
@@ -494,7 +490,6 @@ public class SmartThingsServlet extends HttpServlet
 
                 logger.trace("CONFIRMATION {}", confirmUrl);
             }
-
         }
         logger.trace("SmartThings servlet returning.");
     }

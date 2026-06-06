@@ -107,7 +107,6 @@ public class SmartThingsBridgeChannelDefinitions {
     }
 
     public SmartThingsBridgeChannelDefinitions() {
-
         // ============================
         // = audioMute
         // ============================

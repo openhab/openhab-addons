@@ -175,11 +175,9 @@ public class SmartThingsThingHandler extends BaseThingHandler {
                         refreshChannel(deviceType, componentId, namespace, capaKey, subKey, subValue);
                     }
                 }
-
             } else {
                 refreshChannel(deviceType, componentId, namespace, capaKey, attr, value);
             }
-
         } catch (Exception ex) {
             logger.error("Unable to refresh device: {} {}", this.getThing().getUID(), ex.toString(), ex);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());

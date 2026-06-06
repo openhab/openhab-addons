@@ -110,7 +110,7 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
             SmartThingsAuthService authService, TranslationProvider translationProvider, BundleContext bundleContext,
             HttpService httpService, OAuthFactory oAuthFactory, HttpClientFactory httpClientFactory,
             SmartThingsTypeRegistry typeRegistry, ClientBuilder clientBuilder, SseEventSourceFactory eventSourceFactory,
-            WebhookService webHookService) {
+            @Nullable WebhookService webHookService) {
         super(bridge);
 
         config = getThing().getConfiguration().as(SmartThingsBridgeConfig.class);
@@ -126,6 +126,22 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
         this.clientBuilder = clientBuilder;
         this.eventSourceFactory = eventSourceFactory;
         this.webHookService = webHookService;
+    }
+
+    public void setWebHookService(WebhookService webHookService) {
+        this.webHookService = webHookService;
+        if (config.useCloudWebhook) {
+            registerCloudWebhook();
+        }
+    }
+
+    public void unsetWebHookService(WebhookService webHookService) {
+        if (webHookService.equals(this.webHookService)) {
+            removeRefreshTask();
+            this.webHookService = null;
+            cloudWebHook = null;
+            updateWebhookProperties(null);
+        }
     }
 
     @Override
@@ -169,7 +185,6 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.unable-register-servlet");
             return;
-
         }
 
         OAuthClientService oAuthService = this.oAuthService;
@@ -177,7 +192,6 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.oauth-service-notinitialized");
             return;
-
         }
         try {
             AccessTokenResponse response = oAuthService.getAccessTokenResponse();
@@ -221,7 +235,6 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
                     SmartThingsBindingConstants.SMARTTHINGS_API_TOKEN_URL,
                     SmartThingsBindingConstants.SMARTTHINGS_AUTHORIZE_URL, config.clientId, null,
                     SmartThingsBindingConstants.SMARTTHINGS_SCOPES, true);
-
         }
         // if the user app created, use the clientId/clientSecret from the app
         else {
@@ -229,7 +242,6 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
                     SmartThingsBindingConstants.SMARTTHINGS_API_TOKEN_URL,
                     SmartThingsBindingConstants.SMARTTHINGS_AUTHORIZE_URL, config.clientId, config.clientSecret,
                     SmartThingsBindingConstants.SMARTTHINGS_SCOPES_ST, true);
-
         }
 
         this.oAuthService = oAuthService;

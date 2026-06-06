@@ -55,7 +55,7 @@ public class SmartThingsAccountHandler extends SmartThingsBridgeHandler {
             SmartThingsAuthService authService, TranslationProvider translationProvider, BundleContext bundleContext,
             HttpService httpService, OAuthFactory oAuthFactory, HttpClientFactory httpClientFactory,
             SmartThingsTypeRegistry typeRegistry, ClientBuilder clientBuilder, SseEventSourceFactory eventSourceFactory,
-            WebhookService webHookService) {
+            @Nullable WebhookService webHookService) {
         super(bridge, smartthingsHandlerFactory, authService, translationProvider, bundleContext, httpService,
                 oAuthFactory, httpClientFactory, typeRegistry, clientBuilder, eventSourceFactory, webHookService);
     }
