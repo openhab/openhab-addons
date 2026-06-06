@@ -81,7 +81,7 @@ class WatchToolsTest {
     @SuppressWarnings("unchecked")
     void watchItemsSuccess() throws Exception {
         CallToolResult result = tools().handleWatchItems(ex(),
-                createRequest(Map.of("itemNames", List.of("Item1", "Item2"))));
+                createRequest(Map.of("action", "start", "itemNames", List.of("Item1", "Item2"))));
         assertSuccess(result);
 
         Map<String, Object> parsed = parseResult(result);
@@ -98,14 +98,28 @@ class WatchToolsTest {
 
     @Test
     void watchItemsMissingParam() throws Exception {
-        CallToolResult result = tools().handleWatchItems(ex(), createRequest(Map.of()));
+        CallToolResult result = tools().handleWatchItems(ex(), createRequest(Map.of("action", "start")));
         assertErrorContains(result, "itemNames");
     }
 
     @Test
     void watchItemsEmptyList() throws Exception {
-        CallToolResult result = tools().handleWatchItems(ex(), createRequest(Map.of("itemNames", List.of())));
+        CallToolResult result = tools().handleWatchItems(ex(),
+                createRequest(Map.of("action", "start", "itemNames", List.of())));
         assertErrorContains(result, "itemNames");
+    }
+
+    @Test
+    void watchItemsMissingAction() throws Exception {
+        CallToolResult result = tools().handleWatchItems(ex(), createRequest(Map.of("itemNames", List.of("Item1"))));
+        assertErrorContains(result, "action");
+    }
+
+    @Test
+    void watchItemsUnknownAction() throws Exception {
+        CallToolResult result = tools().handleWatchItems(ex(),
+                createRequest(Map.of("action", "pause", "itemNames", List.of("Item1"))));
+        assertErrorContains(result, "Invalid action");
     }
 
     @Test
@@ -113,7 +127,8 @@ class WatchToolsTest {
     void unwatchItemsSpecific() throws Exception {
         subs().watch("session1", List.of("Item1", "Item2", "Item3"));
 
-        CallToolResult result = tools().handleUnwatchItems(ex(), createRequest(Map.of("itemNames", List.of("Item2"))));
+        CallToolResult result = tools().handleWatchItems(ex(),
+                createRequest(Map.of("action", "stop", "itemNames", List.of("Item2"))));
         assertSuccess(result);
 
         Map<String, Object> parsed = parseResult(result);
@@ -132,7 +147,7 @@ class WatchToolsTest {
     void unwatchItemsAll() throws Exception {
         subs().watch("session1", List.of("Item1", "Item2"));
 
-        CallToolResult result = tools().handleUnwatchItems(ex(), createRequest(Map.of()));
+        CallToolResult result = tools().handleWatchItems(ex(), createRequest(Map.of("action", "stop")));
         assertSuccess(result);
 
         Map<String, Object> parsed = parseResult(result);

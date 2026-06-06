@@ -1,6 +1,6 @@
 # openHAB MCP Server
 
-The openHAB MCP add-on lets AI assistants — Claude Desktop, Claude Code, ChatGPT, and other [Model Context Protocol](https://modelcontextprotocol.io) (MCP) clients — read and control your openHAB smart home.
+The openHAB MCP add-on lets AI assistants — Claude Desktop, Claude Code, ChatGPT, and other [Model Context Protocol](https://modelcontextprotocol.io) (MCP) clients read and control your openHAB smart home.
 
 Once you've connected a client, you can say things like:
 
@@ -9,6 +9,7 @@ Once you've connected a client, you can say things like:
 - _"Turn on the porch light every day at sunset."_
 - _"Let me know if the garage door opens while we're talking."_
 - _"Turn off the kitchen light at 10pm tonight."_
+- _"Modernize all my openHAB UI Pages."_
 
 The assistant uses your home's semantic model (rooms, equipment, devices) along with fuzzy matching logic to understand which items you mean to monitor or control without having to use the exact item name.
 
@@ -21,14 +22,18 @@ Every connection must present an openHAB bearer token (see [Authentication](#aut
 
 ## Settings
 
-| Setting                | Default | Advanced | Description                                                                                                                                                                                                           |
-| ---------------------- | ------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `enabled`              | `true`  | NO       | Turn the server on or off without uninstalling.                                                                                                                                                                       |
-| `enableFullApiAccess`  | `false` | NO       | Give the assistant access to the **full openHAB REST API** — including destructive endpoints. Only turn this on if you trust the assistant with that scope. See [Full REST API access](#full-rest-api-access-opt-in). |
-| `registerCloudWebhook` | `false` | NO       | Let remote MCP clients reach this server through openHAB Cloud (`myopenhab.org`) with no port forwarding. Requires the openHAB Cloud add-on. See [openHAB Cloud](#2-openhab-cloud) under Connecting a client.         |
-| `exposeUntaggedItems`  | `false` | YES      | Also include items that aren't assigned to a Location/Equipment/Point. Most people leave this off.                                                                                                                    |
-| `maxItemsPerPage`      | `100`   | YES      | Maximum items returned in one paginated response.                                                                                                                                                                     |
-| `resourceCoalesceMs`   | `500`   | YES      | Rate-limit update notifications for chatty items like power meters.                                                                                                                                                   |
+| Setting                | Default | Advanced | Description                                                                                                                                                                                                                                                                        |
+| ---------------------- | ------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `enabled`              | `true`  | NO       | Turn the server on or off without uninstalling.                                                                                                                                                                                                                                    |
+| `enableFullApiAccess`  | `false` | NO       | Give the assistant access to the **full openHAB REST API** — including destructive endpoints. Only turn this on if you trust the assistant with that scope. See [Full REST API access](#full-rest-api-access-opt-in).                                                              |
+| `enableScripting`      | `false` | NO       | Let the assistant include JavaScript snippets as rule actions/conditions and run scripts ad-hoc via `execute_script`. Requires the `openhab-automation-jsscripting` add-on. See [Scripting](#scripting-opt-in).                                                                    |
+| `enableLoggingAccess`  | `false` | NO       | Give the assistant tools to read recent log entries and adjust logger verbosity for diagnostics. Level changes require an ADMIN-scoped token. See [Diagnostic logging](#diagnostic-logging-opt-in).                                                                                |
+| `enableUiDesign`       | `false` | NO       | Let the assistant design Main UI pages and reusable custom widgets via `list_widgets`, `describe_widget`, `get_page_skeleton`, `manage_ui_component`, and `validate_ui_component`. Writes require an ADMIN-scoped token. See [Main UI design](#main-ui-design-opt-in).             |
+| `enableStaticAssets`   | `false` | NO       | Let the assistant list, read, upload, and delete files in `$OPENHAB_CONF/html` (the folder served at `/static/*`). Useful for SVG icons, images, CSS overrides, and other static files the UI references. ADMIN-scoped token required. See [Static assets](#static-assets-opt-in). |
+| `registerCloudWebhook` | `false` | NO       | Let remote MCP clients reach this server through openHAB Cloud (`myopenhab.org`) with no port forwarding. Requires the openHAB Cloud add-on. See [openHAB Cloud](#2-openhab-cloud) under Connecting a client.                                                                      |
+| `exposeUntaggedItems`  | `false` | YES      | Also include items that aren't assigned to a Location/Equipment/Point. Most people leave this off.                                                                                                                                                                                 |
+| `maxItemsPerPage`      | `100`   | YES      | Maximum items returned in one paginated response.                                                                                                                                                                                                                                  |
+| `resourceCoalesceMs`   | `500`   | YES      | Rate-limit update notifications for chatty items like power meters.                                                                                                                                                                                                                |
 
 ## Authentication
 
@@ -199,45 +204,74 @@ Requires a paid ChatGPT plan (Plus, Pro, Business, Enterprise, Education).
 
 ### Items
 
-| Tool                 | What it does                                                                                                      |
-| -------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| `get_semantic_model` | Returns the home layout: Locations → Equipment → Points. The assistant usually calls this first to orient itself. |
-| `search_items`       | Fuzzy search across names, labels, and synonyms. Tolerates typos and word reordering.                             |
-| `get_item`           | Current state and details for one or more items by exact name.                                                    |
-| `create_item`        | Create a new item (Switch, Dimmer, Number, Group, etc.) with label, tags, and group memberships.                  |
-| `update_item`        | Modify an item's label, category, tags, or group memberships.                                                     |
-| `delete_item`        | Permanently remove an item.                                                                                       |
-| `send_command`       | Turn things on/off, set dimmer/colour values, etc.                                                                |
-| `update_state`       | Directly set the state of a virtual item (bypasses the device handler).                                           |
-| `get_home_status`    | A single snapshot: security (open doors/windows), active lights, climate, energy, device health.                  |
-| `get_system_info`    | openHAB version, item/thing/rule counts, installed bindings.                                                      |
+| Tool                 | What it does                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `get_semantic_model` | Returns the home layout: Locations → Equipment → Points. The assistant usually calls this first to orient itself.                                                                                                                                                                                                                                                                                                                                    |
+| `search_items`       | Fuzzy search across names, labels, and synonyms. Tolerates typos and word reordering.                                                                                                                                                                                                                                                                                                                                                                |
+| `get_item`           | Current state and details for one or more items by exact name.                                                                                                                                                                                                                                                                                                                                                                                       |
+| `manage_item`        | Create, update, or delete an item. `action='create'` (requires `name`+`type`), `action='update'` (label/tags/groups), `action='delete'` (also removes its links).                                                                                                                                                                                                                                                                                    |
+| `set_item`           | Change an item's value. `action='command'` sends a command to control the device (ON/OFF, dimmer levels, etc.); `action='state'` sends an update to the item.                                                                                                                                                                                                                                                                                        |
+| `get_home_status`    | A single snapshot: security (open doors/windows), active lights, climate, energy, device health.                                                                                                                                                                                                                                                                                                                                                     |
+| `get_system_info`    | openHAB version, item/thing/rule counts, installed bindings, and the server's current date/time + timezone. Relative offsets like `"+30s"` or `"+1h"` on a `datetime` trigger are resolved server-side, so this tool isn't needed for simple "in N minutes" scheduling — the assistant calls it when it needs the server's wall-clock for reasoning ("is it morning?", "what day is it?") or for absolute scheduling against an unfamiliar timezone. |
 
 ### Things & links
 
-| Tool                | What it does                                                   |
-| ------------------- | -------------------------------------------------------------- |
-| `get_things`        | Lists Things with online/offline status.                       |
-| `get_thing_details` | Channels, configuration, and linked items for one Thing.       |
-| `get_links`         | List item-channel links, filtered by item name or channel UID. |
-| `create_link`       | Wire an item to a thing's channel.                             |
-| `delete_link`       | Remove an item-channel link.                                   |
+| Tool                | What it does                                                                                                                                      |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `get_things`        | Lists Things with online/offline status.                                                                                                          |
+| `get_thing_details` | Channels, configuration, and linked items for one Thing.                                                                                          |
+| `manage_link`       | List, create, or delete item-channel links. `action='get'` (filter by item name and/or channel UID prefix), `action='create'`, `action='delete'`. |
 
 ### Rules
 
-| Tool          | What it does                                                                                                                                          |
-| ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `get_rules`   | Lists automation rules. `tag='MCP'` scopes the list to rules the assistant created.                                                                   |
-| `create_rule` | Creates a rule. Triggers supported: `time_of_day`, `cron`, `item_state_change`, `item_command`, and `datetime` (one-shot; auto-deletes after firing). |
-| `update_rule` | Modify a rule's name, description, tags, or actions without recreating it.                                                                            |
-| `manage_rule` | Enable, disable, manually trigger, or delete a rule.                                                                                                  |
+| Tool          | What it does                                                                                                                                                                                    |
+| ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `get_rules`   | Lists automation rules. `tag='MCP'` scopes the list to rules the assistant created.                                                                                                             |
+| `create_rule` | Creates a rule with one or more triggers, optional conditions, and a list of actions. See [Rule building blocks](#rule-building-blocks) below for the supported trigger/condition/action types. |
+| `update_rule` | Modify a rule's name, description, tags, conditions, or actions without recreating it.                                                                                                          |
+| `manage_rule` | Enable, disable, manually trigger, or delete a rule.                                                                                                                                            |
+
+#### Rule building blocks
+
+Each `create_rule` call has a `triggers` array (or a single `trigger`), an optional `conditions` array, and a required `actions` array. Each entry has a `type` discriminator plus type-specific fields.
+
+**Triggers** (any matching trigger fires the rule):
+
+| `type`              | Fields                                                                                                                                                                                                                                    |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `time_of_day`       | `time: "HH:MM"`                                                                                                                                                                                                                           |
+| `cron`              | `cronExpression: "0 0 8 ? * MON-FRI"`                                                                                                                                                                                                     |
+| `item_state_change` | `itemName`, optional `state`, optional `previousState`                                                                                                                                                                                    |
+| `item_command`      | `itemName`, optional `command`                                                                                                                                                                                                            |
+| `datetime`          | `datetime: "2026-04-17T15:00:00"` (absolute one-shot, auto-deleted) or a relative offset resolved against the server's clock: `"+30s"`, `"+5m"`, `"+2h"`, `"+1d"`, `"+1w"`; ISO duration `"PT30M"`, `"PT2H"`; ISO period `"P1D"`, `"P2W"` |
+
+**Conditions** (all must pass for actions to run):
+
+| `type`        | Fields                                                                                           |
+| ------------- | ------------------------------------------------------------------------------------------------ |
+| `item_state`  | `itemName`, `operator` (`=`/`!=`/`<`/`<=`/`>`/`>=`, default `=`), `state`                        |
+| `time_of_day` | `startTime`, `endTime` (HH:MM)                                                                   |
+| `day_of_week` | `days: ["MONDAY", "TUESDAY", …]`                                                                 |
+| `ephemeris`   | `kind: "weekend"`/`"weekday"`/`"holiday"`/`"not_holiday"`/`"dayset"`, optional `offset`/`dayset` |
+| `script`      | `script: "…"` — needs `enableScripting` and the JS scripting add-on                              |
+
+**Actions** (executed in order when triggered and conditions pass):
+
+| `type`              | Fields                                                                                                                                                                                                         |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `item_command`      | `itemName`, `command`                                                                                                                                                                                          |
+| `item_state_update` | `itemName`, `state`                                                                                                                                                                                            |
+| `notification`      | `scope: "user"` (default, requires `userId`) / `"broadcast"` / `"log"`; `message`; optional `title`, `icon`, `tag`, `referenceId`, `mediaAttachmentUrl`, `actionButton1-3`. Requires the openHAB Cloud add-on. |
+| `run_rule`          | `ruleUIDs: [...]`, optional `considerConditions` (default `true`)                                                                                                                                              |
+| `rule_enablement`   | `ruleUIDs: [...]`, `enable: true` or `false`                                                                                                                                                                   |
+| `script`            | `script: "…"` — JavaScript via openhab-js; needs `enableScripting` and the JS scripting add-on                                                                                                                 |
 
 ### Watching for changes
 
-| Tool            | What it does                                                                |
-| --------------- | --------------------------------------------------------------------------- |
-| `watch_items`   | Start tracking the given items for state changes in this session.           |
-| `get_events`    | Return any state changes buffered since the last call and drain the buffer. |
-| `unwatch_items` | Stop watching (omit the item list to unwatch everything).                   |
+| Tool          | What it does                                                                                                                                                |
+| ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `watch_items` | Start or stop tracking items for state changes in this session. `action='start'` (with `itemNames`), `action='stop'` (omit `itemNames` to stop everything). |
+| `get_events`  | Return any state changes buffered since the last call and drain the buffer.                                                                                 |
 
 ### Improving how the assistant resolves names
 
@@ -261,9 +295,113 @@ Setting `enableFullApiAccess=true` exposes three extra tools:
 
 Useful when the built-in tools don't cover the task, for example:
 
-- _"Rename the metadata namespace 'alexa' to 'openhabcloud' on all items."_
+- _"Rename the metadata namespace 'alexa' to 'matter' on all items."_
 - _"Query the last 24 hours of temperature persistence for the hallway sensor."_
 - _"Approve the pending Zigbee discovery result for the bulb I just paired."_
+
+## Scripting (opt-in)
+
+> **Note:** Scripts run with the same privileges as any openHAB script — they can access every item, make HTTP requests via `actions.HTTP`, execute system commands via `actions.Exec`, look up OSGi services, and even create new rules.
+> Only enable this if you trust the assistant (and the human directing it) with that scope.
+
+Setting `enableScripting=true` does two things:
+
+1. Unlocks `script` as a valid action and condition `type` in `create_rule` / `update_rule`, with a `script` field holding the JS source.
+1. Exposes an extra `execute_script` tool.
+
+| Tool             | What it does                                                                                                                                                                                                                                                                                                                                 |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `execute_script` | Runs a JavaScript snippet immediately against the openHAB scripting engine and returns its result. Primary use is to **dry-run a script before adding it as a `script` action in a scheduled rule** — syntax and runtime errors come back structured so the assistant can fix them now rather than discover them when the rule fires at 3am. |
+
+Scripts get the full openhab-js environment (`items`, `actions`, `things`, `rules`, `cache`, `time`, …).
+Requires the `openhab-automation-jsscripting` add-on.
+
+Things you can ask once scripting is on:
+
+- _"At 7pm every weekday, dim the living room lights to 40% only if someone is home — write that as a script action."_
+- _"My morning routine should check three weather items and adjust the thermostat — set that up as a rule."_
+- _"Test a snippet that calculates the average of these temperature items before adding it to a rule."_
+
+## Diagnostic logging (opt-in)
+
+> **Note:** Reading logs is gated by `enableLoggingAccess` alone.
+> Changing log levels additionally requires the connected user's bearer token to have **administrator** scope — openHAB's REST API enforces this, the MCP server just forwards the token.
+
+Setting `enableLoggingAccess=true` exposes two tools:
+
+| Tool               | What it does                                                                                                                                                                                                                                                                                                                                                         |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `get_logs`         | Reads recent log entries from openHAB's in-memory buffer (typically the last 500-5000 entries, with stack traces). Filters: `loggerFilter` (regex), `minLevel`, `sinceMs`, `sinceSequence`, `search`, `limit` (default 100, max 1000).                                                                                                                               |
+| `manage_log_level` | `action='get'` lists current effective log levels via `GET /rest/logging/` (optional `loggerFilter` substring). `action='set'` changes one logger via `PUT /rest/logging/{name}` (or DELETE when `level="DEFAULT"`). Auto-reverts to the previous level after `revertAfterSeconds` (default **1800** = 30 min). Pass `revertAfterSeconds=0` for a persistent change. |
+
+Things you can ask once this is enabled:
+
+- _"My Zigbee binding has been flaky — what does the log say?"_
+- _"Why didn't my evening lights rule fire last night?"_
+- _"Turn on DEBUG logging for the Hue binding for a few minutes so I can reproduce something."_
+- _"Has anything errored out in the last hour?"_
+
+The assistant will scope log reads to the relevant binding by default. When increasing log verbosity, it auto-reverts after 30 minutes so DEBUG won't be left on overnight by accident.
+It's also instructed to **ask for confirmation** before bumping infrastructure loggers (`org.eclipse.jetty.*`, `org.apache.karaf.*`, `org.apache.cxf.*`, `org.ops4j.pax.web.*`) since those can flood logs or hurt performance.
+
+## Main UI design (opt-in)
+
+Setting `enableUiDesign=true` lets the assistant design your Main UI: create pages, edit existing ones, and build reusable custom widgets.
+The assistant knows about every page type (layout, home, tabbed, chart, map, floorplan), all the standard cards (toggle, slider, color picker, etc.), how to wire them to your items, and how to compose them — so you can describe what you want in plain English instead of editing YAML.
+
+Things you can ask once this is enabled:
+
+- _"Build me a kitchen dashboard with toggles for the lights, a slider for the dimmer, and a temperature reading at the top."_
+- _"Create a chart page showing the last 24 hours of outdoor temperature and humidity."_
+- _"Add a floor-plan page using the image I just uploaded — and place markers for each room's main light."_
+- _"Make a tabbed page with a tab for each floor of the house."_
+- _"Add a Sonos tab to my media page with controls for all four speakers."_
+- _"Design a custom widget I can reuse for each smart blind — show its position and provide up/down/stop buttons."_
+- _"Rename the 'Living Room' page title to 'Family Room'."_
+- _"Delete the test page I asked you to make yesterday."_
+
+The five UI tools the assistant has available (you don't need to call these directly — just ask in plain English):
+
+| Tool                    | What it does                                                                                                                                                                                          |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `list_widgets`          | Browse the catalog of available components, optionally by category (page types, standard cards, layout primitives, list items, map/plan markers).                                                     |
+| `describe_widget`       | Look up the full prop and slot schema for any component, so the assistant writes valid configuration the first time.                                                                                  |
+| `get_page_skeleton`     | Get a starter scaffold for any of the 6 page types with sensible defaults.                                                                                                                            |
+| `manage_ui_component`   | Create / read / update / patch / delete pages and custom widgets through `/rest/ui/components/{namespace}`. Single-field edits use an efficient patch path instead of re-sending the whole component. |
+| `validate_ui_component` | Pre-check a composed page or widget against the schema before saving — catches typos, missing required props, and bad slot names.                                                                     |
+
+**Custom widgets:** when the assistant creates a custom widget, it lives in the `widget` namespace and can be reused across any page as `widget:<your-uid>`.
+The widget can declare its own parameters (item name, color, threshold, etc.) so a single widget definition serves many devices.
+
+**Tip — visual verification:** if your agent also has a browser-automation server connected (e.g. Claude in Chrome, Playwright MCP), the assistant will offer to screenshot the rendered page so you can both see what was built.
+It'll ask you once for the URL you use to reach openHAB (e.g. `http://openhab.local:8080`) since the internal hostname isn't always reachable from a remote browser.
+
+> **UI Design Token Usage:** UI design uses noticeably more of an agent's context window than simple item control. Pages and especially custom widgets are large JSON structures (tens of KB each), and the assistant often reads, edits, and re-reads them several times in one design session. Expect to start fresh chats more often when working on the UI — particularly for big dashboards or multi-widget projects. The assistant has been tuned to keep responses small (minimal write confirmations, in-place edits instead of full rewrites) but the underlying data is inherently large.
+>
+> **Recommended clients for UI design:** because of the above, coding-oriented agents like [Claude Code](https://www.claude.com/product/claude-code), [Codex CLI](https://github.com/openai/codex), or [Cursor](https://cursor.com) work much better here than chat-only clients. They have larger context windows, can spawn sub-agents that each get their own fresh context for focused sub-tasks (e.g. "design this one widget"), and can combine the MCP server with a browser-automation MCP (Claude in Chrome, Playwright MCP) in the same session so the agent can build a page and then screenshot the result to verify it. Chat-only clients like Claude Desktop and ChatGPT still work for small edits, but you'll hit context limits sooner on larger projects.
+
+## Static assets (opt-in)
+
+Setting `enableStaticAssets=true` lets the assistant manage the files in `$OPENHAB_CONF/html`, which is the folder served at `http://<your-openhab>:8080/static/*`.
+These are static assets: SVGs, images (PNG/JPG/GIF/WebP/ICO), CSS overrides, and small text/JS files — anything a Main UI component or rule references by URL.
+
+> SVGs can be particularly useful for agents to manipulate, the assistant can author and edit the markup directly, and openHAB can bind to elements inside an SVG to make it dynamic, so you can ask for a custom icon or diagram and have it react to item states.
+
+Pairs naturally with `enableUiDesign`, but mind the split: this flag manages the **asset** (the image or SVG file), while the **page or widget** that displays it is a Main UI component handled by the design tools.
+
+Things you can ask once this is enabled (typically combined with UI design):
+
+- _"Draw an SVG icon for a garage door and upload it as `icons/garage-door.svg`."_ — the assistant writes the SVG markup and uploads it, ready to reference from a widget.
+- _"Upload the attached photo to `images/living-room.jpg`."_
+- _"What images do I have under `images/`?"_ — lists the folder so you can reuse one.
+- _"Replace my custom CSS with this update."_ — reads the current `css/custom.css`, applies the change, writes it back.
+- _"Delete the test icon you uploaded yesterday."_
+
+| Tool                  | What it does                                                                                           |
+| --------------------- | ------------------------------------------------------------------------------------------------------ |
+| `manage_static_asset` | List, read, upload, and delete files under `$OPENHAB_CONF/html`. Uploads are capped at 10 MB per call. |
+
+Only common asset types are allowed (images, SVG, CSS, JS, and a few text formats), and the assistant needs an ADMIN-scoped token to use the tool at all.
 
 ## Real-time subscriptions (advanced)
 
