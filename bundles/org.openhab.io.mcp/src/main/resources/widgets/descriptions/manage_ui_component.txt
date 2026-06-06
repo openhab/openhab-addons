@@ -1,0 +1,154 @@
+Create, read, update, patch, or delete openHAB Main UI components (pages and custom widgets) via the /rest/ui/components/{namespace} REST API. Action-dispatched: action='get' (fetch one if uid set, else list the namespace; optional 'fields' parameter projects only requested top-level keys); action='create' (POST a new component; server generates UID if omitted); action='update' (PUT a full replacement); action='patch' (apply JSON Patch ops in place — PREFERRED for any single-field edit, dramatically cheaper than update); action='delete' (by uid). The caller's bearer token is forwarded to openHAB; writes require ADMIN scope.
+
+RESPONSE SIZE — writes (create/update/patch) return a minimal response by default: {success, action, namespace, uid, viewUrl, editUrl, viewPath, editPath, urlNote}. The stored component body is NOT echoed (would add 15-20+ KB per call to your tool-result history). If you specifically need to see the server-normalized component back, pass responseDetail='full'.
+
+PATCH — to change one or a few fields without re-sending the whole tree, use action='patch' with an 'operations' array (JSON Patch, RFC 6902 subset: replace, add, remove, test). Path is JSON Pointer (RFC 6901). Examples:
+  - Rename a page: operations=[{op:'replace', path:'/config/label', value:'New Title'}]
+  - Add a card at the end of a slot: operations=[{op:'add', path:'/slots/default/-', value:{component:'oh-toggle-card', config:{item:'X'}}}]
+  - Delete a card: operations=[{op:'remove', path:'/slots/default/2'}]
+  - Precondition: operations=[{op:'test', path:'/component', value:'oh-layout-page'}, {op:'replace', ...}]
+Use patch INSTEAD OF action='update' whenever the change is small — round-trip cost drops from ~40 KB (GET 20 + PUT 20) to a few hundred bytes. The server fetches, applies, and PUTs back internally; any op failure aborts the whole patch and returns {success:false, error, failedOp:N}.
+
+VISUAL VERIFICATION — STRONGLY RECOMMENDED for UI work. Responses for create/update/get-single include 'viewUrl' (the public page URL) and 'editUrl' (the admin editor URL). Both URLs are built from the SERVER's local hostname (often 'localhost'), so they will NOT be reachable from a browser on a different machine. If a browser-automation MCP tool is connected in this session (Claude in Chrome, Playwright, Puppeteer, etc.), do the following ONCE at the start of the UI-design session: ask the user 'what URL do you use to reach your openHAB Main UI?' (typical answers: http://openhab.local:8080, http://192.168.x.x:8080, or a https://myopenhab.org cloud URL which requires the user to login first). Remember that base for the session and substitute it for the host portion of every viewUrl / editUrl when navigating the browser. Then after each create/update, navigate → screenshot → iterate if the result doesn't match the user's intent. The page renders client-side in 1-2 seconds; if blank, wait briefly and re-snapshot. The browser session must already be authenticated to openHAB; if it redirects to login, ask the user to sign in once. If no browser tool is connected, tell the user the page path (e.g. '/page/kitchen') and ask them to verify visually themselves.
+
+COMPONENT TREE SHAPE: a RootUIComponent has {uid, component, config, slots, tags, props, timestamp}. 'component' is the type (e.g. 'oh-layout-page', 'oh-toggle-card'). 'config' is a freeform map of component-specific props. 'slots' is a map { slotName: [child, ...] } where each child is a nested UIComponent {component, config, slots} (no uid). 'props' is only for ui:widget — defines the custom widget's parameter schema. Use describe_widget(name) to discover valid config keys and slot names per component.
+
+EXPRESSION LANGUAGE — config values starting with '=' are JS expressions evaluated against a context that includes: items (item registry), props (widget params), config (own config), vars (page-scoped), loop (oh-repeater iteration), Math, Number, dayjs, theme, user. Three special unary item accessors: @itemName (formatted display state), @@itemName (raw state), #itemName (numeric). String interpolation: ="The light is " + items.LivingRoom_Light.state. Strings without leading '=' are literals — a common mistake is forgetting the '='. Item names with spaces use bracket syntax: items['Living Room Light'].state.
+
+ACTIONS — clickable widgets (oh-button, oh-link, oh-icon, oh-image, oh-map-marker, oh-plan-marker) accept an actionType. Full grammar for each:
+
+- 'command' — send a single command to an item.
+  Required: actionItem (item name), actionCommand (command string e.g. 'ON', '50', '#ff0000').
+
+- 'toggle' — alternate between two commands based on current state.
+  Required: actionItem, actionCommand, actionCommandAlt.
+  Special handling: for Color/Dimmer items, treats brightness=0 as OFF-equivalent and >0 as ON-equivalent, so "toggle a Color light" works even when the state is "120,100,0".
+
+- 'options' — show a popup with command choices.
+  Required: actionItem.
+  Optional: actionOptions — one of:
+    (a) Comma-separated string: "ON,OFF" or "ON=Turn On,OFF=Turn Off" (the part after '=' is the display label, the part before is the command sent).
+    (b) Quoted form for commands containing commas: '"cmd1"="My Label","cmd2"="Other"'.
+    (c) An array of {text, color, onClick} button objects (advanced).
+    (d) OMITTED — falls back to the item's commandDescription.commandOptions automatically. Strongly preferred for items whose binding provides command options (most modern bindings do); just set actionType='options' + actionItem and the right menu appears.
+
+- 'rule' — run a rule, scene, or script.
+  Required: actionRule (rule UID).
+  Optional: actionRuleContext (object or string) — POSTed to /rest/rules/{uid}/runnow as a context payload. Useful for scripts that take parameters.
+
+- 'popup' / 'popover' / 'sheet' — open a modal dialog with another page or widget as content.
+  Required: actionModal — MUST be one of three forms: 'page:uid' (an existing page UID), 'widget:uid' (a custom widget UID), or 'oh-component-name' (a built-in component like 'oh-card'). Any other format silently fails.
+  Optional: actionModalConfig — object passed as props to the modal content. The framework dedupes — if the same modal is already open, it won't open a second time.
+
+- 'navigate' — switch to another page.
+  Required: actionPage in the form 'page:uid' (the 'page:' prefix is required; raw UID silently fails).
+  Optional: actionPageTransition, actionPageDefineVars.
+
+- 'photos' — open a fullscreen photo browser.
+  Required: actionPhotos — array of either URL strings or {item: 'ItemName', caption: 'Optional'} objects. For item-backed photos, the item's state (typically a URL string) is fetched via /rest/items/{name}/state at click time. Also accepts a JSON string starting with '[' (parsed on click).
+  Optional: actionPhotoBrowserConfig — Framework7 PhotoBrowser params (auto-selects dark theme in dark mode).
+
+- 'group' — open a popup showing the members of a Group item.
+  Required: actionGroupPopupItem (the Group item UID).
+
+- 'analyzer' — open the chart analyzer for one or more items.
+  Optional: actionAnalyzerItems (string or array — joined with commas), actionAnalyzerChartType, actionAnalyzerCoordSystem, actionAnalyzerAggregation.
+
+- 'url' — open an external URL.
+  Required: actionUrl.
+  Optional: actionUrlSameWindow (default false → opens in new tab; true → replaces current window).
+
+- 'http' — fire-and-forget HTTP request (no-cors mode, no response visible).
+  Required: actionUrl.
+  Optional: actionHttpMethod (default 'GET'), actionHttpBody (string).
+
+- 'variable' — mutate a page-scoped or context-scoped variable.
+  Required: actionVariable (variable name).
+  Optional: actionVariableValue (new value — any JSON type), actionVariableKey (dot/bracket path for setting a nested property: 'user.name', '[0]', 'items[0].address[1].street'). Without actionVariableKey, replaces the entire variable.
+
+LONG-PRESS — every action key above has a 'taphold_' twin (taphold_actionType, taphold_actionItem, taphold_actionCommand, etc.) for context-menu / long-press behavior.
+
+CONFIRMATION & FEEDBACK — optional on any action:
+- actionConfirmation: a string (treated as confirm-dialog text) OR an object {type: 'dialog'|'sheet', title?: '...', text: '...', color?: '...'}. Shown before the action runs; user must confirm.
+- actionFeedback: same shape; shown after the action completes. Use for "Light turned on" style toasts.
+
+VISIBILITY — config.visible accepts an expression: visible: "=items.Mode.state === 'NIGHT'". visible: false hides unconditionally. config.visibleTo: 'role:administrator' or 'user:alice' gates by role/user (not a security boundary — server still serves it; only hides in UI). undefined visibility means visible. In edit mode all widgets show regardless.
+
+SLOTS — common names: 'default' (most components), 'masonry' (oh-layout-page with masonry), 'grid' (fixed-grid layout), 'canvas' (oh-canvas-layout), 'series' / 'xAxis' / 'yAxis' / 'grid' (oh-chart-page), 'title' / 'content' / 'before' / 'after' (oh-card). describe_widget(name) lists the exact slots per component.
+
+CUSTOM WIDGETS (namespace='ui:widget') — root component is whatever you want to wrap (often 'oh-card' or 'Label'). props.parameters defines the widget's external API: each is {name, type: TEXT|INTEGER|DECIMAL|BOOLEAN, label, description, required, default, context: item|url|color|location|page|...}. Reference the widget from a page as component='widget:my-uid'.
+
+============ BEST PRACTICES ============
+
+ITEM-DRIVEN CONFIG (the #1 way to make widgets accurate) — call get_item BEFORE authoring any item-bound widget and use the item's metadata to drive your config:
+
+- stateDescription: items often publish {pattern, minimum, maximum, step, options, readOnly}.
+  * Slider/Knob widgets: copy minimum/maximum/step from stateDescription into the widget's min/max/step config — never guess (a Number:Temperature thermostat probably ranges 50-90 °F, not 0-100; a percentage Dimmer is 0-100).
+  * Label/display widgets: stateDescription.pattern (e.g. "%.1f °C", "%d W") is what Main UI uses to format the state — you don't need to mess with it; oh-label-card without an explicit label config will use the display state automatically.
+  * stateDescription.options [{value, label}]: present these as discrete choices in an oh-options-card or as a popup.
+  * stateDescription.readOnly = true: do NOT author a controlling widget (toggle, slider, button) for this item — use a label/cell instead. Sending a command to a read-only item is a no-op or error.
+
+- commandDescription: items can publish {commandOptions: [{command, label}]} that lists the valid commands. Use this to:
+  * Populate actionOptions for an oh-button with actionType='options' — each {command, label} becomes one choice in the popup.
+  * Pick the right widget — if commandOptions has just 2 entries that look like ON/OFF, oh-toggle-card is right; if it has 3+ named values, oh-options-card is better than guessing.
+
+- For Number items with a dimension (Number:Temperature, Number:Power, Number:Length), the item state already carries a unit. Don't strip it. If you set the slider's `unit` config, make it match the item's unit so commands round-trip cleanly. Better: leave `unit` blank and the widget inherits from the item.
+
+- ITEM METADATA NAMESPACES — items can attach metadata that influences the UI directly. Check these via get_item:
+  * 'widget' namespace: item.metadata.widget.value can be a component name (e.g. 'oh-toggle-card'); item.metadata.widget.config carries pre-baked widget config. The default oh-home-page reads this verbatim — if set, use the SAME component + config when authoring custom pages so the item displays consistently across the UI.
+  * 'semantics' namespace: Location/Equipment/Point tags. Drives auto-grouping on the home page; useful for oh-repeater filters.
+  * 'synonyms' namespace: comma-separated alternate names. Already consumed by the MCP fuzzy search; if a user refers to an item by a name that doesn't quite match the formal label, check synonyms first.
+  * 'listWidget' / 'cellWidget' namespaces: same as 'widget' but for the list-item / expandable-cell variants. The list-card auto-uses these when an item appears inside an oh-list-card.
+
+ICON CONVENTIONS — Main UI supports several icon namespaces; pick one and stick to it within a page:
+- oh: namespace (e.g. oh:lightbulb, oh:climate-on) — openHAB classic icons, state-aware variants exist (oh:lightbulb-on, oh:lightbulb-off). With iconUseState=true and icon='oh:lightbulb', the rendered icon becomes oh:lightbulb-{state} automatically.
+- f7: namespace (e.g. f7:house_fill, f7:bolt_fill) — Framework7 icons, comprehensive UI set.
+- material: namespace — Material Design icons (e.g. material:lightbulb).
+- iconify: namespace — Iconify catalog (e.g. iconify:mdi:lightbulb-outline) — very large; useful for niche icons.
+
+THEME VARIABLES — don't hard-code colors; reference theme so widgets adapt to dark mode and the user's accent:
+- theme.brand — the user's accent color (default: openHAB orange).
+- theme.dark — boolean, true when dark mode is active. Use in expressions: color: "=theme.dark ? 'white' : 'black'".
+- Standard color name strings ('red', 'green', 'blue', 'pink', 'yellow', 'orange', 'purple', 'deeppurple', 'lightblue', 'teal', 'lime', 'deeporange', 'gray', 'white', 'black') auto-adapt to the theme palette — prefer these over hex codes.
+
+ACTION TARGET PREFIXES — common authoring mistake is to omit the prefix:
+- actionPage: 'page:my-other-page' — the 'page:' prefix is REQUIRED. Just 'my-other-page' silently fails.
+- actionModal: 'page:uid' | 'widget:uid' | 'oh-component-name' — three valid forms; raw UID without prefix doesn't work.
+- actionRule: just the rule UID (no prefix).
+
+COMPOSABILITY — if you find yourself authoring 3+ near-identical widgets that differ only by item name, stop and build a custom widget instead:
+1. manage_ui_component(action='create', namespace='ui:widget', component='oh-card', props={parameters:[{name:'item', type:'TEXT', context:'item', required:true, label:'Item'}]}, slots={default:[...]}).
+2. Reference it from pages as component='widget:my-uid' with config={item:'Specific_Item_Name'}.
+3. Custom widgets can themselves use other custom widgets — but watch for naming collisions on parameter names.
+
+SEMANTIC MODEL INTEGRATION — before designing a custom home page, check what the semantic model gives you for free:
+- Items tagged with Location/Equipment/Point are auto-organized into the default oh-home-page's Locations/Equipment/Properties tabs. No manual layout needed.
+- For category-driven dynamic lists, use oh-repeater with an items expression that filters by tag (e.g. for: "=Object.values(items).filter(i => i.tags.includes('Light'))").
+- The semantic model is the right place to fix organization issues; pages built on a clean model are dramatically easier to author.
+
+MOBILE-FIRST LAYOUTS — Main UI is mobile-first; design for narrow viewports:
+- responsive layout (oh-layout-page default) stacks children vertically on phones; oh-block containers group cards into logical sections.
+- For tablet/desktop optimization, oh-grid-layout with breakpoint props (small, medium, large, xlarge widths in %) lets you control multi-column behavior at specific sizes.
+- For complex dashboards on fixed screens (wall-mounted tablet), fixed canvas layout (layoutType='fixed', fixedType='canvas') gives pixel-perfect positioning.
+
+REPEATER PATTERN — when a section of the page should mirror a dynamic list:
+- oh-repeater iterates a collection (items array, oh-context vars, etc.). Each iteration gets a 'loop' variable with .item, .item_idx, .item_source, .item_key.
+- Combine with visibility for advanced filters: visible: "=loop.item.tags.includes('Lighting')".
+- Avoid 50+ iterations in a single repeater — pagination via a slider/stepper variable is better for huge lists.
+
+WIDGET SELECTION DECISION TREE (quick reference):
+- Switch item: oh-toggle-card
+- Dimmer/percent: oh-slider-card, oh-knob-card if circular preferred
+- Number with discrete options (commandDescription.commandOptions): oh-options-card or oh-button with actionType='options'
+- Number sensor reading: oh-label-card (read-only) or oh-gauge-card (with min/max from stateDescription)
+- Color light: oh-colorpicker-card
+- Rollershutter: oh-rollershutter-card
+- String item with set values: oh-options-card; with free input: oh-input-card
+- DateTime: oh-input-card with type='datetime-local', or oh-clock-card for display
+- Player: oh-player-card
+- Image/video item (URL state): oh-image-card / oh-video-card
+- Anything not yet listed: search list_widgets first, then describe_widget(candidate) to verify.
+
+GOTCHAS: missing '=' on an expression makes it a literal string; YAML escaping is finicky in code view — prefer composing in JSON via this tool; oh-context constants are evaluated once at mount, variables are reactive; actions are blocked in edit mode (the widget renders but clicks show a 'not performed' toast); for items with display states (formatted with stateDescription.pattern), use @itemName to get the formatted value and @@itemName for the raw value.
+
+WORKFLOW: get_item (read item metadata) → list_widgets (discover candidates) → describe_widget(name) (verify prop schema) → get_page_skeleton (for new pages) → assemble component tree using item-driven config → validate_ui_component before committing → manage_ui_component(create/update). For visual confirmation use the returned viewUrl with a browser tool.

@@ -22,9 +22,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.events.AbstractEvent;
 import org.openhab.core.events.EventPublisher;
 import org.openhab.core.items.GroupItem;
 import org.openhab.core.items.Item;
@@ -43,6 +45,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.modelcontextprotocol.json.McpJsonMapper;
+import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 
@@ -57,12 +60,14 @@ public class ItemTools {
     private final Logger logger = LoggerFactory.getLogger(ItemTools.class);
 
     private static final double MIN_SCORE = 0.65;
+    static final String MCP_EVENT_SOURCE = "org.openhab.io.mcp";
 
     private final ItemRegistry itemRegistry;
     private final ItemBuilderFactory itemBuilderFactory;
     private final EventPublisher eventPublisher;
     private final McpJsonMapper jsonMapper;
     private final FuzzyItemMatcher fuzzyMatcher;
+    private final Function<String, @Nullable String> usernameForSession;
 
     /**
      * Constructs a new {@code ItemTools} instance with the required openHAB services.
@@ -71,13 +76,17 @@ public class ItemTools {
      * @param itemBuilderFactory factory for creating new item builders
      * @param metadataRegistry the metadata registry used for fuzzy matching, may be {@code null}
      * @param eventPublisher the event publisher for sending commands and state updates
+     * @param usernameForSession resolves the authenticated username for an MCP session id, used as the
+     *            actor in the source string of published events
      * @param jsonMapper the JSON mapper for serializing tool results
      */
     public ItemTools(ItemRegistry itemRegistry, ItemBuilderFactory itemBuilderFactory,
-            @Nullable MetadataRegistry metadataRegistry, EventPublisher eventPublisher, McpJsonMapper jsonMapper) {
+            @Nullable MetadataRegistry metadataRegistry, EventPublisher eventPublisher,
+            Function<String, @Nullable String> usernameForSession, McpJsonMapper jsonMapper) {
         this.itemRegistry = itemRegistry;
         this.itemBuilderFactory = itemBuilderFactory;
         this.eventPublisher = eventPublisher;
+        this.usernameForSession = usernameForSession;
         this.jsonMapper = jsonMapper;
         this.fuzzyMatcher = new FuzzyItemMatcher(metadataRegistry);
     }
@@ -245,38 +254,82 @@ public class ItemTools {
     }
 
     /**
-     * Returns the {@code send_command} tool schema.
-     * Sends a command to control a device through its item (e.g., ON/OFF, dimmer levels, HSB values).
+     * Returns the {@code set_item} tool schema. Single entry point for changing an item's value;
+     * dispatches on {@code action} to either send a command through the binding (controls the
+     * device) or post a state-update event directly (no binding involvement).
      *
-     * @return the MCP tool definition for {@code send_command}
+     * @return the MCP tool definition for {@code set_item}
      */
-    public McpSchema.Tool getSendCommandTool() {
-        return McpSchema.Tool.builder().name("send_command").description(
-                "Send a command to control a device. Common commands: ON/OFF for switches, 0-100 for dimmers, UP/DOWN/STOP for rollershutters, HSB values for colors, numeric values for thermostats. Use get_item first to check the item type if unsure.")
-                .inputSchema(new McpSchema.JsonSchema("object", Map.of("itemName",
-                        Map.of("type", "string", "description", "The exact name of the item to command"), "command",
-                        Map.of("type", "string", "description", "The command string (e.g., ON, OFF, 50, UP, 21.5)")),
-                        List.of("itemName", "command"), null, null, null))
+    public McpSchema.Tool getSetItemTool() {
+        Map<String, Object> props = new LinkedHashMap<>();
+        props.put("action", Map.of("type", "string", "description",
+                "command: send a command through the binding to control the device; "
+                        + "state: post a state-update event for the item directly — the same kind of event a "
+                        + "binding publishes after observing a device. The binding is not asked to do anything; "
+                        + "you're declaring what the item's state is, not requesting that openHAB change it. "
+                        + "Most device-control intents should use 'command'.",
+                "enum", List.of("command", "state")));
+        props.put("itemName", Map.of("type", "string", "description", "The exact name of the item."));
+        props.put("value", Map.of("type", "string", "description",
+                """
+                        The value to send (a command if action='command', a state if action='state'). \
+                        Accepted values by item type:
+                          - Switch: ON, OFF
+                          - Dimmer: ON, OFF, INCREASE, DECREASE, or 0-100 (percent)
+                          - Color: ON, OFF, INCREASE, DECREASE, 0-100 (brightness), or "H,S,B" triple \
+                        (e.g. "120,100,50" — H is 0-360, S/B are 0-100)
+                          - Rollershutter: UP, DOWN, STOP, MOVE, or 0-100 (percent position)
+                          - Number: any decimal (e.g. "42", "21.5", "-3.14")
+                          - Number:<dimension> (e.g. Number:Temperature, Number:Power, Number:Length): value with unit \
+                        (e.g. "21.5 °C", "70 °F", "1024 W", "1.8 m"); a plain number is interpreted in the item's configured unit
+                          - String: any text value
+                          - DateTime: ISO-8601 datetime (e.g. "2026-01-15T10:30:00" or with offset "2026-01-15T10:30:00-05:00")
+                          - Contact: OPEN, CLOSED — Contact items don't accept commands, so use action='state' for these
+                          - Player: PLAY, PAUSE, NEXT, PREVIOUS, REWIND, FASTFORWARD
+                          - Location: "lat,lon" or "lat,lon,alt" (e.g. "37.7749,-122.4194" or "37.7749,-122.4194,30")
+                          - Group: forwards to members based on the group's base type
+                        All item types also accept REFRESH as a command (asks the binding to re-poll the device), \
+                        and NULL or UNDEF as a state (clears the value). Use get_item first if you're not sure of an item's type."""));
+
+        return McpSchema.Tool.builder().name("set_item").description("""
+                Change an item's value. Action-dispatched: \
+                action='command' sends a command through the binding to control the physical device — \
+                use this for normal device control (turn on/off, dim, open/close, set values). \
+                action='state' posts a state-update event for the item directly, the same kind of event a binding \
+                publishes after observing a device. The binding is not asked to do anything — you're declaring what \
+                the item's state is, not requesting that openHAB change it. Most device-control intents should use \
+                'command'. See the 'value' field for the full list of accepted values per item type.""").inputSchema(
+                new McpSchema.JsonSchema("object", props, List.of("action", "itemName", "value"), null, null, null))
                 .build();
     }
 
     /**
-     * Handles a {@code send_command} call.
-     * Parses the command string, validates it against the item's accepted types, and publishes
-     * the command event.
+     * Handles a {@code set_item} call. Dispatches to command-send / state-update based on
+     * {@code action}.
      *
-     * @param request the incoming tool call request containing the item name and command
-     * @return the result indicating success with the previous state, or an error message
+     * @param exchange the MCP server exchange — used to resolve the authenticated user for event attribution
+     * @param request the incoming tool call request
+     * @return the result for the dispatched action
      */
-    public CallToolResult handleSendCommand(McpSchema.CallToolRequest request) {
+    public CallToolResult handleSetItem(McpSyncServerExchange exchange, McpSchema.CallToolRequest request) {
         Map<String, Object> args = request.arguments();
+        String action = getStringArg(args, "action");
         String itemName = getStringArg(args, "itemName");
-        String commandStr = getStringArg(args, "command");
-
-        if (itemName == null || commandStr == null) {
-            return errorResult("Both 'itemName' and 'command' are required.");
+        String value = getStringArg(args, "value");
+        if (action == null || action.isBlank()) {
+            return errorResult("'action' is required (one of: command, state).");
         }
+        if (itemName == null || itemName.isBlank() || value == null || value.isBlank()) {
+            return errorResult("'itemName' and 'value' are required.");
+        }
+        return switch (action.toLowerCase(Locale.ROOT)) {
+            case "command" -> sendCommand(exchange, itemName, value);
+            case "state" -> updateState(exchange, itemName, value);
+            default -> errorResult("Invalid action '" + action + "'. Use one of: command, state.");
+        };
+    }
 
+    private CallToolResult sendCommand(McpSyncServerExchange exchange, String itemName, String commandStr) {
         Item item;
         try {
             item = itemRegistry.getItem(itemName);
@@ -297,51 +350,20 @@ public class ItemTools {
         }
 
         String previousState = ItemStateFormatter.formatState(item.getState());
-        eventPublisher.post(ItemEventFactory.createCommandEvent(itemName, command, "org.openhab.io.mcp"));
-        logger.debug("Sent command '{}' to item '{}'", command, itemName);
+        String source = AbstractEvent.buildSource(MCP_EVENT_SOURCE, usernameForSession.apply(exchange.sessionId()));
+        eventPublisher.post(ItemEventFactory.createCommandEvent(itemName, command, source));
+        logger.debug("Sent command '{}' to item '{}' (source={})", command, itemName, source);
 
         Map<String, Object> result = new HashMap<>();
         result.put("success", true);
+        result.put("action", "command");
         result.put("itemName", itemName);
         result.put("command", command.toString());
         result.put("previousState", previousState);
         return textResult(jsonMapper, result);
     }
 
-    /**
-     * Returns the {@code update_state} tool schema.
-     * Updates the state of an item directly without sending a command to the physical device.
-     *
-     * @return the MCP tool definition for {@code update_state}
-     */
-    public McpSchema.Tool getUpdateStateTool() {
-        return McpSchema.Tool.builder().name("update_state").description(
-                "Update the state of an item directly without sending a command to the device. Use this for virtual items or sensor values, not for controlling physical devices (use send_command for that).")
-                .inputSchema(new McpSchema.JsonSchema("object",
-                        Map.of("itemName",
-                                Map.of("type", "string", "description", "The exact name of the item to update"),
-                                "state", Map.of("type", "string", "description", "The new state value")),
-                        List.of("itemName", "state"), null, null, null))
-                .build();
-    }
-
-    /**
-     * Handles an {@code update_state} call.
-     * Parses the state string, validates it against the item's accepted data types, and publishes
-     * the state update event.
-     *
-     * @param request the incoming tool call request containing the item name and new state
-     * @return the result indicating success, or an error message
-     */
-    public CallToolResult handleUpdateState(McpSchema.CallToolRequest request) {
-        Map<String, Object> args = request.arguments();
-        String itemName = getStringArg(args, "itemName");
-        String stateStr = getStringArg(args, "state");
-
-        if (itemName == null || stateStr == null) {
-            return errorResult("Both 'itemName' and 'state' are required.");
-        }
-
+    private CallToolResult updateState(McpSyncServerExchange exchange, String itemName, String stateStr) {
         Item item;
         try {
             item = itemRegistry.getItem(itemName);
@@ -354,66 +376,92 @@ public class ItemTools {
             return errorResult("Cannot parse state '" + stateStr + "' for item '" + itemName + "'.");
         }
 
-        eventPublisher.post(ItemEventFactory.createStateEvent(itemName, state, "org.openhab.io.mcp"));
+        String previousState = ItemStateFormatter.formatState(item.getState());
+        String source = AbstractEvent.buildSource(MCP_EVENT_SOURCE, usernameForSession.apply(exchange.sessionId()));
+        eventPublisher.post(ItemEventFactory.createStateEvent(itemName, state, source));
 
         Map<String, Object> result = new HashMap<>();
         result.put("success", true);
+        result.put("action", "state");
         result.put("itemName", itemName);
         result.put("state", stateStr);
+        result.put("previousState", previousState);
         return textResult(jsonMapper, result);
     }
 
     /**
-     * Returns the {@code create_item} tool schema.
-     * Creates a new openHAB item with the specified name, type, label, tags, and group memberships.
+     * Returns the {@code manage_item} tool schema. Single CRUD entry point for item
+     * lifecycle management; dispatches on {@code action}.
      *
-     * @return the MCP tool definition for {@code create_item}
+     * @return the MCP tool definition for {@code manage_item}
      */
-    public McpSchema.Tool getCreateItemTool() {
+    public McpSchema.Tool getManageItemTool() {
         Map<String, Object> props = new LinkedHashMap<>();
-        props.put("name", Map.of("type", "string", "description", "Unique item name (e.g. Kitchen_Light)"));
-        props.put("type",
-                Map.of("type", "string", "description",
-                        "Item type: Switch, Dimmer, Color, Contact, DateTime, Number, Number:<dimension>, "
-                                + "Player, Rollershutter, String, Image, Location, Group"));
-        props.put("label", Map.of("type", "string", "description", "Human-readable label"));
-        props.put("category", Map.of("type", "string", "description", "Icon category (e.g. light, switch, door)"));
-        props.put("tags",
-                Map.of("type", "array", "items", Map.of("type", "string"), "description", "Semantic or custom tags"));
+        props.put("action", Map.of("type", "string", "description",
+                "create: add a new item; update: modify labels/tags/groups of an existing item (cannot change type); delete: remove an item and its links.",
+                "enum", List.of("create", "update", "delete")));
+        props.put("name", Map.of("type", "string", "description",
+                "Item name. For create: follow Location_Equipment_Point (e.g. Kitchen_Light_Brightness)."));
+        props.put("type", Map.of("type", "string", "description",
+                "create only: item type — Switch, Dimmer, Color, Contact, DateTime, Number, Number:<dimension>, "
+                        + "Player, Rollershutter, String, Image, Location, Group. Item type is immutable; "
+                        + "to change it, delete and recreate."));
+        props.put("label",
+                Map.of("type", "string", "description", "create/update: human-readable label (omit to keep current)."));
+        props.put("category", Map.of("type", "string", "description",
+                "create/update: icon category like light, switch, door (omit to keep current)."));
+        props.put("tags", Map.of("type", "array", "items", Map.of("type", "string"), "description",
+                "create/update: semantic or custom tags. Replaces existing tags on update."));
         props.put("groupNames", Map.of("type", "array", "items", Map.of("type", "string"), "description",
-                "Groups this item belongs to"));
+                "create/update: groups this item belongs to. Replaces existing memberships on update."));
         props.put("groupType", Map.of("type", "string", "description",
-                "For Group items only: the base item type of members (e.g. Switch, Number)"));
+                "create only, for Group items: the base item type of members (e.g. Switch, Number)."));
         props.put("groupFunction", Map.of("type", "string", "description",
-                "For Group items only: aggregation function (AND, OR, NAND, NOR, AVG, SUM, MIN, MAX, COUNT, LATEST, EARLIEST, EQUALITY)"));
+                "create only, for Group items: aggregation function (AND, OR, NAND, NOR, AVG, SUM, MIN, MAX, COUNT, LATEST, EARLIEST, EQUALITY)."));
 
-        return McpSchema.Tool.builder().name("create_item")
-                .description("Create a new openHAB item. Use this when setting up new devices or "
-                        + "organizing the item model. Item names should follow the convention "
-                        + "Location_Equipment_Point (e.g. Kitchen_Light_Brightness).")
-                .inputSchema(new McpSchema.JsonSchema("object", props, List.of("name", "type"), null, null, null))
+        return McpSchema.Tool.builder().name("manage_item").description("""
+                Create, update, or delete an item. Action-dispatched: \
+                action='create' requires name and type; \
+                action='update' requires name (and any fields to change — label, category, tags, groupNames); \
+                action='delete' requires only name (links are removed automatically).""")
+                .inputSchema(new McpSchema.JsonSchema("object", props, List.of("action", "name"), null, null, null))
                 .build();
     }
 
     /**
-     * Handles a {@code create_item} call.
-     * Validates that the item does not already exist, builds it from the provided arguments,
-     * and adds it to the item registry.
+     * Handles a {@code manage_item} call. Dispatches to create / update / delete based on the
+     * {@code action} argument.
      *
-     * @param request the incoming tool call request containing item properties
-     * @return the result indicating success with the created item details, or an error message
+     * @param request the incoming tool call request
+     * @return the result for the dispatched action
      */
-    public CallToolResult handleCreateItem(McpSchema.CallToolRequest request) {
+    public CallToolResult handleManageItem(McpSchema.CallToolRequest request) {
         Map<String, Object> args = request.arguments();
+        String action = getStringArg(args, "action");
         String name = getStringArg(args, "name");
+        if (action == null || action.isBlank()) {
+            return errorResult("'action' is required (one of: create, update, delete).");
+        }
+        if (name == null || name.isBlank()) {
+            return errorResult("'name' is required.");
+        }
+        return switch (action.toLowerCase(Locale.ROOT)) {
+            case "create" -> createItem(name, args);
+            case "update" -> updateItem(name, args);
+            case "delete" -> deleteItem(name);
+            default -> errorResult("Invalid action '" + action + "'. Use one of: create, update, delete.");
+        };
+    }
+
+    private CallToolResult createItem(String name, Map<String, Object> args) {
         String type = getStringArg(args, "type");
-        if (name == null || name.isBlank() || type == null || type.isBlank()) {
-            return errorResult("'name' and 'type' are required.");
+        if (type == null || type.isBlank()) {
+            return errorResult("'type' is required when action='create'.");
         }
 
         try {
             itemRegistry.getItem(name);
-            return errorResult("Item '" + name + "' already exists. Use update_item to modify it.");
+            return errorResult("Item '" + name + "' already exists. Use action='update' to modify it.");
         } catch (ItemNotFoundException e) {
             // expected
         }
@@ -442,6 +490,7 @@ public class ItemTools {
 
             Map<String, Object> result = new HashMap<>();
             result.put("success", true);
+            result.put("action", "create");
             result.put("name", name);
             result.put("type", type);
             result.put("label", label != null ? label : "");
@@ -451,42 +500,7 @@ public class ItemTools {
         }
     }
 
-    /**
-     * Returns the {@code update_item} tool schema.
-     * Updates an existing item's label, category, tags, or group memberships without changing its type.
-     *
-     * @return the MCP tool definition for {@code update_item}
-     */
-    public McpSchema.Tool getUpdateItemTool() {
-        Map<String, Object> props = new LinkedHashMap<>();
-        props.put("name", Map.of("type", "string", "description", "Name of the item to update"));
-        props.put("label", Map.of("type", "string", "description", "New label (omit to keep current)"));
-        props.put("category", Map.of("type", "string", "description", "New icon category (omit to keep current)"));
-        props.put("tags", Map.of("type", "array", "items", Map.of("type", "string"), "description",
-                "Replace all tags (omit to keep current)"));
-        props.put("groupNames", Map.of("type", "array", "items", Map.of("type", "string"), "description",
-                "Replace all group memberships (omit to keep current)"));
-
-        return McpSchema.Tool.builder().name("update_item")
-                .description("Update an existing item's label, category, tags, or group memberships. "
-                        + "Cannot change the item type — delete and recreate the item for that.")
-                .inputSchema(new McpSchema.JsonSchema("object", props, List.of("name"), null, null, null)).build();
-    }
-
-    /**
-     * Handles an {@code update_item} call.
-     * Looks up the existing item and applies the requested property changes via the item builder.
-     *
-     * @param request the incoming tool call request containing the item name and updated properties
-     * @return the result indicating success with the updated item details, or an error message
-     */
-    public CallToolResult handleUpdateItem(McpSchema.CallToolRequest request) {
-        Map<String, Object> args = request.arguments();
-        String name = getStringArg(args, "name");
-        if (name == null || name.isBlank()) {
-            return errorResult("'name' is required.");
-        }
-
+    private CallToolResult updateItem(String name, Map<String, Object> args) {
         Item existing;
         try {
             existing = itemRegistry.getItem(name);
@@ -518,6 +532,7 @@ public class ItemTools {
 
             Map<String, Object> result = new HashMap<>();
             result.put("success", true);
+            result.put("action", "update");
             result.put("name", name);
             result.put("label", Objects.requireNonNullElse(updated.getLabel(), ""));
             result.put("tags", updated.getTags());
@@ -528,35 +543,7 @@ public class ItemTools {
         }
     }
 
-    /**
-     * Returns the {@code delete_item} tool schema.
-     * Permanently removes an item and its associated links from openHAB.
-     *
-     * @return the MCP tool definition for {@code delete_item}
-     */
-    public McpSchema.Tool getDeleteItemTool() {
-        return McpSchema.Tool.builder().name("delete_item")
-                .description("Permanently remove an item from openHAB. Associated links will also be removed.")
-                .inputSchema(new McpSchema.JsonSchema("object",
-                        Map.of("name", Map.of("type", "string", "description", "Name of the item to delete")),
-                        List.of("name"), null, null, null))
-                .build();
-    }
-
-    /**
-     * Handles a {@code delete_item} call.
-     * Removes the named item from the item registry if it exists.
-     *
-     * @param request the incoming tool call request containing the item name to delete
-     * @return the result indicating success, or an error if the item was not found
-     */
-    public CallToolResult handleDeleteItem(McpSchema.CallToolRequest request) {
-        Map<String, Object> args = request.arguments();
-        String name = getStringArg(args, "name");
-        if (name == null || name.isBlank()) {
-            return errorResult("'name' is required.");
-        }
-
+    private CallToolResult deleteItem(String name) {
         Item removed = itemRegistry.remove(name);
         if (removed == null) {
             return errorResult("Item '" + name + "' not found.");
@@ -565,6 +552,7 @@ public class ItemTools {
 
         Map<String, Object> result = new HashMap<>();
         result.put("success", true);
+        result.put("action", "delete");
         result.put("name", name);
         return textResult(jsonMapper, result);
     }

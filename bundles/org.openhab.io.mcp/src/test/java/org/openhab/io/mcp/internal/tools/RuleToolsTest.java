@@ -28,6 +28,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.core.automation.Rule;
@@ -61,15 +62,24 @@ class RuleToolsTest {
 
     private final McpJsonMapper jsonMapper = McpTestHelper.newJsonMapper();
     private @Nullable RuleTools ruleTools;
+    private @Nullable RuleTools ruleToolsWithScripting;
 
     @BeforeEach
     void setUp() {
-        ruleTools = new RuleTools(Objects.requireNonNull(ruleRegistry), Objects.requireNonNull(ruleManager),
-                jsonMapper);
+        ruleTools = new RuleTools(Objects.requireNonNull(ruleRegistry), Objects.requireNonNull(ruleManager), jsonMapper,
+                false);
+        ruleToolsWithScripting = new RuleTools(Objects.requireNonNull(ruleRegistry),
+                Objects.requireNonNull(ruleManager), jsonMapper, true);
     }
 
     private RuleTools tools() {
         RuleTools rt = ruleTools;
+        assertNotNull(rt);
+        return rt;
+    }
+
+    private RuleTools toolsWithScripting() {
+        RuleTools rt = ruleToolsWithScripting;
         assertNotNull(rt);
         return rt;
     }
@@ -278,7 +288,7 @@ class RuleToolsTest {
         Map<String, Object> args = new HashMap<>();
         args.put("name", "Morning Alarm");
         args.put("trigger", trigger);
-        args.put("actions", List.of(Map.of("itemName", "Kitchen_Light", "command", "ON")));
+        args.put("actions", List.of(Map.of("type", "item_command", "itemName", "Kitchen_Light", "command", "ON")));
 
         CallToolResult result = tools().handleCreateRule(createRequest(args));
         assertSuccess(result);
@@ -301,7 +311,7 @@ class RuleToolsTest {
         Map<String, Object> args = new HashMap<>();
         args.put("name", "Daily Wake Up");
         args.put("trigger", trigger);
-        args.put("actions", List.of(Map.of("itemName", "Bedroom_Light", "command", "ON")));
+        args.put("actions", List.of(Map.of("type", "item_command", "itemName", "Bedroom_Light", "command", "ON")));
 
         CallToolResult result = tools().handleCreateRule(createRequest(args));
         assertSuccess(result);
@@ -323,7 +333,7 @@ class RuleToolsTest {
         Map<String, Object> args = new HashMap<>();
         args.put("name", "Weekday Alarm");
         args.put("trigger", trigger);
-        args.put("actions", List.of(Map.of("itemName", "Kitchen_Light", "command", "ON")));
+        args.put("actions", List.of(Map.of("type", "item_command", "itemName", "Kitchen_Light", "command", "ON")));
 
         CallToolResult result = tools().handleCreateRule(createRequest(args));
         assertSuccess(result);
@@ -341,7 +351,7 @@ class RuleToolsTest {
         Map<String, Object> args = new HashMap<>();
         args.put("name", "Garage Door Alert");
         args.put("trigger", trigger);
-        args.put("actions", List.of(Map.of("itemName", "Alert_Switch", "command", "ON")));
+        args.put("actions", List.of(Map.of("type", "item_command", "itemName", "Alert_Switch", "command", "ON")));
 
         CallToolResult result = tools().handleCreateRule(createRequest(args));
         assertSuccess(result);
@@ -359,7 +369,7 @@ class RuleToolsTest {
         Map<String, Object> args = new HashMap<>();
         args.put("name", "Button Pressed Rule");
         args.put("trigger", trigger);
-        args.put("actions", List.of(Map.of("itemName", "Fan_Switch", "command", "ON")));
+        args.put("actions", List.of(Map.of("type", "item_command", "itemName", "Fan_Switch", "command", "ON")));
 
         CallToolResult result = tools().handleCreateRule(createRequest(args));
         assertSuccess(result);
@@ -376,8 +386,10 @@ class RuleToolsTest {
         Map<String, Object> args = new HashMap<>();
         args.put("name", "Bedtime Routine");
         args.put("trigger", trigger);
-        args.put("actions", List.of(Map.of("itemName", "Light1", "command", "OFF"),
-                Map.of("itemName", "Light2", "command", "OFF"), Map.of("itemName", "Lock", "command", "ON")));
+        args.put("actions",
+                List.of(Map.of("type", "item_command", "itemName", "Light1", "command", "OFF"),
+                        Map.of("type", "item_command", "itemName", "Light2", "command", "OFF"),
+                        Map.of("type", "item_command", "itemName", "Lock", "command", "ON")));
 
         CallToolResult result = tools().handleCreateRule(createRequest(args));
         assertSuccess(result);
@@ -392,7 +404,7 @@ class RuleToolsTest {
 
         Map<String, Object> args = new HashMap<>();
         args.put("trigger", trigger);
-        args.put("actions", List.of(Map.of("itemName", "Light1", "command", "ON")));
+        args.put("actions", List.of(Map.of("type", "item_command", "itemName", "Light1", "command", "ON")));
 
         CallToolResult result = tools().handleCreateRule(createRequest(args));
         assertErrorContains(result, "name");
@@ -402,7 +414,7 @@ class RuleToolsTest {
     void createRuleMissingTrigger() {
         Map<String, Object> args = new HashMap<>();
         args.put("name", "No Trigger Rule");
-        args.put("actions", List.of(Map.of("itemName", "Light1", "command", "ON")));
+        args.put("actions", List.of(Map.of("type", "item_command", "itemName", "Light1", "command", "ON")));
 
         CallToolResult result = tools().handleCreateRule(createRequest(args));
         assertErrorContains(result, "trigger");
@@ -445,7 +457,7 @@ class RuleToolsTest {
         Map<String, Object> args = new HashMap<>();
         args.put("name", "Unknown Trigger");
         args.put("trigger", trigger);
-        args.put("actions", List.of(Map.of("itemName", "Light1", "command", "ON")));
+        args.put("actions", List.of(Map.of("type", "item_command", "itemName", "Light1", "command", "ON")));
 
         CallToolResult result = tools().handleCreateRule(createRequest(args));
         assertErrorContains(result, "Unknown trigger type");
@@ -459,7 +471,7 @@ class RuleToolsTest {
         Map<String, Object> args = new HashMap<>();
         args.put("name", "No Datetime");
         args.put("trigger", trigger);
-        args.put("actions", List.of(Map.of("itemName", "Light1", "command", "ON")));
+        args.put("actions", List.of(Map.of("type", "item_command", "itemName", "Light1", "command", "ON")));
 
         CallToolResult result = tools().handleCreateRule(createRequest(args));
         assertErrorContains(result, "datetime");
@@ -473,7 +485,7 @@ class RuleToolsTest {
         Map<String, Object> args = new HashMap<>();
         args.put("name", "No Time");
         args.put("trigger", trigger);
-        args.put("actions", List.of(Map.of("itemName", "Light1", "command", "ON")));
+        args.put("actions", List.of(Map.of("type", "item_command", "itemName", "Light1", "command", "ON")));
 
         CallToolResult result = tools().handleCreateRule(createRequest(args));
         assertErrorContains(result, "time");
@@ -487,7 +499,7 @@ class RuleToolsTest {
         Map<String, Object> args = new HashMap<>();
         args.put("name", "No Cron");
         args.put("trigger", trigger);
-        args.put("actions", List.of(Map.of("itemName", "Light1", "command", "ON")));
+        args.put("actions", List.of(Map.of("type", "item_command", "itemName", "Light1", "command", "ON")));
 
         CallToolResult result = tools().handleCreateRule(createRequest(args));
         assertErrorContains(result, "cronExpression");
@@ -501,7 +513,7 @@ class RuleToolsTest {
         Map<String, Object> args = new HashMap<>();
         args.put("name", "No Item");
         args.put("trigger", trigger);
-        args.put("actions", List.of(Map.of("itemName", "Light1", "command", "ON")));
+        args.put("actions", List.of(Map.of("type", "item_command", "itemName", "Light1", "command", "ON")));
 
         CallToolResult result = tools().handleCreateRule(createRequest(args));
         assertErrorContains(result, "itemName");
@@ -515,7 +527,7 @@ class RuleToolsTest {
         Map<String, Object> args = new HashMap<>();
         args.put("name", "No Item");
         args.put("trigger", trigger);
-        args.put("actions", List.of(Map.of("itemName", "Light1", "command", "ON")));
+        args.put("actions", List.of(Map.of("type", "item_command", "itemName", "Light1", "command", "ON")));
 
         CallToolResult result = tools().handleCreateRule(createRequest(args));
         assertErrorContains(result, "itemName");
@@ -580,5 +592,468 @@ class RuleToolsTest {
     void updateRuleMissingRuleUID() {
         CallToolResult result = tools().handleUpdateRule(createRequest(Map.of()));
         assertErrorContains(result, "ruleUID");
+    }
+
+    // ========== New action types ==========
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void createRuleItemStateUpdateAction() throws Exception {
+        Map<String, Object> trigger = Map.of("type", "cron", "cronExpression", "0 0 8 * * ?");
+        Map<String, Object> action = Map.of("type", "item_state_update", "itemName", "Virtual_Mode", "state", "AUTO");
+        Map<String, Object> args = new HashMap<>();
+        args.put("name", "Set Mode");
+        args.put("trigger", trigger);
+        args.put("actions", List.of(action));
+
+        CallToolResult result = tools().handleCreateRule(createRequest(args));
+        assertSuccess(result);
+        ArgumentCaptor<Rule> captor = ArgumentCaptor.forClass(Rule.class);
+        verify(ruleRegistry).add(captor.capture());
+        org.openhab.core.automation.Action built = captor.getValue().getActions().get(0);
+        assertEquals("core.ItemStateUpdateAction", built.getTypeUID());
+        assertEquals("Virtual_Mode", built.getConfiguration().get("itemName"));
+        assertEquals("AUTO", built.getConfiguration().get("state"));
+    }
+
+    @Test
+    void createRuleNotificationUserAction() throws Exception {
+        Map<String, Object> trigger = Map.of("type", "cron", "cronExpression", "0 0 9 * * ?");
+        Map<String, Object> notification = new HashMap<>();
+        notification.put("type", "notification");
+        notification.put("scope", "user");
+        notification.put("userId", "dan@example.com");
+        notification.put("message", "Good morning");
+        notification.put("title", "Wake up");
+
+        Map<String, Object> args = new HashMap<>();
+        args.put("name", "Morning Push");
+        args.put("trigger", trigger);
+        args.put("actions", List.of(notification));
+
+        CallToolResult result = tools().handleCreateRule(createRequest(args));
+        assertSuccess(result);
+        ArgumentCaptor<Rule> captor = ArgumentCaptor.forClass(Rule.class);
+        verify(ruleRegistry).add(captor.capture());
+        org.openhab.core.automation.Action built = captor.getValue().getActions().get(0);
+        assertEquals("notification.SendExtended2Notification", built.getTypeUID());
+        assertEquals("dan@example.com", built.getConfiguration().get("userId"));
+        assertEquals("Good morning", built.getConfiguration().get("message"));
+        assertEquals("Wake up", built.getConfiguration().get("title"));
+    }
+
+    @Test
+    void createRuleNotificationBroadcastAction() throws Exception {
+        Map<String, Object> trigger = Map.of("type", "cron", "cronExpression", "0 0 9 * * ?");
+        Map<String, Object> notification = Map.of("type", "notification", "scope", "broadcast", "message",
+                "Server starting up");
+        Map<String, Object> args = new HashMap<>();
+        args.put("name", "Broadcast");
+        args.put("trigger", trigger);
+        args.put("actions", List.of(notification));
+
+        CallToolResult result = tools().handleCreateRule(createRequest(args));
+        assertSuccess(result);
+        ArgumentCaptor<Rule> captor = ArgumentCaptor.forClass(Rule.class);
+        verify(ruleRegistry).add(captor.capture());
+        assertEquals("notification.SendExtended2BroadcastNotification",
+                captor.getValue().getActions().get(0).getTypeUID());
+    }
+
+    @Test
+    void createRuleNotificationLogAction() throws Exception {
+        Map<String, Object> trigger = Map.of("type", "cron", "cronExpression", "0 0 9 * * ?");
+        Map<String, Object> notification = Map.of("type", "notification", "scope", "log", "message", "log entry");
+        Map<String, Object> args = new HashMap<>();
+        args.put("name", "Log Note");
+        args.put("trigger", trigger);
+        args.put("actions", List.of(notification));
+
+        CallToolResult result = tools().handleCreateRule(createRequest(args));
+        assertSuccess(result);
+        ArgumentCaptor<Rule> captor = ArgumentCaptor.forClass(Rule.class);
+        verify(ruleRegistry).add(captor.capture());
+        assertEquals("notification.SendExtendedLogNotification", captor.getValue().getActions().get(0).getTypeUID());
+    }
+
+    @Test
+    void createRuleNotificationWithActionButtonsArray() throws Exception {
+        Map<String, Object> trigger = Map.of("type", "cron", "cronExpression", "0 0 22 * * ?");
+        Map<String, Object> notification = new HashMap<>();
+        notification.put("type", "notification");
+        notification.put("scope", "user");
+        notification.put("userId", "dan@example.com");
+        notification.put("message", "Office light still on");
+        notification.put("actionButtons", List.of(Map.of("label", "Turn off", "action", "command:Office_Light:OFF"),
+                Map.of("label", "Keep on", "action", "ui:popup:oh-light-card")));
+        Map<String, Object> args = new HashMap<>();
+        args.put("name", "Bedtime check");
+        args.put("trigger", trigger);
+        args.put("actions", List.of(notification));
+
+        CallToolResult result = tools().handleCreateRule(createRequest(args));
+        assertSuccess(result);
+        ArgumentCaptor<Rule> captor = ArgumentCaptor.forClass(Rule.class);
+        verify(ruleRegistry).add(captor.capture());
+        org.openhab.core.automation.Action built = captor.getValue().getActions().get(0);
+        assertEquals("Turn off=command:Office_Light:OFF", built.getConfiguration().get("actionButton1"));
+        assertEquals("Keep on=ui:popup:oh-light-card", built.getConfiguration().get("actionButton2"));
+        assertNull(built.getConfiguration().get("actionButton3"));
+    }
+
+    @Test
+    void createRuleNotificationActionButtonRejectsEqualsInLabel() {
+        Map<String, Object> trigger = Map.of("type", "cron", "cronExpression", "0 0 22 * * ?");
+        Map<String, Object> notification = new HashMap<>();
+        notification.put("type", "notification");
+        notification.put("scope", "user");
+        notification.put("userId", "u");
+        notification.put("message", "m");
+        notification.put("actionButtons", List.of(Map.of("label", "Bad=Label", "action", "command:X:Y")));
+        Map<String, Object> args = new HashMap<>();
+        args.put("name", "Bad buttons");
+        args.put("trigger", trigger);
+        args.put("actions", List.of(notification));
+
+        CallToolResult result = tools().handleCreateRule(createRequest(args));
+        assertErrorContains(result, "'='");
+    }
+
+    @Test
+    void createRuleNotificationUserMissingUserId() {
+        Map<String, Object> trigger = Map.of("type", "cron", "cronExpression", "0 0 9 * * ?");
+        Map<String, Object> notification = Map.of("type", "notification", "scope", "user", "message", "x");
+        Map<String, Object> args = new HashMap<>();
+        args.put("name", "Bad");
+        args.put("trigger", trigger);
+        args.put("actions", List.of(notification));
+
+        CallToolResult result = tools().handleCreateRule(createRequest(args));
+        assertErrorContains(result, "userId");
+    }
+
+    @Test
+    void createRuleRunRuleAction() throws Exception {
+        Map<String, Object> trigger = Map.of("type", "cron", "cronExpression", "0 0 9 * * ?");
+        Map<String, Object> action = Map.of("type", "run_rule", "ruleUIDs", List.of("rule-a", "rule-b"),
+                "considerConditions", false);
+        Map<String, Object> args = new HashMap<>();
+        args.put("name", "Orchestrate");
+        args.put("trigger", trigger);
+        args.put("actions", List.of(action));
+
+        CallToolResult result = tools().handleCreateRule(createRequest(args));
+        assertSuccess(result);
+        ArgumentCaptor<Rule> captor = ArgumentCaptor.forClass(Rule.class);
+        verify(ruleRegistry).add(captor.capture());
+        org.openhab.core.automation.Action built = captor.getValue().getActions().get(0);
+        assertEquals("core.RunRuleAction", built.getTypeUID());
+        assertEquals(List.of("rule-a", "rule-b"), built.getConfiguration().get("ruleUIDs"));
+        assertEquals(Boolean.FALSE, built.getConfiguration().get("considerConditions"));
+    }
+
+    @Test
+    void createRuleRuleEnablementAction() throws Exception {
+        Map<String, Object> trigger = Map.of("type", "cron", "cronExpression", "0 0 9 * * ?");
+        Map<String, Object> action = Map.of("type", "rule_enablement", "ruleUIDs", List.of("rule-x"), "enable", true);
+        Map<String, Object> args = new HashMap<>();
+        args.put("name", "Enabler");
+        args.put("trigger", trigger);
+        args.put("actions", List.of(action));
+
+        CallToolResult result = tools().handleCreateRule(createRequest(args));
+        assertSuccess(result);
+        ArgumentCaptor<Rule> captor = ArgumentCaptor.forClass(Rule.class);
+        verify(ruleRegistry).add(captor.capture());
+        org.openhab.core.automation.Action built = captor.getValue().getActions().get(0);
+        assertEquals("core.RuleEnablementAction", built.getTypeUID());
+        assertEquals(Boolean.TRUE, built.getConfiguration().get("enable"));
+    }
+
+    @Test
+    void createRuleScriptActionWithScriptingDisabledFails() {
+        Map<String, Object> trigger = Map.of("type", "cron", "cronExpression", "0 0 9 * * ?");
+        Map<String, Object> action = Map.of("type", "script", "script", "console.log('hi')");
+        Map<String, Object> args = new HashMap<>();
+        args.put("name", "JS");
+        args.put("trigger", trigger);
+        args.put("actions", List.of(action));
+
+        CallToolResult result = tools().handleCreateRule(createRequest(args));
+        assertErrorContains(result, "enableScripting");
+    }
+
+    @Test
+    void createRuleScriptActionWithScriptingEnabledSucceeds() throws Exception {
+        Map<String, Object> trigger = Map.of("type", "cron", "cronExpression", "0 0 9 * * ?");
+        Map<String, Object> action = Map.of("type", "script", "script", "items.Light.sendCommand('ON')");
+        Map<String, Object> args = new HashMap<>();
+        args.put("name", "JS");
+        args.put("trigger", trigger);
+        args.put("actions", List.of(action));
+
+        CallToolResult result = toolsWithScripting().handleCreateRule(createRequest(args));
+        assertSuccess(result);
+        ArgumentCaptor<Rule> captor = ArgumentCaptor.forClass(Rule.class);
+        verify(ruleRegistry).add(captor.capture());
+        org.openhab.core.automation.Action built = captor.getValue().getActions().get(0);
+        assertEquals("script.ScriptAction", built.getTypeUID());
+        assertEquals("application/javascript", built.getConfiguration().get("type"));
+        assertEquals("items.Light.sendCommand('ON')", built.getConfiguration().get("script"));
+    }
+
+    @Test
+    void createRuleUnknownActionType() {
+        Map<String, Object> trigger = Map.of("type", "cron", "cronExpression", "0 0 9 * * ?");
+        Map<String, Object> action = Map.of("type", "teleport", "destination", "Mars");
+        Map<String, Object> args = new HashMap<>();
+        args.put("name", "Bad");
+        args.put("trigger", trigger);
+        args.put("actions", List.of(action));
+
+        CallToolResult result = tools().handleCreateRule(createRequest(args));
+        assertErrorContains(result, "Unknown action type");
+    }
+
+    // ========== Conditions ==========
+
+    @Test
+    void createRuleItemStateCondition() throws Exception {
+        Map<String, Object> trigger = Map.of("type", "cron", "cronExpression", "0 0 9 * * ?");
+        Map<String, Object> condition = Map.of("type", "item_state", "itemName", "Mode", "operator", "=", "state",
+                "AUTO");
+        Map<String, Object> args = new HashMap<>();
+        args.put("name", "Conditional");
+        args.put("trigger", trigger);
+        args.put("conditions", List.of(condition));
+        args.put("actions", List.of(Map.of("type", "item_command", "itemName", "Light", "command", "ON")));
+
+        CallToolResult result = tools().handleCreateRule(createRequest(args));
+        assertSuccess(result);
+        ArgumentCaptor<Rule> captor = ArgumentCaptor.forClass(Rule.class);
+        verify(ruleRegistry).add(captor.capture());
+        org.openhab.core.automation.Condition built = captor.getValue().getConditions().get(0);
+        assertEquals("core.ItemStateCondition", built.getTypeUID());
+        assertEquals("Mode", built.getConfiguration().get("itemName"));
+        assertEquals("=", built.getConfiguration().get("operator"));
+        assertEquals("AUTO", built.getConfiguration().get("state"));
+    }
+
+    @Test
+    void createRuleTimeOfDayCondition() throws Exception {
+        Map<String, Object> trigger = Map.of("type", "item_state_change", "itemName", "Door");
+        Map<String, Object> condition = Map.of("type", "time_of_day", "startTime", "22:00", "endTime", "06:00");
+        Map<String, Object> args = new HashMap<>();
+        args.put("name", "Nighttime");
+        args.put("trigger", trigger);
+        args.put("conditions", List.of(condition));
+        args.put("actions", List.of(Map.of("type", "item_command", "itemName", "Light", "command", "ON")));
+
+        CallToolResult result = tools().handleCreateRule(createRequest(args));
+        assertSuccess(result);
+        ArgumentCaptor<Rule> captor = ArgumentCaptor.forClass(Rule.class);
+        verify(ruleRegistry).add(captor.capture());
+        org.openhab.core.automation.Condition built = captor.getValue().getConditions().get(0);
+        assertEquals("core.TimeOfDayCondition", built.getTypeUID());
+        assertEquals("22:00", built.getConfiguration().get("startTime"));
+        assertEquals("06:00", built.getConfiguration().get("endTime"));
+    }
+
+    @Test
+    void createRuleDayOfWeekCondition() throws Exception {
+        Map<String, Object> trigger = Map.of("type", "cron", "cronExpression", "0 0 9 * * ?");
+        Map<String, Object> condition = Map.of("type", "day_of_week", "days",
+                List.of("MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"));
+        Map<String, Object> args = new HashMap<>();
+        args.put("name", "Weekdays");
+        args.put("trigger", trigger);
+        args.put("conditions", List.of(condition));
+        args.put("actions", List.of(Map.of("type", "item_command", "itemName", "Light", "command", "ON")));
+
+        CallToolResult result = tools().handleCreateRule(createRequest(args));
+        assertSuccess(result);
+        ArgumentCaptor<Rule> captor = ArgumentCaptor.forClass(Rule.class);
+        verify(ruleRegistry).add(captor.capture());
+        org.openhab.core.automation.Condition built = captor.getValue().getConditions().get(0);
+        assertEquals("timer.DayOfWeekCondition", built.getTypeUID());
+    }
+
+    @Test
+    void createRuleEphemerisWeekendCondition() throws Exception {
+        Map<String, Object> trigger = Map.of("type", "cron", "cronExpression", "0 0 9 * * ?");
+        Map<String, Object> condition = Map.of("type", "ephemeris", "kind", "weekend");
+        Map<String, Object> args = new HashMap<>();
+        args.put("name", "Weekend Only");
+        args.put("trigger", trigger);
+        args.put("conditions", List.of(condition));
+        args.put("actions", List.of(Map.of("type", "item_command", "itemName", "Light", "command", "ON")));
+
+        CallToolResult result = tools().handleCreateRule(createRequest(args));
+        assertSuccess(result);
+        ArgumentCaptor<Rule> captor = ArgumentCaptor.forClass(Rule.class);
+        verify(ruleRegistry).add(captor.capture());
+        assertEquals("ephemeris.WeekendCondition", captor.getValue().getConditions().get(0).getTypeUID());
+    }
+
+    @Test
+    void createRuleEphemerisDaysetCondition() throws Exception {
+        Map<String, Object> trigger = Map.of("type", "cron", "cronExpression", "0 0 9 * * ?");
+        Map<String, Object> condition = Map.of("type", "ephemeris", "kind", "dayset", "dayset", "workout");
+        Map<String, Object> args = new HashMap<>();
+        args.put("name", "Workout days");
+        args.put("trigger", trigger);
+        args.put("conditions", List.of(condition));
+        args.put("actions", List.of(Map.of("type", "item_command", "itemName", "Light", "command", "ON")));
+
+        CallToolResult result = tools().handleCreateRule(createRequest(args));
+        assertSuccess(result);
+        ArgumentCaptor<Rule> captor = ArgumentCaptor.forClass(Rule.class);
+        verify(ruleRegistry).add(captor.capture());
+        org.openhab.core.automation.Condition built = captor.getValue().getConditions().get(0);
+        assertEquals("ephemeris.DaysetCondition", built.getTypeUID());
+        assertEquals("workout", built.getConfiguration().get("dayset"));
+    }
+
+    @Test
+    void createRuleScriptConditionGated() {
+        Map<String, Object> trigger = Map.of("type", "cron", "cronExpression", "0 0 9 * * ?");
+        Map<String, Object> condition = Map.of("type", "script", "script", "true");
+        Map<String, Object> args = new HashMap<>();
+        args.put("name", "Bad");
+        args.put("trigger", trigger);
+        args.put("conditions", List.of(condition));
+        args.put("actions", List.of(Map.of("type", "item_command", "itemName", "Light", "command", "ON")));
+
+        CallToolResult result = tools().handleCreateRule(createRequest(args));
+        assertErrorContains(result, "enableScripting");
+    }
+
+    @Test
+    void createRuleUnknownConditionType() {
+        Map<String, Object> trigger = Map.of("type", "cron", "cronExpression", "0 0 9 * * ?");
+        Map<String, Object> condition = Map.of("type", "weather", "max_temp", 20);
+        Map<String, Object> args = new HashMap<>();
+        args.put("name", "Bad");
+        args.put("trigger", trigger);
+        args.put("conditions", List.of(condition));
+        args.put("actions", List.of(Map.of("type", "item_command", "itemName", "Light", "command", "ON")));
+
+        CallToolResult result = tools().handleCreateRule(createRequest(args));
+        assertErrorContains(result, "Unknown condition type");
+    }
+
+    // ========== Multi-trigger and back-compat ==========
+
+    @Test
+    void createRuleMultipleTriggers() throws Exception {
+        List<Map<String, Object>> triggers = List.of(Map.of("type", "time_of_day", "time", "08:00"),
+                Map.of("type", "item_state_change", "itemName", "WakeUp_Switch", "state", "ON"));
+        Map<String, Object> args = new HashMap<>();
+        args.put("name", "Wake Up");
+        args.put("triggers", triggers);
+        args.put("actions", List.of(Map.of("type", "item_command", "itemName", "Light", "command", "ON")));
+
+        CallToolResult result = tools().handleCreateRule(createRequest(args));
+        assertSuccess(result);
+        ArgumentCaptor<Rule> captor = ArgumentCaptor.forClass(Rule.class);
+        verify(ruleRegistry).add(captor.capture());
+        assertEquals(2, captor.getValue().getTriggers().size());
+        assertEquals("timer.TimeOfDayTrigger", captor.getValue().getTriggers().get(0).getTypeUID());
+        assertEquals("core.ItemStateChangeTrigger", captor.getValue().getTriggers().get(1).getTypeUID());
+    }
+
+    @Test
+    void createRuleEmptyTriggersArrayFails() {
+        Map<String, Object> args = new HashMap<>();
+        args.put("name", "Bad");
+        args.put("triggers", List.of());
+        args.put("actions", List.of(Map.of("type", "item_command", "itemName", "Light", "command", "ON")));
+
+        CallToolResult result = tools().handleCreateRule(createRequest(args));
+        assertErrorContains(result, "triggers");
+    }
+
+    // ========== Relative datetime offsets ==========
+
+    @Test
+    void createRuleDatetimeSimpleOffsetSeconds() throws Exception {
+        Map<String, Object> trigger = new HashMap<>();
+        trigger.put("type", "datetime");
+        trigger.put("datetime", "+30s");
+
+        Map<String, Object> args = new HashMap<>();
+        args.put("name", "Soon");
+        args.put("trigger", trigger);
+        args.put("actions", List.of(Map.of("type", "item_command", "itemName", "Light", "command", "ON")));
+
+        CallToolResult result = tools().handleCreateRule(createRequest(args));
+        assertSuccess(result);
+        ArgumentCaptor<Rule> captor = ArgumentCaptor.forClass(Rule.class);
+        verify(ruleRegistry).add(captor.capture());
+        Rule built = captor.getValue();
+        assertTrue(built.getTags().contains("MCP-oneshot"));
+        // mcpFireAt should be an absolute ISO datetime, not the raw "+30s"
+        String fireAt = (String) built.getConfiguration().get("mcpFireAt");
+        assertNotNull(fireAt);
+        assertTrue(fireAt.matches("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.*"),
+                "Expected absolute ISO datetime, got: " + fireAt);
+    }
+
+    @Test
+    void createRuleDatetimeIsoDurationMinutes() throws Exception {
+        Map<String, Object> trigger = new HashMap<>();
+        trigger.put("type", "datetime");
+        trigger.put("datetime", "PT5M");
+
+        Map<String, Object> args = new HashMap<>();
+        args.put("name", "Five Minutes");
+        args.put("trigger", trigger);
+        args.put("actions", List.of(Map.of("type", "item_command", "itemName", "Light", "command", "ON")));
+
+        CallToolResult result = tools().handleCreateRule(createRequest(args));
+        assertSuccess(result);
+    }
+
+    @Test
+    void createRuleDatetimeIsoPeriodDay() throws Exception {
+        Map<String, Object> trigger = new HashMap<>();
+        trigger.put("type", "datetime");
+        trigger.put("datetime", "P1D");
+
+        Map<String, Object> args = new HashMap<>();
+        args.put("name", "Tomorrow");
+        args.put("trigger", trigger);
+        args.put("actions", List.of(Map.of("type", "item_command", "itemName", "Light", "command", "ON")));
+
+        CallToolResult result = tools().handleCreateRule(createRequest(args));
+        assertSuccess(result);
+    }
+
+    @Test
+    void createRuleDatetimeBadOffsetReportsError() {
+        Map<String, Object> trigger = new HashMap<>();
+        trigger.put("type", "datetime");
+        trigger.put("datetime", "+nonsense");
+
+        Map<String, Object> args = new HashMap<>();
+        args.put("name", "Bad offset");
+        args.put("trigger", trigger);
+        args.put("actions", List.of(Map.of("type", "item_command", "itemName", "Light", "command", "ON")));
+
+        CallToolResult result = tools().handleCreateRule(createRequest(args));
+        assertErrorContains(result, "Cannot parse");
+    }
+
+    @Test
+    void createRuleMissingActionTypeIsRejected() throws Exception {
+        Map<String, Object> trigger = Map.of("type", "cron", "cronExpression", "0 0 9 * * ?");
+        Map<String, Object> args = new HashMap<>();
+        args.put("name", "Untyped");
+        args.put("trigger", trigger);
+        // No 'type' field — should error rather than silently fall back.
+        args.put("actions", List.of(Map.of("itemName", "Light", "command", "ON")));
+
+        CallToolResult result = tools().handleCreateRule(createRequest(args));
+        assertErrorContains(result, "type");
     }
 }
