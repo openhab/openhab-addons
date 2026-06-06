@@ -33,16 +33,14 @@ public class CloudMqttTransport implements RoborockCommandTransport {
     private String localKey = "";
     private final boolean b01;
     private final boolean q7;
-    private final boolean q10;
 
-    public CloudMqttTransport(RoborockAccountHandler accountHandler, String duid, byte[] nonce, boolean b01, boolean q7,
-            boolean q10) {
+    public CloudMqttTransport(RoborockAccountHandler accountHandler, String duid, byte[] nonce, boolean b01,
+            boolean q7) {
         this.accountHandler = accountHandler;
         this.duid = duid;
         this.nonce = Arrays.copyOf(nonce, nonce.length);
         this.b01 = b01;
         this.q7 = q7;
-        this.q10 = q10;
     }
 
     @Override

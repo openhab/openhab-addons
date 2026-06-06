@@ -369,7 +369,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         }
         bridgeHandler = accountHandler;
         b01 = isB01Device();
-        cloudTransport = new CloudMqttTransport(accountHandler, config.duid, nonce, b01, q7, q10);
+        cloudTransport = new CloudMqttTransport(accountHandler, config.duid, nonce, b01, q7);
         LocalDirectTransport localDirectTransport = new LocalDirectTransport();
         localDirectTransport.setMessageConsumer(this::handleMessage);
         directTransport = localDirectTransport;

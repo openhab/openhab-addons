@@ -6,7 +6,6 @@ Robots that use the v1.0 protocol are fully supported.
 The Q7/Q10 series are partially supported - some channels will be fixed in a future update.
 Local control on the Q7/Q10 is not (yet) supported.
 
-
 ## Supported Things
 
 The following things types are available:
