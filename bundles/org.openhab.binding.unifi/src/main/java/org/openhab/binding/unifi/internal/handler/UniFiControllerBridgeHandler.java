@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.WWWAuthenticationProtocolHandler;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.unifi.internal.UniFiBindingConstants;
 import org.openhab.binding.unifi.internal.UniFiControllerConfiguration;
@@ -101,6 +102,9 @@ public class UniFiControllerBridgeHandler extends BaseBridgeHandler {
 
         HttpClient client = httpClientFactory.createHttpClient(UniFiBindingConstants.BINDING_ID,
                 new SslContextFactory.Client(true));
+        // The console answers some requests with a 401 that carries no WWW-Authenticate header (seen on
+        // recent UniFi OS / Protect firmware) which Jetty intercepts and throws an exception before we can process
+        client.getProtocolHandlers().remove(WWWAuthenticationProtocolHandler.NAME);
         try {
             client.start();
         } catch (Exception e) {

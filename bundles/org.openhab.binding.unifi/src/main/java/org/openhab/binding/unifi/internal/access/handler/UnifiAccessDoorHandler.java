@@ -109,12 +109,12 @@ public class UnifiAccessDoorHandler extends UnifiAccessBaseHandler {
                             DoorLockRule rule = this.lockRule;
                             String hubId = getHubDeviceId();
                             if (rule != null && rule.type == DoorState.DoorLockRuleType.SCHEDULE) {
-                                api.lockEarly(hubId);
+                                api.lockEarly(hubId, door.id);
                             } else if (rule != null && (rule.type == DoorState.DoorLockRuleType.CUSTOM
                                     || rule.type == DoorState.DoorLockRuleType.KEEP_UNLOCK)) {
-                                api.lockNow(hubId);
+                                api.lockNow(hubId, door.id);
                             } else {
-                                api.resetDoorLockRule(hubId);
+                                api.resetDoorLockRule(hubId, door.id);
                             }
                         } else {
                             // Unlock uses the location/door ID, not the hub device ID
@@ -125,18 +125,18 @@ public class UnifiAccessDoorHandler extends UnifiAccessBaseHandler {
                 case UnifiAccessBindingConstants.CHANNEL_KEEP_UNLOCKED:
                     if (command instanceof OnOffType onOff) {
                         if (onOff == OnOffType.ON) {
-                            api.keepDoorUnlocked(getHubDeviceId());
+                            api.keepDoorUnlocked(getHubDeviceId(), door.id);
                         } else {
-                            api.resetDoorLockRule(getHubDeviceId());
+                            api.resetDoorLockRule(getHubDeviceId(), door.id);
                         }
                     }
                     break;
                 case UnifiAccessBindingConstants.CHANNEL_KEEP_LOCKED:
                     if (command instanceof OnOffType onOff) {
                         if (onOff == OnOffType.ON) {
-                            api.keepDoorLocked(getHubDeviceId());
+                            api.keepDoorLocked(getHubDeviceId(), door.id);
                         } else {
-                            api.resetDoorLockRule(getHubDeviceId());
+                            api.resetDoorLockRule(getHubDeviceId(), door.id);
                         }
                     }
                     break;
@@ -151,9 +151,9 @@ public class UnifiAccessDoorHandler extends UnifiAccessBaseHandler {
                         minutes = Integer.parseInt(command.toString());
                     }
                     if (minutes > 0) {
-                        api.unlockForMinutes(getHubDeviceId(), minutes);
+                        api.unlockForMinutes(getHubDeviceId(), door.id, minutes);
                     } else {
-                        api.resetDoorLockRule(getHubDeviceId());
+                        api.resetDoorLockRule(getHubDeviceId(), door.id);
                     }
                     updateState(UnifiAccessBindingConstants.CHANNEL_UNLOCK_MINUTES, UnDefType.UNDEF);
                 }
@@ -162,12 +162,12 @@ public class UnifiAccessDoorHandler extends UnifiAccessBaseHandler {
                     if (command instanceof DateTimeType dateTime) {
                         int minutes = (int) ChronoUnit.MINUTES.between(Instant.now(), dateTime.getInstant());
                         if (minutes > 0) {
-                            api.unlockForMinutes(getHubDeviceId(), minutes);
+                            api.unlockForMinutes(getHubDeviceId(), door.id, minutes);
                         } else {
-                            api.resetDoorLockRule(getHubDeviceId());
+                            api.resetDoorLockRule(getHubDeviceId(), door.id);
                         }
                     } else {
-                        api.resetDoorLockRule(getHubDeviceId());
+                        api.resetDoorLockRule(getHubDeviceId(), door.id);
                     }
                 }
                     break;
@@ -271,7 +271,7 @@ public class UnifiAccessDoorHandler extends UnifiAccessBaseHandler {
         UnifiAccessApiClient api = getApiClient();
         if (api != null) {
             try {
-                DoorLockRule rule = api.getDoorLockRule(door.id);
+                DoorLockRule rule = api.getDoorLockRule(getHubDeviceId(), door.id);
                 updateLockRule(rule);
             } catch (UnifiAccessApiException e) {
                 logger.debug("Failed to get door lock rule for door {}: {}", door.id, e.getMessage());
@@ -344,7 +344,7 @@ public class UnifiAccessDoorHandler extends UnifiAccessBaseHandler {
                     break;
                 case CUSTOM:
                     updateState(UnifiAccessBindingConstants.CHANNEL_UNLOCK_UNTIL,
-                            new DateTimeType(Instant.ofEpochMilli(rule.until)));
+                            new DateTimeType(Instant.ofEpochMilli(rule.endInstantMillis())));
                     lockChannels.remove(UnifiAccessBindingConstants.CHANNEL_UNLOCK_UNTIL);
                     break;
                 default:

@@ -380,10 +380,45 @@ public final class UnifiAccessApiClient implements Closeable {
             }
         }
 
+        // Some hubs (e.g. UA Hub Gate) do not sit inside the door's device_groups; only the reader/camera
+        // does, and the actual hub lives in a higher-level (building) group. The reader still references the
+        // hub via connected_uah_id, which is the device id the lock_rule endpoint is keyed by. Fall back to
+        // that when no in-group is_hub device was found, so lock-rule commands target the correct hub.
+        if (door.hubDeviceId == null && deviceGroups != null) {
+            for (JsonElement dgEl : deviceGroups) {
+                String uah = findConnectedUahId(dgEl);
+                if (uah != null) {
+                    door.hubDeviceId = uah;
+                    break;
+                }
+            }
+        }
+
         // Floor ID from up_id
         door.floorId = getStringOrNull(doorObj, "up_id");
 
         return door;
+    }
+
+    /**
+     * Returns the first {@code connected_uah_id} found among the devices in a device-group element (which may
+     * be a single device object or a nested array of devices), or {@code null} if none carry one.
+     */
+    private @Nullable String findConnectedUahId(JsonElement dgEl) {
+        if (dgEl.isJsonObject()) {
+            return getStringOrNull(dgEl.getAsJsonObject(), "connected_uah_id");
+        }
+        if (dgEl.isJsonArray()) {
+            for (JsonElement inner : dgEl.getAsJsonArray()) {
+                if (inner.isJsonObject()) {
+                    String uah = getStringOrNull(inner.getAsJsonObject(), "connected_uah_id");
+                    if (uah != null) {
+                        return uah;
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     /**
@@ -574,9 +609,16 @@ public final class UnifiAccessApiClient implements Closeable {
     }
 
     /**
-     * Sets a lock rule on a device.
+     * Sets a lock rule on a door. The lock_rule endpoint is keyed by the hub device id in the path and the
+     * door's location id in the {@code location_id} query parameter, matching the UniFi Access web client.
+     * Passing the door/location id in the path instead is rejected by recent firmware with
+     * {@code GetAdoptedDeviceByUniqueId failed; NotExist}.
+     *
+     * @param hubDeviceId the hub's unique_id (path key)
+     * @param locationId the door/location id
      */
-    public boolean setDoorLockRule(String deviceId, DoorLockRule rule) throws UnifiAccessApiException {
+    public boolean setDoorLockRule(String hubDeviceId, String locationId, DoorLockRule rule)
+            throws UnifiAccessApiException {
         JsonObject body = new JsonObject();
         if (rule.type != null) {
             body.addProperty("type", gson.toJson(rule.type).replace("\"", ""));
@@ -584,48 +626,70 @@ public final class UnifiAccessApiClient implements Closeable {
         if (rule.interval != null && rule.interval > 0) {
             body.addProperty("interval", rule.interval);
         }
-        ContentResponse resp = execPut(V2_BASE + "/device/" + deviceId + "/lock_rule?get_result=true", body.toString());
+        ContentResponse resp = execPut(
+                V2_BASE + "/device/" + hubDeviceId + "/lock_rule?get_result=true&location_id=" + locationId,
+                body.toString());
         ensure2xx(resp, "setDoorLockRule");
         return checkV2SuccessBool(resp, "setDoorLockRule");
     }
 
-    public boolean keepDoorUnlocked(String deviceId) throws UnifiAccessApiException {
-        return setDoorLockRule(deviceId, DoorLockRule.keepUnlock());
+    public boolean keepDoorUnlocked(String hubDeviceId, String locationId) throws UnifiAccessApiException {
+        return setDoorLockRule(hubDeviceId, locationId, DoorLockRule.keepUnlock());
     }
 
-    public boolean keepDoorLocked(String deviceId) throws UnifiAccessApiException {
-        return setDoorLockRule(deviceId, DoorLockRule.keepLock());
+    public boolean keepDoorLocked(String hubDeviceId, String locationId) throws UnifiAccessApiException {
+        return setDoorLockRule(hubDeviceId, locationId, DoorLockRule.keepLock());
     }
 
-    public boolean unlockForMinutes(String deviceId, int minutes) throws UnifiAccessApiException {
+    public boolean unlockForMinutes(String hubDeviceId, String locationId, int minutes) throws UnifiAccessApiException {
         if (minutes <= 0) {
             throw new IllegalArgumentException("minutes must be > 0");
         }
-        return setDoorLockRule(deviceId, DoorLockRule.customMinutes(minutes));
+        return setDoorLockRule(hubDeviceId, locationId, DoorLockRule.customMinutes(minutes));
     }
 
-    public boolean resetDoorLockRule(String deviceId) throws UnifiAccessApiException {
-        return setDoorLockRule(deviceId, DoorLockRule.reset());
+    public boolean resetDoorLockRule(String hubDeviceId, String locationId) throws UnifiAccessApiException {
+        return setDoorLockRule(hubDeviceId, locationId, DoorLockRule.reset());
     }
 
     /** End an active keep-unlock/custom early (lock immediately). */
-    public boolean lockEarly(String deviceId) throws UnifiAccessApiException {
-        return setDoorLockRule(deviceId, DoorLockRule.lockEarly());
+    public boolean lockEarly(String hubDeviceId, String locationId) throws UnifiAccessApiException {
+        return setDoorLockRule(hubDeviceId, locationId, DoorLockRule.lockEarly());
     }
 
     /** Terminate both unlock schedule and temporary unlock, locking immediately. */
-    public boolean lockNow(String deviceId) throws UnifiAccessApiException {
-        return setDoorLockRule(deviceId, DoorLockRule.lockNow());
+    public boolean lockNow(String hubDeviceId, String locationId) throws UnifiAccessApiException {
+        return setDoorLockRule(hubDeviceId, locationId, DoorLockRule.lockNow());
     }
 
     /**
-     * Gets the current lock rule for a door. The v2 API does not have a dedicated
-     * endpoint for this, so we return a default reset rule.
+     * Gets the current lock rule for a door. Recent device firmware exposes the rule via a v2
+     * {@code lock_rule} read-back keyed by the hub device id and door location id; the response carries
+     * the active {@code temp_lock_type} and the {@code unlock_period} end time (epoch seconds). Older
+     * firmware without this endpoint falls back to a default reset rule so callers still get a value.
+     *
+     * @param hubDeviceId the hub's unique_id (path key for lock_rule), as used by {@link #setDoorLockRule}
+     * @param locationId the door/location id
      */
-    public DoorLockRule getDoorLockRule(String doorId) throws UnifiAccessApiException {
-        // The v2 topology does not expose a separate lock_rule GET endpoint.
-        // Return a default "reset" rule; actual state is derived from bootstrap/notifications.
-        return DoorLockRule.reset();
+    public DoorLockRule getDoorLockRule(String hubDeviceId, String locationId) throws UnifiAccessApiException {
+        ContentResponse resp = execGet(
+                V2_BASE + "/device/" + hubDeviceId + "/lock_rule?get_result=true&location_id=" + locationId);
+        if (resp.getStatus() == 404) {
+            // Firmware without the lock_rule read-back; state is derived from bootstrap/notifications.
+            return DoorLockRule.reset();
+        }
+        ensure2xx(resp, "getDoorLockRule");
+        JsonObject root = JsonParser.parseString(resp.getContentAsString()).getAsJsonObject();
+        checkV2Success(root, "getDoorLockRule");
+        JsonElement dataEl = root.get("data");
+        if (dataEl == null || dataEl.isJsonNull()) {
+            return DoorLockRule.reset();
+        }
+        DoorLockRule rule = gson.fromJson(dataEl, DoorLockRule.class);
+        if (rule == null || rule.type == null) {
+            return DoorLockRule.reset();
+        }
+        return rule;
     }
 
     /**

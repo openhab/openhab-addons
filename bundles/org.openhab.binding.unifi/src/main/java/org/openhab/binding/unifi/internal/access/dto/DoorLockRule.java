@@ -20,11 +20,19 @@ import com.google.gson.annotations.SerializedName;
  * @author Dan Cunningham - Initial contribution
  */
 public class DoorLockRule {
+    @SerializedName(value = "type", alternate = { "temp_lock_type" })
     public DoorState.DoorLockRuleType type;
     /** minutes, only for type=custom and for setting the rule */
     public Integer interval = 0;
     @SerializedName(value = "until", alternate = { "ended_time", "endtime" })
     public Long until = 0L; // milliseconds since epoch
+    /**
+     * End of the temporary unlock window, in epoch <em>seconds</em>, as reported by the device's
+     * {@code lock_rule} read-back ({@code unlock_period} / {@code end_time_interval}). The setter-side
+     * {@link #until} is epoch milliseconds; {@link #endInstantMillis()} reconciles the two.
+     */
+    @SerializedName(value = "unlock_period", alternate = { "end_time_interval" })
+    public Long unlockPeriod = 0L; // seconds since epoch
 
     public DoorLockRule(DoorState.DoorLockRuleType type, Integer minutes) {
         this.type = type;
@@ -58,5 +66,19 @@ public class DoorLockRule {
 
     public static DoorLockRule lockNow() {
         return new DoorLockRule(DoorState.DoorLockRuleType.LOCK_NOW);
+    }
+
+    /**
+     * The end of the unlock window in epoch milliseconds, preferring the device read-back
+     * {@code unlock_period} (epoch seconds) and falling back to the setter-side {@code until}
+     * (epoch milliseconds). Returns 0 if neither is set.
+     */
+    public long endInstantMillis() {
+        Long period = unlockPeriod;
+        if (period != null && period > 0) {
+            return period * 1000L;
+        }
+        Long u = until;
+        return u != null ? u : 0L;
     }
 }
