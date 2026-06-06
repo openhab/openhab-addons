@@ -22,5 +22,6 @@ public enum IP150Command {
     LOGOUT,
     LOGIN,
     RESET,
+    SYNC_TIME,
     UNIMPLEMENTED
 }

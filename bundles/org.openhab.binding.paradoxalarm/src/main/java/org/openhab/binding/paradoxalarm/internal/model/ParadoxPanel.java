@@ -91,6 +91,10 @@ public class ParadoxPanel implements IDataUpdateListener {
         }
 
         ZoneStateFlags zoneStateFlags = communicator.getZoneStateFlags();
+        if (zoneStateFlags == null) {
+            logger.debug("Zone state flags not yet available, skipping zone update.");
+            return;
+        }
         for (int i = 0; i < zones.size(); i++) {
             Zone zone = zones.get(i);
             zone.setZoneState(parser.calculateZoneState(zone.getId(), zoneStateFlags));

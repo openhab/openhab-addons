@@ -22,5 +22,6 @@ public enum RequestType {
     RAM,
     EPROM,
     PARTITION_COMMAND,
-    ZONE_COMMAND
+    ZONE_COMMAND,
+    SYNC_TIME
 }
