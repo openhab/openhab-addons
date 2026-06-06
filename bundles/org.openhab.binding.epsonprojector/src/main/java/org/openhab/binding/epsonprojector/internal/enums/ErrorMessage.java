@@ -13,6 +13,7 @@
 package org.openhab.binding.epsonprojector.internal.enums;
 
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.NoSuchElementException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -68,7 +69,7 @@ public enum ErrorMessage {
         } catch (NoSuchElementException e) {
             // for example, will display 10 as '0A' to match format of error codes in the epson documentation
             return "Unknown error code (hex): "
-                    + String.format("%2s", Integer.toHexString(code)).replace(' ', '0').toUpperCase();
+                    + String.format("%2s", Integer.toHexString(code)).replace(' ', '0').toUpperCase(Locale.ENGLISH);
         }
     }
 }
