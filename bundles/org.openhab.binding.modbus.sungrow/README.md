@@ -5,6 +5,7 @@ It is based on the Sungrow specification [Communication Protocol of Residential 
 and the [iHM Communication Protocol](https://github.com/Jam3s97/sungrow_ihomemanager/blob/main/Modbus%20Information/iHM.Communication.Protocol-20260121-test.pdf).
 
 ## Supported Inverters
+
 As defined within the spec mentioned above the following inverters are supported, but not all are tested yet:
 
 - SH3.0-6.0RS
@@ -42,9 +43,10 @@ Enabling modbus and whitelist setting can be done in WiNet-S Web-UI as shown bel
 <img src="./doc/WiNet-S_Modbus.png" alt="WiNet-S Modbus configuration"/>
 
 ## Preparation of the iHomeManager
+
 The data from the iHomeManager is read via Modbus. So you need to configure a Modbus Serial Slave `serial` or Modbus TCP Slave `tcp` as bridge first.
-Within the iHomeManager, the Modbus TCP must be enabled. A complete documentation how to configure the Modbus TCP can be found here:
-https://github.com/Jam3s97/sungrow_ihomemanager#-installation
+Within the iHomeManager, the Modbus TCP must be enabled.
+Complete documentation on how to configure the Modbus TCP can be found within GitHub for [Sungrow iHomeManager for Home Assistant](https://github.com/Jam3s97/sungrow_ihomemanager#-installation).
 
 ## Thing Configuration
 
