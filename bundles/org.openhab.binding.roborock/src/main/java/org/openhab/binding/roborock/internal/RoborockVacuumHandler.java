@@ -1533,9 +1533,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             updateState(CHANNEL_BATTERY, new DecimalType(dpsRoot.get("122").getAsInt()));
         }
 
-        if (!q10)
-            return; // Q7 only exposes 121 and 122 via flat push
-
         // DP 123 — fan/suction power
         if (dpsRoot.has("123")) {
             int fanPower = dpsRoot.get("123").getAsInt();
