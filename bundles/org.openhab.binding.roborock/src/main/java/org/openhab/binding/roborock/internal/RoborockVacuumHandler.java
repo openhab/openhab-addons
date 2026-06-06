@@ -1383,12 +1383,14 @@ public class RoborockVacuumHandler extends BaseThingHandler {
      * based on the request correlation tracker.
      */
     private void dispatchNormalisedResponse(String jsonString) {
-        if (!jsonString.endsWith("\"result\":[\"ok\"]}") && !jsonString.endsWith("\"result\":[]}")
-                && JsonParser.parseString(jsonString).getAsJsonObject().has("id")
-                && JsonParser.parseString(jsonString).getAsJsonObject().has("result")) {
-            int messageId = JsonParser.parseString(jsonString).getAsJsonObject().get("id").getAsInt();
-            String methodName = requestCorrelationTracker.findMethodByRequestId(messageId);
+        if (jsonString.endsWith("\"result\":[\"ok\"]}") || jsonString.endsWith("\"result\":[]}")) {
+            return;
+        }
 
+        JsonObject obj = JsonParser.parseString(jsonString).getAsJsonObject();
+        if (obj.has("id") && obj.has("result")) {
+            int messageId = obj.get("id").getAsInt();
+            String methodName = requestCorrelationTracker.findMethodByRequestId(messageId);
             if (methodName == null) {
                 logger.trace("Received response for unknown or already handled message ID: {}", messageId);
                 return;
