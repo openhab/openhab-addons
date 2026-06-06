@@ -33,20 +33,25 @@ public class CloudMqttTransport implements RoborockCommandTransport {
     private String localKey = "";
     private final boolean b01;
     private final boolean q7;
+    private final boolean q10;
 
-    public CloudMqttTransport(RoborockAccountHandler accountHandler, String duid, byte[] nonce, boolean b01,
-            boolean q7) {
+    public CloudMqttTransport(RoborockAccountHandler accountHandler, String duid, byte[] nonce, boolean b01, boolean q7,
+            boolean q10) {
         this.accountHandler = accountHandler;
         this.duid = duid;
         this.nonce = Arrays.copyOf(nonce, nonce.length);
         this.b01 = b01;
         this.q7 = q7;
+        this.q10 = q10;
     }
 
     @Override
     public int sendCommand(String method, String params, int requestId) throws UnsupportedEncodingException {
-        if (b01) {
-            return accountHandler.sendB01RPCCommand(method, params, duid, localKey, requestId, q7);
+        if (b01 && q7) {
+            return accountHandler.sendB01RPCCommand(method, params, duid, localKey, requestId);
+        } else if (b01 && q10) {
+            // q10 b01 vacuums don't use RPCCommands.
+            return -1;
         }
         return accountHandler.sendRPCCommand(method, params, duid, localKey, nonce, requestId);
     }

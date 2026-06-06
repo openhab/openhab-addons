@@ -82,8 +82,8 @@ class RoborockVacuumHandlerConsumableWriterTest {
         assertTrue(handleGetStatusBody.contains("CHANNEL_BATTERY"),
                 "handleGetStatus should continue writing battery channel from live status data");
         assertTrue(
-                source.contains("dpsJsonObject.has(\"122\")")
-                        && source.contains("updateState(CHANNEL_BATTERY, new DecimalType(battery));"),
+                source.contains("dpsRoot.has(\"122\")") && source
+                        .contains("updateState(CHANNEL_BATTERY, new DecimalType(dpsRoot.get(\"122\").getAsInt()));"),
                 "handleMessage should continue writing battery channel from live DPS updates");
     }
 
