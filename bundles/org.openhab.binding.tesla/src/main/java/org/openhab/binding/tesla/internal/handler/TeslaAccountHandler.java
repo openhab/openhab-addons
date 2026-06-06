@@ -303,7 +303,7 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
             this.logonToken = ssoHandler.getAccessToken(refreshToken);
             if (this.logonToken == null) {
                 return new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Failed to obtain access token for API.");
+                        "Failed to obtain access token for API - the refresh token might be invalid.");
             }
         }
 
@@ -422,7 +422,8 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
                 } else if (authenticationResult.getStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR) {
                     // make sure to set thing to CONFIGURATION_ERROR in case of failed authentication in order not to
                     // hit request limit on retries on the Tesla SSO endpoints.
-                    updateStatus(ThingStatus.OFFLINE, authenticationResult.getStatusDetail());
+                    updateStatus(ThingStatus.OFFLINE, authenticationResult.getStatusDetail(),
+                            authenticationResult.getDescription());
                 }
             }
         } catch (Exception e) {

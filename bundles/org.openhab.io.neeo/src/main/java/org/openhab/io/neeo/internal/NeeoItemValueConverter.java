@@ -52,19 +52,6 @@ public class NeeoItemValueConverter {
     /** RegEx to identify format patterns. See java.util.Formatter#formatSpecifier (without the '%' at the very end). */
     private static final String IDENTIFY_FORMAT_PATTERN_PATTERN = "%(\\d+\\$)?([-#+ 0,(\\<]*)?(\\d+)?(\\.\\d+)?([tT])?([a-zA-Z])";
 
-    /** The service context */
-    private final ServiceContext context;
-
-    /**
-     * Creates the convert using the {@link ServiceContext}
-     *
-     * @param context a non-null {@link ServiceContext}
-     */
-    public NeeoItemValueConverter(ServiceContext context) {
-        Objects.requireNonNull(context, "context must not be null");
-        this.context = context;
-    }
-
     /**
      * Converts the {@link State} from the given {@link NeeoDeviceChannel} to a {@link NeeoItemValue}. This method will
      * convert enums to booleans and format string values to their associated pattern
@@ -154,8 +141,7 @@ public class NeeoItemValueConverter {
             } else if (state instanceof Type) {
                 if (TransformationHelper.isTransform(format)) {
                     try {
-                        final String transformed = TransformationHelper
-                                .transform(context.getComponentContext().getBundleContext(), format, state.toString());
+                        final String transformed = TransformationHelper.transform(format, state.toString());
                         if (transformed != null) {
                             return new NeeoItemValue(transformed);
                         }

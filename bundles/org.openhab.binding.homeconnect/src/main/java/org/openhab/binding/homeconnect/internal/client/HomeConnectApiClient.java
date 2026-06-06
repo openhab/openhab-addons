@@ -516,6 +516,48 @@ public class HomeConnectApiClient {
     }
 
     /**
+     * Get battery level of device.
+     *
+     * @param haId home appliance id
+     * @return {@link Data}
+     * @throws CommunicationException API communication exception
+     * @throws AuthorizationException oAuth authorization exception
+     * @throws ApplianceOfflineException appliance is not connected to the cloud
+     */
+    public Data getBatteryLevel(String haId)
+            throws CommunicationException, AuthorizationException, ApplianceOfflineException {
+        return getStatus(haId, STATUS_BATTERY_LEVEL);
+    }
+
+    /**
+     * Get current map of cleaning robot.
+     *
+     * @param haId home appliance id
+     * @return {@link Data}
+     * @throws CommunicationException API communication exception
+     * @throws AuthorizationException oAuth authorization exception
+     * @throws ApplianceOfflineException appliance is not connected to the cloud
+     */
+    public Data getCurrentMap(String haId)
+            throws CommunicationException, AuthorizationException, ApplianceOfflineException {
+        return getSetting(haId, SETTING_CURRENT_MAP);
+    }
+
+    /**
+     * Set current map of cleaning robot.
+     *
+     * @param haId home appliance id
+     * @param map map value (e.g. ConsumerProducts.CleaningRobot.EnumType.AvailableMaps.Map1)
+     * @throws CommunicationException API communication exception
+     * @throws AuthorizationException oAuth authorization exception
+     * @throws ApplianceOfflineException appliance is not connected to the cloud
+     */
+    public void setCurrentMap(String haId, String map)
+            throws CommunicationException, AuthorizationException, ApplianceOfflineException {
+        putSettings(haId, new Data(SETTING_CURRENT_MAP, map, null));
+    }
+
+    /**
      * Get operation state of device.
      *
      * @param haId home appliance id
@@ -650,6 +692,21 @@ public class HomeConnectApiClient {
     public void stopProgram(String haId)
             throws CommunicationException, AuthorizationException, ApplianceOfflineException {
         sendDelete(haId, BASE_PATH + haId + "/programs/active");
+    }
+
+    /**
+     * Send a command to the active program.
+     *
+     * @param haId home appliance id
+     * @param commandKey the command key (e.g. BSH.Common.Command.PauseCommand)
+     * @throws CommunicationException API communication exception
+     * @throws AuthorizationException oAuth authorization exception
+     * @throws ApplianceOfflineException appliance is not connected to the cloud
+     */
+    public void putCommand(String haId, String commandKey)
+            throws CommunicationException, AuthorizationException, ApplianceOfflineException {
+        putData(haId, BASE_PATH + haId + "/commands/" + commandKey, new Data(commandKey, Boolean.TRUE.toString(), null),
+                VALUE_TYPE_BOOLEAN);
     }
 
     public List<AvailableProgram> getPrograms(String haId)

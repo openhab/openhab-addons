@@ -7,9 +7,22 @@ import { WebSocketSession } from "../app";
 import { EventType, NodeState } from "../MessageTypes";
 import { printError } from "../util/error";
 import { SoftwareUpdateManager } from "@matter/node";
-import { DclOtaUpdateService } from "@matter/main/protocol";
-import { OtaSoftwareUpdateRequestorCluster } from "@matter/types/clusters/ota-software-update-requestor";
+import { DclOtaUpdateService, PhysicalDeviceProperties } from "@matter/main/protocol";
+
 const logger = Logger.get("ControllerNode");
+
+function extractPhysicalProperties(node: PairedNode | undefined): PhysicalDeviceProperties | undefined {
+    if (!node) return undefined;
+    try {
+        const deviceInformation = node.deviceInformation;
+        if (!deviceInformation) return undefined;
+        // these are lazy properties, so we need to access them to actually hydrate our return object
+        return { ...deviceInformation };
+    } catch (e) {
+        logger.debug(`Could not read deviceInformation for node ${node.nodeId}: ${e}`);
+        return undefined;
+    }
+}
 
 /**
  * This class represents the Matter Controller / Admin client
@@ -18,6 +31,10 @@ export class ControllerNode {
     private environment: Environment = Environment.default;
     private storageContext?: StorageContext;
     private nodes: Map<NodeId, PairedNode> = new Map();
+    // Per-node observer groups so listeners can be removed in bulk before re-registering,
+    // avoiding duplicate handlers (and duplicate WebSocket events) when the same node instance
+    // is reused across reconnections.
+    private nodeObservers: Map<NodeId, ObserverGroup> = new Map();
     commissioningController?: CommissioningController;
     private observers?: ObserverGroup;
     #services?: SharedEnvironmentServices;
@@ -54,8 +71,36 @@ export class ControllerNode {
      * Closes the controller node
      */
     async close() {
+        for (const observers of this.nodeObservers.values()) {
+            observers.close();
+        }
+        this.nodeObservers.clear();
+        this.observers?.close();
         await this.commissioningController?.close();
         this.nodes.clear();
+    }
+
+    /**
+     * Disposes any existing observer group for the given node and returns a fresh one.
+     * This guarantees that re-registering listeners for the same node instance (e.g. across
+     * reconnections) does not accumulate duplicate handlers.
+     */
+    private resetNodeObservers(nodeId: NodeId): ObserverGroup {
+        this.disposeNodeObservers(nodeId);
+        const observers = new ObserverGroup();
+        this.nodeObservers.set(nodeId, observers);
+        return observers;
+    }
+
+    /**
+     * Removes all listeners registered through the observer group for the given node, if any.
+     */
+    private disposeNodeObservers(nodeId: NodeId): void {
+        const observers = this.nodeObservers.get(nodeId);
+        if (observers !== undefined) {
+            observers.close();
+            this.nodeObservers.delete(nodeId);
+        }
     }
 
     /**
@@ -176,6 +221,12 @@ export class ControllerNode {
                 node?.events.initializedFromRemote.once(() => {
                     logger.info(`Node ${node?.nodeId} initialized from remote`);
                     if (timeoutId) clearTimeout(timeoutId);
+                    // Send a connected event so the client knows the resume completed
+                    this.ws.sendEvent(EventType.NodeStateInformation, {
+                        nodeId: node!.nodeId,
+                        state: NodeStates[NodeStates.Connected],
+                        physicalProperties: extractPhysicalProperties(node),
+                    });
                     resolve();
                 });
             });
@@ -185,46 +236,60 @@ export class ControllerNode {
         if (node === undefined) {
             throw new Error(`Node ${nodeId} not connected`);
         }
-        node.connect();
         this.nodes.set(node.nodeId, node);
 
-        // register event listeners once the node is fully connected
+        // Remove any listeners left over from a previous registration of this same node instance
+        // (e.g. after a decommission/re-commission cycle) so handlers do not accumulate.
+        const observers = this.resetNodeObservers(node.nodeId);
+
+        observers.on(node.events.stateChanged, info => {
+            this.ws.sendEvent(EventType.NodeStateInformation, {
+                nodeId: node!.nodeId,
+                state: NodeStates[info],
+            });
+        });
+
+        observers.on(node.events.structureChanged, () => {
+            this.ws.sendEvent(EventType.NodeStateInformation, {
+                nodeId: node!.nodeId,
+                state: NodeState.STRUCTURE_CHANGED,
+            });
+        });
+
+        observers.on(node.events.decommissioned, () => {
+            this.disposeNodeObservers(node!.nodeId);
+            this.nodes.delete(node!.nodeId);
+            this.ws.sendEvent(EventType.NodeStateInformation, {
+                nodeId: node!.nodeId,
+                state: NodeState.DECOMMISSIONED,
+            });
+        });
+
+        // attributeChanged and eventTriggered only need to be wired up once initialization completes,
+        // to avoid forwarding the init state updates as user visible updates. Use once() so they are
+        // wired exactly once per registration; the inner handlers are tracked by the observer group
+        // (reset above) so they are still removed in bulk on re-registration or decommission.
         node.events.initializedFromRemote.once(() => {
-            node.events.attributeChanged.on(data => {
-                data.path.nodeId = node.nodeId;
+            observers.on(node!.events.attributeChanged, data => {
+                data.path.nodeId = node!.nodeId;
                 this.ws.sendEvent(EventType.AttributeChanged, data);
             });
 
-            node.events.eventTriggered.on(data => {
-                data.path.nodeId = node.nodeId;
+            observers.on(node!.events.eventTriggered, data => {
+                data.path.nodeId = node!.nodeId;
                 this.ws.sendEvent(EventType.EventTriggered, data);
             });
 
-            node.events.stateChanged.on(info => {
-                const data: any = {
-                    nodeId: node.nodeId,
-                    state: NodeStates[info],
-                };
-                this.ws.sendEvent(EventType.NodeStateInformation, data);
-            });
-
-            node.events.structureChanged.on(() => {
-                const data: any = {
-                    nodeId: node.nodeId,
-                    state: NodeState.STRUCTURE_CHANGED,
-                };
-                this.ws.sendEvent(EventType.NodeStateInformation, data);
-            });
-
-            node.events.decommissioned.on(() => {
-                this.nodes.delete(node.nodeId);
-                const data: any = {
-                    nodeId: node.nodeId,
-                    state: NodeState.DECOMMISSIONED,
-                };
-                this.ws.sendEvent(EventType.NodeStateInformation, data);
+            // send a connected event in case the stateChanged transition
+            // to connected was missed despite the early listener attachment above.
+            this.ws.sendEvent(EventType.NodeStateInformation, {
+                nodeId: node!.nodeId,
+                state: NodeStates[NodeStates.Connected],
+                physicalProperties: extractPhysicalProperties(node),
             });
         });
+
+        node.connect();
 
         return new Promise((resolve, reject) => {
             let timeoutId: NodeJS.Timeout | undefined;
@@ -233,27 +298,18 @@ export class ControllerNode {
                 timeoutId = setTimeout(() => {
                     logger.info(`Node ${node?.nodeId} initialization timed out`);
 
-                    // register a listener to send the node state information once the node is connected at some future time
-                    node.events.initializedFromRemote.once(() => {
-                        const data: any = {
-                            nodeId: node.nodeId,
-                            state: NodeStates.Connected,
-                        };
-                        this.ws.sendEvent(EventType.NodeStateInformation, data);
-                    });
-
                     if (
                         node?.connectionState === NodeStates.Disconnected ||
                         node?.connectionState === NodeStates.WaitingForDeviceDiscovery
                     ) {
                         reject(new Error(`Node ${node.nodeId} connection failed: ${NodeStates[node.connectionState]}`));
                     } else {
-                        reject(new Error(`Node ${node.nodeId} connection timed out`));
+                        reject(new Error(`Node ${node!.nodeId} connection timed out`));
                     }
                 }, connectionTimeout);
             }
 
-            node.events.initializedFromRemote.once(() => {
+            node!.events.initializedFromRemote.once(() => {
                 if (timeoutId) clearTimeout(timeoutId);
                 resolve();
             });
@@ -288,6 +344,7 @@ export class ControllerNode {
             } catch (error) {
                 logger.error(`Error decommissioning node ${nodeId}: ${error} force removing node`);
                 await this.commissioningController?.removeNode(NodeId(BigInt(nodeId)), false);
+                this.disposeNodeObservers(node.nodeId);
                 this.nodes.delete(NodeId(BigInt(nodeId)));
             }
         } else {

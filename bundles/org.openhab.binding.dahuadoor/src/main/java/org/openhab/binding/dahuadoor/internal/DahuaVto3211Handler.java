@@ -13,9 +13,7 @@
 package org.openhab.binding.dahuadoor.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.dahuadoor.internal.dahuaeventhandler.DahuaEventClient;
 import org.openhab.binding.dahuadoor.internal.media.PlayStreamServlet;
-import org.openhab.core.library.types.RawType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.Thing;
 
@@ -52,14 +50,35 @@ public class DahuaVto3211Handler extends DahuaDoorBaseHandler {
     }
 
     @Override
+    protected void restoreLastSnapshots() {
+        byte[] buffer1 = readLatestSnapshot(1);
+        updateImageChannel(DahuaDoorBindingConstants.CHANNEL_DOOR_IMAGE_1, buffer1);
+
+        byte[] buffer2 = readLatestSnapshot(2);
+        updateImageChannel(DahuaDoorBindingConstants.CHANNEL_DOOR_IMAGE_2, buffer2);
+    }
+
+    @Override
+    protected String getDoorImageChannelForLock(int lockNumber) {
+        return lockNumber == 2 ? DahuaDoorBindingConstants.CHANNEL_DOOR_IMAGE_2
+                : DahuaDoorBindingConstants.CHANNEL_DOOR_IMAGE_1;
+    }
+
+    @Override
+    protected String getDoorbellSnapshotSuffixForLock(int lockNumber) {
+        return lockNumber == 2 ? "-2" : "-1";
+    }
+
+    @Override
     protected void onButtonPressed(int lockNumber) {
-        logger.debug("Button {} pressed on VTO3211", lockNumber);
+        int resolvedLockNumber = lockNumber == 2 ? 2 : 1;
+        logger.debug("Button {} pressed on VTO3211", resolvedLockNumber);
 
         // Determine channel IDs based on lock number
         String bellButtonChannelId;
         String doorImageChannelId;
 
-        if (lockNumber == 2) {
+        if (resolvedLockNumber == 2) {
             bellButtonChannelId = DahuaDoorBindingConstants.CHANNEL_BELL_BUTTON_2;
             doorImageChannelId = DahuaDoorBindingConstants.CHANNEL_DOOR_IMAGE_2;
         } else {
@@ -76,26 +95,14 @@ public class DahuaVto3211Handler extends DahuaDoorBaseHandler {
         }
         triggerChannel(bellChannel.getUID(), "PRESSED");
 
-        // Retrieve image asynchronously to avoid blocking the keepAlive event loop
-        DahuaEventClient localClient = client;
-        if (localClient == null) {
-            logger.warn("Client not initialized, cannot retrieve doorbell image");
+        if (isDhipSnapshotMode()) {
+            logger.debug("snapshotMode=dhip: waiting for NewFile snapshot event for lock {}", lockNumber);
             return;
         }
 
+        // Retrieve image asynchronously to avoid blocking the keepAlive event loop
         final String doorImageChannelIdFinal = doorImageChannelId;
-        scheduler.submit(() -> {
-            byte[] buffer = localClient.requestImage();
-            if (buffer != null && buffer.length > 0) {
-                // Update image channel for the specific button
-                RawType image = new RawType(buffer, "image/jpeg");
-                updateState(doorImageChannelIdFinal, image);
-
-                // Save snapshot image
-                saveSnapshot(buffer);
-            } else {
-                logger.warn("Received empty or null image buffer from VTO3211 button {}", lockNumber);
-            }
-        });
+        scheduler.submit(() -> requestApiSnapshotForChannel(doorImageChannelIdFinal, "VTO3211 button " + lockNumber,
+                resolvedLockNumber));
     }
 }

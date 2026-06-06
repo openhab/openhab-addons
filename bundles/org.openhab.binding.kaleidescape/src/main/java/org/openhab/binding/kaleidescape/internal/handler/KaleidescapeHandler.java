@@ -93,7 +93,6 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
     protected boolean isMuted = false;
     protected boolean isLoadHighlightedDetails = false;
     protected boolean isLoadAlbumDetails = false;
-    protected String friendlyName = EMPTY;
     protected Object sequenceLock = new Object();
 
     public KaleidescapeHandler(Thing thing, SerialPortManager serialPortManager, HttpClient httpClient) {
@@ -261,6 +260,36 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
                     case CHANNEL_TYPE_SENDCMD:
                         connector.sendCommand(command.toString());
                         break;
+                    case CHANNEL_TYPE_SEARCH:
+                        final String srchStr = command.toString();
+
+                        if (srchStr.isBlank()) {
+                            logger.debug("Search string was blank");
+                            return;
+                        }
+
+                        scheduler.execute(() -> {
+                            synchronized (sequenceLock) {
+                                try {
+                                    connector.sendCommand("GO_MOVIE_LIST");
+
+                                    // Wait .5 seconds for the MOVIE LIST screen to load
+                                    TimeUnit.MILLISECONDS.sleep(500);
+
+                                    connector.sendCommand("FILTER_LIST");
+                                    for (int i = 0; i < srchStr.length(); i++) {
+                                        connector.sendCommand("KEYBOARD_CHARACTER:" + srchStr.charAt(i));
+                                    }
+                                } catch (InterruptedException e) {
+                                    Thread.currentThread().interrupt();
+                                    return;
+                                } catch (KaleidescapeException e) {
+                                    logger.debug("Error searching for: {}", srchStr, e);
+                                    return;
+                                }
+                            }
+                        });
+                        break;
                     default:
                         logger.debug("Command {} from channel {} failed: unexpected command", command, channel);
                         break;
@@ -327,7 +356,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
 
             if (ThingStatusDetail.BRIDGE_OFFLINE.equals(thing.getStatusInfo().getStatusDetail())) {
                 // no longer in standby, update the status
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, this.friendlyName);
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
             }
         } catch (IllegalArgumentException e) {
             logger.debug("Unhandled message: key {} = {}", evt.getKey(), evt.getValue());
@@ -400,7 +429,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error);
                         return;
                     }
-                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, this.friendlyName);
+                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
                     lastEventReceived = System.currentTimeMillis();
                 }
             }

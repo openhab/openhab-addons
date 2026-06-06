@@ -63,6 +63,73 @@
 				<label>Snapshot Path</label>
 				<description>Path where snapshots will be saved (e.g., /var/lib/openhab/door-images)</description>
 			</parameter>
+			<parameter name="maxImages" type="integer">
+				<label>Max Images</label>
+				<description>Maximum number of timestamped snapshots to keep per button (0 disables cleanup)</description>
+				<default>20</default>
+			</parameter>
+			<parameter name="maxEvents" type="integer">
+				<label>Max Events</label>
+				<description>Maximum number of DHIP event files to keep per directory (0 disables cleanup)</description>
+				<default>20</default>
+			</parameter>
+			<parameter name="snapshotMode" type="text">
+				<label>Snapshot Mode</label>
+				<description>Snapshot source mode: api = /cgi-bin/snapshot.cgi, dhip = consume file events from DHIP NewFile.</description>
+				<options>
+					<option value="api">API (HTTP snapshot.cgi)</option>
+					<option value="dhip">DHIP (event file pipeline)</option>
+				</options>
+				<default>api</default>
+			</parameter>
+			<parameter name="enableDoorRecordingDownload" type="boolean">
+				<advanced>true</advanced>
+				<label>Enable Door Recording Download</label>
+				<description>Download Auto-Recording files from DHIP NewFile events under /mnt/sd/Record.</description>
+				<default>true</default>
+			</parameter>
+			<parameter name="enableHangupSnapshotDownload" type="boolean">
+				<advanced>true</advanced>
+				<label>Enable Hangup Snapshot Download</label>
+				<description>Download call snapshots created after hangup. Default off to avoid duplicate images per call.</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="enableUnlockSnapshotDownload" type="boolean">
+				<advanced>true</advanced>
+				<label>Enable Unlock Snapshot Download</label>
+				<description>Download AccessControl snapshots created on door unlock events.</description>
+				<default>true</default>
+			</parameter>
+			<parameter name="enableVideoMessageDownload" type="boolean">
+				<advanced>true</advanced>
+				<label>Enable Video Message Download</label>
+				<description>Download video message files when matching DHIP NewFile events are detected.</description>
+				<default>true</default>
+			</parameter>
+			<parameter name="hangupSnapshotPath" type="text">
+				<advanced>true</advanced>
+				<label>Hangup Snapshot Path</label>
+				<description>Absolute target path for hangup snapshots.</description>
+				<default>/var/lib/openhab/door-images/hangup</default>
+			</parameter>
+			<parameter name="unlockSnapshotPath" type="text">
+				<advanced>true</advanced>
+				<label>Unlock Snapshot Path</label>
+				<description>Absolute target path for unlock snapshots.</description>
+				<default>/var/lib/openhab/door-images/unlock</default>
+			</parameter>
+			<parameter name="recordingPath" type="text">
+				<advanced>true</advanced>
+				<label>Recording Path</label>
+				<description>Absolute target path for auto-recording files (.dav/.jpg/.idx).</description>
+				<default>/var/lib/openhab/door-images/recording</default>
+			</parameter>
+			<parameter name="videoMessagePath" type="text">
+				<advanced>true</advanced>
+				<label>Video Message Path</label>
+				<description>Absolute target path for video message files.</description>
+				<default>/var/lib/openhab/door-images/video-message</default>
+			</parameter>
 			<parameter name="useHttps" type="boolean">
 				<label>Use HTTPS</label>
 				<description>Use HTTPS (port 443) for snapshot and door-open requests. Enable if the device has HTTPS turned on.

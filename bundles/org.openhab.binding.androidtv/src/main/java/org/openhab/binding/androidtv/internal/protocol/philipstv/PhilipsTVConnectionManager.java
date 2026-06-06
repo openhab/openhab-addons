@@ -31,7 +31,6 @@ import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -488,7 +487,8 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
         services.put(CHANNEL_TV_CHANNEL, new TvChannelService(this, connectionManager));
         services.put(CHANNEL_POWER, new PowerService(this, connectionManager));
         services.put(CHANNEL_SEARCH_CONTENT, new SearchContentService(this, connectionManager));
-        channelServices = Collections.unmodifiableMap(services);
+
+        channelServices = Map.copyOf(services);
     }
 
     /**
@@ -682,7 +682,7 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
     @Override
     public @Nullable Collection<ThingUID> removeOlderResults(DiscoveryService source, Instant timestamp,
             @Nullable Collection<ThingTypeUID> thingTypeUIDs, @Nullable ThingUID bridgeUID) {
-        return Collections.emptyList();
+        return List.of();
     }
 
     public void dispose() {

@@ -284,6 +284,7 @@
 /bundles/org.openhab.binding.nikohomecontrol/ @mherwege
 /bundles/org.openhab.binding.nobohub/ @espenaf
 /bundles/org.openhab.binding.novafinedust/ @t2000
+/bundles/org.openhab.binding.ntfy/ @EvilPingu
 /bundles/org.openhab.binding.ntp/ @marcelrv
 /bundles/org.openhab.binding.nuki/ @janvyb
 /bundles/org.openhab.binding.nuvo/ @mlobstein
@@ -468,6 +469,7 @@
 /bundles/org.openhab.binding.zway/ @pathec
 /bundles/org.openhab.io.homekit/ @andylintner @ccutrer @yfre
 /bundles/org.openhab.io.hueemulation/ @digitaldan
+/bundles/org.openhab.io.mcp/ @digitaldan
 /bundles/org.openhab.io.metrics/ @pravussum
 /bundles/org.openhab.io.neeo/ @morph166955
 /bundles/org.openhab.io.openhabcloud/ @kaikreuzer

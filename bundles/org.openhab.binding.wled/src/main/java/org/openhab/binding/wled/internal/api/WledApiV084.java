@@ -46,6 +46,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.StateOption;
+import org.openhab.core.util.ColorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -377,17 +378,14 @@ public class WledApiV084 implements WledApi {
 
     @Override
     public void setMasterHSB(HSBType hsbType, int segmentIndex) throws ApiException {
+        int[] rgb = ColorUtil.hsbToRgb(hsbType);
         if (hsbType.getBrightness().toBigDecimal().equals(BigDecimal.ZERO)) {
             updateStateFromReply(postState("{\"tt\":2,\"v\":true,\"seg\":[{\"on\":false,\"id\":" + segmentIndex
-                    + ",\"fx\":0,\"col\":[[" + hsbType.getRed().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue()
-                    + "," + hsbType.getGreen().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + ","
-                    + hsbType.getBlue().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + "]]}]}"));
+                    + ",\"fx\":0,\"col\":[[" + rgb[0] + "," + rgb[1] + "," + rgb[2] + "]]}]}"));
             return;
         }
         updateStateFromReply(postState("{\"tt\":2,\"v\":true,\"seg\":[{\"on\":true,\"id\":" + segmentIndex
-                + ",\"fx\":0,\"col\":[[" + hsbType.getRed().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + ","
-                + hsbType.getGreen().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + ","
-                + hsbType.getBlue().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + "]]}]}"));
+                + ",\"fx\":0,\"col\":[[" + rgb[0] + "," + rgb[1] + "," + rgb[2] + "]]}]}"));
     }
 
     @Override
@@ -448,26 +446,23 @@ public class WledApiV084 implements WledApi {
 
     @Override
     public void setPrimaryColor(HSBType hsbType, int segmentIndex) throws ApiException {
-        postState("{\"on\":true,\"seg\":[{\"id\":" + segmentIndex + ",\"col\":[["
-                + hsbType.getRed().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + ","
-                + hsbType.getGreen().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + ","
-                + hsbType.getBlue().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + "],[],[]]}]}");
+        int[] rgb = ColorUtil.hsbToRgb(hsbType);
+        postState("{\"on\":true,\"seg\":[{\"id\":" + segmentIndex + ",\"col\":[[" + rgb[0] + "," + rgb[1] + "," + rgb[2]
+                + "],[],[]]}]}");
     }
 
     @Override
     public void setSecondaryColor(HSBType hsbType, int segmentIndex) throws ApiException {
-        postState("{\"on\":true,\"seg\":[{\"id\":" + segmentIndex + ",\"col\":[[],["
-                + hsbType.getRed().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + ","
-                + hsbType.getGreen().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + ","
-                + hsbType.getBlue().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + "],[]]}]}");
+        int[] rgb = ColorUtil.hsbToRgb(hsbType);
+        postState("{\"on\":true,\"seg\":[{\"id\":" + segmentIndex + ",\"col\":[[],[" + rgb[0] + "," + rgb[1] + ","
+                + rgb[2] + "],[]]}]}");
     }
 
     @Override
     public void setTertiaryColor(HSBType hsbType, int segmentIndex) throws ApiException {
-        postState("{\"on\":true,\"seg\":[{\"id\":" + segmentIndex + ",\"col\":[[],[],["
-                + hsbType.getRed().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + ","
-                + hsbType.getGreen().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + ","
-                + hsbType.getBlue().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + "]]}]}");
+        int[] rgb = ColorUtil.hsbToRgb(hsbType);
+        postState("{\"on\":true,\"seg\":[{\"id\":" + segmentIndex + ",\"col\":[[],[],[" + rgb[0] + "," + rgb[1] + ","
+                + rgb[2] + "]]}]}");
     }
 
     @Override

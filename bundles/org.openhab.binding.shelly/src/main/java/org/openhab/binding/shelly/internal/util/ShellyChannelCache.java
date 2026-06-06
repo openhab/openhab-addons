@@ -36,7 +36,7 @@ public class ShellyChannelCache {
     private final ShellyThingInterface thingHandler;
     private final Map<String, State> channelData = new ConcurrentHashMap<>();
     private String thingName = "";
-    private boolean enabled = false;
+    private boolean enabled;
 
     public ShellyChannelCache(ShellyThingInterface thingHandler) {
         this.thingHandler = thingHandler;

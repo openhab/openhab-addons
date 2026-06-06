@@ -38,7 +38,7 @@ jobs:
         id: build
         # call mvnw directly instead of the repo's log-filtering wrapper script,
         # use more cores, safe to do so as we skip tests (which might depend on load)
-        run: './mvnw verify -B -T 2.5C -U -DskipChecks -DskipTests -DwithResolver'
+        run: './mvnw verify -B -T 2.5C -U -DskipChecks -DskipTests -DwithResolver -Dmarkdownlint.skip=true -DspotlessCheck.skip=true'
         env:
           MAVEN_OPTS: >-
             -Xmx8g
@@ -57,6 +57,10 @@ jobs:
         with:
           commit-message: "Resolve itest dependencies"
           title: "Resolve itest dependencies"
+          body: "PR created by workflow run (resolver.yml)\n\nCI is disabled by default for PRs created by workflow runs. After reviewing the changes, use Close and Reopen to run the CI."
           branch: "gha/resolver/${{ github.ref_name }}"
+          author: openhab-bot <bot@openhab.org>
+          committer: openhab-bot <bot@openhab.org>
           delete-branch: true
           # labels: infrastructure
+          signoff: true

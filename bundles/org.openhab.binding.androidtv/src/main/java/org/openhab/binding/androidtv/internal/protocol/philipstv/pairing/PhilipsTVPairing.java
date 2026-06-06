@@ -27,8 +27,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.Formatter;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.List;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -81,8 +80,8 @@ public class PhilipsTVPairing {
 
     public void requestPairingPin(HttpHost target)
             throws IOException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
-        RequestCodeDTO requestCodeDTO = new RequestCodeDTO(
-                Stream.of("read", "write", "control").collect(Collectors.toList()), createDeviceSpecification());
+        RequestCodeDTO requestCodeDTO = new RequestCodeDTO(List.of("read", "write", "control"),
+                createDeviceSpecification());
 
         CloseableHttpClient httpClient = ConnectionManagerUtil.createSharedHttpClient(target, EMPTY, EMPTY);
         ConnectionManager connectionManager = new ConnectionManager(httpClient, target);

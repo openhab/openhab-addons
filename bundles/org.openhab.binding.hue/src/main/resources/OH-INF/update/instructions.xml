@@ -99,6 +99,12 @@
 				<type>hue:update-ready</type>
 			</add-channel>
 		</instruction-set>
+		<instruction-set targetVersion="2">
+			<remove-channel id="update-ready"/>
+			<add-channel id="update-ready" groupIds="software">
+				<type>hue:update-ready</type>
+			</add-channel>
+		</instruction-set>
 	</thing-type>
 
 </update:update-descriptions>

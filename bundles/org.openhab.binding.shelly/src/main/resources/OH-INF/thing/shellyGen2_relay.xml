@@ -150,6 +150,36 @@
 		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
 	</thing-type>
 
+	<thing-type id="shellyplugusg4">
+		<label>Shelly Plug US Gen4</label>
+		<description>Shelly Plug US Gen4. US Outlet with Power Meter (Gen4)</description>
+		<category>PowerOutlet</category>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="relay" typeId="relayChannelPlug"/>
+			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
+	</thing-type>
+
+	<thing-type id="shellyplusplugcpm">
+		<label>ShellyPlus Plug CPM</label>
+		<description>Shelly Plus Plug CPM. EU C-type Outlet with Power Meter (Gen4)</description>
+		<category>PowerOutlet</category>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="relay" typeId="relayChannelPlug"/>
+			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
+	</thing-type>
+
 	<thing-type id="shellyplusstrip">
 		<label>ShellyPlus Power Strip</label>
 		<description>Shelly Plus Power Strip 4</description>

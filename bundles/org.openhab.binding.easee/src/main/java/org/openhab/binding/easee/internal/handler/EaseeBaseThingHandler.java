@@ -104,7 +104,7 @@ public abstract class EaseeBaseThingHandler extends BaseThingHandler
                 updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
                 break;
             default:
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+                updateStatus(ThingStatus.OFFLINE, Utils.getStatusDetailFromHttpCode(status.getHttpCode()), msg);
         }
     }
 

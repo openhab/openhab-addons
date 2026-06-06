@@ -13,8 +13,10 @@
 package org.openhab.binding.mideaac.internal.cloud;
 
 import java.nio.ByteOrder;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
@@ -102,7 +104,8 @@ public class Cloud {
             data.addProperty("clientType", CLIENT_TYPE);
             data.addProperty("language", LANGUAGE);
             data.addProperty("src", cloudProvider.appid());
-            data.addProperty("stamp", new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
+            DateFormat fmt = new SimpleDateFormat("yyyyMMddHHmmss", Locale.ROOT);
+            data.addProperty("stamp", fmt.format(new Date()));
         }
 
         // For the getLoginId() this adds the email account
@@ -262,7 +265,8 @@ public class Cloud {
             iotData.addProperty("pushToken", Utils.tokenUrlsafe(120));
             iotData.addProperty("reqId", StringUtils.getRandomHex(16));
             iotData.addProperty("src", cloudProvider.appid());
-            iotData.addProperty("stamp", new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
+            DateFormat fmt = new SimpleDateFormat("yyyyMMddHHmmss", Locale.ROOT);
+            iotData.addProperty("stamp", fmt.format(new Date()));
             newData.add("iotData", iotData);
 
             @Nullable

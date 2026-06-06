@@ -26,6 +26,7 @@ import org.openhab.binding.epsonprojector.internal.EpsonProjectorCommandExceptio
 import org.openhab.binding.epsonprojector.internal.EpsonProjectorCommandType;
 import org.openhab.binding.epsonprojector.internal.EpsonProjectorDevice;
 import org.openhab.binding.epsonprojector.internal.EpsonProjectorException;
+import org.openhab.binding.epsonprojector.internal.EpsonProjectorPasswordException;
 import org.openhab.binding.epsonprojector.internal.EpsonStateDescriptionOptionProvider;
 import org.openhab.binding.epsonprojector.internal.configuration.EpsonProjectorConfiguration;
 import org.openhab.binding.epsonprojector.internal.enums.AspectRatio;
@@ -75,6 +76,7 @@ public class EpsonProjectorHandler extends BaseThingHandler {
 
     private boolean loadSourceList = false;
     private boolean isSourceListLoaded = false;
+    private boolean isMetadataLoaded = false;
     private boolean isPowerOn = false;
     private int maxVolume = 20;
     private int curVolumeStep = -1;
@@ -154,7 +156,7 @@ public class EpsonProjectorHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         cancelPollingJob();
-        closeConnection();
+        closeConnection(null);
         super.dispose();
     }
 
@@ -206,6 +208,22 @@ public class EpsonProjectorHandler extends BaseThingHandler {
                             sourceListOptions);
                     isSourceListLoaded = true;
                 }
+            }
+
+            // When polling for PWR status, also try to get projector model and serial number
+            if (EpsonProjectorCommandType.POWER == commandType && !isMetadataLoaded) {
+                try {
+                    thing.setProperty(Thing.PROPERTY_MODEL_ID, remoteController.getModel());
+                } catch (EpsonProjectorCommandException e) {
+                    logger.debug("PJINFO? command is not supported");
+                }
+
+                try {
+                    thing.setProperty(Thing.PROPERTY_SERIAL_NUMBER, remoteController.getSerialNumber());
+                } catch (EpsonProjectorCommandException e) {
+                    logger.debug("SNO? command is not supported");
+                }
+                isMetadataLoaded = true;
             }
 
             switch (commandType) {
@@ -316,9 +334,12 @@ public class EpsonProjectorHandler extends BaseThingHandler {
         } catch (EpsonProjectorCommandException e) {
             logger.debug("Error executing command '{}', {}", commandType, e.getMessage());
             return UnDefType.UNDEF;
+        } catch (EpsonProjectorPasswordException e) {
+            logger.debug("Password error: {}", e.getMessage());
+            closeConnection(e.getMessage());
         } catch (EpsonProjectorException e) {
             logger.debug("Couldn't execute command '{}', {}", commandType, e.getMessage());
-            closeConnection();
+            closeConnection(null);
             return null;
         }
 
@@ -439,20 +460,35 @@ public class EpsonProjectorHandler extends BaseThingHandler {
             }
         } catch (EpsonProjectorCommandException e) {
             logger.debug("Error executing command '{}', {}", commandType, e.getMessage());
+        } catch (EpsonProjectorPasswordException e) {
+            logger.debug("Password error: {}", e.getMessage());
+            closeConnection(e.getMessage());
         } catch (EpsonProjectorException e) {
             logger.warn("Couldn't execute command '{}', {}", commandType, e.getMessage());
-            closeConnection();
+            closeConnection(null);
         }
     }
 
-    private void closeConnection() {
+    /**
+     * Method to handle connection closing and updating ThingStatus
+     *
+     * @param passwordError sends password error info to the ThingStatusDetail and stops the polling
+     */
+    private void closeConnection(@Nullable String passwordError) {
         if (device.isPresent()) {
             try {
                 logger.debug("Closing connection to device '{}'", this.thing.getUID());
                 device.get().disconnect();
+                isSourceListLoaded = false;
+                isMetadataLoaded = false;
                 isPowerOn = false;
 
-                updateStatus(ThingStatus.OFFLINE);
+                if (passwordError != null) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, passwordError);
+                    cancelPollingJob();
+                } else {
+                    updateStatus(ThingStatus.OFFLINE);
+                }
                 if (isLinked(CHANNEL_TYPE_POWERSTATE)) {
                     updateState(CHANNEL_TYPE_POWERSTATE, new StringType(PowerStatus.OFFLINE.toString()));
                 }

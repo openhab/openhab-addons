@@ -14,24 +14,36 @@ package org.openhab.binding.roborock.internal;
 
 import static org.openhab.binding.roborock.internal.RoborockBindingConstants.*;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.concurrent.TimeoutException;
+import java.util.zip.GZIPOutputStream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.roborock.internal.action.RoborockVacuumActions;
 import org.openhab.binding.roborock.internal.api.GetCleanRecord;
 import org.openhab.binding.roborock.internal.api.GetConsumables;
 import org.openhab.binding.roborock.internal.api.GetDndTimer;
@@ -49,6 +61,9 @@ import org.openhab.binding.roborock.internal.api.enums.VacuumErrorType;
 import org.openhab.binding.roborock.internal.map.RRMapData;
 import org.openhab.binding.roborock.internal.map.RRMapParser;
 import org.openhab.binding.roborock.internal.map.RRMapRenderer;
+import org.openhab.binding.roborock.internal.transport.CloudMqttTransport;
+import org.openhab.binding.roborock.internal.transport.LocalDirectTransport;
+import org.openhab.binding.roborock.internal.transport.RoborockCommandTransport;
 import org.openhab.binding.roborock.internal.util.ProtocolUtils;
 import org.openhab.binding.roborock.internal.util.RequestCorrelationTracker;
 import org.openhab.binding.roborock.internal.util.SchedulerTask;
@@ -68,6 +83,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelType;
@@ -97,12 +113,16 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class RoborockVacuumHandler extends BaseThingHandler {
 
+    private static final int REQUEST_ID_SYNC_DIRECT_COMPLETED = -2;
+    private static final String MAP_DOWNLOAD_REQUEST_METHOD = "downloadRrMap";
+    private static final long MAP_DOWNLOAD_TIMEOUT_MS = 30_000L;
+
     private final Logger logger = LoggerFactory.getLogger(RoborockVacuumHandler.class);
 
-    @Nullable
-    RoborockAccountHandler bridgeHandler;
+    private @Nullable RoborockAccountHandler bridgeHandler;
     private final SchedulerTask initTask;
     private final SchedulerTask pollTask;
+    private final SchedulerTask statusPollTask;
     private final RoborockStateDescriptionOptionProvider stateDescriptionProvider;
     private String token = "";
     private Rooms[] homeRooms = new Rooms[0];
@@ -110,12 +130,23 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     private String localKey = "";
     private String localIP = "";
     private String endpointPrefix = "";
+    private boolean b01 = false;
+    private boolean q7 = false;
     private final byte[] nonce = new byte[16];
     private boolean hasChannelStructure;
+    private RoborockCommunicationMode communicationMode = RoborockCommunicationMode.CLOUD;
+    private @Nullable RoborockCommandTransport cloudTransport;
+    private @Nullable RoborockCommandTransport directTransport;
     private ConcurrentHashMap<RobotCapabilities, Boolean> deviceCapabilities = new ConcurrentHashMap<>();
     private ChannelTypeRegistry channelTypeRegistry;
     private long lastSuccessfulPollTimestamp;
+    private long lastCloudOnlyPollTimestamp;
+    private long lastMapPollTimestamp;
     private boolean supportsRoutines = true;
+    private boolean cloudMapRefreshDisabledLogged;
+    private boolean cloudMetadataRefreshDisabledLogged;
+    private volatile boolean vacuumChannelOn;
+    private @Nullable Integer lastKnownStateId;
     private final Gson gson = new Gson();
     private final SecureRandom secureRandom = new SecureRandom();
     protected RoborockVacuumConfiguration config = new RoborockVacuumConfiguration();
@@ -125,14 +156,16 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     private final RequestCorrelationTracker requestCorrelationTracker = new RequestCorrelationTracker();
     private final RRMapParser rrMapParser = new RRMapParser();
     private final RRMapRenderer rrMapRenderer = new RRMapRenderer();
+    private final MapUpdateDeduplicator mapUpdateDeduplicator = new MapUpdateDeduplicator();
+    private final Map<Integer, CompletableFuture<byte[]>> pendingRrMapDownloads = new ConcurrentHashMap<>();
 
     private static final Set<RobotCapabilities> FEATURES_CHANNELS = Collections.unmodifiableSet(
-            Stream.of(RobotCapabilities.SEGMENT_STATUS, RobotCapabilities.MAP_STATUS, RobotCapabilities.LED_STATUS,
+            EnumSet.of(RobotCapabilities.SEGMENT_STATUS, RobotCapabilities.MAP_STATUS, RobotCapabilities.LED_STATUS,
                     RobotCapabilities.CARPET_MODE, RobotCapabilities.FW_FEATURES, RobotCapabilities.ROOM_MAPPING,
                     RobotCapabilities.MULTI_MAP_LIST, RobotCapabilities.CUSTOMIZE_CLEAN_MODE,
                     RobotCapabilities.COLLECT_DUST, RobotCapabilities.CLEAN_MOP_START, RobotCapabilities.CLEAN_MOP_STOP,
                     RobotCapabilities.MOP_DRYING, RobotCapabilities.MOP_DRYING_REMAINING_TIME,
-                    RobotCapabilities.DOCK_STATE_ID, RobotCapabilities.CLEAN_PERCENT).collect(Collectors.toSet()));
+                    RobotCapabilities.DOCK_STATE_ID, RobotCapabilities.CLEAN_PERCENT));
 
     public RoborockVacuumHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry,
             RoborockStateDescriptionOptionProvider stateDescriptionProvider) {
@@ -141,7 +174,8 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         this.stateDescriptionProvider = stateDescriptionProvider;
         initTask = new SchedulerTask(scheduler, logger, "Init", this::initDevice);
         pollTask = new SchedulerTask(scheduler, logger, "Poll", this::pollData);
-        new java.security.SecureRandom().nextBytes(nonce);
+        statusPollTask = new SchedulerTask(scheduler, logger, "StatusPoll", this::pollStatusOnly);
+        secureRandom.nextBytes(nonce);
     }
 
     protected String getTokenFromBridge() {
@@ -164,6 +198,11 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             return "";
         }
         return localBridge.setRoutine(routine);
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Set.of(RoborockVacuumActions.class);
     }
 
     @Override
@@ -276,6 +315,14 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         config = getConfigAs(RoborockVacuumConfiguration.class);
+        communicationMode = config.getCommunicationMode();
+        lastCloudOnlyPollTimestamp = 0;
+        lastMapPollTimestamp = 0;
+        vacuumChannelOn = false;
+        lastKnownStateId = null;
+        cloudMapRefreshDisabledLogged = false;
+        cloudMetadataRefreshDisabledLogged = false;
+        mapUpdateDeduplicator.reset();
 
         if (!(getBridge() instanceof Bridge bridge
                 && bridge.getHandler() instanceof RoborockAccountHandler accountHandler)) {
@@ -283,28 +330,58 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             return;
         }
         bridgeHandler = accountHandler;
+        b01 = isB01Device();
+        cloudTransport = new CloudMqttTransport(accountHandler, config.duid, nonce, b01, q7);
+        LocalDirectTransport localDirectTransport = new LocalDirectTransport();
+        localDirectTransport.setMessageConsumer(this::handleMessage);
+        directTransport = localDirectTransport;
+        refreshTransportContext();
         hasChannelStructure = false;
+        applyCloudOnlyCapabilityPolicies();
 
         initTask.setNamePrefix(getThing().getUID().getId());
         pollTask.setNamePrefix(getThing().getUID().getId());
+        statusPollTask.setNamePrefix(getThing().getUID().getId());
         updateStatus(ThingStatus.UNKNOWN);
         initTask.schedule(5);
+    }
+
+    private boolean isB01Device() {
+        q7 = false;
+        String protocol = getThing().getProperties().getOrDefault(THING_PROPERTY_PROTOCOL, "");
+        if (!"B01".equalsIgnoreCase(protocol)) {
+            return false;
+        }
+        b01 = true;
+        String name = getThing().getProperties().getOrDefault(THING_PROPERTY_DEVICE_NAME, "");
+        String nameUpper = name.toUpperCase(java.util.Locale.ROOT);
+        if (nameUpper.contains("Q7")) {
+            q7 = true;
+        }
+        return true;
     }
 
     private synchronized void scheduleNextPoll(long initialDelaySeconds) {
         final long delayUntilNextPoll;
         if (initialDelaySeconds < 0) {
-            long intervalSeconds = config.refresh * 60;
+            long intervalSeconds = config.getRefreshIntervalSeconds();
             long secondsSinceLastPoll = (System.currentTimeMillis() - lastSuccessfulPollTimestamp) / 1000;
             long deltaRemaining = intervalSeconds - secondsSinceLastPoll;
             delayUntilNextPoll = Math.max(0, deltaRemaining);
         } else {
             delayUntilNextPoll = initialDelaySeconds;
         }
-        logger.debug("{}: Scheduling next poll in {}s, refresh interval {}min", config.duid, delayUntilNextPoll,
-                config.refresh);
+        logger.debug("{}: Scheduling next poll in {}s, refresh interval {}s", config.duid, delayUntilNextPoll,
+                config.getRefreshIntervalSeconds());
         pollTask.cancel();
         pollTask.schedule(delayUntilNextPoll);
+    }
+
+    private synchronized void scheduleNextStatusPoll(long delaySeconds) {
+        logger.debug("{}: Scheduling status-only poll in {}s, fast refresh interval {}s", config.duid, delaySeconds,
+                config.getFastRefreshIntervalSeconds());
+        statusPollTask.cancel();
+        statusPollTask.schedule(delaySeconds);
     }
 
     private void initDevice() {
@@ -336,7 +413,9 @@ public class RoborockVacuumHandler extends BaseThingHandler {
 
     private synchronized void teardown(boolean scheduleReconnection) {
         pollTask.cancel();
+        statusPollTask.cancel();
         initTask.cancel();
+        requestCorrelationTracker.cleanupExpired(0);
 
         if (scheduleReconnection) {
             initTask.schedule(30);
@@ -345,8 +424,12 @@ public class RoborockVacuumHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        super.dispose();
+        RoborockCommandTransport localDirectTransport = directTransport;
+        if (localDirectTransport != null) {
+            localDirectTransport.dispose();
+        }
         teardown(false);
+        super.dispose();
     }
 
     @Override
@@ -364,16 +447,8 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             if (config.duid.equals(devices[i].duid)) {
                 if (localKey.isEmpty()) {
                     localKey = devices[i].localKey;
+                    refreshTransportContext();
                 }
-                updateState(CHANNEL_ERROR_ID, new DecimalType(devices[i].deviceStatus.errorCode));
-                updateState(CHANNEL_STATE_ID, new DecimalType(devices[i].deviceStatus.vacuumState));
-                updateState(CHANNEL_BATTERY, new DecimalType(devices[i].deviceStatus.battery));
-                updateState(CHANNEL_FAN_POWER, new DecimalType(devices[i].deviceStatus.fanPower));
-                updateState(CHANNEL_MOP_DRYING, new DecimalType(devices[i].deviceStatus.dryingStatus));
-                updateState(CHANNEL_CONSUMABLE_MAIN_PERC, new DecimalType(devices[i].deviceStatus.mainBrushWorkTime));
-                updateState(CHANNEL_CONSUMABLE_SIDE_PERC, new DecimalType(devices[i].deviceStatus.sideBrushWorkTime));
-                updateState(CHANNEL_CONSUMABLE_FILTER_PERC, new DecimalType(devices[i].deviceStatus.filterWorkTime));
-
                 if (devices[i].online) {
                     sendAllMqttCommands();
                 } else {
@@ -387,6 +462,8 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     private void pollData() {
         RoborockAccountHandler localBridgeHandler = bridgeHandler;
         if (localBridgeHandler != null) {
+            applyCloudOnlyCapabilityPolicies();
+            boolean cloudOnlyRefreshDue = isCloudOnlyRefreshDue();
             HomeData homeData = localBridgeHandler.getHomeData();
             if (homeData != null && homeData.result != null) {
                 homeRooms = homeData.result.rooms;
@@ -396,17 +473,16 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 updateDevice(receivedDevices);
             }
 
-            if (supportsRoutines) {
+            if (supportsRoutines && isCloudMetadataRefreshAllowed() && cloudOnlyRefreshDue) {
                 String routinesResponse = localBridgeHandler.getRoutines(config.duid);
                 List<StateOption> options = new ArrayList<>();
-                if (routinesResponse != null && !routinesResponse.isEmpty()
-                        && JsonParser.parseString(routinesResponse).getAsJsonObject().get("result").isJsonArray()
-                        && JsonParser.parseString(routinesResponse).getAsJsonObject().get("result").getAsJsonArray()
-                                .size() > 0
-                        && JsonParser.parseString(routinesResponse).getAsJsonObject().get("result").getAsJsonArray()
-                                .get(0).isJsonObject()) {
-                    JsonArray routinesArray = JsonParser.parseString(routinesResponse).getAsJsonObject().get("result")
-                            .getAsJsonArray();
+                JsonObject parsedRoutines = routinesResponse != null && !routinesResponse.isEmpty()
+                        ? JsonParser.parseString(routinesResponse).getAsJsonObject()
+                        : null;
+                if (parsedRoutines != null && parsedRoutines.get("result").isJsonArray()
+                        && parsedRoutines.get("result").getAsJsonArray().size() > 0
+                        && parsedRoutines.get("result").getAsJsonArray().get(0).isJsonObject()) {
+                    JsonArray routinesArray = parsedRoutines.get("result").getAsJsonArray();
                     Map<String, Object> routines = new HashMap<>();
                     for (int i = 0; i < routinesArray.size(); ++i) {
                         JsonObject routinesJsonObject = routinesArray.get(i).getAsJsonObject();
@@ -422,6 +498,12 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                     logger.debug("Routines not supported for device {}", config.duid);
                     supportsRoutines = false;
                 }
+            } else if (supportsRoutines && !isCloudMetadataRefreshAllowed()) {
+                disableRoutinesState("cloudMetadataRefresh=off in direct communication mode");
+            }
+
+            if (cloudOnlyRefreshDue) {
+                lastCloudOnlyPollTimestamp = System.currentTimeMillis();
             }
 
             lastSuccessfulPollTimestamp = System.currentTimeMillis();
@@ -434,22 +516,47 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         }
     }
 
+    private void pollStatusOnly() {
+        @Nullable
+        Integer nextStatusPollDelaySeconds = VacuumRefreshPolicy.getStatusPollDelaySeconds(communicationMode,
+                vacuumChannelOn, config.getFastRefreshIntervalSeconds());
+        if (nextStatusPollDelaySeconds == null) {
+            statusPollTask.cancel();
+            return;
+        }
+        requestImmediateStatusUpdate("vacuum channel is ON");
+        try {
+            requestMapRefreshIfDue(false, "vacuum channel is ON");
+        } catch (UnsupportedEncodingException e) {
+            logger.warn("Failed to request map update during status-only poll: {}", e.getMessage());
+        }
+        scheduleNextStatusPoll(nextStatusPollDelaySeconds.intValue());
+    }
+
     private void sendAllMqttCommands() {
         try {
+            requestCorrelationTracker.cleanupExpired(MAP_REQUEST_CORRELATION_TIMEOUT_MS);
+            boolean cloudOnlyRefreshDue = isCloudOnlyRefreshDue();
             registerRequest("getStatus", sendRPCCommand(COMMAND_GET_STATUS));
             registerRequest("getConsumable", sendRPCCommand(COMMAND_GET_CONSUMABLE));
-            registerRequest("getNetworkInfo", sendRPCCommand(COMMAND_GET_NETWORK_INFO));
             registerRequest("getCleanSummary", sendRPCCommand(COMMAND_GET_CLEAN_SUMMARY));
-            registerRequest("getDndTimer", sendRPCCommand(COMMAND_GET_DND_TIMER));
-            registerRequest("getRoomMapping", sendRPCCommand(COMMAND_GET_ROOM_MAPPING));
-            registerRequest("getSegmentStatus", sendRPCCommand(COMMAND_GET_SEGMENT_STATUS));
-            registerRequest("getMapStatus", sendRPCCommand(COMMAND_GET_MAP_STATUS));
-            registerRequest("getLedStatus", sendRPCCommand(COMMAND_GET_LED_STATUS));
-            registerRequest("getCarpetMode", sendRPCCommand(COMMAND_GET_CARPET_MODE));
-            registerRequest("getFwFeatures", sendRPCCommand(COMMAND_GET_FW_FEATURES));
-            registerRequest("getMultiMapsList", sendRPCCommand(COMMAND_GET_MULTI_MAP_LIST));
-            registerRequest("getCustomizeCleanMode", sendRPCCommand(COMMAND_GET_CUSTOMIZE_CLEAN_MODE));
-            registerRequest("getMap", sendRPCCommand(COMMAND_GET_MAP));
+            if (!b01) {
+                registerRequest("getDndTimer", sendRPCCommand(COMMAND_GET_DND_TIMER));
+                registerRequest("getNetworkInfo", sendRPCCommand(COMMAND_GET_NETWORK_INFO));
+                if (isCloudMetadataRefreshAllowed() && cloudOnlyRefreshDue) {
+                    registerRequest("getRoomMapping", sendRPCCommand(COMMAND_GET_ROOM_MAPPING));
+                } else if (!isCloudMetadataRefreshAllowed()) {
+                    disableRoomMappingState("cloudMetadataRefresh=off in direct communication mode");
+                }
+                registerRequest("getSegmentStatus", sendRPCCommand(COMMAND_GET_SEGMENT_STATUS));
+                registerRequest("getMapStatus", sendRPCCommand(COMMAND_GET_MAP_STATUS));
+                registerRequest("getLedStatus", sendRPCCommand(COMMAND_GET_LED_STATUS));
+                registerRequest("getCarpetMode", sendRPCCommand(COMMAND_GET_CARPET_MODE));
+                registerRequest("getFwFeatures", sendRPCCommand(COMMAND_GET_FW_FEATURES));
+                registerRequest("getMultiMapsList", sendRPCCommand(COMMAND_GET_MULTI_MAP_LIST));
+                registerRequest("getCustomizeCleanMode", sendRPCCommand(COMMAND_GET_CUSTOMIZE_CLEAN_MODE));
+            }
+            requestMapRefreshIfDue(cloudOnlyRefreshDue, "periodic poll cycle");
         } catch (UnsupportedEncodingException e) {
             logger.warn("Failed to send MQTT commands due to unsupported encoding: {}", e.getMessage());
         }
@@ -458,8 +565,17 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     public void handleMessage(byte[] payload) {
         requestCorrelationTracker.cleanupExpired(MAP_REQUEST_CORRELATION_TIMEOUT_MS);
         try {
+            int connectNonce = -1;
+            int ackNonce = -1;
+            @Nullable
+            RoborockCommandTransport currentDirectTransport = directTransport;
+            if (currentDirectTransport instanceof LocalDirectTransport localDirect) {
+                connectNonce = localDirect.getConnectNonce();
+                ackNonce = localDirect.getAckNonce();
+            }
+
             ProtocolUtils.DecodedMessage decodedMessage = ProtocolUtils.decodeMessage(payload, localKey, nonce,
-                    endpointPrefix);
+                    endpointPrefix, connectNonce, ackNonce);
             if (decodedMessage instanceof ProtocolUtils.IgnoredResponse) {
                 return;
             }
@@ -471,11 +587,25 @@ public class RoborockVacuumHandler extends BaseThingHandler {
 
             String response = ((ProtocolUtils.JsonPayloadResponse) decodedMessage).payload();
 
-            if (JsonParser.parseString(response).isJsonObject()
-                    && JsonParser.parseString(response).getAsJsonObject().get("dps").isJsonObject()
-                    && JsonParser.parseString(response).getAsJsonObject().get("dps").getAsJsonObject().has("102")) {
-                String jsonString = JsonParser.parseString(response).getAsJsonObject().get("dps").getAsJsonObject()
-                        .get("102").getAsString();
+            JsonElement parsedResponse = JsonParser.parseString(response);
+            if (!parsedResponse.isJsonObject()) {
+                return;
+            }
+            JsonObject responseJson = parsedResponse.getAsJsonObject();
+            JsonElement rpcPayload = extractRpcPayload(responseJson);
+            if (rpcPayload != null && rpcPayload.isJsonPrimitive()) {
+                String jsonString = rpcPayload.getAsString();
+
+                // B01 responses have a different envelope shape — normalise to V1 before dispatching
+                if (b01) {
+                    String normalised = normaliseB01Response(jsonString);
+                    if (normalised == null) {
+                        // unsolicited push or error response — nothing to correlate
+                        return;
+                    }
+                    jsonString = normalised;
+                }
+
                 if (!jsonString.endsWith("\"result\":[\"ok\"]}") && !jsonString.endsWith("\"result\":[]}")
                         && JsonParser.parseString(jsonString).getAsJsonObject().has("id")
                         && JsonParser.parseString(jsonString).getAsJsonObject().has("result")) {
@@ -490,45 +620,59 @@ public class RoborockVacuumHandler extends BaseThingHandler {
 
                     switch (methodName) {
                         case "getStatus":
+                        case COMMAND_GET_STATUS:
                             handleGetStatus(jsonString);
                             break;
                         case "getConsumable":
+                        case COMMAND_GET_CONSUMABLE:
                             handleGetConsumables(jsonString);
                             break;
                         case "getRoomMapping":
+                        case COMMAND_GET_ROOM_MAPPING:
                             handleGetRoomMapping(jsonString);
                             break;
                         case "getNetworkInfo":
+                        case COMMAND_GET_NETWORK_INFO:
                             handleGetNetworkInfo(jsonString);
                             break;
                         case "getCleanRecord":
+                        case COMMAND_GET_CLEAN_RECORD:
                             handleGetCleanRecord(jsonString);
                             break;
                         case "getCleanSummary":
+                        case COMMAND_GET_CLEAN_SUMMARY:
                             handleGetCleanSummary(jsonString);
                             break;
                         case "getDndTimer":
+                        case COMMAND_GET_DND_TIMER:
                             handleGetDndTimer(jsonString);
                             break;
                         case "getSegmentStatus":
+                        case COMMAND_GET_SEGMENT_STATUS:
                             handleGetSegmentStatus(jsonString);
                             break;
                         case "getMapStatus":
+                        case COMMAND_GET_MAP_STATUS:
                             handleGetMapStatus(jsonString);
                             break;
                         case "getLedStatus":
+                        case COMMAND_GET_LED_STATUS:
                             handleGetLedStatus(jsonString);
                             break;
                         case "getCarpetMode":
+                        case COMMAND_GET_CARPET_MODE:
                             handleGetCarpetMode(jsonString);
                             break;
                         case "getFwFeatures":
+                        case COMMAND_GET_FW_FEATURES:
                             handleGetFwFeatures(jsonString);
                             break;
                         case "getMultiMapsList":
+                        case COMMAND_GET_MULTI_MAP_LIST:
                             handleGetMultiMapsList(jsonString);
                             break;
                         case "getCustomizeCleanMode":
+                        case COMMAND_GET_CUSTOMIZE_CLEAN_MODE:
                             handleGetCustomizeCleanMode(jsonString);
                             break;
                         default:
@@ -540,13 +684,12 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             } else {
                 // handle live updates ie any one (or more of values of dps)
                 // "dps":{"121":8,"122":100,"123":104,"124":203,"125":75,"126":63,"127":50,"128":0,"133":1,"134":0}
-                if (JsonParser.parseString(response).isJsonObject()
-                        && JsonParser.parseString(response).getAsJsonObject().get("dps").isJsonObject()) {
-                    JsonObject dpsJsonObject = JsonParser.parseString(response).getAsJsonObject().get("dps")
-                            .getAsJsonObject();
+                JsonElement dpsElement = responseJson.get("dps");
+                if (dpsElement != null && dpsElement.isJsonObject()) {
+                    JsonObject dpsJsonObject = dpsElement.getAsJsonObject();
                     if (dpsJsonObject.has("121")) {
                         int stateInt = dpsJsonObject.get("121").getAsInt();
-                        updateState(CHANNEL_STATE_ID, new DecimalType(stateInt));
+                        updateStateIdAndRequestStatusIfChanged(stateInt, true);
                     } else if (dpsJsonObject.has("122")) {
                         int battery = dpsJsonObject.get("122").getAsInt();
                         updateState(CHANNEL_BATTERY, new DecimalType(battery));
@@ -583,9 +726,9 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             updateState(CHANNEL_ERROR_ID, new DecimalType(getStatus.result[0].errorCode));
             updateState(CHANNEL_IN_CLEANING, OnOffType.from(1 == getStatus.result[0].inCleaning));
             updateState(CHANNEL_MAP_PRESENT, OnOffType.from(1 == getStatus.result[0].mapPresent));
-            updateState(CHANNEL_STATE_ID, new DecimalType(getStatus.result[0].state));
+            updateStateIdAndRequestStatusIfChanged(getStatus.result[0].state, false);
 
-            State vacuum = OnOffType.OFF;
+            OnOffType vacuum = OnOffType.OFF;
             StatusType state = StatusType.getType(getStatus.result[0].state);
             String control;
             switch (state) {
@@ -620,7 +763,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             } else {
                 updateState(CHANNEL_CONTROL, new StringType(control));
             }
-            updateState(CHANNEL_VACUUM, vacuum);
+            updateVacuumChannelState(vacuum);
 
             if (this.deviceCapabilities.containsKey(RobotCapabilities.DOCK_STATE_ID)) {
                 updateState(CHANNEL_DOCK_STATE_ID, new DecimalType(getStatus.result[0].dockErrorStatus));
@@ -734,6 +877,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             updateState(CHANNEL_RSSI, new DecimalType(getNetworkInfo.result.rssi));
             if (localIP.isEmpty()) {
                 localIP = getNetworkInfo.result.ip;
+                refreshTransportContext();
             }
         }
     }
@@ -830,7 +974,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             updateState(CHANNEL_HISTORY_TOTALAREA,
                     new QuantityType<>(historyData.get(1).getAsDouble() / 1000000D, SIUnits.SQUARE_METRE));
             updateState(CHANNEL_HISTORY_COUNT, new DecimalType(historyData.get(2).toString()));
-            if (historyData.get(3).getAsJsonArray().size() > 0) {
+            if (!b01 && historyData.get(3).getAsJsonArray().size() > 0) {
                 String lastClean = historyData.get(3).getAsJsonArray().get(0).getAsString();
                 if (!lastClean.equals(lastHistoryID)) {
                     lastHistoryID = lastClean;
@@ -850,7 +994,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             updateState(CHANNEL_HISTORY_TOTALAREA,
                     new QuantityType<>(cleanSummary.get("clean_area").getAsDouble() / 1000000D, SIUnits.SQUARE_METRE));
             updateState(CHANNEL_HISTORY_COUNT, new DecimalType(cleanSummary.get("clean_count").getAsLong()));
-            if (cleanSummary.has("records") & cleanSummary.get("records").isJsonArray()) {
+            if (!b01 && cleanSummary.has("records") && cleanSummary.get("records").isJsonArray()) {
                 JsonArray cleanSummaryRecords = cleanSummary.get("records").getAsJsonArray();
                 if (!cleanSummaryRecords.isEmpty()) {
                     String lastClean = cleanSummaryRecords.get(0).getAsString();
@@ -920,7 +1064,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 }
             } catch (ClassCastException | IllegalStateException e) {
                 logger.debug("Could not update numeric channel {} with '{}': {}",
-                        RobotCapabilities.MAP_STATUS.getChannel(), response, e.getMessage());
+                        RobotCapabilities.LED_STATUS.getChannel(), response, e.getMessage());
             }
         }
     }
@@ -931,8 +1075,8 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             updateState(RobotCapabilities.CARPET_MODE.getChannel(),
                     new StringType(getCarpetMode.get(0).getAsJsonObject().toString()));
         } catch (ClassCastException | IllegalStateException e) {
-            logger.debug("Could not update numeric channel {} with '{}': {}", RobotCapabilities.MAP_STATUS.getChannel(),
-                    response, e.getMessage());
+            logger.debug("Could not update numeric channel {} with '{}': {}",
+                    RobotCapabilities.CARPET_MODE.getChannel(), response, e.getMessage());
         }
     }
 
@@ -960,7 +1104,12 @@ public class RoborockVacuumHandler extends BaseThingHandler {
 
     private void handleGetMap(int requestId, byte[] mapPayload) {
         String methodName = requestCorrelationTracker.findMethodByRequestId(requestId);
-        if (!"getMap".equals(methodName)) {
+        CompletableFuture<byte[]> pendingDownload = pendingRrMapDownloads.remove(Integer.valueOf(requestId));
+        if (pendingDownload != null) {
+            pendingDownload.complete(mapPayload);
+        }
+        if (!"getMap".equals(methodName) && !COMMAND_GET_MAP.equals(methodName)
+                && !MAP_DOWNLOAD_REQUEST_METHOD.equals(methodName) && pendingDownload == null) {
             logger.debug("Ignoring map response for request id {} with unknown method mapping", requestId);
             return;
         }
@@ -968,7 +1117,11 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         try {
             RRMapData mapData = rrMapParser.parse(mapPayload);
             byte[] pngBytes = rrMapRenderer.renderAsPng(mapData);
-            updateState(CHANNEL_VACUUM_MAP, new RawType(pngBytes, "image/png"));
+            if (mapUpdateDeduplicator.shouldPublish(pngBytes)) {
+                updateState(CHANNEL_VACUUM_MAP, new RawType(pngBytes, "image/png"));
+            } else {
+                logger.trace("Suppressing duplicate map image update for request id {}", requestId);
+            }
         } catch (RoborockException e) {
             logger.debug("Failed to parse map payload for request id {}: {}", requestId, e.getMessage());
         } finally {
@@ -976,7 +1129,158 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         }
     }
 
+    public @Nullable String downloadRrMap(@Nullable String requestedDirectory) {
+        int requestId = 0;
+        try {
+            requestCorrelationTracker.cleanupExpired(MAP_REQUEST_CORRELATION_TIMEOUT_MS);
+            RoborockCommunicationMode selectedMode = RoborockTransportRouting.selectTransportMode(communicationMode,
+                    COMMAND_GET_MAP);
+            RoborockCommandTransport selectedTransport = selectedMode == RoborockCommunicationMode.DIRECT
+                    ? directTransport
+                    : cloudTransport;
+            if (selectedTransport == null) {
+                logger.debug("Cannot download RR map because transport {} is not available.", selectedMode);
+                return null;
+            }
+
+            do {
+                requestId = secureRandom.nextInt(22767 + 1) + 10000;
+            } while (requestCorrelationTracker.isRequestIdInUse(requestId));
+
+            CompletableFuture<byte[]> rrMapFuture = new CompletableFuture<>();
+            pendingRrMapDownloads.put(Integer.valueOf(requestId), rrMapFuture);
+            registerRequest(MAP_DOWNLOAD_REQUEST_METHOD, requestId);
+            int sentRequestId = selectedTransport.sendCommand(COMMAND_GET_MAP, "[]", requestId);
+            if (sentRequestId <= 0) {
+                logger.debug("Cannot download RR map because request id {} could not be sent.", sentRequestId);
+                return null;
+            }
+
+            byte[] mapPayload = rrMapFuture.get(MAP_DOWNLOAD_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+            byte[] gzipPayload = gzip(mapPayload);
+            String fileName = "roborock-" + getThing().getUID().getId() + "-" + requestId + ".rrmap";
+            Path mapFile = storeRrMapFile(gzipPayload, fileName, requestedDirectory);
+            return mapFile.toAbsolutePath().toString();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.debug("Interrupted while waiting for RR map download: {}", e.getMessage());
+        } catch (ExecutionException | TimeoutException e) {
+            logger.debug("Timed out while waiting for RR map payload: {}", e.getMessage());
+        } catch (UnsupportedEncodingException e) {
+            logger.debug("Failed to request RR map payload: {}", e.getMessage());
+        } catch (IOException e) {
+            logger.debug("Failed to store RR map payload: {}", e.getMessage());
+        } finally {
+            if (requestId > 0) {
+                pendingRrMapDownloads.remove(Integer.valueOf(requestId));
+                requestCorrelationTracker.removeByRequestId(requestId);
+            }
+        }
+        return null;
+    }
+
+    static Path getDefaultRrMapDownloadDirectory() {
+        String userHome = System.getProperty("user.home", ".");
+        return Paths.get(userHome);
+    }
+
+    static Path resolveRrMapDownloadDirectory(@Nullable String requestedDirectory, Path defaultDirectory) {
+        if (requestedDirectory == null || requestedDirectory.isBlank()) {
+            return defaultDirectory;
+        }
+        if (requestedDirectory.indexOf('\u0000') >= 0) {
+            return defaultDirectory;
+        }
+        try {
+            Path candidate = Paths.get(requestedDirectory.trim()).normalize();
+            if (Files.exists(candidate) && !Files.isDirectory(candidate)) {
+                return defaultDirectory;
+            }
+            return candidate;
+        } catch (InvalidPathException | SecurityException e) {
+            return defaultDirectory;
+        }
+    }
+
+    private Path storeRrMapFile(byte[] gzipPayload, String fileName, @Nullable String requestedDirectory)
+            throws IOException {
+        Path defaultDirectory = getDefaultRrMapDownloadDirectory();
+        Path targetDirectory = resolveRrMapDownloadDirectory(requestedDirectory, defaultDirectory);
+        if (requestedDirectory != null && !requestedDirectory.isBlank() && targetDirectory.equals(defaultDirectory)
+                && !isRequestedDefaultDirectory(requestedDirectory, defaultDirectory)) {
+            logger.warn("Invalid or unusable RR map download directory '{}'. Falling back to '{}'.", requestedDirectory,
+                    defaultDirectory.toAbsolutePath());
+        }
+
+        try {
+            return writeRrMapFile(gzipPayload, targetDirectory, fileName);
+        } catch (IOException e) {
+            if (requestedDirectory != null && !requestedDirectory.isBlank()
+                    && !targetDirectory.equals(defaultDirectory)) {
+                logger.warn("Failed to store RR map in '{}': {}. Falling back to '{}'.", targetDirectory,
+                        e.getMessage(), defaultDirectory.toAbsolutePath());
+                return writeRrMapFile(gzipPayload, defaultDirectory, fileName);
+            }
+            throw e;
+        }
+    }
+
+    private static boolean isRequestedDefaultDirectory(String requestedDirectory, Path defaultDirectory) {
+        try {
+            return Paths.get(requestedDirectory.trim()).equals(defaultDirectory);
+        } catch (InvalidPathException | SecurityException e) {
+            return false;
+        }
+    }
+
+    private static Path writeRrMapFile(byte[] gzipPayload, Path directory, String fileName) throws IOException {
+        Files.createDirectories(directory);
+        Path mapFile = directory.resolve(fileName);
+        Files.write(mapFile, gzipPayload, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING,
+                StandardOpenOption.WRITE);
+        return mapFile;
+    }
+
+    private static byte[] gzip(byte[] input) throws IOException {
+        try (ByteArrayOutputStream output = new ByteArrayOutputStream();
+                GZIPOutputStream gzipOutputStream = new GZIPOutputStream(output)) {
+            gzipOutputStream.write(input);
+            gzipOutputStream.finish();
+            return output.toByteArray();
+        }
+    }
+
     private void registerRequest(String methodName, int requestId) {
+        if (requestId == REQUEST_ID_SYNC_DIRECT_COMPLETED) {
+            if (logger.isTraceEnabled()) {
+                logger.trace(
+                        "Skipping request registration for method '{}' because direct response handling already completed synchronously.",
+                        methodName);
+            }
+            return;
+        }
+        if (requestId == -1) {
+            if (logger.isTraceEnabled()) {
+                logger.trace(
+                        "Skipping request registration for method '{}' because transport returned timeout sentinel request id -1.",
+                        methodName);
+            }
+            if ("getMap".equals(methodName)) {
+                setMapStateUndefinedAndResetDeduplicator();
+            }
+            return;
+        }
+        if (requestId <= 0) {
+            logger.debug("Skipping request registration for method '{}' due to invalid request id {}", methodName,
+                    requestId);
+            if ("getMap".equals(methodName)) {
+                setMapStateUndefinedAndResetDeduplicator();
+            }
+            return;
+        }
+        if (requestCorrelationTracker.isRequestIdInUse(requestId)) {
+            return;
+        }
         requestCorrelationTracker.register(methodName, requestId);
         if ("getMap".equals(methodName)) {
             logger.debug("Registered getMap request correlation id {}", requestId);
@@ -1016,10 +1320,10 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                     thingBuilder.withChannel(channel);
                     cnt++;
                 } else {
-                    logger.debug("ChannelType {} not found (Unexpected). Available types:",
+                    logger.trace("ChannelType {} not found (Unexpected). Available types:",
                             capability.getChannelType());
                     for (ChannelType ct : channelTypeRegistry.getChannelTypes()) {
-                        logger.debug("Available channelType: '{}' '{}' '{}'", ct.getUID(), ct.toString(),
+                        logger.trace("Available channelType: '{}' '{}' '{}'", ct.getUID(), ct.toString(),
                                 ct.getConfigDescriptionURI());
                     }
                 }
@@ -1036,11 +1340,11 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private int sendRPCCommand(String method, String params) throws UnsupportedEncodingException {
-        RoborockAccountHandler localBridge = bridgeHandler;
-        if (localBridge == null) {
+        if (bridgeHandler == null) {
             return 0;
         }
         try {
+            requestCorrelationTracker.cleanupExpired(MAP_REQUEST_CORRELATION_TIMEOUT_MS);
             @Nullable
             String methodName = null;
             int id;
@@ -1048,10 +1352,417 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 id = secureRandom.nextInt(22767 + 1) + 10000;
                 methodName = requestCorrelationTracker.isRequestIdInUse(id) ? "inUse" : null;
             } while (methodName != null);
-            return localBridge.sendRPCCommand(method, params, config.duid, localKey, nonce, id);
+            RoborockCommunicationMode selectedMode = RoborockTransportRouting.selectTransportMode(communicationMode,
+                    method);
+            RoborockCommandTransport selectedTransport = selectedMode == RoborockCommunicationMode.DIRECT
+                    ? directTransport
+                    : cloudTransport;
+            if (selectedTransport == null) {
+                logger.debug("No available transport for mode {} and method {}", selectedMode, method);
+                return -1;
+            }
+            if (communicationMode == RoborockCommunicationMode.DIRECT && selectedMode == RoborockCommunicationMode.CLOUD
+                    && RoborockTransportRouting.isCloudOnlyMethod(method)) {
+                logger.debug(
+                        "Direct communication mode selected for {}, but method '{}' remains cloud-only and is routed via cloud transport.",
+                        config.duid, method);
+            }
+            // Pre-register for direct mode responses (sync handling) or cloud-routed map requests
+            // to avoid race condition where response arrives before correlation is registered
+            boolean preRegisterForDirect = selectedMode == RoborockCommunicationMode.DIRECT
+                    && shouldPreRegisterForDirectResponseHandling(method);
+            boolean preRegisterForCloudMap = selectedMode == RoborockCommunicationMode.CLOUD
+                    && COMMAND_GET_MAP.equals(method);
+            boolean preRegisterRequest = preRegisterForDirect || preRegisterForCloudMap;
+            if (preRegisterRequest) {
+                requestCorrelationTracker.register(method, id);
+                if (preRegisterForCloudMap) {
+                    logger.debug("Pre-registered cloud map correlation for request id {}", id);
+                }
+            }
+            int requestId = selectedTransport.sendCommand(method, params, id);
+            if (requestId <= 0 && preRegisterRequest) {
+                requestCorrelationTracker.removeByRequestId(id);
+                return requestId;
+            }
+            if (preRegisterRequest && !requestCorrelationTracker.isRequestIdInUse(id)) {
+                return REQUEST_ID_SYNC_DIRECT_COMPLETED;
+            }
+            return requestId;
         } catch (IllegalStateException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
             return 0;
+        }
+    }
+
+    private @Nullable JsonElement extractRpcPayload(JsonObject responseJson) {
+        JsonElement dpsElement = responseJson.get("dps");
+        if (dpsElement == null || !dpsElement.isJsonObject()) {
+            return null;
+        }
+        JsonObject dpsJson = dpsElement.getAsJsonObject();
+        if (dpsJson.has("102")) {
+            return dpsJson.get("102");
+        }
+        if (dpsJson.has("101")) {
+            return dpsJson.get("101");
+        }
+        // B01 protocol responses arrive on dps.10001
+        if (dpsJson.has("10001")) {
+            return dpsJson.get("10001");
+        }
+        return null;
+    }
+
+    /**
+     * Converts a B01 response envelope into the V1 shape expected by all handleGet* methods,
+     * so no downstream handler needs to be aware of the protocol difference.
+     *
+     * <p>
+     * B01 shape: {@code {"msgId":"12345", "code":0, "method":"prop.get", "data":{...}}}
+     * <p>
+     * V1 shape varies by method — see inline comments for each case.
+     *
+     * @return normalised V1-shaped JSON string, or {@code null} if the response is an error or unparseable
+     */
+    @Nullable
+    private String normaliseB01Response(String jsonString) {
+        try {
+            JsonObject b01 = JsonParser.parseString(jsonString).getAsJsonObject();
+
+            // Error response — log and discard
+            if (b01.has("code") && b01.get("code").getAsInt() != 0) {
+                logger.debug("B01 error response (code={}): {}", b01.get("code").getAsInt(), jsonString);
+                return null;
+            }
+
+            // msgId is a string in B01 echoing back the int id we sent in the request
+            int id = 0;
+            if (b01.has("msgId")) {
+                try {
+                    id = (int) Long.parseLong(b01.get("msgId").getAsString());
+                } catch (NumberFormatException e) {
+                    logger.debug("Could not parse B01 msgId as int: {}", b01.get("msgId"));
+                }
+            }
+
+            String method = b01.has("method") ? b01.get("method").getAsString() : "";
+            JsonObject data = b01.has("data") && b01.get("data").isJsonObject() ? b01.get("data").getAsJsonObject()
+                    : new JsonObject();
+
+            JsonObject v1 = new JsonObject();
+            v1.addProperty("id", id);
+
+            switch (method) {
+                case "prop.get": {
+                    // B01 prop.get is used for both status and consumables polling.
+                    // Detect consumables response by presence of "main_brush" key.
+                    if (data.has("main_brush")) {
+                        // Consumables response: rename B01 prop names → GetConsumable field names
+                        renameField(data, "main_brush", "main_brush_work_time");
+                        renameField(data, "side_brush", "side_brush_work_time");
+                        renameField(data, "hypa", "filter_work_time");
+                        renameField(data, "main_sensor", "sensor_dirty_time");
+                        JsonArray consumableResult = new JsonArray();
+                        consumableResult.add(data);
+                        v1.add("result", consumableResult);
+                        break;
+                    }
+                    // Status response: rename B01 field names → V1/GetStatus @SerializedName equivalents
+                    renameField(data, "status", "state");
+                    renameField(data, "wind", "fan_power");
+                    renameField(data, "water", "water_box_mode");
+                    renameField(data, "mode", "mop_mode");
+                    renameField(data, "quantity", "battery");
+                    renameField(data, "fault", "error_code");
+                    renameField(data, "tank_state", "water_box_status");
+                    renameField(data, "charge_state", "charge_status");
+                    renameField(data, "repeat_state", "repeat");
+                    renameField(data, "dust_action", "auto_dust_collection");
+                    renameField(data, "cleaning_time", "clean_time");
+                    // B01 cleaning_area is in cm²; convert to mm² so / 1000000D in handleGetStatus gives correct m²
+                    if (data.has("cleaning_area")) {
+                        data.addProperty("clean_area", data.get("cleaning_area").getAsLong() * 10000L);
+                        data.remove("cleaning_area");
+                    }
+                    renameField(data, "multi_floor", "switch_map_mode");
+                    renameField(data, "clean_path_preference", "corner_clean_mode");
+                    // Wrap as {"id":N, "result":[data]} for GetStatus GSON deserialisation
+                    JsonArray statusResult = new JsonArray();
+                    statusResult.add(data);
+                    v1.add("result", statusResult);
+                    break;
+                }
+
+                case "service.get_consumable": {
+                    // Fallback path — not used by Q7 (which uses prop.get) but kept for other B01 variants
+                    renameField(data, "main_brush", "main_brush_work_time");
+                    renameField(data, "side_brush", "side_brush_work_time");
+                    renameField(data, "filter", "filter_work_time");
+                    renameField(data, "sensor", "sensor_dirty_time");
+                    JsonArray consumableResult = new JsonArray();
+                    consumableResult.add(data);
+                    v1.add("result", consumableResult);
+                    break;
+                }
+
+                case "service.get_record_list": {
+                    // B01 data: {"total_time":N, "total_area":N, "total_count":N, "record_list":[...]}
+                    // V1 clean summary shape: {"id":N, "result":{"clean_time":N, "clean_area":N, "clean_count":N}}
+                    // No follow-up record fetch needed — extract most recent record directly from record_list.
+                    JsonObject summaryResult = new JsonObject();
+                    summaryResult.addProperty("clean_time",
+                            data.has("total_time") ? data.get("total_time").getAsLong() : 0);
+                    // B01 total_area is in cm²; multiply by 10000 to get mm² so the
+                    // existing / 1000000D in handleGetCleanSummary produces correct m²
+                    summaryResult.addProperty("clean_area",
+                            data.has("total_area") ? data.get("total_area").getAsLong() * 10000L : 0);
+                    summaryResult.addProperty("clean_count",
+                            data.has("total_count") ? data.get("total_count").getAsLong() : 0);
+                    v1.add("result", summaryResult);
+
+                    // Also synthesise a GetCleanRecord response from the most recent record_list entry
+                    // so handleGetCleanRecord can update history channels without a separate fetch.
+                    if (data.has("record_list") && data.get("record_list").isJsonArray()) {
+                        JsonArray recordList = data.get("record_list").getAsJsonArray();
+                        if (!recordList.isEmpty()) {
+                            // Most recent record is last in the list
+                            JsonElement lastEntry = recordList.get(recordList.size() - 1);
+                            if (lastEntry.isJsonObject() && lastEntry.getAsJsonObject().has("detail")) {
+                                try {
+                                    JsonObject detail = JsonParser
+                                            .parseString(lastEntry.getAsJsonObject().get("detail").getAsString())
+                                            .getAsJsonObject();
+                                    // Map B01 detail fields → GetCleanRecord.Result field names
+                                    JsonObject rec = new JsonObject();
+                                    long startTime = detail.has("record_start_time")
+                                            ? detail.get("record_start_time").getAsLong()
+                                            : 0;
+                                    long useTime = detail.has("record_use_time")
+                                            ? detail.get("record_use_time").getAsLong()
+                                            : 0;
+                                    rec.addProperty("begin", startTime);
+                                    rec.addProperty("end", startTime + useTime);
+                                    rec.addProperty("duration", useTime);
+                                    // B01 record_clean_area is in cm²; multiply by 10000 to get mm²
+                                    // so the existing / 1000000D in handleGetCleanRecord produces correct m²
+                                    rec.addProperty("cleaned_area",
+                                            detail.has("record_clean_area")
+                                                    ? detail.get("record_clean_area").getAsLong() * 10000L
+                                                    : 0);
+                                    rec.addProperty("error",
+                                            detail.has("record_faultcode") ? detail.get("record_faultcode").getAsInt()
+                                                    : 0);
+                                    rec.addProperty("complete",
+                                            detail.has("record_task_status")
+                                                    ? detail.get("record_task_status").getAsInt()
+                                                    : 0);
+                                    rec.addProperty("finish_reason",
+                                            detail.has("record_task_status")
+                                                    ? detail.get("record_task_status").getAsInt()
+                                                    : 0);
+                                    JsonArray recResult = new JsonArray();
+                                    recResult.add(rec);
+                                    JsonObject cleanRecordV1 = new JsonObject();
+                                    cleanRecordV1.addProperty("id", id);
+                                    cleanRecordV1.add("result", recResult);
+                                    handleGetCleanRecord(gson.toJson(cleanRecordV1));
+                                } catch (Exception e) {
+                                    logger.debug("Failed to synthesise B01 clean record: {}", e.getMessage());
+                                }
+                            }
+                        }
+                    }
+                    break;
+                }
+
+                case "prop.set":
+                case "service.set_room_clean":
+                case "service.start_recharge":
+                case "service.find_device":
+                case "service.reset_consumable": {
+                    // Ack responses — normalise to {"id":N, "result":["ok"]}
+                    JsonArray ack = new JsonArray();
+                    ack.add("ok");
+                    v1.add("result", ack);
+                    break;
+                }
+
+                default: {
+                    // Unknown method — wrap data as-is for best-effort handling
+                    logger.debug("B01 normalise: unhandled method '{}', wrapping data as-is", method);
+                    JsonArray defaultResult = new JsonArray();
+                    defaultResult.add(data);
+                    v1.add("result", defaultResult);
+                    break;
+                }
+            }
+
+            return gson.toJson(v1);
+        } catch (Exception e) {
+            logger.debug("Failed to normalise B01 response: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    private void renameField(JsonObject obj, String from, String to) {
+        if (obj.has(from)) {
+            obj.add(to, obj.get(from));
+            obj.remove(from);
+        }
+    }
+
+    private boolean shouldPreRegisterForDirectResponseHandling(String method) {
+        return switch (method) {
+            case COMMAND_GET_STATUS, COMMAND_GET_CONSUMABLE, COMMAND_GET_NETWORK_INFO, COMMAND_GET_CLEAN_SUMMARY,
+                    COMMAND_GET_DND_TIMER, COMMAND_GET_ROOM_MAPPING, COMMAND_GET_SEGMENT_STATUS, COMMAND_GET_MAP_STATUS,
+                    COMMAND_GET_LED_STATUS, COMMAND_GET_CARPET_MODE, COMMAND_GET_FW_FEATURES,
+                    COMMAND_GET_MULTI_MAP_LIST, COMMAND_GET_CUSTOMIZE_CLEAN_MODE, COMMAND_GET_CLEAN_RECORD,
+                    COMMAND_GET_MAP ->
+                true;
+            default -> false;
+        };
+    }
+
+    private void updateStateIdAndRequestStatusIfChanged(int stateId, boolean triggerImmediateStatusQuery) {
+        @Nullable
+        Integer previousStateId = lastKnownStateId;
+        updateState(CHANNEL_STATE_ID, new DecimalType(stateId));
+        lastKnownStateId = stateId;
+        if (triggerImmediateStatusQuery && VacuumRefreshPolicy.shouldRequestImmediateStatus(previousStateId, stateId)) {
+            requestImmediateStatusUpdate("state-id changed from " + previousStateId + " to " + stateId);
+        }
+    }
+
+    private void requestImmediateStatusUpdate(String reason) {
+        try {
+            logger.debug("{}: Triggering immediate '{}' request because {}", config.duid, COMMAND_GET_STATUS, reason);
+            registerRequest("getStatus", sendRPCCommand(COMMAND_GET_STATUS));
+        } catch (UnsupportedEncodingException e) {
+            logger.debug("UnsupportedEncodingException while requesting immediate status, {}", e.getMessage());
+        }
+    }
+
+    private void updateVacuumChannelState(OnOffType vacuumState) {
+        boolean wasVacuumOn = vacuumChannelOn;
+        vacuumChannelOn = OnOffType.ON.equals(vacuumState);
+        updateState(CHANNEL_VACUUM, vacuumState);
+        if (vacuumChannelOn != wasVacuumOn) {
+            @Nullable
+            Integer nextStatusPollDelaySeconds = VacuumRefreshPolicy.getStatusPollDelaySeconds(communicationMode,
+                    vacuumChannelOn, config.getFastRefreshIntervalSeconds());
+            if (nextStatusPollDelaySeconds != null) {
+                scheduleNextStatusPoll(nextStatusPollDelaySeconds.intValue());
+            } else {
+                statusPollTask.cancel();
+            }
+        }
+    }
+
+    private boolean isCloudMapRefreshAllowed() {
+        return CloudRefreshPolicy.isCloudMapRefreshAllowed(communicationMode, config);
+    }
+
+    private boolean isCloudMetadataRefreshAllowed() {
+        return CloudRefreshPolicy.isCloudMetadataRefreshAllowed(communicationMode, config);
+    }
+
+    private boolean isCloudOnlyRefreshDue() {
+        return CloudRefreshPolicy.isCloudOnlyRefreshDue(System.currentTimeMillis(), lastCloudOnlyPollTimestamp,
+                config.getCloudRefreshIntervalSeconds());
+    }
+
+    private int getMapRefreshDuringCleaningIntervalSeconds() {
+        return config.getMapRefreshDuringCleaningIntervalSeconds(communicationMode);
+    }
+
+    private boolean isCleaningMapRefreshDue(long now) {
+        return VacuumRefreshPolicy.isRefreshDue(now, lastMapPollTimestamp,
+                getMapRefreshDuringCleaningIntervalSeconds());
+    }
+
+    private void requestMapRefreshIfDue(boolean cloudOnlyRefreshDue, String reason)
+            throws UnsupportedEncodingException {
+        if (!isCloudMapRefreshAllowed()) {
+            disableMapState("cloudMapRefresh=off in direct communication mode");
+            return;
+        }
+
+        long now = System.currentTimeMillis();
+        boolean mapRefreshDue = vacuumChannelOn ? isCleaningMapRefreshDue(now) : cloudOnlyRefreshDue;
+        if (!mapRefreshDue) {
+            return;
+        }
+
+        registerRequest("getMap", sendRPCCommand(COMMAND_GET_MAP));
+        lastMapPollTimestamp = now;
+        logger.debug("{}: Requested map refresh because {} (vacuumOn={}, interval={}s)", config.duid, reason,
+                vacuumChannelOn, getMapRefreshDuringCleaningIntervalSeconds());
+    }
+
+    private void applyCloudOnlyCapabilityPolicies() {
+        if (!isCloudMapRefreshAllowed()) {
+            disableMapState("cloudMapRefresh=off in direct communication mode");
+        }
+        if (!isCloudMetadataRefreshAllowed()) {
+            disableRoutinesState("cloudMetadataRefresh=off in direct communication mode");
+            disableRoomMappingState("cloudMetadataRefresh=off in direct communication mode");
+        }
+    }
+
+    private void disableMapState(String reason) {
+        if (thing.getChannel(CHANNEL_VACUUM_MAP) != null) {
+            setMapStateUndefinedAndResetDeduplicator();
+        }
+        if (!cloudMapRefreshDisabledLogged) {
+            logger.info("Cloud map refresh disabled for {}: {}. Channel '{}' is set to UNDEF.", config.duid, reason,
+                    CHANNEL_VACUUM_MAP);
+            cloudMapRefreshDisabledLogged = true;
+        }
+    }
+
+    private void disableRoutinesState(String reason) {
+        updateChannelStateIfExists(CHANNEL_ROUTINES, UnDefType.UNDEF);
+        if (!cloudMetadataRefreshDisabledLogged) {
+            logger.info(
+                    "Cloud metadata refresh disabled for {}: {}. Channels '{}' and '{}' are set to UNDEF when available.",
+                    config.duid, reason, CHANNEL_ROUTINES, RobotCapabilities.ROOM_MAPPING.getChannel());
+            cloudMetadataRefreshDisabledLogged = true;
+        }
+    }
+
+    private void disableRoomMappingState(String reason) {
+        updateChannelStateIfExists(RobotCapabilities.ROOM_MAPPING.getChannel(), UnDefType.UNDEF);
+        if (!cloudMetadataRefreshDisabledLogged) {
+            logger.info(
+                    "Cloud metadata refresh disabled for {}: {}. Channels '{}' and '{}' are set to UNDEF when available.",
+                    config.duid, reason, CHANNEL_ROUTINES, RobotCapabilities.ROOM_MAPPING.getChannel());
+            cloudMetadataRefreshDisabledLogged = true;
+        }
+    }
+
+    private void updateChannelStateIfExists(String channelId, State state) {
+        if (thing.getChannel(channelId) != null) {
+            updateState(channelId, state);
+        }
+    }
+
+    private void setMapStateUndefinedAndResetDeduplicator() {
+        updateState(CHANNEL_VACUUM_MAP, UnDefType.UNDEF);
+        mapUpdateDeduplicator.reset();
+    }
+
+    private void refreshTransportContext() {
+        @Nullable
+        String configuredLocalHost = config.getLocalHostOrNull();
+        String effectiveLocalHost = configuredLocalHost != null ? configuredLocalHost : localIP;
+        RoborockCommandTransport localCloudTransport = cloudTransport;
+        if (localCloudTransport != null) {
+            localCloudTransport.updateContext(localKey, effectiveLocalHost, config.localPort, endpointPrefix);
+        }
+        RoborockCommandTransport localDirectTransport = directTransport;
+        if (localDirectTransport != null) {
+            localDirectTransport.updateContext(localKey, effectiveLocalHost, config.localPort, endpointPrefix);
         }
     }
 }
