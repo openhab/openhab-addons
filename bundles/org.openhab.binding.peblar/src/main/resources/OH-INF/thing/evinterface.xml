@@ -56,7 +56,7 @@
 			EN-IEC 61851-1.
 		</description>
 		<category>Energy</category>
-		<state readOnly="false" min="0" max="32000" pattern="%.0f mA"/>
+		<state readOnly="false" min="0" max="32000" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="chargeCurrentLimitSource">
@@ -86,7 +86,7 @@
 		<label>Actual Charge Current Limit</label>
 		<description>The actual charge current limit applied after all constraints in milliamperes</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.0f mA"/>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="force1Phase">

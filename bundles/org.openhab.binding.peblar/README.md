@@ -21,7 +21,7 @@ Auto-discovery is not supported. The thing must be added manually.
 |-------------------|-----------|----------|---------|--------------------------------------------------------------|
 | `hostname`        | `text`    | yes      | —       | Hostname or IP address of the charger on the local network   |
 | `apiToken`        | `text`    | yes      | —       | API token set in the charger web interface                   |
-| `refreshInterval` | `integer` | no       | 30      | How often to poll the charger in seconds (min: 5, max: 3600) |
+| `refreshInterval` | `integer` | no       | 30      | How often to poll the charger in seconds (min: 1, max: 3600) |
 
 ---
 
@@ -78,15 +78,15 @@ Polled from `GET /api/wlac/v1/evinterface`. Writable channels use `PATCH /api/wl
 
 Polled from `GET /api/wlac/v1/system`.
 
-| Channel ID               | Type                     | R/W | Description                          |
-|--------------------------|--------------------------|-----|--------------------------------------|
-| `productPn`              | `String`                 | R   | Product part number                  |
-| `productSn`              | `String`                 | R   | Product serial number                |
-| `firmwareVersion`        | `String`                 | R   | Currently installed firmware version |
-| `wlanSignalStrength`     | `Number:Dimensionless`   | R   | Wi-Fi signal strength in dBm         |
-| `cellularSignalStrength` | `Number:Dimensionless`   | R   | Cellular signal strength in dBm      |
-| `uptime`                 | `Number:Time`            | R   | Device uptime in seconds             |
-| `phaseCount`             | `Number:Dimensionless`   | R   | Number of connected phases (1 or 3)  |
+| Channel ID               | Type           | R/W | Description                          |
+|--------------------------|----------------|-----|--------------------------------------|
+| `productPn`              | `String`       | R   | Product part number                  |
+| `productSn`              | `String`       | R   | Product serial number                |
+| `firmwareVersion`        | `String`       | R   | Currently installed firmware version |
+| `wlanSignalStrength`     | `Number:Power` | R   | Wi-Fi signal strength in dBm         |
+| `cellularSignalStrength` | `Number:Power` | R   | Cellular signal strength in dBm      |
+| `uptime`                 | `Number:Time`  | R   | Device uptime in seconds             |
+| `phaseCount`             | `Number`       | R   | Number of connected phases (1 or 3)  |
 
 ---
 
