@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="rachio" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>binding</type>
+	<name>Rachio Binding</name>
+	<description>This is the binding for Rachio Sprinkler Controller.</description>
+
+	<config-description>
+		<parameter name="apikey" type="text">
+			<label>Rachio API Key</label>
+			<description>Deprecated fallback only. Configure the API token on the Rachio Cloud Connector Thing. Legacy
+				binding-level values are used only when the Thing value is absent.</description>
+			<required>false</required>
+		</parameter>
+		<parameter name="pollingInterval" type="integer" min="30" step="30">
+			<label>Polling/Refresh Interval</label>
+			<description>Deprecated fallback only. Configure the polling interval on the Rachio Cloud Connector Thing.</description>
+			<required>false</required>
+		</parameter>
+		<parameter name="defaultRuntime" type="integer" min="30" step="30">
+			<label>Default Runtime</label>
+			<description>Deprecated fallback only. Configure the default runtime on the Rachio Cloud Connector Thing.</description>
+			<required>false</required>
+		</parameter>
+		<parameter name="eventHistoryLookbackHours" type="integer" min="0" step="1">
+			<label>Event History Lookback</label>
+			<description>Deprecated fallback only. Configure the event history lookback on the Rachio Cloud Connector Thing.</description>
+			<required>false</required>
+		</parameter>
+		<parameter name="forecastUnits" type="text">
+			<label>Forecast Units</label>
+			<description>Deprecated fallback only. Configure forecast units on the Rachio Cloud Connector Thing.</description>
+			<required>false</required>
+			<options>
+				<option value="METRIC">Metric</option>
+				<option value="US">US</option>
+			</options>
+		</parameter>
+		<parameter name="hoseSummaryLookbackDays" type="integer" min="0" max="31" step="1">
+			<label>Hose Timer Summary Lookback</label>
+			<description>Deprecated fallback only. Configure the summary lookback on the Rachio Cloud Connector Thing.</description>
+			<required>false</required>
+		</parameter>
+		<parameter name="hoseSummaryLookaheadDays" type="integer" min="0" max="31" step="1">
+			<label>Hose Timer Summary Lookahead</label>
+			<description>Deprecated fallback only. Configure the summary lookahead on the Rachio Cloud Connector Thing.</description>
+			<required>false</required>
+		</parameter>
+		<parameter name="callbackUrl" type="text">
+			<label>Callback URL</label>
+			<description>Deprecated fallback only. Configure the callback URL on the Rachio Cloud Connector Thing.</description>
+			<context>url</context>
+			<required>false</required>
+		</parameter>
+		<parameter name="callbackUsername" type="text">
+			<label>Callback Username</label>
+			<description>Deprecated fallback only. Configure the callback username on the Rachio Cloud Connector Thing.</description>
+			<required>false</required>
+		</parameter>
+		<parameter name="callbackPassword" type="text">
+			<label>Callback Password</label>
+			<description>Deprecated fallback only. Configure the callback password on the Rachio Cloud Connector Thing.</description>
+			<context>password</context>
+			<required>false</required>
+		</parameter>
+		<parameter name="clearAllCallbacks" type="boolean">
+			<label>Clear Callbacks</label>
+			<description>Deprecated fallback only. Configure callback cleanup on the Rachio Cloud Connector Thing.</description>
+			<required>false</required>
+		</parameter>
+	</config-description>
+
+</addon:addon>
