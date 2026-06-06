@@ -36,8 +36,8 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -558,7 +558,7 @@ public class StaticAssetTools {
     private boolean tokenHasAdminScope(String token) {
         try {
             ContentResponse resp = httpClient.newRequest(URI.create(baseUrl + ADMIN_PROBE_PATH)).method(HttpMethod.GET)
-                    .header("Authorization", "Bearer " + token).header("Accept", "application/json")
+                .headers(h -> h.put("Authorization", "Bearer " + token)).accept("application/json")
                     .timeout(ADMIN_PROBE_TIMEOUT_SECONDS, TimeUnit.SECONDS).send();
             return resp.getStatus() == 200;
         } catch (Exception e) {
