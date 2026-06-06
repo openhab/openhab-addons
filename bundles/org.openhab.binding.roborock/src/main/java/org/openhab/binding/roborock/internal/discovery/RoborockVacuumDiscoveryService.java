@@ -87,26 +87,27 @@ public class RoborockVacuumDiscoveryService extends AbstractThingHandlerDiscover
         return thingHandler.getHomeData();
     }
 
-    private void findDevice(Devices devices[]) {
+    private void findDevice(String name, String id, Devices devices[]) {
         ThingUID bridgeUID = thingHandler.getThing().getUID();
         for (int i = 0; i < devices.length; i++) {
-            if (("1.0".equals(devices[i].pv)) || ("B01".equals(devices[i].pv)
-                    && devices[i].name.toUpperCase(java.util.Locale.ROOT).contains("Q7"))) {
-                Configuration configuration = new Configuration();
-                configuration.put(THING_CONFIG_DUID, devices[i].duid);
-                configuration.put(THING_PROPERTY_PROTOCOL, devices[i].pv);
-                configuration.put(THING_PROPERTY_DEVICE_NAME, devices[i].name);
-                configuration.put(THING_PROPERTY_SN, (devices[i].sn != null) ? devices[i].sn : "N/A");
+            if (id.equals(devices[i].productId)) {
+                if (("1.0".equals(devices[i].pv)) || ("B01".equals(devices[i].pv))) {
+                    Configuration configuration = new Configuration();
+                    configuration.put(THING_CONFIG_DUID, devices[i].duid);
+                    configuration.put(THING_PROPERTY_PROTOCOL, devices[i].pv);
+                    configuration.put(THING_PROPERTY_DEVICE_NAME, name);
+                    configuration.put(THING_PROPERTY_SN, (devices[i].sn != null) ? devices[i].sn : "N/A");
 
-                DiscoveryResult result = DiscoveryResultBuilder
-                        .create(new ThingUID(ROBOROCK_VACUUM, bridgeUID, devices[i].duid))
-                        .withProperties(configuration.getProperties()).withLabel(devices[i].name)
-                        .withRepresentationProperty(THING_CONFIG_DUID).withBridge(bridgeUID).build();
+                    DiscoveryResult result = DiscoveryResultBuilder
+                            .create(new ThingUID(ROBOROCK_VACUUM, bridgeUID, devices[i].duid))
+                            .withProperties(configuration.getProperties()).withLabel(devices[i].name)
+                            .withRepresentationProperty(THING_CONFIG_DUID).withBridge(bridgeUID).build();
 
-                thingDiscovered(result);
-            } else {
-                logger.info("Vacuum with duid {}, not added as protocol {} is not (yet) supported.", devices[i].duid,
-                        devices[i].pv);
+                    thingDiscovered(result);
+                } else {
+                    logger.info("Vacuum with duid {}, not added as protocol {} is not (yet) supported.",
+                            devices[i].duid, devices[i].pv);
+                }
             }
         }
     }
@@ -115,11 +116,13 @@ public class RoborockVacuumDiscoveryService extends AbstractThingHandlerDiscover
         HomeData homeData = getHomeData();
 
         if (homeData != null && homeData.result != null) {
-            Devices devices[] = homeData.result.devices;
-            findDevice(devices);
-            // also check for shared devices
-            Devices receivedDevices[] = homeData.result.receivedDevices;
-            findDevice(receivedDevices);
+            for (int i = 0; i < homeData.result.products.length; i++) {
+                Devices devices[] = homeData.result.devices;
+                findDevice(homeData.result.products[i].name, homeData.result.products[i].id, devices);
+                // also check for shared devices
+                Devices receivedDevices[] = homeData.result.receivedDevices;
+                findDevice(homeData.result.products[i].name, homeData.result.products[i].id, receivedDevices);
+            }
         }
     }
 

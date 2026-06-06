@@ -132,6 +132,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     private String endpointPrefix = "";
     private boolean b01 = false;
     private boolean q7 = false;
+    private boolean q10 = false;
     private final byte[] nonce = new byte[16];
     private boolean hasChannelStructure;
     private RoborockCommunicationMode communicationMode = RoborockCommunicationMode.CLOUD;
@@ -222,26 +223,46 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             }
             if (channelUID.getId().equals(CHANNEL_VACUUM)) {
                 if (command instanceof OnOffType) {
-                    if (command.equals(OnOffType.ON)) {
-                        sendRPCCommand(COMMAND_APP_START);
-                        return;
+                    if (q10) {
+                        if (command.equals(OnOffType.ON)) {
+                            sendQ10DpCommand(Map.of("201", Map.of("cmd", 1)));
+                        } else {
+                            sendQ10DpCommand(Map.of("206", 0));
+                        }
                     } else {
-                        sendRPCCommand(COMMAND_APP_STOP);
-                        return;
+                        if (command.equals(OnOffType.ON)) {
+                            sendRPCCommand(COMMAND_APP_START);
+                            return;
+                        } else {
+                            sendRPCCommand(COMMAND_APP_STOP);
+                            return;
+                        }
                     }
+                    return;
                 }
             }
             if (channelUID.getId().equals(CHANNEL_CONTROL) && command instanceof StringType) {
-                if ("vacuum".equals(command.toString())) {
-                    sendRPCCommand(COMMAND_APP_START);
-                } else if ("spot".equals(command.toString())) {
-                    sendRPCCommand(COMMAND_APP_SPOT);
-                } else if ("pause".equals(command.toString())) {
-                    sendRPCCommand(COMMAND_APP_PAUSE);
-                } else if ("dock".equals(command.toString())) {
-                    sendRPCCommand(COMMAND_APP_CHARGE);
+                if (q10) {
+                    switch (command.toString()) {
+                        case "vacuum" -> sendQ10DpCommand(Map.of("201", Map.of("cmd", 1)));
+                        // Q10 has no separate spot mode observed in captures — treat as full clean
+                        case "spot" -> sendQ10DpCommand(Map.of("201", Map.of("cmd", 1)));
+                        case "pause" -> sendQ10DpCommand(Map.of("204", 0));
+                        case "dock" -> sendQ10DpCommand(Map.of("202", 5));
+                        default -> logger.warn("Q10 command {} not recognised", command.toString());
+                    }
                 } else {
-                    logger.warn("Command {} not recognised", command.toString());
+                    if ("vacuum".equals(command.toString())) {
+                        sendRPCCommand(COMMAND_APP_START);
+                    } else if ("spot".equals(command.toString())) {
+                        sendRPCCommand(COMMAND_APP_SPOT);
+                    } else if ("pause".equals(command.toString())) {
+                        sendRPCCommand(COMMAND_APP_PAUSE);
+                    } else if ("dock".equals(command.toString())) {
+                        sendRPCCommand(COMMAND_APP_CHARGE);
+                    } else {
+                        logger.warn("Command {} not recognised", command.toString());
+                    }
                 }
                 return;
             }
@@ -252,12 +273,20 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             }
 
             if (channelUID.getId().equals(CHANNEL_FAN_POWER)) {
-                sendRPCCommand(COMMAND_SET_MODE, "[" + command.toString() + "]");
+                if (q10) {
+                    sendQ10DpCommand(Map.of("123", Integer.parseInt(command.toString())));
+                } else {
+                    sendRPCCommand(COMMAND_SET_MODE, "[" + command.toString() + "]");
+                }
                 return;
             }
 
             if (channelUID.getId().equals(RobotCapabilities.WATERBOX_MODE.getChannel())) {
-                sendRPCCommand(COMMAND_SET_WATERBOX_MODE, "[" + command.toString() + "]");
+                if (q10) {
+                    sendQ10DpCommand(Map.of("124", Integer.parseInt(command.toString())));
+                } else {
+                    sendRPCCommand(COMMAND_SET_WATERBOX_MODE, "[" + command.toString() + "]");
+                }
                 return;
             }
             if (channelUID.getId().equals(RobotCapabilities.MOP_MODE.getChannel())) {
@@ -266,7 +295,16 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             }
             if (channelUID.getId().equals(RobotCapabilities.SEGMENT_CLEAN.getChannel()) && !command.toString().isEmpty()
                     && !command.toString().contentEquals("-")) {
-                sendRPCCommand(COMMAND_START_SEGMENT, "[" + command.toString() + "]");
+                if (q10) {
+                    // Room IDs arrive as a comma-separated string or single integer
+                    List<Integer> roomIds = java.util.Arrays.stream(command.toString().split(",")).map(String::trim)
+                            .filter(s -> !s.isEmpty()).map(Integer::parseInt)
+                            .collect(java.util.stream.Collectors.toList());
+                    // Note: "clean_paramters" is a typo in the Q10 protocol — do not correct it
+                    sendQ10DpCommand(Map.of("201", Map.of("cmd", 2, "clean_paramters", roomIds)));
+                } else {
+                    sendRPCCommand(COMMAND_START_SEGMENT, "[" + command.toString() + "]");
+                }
                 updateState(RobotCapabilities.SEGMENT_CLEAN.getChannel(), new StringType("-"));
                 return;
             }
@@ -331,7 +369,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         }
         bridgeHandler = accountHandler;
         b01 = isB01Device();
-        cloudTransport = new CloudMqttTransport(accountHandler, config.duid, nonce, b01, q7);
+        cloudTransport = new CloudMqttTransport(accountHandler, config.duid, nonce, b01, q7, q10);
         LocalDirectTransport localDirectTransport = new LocalDirectTransport();
         localDirectTransport.setMessageConsumer(this::handleMessage);
         directTransport = localDirectTransport;
@@ -348,6 +386,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
 
     private boolean isB01Device() {
         q7 = false;
+        q10 = false;
         String protocol = getThing().getProperties().getOrDefault(THING_PROPERTY_PROTOCOL, "");
         if (!"B01".equalsIgnoreCase(protocol)) {
             return false;
@@ -357,6 +396,8 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         String nameUpper = name.toUpperCase(java.util.Locale.ROOT);
         if (nameUpper.contains("Q7")) {
             q7 = true;
+        } else if (nameUpper.contains("Q10")) {
+            q10 = true;
         }
         return true;
     }
@@ -450,7 +491,9 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                     refreshTransportContext();
                 }
                 if (devices[i].online) {
-                    sendAllMqttCommands();
+                    if (!q10) {
+                        sendAllMqttCommands();
+                    }
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "@text/offline.comm-error.vac-offline");
@@ -599,102 +642,24 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 // B01 responses have a different envelope shape — normalise to V1 before dispatching
                 if (b01) {
                     String normalised = normaliseB01Response(jsonString);
-                    if (normalised == null) {
-                        // unsolicited push or error response — nothing to correlate
+                    if (normalised != null) {
+                        dispatchNormalisedResponse(normalised);
+                    }
+                    // Do NOT return here for Q10 — the same frame may also carry flat DPs below
+                    if (!q10)
                         return;
-                    }
-                    jsonString = normalised;
+                } else {
+                    dispatchNormalisedResponse(jsonString);
+                    return;
                 }
+            }
 
-                if (!jsonString.endsWith("\"result\":[\"ok\"]}") && !jsonString.endsWith("\"result\":[]}")
-                        && JsonParser.parseString(jsonString).getAsJsonObject().has("id")
-                        && JsonParser.parseString(jsonString).getAsJsonObject().has("result")) {
-                    int messageId = JsonParser.parseString(jsonString).getAsJsonObject().get("id").getAsInt();
-                    String methodName = requestCorrelationTracker.findMethodByRequestId(messageId);
-
-                    if (methodName == null) {
-                        logger.trace("Received response {} for unknown or already handled message ID: {}", response,
-                                messageId);
-                        return;
-                    }
-
-                    switch (methodName) {
-                        case "getStatus":
-                        case COMMAND_GET_STATUS:
-                            handleGetStatus(jsonString);
-                            break;
-                        case "getConsumable":
-                        case COMMAND_GET_CONSUMABLE:
-                            handleGetConsumables(jsonString);
-                            break;
-                        case "getRoomMapping":
-                        case COMMAND_GET_ROOM_MAPPING:
-                            handleGetRoomMapping(jsonString);
-                            break;
-                        case "getNetworkInfo":
-                        case COMMAND_GET_NETWORK_INFO:
-                            handleGetNetworkInfo(jsonString);
-                            break;
-                        case "getCleanRecord":
-                        case COMMAND_GET_CLEAN_RECORD:
-                            handleGetCleanRecord(jsonString);
-                            break;
-                        case "getCleanSummary":
-                        case COMMAND_GET_CLEAN_SUMMARY:
-                            handleGetCleanSummary(jsonString);
-                            break;
-                        case "getDndTimer":
-                        case COMMAND_GET_DND_TIMER:
-                            handleGetDndTimer(jsonString);
-                            break;
-                        case "getSegmentStatus":
-                        case COMMAND_GET_SEGMENT_STATUS:
-                            handleGetSegmentStatus(jsonString);
-                            break;
-                        case "getMapStatus":
-                        case COMMAND_GET_MAP_STATUS:
-                            handleGetMapStatus(jsonString);
-                            break;
-                        case "getLedStatus":
-                        case COMMAND_GET_LED_STATUS:
-                            handleGetLedStatus(jsonString);
-                            break;
-                        case "getCarpetMode":
-                        case COMMAND_GET_CARPET_MODE:
-                            handleGetCarpetMode(jsonString);
-                            break;
-                        case "getFwFeatures":
-                        case COMMAND_GET_FW_FEATURES:
-                            handleGetFwFeatures(jsonString);
-                            break;
-                        case "getMultiMapsList":
-                        case COMMAND_GET_MULTI_MAP_LIST:
-                            handleGetMultiMapsList(jsonString);
-                            break;
-                        case "getCustomizeCleanMode":
-                        case COMMAND_GET_CUSTOMIZE_CLEAN_MODE:
-                            handleGetCustomizeCleanMode(jsonString);
-                            break;
-                        default:
-                            logger.debug("No handler for method: {}", methodName);
-                            break;
-                    }
-                    requestCorrelationTracker.removeByRequestId(messageId);
-                }
-            } else {
-                // handle live updates ie any one (or more of values of dps)
-                // "dps":{"121":8,"122":100,"123":104,"124":203,"125":75,"126":63,"127":50,"128":0,"133":1,"134":0}
-                JsonElement dpsElement = responseJson.get("dps");
-                if (dpsElement != null && dpsElement.isJsonObject()) {
-                    JsonObject dpsJsonObject = dpsElement.getAsJsonObject();
-                    if (dpsJsonObject.has("121")) {
-                        int stateInt = dpsJsonObject.get("121").getAsInt();
-                        updateStateIdAndRequestStatusIfChanged(stateInt, true);
-                    } else if (dpsJsonObject.has("122")) {
-                        int battery = dpsJsonObject.get("122").getAsInt();
-                        updateState(CHANNEL_BATTERY, new DecimalType(battery));
-                    }
-                }
+            // Flat DP push handler — runs for all B01 devices on every frame.
+            // Q10 frames can carry both an RPC result (dps.10001) and flat shadow DPs
+            // simultaneously, so this block runs after the RPC block rather than as an else branch.
+            JsonElement dpsElement = responseJson.get("dps");
+            if (dpsElement != null && dpsElement.isJsonObject()) {
+                handleFlatDpPush(dpsElement.getAsJsonObject());
             }
         } catch (JsonSyntaxException e) {
             // Occasionally get non-JSON returned from the Roborock MQTT server
@@ -1415,6 +1380,254 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     /**
+     * Dispatches a normalised (V1-shaped) JSON response string to the appropriate handleGet* method
+     * based on the request correlation tracker.
+     */
+    private void dispatchNormalisedResponse(String jsonString) {
+        if (!jsonString.endsWith("\"result\":[\"ok\"]}") && !jsonString.endsWith("\"result\":[]}")
+                && JsonParser.parseString(jsonString).getAsJsonObject().has("id")
+                && JsonParser.parseString(jsonString).getAsJsonObject().has("result")) {
+            int messageId = JsonParser.parseString(jsonString).getAsJsonObject().get("id").getAsInt();
+            String methodName = requestCorrelationTracker.findMethodByRequestId(messageId);
+
+            if (methodName == null) {
+                logger.trace("Received response for unknown or already handled message ID: {}", messageId);
+                return;
+            }
+
+            switch (methodName) {
+                case "getStatus":
+                case COMMAND_GET_STATUS:
+                    handleGetStatus(jsonString);
+                    break;
+                case "getConsumable":
+                case COMMAND_GET_CONSUMABLE:
+                    handleGetConsumables(jsonString);
+                    break;
+                case "getRoomMapping":
+                case COMMAND_GET_ROOM_MAPPING:
+                    handleGetRoomMapping(jsonString);
+                    break;
+                case "getNetworkInfo":
+                case COMMAND_GET_NETWORK_INFO:
+                    handleGetNetworkInfo(jsonString);
+                    break;
+                case "getCleanRecord":
+                case COMMAND_GET_CLEAN_RECORD:
+                    handleGetCleanRecord(jsonString);
+                    break;
+                case "getCleanSummary":
+                case COMMAND_GET_CLEAN_SUMMARY:
+                    handleGetCleanSummary(jsonString);
+                    break;
+                case "getDndTimer":
+                case COMMAND_GET_DND_TIMER:
+                    handleGetDndTimer(jsonString);
+                    break;
+                case "getSegmentStatus":
+                case COMMAND_GET_SEGMENT_STATUS:
+                    handleGetSegmentStatus(jsonString);
+                    break;
+                case "getMapStatus":
+                case COMMAND_GET_MAP_STATUS:
+                    handleGetMapStatus(jsonString);
+                    break;
+                case "getLedStatus":
+                case COMMAND_GET_LED_STATUS:
+                    handleGetLedStatus(jsonString);
+                    break;
+                case "getCarpetMode":
+                case COMMAND_GET_CARPET_MODE:
+                    handleGetCarpetMode(jsonString);
+                    break;
+                case "getFwFeatures":
+                case COMMAND_GET_FW_FEATURES:
+                    handleGetFwFeatures(jsonString);
+                    break;
+                case "getMultiMapsList":
+                case COMMAND_GET_MULTI_MAP_LIST:
+                    handleGetMultiMapsList(jsonString);
+                    break;
+                case "getCustomizeCleanMode":
+                case COMMAND_GET_CUSTOMIZE_CLEAN_MODE:
+                    handleGetCustomizeCleanMode(jsonString);
+                    break;
+                default:
+                    logger.debug("No handler for method: {}", methodName);
+                    break;
+            }
+            requestCorrelationTracker.removeByRequestId(messageId);
+        }
+    }
+
+    /**
+     * Sends a Q10 native DP command by writing raw data-points directly to the device,
+     * bypassing the RPC method/msgId envelope used by V1 and Q7.
+     *
+     * @param dps the data-point map to publish, e.g. {@code {"201": {"cmd":1}}}
+     */
+    private void sendQ10DpCommand(Map<String, Object> dps) {
+        RoborockAccountHandler localBridge = bridgeHandler;
+        if (localBridge == null) {
+            logger.debug("Q10 DP command skipped: no bridge handler");
+            return;
+        }
+        localBridge.sendB01DpCommand(config.duid, localKey, dps);
+    }
+
+    /**
+     * Handles unsolicited flat DP pushes from B01 devices.
+     *
+     * <p>
+     * For Q7, only DPs 121 (state) and 122 (battery) are expected at the root.
+     * For Q10, a richer set of DPs is pushed (121–127, 136–139, 141, 142) alongside
+     * a nested {@code 101} object containing map, carpet, network, and settings data.
+     *
+     * <p>
+     * Each DP is checked independently — a single push frame can carry any
+     * combination of them simultaneously.
+     */
+    private void handleFlatDpPush(JsonObject dpsRoot) {
+        // DP 121 — vacuum state ID (shared: Q7 and Q10)
+        if (dpsRoot.has("121")) {
+            int stateInt = dpsRoot.get("121").getAsInt();
+            updateStateIdAndRequestStatusIfChanged(stateInt, true);
+        }
+
+        // DP 122 — battery % (shared: Q7 and Q10)
+        if (dpsRoot.has("122")) {
+            updateState(CHANNEL_BATTERY, new DecimalType(dpsRoot.get("122").getAsInt()));
+        }
+
+        if (!q10)
+            return; // Q7 only exposes 121 and 122 via flat push
+
+        // DP 123 — fan/suction power
+        if (dpsRoot.has("123")) {
+            int fanPower = dpsRoot.get("123").getAsInt();
+            updateState(CHANNEL_FAN_POWER, new DecimalType(fanPower));
+            updateState(CHANNEL_FAN_CONTROL, new DecimalType(FanModeType.getType(fanPower).getId()));
+        }
+
+        // DP 124 — water level
+        if (dpsRoot.has("124") && deviceCapabilities.containsKey(RobotCapabilities.WATERBOX_MODE)) {
+            updateState(RobotCapabilities.WATERBOX_MODE.getChannel(), new DecimalType(dpsRoot.get("124").getAsInt()));
+        }
+
+        // DP 125 — clean area in cm²; convert to mm² so / 1000000D gives m²
+        if (dpsRoot.has("125")) {
+            long areaMm2 = dpsRoot.get("125").getAsLong() * 10000L;
+            updateState(CHANNEL_CLEAN_AREA, new QuantityType<>(areaMm2 / 1000000D, SIUnits.SQUARE_METRE));
+        }
+
+        // DP 126 — clean time in seconds
+        if (dpsRoot.has("126")) {
+            updateState(CHANNEL_CLEAN_TIME,
+                    new QuantityType<>(TimeUnit.SECONDS.toMinutes(dpsRoot.get("126").getAsLong()), Units.MINUTE));
+        }
+
+        // DP 127 — clean percent (0–100); purpose confirmed from Q10DpDispatcher known keys
+        if (dpsRoot.has("127") && deviceCapabilities.containsKey(RobotCapabilities.CLEAN_PERCENT)) {
+            updateState(CHANNEL_CLEAN_PERCENT, new DecimalType(dpsRoot.get("127").getAsInt()));
+        }
+
+        // DPs 136–139, 141, 142 — present in Q10 known-key set but purpose not yet confirmed.
+        // Logged at trace so captures can be used to identify them.
+        for (String unknownDp : new String[] { "136", "137", "138", "139", "141", "142" }) {
+            if (dpsRoot.has(unknownDp)) {
+                logger.trace("Q10 unhandled flat DP {}: {}", unknownDp, dpsRoot.get(unknownDp));
+            }
+        }
+
+        // DP 101 — nested object containing map, carpet, network, and settings sub-keys
+        JsonElement dp101Element = dpsRoot.get("101");
+        if (dp101Element != null && dp101Element.isJsonObject()) {
+            handleQ10Dp101(dp101Element.getAsJsonObject());
+        }
+    }
+
+    /**
+     * Handles the Q10's nested {@code dps.101} object, which carries map metadata,
+     * carpet zones, network info, voice settings, and other configuration sub-keys.
+     *
+     * <p>
+     * Known sub-keys (from Q10DpDispatcher knownCommonKeys):
+     * 6, 7, 25–33, 36–37, 40, 45, 47, 50–53, 60–61, 64–65, 67, 76, 78–79, 81,
+     * 83, 86–88, 90, 92–93, 96, 104–106, 108–109, 207
+     */
+    private void handleQ10Dp101(JsonObject dp101) {
+        // Sub-key 81 — network info: {ssid, bssid, ip, signal (RSSI)}
+        // Mirrors the V1 get_network_info response; update the same channels.
+        if (dp101.has("81") && dp101.get("81").isJsonObject()) {
+            JsonObject net = dp101.get("81").getAsJsonObject();
+            if (net.has("ssid"))
+                updateState(CHANNEL_SSID, new StringType(net.get("ssid").getAsString()));
+            if (net.has("bssid"))
+                updateState(CHANNEL_BSSID, new StringType(net.get("bssid").getAsString()));
+            if (net.has("signal"))
+                updateState(CHANNEL_RSSI, new DecimalType(net.get("signal").getAsInt()));
+            if (net.has("ip") && localIP.isEmpty()) {
+                localIP = net.get("ip").getAsString();
+                refreshTransportContext();
+            }
+        }
+
+        // FIXME
+        // Sub-key 78 — clean_path_preference (0=standard, 1=deep, 2=custom)
+        // if (dp101.has("78") && deviceCapabilities.containsKey(RobotCapabilities.CORNER_CLEAN_MODE)) {
+        // updateState(RobotCapabilities.CORNER_CLEAN_MODE.getChannel(), new DecimalType(dp101.get("78").getAsInt()));
+        // }
+
+        // Sub-key 61 — map list: {data:[...]}
+        // Trigger a map refresh rather than parsing inline; full map data arrives as a separate binary blob.
+        if (dp101.has("61") && dp101.get("61").isJsonObject()) {
+            JsonObject mapList = dp101.get("61").getAsJsonObject();
+            if (mapList.has("data") && mapList.get("data").isJsonArray()) {
+                logger.debug("Q10 dp101.61 map list push: {} maps", mapList.get("data").getAsJsonArray().size());
+                // TODO: trigger map list refresh if multi-map capability is present
+            }
+        }
+
+        // Sub-key 65 — carpet zones: {data:[...]}
+        if (dp101.has("65") && dp101.get("65").isJsonObject()) {
+            JsonObject carpets = dp101.get("65").getAsJsonObject();
+            if (carpets.has("data") && carpets.get("data").isJsonArray()) {
+                logger.debug("Q10 dp101.65 carpet zone push: {} zones", carpets.get("data").getAsJsonArray().size());
+                // TODO: update carpet zone channel if capability is present
+            }
+        }
+
+        // Sub-key 52 — clean record selector/list
+        // op="select" result=1 means a record was selected (ack only, no data).
+        // op="list" carries the record list array.
+        if (dp101.has("52") && dp101.get("52").isJsonObject()) {
+            JsonObject dp52 = dp101.get("52").getAsJsonObject();
+            String op = dp52.has("op") ? dp52.get("op").getAsString() : "";
+            if ("list".equals(op) && dp52.has("data") && dp52.get("data").isJsonArray()) {
+                logger.debug("Q10 dp101.52 clean record list push: {} records",
+                        dp52.get("data").getAsJsonArray().size());
+                // TODO: parse and apply cleaning history records
+            }
+        }
+
+        // Sub-keys 36, 108, 109 — voice/locale settings; logged at trace until purpose is confirmed
+        if (dp101.has("36"))
+            logger.trace("Q10 dp101.36 voice_lang: {}", dp101.get("36"));
+        if (dp101.has("108"))
+            logger.trace("Q10 dp101.108 voice_ver: {}", dp101.get("108"));
+        if (dp101.has("109"))
+            logger.trace("Q10 dp101.109 country: {}", dp101.get("109"));
+
+        // All other sub-keys logged at trace for identification from captures
+        Set<String> handledKeys = Set.of("52", "61", "65", "78", "81", "36", "108", "109");
+        for (Map.Entry<String, JsonElement> entry : dp101.entrySet()) {
+            if (!handledKeys.contains(entry.getKey())) {
+                logger.trace("Q10 dp101 unhandled sub-key {}: {}", entry.getKey(), entry.getValue());
+            }
+        }
+    }
+
+    /**
      * Converts a B01 response envelope into the V1 shape expected by all handleGet* methods,
      * so no downstream handler needs to be aware of the protocol difference.
      *
@@ -1450,6 +1663,12 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             JsonObject data = b01.has("data") && b01.get("data").isJsonObject() ? b01.get("data").getAsJsonObject()
                     : new JsonObject();
 
+            // prop.post is a device-initiated shadow push — handled via handleFlatDpPush, not here.
+            if ("prop.post".equals(method)) {
+                logger.debug("B01 prop.post received — skipping RPC normalisation path");
+                return null;
+            }
+
             JsonObject v1 = new JsonObject();
             v1.addProperty("id", id);
 
@@ -1472,7 +1691,12 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                     renameField(data, "status", "state");
                     renameField(data, "wind", "fan_power");
                     renameField(data, "water", "water_box_mode");
-                    renameField(data, "mode", "mop_mode");
+                    // Q10 sends "sweep_type" where Q7 sends "mode" for the mop/sweep mode field
+                    if (data.has("sweep_type") && !data.has("mode")) {
+                        renameField(data, "sweep_type", "mop_mode"); // Q10
+                    } else {
+                        renameField(data, "mode", "mop_mode"); // Q7
+                    }
                     renameField(data, "quantity", "battery");
                     renameField(data, "fault", "error_code");
                     renameField(data, "tank_state", "water_box_status");
@@ -1580,7 +1804,13 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 case "service.set_room_clean":
                 case "service.start_recharge":
                 case "service.find_device":
-                case "service.reset_consumable": {
+                case "service.reset_consumable":
+                    // Q10 native DP acks — device echoes the DP number as the method name.
+                    // Verify exact strings from traffic captures; some firmware may prefix these (e.g. "dp_201").
+                case "201": // start / segment / zone clean ack
+                case "202": // dock ack
+                case "204": // pause ack
+                case "206": { // stop ack
                     // Ack responses — normalise to {"id":N, "result":["ok"]}
                     JsonArray ack = new JsonArray();
                     ack.add("ok");
