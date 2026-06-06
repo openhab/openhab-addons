@@ -39,10 +39,10 @@ import java.util.regex.PatternSyntaxException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.osgi.service.log.LogEntry;
 import org.osgi.service.log.LogLevel;
@@ -284,7 +284,7 @@ public class LoggingTools {
 
         try {
             ContentResponse resp = httpClient.newRequest(URI.create(baseUrl + "/rest/logging/")).method(HttpMethod.GET)
-                    .header("Authorization", "Bearer " + token).header("Accept", "application/json").send();
+                    .headers(h -> h.put("Authorization", "Bearer " + token)).accept("application/json").send();
             if (resp.getStatus() == 403 || resp.getStatus() == 401) {
                 return errorResult("openHAB rejected the request (HTTP " + resp.getStatus()
                         + "). The /rest/logging/ endpoint requires the user's bearer token to have ADMIN scope.");
@@ -430,7 +430,8 @@ public class LoggingTools {
     private String fetchLoggerLevel(String loggerName, String token) throws Exception {
         ContentResponse resp = httpClient
                 .newRequest(URI.create(baseUrl + "/rest/logging/" + encodeLoggerName(loggerName)))
-                .method(HttpMethod.GET).header("Authorization", "Bearer " + token).header("Accept", "application/json")
+            .method(HttpMethod.GET).headers(h -> h.put("Authorization", "Bearer " + token))
+            .accept("application/json")
                 .send();
         if (resp.getStatus() == 401 || resp.getStatus() == 403) {
             throw new AdminRequiredException(resp.getStatus());
@@ -462,16 +463,16 @@ public class LoggingTools {
     private int applyLevel(String loggerName, String level, String token) throws Exception {
         String url = baseUrl + "/rest/logging/" + encodeLoggerName(loggerName);
         if ("DEFAULT".equals(level)) {
-            Request req = httpClient.newRequest(URI.create(url)).method(HttpMethod.DELETE).header("Authorization",
-                    "Bearer " + token);
+            Request req = httpClient.newRequest(URI.create(url)).method(HttpMethod.DELETE)
+                .headers(h -> h.put("Authorization", "Bearer " + token));
             return req.send().getStatus();
         }
         ObjectNode body = jackson.createObjectNode();
         body.put("loggerName", loggerName);
         body.put("level", level);
         Request req = httpClient.newRequest(URI.create(url)).method(HttpMethod.PUT)
-                .header("Authorization", "Bearer " + token).header("Accept", "application/json")
-                .content(new StringContentProvider(body.toString(), StandardCharsets.UTF_8), "application/json");
+            .headers(h -> h.put("Authorization", "Bearer " + token)).accept("application/json")
+                .body(new StringRequestContent("application/json", body.toString(), StandardCharsets.UTF_8));
         return req.send().getStatus();
     }
 
