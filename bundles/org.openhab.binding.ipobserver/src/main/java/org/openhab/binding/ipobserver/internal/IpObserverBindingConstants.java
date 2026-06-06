@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.ipobserver.internal;
 
+import javax.measure.quantity.Temperature;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
@@ -29,6 +32,8 @@ public class IpObserverBindingConstants {
     public static final String SERVER_UPDATE_URL = "/weatherstation/updateweatherstation.php";
     public static final String STATION_SETTINGS_URL = "/station.htm";
     public static final int DISCOVERY_THREAD_POOL_SIZE = 15;
+    public static final QuantityType<Temperature> MAX_TEMPERATURE = new QuantityType<>("80 °C");
+    public static final QuantityType<Temperature> MIN_TEMPERATURE = new QuantityType<>("-30 °C");
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_WEATHER_STATION = new ThingTypeUID(BINDING_ID, "weatherstation");
