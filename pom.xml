@@ -68,7 +68,7 @@
 
     <ohc.version>5.2.0-SNAPSHOT</ohc.version>
     <asm.version>9.9.1</asm.version>
-    <bnd.version>7.2.3</bnd.version>
+    <bnd.version>7.3.0</bnd.version>
     <commons.codec.version>1.17.1</commons.codec.version>
     <commons.net.version>3.9.0</commons.net.version>
     <eea.version>2.4.0</eea.version>
