@@ -296,9 +296,8 @@ public class MatterWebsocketService {
     }
 
     /**
-     * Recursively removes matter.js storage lock files ("matter.lock" and "matter.pid") from the matter storage
-     * folder. These are normally released by the node process on shutdown; this is a safety net for the case where
-     * the previous node process was killed abruptly and left them behind, which would otherwise block startup.
+     * Safety net for a node process that was killed abruptly: matter.js storage locks are normally released on
+     * shutdown, but leftovers would otherwise block startup.
      */
     private void clearStaleStorageLocks() {
         File matterFolder = new File(OpenHAB.getUserDataFolder(), "matter");
@@ -315,14 +314,20 @@ public class MatterWebsocketService {
         }
         for (File entry : entries) {
             if (entry.isDirectory()) {
+                // Skip symlinked directories to avoid following symlink loops or traversing outside the
+                // matter storage folder.
+                if (Files.isSymbolicLink(entry.toPath())) {
+                    continue;
+                }
                 deleteStorageLocksRecursively(entry);
             } else {
                 String name = entry.getName();
                 if ("matter.lock".equals(name) || "matter.pid".equals(name)) {
-                    if (entry.delete()) {
+                    try {
+                        Files.delete(entry.toPath());
                         logger.debug("Removed stale matter storage lock file {}", entry);
-                    } else {
-                        logger.debug("Failed to remove stale matter storage lock file {}", entry);
+                    } catch (IOException e) {
+                        logger.debug("Failed to remove stale matter storage lock file {}", entry, e);
                     }
                 }
             }
