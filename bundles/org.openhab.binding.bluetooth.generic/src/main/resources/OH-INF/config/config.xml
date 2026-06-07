@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
+		https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="binding:bluetooth:generic">
+		<parameter name="gattExtensionsFolder" type="text">
+			<label>Custom GATT Extensions Folder</label>
+			<description>Folder containing custom GATT specification XML files for non-standard services and characteristics,
+				letting the generic Bluetooth handler recognise them and expose typed channels instead of raw hexadecimal. The
+				folder must contain "characteristic" and/or "service" sub-folders with XML files in the Bluetooth SIG GATT XML
+				format. A relative path is resolved against the openHAB configuration folder (portable across operating systems); an
+				absolute path is used as-is. Defaults to "gatt-extensions" under the configuration folder.</description>
+			<advanced>true</advanced>
+			<default>gatt-extensions</default>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>
