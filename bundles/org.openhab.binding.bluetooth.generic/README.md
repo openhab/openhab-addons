@@ -17,11 +17,14 @@ Generic bluetooth devices will be discovered for any connectable bluetooth devic
 
 ## Binding Configuration
 
-| Parameter            | Required | Default          | Description                                                                                                                                                                                                                                                                                                                                            |
-|----------------------|----------|------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| gattExtensionsFolder | no       | `gatt-extensions` | Folder with custom GATT specification XML files for non-standard services and characteristics, so they are exposed as typed channels instead of raw hexadecimal `Unknown` channels. The folder must contain `characteristic` and/or `service` sub-folders with XML files in the Bluetooth SIG GATT XML format. A relative path is resolved against the openHAB configuration folder; an absolute path is used as-is. |
+| Parameter            | Default           |
+|----------------------|-------------------|
+| gattExtensionsFolder | `gatt-extensions` |
 
-The XML files follow the Bluetooth SIG GATT specification format (see the [bluetooth-gatt-parser](https://github.com/sputnikdev/bluetooth-gatt-parser) project for examples).
+The optional `gattExtensionsFolder` contains custom GATT specification XML files for non-standard services and characteristics, so they are exposed as typed channels instead of raw hexadecimal `Unknown` channels.
+It must contain `characteristic` and/or `service` sub-folders with XML files in the Bluetooth SIG GATT XML format.
+A relative path is resolved against the openHAB configuration folder; an absolute path is used as-is.
+See the [bluetooth-gatt-parser](https://github.com/sputnikdev/bluetooth-gatt-parser) project for examples.
 
 ## Thing Configuration
 
