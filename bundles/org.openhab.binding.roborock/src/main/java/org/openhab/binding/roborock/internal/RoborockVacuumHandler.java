@@ -1576,33 +1576,31 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             updateState(RobotCapabilities.WATERBOX_MODE.getChannel(), new DecimalType(dpsRoot.get("124").getAsInt()));
         }
 
-        // DP 125 — main brush remaining life
-        // Value is either already remaining-hours (<=100) or seconds-used (>100).
-        // Convert to seconds-used for ConsumablesType.remainingHours compatibility.
+        // DP 125 — main brush remaining life in s
         if (dpsRoot.has("125")) {
-            int workTimeSecs = q10ConsumableToSecondsUsed(dpsRoot.get("125").getAsLong(), ConsumablesType.MAIN_BRUSH);
+            int brushSecs = 3600 * dpsRoot.get("125").getAsInt();
             updateState(CHANNEL_CONSUMABLE_MAIN_TIME, new QuantityType<>(
-                    ConsumablesType.remainingHours(workTimeSecs, ConsumablesType.MAIN_BRUSH), Units.HOUR));
+                    ConsumablesType.remainingHours(brushSecs, ConsumablesType.MAIN_BRUSH), Units.HOUR));
             updateState(CHANNEL_CONSUMABLE_MAIN_PERC,
-                    new DecimalType(ConsumablesType.remainingPercent(workTimeSecs, ConsumablesType.MAIN_BRUSH)));
+                    new DecimalType(ConsumablesType.remainingPercent(brushSecs, ConsumablesType.MAIN_BRUSH)));
         }
 
         // DP 126 — side brush remaining life (same encoding as DP 125)
         if (dpsRoot.has("126")) {
-            int workTimeSecs = q10ConsumableToSecondsUsed(dpsRoot.get("126").getAsLong(), ConsumablesType.SIDE_BRUSH);
+            int sideBrushSecs = 3600 * dpsRoot.get("126").getAsInt();
             updateState(CHANNEL_CONSUMABLE_SIDE_TIME, new QuantityType<>(
-                    ConsumablesType.remainingHours(workTimeSecs, ConsumablesType.SIDE_BRUSH), Units.HOUR));
+                    ConsumablesType.remainingHours(sideBrushSecs, ConsumablesType.SIDE_BRUSH), Units.HOUR));
             updateState(CHANNEL_CONSUMABLE_SIDE_PERC,
-                    new DecimalType(ConsumablesType.remainingPercent(workTimeSecs, ConsumablesType.SIDE_BRUSH)));
+                    new DecimalType(ConsumablesType.remainingPercent(sideBrushSecs, ConsumablesType.SIDE_BRUSH)));
         }
 
         // DP 127 — filter remaining life (same encoding as DP 125)
         if (dpsRoot.has("127")) {
-            int workTimeSecs = q10ConsumableToSecondsUsed(dpsRoot.get("127").getAsLong(), ConsumablesType.FILTER);
-            updateState(CHANNEL_CONSUMABLE_FILTER_TIME, new QuantityType<>(
-                    ConsumablesType.remainingHours(workTimeSecs, ConsumablesType.FILTER), Units.HOUR));
+            int filterSecs = 3600 * dpsRoot.get("126").getAsInt();
+            updateState(CHANNEL_CONSUMABLE_FILTER_TIME,
+                    new QuantityType<>(ConsumablesType.remainingHours(filterSecs, ConsumablesType.FILTER), Units.HOUR));
             updateState(CHANNEL_CONSUMABLE_FILTER_PERC,
-                    new DecimalType(ConsumablesType.remainingPercent(workTimeSecs, ConsumablesType.FILTER)));
+                    new DecimalType(ConsumablesType.remainingPercent(filterSecs, ConsumablesType.FILTER)));
         }
 
         // DP 136 — clean_times: number of cleaning passes completed in this task
@@ -1640,53 +1638,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         if (dp101Element != null && dp101Element.isJsonObject()) {
             handleQ10Dp101(dp101Element.getAsJsonObject());
         }
-    }
-
-    /**
-     * Converts a Q10 shadow consumable value to seconds-used for use with
-     * {@link ConsumablesType#remainingHours} and {@link ConsumablesType#remainingPercent}.
-     *
-     * <p>
-     * Q10 shadow DPs 125/126/127 encode consumable life in one of two ways:
-     * <ul>
-     * <li>Value &le; 100: already a remaining-hours figure — convert to seconds-used
-     * by subtracting from the lifespan and multiplying by 3600.</li>
-     * <li>Value &gt; 100: already seconds-used — pass through directly.</li>
-     * </ul>
-     *
-     * <p>
-     * Lifespan values (from Q10ShadowDataService): main brush 300h, side brush 200h,
-     * filter 150h, sensor 30h.
-     */
-    private int q10ConsumableToSecondsUsed(long rawValue, ConsumablesType type) {
-        if (rawValue <= 100) {
-            // Value is remaining hours — derive seconds used from known lifespan
-            final long lifespanHours;
-            switch (type) {
-                case MAIN_BRUSH:
-                    lifespanHours = 300;
-                    break;
-                case SIDE_BRUSH:
-                    lifespanHours = 200;
-                    break;
-                case FILTER:
-                    lifespanHours = 150;
-                    break;
-                case SENSOR:
-                    lifespanHours = 30;
-                    break;
-                default:
-                    lifespanHours = 0;
-                    break;
-            }
-            if (lifespanHours == 0)
-                return 0;
-            long remainingSecs = rawValue * 3600L;
-            long lifespanSecs = lifespanHours * 3600L;
-            return (int) Math.max(0, lifespanSecs - remainingSecs);
-        }
-        // Value is already seconds used
-        return (int) Math.min(rawValue, Integer.MAX_VALUE);
     }
 
     /**
@@ -1729,10 +1680,15 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             updateState(CHANNEL_CLEAN_AREA, new QuantityType<>(areaMm2 / 1000000D, SIUnits.SQUARE_METRE));
         }
 
+        // Sub-key 25 — quiet_is_open: Quiet Is Open (DND Mode)
+        if (dp101.has("25")) {
+            updateState(CHANNEL_DND_ENABLED, OnOffType.from((dp101.get("25").getAsString())));
+        }
+
         // Sub-key 29 — total_clean_area: lifetime total clean area in m²
         if (dp101.has("29")) {
-            long totalAreaMm2 = dp101.get("29").getAsLong() * 10000L;
-            updateState(CHANNEL_HISTORY_TOTALAREA, new QuantityType<>(totalAreaMm2 / 1000000D, SIUnits.SQUARE_METRE));
+            long totalAreaMm2 = dp101.get("29").getAsLong();
+            updateState(CHANNEL_HISTORY_TOTALAREA, new QuantityType<>(totalAreaMm2, SIUnits.SQUARE_METRE));
         }
 
         // Sub-key 30 — total_clean_count: lifetime total clean cycles
@@ -1740,15 +1696,14 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             updateState(CHANNEL_HISTORY_COUNT, new DecimalType(dp101.get("30").getAsLong()));
         }
 
-        // Sub-key 31 — total_clean_time: lifetime total clean time in seconds
+        // Sub-key 31 — total_clean_time: lifetime total clean time in minutes
         if (dp101.has("31")) {
-            updateState(CHANNEL_HISTORY_TOTALTIME,
-                    new QuantityType<>(TimeUnit.SECONDS.toMinutes(dp101.get("31").getAsLong()), Units.MINUTE));
+            updateState(CHANNEL_HISTORY_TOTALTIME, new QuantityType<>(dp101.get("31").getAsLong(), Units.MINUTE));
         }
 
         // Sub-key 67 — sensor_dirty_time: sensor consumable seconds used
         if (dp101.has("67")) {
-            int sensorSecs = dp101.get("67").getAsInt();
+            int sensorSecs = 3600 * dp101.get("67").getAsInt();
             updateState(CHANNEL_CONSUMABLE_SENSOR_TIME,
                     new QuantityType<>(ConsumablesType.remainingHours(sensorSecs, ConsumablesType.SENSOR), Units.HOUR));
             updateState(CHANNEL_CONSUMABLE_SENSOR_PERC,
@@ -1824,8 +1779,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         }
 
         // Sub-keys logged at trace — known but no channel mapping yet
-        if (dp101.has("25"))
-            logger.trace("Q10 dp101.25 quiet_is_open: {}", dp101.get("25"));
         if (dp101.has("26"))
             logger.trace("Q10 dp101.26 volume: {}", dp101.get("26"));
         if (dp101.has("32"))
