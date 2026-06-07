@@ -85,7 +85,8 @@ public class ConfigurationUtils {
                 }
                 var queueSizeObject = properties.get("messageQueueSize");
                 if (queueSizeObject != null) {
-                    configuration.messageQueueSize = Integer.parseInt(String.valueOf(queueSizeObject));
+                    int queueSize = Integer.parseInt(String.valueOf(queueSizeObject));
+                    configuration.messageQueueSize = Math.min(86400, Math.max(10, queueSize));
                 }
             }
         } catch (IOException | NumberFormatException ignored) {

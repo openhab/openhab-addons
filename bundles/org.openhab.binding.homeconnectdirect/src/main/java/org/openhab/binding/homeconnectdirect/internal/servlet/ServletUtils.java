@@ -140,6 +140,6 @@ public class ServletUtils {
 
     private static OffsetDateTime roundUp(OffsetDateTime dateTime) {
         OffsetDateTime truncated = dateTime.truncatedTo(ChronoUnit.MINUTES);
-        return truncated.plusMinutes(1).minus(1, ChronoUnit.MILLIS);
+        return truncated.plusMinutes(1).minus(1, ChronoUnit.NANOS);
     }
 }

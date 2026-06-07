@@ -133,6 +133,7 @@ public class RequestHandlerContext {
 
     public void sendJson(Object responseObject, int status) throws RequestHandlerException {
         response.setContentType(CONTENT_TYPE_JSON);
+        response.setCharacterEncoding(UTF_8.name());
         response.setStatus(status);
 
         try {
