@@ -20,9 +20,11 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Queue;
@@ -50,6 +52,7 @@ public class BindingInjector {
     /**
      * Smart injection of binding values into an object.
      *
+     *
      * @param sourceScriptClassLoader The Script class loader initiating the execution
      * @param bindings a binding map with values to inject
      * @param objectToInjectInto An object. Its fields will be filled with value from the
@@ -57,28 +60,41 @@ public class BindingInjector {
      */
     public static void injectBindingsInto(ClassLoader sourceScriptClassLoader, Map<String, Object> bindings,
             Object objectToInjectInto) {
+        injectBindingsInto(sourceScriptClassLoader, bindings, objectToInjectInto, new HashMap<>(), false,
+                Collections.emptyList());
+    }
+
+    /**
+     * Smart injection of binding values into an object.
+     * 
+     * @param sourceScriptClassLoader The Script class loader initiating the execution
+     * @param bindings a binding map with values to inject
+     * @param objectToInjectInto An object. Its fields will be filled with value from
+     * @param libAlreadyInstantiated To avoid looping the instantiation of libraries
+     * @param forceOptional Set to true to force the optionality of parameters.
+     * @param excludedFields Fields to exclude from injection
+     */
+    public static void injectBindingsInto(ClassLoader sourceScriptClassLoader, Map<String, Object> bindings,
+            Object objectToInjectInto, Map<Class<?>, Object> libAlreadyInstantiated, boolean forceOptional,
+            List<Field> excludedFields) {
+        Class<?> clazz = objectToInjectInto.getClass();
+
+        Set<Field> allFields = getAllFields(clazz);
+        allFields.removeAll(excludedFields);
         try {
-            injectBindingsInto(sourceScriptClassLoader, bindings, objectToInjectInto, new HashMap<>(), false);
+            for (Field field : allFields) {
+                if (!field.accessFlags().contains(AccessFlag.FINAL)) { // inject value only in non-final fields
+                    Object valueToInject = extractBindingValueForElement(sourceScriptClassLoader, bindings, field,
+                            libAlreadyInstantiated, forceOptional);
+                    if (valueToInject != null) {
+                        field.setAccessible(true);
+                        field.set(objectToInjectInto, valueToInject);
+                    }
+                }
+            }
         } catch (IllegalAccessException | IllegalArgumentException | SecurityException | InstantiationException
                 | InvocationTargetException e) {
             LOGGER.error("Cannot inject bindings or libs", e);
-        }
-    }
-
-    private static void injectBindingsInto(ClassLoader sourceScriptClassLoader, Map<String, Object> bindings,
-            Object objectToInjectInto, Map<Class<?>, Object> libAlreadyInstantiated, boolean forceOptional)
-            throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        Class<?> clazz = objectToInjectInto.getClass();
-
-        for (Field field : getAllFields(clazz)) {
-            if (!field.accessFlags().contains(AccessFlag.FINAL)) { // inject value only in non-final fields
-                Object valueToInject = extractBindingValueForElement(sourceScriptClassLoader, bindings, field,
-                        libAlreadyInstantiated, forceOptional);
-                if (valueToInject != null) {
-                    field.setAccessible(true);
-                    field.set(objectToInjectInto, valueToInject);
-                }
-            }
         }
     }
 
@@ -278,7 +294,8 @@ public class BindingInjector {
                 libAlreadyInstantiated.put(fieldType, valueToInject);
                 if (recursive) {
                     // and then also use injection into it
-                    injectBindingsInto(classLoader, bindings, valueToInject, libAlreadyInstantiated, forceOptional);
+                    injectBindingsInto(classLoader, bindings, valueToInject, libAlreadyInstantiated, forceOptional,
+                            Collections.emptyList());
                 }
             }
         }
@@ -296,9 +313,14 @@ public class BindingInjector {
         // we know that the ClassLoader is a MemoryClassLoader (contains all .java lib + the script)
         // and that the parent is a JarClassLoader (contains all .jar lib).
         // so we ask them if they loaded the class themselves
-        var memoryClassLoader = (MemoryClassLoader) classLoader;
-        var parentJarClassLoader = (JarClassLoader) Optional.ofNullable(memoryClassLoader.getParent())
-                .orElseThrow(() -> new IllegalArgumentException("ClassLoader cannot be null"));
+        if (!(classLoader instanceof MemoryClassLoader memoryClassLoader)) {
+            throw new Java223Exception(
+                    "ClassLoader is not a MemoryClassLoader. Cannot check if it is a library. Shouldn't happen !");
+        }
+        if (!(memoryClassLoader.getParent() instanceof JarClassLoader parentJarClassLoader)) {
+            throw new Java223Exception(
+                    "Parent ClassLoader is not a JarClassLoader. Cannot check if it is a library. Shouldn't happen !");
+        }
         return parentJarClassLoader.isAUserLibrary(name) || memoryClassLoader.isLoadedClass(name);
     }
 
@@ -351,7 +373,7 @@ public class BindingInjector {
         throw new NoSuchFieldException();
     }
 
-    private static Set<Field> getAllFields(Class<?> type) {
+    public static Set<Field> getAllFields(Class<?> type) {
         Set<Field> fields = new HashSet<>();
         for (Class<?> c = type; c != null; c = c.getSuperclass()) {
             fields.addAll(Arrays.asList(c.getDeclaredFields()));

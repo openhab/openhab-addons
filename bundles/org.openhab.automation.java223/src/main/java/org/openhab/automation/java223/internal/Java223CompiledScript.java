@@ -15,9 +15,13 @@ package org.openhab.automation.java223.internal;
 import static org.openhab.core.automation.module.script.ScriptTransformationService.OPENHAB_TRANSFORMATION_SCRIPT;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.script.Bindings;
@@ -54,6 +58,12 @@ public class Java223CompiledScript extends JavaCompiledScript {
      */
     @Nullable
     private Object java223CompiledInstance;
+
+    // This list is populated when the related script is first instantiated
+    // It will contain all fields that are NOT NULL immediately after the call to the constructor.
+    // It means that the user instantiates the fields manually, inside the constructor,
+    // and so they should be excluded from injection.
+    private List<Field> fieldsExcludedFromInjection = Collections.emptyList();
 
     private final Java223Strategy java223Strategy;
 
@@ -102,12 +112,22 @@ public class Java223CompiledScript extends JavaCompiledScript {
             if (!instanceReuse || localScriptInstance == null) {
                 // no cache, instantiate the script
                 localScriptInstance = construct(getCompiledClass(), mergedBindings);
+                // check which field has already been instantiated, to exclude them from auto-injection
+                List<Field> fieldsExcludedFromInjection = new ArrayList<>();
+                for (Field field : BindingInjector.getAllFields(getCompiledClass())) {
+                    field.setAccessible(true);
+                    Object value = field.get(localScriptInstance);
+                    if (value != null) { // field manually instantiated.
+                        fieldsExcludedFromInjection.add(field);
+                    }
+                }
+                this.fieldsExcludedFromInjection = fieldsExcludedFromInjection;
                 java223CompiledInstance = localScriptInstance;
             }
 
             // execute
-            return java223Strategy.execute(localScriptInstance, mergedBindings);
-        } catch (Java223Exception e) {
+            return java223Strategy.execute(localScriptInstance, mergedBindings, fieldsExcludedFromInjection);
+        } catch (Java223Exception | IllegalAccessException e) {
             // keep responsibility of logging full stack trace, as ScriptException cannot contain cause
             // and caller sometimes does not do it well
             logger.error("Exception during evaluation of a java223 script: {}", e.getMessage(), e);
