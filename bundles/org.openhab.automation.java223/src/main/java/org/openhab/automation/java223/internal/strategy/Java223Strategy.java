@@ -16,6 +16,7 @@ import static org.openhab.automation.java223.common.Java223Constants.BINDINGS;
 import static org.openhab.automation.java223.common.Java223Constants.LIB_DIR;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
@@ -123,10 +124,12 @@ public class Java223Strategy
      * 
      * @param instance an instantiated script
      * @param bindings bindings data to inject
+     * @param excludedField fields to exclude from binding injection.
      * @return Execution result
      * @throws ScriptException When the script cannot execute
      */
-    public @Nullable Object execute(Object instance, Map<String, Object> bindings) throws ScriptException {
+    public @Nullable Object execute(Object instance, Map<String, Object> bindings, List<Field> excludedField)
+            throws ScriptException {
         Class<?> compiledClass = instance.getClass();
 
         // inject binding's data in the script
@@ -134,7 +137,7 @@ public class Java223Strategy
         if (classLoader == null) { // should not happen
             throw new ScriptException("Cannot get the classloader of " + compiledClass.getName());
         }
-        BindingInjector.injectBindingsInto(classLoader, bindings, instance);
+        BindingInjector.injectBindingsInto(classLoader, bindings, instance, new HashMap<>(), false, excludedField);
 
         // find methods to execute
         // noinspection OptionalAssignedToNull
