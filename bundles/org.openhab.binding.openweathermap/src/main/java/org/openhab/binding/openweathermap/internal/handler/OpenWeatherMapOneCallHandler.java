@@ -579,6 +579,9 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
             case CHANNEL_CLOUDINESS:
                 state = getQuantityTypeState(forecastData.getClouds(), PERCENT);
                 break;
+            case CHANNEL_UVINDEX:
+                state = getDecimalTypeState(forecastData.getUvi());
+                break;
             case CHANNEL_VISIBILITY:
                 State tempstate = new QuantityType<>(localWeatherData.getCurrent().getVisibility(), METRE)
                         .toUnit(KILO(METRE));
