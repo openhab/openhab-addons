@@ -67,6 +67,7 @@ import org.openhab.binding.roborock.internal.transport.RoborockCommandTransport;
 import org.openhab.binding.roborock.internal.util.ProtocolUtils;
 import org.openhab.binding.roborock.internal.util.RequestCorrelationTracker;
 import org.openhab.binding.roborock.internal.util.SchedulerTask;
+import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -88,6 +89,7 @@ import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -218,6 +220,25 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                     sendRPCCommand(commandArray[0]);
                 } else {
                     sendRPCCommand(commandArray[0], commandArray[1]);
+                }
+                return;
+            }
+            if (channelUID.getId().equals(CHANNEL_DP_COMMAND)) {
+                String jsonPayload = command.toString();
+                try {
+                    // Deserialize the incoming JSON string into a Map<String, Object>
+                    @SuppressWarnings("unchecked")
+                    Map<String, Object> dpsMap = gson.fromJson(jsonPayload, Map.class);
+
+                    if (dpsMap != null && !dpsMap.isEmpty()) {
+                        sendQ10DpCommand(dpsMap);
+                        logger.debug("Successfully forwarded DP command map to device: {}", jsonPayload);
+                    } else {
+                        logger.warn("Received empty or invalid DP payload: {}", jsonPayload);
+                    }
+                } catch (JsonSyntaxException e) {
+                    logger.error("Failed to parse incoming DP payload '{}'. Invalid JSON syntax: {}", jsonPayload,
+                            e.getMessage());
                 }
                 return;
             }
@@ -401,6 +422,16 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             q7 = true;
         } else if (nameUpper.contains("Q10")) {
             q10 = true;
+            ChannelUID channelUID = new ChannelUID(getThing().getUID(), CHANNEL_DP_COMMAND);
+            Channel channel = thing.getChannel(channelUID);
+            if (channel == null) {
+                logger.debug("Adding channel for DP commands, on device {}", getThing().getUID());
+                ThingBuilder thingBuilder = editThing();
+                channel = ChannelBuilder.create(channelUID, CoreItemFactory.STRING).withLabel("Execute DP Command")
+                        .withType(new ChannelTypeUID(BINDING_ID, "DPCommand")).build();
+                thingBuilder.withChannel(channel);
+                updateThing(thingBuilder.build());
+            }
         }
         return true;
     }
