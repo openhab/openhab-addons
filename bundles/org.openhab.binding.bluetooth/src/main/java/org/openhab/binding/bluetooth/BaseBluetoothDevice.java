@@ -239,6 +239,11 @@ public abstract class BaseBluetoothDevice extends BluetoothDevice {
         return connectionState;
     }
 
+    protected void clearServices() {
+        supportedServices.clear();
+        servicesDiscovered = false;
+    }
+
     /**
      * Adds a service to the device.
      *

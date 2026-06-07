@@ -19,10 +19,10 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.freedesktop.dbus.errors.NoReply;
 import org.freedesktop.dbus.errors.UnknownObject;
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.freedesktop.dbus.exceptions.DBusExecutionException;
@@ -71,6 +71,8 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
     private final Logger logger = LoggerFactory.getLogger(BlueZBluetoothDevice.class);
 
     private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("bluetooth");
+
+    private final AtomicBoolean connectionStartRunning = new AtomicBoolean();
 
     // Device from native lib
     private @Nullable BluetoothDevice device = null;
@@ -170,6 +172,7 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
     }
 
     private void setConnectionState(ConnectionState state) {
+        logger.debug("Update connection state: {}", state);
         if (this.connectionState != state) {
             this.connectionState = state;
             notifyListeners(BluetoothEventType.CONNECTION_STATE, new BluetoothConnectionStatusNotification(state));
@@ -207,42 +210,35 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
 
     @Override
     public boolean connect() {
-        logger.debug("Connect({})", device);
-
         BluetoothDevice dev = device;
-        if (dev != null) {
-            if (Boolean.FALSE.equals(dev.isConnected())) {
-                // BlueZ Device.Connect() is unreliable while the adapter is actively discovering
-                // (the call blocks / does not complete). Pause discovery first; the bridge's periodic
-                // refresh job resumes it shortly after.
-                bridgeHandler.stopDiscovery();
-                try {
-                    boolean ret = dev.connect();
-                    logger.debug("Connect result: {}", ret);
-                    return ret;
-                } catch (NoReply e) {
-                    // Have to double check because sometimes, exception but still worked
-                    logger.debug("Got a timeout - but sometimes happen. Is Connected ? {}", dev.isConnected());
-                    if (Boolean.FALSE.equals(dev.isConnected())) {
-                        notifyListeners(BluetoothEventType.CONNECTION_STATE,
-                                new BluetoothConnectionStatusNotification(ConnectionState.DISCONNECTED));
-                        return false;
-                    } else {
-                        return true;
-                    }
-                } catch (DBusExecutionException e) {
-                    // Catch "software caused connection abort"
-                    return false;
-                } catch (Exception e) {
-                    logger.warn("error occurred while trying to connect", e);
-                }
-            } else {
-                logger.debug("Device was already connected");
-                // we might be stuck in another state atm so we need to trigger a connected in this case
-                setConnectionState(ConnectionState.CONNECTED);
-                return true;
-            }
+
+        if (dev == null) {
+            return false;
         }
+
+        logger.debug("Connect({})", dev);
+
+        if (connectionStartRunning.get()) {
+            return true;
+        }
+
+        if (Boolean.FALSE.equals(dev.isConnected())) {
+            clearServices();
+            connectionStartRunning.set(true);
+            CompletableFuture<@Nullable Void> result = CompletableFuture.runAsync(() -> {
+                setConnectionState(ConnectionState.CONNECTING);
+                boolean ret = device.connect();
+                logger.debug("Connect result: {}", ret);
+            }).handle((voidResult, th) -> {
+                if (th != null) {
+                    logger.warn("Failed to connect", th);
+                }
+                connectionStartRunning.set(false);
+                return null;
+            });
+            return true;
+        }
+
         return false;
     }
 
@@ -385,15 +381,30 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
 
     @Override
     public void onServicesResolved(ServicesResolvedEvent event) {
+        logger.debug("onServicesResolved: {}", event.isResolved());
         if (event.isResolved()) {
-            // Populate our service/characteristic list from the now-resolved GATT and notify
-            // listeners. BlueZ can deliver ServicesResolved=true while our own supportedServices list
-            // is still empty (e.g. right after a reconnect, before discoverServices() has run); firing
-            // SERVICES_DISCOVERED then makes listeners (e.g. the generic handler's channel builder) run
-            // against an empty list and miss every characteristic. discoverServices() populates the
-            // list and fires SERVICES_DISCOVERED once the GATT is resolved with services present -
-            // including on a reconnect where the list is unchanged - so it is the correct trigger here.
-            discoverServices();
+            if (device.getGattServices().size() > getServices().size()) {
+                for (BluetoothGattService dBusBlueZService : device.getGattServices()) {
+                    BluetoothService service = new BluetoothService(UUID.fromString(dBusBlueZService.getUuid()),
+                            dBusBlueZService.isPrimary());
+                    for (BluetoothGattCharacteristic dBusBlueZCharacteristic : dBusBlueZService
+                            .getGattCharacteristics()) {
+                        BluetoothCharacteristic characteristic = new BluetoothCharacteristic(
+                                UUID.fromString(dBusBlueZCharacteristic.getUuid()), 0);
+                        convertCharacteristicProperties(dBusBlueZCharacteristic, characteristic);
+
+                        for (BluetoothGattDescriptor dBusBlueZDescriptor : dBusBlueZCharacteristic
+                                .getGattDescriptors()) {
+                            BluetoothDescriptor descriptor = new BluetoothDescriptor(characteristic,
+                                    UUID.fromString(dBusBlueZDescriptor.getUuid()), 0);
+                            characteristic.addDescriptor(descriptor);
+                        }
+                        service.addCharacteristic(characteristic);
+                    }
+                    addService(service);
+                }
+            }
+            notifyListeners(BluetoothEventType.SERVICES_DISCOVERED);
         }
     }
 
@@ -461,9 +472,7 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
 
     @Override
     public void onConnectedStatusUpdate(ConnectedEvent event) {
-        this.connectionState = event.isConnected() ? ConnectionState.CONNECTED : ConnectionState.DISCONNECTED;
-        notifyListeners(BluetoothEventType.CONNECTION_STATE,
-                new BluetoothConnectionStatusNotification(connectionState));
+        setConnectionState(event.isConnected() ? ConnectionState.CONNECTED : ConnectionState.DISCONNECTED);
     }
 
     @Override
@@ -471,49 +480,6 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
         BluetoothDevice dev = device;
         if (dev == null) {
             return false;
-        }
-        // bluez-dbus caches the GATT service list: getGattServices() latches `servicesDiscovered`
-        // true on its first call and never re-queries afterwards. The bridge's periodic refresh
-        // calls this before the device is connected, so the cache gets latched EMPTY and stays
-        // empty even after a later connect resolves the GATT. Whenever BlueZ reports the device
-        // connected but our cached service list is empty, force a re-query. (We don't gate on
-        // isServicesResolved(): that property is not always surfaced by the wrapper even when the
-        // GATT is in fact resolved, and refreshGattServices() is a harmless no-op when it isn't.)
-        try {
-            if (dev.getGattServices().isEmpty() && Boolean.TRUE.equals(dev.isConnected())) {
-                logger.debug("GATT service cache is empty while connected for {}; refreshing", address);
-                dev.refreshGattServices();
-            }
-        } catch (RuntimeException ex) {
-            logger.debug("Failed to refresh GATT services for {}: {}", address, ex.getMessage());
-        }
-        if (dev.getGattServices().size() > getServices().size()) {
-            for (BluetoothGattService dBusBlueZService : dev.getGattServices()) {
-                BluetoothService service = new BluetoothService(UUID.fromString(dBusBlueZService.getUuid()),
-                        dBusBlueZService.isPrimary());
-                for (BluetoothGattCharacteristic dBusBlueZCharacteristic : dBusBlueZService.getGattCharacteristics()) {
-                    BluetoothCharacteristic characteristic = new BluetoothCharacteristic(
-                            UUID.fromString(dBusBlueZCharacteristic.getUuid()), 0);
-                    convertCharacteristicProperties(dBusBlueZCharacteristic, characteristic);
-
-                    for (BluetoothGattDescriptor dBusBlueZDescriptor : dBusBlueZCharacteristic.getGattDescriptors()) {
-                        BluetoothDescriptor descriptor = new BluetoothDescriptor(characteristic,
-                                UUID.fromString(dBusBlueZDescriptor.getUuid()), 0);
-                        characteristic.addDescriptor(descriptor);
-                    }
-                    service.addCharacteristic(characteristic);
-                }
-                addService(service);
-            }
-        }
-        // Notify whenever the GATT is resolved with services present, not only when our list just
-        // grew. On a reconnect BlueZ re-fires ServicesResolved=true while our supportedServices map
-        // is already fully populated from the previous connection (it is only cleared on object
-        // removal), so the "grew" check above is false. Consumers such as ConnectedBluetoothHandler
-        // re-arm their notifications/polling off SERVICES_DISCOVERED, so swallowing it here leaves the
-        // Thing online but silent after every reconnect. The notification is idempotent for listeners.
-        if (!getServices().isEmpty()) {
-            notifyListeners(BluetoothEventType.SERVICES_DISCOVERED);
         }
         return true;
     }
