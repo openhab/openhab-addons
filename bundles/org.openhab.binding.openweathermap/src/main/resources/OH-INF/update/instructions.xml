@@ -196,6 +196,11 @@
 				<type>openweathermap:visibility</type>
 			</add-channel>
 		</instruction-set>
+		<instruction-set targetVersion="4">
+			<add-channel id="uvindex" groupIds="forecastHourly">
+				<type>openweathermap:uvindex</type>
+			</add-channel>
+		</instruction-set>
 	</thing-type>
 
 </update:update-descriptions>
