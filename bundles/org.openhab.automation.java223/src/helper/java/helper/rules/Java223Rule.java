@@ -22,8 +22,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
@@ -70,8 +69,7 @@ public class Java223Rule extends SimpleRule {
     @Nullable
     private ZonedDateTime executionTimeStamp = null;
     @Nullable
-    private ScheduledFuture<@Nullable Object> futureAction;
-    private final ScheduledExecutorService execService = Executors.newScheduledThreadPool(2);
+    private CompletableFuture<@Nullable Void> futureAction;
 
     public void setUid(String uid) {
         if (!uid.isBlank()) {
@@ -205,7 +203,7 @@ public class Java223Rule extends SimpleRule {
     @SuppressWarnings("unchecked")
     @Override
     public Object execute(Action module, Map<String, ?> bindings) {
-        // special self reference:
+        // special self-reference:
         ((Map<String, Object>) bindings).put(Java223Constants.BINDINGS, bindings);
         // actual call:
         try {
@@ -238,7 +236,7 @@ public class Java223Rule extends SimpleRule {
                     executionTimeStamp = now;
                     // execute immediately in a separate thread to avoid blocking the rule execution. The
                     // purpose of this is to debounce, so we assume the user doesn't want blocking behavior.
-                    execService.execute(() -> codeToExecute.apply(module, bindings));
+                    CompletableFuture.runAsync(() -> codeToExecute.apply(module, bindings));
                 } else {
                     logger.debug("Debounced action (first only");
                 }
@@ -255,28 +253,29 @@ public class Java223Rule extends SimpleRule {
                 }
 
                 // Second, cancel the previous scheduled action (if any)
-                @Nullable ScheduledFuture<@Nullable Object> futureActionLocal = futureAction;
+                @Nullable CompletableFuture<@Nullable Void> futureActionLocal = futureAction;
                 if (futureActionLocal != null) {
                     futureActionLocal.cancel(false);
                 }
 
                 // Third, schedule
-                futureAction = execService.schedule(() -> {
+                futureAction = CompletableFuture.runAsync(() -> {
                     futureAction = null;
-                    return codeToExecute.apply(module, bindings);
-                }, remainingDelay, TimeUnit.MILLISECONDS);
+                    executionTimeStamp = null;
+                    codeToExecute.apply(module, bindings);
+                }, CompletableFuture.delayedExecutor(remainingDelay, TimeUnit.MILLISECONDS));
             }
             case STABLE -> {
                 // in this case, we will wait for a stable state (rule not triggered during the wanted delay)
                 // and execute the last one
-                @Nullable ScheduledFuture<@Nullable Object> futureActionLocal = futureAction;
+                @Nullable CompletableFuture<@Nullable Void> futureActionLocal = futureAction;
                 if (futureActionLocal != null) {
                     futureActionLocal.cancel(false);
                 }
-                futureAction = execService.schedule(() -> {
+                futureAction = CompletableFuture.runAsync(() -> {
                     futureAction = null;
-                    return codeToExecute.apply(module, bindings);
-                }, debounce.value(), TimeUnit.MILLISECONDS);
+                    codeToExecute.apply(module, bindings);
+                }, CompletableFuture.delayedExecutor(debounce.value(), TimeUnit.MILLISECONDS));
             }
         }
     }

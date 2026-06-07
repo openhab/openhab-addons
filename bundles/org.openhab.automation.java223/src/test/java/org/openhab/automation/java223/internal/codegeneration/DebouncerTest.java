@@ -12,25 +12,20 @@
  */
 package org.openhab.automation.java223.internal.codegeneration;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.when;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-
+import helper.rules.Java223Rule;
+import helper.rules.annotations.Debounce;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.openhab.core.automation.Action;
 
-import helper.rules.Java223Rule;
-import helper.rules.annotations.Debounce;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Gwendal Roulleau - Initial contribution
@@ -45,10 +40,9 @@ public class DebouncerTest {
     Debounce debounce = Mockito.mock(Debounce.class);
 
     @Test
-    public void debouncerFirstTest() throws InterruptedException, NoSuchFieldException, IllegalAccessException {
+    public void debouncerFirstTest() throws InterruptedException {
         AtomicInteger value = new AtomicInteger(0);
         AtomicInteger count = new AtomicInteger(0);
-        ScheduledExecutorService service = Executors.newScheduledThreadPool(2);
 
         when(debounce.type()).thenReturn(Debounce.Type.FIRST_ONLY);
         when(debounce.value()).thenReturn(500L);
@@ -61,26 +55,23 @@ public class DebouncerTest {
             count.incrementAndGet();
             return null;
         }, debounce);
-        setExecutorService(rule, service);
 
         // we will call it two times
         exec(rule, 1);
         Thread.sleep(100);
         exec(rule, 2);
 
-        service.shutdown();
+        Thread.sleep(500);
 
         // but only one call, and the value set is the first one
-        assertTrue(service.awaitTermination(1, TimeUnit.SECONDS));
         assertEquals(1, count.get());
         assertEquals(1, value.get());
     }
 
     @Test
-    public void debouncerLastTest() throws InterruptedException, NoSuchFieldException, IllegalAccessException {
+    public void debouncerLastTest() throws InterruptedException {
         AtomicInteger value = new AtomicInteger(0);
         AtomicInteger count = new AtomicInteger(0);
-        ScheduledExecutorService service = Executors.newScheduledThreadPool(2);
 
         when(debounce.type()).thenReturn(Debounce.Type.LAST_ONLY);
         when(debounce.value()).thenReturn(500L);
@@ -93,17 +84,15 @@ public class DebouncerTest {
             count.incrementAndGet();
             return null;
         }, debounce);
-        setExecutorService(rule, service);
 
         // we will call it two times
         exec(rule, 1);
         Thread.sleep(100);
         exec(rule, 2);
 
-        service.shutdown();
+        Thread.sleep(500);
 
         // but only one call, and the value set is the last one
-        assertTrue(service.awaitTermination(1, TimeUnit.SECONDS));
         assertEquals(1, count.get());
         assertEquals(2, value.get());
     }
@@ -115,10 +104,9 @@ public class DebouncerTest {
     }
 
     @Test
-    public void debouncerStableTest() throws InterruptedException, NoSuchFieldException, IllegalAccessException {
+    public void debouncerStableTest() throws InterruptedException {
         AtomicInteger value = new AtomicInteger(0);
         AtomicInteger count = new AtomicInteger(0);
-        ScheduledExecutorService service = Executors.newScheduledThreadPool(2);
 
         when(debounce.type()).thenReturn(Debounce.Type.STABLE);
         when(debounce.value()).thenReturn(500L);
@@ -131,7 +119,6 @@ public class DebouncerTest {
             count.incrementAndGet();
             return null;
         }, debounce);
-        setExecutorService(rule, service);
 
         // we will call it three times
         exec(rule, 1);
@@ -140,23 +127,10 @@ public class DebouncerTest {
         Thread.sleep(300);
         exec(rule, 3);
 
-        service.shutdown();
+        Thread.sleep(1000);
 
         // but only one call, and the value set is the last one
-        assertTrue(service.awaitTermination(2, TimeUnit.SECONDS));
         assertEquals(1, count.get());
         assertEquals(3, value.get());
-    }
-
-    /**
-     * Sets a specific field on a target object to the given value using reflection.
-     *
-     * @param target the object whose field is to be set
-     * @param value the new value to assign to the specified field
-     */
-    private void setExecutorService(Object target, Object value) throws NoSuchFieldException, IllegalAccessException {
-        java.lang.reflect.Field field = target.getClass().getDeclaredField("execService");
-        field.setAccessible(true);
-        field.set(target, value);
     }
 }
