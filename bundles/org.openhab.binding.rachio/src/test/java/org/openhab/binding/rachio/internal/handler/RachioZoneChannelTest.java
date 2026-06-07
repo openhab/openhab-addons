@@ -22,8 +22,10 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -35,6 +37,8 @@ import org.junit.jupiter.api.Test;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
@@ -44,14 +48,32 @@ import org.xml.sax.SAXException;
  */
 @NonNullByDefault
 class RachioZoneChannelTest {
+    private static final List<String> THING_XML_FILES = List.of("cloud.xml", "device.xml", "zone.xml", "schedule.xml",
+            "flex-schedule.xml", "base-station.xml", "valve.xml", "valve-program.xml");
+
     @Test
     void thingXmlFilesAreWellFormed()
             throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
-        for (String file : List.of("cloud.xml", "device.xml", "zone.xml", "schedule.xml", "flex-schedule.xml",
-                "base-station.xml", "valve.xml", "valve-program.xml")) {
+        for (String file : THING_XML_FILES) {
             factory.newDocumentBuilder().parse(resource("/OH-INF/thing/" + file).toFile());
+        }
+    }
+
+    @Test
+    void channelTypeIdsAreUnique() throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setNamespaceAware(true);
+        Set<String> channelTypeIds = new HashSet<>();
+
+        for (String file : THING_XML_FILES) {
+            NodeList channelTypes = factory.newDocumentBuilder().parse(resource("/OH-INF/thing/" + file).toFile())
+                    .getElementsByTagNameNS("https://openhab.org/schemas/thing-description/v1.0.0", "channel-type");
+            for (int i = 0; i < channelTypes.getLength(); i++) {
+                String id = ((Element) channelTypes.item(i)).getAttribute("id");
+                assertThat("Duplicate channel type ID '" + id + "' in " + file, channelTypeIds.add(id), is(true));
+            }
         }
     }
 
@@ -101,12 +123,12 @@ class RachioZoneChannelTest {
     }
 
     private void assertScheduleCommandChannels(String xml) {
-        assertThat(xml, containsString("<channel id=\"start\" typeId=\"schedule-start\"/>"));
-        assertThat(xml, containsString("<channel id=\"skip\" typeId=\"schedule-skip\"/>"));
+        assertThat(xml, containsString("<channel id=\"start\" typeId=\"schedule-rule-start\"/>"));
+        assertThat(xml, containsString("<channel id=\"skip\" typeId=\"schedule-rule-skip\"/>"));
+        assertThat(xml, containsString(
+                "<channel id=\"skip-forward-zone-run\" typeId=\"schedule-rule-skip-forward-zone-run\"/>"));
         assertThat(xml,
-                containsString("<channel id=\"skip-forward-zone-run\" typeId=\"schedule-skip-forward-zone-run\"/>"));
-        assertThat(xml,
-                containsString("<channel id=\"seasonal-adjustment\" typeId=\"schedule-seasonal-adjustment\"/>"));
+                containsString("<channel id=\"seasonal-adjustment\" typeId=\"schedule-rule-seasonal-adjustment\"/>"));
     }
 
     @Test

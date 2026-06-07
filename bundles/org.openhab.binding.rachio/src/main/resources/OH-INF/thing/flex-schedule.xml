@@ -13,17 +13,17 @@
 		<description>A Rachio flex schedule rule.</description>
 
 		<channels>
-			<channel id="name" typeId="schedule-name"/>
-			<channel id="enabled" typeId="schedule-enabled"/>
-			<channel id="type" typeId="schedule-type"/>
-			<channel id="start-time" typeId="schedule-start-time"/>
-			<channel id="last-run" typeId="schedule-last-run"/>
-			<channel id="next-run" typeId="schedule-next-run"/>
-			<channel id="zones" typeId="schedule-zones"/>
-			<channel id="seasonal-adjustment" typeId="schedule-seasonal-adjustment"/>
-			<channel id="start" typeId="schedule-start"/>
-			<channel id="skip" typeId="schedule-skip"/>
-			<channel id="skip-forward-zone-run" typeId="schedule-skip-forward-zone-run"/>
+			<channel id="name" typeId="schedule-rule-name"/>
+			<channel id="enabled" typeId="schedule-rule-enabled"/>
+			<channel id="type" typeId="schedule-rule-type"/>
+			<channel id="start-time" typeId="schedule-rule-start-time"/>
+			<channel id="last-run" typeId="schedule-rule-last-run"/>
+			<channel id="next-run" typeId="schedule-rule-next-run"/>
+			<channel id="zones" typeId="schedule-rule-zones"/>
+			<channel id="seasonal-adjustment" typeId="schedule-rule-seasonal-adjustment"/>
+			<channel id="start" typeId="schedule-rule-start"/>
+			<channel id="skip" typeId="schedule-rule-skip"/>
+			<channel id="skip-forward-zone-run" typeId="schedule-rule-skip-forward-zone-run"/>
 			<channel id="last-update" typeId="last-update"/>
 		</channels>
 
