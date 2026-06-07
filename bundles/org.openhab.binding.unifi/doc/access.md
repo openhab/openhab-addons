@@ -75,7 +75,7 @@ Cloud-only accounts are not supported; a local user account on the console is re
 | keep-unlocked          | Switch      | RW  | Keep door unlocked indefinitely. ON to activate, OFF to reset.                     |
 | keep-locked            | Switch      | RW  | Keep door locked indefinitely. ON to activate, OFF to reset.                       |
 | unlock-minutes         | Number:Time | W   | Unlock for the specified number of minutes.                                        |
-| unlock-until           | DateTime    | W   | Unlock until the specified date/time.                                              |
+| unlock-until           | DateTime    | RW  | Unlock until a date/time; also reports the active temporary-unlock end time.       |
 | thumbnail              | Image       | R   | Latest door camera thumbnail image.                                                |
 | access-attempt-success | Trigger     | -   | Fires on successful access. JSON payload with actor, credential provider, etc.     |
 | access-attempt-failure | Trigger     | -   | Fires on failed access attempt. JSON payload with actor details.                   |
