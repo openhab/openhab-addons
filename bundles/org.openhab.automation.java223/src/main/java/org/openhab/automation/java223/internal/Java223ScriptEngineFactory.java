@@ -183,14 +183,14 @@ public class Java223ScriptEngineFactory extends JavaScriptEngineFactory
     }
 
     private void copyHelperLibJar() throws IOException {
-        // get old file :
+        // get old file:
         Path dest = LIB_DIR.resolve(HELPER_LIB_JAR);
         byte[] oldHelperLibAsByteArray = new byte[0];
         if (dest.toFile().exists()) {
             oldHelperLibAsByteArray = Files.readAllBytes(dest);
         }
 
-        // get new file :
+        // get new file:
         byte[] newHelperLibAsByteArray;
         try (InputStream source = getClass().getResourceAsStream("/" + HELPER_LIB_JAR)) {
             if (source != null) {

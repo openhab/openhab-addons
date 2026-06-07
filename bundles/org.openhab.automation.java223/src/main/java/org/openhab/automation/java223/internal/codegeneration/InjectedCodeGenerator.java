@@ -145,7 +145,7 @@ public class InjectedCodeGenerator {
         switch (value) {
             case Class<?> clazz -> { // the binding value is a class reference. We will generate an import statement,
                 // but for wrapped classes only (i.e., one-liner)
-                // (example : "import java.time.Duration;" is useless for the Java223Script super class,
+                // (example: "import java.time.Duration;" is useless for the Java223Script super class,
                 // but it can be useful for user-defined one-liner)
                 String canonicalName = clazz.getCanonicalName();
                 try {
@@ -193,12 +193,11 @@ public class InjectedCodeGenerator {
                     return getImportAndDeclaration(key, value.getClass());
                 } else if (interfaces.length == 1) {
                     return getImportAndDeclaration(key, interfaces[0]);
-                } else {
-                    logger.warn(
-                            "Cannot find an appropriate interface for declaring the injected field {} : {}. We pick the first one",
-                            key, value.getClass());
-                    return getImportAndDeclaration(key, interfaces[0]);
                 }
+                logger.warn(
+                        "Cannot find an appropriate interface for declaring the injected field {}: {}. We pick the first one",
+                        key, value.getClass());
+                return getImportAndDeclaration(key, interfaces[0]);
             }
         }
     }

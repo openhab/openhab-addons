@@ -147,7 +147,7 @@ public class DependencyGenerator {
                     }
                 }
 
-                // now the individual classes :
+                // now the individual classes:
                 Set<String> classesDependencies = new HashSet<>(DEFAULT_CLASSES_DEPENDENCIES);
                 classesDependencies.addAll(Arrays.asList(additionalClassesConfig.split(",")));
                 classesDependencies.addAll(additionalClassesToExport);
@@ -166,7 +166,7 @@ public class DependencyGenerator {
             String path = classToExtract.replaceAll("\\.", "/") + ".class";
             ClassLoader classLoader = DependencyGenerator.class.getClassLoader();
             if (classLoader == null) {
-                LOGGER.warn("Failed (no classloader) to copy from classpath : {}", classToExtract);
+                LOGGER.warn("Failed (no classloader) to copy from classpath: {}", classToExtract);
                 return;
             }
             try (InputStream stream = classLoader.getResourceAsStream(path)) {
@@ -176,7 +176,7 @@ public class DependencyGenerator {
                     LOGGER.warn("InputStream {} from classpath is null", classToExtract);
                 }
             } catch (IOException e) {
-                LOGGER.warn("Failed to copy classes '{}' from classpath : {}", classToExtract, e.getMessage());
+                LOGGER.warn("Failed to copy classes '{}' from classpath: {}", classToExtract, e.getMessage());
             }
         }
     }
@@ -280,7 +280,7 @@ public class DependencyGenerator {
         }
 
         newAdditionalClassesToExport.removeIf(this::excludeFromExport);
-        // check if there are new classes :
+        // check if there are new classes:
         newAdditionalClassesToExport.removeAll(additionalClassesToExport);
         if (!newAdditionalClassesToExport.isEmpty()) {
             additionalClassesToExport.addAll(newAdditionalClassesToExport);
