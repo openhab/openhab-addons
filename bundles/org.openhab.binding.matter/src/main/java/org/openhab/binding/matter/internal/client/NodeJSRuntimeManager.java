@@ -65,7 +65,7 @@ class NodeJSRuntimeManager {
 
     private static final String NODE_BASE_VERSION = "v22";
     private static final String NODE_DEFAULT_VERSION = "v22.12.0";
-    private static final String NODE_MIN_VERSION = "v18.0.0";
+    private static final String NODE_MIN_VERSION = "v22.0.0";
 
     private static final String NODE_INDEX_URL = "https://nodejs.org/dist/index.json";
 
