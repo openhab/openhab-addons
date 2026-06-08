@@ -30,7 +30,7 @@ Controller, zone, schedule, flex schedule, Smart Hose Timer base station, valve,
 ### What changed
 
 - Account-level configuration now belongs on the Rachio Cloud Connector Thing (`rachio:cloud`).
-- No binding-level configuration is used; configure API, polling, runtime, webhook, and Smart Hose Timer options on the Cloud Connector Thing.
+- Configure API, polling, runtime, webhook, and Smart Hose Timer options on the Cloud Connector Thing; no add-on-wide fallback configuration is used.
 - New Thing type IDs introduced by this update use the openHAB lower-case-hyphen naming convention, while existing released channel IDs are preserved for Item-link compatibility.
 - Several physical numeric channels now use typed Quantity Item types such as `Number:Time`, `Number:Length`, `Number:Area`, `Number:Temperature`, `Number:Speed`, and `Number:Dimensionless`.
 - Controller and zone Things should use real Rachio API UUIDs (`deviceId`, `zoneId`), not the controller MAC address.
@@ -54,8 +54,8 @@ Text-file `.things` definitions must use the current thing IDs, for example `fle
 Existing Item channel links from released binding versions should continue to use their established channel IDs.
 Temporary development builds may have exposed experimental channel IDs that need to be corrected manually.
 
-An Item link contains the full `ChannelUID`, including the Thing UID and channel ID.
-Changing either the Thing UID or channel ID breaks that link and requires the Item to be relinked.
+An Item link depends on the full `ChannelUID`, which includes both the Thing UID and channel ID.
+Changing either the Thing UID or channel ID breaks the existing Item link and requires relinking it.
 
 Flex Schedule is introduced as a new Thing type: `rachio:flex-schedule`.
 Any `rachio:flexschedule` Things created by previous development builds should be deleted and rediscovered.
@@ -212,7 +212,7 @@ The bridge Thing does not have channels.
 Cloud Connector Thing configuration is the only user configuration source.
 Built-in defaults are used for unset optional values.
 Configuration precedence is: `Cloud Connector Thing configuration > built-in defaults`.
-No binding-level or add-on-level configuration is read.
+No add-on-wide fallback configuration is read.
 
 ### openHAB Cloud / myopenHAB.org setup
 
@@ -495,7 +495,7 @@ When only a Program ID and timestamp are available, it falls back to the Program
 
 Fixed schedule rules are represented by `schedule` Things and keep the established schedule channel IDs.
 
-Flex schedules use `FlexScheduleRuleService` for metadata/readback and expose the supported ScheduleRuleService commands using the flex schedule rule ID.
+Flex schedules use lower-case-hyphen channel IDs and expose the same command operations as fixed schedules.
 
 | Fixed schedule channel   | Flex schedule channel    | Description                                                                                                                                                  |
 | :---                     | :---                     | :---                                                                                                                                                         |
@@ -506,21 +506,21 @@ Flex schedules use `FlexScheduleRuleService` for metadata/readback and expose th
 | `lastRun`                | `last-run`               | Last run time when Rachio provides a usable best-effort field.                                                                                               |
 | `nextRun`                | `next-run`               | Next run time when Rachio provides a usable best-effort field.                                                                                               |
 | `zones`                  | `zones`                  | Comma-separated Rachio zone IDs associated with the schedule.                                                                                                |
-| `seasonalAdjustment`     | `seasonal-adjustment`    | `Number:Dimensionless` seasonal adjustment value. Sending a plain number updates the rule through ScheduleRuleService.                                      |
-| `start`                  | `start`                  | Send ON to start the schedule rule through ScheduleRuleService.                                                                                              |
-| `skip`                   | `skip`                   | Send ON to skip the schedule rule through ScheduleRuleService.                                                                                               |
-| `skipForwardZoneRun`     | `skip-forward-zone-run` | Send ON to skip the currently running zone in the schedule context through ScheduleRuleService.                                                             |
+| `seasonalAdjustment`    | `seasonal-adjustment`    | `Number:Dimensionless` seasonal adjustment value. Sending a plain number updates the corresponding rule.                                                     |
+| `start`                  | `start`                  | Send ON to start the schedule rule.                                                                                                                           |
+| `skip`                   | `skip`                   | Send ON to skip the schedule rule.                                                                                                                            |
+| `skipForwardZoneRun`    | `skip-forward-zone-run`  | Send ON to skip the currently running zone in this schedule context.                                                                                          |
 | `lastUpdate`             | `last-update`            | Timestamp of last schedule state update.                                                                                                                     |
+
+Fixed schedule metadata is loaded through ScheduleRuleService with `GET /public/schedulerule/:id`.
+Flex schedule metadata is loaded through FlexScheduleRuleService with `GET /public/flexschedulerule/:id`.
+Commands for both fixed and flex schedules use the ScheduleRuleService `start`, `skip`, `seasonal_adjustment`, and `skip_forward_zone_run` endpoints with the corresponding rule ID.
 
 Manual schedule creation requires `scheduleRuleId`.
 
 Manual flex schedule creation requires `flexScheduleRuleId`.
 
 Discovery creates schedule and flex schedule Things when the Rachio controller payload includes the corresponding rule IDs.
-
-Fixed schedule metadata is read from `/public/schedulerule/:id`.
-Flex schedule metadata is read from `/public/flexschedulerule/:id`.
-Commands for both Thing types use the ScheduleRuleService endpoints with the corresponding schedule rule ID.
 
 Schedule and flex schedule DateTime channels support epoch milliseconds, epoch seconds, numeric strings, and ISO-8601 strings when those fields are present.
 `lastRun`/`last-run` and `nextRun`/`next-run` remain `UNDEF` when the Rachio API response does not include a usable value; the binding does not fabricate dates.
@@ -568,11 +568,11 @@ Bridge rachio:cloud:1 @ "Sprinkler" [
     clearAllCallbacks=false
 ] {
     Thing device controller "Rachio Controller" @ "Sprinkler" [
-        deviceId="811aea42-2bf5-4761-9f97-900108d6f04e"
+        deviceId="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
     ]
 
     Thing zone controller-zone1 "Front Lawn" @ "Sprinkler" [
-        zoneId="a4f319e9-f88e-476f-b341-0ea571a202a0"
+        zoneId="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
     ]
 
     Thing schedule morning "Morning Schedule" @ "Sprinkler" [
