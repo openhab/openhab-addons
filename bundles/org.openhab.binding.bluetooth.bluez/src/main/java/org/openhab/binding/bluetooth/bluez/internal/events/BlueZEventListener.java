@@ -64,4 +64,12 @@ public interface BlueZEventListener {
     default void onServicesResolved(ServicesResolvedEvent event) {
         onDBusBlueZEvent(event);
     }
+
+    default void onDeviceRemoved(DeviceRemovedEvent event) {
+        onDBusBlueZEvent(event);
+    }
+
+    default void onAdapterRemoved(AdapterRemovedEvent event) {
+        onDBusBlueZEvent(event);
+    }
 }
