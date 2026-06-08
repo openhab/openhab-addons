@@ -102,9 +102,6 @@ public class UniFiControllerBridgeHandler extends BaseBridgeHandler {
 
         HttpClient client = httpClientFactory.createHttpClient(UniFiBindingConstants.BINDING_ID,
                 new SslContextFactory.Client(true));
-        // The console answers some requests with a 401 that carries no WWW-Authenticate header (seen on
-        // recent UniFi OS / Protect firmware) which Jetty intercepts and throws an exception before we can process
-        client.getProtocolHandlers().remove(WWWAuthenticationProtocolHandler.NAME);
         try {
             client.start();
         } catch (Exception e) {
@@ -114,6 +111,10 @@ public class UniFiControllerBridgeHandler extends BaseBridgeHandler {
             sessionFuture.completeExceptionally(new UniFiException("Failed to start HTTP client", e));
             return;
         }
+        // The console answers some requests with a 401 that carries no WWW-Authenticate header (seen on
+        // recent UniFi OS / Protect firmware) which Jetty intercepts and throws an exception before we can process
+        // Must be after start(): doStart() registers the default protocol handlers.
+        client.getProtocolHandlers().remove(WWWAuthenticationProtocolHandler.NAME);
         httpClient = client;
 
         String baseUrl = "https://" + config.host + ":" + config.port;
