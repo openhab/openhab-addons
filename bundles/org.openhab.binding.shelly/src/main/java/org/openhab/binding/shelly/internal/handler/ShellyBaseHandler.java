@@ -391,10 +391,10 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             }
         } else if (tmpPrf.settings.coiot != null && tmpPrf.settings.coiot.updatePeriod != null) {
             // Derive from CoAP update interval, usually 2*15+10s=40sec -> 70sec
-            tmpPrf.updatePeriod = Math.max(UPDATE_SETTINGS_INTERVAL_SECONDS,
-                    2 * getInteger(tmpPrf.settings.coiot.updatePeriod)) + 10;
+            tmpPrf.updatePeriod = 2 * //
+                    Math.max(UPDATE_SETTINGS_INTERVAL_SECONDS, getInteger(tmpPrf.settings.coiot.updatePeriod)) + 10;
         } else {
-            tmpPrf.updatePeriod = UPDATE_SETTINGS_INTERVAL_SECONDS + 10;
+            tmpPrf.updatePeriod = 2 * UPDATE_SETTINGS_INTERVAL_SECONDS + 10;
         }
 
         tmpPrf.status = api.getStatus(); // update thing properties

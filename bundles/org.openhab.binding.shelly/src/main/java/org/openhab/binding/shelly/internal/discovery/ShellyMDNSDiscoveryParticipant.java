@@ -52,6 +52,17 @@ import org.slf4j.LoggerFactory;
 /**
  * This class identifies Shelly devices by their mDNS service information.
  *
+ * On discovery result
+ * - Extract IPv4 address from ServiceInfo.getInet4Addresses()
+ * - Read the gen TXT record ("2", "3", "4" → Gen2) and fall back to
+ * ShellyDeviceProfile.isGeneration2(serviceName) for older firmware that
+ * does not publish the property
+ * - Capture a local snapshot of this.bindingConfig (volatile field) to avoid a
+ * TOCTOU race with concurrent @Modified callbacks
+ * - Probe the device via HTTP to read /shelly or /settings and confirm its type
+ * - Call ShellyThingCreator.getThingUID() to map the device type string to a ThingTypeUID
+ * - Build and return a DiscoveryResult with the device's IP as deviceIp property
+ *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault

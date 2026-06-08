@@ -16,13 +16,21 @@ import static org.openhab.binding.shelly.internal.ShellyBindingConstants.DEFAULT
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.shelly.internal.ShellyHandlerFactory;
+import org.openhab.binding.shelly.internal.handler.ShellyBaseHandler;
 import org.openhab.core.net.NetworkAddressService;
 
 /**
- * Runtime binding configuration derived from {@link ShellyBindingConfiguration}.
+ * Runtime snapshot derived from {@link ShellyBindingConfiguration} plus
+ * runtime binding configuration derived from {@link ShellyBindingConfiguration}.
+ *
  * Resolves the local IP address (config override wins; falls back to
  * {@link NetworkAddressService}) and carries the HTTP port once the OSGi HTTP
- * service has started. Thread-safe.
+ * service has started.
+ *
+ * Thread-safe (mutable object with synchronized access, updated in-place).
+ * Held as volatile in {@link ShellyHandlerFactory} and {@link ShellyBaseHandler} to
+ * guarantee safe publication after @Modified callbacks.
  *
  * @author Markus Michels - Initial contribution
  */
