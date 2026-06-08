@@ -23,6 +23,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -63,20 +64,20 @@ public class MatterWebsocketService {
     private static final int SHUTDOWN_TIMEOUT_SECONDS = 3;
     // Delay before retrying to start the node process if it fails
     private static final int STARTUP_RETRY_DELAY_SECONDS = 30;
-    private final List<NodeProcessListener> processListeners = new ArrayList<>();
+    private final List<NodeProcessListener> processListeners = new CopyOnWriteArrayList<>();
     private final ExecutorService executorService = Executors.newFixedThreadPool(3,
             new NamedThreadFactory("matter.MatterWebsocketService-executor"));
     private final ScheduledExecutorService scheduler = ThreadPoolManager
             .getScheduledPool("matter.MatterWebsocketService-scheduler");
     private final NodeJSRuntimeManager nodeManager;
-    private @Nullable ScheduledFuture<?> notifyFuture;
-    private @Nullable ScheduledFuture<?> restartFuture;
+    private volatile @Nullable ScheduledFuture<?> notifyFuture;
+    private volatile @Nullable ScheduledFuture<?> restartFuture;
     // The Node.js process running the matter.js script
-    private @Nullable Process nodeProcess;
+    private volatile @Nullable Process nodeProcess;
     // The state of the service, STARTING, READY, SHUTTING_DOWN
-    private ServiceState state = ServiceState.STARTING;
+    private volatile ServiceState state = ServiceState.STARTING;
     // the port the node process is listening on
-    private int port;
+    private volatile int port;
     private AtomicBoolean restarting = new AtomicBoolean(false);
 
     @Activate
@@ -112,6 +113,7 @@ public class MatterWebsocketService {
         state = ServiceState.SHUTTING_DOWN;
         cancelFutures();
         Process nodeProcess = this.nodeProcess;
+        this.nodeProcess = null;
         if (nodeProcess != null && nodeProcess.isAlive()) {
             nodeProcess.destroy();
             try {
@@ -135,13 +137,19 @@ public class MatterWebsocketService {
     }
 
     private void cancelFutures() {
+        cancelNotifyFuture();
+        ScheduledFuture<?> restartFuture = this.restartFuture;
+        if (restartFuture != null && restartFuture.cancel(true)) {
+            restarting.set(false);
+        }
+    }
+
+    private void cancelNotifyFuture() {
         ScheduledFuture<?> notifyFuture = this.notifyFuture;
         if (notifyFuture != null) {
+            // null the field so the next startup re-arms the READY transition in processStream()
             notifyFuture.cancel(true);
-        }
-        ScheduledFuture<?> restartFuture = this.restartFuture;
-        if (restartFuture != null) {
-            restartFuture.cancel(true);
+            this.notifyFuture = null;
         }
     }
 
@@ -182,21 +190,21 @@ public class MatterWebsocketService {
         command.addAll(List.of(additionalArgs));
 
         ProcessBuilder pb = new ProcessBuilder(command);
-        nodeProcess = pb.start();
+        Process process = pb.start();
+        nodeProcess = process;
 
         // Start output and error stream readers
-        executorService.submit(this::readOutputStream);
-        executorService.submit(this::readErrorStream);
+        executorService
+                .submit(() -> processStream(process.getInputStream(), "Error reading Node process output", true));
+        executorService.submit(
+                () -> processStream(process.getErrorStream(), "Error reading Node process error stream", false));
 
         // Wait for the process to exit in a separate thread
         executorService.submit(() -> {
             int exitCode = -1;
             try {
-                Process nodeProcess = this.nodeProcess;
-                if (nodeProcess != null) {
-                    exitCode = nodeProcess.waitFor();
-                    logger.debug("Node process exited with code: {}", exitCode);
-                }
+                exitCode = process.waitFor();
+                logger.debug("Node process exited with code: {}", exitCode);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 logger.debug("Interrupted while waiting for Node process to exit", e);
@@ -209,26 +217,15 @@ public class MatterWebsocketService {
                 }
 
                 if (state != ServiceState.SHUTTING_DOWN) {
+                    // the process died unexpectedly; drop a pending READY transition so it cannot flip a
+                    // dead process to READY, then schedule the restart
+                    cancelNotifyFuture();
                     logger.debug("trying to restart, state: {}", state);
                     scheduledStart(STARTUP_DELAY_SECONDS);
                 }
             }
         });
         return port;
-    }
-
-    private void readOutputStream() {
-        Process nodeProcess = this.nodeProcess;
-        if (nodeProcess != null) {
-            processStream(nodeProcess.getInputStream(), "Error reading Node process output", true);
-        }
-    }
-
-    private void readErrorStream() {
-        Process nodeProcess = this.nodeProcess;
-        if (nodeProcess != null) {
-            processStream(nodeProcess.getErrorStream(), "Error reading Node process error stream", false);
-        }
     }
 
     private void processStream(InputStream inputStream, String errorMessage, boolean triggerNotify) {
