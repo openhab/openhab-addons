@@ -193,11 +193,12 @@ public class MatterWebsocketService {
         Process process = pb.start();
         nodeProcess = process;
 
-        // Start output and error stream readers
-        executorService
-                .submit(() -> processStream(process.getInputStream(), "Error reading Node process output", true));
+        // Start output and error stream readers, bound to this specific process so a stale reader
+        // cannot drive the READY transition for a newer process
         executorService.submit(
-                () -> processStream(process.getErrorStream(), "Error reading Node process error stream", false));
+                () -> processStream(process, process.getInputStream(), "Error reading Node process output", true));
+        executorService.submit(() -> processStream(process, process.getErrorStream(),
+                "Error reading Node process error stream", false));
 
         // Wait for the process to exit in a separate thread
         executorService.submit(() -> {
@@ -228,16 +229,20 @@ public class MatterWebsocketService {
         return port;
     }
 
-    private void processStream(InputStream inputStream, String errorMessage, boolean triggerNotify) {
+    private void processStream(Process process, InputStream inputStream, String errorMessage, boolean triggerNotify) {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                // we only want to do this once!
-                if (state == ServiceState.STARTING && triggerNotify && notifyFuture == null) {
+                // we only want to do this once, and only for the process this reader belongs to
+                if (state == ServiceState.STARTING && triggerNotify && notifyFuture == null
+                        && process.equals(nodeProcess)) {
                     notifyFuture = scheduler.schedule(() -> {
-                        state = ServiceState.READY;
                         this.notifyFuture = null;
-                        notifyReadyListeners();
+                        // only flip to READY if this is still the current, live process
+                        if (process.equals(nodeProcess) && process.isAlive() && state == ServiceState.STARTING) {
+                            state = ServiceState.READY;
+                            notifyReadyListeners();
+                        }
                     }, STARTUP_DELAY_SECONDS, TimeUnit.SECONDS);
                 }
                 if (logger.isTraceEnabled()) {
