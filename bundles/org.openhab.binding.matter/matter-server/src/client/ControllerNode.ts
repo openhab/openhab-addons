@@ -11,6 +11,16 @@ import { DclOtaUpdateService, PhysicalDeviceProperties } from "@matter/main/prot
 
 const logger = Logger.get("ControllerNode");
 
+// Attributes that are always read fresh from the device, even when the rest of the node is served from the
+// local subscription cache (requestFromRemote=false). softwareVersion/softwareVersionString only change on a
+// firmware update, so after a device reboots onto new firmware the cached value can be stale - and it is
+// surfaced as the Thing's firmware-version property, so it must be accurate. The cost is one tiny read of a
+// rarely-changing attribute per serialization, with a fallback to the cached value if the read fails.
+const ALWAYS_FRESH_ATTRIBUTES: Record<string, ReadonlySet<string>> = {
+    BasicInformation: new Set(["softwareVersion", "softwareVersionString"]),
+    BridgedDeviceBasicInformation: new Set(["softwareVersion", "softwareVersionString"]),
+};
+
 function extractPhysicalProperties(node: PairedNode | undefined): PhysicalDeviceProperties | undefined {
     if (!node) return undefined;
     try {
@@ -162,6 +172,25 @@ export class ControllerNode {
         });
         this.observers.on(updateManagerEvents.updateDone, peer => {
             logger.info(`Update done for peer `, peer);
+            const nodeId = peer?.nodeId;
+            if (!nodeId) {
+                logger.error(`Node ID not found for peer `, peer);
+                return;
+            }
+            // matter.js only emits updateDone once the device has already rebooted onto the new firmware and
+            // re-established its session, so it is reachable now and we refresh immediately. The serialized node
+            // (and thus the Thing's firmware-version property) is normally built from the local subscription cache
+            // (requestFromRemote=false), which may still hold the pre-update version until the subscription has
+            // re-primed; forcing a fresh remote read makes the reported version reflect the firmware just installed,
+            // rebuilds the structure/channels and brings the Thing (set OFFLINE while applying) back ONLINE in one
+            // step. If the device should be briefly unreachable again, sendSerializedNode triggers a reconnect on
+            // failure and ALWAYS_FRESH_ATTRIBUTES corrects the version on the next serialization. OTA is rare, so a
+            // one-off full read is cheap.
+            try {
+                this.sendSerializedNode(this.getNode(nodeId), undefined, true);
+            } catch (e) {
+                logger.error(`Could not refresh node ${nodeId} after OTA update: ${e}`);
+            }
         });
 
         // Query for updates now once
@@ -455,7 +484,22 @@ export class ControllerNode {
                     if (/^\d+$/.test(attributeName)) continue;
                     const attribute = cluster.attributes[attributeName];
                     if (!attribute) continue;
-                    const attributeValue = await attribute.get(requestFromRemote);
+                    // Force a fresh remote read for attributes that must never be served stale from the cache
+                    // (see ALWAYS_FRESH_ATTRIBUTES), but fall back to the cached value if that read fails so one
+                    // flaky read of a single attribute never fails the whole node serialization.
+                    const forceFresh =
+                        !requestFromRemote && (ALWAYS_FRESH_ATTRIBUTES[cluster.name]?.has(attributeName) ?? false);
+                    let attributeValue: any;
+                    if (forceFresh) {
+                        try {
+                            attributeValue = await attribute.get(true);
+                        } catch (e) {
+                            logger.debug(`Fresh read of ${cluster.name}.${attributeName} failed, using cache: ${e}`);
+                            attributeValue = await attribute.get(false);
+                        }
+                    } else {
+                        attributeValue = await attribute.get(requestFromRemote);
+                    }
                     logger.debug(`Attribute ${attributeName} value: ${attributeValue}`);
                     if (attributeValue !== undefined) {
                         clusterData[attributeName] = attributeValue;
