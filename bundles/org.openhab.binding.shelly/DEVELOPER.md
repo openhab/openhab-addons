@@ -29,24 +29,6 @@ The format specification documents all object IDs, data types, encoding rules, a
 
 Device specifications, parameters, wiring diagrams, and firmware changelogs for all Shelly products: <https://kb.shelly.cloud/knowledge-base/devices>
 
-### Sample API Responses
-
-Raw JSON payloads captured from real devices, organised by generation.
-Use these as a reference when adding a new device model or mapping a new DTO field — they show exactly what the device returns, including optional/fw-version-dependent fields.
-
-| File                                                                                       | Coverage                                     |
-|--------------------------------------------------------------------------------------------|----------------------------------------------|
-| [DEVNOTES - API JSON Samples.md](./doc/DEVNOTES%20-%20API%20JSON%20Samples.md)             | Gen1 (`/settings`, `/status`, `/shelly`, …)  |
-| [DEVNOTES - Gen2 API JSON Samples.md](./doc/DEVNOTES%20-%20Gen2%20API%20JSON%20Samples.md) | Gen2 RPC responses and push notifications    |
-| [DEVNOTES - Gen3 API JSON Samples.md](./doc/DEVNOTES%20-%20Gen3%20API%20JSON%20Samples.md) | Gen3 RPC responses and push notifications    |
-| [DEVNOTES - Gen4 API JSON Samples.md](./doc/DEVNOTES%20-%20Gen4%20API%20JSON%20Samples.md) | Gen4 RPC responses and push notifications    |
-| [DEVNOTES - BLU API JSON Samples.md](./doc/DEVNOTES%20-%20BLU%20API%20JSON%20Samples.md) | BLU BLE advertisement and gateway RPC messages |
-
-You can find those under </https://github.com/markus7017/myfiles/tree/master/shelly>.
-
-> **Note:** Samples reflect a specific firmware version at the time of capture.
-> Fields may be added or renamed across firmware releases — always cross-check against the official API documentation when in doubt.
-
 ### Minimum Firmware Requirements
 
 | Generation             | Minimum Version | Notes                                                   |
@@ -402,7 +384,7 @@ refreshStatus()
 
 ### `ShellyDiscoveryInterface` and `ShellyApiInterface`
 
-`ShellyApiInterface extends ShellyDiscoveryInterface`. 
+`ShellyApiInterface` extends `ShellyDiscoveryInterface`.
 `ShellyDiscoveryInterface` carries the four lifecycle methods used by both the discovery service and the full handler:
 
 ```java
@@ -417,7 +399,7 @@ Implementations (`Shelly2ApiRpc`, `ShellyBluApi`, `Shelly2ApiClient`) handle any
 The discovery service instantiates `Shelly2ApiClient` directly (not `Shelly2ApiRpc`) and calls `api.initialize()` on a `ShellyDiscoveryInterface`-typed variable; the empty override in
 `Shelly2ApiClient` satisfies the interface contract.
 
-`ShellyApiInterface` adds all device-control methods. 
+`ShellyApiInterface` adds all device-control methods.
 
 Key groups:
 All methods throw `ShellyApiException`, which wraps HTTP errors, parse failures, and connectivity problems.
@@ -723,13 +705,6 @@ ShellyHandlerFactory.modified()
 ```
 
 Both paths compute the derived `apiConfig` before writing any fields, ensuring a concurrent scheduler thread never observes a `config`/`bindingConfig` combination that does not match the `apiConfig` it reads.
-
-### Data Transfer Objects (DTOs)
-
-> **Tip:** Real-world JSON samples for every generation are collected in the DEVNOTES files — see [Resources → Sample API Responses](#sample-api-responses).
-> They are invaluable when mapping a new field or device type to a DTO class.
-
-All JSON API responses are deserialized by Gson into static inner classes in two files:
 
 ## Discovery
 
