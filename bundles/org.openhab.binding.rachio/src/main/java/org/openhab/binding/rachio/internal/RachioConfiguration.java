@@ -14,12 +14,9 @@ package org.openhab.binding.rachio.internal;
 
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.*;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -29,15 +26,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link RachioConfiguration} contains the binding configuration and default values. The field names represent the
- * configuration names, do not rename them if you don't intend to break the configuration interface.
+ * The {@link RachioConfiguration} contains the Rachio Cloud Connector Thing configuration and default values. The field
+ * names represent the configuration names, do not rename them if you don't intend to break the configuration interface.
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
 public class RachioConfiguration {
     private static final String REDACTED = "[redacted]";
-    private static final String REDACTED_INVALID_URL = "[redacted invalid URL]";
     private static final List<String> CONFIGURATION_PARAMETERS = List.of(PARAM_APIKEY, PARAM_POLLING_INTERVAL,
             PARAM_DEF_RUNTIME, PARAM_CALLBACK_URL, PARAM_CALLBACK_USERNAME, PARAM_CALLBACK_PASSWORD,
             PARAM_CLEAR_CALLBACK, PARAM_EVENT_HISTORY_LOOKBACK_HOURS, PARAM_FORECAST_UNITS,
@@ -61,14 +57,8 @@ public class RachioConfiguration {
     public RachioConfiguration() {
     }
 
-    public RachioConfiguration(RachioConfiguration source) {
-        copyValuesFrom(source);
-        configuredParameters.addAll(source.configuredParameters);
-    }
-
     public enum ConfigurationSource {
         CLOUD_THING("Cloud Thing"),
-        DEPRECATED_BINDING_FALLBACK("deprecated binding fallback"),
         DEFAULT("built-in default");
 
         private final String label;
@@ -104,19 +94,12 @@ public class RachioConfiguration {
         }
     }
 
-    public static ResolvedConfiguration resolveEffectiveConfig(RachioConfiguration bindingFallback,
+    public static ResolvedConfiguration resolveEffectiveConfig(
             @Nullable Map<String, @Nullable Object> cloudThingConfig) {
         RachioConfiguration effectiveConfig = new RachioConfiguration();
         Map<String, ConfigurationSource> sources = new HashMap<>();
         for (String parameterName : CONFIGURATION_PARAMETERS) {
             sources.put(parameterName, ConfigurationSource.DEFAULT);
-        }
-
-        effectiveConfig.applyConfiguredValuesFrom(bindingFallback);
-        for (String parameterName : CONFIGURATION_PARAMETERS) {
-            if (bindingFallback.hasConfiguredValue(parameterName)) {
-                sources.put(parameterName, ConfigurationSource.DEPRECATED_BINDING_FALLBACK);
-            }
         }
 
         effectiveConfig.updateConfig(cloudThingConfig);
@@ -141,7 +124,7 @@ public class RachioConfiguration {
         }
         for (Map.Entry<String, @Nullable Object> ce : config.entrySet()) {
             String key = ce.getKey();
-            if ("component.name".equalsIgnoreCase(key) || "component.id".equalsIgnoreCase(key)) {
+            if (key.equalsIgnoreCase("component.name") || key.equalsIgnoreCase("component.id")) {
                 continue;
             }
             if (ce.getValue() == null) {
@@ -151,8 +134,8 @@ public class RachioConfiguration {
             Object configValue = ce.getValue();
             String value = configValue != null ? configValue.toString() : "";
 
-            if ("service.pid".equalsIgnoreCase(key)) {
-                logger.debug("Rachio: Binding configuration:");
+            if (key.equalsIgnoreCase("service.pid")) {
+                logger.debug("Rachio: Cloud Connector configuration:");
             }
             logger.debug("  {}={}", key, sanitizeValueForLogging(key, value));
 
@@ -175,7 +158,8 @@ public class RachioConfiguration {
             } else if (parameterName.equals(PARAM_CALLBACK_PASSWORD)) {
                 this.callbackPassword = value;
             } else if (parameterName.equals(PARAM_CLEAR_CALLBACK)) {
-                this.clearAllCallbacks = "true".equalsIgnoreCase(value);
+                String str = value;
+                this.clearAllCallbacks = str.toLowerCase().equals("true");
             } else if (parameterName.equals(PARAM_EVENT_HISTORY_LOOKBACK_HOURS)) {
                 this.eventHistoryLookbackHours = parseEventHistoryLookbackHours(value);
             } else if (parameterName.equals(PARAM_FORECAST_UNITS)) {
@@ -193,61 +177,6 @@ public class RachioConfiguration {
     public boolean hasConfiguredValue(String parameterName) {
         String canonicalParameterName = canonicalParameterName(parameterName);
         return canonicalParameterName != null && configuredParameters.contains(canonicalParameterName);
-    }
-
-    private void applyConfiguredValuesFrom(RachioConfiguration source) {
-        for (String parameterName : CONFIGURATION_PARAMETERS) {
-            if (source.hasConfiguredValue(parameterName)) {
-                copyValueFrom(source, parameterName);
-                configuredParameters.add(parameterName);
-            }
-        }
-    }
-
-    private void copyValuesFrom(RachioConfiguration source) {
-        for (String parameterName : CONFIGURATION_PARAMETERS) {
-            copyValueFrom(source, parameterName);
-        }
-    }
-
-    private void copyValueFrom(RachioConfiguration source, String parameterName) {
-        switch (parameterName) {
-            case PARAM_APIKEY:
-                apikey = source.apikey;
-                break;
-            case PARAM_POLLING_INTERVAL:
-                pollingInterval = source.pollingInterval;
-                break;
-            case PARAM_DEF_RUNTIME:
-                defaultRuntime = source.defaultRuntime;
-                break;
-            case PARAM_CALLBACK_URL:
-                callbackUrl = source.callbackUrl;
-                break;
-            case PARAM_CALLBACK_USERNAME:
-                callbackUsername = source.callbackUsername;
-                break;
-            case PARAM_CALLBACK_PASSWORD:
-                callbackPassword = source.callbackPassword;
-                break;
-            case PARAM_CLEAR_CALLBACK:
-                clearAllCallbacks = source.clearAllCallbacks;
-                break;
-            case PARAM_EVENT_HISTORY_LOOKBACK_HOURS:
-                eventHistoryLookbackHours = source.eventHistoryLookbackHours;
-                break;
-            case PARAM_FORECAST_UNITS:
-                forecastUnits = source.forecastUnits;
-                break;
-            case PARAM_HOSE_SUMMARY_LOOKBACK_DAYS:
-                hoseSummaryLookbackDays = source.hoseSummaryLookbackDays;
-                break;
-            case PARAM_HOSE_SUMMARY_LOOKAHEAD_DAYS:
-                hoseSummaryLookaheadDays = source.hoseSummaryLookaheadDays;
-                break;
-            default:
-                break;
-        }
     }
 
     private static @Nullable String canonicalParameterName(String key) {
@@ -281,7 +210,7 @@ public class RachioConfiguration {
     }
 
     private String parseForecastUnits(String value) {
-        String normalizedValue = value.trim().toUpperCase(Locale.ROOT);
+        String normalizedValue = value.trim().toUpperCase();
         if ("METRIC".equals(normalizedValue) || "US".equals(normalizedValue)) {
             return normalizedValue;
         }
@@ -328,54 +257,6 @@ public class RachioConfiguration {
         if (value.isBlank()) {
             return value;
         }
-
-        try {
-            URI uri = new URI(value);
-            String rawUserInfo = uri.getRawUserInfo();
-            String rawAuthority = uri.getRawAuthority();
-            if (rawUserInfo == null) {
-                if (rawAuthority != null && rawAuthority.contains("@")) {
-                    return REDACTED_INVALID_URL;
-                }
-                return value;
-            }
-
-            if (rawAuthority == null) {
-                return REDACTED_INVALID_URL;
-            }
-
-            String userInfoPrefix = rawUserInfo + "@";
-            if (!rawAuthority.startsWith(userInfoPrefix)
-                    || rawAuthority.indexOf('@') != rawAuthority.lastIndexOf('@')) {
-                return REDACTED_INVALID_URL;
-            }
-
-            return buildCallbackUrlForLogging(uri, "***:***@" + rawAuthority.substring(userInfoPrefix.length()));
-        } catch (URISyntaxException e) {
-            return REDACTED_INVALID_URL;
-        }
-    }
-
-    private String buildCallbackUrlForLogging(URI uri, String sanitizedAuthority) {
-        StringBuilder url = new StringBuilder();
-        String scheme = uri.getScheme();
-        if (scheme != null) {
-            url.append(scheme).append(":");
-        }
-        url.append("//").append(sanitizedAuthority);
-
-        String path = uri.getRawPath();
-        if (path != null) {
-            url.append(path);
-        }
-        String query = uri.getRawQuery();
-        if (query != null) {
-            url.append("?").append(query);
-        }
-        String fragment = uri.getRawFragment();
-        if (fragment != null) {
-            url.append("#").append(fragment);
-        }
-        return url.toString();
+        return REDACTED;
     }
 }

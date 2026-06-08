@@ -13,18 +13,18 @@
 		<description>A fixed Rachio sprinkler schedule rule.</description>
 
 		<channels>
-			<channel id="name" typeId="schedule-rule-name"/>
-			<channel id="enabled" typeId="schedule-rule-enabled"/>
-			<channel id="type" typeId="schedule-rule-type"/>
-			<channel id="start-time" typeId="schedule-rule-start-time"/>
-			<channel id="last-run" typeId="schedule-rule-last-run"/>
-			<channel id="next-run" typeId="schedule-rule-next-run"/>
-			<channel id="zones" typeId="schedule-rule-zones"/>
-			<channel id="seasonal-adjustment" typeId="schedule-rule-seasonal-adjustment"/>
-			<channel id="start" typeId="schedule-rule-start"/>
-			<channel id="skip" typeId="schedule-rule-skip"/>
-			<channel id="skip-forward-zone-run" typeId="schedule-rule-skip-forward-zone-run"/>
-			<channel id="last-update" typeId="last-update"/>
+			<channel id="name" typeId="schedule_name"/>
+			<channel id="enabled" typeId="schedule_enabled"/>
+			<channel id="type" typeId="schedule_type"/>
+			<channel id="startTime" typeId="schedule_startTime"/>
+			<channel id="lastRun" typeId="schedule_lastRun"/>
+			<channel id="nextRun" typeId="schedule_nextRun"/>
+			<channel id="zones" typeId="schedule_zones"/>
+			<channel id="seasonalAdjustment" typeId="schedule_seasonalAdjustment"/>
+			<channel id="start" typeId="schedule_start"/>
+			<channel id="skip" typeId="schedule_skip"/>
+			<channel id="skipForwardZoneRun" typeId="schedule_skipForwardZoneRun"/>
+			<channel id="lastUpdate" typeId="lastUpdate"/>
 		</channels>
 
 		<properties>
@@ -41,7 +41,7 @@
 		</config-description>
 	</thing-type>
 
-	<channel-type id="schedule-rule-name">
+	<channel-type id="schedule_name">
 		<item-type>String</item-type>
 		<label>Name</label>
 		<description>Schedule rule name.</description>
@@ -50,7 +50,7 @@
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="schedule-rule-enabled">
+	<channel-type id="schedule_enabled">
 		<item-type>Switch</item-type>
 		<label>Enabled</label>
 		<description>ON if the schedule rule is enabled.</description>
@@ -59,49 +59,49 @@
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="schedule-rule-type">
+	<channel-type id="schedule_type">
 		<item-type>String</item-type>
 		<label>Type</label>
 		<description>Schedule rule type.</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="schedule-rule-start-time">
+	<channel-type id="schedule_startTime">
 		<item-type>DateTime</item-type>
 		<label>Start Time</label>
-		<description>Schedule rule start time when provided by Rachio.</description>
+		<description>Schedule rule start time from Rachio startDate, with startTime used as a fallback when present.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Timestamp</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="schedule-rule-last-run">
+	<channel-type id="schedule_lastRun">
 		<item-type>DateTime</item-type>
 		<label>Last Run</label>
-		<description>Last run time when provided by Rachio.</description>
+		<description>Last run time when provided by Rachio. Remains UNDEF when the API does not provide a usable value.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Timestamp</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="schedule-rule-next-run">
+	<channel-type id="schedule_nextRun">
 		<item-type>DateTime</item-type>
 		<label>Next Run</label>
-		<description>Next run time when provided by Rachio.</description>
+		<description>Next run time when provided by Rachio. Remains UNDEF when the API does not provide a usable value.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Timestamp</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="schedule-rule-zones">
+	<channel-type id="schedule_zones">
 		<item-type>String</item-type>
 		<label>Zones</label>
 		<description>Comma-separated Rachio zone IDs associated with this schedule.</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="schedule-rule-seasonal-adjustment">
+	<channel-type id="schedule_seasonalAdjustment">
 		<item-type unitHint="one">Number:Dimensionless</item-type>
 		<label>Seasonal Adjustment</label>
 		<description>Seasonal adjustment value for the schedule rule. Sending a number updates the adjustment.</description>
@@ -109,7 +109,7 @@
 			<tag>Control</tag>
 		</tags>
 	</channel-type>
-	<channel-type id="schedule-rule-start">
+	<channel-type id="schedule_start">
 		<item-type>Switch</item-type>
 		<label>Start Schedule</label>
 		<description>Send ON to start this schedule rule.</description>
@@ -118,7 +118,7 @@
 			<tag>Water</tag>
 		</tags>
 	</channel-type>
-	<channel-type id="schedule-rule-skip">
+	<channel-type id="schedule_skip">
 		<item-type>Switch</item-type>
 		<label>Skip Schedule</label>
 		<description>Send ON to skip this schedule rule.</description>
@@ -126,7 +126,7 @@
 			<tag>Control</tag>
 		</tags>
 	</channel-type>
-	<channel-type id="schedule-rule-skip-forward-zone-run">
+	<channel-type id="schedule_skipForwardZoneRun">
 		<item-type>Switch</item-type>
 		<label>Skip Forward Zone Run</label>
 		<description>Send ON to skip the currently running zone in this schedule context.</description>

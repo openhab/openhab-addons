@@ -14,6 +14,7 @@ package org.openhab.binding.rachio.internal.api;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
 
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
@@ -49,5 +50,42 @@ class RachioApiExceptionTest {
         String message = new RachioApiException("Request failed", new IllegalStateException("boom")).toString();
 
         assertThat(message, containsString("java.lang.IllegalStateException: boom (boom)"));
+    }
+
+    @Test
+    void wrappedExceptionMessageSanitizesTokensFromCause() {
+        String message = new RachioApiException("Request failed",
+                new IllegalStateException("Authorization: Bearer cause-secret-token")).toString();
+
+        assertThat(message, containsString("Bearer [redacted]"));
+        assertThat(message, not(containsString("cause-secret-token")));
+    }
+
+    @Test
+    void directExceptionMessageSanitizesTokens() {
+        String message = new RachioApiException("Request failed with apikey=direct-secret").toString();
+
+        assertThat(message, containsString("apikey=[redacted]"));
+        assertThat(message, not(containsString("direct-secret")));
+    }
+
+    @Test
+    void apiResultPayloadIsSummarizedWithoutSensitiveContent() {
+        RachioApiResult result = new RachioApiResult();
+        result.requestMethod = "GET";
+        result.url = "https://api.example.org/path?apikey=query-secret";
+        result.responseCode = 400;
+        result.resultString = """
+                {"email":"user@example.org","apikey":"body-secret","devices":[{"id":"device-id"}]}
+                """;
+
+        String message = new RachioApiException("Request failed", result).toString();
+
+        assertThat(message, containsString("resultLength="));
+        assertThat(message, containsString("apikey=[redacted]"));
+        assertThat(message, not(containsString("user@example.org")));
+        assertThat(message, not(containsString("query-secret")));
+        assertThat(message, not(containsString("body-secret")));
+        assertThat(message, not(containsString("\"devices\"")));
     }
 }

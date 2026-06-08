@@ -58,11 +58,14 @@ public class RachioDiscoveryService extends AbstractDiscoveryService implements 
 
     private final Logger logger = LoggerFactory.getLogger(RachioDiscoveryService.class);
 
-    private @Nullable Future<?> scanTask;
+    @Nullable
+    private Future<?> scanTask;
 
-    private @Nullable ScheduledFuture<?> discoveryJob;
+    @Nullable
+    private ScheduledFuture<?> discoveryJob;
 
-    private @Nullable RachioBridgeHandler cloudHandler;
+    @Nullable
+    private RachioBridgeHandler cloudHandler;
 
     @Override
     @Activate
@@ -235,6 +238,7 @@ public class RachioDiscoveryService extends AbstractDiscoveryService implements 
     private int discoverScheduleRules(ThingUID bridgeUID, RachioDevice dev) {
         int count = 0;
         for (RachioCloudScheduleRule scheduleRule : dev.scheduleRules) {
+            @Nullable
             DiscoveryResult discoveryResult = buildScheduleDiscoveryResult(bridgeUID, dev, scheduleRule);
             if (discoveryResult != null) {
                 thingDiscovered(discoveryResult);
@@ -247,6 +251,7 @@ public class RachioDiscoveryService extends AbstractDiscoveryService implements 
     private int discoverFlexScheduleRules(ThingUID bridgeUID, RachioDevice dev) {
         int count = 0;
         for (RachioCloudScheduleRule scheduleRule : dev.flexScheduleRules) {
+            @Nullable
             DiscoveryResult discoveryResult = buildFlexScheduleDiscoveryResult(bridgeUID, dev, scheduleRule);
             if (discoveryResult != null) {
                 logger.debug(
@@ -295,6 +300,7 @@ public class RachioDiscoveryService extends AbstractDiscoveryService implements 
         DiscoveryCounts counts = new DiscoveryCounts();
         try {
             for (RachioBaseStation baseStation : handler.listBaseStations()) {
+                @Nullable
                 DiscoveryResult baseStationResult = buildBaseStationDiscoveryResult(bridgeUID, baseStation);
                 if (baseStationResult != null) {
                     thingDiscovered(baseStationResult);
@@ -307,6 +313,7 @@ public class RachioDiscoveryService extends AbstractDiscoveryService implements 
                 Set<String> discoveredProgramIds = new HashSet<>();
                 try {
                     for (RachioValveProgram program : handler.listValveProgramsForBaseStation(baseStation.id)) {
+                        @Nullable
                         DiscoveryResult programResult = buildValveProgramDiscoveryResult(bridgeUID, baseStation,
                                 program);
                         if (programResult != null) {
@@ -320,6 +327,7 @@ public class RachioDiscoveryService extends AbstractDiscoveryService implements 
                             e.getMessage());
                 }
                 for (RachioValve valve : handler.listValves(baseStation.id)) {
+                    @Nullable
                     DiscoveryResult valveResult = buildValveDiscoveryResult(bridgeUID, baseStation, valve);
                     if (valveResult != null) {
                         thingDiscovered(valveResult);
@@ -333,6 +341,7 @@ public class RachioDiscoveryService extends AbstractDiscoveryService implements 
                             if (discoveredProgramIds.contains(program.id)) {
                                 continue;
                             }
+                            @Nullable
                             DiscoveryResult programResult = buildValveProgramDiscoveryResult(bridgeUID, baseStation,
                                     program);
                             if (programResult != null) {

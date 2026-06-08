@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
@@ -86,10 +85,12 @@ public class RachioSmartHoseTimerGsonDTO {
         }
 
         public boolean isOnline() {
+            @Nullable
             Boolean online = this.online;
             if (online != null) {
                 return online.booleanValue();
             }
+            @Nullable
             Boolean connected = this.connected;
             if (connected != null) {
                 return connected.booleanValue();
@@ -150,19 +151,23 @@ public class RachioSmartHoseTimerGsonDTO {
         }
 
         public boolean isOnline() {
+            @Nullable
             Boolean online = this.online;
             if (online != null) {
                 return online.booleanValue();
             }
+            @Nullable
             Boolean connected = this.connected;
             if (connected != null) {
                 return connected.booleanValue();
             }
             RachioValveState state = getState();
+            @Nullable
             Boolean stateOnline = state.online;
             if (stateOnline != null) {
                 return stateOnline.booleanValue();
             }
+            @Nullable
             Boolean stateConnected = state.connected;
             if (stateConnected != null) {
                 return stateConnected.booleanValue();
@@ -194,6 +199,7 @@ public class RachioSmartHoseTimerGsonDTO {
         }
 
         public int getDefaultRuntimeSeconds() {
+            @Nullable
             Integer defaultRuntimeSeconds = this.defaultRuntimeSeconds;
             if (defaultRuntimeSeconds != null && defaultRuntimeSeconds.intValue() > 0) {
                 return defaultRuntimeSeconds.intValue();
@@ -225,6 +231,7 @@ public class RachioSmartHoseTimerGsonDTO {
         public @Nullable Integer defaultRuntimeSeconds;
 
         public boolean getFlowDetected() {
+            @Nullable
             Boolean flowDetected = this.flowDetected;
             if (flowDetected != null) {
                 return flowDetected.booleanValue();
@@ -486,7 +493,7 @@ public class RachioSmartHoseTimerGsonDTO {
             if (skipped != null) {
                 return skipped.booleanValue();
             }
-            String normalizedStatus = getStatus().toUpperCase(Locale.ROOT);
+            String normalizedStatus = getStatus().toUpperCase();
             return normalizedStatus.contains("SKIP");
         }
 
@@ -540,16 +547,19 @@ public class RachioSmartHoseTimerGsonDTO {
     }
 
     public static RachioBaseStation parseBaseStation(String json) {
+        @Nullable
         RachioBaseStation baseStation = parseObject(json, RachioBaseStation.class, "baseStation", "data", "result");
         return baseStation != null ? baseStation : new RachioBaseStation();
     }
 
     public static RachioValve parseValve(String json) {
+        @Nullable
         RachioValve valve = parseObject(json, RachioValve.class, "valve", "data", "result");
         return valve != null ? valve : new RachioValve();
     }
 
     public static RachioValveProgram parseValveProgram(String json) {
+        @Nullable
         RachioValveProgram program = parseObject(json, RachioValveProgram.class, "program", "programV2", "data",
                 "result");
         return program != null ? program : new RachioValveProgram();
@@ -578,6 +588,7 @@ public class RachioSmartHoseTimerGsonDTO {
     private static <T> void addArrayEntries(List<T> values, JsonArray array, Class<T> valueType) {
         for (JsonElement element : array) {
             if (element != null && element.isJsonObject()) {
+                @Nullable
                 T value = GSON.fromJson(element, valueType);
                 if (value != null) {
                     values.add(value);

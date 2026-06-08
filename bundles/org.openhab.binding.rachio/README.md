@@ -20,7 +20,7 @@ Controller, zone, schedule, flex schedule, Smart Hose Timer base station, valve,
 | `device`        | Rachio irrigation controller.                                                                                                 |
 | `zone`          | Irrigation zone for a controller.                                                                                             |
 | `schedule`      | Fixed schedule rule.                                                                                                          |
-| `flex-schedule` | Flex schedule rule with status and ScheduleRuleService control channels.                                                      |
+| `flex-schedule` | Flex schedule rule with status and ScheduleRuleService command channels.                                                       |
 | `base-station`  | Smart Hose Timer Wi-Fi hub.                                                                                                   |
 | `valve`         | Smart Hose Timer valve with manual start/stop and default runtime control.                                                    |
 | `valve-program` | Schedule-like Smart Hose Timer API resource associated with a valve/base station, not a physical device.                      |
@@ -30,9 +30,8 @@ Controller, zone, schedule, flex schedule, Smart Hose Timer base station, valve,
 ### What changed
 
 - Account-level configuration now belongs on the Rachio Cloud Connector Thing (`rachio:cloud`).
-- Deprecated binding-level configuration is still accepted as a fallback for compatibility.
-- Cloud Connector Thing configuration is authoritative when both Thing-level and binding-level values are present.
-- Thing and channel IDs now follow the openHAB lower-case-hyphen naming convention.
+- No binding-level configuration is used; configure API, polling, runtime, webhook, and Smart Hose Timer options on the Cloud Connector Thing.
+- New Thing type IDs introduced by this update use the openHAB lower-case-hyphen naming convention, while existing released channel IDs are preserved for Item-link compatibility.
 - Several physical numeric channels now use typed Quantity Item types such as `Number:Time`, `Number:Length`, `Number:Area`, `Number:Temperature`, `Number:Speed`, and `Number:Dimensionless`.
 - Controller and zone Things should use real Rachio API UUIDs (`deviceId`, `zoneId`), not the controller MAC address.
 - Webhook callback credentials should preferably be configured through `callbackUsername` and `callbackPassword`, not embedded in `callbackUrl`.
@@ -52,7 +51,15 @@ Managed Things created with earlier test builds may need to be recreated through
 
 Text-file `.things` definitions must use the current thing IDs, for example `flex-schedule`, `base-station`, and `valve-program`.
 
-Existing Item channel links from earlier test builds must be updated to the current lower-case-hyphen channel IDs.
+Existing Item channel links from released binding versions should continue to use their established channel IDs.
+Temporary development builds may have exposed experimental channel IDs that need to be corrected manually.
+
+An Item link contains the full `ChannelUID`, including the Thing UID and channel ID.
+Changing either the Thing UID or channel ID breaks that link and requires the Item to be relinked.
+
+Flex Schedule is introduced as a new Thing type: `rachio:flex-schedule`.
+Any `rachio:flexschedule` Things created by previous development builds should be deleted and rediscovered.
+They were never part of a released binding version.
 
 Discovery is recommended for new or repaired Things because it fills the real Rachio API identifiers automatically.
 
@@ -64,33 +71,34 @@ Update manually created `.items` entries and managed Items where you want correc
 
 Runtime and delay command compatibility is preserved: plain numeric commands are still accepted and interpreted as seconds.
 
-Zone `moisture-level` plain numeric commands are still interpreted as millimeters.
+Zone `moistureLevel` plain numeric commands are still interpreted as millimeters.
 
-`moisture-percent` and `forecast-precipitation-probability` use Rachio 0..1 fraction semantics. Percent display patterns can be used if you want the UI to show a percent.
+`moisturePercent` and `forecastPrecipitationProbability` use Rachio 0..1 fraction semantics. Percent display patterns can be used if you want the UI to show a percent.
 
 | Thing type                  | Channels                                                                                             | New Item type          |
 | :---                        | :---                                                                                                 | :---                   |
-| `device`                    | `pause-time`, `run-time`, `rain-delay`, `current-schedule-duration`                                  | `Number:Time`          |
-| `device`                    | `forecast-today-high`, `forecast-today-low`                                                          | `Number:Temperature`   |
-| `device`                    | `forecast-precipitation`                                                                             | `Number:Length`        |
-| `device`                    | `forecast-precipitation-probability`                                                                 | `Number:Dimensionless` |
-| `device`                    | `forecast-wind`                                                                                      | `Number:Speed`         |
-| `zone`                      | `run-time`, `run-total`, `fixed-runtime`, `max-runtime`, `runtime-no-multiplier`                     | `Number:Time`          |
-| `zone`                      | `available-water`, `depth-of-water`, `saturated-depth-of-water`, `root-zone-depth`, `moisture-level` | `Number:Length`        |
-| `zone`                      | `yard-area-square-feet`                                                                              | `Number:Area`          |
-| `zone`                      | `management-allowed-depletion`, `efficiency`, `moisture-percent`                                     | `Number:Dimensionless` |
-| `schedule`, `flex-schedule` | `seasonal-adjustment`                                                                                | `Number:Dimensionless` |
-| `valve`                     | `run-time`, `default-runtime`, `next-planned-run-duration`, `last-completed-run-duration`            | `Number:Time`          |
-| `valve`                     | `battery-level`                                                                                      | `Number:Dimensionless` |
-| `valve-program`             | `duration`, `interval-days`                                                                          | `Number:Time`          |
-| `valve-program`             | `seasonal-adjustment`                                                                                | `Number:Dimensionless` |
+| `device`                    | `pauseTime`, `runTime`, `rainDelay`, `currentScheduleDuration`                                       | `Number:Time`          |
+| `device`                    | `forecastTodayHigh`, `forecastTodayLow`                                                              | `Number:Temperature`   |
+| `device`                    | `forecastPrecipitation`                                                                              | `Number:Length`        |
+| `device`                    | `forecastPrecipitationProbability`                                                                   | `Number:Dimensionless` |
+| `device`                    | `forecastWind`                                                                                       | `Number:Speed`         |
+| `zone`                      | `runTime`, `runTotal`, `fixedRuntime`, `maxRuntime`, `runtimeNoMultiplier`                           | `Number:Time`          |
+| `zone`                      | `availableWater`, `depthOfWater`, `saturatedDepthOfWater`, `rootZoneDepth`, `moistureLevel`          | `Number:Length`        |
+| `zone`                      | `yardAreaSquareFeet`                                                                                 | `Number:Area`          |
+| `zone`                      | `managementAllowedDepletion`, `efficiency`, `moisturePercent`                                        | `Number:Dimensionless` |
+| `schedule`                  | `seasonalAdjustment`                                                                                 | `Number:Dimensionless` |
+| `flex-schedule`             | `seasonal-adjustment`                                                                                | `Number:Dimensionless` |
+| `valve`                     | `runTime`, `defaultRuntime`, `nextPlannedRunDuration`, `lastCompletedRunDuration`                    | `Number:Time`          |
+| `valve`                     | `batteryLevel`                                                                                       | `Number:Dimensionless` |
+| `valve-program`             | `duration`, `intervalDays`                                                                           | `Number:Time`          |
+| `valve-program`             | `seasonalAdjustment`                                                                                 | `Number:Dimensionless` |
 
-Valve Program `interval-days` is represented as `Number:Time` with day semantics.
+Valve Program `intervalDays` is represented as `Number:Time` with day semantics.
 
 ```text
-Number:Time Rachio_Zone1_RunTime "Zone 1 runtime [%d s]" { channel="rachio:zone:cloud:zone1:run-time" }
-Number:Length Rachio_Zone1_MoistureLevel "Zone 1 moisture [%.1f mm]" { channel="rachio:zone:cloud:zone1:moisture-level" }
-Number:Dimensionless Rachio_ForecastPrecipProbability "Rain probability [%.0f %%]" { channel="rachio:device:cloud:controller1:forecast-precipitation-probability" }
+Number:Time Rachio_Zone1_RunTime "Zone 1 runtime [%d s]" { channel="rachio:zone:cloud:zone1:runTime" }
+Number:Length Rachio_Zone1_MoistureLevel "Zone 1 moisture [%.1f mm]" { channel="rachio:zone:cloud:zone1:moistureLevel" }
+Number:Dimensionless Rachio_ForecastPrecipProbability "Rain probability [%.0f %%]" { channel="rachio:device:cloud:controller1:forecastPrecipitationProbability" }
 ```
 
 ### Controller and zone identity migration
@@ -112,20 +120,20 @@ Manual Things are supported, but only if the correct Rachio UUIDs are configured
 The recommended callback URL for myopenHAB.org is:
 
 ```text
-https://your-public-host.example/rachio/webhook
+https://home.myopenhab.org/rachio/webhook
 ```
 
 New configurations should use separate callback fields:
 
 ```text
-callbackUrl="https://your-public-host.example/rachio/webhook"
-callbackUsername="webhook-user"
-callbackPassword="webhook-password"
+callbackUrl="https://home.myopenhab.org/rachio/webhook"
+callbackUsername="user@example.com"
+callbackPassword="raw-password-with-special-characters"
 ```
 
 Enter raw username and password values. The binding percent-encodes them internally before registering the webhook URL with Rachio.
 
-Legacy `callbackUrl` values with already-encoded embedded credentials remain supported for backward compatibility.
+Legacy `callbackUrl` values with already-encoded embedded credentials, such as `https://user%40example.com:pass%3Fword@home.myopenhab.org/rachio/webhook`, remain supported for backward compatibility.
 
 `callbackUsername` and `callbackPassword` take precedence when both models are configured.
 
@@ -140,7 +148,7 @@ Set `clearAllCallbacks=true` only as a cleanup or migration tool to remove stale
 - Existing zone Things are ONLINE.
 - Quantity channels publish expected values.
 - Sending a plain numeric runtime command still starts watering for the expected number of seconds.
-- `run-zones` plus controller `run` works for selected zones.
+- `runZones` plus controller `run` works for selected zones.
 - `stop` stops watering.
 - Webhook registration succeeds in logs, or is briefly deferred and retried automatically if the local API budget guard is active.
 - Recent event or webhook channels update after a watering event.
@@ -169,16 +177,16 @@ Create `conf/things/rachio.things` and configure the Cloud Connector:
 
 ```text
 Bridge rachio:cloud:1 [
-    apikey="your-rachio-api-key",
+    apikey="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxx",
     pollingInterval=600,
     defaultRuntime=120,
     eventHistoryLookbackHours=24,
     forecastUnits="METRIC",
     hoseSummaryLookbackDays=2,
     hoseSummaryLookaheadDays=7,
-    callbackUrl="https://your-public-host.example/rachio/webhook",
-    callbackUsername="webhook-user",
-    callbackPassword="webhook-password",
+    callbackUrl="https://home.myopenhab.org/rachio/webhook",
+    callbackUsername="user@example.com",
+    callbackPassword="raw-password-with-special-characters",
     clearAllCallbacks=false
 ]
 ```
@@ -201,22 +209,19 @@ The bridge Thing does not have channels.
 | `callbackPassword`          | Optional HTTP Basic Auth password for the webhook endpoint. Enter the raw value; the binding percent-encodes it before registering the webhook with Rachio.                              |
 | `clearAllCallbacks`         | Cleanup switch for stale Rachio callback registrations. Leave `false` for normal operation.                                                                                              |
 
-Cloud Connector Thing configuration is authoritative.
-
-The effective precedence is:
-
-```text
-Cloud Connector Thing configuration > deprecated binding-level fallback > built-in default
-```
+Cloud Connector Thing configuration is the only user configuration source.
+Built-in defaults are used for unset optional values.
+Configuration precedence is: `Cloud Connector Thing configuration > built-in defaults`.
+No binding-level or add-on-level configuration is read.
 
 ### openHAB Cloud / myopenHAB.org setup
 
 For users of [openHAB Cloud](https://www.openhab.org/docs/configuration/openhab-cloud.html) or [myopenHAB.org](https://www.myopenhab.org/), configure the public callback URL and Basic Auth credentials separately:
 
 ```text
-callbackUrl="https://your-public-host.example/rachio/webhook"
-callbackUsername="webhook-user"
-callbackPassword="webhook-password"
+callbackUrl="https://home.myopenhab.org/rachio/webhook"
+callbackUsername="user@example.com"
+callbackPassword="raw-password-with-special-characters"
 ```
 
 Webhook forwarding through openHAB Cloud / myopenHAB.org does not require exposing any Items in the Cloud Connector configuration.
@@ -254,7 +259,7 @@ Rachio API identifiers are real UUIDs from the API; a controller `deviceId` is n
 - Zone discovery and zone start/stop
 - Multiple-zone start
 - Fixed schedule discovery and basic control
-- Flex schedule discovery, status, and basic control
+- Flex schedule discovery, status, and ScheduleRuleService commands
 - Current schedule
 - Forecast
 - Recent controller events
@@ -292,54 +297,54 @@ For webhook event types, the binding queries Rachio's `listWebhookEventTypes` ca
 | `name`                               | Device name.                                                                                                               |
 | `active`                             | ON when the controller is active.                                                                                          |
 | `online`                             | ON when the controller is connected to the Rachio cloud.                                                                   |
-| `paused`                             | ON pauses the currently active zone run for `pause-time` seconds; OFF resumes the active zone run.                         |
-| `pause-time`                         | `Number:Time` duration to pause the active zone run. Plain numeric commands are seconds. Valid range is 0 to 3600 seconds. |
-| `sleep-mode`                         | ON when Rachio device sleep mode is active.                                                                                |
+| `paused`                             | ON pauses the currently active zone run for `pauseTime` seconds; OFF resumes the active zone run.                          |
+| `pauseTime`                          | `Number:Time` duration to pause the active zone run. Plain numeric commands are seconds. Valid range is 0 to 3600 seconds. |
+| `sleepMode`                          | ON when Rachio device sleep mode is active.                                                                                |
 | `stop`                               | ON stops watering for all zones.                                                                                           |
-| `run`                                | ON starts watering selected zones from `run-zones`.                                                                        |
-| `run-zones`                          | Comma-separated zone numbers to run, for example `1,3`; an empty value means all zones.                                    |
-| `run-time`                           | Controller-level `Number:Time` run duration for the multi-zone `run` command. Plain numeric commands are seconds.          |
-| `rain-delay`                         | `Number:Time` rain delay duration. Plain numeric commands are seconds; 0 means not in rain delay mode.                     |
-| `rain-sensor-tripped`                | ON when the rain sensor has tripped.                                                                                       |
-| `active-zone-number`                 | Zone number currently watering, populated from zone run webhook events.                                                    |
-| `active-zone-name`                   | Zone name currently watering, populated from zone run webhook events.                                                      |
-| `active-zone-id`                     | Rachio zone UUID currently watering, populated from zone run webhook events.                                               |
-| `last-update`                        | Timestamp of last status update.                                                                                           |
-| `last-event`                         | Last event received from the cloud.                                                                                        |
-| `last-event-time`                    | Timestamp of the last received event.                                                                                      |
-| `schedule-name`                      | Current or last executed schedule name.                                                                                    |
-| `schedule-info`                      | Description of the current or last executed schedule.                                                                      |
-| `schedule-start`                     | Schedule start time.                                                                                                       |
-| `schedule-end`                       | Schedule end time.                                                                                                         |
-| `current-schedule-running`           | ON when Rachio reports a currently running schedule from `/device/{id}/current_schedule`.                                  |
-| `current-schedule-id`                | Rachio schedule ID for the currently running schedule.                                                                     |
-| `current-schedule-name`              | Name of the currently running schedule.                                                                                    |
-| `current-schedule-type`              | Type of the currently running schedule.                                                                                    |
-| `current-schedule-start-time`        | Start time of the currently running schedule.                                                                              |
-| `current-schedule-end-time`          | End time of the currently running schedule.                                                                                |
-| `current-schedule-duration`          | `Number:Time` duration of the currently running schedule, published in seconds.                                            |
-| `last-api-event-type`                | Type of the latest event retrieved from recent device event history.                                                       |
-| `last-api-event-time`                | Time of the latest event retrieved from recent device event history.                                                       |
-| `last-api-event-summary`             | Summary of the latest event retrieved from recent device event history.                                                    |
-| `forecast-summary`                   | Forecast summary from Rachio.                                                                                              |
-| `forecast-today-high`                | Today's `Number:Temperature` high temperature in the configured forecast units.                                            |
-| `forecast-today-low`                 | Today's `Number:Temperature` low temperature in the configured forecast units.                                             |
-| `forecast-precipitation`             | Today's `Number:Length` forecast precipitation amount in the configured forecast units.                                    |
-| `forecast-precipitation-probability` | Today's `Number:Dimensionless` precipitation probability as a 0..1 fraction.                                               |
-| `forecast-wind`                      | Today's `Number:Speed` wind speed in the configured forecast units.                                                        |
-| `forecast-updated`                   | Timestamp of the forecast data when provided by Rachio.                                                                    |
-| `last-skip-type`                     | Most recent weather intelligence skip event type.                                                                          |
-| `last-skip-schedule-id`              | Schedule ID associated with the most recent weather intelligence skip event.                                               |
-| `last-skip-start-time`               | Start time associated with the most recent weather intelligence skip event.                                                |
-| `last-skip-reason`                   | Summary or reason from the most recent weather intelligence skip event.                                                    |
+| `run`                                | ON starts watering selected zones from `runZones`.                                                                         |
+| `runZones`                           | Comma-separated zone numbers to run, for example `1,3`; an empty value means all zones.                                    |
+| `runTime`                            | Controller-level `Number:Time` run duration for the multi-zone `run` command. Plain numeric commands are seconds.          |
+| `rainDelay`                          | `Number:Time` rain delay duration. Plain numeric commands are seconds; 0 means not in rain delay mode.                     |
+| `rainSensorTripped`                  | ON when the rain sensor has tripped.                                                                                       |
+| `activeZoneNumber`                   | Zone number currently watering, populated from zone run webhook events.                                                    |
+| `activeZoneName`                     | Zone name currently watering, populated from zone run webhook events.                                                      |
+| `activeZoneId`                       | Rachio zone UUID currently watering, populated from zone run webhook events.                                               |
+| `lastUpdate`                         | Timestamp of last status update.                                                                                           |
+| `lastEvent`                          | Last event received from the cloud.                                                                                        |
+| `lastEventTime`                      | Timestamp of the last received event.                                                                                      |
+| `scheduleName`                       | Current or last executed schedule name.                                                                                    |
+| `scheduleInfo`                       | Description of the current or last executed schedule.                                                                      |
+| `scheduleStart`                      | Schedule start time.                                                                                                       |
+| `scheduleEnd`                        | Schedule end time.                                                                                                         |
+| `currentScheduleRunning`             | ON when Rachio reports a currently running schedule from `/device/{id}/current_schedule`.                                  |
+| `currentScheduleId`                  | Rachio schedule ID for the currently running schedule.                                                                     |
+| `currentScheduleName`                | Name of the currently running schedule.                                                                                    |
+| `currentScheduleType`                | Type of the currently running schedule.                                                                                    |
+| `currentScheduleStartTime`           | Start time of the currently running schedule.                                                                              |
+| `currentScheduleEndTime`             | End time of the currently running schedule.                                                                                |
+| `currentScheduleDuration`            | `Number:Time` duration of the currently running schedule, published in seconds.                                            |
+| `lastApiEventType`                   | Type of the latest event retrieved from recent device event history.                                                       |
+| `lastApiEventTime`                   | Time of the latest event retrieved from recent device event history.                                                       |
+| `lastApiEventSummary`                | Summary of the latest event retrieved from recent device event history.                                                    |
+| `forecastSummary`                    | Forecast summary from Rachio.                                                                                              |
+| `forecastTodayHigh`                  | Today's `Number:Temperature` high temperature in the configured forecast units.                                            |
+| `forecastTodayLow`                   | Today's `Number:Temperature` low temperature in the configured forecast units.                                             |
+| `forecastPrecipitation`              | Today's `Number:Length` forecast precipitation amount in the configured forecast units.                                    |
+| `forecastPrecipitationProbability`   | Today's `Number:Dimensionless` precipitation probability as a 0..1 fraction.                                               |
+| `forecastWind`                       | Today's `Number:Speed` wind speed in the configured forecast units.                                                        |
+| `forecastUpdated`                    | Timestamp of the forecast data when provided by Rachio.                                                                    |
+| `lastSkipType`                       | Most recent weather intelligence skip event type.                                                                          |
+| `lastSkipScheduleId`                 | Schedule ID associated with the most recent weather intelligence skip event.                                               |
+| `lastSkipStartTime`                  | Start time associated with the most recent weather intelligence skip event.                                                |
+| `lastSkipReason`                     | Summary or reason from the most recent weather intelligence skip event.                                                    |
 
-When starting zones from the controller Thing with `run-zones` and `run`, controller `run-time` controls the duration for every selected zone.
+When starting zones from the controller Thing with `runZones` and `run`, controller `runTime` controls the duration for every selected zone.
 
-If controller `run-time` is greater than 0, that value is used.
+If controller `runTime` is greater than 0, that value is used.
 
-If controller `run-time` is 0, the bridge `defaultRuntime` is used.
+If controller `runTime` is 0, the bridge `defaultRuntime` is used.
 
-Zone-specific `run-time` values only apply when starting an individual zone from that zone Thing.
+Zone-specific `runTime` values only apply when starting an individual zone from that zone Thing.
 
 Forecast channels follow the Cloud Connector `forecastUnits` setting.
 
@@ -354,34 +359,39 @@ With `US`, they are published as Fahrenheit, inches, and miles per hour.
 | `number`                       | Zone number as assigned by the controller.                                                                                                                                    |
 | `name`                         | Zone name.                                                                                                                                                                    |
 | `enabled`                      | ON when the zone is enabled. Sending ON/OFF enables or disables the zone.                                                                                                     |
-| `run`                          | ON starts watering. If `run-time` is 0, `defaultRuntime` is used. OFF stops watering.                                                                                         |
-| `run-time`                     | `Number:Time` duration to run the zone when `run` receives ON. Plain numeric commands are seconds.                                                                            |
-| `run-total`                    | Total `Number:Time` duration the zone was watering, as returned by the cloud service.                                                                                         |
-| `available-water`              | `Number:Length` available water value returned by Rachio for the zone, published in inches.                                                                                   |
-| `image-url`                    | URL to the zone picture.                                                                                                                                                      |
+| `run`                          | ON starts watering. If `runTime` is 0, `defaultRuntime` is used. OFF stops watering.                                                                                          |
+| `runTime`                      | `Number:Time` duration to run the zone when `run` receives ON. Plain numeric commands are seconds.                                                                            |
+| `runTotal`                     | Total `Number:Time` duration the zone was watering, as returned by the cloud service.                                                                                         |
+| `availableWater`               | `Number:Length` available water value returned by Rachio for the zone, published in inches.                                                                                   |
+| `imageUrl`                     | URL to the zone picture.                                                                                                                                                      |
 | `image`                        | Native openHAB Image channel for the zone picture.                                                                                                                            |
-| `depth-of-water`               | `Number:Length` depth of water value returned by Rachio, published in inches.                                                                                                 |
-| `saturated-depth-of-water`     | `Number:Length` saturated depth of water value returned by Rachio, published in inches.                                                                                       |
-| `management-allowed-depletion` | `Number:Dimensionless` depletion fraction returned by Rachio.                                                                                                                 |
-| `root-zone-depth`              | `Number:Length` root zone depth value returned by Rachio, published in inches.                                                                                                |
+| `depthOfWater`                 | `Number:Length` depth of water value returned by Rachio, published in inches.                                                                                                 |
+| `saturatedDepthOfWater`        | `Number:Length` saturated depth of water value returned by Rachio, published in inches.                                                                                       |
+| `managementAllowedDepletion`   | `Number:Dimensionless` depletion fraction returned by Rachio.                                                                                                                 |
+| `rootZoneDepth`                | `Number:Length` root zone depth value returned by Rachio, published in inches.                                                                                                |
 | `efficiency`                   | `Number:Dimensionless` efficiency fraction returned by Rachio.                                                                                                                |
-| `yard-area-square-feet`        | `Number:Area` yard area in square feet as returned by Rachio.                                                                                                                 |
-| `last-watered-date`            | Timestamp when Rachio reports the zone was last watered.                                                                                                                      |
-| `fixed-runtime`                | `Number:Time` fixed runtime value returned by Rachio, published in seconds.                                                                                                   |
-| `max-runtime`                  | `Number:Time` maximum runtime value returned by Rachio, published in seconds.                                                                                                 |
-| `runtime-no-multiplier`        | `Number:Time` runtime without multiplier value returned by Rachio, published in seconds.                                                                                      |
-| `schedule-data-modified`       | ON when Rachio reports modified schedule data for the zone.                                                                                                                   |
-| `moisture-level`               | `Number:Length` command channel for `zone/setMoistureLevel`. Plain numeric commands are millimeters.                                                                          |
-| `moisture-percent`             | `Number:Dimensionless` command channel for `zone/setMoisturePercent`. Plain numeric commands are a 0..1 fraction; quantity percentages such as `50 %` are converted to `0.5`. |
-| `last-update`                  | Timestamp of last status update.                                                                                                                                              |
-| `last-event`                   | Last event received from the cloud.                                                                                                                                           |
-| `last-event-time`              | Timestamp of the last received event.                                                                                                                                         |
+| `yardAreaSquareFeet`           | `Number:Area` yard area in square feet as returned by Rachio.                                                                                                                 |
+| `lastWateredDate`              | Timestamp when Rachio reports the zone was last watered.                                                                                                                      |
+| `fixedRuntime`                 | `Number:Time` fixed runtime value returned by Rachio, published in seconds.                                                                                                   |
+| `maxRuntime`                   | `Number:Time` maximum runtime value returned by Rachio, published in seconds.                                                                                                 |
+| `runtimeNoMultiplier`          | `Number:Time` runtime without multiplier value returned by Rachio, published in seconds.                                                                                      |
+| `scheduleDataModified`         | ON when Rachio reports modified schedule data for the zone.                                                                                                                   |
+| `moistureLevel`                | `Number:Length` command-only soil moisture adjustment input for `zone/setMoistureLevel`. Plain numeric commands are millimeters.                                              |
+| `moisturePercent`              | `Number:Dimensionless` command-only soil moisture adjustment input for `zone/setMoisturePercent`. Plain numeric commands are a 0..1 fraction; quantity percentages such as `50 %` are converted to `0.5`. |
+| `lastUpdate`                   | Timestamp of last status update.                                                                                                                                              |
+| `lastEvent`                    | Last event received from the cloud.                                                                                                                                           |
+| `lastEventTime`                | Timestamp of the last received event.                                                                                                                                         |
 
-The existing `image-url` channel remains available for URL-based integrations.
+The existing `imageUrl` channel remains available for URL-based integrations.
 
 The `image` channel downloads the same zone picture as native openHAB image data and can be linked to an `Image` Item.
 
 If an image cannot be downloaded, the zone remains online and the URL channel is still updated.
+
+The Rachio public Zone object does not return readable `moistureLevel` or `moisturePercent` fields.
+Those channels are retained as command-only soil moisture adjustment inputs for external measurements or manual correction.
+After restart or before the first successful command, their Item state may be `UNDEF`.
+Readable water-model values are available through `availableWater`, `depthOfWater`, and `saturatedDepthOfWater`.
 
 ## Smart Hose Timer Things
 
@@ -393,18 +403,18 @@ Manual creation is supported when the real Rachio IDs are configured:
 
 ```text
 Thing base-station hosehub "Hose Timer Hub" [
-    baseStationId="base-station-id"
+    baseStationId="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 ]
 
 Thing valve garden "Garden Hose Valve" [
-    valveId="valve-id",
-    baseStationId="base-station-id"
+    valveId="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+    baseStationId="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 ]
 
 Thing valve-program morninghose "Morning Hose Program" [
-    programId="program-id",
-    valveId="valve-id",
-    baseStationId="base-station-id"
+    programId="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+    valveId="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+    baseStationId="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 ]
 ```
 
@@ -414,7 +424,7 @@ Thing valve-program morninghose "Morning Hose Program" [
 | :---          | :---                                                            |
 | `name`        | Base station name when reported by Rachio.                      |
 | `online`      | ON when Rachio reports the base station is online or connected. |
-| `last-update` | Timestamp of last base station state update.                    |
+| `lastUpdate`  | Timestamp of last base station state update.                    |
 
 ### Valve channels
 
@@ -423,30 +433,30 @@ Thing valve-program morninghose "Morning Hose Program" [
 | `name`                         | Valve name when reported by Rachio.                                                                                                                                            |
 | `online`                       | ON when Rachio reports the valve is online or connected.                                                                                                                       |
 | `run`                          | Send ON to start watering, OFF to stop watering.                                                                                                                               |
-| `run-time`                     | `Number:Time` runtime for the next manual valve start. Plain numeric commands are seconds. If 0, the valve default runtime is used, then the bridge `defaultRuntime` fallback. |
-| `default-runtime`              | `Number:Time` valve default manual runtime. Plain numeric commands are seconds. Sending a value updates Rachio using `setDefaultRuntime`.                                      |
-| `state-matches`                | ON when `ValveState.matches` indicates the physical valve has synchronized with the desired cloud-side state.                                                                  |
-| `flow-detected`                | ON when a valve webhook event or valve state reports flow.                                                                                                                     |
-| `battery-level`                | `Number:Dimensionless` battery level when reported by Rachio, published as percent.                                                                                            |
-| `serial-number`                | Valve serial number when reported by Rachio.                                                                                                                                   |
-| `last-run-type`                | Run type from the most recent valve webhook event.                                                                                                                             |
-| `last-end-reason`              | End reason from the most recent valve stop webhook event.                                                                                                                      |
-| `next-planned-run-time`        | Start time of the next planned valve run from Summary day views.                                                                                                               |
-| `next-planned-run-duration`    | `Number:Time` duration of the next planned valve run, published in seconds.                                                                                                    |
-| `next-planned-run-program-id`  | Program ID associated with the next planned valve run.                                                                                                                         |
-| `next-planned-run-skipped`     | ON when the next planned valve run is currently skipped.                                                                                                                       |
-| `last-completed-run-time`      | Start time of the most recent completed valve run from Summary day views.                                                                                                      |
-| `last-completed-run-duration`  | `Number:Time` duration of the most recent completed valve run, published in seconds.                                                                                           |
-| `last-run-status`              | Status of the most recent completed valve run from Summary day views.                                                                                                          |
-| `skip-next-planned-run`        | Send ON to skip the next upcoming valve planned run when Summary identifiers are available.                                                                                    |
-| `cancel-next-planned-run-skip` | Send ON to cancel the next skipped upcoming valve run when Summary identifiers are available.                                                                                  |
-| `last-update`                  | Timestamp of last valve state update.                                                                                                                                          |
-| `last-event`                   | Most recent valve webhook event.                                                                                                                                               |
-| `last-event-time`              | Timestamp of the most recent valve webhook event.                                                                                                                              |
+| `runTime`                      | `Number:Time` runtime for the next manual valve start. Plain numeric commands are seconds. If 0, the valve default runtime is used, then the bridge `defaultRuntime` fallback. |
+| `defaultRuntime`               | `Number:Time` valve default manual runtime. Plain numeric commands are seconds. Sending a value updates Rachio using `setDefaultRuntime`.                                      |
+| `stateMatches`                 | ON when `ValveState.matches` indicates the physical valve has synchronized with the desired cloud-side state.                                                                  |
+| `flowDetected`                 | ON when a valve webhook event or valve state reports flow.                                                                                                                     |
+| `batteryLevel`                 | `Number:Dimensionless` battery level when reported by Rachio, published as percent.                                                                                            |
+| `serialNumber`                 | Valve serial number when reported by Rachio.                                                                                                                                   |
+| `lastRunType`                  | Run type from the most recent valve webhook event.                                                                                                                             |
+| `lastEndReason`                | End reason from the most recent valve stop webhook event.                                                                                                                      |
+| `nextPlannedRunTime`           | Start time of the next planned valve run from Summary day views.                                                                                                               |
+| `nextPlannedRunDuration`       | `Number:Time` duration of the next planned valve run, published in seconds.                                                                                                    |
+| `nextPlannedRunProgramId`      | Program ID associated with the next planned valve run.                                                                                                                         |
+| `nextPlannedRunSkipped`        | ON when the next planned valve run is currently skipped.                                                                                                                       |
+| `lastCompletedRunTime`         | Start time of the most recent completed valve run from Summary day views.                                                                                                      |
+| `lastCompletedRunDuration`     | `Number:Time` duration of the most recent completed valve run, published in seconds.                                                                                           |
+| `lastRunStatus`                | Status of the most recent completed valve run from Summary day views.                                                                                                          |
+| `skipNextPlannedRun`           | Send ON to skip the next upcoming valve planned run when Summary identifiers are available.                                                                                    |
+| `cancelNextPlannedRunSkip`     | Send ON to cancel the next skipped upcoming valve run when Summary identifiers are available.                                                                                  |
+| `lastUpdate`                   | Timestamp of last valve state update.                                                                                                                                          |
+| `lastEvent`                    | Most recent valve webhook event.                                                                                                                                               |
+| `lastEventTime`                | Timestamp of the most recent valve webhook event.                                                                                                                              |
 
 The Smart Hose Timer API is asynchronous.
 
-After changing `default-runtime`, Rachio may report `state-matches=OFF` until the physical valve downloads and applies the cloud-side update.
+After changing `defaultRuntime`, Rachio may report `stateMatches=OFF` until the physical valve downloads and applies the cloud-side update.
 
 Summary day-view polling uses the bridge `hoseSummaryLookbackDays` and `hoseSummaryLookaheadDays` configuration.
 
@@ -456,24 +466,24 @@ Summary day-view polling uses the bridge `hoseSummaryLookbackDays` and `hoseSumm
 | :---                                             | :---                                                                                                     |
 | `name`                                           | Program name.                                                                                            |
 | `enabled`                                        | ON when Rachio reports that the program is enabled.                                                      |
-| `program-type`                                   | Program type returned by Rachio.                                                                         |
-| `valve-id`                                       | Associated Smart Hose Timer Valve UUID.                                                                  |
-| `start-time`                                     | Program start time value returned by Rachio.                                                             |
-| `next-run-time`                                  | Next planned run time when available from Rachio or Summary day views.                                   |
-| `last-run-time`                                  | Last run time when available from Rachio or Summary day views.                                           |
+| `programType`                                    | Program type returned by Rachio.                                                                         |
+| `valveId`                                        | Associated Smart Hose Timer Valve UUID.                                                                  |
+| `startTime`                                      | Program start time value returned by Rachio.                                                             |
+| `nextRunTime`                                    | Next planned run time when available from Rachio or Summary day views.                                   |
+| `lastRunTime`                                    | Last run time when available from Rachio or Summary day views.                                           |
 | `duration`                                       | `Number:Time` Program duration, published in seconds.                                                    |
-| `days-of-week`                                   | Days-of-week structure returned by Rachio.                                                               |
-| `interval-days`                                  | `Number:Time` Program interval, published in days when provided by Rachio.                               |
-| `seasonal-adjustment`                            | `Number:Dimensionless` seasonal adjustment fraction when provided by Rachio.                             |
-| `updated-at`                                     | Last update time when provided by Rachio.                                                                |
-| `next-program-run-skipped`                       | ON when the next upcoming run for this program is currently skipped.                                     |
-| `skip-next-planned-run`                          | Send ON to skip the next upcoming planned run for this program when Summary identifiers are available.   |
-| `cancel-next-planned-run-skip`                   | Send ON to cancel the next skipped upcoming run for this program when Summary identifiers are available. |
-| `last-rain-skip-planned-run-start-time`          | Planned run start time from the most recent Program rain-skip-created webhook event.                     |
-| `last-rain-skip-canceled-planned-run-start-time` | Planned run start time from the most recent Program rain-skip-canceled webhook event.                    |
-| `last-update`                                    | Timestamp of last Program state update.                                                                  |
-| `last-event`                                     | Most recent Program webhook event.                                                                       |
-| `last-event-time`                                | Timestamp of the most recent Program webhook event.                                                      |
+| `daysOfWeek`                                     | Days-of-week structure returned by Rachio.                                                               |
+| `intervalDays`                                   | `Number:Time` Program interval, published in days when provided by Rachio.                               |
+| `seasonalAdjustment`                             | `Number:Dimensionless` seasonal adjustment fraction when provided by Rachio.                             |
+| `updatedAt`                                      | Last update time when provided by Rachio.                                                                |
+| `nextProgramRunSkipped`                          | ON when the next upcoming run for this program is currently skipped.                                     |
+| `skipNextPlannedRun`                             | Send ON to skip the next upcoming planned run for this program when Summary identifiers are available.   |
+| `cancelNextPlannedRunSkip`                       | Send ON to cancel the next skipped upcoming run for this program when Summary identifiers are available. |
+| `lastRainSkipPlannedRunStartTime`                | Planned run start time from the most recent Program rain-skip-created webhook event.                     |
+| `lastRainSkipCanceledPlannedRunStartTime`        | Planned run start time from the most recent Program rain-skip-canceled webhook event.                    |
+| `lastUpdate`                                     | Timestamp of last Program state update.                                                                  |
+| `lastEvent`                                      | Most recent Program webhook event.                                                                       |
+| `lastEventTime`                                  | Timestamp of the most recent Program webhook event.                                                      |
 
 Skip commands use Summary day-view identifiers.
 
@@ -483,32 +493,24 @@ When only a Program ID and timestamp are available, it falls back to the Program
 
 ## Schedule Things
 
-Fixed schedule rules are represented by `schedule` Things.
+Fixed schedule rules are represented by `schedule` Things and keep the established schedule channel IDs.
 
-Flex schedules are represented by `flex-schedule` Things.
+Flex schedules use `FlexScheduleRuleService` for metadata/readback and expose the supported ScheduleRuleService commands using the flex schedule rule ID.
 
-Fixed schedule metadata is read through Rachio's ScheduleRuleService, while flex schedule metadata is read through
-FlexScheduleRuleService.
-
-Both Thing types execute `start`, `skip`, `seasonal-adjustment`, and `skip-forward-zone-run` commands through
-ScheduleRuleService using their schedule rule ID.
-
-The channel table below applies to both `schedule` and `flex-schedule` Things.
-
-| Channel                 | Description                                                                                                                                                  |
-| :---                    | :---                                                                                                                                                         |
-| `name`                  | Schedule rule name.                                                                                                                                          |
-| `enabled`               | ON if the schedule rule is enabled.                                                                                                                          |
-| `type`                  | Schedule rule type.                                                                                                                                          |
-| `start-time`            | Schedule start time when provided by Rachio.                                                                                                                 |
-| `last-run`              | Last run time when provided by Rachio.                                                                                                                       |
-| `next-run`              | Next run time when provided by Rachio.                                                                                                                       |
-| `zones`                 | Comma-separated Rachio zone IDs associated with the schedule.                                                                                                |
-| `seasonal-adjustment`   | `Number:Dimensionless` seasonal adjustment value. Sending a plain number preserves the existing fraction semantics and updates the schedule rule adjustment. |
-| `start`                 | Send ON to start the schedule rule.                                                                                                                          |
-| `skip`                  | Send ON to skip the schedule rule.                                                                                                                           |
-| `skip-forward-zone-run` | Send ON to skip the currently running zone in the schedule context.                                                                                          |
-| `last-update`           | Timestamp of last schedule state update.                                                                                                                     |
+| Fixed schedule channel   | Flex schedule channel    | Description                                                                                                                                                  |
+| :---                     | :---                     | :---                                                                                                                                                         |
+| `name`                   | `name`                   | Schedule rule name.                                                                                                                                          |
+| `enabled`                | `enabled`                | ON if the schedule rule is enabled.                                                                                                                          |
+| `type`                   | `type`                   | Schedule rule type.                                                                                                                                          |
+| `startTime`              | `start-time`             | Schedule start time from Rachio `startDate`, with `startTime` used as a fallback when present.                                                              |
+| `lastRun`                | `last-run`               | Last run time when Rachio provides a usable best-effort field.                                                                                               |
+| `nextRun`                | `next-run`               | Next run time when Rachio provides a usable best-effort field.                                                                                               |
+| `zones`                  | `zones`                  | Comma-separated Rachio zone IDs associated with the schedule.                                                                                                |
+| `seasonalAdjustment`     | `seasonal-adjustment`    | `Number:Dimensionless` seasonal adjustment value. Sending a plain number updates the rule through ScheduleRuleService.                                      |
+| `start`                  | `start`                  | Send ON to start the schedule rule through ScheduleRuleService.                                                                                              |
+| `skip`                   | `skip`                   | Send ON to skip the schedule rule through ScheduleRuleService.                                                                                               |
+| `skipForwardZoneRun`     | `skip-forward-zone-run` | Send ON to skip the currently running zone in the schedule context through ScheduleRuleService.                                                             |
+| `lastUpdate`             | `last-update`            | Timestamp of last schedule state update.                                                                                                                     |
 
 Manual schedule creation requires `scheduleRuleId`.
 
@@ -516,8 +518,12 @@ Manual flex schedule creation requires `flexScheduleRuleId`.
 
 Discovery creates schedule and flex schedule Things when the Rachio controller payload includes the corresponding rule IDs.
 
-Schedule command support depends on the Rachio API accepting the relevant fixed or flex schedule rule ID for the
-ScheduleRuleService command endpoint.
+Fixed schedule metadata is read from `/public/schedulerule/:id`.
+Flex schedule metadata is read from `/public/flexschedulerule/:id`.
+Commands for both Thing types use the ScheduleRuleService endpoints with the corresponding schedule rule ID.
+
+Schedule and flex schedule DateTime channels support epoch milliseconds, epoch seconds, numeric strings, and ISO-8601 strings when those fields are present.
+`lastRun`/`last-run` and `nextRun`/`next-run` remain `UNDEF` when the Rachio API response does not include a usable value; the binding does not fabricate dates.
 
 ## Webhook Events
 
@@ -533,7 +539,7 @@ Schedule events update controller schedule channels and matching `schedule` Thin
 
 Zone run events update the corresponding zone Thing when the event carries enough zone identity information.
 
-Weather skip notifications update the controller `last-skip-*` channels and the normal `last-event` channels.
+Weather skip notifications update the controller `lastSkip*` channels and the normal `lastEvent` channels.
 
 Smart Hose Timer valve run start/end events update matching `valve` Things.
 
@@ -553,43 +559,43 @@ The implemented API layer can list properties for a user, retrieve a property by
 
 ```text
 Bridge rachio:cloud:1 @ "Sprinkler" [
-    apikey="your-rachio-api-key",
+    apikey="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
     pollingInterval=600,
     defaultRuntime=120,
-    callbackUrl="https://your-public-host.example/rachio/webhook",
-    callbackUsername="webhook-user",
-    callbackPassword="webhook-password",
+    callbackUrl="https://home.myopenhab.org/rachio/webhook",
+    callbackUsername="user@example.com",
+    callbackPassword="raw-password-with-special-characters",
     clearAllCallbacks=false
 ] {
     Thing device controller "Rachio Controller" @ "Sprinkler" [
-        deviceId="controller-id"
+        deviceId="811aea42-2bf5-4761-9f97-900108d6f04e"
     ]
 
     Thing zone controller-zone1 "Front Lawn" @ "Sprinkler" [
-        zoneId="zone-id"
+        zoneId="a4f319e9-f88e-476f-b341-0ea571a202a0"
     ]
 
     Thing schedule morning "Morning Schedule" @ "Sprinkler" [
-        scheduleRuleId="fixed-schedule-rule-id"
+        scheduleRuleId="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
     ]
 
     Thing flex-schedule flex "Flex Schedule" @ "Sprinkler" [
-        flexScheduleRuleId="flex-schedule-rule-id"
+        flexScheduleRuleId="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
     ]
 
     Thing base-station hosehub "Hose Timer Hub" @ "Garden" [
-        baseStationId="base-station-id"
+        baseStationId="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
     ]
 
     Thing valve gardenhose "Garden Hose Valve" @ "Garden" [
-        valveId="valve-id",
-        baseStationId="base-station-id"
+        valveId="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+        baseStationId="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
     ]
 
     Thing valve-program morninghose "Morning Hose Program" @ "Garden" [
-        programId="program-id",
-        valveId="valve-id",
-        baseStationId="base-station-id"
+        programId="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+        valveId="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+        baseStationId="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
     ]
 }
 ```
@@ -600,32 +606,32 @@ Bridge rachio:cloud:1 @ "Sprinkler" [
 String Rachio_Controller_Name "Controller Name" { channel="rachio:device:1:controller:name" }
 Switch Rachio_Controller_Online "Controller Online" { channel="rachio:device:1:controller:online" }
 Switch Rachio_Controller_Run "Run Selected Zones" { channel="rachio:device:1:controller:run" }
-String Rachio_Controller_RunZones "Run Zone List" { channel="rachio:device:1:controller:run-zones" }
-Number:Time Rachio_Controller_RunTime "Controller Runtime [%d s]" { channel="rachio:device:1:controller:run-time" }
-Number:Time Rachio_Controller_RainDelay "Rain Delay [%d s]" { channel="rachio:device:1:controller:rain-delay" }
+String Rachio_Controller_RunZones "Run Zone List" { channel="rachio:device:1:controller:runZones" }
+Number:Time Rachio_Controller_RunTime "Controller Runtime [%d s]" { channel="rachio:device:1:controller:runTime" }
+Number:Time Rachio_Controller_RainDelay "Rain Delay [%d s]" { channel="rachio:device:1:controller:rainDelay" }
 
-Number:Temperature Rachio_Forecast_High "Forecast High" { channel="rachio:device:1:controller:forecast-today-high" }
-Number:Length Rachio_Forecast_Precipitation "Forecast Precipitation" { channel="rachio:device:1:controller:forecast-precipitation" }
-Number:Dimensionless Rachio_Forecast_PrecipitationProbability "Rain Probability [%.0f %%]" { channel="rachio:device:1:controller:forecast-precipitation-probability" }
+Number:Temperature Rachio_Forecast_High "Forecast High" { channel="rachio:device:1:controller:forecastTodayHigh" }
+Number:Length Rachio_Forecast_Precipitation "Forecast Precipitation" { channel="rachio:device:1:controller:forecastPrecipitation" }
+Number:Dimensionless Rachio_Forecast_PrecipitationProbability "Rain Probability [%.0f %%]" { channel="rachio:device:1:controller:forecastPrecipitationProbability" }
 
 String Rachio_Zone1_Name "Zone Name" { channel="rachio:zone:1:controller-zone1:name" }
 Switch Rachio_Zone1_Run "Run Zone" { channel="rachio:zone:1:controller-zone1:run" }
-Number:Time Rachio_Zone1_RunTime "Zone Runtime [%d s]" { channel="rachio:zone:1:controller-zone1:run-time" }
-Number:Length Rachio_Zone1_MoistureLevel "Moisture Level [%.1f mm]" { channel="rachio:zone:1:controller-zone1:moisture-level" }
-Number:Dimensionless Rachio_Zone1_MoisturePercent "Moisture [%.0f %%]" { channel="rachio:zone:1:controller-zone1:moisture-percent" }
+Number:Time Rachio_Zone1_RunTime "Zone Runtime [%d s]" { channel="rachio:zone:1:controller-zone1:runTime" }
+Number:Length Rachio_Zone1_MoistureLevel "Moisture Level [%.1f mm]" { channel="rachio:zone:1:controller-zone1:moistureLevel" }
+Number:Dimensionless Rachio_Zone1_MoisturePercent "Moisture [%.0f %%]" { channel="rachio:zone:1:controller-zone1:moisturePercent" }
 Image Rachio_Zone1_Image "Zone Image" { channel="rachio:zone:1:controller-zone1:image" }
 
 Switch HoseValve_Run "Run Hose Valve" { channel="rachio:valve:1:gardenhose:run" }
-Number:Time HoseValve_RunTime "Hose Runtime [%d s]" { channel="rachio:valve:1:gardenhose:run-time" }
-Number:Time HoseValve_DefaultRuntime "Default Hose Runtime [%d s]" { channel="rachio:valve:1:gardenhose:default-runtime" }
-Number:Dimensionless HoseValve_BatteryLevel "Valve Battery [%.0f %%]" { channel="rachio:valve:1:gardenhose:battery-level" }
-Number:Time HoseValve_NextRunDuration "Next Hose Run Duration [%d s]" { channel="rachio:valve:1:gardenhose:next-planned-run-duration" }
-Switch HoseValve_SkipNext "Skip Next Hose Run" { channel="rachio:valve:1:gardenhose:skip-next-planned-run" }
+Number:Time HoseValve_RunTime "Hose Runtime [%d s]" { channel="rachio:valve:1:gardenhose:runTime" }
+Number:Time HoseValve_DefaultRuntime "Default Hose Runtime [%d s]" { channel="rachio:valve:1:gardenhose:defaultRuntime" }
+Number:Dimensionless HoseValve_BatteryLevel "Valve Battery [%.0f %%]" { channel="rachio:valve:1:gardenhose:batteryLevel" }
+Number:Time HoseValve_NextRunDuration "Next Hose Run Duration [%d s]" { channel="rachio:valve:1:gardenhose:nextPlannedRunDuration" }
+Switch HoseValve_SkipNext "Skip Next Hose Run" { channel="rachio:valve:1:gardenhose:skipNextPlannedRun" }
 
 String HoseProgram_Name "Program Name" { channel="rachio:valve-program:1:morninghose:name" }
 Number:Time HoseProgram_Duration "Program Duration [%d s]" { channel="rachio:valve-program:1:morninghose:duration" }
-Number:Time HoseProgram_Interval "Program Interval [%.0f d]" { channel="rachio:valve-program:1:morninghose:interval-days" }
-Number:Dimensionless HoseProgram_SeasonalAdjustment "Seasonal Adjustment [%.0f %%]" { channel="rachio:valve-program:1:morninghose:seasonal-adjustment" }
+Number:Time HoseProgram_Interval "Program Interval [%.0f d]" { channel="rachio:valve-program:1:morninghose:intervalDays" }
+Number:Dimensionless HoseProgram_SeasonalAdjustment "Seasonal Adjustment [%.0f %%]" { channel="rachio:valve-program:1:morninghose:seasonalAdjustment" }
 ```
 
 ### Rule Example
@@ -638,4 +644,3 @@ then
     Rachio_Zone1_RunTime.sendCommand(1800)
     Rachio_Zone1_Run.sendCommand(ON)
 end
-```

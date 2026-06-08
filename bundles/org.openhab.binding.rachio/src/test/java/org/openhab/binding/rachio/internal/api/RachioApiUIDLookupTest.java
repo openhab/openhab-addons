@@ -26,8 +26,6 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.rachio.internal.api.json.RachioDeviceGsonDTO.RachioCloudDevice;
 import org.openhab.binding.rachio.internal.api.json.RachioZoneGsonDTO.RachioCloudZone;
@@ -38,7 +36,6 @@ import org.openhab.core.thing.ThingUID;
  *
  * @author openHAB Contributors - Initial contribution
  */
-@NonNullByDefault
 class RachioApiUIDLookupTest {
     private static final ThingUID BRIDGE_UID = new ThingUID(THING_TYPE_CLOUD, "bridge");
 
@@ -56,7 +53,7 @@ class RachioApiUIDLookupTest {
 
     @Test
     void bindDeviceByRachioIdMatchesRandomThingUID() {
-        RachioDevice device = device("configured-device-id", "009D6BC04DAC", "serial-number");
+        RachioDevice device = device("811aea42-2bf5-4761-9f97-900108d6f04e", "009D6BC04DAC", "serial-number");
         RachioApi api = apiWithDevice(device);
         ThingUID customThingUID = new ThingUID(THING_TYPE_DEVICE, BRIDGE_UID, "809c1a9736");
 
@@ -79,12 +76,12 @@ class RachioApiUIDLookupTest {
 
     @Test
     void getDevByUIDMatchesConfiguredDeviceIdWithCanonicalDiscoveryThingUID() {
-        RachioDevice device = device("configured-device-id", "009D6BC04DAC", "serial-number");
+        RachioDevice device = device("811aea42-2bf5-4761-9f97-900108d6f04e", "009D6BC04DAC", "serial-number");
         RachioApi api = apiWithDevice(device);
         ThingUID thingUID = new ThingUID(THING_TYPE_DEVICE, BRIDGE_UID, "009D6BC04DAC");
 
         RachioDevice foundDevice = api.getDevByUID(BRIDGE_UID, thingUID,
-                Map.<String, @Nullable Object> of(PROPERTY_DEV_ID, device.id), Collections.emptyMap());
+                Map.<String, Object> of(PROPERTY_DEV_ID, device.id), Collections.emptyMap());
 
         assertThat(foundDevice, is(sameInstance(device)));
         assertThat(device.getUID(), is(thingUID));
@@ -92,12 +89,12 @@ class RachioApiUIDLookupTest {
 
     @Test
     void getDevByUIDMatchesConfiguredDeviceIdWithArbitraryThingUID() {
-        RachioDevice device = device("configured-device-id", "009D6BC04DAC", "serial-number");
+        RachioDevice device = device("811aea42-2bf5-4761-9f97-900108d6f04e", "009D6BC04DAC", "serial-number");
         RachioApi api = apiWithDevice(device);
         ThingUID customThingUID = new ThingUID(THING_TYPE_DEVICE, BRIDGE_UID, "a283238ad8");
 
         RachioDevice foundDevice = api.getDevByUID(BRIDGE_UID, customThingUID,
-                Map.<String, @Nullable Object> of(PROPERTY_DEV_ID, device.id), Collections.emptyMap());
+                Map.<String, Object> of(PROPERTY_DEV_ID, device.id), Collections.emptyMap());
 
         assertThat(foundDevice, is(sameInstance(device)));
         assertThat(device.getUID(), is(customThingUID));
@@ -122,7 +119,7 @@ class RachioApiUIDLookupTest {
         ThingUID thingUID = new ThingUID(THING_TYPE_DEVICE, BRIDGE_UID, "ABCDEF123456");
 
         RachioDevice foundDevice = api.getDevByUID(BRIDGE_UID, thingUID,
-                Map.<String, @Nullable Object> of(PROPERTY_DEV_ID, "wrong-device-id"), Collections.emptyMap());
+                Map.<String, Object> of(PROPERTY_DEV_ID, "wrong-device-id"), Collections.emptyMap());
 
         assertThat(foundDevice, is(nullValue()));
     }
@@ -150,7 +147,7 @@ class RachioApiUIDLookupTest {
         ThingUID customZoneUID = new ThingUID(THING_TYPE_ZONE, BRIDGE_UID, "custom-zone-id");
 
         RachioZone foundZone = api.getZoneByUID(BRIDGE_UID, customZoneUID,
-                Map.<String, @Nullable Object> of(PROPERTY_ZONE_ID, "zone-id"), Collections.emptyMap());
+                Map.<String, Object> of(PROPERTY_ZONE_ID, "zone-id"), Collections.emptyMap());
 
         assertThat(foundZone, is(sameInstance(zone)));
         assertThat(zone.getUID(), is(customZoneUID));
@@ -167,7 +164,7 @@ class RachioApiUIDLookupTest {
         device.setUID(BRIDGE_UID, manualDeviceUID);
 
         RachioZone foundZone = api.getZoneByUID(BRIDGE_UID, customZoneUID,
-                Map.<String, @Nullable Object> of(PROPERTY_ZONE_ID, "zone-id"), Collections.emptyMap());
+                Map.<String, Object> of(PROPERTY_ZONE_ID, "zone-id"), Collections.emptyMap());
 
         assertThat(foundZone, is(sameInstance(zone)));
         assertThat(device.getUID(), is(manualDeviceUID));
@@ -184,7 +181,7 @@ class RachioApiUIDLookupTest {
         ThingUID zoneUID = new ThingUID(THING_TYPE_ZONE, BRIDGE_UID, zone.getThingID());
 
         RachioZone foundZone = api.getZoneByUID(BRIDGE_UID, zoneUID,
-                Map.<String, @Nullable Object> of(PROPERTY_ZONE_ID, "wrong-zone-id"), Collections.emptyMap());
+                Map.<String, Object> of(PROPERTY_ZONE_ID, "wrong-zone-id"), Collections.emptyMap());
 
         assertThat(foundZone, is(nullValue()));
     }

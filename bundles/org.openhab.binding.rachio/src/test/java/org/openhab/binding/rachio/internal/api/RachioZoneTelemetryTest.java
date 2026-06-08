@@ -17,7 +17,6 @@ import static org.hamcrest.Matchers.is;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.SERVLET_IMAGE_PATH;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.SERVLET_IMAGE_URL_BASE;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.rachio.internal.api.json.RachioZoneGsonDTO.RachioCloudZone;
 
@@ -26,7 +25,6 @@ import org.openhab.binding.rachio.internal.api.json.RachioZoneGsonDTO.RachioClou
  *
  * @author openHAB Contributors - Initial contribution
  */
-@NonNullByDefault
 class RachioZoneTelemetryTest {
     @Test
     void zoneKeepsOriginalRachioImageUrlForNativeImageDownload() {

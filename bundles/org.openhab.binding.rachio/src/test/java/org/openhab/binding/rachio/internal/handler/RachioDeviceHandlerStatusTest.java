@@ -20,6 +20,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_DEVICE_ONLINE;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.PROPERTY_DEV_ID;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_TYPE_DEVICE;
 
@@ -40,7 +41,9 @@ import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager.PRIORITY
 import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager.RateLimitThrottleException;
 import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager.RequestPurpose;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -55,7 +58,7 @@ import org.openhab.core.thing.binding.ThingHandlerCallback;
 @NonNullByDefault
 @SuppressWarnings({ "null" })
 class RachioDeviceHandlerStatusTest {
-    private static final String DEVICE_ID = "device-id";
+    private static final String DEVICE_ID = "fc284477-53a1-4fa7-8afd-ed057a8ff2ea";
 
     @Test
     void initializationDefersLocalWebhookThrottleButAllowsOnlineControllerToBecomeOnline() throws Exception {
@@ -105,43 +108,57 @@ class RachioDeviceHandlerStatusTest {
     }
 
     @Test
-    void cachedPhysicalControllerOfflineAndOnlineStatesUpdateThingStatus() {
+    void initializationKeepsThingOnlineWhenRachioControllerReportsOffline() {
         Thing thing = thing();
-        TestDeviceHandler handler = new TestDeviceHandler(thing, bridgeHandler(thing, device("ONLINE")));
+        TestDeviceHandler handler = new TestDeviceHandler(thing, bridgeHandler(thing, device("OFFLINE")));
         ThingHandlerCallback callback = Mockito.mock(ThingHandlerCallback.class);
         handler.setCallback(callback);
-        RachioDevice device = device("OFFLINE");
-        handler.setDevice(device);
 
-        handler.refreshThingStatusFromCachedDevice();
-
-        verify(callback).statusUpdated(eq(thing),
-                argThat(status -> status.getStatus() == ThingStatus.OFFLINE
-                        && status.getStatusDetail() == ThingStatusDetail.COMMUNICATION_ERROR
-                        && "Rachio controller reports OFFLINE".equals(status.getDescription())));
-
-        device.setStatus("ONLINE");
-        handler.refreshThingStatusFromCachedDevice();
+        handler.initialize();
 
         verify(callback).statusUpdated(eq(thing), argThat(status -> status.getStatus() == ThingStatus.ONLINE));
+        verify(callback, never()).statusUpdated(eq(thing),
+                argThat(status -> status.getStatus() == ThingStatus.OFFLINE));
+        verify(callback).stateUpdated(new ChannelUID(thing.getUID(), CHANNEL_DEVICE_ONLINE), OnOffType.OFF);
     }
 
     @Test
-    void deviceStatusWebhookEventsUpdateThingStatus() {
+    void deviceStatusWebhookEventsUpdateReportedStatusChannelWithoutTakingThingOffline() {
         Thing thing = thing();
         TestDeviceHandler handler = new TestDeviceHandler(thing, bridgeHandler(thing, device("ONLINE")));
         ThingHandlerCallback callback = Mockito.mock(ThingHandlerCallback.class);
         handler.setCallback(callback);
-        handler.setDevice(device("ONLINE"));
+        handler.initialize();
+        Mockito.clearInvocations(callback);
 
         handler.webhookEvent(deviceStatusEvent("OFFLINE"));
 
-        verify(callback).statusUpdated(eq(thing), argThat(status -> status.getStatus() == ThingStatus.OFFLINE
-                && "Rachio controller reports OFFLINE".equals(status.getDescription())));
+        verify(callback).stateUpdated(new ChannelUID(thing.getUID(), CHANNEL_DEVICE_ONLINE), OnOffType.OFF);
+        verify(callback).statusUpdated(eq(thing), argThat(status -> status.getStatus() == ThingStatus.ONLINE));
+        verify(callback, never()).statusUpdated(eq(thing),
+                argThat(status -> status.getStatus() == ThingStatus.OFFLINE));
 
         handler.webhookEvent(deviceStatusEvent("ONLINE"));
 
-        verify(callback).statusUpdated(eq(thing), argThat(status -> status.getStatus() == ThingStatus.ONLINE));
+        verify(callback).stateUpdated(new ChannelUID(thing.getUID(), CHANNEL_DEVICE_ONLINE), OnOffType.ON);
+    }
+
+    @Test
+    void missingConfiguredControllerRemainsAConfigurationFailure() {
+        Thing thing = thing();
+        RachioBridgeHandler bridgeHandler = bridgeHandler(thing, device("ONLINE"));
+        when(bridgeHandler.getDevByConfiguredDeviceId(thing, DEVICE_ID)).thenReturn(null);
+        TestDeviceHandler handler = new TestDeviceHandler(thing, bridgeHandler);
+        ThingHandlerCallback callback = Mockito.mock(ThingHandlerCallback.class);
+        handler.setCallback(callback);
+
+        handler.initialize();
+
+        verify(callback).statusUpdated(eq(thing),
+                argThat(status -> status.getStatus() == ThingStatus.OFFLINE
+                        && status.getStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR
+                        && String.valueOf(status.getDescription()).contains("deviceId was not found")));
+        verify(callback, never()).statusUpdated(eq(thing), argThat(status -> status.getStatus() == ThingStatus.ONLINE));
     }
 
     private Thing thing() {
@@ -202,11 +219,6 @@ class RachioDeviceHandlerStatusTest {
             super(thing);
             this.bridgeHandler = bridgeHandler;
             when(bridgeThing.getStatus()).thenReturn(ThingStatus.ONLINE);
-        }
-
-        void setDevice(RachioDevice device) {
-            dev = device;
-            thingId = device.name;
         }
 
         void runScheduledRetry() {

@@ -19,7 +19,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.Map;
+import java.util.Objects;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -28,11 +28,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.component.annotations.ReferencePolicyOption;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
@@ -46,27 +47,47 @@ import org.slf4j.LoggerFactory;
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-@Component(service = HttpServlet.class, configurationPolicy = ConfigurationPolicy.OPTIONAL, immediate = true)
+@Component(service = {}, configurationPolicy = ConfigurationPolicy.OPTIONAL, immediate = true)
 public class RachioImageServlet extends HttpServlet {
     private static final long serialVersionUID = 8706067059503685993L;
     private static final String HTTP_METHOD_GET = "GET";
     private final Logger logger = LoggerFactory.getLogger(RachioImageServlet.class);
 
-    private final HttpService httpService;
+    private final Object registrationLock = new Object();
+    private @Nullable HttpService httpService;
+    private boolean servletRegistered;
 
     /**
-     * OSGi activation callback.
+     * OSGi HttpService bind callback.
      *
-     * @param config Service config.
+     * @param httpService the HTTP service used for manual servlet registration
      */
-    @Activate
-    public RachioImageServlet(@Reference HttpService httpService, Map<String, Object> config) {
-        this.httpService = httpService;
-        try {
-            httpService.registerServlet(SERVLET_IMAGE_PATH, this, null, httpService.createDefaultHttpContext());
-            logger.debug("Started RachioImage servlet at {}", SERVLET_IMAGE_PATH);
-        } catch (ServletException | NamespaceException e) {
-            logger.warn("Could not start RachioImage servlet: {}", e.getMessage(), e);
+    @Reference(policy = ReferencePolicy.DYNAMIC, policyOption = ReferencePolicyOption.GREEDY)
+    protected void bindHttpService(HttpService httpService) {
+        synchronized (registrationLock) {
+            if (Objects.equals(this.httpService, httpService) && servletRegistered) {
+                logger.debug("RachioImage: Image servlet already registered at {}, skipping duplicate bind",
+                        SERVLET_IMAGE_PATH);
+                return;
+            }
+            if (servletRegistered) {
+                unregisterServletLocked();
+            }
+
+            this.httpService = httpService;
+            registerServletLocked(httpService);
+        }
+    }
+
+    protected void unbindHttpService(HttpService httpService) {
+        synchronized (registrationLock) {
+            if (!Objects.equals(this.httpService, httpService)) {
+                logger.debug("RachioImage: Ignoring HttpService unbind for non-current service");
+                return;
+            }
+
+            unregisterServletLocked();
+            this.httpService = null;
         }
     }
 
@@ -75,8 +96,38 @@ public class RachioImageServlet extends HttpServlet {
      */
     @Deactivate
     protected void deactivate() {
-        httpService.unregister(SERVLET_IMAGE_PATH);
-        logger.debug("RachioImage: Servlet stopped");
+        synchronized (registrationLock) {
+            unregisterServletLocked();
+            httpService = null;
+        }
+    }
+
+    private void registerServletLocked(HttpService httpService) {
+        try {
+            logger.debug("RachioImage: Registering image servlet alias {}", SERVLET_IMAGE_PATH);
+            httpService.registerServlet(SERVLET_IMAGE_PATH, this, null, httpService.createDefaultHttpContext());
+            servletRegistered = true;
+        } catch (ServletException | NamespaceException e) {
+            servletRegistered = false;
+            logger.warn("RachioImage: Could not register image servlet alias {}: {}", SERVLET_IMAGE_PATH,
+                    e.getMessage());
+        }
+    }
+
+    private void unregisterServletLocked() {
+        HttpService currentHttpService = httpService;
+        if (!servletRegistered || currentHttpService == null) {
+            return;
+        }
+
+        try {
+            logger.debug("RachioImage: Unregistering image servlet alias {}", SERVLET_IMAGE_PATH);
+            currentHttpService.unregister(SERVLET_IMAGE_PATH);
+        } catch (IllegalArgumentException e) {
+            logger.debug("RachioImage: Image servlet alias {} was already unregistered", SERVLET_IMAGE_PATH);
+        } finally {
+            servletRegistered = false;
+        }
     }
 
     @Override
@@ -118,7 +169,7 @@ public class RachioImageServlet extends HttpServlet {
             // read data in 4k chunks
             byte[] data = new byte[4096];
             int n;
-            while ((n = reader.read(data)) != -1) {
+            while (((n = reader.read(data)) != -1)) {
                 writer.write(data, 0, n);
             }
         } catch (RuntimeException e) {

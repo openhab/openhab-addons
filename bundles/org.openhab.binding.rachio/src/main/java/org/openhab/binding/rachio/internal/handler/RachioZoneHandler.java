@@ -61,10 +61,13 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(RachioZoneHandler.class);
     private OnOffType zoneRunState = OnOffType.OFF;
-    private @Nullable RachioDevice dev;
-    private @Nullable RachioZone zone;
+    @Nullable
+    private RachioDevice dev;
+    @Nullable
+    private RachioZone zone;
     private String cachedImageUrl = "";
-    private @Nullable RawType cachedImage;
+    @Nullable
+    private RawType cachedImage;
     private String failedImageUrl = "";
 
     public RachioZoneHandler(Thing thing) {
@@ -164,7 +167,7 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
             if (channel.equals(RachioBindingConstants.CHANNEL_ZONE_ENABLED)) {
                 if (command instanceof OnOffType) {
                     boolean enabled = command == OnOffType.ON;
-                    logger.debug("{} zone '{} [{}]'", enabled ? "Enabling" : "Disabling", currentZone.name,
+                    logger.info("{} zone '{} [{}]'", enabled ? "Enabling" : "Disabling", currentZone.name,
                             currentZone.zoneNumber);
                     handler.setZoneEnabled(currentZone.id, enabled);
                     currentZone.setEnabled(enabled);
@@ -228,7 +231,7 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
             }
         } finally {
             if (!errorMessage.isEmpty()) {
-                logger.debug("{}: {}", thingId, errorMessage);
+                logger.warn("{}: Zone command failed: {}", thingId, errorMessage);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
             }
         }
@@ -247,7 +250,7 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
     public boolean onThingStateChanged(@Nullable RachioDevice updatedDev, @Nullable RachioZone updatedZone) {
         RachioZone z = zone;
         RachioDevice d = dev;
-        if (updatedZone != null && z != null && z.id.equals(updatedZone.id)) {
+        if ((updatedZone != null) && (z != null) && z.id.equals(updatedZone.id)) {
             logger.debug("{}: Update for zone {} received.", thingId, z.name);
             z.update(updatedZone);
             updateChannel(CHANNEL_LAST_UPDATE, getTimestamp());
@@ -271,30 +274,31 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
             return false;
         }
         try {
+
             String zoneName = event.zoneName;
             String evt = event.subType.isEmpty() ? event.type : event.subType;
             z.setEvent(evt, getTimestamp()); // and funnel all zone events to the device
             if (event.type.equals("ZONE_STATUS")) {
                 RachioZoneStatus runStatus = event.zoneRunStatus;
                 String state = runStatus != null ? runStatus.state : event.subType;
-                if ("ZONE_STARTED".equals(state)) {
-                    logger.debug("{}: Zone {} STARTED watering ({}).", thingId, zoneName, event.timestamp);
+                if (state.equals("ZONE_STARTED")) {
+                    logger.info("{}: Zone {} STARTED watering ({}).", thingId, zoneName, event.timestamp);
                     zoneRunState = OnOffType.ON;
                     updateChannel(CHANNEL_ZONE_RUN, zoneRunState);
-                } else if ("ZONE_STOPPED".equals(state) || "ZONE_COMPLETED".equals(state)) {
-                    logger.debug(
+                } else if (state.equals("ZONE_STOPPED") || state.equals("ZONE_COMPLETED")) {
+                    logger.info(
                             "{}: Zoned {} STOPPED watering (timestamp={}, current={}, duration={}sec/{}min, flowVolume={}).",
                             thingId, zoneName, event.timestamp, event.zoneCurrent, event.duration,
                             event.durationInMinutes, event.flowVolume);
                     zoneRunState = OnOffType.OFF;
                     updateChannel(CHANNEL_ZONE_RUN, zoneRunState);
                 } else {
-                    logger.debug("{}: Event for zone {}: {} (status={}, duration = {}sec)", thingId, event.zoneName,
+                    logger.info("{}: Event for zone {}: {} (status={}, duration = {}sec)", thingId, event.zoneName,
                             event.summary, state, event.duration);
                 }
                 update = true;
             } else if (event.subType.equals("ZONE_DELTA")) {
-                logger.debug("{}: DELTA Event for zone {}: {}.{}", thingId, z.name, event.category, event.action);
+                logger.info("{}: DELTA Event for zone {}: {}.{}", thingId, z.name, event.category, event.action);
                 update = true;
             } else {
                 logger.debug("{}: Unhandled event type {}.{} for zone {}", thingId, event.type, event.subType,
@@ -338,10 +342,14 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
             updateChannel(CHANNEL_ZONE_MAX_RUNTIME, RachioQuantityTypes.seconds(z.maxRuntime));
             updateChannel(CHANNEL_ZONE_RUNTIME_NO_MULTIPLIER, RachioQuantityTypes.seconds(z.runtimeNoMultiplier));
             updateChannel(CHANNEL_ZONE_SCHEDULE_DATA_MODIFIED, z.scheduleDataModified ? OnOffType.ON : OnOffType.OFF);
-            updateChannel(CHANNEL_ZONE_MOISTURE_LEVEL, Double.isNaN(z.getMoistureLevel()) ? UnDefType.UNDEF
-                    : RachioQuantityTypes.millimetersOrUndef(z.getMoistureLevel()));
-            updateChannel(CHANNEL_ZONE_MOISTURE_PERCENT, Double.isNaN(z.getMoisturePercent()) ? UnDefType.UNDEF
-                    : RachioQuantityTypes.fractionOrUndef(z.getMoisturePercent()));
+            if (!Double.isNaN(z.getMoistureLevel())) {
+                updateChannel(CHANNEL_ZONE_MOISTURE_LEVEL,
+                        RachioQuantityTypes.millimetersOrUndef(z.getMoistureLevel()));
+            }
+            if (!Double.isNaN(z.getMoisturePercent())) {
+                updateChannel(CHANNEL_ZONE_MOISTURE_PERCENT,
+                        RachioQuantityTypes.fractionOrUndef(z.getMoisturePercent()));
+            }
             updateChannel(CHANNEL_LAST_EVENT, new StringType(z.getEvent()));
             DateTimeType ts = z.getEventTime();
             updateChannel(RachioBindingConstants.CHANNEL_LAST_EVENTTS, ts != null ? ts : UnDefType.UNDEF);

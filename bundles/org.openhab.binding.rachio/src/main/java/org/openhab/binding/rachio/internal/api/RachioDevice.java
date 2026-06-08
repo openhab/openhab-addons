@@ -49,17 +49,22 @@ public class RachioDevice extends RachioCloudDevice {
     public String runList = "";
     public Integer runTime = 0;
     public String lastEvent = "";
-    public @Nullable DateTimeType lastEventTime;
+    @Nullable
+    public DateTimeType lastEventTime;
     public boolean paused = false;
     public int pauseDuration = DEFAULT_ZONE_RUNTIME_SEC;
     public int rainDelay = 0;
     private boolean sleepMode = false;
 
-    public @Nullable ThingUID bridgeUID;
-    public @Nullable ThingUID devUID;
+    @Nullable
+    public ThingUID bridgeUID;
+    @Nullable
+    public ThingUID devUID;
     private HashMap<String, RachioZone> zoneList = new HashMap<String, RachioZone>();
-    private @Nullable RachioDeviceHandler thingHandler;
-    public @Nullable RachioCloudNetworkSettings network;
+    @Nullable
+    private RachioDeviceHandler thingHandler = null;
+    @Nullable
+    public RachioCloudNetworkSettings network;
     public String scheduleName = "";
     public String currentScheduleId = "";
     public String currentScheduleName = "";
@@ -121,7 +126,8 @@ public class RachioDevice extends RachioCloudDevice {
     /**
      * @return thing handler for this zone
      */
-    public @Nullable RachioDeviceHandler getThingHandler() {
+    @Nullable
+    public RachioDeviceHandler getThingHandler() {
         return thingHandler;
     }
 
@@ -172,7 +178,8 @@ public class RachioDevice extends RachioCloudDevice {
     /**
      * @return Device thing uid
      */
-    public @Nullable ThingUID getUID() {
+    @Nullable
+    public ThingUID getUID() {
         return devUID;
     }
 
@@ -419,6 +426,7 @@ public class RachioDevice extends RachioCloudDevice {
     public void applyForecast(RachioForecastResponse forecast) {
         forecastSummary = forecast.getSummary();
         forecastUpdated = forecast.getUpdated();
+        @Nullable
         RachioForecastEntry today = forecast.getTodayForecast();
         if (today == null) {
             forecastTodayHigh = Double.NaN;
@@ -470,13 +478,14 @@ public class RachioDevice extends RachioCloudDevice {
     }
 
     public String getAllRunZonesJson(int defaultRuntime) {
-        boolean flAll = runList.isEmpty() || "ALL".equalsIgnoreCase(runList);
+        boolean flAll = runList.isEmpty() || runList.equalsIgnoreCase("ALL");
         int runtime = getMultiZoneRunTime(defaultRuntime);
         StringBuilder resolvedDurations = new StringBuilder();
 
         String list = runList + ","; // make sure last entry is terminated by ','
         String json = "{ \"zones\" : [";
         for (HashMap.Entry<String, RachioZone> ze : zoneList.entrySet()) {
+            @Nullable
             RachioZone zone = ze.getValue();
             if (flAll || (list.contains(zone.zoneNumber + ",") && (zone.getEnabled() == OnOffType.ON))) {
                 if (resolvedDurations.length() > 0) {
@@ -503,7 +512,8 @@ public class RachioDevice extends RachioCloudDevice {
         return zoneList;
     }
 
-    public @Nullable RachioZone getZoneByNumber(int zoneNumber) {
+    @Nullable
+    public RachioZone getZoneByNumber(int zoneNumber) {
         for (HashMap.Entry<String, RachioZone> ze : zoneList.entrySet()) {
             RachioZone zone = ze.getValue();
             if ((zone != null) && zone.zoneNumber == zoneNumber) {
@@ -513,7 +523,8 @@ public class RachioDevice extends RachioCloudDevice {
         return null;
     }
 
-    public @Nullable RachioZone getZoneById(String zoneId) {
+    @Nullable
+    public RachioZone getZoneById(String zoneId) {
         for (HashMap.Entry<String, RachioZone> ze : zoneList.entrySet()) {
             RachioZone zone = ze.getValue();
             if ((zone != null) && zone.id.equals(zoneId)) {

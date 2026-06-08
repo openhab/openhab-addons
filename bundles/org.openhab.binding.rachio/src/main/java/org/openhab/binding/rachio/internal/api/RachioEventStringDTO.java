@@ -26,16 +26,18 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class RachioEventStringDTO {
-    private @Nullable GenericEvent gEvent;
-    private @Nullable ZoneEvent zEvent;
+    @Nullable
+    private GenericEvent gEvent;
+    @Nullable
+    private ZoneEvent zEvent;
     private Gson gson = new Gson();
 
     private class GenericEvent {
-        final String timestamp;
-        final String summary;
-        final String topic;
-        final String type;
-        final String subType;
+        private final String timestamp;
+        private final String summary;
+        private final String topic;
+        private final String type;
+        private final String subType;
 
         public GenericEvent(RachioEventGsonDTO event) {
             timestamp = event.timestamp;
@@ -47,18 +49,18 @@ public class RachioEventStringDTO {
     }
 
     private class ZoneEvent {
-        final String timestamp;
-        final String summary;
-        final String type;
-        final String subType;
+        private final String timestamp;
+        private final String summary;
+        private final String type;
+        private final String subType;
 
-        final String zoneName;
-        final int zoneNumber;
-        final String zoneRunState;
-        final String scheduleType;
-        final String startTime;
-        final String endTime;
-        final int duration;
+        private final String zoneName;
+        private final int zoneNumber;
+        private final String zoneRunState;
+        private final String scheduleType;
+        private final String startTime;
+        private final String endTime;
+        private final int duration;
 
         public ZoneEvent(RachioEventGsonDTO event) {
             timestamp = event.timestamp;
@@ -85,7 +87,8 @@ public class RachioEventStringDTO {
         }
     }
 
-    public @Nullable String toJson() {
+    @Nullable
+    public String toJson() {
         return zEvent != null ? gson.toJson(zEvent) : gson.toJson(gEvent);
     }
 }

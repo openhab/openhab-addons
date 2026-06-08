@@ -35,14 +35,18 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class RachioZone extends RachioCloudZone {
     private final Logger logger = LoggerFactory.getLogger(RachioZone.class);
-    protected @Nullable ThingUID devUID;
-    protected @Nullable ThingUID zoneUID;
-    protected @Nullable RachioZoneHandler thingHandler;
+    @Nullable
+    protected ThingUID devUID;
+    @Nullable
+    protected ThingUID zoneUID;
+    @Nullable
+    protected RachioZoneHandler thingHandler;
     protected String uniqueId = "";
 
     protected int startRunTime = 0;
     protected String lastEvent = "";
-    protected @Nullable DateTimeType lastEventTime;
+    @Nullable
+    protected DateTimeType lastEventTime;
     protected double moistureLevel = Double.NaN;
     protected double moisturePercent = Double.NaN;
     protected String imageDownloadUrl = "";
@@ -81,7 +85,8 @@ public class RachioZone extends RachioCloudZone {
         thingHandler = zoneHandler;
     }
 
-    public @Nullable RachioZoneHandler getThingHandler() {
+    @Nullable
+    public RachioZoneHandler getThingHandler() {
         return thingHandler;
     }
 
@@ -102,7 +107,7 @@ public class RachioZone extends RachioCloudZone {
     }
 
     public void update(@Nullable RachioZone updatedZone) {
-        if (updatedZone == null || !id.equalsIgnoreCase(updatedZone.id)) {
+        if ((updatedZone == null) || !id.equalsIgnoreCase(updatedZone.id)) {
             return;
         }
         zoneNumber = updatedZone.zoneNumber;
@@ -129,11 +134,13 @@ public class RachioZone extends RachioCloudZone {
         this.zoneUID = zoneUID;
     }
 
-    public @Nullable ThingUID getUID() {
+    @Nullable
+    public ThingUID getUID() {
         return zoneUID;
     }
 
-    public @Nullable ThingUID getDevUID() {
+    @Nullable
+    public ThingUID getDevUID() {
         return devUID;
     }
 

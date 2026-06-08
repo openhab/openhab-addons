@@ -21,7 +21,6 @@ import static org.openhab.binding.rachio.internal.RachioBindingConstants.PROPERT
 
 import java.util.Objects;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.rachio.internal.api.json.RachioPropertyGsonDTO;
 import org.openhab.binding.rachio.internal.api.json.RachioPropertyGsonDTO.RachioProperty;
@@ -33,7 +32,6 @@ import org.openhab.binding.rachio.internal.api.json.RachioPropertyGsonDTO.Rachio
  *
  * @author openHAB Contributors - Initial contribution
  */
-@NonNullByDefault
 class RachioPropertyApiTest {
     @Test
     void propertyListResponseParsesWrappedProperties() {

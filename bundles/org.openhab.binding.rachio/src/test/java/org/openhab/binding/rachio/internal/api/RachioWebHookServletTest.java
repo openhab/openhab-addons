@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
 
 import javax.servlet.ReadListener;
 import javax.servlet.ServletInputStream;
@@ -39,8 +38,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.openhab.binding.rachio.internal.RachioHandlerFactory;
 import org.openhab.binding.rachio.internal.api.json.RachioEventGsonDTO;
-import org.osgi.service.http.HttpContext;
-import org.osgi.service.http.HttpService;
 
 /**
  * Tests servlet-level Rachio webhook duplicate handling.
@@ -155,9 +152,7 @@ class RachioWebHookServletTest {
     }
 
     private RachioWebHookServlet servlet(RachioHandlerFactory handlerFactory) throws Exception {
-        HttpService httpService = Mockito.mock(HttpService.class);
-        when(httpService.createDefaultHttpContext()).thenReturn(Mockito.mock(HttpContext.class));
-        return new RachioWebHookServlet(httpService, handlerFactory, Map.of());
+        return new RachioWebHookServlet(handlerFactory);
     }
 
     private RachioHandlerFactory mockHandlerFactory(boolean validSignature) {

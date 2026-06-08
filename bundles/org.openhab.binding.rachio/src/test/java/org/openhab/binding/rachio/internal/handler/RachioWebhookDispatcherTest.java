@@ -20,7 +20,6 @@ import static org.openhab.binding.rachio.internal.RachioBindingConstants.EVENT_V
 
 import java.util.List;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.rachio.internal.api.json.RachioEventGsonDTO;
 import org.openhab.binding.rachio.internal.api.json.RachioEventGsonDTO.RachioWebhookPayload;
@@ -31,7 +30,6 @@ import org.openhab.binding.rachio.internal.api.webhook.RachioWebhookResourceType
  *
  * @author openHAB Contributors - Initial contribution
  */
-@NonNullByDefault
 class RachioWebhookDispatcherTest {
     @Test
     void irrigationEventRoutesThroughResourceAwareDispatcher() {

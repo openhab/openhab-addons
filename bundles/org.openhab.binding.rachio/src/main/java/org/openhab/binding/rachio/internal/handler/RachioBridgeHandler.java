@@ -18,7 +18,6 @@ import static org.openhab.binding.rachio.internal.RachioUtils.getString;
 import java.net.UnknownHostException;
 import java.text.MessageFormat;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -76,7 +75,6 @@ import org.slf4j.LoggerFactory;
 public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(RachioBridgeHandler.class);
     private final RachioApi rachioApi;
-    private RachioConfiguration bindingConfig = new RachioConfiguration();
     private RachioConfiguration thingConfig = new RachioConfiguration();
     private String personId = "";
     private final Set<RachioDiscoveryService> discoveryServices = new CopyOnWriteArraySet<>();
@@ -97,10 +95,6 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
     public RachioBridgeHandler(final Bridge bridge) {
         super(bridge);
         rachioApi = new RachioApi(personId);
-    }
-
-    public void setConfiguration(RachioConfiguration defaultConfig) {
-        bindingConfig = new RachioConfiguration(defaultConfig);
     }
 
     /**
@@ -136,7 +130,7 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
                 }
             }
 
-            logger.debug("RachioCloud: Connector initialized");
+            logger.info("RachioCloud: Connector initialized");
             updateStatus(ThingStatus.ONLINE);
             triggerPostInitializationDiscovery();
         } catch (RachioApiException e) {
@@ -262,7 +256,7 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
                 RachioDevice checkDev = de.getValue();
                 RachioDevice dev = deviceList.get(checkDev.id);
                 if (dev == null) {
-                    logger.debug("RachioCloud: New device detected: {} - {}", checkDev.id, checkDev.name);
+                    logger.info("RachioCloud: New device detected: {} - {}", checkDev.id, checkDev.name);
                 } else {
                     RachioDeviceHandler deviceHandler = dev.getThingHandler();
                     if (!dev.compare(checkDev)) {
@@ -275,7 +269,7 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
                     } else {
                         logger.trace("RachioCloud: Device {} was not updated", checkDev.id);
                         if (deviceHandler != null) {
-                            deviceHandler.refreshThingStatusFromCachedDevice();
+                            deviceHandler.refreshThingStatusAfterSuccessfulCommunication();
                         }
                     }
 
@@ -329,7 +323,7 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
 
     @Override
     public void shutdown() {
-        logger.debug("RachioCloud: Shutting down");
+        logger.info("RachioCloud: Shutting down");
         super.shutdown();
     }
 
@@ -579,8 +573,8 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
     }
 
     public RachioValveDayViewsResponse getValveDayViews(String valveId) throws RachioApiException {
-        LocalDate end = LocalDate.now(ZoneId.systemDefault()).plusDays(getHoseSummaryLookaheadDays());
-        LocalDate start = LocalDate.now(ZoneId.systemDefault()).minusDays(getHoseSummaryLookbackDays());
+        LocalDate end = LocalDate.now().plusDays(getHoseSummaryLookaheadDays());
+        LocalDate start = LocalDate.now().minusDays(getHoseSummaryLookbackDays());
         return rachioApi.getValveDayViews(valveId, start, end);
     }
 
@@ -728,7 +722,8 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
      *
      * @return HashMap of RachioDevice
      */
-    public @Nullable HashMap<String, RachioDevice> getDevices() {
+    @Nullable
+    public HashMap<String, RachioDevice> getDevices() {
         try {
             return rachioApi.getDevices();
         } catch (RuntimeException e) {
@@ -743,20 +738,24 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
      * @param thingUID
      * @return RachioDevice for that device Thing UID
      */
-    public @Nullable RachioDevice getDevByUID(@Nullable ThingUID thingUID) {
+    @Nullable
+    public RachioDevice getDevByUID(@Nullable ThingUID thingUID) {
         return rachioApi.getDevByUID(getThing().getUID(), thingUID);
     }
 
-    public @Nullable RachioDevice getDevByThing(Thing thing) {
+    @Nullable
+    public RachioDevice getDevByThing(Thing thing) {
         return rachioApi.getDevByUID(getThing().getUID(), thing.getUID(), thing.getConfiguration().getProperties(),
                 thing.getProperties());
     }
 
-    public @Nullable RachioDevice getDevByConfiguredDeviceId(Thing thing, String deviceId) {
+    @Nullable
+    public RachioDevice getDevByConfiguredDeviceId(Thing thing, String deviceId) {
         return rachioApi.bindDeviceByRachioId(getThing().getUID(), thing.getUID(), deviceId);
     }
 
-    public @Nullable RachioDevice getDevForZone(RachioZone zone) {
+    @Nullable
+    public RachioDevice getDevForZone(RachioZone zone) {
         return rachioApi.getDeviceByZoneRachioId(zone.id);
     }
 
@@ -766,11 +765,13 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
      * @param thingUID Zone Thing UID
      * @return matching RachioZone, or null when no zone matches
      */
-    public @Nullable RachioZone getZoneByUID(@Nullable ThingUID thingUID) {
+    @Nullable
+    public RachioZone getZoneByUID(@Nullable ThingUID thingUID) {
         return rachioApi.getZoneByUID(getThing().getUID(), thingUID);
     }
 
-    public @Nullable RachioZone getZoneByThing(Thing thing) {
+    @Nullable
+    public RachioZone getZoneByThing(Thing thing) {
         return rachioApi.getZoneByUID(getThing().getUID(), thing.getUID(), thing.getConfiguration().getProperties(),
                 thing.getProperties());
     }
@@ -842,7 +843,8 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
         return false;
     }
 
-    public @Nullable String getExternalId() {
+    @Nullable
+    public String getExternalId() {
         return rachioApi.getExternalId();
     }
 
@@ -862,17 +864,13 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
     }
 
     private RachioConfiguration.ResolvedConfiguration resolveEffectiveConfiguration() {
-        return RachioConfiguration.resolveEffectiveConfig(bindingConfig, getConfig().getProperties());
+        return RachioConfiguration.resolveEffectiveConfig(getConfig().getProperties());
     }
 
     private void logResolvedConfiguration(RachioConfiguration.ResolvedConfiguration resolvedConfiguration) {
         RachioConfiguration config = resolvedConfiguration.configuration();
         logger.debug(
-                "Rachio Cloud configuration resolved: apikeyConfigured={} ({}), pollingInterval={} ({}), "
-                        + "defaultRuntime={} ({}), eventHistoryLookbackHours={} ({}), forecastUnits={} ({}), "
-                        + "hoseSummaryLookbackDays={} ({}), hoseSummaryLookaheadDays={} ({}), "
-                        + "callbackUrlConfigured={} ({}), callbackUsernameConfigured={} ({}), "
-                        + "callbackPasswordConfigured={} ({}), clearAllCallbacks={} ({})",
+                "Rachio Cloud configuration resolved: apikeyConfigured={} ({}), pollingInterval={} ({}), defaultRuntime={} ({}), eventHistoryLookbackHours={} ({}), forecastUnits={} ({}), hoseSummaryLookbackDays={} ({}), hoseSummaryLookaheadDays={} ({}), callbackUrlConfigured={} ({}), callbackUsernameConfigured={} ({}), callbackPasswordConfigured={} ({}), clearAllCallbacks={} ({})",
                 isConfigured(config.apikey), sourceLabel(resolvedConfiguration, PARAM_APIKEY), config.pollingInterval,
                 sourceLabel(resolvedConfiguration, PARAM_POLLING_INTERVAL), config.defaultRuntime,
                 sourceLabel(resolvedConfiguration, PARAM_DEF_RUNTIME), config.eventHistoryLookbackHours,

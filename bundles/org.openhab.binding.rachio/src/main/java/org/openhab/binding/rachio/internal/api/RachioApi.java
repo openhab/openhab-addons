@@ -113,10 +113,11 @@ public class RachioApi {
     protected String userName = "";
     protected String fullName = "";
     protected String email = "";
-    protected @Nullable ThingUID bridgeUID;
+    @Nullable
+    protected ThingUID bridgeUID = null;
 
     protected RachioApiResult lastApiResult = new RachioApiResult();
-    private static final Map<String, ClientRateLimitManager> RATE_LIMIT_MANAGERS = new ConcurrentHashMap<>();
+    private static final Map<String, ClientRateLimitManager> rateLimitManagers = new ConcurrentHashMap<>();
     private ClientRateLimitManager rateLimitManager = new ClientRateLimitManager(10, Duration.ofSeconds(30));
 
     private HashMap<String, RachioDevice> deviceList = new HashMap<String, RachioDevice>();
@@ -260,7 +261,7 @@ public class RachioApi {
             throws RachioApiException {
         this.apikey = apikey;
         this.bridgeUID = bridgeUID;
-        this.rateLimitManager = Objects.requireNonNull(RATE_LIMIT_MANAGERS.computeIfAbsent(apikey,
+        this.rateLimitManager = Objects.requireNonNull(rateLimitManagers.computeIfAbsent(apikey,
                 key -> new ClientRateLimitManager(10, Duration.ofSeconds(30))));
         httpApi = new RachioHttp(this.apikey);
         if (!initializePersonId(priority, requestPurpose) || !initializeDevices(bridgeUID, priority, requestPurpose)
@@ -273,7 +274,8 @@ public class RachioApi {
         return deviceList;
     }
 
-    public @Nullable RachioDevice bindDeviceByRachioId(ThingUID bridgeUID, ThingUID thingUID, String deviceId) {
+    @Nullable
+    public RachioDevice bindDeviceByRachioId(ThingUID bridgeUID, ThingUID thingUID, String deviceId) {
         RachioDevice dev = getDeviceByRachioId(deviceId);
         if (dev != null) {
             dev.setUID(bridgeUID, thingUID);
@@ -285,7 +287,8 @@ public class RachioApi {
         return dev;
     }
 
-    public @Nullable RachioDevice getDeviceByRachioId(@Nullable String deviceId) {
+    @Nullable
+    public RachioDevice getDeviceByRachioId(@Nullable String deviceId) {
         if (deviceId == null || deviceId.isBlank()) {
             return null;
         }
@@ -303,7 +306,8 @@ public class RachioApi {
         return null;
     }
 
-    public @Nullable RachioZone getZoneByRachioId(@Nullable String zoneId) {
+    @Nullable
+    public RachioZone getZoneByRachioId(@Nullable String zoneId) {
         if (zoneId == null || zoneId.isBlank()) {
             return null;
         }
@@ -318,7 +322,8 @@ public class RachioApi {
         return null;
     }
 
-    public @Nullable RachioDevice getDeviceByZoneRachioId(@Nullable String zoneId) {
+    @Nullable
+    public RachioDevice getDeviceByZoneRachioId(@Nullable String zoneId) {
         if (zoneId == null || zoneId.isBlank()) {
             return null;
         }
@@ -333,16 +338,19 @@ public class RachioApi {
         return null;
     }
 
-    public @Nullable RachioDevice getDevByUID(@Nullable ThingUID bridgeUID, @Nullable ThingUID thingUID) {
+    @Nullable
+    public RachioDevice getDevByUID(@Nullable ThingUID bridgeUID, @Nullable ThingUID thingUID) {
         return getDevByUID(bridgeUID, thingUID, Collections.emptyMap(), Collections.emptyMap());
     }
 
-    public @Nullable RachioDevice getDevByUID(@Nullable ThingUID bridgeUID, @Nullable ThingUID thingUID,
+    @Nullable
+    public RachioDevice getDevByUID(@Nullable ThingUID bridgeUID, @Nullable ThingUID thingUID,
             Map<String, String> properties) {
         return getDevByUID(bridgeUID, thingUID, Collections.emptyMap(), properties);
     }
 
-    public @Nullable RachioDevice getDevByUID(@Nullable ThingUID bridgeUID, @Nullable ThingUID thingUID,
+    @Nullable
+    public RachioDevice getDevByUID(@Nullable ThingUID bridgeUID, @Nullable ThingUID thingUID,
             Map<String, @Nullable Object> configuration, Map<String, String> properties) {
         if (bridgeUID == null || thingUID == null) {
             logger.debug("getDevByUID: Unable map UID to device, bridgeUID={}, deviceUID={}", bridgeUID, thingUID);
@@ -367,6 +375,7 @@ public class RachioApi {
 
         for (HashMap.Entry<String, RachioDevice> entry : deviceList.entrySet()) {
             RachioDevice dev = entry.getValue();
+            @Nullable
             String matchedProperty = getMatchingDeviceProperty(dev, properties);
             if (matchedProperty != null) {
                 dev.setUID(bridgeUID, thingUID);
@@ -379,6 +388,7 @@ public class RachioApi {
 
         for (HashMap.Entry<String, RachioDevice> entry : deviceList.entrySet()) {
             RachioDevice dev = entry.getValue();
+            @Nullable
             ThingUID expectedUID = buildExpectedThingUID(THING_TYPE_DEVICE, bridgeUID, dev.getThingID());
             logger.trace("getDevByUID: requested bridge={}, requested device={}, cached bridge={}, cached device={}, "
                     + "candidate device={}", bridgeUID, thingUID, dev.bridgeUID, dev.devUID, expectedUID);
@@ -393,16 +403,19 @@ public class RachioApi {
         return null;
     }
 
-    public @Nullable RachioZone getZoneByUID(@Nullable ThingUID bridgeUID, @Nullable ThingUID zoneUID) {
+    @Nullable
+    public RachioZone getZoneByUID(@Nullable ThingUID bridgeUID, @Nullable ThingUID zoneUID) {
         return getZoneByUID(bridgeUID, zoneUID, Collections.emptyMap(), Collections.emptyMap());
     }
 
-    public @Nullable RachioZone getZoneByUID(@Nullable ThingUID bridgeUID, @Nullable ThingUID zoneUID,
+    @Nullable
+    public RachioZone getZoneByUID(@Nullable ThingUID bridgeUID, @Nullable ThingUID zoneUID,
             Map<String, String> properties) {
         return getZoneByUID(bridgeUID, zoneUID, Collections.emptyMap(), properties);
     }
 
-    public @Nullable RachioZone getZoneByUID(@Nullable ThingUID bridgeUID, @Nullable ThingUID zoneUID,
+    @Nullable
+    public RachioZone getZoneByUID(@Nullable ThingUID bridgeUID, @Nullable ThingUID zoneUID,
             Map<String, @Nullable Object> configuration, Map<String, String> properties) {
         if (bridgeUID == null || zoneUID == null) {
             logger.debug("getZoneByUID: Unable map UID to zone, bridgeUID={}, zoneUID={}", bridgeUID, zoneUID);
@@ -428,6 +441,7 @@ public class RachioApi {
 
         for (HashMap.Entry<String, RachioDevice> de : deviceList.entrySet()) {
             RachioDevice dev = de.getValue();
+            @Nullable
             ThingUID expectedDevUID = buildExpectedThingUID(THING_TYPE_DEVICE, bridgeUID, dev.getThingID());
             if (expectedDevUID == null) {
                 logger.trace("getZoneByUID: Skip device '{}' because no valid device Thing UID can be built", dev.name);
@@ -437,6 +451,7 @@ public class RachioApi {
             HashMap<String, RachioZone> zoneList = dev.getZones();
             for (HashMap.Entry<String, RachioZone> ze : zoneList.entrySet()) {
                 RachioZone zone = ze.getValue();
+                @Nullable
                 String matchedProperty = getMatchingZoneProperty(zone, properties);
                 if (matchedProperty != null) {
                     bindZoneUIDs(dev, zone, bridgeUID, zoneUID);
@@ -450,6 +465,7 @@ public class RachioApi {
 
         for (HashMap.Entry<String, RachioDevice> de : deviceList.entrySet()) {
             RachioDevice dev = de.getValue();
+            @Nullable
             ThingUID expectedDevUID = buildExpectedThingUID(THING_TYPE_DEVICE, bridgeUID, dev.getThingID());
             if (expectedDevUID == null) {
                 logger.trace("getZoneByUID: Skip device '{}' because no valid device Thing UID can be built", dev.name);
@@ -459,6 +475,7 @@ public class RachioApi {
             HashMap<String, RachioZone> zoneList = dev.getZones();
             for (HashMap.Entry<String, RachioZone> ze : zoneList.entrySet()) {
                 RachioZone zone = ze.getValue();
+                @Nullable
                 ThingUID expectedZoneUID = buildExpectedThingUID(THING_TYPE_ZONE, bridgeUID, zone.getThingID());
                 logger.trace(
                         "getZoneByUID: requested bridge={}, requested zone={}, cached device={}, cached zone={}, "
@@ -477,6 +494,7 @@ public class RachioApi {
     }
 
     private void bindZoneUIDs(RachioDevice dev, RachioZone zone, ThingUID bridgeUID, ThingUID zoneUID) {
+        @Nullable
         ThingUID deviceUID = dev.getUID();
         if (deviceUID == null) {
             deviceUID = buildExpectedThingUID(THING_TYPE_DEVICE, bridgeUID, dev.getThingID());
@@ -508,11 +526,13 @@ public class RachioApi {
     }
 
     private String getConfigurationString(Map<String, @Nullable Object> configuration, String parameterName) {
+        @Nullable
         Object configValue = getConfigurationValue(configuration, parameterName);
         return configValue != null ? configValue.toString().trim() : "";
     }
 
     private @Nullable Object getConfigurationValue(Map<String, @Nullable Object> configuration, String parameterName) {
+        @Nullable
         Object value = configuration.get(parameterName);
         if (value != null) {
             return value;
@@ -528,6 +548,7 @@ public class RachioApi {
 
     private boolean matchesProperty(Map<String, String> properties, String propertyName,
             @Nullable String expectedValue) {
+        @Nullable
         String actualValue = properties.get(propertyName);
         return matchesIdentifierValue(actualValue, expectedValue);
     }
@@ -613,8 +634,29 @@ public class RachioApi {
     }
 
     public void runMultipleZones(String zoneListJson) throws RachioApiException {
-        logger.debug("Start multiple zones '{}'.", zoneListJson);
+        int zoneCount = countStartMultipleZoneEntries(zoneListJson);
+        if (zoneCount >= 0) {
+            logger.debug("Start multiple zones: zoneCount={}.", zoneCount);
+        } else {
+            logger.debug("Start multiple zones: zoneCount=unknown, requestLength={}.", zoneListJson.length());
+        }
         httpPut(APIURL_BASE + APIURL_ZONE_PUT_MULTIPLE_START, zoneListJson, PRIORITY.HI);
+    }
+
+    private int countStartMultipleZoneEntries(String zoneListJson) {
+        try {
+            JsonElement root = JsonParser.parseString(zoneListJson);
+            if (root.isJsonObject()) {
+                @Nullable
+                JsonElement zones = root.getAsJsonObject().get("zones");
+                if (zones != null && zones.isJsonArray()) {
+                    return zones.getAsJsonArray().size();
+                }
+            }
+        } catch (RuntimeException e) {
+            logger.trace("Unable to summarize multi-zone start request JSON: {}", e.getMessage());
+        }
+        return -1;
     }
 
     public void runZone(String zoneId, int duration) throws RachioApiException {
@@ -638,6 +680,7 @@ public class RachioApi {
         String json = httpGet(
                 APIURL_BASE + APIURL_GET_DEVICE + "/" + deviceId + "/" + APIURL_GET_DEVICE_CURRENT_SCHEDULE, null,
                 PRIORITY.LOW).resultString;
+        @Nullable
         RachioCurrentScheduleResponse response = new Gson().fromJson(json, RachioCurrentScheduleResponse.class);
         return response != null ? response : new RachioCurrentScheduleResponse();
     }
@@ -654,10 +697,11 @@ public class RachioApi {
     }
 
     public RachioForecastResponse getDeviceForecast(String deviceId, String units) throws RachioApiException {
-        String normalizedUnits = "US".equalsIgnoreCase(units) ? "US" : "METRIC";
+        String normalizedUnits = units.equalsIgnoreCase("US") ? "US" : "METRIC";
         logger.debug("Load forecast for device '{}' using {} units.", deviceId, normalizedUnits);
         String json = httpGet(APIURL_BASE + APIURL_GET_DEVICE + "/" + deviceId + "/" + APIURL_GET_DEVICE_FORECAST,
                 "units=" + urlEncode(normalizedUnits), PRIORITY.LOW).resultString;
+        @Nullable
         RachioForecastResponse response = new Gson().fromJson(json, RachioForecastResponse.class);
         return response != null ? response : new RachioForecastResponse();
     }
@@ -675,6 +719,7 @@ public class RachioApi {
         logger.debug("Load Rachio property '{}'.", propertyId);
         String json = httpGet(APIURL_CLOUD_REST_BASE + PROPERTY_GET + urlEncode(propertyId), null,
                 PRIORITY.LOW).resultString;
+        @Nullable
         RachioProperty property = RachioPropertyGsonDTO.parseProperty(json);
         return property != null ? property : new RachioProperty();
     }
@@ -892,6 +937,7 @@ public class RachioApi {
         logger.debug("Load schedule rule '{}'.", scheduleRuleId);
         String json = httpGet(APIURL_BASE + APIURL_GET_SCHEDULE_RULE + "/" + scheduleRuleId, null,
                 readPriority(requestPurpose), requestPurpose).resultString;
+        @Nullable
         RachioScheduleRuleResponse response = new Gson().fromJson(json, RachioScheduleRuleResponse.class);
         return response != null ? response : new RachioScheduleRuleResponse();
     }
@@ -906,6 +952,7 @@ public class RachioApi {
         logger.debug("GET {}{}/{}", APIURL_BASE, APIURL_GET_FLEX_SCHEDULE_RULE, flexScheduleRuleId);
         String json = httpGet(APIURL_BASE + APIURL_GET_FLEX_SCHEDULE_RULE + "/" + flexScheduleRuleId, null,
                 readPriority(requestPurpose), requestPurpose).resultString;
+        @Nullable
         RachioFlexScheduleRuleResponse response = new Gson().fromJson(json, RachioFlexScheduleRuleResponse.class);
         return response != null ? response : new RachioFlexScheduleRuleResponse();
     }
@@ -1190,36 +1237,27 @@ public class RachioApi {
         return url.toString();
     }
 
-    private String sanitizeCallbackUrl(@Nullable String url) {
+    static String callbackUrlLogReference(@Nullable String url) {
         if (url == null || url.isBlank()) {
-            return "";
+            return "callbackUrlHash=none";
         }
-        try {
-            URI uri = new URI(url);
-            if (uri.getRawUserInfo() == null) {
-                return uri.toASCIIString();
-            }
-            URI sanitizedUri = new URI(uri.getScheme(), "***:***", uri.getHost(), uri.getPort(), uri.getPath(),
-                    uri.getQuery(), uri.getFragment());
-            return sanitizedUri.toASCIIString();
-        } catch (RuntimeException | URISyntaxException e) {
-            return "<redacted-callback-url>";
-        }
+        String hash = getMD5Hash(url);
+        return "callbackUrlHash=" + (hash.isBlank() ? "unavailable" : hash.substring(0, Math.min(12, hash.length())));
     }
 
     private RachioApiException sanitizeWebhookRegistrationException(RachioApiException e, String registrationUrl) {
         if (e instanceof RachioApiThrottledException) {
             return e;
         }
-        String sanitizedUrl = sanitizeCallbackUrl(registrationUrl);
+        String callbackUrlReference = callbackUrlLogReference(registrationUrl);
         RachioApiResult result = e.getApiResult();
-        result.resultString = result.resultString.replace(registrationUrl, sanitizedUrl);
+        result.resultString = result.resultString.replace(registrationUrl, callbackUrlReference);
 
         String message = e.getMessage();
         if (message == null || message.isBlank()) {
             message = "Rachio webhook registration failed";
         } else {
-            message = message.replace(registrationUrl, sanitizedUrl);
+            message = message.replace(registrationUrl, callbackUrlReference);
         }
         return new RachioApiException(message, result);
     }
@@ -1390,8 +1428,8 @@ public class RachioApi {
         List<RachioApiWebHookEntry> webhooks = parseWebHookList(json);
         logger.debug("Registered webhook count for target '{}': {}", target.describe(), webhooks.size());
         for (RachioApiWebHookEntry whe : webhooks) {
-            logger.debug("WebHook: id='{}', url='{}', externalId='{}', resourceId='{}'", whe.id,
-                    sanitizeCallbackUrl(whe.url), whe.externalId,
+            logger.debug("WebHook: id='{}', callbackUrl={}, externalId='{}', resourceId='{}'", whe.id,
+                    callbackUrlLogReference(whe.url), whe.externalId,
                     whe.resourceId == null ? null : whe.resourceId.getResourceId(target.getResourceType()));
             boolean matchesExternalId = externalIds.stream().anyMatch(id -> Objects.equals(whe.externalId, id));
             boolean matchesExpectedWebhook = target.matches(whe, callbackUrl, expectedExternalId);
@@ -1435,6 +1473,7 @@ public class RachioApi {
                 webhooks = root.getAsJsonObject().get("data");
             }
             if ((webhooks == null) || !webhooks.isJsonArray()) {
+                @Nullable
                 RachioApiWebHookList list = gson.fromJson(root, RachioApiWebHookList.class);
                 return list != null ? list.webhooks : new ArrayList<>();
             }
@@ -1444,10 +1483,12 @@ public class RachioApi {
         }
 
         List<RachioApiWebHookEntry> webhooks = new ArrayList<>();
-        for (JsonElement entry : entries) {
+        for (@Nullable
+        JsonElement entry : entries) {
             if (entry == null) {
                 continue;
             }
+            @Nullable
             RachioApiWebHookEntry webhook = gson.fromJson(entry, RachioApiWebHookEntry.class);
             if (webhook != null) {
                 webhooks.add(webhook);
@@ -1597,6 +1638,9 @@ public class RachioApi {
                         f.setAccessible(true);
                         t.setAccessible(true);
                         t.set(toObj, a != null ? a.clone() : null);
+                    } else {
+                        // logger.debug("RachioApiInternal: Unable to update field '{}', '{}'", t.getName(),
+                        // t.getType());
                     }
                 }
             } catch (NoSuchFieldException ex) {

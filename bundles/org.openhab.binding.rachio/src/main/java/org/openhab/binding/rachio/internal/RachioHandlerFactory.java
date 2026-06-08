@@ -51,18 +51,18 @@ import org.slf4j.LoggerFactory;
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-@Component(service = { ThingHandlerFactory.class,
-        RachioHandlerFactory.class }, immediate = true, configurationPid = "binding." + BINDING_ID)
+@Component(service = { ThingHandlerFactory.class, RachioHandlerFactory.class }, immediate = true)
 public class RachioHandlerFactory extends BaseThingHandlerFactory {
 
     public class RachioBridge {
-        private @Nullable RachioBridgeHandler cloudHandler;
-        private @Nullable ThingUID uid;
+        @Nullable
+        RachioBridgeHandler cloudHandler;
+        @Nullable
+        ThingUID uid;
     }
 
     private final Logger logger = LoggerFactory.getLogger(RachioHandlerFactory.class);
     private final Map<String, RachioBridge> bridgeList = new ConcurrentHashMap<>();
-    private final RachioConfiguration bindingConfig = new RachioConfiguration();
 
     RachioHandlerFactory() {
         logger.debug("RachioHandlerFactory: Initialized Rachio Thing handler.");
@@ -73,13 +73,9 @@ public class RachioHandlerFactory extends BaseThingHandlerFactory {
      *
      */
     @Activate
-    public RachioHandlerFactory(ComponentContext componentContext,
-            @Nullable Map<String, @Nullable Object> configProperties) {
+    public RachioHandlerFactory(ComponentContext componentContext) {
         super.activate(componentContext);
         logger.debug("RachioHandlerFactory: Initialized Rachio Thing handler.");
-
-        logger.debug("RachioHandlerFactory: Activating with binding-level configuration");
-        bindingConfig.updateConfig(configProperties);
     }
 
     @Override
@@ -148,6 +144,7 @@ public class RachioHandlerFactory extends BaseThingHandlerFactory {
                 if (cloudHandler == null) {
                     continue;
                 }
+                @Nullable
                 String externalId = cloudHandler.getExternalId();
                 if (externalId != null && externalId.equals(event.externalId)) {
                     return cloudHandler.webHookEvent(event);
@@ -192,14 +189,14 @@ public class RachioHandlerFactory extends BaseThingHandlerFactory {
         return false;
     }
 
-    private @Nullable RachioBridgeHandler createBridge(Bridge bridgeThing) {
+    @Nullable
+    private RachioBridgeHandler createBridge(Bridge bridgeThing) {
         try {
             RachioBridge bridge = new RachioBridge();
             ThingUID bridgeUID = bridgeThing.getUID();
             RachioBridgeHandler cloudHandler = new RachioBridgeHandler(bridgeThing);
             bridge.uid = bridgeUID;
             bridge.cloudHandler = cloudHandler;
-            cloudHandler.setConfiguration(bindingConfig);
             bridgeList.put(bridgeUID.toString(), bridge);
             return cloudHandler;
         } catch (RuntimeException e) {

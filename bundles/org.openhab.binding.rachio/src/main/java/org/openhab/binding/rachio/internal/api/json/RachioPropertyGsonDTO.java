@@ -44,8 +44,10 @@ public class RachioPropertyGsonDTO {
         public String longitude = "";
         public ArrayList<RachioPropertyEntity> entities = new ArrayList<>();
         public ArrayList<RachioPropertyEntity> resources = new ArrayList<>();
-        public @Nullable JsonObject address;
-        public @Nullable JsonObject resourceId;
+        @Nullable
+        public JsonObject address;
+        @Nullable
+        public JsonObject resourceId;
 
         public String getId() {
             return firstNonBlank(id, propertyId, readString(resourceId, "propertyId"), readString(resourceId, "id"));
@@ -63,7 +65,8 @@ public class RachioPropertyGsonDTO {
         public String entityType = "";
         public String resourceType = "";
         public String name = "";
-        public @Nullable JsonObject resourceId;
+        @Nullable
+        public JsonObject resourceId;
     }
 
     public static class RachioPropertyListResponse {
@@ -83,6 +86,7 @@ public class RachioPropertyGsonDTO {
                     }
                 }
                 if (response.properties.isEmpty()) {
+                    @Nullable
                     RachioProperty property = parsePropertyObjectOrWrapper(object);
                     if (property != null) {
                         response.properties.add(property);
@@ -96,6 +100,7 @@ public class RachioPropertyGsonDTO {
             List<RachioProperty> properties = new ArrayList<>();
             for (JsonElement element : array) {
                 if (element != null && element.isJsonObject()) {
+                    @Nullable
                     RachioProperty property = parsePropertyObject(element.getAsJsonObject());
                     if (property != null) {
                         properties.add(property);
@@ -108,7 +113,8 @@ public class RachioPropertyGsonDTO {
 
     public static class RachioPropertyEntityLookupResponse {
         public ArrayList<RachioProperty> properties = new ArrayList<>();
-        public @Nullable RachioProperty property;
+        @Nullable
+        public RachioProperty property;
 
         public static RachioPropertyEntityLookupResponse fromJson(String json) {
             RachioPropertyEntityLookupResponse response = new RachioPropertyEntityLookupResponse();

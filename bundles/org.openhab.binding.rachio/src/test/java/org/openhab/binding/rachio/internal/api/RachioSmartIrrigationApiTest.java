@@ -17,7 +17,6 @@ import static org.hamcrest.Matchers.is;
 
 import java.util.Objects;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.rachio.internal.api.json.RachioSmartIrrigationGsonDTO.RachioCurrentScheduleResponse;
 import org.openhab.binding.rachio.internal.api.json.RachioSmartIrrigationGsonDTO.RachioDeviceEvent;
@@ -34,7 +33,6 @@ import com.google.gson.JsonParser;
  *
  * @author openHAB Contributors - Initial contribution
  */
-@NonNullByDefault
 class RachioSmartIrrigationApiTest {
     @Test
     void moistureLevelPayloadContainsDocumentedFields() {

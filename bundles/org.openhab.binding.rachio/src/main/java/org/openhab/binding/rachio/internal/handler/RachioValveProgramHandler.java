@@ -55,11 +55,15 @@ import org.slf4j.LoggerFactory;
 public class RachioValveProgramHandler extends AbstractRachioThingHandler {
     private final Logger logger = LoggerFactory.getLogger(RachioValveProgramHandler.class);
 
-    private @Nullable RachioValveProgram program;
-    private @Nullable RachioValveDayRun nextProgramRun;
-    private @Nullable RachioValveDayRun nextSkippedProgramRun;
+    @Nullable
+    private RachioValveProgram program;
+    @Nullable
+    private RachioValveDayRun nextProgramRun;
+    @Nullable
+    private RachioValveDayRun nextSkippedProgramRun;
     private String lastEvent = "";
-    private @Nullable DateTimeType lastEventTime;
+    @Nullable
+    private DateTimeType lastEventTime;
     private String lastRainSkipPlannedRunStartTime = "";
     private String lastRainSkipCanceledPlannedRunStartTime = "";
     private boolean statusListenerRegistered = false;

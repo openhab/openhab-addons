@@ -48,8 +48,10 @@ public class RachioSmartIrrigationGsonDTO {
         public int duration = 0;
         public int durationInMinutes = 0;
         public boolean running = false;
-        public @Nullable JsonObject schedule;
-        public @Nullable JsonObject currentSchedule;
+        @Nullable
+        public JsonObject schedule;
+        @Nullable
+        public JsonObject currentSchedule;
 
         public String getScheduleId() {
             return firstNonBlank(id, scheduleId, routingId, readString(schedule, "id"),
@@ -96,7 +98,7 @@ public class RachioSmartIrrigationGsonDTO {
             }
             String currentStatus = firstNonBlank(status, readString(schedule, "status"),
                     readString(currentSchedule, "status"));
-            return "RUNNING".equalsIgnoreCase(currentStatus) || "STARTED".equalsIgnoreCase(currentStatus)
+            return currentStatus.equalsIgnoreCase("RUNNING") || currentStatus.equalsIgnoreCase("STARTED")
                     || !getScheduleId().isBlank() || !getScheduleName().isBlank();
         }
     }
@@ -118,6 +120,7 @@ public class RachioSmartIrrigationGsonDTO {
                     }
                 }
                 if (response.events.isEmpty()) {
+                    @Nullable
                     RachioDeviceEvent event = GSON.fromJson(object, RachioDeviceEvent.class);
                     if (event != null) {
                         response.events.add(event);
@@ -144,6 +147,7 @@ public class RachioSmartIrrigationGsonDTO {
             List<RachioDeviceEvent> events = new ArrayList<>();
             for (JsonElement element : array) {
                 if (element.isJsonObject()) {
+                    @Nullable
                     RachioDeviceEvent event = GSON.fromJson(element, RachioDeviceEvent.class);
                     if (event != null) {
                         events.add(event);
@@ -198,7 +202,8 @@ public class RachioSmartIrrigationGsonDTO {
         public ArrayList<RachioForecastEntry> forecast = new ArrayList<>();
         public ArrayList<RachioForecastEntry> forecasts = new ArrayList<>();
         public ArrayList<RachioForecastEntry> dailyForecasts = new ArrayList<>();
-        public @Nullable RachioForecastEntry today;
+        @Nullable
+        public RachioForecastEntry today;
 
         public String getSummary() {
             RachioForecastEntry todayForecast = getTodayForecast();
@@ -257,9 +262,18 @@ public class RachioSmartIrrigationGsonDTO {
         public String name = "";
         public boolean enabled = false;
         public String type = "";
+        public String startDate = "";
         public String startTime = "";
         public String lastRun = "";
+        public String lastRunDate = "";
+        public String lastRunTime = "";
+        public String lastRunAt = "";
         public String nextRun = "";
+        public String nextRunDate = "";
+        public String nextRunTime = "";
+        public String nextRunAt = "";
+        public String nextScheduledRun = "";
+        public String nextScheduledStart = "";
         public double seasonalAdjustment = 0;
         public ArrayList<RachioScheduleRuleZone> zones = new ArrayList<>();
 

@@ -15,9 +15,20 @@ package org.openhab.binding.rachio.internal;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.Mockito.when;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.SUPPORTED_THING_TYPES_UIDS;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_TYPE_BASE_STATION;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_TYPE_CLOUD;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_TYPE_DEVICE;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_TYPE_FLEX_SCHEDULE;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_TYPE_SCHEDULE;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_TYPE_VALVE;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_TYPE_VALVE_PROGRAM;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_TYPE_ZONE;
+
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -45,6 +56,27 @@ class RachioHandlerFactoryTest {
     }
 
     @Test
+    void doesNotSupportTemporaryFlexScheduleThingType() {
+        RachioHandlerFactory factory = new RachioHandlerFactory();
+        ThingTypeUID temporaryFlexScheduleType = new ThingTypeUID("rachio", "flexschedule");
+
+        assertThat(factory.supportsThingType(temporaryFlexScheduleType), is(false));
+    }
+
+    @Test
+    void eachSupportedThingTypeHasThingXmlMetadata() {
+        Map<ThingTypeUID, String> metadataFiles = Map.of(THING_TYPE_CLOUD, "cloud.xml", THING_TYPE_DEVICE, "device.xml",
+                THING_TYPE_ZONE, "zone.xml", THING_TYPE_SCHEDULE, "schedule.xml", THING_TYPE_FLEX_SCHEDULE,
+                "flex-schedule.xml", THING_TYPE_BASE_STATION, "base-station.xml", THING_TYPE_VALVE, "valve.xml",
+                THING_TYPE_VALVE_PROGRAM, "valve-program.xml");
+
+        assertThat(metadataFiles.keySet(), is(SUPPORTED_THING_TYPES_UIDS));
+        for (String metadataFile : metadataFiles.values()) {
+            assertThat(getClass().getResource("/OH-INF/thing/" + metadataFile), notNullValue());
+        }
+    }
+
+    @Test
     void createsFlexScheduleHandlerForFlexScheduleThingType() {
         RachioHandlerFactory factory = new RachioHandlerFactory();
         ThingUID bridgeUID = new ThingUID(THING_TYPE_CLOUD, "bridge");
@@ -57,5 +89,19 @@ class RachioHandlerFactoryTest {
         ThingHandler handler = factory.createHandler(thing);
 
         assertThat(handler, instanceOf(RachioFlexScheduleHandler.class));
+    }
+
+    @Test
+    void doesNotCreateHandlerForTemporaryFlexScheduleThingType() {
+        RachioHandlerFactory factory = new RachioHandlerFactory();
+        ThingTypeUID temporaryFlexScheduleType = new ThingTypeUID("rachio", "flexschedule");
+        ThingUID thingUID = new ThingUID(temporaryFlexScheduleType, "bridge", "flex-id");
+        Thing thing = Mockito.mock(Thing.class);
+        when(thing.getThingTypeUID()).thenReturn(temporaryFlexScheduleType);
+        when(thing.getUID()).thenReturn(thingUID);
+
+        ThingHandler handler = factory.createHandler(thing);
+
+        assertThat(handler, nullValue());
     }
 }

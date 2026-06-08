@@ -29,14 +29,15 @@ import org.openhab.core.thing.binding.ConfigStatusBridgeHandler;
 /**
  * Base class for Rachio bridge-like handlers that own child status listeners and scheduled refresh work.
  *
- * @author Jeff James - Initial contribution
+ * @author Jeff James - Initial architectural concept
  * @author Kovacs Istvan - Adaptation and integration into the openHAB 5.1+ Rachio binding
  */
 @NonNullByDefault
 public abstract class AbstractRachioBridgeHandler extends ConfigStatusBridgeHandler {
     protected final List<RachioStatusListener> rachioStatusListeners = new CopyOnWriteArrayList<>();
 
-    private @Nullable ScheduledFuture<?> pollingJob;
+    @Nullable
+    private ScheduledFuture<?> pollingJob;
     private boolean refreshPending = false;
 
     protected AbstractRachioBridgeHandler(Bridge bridge) {

@@ -24,6 +24,7 @@ import javax.measure.quantity.Temperature;
 import javax.measure.quantity.Time;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.ImperialUnits;
@@ -48,6 +49,7 @@ final class RachioQuantityTypes {
 
     static OptionalInt durationSeconds(Command command) {
         if (command instanceof QuantityType<?> quantityCommand) {
+            @Nullable
             QuantityType<?> seconds = quantityCommand.toUnit(Units.SECOND);
             return seconds != null ? OptionalInt.of(seconds.intValue()) : OptionalInt.empty();
         }
@@ -59,6 +61,7 @@ final class RachioQuantityTypes {
 
     static OptionalDouble lengthMillimeters(Command command) {
         if (command instanceof QuantityType<?> quantityCommand) {
+            @Nullable
             QuantityType<?> millimeters = quantityCommand.toUnit(MILLIMETRE);
             return millimeters != null ? OptionalDouble.of(millimeters.doubleValue()) : OptionalDouble.empty();
         }
@@ -70,6 +73,7 @@ final class RachioQuantityTypes {
 
     static OptionalDouble dimensionless(Command command) {
         if (command instanceof QuantityType<?> quantityCommand) {
+            @Nullable
             QuantityType<?> unitless = quantityCommand.toUnit(Units.ONE);
             return unitless != null ? OptionalDouble.of(unitless.doubleValue()) : OptionalDouble.empty();
         }

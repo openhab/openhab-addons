@@ -14,8 +14,8 @@ package org.openhab.binding.rachio.internal.api;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.startsWith;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -23,32 +23,31 @@ import org.junit.jupiter.api.Test;
  *
  * @author openHAB Contributors - Initial contribution
  */
-@NonNullByDefault
 class RachioHttpSanitizerTest {
 
     @Test
     void sanitizeForLoggingMasksCallbackUrlCredentials() {
         String input = """
-                {"url":"https://webhook-user:webhook-password@host.example/rachio/webhook"}
+                {"url":"https://user@example.com:secret-password@home.myopenhab.org/rachio/webhook"}
                 """;
 
         String sanitized = RachioHttp.sanitizeForLogging(input);
 
-        assertThat(sanitized.contains("webhook-user"), is(false));
-        assertThat(sanitized.contains("webhook-password"), is(false));
-        assertThat(sanitized.contains("https://***:***@host.example/rachio/webhook"), is(true));
+        assertThat(sanitized.contains("user@example.com"), is(false));
+        assertThat(sanitized.contains("secret-password"), is(false));
+        assertThat(sanitized.contains("https://***:***@home.myopenhab.org/rachio/webhook"), is(true));
     }
 
     @Test
     void sanitizeForLoggingMasksEscapedCallbackUrlCredentials() {
         String input = """
-                {"url":"https:\\/\\/webhook-user:webhook-password@host.example\\/rachio\\/webhook"}
+                {"url":"https:\\/\\/user:password@home.myopenhab.org\\/rachio\\/webhook"}
                 """;
 
         String sanitized = RachioHttp.sanitizeForLogging(input);
 
-        assertThat(sanitized.contains("webhook-user:webhook-password"), is(false));
-        assertThat(sanitized.contains("https:\\/\\/***:***@host.example"), is(true));
+        assertThat(sanitized.contains("user:password"), is(false));
+        assertThat(sanitized.contains("https:\\/\\/***:***@home.myopenhab.org"), is(true));
     }
 
     @Test
@@ -67,5 +66,17 @@ class RachioHttpSanitizerTest {
         assertThat(sanitized.contains("Bearer [redacted]"), is(true));
         assertThat(sanitized.contains("\"apikey\":\"[redacted]\""), is(true));
         assertThat(sanitized.contains("apikey=[redacted]"), is(true));
+    }
+
+    @Test
+    void callbackUrlLogReferenceUsesHashWithoutUrlPartsOrCredentials() {
+        String reference = RachioApi.callbackUrlLogReference(
+                "https://user@example.com:secret-password@home.myopenhab.org/rachio/webhook?token=callback-token");
+
+        assertThat(reference, startsWith("callbackUrlHash="));
+        assertThat(reference.contains("user@example.com"), is(false));
+        assertThat(reference.contains("secret-password"), is(false));
+        assertThat(reference.contains("home.myopenhab.org"), is(false));
+        assertThat(reference.contains("callback-token"), is(false));
     }
 }

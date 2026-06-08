@@ -32,7 +32,7 @@ import org.openhab.core.types.State;
 /**
  * Base class for Rachio child thing handlers with common bridge lookup, cached refresh, and status propagation logic.
  *
- * @author Jeff James - Initial contribution
+ * @author Jeff James - Initial architectural concept
  * @author Kovacs Istvan - Adaptation and integration into the openHAB 5.1+ Rachio binding
  */
 @NonNullByDefault
@@ -44,11 +44,14 @@ public abstract class AbstractRachioThingHandler extends BaseThingHandler implem
     protected String thingId = "";
     protected final Map<String, State> channelData = new HashMap<>();
 
-    protected @Nullable Bridge bridge;
+    @Nullable
+    protected Bridge bridge;
 
-    protected @Nullable RachioBridgeHandler cloudHandler;
+    @Nullable
+    protected RachioBridgeHandler cloudHandler;
 
-    private @Nullable ScheduledFuture<?> localThrottleRetryJob;
+    @Nullable
+    private ScheduledFuture<?> localThrottleRetryJob;
     private int localThrottleRetryAttempt = 0;
     private boolean localThrottleInitializationDeferred = false;
 

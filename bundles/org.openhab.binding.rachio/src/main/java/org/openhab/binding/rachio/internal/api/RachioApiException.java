@@ -30,7 +30,8 @@ import org.eclipse.jdt.annotation.Nullable;
 public class RachioApiException extends Exception {
     private static final long serialVersionUID = -2579498702258574787L;
     private RachioApiResult apiResult = new RachioApiResult();
-    private @Nullable Throwable e;
+    @Nullable
+    private Throwable e = null;
 
     public RachioApiException(String message) {
         super(message);
@@ -57,39 +58,46 @@ public class RachioApiException extends Exception {
     }
 
     @Override
-    public @Nullable String getMessage() {
+    @Nullable
+    public String getMessage() {
         return super.getMessage();
     }
 
     @Override
     public String toString() {
+        @Nullable
         String detail = super.getMessage();
-        String message = detail != null ? detail : "";
+        String message = detail != null ? RachioHttp.sanitizeForLogging(detail) : "";
         Throwable ex = e;
         if (ex != null) {
             if (ex instanceof UnknownHostException) {
+                @Nullable
                 String host = ex.getMessage();
+                String sanitizedHost = RachioHttp.sanitizeForLogging(host);
                 message = MessageFormat.format("Unable to connect to {0} (unknown host / internet connection down)",
-                        host == null || host.isBlank() ? "Rachio API" : host);
+                        sanitizedHost.isBlank() ? "Rachio API" : sanitizedHost);
             } else if (ex instanceof MalformedURLException) {
+                @Nullable
                 String exceptionMessage = ex.getMessage();
+                String sanitizedExceptionMessage = RachioHttp.sanitizeForLogging(exceptionMessage);
                 message = MessageFormat.format("Invalid URL: {0}",
-                        exceptionMessage == null || exceptionMessage.isBlank() ? message : exceptionMessage);
+                        sanitizedExceptionMessage.isBlank() ? message : sanitizedExceptionMessage);
             } else {
-                message = MessageFormat.format("{0} ({1})", ex.toString(), ex.getMessage());
+                message = MessageFormat.format("{0} ({1})", RachioHttp.sanitizeForLogging(ex.toString()),
+                        RachioHttp.sanitizeForLogging(ex.getMessage()));
             }
         } else {
             message = MessageFormat.format("{0} ({1})", super.getClass().toString(), message);
         }
 
         String url = !apiResult.url.isEmpty() ? MessageFormat.format(", {0} {1}, http code={2}",
-                apiResult.requestMethod, apiResult.url, apiResult.responseCode) : "";
+                apiResult.requestMethod, RachioHttp.sanitizeForLogging(apiResult.url), apiResult.responseCode) : "";
         String rateLimit = apiResult.rateLimit > 0
                 ? MessageFormat.format(", apiCalls={0}, rateLimit={1} of {2}", apiResult.apiCalls,
                         apiResult.rateRemaining, apiResult.rateLimit)
                 : "";
         String resultString = !apiResult.resultString.isEmpty()
-                ? MessageFormat.format(", result = {0}", apiResult.resultString)
+                ? MessageFormat.format(", resultLength={0}", apiResult.resultString.length())
                 : "";
         return MessageFormat.format("Exception: {0}{1}{2}{3}", message, url, rateLimit, resultString);
     }

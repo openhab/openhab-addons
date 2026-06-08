@@ -16,7 +16,7 @@ import static org.openhab.binding.rachio.internal.RachioBindingConstants.*;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
+import java.util.Objects;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -32,6 +32,8 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.component.annotations.ReferencePolicyOption;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
@@ -49,7 +51,7 @@ import com.google.gson.JsonSyntaxException;
  *
  * @author Markus Michels - Initial contribution
  */
-@Component(service = HttpServlet.class, configurationPolicy = ConfigurationPolicy.OPTIONAL, immediate = true)
+@Component(service = {}, configurationPolicy = ConfigurationPolicy.OPTIONAL, immediate = true)
 @NonNullByDefault
 public class RachioWebHookServlet extends HttpServlet {
     private static final long serialVersionUID = -4654253998990066051L;
@@ -58,24 +60,50 @@ public class RachioWebHookServlet extends HttpServlet {
     private final Gson gson = new Gson();
     private final RachioWebhookDuplicateEventCache duplicateEventCache = new RachioWebhookDuplicateEventCache();
 
-    private final HttpService httpService;
     private final RachioHandlerFactory rachioHandlerFactory;
+    private final Object registrationLock = new Object();
+    private @Nullable HttpService httpService;
+    private boolean servletRegistered;
 
     /**
      * OSGi activation callback.
-     *
-     * @param config Service config.
      */
     @Activate
-    public RachioWebHookServlet(@Reference HttpService httpService,
-            @Reference RachioHandlerFactory rachioHandlerFactory, Map<String, Object> config) {
-        this.httpService = httpService;
+    public RachioWebHookServlet(@Reference RachioHandlerFactory rachioHandlerFactory) {
         this.rachioHandlerFactory = rachioHandlerFactory;
-        try {
-            httpService.registerServlet(SERVLET_WEBHOOK_PATH, this, null, httpService.createDefaultHttpContext());
-            logger.debug("RachioWebhook: Started servlet at {}", SERVLET_WEBHOOK_PATH);
-        } catch (ServletException | NamespaceException e) {
-            logger.warn("RachioWebhook: Could not start Rachio Webhook servlet", e);
+    }
+
+    /**
+     * OSGi HttpService bind callback.
+     *
+     * @param httpService the HTTP service used for manual servlet registration
+     */
+    @Reference(policy = ReferencePolicy.DYNAMIC, policyOption = ReferencePolicyOption.GREEDY)
+    protected void bindHttpService(HttpService httpService) {
+        synchronized (registrationLock) {
+            if (Objects.equals(this.httpService, httpService) && servletRegistered) {
+                logger.debug("RachioWebHook: Webhook servlet already registered at {}, skipping duplicate bind",
+                        SERVLET_WEBHOOK_PATH);
+                return;
+            }
+            if (servletRegistered) {
+                unregisterServletLocked();
+            }
+
+            this.httpService = httpService;
+            registerServletLocked(httpService);
+        }
+    }
+
+    protected void unbindHttpService(HttpService httpService) {
+        synchronized (registrationLock) {
+            if (!Objects.equals(this.httpService, httpService)) {
+                logger.debug("RachioWebHook: Ignoring HttpService unbind for non-current service");
+                return;
+            }
+
+            unregisterServletLocked();
+            this.httpService = null;
         }
     }
 
@@ -84,8 +112,38 @@ public class RachioWebHookServlet extends HttpServlet {
      */
     @Deactivate
     protected void deactivate() {
-        httpService.unregister(SERVLET_WEBHOOK_PATH);
-        logger.debug("RachioWebHook: Servlet stopped");
+        synchronized (registrationLock) {
+            unregisterServletLocked();
+            httpService = null;
+        }
+    }
+
+    private void registerServletLocked(HttpService httpService) {
+        try {
+            logger.debug("RachioWebHook: Registering webhook servlet alias {}", SERVLET_WEBHOOK_PATH);
+            httpService.registerServlet(SERVLET_WEBHOOK_PATH, this, null, httpService.createDefaultHttpContext());
+            servletRegistered = true;
+        } catch (ServletException | NamespaceException e) {
+            servletRegistered = false;
+            logger.warn("RachioWebHook: Could not register webhook servlet alias {}: {}", SERVLET_WEBHOOK_PATH,
+                    e.getMessage());
+        }
+    }
+
+    private void unregisterServletLocked() {
+        HttpService currentHttpService = httpService;
+        if (!servletRegistered || currentHttpService == null) {
+            return;
+        }
+
+        try {
+            logger.debug("RachioWebHook: Unregistering webhook servlet alias {}", SERVLET_WEBHOOK_PATH);
+            currentHttpService.unregister(SERVLET_WEBHOOK_PATH);
+        } catch (IllegalArgumentException e) {
+            logger.debug("RachioWebHook: Webhook servlet alias {} was already unregistered", SERVLET_WEBHOOK_PATH);
+        } finally {
+            servletRegistered = false;
+        }
     }
 
     @Override
@@ -98,6 +156,7 @@ public class RachioWebHookServlet extends HttpServlet {
         setHeaders(resp);
 
         String ipAddress = getClientIpAddress(request);
+        @Nullable
         String path = request.getRequestURI();
         logger.trace("RachioWebhook: Request from {}:{}{} ({}:{}, {})", ipAddress, request.getRemotePort(), path,
                 request.getRemoteHost(), request.getServerPort(), request.getProtocol());
@@ -121,6 +180,7 @@ public class RachioWebHookServlet extends HttpServlet {
         }
 
         byte[] rawBody = request.getInputStream().readAllBytes();
+        @Nullable
         String signature = request.getHeader(WEBHOOK_SIGNATURE_HEADER);
         if (signature == null || signature.isBlank()) {
             logger.warn("RachioWebHook: Rejecting webhook request from {} because the x-signature header is missing",
@@ -137,6 +197,7 @@ public class RachioWebHookServlet extends HttpServlet {
         }
 
         String data = new String(rawBody, StandardCharsets.UTF_8);
+        @Nullable
         RachioEventGsonDTO event = null;
         try {
             logger.trace("RachioWebHook: Received {} byte webhook payload", rawBody.length);
@@ -168,6 +229,7 @@ public class RachioWebHookServlet extends HttpServlet {
                     e.getMessage());
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
         } catch (RuntimeException e) {
+            @Nullable
             RachioEventGsonDTO failedEvent = event;
             if (failedEvent != null) {
                 logger.debug(
@@ -181,6 +243,7 @@ public class RachioWebHookServlet extends HttpServlet {
     }
 
     private String getClientIpAddress(HttpServletRequest request) {
+        @Nullable
         String ipAddress = request.getHeader("HTTP_X_FORWARDED_FOR");
         if (ipAddress == null) {
             ipAddress = request.getRemoteAddr();
@@ -192,6 +255,7 @@ public class RachioWebHookServlet extends HttpServlet {
         try {
             return parseEventDirectly(data);
         } catch (JsonSyntaxException e) {
+            @Nullable
             String legacyData = createLegacyJson(data);
             if (legacyData == null) {
                 throw e;
@@ -202,6 +266,7 @@ public class RachioWebHookServlet extends HttpServlet {
     }
 
     private RachioEventGsonDTO parseEventDirectly(String data) {
+        @Nullable
         RachioEventGsonDTO event = gson.fromJson(data, RachioEventGsonDTO.class);
         if (event == null) {
             throw new JsonSyntaxException("Webhook payload did not contain an event object");
@@ -210,6 +275,7 @@ public class RachioWebHookServlet extends HttpServlet {
     }
 
     private @Nullable String createLegacyJson(String data) {
+        @Nullable
         String unwrappedJson = unwrapLegacyJsonString(data);
         if (unwrappedJson != null) {
             return unwrappedJson;

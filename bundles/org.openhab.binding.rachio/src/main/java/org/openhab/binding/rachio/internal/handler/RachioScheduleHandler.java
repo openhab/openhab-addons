@@ -15,9 +15,7 @@ package org.openhab.binding.rachio.internal.handler;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.*;
 import static org.openhab.binding.rachio.internal.RachioUtils.getTimestamp;
 
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.util.OptionalDouble;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -27,7 +25,6 @@ import org.openhab.binding.rachio.internal.api.RachioDevice;
 import org.openhab.binding.rachio.internal.api.RachioZone;
 import org.openhab.binding.rachio.internal.api.json.RachioEventGsonDTO;
 import org.openhab.binding.rachio.internal.api.json.RachioSmartIrrigationGsonDTO.RachioScheduleRuleResponse;
-import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
@@ -51,6 +48,7 @@ public class RachioScheduleHandler extends AbstractRachioThingHandler {
     private final Logger logger = LoggerFactory.getLogger(RachioScheduleHandler.class);
     protected String scheduleRuleId = "";
     protected RachioScheduleRuleResponse scheduleRule = new RachioScheduleRuleResponse();
+    private boolean scheduleRuleLoaded = false;
 
     public RachioScheduleHandler(Thing thing) {
         super(thing);
@@ -83,6 +81,13 @@ public class RachioScheduleHandler extends AbstractRachioThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         String channel = channelUID.getId();
+        if (command == RefreshType.REFRESH) {
+            if (loadScheduleRuleForRefreshIfCacheMissing(channel)) {
+                updateStatus(ThingStatus.ONLINE);
+            }
+            return;
+        }
+
         RachioBridgeHandler handler = cloudHandler;
         if (handler == null) {
             logger.debug("{}: Cloud handler is not initialized", thingId);
@@ -90,18 +95,42 @@ public class RachioScheduleHandler extends AbstractRachioThingHandler {
         }
 
         try {
-            if (command == RefreshType.REFRESH) {
-                if (refreshScheduleRule()) {
-                    updateStatus(ThingStatus.ONLINE);
+            if (channel.equals(CHANNEL_SCHEDULE_START) && command == OnOffType.ON) {
+                handler.startScheduleRule(scheduleRuleId);
+                updateChannel(CHANNEL_SCHEDULE_START, OnOffType.OFF);
+            } else if (channel.equals(CHANNEL_SCHEDULE_SKIP) && command == OnOffType.ON) {
+                handler.skipScheduleRule(scheduleRuleId);
+                updateChannel(CHANNEL_SCHEDULE_SKIP, OnOffType.OFF);
+            } else if (channel.equals(CHANNEL_SCHEDULE_SEASONAL_ADJUSTMENT)) {
+                OptionalDouble adjustment = RachioQuantityTypes.dimensionless(command);
+                if (adjustment.isPresent()) {
+                    double value = adjustment.getAsDouble();
+                    handler.setScheduleRuleSeasonalAdjustment(scheduleRuleId, value);
+                    scheduleRule.seasonalAdjustment = value;
+                    updateChannel(CHANNEL_SCHEDULE_SEASONAL_ADJUSTMENT, RachioQuantityTypes.fractionOrUndef(value));
+                } else {
+                    logger.debug("{}: Seasonal adjustment command value is not dimensionless: {}", thingId, command);
                 }
-                return;
+            } else if (channel.equals(CHANNEL_SCHEDULE_SKIP_FORWARD_ZONE_RUN) && command == OnOffType.ON) {
+                handler.skipForwardZoneRun(scheduleRuleId);
+                updateChannel(CHANNEL_SCHEDULE_SKIP_FORWARD_ZONE_RUN, OnOffType.OFF);
             }
-            RachioScheduleCommandSupport.handleCommand(this, logger, handler, scheduleRuleId, channel, command,
-                    value -> scheduleRule.seasonalAdjustment = value);
         } catch (RachioApiException e) {
             logger.debug("{}: Schedule command failed: {}", thingId, e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
+    }
+
+    private synchronized boolean loadScheduleRuleForRefreshIfCacheMissing(String channel) {
+        if (scheduleRuleLoaded) {
+            logger.trace("{}: Serving schedule channel '{}' REFRESH from cached rule '{}'", thingId, channel,
+                    scheduleRuleId);
+            postCachedChannelData(channel);
+            return false;
+        }
+        logger.debug("{}: Schedule rule cache is empty; loading rule '{}' for channel '{}' REFRESH", thingId,
+                scheduleRuleId, channel);
+        return refreshScheduleRule();
     }
 
     @Override
@@ -111,7 +140,7 @@ public class RachioScheduleHandler extends AbstractRachioThingHandler {
         }
     }
 
-    protected boolean refreshScheduleRule() {
+    protected synchronized boolean refreshScheduleRule() {
         RachioBridgeHandler handler = cloudHandler;
         if (handler == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
@@ -119,6 +148,7 @@ public class RachioScheduleHandler extends AbstractRachioThingHandler {
         }
         try {
             scheduleRule = loadScheduleRule();
+            scheduleRuleLoaded = true;
             logger.debug("{}: Loaded schedule rule '{}'", thingId, scheduleRuleId);
             postChannelData();
             updateChannel(CHANNEL_LAST_UPDATE, getTimestamp());
@@ -143,6 +173,14 @@ public class RachioScheduleHandler extends AbstractRachioThingHandler {
         }
     }
 
+    private void postCachedChannelData(String channel) {
+        postChannelData();
+        State cachedState = channelData.get(channel);
+        if (cachedState != null) {
+            updateState(channel, cachedState);
+        }
+    }
+
     protected RachioScheduleRuleResponse loadScheduleRule() throws RachioApiException {
         RachioBridgeHandler handler = cloudHandler;
         if (handler == null) {
@@ -156,9 +194,17 @@ public class RachioScheduleHandler extends AbstractRachioThingHandler {
         updateChannel(CHANNEL_SCHEDULE_NAME, stringOrUndef(scheduleRule.name));
         updateChannel(CHANNEL_SCHEDULE_ENABLED, scheduleRule.enabled ? OnOffType.ON : OnOffType.OFF);
         updateChannel(CHANNEL_SCHEDULE_TYPE, stringOrUndef(scheduleRule.type));
-        updateChannel(CHANNEL_SCHEDULE_START_TIME, dateTimeOrUndef(scheduleRule.startTime));
-        updateChannel(CHANNEL_SCHEDULE_LAST_RUN, dateTimeOrUndef(scheduleRule.lastRun));
-        updateChannel(CHANNEL_SCHEDULE_NEXT_RUN, dateTimeOrUndef(scheduleRule.nextRun));
+        updateChannel(CHANNEL_SCHEDULE_START_TIME, dateTimeOrUndef(CHANNEL_SCHEDULE_START_TIME, "startDate",
+                scheduleRule.startDate, "startTime", scheduleRule.startTime));
+        updateChannel(CHANNEL_SCHEDULE_LAST_RUN,
+                dateTimeOrUndef(CHANNEL_SCHEDULE_LAST_RUN, "lastRun", scheduleRule.lastRun, "lastRunDate",
+                        scheduleRule.lastRunDate, "lastRunTime", scheduleRule.lastRunTime, "lastRunAt",
+                        scheduleRule.lastRunAt));
+        updateChannel(CHANNEL_SCHEDULE_NEXT_RUN,
+                dateTimeOrUndef(CHANNEL_SCHEDULE_NEXT_RUN, "nextRun", scheduleRule.nextRun, "nextRunDate",
+                        scheduleRule.nextRunDate, "nextRunTime", scheduleRule.nextRunTime, "nextRunAt",
+                        scheduleRule.nextRunAt, "nextScheduledRun", scheduleRule.nextScheduledRun, "nextScheduledStart",
+                        scheduleRule.nextScheduledStart));
         updateChannel(CHANNEL_SCHEDULE_ZONES, stringOrUndef(scheduleRule.getZoneSummary()));
         updateChannel(CHANNEL_SCHEDULE_SEASONAL_ADJUSTMENT,
                 RachioQuantityTypes.fractionOrUndef(scheduleRule.seasonalAdjustment));
@@ -202,21 +248,7 @@ public class RachioScheduleHandler extends AbstractRachioThingHandler {
         return value.isBlank() ? UnDefType.UNDEF : new StringType(value);
     }
 
-    protected State dateTimeOrUndef(String value) {
-        if (value.isBlank()) {
-            return UnDefType.UNDEF;
-        }
-        try {
-            if (value.chars().allMatch(Character::isDigit)) {
-                long epoch = Long.parseLong(value);
-                long epochMillis = value.length() > 10 ? epoch : epoch * 1000L;
-                return new DateTimeType(
-                        ZonedDateTime.ofInstant(Instant.ofEpochMilli(epochMillis), ZoneId.systemDefault()));
-            }
-            return new DateTimeType(value);
-        } catch (RuntimeException e) {
-            logger.trace("{}: Unable to parse DateTime channel value '{}'", thingId, value);
-            return UnDefType.UNDEF;
-        }
+    protected State dateTimeOrUndef(String channel, String... fieldNamesAndValues) {
+        return RachioScheduleDateTime.dateTimeOrUndef(thingId, logger, scheduleRuleId, channel, fieldNamesAndValues);
     }
 }

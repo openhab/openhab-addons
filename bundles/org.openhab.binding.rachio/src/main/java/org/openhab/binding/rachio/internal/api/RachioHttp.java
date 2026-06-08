@@ -131,6 +131,7 @@ public class RachioHttp {
      */
     protected RachioApiResult httpRequest(String method, String url, @Nullable String urlParameters,
             @Nullable String reqDatas) throws RachioApiException {
+
         RachioApiResult result = new RachioApiResult();
         try {
             apiCalls++;
@@ -178,10 +179,12 @@ public class RachioHttp {
             }
 
             if ((result.responseCode < HTTP_OK) || (result.responseCode >= HTTP_MULT_CHOICE)) {
-                result.resultString = sanitizeForLogging(readResponse(request.getErrorStream()));
+                String errorResponse = readResponse(request.getErrorStream());
+                result.resultString = "responseLength=" + errorResponse.length();
                 String message = MessageFormat.format(
-                        "RachioHttp: Error sending HTTP {0} request to {1} - http response code={2}, response={3}",
-                        request.getRequestMethod(), sanitizeForLogging(url), result.responseCode, result.resultString);
+                        "RachioHttp: Error sending HTTP {0} request to {1} - http response code={2}, responseLength={3}",
+                        request.getRequestMethod(), sanitizeForLogging(result.url), result.responseCode,
+                        errorResponse.length());
                 throw new RachioApiException(message, result);
             }
 
