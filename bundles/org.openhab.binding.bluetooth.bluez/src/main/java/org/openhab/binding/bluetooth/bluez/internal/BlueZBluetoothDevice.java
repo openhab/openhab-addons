@@ -36,6 +36,7 @@ import org.openhab.binding.bluetooth.bluez.internal.events.BlueZEvent;
 import org.openhab.binding.bluetooth.bluez.internal.events.BlueZEventListener;
 import org.openhab.binding.bluetooth.bluez.internal.events.CharacteristicUpdateEvent;
 import org.openhab.binding.bluetooth.bluez.internal.events.ConnectedEvent;
+import org.openhab.binding.bluetooth.bluez.internal.events.DeviceRemovedEvent;
 import org.openhab.binding.bluetooth.bluez.internal.events.ManufacturerDataEvent;
 import org.openhab.binding.bluetooth.bluez.internal.events.NameEvent;
 import org.openhab.binding.bluetooth.bluez.internal.events.RssiEvent;
@@ -127,6 +128,12 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
 
         if (Boolean.TRUE.equals(blueZDevice.isConnected())) {
             setConnectionState(ConnectionState.CONNECTED);
+        } else {
+            // A fresh device object while we are not connected means the device (re)appeared and is
+            // available but not in a connection. Notify DISCOVERED so the handler can connect to it
+            // proactively (for alwaysConnected things) instead of waiting for the next reconnect poll.
+            // This mirrors how the BlueGiga binding signals discovery.
+            setConnectionState(ConnectionState.DISCOVERED);
         }
 
         discoverServices();
@@ -167,6 +174,35 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
             this.connectionState = state;
             notifyListeners(BluetoothEventType.CONNECTION_STATE, new BluetoothConnectionStatusNotification(state));
         }
+    }
+
+    /**
+     * Called when BlueZ removes this device's object (ObjectManager InterfacesRemoved). The removal
+     * means the connection is gone and any cached GATT services belong to a dead object; because the
+     * {@code Connected=false} signal can be missed under continuous discovery, the cached state could
+     * otherwise stay {@code CONNECTED} and the reconnect job would never reconnect. Drop the cached
+     * device, clear services, and mark disconnected so a clean reconnect can happen once the device
+     * reappears (a fresh object then arrives via {@link #updateBlueZDevice}, which notifies
+     * {@code DISCOVERED} and triggers a proactive reconnect).
+     */
+    @Override
+    public synchronized void onDeviceRemoved(DeviceRemovedEvent event) {
+        logger.debug("BlueZ removed device object for {}; clearing cached state to allow reconnect", address);
+        resetForRemoval();
+    }
+
+    /**
+     * Drops the cached BlueZ device object and GATT services and marks the device disconnected, so a
+     * clean reconnect can happen once it reappears (a fresh object then arrives via
+     * {@link #updateBlueZDevice}, which notifies {@code DISCOVERED} and triggers a proactive
+     * reconnect). Called both when BlueZ removes this device object directly and when the adapter it
+     * lives under is removed (the bridge cascades the reset to all of its devices, since BlueZ does
+     * not reliably emit a per-device removal before removing the adapter).
+     */
+    synchronized void resetForRemoval() {
+        this.device = null;
+        supportedServices.clear();
+        setConnectionState(ConnectionState.DISCONNECTED);
     }
 
     @Override
@@ -350,7 +386,14 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
     @Override
     public void onServicesResolved(ServicesResolvedEvent event) {
         if (event.isResolved()) {
-            notifyListeners(BluetoothEventType.SERVICES_DISCOVERED);
+            // Populate our service/characteristic list from the now-resolved GATT before notifying
+            // listeners. BlueZ can deliver ServicesResolved=true while our own supportedServices list
+            // is still empty (e.g. right after a reconnect, before discoverServices() has run); firing
+            // SERVICES_DISCOVERED then makes listeners (e.g. the generic handler's channel builder) run
+            // against an empty list and miss every characteristic. discoverServices() populates the
+            // list and fires SERVICES_DISCOVERED itself once it has added services, so it is the
+            // correct trigger here. If the services are already known it is a cheap no-op.
+            discoverServices();
         }
     }
 
