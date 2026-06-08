@@ -40,6 +40,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettings
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortLightStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusLightChannel;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor;
+import org.openhab.binding.shelly.internal.handler.ShellyComponents;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -456,6 +457,8 @@ public class ShellyChannelDefinitions {
         addChannel(thing, add, profile.status.extVoltage != null, CHGR_SENSOR, CHANNEL_ESENSOR_VOLTAGE);
         addChannel(thing, add, profile.status.extDigitalInput != null, CHGR_SENSOR, CHANNEL_ESENSOR_DIGITALINPUT);
         addChannel(thing, add, profile.status.extAnalogInput != null, CHGR_SENSOR, CHANNEL_ESENSOR_ANALOGINPUT);
+
+        addChannel(thing, add, ShellyComponents.hasAddon(profile.status), CHGR_SENSOR, CHANNEL_LAST_UPDATE);
     }
 
     public static Map<String, Channel> createDimmerChannels(final Thing thing, final ShellyDeviceProfile profile,
