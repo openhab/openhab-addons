@@ -17,10 +17,19 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * The {@link ShellyThingConfiguration} class contains fields mapping thing configuration parameters.
  *
+ * Per-thing configuration mapped from the <config-description> in thing-types.xml.
+ * Getters are provided for all fields. Never access DTO fields directly from outside the config layer.
+ *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
 public class ShellyThingConfiguration {
+    /*
+     * deviceIp vs. deviceAddress - serve different purposes:
+     * deviceIp: IP address, hostname, or host:port
+     * deviceAddress: BLU devices only - Bluetooth Device Address
+     */
+
     private String deviceIp = ""; // IP address of the device
     private String deviceAddress = ""; // IP address or MAC address for BLU devices
     private String userId = ""; // userid for http basic auth

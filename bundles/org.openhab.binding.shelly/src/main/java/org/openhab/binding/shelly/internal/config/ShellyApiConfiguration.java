@@ -23,11 +23,26 @@ import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.shelly.internal.handler.ShellyBaseHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * The {@link ShellyApiConfiguration} class contains fields mapping thing configuration parameters.
+ * Derived configuration consumed exclusively by the API layer.
+ *
+ * Thread-safe, mutable configuration (all access is synchronized). Created in
+ * {@link ShellyBaseHandler#initializeThingConfig()}
+ *
+ * DNS resolution is controlled by the resolveHostname constructor parameter.
+ * The handler constructor passes false (no DNS, safe on OSGi framework thread);
+ * initializeThingConfig() rebuilds apiConfig with resolveHostname=true on the
+ * scheduler thread where blocking is permitted.
+ *
+ * For regular devices deviceIp and deviceAddress end up identical (the resolved IP).
+ * For BLU devices deviceIp is empty and deviceAddress holds the normalized MAC.
+ * ShellyThingTable uses deviceAddress as the lookup key when routing gateway RPC
+ * notifications to the correct BLU handler.
  *
  * @author Markus Michels - Initial contribution
  */
