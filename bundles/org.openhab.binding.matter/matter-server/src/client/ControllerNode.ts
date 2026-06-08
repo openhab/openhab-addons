@@ -197,6 +197,20 @@ export class ControllerNode {
 
         let node = this.nodes.get(NodeId(BigInt(nodeId)));
         if (node !== undefined) {
+            // If the node already completed its remote initialization (e.g. it was enumerated during a discovery
+            // scan before its Thing existed), the initializedFromRemote event has already fired and will not fire
+            // again. Re-announce the connected state synchronously so the client re-enumerates instead of waiting
+            // for an event that never comes - otherwise this runs into the 300s timeout and the Thing flips OFFLINE
+            // (and ends up without channels) shortly after being added.
+            if (node.remoteInitializationDone) {
+                this.ws.sendEvent(EventType.NodeStateInformation, {
+                    nodeId: node.nodeId,
+                    state: NodeStates[NodeStates.Connected],
+                    physicalProperties: extractPhysicalProperties(node),
+                });
+                return;
+            }
+
             node.triggerReconnect();
 
             return new Promise((resolve, reject) => {
@@ -269,7 +283,9 @@ export class ControllerNode {
         // to avoid forwarding the init state updates as user visible updates. Use once() so they are
         // wired exactly once per registration; the inner handlers are tracked by the observer group
         // (reset above) so they are still removed in bulk on re-registration or decommission.
-        node.events.initializedFromRemote.once(() => {
+        // Wire up the user-visible event forwarding and emit the connected event once the node has completed
+        // its remote initialization.
+        const handleInitialized = () => {
             observers.on(node!.events.attributeChanged, data => {
                 data.path.nodeId = node!.nodeId;
                 this.ws.sendEvent(EventType.AttributeChanged, data);
@@ -287,7 +303,18 @@ export class ControllerNode {
                 state: NodeStates[NodeStates.Connected],
                 physicalProperties: extractPhysicalProperties(node),
             });
-        });
+        };
+
+        // matter.js auto-connects a node immediately after commissioning, so by the time we get here the
+        // initializedFromRemote event may have already fired and will not fire again. In that case finish
+        // synchronously instead of waiting for an event that never comes - otherwise initializeNode runs into
+        // its timeout after a successful commissioning and the new node never surfaces to the client.
+        if (node.remoteInitializationDone) {
+            handleInitialized();
+            return;
+        }
+
+        node.events.initializedFromRemote.once(handleInitialized);
 
         node.connect();
 

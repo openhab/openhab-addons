@@ -1,3 +1,4 @@
+import { randomBytes } from "node:crypto";
 import { Logger, ObserverGroup, SoftwareUpdateManager } from "@matter/main";
 import { GeneralCommissioning, OperationalCredentialsCluster, OtaSoftwareUpdateRequestor, OtaSoftwareUpdateRequestorCluster } from "@matter/main/clusters";
 import { FabricIndex, ManualPairingCodeCodec, NodeId, QrCode, QrPairingCodeCodec } from "@matter/types";
@@ -131,6 +132,24 @@ export class Nodes {
             throw new Error("CommissioningController not initialized");
         }
 
+        // matter.js 0.17 assigns operational node IDs from a sequential counter starting at 1, and that counter is
+        // not restored after a controller restart. It then re-allocates low IDs that may already be commissioned,
+        // producing "Node ID X is already commissioned and can not be reused". When the pairing code does not carry
+        // an explicit node ID, assign a random operational node ID ourselves (as the Matter spec recommends and as
+        // pre-0.17 did), making sure it is not already in use.
+        let assignedNodeId = nodeId;
+        if (assignedNodeId === undefined) {
+            const usedNodeIds = new Set(
+                this.controllerNode.commissioningController.getCommissionedNodes().map(id => id.toString()),
+            );
+            let candidate: bigint;
+            do {
+                // 63-bit random keeps the value inside the valid operational node ID range (1 .. 0xFFFFFFEFFFFFFFFF)
+                candidate = randomBytes(8).readBigUInt64BE() & 0x7fffffffffffffffn;
+            } while (candidate < 1n || usedNodeIds.has(candidate.toString()));
+            assignedNodeId = NodeId(candidate);
+        }
+
         const options = {
             discovery: {
                 knownAddress: ip !== undefined && ipPort !== undefined ? { ip, port: ipPort, type: "udp" } : undefined,
@@ -151,22 +170,24 @@ export class Nodes {
         } as NodeCommissioningOptions;
 
         options.commissioning = {
-            nodeId: nodeId !== undefined ? NodeId(nodeId) : undefined,
+            nodeId: assignedNodeId,
             regulatoryLocation: GeneralCommissioning.RegulatoryLocationType.Outdoor, // Set to the most restrictive if relevant
             regulatoryCountryCode: "XX",
         };
 
-        if (this.controllerNode.Store.has("WiFiSsid") && this.controllerNode.Store.has("WiFiPassword")) {
-            options.commissioning.wifiNetwork = {
-                wifiSsid: await this.controllerNode.Store.get<string>("WiFiSsid", ""),
-                wifiCredentials: await this.controllerNode.Store.get<string>("WiFiPassword", ""),
-            };
+        // Only pass network credentials when they are actually present and non-empty. matter.js 0.17 rejects an
+        // empty wifiNetwork/threadNetwork with "must not be empty" before commissioning even starts. Devices that
+        // are already on their operational network (e.g. a Thread device joined externally beforehand) are
+        // commissioned over IP without re-provisioning, so omitting the credentials here is the correct behaviour.
+        const wifiSsid = await this.controllerNode.Store.get<string>("WiFiSsid", "");
+        const wifiCredentials = await this.controllerNode.Store.get<string>("WiFiPassword", "");
+        if (wifiSsid.length > 0 && wifiCredentials.length > 0) {
+            options.commissioning.wifiNetwork = { wifiSsid, wifiCredentials };
         }
-        if (this.controllerNode.Store.has("ThreadName") && this.controllerNode.Store.has("ThreadOperationalDataset")) {
-            options.commissioning.threadNetwork = {
-                networkName: await this.controllerNode.Store.get<string>("ThreadName", ""),
-                operationalDataset: await this.controllerNode.Store.get<string>("ThreadOperationalDataset", ""),
-            };
+        const threadName = await this.controllerNode.Store.get<string>("ThreadName", "");
+        const threadOperationalDataset = await this.controllerNode.Store.get<string>("ThreadOperationalDataset", "");
+        if (threadName.length > 0 && threadOperationalDataset.length > 0) {
+            options.commissioning.threadNetwork = { networkName: threadName, operationalDataset: threadOperationalDataset };
         }
 
         const commissionedNodeId = await this.controllerNode.commissioningController.commissionNode(options);
