@@ -484,10 +484,12 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
                 if (profile.isSensor || profile.isRoller) {
                     // CoAP is currently lacking the lastUpdate info, so we use host timestamp
                     thingHandler.updateChannel(profile.getControlGroup(0), CHANNEL_LAST_UPDATE, getTimestamp());
-                } else if (sensorGroupUpdated) {
-                    // Relay device with addon sensors: update sensors#lastUpdate
-                    thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_LAST_UPDATE, getTimestamp());
                 }
+            }
+            if (sensorGroupUpdated && !profile.isSensor && !profile.isRoller) {
+                // Relay device with addon sensors: always refresh sensors#lastUpdate so the channel acts
+                // as a heartbeat even when temperature values are unchanged (and thus cache-deduplicated)
+                thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_LAST_UPDATE, getTimestamp());
             }
 
             if (profile.isLight && profile.inColor && col.isRgbValid()) {
