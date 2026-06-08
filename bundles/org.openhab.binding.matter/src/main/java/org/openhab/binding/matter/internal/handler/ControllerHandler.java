@@ -246,7 +246,7 @@ public class ControllerHandler extends BaseBridgeHandler implements MatterClient
                 // A structure change means the node's endpoints/clusters changed, so the channels must be rebuilt
                 // from fresh data. Drop the "already enumerated" marker first: otherwise the data request that the
                 // reconnect's Connected event triggers is skipped for sleepy nodes (see requestAllNodeDataIfNeeded),
-                // leaving the Thing online but with stale channels. Same marker handling as childHandlerInitialized.
+                // leaving the Thing online but with stale channels. Same marker handling as removeNode/dispose.
                 enumeratedNodes.remove(message.nodeId);
                 updateNode(message.nodeId);
                 break;

@@ -495,7 +495,14 @@ export class ControllerNode {
                             attributeValue = await attribute.get(true);
                         } catch (e) {
                             logger.debug(`Fresh read of ${cluster.name}.${attributeName} failed, using cache: ${e}`);
-                            attributeValue = await attribute.get(false);
+                            try {
+                                attributeValue = await attribute.get(false);
+                            } catch (e2) {
+                                logger.debug(
+                                    `Cache read of ${cluster.name}.${attributeName} also failed, skipping: ${e2}`,
+                                );
+                                attributeValue = undefined;
+                            }
                         }
                     } else {
                         attributeValue = await attribute.get(requestFromRemote);
