@@ -202,6 +202,8 @@ public class RoborockBindingConstants {
     public static final String THING_CONFIG_CLOUD_METADATA_REFRESH = "cloudMetadataRefresh";
     public static final String THING_CONFIG_CLOUD_REFRESH_INTERVAL = "cloudRefreshInterval";
     public static final String THING_CONFIG_FAST_REFRESH_INTERVAL = "fastRefreshInterval";
+    public static final String THING_PROPERTY_DEVICE_NAME = "deviceName";
+    public static final String THING_PROPERTY_PROTOCOL = "protocol";
     public static final String THING_PROPERTY_SN = "sn";
 
     public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Set.of(ROBOROCK_ACCOUNT);

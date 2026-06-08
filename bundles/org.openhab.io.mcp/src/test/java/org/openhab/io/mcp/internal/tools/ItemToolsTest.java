@@ -45,6 +45,7 @@ import org.openhab.core.types.UnDefType;
 import org.openhab.io.mcp.internal.McpTestHelper;
 
 import io.modelcontextprotocol.json.McpJsonMapper;
+import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 
@@ -61,14 +62,18 @@ class ItemToolsTest {
     private @Mock @Nullable ItemBuilderFactory itemBuilderFactory;
     private @Mock @Nullable MetadataRegistry metadataRegistry;
     private @Mock @Nullable EventPublisher eventPublisher;
+    private @Mock @Nullable McpSyncServerExchange exchange;
 
     private @Nullable ItemTools itemTools;
     private final McpJsonMapper jsonMapper = McpTestHelper.newJsonMapper();
+    /** Returns the same fake username for any session id; tests assert that this lands in the event source. */
+    private final java.util.function.Function<String, @Nullable String> usernameSupplier = sid -> "alice";
 
     @BeforeEach
     void setUp() {
         itemTools = new ItemTools(Objects.requireNonNull(itemRegistry), Objects.requireNonNull(itemBuilderFactory),
-                metadataRegistry, Objects.requireNonNull(eventPublisher), jsonMapper);
+                metadataRegistry, Objects.requireNonNull(eventPublisher), usernameSupplier, jsonMapper);
+        lenient().when(exchange.sessionId()).thenReturn("session-1");
     }
 
     private ItemTools tools() {
@@ -362,8 +367,8 @@ class ItemToolsTest {
         Item item = mockSwitchItem("Kitchen_Light", "Kitchen Light", OnOffType.OFF);
         when(Objects.requireNonNull(itemRegistry).getItem("Kitchen_Light")).thenReturn(item);
 
-        CallToolResult result = tools()
-                .handleSendCommand(request(Map.of("itemName", "Kitchen_Light", "command", "ON")));
+        CallToolResult result = tools().handleSetItem(Objects.requireNonNull(exchange),
+                request(Map.of("action", "command", "itemName", "Kitchen_Light", "value", "ON")));
 
         assertSuccess(result);
         Map<String, Object> parsed = parseResult(result);
@@ -376,12 +381,42 @@ class ItemToolsTest {
     }
 
     @Test
+    void sendCommandPublishesEventWithMcpAndUserSource() throws Exception {
+        Item item = mockSwitchItem("Kitchen_Light", "Kitchen Light", OnOffType.OFF);
+        when(Objects.requireNonNull(itemRegistry).getItem("Kitchen_Light")).thenReturn(item);
+
+        tools().handleSetItem(Objects.requireNonNull(exchange),
+                request(Map.of("action", "command", "itemName", "Kitchen_Light", "value", "ON")));
+
+        // usernameSupplier returns "alice" → expected source is "org.openhab.io.mcp$alice".
+        verify(Objects.requireNonNull(eventPublisher))
+                .post(argThat(event -> "org.openhab.io.mcp$alice".equals(event.getSource())));
+    }
+
+    @Test
+    void sendCommandFallsBackToBundleOnlyWhenUserUnknown() throws Exception {
+        Item item = mockSwitchItem("Kitchen_Light", "Kitchen Light", OnOffType.OFF);
+        when(Objects.requireNonNull(itemRegistry).getItem("Kitchen_Light")).thenReturn(item);
+        ItemTools toolsNoUser = new ItemTools(Objects.requireNonNull(itemRegistry),
+                Objects.requireNonNull(itemBuilderFactory), metadataRegistry, Objects.requireNonNull(eventPublisher),
+                sid -> null, jsonMapper);
+
+        toolsNoUser.handleSetItem(Objects.requireNonNull(exchange),
+                request(Map.of("action", "command", "itemName", "Kitchen_Light", "value", "ON")));
+
+        // Null username → just the bundle, no actor suffix.
+        verify(Objects.requireNonNull(eventPublisher))
+                .post(argThat(event -> "org.openhab.io.mcp".equals(event.getSource())));
+    }
+
+    @Test
     void sendCommandItemNotFound() throws Exception {
         ItemRegistry registry = Objects.requireNonNull(itemRegistry);
         when(registry.getItem("NoSuchItem")).thenThrow(new ItemNotFoundException("NoSuchItem"));
         when(registry.getItems()).thenReturn(List.of());
 
-        CallToolResult result = tools().handleSendCommand(request(Map.of("itemName", "NoSuchItem", "command", "ON")));
+        CallToolResult result = tools().handleSetItem(Objects.requireNonNull(exchange),
+                request(Map.of("action", "command", "itemName", "NoSuchItem", "value", "ON")));
 
         assertError(result);
         assertErrorContains(result, "not found");
@@ -392,8 +427,8 @@ class ItemToolsTest {
         Item item = mockSwitchItem("Kitchen_Light", "Kitchen Light", OnOffType.OFF);
         when(Objects.requireNonNull(itemRegistry).getItem("Kitchen_Light")).thenReturn(item);
 
-        CallToolResult result = tools()
-                .handleSendCommand(request(Map.of("itemName", "Kitchen_Light", "command", "INVALID_CMD")));
+        CallToolResult result = tools().handleSetItem(Objects.requireNonNull(exchange),
+                request(Map.of("action", "command", "itemName", "Kitchen_Light", "value", "INVALID_CMD")));
 
         assertError(result);
         assertErrorContains(result, "Cannot parse command");
@@ -405,8 +440,8 @@ class ItemToolsTest {
         Item item = mockDimmerItem("Kitchen_Dimmer", "Kitchen Dimmer", new PercentType(30), Set.of());
         when(Objects.requireNonNull(itemRegistry).getItem("Kitchen_Dimmer")).thenReturn(item);
 
-        CallToolResult result = tools()
-                .handleSendCommand(request(Map.of("itemName", "Kitchen_Dimmer", "command", "50%")));
+        CallToolResult result = tools().handleSetItem(Objects.requireNonNull(exchange),
+                request(Map.of("action", "command", "itemName", "Kitchen_Dimmer", "value", "50%")));
 
         assertSuccess(result);
         Map<String, Object> parsed = parseResult(result);
@@ -416,8 +451,27 @@ class ItemToolsTest {
     }
 
     @Test
+    void setItemMissingAction() {
+        CallToolResult result = tools().handleSetItem(Objects.requireNonNull(exchange),
+                request(Map.of("itemName", "Foo", "value", "ON")));
+
+        assertError(result);
+        assertErrorContains(result, "action");
+    }
+
+    @Test
+    void setItemUnknownAction() {
+        CallToolResult result = tools().handleSetItem(Objects.requireNonNull(exchange),
+                request(Map.of("action", "toggle", "itemName", "Foo", "value", "ON")));
+
+        assertError(result);
+        assertErrorContains(result, "Invalid action");
+    }
+
+    @Test
     void sendCommandMissingParameters() {
-        CallToolResult result = tools().handleSendCommand(request(Map.of()));
+        CallToolResult result = tools().handleSetItem(Objects.requireNonNull(exchange),
+                request(Map.of("action", "command")));
 
         assertError(result);
         assertErrorContains(result, "required");
@@ -428,7 +482,8 @@ class ItemToolsTest {
         Item item = mockSwitchItem("Kitchen_Light", "Kitchen Light", OnOffType.OFF);
         when(Objects.requireNonNull(itemRegistry).getItem("Kitchen_Light")).thenReturn(item);
 
-        CallToolResult result = tools().handleUpdateState(request(Map.of("itemName", "Kitchen_Light", "state", "ON")));
+        CallToolResult result = tools().handleSetItem(Objects.requireNonNull(exchange),
+                request(Map.of("action", "state", "itemName", "Kitchen_Light", "value", "ON")));
 
         assertSuccess(result);
         Map<String, Object> parsed = parseResult(result);
@@ -443,7 +498,8 @@ class ItemToolsTest {
         when(Objects.requireNonNull(itemRegistry).getItem("NoSuchItem"))
                 .thenThrow(new ItemNotFoundException("NoSuchItem"));
 
-        CallToolResult result = tools().handleUpdateState(request(Map.of("itemName", "NoSuchItem", "state", "ON")));
+        CallToolResult result = tools().handleSetItem(Objects.requireNonNull(exchange),
+                request(Map.of("action", "state", "itemName", "NoSuchItem", "value", "ON")));
 
         assertError(result);
         assertErrorContains(result, "not found");
@@ -451,7 +507,8 @@ class ItemToolsTest {
 
     @Test
     void updateStateMissingParameters() {
-        CallToolResult result = tools().handleUpdateState(request(Map.of()));
+        CallToolResult result = tools().handleSetItem(Objects.requireNonNull(exchange),
+                request(Map.of("action", "state")));
 
         assertError(result);
         assertErrorContains(result, "required");
@@ -467,7 +524,8 @@ class ItemToolsTest {
         when(Objects.requireNonNull(itemBuilderFactory).newItemBuilder("Switch", "New_Switch")).thenReturn(builder);
         when(builder.build()).thenReturn(builtItem);
 
-        CallToolResult result = tools().handleCreateItem(request(Map.of("name", "New_Switch", "type", "Switch")));
+        CallToolResult result = tools()
+                .handleManageItem(request(Map.of("action", "create", "name", "New_Switch", "type", "Switch")));
 
         assertSuccess(result);
         Map<String, Object> parsed = parseResult(result);
@@ -492,13 +550,14 @@ class ItemToolsTest {
         when(builder.build()).thenReturn(builtItem);
 
         Map<String, Object> args = new HashMap<>();
+        args.put("action", "create");
         args.put("name", "Kitchen_Dimmer");
         args.put("type", "Dimmer");
         args.put("label", "Kitchen Dimmer");
         args.put("category", "light");
         args.put("tags", List.of("Lighting"));
         args.put("groupNames", List.of("gKitchen"));
-        CallToolResult result = tools().handleCreateItem(request(args));
+        CallToolResult result = tools().handleManageItem(request(args));
 
         assertSuccess(result);
         Map<String, Object> parsed = parseResult(result);
@@ -515,18 +574,35 @@ class ItemToolsTest {
         Item existing = mockSwitchItem("Existing_Item", "Existing", OnOffType.ON);
         when(Objects.requireNonNull(itemRegistry).getItem("Existing_Item")).thenReturn(existing);
 
-        CallToolResult result = tools().handleCreateItem(request(Map.of("name", "Existing_Item", "type", "Switch")));
+        CallToolResult result = tools()
+                .handleManageItem(request(Map.of("action", "create", "name", "Existing_Item", "type", "Switch")));
 
         assertError(result);
         assertErrorContains(result, "already exists");
     }
 
     @Test
-    void createItemMissingParameters() {
-        CallToolResult result = tools().handleCreateItem(request(Map.of()));
+    void createItemMissingType() {
+        CallToolResult result = tools().handleManageItem(request(Map.of("action", "create", "name", "New_Item")));
 
         assertError(result);
         assertErrorContains(result, "required");
+    }
+
+    @Test
+    void manageItemMissingAction() {
+        CallToolResult result = tools().handleManageItem(request(Map.of("name", "Foo")));
+
+        assertError(result);
+        assertErrorContains(result, "action");
+    }
+
+    @Test
+    void manageItemUnknownAction() {
+        CallToolResult result = tools().handleManageItem(request(Map.of("action", "delete-all", "name", "Foo")));
+
+        assertError(result);
+        assertErrorContains(result, "Invalid action");
     }
 
     @Test
@@ -545,7 +621,7 @@ class ItemToolsTest {
         when(builder.build()).thenReturn(updatedItem);
 
         CallToolResult result = tools()
-                .handleUpdateItem(request(Map.of("name", "Kitchen_Light", "label", "New Label")));
+                .handleManageItem(request(Map.of("action", "update", "name", "Kitchen_Light", "label", "New Label")));
 
         assertSuccess(result);
         Map<String, Object> parsed = parseResult(result);
@@ -559,7 +635,8 @@ class ItemToolsTest {
         when(Objects.requireNonNull(itemRegistry).getItem("NoSuchItem"))
                 .thenThrow(new ItemNotFoundException("NoSuchItem"));
 
-        CallToolResult result = tools().handleUpdateItem(request(Map.of("name", "NoSuchItem", "label", "Label")));
+        CallToolResult result = tools()
+                .handleManageItem(request(Map.of("action", "update", "name", "NoSuchItem", "label", "Label")));
 
         assertError(result);
         assertErrorContains(result, "not found");
@@ -567,7 +644,7 @@ class ItemToolsTest {
 
     @Test
     void updateItemMissingName() {
-        CallToolResult result = tools().handleUpdateItem(request(Map.of()));
+        CallToolResult result = tools().handleManageItem(request(Map.of("action", "update")));
 
         assertError(result);
         assertErrorContains(result, "required");
@@ -578,7 +655,7 @@ class ItemToolsTest {
         Item removed = mockSwitchItem("Old_Item", "Old Item", OnOffType.OFF);
         when(Objects.requireNonNull(itemRegistry).remove("Old_Item")).thenReturn(removed);
 
-        CallToolResult result = tools().handleDeleteItem(request(Map.of("name", "Old_Item")));
+        CallToolResult result = tools().handleManageItem(request(Map.of("action", "delete", "name", "Old_Item")));
 
         assertSuccess(result);
         Map<String, Object> parsed = parseResult(result);
@@ -590,7 +667,7 @@ class ItemToolsTest {
     void deleteItemNotFound() {
         when(Objects.requireNonNull(itemRegistry).remove("NoSuchItem")).thenReturn(null);
 
-        CallToolResult result = tools().handleDeleteItem(request(Map.of("name", "NoSuchItem")));
+        CallToolResult result = tools().handleManageItem(request(Map.of("action", "delete", "name", "NoSuchItem")));
 
         assertError(result);
         assertErrorContains(result, "not found");
@@ -598,7 +675,7 @@ class ItemToolsTest {
 
     @Test
     void deleteItemMissingName() {
-        CallToolResult result = tools().handleDeleteItem(request(Map.of()));
+        CallToolResult result = tools().handleManageItem(request(Map.of("action", "delete")));
 
         assertError(result);
         assertErrorContains(result, "required");

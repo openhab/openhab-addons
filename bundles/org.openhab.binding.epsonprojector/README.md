@@ -37,6 +37,7 @@ The `projector-tcp` thing has the following configuration parameters:
 | pollingInterval | Polling Interval | Polling interval in seconds to update channel states, range 5-60 seconds; default 10 seconds.                                                  | no       |
 | loadSourceList  | Load Source List | Attempt to load source list options from the projector when True; default True.                                                                | no       |
 | maxVolume       | Volume Range     | Set to the maximum volume level available in the projector's OSD to select the correct range for the volume control. e.g. 20 or 40; default 20 | no       |
+| password        | Password         | The 'Monitor' password that allows the binding to authenticate with the projector if configured, must be <= 16 alpha numeric or @ characters.  | no       |
 
 Some notes:
 
@@ -44,13 +45,13 @@ Some notes:
 - The _source_ channel includes a dropdown with the most common source inputs.
 - When the `loadSourceList` configuration option is set to true, the binding attempts to retrieve the available sources list from the projector and loads them into the _source_ channel.
 - The command to retrieve the sources list is not supported by older projectors and in this case the pre-defined sources list is used instead.
-- If your projector has a source input that is not in the dropdown, the two character hex code to access that input will be displayed by the _source_ channel when that input is selected by the remote control.
+- If your projector has a source input that is not in the dropdown, the two-character hex code to access that input will be displayed by the _source_ channel when that input is selected by the remote control.
 - By using the sitemap mapping or a rule to send the input's code back to the _source_ channel, any source on the projector can be accessed by the binding.
 - The following channels _aspectratio_, _colormode_, _luminance_, _gamma_ and _background_ are pre-populated with a full set of options but not every option will be useable on all projectors.
-- If your projector has an option in one of the above mentioned channels that is not recognized by the binding, the channel will display 'UNKNOWN' if that un-recognized option is selected by the remote control.
+- If your projector has an option in one of the above-mentioned channels that is not recognized by the binding, the channel will display 'UNKNOWN' if that un-recognized option is selected by the remote control.
 - The volume channel is a dimmer (0-100%) that is scaled to the range on the projector, either 0-20 or 0-40 per the maxVolume configuration setting. If your projector uses a different range, then the volume channel will not work.
 - If the projector power is switched to off in the middle of a polling operation, some of the channel values may become undefined until the projector is switched on again.
-- If the binding fails to connect to the projector using the direct IP connection, ensure that no password is configured on the projctor.
+- If the binding fails to connect to the projector using the direct IP connection, ensure that a password is supplied if configured on the projector.
 
 - On Linux, you may get an error stating the serial port cannot be opened when the epsonprojector binding tries to load.
 - You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
@@ -116,44 +117,46 @@ connection: &conEpson
 epsonprojector:projector-serial:hometheater "Projector" [ serialPort="COM5", pollingInterval=10, maxVolume=20 ]
 
 // direct IP or serial over IP connection
-epsonprojector:projector-tcp:hometheater "Projector" [ host="192.168.0.10", port=3629, pollingInterval=10, maxVolume=20 ]
+epsonprojector:projector-tcp:hometheater "Projector" [ host="192.168.0.10", port=3629, pollingInterval=10, maxVolume=20, password="1234" ]
 
 ```
 
 ### `epson.items` Example
 
 ```java
-Switch epsonPower                                      { channel="epsonprojector:projector-serial:hometheater:power" }
-String epsonSource       "Source [%s]"                 { channel="epsonprojector:projector-serial:hometheater:source" }
-String epsonAspectRatio  "Aspect Ratio [%s]"           { channel="epsonprojector:projector-serial:hometheater:aspectratio" }
-String epsonColorMode    "Color Mode [%s]"             { channel="epsonprojector:projector-serial:hometheater:colormode" }
-Switch epsonFreeze                                     { channel="epsonprojector:projector-serial:hometheater:freeze" }
-Switch epsonMute                                       { channel="epsonprojector:projector-serial:hometheater:mute" }
-Dimmer epsonVolume                                     { channel="epsonprojector:projector-serial:hometheater:volume" }
-String epsonLuminance    "Lamp Mode [%s]"              { channel="epsonprojector:projector-serial:hometheater:luminance" }
+// Note: replace `-serial` with `-tcp` for `projector-tcp` thing type
 
-Number epsonBrightness                                 { channel="epsonprojector:projector-serial:hometheater:brightness" }
-Number epsonContrast                                   { channel="epsonprojector:projector-serial:hometheater:contrast" }
-Number epsonDensity                                    { channel="epsonprojector:projector-serial:hometheater:density" }
-Number epsonTint                                       { channel="epsonprojector:projector-serial:hometheater:tint" }
-Number epsonColorTemperature                           { channel="epsonprojector:projector-serial:hometheater:colortemperature" }
-Number epsonFleshTemperature                           { channel="epsonprojector:projector-serial:hometheater:fleshtemperature" }
-String epsonGamma        "Gamma [%s]"                  { channel="epsonprojector:projector-serial:hometheater:gamma" }
+Switch epsonPower                                     { channel="epsonprojector:projector-serial:hometheater:power" }
+String epsonSource      "Source [%s]"                 { channel="epsonprojector:projector-serial:hometheater:source" }
+String epsonAspectRatio "Aspect Ratio [%s]"           { channel="epsonprojector:projector-serial:hometheater:aspectratio" }
+String epsonColorMode   "Color Mode [%s]"             { channel="epsonprojector:projector-serial:hometheater:colormode" }
+Switch epsonFreeze                                    { channel="epsonprojector:projector-serial:hometheater:freeze" }
+Switch epsonMute                                      { channel="epsonprojector:projector-serial:hometheater:mute" }
+Dimmer epsonVolume                                    { channel="epsonprojector:projector-serial:hometheater:volume" }
+String epsonLuminance   "Lamp Mode [%s]"              { channel="epsonprojector:projector-serial:hometheater:luminance" }
 
-Switch epsonAutokeystone                               { channel="epsonprojector:projector-serial:hometheater:autokeystone" }
-Number epsonVerticalKeystone                           { channel="epsonprojector:projector-serial:hometheater:verticalkeystone" }
-Number epsonHorizontalKeystone                         { channel="epsonprojector:projector-serial:hometheater:horizontalkeystone" }
-Number epsonVerticalPosition                           { channel="epsonprojector:projector-serial:hometheater:verticalposition" }
-Number epsonHorizontalPosition                         { channel="epsonprojector:projector-serial:hometheater:horizontalposition" }
-Switch epsonVerticalReverse                            { channel="epsonprojector:projector-serial:hometheater:verticalreverse" }
-Switch epsonHorizontalReverse                          { channel="epsonprojector:projector-serial:hometheater:horizontalreverse" }
+Number epsonBrightness                                { channel="epsonprojector:projector-serial:hometheater:brightness" }
+Number epsonContrast                                  { channel="epsonprojector:projector-serial:hometheater:contrast" }
+Number epsonDensity                                   { channel="epsonprojector:projector-serial:hometheater:density" }
+Number epsonTint                                      { channel="epsonprojector:projector-serial:hometheater:tint" }
+Number epsonColorTemperature                          { channel="epsonprojector:projector-serial:hometheater:colortemperature" }
+Number epsonFleshTemperature                          { channel="epsonprojector:projector-serial:hometheater:fleshtemperature" }
+String epsonGamma       "Gamma [%s]"                  { channel="epsonprojector:projector-serial:hometheater:gamma" }
 
-String epsonBackground  "Background [%s]"              { channel="epsonprojector:projector-serial:hometheater:background" }
-String epsonKeyCode     "Key Code [%s]"                { channel="epsonprojector:projector-serial:hometheater:keycode" }
-String epsonPowerState  "Power State [%s]"   <switch>  { channel="epsonprojector:projector-serial:hometheater:powerstate" }
-Number epsonLampTime    "Lamp Time [%d h]"   <switch>  { channel="epsonprojector:projector-serial:hometheater:lamptime" }
-Number epsonErrCode     "Error Code [%d]"    <error>   { channel="epsonprojector:projector-serial:hometheater:errcode" }
-String epsonErrMessage  "Error Message [%s]" <error>   { channel="epsonprojector:projector-serial:hometheater:errmessage" }
+Switch epsonAutokeystone                              { channel="epsonprojector:projector-serial:hometheater:autokeystone" }
+Number epsonVerticalKeystone                          { channel="epsonprojector:projector-serial:hometheater:verticalkeystone" }
+Number epsonHorizontalKeystone                        { channel="epsonprojector:projector-serial:hometheater:horizontalkeystone" }
+Number epsonVerticalPosition                          { channel="epsonprojector:projector-serial:hometheater:verticalposition" }
+Number epsonHorizontalPosition                        { channel="epsonprojector:projector-serial:hometheater:horizontalposition" }
+Switch epsonVerticalReverse                           { channel="epsonprojector:projector-serial:hometheater:verticalreverse" }
+Switch epsonHorizontalReverse                         { channel="epsonprojector:projector-serial:hometheater:horizontalreverse" }
+
+String epsonBackground  "Background [%s]"             { channel="epsonprojector:projector-serial:hometheater:background" }
+String epsonKeyCode     "Key Code [%s]"               { channel="epsonprojector:projector-serial:hometheater:keycode" }
+String epsonPowerState  "Power State [%s]"   <switch> { channel="epsonprojector:projector-serial:hometheater:powerstate" }
+Number epsonLampTime    "Lamp Time [%d h]"   <switch> { channel="epsonprojector:projector-serial:hometheater:lamptime" }
+Number epsonErrCode     "Error Code [%d]"    <error>  { channel="epsonprojector:projector-serial:hometheater:errcode" }
+String epsonErrMessage  "Error Message [%s]" <error>  { channel="epsonprojector:projector-serial:hometheater:errmessage" }
 ```
 
 ### `epson.sitemap` Example
@@ -174,10 +177,16 @@ sitemap epson label="Epson Projector"
         Buttongrid item=epsonKeyCode label="Navigation" staticIcon=material:tv_remote buttons=[1:1:"03"="Menu", 1:2:"35"="Up"=f7:arrowtriangle_up, 3:2:"36"="Down"=f7:arrowtriangle_down, 2:1:"37"="Left"=f7:arrowtriangle_left, 2:3:"38"="Right"=f7:arrowtriangle_right, 2:2:"16"="Enter"]
     }
     Frame label="Adjust Image" {
+        Selection  item=epsonAspectRatio
+        Selection  item=epsonLuminance
         Setpoint   item=epsonBrightness         label="Brightness"
         Setpoint   item=epsonContrast           label="Contrast"
         Setpoint   item=epsonDensity            label="Color Saturation"
         Setpoint   item=epsonTint               label="Tint"
+        Selection  item=epsonColorMode
+        Selection  item=epsonGamma
+        Setpoint   item=epsonColorTemperature   label="Color Temperature"
+        Setpoint   item=epsonFleshTemperature   label="Flesh Temperature"
         Switch     item=epsonAutokeystone       label="Auto Keystone"
         Setpoint   item=epsonVerticalKeystone   label="Vertical Keystone"
         Setpoint   item=epsonHorizontalKeystone label="Horizontal Keystone"
@@ -186,16 +195,10 @@ sitemap epson label="Epson Projector"
         Selection  item=epsonBackground         label="Background"
     }
     Frame label="Flip Projection" {
-        Switch  item=epsonVerticalReverse   label="Vertical Reverse"
-        Switch  item=epsonHorizontalReverse label="Horizontal Reverse"
+        Switch  item=epsonVerticalReverse       label="Vertical Reverse"
+        Switch  item=epsonHorizontalReverse     label="Horizontal Reverse"
     }
     Frame label="Info" {
-        Text  item=epsonAspectRatio
-        Text  item=epsonColorMode
-        Text  item=epsonColorTemperature    label="Color Temperature"
-        Text  item=epsonFleshTemperature    label="Flesh Temperature"
-        Text  item=epsonGamma
-        Text  item=epsonLuminance
         Text  item=epsonPowerState
         Text  item=epsonLampTime
         Text  item=epsonErrCode

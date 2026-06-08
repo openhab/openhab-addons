@@ -14,6 +14,8 @@ package org.openhab.binding.paradoxalarm.internal.handlers;
 
 import static org.openhab.binding.paradoxalarm.internal.handlers.ParadoxAlarmBindingConstants.*;
 
+import java.time.ZonedDateTime;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.paradoxalarm.internal.model.ParadoxInformation;
 import org.openhab.binding.paradoxalarm.internal.model.ParadoxPanel;
@@ -57,7 +59,10 @@ public class ParadoxPanelHandler extends EntityBaseHandler {
                     panelInformation.getApplicationVersion().toString());
             updateProperty(PANEL_BOOTLOADER_VERSION_PROPERTY_NAME, panelInformation.getBootLoaderVersion().toString());
 
-            updateState(PANEL_TIME, new DateTimeType(panel.getPanelTime()));
+            ZonedDateTime panelTime = panel.getPanelTime();
+            if (panelTime != null) {
+                updateState(PANEL_TIME, new DateTimeType(panelTime));
+            }
             updateState(PANEL_INPUT_VOLTAGE, new QuantityType<>(panel.getVdcLevel(), Units.VOLT));
             updateState(PANEL_BOARD_VOLTAGE, new QuantityType<>(panel.getDcLevel(), Units.VOLT));
             updateState(PANEL_BATTERY_VOLTAGE, new QuantityType<>(panel.getBatteryLevel(), Units.VOLT));

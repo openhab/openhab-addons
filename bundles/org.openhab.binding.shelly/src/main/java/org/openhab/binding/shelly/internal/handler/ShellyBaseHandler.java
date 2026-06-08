@@ -129,7 +129,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     protected int scheduledUpdates = 0;
     private int skipCount = UPDATE_SKIP_COUNT;
     private int skipUpdate = 0;
-    private boolean refreshSettings = false;
+    private boolean refreshSettings;
     private @Nullable ScheduledFuture<?> statusJob;
     private @Nullable ScheduledFuture<?> initJob;
 
@@ -240,7 +240,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             errorCode = ThingStatusDetail.CONFIGURATION_ERROR;
             retry = false;
         } else if (isWatchdogExpired()) {
-            status = "offline.status-error-watchdog";
+            status = profile.isBlu ? "offline.status-error-blu-timeout" : "offline.status-error-watchdog";
         } else if (res.httpCode >= 400) {
             logger.debug("{}: Unexpected API result: {}/{}", thingName, res.httpCode, res.httpReason, e);
             status = "offline.status-error-unexpected-api-result";
@@ -754,6 +754,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         }
         api.close(); // Gen2: disconnect WS/close http sessions
         watchdog = 0;
+        profile.initialized = false; // force full re-init (incl. asyncApiRequest) on next reconnect
         channelsCreated = false; // check for new channels after devices gets re-initialized (e.g. new
     }
 

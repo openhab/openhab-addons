@@ -160,7 +160,7 @@ public class EaseeSiteHandler extends BaseBridgeHandler implements EaseeBridgeHa
                 super.updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
                 break;
             default:
-                super.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+                super.updateStatus(ThingStatus.OFFLINE, Utils.getStatusDetailFromHttpCode(status.getHttpCode()), msg);
         }
     }
 

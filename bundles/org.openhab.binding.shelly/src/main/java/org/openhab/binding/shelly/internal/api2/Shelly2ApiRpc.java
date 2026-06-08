@@ -100,7 +100,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     private final Logger logger = LoggerFactory.getLogger(Shelly2ApiRpc.class);
     private final ShellyThingTable thingTable;
 
-    protected volatile boolean initialized = false;
+    protected volatile boolean initialized;
     protected final boolean alwaysOn;
     private @Nullable Shelly2RpcSocket rpcSocket;
     private @Nullable Shelly2AuthChallenge authInfo;
@@ -281,37 +281,47 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 }
             }
 
-            boolean restart = false;
             if (ourId == -1) {
                 // script not installed -> install it
                 upload = true;
             } else {
                 try {
-                    // verify that the same code version is active (avoid unnesesary flash updates)
+                    // verify that the same code version is active (avoid unnecessary flash updates)
                     ShellyScriptResponse rsp = apiRequest(
                             new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_SCRIPT_GETCODE).withId(ourId),
                             ShellyScriptResponse.class);
                     if (!rsp.data.trim().equals(code.trim())) {
-                        logger.debug("{}: A script version was found, update to newest one", thingName);
+                        logger.debug("{}: A newer script version was found, updating", thingName);
                         upload = true;
+                    } else if (running) {
+                        // Same version already running — nothing to do; leave it undisturbed so no
+                        // event gap is created and no risk of a silent restart failure.
+                        logger.debug("{}: Script {} already running with current version, leaving it", thingName,
+                                script);
+                        enableScript(script, ourId, true); // ensure auto-start flag is set
+                        return;
                     } else {
-                        logger.debug("{}: Same script version was found, restart", thingName);
-                        restart = true;
+                        // Same version but not running — start it
+                        logger.debug("{}: Script {} installed but not running, starting it", thingName, script);
+                        enableScript(script, ourId, true);
+                        if (!startScript(ourId, true)) {
+                            logger.warn("{}: Failed to start script {}", thingName, script);
+                        }
+                        return;
                     }
                 } catch (ShellyApiException e) {
-                    logger.debug("{}: Unable to read current script code -> force update (deviced returned: {})",
+                    logger.debug("{}: Unable to read current script code -> force update (device returned: {})",
                             thingName, e.getMessage());
                     upload = true;
                 }
             }
 
-            if (restart || (running && upload)) {
-                // first stop running script
+            // upload=true from here: stop and delete the old script before uploading new code
+            if (running) {
                 startScript(ourId, false);
                 running = false;
             }
             if (upload && ourId != -1) {
-                // Delete existing script
                 deleteScript(ourId);
             }
 
@@ -320,7 +330,6 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
                 if (ourId == -1) {
                     // find free script id
-                    ourId = 0;
                     for (ourId = 1; ourId <= MAX_SCRIPT_ID; ourId++) {
                         if (!testScriptId(scriptList, ourId)) {
                             break;
@@ -334,10 +343,9 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                             ShellyScriptResponse.class);
                     ourId = rsp.id;
                     logger.debug("{}: Script has been created, id={}", thingName, ourId);
-                    upload = true;
                 } else {
-                    logger.debug("{}: Too many scripts installed on this device", thingName);
-                    upload = false;
+                    logger.warn("{}: Too many scripts installed on this device, cannot install {}", thingName, script);
+                    return;
                 }
             }
 
@@ -357,16 +365,13 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                     chunk++;
                     parms.append = true;
                 } while (processed < length);
-                running = false;
-            }
-            if (enableScript(script, ourId, true) && upload) {
-                logger.info("{}: Script {} was {} installed successful", thingName, thingName, script);
+                if (enableScript(script, ourId, true)) {
+                    logger.info("{}: Script {} installed successfully", thingName, script);
+                }
             }
 
-            if (!running) {
-                running = startScript(ourId, true);
-                logger.debug("{}: Script {} {}", thingName, script,
-                        running ? "was successfully started" : "failed to start");
+            if (!startScript(ourId, true)) {
+                logger.warn("{}: Failed to start script {} after installation", thingName, script);
             }
         } catch (ShellyApiException e) {
             ShellyApiResult res = e.getApiResult();

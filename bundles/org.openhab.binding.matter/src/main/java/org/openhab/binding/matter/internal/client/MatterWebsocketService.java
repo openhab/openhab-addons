@@ -13,6 +13,7 @@
 package org.openhab.binding.matter.internal.client;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -34,6 +35,7 @@ import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.OpenHAB;
 import org.openhab.core.common.NamedThreadFactory;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -171,6 +173,14 @@ public class MatterWebsocketService {
         String nodePath = nodeManager.getNodePath();
         Path scriptPath = extractResourceToTempFile(resourcePath);
 
+        // matter.js 0.17 locks each storage directory with a "matter.lock"/"matter.pid" pair. The node process
+        // normally releases these on shutdown, but if it was killed abruptly (e.g. SIGKILL) they are left behind.
+        // matter.js then refuses to start if the recorded pid still appears alive, and because the check is a bare
+        // kill(pid, 0) it can match an unrelated process or even one of the openHAB JVM's own thread ids (TIDs share
+        // the pid number space on Linux), permanently blocking startup. We own a single node process whose previous
+        // instance is always stopped before we get here, so clear any leftover lock files before (re)spawning.
+        clearStaleStorageLocks();
+
         port = findAvailablePort();
         List<String> command = new ArrayList<>();
         command.add(nodePath);
@@ -283,6 +293,45 @@ public class MatterWebsocketService {
         }
         tempFile.toFile().deleteOnExit(); // Ensure the temp file is deleted on JVM exit
         return tempFile;
+    }
+
+    /**
+     * Safety net for a node process that was killed abruptly: matter.js storage locks are normally released on
+     * shutdown, but leftovers would otherwise block startup.
+     */
+    private void clearStaleStorageLocks() {
+        File matterFolder = new File(OpenHAB.getUserDataFolder(), "matter");
+        if (!matterFolder.isDirectory()) {
+            return;
+        }
+        deleteStorageLocksRecursively(matterFolder);
+    }
+
+    private void deleteStorageLocksRecursively(File dir) {
+        File[] entries = dir.listFiles();
+        if (entries == null) {
+            return;
+        }
+        for (File entry : entries) {
+            if (entry.isDirectory()) {
+                // Skip symlinked directories to avoid following symlink loops or traversing outside the
+                // matter storage folder.
+                if (Files.isSymbolicLink(entry.toPath())) {
+                    continue;
+                }
+                deleteStorageLocksRecursively(entry);
+            } else {
+                String name = entry.getName();
+                if ("matter.lock".equals(name) || "matter.pid".equals(name)) {
+                    try {
+                        Files.delete(entry.toPath());
+                        logger.debug("Removed stale matter storage lock file {}", entry);
+                    } catch (IOException e) {
+                        logger.debug("Failed to remove stale matter storage lock file {}", entry, e);
+                    }
+                }
+            }
+        }
     }
 
     private int findAvailablePort() throws IOException {

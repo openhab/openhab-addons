@@ -57,7 +57,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class ShellyBluApi extends Shelly2ApiRpc {
     private final Logger logger = LoggerFactory.getLogger(ShellyBluApi.class);
-    private boolean connected = false; // true = BLU devices has connected
+    private boolean connected; // true = BLU devices has connected
     private ShellySettingsStatus deviceStatus = new ShellySettingsStatus();
     private int lastPid = -1;
     private static final int PID_CYCLE_TRESHHOLD = 50;
@@ -138,7 +138,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
     @Override
     public ShellySettingsStatus getStatus() throws ShellyApiException {
         if (!connected) {
-            throw new ShellyApiException("Thing is not yet initialized -> status not available");
+            throw new ShellyApiException("offline.status-error-blu-not-connected");
         }
         return deviceStatus;
     }
@@ -146,9 +146,8 @@ public class ShellyBluApi extends Shelly2ApiRpc {
     @Override
     public ShellyStatusSensor getSensorStatus() throws ShellyApiException {
         if (!connected) {
-            throw new ShellyApiException("Thing is not yet initialized -> sensor data not available");
+            throw new ShellyApiException("offline.status-error-blu-sensor-unavailable");
         }
-
         return sensorData;
     }
 
