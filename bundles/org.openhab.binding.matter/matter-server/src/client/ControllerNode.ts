@@ -197,12 +197,9 @@ export class ControllerNode {
 
         let node = this.nodes.get(NodeId(BigInt(nodeId)));
         if (node !== undefined) {
-            // If the node already completed its remote initialization (e.g. it was enumerated during a discovery
-            // scan before its Thing existed), the initializedFromRemote event has already fired and will not fire
-            // again. Re-announce the connected state synchronously so the client re-enumerates instead of waiting
-            // for an event that never comes - otherwise this runs into the 300s timeout and the Thing flips OFFLINE
-            // (and ends up without channels) shortly after being added.
-            if (node.remoteInitializationDone) {
+            // We are already connected so there is nothing to reconnect. Send the connected state so the
+            // client refreshes, otherwise we would wait for an init event that never fires again and time out.
+            if (node.connectionState === NodeStates.Connected) {
                 this.ws.sendEvent(EventType.NodeStateInformation, {
                     nodeId: node.nodeId,
                     state: NodeStates[NodeStates.Connected],
