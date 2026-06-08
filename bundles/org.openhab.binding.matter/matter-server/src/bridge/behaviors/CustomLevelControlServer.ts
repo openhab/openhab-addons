@@ -28,10 +28,12 @@ export class CustomLevelControlServer extends LevelControlServer {
         this.env
             .get(DeviceFunctions)
             .sendAttributeChangedEvent(this.endpoint.id, "levelControl", "currentLevel", level);
-        if (this.endpoint.stateOf(CustomLevelControlServer).currentLevel !== level) {
-            await this.env
-                .get(DeviceFunctions)
-                .waitForStateUpdate(this.endpoint.id, "levelControl", "currentLevel", 15000);
+        if (this.state.currentLevel !== level) {
+            try {
+                await this.env
+                    .get(DeviceFunctions)
+                    .waitForStateUpdate(this.endpoint.id, "levelControl", "currentLevel", 15000);
+            } catch {}
         }
         return super.moveToLevelLogic(level, transitionTime, withOnOff, options);
     }

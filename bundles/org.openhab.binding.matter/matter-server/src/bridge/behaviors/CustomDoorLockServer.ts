@@ -31,10 +31,15 @@ export class CustomDoorLockServer extends DoorLockServer {
      */
     private async sendLockState(lockState: DoorLock.LockState) {
         this.env.get(DeviceFunctions).sendAttributeChangedEvent(this.endpoint.id, "doorLock", "lockState", lockState);
-        if (this.endpoint.stateOf(CustomDoorLockServer).lockState !== lockState) {
-            const result = await this.env
-                .get(DeviceFunctions)
-                .waitForStateUpdate(this.endpoint.id, "doorLock", "lockState", 30000);
+        if (this.state.lockState !== lockState) {
+            let result: DoorLock.LockState | undefined;
+            try {
+                result = await this.env
+                    .get(DeviceFunctions)
+                    .waitForStateUpdate(this.endpoint.id, "doorLock", "lockState", 30000);
+            } catch {
+                return;
+            }
             if (result !== lockState) {
                 throw new Error("Lock state failed", { cause: result });
             }

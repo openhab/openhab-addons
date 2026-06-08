@@ -1,5 +1,8 @@
+import { Logger } from "@matter/main";
 import { OnOffServer } from "@matter/main/behaviors";
 import { DeviceFunctions } from "../DeviceFunctions";
+
+const logger = Logger.get("CustomOnOffServer");
 
 /**
  * This class is used to send on/off events to the bridge.
@@ -10,7 +13,7 @@ export class CustomOnOffServer extends OnOffServer {
 
     override async on() {
         // we only wait for ON/OFF if waiting for a different state
-        if (this.endpoint.stateOf(CustomOnOffServer).onOff !== true) {
+        if (this.state.onOff !== true) {
             await this.sendOnOffAndWait(true);
         } else {
             this.sendOnOff(true);
@@ -18,7 +21,7 @@ export class CustomOnOffServer extends OnOffServer {
         return super.on();
     }
     override async off() {
-        if (this.endpoint.stateOf(CustomOnOffServer).onOff !== false) {
+        if (this.state.onOff !== false) {
             await this.sendOnOffAndWait(false);
         } else {
             this.sendOnOff(false);
@@ -32,11 +35,15 @@ export class CustomOnOffServer extends OnOffServer {
 
     protected async sendOnOffAndWait(onOff: boolean) {
         this.sendOnOff(onOff);
-        const result = await this.env
-            .get(DeviceFunctions)
-            .waitForStateUpdate(this.endpoint.id, "onOff", "onOff", 15000);
-        if (result !== onOff) {
-            throw new Error("On/Off failed", { cause: result });
+        try {
+            const result = await this.env
+                .get(DeviceFunctions)
+                .waitForStateUpdate(this.endpoint.id, "onOff", "onOff", 5000);
+            if (result !== onOff) {
+                logger.debug(`onOff confirmation for ${this.endpoint.id} returned ${result}, expected ${onOff}`);
+            }
+        } catch {
+            logger.debug(`No onOff confirmation from openHAB for ${this.endpoint.id}, proceeding`);
         }
     }
 }

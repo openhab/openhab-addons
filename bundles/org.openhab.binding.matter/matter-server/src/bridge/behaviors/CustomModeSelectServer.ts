@@ -13,10 +13,12 @@ export class CustomModeSelectServer extends ModeSelectServer {
         this.env
             .get(DeviceFunctions)
             .sendAttributeChangedEvent(this.endpoint.id, "modeSelect", "currentMode", request.newMode);
-        if (this.endpoint.stateOf(CustomModeSelectServer).currentMode !== request.newMode) {
-            await this.env
-                .get(DeviceFunctions)
-                .waitForStateUpdate(this.endpoint.id, "modeSelect", "currentMode", 15000);
+        if (this.state.currentMode !== request.newMode) {
+            try {
+                await this.env
+                    .get(DeviceFunctions)
+                    .waitForStateUpdate(this.endpoint.id, "modeSelect", "currentMode", 15000);
+            } catch {}
         }
     }
 }
