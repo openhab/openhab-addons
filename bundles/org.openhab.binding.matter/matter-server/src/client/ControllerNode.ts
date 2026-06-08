@@ -400,9 +400,13 @@ export class ControllerNode {
      * Serializes a node and sends it to the web socket
      * @param node
      * @param endpointId Optional endpointId to serialize. If omitted, all endpoints will be serialized.
+     * @param requestFromRemote When false (the default) values are taken from the local subscription cache instead of
+     *  reading every attribute individually from the device. Since the node is subscribed (autoSubscribe) the cache is
+     *  continuously kept up to date by the device, so a remote read per attribute is redundant and very expensive on
+     *  slow Thread meshes. Pass true only to force a fresh remote read of every attribute.
      */
-    sendSerializedNode(node: PairedNode, endpointId?: number) {
-        this.serializePairedNode(node, endpointId)
+    sendSerializedNode(node: PairedNode, endpointId?: number, requestFromRemote: boolean = false) {
+        this.serializePairedNode(node, endpointId, requestFromRemote)
             .then(data => {
                 this.ws.sendEvent(EventType.NodeData, data);
             })
@@ -417,9 +421,13 @@ export class ControllerNode {
      * Serializes a node and returns the json object
      * @param node
      * @param endpointId Optional endpointId to serialize. If omitted, the root endpoint will be serialized.
+     * @param requestFromRemote When false (the default) attribute values are served from the local subscription cache.
+     *  Reading every attribute remotely (true) issues one network request per attribute and is extremely slow for
+     *  Thread / sleepy devices; the autoSubscribe cache already holds the current values. Fabric-scoped attributes are
+     *  always read from the device regardless of this flag (enforced by matter.js).
      * @returns
      */
-    async serializePairedNode(node: PairedNode, endpointId?: number, requestFromRemote: boolean = true) {
+    async serializePairedNode(node: PairedNode, endpointId?: number, requestFromRemote: boolean = false) {
         if (!this.commissioningController) {
             throw new Error("CommissioningController not initialized");
         }
