@@ -100,9 +100,9 @@ class RachioZoneChannelTest {
         assertChannel(xml, CHANNEL_FLEX_SCHEDULE_NEXT_RUN, "flex_schedule_next_run");
         assertChannel(xml, CHANNEL_FLEX_SCHEDULE_ZONES, "flex_schedule_zones");
         assertChannel(xml, CHANNEL_FLEX_SCHEDULE_SEASONAL_ADJUSTMENT, "flex_schedule_seasonal_adjustment");
-        assertChannel(xml, CHANNEL_FLEX_SCHEDULE_START, "flex_schedule_start");
-        assertChannel(xml, CHANNEL_FLEX_SCHEDULE_SKIP, "flex_schedule_skip");
-        assertChannel(xml, CHANNEL_FLEX_SCHEDULE_SKIP_FORWARD_ZONE_RUN, "flex_schedule_skip_forward_zone_run");
+        assertChannel(xml, CHANNEL_FLEX_SCHEDULE_START, "schedule-rule-start");
+        assertChannel(xml, CHANNEL_FLEX_SCHEDULE_SKIP, "schedule-rule-skip");
+        assertChannel(xml, CHANNEL_FLEX_SCHEDULE_SKIP_FORWARD_ZONE_RUN, "schedule-rule-skip-forward-zone-run");
         assertChannel(xml, CHANNEL_FLEX_SCHEDULE_LAST_UPDATE, "flex_schedule_last_update");
         assertThat(xml, containsString("<channel-type id=\"flex_schedule_seasonal_adjustment\">"));
         assertThat(xml, containsString("<item-type unitHint=\"one\">Number:Dimensionless</item-type>"));

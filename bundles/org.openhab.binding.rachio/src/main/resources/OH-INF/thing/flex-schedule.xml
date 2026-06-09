@@ -21,9 +21,9 @@
 			<channel id="next-run" typeId="flex_schedule_next_run"/>
 			<channel id="zones" typeId="flex_schedule_zones"/>
 			<channel id="seasonal-adjustment" typeId="flex_schedule_seasonal_adjustment"/>
-			<channel id="start" typeId="flex_schedule_start"/>
-			<channel id="skip" typeId="flex_schedule_skip"/>
-			<channel id="skip-forward-zone-run" typeId="flex_schedule_skip_forward_zone_run"/>
+			<channel id="start" typeId="schedule-rule-start"/>
+			<channel id="skip" typeId="schedule-rule-skip"/>
+			<channel id="skip-forward-zone-run" typeId="schedule-rule-skip-forward-zone-run"/>
 			<channel id="last-update" typeId="flex_schedule_last_update"/>
 		</channels>
 
@@ -111,7 +111,7 @@
 			<tag>Control</tag>
 		</tags>
 	</channel-type>
-	<channel-type id="flex_schedule_start">
+	<channel-type id="schedule-rule-start">
 		<item-type>Switch</item-type>
 		<label>Start Schedule</label>
 		<description>Send ON to start this flex schedule rule.</description>
@@ -120,7 +120,7 @@
 			<tag>Water</tag>
 		</tags>
 	</channel-type>
-	<channel-type id="flex_schedule_skip">
+	<channel-type id="schedule-rule-skip">
 		<item-type>Switch</item-type>
 		<label>Skip Schedule</label>
 		<description>Send ON to skip this flex schedule rule.</description>
@@ -128,7 +128,7 @@
 			<tag>Control</tag>
 		</tags>
 	</channel-type>
-	<channel-type id="flex_schedule_skip_forward_zone_run">
+	<channel-type id="schedule-rule-skip-forward-zone-run">
 		<item-type>Switch</item-type>
 		<label>Skip Forward Zone Run</label>
 		<description>Send ON to skip the currently running zone in this flex schedule context.</description>
