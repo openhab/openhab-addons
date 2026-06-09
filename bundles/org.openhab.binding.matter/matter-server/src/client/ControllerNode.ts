@@ -219,8 +219,34 @@ export class ControllerNode {
             return new Promise((resolve, reject) => {
                 let timeoutId: NodeJS.Timeout | undefined;
 
+                // initializedFromRemote only fires on the very first connect of a PairedNode instance; a later
+                // reconnect re-asserts the Connected state but never emits it again. So we also resolve on a live
+                // stateChanged -> Connected transition, otherwise an already-initialized node that has to reconnect
+                // here would wait for an event that never comes and run into the timeout (Thing flips OFFLINE).
+                const onStateChanged = (state: NodeStates): void => {
+                    if (state === NodeStates.Connected) {
+                        finish("reconnected");
+                    }
+                };
+                const finish = (reason: string): void => {
+                    if (timeoutId) clearTimeout(timeoutId);
+                    node?.events.initializedFromRemote.off(onInitialized);
+                    node?.events.stateChanged.off(onStateChanged);
+                    logger.info(`Node ${node?.nodeId} ${reason}`);
+                    // Send a connected event so the client knows the resume completed
+                    this.ws.sendEvent(EventType.NodeStateInformation, {
+                        nodeId: node!.nodeId,
+                        state: NodeStates[NodeStates.Connected],
+                        physicalProperties: extractPhysicalProperties(node),
+                    });
+                    resolve();
+                };
+                const onInitialized = (): void => finish("initialized from remote");
+
                 if (connectionTimeout && connectionTimeout > 0) {
                     timeoutId = setTimeout(() => {
+                        node?.events.initializedFromRemote.off(onInitialized);
+                        node?.events.stateChanged.off(onStateChanged);
                         logger.info(`Node ${node?.nodeId} state: ${node?.state}`);
                         if (
                             node?.connectionState === NodeStates.Disconnected ||
@@ -234,18 +260,15 @@ export class ControllerNode {
                     }, connectionTimeout);
                 }
 
-                // Cancel timer if node initializes
-                node?.events.initializedFromRemote.once(() => {
-                    logger.info(`Node ${node?.nodeId} initialized from remote`);
-                    if (timeoutId) clearTimeout(timeoutId);
-                    // Send a connected event so the client knows the resume completed
-                    this.ws.sendEvent(EventType.NodeStateInformation, {
-                        nodeId: node!.nodeId,
-                        state: NodeStates[NodeStates.Connected],
-                        physicalProperties: extractPhysicalProperties(node),
-                    });
-                    resolve();
-                });
+                // The node may already be Connected again by the time we get here (between the guard above and
+                // triggerReconnect), so check once before waiting for an event.
+                if (node?.connectionState === NodeStates.Connected) {
+                    finish("already connected");
+                    return;
+                }
+
+                node?.events.initializedFromRemote.once(onInitialized);
+                node?.events.stateChanged.on(onStateChanged);
             });
         }
 
