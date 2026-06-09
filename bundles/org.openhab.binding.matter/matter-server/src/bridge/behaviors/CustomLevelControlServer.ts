@@ -1,7 +1,9 @@
-import { MaybePromise } from "@matter/main";
+import { Logger, MaybePromise } from "@matter/main";
 import { LevelControlServer } from "@matter/main/behaviors";
 import { LevelControl } from "@matter/main/clusters";
 import { DeviceFunctions } from "../DeviceFunctions";
+
+const logger = Logger.get("CustomLevelControlServer");
 
 export class CustomLevelControlServer extends LevelControlServer {
     static readonly DEFAULTS = { currentLevel: 254 } as const;
@@ -33,7 +35,9 @@ export class CustomLevelControlServer extends LevelControlServer {
                 await this.env
                     .get(DeviceFunctions)
                     .waitForStateUpdate(this.endpoint.id, "levelControl", "currentLevel", 15000);
-            } catch {}
+            } catch {
+                logger.debug(`No currentLevel confirmation from openHAB for ${this.endpoint.id}, proceeding`);
+            }
         }
         return super.moveToLevelLogic(level, transitionTime, withOnOff, options);
     }
