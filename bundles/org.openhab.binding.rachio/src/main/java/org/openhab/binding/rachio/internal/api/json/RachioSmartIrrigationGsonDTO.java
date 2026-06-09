@@ -48,10 +48,8 @@ public class RachioSmartIrrigationGsonDTO {
         public int duration = 0;
         public int durationInMinutes = 0;
         public boolean running = false;
-        @Nullable
-        public JsonObject schedule;
-        @Nullable
-        public JsonObject currentSchedule;
+        public @Nullable JsonObject schedule;
+        public @Nullable JsonObject currentSchedule;
 
         public String getScheduleId() {
             return firstNonBlank(id, scheduleId, routingId, readString(schedule, "id"),
@@ -202,8 +200,7 @@ public class RachioSmartIrrigationGsonDTO {
         public ArrayList<RachioForecastEntry> forecast = new ArrayList<>();
         public ArrayList<RachioForecastEntry> forecasts = new ArrayList<>();
         public ArrayList<RachioForecastEntry> dailyForecasts = new ArrayList<>();
-        @Nullable
-        public RachioForecastEntry today;
+        public @Nullable RachioForecastEntry today;
 
         public String getSummary() {
             RachioForecastEntry todayForecast = getTodayForecast();

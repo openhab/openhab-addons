@@ -127,10 +127,8 @@ public class RachioEventGsonDTO {
     public Integer duration = 0;
     public Integer durationInMinutes = 0;
     public Integer flowVolume = 0;
-    @Nullable
-    public RachioZoneStatus zoneRunStatus;
-    @Nullable
-    public RachioWebhookPayload payload;
+    public @Nullable RachioZoneStatus zoneRunStatus;
+    public @Nullable RachioWebhookPayload payload;
 
     // SCHEDULE_STATUS
     public String scheduleName = "";
@@ -139,17 +137,14 @@ public class RachioEventGsonDTO {
     // COLD_REBOOT
     public String deviceName = ""; // "deviceName" : "My
                                    // Rachio",
-    @Nullable
-    public RachioCloudNetworkSettings network; // "network" : {}
+    public @Nullable RachioCloudNetworkSettings network; // "network" : {}
     String pin = "";
 
     public RachioApiResult apiResult = new RachioApiResult();
 
     // public JsonArray eventDatas;
-    @Nullable
-    public HashMap<String, String> eventParms;
-    @Nullable
-    public HashMap<String, RachioEventProperty> deltaProperties;
+    public @Nullable HashMap<String, String> eventParms;
+    public @Nullable HashMap<String, RachioEventProperty> deltaProperties;
 
     public RachioEventGsonDTO() {
     }
@@ -257,7 +252,7 @@ public class RachioEventGsonDTO {
         }
 
         RachioWebhookPayload eventPayload = payload;
-        if ((eventPayload != null) && !eventPayload.durationSeconds.isEmpty()) {
+        if (eventPayload != null && !eventPayload.durationSeconds.isEmpty()) {
             return Math.max(0, eventPayload.getDurationSeconds());
         }
         return -1;

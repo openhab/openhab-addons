@@ -36,8 +36,7 @@ import org.openhab.core.thing.binding.ConfigStatusBridgeHandler;
 public abstract class AbstractRachioBridgeHandler extends ConfigStatusBridgeHandler {
     protected final List<RachioStatusListener> rachioStatusListeners = new CopyOnWriteArrayList<>();
 
-    @Nullable
-    private ScheduledFuture<?> pollingJob;
+    private @Nullable ScheduledFuture<?> pollingJob;
     private boolean refreshPending = false;
 
     protected AbstractRachioBridgeHandler(Bridge bridge) {

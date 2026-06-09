@@ -91,8 +91,7 @@ final class RachioScheduleDateTime {
     }
 
     private static class ParseResult {
-        @Nullable
-        final State state;
+        final @Nullable State state;
         final String valueType;
 
         ParseResult(@Nullable State state, String valueType) {

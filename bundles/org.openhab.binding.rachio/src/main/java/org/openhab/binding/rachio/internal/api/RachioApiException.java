@@ -30,8 +30,7 @@ import org.eclipse.jdt.annotation.Nullable;
 public class RachioApiException extends Exception {
     private static final long serialVersionUID = -2579498702258574787L;
     private RachioApiResult apiResult = new RachioApiResult();
-    @Nullable
-    private Throwable e = null;
+    private @Nullable Throwable e = null;
 
     public RachioApiException(String message) {
         super(message);
@@ -58,8 +57,7 @@ public class RachioApiException extends Exception {
     }
 
     @Override
-    @Nullable
-    public String getMessage() {
+    public @Nullable String getMessage() {
         return super.getMessage();
     }
 

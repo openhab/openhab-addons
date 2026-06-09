@@ -44,10 +44,8 @@ public class RachioPropertyGsonDTO {
         public String longitude = "";
         public ArrayList<RachioPropertyEntity> entities = new ArrayList<>();
         public ArrayList<RachioPropertyEntity> resources = new ArrayList<>();
-        @Nullable
-        public JsonObject address;
-        @Nullable
-        public JsonObject resourceId;
+        public @Nullable JsonObject address;
+        public @Nullable JsonObject resourceId;
 
         public String getId() {
             return firstNonBlank(id, propertyId, readString(resourceId, "propertyId"), readString(resourceId, "id"));
@@ -65,8 +63,7 @@ public class RachioPropertyGsonDTO {
         public String entityType = "";
         public String resourceType = "";
         public String name = "";
-        @Nullable
-        public JsonObject resourceId;
+        public @Nullable JsonObject resourceId;
     }
 
     public static class RachioPropertyListResponse {
@@ -113,8 +110,7 @@ public class RachioPropertyGsonDTO {
 
     public static class RachioPropertyEntityLookupResponse {
         public ArrayList<RachioProperty> properties = new ArrayList<>();
-        @Nullable
-        public RachioProperty property;
+        public @Nullable RachioProperty property;
 
         public static RachioPropertyEntityLookupResponse fromJson(String json) {
             RachioPropertyEntityLookupResponse response = new RachioPropertyEntityLookupResponse();

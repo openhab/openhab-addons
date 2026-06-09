@@ -62,7 +62,7 @@ public class RachioApiResult {
             this.rateReset = rateReset;
         }
 
-        if ((this.rateLimit == 0) || !rateRemainingKnown || (this.rateRemaining == 0)) {
+        if (this.rateLimit == 0 || !rateRemainingKnown || this.rateRemaining == 0) {
             return;
         }
 
@@ -90,14 +90,14 @@ public class RachioApiResult {
     }
 
     public boolean isRateLimitWarning() {
-        return (rateRemaining > 0) && (rateRemaining < RACHIO_RATE_LIMIT_WARNING);
+        return rateRemaining > 0 && rateRemaining < RACHIO_RATE_LIMIT_WARNING;
     }
 
     public boolean isRateLimitCritical() {
-        return (rateRemaining > 0) && (rateRemaining <= RACHIO_RATE_LIMIT_CRITICAL);
+        return rateRemaining > 0 && rateRemaining <= RACHIO_RATE_LIMIT_CRITICAL;
     }
 
     public boolean isRateLimitBlocked() {
-        return rateRemainingKnown && (rateRemaining >= 0) && (rateRemaining <= RACHIO_RATE_LIMIT_BLOCK);
+        return rateRemainingKnown && rateRemaining >= 0 && rateRemaining <= RACHIO_RATE_LIMIT_BLOCK;
     }
 }

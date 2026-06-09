@@ -44,8 +44,7 @@ import org.slf4j.LoggerFactory;
 public class RachioBaseStationHandler extends AbstractRachioThingHandler {
     private final Logger logger = LoggerFactory.getLogger(RachioBaseStationHandler.class);
 
-    @Nullable
-    private RachioBaseStation baseStation;
+    private @Nullable RachioBaseStation baseStation;
 
     public RachioBaseStationHandler(Thing thing) {
         super(thing);

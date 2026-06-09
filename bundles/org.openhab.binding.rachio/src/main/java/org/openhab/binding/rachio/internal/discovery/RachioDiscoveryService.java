@@ -58,14 +58,11 @@ public class RachioDiscoveryService extends AbstractDiscoveryService implements 
 
     private final Logger logger = LoggerFactory.getLogger(RachioDiscoveryService.class);
 
-    @Nullable
-    private Future<?> scanTask;
+    private @Nullable Future<?> scanTask;
 
-    @Nullable
-    private ScheduledFuture<?> discoveryJob;
+    private @Nullable ScheduledFuture<?> discoveryJob;
 
-    @Nullable
-    private RachioBridgeHandler cloudHandler;
+    private @Nullable RachioBridgeHandler cloudHandler;
 
     @Override
     @Activate

@@ -61,13 +61,10 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(RachioZoneHandler.class);
     private OnOffType zoneRunState = OnOffType.OFF;
-    @Nullable
-    private RachioDevice dev;
-    @Nullable
-    private RachioZone zone;
+    private @Nullable RachioDevice dev;
+    private @Nullable RachioZone zone;
     private String cachedImageUrl = "";
-    @Nullable
-    private RawType cachedImage;
+    private @Nullable RawType cachedImage;
     private String failedImageUrl = "";
 
     public RachioZoneHandler(Thing thing) {
@@ -110,7 +107,7 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
                 logger.debug("Zone parent bridge is not available: thingUid={}, bridgeUid={}", getThing().getUID(),
                         getThing().getBridgeUID());
             }
-            if ((bridge == null) || (cloudHandler == null) || (dev == null) || (zone == null)) {
+            if (bridge == null || cloudHandler == null || dev == null || zone == null) {
                 String errorMessage = buildZoneResolutionError(configuredZoneId);
                 logger.debug("{}: {}", thingId, errorMessage);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMessage);
@@ -149,7 +146,7 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
         RachioBridgeHandler handler = cloudHandler;
         RachioZone currentZone = zone;
         RachioDevice currentDev = dev;
-        if ((handler == null) || (currentZone == null) || (currentDev == null)) {
+        if (handler == null || currentZone == null || currentDev == null) {
             logger.debug("{}: Cloud handler or device not initialized!", thingId);
             return;
         }
@@ -250,7 +247,7 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
     public boolean onThingStateChanged(@Nullable RachioDevice updatedDev, @Nullable RachioZone updatedZone) {
         RachioZone z = zone;
         RachioDevice d = dev;
-        if ((updatedZone != null) && (z != null) && z.id.equals(updatedZone.id)) {
+        if (updatedZone != null && z != null && z.id.equals(updatedZone.id)) {
             logger.debug("{}: Update for zone {} received.", thingId, z.name);
             z.update(updatedZone);
             updateChannel(CHANNEL_LAST_UPDATE, getTimestamp());
@@ -430,7 +427,7 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
     }
 
     private void updateProperties() {
-        if ((cloudHandler != null) && (zone != null)) {
+        if (cloudHandler != null && zone != null) {
             logger.trace("Updating Rachio zone properties");
             Map<String, String> prop = zone.fillProperties();
             if (prop != null) {

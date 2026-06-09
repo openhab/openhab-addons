@@ -35,18 +35,14 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class RachioZone extends RachioCloudZone {
     private final Logger logger = LoggerFactory.getLogger(RachioZone.class);
-    @Nullable
-    protected ThingUID devUID;
-    @Nullable
-    protected ThingUID zoneUID;
-    @Nullable
-    protected RachioZoneHandler thingHandler;
+    protected @Nullable ThingUID devUID;
+    protected @Nullable ThingUID zoneUID;
+    protected @Nullable RachioZoneHandler thingHandler;
     protected String uniqueId = "";
 
     protected int startRunTime = 0;
     protected String lastEvent = "";
-    @Nullable
-    protected DateTimeType lastEventTime;
+    protected @Nullable DateTimeType lastEventTime;
     protected double moistureLevel = Double.NaN;
     protected double moisturePercent = Double.NaN;
     protected String imageDownloadUrl = "";
@@ -85,21 +81,20 @@ public class RachioZone extends RachioCloudZone {
         thingHandler = zoneHandler;
     }
 
-    @Nullable
-    public RachioZoneHandler getThingHandler() {
+    public @Nullable RachioZoneHandler getThingHandler() {
         return thingHandler;
     }
 
     public boolean compare(@Nullable RachioZone czone) {
-        if ((czone == null) || (zoneNumber != czone.zoneNumber) || (enabled != czone.enabled)
-                || (availableWater != czone.availableWater) || (efficiency != czone.efficiency)
-                || (lastWateredDate != czone.lastWateredDate) || (depthOfWater != czone.depthOfWater)
-                || (saturatedDepthOfWater != czone.saturatedDepthOfWater)
-                || (managementAllowedDepletion != czone.managementAllowedDepletion)
-                || (rootZoneDepth != czone.rootZoneDepth) || (yardAreaSquareFeet != czone.yardAreaSquareFeet)
-                || (scheduleDataModified != czone.scheduleDataModified) || (fixedRuntime != czone.fixedRuntime)
-                || (maxRuntime != czone.maxRuntime) || (runtimeNoMultiplier != czone.runtimeNoMultiplier)
-                || (runtime != czone.runtime) || !imageUrl.equals(czone.imageUrl)
+        if (czone == null || zoneNumber != czone.zoneNumber || enabled != czone.enabled
+                || availableWater != czone.availableWater || efficiency != czone.efficiency
+                || lastWateredDate != czone.lastWateredDate || depthOfWater != czone.depthOfWater
+                || saturatedDepthOfWater != czone.saturatedDepthOfWater
+                || managementAllowedDepletion != czone.managementAllowedDepletion
+                || rootZoneDepth != czone.rootZoneDepth || yardAreaSquareFeet != czone.yardAreaSquareFeet
+                || scheduleDataModified != czone.scheduleDataModified || fixedRuntime != czone.fixedRuntime
+                || maxRuntime != czone.maxRuntime || runtimeNoMultiplier != czone.runtimeNoMultiplier
+                || runtime != czone.runtime || !imageUrl.equals(czone.imageUrl)
                 || !imageDownloadUrl.equals(czone.imageDownloadUrl)) {
             return false;
         }
@@ -107,7 +102,7 @@ public class RachioZone extends RachioCloudZone {
     }
 
     public void update(@Nullable RachioZone updatedZone) {
-        if ((updatedZone == null) || !id.equalsIgnoreCase(updatedZone.id)) {
+        if (updatedZone == null || !id.equalsIgnoreCase(updatedZone.id)) {
             return;
         }
         zoneNumber = updatedZone.zoneNumber;
@@ -134,13 +129,11 @@ public class RachioZone extends RachioCloudZone {
         this.zoneUID = zoneUID;
     }
 
-    @Nullable
-    public ThingUID getUID() {
+    public @Nullable ThingUID getUID() {
         return zoneUID;
     }
 
-    @Nullable
-    public ThingUID getDevUID() {
+    public @Nullable ThingUID getDevUID() {
         return devUID;
     }
 

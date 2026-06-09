@@ -66,8 +66,7 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
     @Nullable
     RachioDevice dev;
     private long lastReadExtensionRefresh = 0;
-    @Nullable
-    private ScheduledFuture<?> webhookRegistrationRetryJob;
+    private @Nullable ScheduledFuture<?> webhookRegistrationRetryJob;
     private boolean webhookRegistrationPending = false;
     private long nextWebhookRegistrationRetryAtMillis = 0;
 
@@ -159,7 +158,7 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
 
         RachioBridgeHandler handler = cloudHandler;
         RachioDevice d = dev;
-        if ((handler == null) || (d == null)) {
+        if (handler == null || d == null) {
             logger.debug("{}: Cloud handler or device not initialized!", thingId);
             return;
         }
@@ -324,7 +323,7 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
     @Override
     public boolean onThingStateChanged(@Nullable RachioDevice updatedDev, @Nullable RachioZone updatedZone) {
         RachioDevice d = dev;
-        if ((updatedDev != null) && (d != null) && d.id.equals(updatedDev.id)) {
+        if (updatedDev != null && d != null && d.id.equals(updatedDev.id)) {
             logger.debug("Update for device '{}' received.", d.id);
             dev.update(updatedDev);
             updateChannel(CHANNEL_LAST_UPDATE, getTimestamp());

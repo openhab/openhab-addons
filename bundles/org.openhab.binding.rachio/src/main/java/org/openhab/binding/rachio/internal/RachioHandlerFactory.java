@@ -189,8 +189,7 @@ public class RachioHandlerFactory extends BaseThingHandlerFactory {
         return false;
     }
 
-    @Nullable
-    private RachioBridgeHandler createBridge(Bridge bridgeThing) {
+    private @Nullable RachioBridgeHandler createBridge(Bridge bridgeThing) {
         try {
             RachioBridge bridge = new RachioBridge();
             ThingUID bridgeUID = bridgeThing.getUID();

@@ -178,7 +178,7 @@ public class RachioHttp {
                 }
             }
 
-            if ((result.responseCode < HTTP_OK) || (result.responseCode >= HTTP_MULT_CHOICE)) {
+            if (result.responseCode < HTTP_OK || result.responseCode >= HTTP_MULT_CHOICE) {
                 String errorResponse = readResponse(request.getErrorStream());
                 result.resultString = "responseLength=" + errorResponse.length();
                 String message = MessageFormat.format(

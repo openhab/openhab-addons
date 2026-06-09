@@ -44,14 +44,11 @@ public abstract class AbstractRachioThingHandler extends BaseThingHandler implem
     protected String thingId = "";
     protected final Map<String, State> channelData = new HashMap<>();
 
-    @Nullable
-    protected Bridge bridge;
+    protected @Nullable Bridge bridge;
 
-    @Nullable
-    protected RachioBridgeHandler cloudHandler;
+    protected @Nullable RachioBridgeHandler cloudHandler;
 
-    @Nullable
-    private ScheduledFuture<?> localThrottleRetryJob;
+    private @Nullable ScheduledFuture<?> localThrottleRetryJob;
     private int localThrottleRetryAttempt = 0;
     private boolean localThrottleInitializationDeferred = false;
 
@@ -105,7 +102,7 @@ public abstract class AbstractRachioThingHandler extends BaseThingHandler implem
 
     protected boolean updateChannel(String channelName, State newValue) {
         State currentValue = channelData.get(channelName);
-        if ((currentValue != null) && currentValue.equals(newValue)) {
+        if (currentValue != null && currentValue.equals(newValue)) {
             return false;
         }
 

@@ -49,22 +49,17 @@ public class RachioDevice extends RachioCloudDevice {
     public String runList = "";
     public Integer runTime = 0;
     public String lastEvent = "";
-    @Nullable
-    public DateTimeType lastEventTime;
+    public @Nullable DateTimeType lastEventTime;
     public boolean paused = false;
     public int pauseDuration = DEFAULT_ZONE_RUNTIME_SEC;
     public int rainDelay = 0;
     private boolean sleepMode = false;
 
-    @Nullable
-    public ThingUID bridgeUID;
-    @Nullable
-    public ThingUID devUID;
+    public @Nullable ThingUID bridgeUID;
+    public @Nullable ThingUID devUID;
     private HashMap<String, RachioZone> zoneList = new HashMap<String, RachioZone>();
-    @Nullable
-    private RachioDeviceHandler thingHandler = null;
-    @Nullable
-    public RachioCloudNetworkSettings network;
+    private @Nullable RachioDeviceHandler thingHandler = null;
+    public @Nullable RachioCloudNetworkSettings network;
     public String scheduleName = "";
     public String currentScheduleId = "";
     public String currentScheduleName = "";
@@ -126,8 +121,7 @@ public class RachioDevice extends RachioCloudDevice {
     /**
      * @return thing handler for this zone
      */
-    @Nullable
-    public RachioDeviceHandler getThingHandler() {
+    public @Nullable RachioDeviceHandler getThingHandler() {
         return thingHandler;
     }
 
@@ -138,9 +132,9 @@ public class RachioDevice extends RachioCloudDevice {
      * @return true: no change, false: update required
      */
     public boolean compare(@Nullable RachioDevice cdev) {
-        if ((cdev == null) || !id.equalsIgnoreCase(cdev.id) || !status.equalsIgnoreCase(cdev.status) || (on != cdev.on)
-                || (rainSensorTripped != cdev.rainSensorTripped)
-                || (rainDelayExpirationDate != cdev.rainDelayExpirationDate)) {
+        if (cdev == null || !id.equalsIgnoreCase(cdev.id) || !status.equalsIgnoreCase(cdev.status) || on != cdev.on
+                || rainSensorTripped != cdev.rainSensorTripped
+                || rainDelayExpirationDate != cdev.rainDelayExpirationDate) {
             logger.trace("Device data was updated");
             return false;
         }
@@ -153,7 +147,7 @@ public class RachioDevice extends RachioCloudDevice {
      * @param updatedData new device settings received from cloud call
      */
     public void update(@Nullable RachioDevice updatedData) {
-        if ((updatedData == null) || !id.equals(updatedData.id)) {
+        if (updatedData == null || !id.equals(updatedData.id)) {
             return;
         }
 
@@ -178,8 +172,7 @@ public class RachioDevice extends RachioCloudDevice {
     /**
      * @return Device thing uid
      */
-    @Nullable
-    public ThingUID getUID() {
+    public @Nullable ThingUID getUID() {
         return devUID;
     }
 
@@ -512,22 +505,20 @@ public class RachioDevice extends RachioCloudDevice {
         return zoneList;
     }
 
-    @Nullable
-    public RachioZone getZoneByNumber(int zoneNumber) {
+    public @Nullable RachioZone getZoneByNumber(int zoneNumber) {
         for (HashMap.Entry<String, RachioZone> ze : zoneList.entrySet()) {
             RachioZone zone = ze.getValue();
-            if ((zone != null) && zone.zoneNumber == zoneNumber) {
+            if (zone != null && zone.zoneNumber == zoneNumber) {
                 return zone;
             }
         }
         return null;
     }
 
-    @Nullable
-    public RachioZone getZoneById(String zoneId) {
+    public @Nullable RachioZone getZoneById(String zoneId) {
         for (HashMap.Entry<String, RachioZone> ze : zoneList.entrySet()) {
             RachioZone zone = ze.getValue();
-            if ((zone != null) && zone.id.equals(zoneId)) {
+            if (zone != null && zone.id.equals(zoneId)) {
                 return zone;
             }
         }

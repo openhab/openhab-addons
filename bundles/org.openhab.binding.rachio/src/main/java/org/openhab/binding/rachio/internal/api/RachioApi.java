@@ -113,8 +113,7 @@ public class RachioApi {
     protected String userName = "";
     protected String fullName = "";
     protected String email = "";
-    @Nullable
-    protected ThingUID bridgeUID = null;
+    protected @Nullable ThingUID bridgeUID = null;
 
     protected RachioApiResult lastApiResult = new RachioApiResult();
     private static final Map<String, ClientRateLimitManager> rateLimitManagers = new ConcurrentHashMap<>();
@@ -274,8 +273,7 @@ public class RachioApi {
         return deviceList;
     }
 
-    @Nullable
-    public RachioDevice bindDeviceByRachioId(ThingUID bridgeUID, ThingUID thingUID, String deviceId) {
+    public @Nullable RachioDevice bindDeviceByRachioId(ThingUID bridgeUID, ThingUID thingUID, String deviceId) {
         RachioDevice dev = getDeviceByRachioId(deviceId);
         if (dev != null) {
             dev.setUID(bridgeUID, thingUID);
@@ -287,8 +285,7 @@ public class RachioApi {
         return dev;
     }
 
-    @Nullable
-    public RachioDevice getDeviceByRachioId(@Nullable String deviceId) {
+    public @Nullable RachioDevice getDeviceByRachioId(@Nullable String deviceId) {
         if (deviceId == null || deviceId.isBlank()) {
             return null;
         }
@@ -306,8 +303,7 @@ public class RachioApi {
         return null;
     }
 
-    @Nullable
-    public RachioZone getZoneByRachioId(@Nullable String zoneId) {
+    public @Nullable RachioZone getZoneByRachioId(@Nullable String zoneId) {
         if (zoneId == null || zoneId.isBlank()) {
             return null;
         }
@@ -322,8 +318,7 @@ public class RachioApi {
         return null;
     }
 
-    @Nullable
-    public RachioDevice getDeviceByZoneRachioId(@Nullable String zoneId) {
+    public @Nullable RachioDevice getDeviceByZoneRachioId(@Nullable String zoneId) {
         if (zoneId == null || zoneId.isBlank()) {
             return null;
         }
@@ -338,19 +333,16 @@ public class RachioApi {
         return null;
     }
 
-    @Nullable
-    public RachioDevice getDevByUID(@Nullable ThingUID bridgeUID, @Nullable ThingUID thingUID) {
+    public @Nullable RachioDevice getDevByUID(@Nullable ThingUID bridgeUID, @Nullable ThingUID thingUID) {
         return getDevByUID(bridgeUID, thingUID, Collections.emptyMap(), Collections.emptyMap());
     }
 
-    @Nullable
-    public RachioDevice getDevByUID(@Nullable ThingUID bridgeUID, @Nullable ThingUID thingUID,
+    public @Nullable RachioDevice getDevByUID(@Nullable ThingUID bridgeUID, @Nullable ThingUID thingUID,
             Map<String, String> properties) {
         return getDevByUID(bridgeUID, thingUID, Collections.emptyMap(), properties);
     }
 
-    @Nullable
-    public RachioDevice getDevByUID(@Nullable ThingUID bridgeUID, @Nullable ThingUID thingUID,
+    public @Nullable RachioDevice getDevByUID(@Nullable ThingUID bridgeUID, @Nullable ThingUID thingUID,
             Map<String, @Nullable Object> configuration, Map<String, String> properties) {
         if (bridgeUID == null || thingUID == null) {
             logger.debug("getDevByUID: Unable map UID to device, bridgeUID={}, deviceUID={}", bridgeUID, thingUID);
@@ -403,19 +395,16 @@ public class RachioApi {
         return null;
     }
 
-    @Nullable
-    public RachioZone getZoneByUID(@Nullable ThingUID bridgeUID, @Nullable ThingUID zoneUID) {
+    public @Nullable RachioZone getZoneByUID(@Nullable ThingUID bridgeUID, @Nullable ThingUID zoneUID) {
         return getZoneByUID(bridgeUID, zoneUID, Collections.emptyMap(), Collections.emptyMap());
     }
 
-    @Nullable
-    public RachioZone getZoneByUID(@Nullable ThingUID bridgeUID, @Nullable ThingUID zoneUID,
+    public @Nullable RachioZone getZoneByUID(@Nullable ThingUID bridgeUID, @Nullable ThingUID zoneUID,
             Map<String, String> properties) {
         return getZoneByUID(bridgeUID, zoneUID, Collections.emptyMap(), properties);
     }
 
-    @Nullable
-    public RachioZone getZoneByUID(@Nullable ThingUID bridgeUID, @Nullable ThingUID zoneUID,
+    public @Nullable RachioZone getZoneByUID(@Nullable ThingUID bridgeUID, @Nullable ThingUID zoneUID,
             Map<String, @Nullable Object> configuration, Map<String, String> properties) {
         if (bridgeUID == null || zoneUID == null) {
             logger.debug("getZoneByUID: Unable map UID to zone, bridgeUID={}, zoneUID={}", bridgeUID, zoneUID);
@@ -1469,10 +1458,10 @@ public class RachioApi {
             entries = root.getAsJsonArray();
         } else if (root.isJsonObject()) {
             JsonElement webhooks = root.getAsJsonObject().get("webhooks");
-            if ((webhooks == null) || !webhooks.isJsonArray()) {
+            if (webhooks == null || !webhooks.isJsonArray()) {
                 webhooks = root.getAsJsonObject().get("data");
             }
-            if ((webhooks == null) || !webhooks.isJsonArray()) {
+            if (webhooks == null || !webhooks.isJsonArray()) {
                 @Nullable
                 RachioApiWebHookList list = gson.fromJson(root, RachioApiWebHookList.class);
                 return list != null ? list.webhooks : new ArrayList<>();

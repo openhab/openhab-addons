@@ -722,8 +722,7 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
      *
      * @return HashMap of RachioDevice
      */
-    @Nullable
-    public HashMap<String, RachioDevice> getDevices() {
+    public @Nullable HashMap<String, RachioDevice> getDevices() {
         try {
             return rachioApi.getDevices();
         } catch (RuntimeException e) {
@@ -738,24 +737,20 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
      * @param thingUID
      * @return RachioDevice for that device Thing UID
      */
-    @Nullable
-    public RachioDevice getDevByUID(@Nullable ThingUID thingUID) {
+    public @Nullable RachioDevice getDevByUID(@Nullable ThingUID thingUID) {
         return rachioApi.getDevByUID(getThing().getUID(), thingUID);
     }
 
-    @Nullable
-    public RachioDevice getDevByThing(Thing thing) {
+    public @Nullable RachioDevice getDevByThing(Thing thing) {
         return rachioApi.getDevByUID(getThing().getUID(), thing.getUID(), thing.getConfiguration().getProperties(),
                 thing.getProperties());
     }
 
-    @Nullable
-    public RachioDevice getDevByConfiguredDeviceId(Thing thing, String deviceId) {
+    public @Nullable RachioDevice getDevByConfiguredDeviceId(Thing thing, String deviceId) {
         return rachioApi.bindDeviceByRachioId(getThing().getUID(), thing.getUID(), deviceId);
     }
 
-    @Nullable
-    public RachioDevice getDevForZone(RachioZone zone) {
+    public @Nullable RachioDevice getDevForZone(RachioZone zone) {
         return rachioApi.getDeviceByZoneRachioId(zone.id);
     }
 
@@ -765,13 +760,11 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
      * @param thingUID Zone Thing UID
      * @return matching RachioZone, or null when no zone matches
      */
-    @Nullable
-    public RachioZone getZoneByUID(@Nullable ThingUID thingUID) {
+    public @Nullable RachioZone getZoneByUID(@Nullable ThingUID thingUID) {
         return rachioApi.getZoneByUID(getThing().getUID(), thingUID);
     }
 
-    @Nullable
-    public RachioZone getZoneByThing(Thing thing) {
+    public @Nullable RachioZone getZoneByThing(Thing thing) {
         return rachioApi.getZoneByUID(getThing().getUID(), thing.getUID(), thing.getConfiguration().getProperties(),
                 thing.getProperties());
     }
@@ -843,8 +836,7 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
         return false;
     }
 
-    @Nullable
-    public String getExternalId() {
+    public @Nullable String getExternalId() {
         return rachioApi.getExternalId();
     }
 

@@ -133,7 +133,7 @@ public class RachioImageServlet extends HttpServlet {
     @Override
     protected void service(@Nullable HttpServletRequest request, @Nullable HttpServletResponse resp)
             throws ServletException, IOException {
-        if ((request == null) || (resp == null)) {
+        if (request == null || resp == null) {
             return;
         }
 
@@ -169,7 +169,7 @@ public class RachioImageServlet extends HttpServlet {
             // read data in 4k chunks
             byte[] data = new byte[4096];
             int n;
-            while (((n = reader.read(data)) != -1)) {
+            while ((n = reader.read(data)) != -1) {
                 writer.write(data, 0, n);
             }
         } catch (RuntimeException e) {
