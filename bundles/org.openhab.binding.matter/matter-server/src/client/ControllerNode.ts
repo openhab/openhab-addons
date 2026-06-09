@@ -6,7 +6,7 @@ import { Endpoint, NodeStates, PairedNode } from "@project-chip/matter.js/device
 import { WebSocketSession } from "../app";
 import { EventType, NodeState } from "../MessageTypes";
 import { printError } from "../util/error";
-import { SoftwareUpdateManager } from "@matter/node";
+import { ControllerBehavior, SoftwareUpdateManager } from "@matter/node";
 import { DclOtaUpdateService, PhysicalDeviceProperties } from "@matter/main/protocol";
 
 const logger = Logger.get("ControllerNode");
@@ -144,6 +144,12 @@ export class ControllerNode {
         }
 
         await this.commissioningController.start();
+
+        // matter.js 0.17 defaults to sequential operational node IDs starting at NodeId(1). The counter is not
+        // restored consistently with the fabric across restarts, so it re-attempts low IDs that are already
+        // commissioned ("Node ID X is already commissioned and can not be reused"). Switch to the documented
+        // random allocation strategy (CHANGELOG: set ControllerBehavior state nodeIdAssignment to "random").
+        await this.commissioningController.node.setStateOf(ControllerBehavior, { nodeIdAssignment: "random" });
 
         //Set up observers for OTA updates, matter.js checks every 24 hours by default.
         this.observers = this.observers ?? new ObserverGroup(this.environment.runtime);

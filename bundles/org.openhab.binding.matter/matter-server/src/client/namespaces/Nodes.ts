@@ -1,4 +1,3 @@
-import { randomBytes } from "node:crypto";
 import { Logger, ObserverGroup, SoftwareUpdateManager } from "@matter/main";
 import { GeneralCommissioning, OperationalCredentialsCluster, OtaSoftwareUpdateRequestor, OtaSoftwareUpdateRequestorCluster } from "@matter/main/clusters";
 import { FabricIndex, ManualPairingCodeCodec, NodeId, QrCode, QrPairingCodeCodec } from "@matter/types";
@@ -132,24 +131,6 @@ export class Nodes {
             throw new Error("CommissioningController not initialized");
         }
 
-        // matter.js 0.17 assigns operational node IDs from a sequential counter starting at 1, and that counter is
-        // not restored after a controller restart. It then re-allocates low IDs that may already be commissioned,
-        // producing "Node ID X is already commissioned and can not be reused". When the pairing code does not carry
-        // an explicit node ID, assign a random operational node ID ourselves (as the Matter spec recommends and as
-        // pre-0.17 did), making sure it is not already in use.
-        let assignedNodeId = nodeId;
-        if (assignedNodeId === undefined) {
-            const usedNodeIds = new Set(
-                this.controllerNode.commissioningController.getCommissionedNodes().map(id => id.toString()),
-            );
-            let candidate: bigint;
-            do {
-                // 63-bit random keeps the value inside the valid operational node ID range (1 .. 0xFFFFFFEFFFFFFFFF)
-                candidate = randomBytes(8).readBigUInt64BE() & 0x7fffffffffffffffn;
-            } while (candidate < 1n || usedNodeIds.has(candidate.toString()));
-            assignedNodeId = NodeId(candidate);
-        }
-
         const options = {
             discovery: {
                 knownAddress: ip !== undefined && ipPort !== undefined ? { ip, port: ipPort, type: "udp" } : undefined,
@@ -170,7 +151,7 @@ export class Nodes {
         } as NodeCommissioningOptions;
 
         options.commissioning = {
-            nodeId: assignedNodeId,
+            nodeId: nodeId !== undefined ? NodeId(nodeId) : undefined,
             regulatoryLocation: GeneralCommissioning.RegulatoryLocationType.Outdoor, // Set to the most restrictive if relevant
             regulatoryCountryCode: "XX",
         };
