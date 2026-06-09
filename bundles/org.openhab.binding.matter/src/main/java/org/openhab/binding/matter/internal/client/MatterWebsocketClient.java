@@ -423,9 +423,7 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
 
     protected CompletableFuture<JsonElement> sendMessage(String namespace, String functionName, @Nullable Object args[],
             int timeoutSeconds) {
-        if (timeoutSeconds <= 0) {
-            timeoutSeconds = REQUEST_TIMEOUT_SECONDS;
-        }
+        final int effectiveTimeoutSeconds = timeoutSeconds > 0 ? timeoutSeconds : REQUEST_TIMEOUT_SECONDS;
         CompletableFuture<JsonElement> responseFuture = new CompletableFuture<>();
 
         Session session = this.session;
@@ -446,9 +444,9 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
             CompletableFuture<JsonElement> future = pendingRequests.remove(requestId);
             if (future != null && !future.isDone()) {
                 future.completeExceptionally(new TimeoutException(String.format(
-                        "Request %s:%s timed out after %d seconds", namespace, functionName, REQUEST_TIMEOUT_SECONDS)));
+                        "Request %s:%s timed out after %d seconds", namespace, functionName, effectiveTimeoutSeconds)));
             }
-        }, timeoutSeconds, TimeUnit.SECONDS);
+        }, effectiveTimeoutSeconds, TimeUnit.SECONDS);
 
         return responseFuture;
     }
