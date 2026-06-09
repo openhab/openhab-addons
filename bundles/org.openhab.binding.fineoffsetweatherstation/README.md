@@ -69,6 +69,9 @@ If you have any issues or feedback, please feel free to [get in touch via the co
   - WH80 - 6-in-1 weather station - Ultrasonic sensor for wind speed & direction, solar radiation & light, temperature & humidity
   - WH90 - 7-in-1 weather station - Ultrasonic sensor for wind speed & direction, solar radiation & light, temperature, humidity and haptic rainfall Sensor
   - WS85 - Sensor for wind speed & direction and rainfall
+  - WH54 - Liquid depth sensor (LDS)
+  - WN20 - Rain Gauge Mini
+  - WN38 - Black globe temperature sensor
 
 ### Unsupported Devices
 
@@ -158,6 +161,20 @@ Valid sensors:
 - WH35_CH8
 - WH90
 - WS85
+- WH51_CH9
+- WH51_CH10
+- WH51_CH11
+- WH51_CH12
+- WH51_CH13
+- WH51_CH14
+- WH51_CH15
+- WH51_CH16
+- WH54_CH1
+- WH54_CH2
+- WH54_CH3
+- WH54_CH4
+- WN20
+- WN38
 
 ## Channels
 

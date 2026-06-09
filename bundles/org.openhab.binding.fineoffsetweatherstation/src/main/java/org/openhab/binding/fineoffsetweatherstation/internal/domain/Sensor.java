@@ -39,13 +39,16 @@ public enum Sensor {
     WH41(LEVEL_OR_DC),
     WH45(LEVEL_OR_DC),
     WH51(VOLTAGE_BROAD_STEPS),
+    WH54(VOLTAGE_FINE_STEPS),
     WH55(LEVEL),
     WH57(LEVEL),
     WH65(LOW_HIGH),
     WH68(VOLTAGE_FINE_STEPS),
     WH80(VOLTAGE_FINE_STEPS),
     WH90(VOLTAGE_FINE_STEPS),
-    WS85(LOW_HIGH);
+    WS85(LOW_HIGH),
+    WN20(LOW_HIGH),
+    WN38(VOLTAGE_FINE_STEPS);
 
     private final BatteryStatus.Type batteryStatusTpe;
 

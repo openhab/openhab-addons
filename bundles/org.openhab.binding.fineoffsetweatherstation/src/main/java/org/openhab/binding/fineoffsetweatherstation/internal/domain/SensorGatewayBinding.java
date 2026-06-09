@@ -83,7 +83,29 @@ public enum SensorGatewayBinding {
     WH35_CH7((byte) 46, Sensor.WH35, 7),
     WH35_CH8((byte) 47, Sensor.WH35, 8),
     WH90((byte) 48, Sensor.WH90, null),
-    WS85((byte) 49, Sensor.WS85, null);
+    WS85((byte) 49, Sensor.WS85, null),
+    // eWH48_SENSORCH1 = 50, // Not currently used (start)
+    // eWH48_SENSORCH2 = 51,
+    // eWH48_SENSORCH3 = 52,
+    // eWH48_SENSORCH4 = 53,
+    // eWH48_SENSORCH5 = 54,
+    // eWH48_SENSORCH6 = 55,
+    // eWH48_SENSORCH7 = 56,
+    // eWH48_SENSORCH8 = 57, Not currently used (end)
+    WH51_CH9((byte) 58, Sensor.WH51, 9),
+    WH51_CH10((byte) 59, Sensor.WH51, 10),
+    WH51_CH11((byte) 60, Sensor.WH51, 11),
+    WH51_CH12((byte) 61, Sensor.WH51, 12),
+    WH51_CH13((byte) 62, Sensor.WH51, 13),
+    WH51_CH14((byte) 63, Sensor.WH51, 14),
+    WH51_CH15((byte) 64, Sensor.WH51, 15),
+    WH51_CH16((byte) 65, Sensor.WH51, 16),
+    WH54_CH1((byte) 66, Sensor.WH54, 1),
+    WH54_CH2((byte) 67, Sensor.WH54, 2),
+    WH54_CH3((byte) 68, Sensor.WH54, 3),
+    WH54_CH4((byte) 69, Sensor.WH54, 4),
+    WN20((byte) 70, Sensor.WN20, null),
+    WN38((byte) 71, Sensor.WN38, null);
 
     private static final Map<Byte, List<SensorGatewayBinding>> SENSOR_LOOKUP = new HashMap<>();
 
