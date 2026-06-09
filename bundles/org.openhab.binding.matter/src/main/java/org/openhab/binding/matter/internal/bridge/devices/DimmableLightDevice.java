@@ -94,32 +94,30 @@ public class DimmableLightDevice extends BaseDevice {
     public void updateState(Item item, State state) {
         List<AttributeState> states = new ArrayList<>();
         if (state instanceof HSBType hsb) {
+            boolean on = hsb.getBrightness().intValue() > 0;
             lastLevel = ValueUtils.percentToLevel(hsb.getBrightness());
-            lastOnOffState = lastLevel > 0 ? OnOffType.ON : OnOffType.OFF;
-            states.add(new AttributeState(LevelControlCluster.CLUSTER_PREFIX,
-                    LevelControlCluster.ATTRIBUTE_CURRENT_LEVEL, lastLevel));
-            states.add(new AttributeState(OnOffCluster.CLUSTER_PREFIX, OnOffCluster.ATTRIBUTE_ON_OFF,
-                    hsb.getBrightness().intValue() > 0));
-        } else if (state instanceof PercentType percentType) {
-            lastLevel = ValueUtils.percentToLevel(percentType);
-            lastOnOffState = lastLevel > 0 ? OnOffType.ON : OnOffType.OFF;
-            states.add(new AttributeState(OnOffCluster.CLUSTER_PREFIX, OnOffCluster.ATTRIBUTE_ON_OFF,
-                    percentType.intValue() > 0));
-            if (percentType.intValue() > 0) {
+            lastOnOffState = on ? OnOffType.ON : OnOffType.OFF;
+            states.add(new AttributeState(OnOffCluster.CLUSTER_PREFIX, OnOffCluster.ATTRIBUTE_ON_OFF, on));
+            if (on) {
                 states.add(new AttributeState(LevelControlCluster.CLUSTER_PREFIX,
                         LevelControlCluster.ATTRIBUTE_CURRENT_LEVEL, lastLevel));
-                lastOnOffState = OnOffType.ON;
-            } else {
+            }
+        } else if (state instanceof PercentType percentType) {
+            boolean on = percentType.intValue() > 0;
+            lastLevel = ValueUtils.percentToLevel(percentType);
+            lastOnOffState = on ? OnOffType.ON : OnOffType.OFF;
+            states.add(new AttributeState(OnOffCluster.CLUSTER_PREFIX, OnOffCluster.ATTRIBUTE_ON_OFF, on));
+            if (on) {
                 states.add(new AttributeState(LevelControlCluster.CLUSTER_PREFIX,
-                        LevelControlCluster.ATTRIBUTE_CURRENT_LEVEL, 0));
-                lastOnOffState = OnOffType.OFF;
+                        LevelControlCluster.ATTRIBUTE_CURRENT_LEVEL, lastLevel));
             }
         } else if (state instanceof OnOffType onOffType) {
-            states.add(new AttributeState(OnOffCluster.CLUSTER_PREFIX, OnOffCluster.ATTRIBUTE_ON_OFF,
-                    onOffType == OnOffType.ON));
-            int level = onOffType == OnOffType.ON ? (lastLevel == 0 ? 1 : lastLevel) : 0;
-            states.add(new AttributeState(LevelControlCluster.CLUSTER_PREFIX,
-                    LevelControlCluster.ATTRIBUTE_CURRENT_LEVEL, level));
+            boolean on = onOffType == OnOffType.ON;
+            states.add(new AttributeState(OnOffCluster.CLUSTER_PREFIX, OnOffCluster.ATTRIBUTE_ON_OFF, on));
+            if (on) {
+                states.add(new AttributeState(LevelControlCluster.CLUSTER_PREFIX,
+                        LevelControlCluster.ATTRIBUTE_CURRENT_LEVEL, lastLevel == 0 ? 1 : lastLevel));
+            }
             lastOnOffState = onOffType;
         }
         if (!states.isEmpty()) {
