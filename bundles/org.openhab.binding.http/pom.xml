@@ -14,19 +14,13 @@
 
   <name>openHAB Add-ons :: Bundles :: HTTP Binding</name>
 
-  <properties>
-    <!-- Compiled against Jetty 12.1.8 (WireMock test requirement) but runtime provides 12.0.23; lower the floor -->
-    <bnd.importpackage>org.eclipse.jetty.*;version="[12.0,13)"</bnd.importpackage>
-  </properties>
-
-  <!-- WireMock 4.x is compiled against Jetty 12.1.8; override the parent BOM's 12.0.23 pins
-       so all Jetty modules are consistent (compile + test). Production runtime still uses 12.0.23 via OSGi. -->
+  <!-- WireMock 4.x requires Jetty 12.1.x; pin the BOM so compile + test stay consistent with runtime (12.1.9). -->
   <dependencyManagement>
     <dependencies>
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-bom</artifactId>
-        <version>12.1.8</version>
+        <version>12.1.9</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
