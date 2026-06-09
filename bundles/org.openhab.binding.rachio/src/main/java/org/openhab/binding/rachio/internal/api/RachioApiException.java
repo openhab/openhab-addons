@@ -63,19 +63,16 @@ public class RachioApiException extends Exception {
 
     @Override
     public String toString() {
-        @Nullable
         String detail = super.getMessage();
         String message = detail != null ? RachioHttp.sanitizeForLogging(detail) : "";
         Throwable ex = e;
         if (ex != null) {
             if (ex instanceof UnknownHostException) {
-                @Nullable
                 String host = ex.getMessage();
                 String sanitizedHost = RachioHttp.sanitizeForLogging(host);
                 message = MessageFormat.format("Unable to connect to {0} (unknown host / internet connection down)",
                         sanitizedHost.isBlank() ? "Rachio API" : sanitizedHost);
             } else if (ex instanceof MalformedURLException) {
-                @Nullable
                 String exceptionMessage = ex.getMessage();
                 String sanitizedExceptionMessage = RachioHttp.sanitizeForLogging(exceptionMessage);
                 message = MessageFormat.format("Invalid URL: {0}",

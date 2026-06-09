@@ -118,7 +118,6 @@ public class RachioSmartIrrigationGsonDTO {
                     }
                 }
                 if (response.events.isEmpty()) {
-                    @Nullable
                     RachioDeviceEvent event = GSON.fromJson(object, RachioDeviceEvent.class);
                     if (event != null) {
                         response.events.add(event);
@@ -145,7 +144,6 @@ public class RachioSmartIrrigationGsonDTO {
             List<RachioDeviceEvent> events = new ArrayList<>();
             for (JsonElement element : array) {
                 if (element.isJsonObject()) {
-                    @Nullable
                     RachioDeviceEvent event = GSON.fromJson(element, RachioDeviceEvent.class);
                     if (event != null) {
                         events.add(event);

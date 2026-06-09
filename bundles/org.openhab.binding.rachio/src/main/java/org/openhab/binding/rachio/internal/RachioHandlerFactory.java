@@ -55,10 +55,8 @@ import org.slf4j.LoggerFactory;
 public class RachioHandlerFactory extends BaseThingHandlerFactory {
 
     public class RachioBridge {
-        @Nullable
-        RachioBridgeHandler cloudHandler;
-        @Nullable
-        ThingUID uid;
+        protected @Nullable RachioBridgeHandler cloudHandler;
+        protected @Nullable ThingUID uid;
     }
 
     private final Logger logger = LoggerFactory.getLogger(RachioHandlerFactory.class);
@@ -144,7 +142,6 @@ public class RachioHandlerFactory extends BaseThingHandlerFactory {
                 if (cloudHandler == null) {
                     continue;
                 }
-                @Nullable
                 String externalId = cloudHandler.getExternalId();
                 if (externalId != null && externalId.equals(event.externalId)) {
                     return cloudHandler.webHookEvent(event);

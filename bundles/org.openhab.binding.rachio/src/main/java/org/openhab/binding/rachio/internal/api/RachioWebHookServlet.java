@@ -156,7 +156,6 @@ public class RachioWebHookServlet extends HttpServlet {
         setHeaders(resp);
 
         String ipAddress = getClientIpAddress(request);
-        @Nullable
         String path = request.getRequestURI();
         logger.trace("RachioWebhook: Request from {}:{}{} ({}:{}, {})", ipAddress, request.getRemotePort(), path,
                 request.getRemoteHost(), request.getServerPort(), request.getProtocol());
@@ -180,7 +179,6 @@ public class RachioWebHookServlet extends HttpServlet {
         }
 
         byte[] rawBody = request.getInputStream().readAllBytes();
-        @Nullable
         String signature = request.getHeader(WEBHOOK_SIGNATURE_HEADER);
         if (signature == null || signature.isBlank()) {
             logger.warn("RachioWebHook: Rejecting webhook request from {} because the x-signature header is missing",
@@ -197,7 +195,6 @@ public class RachioWebHookServlet extends HttpServlet {
         }
 
         String data = new String(rawBody, StandardCharsets.UTF_8);
-        @Nullable
         RachioEventGsonDTO event = null;
         try {
             logger.trace("RachioWebHook: Received {} byte webhook payload", rawBody.length);
@@ -229,7 +226,6 @@ public class RachioWebHookServlet extends HttpServlet {
                     e.getMessage());
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
         } catch (RuntimeException e) {
-            @Nullable
             RachioEventGsonDTO failedEvent = event;
             if (failedEvent != null) {
                 logger.debug(
@@ -243,7 +239,6 @@ public class RachioWebHookServlet extends HttpServlet {
     }
 
     private String getClientIpAddress(HttpServletRequest request) {
-        @Nullable
         String ipAddress = request.getHeader("HTTP_X_FORWARDED_FOR");
         if (ipAddress == null) {
             ipAddress = request.getRemoteAddr();
@@ -255,7 +250,6 @@ public class RachioWebHookServlet extends HttpServlet {
         try {
             return parseEventDirectly(data);
         } catch (JsonSyntaxException e) {
-            @Nullable
             String legacyData = createLegacyJson(data);
             if (legacyData == null) {
                 throw e;
@@ -266,7 +260,6 @@ public class RachioWebHookServlet extends HttpServlet {
     }
 
     private RachioEventGsonDTO parseEventDirectly(String data) {
-        @Nullable
         RachioEventGsonDTO event = gson.fromJson(data, RachioEventGsonDTO.class);
         if (event == null) {
             throw new JsonSyntaxException("Webhook payload did not contain an event object");
@@ -275,7 +268,6 @@ public class RachioWebHookServlet extends HttpServlet {
     }
 
     private @Nullable String createLegacyJson(String data) {
-        @Nullable
         String unwrappedJson = unwrapLegacyJsonString(data);
         if (unwrappedJson != null) {
             return unwrappedJson;

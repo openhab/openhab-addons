@@ -419,7 +419,6 @@ public class RachioDevice extends RachioCloudDevice {
     public void applyForecast(RachioForecastResponse forecast) {
         forecastSummary = forecast.getSummary();
         forecastUpdated = forecast.getUpdated();
-        @Nullable
         RachioForecastEntry today = forecast.getTodayForecast();
         if (today == null) {
             forecastTodayHigh = Double.NaN;
@@ -478,7 +477,6 @@ public class RachioDevice extends RachioCloudDevice {
         String list = runList + ","; // make sure last entry is terminated by ','
         String json = "{ \"zones\" : [";
         for (HashMap.Entry<String, RachioZone> ze : zoneList.entrySet()) {
-            @Nullable
             RachioZone zone = ze.getValue();
             if (flAll || (list.contains(zone.zoneNumber + ",") && (zone.getEnabled() == OnOffType.ON))) {
                 if (resolvedDurations.length() > 0) {

@@ -63,8 +63,7 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
     private static final long MAX_WEBHOOK_REGISTRATION_RETRY_DELAY_SECONDS = 5 * 60;
     private final Logger logger = LoggerFactory.getLogger(RachioDeviceHandler.class);
 
-    @Nullable
-    RachioDevice dev;
+    protected @Nullable RachioDevice dev;
     private long lastReadExtensionRefresh = 0;
     private @Nullable ScheduledFuture<?> webhookRegistrationRetryJob;
     private boolean webhookRegistrationPending = false;

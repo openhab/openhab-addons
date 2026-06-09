@@ -334,7 +334,6 @@ public class RachioEventGsonDTO {
         }
 
         public boolean getFlowDetected() {
-            @Nullable
             Boolean flowDetected = this.flowDetected;
             return flowDetected != null && flowDetected.booleanValue();
         }

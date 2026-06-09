@@ -50,7 +50,6 @@ class RachioWebhookDuplicateEventCache {
     }
 
     boolean isProcessed(@Nullable String eventId) {
-        @Nullable
         String normalizedEventId = normalizeEventId(eventId);
         if (normalizedEventId == null) {
             return false;
@@ -59,7 +58,6 @@ class RachioWebhookDuplicateEventCache {
         long now = clockMillis.getAsLong();
         cleanupIfNeeded(now);
 
-        @Nullable
         Long previous = eventIds.get(normalizedEventId);
         if (previous == null) {
             return false;
@@ -73,7 +71,6 @@ class RachioWebhookDuplicateEventCache {
     }
 
     void markProcessed(@Nullable String eventId) {
-        @Nullable
         String normalizedEventId = normalizeEventId(eventId);
         if (normalizedEventId == null) {
             return;

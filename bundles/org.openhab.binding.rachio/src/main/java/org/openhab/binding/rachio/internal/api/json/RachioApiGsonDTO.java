@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.rachio.internal.api.json.RachioDeviceGsonDTO.RachioCloudDevice;
 import org.openhab.binding.rachio.internal.api.webhook.RachioWebhookResourceType;
 
@@ -134,8 +133,7 @@ public class RachioApiGsonDTO {
         private static List<RachioApiWebhookEventTypeGroup> parseGroups(JsonArray entries) {
             List<RachioApiWebhookEventTypeGroup> groups = new ArrayList<>();
             RachioApiWebhookEventTypeGroup flatGroup = new RachioApiWebhookEventTypeGroup();
-            for (@Nullable
-            JsonElement entry : entries) {
+            for (JsonElement entry : entries) {
                 if (entry == null) {
                     continue;
                 }

@@ -83,7 +83,6 @@ public class RachioPropertyGsonDTO {
                     }
                 }
                 if (response.properties.isEmpty()) {
-                    @Nullable
                     RachioProperty property = parsePropertyObjectOrWrapper(object);
                     if (property != null) {
                         response.properties.add(property);
@@ -97,7 +96,6 @@ public class RachioPropertyGsonDTO {
             List<RachioProperty> properties = new ArrayList<>();
             for (JsonElement element : array) {
                 if (element != null && element.isJsonObject()) {
-                    @Nullable
                     RachioProperty property = parsePropertyObject(element.getAsJsonObject());
                     if (property != null) {
                         properties.add(property);

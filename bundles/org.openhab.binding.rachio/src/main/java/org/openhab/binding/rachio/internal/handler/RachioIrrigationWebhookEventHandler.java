@@ -15,7 +15,6 @@ package org.openhab.binding.rachio.internal.handler;
 import java.util.HashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.rachio.internal.api.RachioDevice;
 import org.openhab.binding.rachio.internal.api.json.RachioEventGsonDTO;
 import org.openhab.binding.rachio.internal.api.webhook.RachioWebhookResourceType;
@@ -44,7 +43,6 @@ class RachioIrrigationWebhookEventHandler implements RachioWebhookEventHandler {
     @Override
     public boolean handle(RachioEventGsonDTO event) {
         try {
-            @Nullable
             HashMap<String, RachioDevice> deviceList = bridgeHandler.getDevices();
             if (deviceList == null) {
                 return false;
