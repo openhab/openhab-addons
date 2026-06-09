@@ -165,6 +165,11 @@ public class ControllerHandler extends BaseBridgeHandler implements MatterClient
         if (childHandler instanceof NodeHandler handler) {
             BigInteger nodeId = handler.getNodeId();
             linkedNodes.put(nodeId, handler);
+            // A freshly linked handler has no node data yet. Drop any "already enumerated" marker so the full data is
+            // actually (re)requested for it. Otherwise requestAllNodeDataIfNeeded skips the request for sleepy nodes
+            // that were enumerated before their Thing existed (e.g. discovered via a scan), leaving the Thing online
+            // but without any channels.
+            enumeratedNodes.remove(nodeId);
             PhysicalDeviceProperties pending = pendingPhysicalProperties.remove(nodeId);
             if (pending != null) {
                 handler.applyPhysicalProperties(pending);

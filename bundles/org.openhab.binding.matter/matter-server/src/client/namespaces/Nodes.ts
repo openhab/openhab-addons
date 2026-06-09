@@ -156,17 +156,19 @@ export class Nodes {
             regulatoryCountryCode: "XX",
         };
 
-        if (this.controllerNode.Store.has("WiFiSsid") && this.controllerNode.Store.has("WiFiPassword")) {
-            options.commissioning.wifiNetwork = {
-                wifiSsid: await this.controllerNode.Store.get<string>("WiFiSsid", ""),
-                wifiCredentials: await this.controllerNode.Store.get<string>("WiFiPassword", ""),
-            };
+        // Only pass network credentials when they are actually present and non-empty. matter.js 0.17 rejects an
+        // empty wifiNetwork/threadNetwork with "must not be empty" before commissioning even starts. Devices that
+        // are already on their operational network (e.g. a Thread device joined externally beforehand) are
+        // commissioned over IP without re-provisioning, so omitting the credentials here is the correct behaviour.
+        const wifiSsid = await this.controllerNode.Store.get<string>("WiFiSsid", "");
+        const wifiCredentials = await this.controllerNode.Store.get<string>("WiFiPassword", "");
+        if (wifiSsid.length > 0 && wifiCredentials.length > 0) {
+            options.commissioning.wifiNetwork = { wifiSsid, wifiCredentials };
         }
-        if (this.controllerNode.Store.has("ThreadName") && this.controllerNode.Store.has("ThreadOperationalDataset")) {
-            options.commissioning.threadNetwork = {
-                networkName: await this.controllerNode.Store.get<string>("ThreadName", ""),
-                operationalDataset: await this.controllerNode.Store.get<string>("ThreadOperationalDataset", ""),
-            };
+        const threadName = await this.controllerNode.Store.get<string>("ThreadName", "");
+        const threadOperationalDataset = await this.controllerNode.Store.get<string>("ThreadOperationalDataset", "");
+        if (threadName.length > 0 && threadOperationalDataset.length > 0) {
+            options.commissioning.threadNetwork = { networkName: threadName, operationalDataset: threadOperationalDataset };
         }
 
         const commissionedNodeId = await this.controllerNode.commissioningController.commissionNode(options);
