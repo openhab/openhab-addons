@@ -23,7 +23,7 @@
     <dep.noembedding>netty-common,netty-transport,netty-transport-native-epoll,netty-transport-native-unix-common,netty-buffer,netty-resolver,netty-codec,netty-codec-http,netty-codec-http2,netty-handler</dep.noembedding>
     <!-- slf4j version matching the version specified in openhab-core/pom.xml -->
     <slf4j.version>2.0.17</slf4j.version>
-    <jetty.version>12.0.23</jetty.version>
+    <jetty.version>12.1.9</jetty.version>
   </properties>
 
   <!-- Let's ensure the correct versions with dependencyManagement.
