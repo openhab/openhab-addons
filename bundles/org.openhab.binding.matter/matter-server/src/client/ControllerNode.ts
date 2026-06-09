@@ -6,7 +6,7 @@ import { Endpoint, NodeStates, PairedNode } from "@project-chip/matter.js/device
 import { WebSocketSession } from "../app";
 import { EventType, NodeState } from "../MessageTypes";
 import { printError } from "../util/error";
-import { SoftwareUpdateManager } from "@matter/node";
+import { ControllerBehavior, SoftwareUpdateManager } from "@matter/node";
 import { DclOtaUpdateService, PhysicalDeviceProperties } from "@matter/main/protocol";
 
 const logger = Logger.get("ControllerNode");
@@ -162,6 +162,12 @@ export class ControllerNode {
 
         await this.commissioningController.start();
 
+        // matter.js 0.17 defaults to sequential operational node IDs starting at NodeId(1). The counter is not
+        // restored consistently with the fabric across restarts, so it re-attempts low IDs that are already
+        // commissioned ("Node ID X is already commissioned and can not be reused"). Switch to the documented
+        // random allocation strategy (CHANGELOG: set ControllerBehavior state nodeIdAssignment to "random").
+        await this.commissioningController.node.setStateOf(ControllerBehavior, { nodeIdAssignment: "random" });
+
         //Set up observers for OTA updates, matter.js checks every 24 hours by default.
         this.observers = this.observers ?? new ObserverGroup(this.environment.runtime);
         const updateManagerEvents = this.commissioningController.otaProvider.eventsOf(SoftwareUpdateManager);
@@ -233,13 +239,50 @@ export class ControllerNode {
 
         let node = this.nodes.get(NodeId(BigInt(nodeId)));
         if (node !== undefined) {
+            // We are already connected so there is nothing to reconnect. Send the connected state so the
+            // client refreshes, otherwise we would wait for an init event that never fires again and time out.
+            if (node.connectionState === NodeStates.Connected) {
+                this.ws.sendEvent(EventType.NodeStateInformation, {
+                    nodeId: node.nodeId,
+                    state: NodeStates[NodeStates.Connected],
+                    physicalProperties: extractPhysicalProperties(node),
+                });
+                return;
+            }
+
             node.triggerReconnect();
 
             return new Promise((resolve, reject) => {
                 let timeoutId: NodeJS.Timeout | undefined;
 
+                // initializedFromRemote only fires on the very first connect of a PairedNode instance; a later
+                // reconnect re-asserts the Connected state but never emits it again. So we also resolve on a live
+                // stateChanged -> Connected transition, otherwise an already-initialized node that has to reconnect
+                // here would wait for an event that never comes and run into the timeout (Thing flips OFFLINE).
+                const onStateChanged = (state: NodeStates): void => {
+                    if (state === NodeStates.Connected) {
+                        finish("reconnected");
+                    }
+                };
+                const finish = (reason: string): void => {
+                    if (timeoutId) clearTimeout(timeoutId);
+                    node?.events.initializedFromRemote.off(onInitialized);
+                    node?.events.stateChanged.off(onStateChanged);
+                    logger.info(`Node ${node?.nodeId} ${reason}`);
+                    // Send a connected event so the client knows the resume completed
+                    this.ws.sendEvent(EventType.NodeStateInformation, {
+                        nodeId: node!.nodeId,
+                        state: NodeStates[NodeStates.Connected],
+                        physicalProperties: extractPhysicalProperties(node),
+                    });
+                    resolve();
+                };
+                const onInitialized = (): void => finish("initialized from remote");
+
                 if (connectionTimeout && connectionTimeout > 0) {
                     timeoutId = setTimeout(() => {
+                        node?.events.initializedFromRemote.off(onInitialized);
+                        node?.events.stateChanged.off(onStateChanged);
                         logger.info(`Node ${node?.nodeId} state: ${node?.state}`);
                         if (
                             node?.connectionState === NodeStates.Disconnected ||
@@ -253,18 +296,15 @@ export class ControllerNode {
                     }, connectionTimeout);
                 }
 
-                // Cancel timer if node initializes
-                node?.events.initializedFromRemote.once(() => {
-                    logger.info(`Node ${node?.nodeId} initialized from remote`);
-                    if (timeoutId) clearTimeout(timeoutId);
-                    // Send a connected event so the client knows the resume completed
-                    this.ws.sendEvent(EventType.NodeStateInformation, {
-                        nodeId: node!.nodeId,
-                        state: NodeStates[NodeStates.Connected],
-                        physicalProperties: extractPhysicalProperties(node),
-                    });
-                    resolve();
-                });
+                // The node may already be Connected again by the time we get here (between the guard above and
+                // triggerReconnect), so check once before waiting for an event.
+                if (node?.connectionState === NodeStates.Connected) {
+                    finish("already connected");
+                    return;
+                }
+
+                node?.events.initializedFromRemote.once(onInitialized);
+                node?.events.stateChanged.on(onStateChanged);
             });
         }
 
@@ -305,7 +345,9 @@ export class ControllerNode {
         // to avoid forwarding the init state updates as user visible updates. Use once() so they are
         // wired exactly once per registration; the inner handlers are tracked by the observer group
         // (reset above) so they are still removed in bulk on re-registration or decommission.
-        node.events.initializedFromRemote.once(() => {
+        // Wire up the user-visible event forwarding and emit the connected event once the node has completed
+        // its remote initialization.
+        const handleInitialized = () => {
             observers.on(node!.events.attributeChanged, data => {
                 data.path.nodeId = node!.nodeId;
                 this.ws.sendEvent(EventType.AttributeChanged, data);
@@ -323,7 +365,18 @@ export class ControllerNode {
                 state: NodeStates[NodeStates.Connected],
                 physicalProperties: extractPhysicalProperties(node),
             });
-        });
+        };
+
+        // matter.js auto-connects a node immediately after commissioning, so by the time we get here the
+        // initializedFromRemote event may have already fired and will not fire again. In that case finish
+        // synchronously instead of waiting for an event that never comes - otherwise initializeNode runs into
+        // its timeout after a successful commissioning and the new node never surfaces to the client.
+        if (node.remoteInitializationDone) {
+            handleInitialized();
+            return;
+        }
+
+        node.events.initializedFromRemote.once(handleInitialized);
 
         node.connect();
 
