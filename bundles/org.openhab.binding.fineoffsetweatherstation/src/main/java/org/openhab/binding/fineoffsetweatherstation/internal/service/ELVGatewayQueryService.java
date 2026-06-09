@@ -34,7 +34,7 @@ import org.openhab.binding.fineoffsetweatherstation.internal.handler.ThingStatus
  * @author Andreas Berger - Initial contribution
  */
 @NonNullByDefault
-public class ELVGatewayQueryService extends GatewayQueryService {
+public class ELVGatewayQueryService extends TcpGatewayQueryService {
 
     private final FineOffsetDataParser fineOffsetDataParser;
 
