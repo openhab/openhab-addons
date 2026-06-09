@@ -47,7 +47,7 @@ public class LivisiWebSocketTest {
         CompletableFuture<Session> futureMock = CompletableFuture.completedFuture(sessionMock);
 
         webSocketClientMock = mock(WebSocketClient.class);
-        when(webSocketClientMock.connect(any(), any())).thenReturn(futureMock);
+        when(webSocketClientMock.connect(any(Object.class), any(URI.class))).thenReturn(futureMock);
 
         HttpClient httpClientMock = mock(HttpClient.class);
 
