@@ -25,6 +25,7 @@ import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -32,10 +33,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.Authentication;
 import org.eclipse.jetty.client.AuthenticationStore;
-import org.eclipse.jetty.client.ContentResponse;
-import org.eclipse.jetty.client.FutureResponseListener;
+import org.eclipse.jetty.client.BufferingResponseListener;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.Result;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.telegram.internal.TelegramHandler;
@@ -451,21 +452,32 @@ public class TelegramActions implements ThingActions {
                 }
                 try {
                     // API has 10mb limit to jpg file size, without this it can only accept 2mb
-                    FutureResponseListener listener = new FutureResponseListener(request, 10 * 1024 * 1024);
-                    request.send(listener);
-                    ContentResponse contentResponse = listener.get();
-                    if (contentResponse.getStatus() == 200) {
-                        byte[] fileContent = contentResponse.getContent();
+                    CompletableFuture<Result> futureResult = new CompletableFuture<>();
+                    BufferingResponseListener bufListener = new BufferingResponseListener(10 * 1024 * 1024) {
+                        @Override
+                        public void onComplete(@Nullable Result r) {
+                            if (r != null && r.isSucceeded()) {
+                                futureResult.complete(r);
+                            } else if (r != null) {
+                                futureResult.completeExceptionally(r.getFailure());
+                            }
+                        }
+                    };
+                    request.send(bufListener);
+                    Result jettyResult = futureResult.get();
+                    if (jettyResult.getResponse().getStatus() == 200) {
+                        byte[] fileContent = bufListener.getContent();
                         sendPhoto = new SendPhoto(chatId, fileContent);
                     } else {
-                        if (contentResponse.getStatus() == 401
-                                && contentResponse.getHeaders().get(HttpHeader.WWW_AUTHENTICATE).contains("igest")) {
+                        String wwwAuth = jettyResult.getResponse().getHeaders().get(HttpHeader.WWW_AUTHENTICATE);
+                        if (jettyResult.getResponse().getStatus() == 401
+                                && wwwAuth != null && wwwAuth.contains("igest")) {
                             logger.warn("Download from {} failed due to no BASIC http auth support.", photoURL);
                         } else {
                             logger.warn("Download from {} failed with status: {}", photoURL,
-                                    contentResponse.getStatus());
+                                    jettyResult.getResponse().getStatus());
                         }
-                        sendTelegram(chatId, caption + ":Download failed with status " + contentResponse.getStatus());
+                        sendTelegram(chatId, caption + ":Download failed with status " + jettyResult.getResponse().getStatus());
                         return false;
                     }
                 } catch (InterruptedException | ExecutionException e) {
@@ -682,16 +694,26 @@ public class TelegramActions implements ThingActions {
                 Request request = client.newRequest(animationURL).method(HttpMethod.GET).timeout(30, TimeUnit.SECONDS);
                 try {
                     // 50mb limit to file size
-                    FutureResponseListener listener = new FutureResponseListener(request, 50 * 1024 * 1024);
-                    request.send(listener);
-                    ContentResponse contentResponse = listener.get();
-                    if (contentResponse.getStatus() == 200) {
-                        byte[] fileContent = contentResponse.getContent();
+                    CompletableFuture<Result> futureResult = new CompletableFuture<>();
+                    BufferingResponseListener bufListener = new BufferingResponseListener(50 * 1024 * 1024) {
+                        @Override
+                        public void onComplete(@Nullable Result r) {
+                            if (r != null && r.isSucceeded()) {
+                                futureResult.complete(r);
+                            } else if (r != null) {
+                                futureResult.completeExceptionally(r.getFailure());
+                            }
+                        }
+                    };
+                    request.send(bufListener);
+                    Result jettyResult = futureResult.get();
+                    if (jettyResult.getResponse().getStatus() == 200) {
+                        byte[] fileContent = bufListener.getContent();
                         sendAnimation = new SendAnimation(chatId, fileContent);
                     } else {
                         logger.warn("Download from {} failed with status: {}", animationURL,
-                                contentResponse.getStatus());
-                        sendTelegram(chatId, caption + ":Download failed with status " + contentResponse.getStatus());
+                                jettyResult.getResponse().getStatus());
+                        sendTelegram(chatId, caption + ":Download failed with status " + jettyResult.getResponse().getStatus());
                         return false;
                     }
                 } catch (InterruptedException | ExecutionException e) {
@@ -763,21 +785,32 @@ public class TelegramActions implements ThingActions {
                 Request request = client.newRequest(videoURL).method(HttpMethod.GET).timeout(30, TimeUnit.SECONDS);
                 try {
                     // 50mb limit to file size
-                    FutureResponseListener listener = new FutureResponseListener(request, 50 * 1024 * 1024);
-                    request.send(listener);
-                    ContentResponse contentResponse = listener.get();
-                    if (contentResponse.getStatus() == 200) {
-                        byte[] fileContent = contentResponse.getContent();
+                    CompletableFuture<Result> futureResult = new CompletableFuture<>();
+                    BufferingResponseListener bufListener = new BufferingResponseListener(50 * 1024 * 1024) {
+                        @Override
+                        public void onComplete(@Nullable Result r) {
+                            if (r != null && r.isSucceeded()) {
+                                futureResult.complete(r);
+                            } else if (r != null) {
+                                futureResult.completeExceptionally(r.getFailure());
+                            }
+                        }
+                    };
+                    request.send(bufListener);
+                    Result jettyResult = futureResult.get();
+                    if (jettyResult.getResponse().getStatus() == 200) {
+                        byte[] fileContent = bufListener.getContent();
                         sendVideo = new SendVideo(chatId, fileContent);
                     } else {
-                        if (contentResponse.getStatus() == 401
-                                && contentResponse.getHeaders().get(HttpHeader.WWW_AUTHENTICATE).contains("igest")) {
+                        String wwwAuth = jettyResult.getResponse().getHeaders().get(HttpHeader.WWW_AUTHENTICATE);
+                        if (jettyResult.getResponse().getStatus() == 401
+                                && wwwAuth != null && wwwAuth.contains("igest")) {
                             logger.warn("Download from {} failed due to no BASIC http auth support.", videoURL);
                         } else {
                             logger.warn("Download from {} failed with status: {}", videoURL,
-                                    contentResponse.getStatus());
+                                    jettyResult.getResponse().getStatus());
                         }
-                        sendTelegram(chatId, caption + ":Download failed with status " + contentResponse.getStatus());
+                        sendTelegram(chatId, caption + ":Download failed with status " + jettyResult.getResponse().getStatus());
                         return false;
                     }
                 } catch (InterruptedException | ExecutionException e) {
