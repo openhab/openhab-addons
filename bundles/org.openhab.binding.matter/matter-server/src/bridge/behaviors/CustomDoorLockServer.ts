@@ -1,6 +1,9 @@
+import { Logger } from "@matter/main";
 import { DoorLockServer } from "@matter/main/behaviors";
 import { DoorLock } from "@matter/main/clusters";
 import { DeviceFunctions } from "../DeviceFunctions";
+
+const logger = Logger.get("CustomDoorLockServer");
 
 export class CustomDoorLockServer extends DoorLockServer {
     static readonly DEFAULTS = {
@@ -26,15 +29,20 @@ export class CustomDoorLockServer extends DoorLockServer {
     }
 
     /**
-     * For Lock/Unlock, we need to wait for the state update to be sent to the bridge controller if the state is not already the desired state.
-     * Locks can often take a while to lock/unlock so we need to wait longer for the state update to be sent to the bridge controller.
+     * Waits for openHAB to confirm the new lockState (longer timeout since locks can be slow).
      */
     private async sendLockState(lockState: DoorLock.LockState) {
         this.env.get(DeviceFunctions).sendAttributeChangedEvent(this.endpoint.id, "doorLock", "lockState", lockState);
-        if (this.endpoint.stateOf(CustomDoorLockServer).lockState !== lockState) {
-            const result = await this.env
-                .get(DeviceFunctions)
-                .waitForStateUpdate(this.endpoint.id, "doorLock", "lockState", 30000);
+        if (this.state.lockState !== lockState) {
+            let result: DoorLock.LockState | undefined;
+            try {
+                result = await this.env
+                    .get(DeviceFunctions)
+                    .waitForStateUpdate(this.endpoint.id, "doorLock", "lockState", 30000);
+            } catch {
+                logger.debug(`No lockState confirmation from openHAB for ${this.endpoint.id}, proceeding`);
+                return;
+            }
             if (result !== lockState) {
                 throw new Error("Lock state failed", { cause: result });
             }
