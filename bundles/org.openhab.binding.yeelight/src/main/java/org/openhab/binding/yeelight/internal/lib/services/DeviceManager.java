@@ -128,7 +128,8 @@ public class DeviceManager {
                     try (MulticastSocket multiSocket = new MulticastSocket(MULTI_CAST_PORT)) {
                         multiSocket.setSoTimeout(TIMEOUT);
                         multiSocket.setNetworkInterface(networkInterface);
-                        multiSocket.joinGroup(new InetSocketAddress(multicastAddress, 0), networkInterface);
+                        multiSocket.joinGroup(new InetSocketAddress(multicastAddress, MULTI_CAST_PORT),
+                                networkInterface);
 
                         DatagramPacket dpSend = new DatagramPacket(DISCOVERY_MSG.getBytes(),
                                 DISCOVERY_MSG.getBytes().length, multicastAddress, MULTI_CAST_PORT);
