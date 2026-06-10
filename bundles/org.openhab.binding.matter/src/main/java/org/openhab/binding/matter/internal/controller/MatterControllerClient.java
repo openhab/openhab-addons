@@ -102,6 +102,22 @@ public class MatterControllerClient extends MatterWebsocketClient {
     }
 
     /**
+     * Forces a fresh remote read of all data for a node, bypassing the local cache, so its properties and
+     * channels/converters are rebuilt from the device's current data. The returned future completes once the
+     * refresh has been requested; the refreshed data is applied asynchronously when it arrives.
+     *
+     * @param nodeId the node ID to refresh
+     * @return a future that completes when the refresh has been requested
+     * @throws MatterRequestException if the request fails
+     */
+    public CompletableFuture<Void> refreshNodeData(BigInteger nodeId) {
+        CompletableFuture<JsonElement> future = sendMessage("nodes", "refreshAllData", new Object[] { nodeId });
+        return future.thenAccept(obj -> {
+            // Do nothing, just to complete the future
+        });
+    }
+
+    /**
      * Request all cluster attribute data for all nodes for debugging purposes
      * 
      * @return a future that completes when the data is requested

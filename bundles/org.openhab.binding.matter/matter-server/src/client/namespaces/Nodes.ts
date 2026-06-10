@@ -51,6 +51,22 @@ export class Nodes {
     }
 
     /**
+     * Forces a fresh remote read of all attributes for a node, bypassing the local subscription cache, and pushes
+     * the result so the node's properties (e.g. firmware version) and channels/converters are rebuilt from the
+     * device's current data. Backs the manual "refresh data" thing action. This is a full remote read and can be
+     * slow on Thread / sleepy devices.
+     * @param nodeId
+     */
+    async refreshAllData(nodeId: string | number) {
+        const node = this.controllerNode.getNode(nodeId);
+        if (node.initialized) {
+            return this.controllerNode.sendSerializedNode(node, undefined, true);
+        } else {
+            throw new Error(`Node ${nodeId} not initialized`);
+        }
+    }
+
+    /**
      * Requests all attributes data for all nodes for debugging purposes
      * @returns
      */

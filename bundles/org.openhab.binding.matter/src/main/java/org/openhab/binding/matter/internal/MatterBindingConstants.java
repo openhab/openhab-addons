@@ -439,6 +439,9 @@ public class MatterBindingConstants {
     public static final String THING_ACTION_LABEL_NODE_CANCEL_FIRMWARE_UPDATE = "@text/thing-action.node.cancelFirmwareUpdate.label";
     public static final String THING_ACTION_DESC_NODE_CANCEL_FIRMWARE_UPDATE = "@text/thing-action.node.cancelFirmwareUpdate.description";
     public static final String THING_ACTION_LABEL_NODE_CANCEL_FIRMWARE_UPDATE_RESULT = "@text/thing-action.node.cancelFirmwareUpdate.result.label";
+    public static final String THING_ACTION_LABEL_NODE_REFRESH_DATA = "@text/thing-action.node.refreshData.label";
+    public static final String THING_ACTION_DESC_NODE_REFRESH_DATA = "@text/thing-action.node.refreshData.description";
+    public static final String THING_ACTION_LABEL_NODE_REFRESH_DATA_RESULT = "@text/thing-action.node.refreshData.result.label";
 
     // Action Result Messages
     public static final String THING_ACTION_RESULT_SUCCESS = "@text/thing-action.result.success";
@@ -448,6 +451,7 @@ public class MatterBindingConstants {
     public static final String THING_ACTION_RESULT_FIRMWARE_UPDATE_AVAILABLE = "@text/thing-action.result.firmware-update-available";
     public static final String THING_ACTION_RESULT_FIRMWARE_UPDATE_STARTED = "@text/thing-action.result.firmware-update-started";
     public static final String THING_ACTION_RESULT_FIRMWARE_UPDATE_CANCELLED = "@text/thing-action.result.firmware-update-cancelled";
+    public static final String THING_ACTION_RESULT_REFRESH_REQUESTED = "@text/thing-action.result.refresh-requested";
 
     // Matter OTBR Actions
     public static final String THING_ACTION_LABEL_OTBR_LOAD_EXTERNAL_DATASET = "@text/thing-action.otbr.loadExternalDataset.label";

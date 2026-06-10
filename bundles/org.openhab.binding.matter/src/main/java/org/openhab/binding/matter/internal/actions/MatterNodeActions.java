@@ -253,4 +253,28 @@ public class MatterNodeActions implements ThingActions {
         }
         return translationService.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_NO_HANDLER);
     }
+
+    @RuleAction(label = MatterBindingConstants.THING_ACTION_LABEL_NODE_REFRESH_DATA, description = MatterBindingConstants.THING_ACTION_DESC_NODE_REFRESH_DATA)
+    public @ActionOutputs({
+            @ActionOutput(name = "result", label = MatterBindingConstants.THING_ACTION_LABEL_NODE_REFRESH_DATA_RESULT, type = "java.lang.String") }) String refreshDeviceData() {
+        NodeHandler handler = this.handler;
+        if (handler != null) {
+            MatterControllerClient client = handler.getClient();
+            if (client != null) {
+                try {
+                    client.refreshNodeData(handler.getNodeId()).get(30, TimeUnit.SECONDS);
+                    return translationService
+                            .getTranslation(MatterBindingConstants.THING_ACTION_RESULT_REFRESH_REQUESTED);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    logger.debug("Failed to refresh data for device {}", handler.getNodeId(), e);
+                    return Objects.requireNonNull(Optional.ofNullable(e.getLocalizedMessage()).orElse(e.toString()));
+                } catch (ExecutionException | TimeoutException e) {
+                    logger.debug("Failed to refresh data for device {}", handler.getNodeId(), e);
+                    return Objects.requireNonNull(Optional.ofNullable(e.getLocalizedMessage()).orElse(e.toString()));
+                }
+            }
+        }
+        return translationService.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_NO_HANDLER);
+    }
 }
