@@ -20,6 +20,7 @@ Here is a product picture of how this Weather Station looks like:
 ![WH2650](doc/WH2650.png)
 
 This binding works offline by [implementing the wire protocol](https://oss.ecowitt.net/uploads/20260112/TCP%20API%20Interface%20Communication%20Protocol%20V1.7.0.pdf) of the WiFi gateway device.
+Gateways that additionally expose the [Ecowitt HTTP API](https://oss.ecowitt.net/uploads/20260114/HTTP%20API%20interface%20Protocol%20(Generic)-(V1.0.6-2026-1-14)%20.pdf) are used via that API instead, which is selected automatically during discovery (see [Protocol](#protocol)).
 
 ## Discussion
 
@@ -98,9 +99,21 @@ This binding support discovery of Fine Offset gateway devices by sending a broad
 |------------------|---------|----------------------------------------------------------------------------------------------|---------|----------|----------|
 | ip               | text    | The Hostname or IP address of the device                                                     | N/A     | yes      | no       |
 | port             | integer | The network port of the gateway                                                              | 45000   | yes      | no       |
-| protocol         | text    | The protocol to use for communicating with the gateway, valid values are: `DEFAULT` or `ELV` | DEFAULT | no       | no       |
+| protocol         | text    | The protocol to use, see [Protocol](#protocol): `DEFAULT`, `ELV` or `HTTP_ECOWITT`           | DEFAULT | no       | no       |
 | pollingInterval  | integer | Polling period for refreshing the data in seconds                                            | 16      | yes      | yes      |
 | discoverInterval | integer | Interval in seconds to fetch registered sensors, battery status and signal strength          | 900     | yes      | yes      |
+
+#### Protocol
+
+| Value          | Description                                                                                                                       |
+|----------------|-----------------------------------------------------------------------------------------------------------------------------------|
+| `DEFAULT`      | The TCP binary protocol (port 45000), used by most Fine Offset gateways.                                                          |
+| `ELV`          | The TCP binary protocol variant used by ELV devices (e.g. WS980).                                                                 |
+| `HTTP_ECOWITT` | The Ecowitt HTTP API (port 80). It reports more data (e.g. the _feels like_ temperature, a _raining_ indicator and solar radiation in W/m²) and is preferred automatically during discovery when the gateway answers `get_version` with `"platform": "ecowitt"`. |
+
+Discovery probes the HTTP API first and falls back to the TCP protocols.
+Values reported by the HTTP API in the unit configured on the gateway (e.g. °F, inHg, mph) are normalized to the binding's units, so the channels are identical regardless of the transport or the gateway's display settings.
+A few channels are only available via the HTTP API and therefore only appear on gateways using the `HTTP_ECOWITT` protocol: `temperature-feels-like`, `vapor-pressure-deficit`, `irradiation-solar`, `rain-state` and `piezo-rain-state`.
 
 ### `sensor` Thing Configuration
 
