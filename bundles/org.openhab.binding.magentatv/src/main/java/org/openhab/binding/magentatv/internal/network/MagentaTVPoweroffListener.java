@@ -84,7 +84,7 @@ public class MagentaTVPoweroffListener extends Thread {
             // Join the Multicast group on the selected network interface
             socket.setNetworkInterface(networkInterface);
             InetAddress group = InetAddress.getByName(UPNP_MULTICAST_ADDRESS);
-            socket.joinGroup(new InetSocketAddress(group, 0), networkInterface);
+            socket.joinGroup(new InetSocketAddress(group, UPNP_PORT), networkInterface);
 
             // read the SSDP messages
             while (!socket.isClosed()) {
