@@ -19,42 +19,42 @@ Second version in early 2024 was never released.
 This version needs a webhook exposed to the internet to handle device events.  
 It also needs a complicated registration process, creating some SmartApps behind the scenes.
 
-The new actual version can use 3 different mechanism to handle device events.  
+The current version can use three different mechanisms to handle device events.
 
-- SSE subscriptions : currently not working as 24/02/2026, waiting for Samsung feedback to fix it
-    This is the most convenient mechanism as it is fast, modern way to be notified of event
+- SSE subscriptions : currently not working as of 24/02/2026, waiting for Samsung feedback to fix it
+    This is the most convenient mechanism as it is a fast, modern way to be notified of events.
 
-- Callback subscriptions : will be the prefered fallback method if SSE it not working.
-    This will need to have an external openhab exposed URL to internet (reverseProxy), or use the new openHab Cloud webHook service (see below).
+- Callback subscriptions : will be the preferred fallback method if SSE is not working.
+    This requires an external openHAB URL exposed to the internet through a reverse proxy, or the openHAB Cloud webhook service (see below).
 
-    1. reverseProxy method:
-    You will have to setup a reverse proxy before addons setup, and access the smarttings setup using you public facing URI.
-    The addons will detect and register automatically with something like this: <https://openhab.yourdomain/smartthings/cb>.
+    1. Reverse proxy method:
+    Set up a reverse proxy before the add-on setup, and access the SmartThings setup using your public-facing URI.
+    The add-on will detect and register automatically with something like this: <https://openhab.yourdomain/smartthings/cb>.
 
-    1. openHab webHookService method:
-    You can also now use the new openHab Cloud webHookService functionnality.
-    For this, you will need to setup openHab cloud before the Smartthings setup, and verify that you can access your openHab instance from openhabCloud (<https://home.myopenhab.org/>).
-    When you add the SmartthingsAccount things, make sure to check the new config options : "Use openHAB Cloud Webhooks".
-    The addons will register automatically a callback URL like this one to the Smartthings Api : <https://myopenhab.org/api/hooks/d4d7dbb1-67e6-41e6-832c-1b136a02d03e>.
+    1. openHAB Cloud webhook service method:
+    You can also use the openHAB Cloud webhook service.
+    For this, set up openHAB Cloud before the SmartThings setup, and verify that you can access your openHAB instance from openHAB Cloud (<https://home.myopenhab.org/>).
+    When you add the SmartThings account thing, make sure to check the new configuration option: "Use openHAB Cloud Webhooks".
+    The add-on will automatically register a callback URL like this one with the SmartThings API: <https://myopenhab.org/api/hooks/d4d7dbb1-67e6-41e6-832c-1b136a02d03e>.
 
-- Event pooling : this is the last method if none other method are working.
-  The addons will pool the events every 10s for every device.
-  This will work, but would induce some delay in your device refreshing.
+- Event polling : this is the fallback method if no other method is working.
+  The add-on will poll the events every 10s for every device.
+  This works, but can introduce some delay when refreshing your devices.
 
-## SmartThings Configuration / Authentification steps
+## SmartThings Configuration / Authentication steps
 
 **The binding will not work until this part has been completed; do not skip this part of the setup.**
 
-We use OAuth authentication (device code flow) for all smartthings Authentification task.  
+We use OAuth authentication for all SmartThings authentication tasks.
 All setup occurs directly inside openHAB.  
-You will see appName, clientId, clientSecret settings in the Smartthings Bridge configuration.  
-Leave this value empty, they will be filled automatically on first setup.
+You will see appName, clientId, clientSecret settings in the SmartThings bridge configuration.
+Leave these values empty, they will be filled automatically on first setup.
 
-Note! you will no longer need to have openHAB Cloud setup have in previous version.
+Note! You no longer need to have openHAB Cloud set up as in the previous version.
 
 To do the registration, follow these steps:
 
-1. On first launch, you will need to setup a bridge (Smarthings Cloud Hub)
+1. On first launch, you will need to set up a bridge (SmartThings Cloud Hub)
    It will look something like this
 
 ![Bridge Configuration](doc/Authorize00.png)
@@ -78,12 +78,15 @@ Leave all values empty, they will be filled automatically.
 ![alt text](doc/Authorize03.png)
 
 1. On this step, SmartThings should display a page like this one with an Authorize button.  
-    It will enable OpenHAB to authenticate to smartthings using smartthings-cli credentials.  
+    It will enable openHAB to authenticate to SmartThings using SmartThings CLI credentials.
     Click on it.  
+
+    If your browser is not running on the openHAB host, SmartThings may redirect to `http://localhost:61973/finish`.
+    In that case, replace `localhost` in the browser address bar with your openHAB host name or IP address and keep the rest of the URL unchanged.
 
 ![alt text](doc/Authorize04.png)
 
-1. You will be next redirected on OpenHab side with a page like this one.  
+1. You will be redirected back to openHAB with a page like this one.
    Just wait a few seconds, the process should continue automatically on step 7.
 
 ![alt text](doc/Authorize05.png)
@@ -105,9 +108,9 @@ Leave all values empty, they will be filled automatically.
 
 ![alt text](doc/Authorize08.png)
 
-1. You can go back to your Smartthings Cloud Hub / bridge.  
+1. You can go back to your SmartThings Cloud Hub / bridge.
     The bridge should now be online, and the appName, clientId & clientSecret filled with values.
-    Note that a Smartthings Apps API_ONLY have been created during the process, and registered on your Smartthings accounts.
+    Note that a SmartThings `API_ONLY` app has been created during the process, and registered on your SmartThings account.
 
     You can now close the window, and go to the openHAB Inbox to trigger a device scan.
 
@@ -145,11 +148,7 @@ Discovery is supported by the SmartThings binding and is run automatically on st
 
 ### Bridge Configuration
 
-```yaml
-!!! ======================================================================================!!!  
-!!! @Todo : below this part, documentation needs to be rewritten                         !!!  
-!!! ======================================================================================!!!  
-```
+The following examples show legacy textual configuration.
 
 The bridge requires the IP address and port used to connect the openHAB server to the SmartThings Hub.
 
@@ -274,6 +273,6 @@ Frame label="Sengled RGBW Bulb" {
 
 1. [openHAB configuration documentation](https://openhab.org/docs/configuration/index.html)
 1. [SmartThings API Documentation](https://developer.smartthings.com/docs/api/public)
-1. [SmartThings Capabilities Reference](https://tobecheck.com/todo_check)
+1. [SmartThings Capabilities Reference](https://developer.smartthings.com/docs/devices/capabilities/capabilities-reference/)
 1. [SmartThings Developers Documentation](https://developer.smartthings.com/docs/getting-started/architecture-of-smartthings)
 1. [Python implementation](https://github.com/andrewsayre/pysmartthings)
