@@ -14,49 +14,49 @@
 		<semantic-equipment-tag>Irrigation</semantic-equipment-tag>
 
 		<channels>
-			<channel id="name" typeId="dev_name"/>
-			<channel id="active" typeId="dev_active"/>
-			<channel id="online" typeId="dev_online"/>
-			<channel id="paused" typeId="dev_paused"/>
-			<channel id="pauseTime" typeId="dev_pauseTime"/>
-			<channel id="sleepMode" typeId="dev_sleepMode"/>
-			<channel id="stop" typeId="dev_stop"/>
-			<channel id="run" typeId="dev_run"/>
-			<channel id="runZones" typeId="dev_runZones"/>
-			<channel id="runTime" typeId="dev_runTime"/>
-			<channel id="rainDelay" typeId="dev_rainDelay"/>
-			<channel id="rainSensorTripped" typeId="dev_rainSensorTripped"/>
-			<channel id="activeZoneNumber" typeId="dev_activeZoneNumber"/>
-			<channel id="activeZoneName" typeId="dev_activeZoneName"/>
-			<channel id="activeZoneId" typeId="dev_activeZoneId"/>
-			<channel id="currentScheduleId" typeId="dev_currentScheduleId"/>
-			<channel id="currentScheduleName" typeId="dev_currentScheduleName"/>
-			<channel id="currentScheduleType" typeId="dev_currentScheduleType"/>
-			<channel id="currentScheduleStartTime" typeId="dev_currentScheduleStartTime"/>
-			<channel id="currentScheduleEndTime" typeId="dev_currentScheduleEndTime"/>
-			<channel id="currentScheduleDuration" typeId="dev_currentScheduleDuration"/>
-			<channel id="currentScheduleRunning" typeId="dev_currentScheduleRunning"/>
-			<channel id="lastApiEventType" typeId="dev_lastApiEventType"/>
-			<channel id="lastApiEventTime" typeId="dev_lastApiEventTime"/>
-			<channel id="lastApiEventSummary" typeId="dev_lastApiEventSummary"/>
-			<channel id="forecastSummary" typeId="dev_forecastSummary"/>
-			<channel id="forecastTodayHigh" typeId="dev_forecastTodayHigh"/>
-			<channel id="forecastTodayLow" typeId="dev_forecastTodayLow"/>
-			<channel id="forecastPrecipitation" typeId="dev_forecastPrecipitation"/>
-			<channel id="forecastPrecipitationProbability" typeId="dev_forecastPrecipitationProbability"/>
-			<channel id="forecastWind" typeId="dev_forecastWind"/>
-			<channel id="forecastUpdated" typeId="dev_forecastUpdated"/>
-			<channel id="lastSkipType" typeId="dev_lastSkipType"/>
-			<channel id="lastSkipScheduleId" typeId="dev_lastSkipScheduleId"/>
-			<channel id="lastSkipStartTime" typeId="dev_lastSkipStartTime"/>
-			<channel id="lastSkipReason" typeId="dev_lastSkipReason"/>
-			<channel id="lastUpdate" typeId="lastUpdate"/>
-			<channel id="lastEvent" typeId="lastEvent"/>
-			<channel id="lastEventTime" typeId="lastEventTime"/>
-			<channel id="scheduleName" typeId="scheduleName"/>
-			<channel id="scheduleInfo" typeId="scheduleInfo"/>
-			<channel id="scheduleStart" typeId="scheduleStart"/>
-			<channel id="scheduleEnd" typeId="scheduleEnd"/>
+			<channel id="name" typeId="device-name"/>
+			<channel id="active" typeId="device-active"/>
+			<channel id="online" typeId="device-online"/>
+			<channel id="paused" typeId="device-paused"/>
+			<channel id="pause-time" typeId="device-pause-time"/>
+			<channel id="sleep-mode" typeId="device-sleep-mode"/>
+			<channel id="stop" typeId="device-stop"/>
+			<channel id="run" typeId="device-run"/>
+			<channel id="run-zones" typeId="device-run-zones"/>
+			<channel id="run-time" typeId="device-run-time"/>
+			<channel id="rain-delay" typeId="device-rain-delay"/>
+			<channel id="rain-sensor-tripped" typeId="device-rain-sensor-tripped"/>
+			<channel id="active-zone-number" typeId="device-active-zone-number"/>
+			<channel id="active-zone-name" typeId="device-active-zone-name"/>
+			<channel id="active-zone-id" typeId="device-active-zone-id"/>
+			<channel id="current-schedule-id" typeId="device-current-schedule-id"/>
+			<channel id="current-schedule-name" typeId="device-current-schedule-name"/>
+			<channel id="current-schedule-type" typeId="device-current-schedule-type"/>
+			<channel id="current-schedule-start-time" typeId="device-current-schedule-start-time"/>
+			<channel id="current-schedule-end-time" typeId="device-current-schedule-end-time"/>
+			<channel id="current-schedule-duration" typeId="device-current-schedule-duration"/>
+			<channel id="current-schedule-running" typeId="device-current-schedule-running"/>
+			<channel id="last-api-event-type" typeId="device-last-api-event-type"/>
+			<channel id="last-api-event-time" typeId="device-last-api-event-time"/>
+			<channel id="last-api-event-summary" typeId="device-last-api-event-summary"/>
+			<channel id="forecast-summary" typeId="device-forecast-summary"/>
+			<channel id="forecast-today-high" typeId="device-forecast-today-high"/>
+			<channel id="forecast-today-low" typeId="device-forecast-today-low"/>
+			<channel id="forecast-precipitation" typeId="device-forecast-precipitation"/>
+			<channel id="forecast-precipitation-probability" typeId="device-forecast-precipitation-probability"/>
+			<channel id="forecast-wind" typeId="device-forecast-wind"/>
+			<channel id="forecast-updated" typeId="device-forecast-updated"/>
+			<channel id="last-skip-type" typeId="device-last-skip-type"/>
+			<channel id="last-skip-schedule-id" typeId="device-last-skip-schedule-id"/>
+			<channel id="last-skip-start-time" typeId="device-last-skip-start-time"/>
+			<channel id="last-skip-reason" typeId="device-last-skip-reason"/>
+			<channel id="last-update" typeId="last-update"/>
+			<channel id="last-event" typeId="last-event"/>
+			<channel id="last-event-time" typeId="last-event-time"/>
+			<channel id="schedule-name" typeId="device-schedule-name"/>
+			<channel id="schedule-info" typeId="device-schedule-info"/>
+			<channel id="schedule-start" typeId="device-schedule-start"/>
+			<channel id="schedule-end" typeId="device-schedule-end"/>
 		</channels>
 
 		<properties>
@@ -74,7 +74,7 @@
 		</config-description>
 	</thing-type>
 
-	<channel-type id="dev_name">
+	<channel-type id="device-name">
 		<item-type>String</item-type>
 		<label>Name</label>
 		<description>The name of the sprinkler controller. This could be configured using the Rachio App.</description>
@@ -82,7 +82,7 @@
 			<tag>Status</tag>
 		</tags>
 	</channel-type>
-	<channel-type id="dev_active">
+	<channel-type id="device-active">
 		<item-type>Switch</item-type>
 		<label>Active</label>
 		<description>ON: Controller is active, OFF: Controller is suspended</description>
@@ -90,7 +90,7 @@
 			<tag>Control</tag>
 		</tags>
 	</channel-type>
-	<channel-type id="dev_online">
+	<channel-type id="device-online">
 		<item-type>Switch</item-type>
 		<label>Online</label>
 		<description>ON: Controller is online, OFF: Controller is offline, check internet connection</description>
@@ -98,7 +98,7 @@
 			<tag>Status</tag>
 		</tags>
 	</channel-type>
-	<channel-type id="dev_paused">
+	<channel-type id="device-paused">
 		<item-type>Switch</item-type>
 		<label>Paused</label>
 		<description>OFF: active watering run is not paused, ON: pause active watering run for pause-time seconds</description>
@@ -106,7 +106,7 @@
 			<tag>Control</tag>
 		</tags>
 	</channel-type>
-	<channel-type id="dev_pauseTime">
+	<channel-type id="device-pause-time">
 		<item-type unitHint="s">Number:Time</item-type>
 		<label>Pause Time</label>
 		<description>Number of seconds to pause the active zone run when paused receives ON. Range is 0 to 3600 seconds.</description>
@@ -115,7 +115,7 @@
 			<tag>Duration</tag>
 		</tags>
 	</channel-type>
-	<channel-type id="dev_sleepMode">
+	<channel-type id="device-sleep-mode">
 		<item-type>Switch</item-type>
 		<label>Sleep Mode</label>
 		<description>Indicates whether the Rachio device sleep mode is active.</description>
@@ -124,7 +124,7 @@
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="dev_stop">
+	<channel-type id="device-stop">
 		<item-type>Switch</item-type>
 		<label>Stop Watering</label>
 		<description>ON: stop watering for all zones, OFF: n/a</description>
@@ -133,7 +133,7 @@
 			<tag>Water</tag>
 		</tags>
 	</channel-type>
-	<channel-type id="dev_run">
+	<channel-type id="device-run">
 		<item-type>Switch</item-type>
 		<label>Run Multiple Zones</label>
 		<description>ON: start watering for selected zones (''=ALL), OFF: n/a</description>
@@ -142,7 +142,7 @@
 			<tag>Water</tag>
 		</tags>
 	</channel-type>
-	<channel-type id="dev_runZones">
+	<channel-type id="device-run-zones">
 		<item-type>String</item-type>
 		<label>Run Zone List</label>
 		<description>Zones to run at the same time (''=run ALL)</description>
@@ -150,7 +150,7 @@
 			<tag>Control</tag>
 		</tags>
 	</channel-type>
-	<channel-type id="dev_runTime">
+	<channel-type id="device-run-time">
 		<item-type unitHint="s">Number:Time</item-type>
 		<label>Run Time</label>
 		<description>=0, use default run time, >0: Start zones for given number of seconds</description>
@@ -159,7 +159,7 @@
 			<tag>Duration</tag>
 		</tags>
 	</channel-type>
-	<channel-type id="dev_rainDelay">
+	<channel-type id="device-rain-delay">
 		<item-type unitHint="s">Number:Time</item-type>
 		<label>Rain Delay</label>
 		<description>>1: Rain delay device</description>
@@ -168,7 +168,7 @@
 			<tag>Duration</tag>
 		</tags>
 	</channel-type>
-	<channel-type id="dev_rainSensorTripped">
+	<channel-type id="device-rain-sensor-tripped">
 		<item-type>Switch</item-type>
 		<label>Rain Sensor Tripped</label>
 		<description>Indicates whether the rain sensor is currently tripped.</description>
@@ -178,7 +178,7 @@
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="dev_activeZoneNumber">
+	<channel-type id="device-active-zone-number">
 		<item-type>Number</item-type>
 		<label>Active Zone Number</label>
 		<description>Zone number of the currently active watering run, populated from webhook zone run events.</description>
@@ -187,7 +187,7 @@
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="dev_activeZoneName">
+	<channel-type id="device-active-zone-name">
 		<item-type>String</item-type>
 		<label>Active Zone Name</label>
 		<description>Name of the currently active watering zone, populated from webhook zone run events.</description>
@@ -196,13 +196,13 @@
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="dev_activeZoneId" advanced="true">
+	<channel-type id="device-active-zone-id" advanced="true">
 		<item-type>String</item-type>
 		<label>Active Zone ID</label>
 		<description>Rachio zone ID of the currently active watering zone, populated from webhook zone run events.</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="dev_latitude" advanced="true">
+	<channel-type id="device-latitude" advanced="true">
 		<item-type>Number</item-type>
 		<label>Latitude</label>
 		<description>Latitude of the device location</description>
@@ -210,37 +210,37 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="dev_currentScheduleId" advanced="true">
+	<channel-type id="device-current-schedule-id" advanced="true">
 		<item-type>String</item-type>
 		<label>Current Schedule ID</label>
 		<description>Rachio schedule ID for the currently running schedule.</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="dev_currentScheduleName">
+	<channel-type id="device-current-schedule-name">
 		<item-type>String</item-type>
 		<label>Current Schedule Name</label>
 		<description>Name of the currently running schedule.</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="dev_currentScheduleType">
+	<channel-type id="device-current-schedule-type">
 		<item-type>String</item-type>
 		<label>Current Schedule Type</label>
 		<description>Type of the currently running schedule.</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="dev_currentScheduleStartTime">
+	<channel-type id="device-current-schedule-start-time">
 		<item-type>DateTime</item-type>
 		<label>Current Schedule Start</label>
 		<description>Start time of the currently running schedule.</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="dev_currentScheduleEndTime">
+	<channel-type id="device-current-schedule-end-time">
 		<item-type>DateTime</item-type>
 		<label>Current Schedule End</label>
 		<description>End time of the currently running schedule.</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="dev_currentScheduleDuration">
+	<channel-type id="device-current-schedule-duration">
 		<item-type unitHint="s">Number:Time</item-type>
 		<label>Current Schedule Duration</label>
 		<description>Duration of the currently running schedule in seconds.</description>
@@ -250,19 +250,19 @@
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="dev_currentScheduleRunning">
+	<channel-type id="device-current-schedule-running">
 		<item-type>Switch</item-type>
 		<label>Current Schedule Running</label>
 		<description>ON when Rachio reports a currently running schedule.</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="dev_lastApiEventType" advanced="true">
+	<channel-type id="device-last-api-event-type" advanced="true">
 		<item-type>String</item-type>
 		<label>Last API Event Type</label>
 		<description>Type of the most recent event retrieved from the Rachio event history endpoint.</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="dev_lastApiEventTime">
+	<channel-type id="device-last-api-event-time">
 		<item-type>DateTime</item-type>
 		<label>Last API Event Time</label>
 		<description>Time of the most recent event retrieved from the Rachio event history endpoint.</description>
@@ -272,19 +272,19 @@
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="dev_lastApiEventSummary" advanced="true">
+	<channel-type id="device-last-api-event-summary" advanced="true">
 		<item-type>String</item-type>
 		<label>Last API Event Summary</label>
 		<description>Summary of the most recent event retrieved from the Rachio event history endpoint.</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="dev_forecastSummary">
+	<channel-type id="device-forecast-summary">
 		<item-type>String</item-type>
 		<label>Forecast Summary</label>
 		<description>Summary from the Rachio forecast endpoint.</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="dev_forecastTodayHigh">
+	<channel-type id="device-forecast-today-high">
 		<item-type>Number:Temperature</item-type>
 		<label>Forecast High</label>
 		<description>Today's forecast high temperature.</description>
@@ -294,7 +294,7 @@
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="dev_forecastTodayLow">
+	<channel-type id="device-forecast-today-low">
 		<item-type>Number:Temperature</item-type>
 		<label>Forecast Low</label>
 		<description>Today's forecast low temperature.</description>
@@ -304,7 +304,7 @@
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="dev_forecastPrecipitation">
+	<channel-type id="device-forecast-precipitation">
 		<item-type>Number:Length</item-type>
 		<label>Forecast Precipitation</label>
 		<description>Today's forecast precipitation amount.</description>
@@ -314,7 +314,7 @@
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="dev_forecastPrecipitationProbability">
+	<channel-type id="device-forecast-precipitation-probability">
 		<item-type unitHint="one">Number:Dimensionless</item-type>
 		<label>Precipitation Probability</label>
 		<description>Today's forecast precipitation probability as a 0..1 fraction.</description>
@@ -324,7 +324,7 @@
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="dev_forecastWind">
+	<channel-type id="device-forecast-wind">
 		<item-type>Number:Speed</item-type>
 		<label>Forecast Wind</label>
 		<description>Today's forecast wind speed.</description>
@@ -334,7 +334,7 @@
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="dev_forecastUpdated">
+	<channel-type id="device-forecast-updated">
 		<item-type>DateTime</item-type>
 		<label>Forecast Updated</label>
 		<description>Timestamp of the forecast data when provided by Rachio.</description>
@@ -344,52 +344,52 @@
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="dev_lastSkipType">
+	<channel-type id="device-last-skip-type">
 		<item-type>String</item-type>
 		<label>Last Skip Type</label>
 		<description>Most recent weather intelligence skip event type.</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="dev_lastSkipScheduleId" advanced="true">
+	<channel-type id="device-last-skip-schedule-id" advanced="true">
 		<item-type>String</item-type>
 		<label>Last Skip Schedule ID</label>
 		<description>Schedule ID associated with the most recent weather intelligence skip event.</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="dev_lastSkipStartTime">
+	<channel-type id="device-last-skip-start-time">
 		<item-type>DateTime</item-type>
 		<label>Last Skip Start</label>
 		<description>Start time associated with the most recent weather intelligence skip event.</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="dev_lastSkipReason">
+	<channel-type id="device-last-skip-reason">
 		<item-type>String</item-type>
 		<label>Last Skip Reason</label>
 		<description>Summary or reason from the most recent weather intelligence skip event.</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="scheduleName">
+	<channel-type id="device-schedule-name">
 		<item-type>String</item-type>
 		<label>Schedule Name</label>
 		<description>Name of schedule.</description>
 	</channel-type>
-	<channel-type id="scheduleInfo">
+	<channel-type id="device-schedule-info">
 		<item-type>String</item-type>
 		<label>Schedule Info</label>
 		<description>Brief description of schedule.</description>
 	</channel-type>
-	<channel-type id="scheduleStart">
+	<channel-type id="device-schedule-start">
 		<item-type>DateTime</item-type>
 		<label>Schedule Start</label>
 		<description>Start of schedule.</description>
 	</channel-type>
-	<channel-type id="scheduleEnd">
+	<channel-type id="device-schedule-end">
 		<item-type>DateTime</item-type>
 		<label>Schedule End</label>
 		<description>End of schedule.</description>
 	</channel-type>
-	<channel-type id="lastUpdate">
+	<channel-type id="last-update">
 		<item-type>DateTime</item-type>
 		<label>Last Update</label>
 		<description>Timestamp of last status update.</description>
@@ -398,7 +398,7 @@
 			<tag>Timestamp</tag>
 		</tags>
 	</channel-type>
-	<channel-type id="lastEvent">
+	<channel-type id="last-event">
 		<item-type>String</item-type>
 		<label>Last Event</label>
 		<description>Events can be received when callback is configured.</description>
@@ -406,7 +406,7 @@
 			<tag>Status</tag>
 		</tags>
 	</channel-type>
-	<channel-type id="lastEventTime">
+	<channel-type id="last-event-time">
 		<item-type>DateTime</item-type>
 		<label>Last Event Time</label>
 		<description>Timestamp of last status update.</description>

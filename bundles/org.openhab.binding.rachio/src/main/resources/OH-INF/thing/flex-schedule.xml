@@ -13,18 +13,18 @@
 		<description>A Rachio flex schedule rule.</description>
 
 		<channels>
-			<channel id="name" typeId="flex_schedule_name"/>
-			<channel id="enabled" typeId="flex_schedule_enabled"/>
-			<channel id="type" typeId="flex_schedule_type"/>
-			<channel id="startTime" typeId="flex_schedule_start_time"/>
-			<channel id="lastRun" typeId="flex_schedule_last_run"/>
-			<channel id="nextRun" typeId="flex_schedule_next_run"/>
-			<channel id="zones" typeId="flex_schedule_zones"/>
-			<channel id="seasonalAdjustment" typeId="flex_schedule_seasonal_adjustment"/>
+			<channel id="name" typeId="flex-schedule-name"/>
+			<channel id="enabled" typeId="flex-schedule-enabled"/>
+			<channel id="type" typeId="flex-schedule-type"/>
+			<channel id="start-time" typeId="flex-schedule-start-time"/>
+			<channel id="last-run" typeId="flex-schedule-last-run"/>
+			<channel id="next-run" typeId="flex-schedule-next-run"/>
+			<channel id="zones" typeId="flex-schedule-zones"/>
+			<channel id="seasonal-adjustment" typeId="flex-schedule-seasonal-adjustment"/>
 			<channel id="start" typeId="schedule-rule-start"/>
 			<channel id="skip" typeId="schedule-rule-skip"/>
-			<channel id="skipForwardZoneRun" typeId="schedule-rule-skip-forward-zone-run"/>
-			<channel id="lastUpdate" typeId="flex_schedule_last_update"/>
+			<channel id="skip-forward-zone-run" typeId="schedule-rule-skip-forward-zone-run"/>
+			<channel id="last-update" typeId="flex-schedule-last-update"/>
 		</channels>
 
 		<properties>
@@ -41,7 +41,7 @@
 		</config-description>
 	</thing-type>
 
-	<channel-type id="flex_schedule_name">
+	<channel-type id="flex-schedule-name">
 		<item-type>String</item-type>
 		<label>Name</label>
 		<description>Flex schedule rule name.</description>
@@ -50,7 +50,7 @@
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="flex_schedule_enabled">
+	<channel-type id="flex-schedule-enabled">
 		<item-type>Switch</item-type>
 		<label>Enabled</label>
 		<description>ON if the flex schedule rule is enabled.</description>
@@ -59,13 +59,13 @@
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="flex_schedule_type">
+	<channel-type id="flex-schedule-type">
 		<item-type>String</item-type>
 		<label>Type</label>
 		<description>Flex schedule rule type.</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="flex_schedule_start_time">
+	<channel-type id="flex-schedule-start-time">
 		<item-type>DateTime</item-type>
 		<label>Start Time</label>
 		<description>Flex schedule start time from Rachio startDate, with startTime used as a fallback when present.</description>
@@ -75,7 +75,7 @@
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="flex_schedule_last_run">
+	<channel-type id="flex-schedule-last-run">
 		<item-type>DateTime</item-type>
 		<label>Last Run</label>
 		<description>Last flex schedule run time when provided by Rachio. Remains UNDEF when the API does not provide a usable
@@ -86,7 +86,7 @@
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="flex_schedule_next_run">
+	<channel-type id="flex-schedule-next-run">
 		<item-type>DateTime</item-type>
 		<label>Next Run</label>
 		<description>Next flex schedule run time when provided by Rachio. Remains UNDEF when the API does not provide a usable
@@ -97,13 +97,13 @@
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="flex_schedule_zones">
+	<channel-type id="flex-schedule-zones">
 		<item-type>String</item-type>
 		<label>Zones</label>
 		<description>Comma-separated Rachio zone IDs associated with this flex schedule.</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="flex_schedule_seasonal_adjustment">
+	<channel-type id="flex-schedule-seasonal-adjustment">
 		<item-type unitHint="one">Number:Dimensionless</item-type>
 		<label>Seasonal Adjustment</label>
 		<description>Seasonal adjustment value for the flex schedule rule. Sending a number updates the adjustment.</description>
@@ -136,7 +136,7 @@
 			<tag>Control</tag>
 		</tags>
 	</channel-type>
-	<channel-type id="flex_schedule_last_update">
+	<channel-type id="flex-schedule-last-update">
 		<item-type>DateTime</item-type>
 		<label>Last Update</label>
 		<description>Timestamp of last flex schedule state update.</description>

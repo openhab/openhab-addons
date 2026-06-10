@@ -14,31 +14,31 @@
 		<semantic-equipment-tag>Irrigation</semantic-equipment-tag>
 
 		<channels>
-			<channel id="name" typeId="zone_name"/>
-			<channel id="number" typeId="zone_number"/>
-			<channel id="enabled" typeId="zone_enabled"/>
-			<channel id="run" typeId="zone_run"/>
-			<channel id="runTime" typeId="zone_runTime"/>
-			<channel id="runTotal" typeId="zone_runTotal"/>
-			<channel id="availableWater" typeId="zone_availableWater"/>
-			<channel id="imageUrl" typeId="zone_imageUrl"/>
-			<channel id="image" typeId="zone_image"/>
-			<channel id="depthOfWater" typeId="zone_depthOfWater"/>
-			<channel id="saturatedDepthOfWater" typeId="zone_saturatedDepthOfWater"/>
-			<channel id="managementAllowedDepletion" typeId="zone_managementAllowedDepletion"/>
-			<channel id="rootZoneDepth" typeId="zone_rootZoneDepth"/>
-			<channel id="efficiency" typeId="zone_efficiency"/>
-			<channel id="yardAreaSquareFeet" typeId="zone_yardAreaSquareFeet"/>
-			<channel id="lastWateredDate" typeId="zone_lastWateredDate"/>
-			<channel id="fixedRuntime" typeId="zone_fixedRuntime"/>
-			<channel id="maxRuntime" typeId="zone_maxRuntime"/>
-			<channel id="runtimeNoMultiplier" typeId="zone_runtimeNoMultiplier"/>
-			<channel id="scheduleDataModified" typeId="zone_scheduleDataModified"/>
-			<channel id="moistureLevel" typeId="zone_moistureLevel"/>
-			<channel id="moisturePercent" typeId="zone_moisturePercent"/>
-			<channel id="lastUpdate" typeId="lastUpdate"/>
-			<channel id="lastEvent" typeId="lastEvent"/>
-			<channel id="lastEventTime" typeId="lastEventTime"/>
+			<channel id="name" typeId="zone-name"/>
+			<channel id="number" typeId="zone-number"/>
+			<channel id="enabled" typeId="zone-enabled"/>
+			<channel id="run" typeId="zone-run"/>
+			<channel id="run-time" typeId="zone-run-time"/>
+			<channel id="run-total" typeId="zone-run-total"/>
+			<channel id="available-water" typeId="zone-available-water"/>
+			<channel id="image-url" typeId="zone-image-url"/>
+			<channel id="image" typeId="zone-image"/>
+			<channel id="depth-of-water" typeId="zone-depth-of-water"/>
+			<channel id="saturated-depth-of-water" typeId="zone-saturated-depth-of-water"/>
+			<channel id="management-allowed-depletion" typeId="zone-management-allowed-depletion"/>
+			<channel id="root-zone-depth" typeId="zone-root-zone-depth"/>
+			<channel id="efficiency" typeId="zone-efficiency"/>
+			<channel id="yard-area-square-feet" typeId="zone-yard-area-square-feet"/>
+			<channel id="last-watered-date" typeId="zone-last-watered-date"/>
+			<channel id="fixed-runtime" typeId="zone-fixed-runtime"/>
+			<channel id="max-runtime" typeId="zone-max-runtime"/>
+			<channel id="runtime-no-multiplier" typeId="zone-runtime-no-multiplier"/>
+			<channel id="schedule-data-modified" typeId="zone-schedule-data-modified"/>
+			<channel id="moisture-level" typeId="zone-moisture-level"/>
+			<channel id="moisture-percent" typeId="zone-moisture-percent"/>
+			<channel id="last-update" typeId="last-update"/>
+			<channel id="last-event" typeId="last-event"/>
+			<channel id="last-event-time" typeId="last-event-time"/>
 		</channels>
 
 		<properties>
@@ -55,7 +55,7 @@
 		</config-description>
 	</thing-type>
 
-	<channel-type id="zone_name">
+	<channel-type id="zone-name">
 		<item-type>String</item-type>
 		<label>Name</label>
 		<description>Name of the zone as configured in the Rachip App</description>
@@ -65,7 +65,7 @@
 		<state readOnly="true" pattern="%s">
 		</state>
 	</channel-type>
-	<channel-type id="zone_number">
+	<channel-type id="zone-number">
 		<item-type>Number</item-type>
 		<label>Zone Number</label>
 		<description>Zone Number (1-16)</description>
@@ -75,7 +75,7 @@
 		<state readOnly="true" pattern="%d">
 		</state>
 	</channel-type>
-	<channel-type id="zone_enabled">
+	<channel-type id="zone-enabled">
 		<item-type>Switch</item-type>
 		<label>Enabled</label>
 		<description>ON: Zone is enabled, OFF: Zone is disabled. Sending ON/OFF enables or disables the zone.</description>
@@ -83,7 +83,7 @@
 			<tag>Control</tag>
 		</tags>
 	</channel-type>
-	<channel-type id="zone_run">
+	<channel-type id="zone-run">
 		<item-type>Switch</item-type>
 		<label>Run Zone</label>
 		<description>ON: start watering, OFF: stop watering</description>
@@ -92,7 +92,7 @@
 			<tag>Water</tag>
 		</tags>
 	</channel-type>
-	<channel-type id="zone_runTime">
+	<channel-type id="zone-run-time">
 		<item-type unitHint="s">Number:Time</item-type>
 		<label>Runtime</label>
 		<description>Set &gt; 0 to start the zone for the given number of seconds.</description>
@@ -101,7 +101,7 @@
 			<tag>Duration</tag>
 		</tags>
 	</channel-type>
-	<channel-type id="zone_availableWater">
+	<channel-type id="zone-available-water">
 		<item-type unitHint="in">Number:Length</item-type>
 		<label>Available Water</label>
 		<description>Available water for the zone.</description>
@@ -110,7 +110,7 @@
 			<tag>Water</tag>
 		</tags>
 	</channel-type>
-	<channel-type id="zone_runTotal">
+	<channel-type id="zone-run-total">
 		<item-type unitHint="s">Number:Time</item-type>
 		<label>Total Runtime</label>
 		<description>Total runtime of the zone.</description>
@@ -119,12 +119,12 @@
 			<tag>Duration</tag>
 		</tags>
 	</channel-type>
-	<channel-type id="zone_imageUrl">
+	<channel-type id="zone-image-url">
 		<item-type>String</item-type>
 		<label>Image URL</label>
 		<description>URL for the zone picture/image.</description>
 	</channel-type>
-	<channel-type id="zone_image">
+	<channel-type id="zone-image">
 		<item-type>Image</item-type>
 		<label>Image</label>
 		<description>Zone picture as native openHAB image data.</description>
@@ -132,7 +132,7 @@
 			<tag>Status</tag>
 		</tags>
 	</channel-type>
-	<channel-type id="zone_depthOfWater">
+	<channel-type id="zone-depth-of-water">
 		<item-type unitHint="in">Number:Length</item-type>
 		<label>Depth of Water</label>
 		<description>Depth of water value returned by Rachio for this zone.</description>
@@ -142,7 +142,7 @@
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="zone_saturatedDepthOfWater">
+	<channel-type id="zone-saturated-depth-of-water">
 		<item-type unitHint="in">Number:Length</item-type>
 		<label>Saturated Depth of Water</label>
 		<description>Saturated depth of water value returned by Rachio for this zone.</description>
@@ -152,7 +152,7 @@
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="zone_managementAllowedDepletion">
+	<channel-type id="zone-management-allowed-depletion">
 		<item-type unitHint="one">Number:Dimensionless</item-type>
 		<label>Management Allowed Depletion</label>
 		<description>Management allowed depletion value returned by Rachio for this zone.</description>
@@ -161,7 +161,7 @@
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="zone_rootZoneDepth">
+	<channel-type id="zone-root-zone-depth">
 		<item-type unitHint="in">Number:Length</item-type>
 		<label>Root Zone Depth</label>
 		<description>Root zone depth value returned by Rachio for this zone.</description>
@@ -171,7 +171,7 @@
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="zone_efficiency">
+	<channel-type id="zone-efficiency">
 		<item-type unitHint="one">Number:Dimensionless</item-type>
 		<label>Efficiency</label>
 		<description>Efficiency value returned by Rachio for this zone.</description>
@@ -180,7 +180,7 @@
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="zone_yardAreaSquareFeet">
+	<channel-type id="zone-yard-area-square-feet">
 		<item-type unitHint="ft²">Number:Area</item-type>
 		<label>Yard Area</label>
 		<description>Yard area in square feet as returned by Rachio for this zone.</description>
@@ -189,7 +189,7 @@
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="zone_lastWateredDate">
+	<channel-type id="zone-last-watered-date">
 		<item-type>DateTime</item-type>
 		<label>Last Watered Date</label>
 		<description>Timestamp when this zone was last watered.</description>
@@ -199,7 +199,7 @@
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="zone_fixedRuntime">
+	<channel-type id="zone-fixed-runtime">
 		<item-type unitHint="s">Number:Time</item-type>
 		<label>Fixed Runtime</label>
 		<description>Fixed runtime value returned by Rachio for this zone.</description>
@@ -209,7 +209,7 @@
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="zone_maxRuntime">
+	<channel-type id="zone-max-runtime">
 		<item-type unitHint="s">Number:Time</item-type>
 		<label>Maximum Runtime</label>
 		<description>Maximum runtime value returned by Rachio for this zone.</description>
@@ -219,7 +219,7 @@
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="zone_runtimeNoMultiplier" advanced="true">
+	<channel-type id="zone-runtime-no-multiplier" advanced="true">
 		<item-type unitHint="s">Number:Time</item-type>
 		<label>Runtime Without Multiplier</label>
 		<description>Runtime without multiplier value returned by Rachio for this zone.</description>
@@ -229,7 +229,7 @@
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="zone_scheduleDataModified" advanced="true">
+	<channel-type id="zone-schedule-data-modified" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Schedule Data Modified</label>
 		<description>ON when Rachio reports modified schedule data for this zone.</description>
@@ -238,7 +238,7 @@
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="zone_moistureLevel">
+	<channel-type id="zone-moisture-level">
 		<item-type unitHint="mm">Number:Length</item-type>
 		<label>Moisture Level</label>
 		<description>Command-only soil moisture adjustment input for zone/setMoistureLevel, in millimeters. Rachio does
@@ -249,7 +249,7 @@
 			<tag>Water</tag>
 		</tags>
 	</channel-type>
-	<channel-type id="zone_moisturePercent">
+	<channel-type id="zone-moisture-percent">
 		<item-type unitHint="one">Number:Dimensionless</item-type>
 		<label>Moisture Percent</label>
 		<description>Command-only soil moisture adjustment input for zone/setMoisturePercent. Valid range is 0 to 1.

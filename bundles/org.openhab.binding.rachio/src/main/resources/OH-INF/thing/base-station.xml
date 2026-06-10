@@ -14,9 +14,9 @@
 		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
 		<channels>
-			<channel id="name" typeId="basestation_name"/>
-			<channel id="online" typeId="basestation_online"/>
-			<channel id="lastUpdate" typeId="lastUpdate"/>
+			<channel id="name" typeId="base-station-name"/>
+			<channel id="online" typeId="base-station-online"/>
+			<channel id="last-update" typeId="last-update"/>
 		</channels>
 
 		<properties>
@@ -33,7 +33,7 @@
 		</config-description>
 	</thing-type>
 
-	<channel-type id="basestation_name">
+	<channel-type id="base-station-name">
 		<item-type>String</item-type>
 		<label>Name</label>
 		<description>Smart Hose Timer Base Station name.</description>
@@ -42,7 +42,7 @@
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="basestation_online">
+	<channel-type id="base-station-online">
 		<item-type>Switch</item-type>
 		<label>Online</label>
 		<description>ON when Rachio reports that the Base Station is online or connected.</description>
