@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -235,7 +236,7 @@ public class GeminiApiClient {
         }
 
         Request request = httpClient.newRequest(url).method(HttpMethod.POST)
-                .timeout(timeoutSeconds != null ? timeoutSeconds : DEFAULT_REQUEST_TIMEOUT, TimeUnit.SECONDS)
+                .timeout((Objects.requireNonNullElse(timeoutSeconds, DEFAULT_REQUEST_TIMEOUT)), TimeUnit.SECONDS)
                 .header(HttpHeader.CONTENT_TYPE, MimeTypes.Type.APPLICATION_JSON.asString())
                 .header(HEADER_API_KEY, apiKey).content(new StringContentProvider(queryJson));
         if (logger.isDebugEnabled()) {
@@ -279,12 +280,14 @@ public class GeminiApiClient {
     /**
      * Fetches the list of models supported by the Gemini API key.
      *
+     * @param timeoutSeconds request timeout in seconds
      * @return a list of GeminiModel objects
      * @throws GeminiApiException if a communication error, timeout, or parsing error occurs
      */
-    public List<GeminiModel> fetchModels() throws GeminiApiException {
+    public List<GeminiModel> fetchModels(@Nullable Integer timeoutSeconds) throws GeminiApiException {
         String modelsUrl = GEMINI_API_BASE_URL + "/models";
-        Request request = httpClient.newRequest(modelsUrl).timeout(DEFAULT_REQUEST_TIMEOUT, TimeUnit.SECONDS)
+        Request request = httpClient.newRequest(modelsUrl)
+                .timeout(Objects.requireNonNullElse(timeoutSeconds, DEFAULT_REQUEST_TIMEOUT), TimeUnit.SECONDS)
                 .method(HttpMethod.GET).header(HEADER_API_KEY, apiKey);
         logger.debug("Request to {}: (GET)", modelsUrl);
 

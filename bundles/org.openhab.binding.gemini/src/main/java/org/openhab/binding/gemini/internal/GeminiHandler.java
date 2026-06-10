@@ -188,7 +188,7 @@ public class GeminiHandler extends BaseThingHandler {
                             "@text/offline.configuration-error");
                     return;
                 }
-                List<GeminiModel> apiModels = client.fetchModels();
+                List<GeminiModel> apiModels = client.fetchModels(config.requestTimeout);
                 if (!apiModels.isEmpty()) {
                     List<String> modelList = new ArrayList<>();
                     for (GeminiModel model : apiModels) {
