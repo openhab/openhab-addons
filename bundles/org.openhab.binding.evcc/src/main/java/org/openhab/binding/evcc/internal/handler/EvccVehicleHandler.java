@@ -18,7 +18,7 @@ import java.util.Locale;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -42,13 +42,10 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(EvccVehicleHandler.class);
 
-    private final @Nullable String vehicleId;
-
     private String endpoint = "";
 
     public EvccVehicleHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
         super(thing, channelTypeRegistry);
-        vehicleId = getPropertyOrConfigValue(PROPERTY_VEHICLE_ID);
         type = PROPERTY_TYPE_VEHICLE;
     }
 
@@ -60,7 +57,7 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
             if (value.contains(" ")) {
                 value = value.substring(0, state.toString().indexOf(" "));
             }
-            String url = endpoint + "/" + vehicleId + "/" + datapoint + "/" + value;
+            String url = endpoint + "/" + getPropertyOrConfigValue(PROPERTY_VEHICLE_ID) + "/" + datapoint + "/" + value;
             logger.debug("Sending command to this url: {}", url);
             performApiRequest(url, POST, JsonNull.INSTANCE);
         } else {
@@ -70,12 +67,36 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
 
     @Override
     public void prepareApiResponseForChannelStateUpdate(JsonObject state) {
-        state = state.getAsJsonObject(JSON_KEY_VEHICLES).getAsJsonObject(vehicleId);
+        state = state.getAsJsonObject(JSON_KEY_VEHICLES).getAsJsonObject(getPropertyOrConfigValue(PROPERTY_VEHICLE_ID));
         updateStatesFromApiResponse(state);
     }
 
     @Override
     public void initialize() {
+        Configuration config = thing.getConfiguration();
+
+        Object oldId = config.get(PROPERTY_ID);
+        Object newId = config.get(PROPERTY_VEHICLE_ID);
+
+        if (oldId != null && (newId == null || newId.toString().isBlank())) {
+            String migrated = oldId.toString();
+
+            config.put(PROPERTY_VEHICLE_ID, migrated);
+            config.remove(PROPERTY_ID);
+
+            updateConfiguration(config);
+            logger.info("Migrated evcc vehicle Thing property 'id' -> 'vehicleId'");
+        } else if (oldId != null && newId != null) {
+            config.remove(PROPERTY_ID);
+            updateConfiguration(config);
+        }
+
+        if (getPropertyOrConfigValue(PROPERTY_VEHICLE_ID).isEmpty()) {
+            logger.warn("No vehicle ID given");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+            return;
+        }
+
         super.initialize();
         Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
             endpoint = String.join("/", handler.getBaseURL(), API_PATH_VEHICLES);
@@ -85,14 +106,15 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
                 return;
             }
 
-            JsonObject state = stateOpt.getAsJsonObject(JSON_KEY_VEHICLES).getAsJsonObject(vehicleId);
+            JsonObject state = stateOpt.getAsJsonObject(JSON_KEY_VEHICLES)
+                    .getAsJsonObject(getPropertyOrConfigValue(PROPERTY_VEHICLE_ID));
             commonInitialize(state);
         });
     }
 
     @Override
     public JsonObject getStateFromCachedState(JsonObject state) {
-        return state.has(JSON_KEY_VEHICLES) ? state.getAsJsonObject(JSON_KEY_VEHICLES).getAsJsonObject(vehicleId)
-                : new JsonObject();
+        return state.has(JSON_KEY_VEHICLES) ? state.getAsJsonObject(JSON_KEY_VEHICLES)
+                .getAsJsonObject(getPropertyOrConfigValue(PROPERTY_VEHICLE_ID)) : new JsonObject();
     }
 }
