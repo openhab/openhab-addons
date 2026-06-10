@@ -16,6 +16,7 @@ import java.awt.Color;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -127,7 +128,8 @@ public class DeviceManager {
                     try (MulticastSocket multiSocket = new MulticastSocket(MULTI_CAST_PORT)) {
                         multiSocket.setSoTimeout(TIMEOUT);
                         multiSocket.setNetworkInterface(networkInterface);
-                        multiSocket.joinGroup(multicastAddress);
+                        multiSocket.joinGroup(new InetSocketAddress(multicastAddress, MULTI_CAST_PORT),
+                                networkInterface);
 
                         DatagramPacket dpSend = new DatagramPacket(DISCOVERY_MSG.getBytes(),
                                 DISCOVERY_MSG.getBytes().length, multicastAddress, MULTI_CAST_PORT);
