@@ -33,16 +33,16 @@
 			<parameter name="useCloudWebhook" type="boolean" required="false">
 				<label>Use openHAB Cloud Webhooks</label>
 				<description>When enabled, uses the openHAB Cloud service to provide publicly-reachable webhook URLs for receiving
-					Smarthings Event. Requires the openHAB Cloud Connector add-on to be installed and connected. This
+					SmartThings events. Requires the openHAB Cloud Connector add-on to be installed and connected. This
 					eliminates the
 					need for port forwarding or a reverse proxy.</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="useDynamicThings" type="boolean" required="false">
-				<label>Creta thing using dynamic discovery of capabilities</label>
-				<description>When enabled, the binding will scan the available device, and will create channel base on available
-					capabilities on this devices.
-					When disabled, only use static things definition coming from the resources files.
+				<label>Create things using dynamic capability discovery</label>
+				<description>When enabled, the binding will scan available devices and create channels based on their available
+					capabilities.
+					When disabled, only static thing definitions from the resource files are used.
 				</description>
 				<default>false</default>
 			</parameter>

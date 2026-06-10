@@ -29,7 +29,7 @@
 	</thing-type>
 
 	<channel-group-type id="main-group-type-generic-presence-detector">
-		<label>Main group type Generic Presence Dectector</label>
+		<label>Main group type Generic Presence Detector</label>
 		<channels>
 			<channel id="presence" typeId="presence">
 				<properties>
