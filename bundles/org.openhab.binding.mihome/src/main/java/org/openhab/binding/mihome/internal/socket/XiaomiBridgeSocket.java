@@ -63,7 +63,7 @@ public class XiaomiBridgeSocket extends XiaomiSocket {
             }
 
             setSocket(socket); // must bind receive side
-            socket.joinGroup(new InetSocketAddress(InetAddress.getByName(MCAST_ADDR), 0), networkInterface);
+            socket.joinGroup(new InetSocketAddress(InetAddress.getByName(MCAST_ADDR), getPort()), networkInterface);
             logger.debug("Initialized socket to {}:{} on {}:{} bound to {} network interface",
                     socket.getRemoteSocketAddress(), socket.getPort(), socket.getLocalAddress(), socket.getLocalPort(),
                     socket.getNetworkInterface());
