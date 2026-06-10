@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.evcc.internal.handler;
 
-import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.when;
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.PROPERTY_ID;
@@ -110,11 +110,11 @@ public class EvccVehicleHandlerTest extends AbstractThingHandlerTestClass<EvccVe
 
     @Test
     public void testMigrationFromIdToVehicleId() {
-        Configuration config = mock(Configuration.class);
-        when(config.get(PROPERTY_ID)).thenReturn("old_vehicle_id");
-        when(config.get(PROPERTY_VEHICLE_ID)).thenReturn(null);
+        Configuration config = new Configuration();
+        config.put(PROPERTY_ID, "vehicle_1");
 
         when(thing.getConfiguration()).thenReturn(config);
+        when(thing.getProperties()).thenReturn(Map.of("type", "vehicle"));
 
         handler = spy(createHandler());
         handler.bridgeHandler = mock(EvccBridgeHandler.class);
@@ -123,12 +123,9 @@ public class EvccVehicleHandlerTest extends AbstractThingHandlerTestClass<EvccVe
 
         handler.initialize();
 
-        verify(config).put(PROPERTY_VEHICLE_ID, "old_vehicle_id");
-
-        verify(config).remove(PROPERTY_ID);
-
+        assertEquals("vehicle_1", config.get(PROPERTY_VEHICLE_ID));
+        assertNull(config.get(PROPERTY_ID));
         assertSame(config, lastUpdatedConfiguration);
-
         assertSame(ThingStatus.ONLINE, lastThingStatus);
     }
 }

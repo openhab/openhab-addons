@@ -78,7 +78,7 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
         Object oldId = config.get(PROPERTY_ID);
         Object newId = config.get(PROPERTY_VEHICLE_ID);
 
-        if (oldId != null && newId == null) {
+        if (oldId != null && (newId == null || newId.toString().isBlank())) {
             String migrated = oldId.toString();
 
             config.put(PROPERTY_VEHICLE_ID, migrated);
@@ -86,11 +86,14 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
 
             updateConfiguration(config);
             logger.info("Migrated evcc vehicle Thing property 'id' -> 'vehicleId'");
+        } else if (oldId != null && newId != null) {
+            config.remove(PROPERTY_ID);
+            updateConfiguration(config);
         }
 
         if (getPropertyOrConfigValue(PROPERTY_VEHICLE_ID).isEmpty()) {
             logger.warn("No vehicle ID given");
-            updateStatus(ThingStatus.UNINITIALIZED);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
             return;
         }
 
