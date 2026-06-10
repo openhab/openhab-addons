@@ -1,0 +1,43 @@
+[
+  {
+    "img": "wh85",
+    "type": "49",
+    "name": "Wind & Rain",
+    "version": "114",
+    "id": "2C75",
+    "batt": "5",
+    "rssi": "4",
+    "signal": "4",
+    "idst": "1"
+  },
+  {
+    "img": "wh69",
+    "type": "0",
+    "name": "Temp & Humidity & Solar & Wind & Rain",
+    "id": "2B",
+    "batt": "0",
+    "rssi": "4",
+    "signal": "4",
+    "idst": "1"
+  },
+  {
+    "img": "wh25",
+    "type": "4",
+    "name": "Temp & Humidity & Pressure",
+    "id": "B9",
+    "batt": "1",
+    "rssi": "4",
+    "signal": "4",
+    "idst": "1"
+  },
+  {
+    "img": "wh34",
+    "type": "31",
+    "name": "Temp CH1",
+    "id": "FFFFFFFE",
+    "batt": "9",
+    "rssi": "--",
+    "signal": "--",
+    "idst": "0"
+  }
+]

@@ -216,4 +216,39 @@
 		<description>The available heap size. If it is reducing, it means the heap is using up.</description>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
+
+	<channel-type id="solar-radiation">
+		<item-type>Number:Intensity</item-type>
+		<label>Solar Radiation</label>
+		<category>Sun</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Light</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="rain-state">
+		<item-type>Switch</item-type>
+		<label>Raining</label>
+		<category>Rain</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Rain</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="vapor-pressure-deficit">
+		<item-type>Number:Pressure</item-type>
+		<label>Vapor Pressure Deficit</label>
+		<description>The difference between the amount of moisture in the air and how much moisture the air can hold when
+			saturated</description>
+		<category>Humidity</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
+		<state pattern="%.3f %unit%" readOnly="true"/>
+	</channel-type>
 </thing:thing-descriptions>

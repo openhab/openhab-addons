@@ -89,7 +89,7 @@ public class FineOffsetDataParser {
             }
             SensorGatewayBinding sensorGatewayBinding = null;
             if (sensorCandidates.size() == 1) {
-                sensorGatewayBinding = sensorCandidates.get(0);
+                sensorGatewayBinding = sensorCandidates.getFirst();
             } else if (sensorCandidates.size() == 2 && data[idx] == 0) {
                 sensorGatewayBinding = Boolean.TRUE.equals(isUseWh24.get()) ? SensorGatewayBinding.WH24
                         : SensorGatewayBinding.WH65;
@@ -128,22 +128,13 @@ public class FineOffsetDataParser {
         // 10 - time zone index (?)
         // 11 - DST 0-1 - false/true
         // 12 - 0x?? - checksum
-        Integer frequency = null;
-        switch (data[4]) {
-            case 0:
-                frequency = 433;
-                break;
-            case 1:
-                frequency = 868;
-                break;
-            case 2:
-                frequency = 915;
-                break;
-            case 3:
-                frequency = 920;
-                break;
-
-        }
+        Integer frequency = switch (data[4]) {
+            case 0 -> 433;
+            case 1 -> 868;
+            case 2 -> 915;
+            case 3 -> 920;
+            default -> null;
+        };
         boolean useWh24 = data[5] == 0;
         var unix = toUInt32(data, 6);
         var date = LocalDateTime.ofEpochSecond(unix, 0, ZoneOffset.UTC);
