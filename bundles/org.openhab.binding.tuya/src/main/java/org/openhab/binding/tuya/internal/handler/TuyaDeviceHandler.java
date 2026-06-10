@@ -23,7 +23,6 @@ import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CONFIG_MIN;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CONFIG_PRODUCT_ID;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CONFIG_PROTOCOL;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CONFIG_RANGE;
-import static org.openhab.binding.tuya.internal.TuyaBindingConstants.DIMMER_CHANNEL_CODES;
 import static org.openhab.core.library.CoreItemFactory.COLOR;
 import static org.openhab.core.library.CoreItemFactory.DIMMER;
 import static org.openhab.core.library.CoreItemFactory.NUMBER;
@@ -645,10 +644,7 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
             Map<@Nullable String, @Nullable Object> configuration = new HashMap<>();
             configuration.put(CONFIG_DP, schemaDp.id);
 
-            if (DIMMER_CHANNEL_CODES.contains(channelId)) {
-                configuration.put(CONFIG_MIN, schemaDp.min);
-                configuration.put(CONFIG_MAX, schemaDp.max);
-            } else if ("enum".equals(schemaDp.type)) {
+            if ("enum".equals(schemaDp.type)) {
                 List<String> range = Objects.requireNonNullElse(schemaDp.range, List.of());
                 configuration.put(CONFIG_RANGE, String.join(",", range));
             } else if ("value".equals(schemaDp.type)) {
