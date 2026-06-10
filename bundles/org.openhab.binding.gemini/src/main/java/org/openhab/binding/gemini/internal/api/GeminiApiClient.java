@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.gemini.internal.api;
 
+import static org.openhab.binding.gemini.internal.GeminiBindingConstants.DEFAULT_REQUEST_TIMEOUT;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -60,7 +62,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 @NonNullByDefault
 public class GeminiApiClient {
-    private static final int DEFAULT_REQUEST_TIMEOUT_S = 30;
     private static final String GEMINI_API_BASE_URL = "https://generativelanguage.googleapis.com/v1beta";
     private static final String HEADER_API_KEY = "x-goog-api-key";
     private static final String ROLE_USER = "user";
@@ -234,7 +235,7 @@ public class GeminiApiClient {
         }
 
         Request request = httpClient.newRequest(url).method(HttpMethod.POST)
-                .timeout(timeoutSeconds != null ? timeoutSeconds : DEFAULT_REQUEST_TIMEOUT_S, TimeUnit.SECONDS)
+                .timeout(timeoutSeconds != null ? timeoutSeconds : DEFAULT_REQUEST_TIMEOUT, TimeUnit.SECONDS)
                 .header(HttpHeader.CONTENT_TYPE, MimeTypes.Type.APPLICATION_JSON.asString())
                 .header(HEADER_API_KEY, apiKey).content(new StringContentProvider(queryJson));
         if (logger.isDebugEnabled()) {
@@ -283,7 +284,7 @@ public class GeminiApiClient {
      */
     public List<GeminiModel> fetchModels() throws GeminiApiException {
         String modelsUrl = GEMINI_API_BASE_URL + "/models";
-        Request request = httpClient.newRequest(modelsUrl).timeout(DEFAULT_REQUEST_TIMEOUT_S, TimeUnit.SECONDS)
+        Request request = httpClient.newRequest(modelsUrl).timeout(DEFAULT_REQUEST_TIMEOUT, TimeUnit.SECONDS)
                 .method(HttpMethod.GET).header(HEADER_API_KEY, apiKey);
         logger.debug("Request to {}: (GET)", modelsUrl);
 

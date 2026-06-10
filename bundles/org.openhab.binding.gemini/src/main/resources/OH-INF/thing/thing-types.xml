@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="gemini"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="account" extensible="chat">
+		<label>@text/thing.type.account.label</label>
+		<description>@text/thing.type.account.description</description>
+
+		<config-description>
+			<parameter-group name="authentication">
+				<context>network-security</context>
+				<label>Authentication</label>
+				<description>Authentication Settings</description>
+			</parameter-group>
+			<parameter-group name="connection">
+				<context>network</context>
+				<label>Connection</label>
+				<description>Connection Settings</description>
+			</parameter-group>
+			<parameter-group name="hli">
+				<label>HLI Configuration</label>
+				<description>Human Language Interpreter Configuration</description>
+			</parameter-group>
+
+			<!-- Authentication Settings -->
+			<parameter name="apiKey" type="text" required="true" groupName="authentication">
+				<context>password</context>
+				<label>@text/config.apiKey.label</label>
+				<description>@text/config.apiKey.description</description>
+			</parameter>
+			<!-- Connection Settings -->
+			<parameter name="requestTimeout" type="integer" unit="s" groupName="connection">
+				<label>@text/config.requestTimeout.label</label>
+				<description>@text/config.requestTimeout.description</description>
+				<default>30</default>
+				<advanced>true</advanced>
+			</parameter>
+			<!-- HLI Settings -->
+			<parameter name="model" type="text" groupName="hli">
+				<label>@text/config.model.label</label>
+				<description>@text/config.model.description</description>
+				<default>gemini-2.5-flash</default>
+			</parameter>
+			<parameter name="temperature" type="decimal" groupName="hli">
+				<label>@text/config.temperature.label</label>
+				<description>@text/config.temperature.description</description>
+				<default>0.7</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="topP" type="decimal" groupName="hli">
+				<label>@text/config.topP.label</label>
+				<description>@text/config.topP.description</description>
+				<default>1.0</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="maxOutputTokens" type="integer" groupName="hli">
+				<label>@text/config.maxOutputTokens.label</label>
+				<description>@text/config.maxOutputTokens.description</description>
+				<default>1024</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="systemMessage" type="text" groupName="hli">
+				<label>@text/config.systemMessage.label</label>
+				<description>@text/config.systemMessage.description</description>
+				<default>You are a helpful assistant.</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="chat">
+		<item-type>String</item-type>
+		<label>@text/channel.type.chat.label</label>
+		<description>@text/channel.type.chat.description</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+		<config-description>
+			<parameter name="model" type="text" required="true">
+				<label>@text/config.model.label</label>
+				<description>@text/config.model.description</description>
+				<default>gemini-2.5-flash</default>
+			</parameter>
+			<parameter name="temperature" type="decimal" required="true">
+				<label>@text/config.temperature.label</label>
+				<description>@text/config.temperature.description</description>
+				<default>0.7</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="topP" type="decimal" required="true">
+				<label>@text/config.topP.label</label>
+				<description>@text/config.topP.description</description>
+				<default>1.0</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="maxOutputTokens" type="integer" required="true">
+				<label>@text/config.maxOutputTokens.label</label>
+				<description>@text/config.maxOutputTokens.description</description>
+				<default>8192</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="systemMessage" type="text" required="true">
+				<label>@text/config.systemMessage.label</label>
+				<description>@text/config.systemMessage.description</description>
+				<default>You are a helpful assistant.</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="requestTimeout" type="integer" unit="s" required="true">
+				<label>@text/config.requestTimeout.label</label>
+				<description>@text/config.requestTimeout.description</description>
+				<default>30</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+</thing:thing-descriptions>
