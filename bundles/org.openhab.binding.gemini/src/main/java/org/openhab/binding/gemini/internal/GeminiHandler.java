@@ -15,6 +15,7 @@ package org.openhab.binding.gemini.internal;
 import static org.openhab.binding.gemini.internal.GeminiBindingConstants.*;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -27,6 +28,7 @@ import org.openhab.binding.gemini.internal.api.dto.GeminiPart;
 import org.openhab.binding.gemini.internal.api.dto.response.GeminiCandidate;
 import org.openhab.binding.gemini.internal.api.dto.response.GeminiModel;
 import org.openhab.binding.gemini.internal.api.dto.response.GeminiResponse;
+import org.openhab.binding.gemini.internal.hli.GeminiHLIService;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;
@@ -35,6 +37,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -216,6 +219,11 @@ public class GeminiHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         });
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return List.of(GeminiHLIService.class);
     }
 
     private boolean invalidTimeout(@Nullable Integer timeout) {
