@@ -12,6 +12,7 @@
  */
 package org.openhab.io.hueemulation.internal.dto;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.PercentType;
@@ -24,6 +25,7 @@ import org.openhab.core.library.types.PercentType;
  * @author Florian Lentz - added xy support
  *
  */
+@NonNullByDefault
 public class HueStateColorBulb extends HueStateBulb {
     public static final int MAX_HUE = 65535; // For extended color light bulbs
     public int hue = 0;
@@ -71,7 +73,7 @@ public class HueStateColorBulb extends HueStateBulb {
      * @param hsb Color information. Sets the hue state to "on" if brightness is > 0.
      */
     public HueStateColorBulb(HSBType hsb) {
-        super(hsb.getBrightness(), hsb.getBrightness().intValue() > 0);
+        super(hsb.getBrightness(), hsb.getBrightness().compareTo(DecimalType.ZERO) > 0);
         this.hue = (int) (hsb.getHue().intValue() * MAX_HUE / 360.0 + 0.5);
         this.sat = (int) (hsb.getSaturation().intValue() * MAX_SAT / 100.0 + 0.5);
         colormode = this.sat > 0 ? ColorMode.hs : ColorMode.ct;

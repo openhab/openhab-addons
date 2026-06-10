@@ -447,10 +447,16 @@ public class LightsAndGroups implements ConfigurationListener, RegistryChangeLis
                     "Invalid request: No state change data received!");
         }
 
+        logger.debug("Received state change for light {}: {}", id, newState);
+
         hueDevice.state = StateUtils.colorStateFromItemState(hueDevice.item.getState(), hueDevice.deviceType);
 
         String itemUID = hueDevice.item.getUID();
         List<HueResponse> responses = new ArrayList<>();
+        if (newState.on == Boolean.TRUE && newState.bri != null && newState.bri == 0) {
+            // The bulb should be on, but the brightness is 0. Skip the brightness change.
+            newState.bri = null;
+        }
         Command command = StateUtils.computeCommandByState(responses, "/lights/" + id + "/state", hueDevice.state,
                 newState);
 
