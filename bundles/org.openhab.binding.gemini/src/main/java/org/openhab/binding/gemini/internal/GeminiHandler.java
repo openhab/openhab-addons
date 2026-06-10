@@ -223,7 +223,7 @@ public class GeminiHandler extends BaseThingHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return List.of(GeminiHLIService.class);
+        return List.of(GeminiModelOptionProvider.class, GeminiHLIService.class);
     }
 
     private boolean invalidTimeout(@Nullable Integer timeout) {
