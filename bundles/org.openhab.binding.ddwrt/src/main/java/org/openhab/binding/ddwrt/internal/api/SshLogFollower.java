@@ -52,7 +52,7 @@ public class SshLogFollower implements Runnable, AutoCloseable {
 
     // DHCP event keywords in message body (to distinguish from dnsmasq warnings/errors)
     private static final Pattern DHCP_MESSAGE = Pattern.compile(
-            "DHCPACK|DHCPREQUEST|DHCPDISCOVER|DHCPOFFER|DHCPDECLINE|DHCPNAK|DHCPINFORM|DHCPRELEASE|lease|renew|rebind",
+            "DHCPACK|DHCPREQUEST|DHCPDISCOVER|DHCPOFFER|DHCPDECLINE|DHCPNAK|DHCPINFORM|DHCPRELEASE|lease|renew|(?<!DNS-)rebind",
             Pattern.CASE_INSENSITIVE);
 
     // Error-level process/message indicators
