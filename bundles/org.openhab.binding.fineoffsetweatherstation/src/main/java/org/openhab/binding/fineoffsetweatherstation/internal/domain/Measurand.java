@@ -241,6 +241,9 @@ public enum Measurand {
     FEELS_LIKE("temperature-feels-like", "Feels like temperature", MeasureType.TEMPERATURE,
             http(HttpGroup.COMMON_LIST, "3")),
 
+    VPD("vapor-pressure-deficit", "Vapor Pressure Deficit", MeasureType.VAPOR_PRESSURE_DEFICIT,
+            http(HttpGroup.COMMON_LIST, "5")),
+
     // shares item code 0x15 with LIGHT; used when the gateway reports solar radiation in W/m² instead of lux
     SOLAR_RADIATION("irradiation-solar", "Solar irradiation", MeasureType.SOLAR_RADIATION,
             httpAlt(HttpGroup.COMMON_LIST, 0x15)),

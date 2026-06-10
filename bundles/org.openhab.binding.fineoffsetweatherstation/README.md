@@ -113,7 +113,7 @@ This binding support discovery of Fine Offset gateway devices by sending a broad
 
 Discovery probes the HTTP API first and falls back to the TCP protocols.
 Values reported by the HTTP API in the unit configured on the gateway (e.g. °F, inHg, mph) are normalized to the binding's units, so the channels are identical regardless of the transport or the gateway's display settings.
-A few channels are only available via the HTTP API and therefore only appear on gateways using the `HTTP_ECOWITT` protocol: `temperature-feels-like`, `irradiation-solar`, `rain-state` and `piezo-rain-state`.
+A few channels are only available via the HTTP API and therefore only appear on gateways using the `HTTP_ECOWITT` protocol: `temperature-feels-like`, `vapor-pressure-deficit`, `irradiation-solar`, `rain-state` and `piezo-rain-state`.
 
 ### `sensor` Thing Configuration
 

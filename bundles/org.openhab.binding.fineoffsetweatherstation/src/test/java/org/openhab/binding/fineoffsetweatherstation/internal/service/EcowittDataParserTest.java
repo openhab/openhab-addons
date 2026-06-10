@@ -44,7 +44,8 @@ class EcowittDataParserTest {
         Assertions.assertThat(data)
                 .extracting(MeasuredValue::getChannelId, measuredValue -> measuredValue.getState().toString())
                 .containsExactly(new Tuple("temperature-outdoor", "21.4 °C"), new Tuple("humidity-outdoor", "41 %"),
-                        new Tuple("temperature-feels-like", "21.4 °C"), new Tuple("temperature-dew-point", "7.6 °C"),
+                        new Tuple("temperature-feels-like", "21.4 °C"),
+                        new Tuple("vapor-pressure-deficit", "1.504 kPa"), new Tuple("temperature-dew-point", "7.6 °C"),
                         new Tuple("speed-wind", "0 m/s"), new Tuple("speed-gust", "0 m/s"),
                         new Tuple("wind-max-day", "0.6 m/s"),
                         // 0x15 is reported in W/m², so it is routed to the solar-radiation channel, not illumination
@@ -69,6 +70,7 @@ class EcowittDataParserTest {
                 .containsEntry("wind-max-day", "0.2682 m/s") // 0.6 mph
                 .containsEntry("pressure-absolute", "1003.7254 hPa") // 29.64 inHg
                 .containsEntry("piezo-rain-state", "ON") // srain_piezo = 1
+                .containsEntry("vapor-pressure-deficit", "1.153 kPa") // kept in kPa
                 .containsEntry("irradiation-solar", "461.08 W/m²");
     }
 

@@ -32,6 +32,7 @@ import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWe
 import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_TYPE_SOLAR_RADIATION;
 import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_TYPE_TEMPERATURE;
 import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_TYPE_UV_RADIATION;
+import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_TYPE_VAPOR_PRESSURE_DEFICIT;
 import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_TYPE_WATER_LEAK_DETECTION;
 import static org.openhab.binding.fineoffsetweatherstation.internal.Utils.toInt16;
 import static org.openhab.binding.fineoffsetweatherstation.internal.Utils.toUInt16;
@@ -123,6 +124,10 @@ public enum MeasureType {
     // solar radiation in W/m² (HTTP only); the lux illumination channel and this share the item code 0x15,
     // disambiguated by the reported unit's dimension
     SOLAR_RADIATION(Units.IRRADIANCE, 4, CHANNEL_TYPE_SOLAR_RADIATION, (data, offset) -> toUInt32(data, offset) / 10.),
+
+    // vapor pressure deficit, conventionally expressed in kPa (HTTP only)
+    VAPOR_PRESSURE_DEFICIT(KILO(PASCAL), 2, CHANNEL_TYPE_VAPOR_PRESSURE_DEFICIT,
+            (data, offset) -> toUInt16(data, offset) / 1000.),
 
     // is-it-raining flag (HTTP only)
     RAIN_STATE(1, CHANNEL_TYPE_RAIN_STATE, (data, offset) -> OnOffType.from(toUInt8(data[offset]) != 0),
@@ -293,6 +298,7 @@ public enum MeasureType {
             case "C" -> CELSIUS;
             case "F" -> ImperialUnits.FAHRENHEIT;
             case "hPa" -> HECTO(PASCAL);
+            case "kPa" -> KILO(PASCAL);
             case "inHg" -> ImperialUnits.INCH_OF_MERCURY;
             case "mmHg" -> Units.MILLIMETRE_OF_MERCURY;
             case "m/s" -> METRE_PER_SECOND;

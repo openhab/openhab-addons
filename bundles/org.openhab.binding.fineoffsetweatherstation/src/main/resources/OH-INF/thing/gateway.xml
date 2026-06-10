@@ -238,4 +238,17 @@
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
+
+	<channel-type id="vapor-pressure-deficit">
+		<item-type>Number:Pressure</item-type>
+		<label>Vapor Pressure Deficit</label>
+		<description>The difference between the amount of moisture in the air and how much moisture the air can hold when
+			saturated</description>
+		<category>Humidity</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
+		<state pattern="%.3f %unit%" readOnly="true"/>
+	</channel-type>
 </thing:thing-descriptions>
