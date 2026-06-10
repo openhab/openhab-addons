@@ -1149,10 +1149,10 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             status.extTemperature.sensor4 = updateExtTempSensor(ds.temperature103);
             status.extTemperature.sensor5 = updateExtTempSensor(ds.temperature104);
         }
-        if (ds.humidity100 != null) {
+        if (ds.humidity100 != null && ds.humidity100.rh != null) {
             status.extHumidity = new ShellyExtHumidity(ds.humidity100.rh);
         }
-        if (ds.voltmeter100 != null) {
+        if (ds.voltmeter100 != null && ds.voltmeter100.voltage != null) {
             status.extVoltage = new ShellyExtVoltage(ds.voltmeter100.voltage);
         }
         if (ds.input100 != null) {
