@@ -127,8 +127,8 @@ class RachioZoneChannelTest {
                 "lastEvent", "lastEventTime");
         assertChannelIds("schedule.xml", "name", "enabled", "type", "startTime", "lastRun", "nextRun", "zones",
                 "seasonalAdjustment", "start", "skip", "skipForwardZoneRun", "lastUpdate");
-        assertChannelIds("flex-schedule.xml", "name", "enabled", "type", "start-time", "last-run", "next-run", "zones",
-                "seasonal-adjustment", "start", "skip", "skip-forward-zone-run", "last-update");
+        assertChannelIds("flex-schedule.xml", "name", "enabled", "type", "startTime", "lastRun", "nextRun", "zones",
+                "seasonalAdjustment", "start", "skip", "skipForwardZoneRun", "lastUpdate");
         assertChannelIds("valve.xml", "name", "online", "run", "runTime", "defaultRuntime", "stateMatches",
                 "flowDetected", "batteryLevel", "serialNumber", "lastRunType", "lastEndReason", "nextPlannedRunTime",
                 "nextPlannedRunDuration", "nextPlannedRunProgramId", "nextPlannedRunSkipped", "lastCompletedRunTime",

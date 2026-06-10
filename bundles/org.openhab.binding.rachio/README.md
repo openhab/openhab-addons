@@ -72,7 +72,7 @@ Plain runtime and delay commands remain seconds, and plain `moistureLevel` comma
 | `zone`          | `yardAreaSquareFeet`                                                                        | `Number:Area`          |
 | `zone`          | `managementAllowedDepletion`, `efficiency`, `moisturePercent`                               | `Number:Dimensionless` |
 | `schedule`      | `seasonalAdjustment`                                                                        | `Number:Dimensionless` |
-| `flex-schedule` | `seasonal-adjustment`                                                                       | `Number:Dimensionless` |
+| `flex-schedule` | `seasonalAdjustment`                                                                        | `Number:Dimensionless` |
 | `valve`         | `runTime`, `defaultRuntime`, `nextPlannedRunDuration`, `lastCompletedRunDuration`           | `Number:Time`          |
 | `valve`         | `batteryLevel`                                                                              | `Number:Dimensionless` |
 | `valve-program` | `duration`, `intervalDays`                                                                  | `Number:Time`          |
@@ -445,22 +445,22 @@ The binding uses planned-run skip endpoints when a run ID and date are available
 
 Fixed schedule rules are represented by `schedule` Things and keep the established schedule channel IDs.
 
-Flex schedules use lower-case-hyphen channel IDs and expose the same command operations as fixed schedules.
+Flex schedules use the same camelCase channel IDs and expose the same command operations as fixed schedules.
 
-| Fixed schedule channel | Flex schedule channel   | Description                                                                                              |
-|------------------------|-------------------------|----------------------------------------------------------------------------------------------------------|
-| `name`                 | `name`                  | Schedule rule name.                                                                                      |
-| `enabled`              | `enabled`               | ON if the schedule rule is enabled.                                                                      |
-| `type`                 | `type`                  | Schedule rule type.                                                                                      |
-| `startTime`            | `start-time`            | Schedule start time from Rachio `startDate`, with `startTime` used as a fallback when present.           |
-| `lastRun`              | `last-run`              | Last run time when Rachio provides a usable best-effort field.                                           |
-| `nextRun`              | `next-run`              | Next run time when Rachio provides a usable best-effort field.                                           |
-| `zones`                | `zones`                 | Comma-separated Rachio zone IDs associated with the schedule.                                            |
-| `seasonalAdjustment`   | `seasonal-adjustment`   | `Number:Dimensionless` seasonal adjustment value. Sending a plain number updates the corresponding rule. |
-| `start`                | `start`                 | Send ON to start the schedule rule.                                                                      |
-| `skip`                 | `skip`                  | Send ON to skip the schedule rule.                                                                       |
-| `skipForwardZoneRun`   | `skip-forward-zone-run` | Send ON to skip the currently running zone in this schedule context.                                     |
-| `lastUpdate`           | `last-update`           | Timestamp of last schedule state update.                                                                 |
+| Fixed schedule channel | Flex schedule channel  | Description                                                                                              |
+|------------------------|------------------------|----------------------------------------------------------------------------------------------------------|
+| `name`                 | `name`                 | Schedule rule name.                                                                                      |
+| `enabled`              | `enabled`              | ON if the schedule rule is enabled.                                                                      |
+| `type`                 | `type`                 | Schedule rule type.                                                                                      |
+| `startTime`            | `startTime`            | Schedule start time from Rachio `startDate`, with `startTime` used as a fallback when present.           |
+| `lastRun`              | `lastRun`              | Last run time when Rachio provides a usable best-effort field.                                           |
+| `nextRun`              | `nextRun`              | Next run time when Rachio provides a usable best-effort field.                                           |
+| `zones`                | `zones`                | Comma-separated Rachio zone IDs associated with the schedule.                                            |
+| `seasonalAdjustment`   | `seasonalAdjustment`   | `Number:Dimensionless` seasonal adjustment value. Sending a plain number updates the corresponding rule. |
+| `start`                | `start`                | Send ON to start the schedule rule.                                                                      |
+| `skip`                 | `skip`                 | Send ON to skip the schedule rule.                                                                       |
+| `skipForwardZoneRun`   | `skipForwardZoneRun`   | Send ON to skip the currently running zone in this schedule context.                                     |
+| `lastUpdate`           | `lastUpdate`           | Timestamp of last schedule state update.                                                                 |
 
 Fixed schedule metadata is loaded through ScheduleRuleService with `GET /public/schedulerule/:id`.
 Flex schedule metadata is loaded through FlexScheduleRuleService with `GET /public/flexschedulerule/:id`.
@@ -470,7 +470,7 @@ Manual schedule creation requires `scheduleRuleId`; manual flex schedule creatio
 Discovery creates both Thing types when the controller payload contains the corresponding rule IDs.
 
 Schedule and flex schedule DateTime channels support epoch milliseconds, epoch seconds, numeric strings, and ISO-8601 strings when those fields are present.
-`lastRun`/`last-run` and `nextRun`/`next-run` remain `UNDEF` when the Rachio API response does not include a usable value; the binding does not fabricate dates.
+`lastRun` and `nextRun` remain `UNDEF` when the Rachio API response does not include a usable value; the binding does not fabricate dates.
 
 ## Webhook Events
 

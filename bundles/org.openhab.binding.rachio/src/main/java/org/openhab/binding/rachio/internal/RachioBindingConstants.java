@@ -178,15 +178,15 @@ public class RachioBindingConstants {
     public static final String CHANNEL_FLEX_SCHEDULE_NAME = "name";
     public static final String CHANNEL_FLEX_SCHEDULE_ENABLED = "enabled";
     public static final String CHANNEL_FLEX_SCHEDULE_TYPE = "type";
-    public static final String CHANNEL_FLEX_SCHEDULE_START_TIME = "start-time";
-    public static final String CHANNEL_FLEX_SCHEDULE_LAST_RUN = "last-run";
-    public static final String CHANNEL_FLEX_SCHEDULE_NEXT_RUN = "next-run";
+    public static final String CHANNEL_FLEX_SCHEDULE_START_TIME = "startTime";
+    public static final String CHANNEL_FLEX_SCHEDULE_LAST_RUN = "lastRun";
+    public static final String CHANNEL_FLEX_SCHEDULE_NEXT_RUN = "nextRun";
     public static final String CHANNEL_FLEX_SCHEDULE_ZONES = "zones";
-    public static final String CHANNEL_FLEX_SCHEDULE_SEASONAL_ADJUSTMENT = "seasonal-adjustment";
+    public static final String CHANNEL_FLEX_SCHEDULE_SEASONAL_ADJUSTMENT = "seasonalAdjustment";
     public static final String CHANNEL_FLEX_SCHEDULE_START = "start";
     public static final String CHANNEL_FLEX_SCHEDULE_SKIP = "skip";
-    public static final String CHANNEL_FLEX_SCHEDULE_SKIP_FORWARD_ZONE_RUN = "skip-forward-zone-run";
-    public static final String CHANNEL_FLEX_SCHEDULE_LAST_UPDATE = "last-update";
+    public static final String CHANNEL_FLEX_SCHEDULE_SKIP_FORWARD_ZONE_RUN = "skipForwardZoneRun";
+    public static final String CHANNEL_FLEX_SCHEDULE_LAST_UPDATE = "lastUpdate";
 
     public static final String CHANNEL_LAST_UPDATE = "lastUpdate";
     public static final String CHANNEL_LAST_EVENT = "lastEvent";

@@ -347,7 +347,6 @@ class RachioScheduleHandlerStatusTest {
                 argThat(DateTimeType.class::isInstance));
         verify(callback).stateUpdated(eq(new ChannelUID(thing.getUID(), CHANNEL_FLEX_SCHEDULE_LAST_UPDATE)),
                 argThat(DateTimeType.class::isInstance));
-        verify(callback, never()).stateUpdated(eq(new ChannelUID(thing.getUID(), CHANNEL_SCHEDULE_START_TIME)), any());
     }
 
     @Test
