@@ -115,7 +115,7 @@ public class RoborockBindingConstants {
 
     public static final String CHANNEL_CONTROL = "actions#control";
     public static final String CHANNEL_COMMAND = "actions#commands";
-    public static final String CHANNEL_DP_COMMAND = "actions#DPCommand";
+    public static final String CHANNEL_DP_COMMAND = "actions#dpcommand";
     public static final String CHANNEL_RPC = "actions#rpc";
     public static final String CHANNEL_VACUUM = "actions#vacuum";
     public static final String CHANNEL_FAN_CONTROL = "actions#fan";

@@ -1534,21 +1534,20 @@ public class RoborockVacuumHandler extends BaseThingHandler {
      *   122 = battery
      *   123 = fan_power
      *   124 = water_box_mode
-     *   125 = main_brush_life   (consumable remaining life — NOT clean area)
-     *   126 = side_brush_life   (consumable remaining life — NOT clean time)
-     *   127 = filter_life       (consumable remaining life — NOT clean percent)
-     *   136 = clean_times       (number of cleans completed in this session)
+     *   125 = main_brush_life   (consumable remaining life)
+     *   126 = side_brush_life   (consumable remaining life)
+     *   127 = filter_life       (consumable remaining life)
+     *   136 = clean_times       (number of cleans completed)
      *   137 = clean_mode        (current cleaning mode)
-     *   138 = clean_task_type   (type of cleaning task — NOT dock state)
+     *   138 = clean_task_type   (type of cleaning task)
      *   139 = back_type         (return-to-dock trigger type)
      *   141 = cleaning_progress (0–100%)
      *   142 = fleeing_goods     (obstacle avoidance active flag)
      * </pre>
      * 
-     * Clean area and time arrive inside dps.101 sub-keys 7 and 6 respectively.
      */
     private void handleFlatDpPush(JsonObject dpsRoot) {
-        // DP 121 — vacuum state ID (shared: Q7 and Q10)
+        // DP 121 — vacuum state ID
         if (dpsRoot.has("121")) {
             int stateInt = dpsRoot.get("121").getAsInt();
             // On the Q10, status updates are provided automatically, so just update the channel.
@@ -1559,7 +1558,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             }
         }
 
-        // DP 122 — battery % (shared: Q7 and Q10)
+        // DP 122 — battery %
         if (dpsRoot.has("122")) {
             updateState(CHANNEL_BATTERY, new DecimalType(dpsRoot.get("122").getAsInt()));
         }
@@ -1585,7 +1584,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                     new DecimalType(ConsumablesType.remainingPercent(brushSecs, ConsumablesType.MAIN_BRUSH)));
         }
 
-        // DP 126 — side brush remaining life (same encoding as DP 125)
+        // DP 126 — side brush remaining life in s
         if (dpsRoot.has("126")) {
             int sideBrushSecs = 3600 * dpsRoot.get("126").getAsInt();
             updateState(CHANNEL_CONSUMABLE_SIDE_TIME, new QuantityType<>(
@@ -1594,7 +1593,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                     new DecimalType(ConsumablesType.remainingPercent(sideBrushSecs, ConsumablesType.SIDE_BRUSH)));
         }
 
-        // DP 127 — filter remaining life (same encoding as DP 125)
+        // DP 127 — filter remaining life in s
         if (dpsRoot.has("127")) {
             int filterSecs = 3600 * dpsRoot.get("126").getAsInt();
             updateState(CHANNEL_CONSUMABLE_FILTER_TIME,
@@ -1613,7 +1612,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             logger.debug("Q10 dp137 clean_mode: {}", dpsRoot.get("137").getAsInt());
         }
 
-        // DP 138 — clean_task_type: type of cleaning task currently running (not dock state)
+        // DP 138 — clean_task_type: type of cleaning task currently running
         if (dpsRoot.has("138")) {
             logger.debug("Q10 dp138 clean_task_type: {}", dpsRoot.get("138").getAsInt());
         }
@@ -1687,8 +1686,8 @@ public class RoborockVacuumHandler extends BaseThingHandler {
 
         // Sub-key 29 — total_clean_area: lifetime total clean area in m²
         if (dp101.has("29")) {
-            long totalAreaMm2 = dp101.get("29").getAsLong();
-            updateState(CHANNEL_HISTORY_TOTALAREA, new QuantityType<>(totalAreaMm2, SIUnits.SQUARE_METRE));
+            long totalArea = dp101.get("29").getAsLong();
+            updateState(CHANNEL_HISTORY_TOTALAREA, new QuantityType<>(totalArea, SIUnits.SQUARE_METRE));
         }
 
         // Sub-key 30 — total_clean_count: lifetime total clean cycles
@@ -1781,8 +1780,16 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         // Sub-keys logged at trace — known but no channel mapping yet
         if (dp101.has("26"))
             logger.trace("Q10 dp101.26 volume: {}", dp101.get("26"));
-        if (dp101.has("32"))
-            logger.trace("Q10 dp101.32 local_timer_blob: {}", dp101.get("32"));
+        if (dp101.has("32")) {
+            try {
+                byte[] b = java.util.Base64.getDecoder().decode(dp101.get("32").getAsString());
+                int timerCount = b.length >= 2 ? b[1] & 0xFF : 0;
+                logger.debug("Q10 dp101.32 TIMER: version={} timerCount={} (full schedule has {} bytes)",
+                        b.length >= 1 ? b[0] & 0xFF : 0, timerCount, b.length);
+            } catch (IllegalArgumentException e) {
+                logger.trace("Q10 dp101.32 TIMER decode failed: {}", e.getMessage());
+            }
+        }
         if (dp101.has("33"))
             logger.trace("Q10 dp101.33 dnd_data_blob: {}", dp101.get("33"));
         if (dp101.has("36"))

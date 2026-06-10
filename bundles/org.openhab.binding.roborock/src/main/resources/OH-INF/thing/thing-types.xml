@@ -975,7 +975,7 @@
 			<tag>Mode</tag>
 		</tags>
 	</channel-type>
-	<channel-type id="DPCommand" advanced="true">
+	<channel-type id="dpcommand" advanced="true">
 		<item-type>String</item-type>
 		<label>Execute DP (cloud) Command</label>
 		<description>Execute a raw flat data-point payload to B01/Q10 devices. (Example payload: {"201": {"cmd": 1}})</description>
