@@ -21,6 +21,7 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.gemini.internal.action.GeminiActions;
 import org.openhab.binding.gemini.internal.api.GeminiApiClient;
 import org.openhab.binding.gemini.internal.api.GeminiApiException;
 import org.openhab.binding.gemini.internal.api.dto.GeminiContent;
@@ -50,7 +51,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class GeminiHandler extends BaseThingHandler {
-
     private final Logger logger = LoggerFactory.getLogger(GeminiHandler.class);
 
     private final HttpClient httpClient;
@@ -87,7 +87,7 @@ public class GeminiHandler extends BaseThingHandler {
                 String model = DEFAULT_MODEL;
                 double temp = DEFAULT_TEMPERATURE;
                 double topP = DEFAULT_TOP_P;
-                int maxTokens = 8092;
+                int maxTokens = DEFAULT_MAX_OUTPUT_TOKENS;
                 String systemMessage = DEFAULT_SYSTEM_MESSAGE;
 
                 if (channel != null) {
@@ -223,7 +223,7 @@ public class GeminiHandler extends BaseThingHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return List.of(GeminiModelOptionProvider.class, GeminiHLIService.class);
+        return List.of(GeminiModelOptionProvider.class, GeminiActions.class, GeminiHLIService.class);
     }
 
     private boolean invalidTimeout(@Nullable Integer timeout) {
