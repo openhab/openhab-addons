@@ -643,9 +643,7 @@ public class ShellyComponents {
 
             int l = 0;
             for (ShellyShortLightStatus dimmer : dstatus.dimmers) {
-                Integer r = l + 1;
-                String groupName = profile.numRelays <= 1 ? CHANNEL_GROUP_DIMMER_CONTROL
-                        : CHANNEL_GROUP_DIMMER_CONTROL + r.toString();
+                String groupName = profile.getControlGroup(l);
 
                 if (!thingHandler.areChannelsCreated()) {
                     thingHandler.updateChannelDefinitions(ShellyChannelDefinitions
