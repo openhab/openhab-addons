@@ -117,11 +117,12 @@ public class SmartThingsThingHandler extends BaseThingHandler {
             Object value) throws SmartThingsException {
         String channelName = SmartThingsTypeRegistryImpl.getChannelName(attr);
         String capabilityId = namespace.isBlank() ? capaKey : namespace + "." + capaKey;
+        ChannelUID channelUID = findChannelUID(deviceType, componentId, capabilityId, channelName);
 
-        String dynamicGroupId = SmartThingsTypeRegistryImpl.getChannelGroupId(deviceType, componentId, capabilityId);
-        ChannelUID channelUID = new ChannelUID(this.getThing().getUID(), dynamicGroupId, channelName);
-        if (thing.getChannel(channelUID) == null) {
-            channelUID = new ChannelUID(this.getThing().getUID(), UidUtils.sanitizeId(componentId), channelName);
+        if (channelUID == null) {
+            logger.trace("Ignoring state update for undeclared channel: component: {}, capability: {}, attribute: {}",
+                    componentId, capabilityId, attr);
+            return;
         }
 
         logger.trace("refreshDevice called: channelName:{}", channelName);
@@ -133,6 +134,22 @@ public class SmartThingsThingHandler extends BaseThingHandler {
             State state = converter.convertToOpenHab(thing, channelUID, value);
             updateState(channelUID, state);
         }
+    }
+
+    private @Nullable ChannelUID findChannelUID(String deviceType, String componentId, String capabilityId,
+            String channelName) {
+        String dynamicGroupId = SmartThingsTypeRegistryImpl.getChannelGroupId(deviceType, componentId, capabilityId);
+        ChannelUID channelUID = new ChannelUID(this.getThing().getUID(), dynamicGroupId, channelName);
+        if (thing.getChannel(channelUID) != null) {
+            return channelUID;
+        }
+
+        channelUID = new ChannelUID(this.getThing().getUID(), UidUtils.sanitizeId(componentId), channelName);
+        if (thing.getChannel(channelUID) != null) {
+            return channelUID;
+        }
+
+        return null;
     }
 
     public void refreshDevice(String deviceType, String componentId, String capa, String attr, Object value) {
