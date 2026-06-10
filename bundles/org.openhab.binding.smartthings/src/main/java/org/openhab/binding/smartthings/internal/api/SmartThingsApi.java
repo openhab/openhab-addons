@@ -109,7 +109,8 @@ public class SmartThingsApi {
         return devices;
     }
 
-    public AppResponse setupApp(String appName, String redirectUrl) throws SmartThingsException {
+    public AppResponse setupApp(String appName, String callbackUrl, String oauthRedirectUri)
+            throws SmartThingsException {
         SmartThingsApp[] appList = getAllApps();
 
         Optional<SmartThingsApp> appOptional = Arrays.stream(appList).filter(x -> appName.equals(x.appName))
@@ -126,7 +127,7 @@ public class SmartThingsApi {
 
             return result;
         } else {
-            AppResponse result = createApp(appName, redirectUrl);
+            AppResponse result = createApp(appName, callbackUrl, oauthRedirectUri);
             return result;
         }
     }
@@ -235,37 +236,40 @@ public class SmartThingsApi {
         }
     }
 
-    public AppResponse createApp(String appName, String eventCallbackuri) throws SmartThingsException {
+    public AppResponse createApp(String appName, String eventCallbackUri, String oauthRedirectUri)
+            throws SmartThingsException {
         try {
             String uri = baseUrl + appEndPoint;
-            String fullCallbackUri = eventCallbackuri;
 
-            AppRequest appRequest = new AppRequest();
-            appRequest.appName = appName;
-            appRequest.displayName = "openHAB";
-            appRequest.description = "Desc " + appName;
-            appRequest.appType = "API_ONLY";
-            appRequest.principalType = "LOCATION";
-            if (fullCallbackUri.contains("https://")) {
-                appRequest.apiOnly = new AppRequest.apiOnlyApp(fullCallbackUri);
-            }
-
-            appRequest.classifications = new String[1];
-            appRequest.classifications[0] = "CONNECTED_SERVICE";
-
-            OAuthConfigRequest oAuthConfig = new OAuthConfigRequest();
-            oAuthConfig.clientName = "openHAB Integration";
-            oAuthConfig.scope = SmartThingsBindingConstants.SMARTTHINGS_FULL_SCOPES;
-            oAuthConfig.redirectUris = new String[] { SmartThingsBindingConstants.REDIRECT_URI };
-            appRequest.oauth = oAuthConfig;
-
-            String body = gson.toJson(appRequest);
+            String body = gson.toJson(createAppRequest(appName, eventCallbackUri, oauthRedirectUri));
             AppResponse appResponse = doRequest(HttpMethod.POST, AppResponse.class, uri, body);
 
             return appResponse;
         } catch (final Exception e) {
             throw new SmartThingsException("SmartThingsApi : Unable to create app", e);
         }
+    }
+
+    static AppRequest createAppRequest(String appName, String eventCallbackUri, String oauthRedirectUri) {
+        AppRequest appRequest = new AppRequest();
+        appRequest.appName = appName;
+        appRequest.displayName = "openHAB";
+        appRequest.description = "Desc " + appName;
+        appRequest.appType = "API_ONLY";
+        appRequest.principalType = "LOCATION";
+        if (eventCallbackUri.contains("https://")) {
+            appRequest.apiOnly = new AppRequest.apiOnlyApp(eventCallbackUri);
+        }
+
+        appRequest.classifications = new String[1];
+        appRequest.classifications[0] = "CONNECTED_SERVICE";
+
+        OAuthConfigRequest oAuthConfig = new OAuthConfigRequest();
+        oAuthConfig.clientName = "openHAB Integration";
+        oAuthConfig.scope = SmartThingsBindingConstants.SMARTTHINGS_FULL_SCOPES;
+        oAuthConfig.redirectUris = new String[] { oauthRedirectUri };
+        appRequest.oauth = oAuthConfig;
+        return appRequest;
     }
 
     public String getToken() throws SmartThingsException {

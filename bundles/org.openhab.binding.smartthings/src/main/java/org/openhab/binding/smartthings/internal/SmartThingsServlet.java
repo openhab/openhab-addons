@@ -105,6 +105,7 @@ public class SmartThingsServlet extends HttpServlet
     private static final String KEY_DEVICES_COUNT = "devicesCount";
     private static final String KEY_AUTHORIZATION_URI = "authorizationUri";
     private static final String KEY_AUTHORIZATION_URI_JS = "authorizationUriJs";
+    private static final String KEY_ASSET_BASE_URI = "assetBaseUri";
 
     private static final Pattern MESSAGE_KEY_PATTERN = Pattern.compile("\\$\\{([^\\}]+)\\}");
 
@@ -114,6 +115,8 @@ public class SmartThingsServlet extends HttpServlet
     private Gson gson = new Gson();
 
     private String callBackURL = "";
+    private String oauthRedirectUri = "";
+    private String assetBaseUri = "";
     private String createAppState = "";
     private String authorizeLocationState = "";
 
@@ -177,10 +180,14 @@ public class SmartThingsServlet extends HttpServlet
 
         logger.debug("SmartThings auth callback servlet received GET request {}.", req.getRequestURI());
 
+        String requestPath = req.getRequestURI();
+        if (requestPath == null) {
+            return;
+        }
         String requestUrlSt = getFullURL(req);
         String queryString = req.getQueryString();
 
-        String template = handleTemplate(requestUrlSt, queryString);
+        String template = handleTemplate(requestPath, queryString, requestUrlSt);
         resp.setContentType(CONTENT_TYPE);
         resp.getWriter().append(template);
         resp.getWriter().close();
@@ -197,7 +204,6 @@ public class SmartThingsServlet extends HttpServlet
         int port = -1;
 
         if (hostHeader != null) {
-            // peut contenir host:port
             if (hostHeader.contains(":")) {
                 String[] parts = hostHeader.split(":", 2);
                 host = parts[0];
@@ -213,7 +219,6 @@ public class SmartThingsServlet extends HttpServlet
             port = req.getServerPort();
         }
 
-        // X-Forwarded-Port prioritaire si présent
         String forwardedPort = extractFirst(req.getHeader("X-Forwarded-Port"));
         if (forwardedPort != null) {
             try {
@@ -254,10 +259,11 @@ public class SmartThingsServlet extends HttpServlet
 
     @Override
     public String handle(String path, @Nullable String query) {
-        return handleTemplate(path, query);
+        return handleTemplate(path, query, null);
     }
 
-    private String handleTemplate(String requestUrl, @Nullable String queryString) {
+    private String handleTemplate(String requestPath, @Nullable String queryString,
+            @Nullable String externalRequestUrl) {
         SmartThingsOAuthHandler oauthHandler = smartThingsAuthService.getSmartThingsOAuthHandler();
 
         if (oauthHandler == null) {
@@ -274,6 +280,7 @@ public class SmartThingsServlet extends HttpServlet
         replaceMap.put(KEY_BRIDGE_URI, "");
         replaceMap.put(KEY_AUTHORIZATION_URI, "");
         replaceMap.put(KEY_AUTHORIZATION_URI_JS, "");
+        replaceMap.put(KEY_ASSET_BASE_URI, Encode.forHtmlAttribute(assetBaseUri));
 
         template = indexTemplate;
 
@@ -297,7 +304,7 @@ public class SmartThingsServlet extends HttpServlet
             } else if (!StringUtil.isBlank(reqState)) {
                 try {
                     if (!StringUtil.isBlank(reqCode)) {
-                        if ("/finish".equals(requestUrl)) {
+                        if (isOAuthCallbackPath(requestPath)) {
                             Optional<String> stateStep = getStateStep(reqState);
                             if (stateStep.isEmpty()) {
                                 template = errorTemplate;
@@ -309,11 +316,11 @@ public class SmartThingsServlet extends HttpServlet
                                 logger.debug("Captured SmartThings authorization callback for app setup.");
 
                                 // Finish OAuth flow
-                                bridgeHandler.finishOAuth(callBackURL, reqCode,
+                                bridgeHandler.finishOAuth(callBackURL, oauthRedirectUri, reqCode,
                                         bridgeHandler.getThing().getUID().getId());
                                 authorizeLocationState = createOAuthState(STEP_AUTHORIZE_LOCATION);
-                                String authorizationUri = oauthHandler.formatAuthorizationUrl(
-                                        SmartThingsBindingConstants.REDIRECT_URI, authorizeLocationState, false);
+                                String authorizationUri = oauthHandler.formatAuthorizationUrl(oauthRedirectUri,
+                                        authorizeLocationState, false);
                                 String authorizationUriJs = authorizationUri.replace("\\", "\\\\").replace("\"",
                                         "\\\"");
 
@@ -322,8 +329,7 @@ public class SmartThingsServlet extends HttpServlet
                             } else if (STEP_AUTHORIZE_LOCATION.equals(stateStep.get())) {
                                 template = confirmTemplate;
 
-                                smartThingsAuthService.authorize(SmartThingsBindingConstants.REDIRECT_URI, reqState,
-                                        reqCode);
+                                smartThingsAuthService.authorize(oauthRedirectUri, reqState, reqCode);
                                 smartThingsLocalCallbackListener.stopCallbackListener();
 
                                 SmartThingsApi api = bridgeHandler.getSmartThingsApi();
@@ -371,18 +377,23 @@ public class SmartThingsServlet extends HttpServlet
         }
         // index case, first time we go to servlet without any queryString
         else {
+            String requestUrl = externalRequestUrl != null ? externalRequestUrl : requestPath;
+
             // calculate the callback URL
             callBackURL = getExternalRequestUrl(requestUrl);
+            oauthRedirectUri = getOAuthRedirectUri(requestUrl);
+            assetBaseUri = getAssetBaseUrl(requestUrl);
 
             // Display it in page rendering for user confirmation
 
             replaceMap.put(KEY_CALLBACK_URI, Encode.forHtml(callBackURL));
+            replaceMap.put(KEY_ASSET_BASE_URI, Encode.forHtmlAttribute(assetBaseUri));
 
             if (!callBackURL.startsWith("https://")) {
                 Locale locale = Locale.getDefault();
                 Bundle bundle = FrameworkUtil.getBundle(getClass());
                 String redirectUriError = translationProvider.getText(bundle, "redirect-uri-not-https", null, locale);
-                replaceMap.put(KEY_ERROR, Encode.forHtml(String.format(HTML_WARNING, redirectUriError)));
+                replaceMap.put(KEY_ERROR, String.format(HTML_WARNING, Encode.forHtml(redirectUriError)));
             }
 
             try {
@@ -398,15 +409,15 @@ public class SmartThingsServlet extends HttpServlet
                 // if app already create, go directly to step2 to reauthenticate a location
                 if (bridgeAccountHandler.appCreated()) {
                     authorizeLocationState = createOAuthState(STEP_AUTHORIZE_LOCATION);
-                    authorizationUri = oauthHandler.formatAuthorizationUrl(SmartThingsBindingConstants.REDIRECT_URI,
-                            authorizeLocationState, false);
+                    authorizationUri = oauthHandler.formatAuthorizationUrl(oauthRedirectUri, authorizeLocationState,
+                            false);
                 } else {
                     createAppState = createOAuthState(STEP_CREATE_APP);
                     authorizationUri = oauthHandler.formatAuthorizationUrl(SmartThingsBindingConstants.REDIRECT_URI,
                             createAppState, true);
                 }
 
-                // handle first redirection to Smartthings when user click button
+                // Handle the first redirect to SmartThings when the user clicks the button.
                 replaceMap.put(KEY_BRIDGE_URI, Encode.forHtml(authorizationUri));
             } catch (SmartThingsException ex) {
                 replaceMap.put(KEY_BRIDGE_URI, "Error during oauth");
@@ -422,7 +433,21 @@ public class SmartThingsServlet extends HttpServlet
             return cloudUrl;
         }
 
-        return requestUrl + "/cb";
+        return getAssetBaseUrl(requestUrl) + "/cb";
+    }
+
+    private String getOAuthRedirectUri(String requestUrl) {
+        if (requestUrl.startsWith("https://")) {
+            return getAssetBaseUrl(requestUrl);
+        }
+
+        return SmartThingsBindingConstants.REDIRECT_URI;
+    }
+
+    private String getAssetBaseUrl(String requestUrl) {
+        int queryIndex = requestUrl.indexOf('?');
+        String url = queryIndex >= 0 ? requestUrl.substring(0, queryIndex) : requestUrl;
+        return url.endsWith("/") ? url.substring(0, url.length() - 1) : url;
     }
 
     private String createOAuthState(String step) {
@@ -439,6 +464,10 @@ public class SmartThingsServlet extends HttpServlet
             return Optional.of(STEP_AUTHORIZE_LOCATION);
         }
         return Optional.empty();
+    }
+
+    static boolean isOAuthCallbackPath(String requestPath) {
+        return "/finish".equals(requestPath) || PATH.equals(requestPath) || (PATH + "/").equals(requestPath);
     }
 
     @Override
