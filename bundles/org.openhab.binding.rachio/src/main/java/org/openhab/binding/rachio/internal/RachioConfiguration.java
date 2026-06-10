@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 public class RachioConfiguration {
     private static final String REDACTED = "[redacted]";
     private static final List<String> CONFIGURATION_PARAMETERS = List.of(PARAM_APIKEY, PARAM_POLLING_INTERVAL,
-            PARAM_DEF_RUNTIME, PARAM_CALLBACK_URL, PARAM_CALLBACK_USERNAME, PARAM_CALLBACK_PASSWORD,
+            PARAM_DEFAULT_RUNTIME, PARAM_CALLBACK_URL, PARAM_CALLBACK_USERNAME, PARAM_CALLBACK_PASSWORD,
             PARAM_CLEAR_CALLBACK, PARAM_EVENT_HISTORY_LOOKBACK_HOURS, PARAM_FORECAST_UNITS,
             PARAM_HOSE_SUMMARY_LOOKBACK_DAYS, PARAM_HOSE_SUMMARY_LOOKAHEAD_DAYS);
 
@@ -149,7 +149,7 @@ public class RachioConfiguration {
                 apikey = value;
             } else if (parameterName.equals(PARAM_POLLING_INTERVAL)) {
                 this.pollingInterval = Integer.parseInt(value);
-            } else if (parameterName.equals(PARAM_DEF_RUNTIME)) {
+            } else if (parameterName.equals(PARAM_DEFAULT_RUNTIME)) {
                 this.defaultRuntime = Integer.parseInt(value);
             } else if (parameterName.equals(PARAM_CALLBACK_URL)) {
                 this.callbackUrl = value;

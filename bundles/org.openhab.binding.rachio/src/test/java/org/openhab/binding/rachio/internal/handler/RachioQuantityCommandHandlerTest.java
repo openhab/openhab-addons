@@ -22,15 +22,15 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_DEVICE_RUN;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_DEVICE_RUN_TIME;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_DEVICE_RUNTIME;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_DEVICE_RUN_ZONES;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_VALVE_DEFAULT_RUNTIME;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_VALVE_RUN;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_VALVE_RUN_TIME;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_VALVE_RUNTIME;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_ZONE_MOISTURE_LEVEL;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_ZONE_MOISTURE_PERCENT;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_ZONE_RUN;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_ZONE_RUN_TIME;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_ZONE_RUNTIME;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_TYPE_DEVICE;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_TYPE_VALVE;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_TYPE_ZONE;
@@ -65,7 +65,7 @@ import org.openhab.core.thing.binding.ThingHandlerCallback;
 @SuppressWarnings("null")
 class RachioQuantityCommandHandlerTest {
     @Test
-    void zoneRunTimeAcceptsQuantityTypeSeconds() throws Exception {
+    void zoneRuntimeAcceptsQuantityTypeSeconds() throws Exception {
         ThingUID thingUID = new ThingUID(THING_TYPE_ZONE, "bridge", "zone");
         RachioZoneHandler handler = new RachioZoneHandler(thing(thingUID));
         RachioBridgeHandler bridgeHandler = Mockito.mock(RachioBridgeHandler.class);
@@ -75,14 +75,14 @@ class RachioQuantityCommandHandlerTest {
         setField(handler, "dev", device);
         setField(handler, "zone", zone);
 
-        handler.handleCommand(new ChannelUID(thingUID, CHANNEL_ZONE_RUN_TIME), QuantityType.valueOf("2 min"));
+        handler.handleCommand(new ChannelUID(thingUID, CHANNEL_ZONE_RUNTIME), QuantityType.valueOf("2 min"));
         handler.handleCommand(new ChannelUID(thingUID, CHANNEL_ZONE_RUN), OnOffType.ON);
 
         verify(bridgeHandler).startZone("zone-id", 120);
     }
 
     @Test
-    void zoneRunTimeStillAcceptsPlainNumericSeconds() throws Exception {
+    void zoneRuntimeStillAcceptsPlainNumericSeconds() throws Exception {
         ThingUID thingUID = new ThingUID(THING_TYPE_ZONE, "bridge", "zone");
         RachioZoneHandler handler = new RachioZoneHandler(thing(thingUID));
         RachioBridgeHandler bridgeHandler = Mockito.mock(RachioBridgeHandler.class);
@@ -92,14 +92,14 @@ class RachioQuantityCommandHandlerTest {
         setField(handler, "dev", device);
         setField(handler, "zone", zone);
 
-        handler.handleCommand(new ChannelUID(thingUID, CHANNEL_ZONE_RUN_TIME), new DecimalType(30));
+        handler.handleCommand(new ChannelUID(thingUID, CHANNEL_ZONE_RUNTIME), new DecimalType(30));
         handler.handleCommand(new ChannelUID(thingUID, CHANNEL_ZONE_RUN), OnOffType.ON);
 
         verify(bridgeHandler).startZone("zone-id", 30);
     }
 
     @Test
-    void controllerRunTimeAcceptsQuantityTypeSecondsForMultiZonePayload() throws Exception {
+    void controllerRuntimeAcceptsQuantityTypeSecondsForMultiZonePayload() throws Exception {
         ThingUID thingUID = new ThingUID(THING_TYPE_DEVICE, "bridge", "device");
         RachioDeviceHandler handler = new RachioDeviceHandler(thing(thingUID));
         RachioBridgeHandler bridgeHandler = Mockito.mock(RachioBridgeHandler.class);
@@ -109,7 +109,7 @@ class RachioQuantityCommandHandlerTest {
         when(bridgeHandler.getDefaultRuntime()).thenReturn(300);
 
         handler.handleCommand(new ChannelUID(thingUID, CHANNEL_DEVICE_RUN_ZONES), new StringType("1"));
-        handler.handleCommand(new ChannelUID(thingUID, CHANNEL_DEVICE_RUN_TIME), QuantityType.valueOf("2 min"));
+        handler.handleCommand(new ChannelUID(thingUID, CHANNEL_DEVICE_RUNTIME), QuantityType.valueOf("2 min"));
         handler.handleCommand(new ChannelUID(thingUID, CHANNEL_DEVICE_RUN), OnOffType.ON);
 
         assertThat(device.getRunTime(), is(120));
@@ -117,7 +117,7 @@ class RachioQuantityCommandHandlerTest {
     }
 
     @Test
-    void controllerRunTimeStillAcceptsPlainNumericSecondsForMultiZonePayload() throws Exception {
+    void controllerRuntimeStillAcceptsPlainNumericSecondsForMultiZonePayload() throws Exception {
         ThingUID thingUID = new ThingUID(THING_TYPE_DEVICE, "bridge", "device");
         RachioDeviceHandler handler = new RachioDeviceHandler(thing(thingUID));
         RachioBridgeHandler bridgeHandler = Mockito.mock(RachioBridgeHandler.class);
@@ -127,7 +127,7 @@ class RachioQuantityCommandHandlerTest {
         when(bridgeHandler.getDefaultRuntime()).thenReturn(300);
 
         handler.handleCommand(new ChannelUID(thingUID, CHANNEL_DEVICE_RUN_ZONES), new StringType("1"));
-        handler.handleCommand(new ChannelUID(thingUID, CHANNEL_DEVICE_RUN_TIME), new DecimalType(30));
+        handler.handleCommand(new ChannelUID(thingUID, CHANNEL_DEVICE_RUNTIME), new DecimalType(30));
         handler.handleCommand(new ChannelUID(thingUID, CHANNEL_DEVICE_RUN), OnOffType.ON);
 
         assertThat(device.getRunTime(), is(30));
@@ -135,28 +135,28 @@ class RachioQuantityCommandHandlerTest {
     }
 
     @Test
-    void valveRunTimeAcceptsQuantityTypeSeconds() throws Exception {
+    void valveRuntimeAcceptsQuantityTypeSeconds() throws Exception {
         ThingUID thingUID = new ThingUID(THING_TYPE_VALVE, "bridge", "valve");
         RachioValveHandler handler = new RachioValveHandler(thing(thingUID));
         RachioBridgeHandler bridgeHandler = Mockito.mock(RachioBridgeHandler.class);
         handler.cloudHandler = bridgeHandler;
         setField(handler, "valve", valve("valve-id"));
 
-        handler.handleCommand(new ChannelUID(thingUID, CHANNEL_VALVE_RUN_TIME), QuantityType.valueOf("2 min"));
+        handler.handleCommand(new ChannelUID(thingUID, CHANNEL_VALVE_RUNTIME), QuantityType.valueOf("2 min"));
         handler.handleCommand(new ChannelUID(thingUID, CHANNEL_VALVE_RUN), OnOffType.ON);
 
         verify(bridgeHandler).startValveWatering("valve-id", 120);
     }
 
     @Test
-    void valveRunTimeStillAcceptsPlainNumericSeconds() throws Exception {
+    void valveRuntimeStillAcceptsPlainNumericSeconds() throws Exception {
         ThingUID thingUID = new ThingUID(THING_TYPE_VALVE, "bridge", "valve");
         RachioValveHandler handler = new RachioValveHandler(thing(thingUID));
         RachioBridgeHandler bridgeHandler = Mockito.mock(RachioBridgeHandler.class);
         handler.cloudHandler = bridgeHandler;
         setField(handler, "valve", valve("valve-id"));
 
-        handler.handleCommand(new ChannelUID(thingUID, CHANNEL_VALVE_RUN_TIME), new DecimalType(30));
+        handler.handleCommand(new ChannelUID(thingUID, CHANNEL_VALVE_RUNTIME), new DecimalType(30));
         handler.handleCommand(new ChannelUID(thingUID, CHANNEL_VALVE_RUN), OnOffType.ON);
 
         verify(bridgeHandler).startValveWatering("valve-id", 30);

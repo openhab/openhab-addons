@@ -23,7 +23,7 @@
 			<channel id="stop" typeId="device-stop"/>
 			<channel id="run" typeId="device-run"/>
 			<channel id="run-zones" typeId="device-run-zones"/>
-			<channel id="run-time" typeId="device-run-time"/>
+			<channel id="runtime" typeId="device-runtime"/>
 			<channel id="rain-delay" typeId="device-rain-delay"/>
 			<channel id="rain-sensor-tripped" typeId="device-rain-sensor-tripped"/>
 			<channel id="active-zone-number" typeId="device-active-zone-number"/>
@@ -150,10 +150,10 @@
 			<tag>Control</tag>
 		</tags>
 	</channel-type>
-	<channel-type id="device-run-time">
+	<channel-type id="device-runtime">
 		<item-type unitHint="s">Number:Time</item-type>
-		<label>Run Time</label>
-		<description>=0, use default run time, >0: Start zones for given number of seconds</description>
+		<label>Runtime</label>
+		<description>=0, use default runtime, >0: Start zones for given number of seconds</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>Duration</tag>

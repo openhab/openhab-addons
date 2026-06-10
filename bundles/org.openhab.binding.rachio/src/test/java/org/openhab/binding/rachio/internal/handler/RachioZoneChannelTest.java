@@ -30,7 +30,7 @@ import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_FLEX_SCHEDULE_TYPE;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_FLEX_SCHEDULE_ZONES;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_SCHEDULE_SEASONAL_ADJUSTMENT;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_ZONE_RUN_TIME;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_ZONE_RUNTIME;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_TYPE_DEVICE;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_TYPE_SCHEDULE;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_TYPE_ZONE;
@@ -112,7 +112,7 @@ class RachioZoneChannelTest {
     void publicChannelIdsMatchLowerCaseHyphenBaseline() throws IOException, URISyntaxException {
         assertChannelIds("base-station.xml", "name", "online", "last-update");
         assertChannelIds("device.xml", "name", "active", "online", "paused", "pause-time", "sleep-mode", "stop", "run",
-                "run-zones", "run-time", "rain-delay", "rain-sensor-tripped", "active-zone-number", "active-zone-name",
+                "run-zones", "runtime", "rain-delay", "rain-sensor-tripped", "active-zone-number", "active-zone-name",
                 "active-zone-id", "current-schedule-id", "current-schedule-name", "current-schedule-type",
                 "current-schedule-start-time", "current-schedule-end-time", "current-schedule-duration",
                 "current-schedule-running", "last-api-event-type", "last-api-event-time", "last-api-event-summary",
@@ -120,7 +120,7 @@ class RachioZoneChannelTest {
                 "forecast-precipitation-probability", "forecast-wind", "forecast-updated", "last-skip-type",
                 "last-skip-schedule-id", "last-skip-start-time", "last-skip-reason", "last-update", "last-event",
                 "last-event-time", "schedule-name", "schedule-info", "schedule-start", "schedule-end");
-        assertChannelIds("zone.xml", "name", "number", "enabled", "run", "run-time", "run-total", "available-water",
+        assertChannelIds("zone.xml", "name", "number", "enabled", "run", "runtime", "run-total", "available-water",
                 "image-url", "image", "depth-of-water", "saturated-depth-of-water", "management-allowed-depletion",
                 "root-zone-depth", "efficiency", "yard-area-square-feet", "last-watered-date", "fixed-runtime",
                 "max-runtime", "runtime-no-multiplier", "schedule-data-modified", "moisture-level", "moisture-percent",
@@ -129,14 +129,14 @@ class RachioZoneChannelTest {
                 "seasonal-adjustment", "start", "skip", "skip-forward-zone-run", "last-update");
         assertChannelIds("flex-schedule.xml", "name", "enabled", "type", "start-time", "last-run", "next-run", "zones",
                 "seasonal-adjustment", "start", "skip", "skip-forward-zone-run", "last-update");
-        assertChannelIds("valve.xml", "name", "online", "run", "run-time", "default-runtime", "state-matches",
+        assertChannelIds("valve.xml", "name", "online", "run", "runtime", "default-runtime", "state-matches",
                 "flow-detected", "battery-level", "serial-number", "last-run-type", "last-end-reason",
-                "next-planned-run-time", "next-planned-run-duration", "next-planned-run-program-id",
-                "next-planned-run-skipped", "last-completed-run-time", "last-completed-run-duration", "last-run-status",
+                "next-planned-runtime", "next-planned-run-duration", "next-planned-run-program-id",
+                "next-planned-run-skipped", "last-completed-runtime", "last-completed-run-duration", "last-run-status",
                 "skip-next-planned-run", "cancel-next-planned-run-skip", "last-update", "last-event",
                 "last-event-time");
         assertChannelIds("valve-program.xml", "name", "enabled", "program-type", "valve-id", "start-time",
-                "next-run-time", "last-run-time", "duration", "days-of-week", "interval-days", "seasonal-adjustment",
+                "next-runtime", "last-runtime", "duration", "days-of-week", "interval-days", "seasonal-adjustment",
                 "updated-at", "next-program-run-skipped", "skip-next-planned-run", "cancel-next-planned-run-skip",
                 "last-rain-skip-planned-run-start-time", "last-rain-skip-canceled-planned-run-start-time",
                 "last-update", "last-event", "last-event-time");
@@ -222,7 +222,7 @@ class RachioZoneChannelTest {
 
         assertThat(deviceXml, containsString("<channel id=\"pause-time\" typeId=\"device-pause-time\"/>"));
         assertThat(deviceXml, containsString("<channel id=\"last-update\" typeId=\"last-update\"/>"));
-        assertThat(zoneXml, containsString("<channel id=\"run-time\" typeId=\"zone-run-time\"/>"));
+        assertThat(zoneXml, containsString("<channel id=\"runtime\" typeId=\"zone-runtime\"/>"));
         assertThat(scheduleXml,
                 containsString("<channel id=\"seasonal-adjustment\" typeId=\"schedule-seasonal-adjustment\"/>"));
     }
@@ -235,7 +235,7 @@ class RachioZoneChannelTest {
 
         assertThat(new ChannelUID(device, CHANNEL_DEVICE_PAUSE_TIME).getAsString(),
                 is("rachio:device:controller:bridge:pause-time"));
-        assertThat(new ChannelUID(zone, CHANNEL_ZONE_RUN_TIME).getAsString(), is("rachio:zone:zone:bridge:run-time"));
+        assertThat(new ChannelUID(zone, CHANNEL_ZONE_RUNTIME).getAsString(), is("rachio:zone:zone:bridge:runtime"));
         assertThat(new ChannelUID(schedule, CHANNEL_SCHEDULE_SEASONAL_ADJUSTMENT).getAsString(),
                 is("rachio:schedule:schedule:bridge:seasonal-adjustment"));
     }

@@ -17,7 +17,7 @@
 			<channel id="name" typeId="valve-name"/>
 			<channel id="online" typeId="valve-online"/>
 			<channel id="run" typeId="valve-run"/>
-			<channel id="run-time" typeId="valve-run-time"/>
+			<channel id="runtime" typeId="valve-runtime"/>
 			<channel id="default-runtime" typeId="valve-default-runtime"/>
 			<channel id="state-matches" typeId="valve-state-matches"/>
 			<channel id="flow-detected" typeId="valve-flow-detected"/>
@@ -25,11 +25,11 @@
 			<channel id="serial-number" typeId="valve-serial-number"/>
 			<channel id="last-run-type" typeId="valve-last-run-type"/>
 			<channel id="last-end-reason" typeId="valve-last-end-reason"/>
-			<channel id="next-planned-run-time" typeId="valve-next-planned-run-time"/>
+			<channel id="next-planned-runtime" typeId="valve-next-planned-runtime"/>
 			<channel id="next-planned-run-duration" typeId="valve-next-planned-run-duration"/>
 			<channel id="next-planned-run-program-id" typeId="valve-next-planned-run-program-id"/>
 			<channel id="next-planned-run-skipped" typeId="valve-next-planned-run-skipped"/>
-			<channel id="last-completed-run-time" typeId="valve-last-completed-run-time"/>
+			<channel id="last-completed-runtime" typeId="valve-last-completed-runtime"/>
 			<channel id="last-completed-run-duration" typeId="valve-last-completed-run-duration"/>
 			<channel id="last-run-status" typeId="valve-last-run-status"/>
 			<channel id="skip-next-planned-run" typeId="valve-skip-next-planned-run"/>
@@ -84,7 +84,7 @@
 			<tag>Water</tag>
 		</tags>
 	</channel-type>
-	<channel-type id="valve-run-time">
+	<channel-type id="valve-runtime">
 		<item-type unitHint="s">Number:Time</item-type>
 		<label>Runtime</label>
 		<description>Runtime in seconds for the next manual valve start.</description>
@@ -149,9 +149,9 @@
 		<description>End reason from the most recent valve stop webhook event.</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="valve-next-planned-run-time">
+	<channel-type id="valve-next-planned-runtime">
 		<item-type>DateTime</item-type>
-		<label>Next Planned Run Time</label>
+		<label>Next Planned Runtime</label>
 		<description>Start time of the next planned valve run from Summary day views.</description>
 		<tags>
 			<tag>Status</tag>
@@ -184,9 +184,9 @@
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="valve-last-completed-run-time">
+	<channel-type id="valve-last-completed-runtime">
 		<item-type>DateTime</item-type>
-		<label>Last Completed Run Time</label>
+		<label>Last Completed Runtime</label>
 		<description>Start time of the most recent completed valve run from Summary day views.</description>
 		<tags>
 			<tag>Status</tag>

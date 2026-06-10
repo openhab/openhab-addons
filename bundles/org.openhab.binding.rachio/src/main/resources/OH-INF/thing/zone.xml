@@ -18,7 +18,7 @@
 			<channel id="number" typeId="zone-number"/>
 			<channel id="enabled" typeId="zone-enabled"/>
 			<channel id="run" typeId="zone-run"/>
-			<channel id="run-time" typeId="zone-run-time"/>
+			<channel id="runtime" typeId="zone-runtime"/>
 			<channel id="run-total" typeId="zone-run-total"/>
 			<channel id="available-water" typeId="zone-available-water"/>
 			<channel id="image-url" typeId="zone-image-url"/>
@@ -92,7 +92,7 @@
 			<tag>Water</tag>
 		</tags>
 	</channel-type>
-	<channel-type id="zone-run-time">
+	<channel-type id="zone-runtime">
 		<item-type unitHint="s">Number:Time</item-type>
 		<label>Runtime</label>
 		<description>Set &gt; 0 to start the zone for the given number of seconds.</description>

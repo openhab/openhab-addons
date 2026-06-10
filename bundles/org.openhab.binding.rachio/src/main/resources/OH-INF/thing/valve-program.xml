@@ -18,8 +18,8 @@
 			<channel id="program-type" typeId="valve-program-program-type"/>
 			<channel id="valve-id" typeId="valve-program-valve-id"/>
 			<channel id="start-time" typeId="valve-program-start-time"/>
-			<channel id="next-run-time" typeId="valve-program-next-run-time"/>
-			<channel id="last-run-time" typeId="valve-program-last-run-time"/>
+			<channel id="next-runtime" typeId="valve-program-next-runtime"/>
+			<channel id="last-runtime" typeId="valve-program-last-runtime"/>
 			<channel id="duration" typeId="valve-program-duration"/>
 			<channel id="days-of-week" typeId="valve-program-days-of-week"/>
 			<channel id="interval-days" typeId="valve-program-interval-days"/>
@@ -95,20 +95,20 @@
 		<description>Program start time value returned by Rachio.</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="valve-program-next-run-time">
+	<channel-type id="valve-program-next-runtime">
 		<item-type>DateTime</item-type>
-		<label>Next Run Time</label>
-		<description>Next planned run time when available from Rachio or Summary day views.</description>
+		<label>Next Runtime</label>
+		<description>Next planned runtime when available from Rachio or Summary day views.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Timestamp</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="valve-program-last-run-time">
+	<channel-type id="valve-program-last-runtime">
 		<item-type>DateTime</item-type>
-		<label>Last Run Time</label>
-		<description>Last run time when available from Rachio or Summary day views.</description>
+		<label>Last Runtime</label>
+		<description>Last runtime when available from Rachio or Summary day views.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Timestamp</tag>

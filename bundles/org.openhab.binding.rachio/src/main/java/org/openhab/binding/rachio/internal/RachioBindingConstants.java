@@ -60,7 +60,7 @@ public class RachioBindingConstants {
     // Rachio Cloud Connector Thing configuration options
     public static final String PARAM_APIKEY = "apikey";
     public static final String PARAM_POLLING_INTERVAL = "pollingInterval";
-    public static final String PARAM_DEF_RUNTIME = "defaultRuntime";
+    public static final String PARAM_DEFAULT_RUNTIME = "defaultRuntime";
     public static final String PARAM_CALLBACK_URL = "callbackUrl";
     public static final String PARAM_CALLBACK_USERNAME = "callbackUsername";
     public static final String PARAM_CALLBACK_PASSWORD = "callbackPassword";
@@ -104,7 +104,7 @@ public class RachioBindingConstants {
     public static final String CHANNEL_DEVICE_SLEEP_MODE = "sleep-mode";
     public static final String CHANNEL_DEVICE_RUN = "run";
     public static final String CHANNEL_DEVICE_RUN_ZONES = "run-zones";
-    public static final String CHANNEL_DEVICE_RUN_TIME = "run-time";
+    public static final String CHANNEL_DEVICE_RUNTIME = "runtime";
     public static final String CHANNEL_DEVICE_STOP = "stop";
     public static final String CHANNEL_DEVICE_RAIN_DELAY = "rain-delay";
     public static final String CHANNEL_DEVICE_RAIN_STRIPPED = "rain-sensor-tripped";
@@ -144,7 +144,7 @@ public class RachioBindingConstants {
     public static final String CHANNEL_ZONE_NUMBER = "number";
     public static final String CHANNEL_ZONE_ENABLED = "enabled";
     public static final String CHANNEL_ZONE_RUN = "run";
-    public static final String CHANNEL_ZONE_RUN_TIME = "run-time";
+    public static final String CHANNEL_ZONE_RUNTIME = "runtime";
     public static final String CHANNEL_ZONE_RUN_TOTAL = "run-total";
     public static final String CHANNEL_ZONE_AVAILABLE_WATER = "available-water";
     public static final String CHANNEL_ZONE_IMAGEURL = "image-url";
@@ -197,7 +197,7 @@ public class RachioBindingConstants {
     public static final String CHANNEL_VALVE_NAME = "name";
     public static final String CHANNEL_VALVE_ONLINE = "online";
     public static final String CHANNEL_VALVE_RUN = "run";
-    public static final String CHANNEL_VALVE_RUN_TIME = "run-time";
+    public static final String CHANNEL_VALVE_RUNTIME = "runtime";
     public static final String CHANNEL_VALVE_DEFAULT_RUNTIME = "default-runtime";
     public static final String CHANNEL_VALVE_STATE_MATCHES = "state-matches";
     public static final String CHANNEL_VALVE_FLOW_DETECTED = "flow-detected";
@@ -205,11 +205,11 @@ public class RachioBindingConstants {
     public static final String CHANNEL_VALVE_SERIAL_NUMBER = "serial-number";
     public static final String CHANNEL_VALVE_LAST_RUN_TYPE = "last-run-type";
     public static final String CHANNEL_VALVE_LAST_END_REASON = "last-end-reason";
-    public static final String CHANNEL_VALVE_NEXT_PLANNED_RUN_TIME = "next-planned-run-time";
+    public static final String CHANNEL_VALVE_NEXT_PLANNED_RUNTIME = "next-planned-runtime";
     public static final String CHANNEL_VALVE_NEXT_PLANNED_RUN_DURATION = "next-planned-run-duration";
     public static final String CHANNEL_VALVE_NEXT_PLANNED_RUN_PROGRAM_ID = "next-planned-run-program-id";
     public static final String CHANNEL_VALVE_NEXT_PLANNED_RUN_SKIPPED = "next-planned-run-skipped";
-    public static final String CHANNEL_VALVE_LAST_COMPLETED_RUN_TIME = "last-completed-run-time";
+    public static final String CHANNEL_VALVE_LAST_COMPLETED_RUNTIME = "last-completed-runtime";
     public static final String CHANNEL_VALVE_LAST_COMPLETED_RUN_DURATION = "last-completed-run-duration";
     public static final String CHANNEL_VALVE_LAST_RUN_STATUS = "last-run-status";
     public static final String CHANNEL_VALVE_SKIP_NEXT_PLANNED_RUN = "skip-next-planned-run";
@@ -220,8 +220,8 @@ public class RachioBindingConstants {
     public static final String CHANNEL_VALVE_PROGRAM_TYPE = "program-type";
     public static final String CHANNEL_VALVE_PROGRAM_VALVE_ID = "valve-id";
     public static final String CHANNEL_VALVE_PROGRAM_START_TIME = "start-time";
-    public static final String CHANNEL_VALVE_PROGRAM_NEXT_RUN_TIME = "next-run-time";
-    public static final String CHANNEL_VALVE_PROGRAM_LAST_RUN_TIME = "last-run-time";
+    public static final String CHANNEL_VALVE_PROGRAM_NEXT_RUNTIME = "next-runtime";
+    public static final String CHANNEL_VALVE_PROGRAM_LAST_RUNTIME = "last-runtime";
     public static final String CHANNEL_VALVE_PROGRAM_DURATION = "duration";
     public static final String CHANNEL_VALVE_PROGRAM_DAYS_OF_WEEK = "days-of-week";
     public static final String CHANNEL_VALVE_PROGRAM_INTERVAL_DAYS = "interval-days";

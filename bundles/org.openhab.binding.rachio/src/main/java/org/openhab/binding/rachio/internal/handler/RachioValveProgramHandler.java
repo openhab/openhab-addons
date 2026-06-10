@@ -326,9 +326,9 @@ public class RachioValveProgramHandler extends AbstractRachioThingHandler {
         updateChannel(CHANNEL_VALVE_PROGRAM_TYPE, stringOrUndef(currentProgram.getProgramType()));
         updateChannel(CHANNEL_VALVE_PROGRAM_VALVE_ID, stringOrUndef(valveId));
         updateChannel(CHANNEL_VALVE_PROGRAM_START_TIME, stringOrUndef(currentProgram.startTime));
-        updateChannel(CHANNEL_VALVE_PROGRAM_NEXT_RUN_TIME, nextRun != null ? dateTimeOrUndef(nextRun.getStartTime())
+        updateChannel(CHANNEL_VALVE_PROGRAM_NEXT_RUNTIME, nextRun != null ? dateTimeOrUndef(nextRun.getStartTime())
                 : dateTimeOrUndef(currentProgram.nextRunTime));
-        updateChannel(CHANNEL_VALVE_PROGRAM_LAST_RUN_TIME, dateTimeOrUndef(currentProgram.lastRunTime));
+        updateChannel(CHANNEL_VALVE_PROGRAM_LAST_RUNTIME, dateTimeOrUndef(currentProgram.lastRunTime));
         updateChannel(CHANNEL_VALVE_PROGRAM_DURATION, RachioQuantityTypes.seconds(currentProgram.getDurationSeconds()));
         updateChannel(CHANNEL_VALVE_PROGRAM_DAYS_OF_WEEK, stringOrUndef(currentProgram.getDaysOfWeek()));
         updateChannel(CHANNEL_VALVE_PROGRAM_INTERVAL_DAYS, RachioQuantityTypes.days(currentProgram.intervalDays));

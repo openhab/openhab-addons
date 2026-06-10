@@ -182,7 +182,7 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
                         handler.enableDevice(d.id);
                     }
                 }
-            } else if (channel.equals(RachioBindingConstants.CHANNEL_DEVICE_RUN_TIME)) {
+            } else if (channel.equals(RachioBindingConstants.CHANNEL_DEVICE_RUNTIME)) {
                 RachioQuantityTypes.durationSeconds(command).ifPresentOrElse(runtime -> {
                     logger.debug("Default Runtime for zones set to {} sec", runtime);
                     d.setRunTime(runtime);
@@ -267,7 +267,7 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
                     RachioQuantityTypes.seconds(d.getPauseDuration()));
             updateChannel(RachioBindingConstants.CHANNEL_DEVICE_SLEEP_MODE, d.getSleepMode());
             updateChannel(RachioBindingConstants.CHANNEL_DEVICE_RUN_ZONES, new StringType(d.getRunZones()));
-            updateChannel(RachioBindingConstants.CHANNEL_DEVICE_RUN_TIME, RachioQuantityTypes.seconds(d.getRunTime()));
+            updateChannel(RachioBindingConstants.CHANNEL_DEVICE_RUNTIME, RachioQuantityTypes.seconds(d.getRunTime()));
             updateChannel(RachioBindingConstants.CHANNEL_DEVICE_RAIN_DELAY, RachioQuantityTypes.seconds(d.rainDelay));
             updateChannel(RachioBindingConstants.CHANNEL_DEVICE_RAIN_STRIPPED,
                     d.rainSensorTripped ? OnOffType.ON : OnOffType.OFF);

@@ -63,18 +63,18 @@ Plain runtime and delay commands remain seconds, and plain `moisture-level` comm
 
 | Thing type      | Channels                                                                                              | New Item type          |
 |-----------------|-------------------------------------------------------------------------------------------------------|------------------------|
-| `device`        | `pause-time`, `run-time`, `rain-delay`, `current-schedule-duration`                                   | `Number:Time`          |
+| `device`        | `pause-time`, `runtime`, `rain-delay`, `current-schedule-duration`                                    | `Number:Time`          |
 | `device`        | `forecast-today-high`, `forecast-today-low`                                                           | `Number:Temperature`   |
 | `device`        | `forecast-precipitation`                                                                              | `Number:Length`        |
 | `device`        | `forecast-precipitation-probability`                                                                  | `Number:Dimensionless` |
 | `device`        | `forecast-wind`                                                                                       | `Number:Speed`         |
-| `zone`          | `run-time`, `run-total`, `fixed-runtime`, `max-runtime`, `runtime-no-multiplier`                       | `Number:Time`          |
+| `zone`          | `runtime`, `run-total`, `fixed-runtime`, `max-runtime`, `runtime-no-multiplier`                        | `Number:Time`          |
 | `zone`          | `available-water`, `depth-of-water`, `saturated-depth-of-water`, `root-zone-depth`, `moisture-level`  | `Number:Length`        |
 | `zone`          | `yard-area-square-feet`                                                                               | `Number:Area`          |
 | `zone`          | `management-allowed-depletion`, `efficiency`, `moisture-percent`                                      | `Number:Dimensionless` |
 | `schedule`      | `seasonal-adjustment`                                                                                 | `Number:Dimensionless` |
 | `flex-schedule` | `seasonal-adjustment`                                                                                 | `Number:Dimensionless` |
-| `valve`         | `run-time`, `default-runtime`, `next-planned-run-duration`, `last-completed-run-duration`             | `Number:Time`          |
+| `valve`         | `runtime`, `default-runtime`, `next-planned-run-duration`, `last-completed-run-duration`              | `Number:Time`          |
 | `valve`         | `battery-level`                                                                                       | `Number:Dimensionless` |
 | `valve-program` | `duration`, `interval-days`                                                                           | `Number:Time`          |
 | `valve-program` | `seasonal-adjustment`                                                                                 | `Number:Dimensionless` |
@@ -82,7 +82,7 @@ Plain runtime and delay commands remain seconds, and plain `moisture-level` comm
 Valve Program `interval-days` is represented as `Number:Time` with day semantics.
 
 ```text
-Number:Time Rachio_Zone1_RunTime "Zone 1 runtime [%d s]" { channel="rachio:zone:cloud:zone1:run-time" }
+Number:Time Rachio_Zone1_Runtime "Zone 1 runtime [%d s]" { channel="rachio:zone:cloud:zone1:runtime" }
 Number:Length Rachio_Zone1_MoistureLevel "Zone 1 moisture [%.1f mm]" { channel="rachio:zone:cloud:zone1:moisture-level" }
 Number:Dimensionless Rachio_ForecastPrecipProbability "Rain probability [%.0f %%]" { channel="rachio:device:cloud:controller1:forecast-precipitation-probability" }
 ```
@@ -257,7 +257,7 @@ The binding queries Rachio's `listWebhookEventTypes` catalog and subscribes to s
 | `stop`                             | ON stops watering for all zones.                                                                                           |
 | `run`                              | ON starts watering selected zones from `run-zones`.                                                                        |
 | `run-zones`                        | Comma-separated zone numbers to run, for example `1,3`; an empty value means all zones.                                    |
-| `run-time`                         | Controller-level `Number:Time` run duration for the multi-zone `run` command. Plain numeric commands are seconds.          |
+| `runtime`                          | Controller-level `Number:Time` run duration for the multi-zone `run` command. Plain numeric commands are seconds.          |
 | `rain-delay`                       | `Number:Time` rain delay duration. Plain numeric commands are seconds; 0 means not in rain delay mode.                     |
 | `rain-sensor-tripped`              | ON when the rain sensor has tripped.                                                                                       |
 | `active-zone-number`               | Zone number currently watering, populated from zone run webhook events.                                                    |
@@ -292,13 +292,13 @@ The binding queries Rachio's `listWebhookEventTypes` catalog and subscribes to s
 | `last-skip-start-time`             | Start time associated with the most recent weather intelligence skip event.                                                |
 | `last-skip-reason`                 | Summary or reason from the most recent weather intelligence skip event.                                                    |
 
-When starting zones from the controller Thing with `run-zones` and `run`, controller `run-time` controls the duration for every selected zone.
+When starting zones from the controller Thing with `run-zones` and `run`, controller `runtime` controls the duration for every selected zone.
 
-If controller `run-time` is greater than 0, that value is used.
+If controller `runtime` is greater than 0, that value is used.
 
-If controller `run-time` is 0, the bridge `defaultRuntime` is used.
+If controller `runtime` is 0, the bridge `defaultRuntime` is used.
 
-Zone-specific `run-time` values only apply when starting an individual zone from that zone Thing.
+Zone-specific `runtime` values only apply when starting an individual zone from that zone Thing.
 
 Forecast channels follow the Cloud Connector `forecastUnits` setting.
 
@@ -313,8 +313,8 @@ With `US`, they are published as Fahrenheit, inches, and miles per hour.
 | `number`                     | Zone number as assigned by the controller.                                                                                                                                                                |
 | `name`                       | Zone name.                                                                                                                                                                                                |
 | `enabled`                    | ON when the zone is enabled. Sending ON/OFF enables or disables the zone.                                                                                                                                 |
-| `run`                        | ON starts watering. If `run-time` is 0, `defaultRuntime` is used. OFF stops watering.                                                                                                                     |
-| `run-time`                   | `Number:Time` duration to run the zone when `run` receives ON. Plain numeric commands are seconds.                                                                                                        |
+| `run`                        | ON starts watering. If `runtime` is 0, `defaultRuntime` is used. OFF stops watering.                                                                                                                      |
+| `runtime`                    | `Number:Time` duration to run the zone when `run` receives ON. Plain numeric commands are seconds.                                                                                                        |
 | `run-total`                  | Total `Number:Time` duration the zone was watering, as returned by the cloud service.                                                                                                                     |
 | `available-water`            | `Number:Length` available water value returned by Rachio for the zone, published in inches.                                                                                                               |
 | `image-url`                  | URL to the zone picture.                                                                                                                                                                                  |
@@ -387,7 +387,7 @@ Thing valve-program morninghose "Morning Hose Program" [
 | `name`                     | Valve name when reported by Rachio.                                                                                                                                            |
 | `online`                   | ON when Rachio reports the valve is online or connected.                                                                                                                       |
 | `run`                      | Send ON to start watering, OFF to stop watering.                                                                                                                               |
-| `run-time`                 | `Number:Time` runtime for the next manual valve start. Plain numeric commands are seconds. If 0, the valve default runtime is used, then the bridge `defaultRuntime` fallback. |
+| `runtime`                  | `Number:Time` runtime for the next manual valve start. Plain numeric commands are seconds. If 0, the valve default runtime is used, then the bridge `defaultRuntime` fallback. |
 | `default-runtime`          | `Number:Time` valve default manual runtime. Plain numeric commands are seconds. Sending a value updates Rachio using `setDefaultRuntime`.                                      |
 | `state-matches`            | ON when `ValveState.matches` indicates the physical valve has synchronized with the desired cloud-side state.                                                                  |
 | `flow-detected`            | ON when a valve webhook event or valve state reports flow.                                                                                                                     |
@@ -395,11 +395,11 @@ Thing valve-program morninghose "Morning Hose Program" [
 | `serial-number`            | Valve serial number when reported by Rachio.                                                                                                                                   |
 | `last-run-type`            | Run type from the most recent valve webhook event.                                                                                                                             |
 | `last-end-reason`          | End reason from the most recent valve stop webhook event.                                                                                                                      |
-| `next-planned-run-time`    | Start time of the next planned valve run from Summary day views.                                                                                                               |
+| `next-planned-runtime`     | Start time of the next planned valve run from Summary day views.                                                                                                               |
 | `next-planned-run-duration` | `Number:Time` duration of the next planned valve run, published in seconds.                                                                                                   |
 | `next-planned-run-program-id` | Program ID associated with the next planned valve run.                                                                                                                       |
 | `next-planned-run-skipped` | ON when the next planned valve run is currently skipped.                                                                                                                       |
-| `last-completed-run-time`  | Start time of the most recent completed valve run from Summary day views.                                                                                                      |
+| `last-completed-runtime`   | Start time of the most recent completed valve run from Summary day views.                                                                                                      |
 | `last-completed-run-duration` | `Number:Time` duration of the most recent completed valve run, published in seconds.                                                                                         |
 | `last-run-status`          | Status of the most recent completed valve run from Summary day views.                                                                                                          |
 | `skip-next-planned-run`    | Send ON to skip the next upcoming valve planned run when Summary identifiers are available.                                                                                    |
@@ -423,8 +423,8 @@ The binding therefore models each program as a related `valve-program` Thing, li
 | `program-type`                            | Program type returned by Rachio.                                                                         |
 | `valve-id`                                | Associated Smart Hose Timer Valve UUID.                                                                  |
 | `start-time`                              | Program start time value returned by Rachio.                                                             |
-| `next-run-time`                           | Next planned run time when available from Rachio or Summary day views.                                   |
-| `last-run-time`                           | Last run time when available from Rachio or Summary day views.                                           |
+| `next-runtime`                            | Next planned runtime when available from Rachio or Summary day views.                                    |
+| `last-runtime`                            | Last runtime when available from Rachio or Summary day views.                                            |
 | `duration`                                | `Number:Time` Program duration, published in seconds.                                                    |
 | `days-of-week`                            | Days-of-week structure returned by Rachio.                                                               |
 | `interval-days`                           | `Number:Time` Program interval, published in days when provided by Rachio.                               |
@@ -535,30 +535,30 @@ String Rachio_Controller_Name "Controller Name" { channel="rachio:device:1:contr
 Switch Rachio_Controller_Online "Controller Online" { channel="rachio:device:1:controller:online" }
 Switch Rachio_Controller_Run "Run Selected Zones" { channel="rachio:device:1:controller:run" }
 String Rachio_Controller_RunZones "Run Zone List" { channel="rachio:device:1:controller:run-zones" }
-Number:Time Rachio_Controller_RunTime "Controller Runtime [%d s]" { channel="rachio:device:1:controller:run-time" }
-Number:Time Rachio_Controller_RainDelay "Rain Delay [%d s]" { channel="rachio:device:1:controller:rainDelay" }
+Number:Time Rachio_Controller_Runtime "Controller Runtime [%d s]" { channel="rachio:device:1:controller:runtime" }
+Number:Time Rachio_Controller_RainDelay "Rain Delay [%d s]" { channel="rachio:device:1:controller:rain-delay" }
 
-Number:Temperature Rachio_Forecast_High "Forecast High" { channel="rachio:device:1:controller:forecastTodayHigh" }
-Number:Length Rachio_Forecast_Precipitation "Forecast Precipitation" { channel="rachio:device:1:controller:forecastPrecipitation" }
-Number:Dimensionless Rachio_Forecast_PrecipitationProbability "Rain Probability [%.0f %%]" { channel="rachio:device:1:controller:forecastPrecipitationProbability" }
+Number:Temperature Rachio_Forecast_High "Forecast High" { channel="rachio:device:1:controller:forecast-today-high" }
+Number:Length Rachio_Forecast_Precipitation "Forecast Precipitation" { channel="rachio:device:1:controller:forecast-precipitation" }
+Number:Dimensionless Rachio_Forecast_PrecipitationProbability "Rain Probability [%.0f %%]" { channel="rachio:device:1:controller:forecast-precipitation-probability" }
 
 String Rachio_Zone1_Name "Zone Name" { channel="rachio:zone:1:controller-zone1:name" }
 Switch Rachio_Zone1_Run "Run Zone" { channel="rachio:zone:1:controller-zone1:run" }
-Number:Time Rachio_Zone1_RunTime "Zone Runtime [%d s]" { channel="rachio:zone:1:controller-zone1:run-time" }
-Number:Length Rachio_Zone1_MoistureLevel "Moisture Level [%.1f mm]" { channel="rachio:zone:1:controller-zone1:moistureLevel" }
-Number:Dimensionless Rachio_Zone1_MoisturePercent "Moisture [%.0f %%]" { channel="rachio:zone:1:controller-zone1:moisturePercent" }
+Number:Time Rachio_Zone1_Runtime "Zone Runtime [%d s]" { channel="rachio:zone:1:controller-zone1:runtime" }
+Number:Length Rachio_Zone1_MoistureLevel "Moisture Level [%.1f mm]" { channel="rachio:zone:1:controller-zone1:moisture-level" }
+Number:Dimensionless Rachio_Zone1_MoisturePercent "Moisture [%.0f %%]" { channel="rachio:zone:1:controller-zone1:moisture-percent" }
 Image Rachio_Zone1_Image "Zone Image" { channel="rachio:zone:1:controller-zone1:image" }
 
 Switch HoseValve_Run "Run Hose Valve" { channel="rachio:valve:1:gardenhose:run" }
-Number:Time HoseValve_RunTime "Hose Runtime [%d s]" { channel="rachio:valve:1:gardenhose:run-time" }
-Number:Time HoseValve_DefaultRuntime "Default Hose Runtime [%d s]" { channel="rachio:valve:1:gardenhose:defaultRuntime" }
-Number:Dimensionless HoseValve_BatteryLevel "Valve Battery [%.0f %%]" { channel="rachio:valve:1:gardenhose:batteryLevel" }
-Number:Time HoseValve_NextRunDuration "Next Hose Run Duration [%d s]" { channel="rachio:valve:1:gardenhose:nextPlannedRunDuration" }
-Switch HoseValve_SkipNext "Skip Next Hose Run" { channel="rachio:valve:1:gardenhose:skipNextPlannedRun" }
+Number:Time HoseValve_Runtime "Hose Runtime [%d s]" { channel="rachio:valve:1:gardenhose:runtime" }
+Number:Time HoseValve_DefaultRuntime "Default Hose Runtime [%d s]" { channel="rachio:valve:1:gardenhose:default-runtime" }
+Number:Dimensionless HoseValve_BatteryLevel "Valve Battery [%.0f %%]" { channel="rachio:valve:1:gardenhose:battery-level" }
+Number:Time HoseValve_NextRunDuration "Next Hose Run Duration [%d s]" { channel="rachio:valve:1:gardenhose:next-planned-run-duration" }
+Switch HoseValve_SkipNext "Skip Next Hose Run" { channel="rachio:valve:1:gardenhose:skip-next-planned-run" }
 
 String HoseProgram_Name "Program Name" { channel="rachio:valve-program:1:morninghose:name" }
 Number:Time HoseProgram_Duration "Program Duration [%d s]" { channel="rachio:valve-program:1:morninghose:duration" }
-Number:Time HoseProgram_Interval "Program Interval [%.0f d]" { channel="rachio:valve-program:1:morninghose:intervalDays" }
+Number:Time HoseProgram_Interval "Program Interval [%.0f d]" { channel="rachio:valve-program:1:morninghose:interval-days" }
 Number:Dimensionless HoseProgram_SeasonalAdjustment "Seasonal Adjustment [%.0f %%]" { channel="rachio:valve-program:1:morninghose:seasonal-adjustment" }
 ```
 

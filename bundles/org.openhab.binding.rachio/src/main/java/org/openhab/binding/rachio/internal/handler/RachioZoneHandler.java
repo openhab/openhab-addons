@@ -185,7 +185,7 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
                     logger.debug("{}: Stop watering for the device", thingId);
                     handler.stopWatering(currentDev.id);
                 }
-            } else if (channel.equals(RachioBindingConstants.CHANNEL_ZONE_RUN_TIME)) {
+            } else if (channel.equals(RachioBindingConstants.CHANNEL_ZONE_RUNTIME)) {
                 RachioQuantityTypes.durationSeconds(command).ifPresentOrElse(runtime -> {
                     logger.debug("{}: Zone {} will start for {} sec", thingId, currentZone.name, runtime);
                     currentZone.setStartRunTime(runtime);
@@ -321,7 +321,7 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
             updateChannel(CHANNEL_ZONE_NUMBER, new DecimalType(new BigDecimal(z.zoneNumber).toString()));
             updateChannel(CHANNEL_ZONE_ENABLED, z.getEnabled());
             updateChannel(CHANNEL_ZONE_RUN, zoneRunState);
-            updateChannel(CHANNEL_ZONE_RUN_TIME, RachioQuantityTypes.seconds(z.getStartRunTime()));
+            updateChannel(CHANNEL_ZONE_RUNTIME, RachioQuantityTypes.seconds(z.getStartRunTime()));
             updateChannel(CHANNEL_ZONE_RUN_TOTAL, RachioQuantityTypes.seconds(z.runtime));
             updateChannel(CHANNEL_ZONE_AVAILABLE_WATER, RachioQuantityTypes.inchesOrNull(z.availableWater));
             updateChannel(CHANNEL_ZONE_IMAGEURL, new StringType(z.imageUrl));

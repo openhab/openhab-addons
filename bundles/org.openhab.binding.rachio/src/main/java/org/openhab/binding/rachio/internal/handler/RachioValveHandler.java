@@ -116,12 +116,12 @@ public class RachioValveHandler extends AbstractRachioThingHandler {
 
         String errorMessage = "";
         try {
-            if (CHANNEL_VALVE_RUN_TIME.equals(channel)) {
+            if (CHANNEL_VALVE_RUNTIME.equals(channel)) {
                 OptionalInt runtimeSeconds = RachioQuantityTypes.durationSeconds(command);
                 if (runtimeSeconds.isPresent()) {
                     runTime = Math.max(0, runtimeSeconds.getAsInt());
                     logger.debug("{}: Valve will start for {} sec", thingId, runTime);
-                    updateChannel(CHANNEL_VALVE_RUN_TIME, RachioQuantityTypes.seconds(runTime));
+                    updateChannel(CHANNEL_VALVE_RUNTIME, RachioQuantityTypes.seconds(runTime));
                 } else {
                     logger.debug("{}: runTime command value is not a duration: {}", thingId, command);
                 }
@@ -390,7 +390,7 @@ public class RachioValveHandler extends AbstractRachioThingHandler {
         updateChannel(CHANNEL_VALVE_NAME, new StringType(currentValve.getThingName()));
         updateChannel(CHANNEL_VALVE_ONLINE, onlineState(currentValve));
         updateChannel(CHANNEL_VALVE_RUN, runState);
-        updateChannel(CHANNEL_VALVE_RUN_TIME, RachioQuantityTypes.seconds(runTime));
+        updateChannel(CHANNEL_VALVE_RUNTIME, RachioQuantityTypes.seconds(runTime));
         updateChannel(CHANNEL_VALVE_DEFAULT_RUNTIME,
                 RachioQuantityTypes.seconds(currentValve.getDefaultRuntimeSeconds()));
         updateChannel(CHANNEL_VALVE_STATE_MATCHES,
@@ -409,7 +409,7 @@ public class RachioValveHandler extends AbstractRachioThingHandler {
 
     private void postSummaryChannelData() {
         RachioValveDayRun nextRun = nextPlannedRun;
-        updateChannel(CHANNEL_VALVE_NEXT_PLANNED_RUN_TIME,
+        updateChannel(CHANNEL_VALVE_NEXT_PLANNED_RUNTIME,
                 nextRun != null ? dateTimeOrUndef(nextRun.getStartTime()) : UnDefType.UNDEF);
         updateChannel(CHANNEL_VALVE_NEXT_PLANNED_RUN_DURATION,
                 nextRun != null ? RachioQuantityTypes.seconds(nextRun.getDurationSeconds()) : UnDefType.UNDEF);
@@ -419,7 +419,7 @@ public class RachioValveHandler extends AbstractRachioThingHandler {
                 nextRun != null ? nextRun.isSkipped() ? OnOffType.ON : OnOffType.OFF : UnDefType.UNDEF);
 
         RachioValveDayRun completedRun = lastCompletedRun;
-        updateChannel(CHANNEL_VALVE_LAST_COMPLETED_RUN_TIME,
+        updateChannel(CHANNEL_VALVE_LAST_COMPLETED_RUNTIME,
                 completedRun != null ? dateTimeOrUndef(completedRun.getStartTime()) : UnDefType.UNDEF);
         updateChannel(CHANNEL_VALVE_LAST_COMPLETED_RUN_DURATION,
                 completedRun != null ? RachioQuantityTypes.seconds(completedRun.getDurationSeconds())

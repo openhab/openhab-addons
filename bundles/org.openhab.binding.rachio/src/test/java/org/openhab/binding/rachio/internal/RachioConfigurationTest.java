@@ -27,7 +27,7 @@ import static org.openhab.binding.rachio.internal.RachioBindingConstants.PARAM_C
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.PARAM_CALLBACK_URL;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.PARAM_CALLBACK_USERNAME;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.PARAM_CLEAR_CALLBACK;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.PARAM_DEF_RUNTIME;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.PARAM_DEFAULT_RUNTIME;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.PARAM_EVENT_HISTORY_LOOKBACK_HOURS;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.PARAM_FORECAST_UNITS;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.PARAM_HOSE_SUMMARY_LOOKAHEAD_DAYS;
@@ -54,7 +54,7 @@ import org.junit.jupiter.api.Test;
  */
 class RachioConfigurationTest {
     private static final List<String> CLOUD_THING_PARAMETERS = List.of(PARAM_APIKEY, PARAM_POLLING_INTERVAL,
-            PARAM_DEF_RUNTIME, PARAM_EVENT_HISTORY_LOOKBACK_HOURS, PARAM_FORECAST_UNITS,
+            PARAM_DEFAULT_RUNTIME, PARAM_EVENT_HISTORY_LOOKBACK_HOURS, PARAM_FORECAST_UNITS,
             PARAM_HOSE_SUMMARY_LOOKBACK_DAYS, PARAM_HOSE_SUMMARY_LOOKAHEAD_DAYS, PARAM_CALLBACK_URL,
             PARAM_CALLBACK_USERNAME, PARAM_CALLBACK_PASSWORD, PARAM_CLEAR_CALLBACK);
 

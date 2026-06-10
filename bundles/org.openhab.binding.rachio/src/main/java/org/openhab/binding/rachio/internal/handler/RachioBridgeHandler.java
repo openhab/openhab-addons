@@ -865,7 +865,7 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
                 "Rachio Cloud configuration resolved: apikeyConfigured={} ({}), pollingInterval={} ({}), defaultRuntime={} ({}), eventHistoryLookbackHours={} ({}), forecastUnits={} ({}), hoseSummaryLookbackDays={} ({}), hoseSummaryLookaheadDays={} ({}), callbackUrlConfigured={} ({}), callbackUsernameConfigured={} ({}), callbackPasswordConfigured={} ({}), clearAllCallbacks={} ({})",
                 isConfigured(config.apikey), sourceLabel(resolvedConfiguration, PARAM_APIKEY), config.pollingInterval,
                 sourceLabel(resolvedConfiguration, PARAM_POLLING_INTERVAL), config.defaultRuntime,
-                sourceLabel(resolvedConfiguration, PARAM_DEF_RUNTIME), config.eventHistoryLookbackHours,
+                sourceLabel(resolvedConfiguration, PARAM_DEFAULT_RUNTIME), config.eventHistoryLookbackHours,
                 sourceLabel(resolvedConfiguration, PARAM_EVENT_HISTORY_LOOKBACK_HOURS), config.forecastUnits,
                 sourceLabel(resolvedConfiguration, PARAM_FORECAST_UNITS), config.hoseSummaryLookbackDays,
                 sourceLabel(resolvedConfiguration, PARAM_HOSE_SUMMARY_LOOKBACK_DAYS), config.hoseSummaryLookaheadDays,
