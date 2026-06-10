@@ -44,8 +44,9 @@
 	<channel-type id="auth-status">
 		<item-type>String</item-type>
 		<label>Authorization Status</label>
-		<description>Shows whether the SmartThings account is authorized. Authorize at
-			http(s)://[YOUR_OPENHAB]/smartthingscloud</description>
+		<description>Shows whether the SmartThings account is authorized. Use the authorization link shown in the
+			account Thing
+			status.</description>
 		<state readOnly="true"/>
 	</channel-type>
 

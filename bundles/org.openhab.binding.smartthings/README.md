@@ -29,7 +29,7 @@ The current version can use three different mechanisms to handle device events.
 
     1. Reverse proxy method:
     Set up a reverse proxy before the add-on setup, and access the SmartThings setup using your public-facing URI.
-    The add-on will detect and register automatically with something like this: <https://openhab.yourdomain/smartthings/cb>.
+    The add-on will detect and register automatically with something like this: <https://openhab.yourdomain/smartthings/account/cb>.
 
     1. openHAB Cloud webhook service method:
     You can also use the openHAB Cloud webhook service.
@@ -61,7 +61,7 @@ To do the registration, follow these steps:
 
 Leave all values empty, they will be filled automatically.
 
-1. Browse to the URL: <https://oh.yourdomain/smartthings>
+1. Browse to the URL shown in the SmartThings account Thing status, for example: <https://openhab.yourdomain/smartthings/account>
    You should see a page like this one:
 
 ![alt text](doc/Authorize01.png)
@@ -166,8 +166,7 @@ where:
     Your router should be configured such that the SmartThings Hub is always assigned to this IP address.
 - **smartthingsPort** is the port the SmartThings hub listens on. 39500 is the port assigned by SmartThings so it should be used unless you have a good reason for using another port.
 
-**Warning** This binding only supports one Bridge.
-If you try to configure a second bridge it will be ignored.
+Multiple SmartThings account bridges can be configured when different SmartThings user accounts need to be integrated.
 
 ### Thing Configuration
 

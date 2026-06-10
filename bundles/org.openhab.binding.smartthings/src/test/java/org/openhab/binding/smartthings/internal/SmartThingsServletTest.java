@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.smartthings.internal;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -27,13 +28,19 @@ import org.junit.jupiter.params.provider.ValueSource;
 class SmartThingsServletTest {
 
     @ParameterizedTest
-    @ValueSource(strings = { "/finish", "/smartthings", "/smartthings/" })
-    void oauthCallbackPathsAcceptLocalListenerAndServletRedirects(String path) {
-        assertTrue(SmartThingsServlet.isOAuthCallbackPath(path));
+    @ValueSource(strings = { "/finish", "/smartthings/account", "/smartthings/account/" })
+    void oauthCallbackPathsAcceptLocalListenerAndAccountServletRedirects(String path) {
+        assertTrue(SmartThingsServlet.isOAuthCallbackPath(path, "/smartthings/account"));
     }
 
     @Test
-    void oauthCallbackPathsRejectWebhookCallback() {
-        assertFalse(SmartThingsServlet.isOAuthCallbackPath("/smartthings/cb"));
+    void oauthCallbackPathsRejectOtherAccountAndWebhookCallback() {
+        assertFalse(SmartThingsServlet.isOAuthCallbackPath("/smartthings/other", "/smartthings/account"));
+        assertFalse(SmartThingsServlet.isOAuthCallbackPath("/smartthings/account/cb", "/smartthings/account"));
+    }
+
+    @Test
+    void accountServletPathUsesBridgeId() {
+        assertEquals("/smartthings/account", SmartThingsServlet.getServletPath("account"));
     }
 }

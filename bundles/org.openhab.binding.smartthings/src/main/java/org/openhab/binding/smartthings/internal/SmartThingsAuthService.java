@@ -13,12 +13,14 @@
 package org.openhab.binding.smartthings.internal;
 
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.validation.constraints.NotNull;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smartthings.internal.type.SmartThingsException;
+import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -35,7 +37,7 @@ import org.slf4j.LoggerFactory;
 public class SmartThingsAuthService {
     private final Logger logger = LoggerFactory.getLogger(SmartThingsAuthService.class);
 
-    private @Nullable SmartThingsOAuthHandler oAuthHandler;
+    private final Map<ThingUID, SmartThingsOAuthHandler> oAuthHandlers = new ConcurrentHashMap<>();
 
     @Activate
     protected void activate(ComponentContext componentContext, Map<String, Object> properties) {
@@ -52,12 +54,13 @@ public class SmartThingsAuthService {
      *
      * @return returns the name of the SmartThings user that is authorized
      */
-    public String authorize(String redirectUri, String state, String code) throws SmartThingsException {
-        SmartThingsOAuthHandler oAuthHandler = getSmartThingsOAuthHandler();
+    public String authorize(ThingUID bridgeUID, String redirectUri, String state, String code)
+            throws SmartThingsException {
+        SmartThingsOAuthHandler oAuthHandler = getSmartThingsOAuthHandler(bridgeUID);
         if (oAuthHandler == null) {
             logger.debug(
-                    "SmartThings redirected with state '{}' but no matching bridge was found. Possible bridge has been removed.",
-                    state);
+                    "SmartThings redirected for bridge '{}' with state '{}' but no matching bridge was found. Possible bridge has been removed.",
+                    bridgeUID, state);
             throw new SmartThingsException("@text/error-unknow-bridge");
         } else {
             return oAuthHandler.authorize(redirectUri, code);
@@ -67,21 +70,21 @@ public class SmartThingsAuthService {
     /**
      * @param listener Adds the given handler
      */
-    public void setSmartThingsOAuthHandler(@Nullable SmartThingsOAuthHandler oAuthHandler) {
-        this.oAuthHandler = oAuthHandler;
+    public void setSmartThingsOAuthHandler(ThingUID bridgeUID, SmartThingsOAuthHandler oAuthHandler) {
+        oAuthHandlers.put(bridgeUID, oAuthHandler);
     }
 
     /**
      * @param handler Removes the given handler
      */
-    public void unsetSmartThingsOAuthHandler(@NotNull SmartThingsOAuthHandler oAuthHandler) {
-        this.oAuthHandler = null;
+    public void unsetSmartThingsOAuthHandler(ThingUID bridgeUID, @NotNull SmartThingsOAuthHandler oAuthHandler) {
+        oAuthHandlers.remove(bridgeUID, oAuthHandler);
     }
 
     /**
      * @param listener Adds the given handler
      */
-    public @Nullable SmartThingsOAuthHandler getSmartThingsOAuthHandler() {
-        return this.oAuthHandler;
+    public @Nullable SmartThingsOAuthHandler getSmartThingsOAuthHandler(ThingUID bridgeUID) {
+        return oAuthHandlers.get(bridgeUID);
     }
 }

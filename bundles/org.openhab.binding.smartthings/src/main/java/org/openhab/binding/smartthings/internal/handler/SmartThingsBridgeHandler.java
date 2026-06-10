@@ -216,11 +216,12 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
         Locale locale = Locale.getDefault();
         Bundle bundle = FrameworkUtil.getBundle(getClass());
         String text = translationProvider.getText(bundle, "authorize-message", null, locale);
+        String authServletPath = getAuthServletPath();
 
         String msg = text + " <a " + "onclick=\"event.stopPropagation(); " + "var w = 600, h = 500;\r\n"
-                + "var left = (screen.width - w) / 2;\r\n" + "var top = (screen.height - h) / 2;\r\n"
-                + "window.open('/smartthings', 'popup', 'width=${w},height=${h},top=${top},left=${left}');"
-                + "return false;\">/smartthings</a>. ";
+                + "var left = (screen.width - w) / 2;\r\n" + "var top = (screen.height - h) / 2;\r\n" + "window.open('"
+                + authServletPath + "', 'popup', 'width=${w},height=${h},top=${top},left=${left}');"
+                + "return false;\">" + authServletPath + "</a>. ";
 
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
     }
@@ -303,7 +304,8 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
 
     public void registerServlet() throws SmartThingsException {
         try {
-            SmartThingsServlet s = new SmartThingsServlet(this, authService, translationProvider, httpService);
+            SmartThingsServlet s = new SmartThingsServlet(this, getAuthServletPath(), authService, translationProvider,
+                    httpService);
             s.activate();
             servlet = s;
         } catch (Exception e) {
@@ -355,7 +357,7 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
         try {
             WebhookService service = webHookService;
             if (service != null) {
-                Webhook webHook = service.requestWebhook(SmartThingsBindingConstants.SMARTTHINGS_CB_ALIAS).get();
+                Webhook webHook = service.requestWebhook(getAuthCallbackPath()).get();
 
                 URL result = webHook.url();
                 String urlSt = result.toString();
@@ -372,8 +374,16 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
     private void removeCloudWebhooks() {
         WebhookService service = webHookService;
         if (service != null) {
-            service.removeWebhook(SmartThingsBindingConstants.SMARTTHINGS_CB_ALIAS).join();
+            service.removeWebhook(getAuthCallbackPath()).join();
         }
+    }
+
+    public String getAuthServletPath() {
+        return SmartThingsServlet.getServletPath(getThing().getUID().getId());
+    }
+
+    public String getAuthCallbackPath() {
+        return getAuthServletPath() + "/cb";
     }
 
     private void updateWebhookProperties(@Nullable String webHookUrl) {

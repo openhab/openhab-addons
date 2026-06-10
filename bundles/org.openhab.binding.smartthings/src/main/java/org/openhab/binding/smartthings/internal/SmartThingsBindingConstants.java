@@ -36,8 +36,6 @@ public class SmartThingsBindingConstants {
     public static final ThingTypeUID THING_TYPE_ACCOUNT = new ThingTypeUID(BINDING_ID, "account");
 
     // Authorization related Servlet and resources aliases.
-    public static final String SMARTTHINGS_ALIAS = "/smartthings";
-    public static final String SMARTTHINGS_CB_ALIAS = SMARTTHINGS_ALIAS + "/cb";
     public static final String SMARTTHINGS_IMG_ALIAS = "/img";
 
     /**

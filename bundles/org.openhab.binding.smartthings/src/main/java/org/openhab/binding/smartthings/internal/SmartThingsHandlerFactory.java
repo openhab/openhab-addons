@@ -17,6 +17,8 @@ import static org.openhab.binding.smartthings.internal.SmartThingsBindingConstan
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.ws.rs.client.ClientBuilder;
 
@@ -59,10 +61,8 @@ public class SmartThingsHandlerFactory extends BaseThingHandlerFactory implement
 
     private final Logger logger = LoggerFactory.getLogger(SmartThingsHandlerFactory.class);
 
-    private List<SmartThingsThingHandler> thingHandlers = Collections.synchronizedList(new ArrayList<>());
-
-    private @Nullable SmartThingsBridgeHandler bridgeHandler = null;
-    private @Nullable ThingUID bridgeUID;
+    private final List<SmartThingsThingHandler> thingHandlers = Collections.synchronizedList(new ArrayList<>());
+    private final Map<ThingUID, SmartThingsBridgeHandler> bridgeHandlers = new ConcurrentHashMap<>();
     private @NonNullByDefault({}) HttpService httpService;
 
     private final HttpClientFactory httpClientFactory;
@@ -98,16 +98,14 @@ public class SmartThingsHandlerFactory extends BaseThingHandlerFactory implement
     @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
     protected void setWebHookService(WebhookService webHookService) {
         this.webHookService = webHookService;
-        SmartThingsBridgeHandler handler = bridgeHandler;
-        if (handler != null) {
+        for (SmartThingsBridgeHandler handler : bridgeHandlers.values()) {
             handler.setWebHookService(webHookService);
         }
     }
 
     protected void unsetWebHookService(WebhookService webHookService) {
         if (webHookService.equals(this.webHookService)) {
-            SmartThingsBridgeHandler handler = bridgeHandler;
-            if (handler != null) {
+            for (SmartThingsBridgeHandler handler : bridgeHandlers.values()) {
                 handler.unsetWebHookService(webHookService);
             }
             this.webHookService = null;
@@ -119,32 +117,22 @@ public class SmartThingsHandlerFactory extends BaseThingHandlerFactory implement
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_ACCOUNT)) {
-            // This binding only supports one bridge. If the user tries to add a second bridge register and error
-            // and ignore
-            if (bridgeHandler != null) {
-                logger.warn(
-                        "The SmartThings binding only supports one bridge. Please change your configuration to only use one Bridge. This bridge {} will be ignored.",
-                        thing.getUID().getAsString());
-                return null;
-            }
+            ThingUID bridgeUID = thing.getUID();
+            SmartThingsBridgeHandler bridgeHandler = new SmartThingsAccountHandler((Bridge) thing, this, authService,
+                    translationProvider, bundleContext, httpService, oAuthFactory, httpClientFactory, typeRegistry,
+                    clientBuilder, eventSourceFactory, webHookService);
+            bridgeHandlers.put(bridgeUID, bridgeHandler);
+            authService.setSmartThingsOAuthHandler(bridgeUID, bridgeHandler);
 
-            bridgeHandler = new SmartThingsAccountHandler((Bridge) thing, this, authService, translationProvider,
-                    bundleContext, httpService, oAuthFactory, httpClientFactory, typeRegistry, clientBuilder,
-                    eventSourceFactory, webHookService);
-
-            SmartThingsOAuthHandler oAuthHandler = bridgeHandler;
-            authService.setSmartThingsOAuthHandler(oAuthHandler);
-
-            bridgeUID = thing.getUID();
             logger.debug("SmartThingsHandlerFactory created SmartThingsAccountHandler for {}",
                     thingTypeUID.getAsString());
             return bridgeHandler;
         } else if (SmartThingsBindingConstants.BINDING_ID.equals(thing.getThingTypeUID().getBindingId())) {
-            ThingUID bridgeUID = this.bridgeUID;
+            ThingUID bridgeUID = thing.getBridgeUID();
             // Everything but the bridge is handled by this one handler
-            // Make sure this thing belongs to the registered Bridge
-            if (bridgeUID != null && !bridgeUID.equals(thing.getBridgeUID())) {
-                logger.warn("Thing: {} is being ignored because it does not belong to the registered bridge.",
+            // Make sure this thing belongs to a registered bridge
+            if (bridgeUID == null || !bridgeHandlers.containsKey(bridgeUID)) {
+                logger.warn("Thing: {} is being ignored because it does not belong to a registered bridge.",
                         thing.getLabel());
                 return null;
             }
@@ -159,12 +147,13 @@ public class SmartThingsHandlerFactory extends BaseThingHandlerFactory implement
 
     @Override
     protected void removeHandler(ThingHandler thingHandler) {
-        SmartThingsBridgeHandler currentBridgeHandler = bridgeHandler;
-        if (thingHandler == currentBridgeHandler) {
-            authService.unsetSmartThingsOAuthHandler(currentBridgeHandler);
-            bridgeHandler = null;
-            bridgeUID = null;
-            thingHandlers.clear();
+        if (thingHandler instanceof SmartThingsBridgeHandler bridgeHandler) {
+            ThingUID bridgeUID = bridgeHandler.getThing().getUID();
+            bridgeHandlers.remove(bridgeUID, bridgeHandler);
+            authService.unsetSmartThingsOAuthHandler(bridgeUID, bridgeHandler);
+            synchronized (thingHandlers) {
+                thingHandlers.removeIf(handler -> bridgeUID.equals(handler.getThing().getBridgeUID()));
+            }
         } else if (thingHandler instanceof SmartThingsThingHandler smartThingsHandler) {
             thingHandlers.remove(smartThingsHandler);
         }

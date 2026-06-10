@@ -87,6 +87,7 @@ public class SmartThingsServlet extends HttpServlet
     private final SmartThingsAuthService smartThingsAuthService;
     private final SmartThingsLocalCallbackListener smartThingsLocalCallbackListener;
     private @NonNullByDefault({}) TranslationProvider translationProvider;
+    private final String servletPath;
 
     private final String indexTemplate;
     private final String step1Template;
@@ -123,11 +124,13 @@ public class SmartThingsServlet extends HttpServlet
     protected final SmartThingsBridgeHandler bridgeHandler;
     protected final HttpService httpService;
 
-    public SmartThingsServlet(SmartThingsBridgeHandler bridgeHandler, SmartThingsAuthService smartthingsAuthService,
-            TranslationProvider translationProvider, HttpService httpService) throws SmartThingsException {
+    public SmartThingsServlet(SmartThingsBridgeHandler bridgeHandler, String servletPath,
+            SmartThingsAuthService smartthingsAuthService, TranslationProvider translationProvider,
+            HttpService httpService) throws SmartThingsException {
         this.smartThingsAuthService = smartthingsAuthService;
         this.bridgeHandler = bridgeHandler;
         this.httpService = httpService;
+        this.servletPath = servletPath;
         this.smartThingsLocalCallbackListener = new SmartThingsLocalCallbackListener();
         this.smartThingsLocalCallbackListener.setListener(this);
         this.translationProvider = translationProvider;
@@ -145,9 +148,9 @@ public class SmartThingsServlet extends HttpServlet
     public void activate() {
         try {
             Dictionary<String, String> servletParams = new Hashtable<String, String>();
-            logger.trace("registerServlet: {}", PATH);
-            httpService.registerServlet(PATH, this, servletParams, httpService.createDefaultHttpContext());
-            httpService.registerResources(PATH + SmartThingsBindingConstants.SMARTTHINGS_IMG_ALIAS, "img", null);
+            logger.trace("registerServlet: {}", servletPath);
+            httpService.registerServlet(servletPath, this, servletParams, httpService.createDefaultHttpContext());
+            httpService.registerResources(servletPath + SmartThingsBindingConstants.SMARTTHINGS_IMG_ALIAS, "img", null);
         } catch (ServletException | NamespaceException e) {
             logger.warn("Could not start SmartThings servlet service: {}", e.getMessage());
         }
@@ -156,8 +159,8 @@ public class SmartThingsServlet extends HttpServlet
     public void deactivate() {
         smartThingsLocalCallbackListener.stopCallbackListener();
         try {
-            httpService.unregister(PATH);
-            httpService.unregister(PATH + "/img");
+            httpService.unregister(servletPath);
+            httpService.unregister(servletPath + SmartThingsBindingConstants.SMARTTHINGS_IMG_ALIAS);
         } catch (IllegalArgumentException e) {
             logger.warn("Could not stop SmartThings servlet service: {}", e.getMessage());
         }
@@ -264,7 +267,8 @@ public class SmartThingsServlet extends HttpServlet
 
     private String handleTemplate(String requestPath, @Nullable String queryString,
             @Nullable String externalRequestUrl) {
-        SmartThingsOAuthHandler oauthHandler = smartThingsAuthService.getSmartThingsOAuthHandler();
+        SmartThingsOAuthHandler oauthHandler = smartThingsAuthService
+                .getSmartThingsOAuthHandler(bridgeHandler.getThing().getUID());
 
         if (oauthHandler == null) {
             logger.error("Account handler is null in SmartThingsServlet::handleTemplate");
@@ -304,7 +308,7 @@ public class SmartThingsServlet extends HttpServlet
             } else if (!StringUtil.isBlank(reqState)) {
                 try {
                     if (!StringUtil.isBlank(reqCode)) {
-                        if (isOAuthCallbackPath(requestPath)) {
+                        if (isOAuthCallbackPath(requestPath, servletPath)) {
                             Optional<String> stateStep = getStateStep(reqState);
                             if (stateStep.isEmpty()) {
                                 template = errorTemplate;
@@ -329,7 +333,8 @@ public class SmartThingsServlet extends HttpServlet
                             } else if (STEP_AUTHORIZE_LOCATION.equals(stateStep.get())) {
                                 template = confirmTemplate;
 
-                                smartThingsAuthService.authorize(oauthRedirectUri, reqState, reqCode);
+                                smartThingsAuthService.authorize(bridgeHandler.getThing().getUID(), oauthRedirectUri,
+                                        reqState, reqCode);
                                 smartThingsLocalCallbackListener.stopCallbackListener();
 
                                 SmartThingsApi api = bridgeHandler.getSmartThingsApi();
@@ -466,8 +471,13 @@ public class SmartThingsServlet extends HttpServlet
         return Optional.empty();
     }
 
-    static boolean isOAuthCallbackPath(String requestPath) {
-        return "/finish".equals(requestPath) || PATH.equals(requestPath) || (PATH + "/").equals(requestPath);
+    public static String getServletPath(String bridgeId) {
+        return PATH + "/" + bridgeId;
+    }
+
+    static boolean isOAuthCallbackPath(String requestPath, String servletPath) {
+        return "/finish".equals(requestPath) || servletPath.equals(requestPath)
+                || (servletPath + "/").equals(requestPath);
     }
 
     @Override
@@ -488,9 +498,9 @@ public class SmartThingsServlet extends HttpServlet
             return;
         }
 
-        if ("/smartthings".equals(path) || "/smartthings/".equals(path)) {
+        if (servletPath.equals(path) || (servletPath + "/").equals(path)) {
             super.service(req, resp);
-        } else if ("/smartthings/cb".equals(path)) {
+        } else if ((servletPath + "/cb").equals(path)) {
             BufferedReader rdr = new BufferedReader(req.getReader());
             String s = rdr.lines().collect(Collectors.joining());
 

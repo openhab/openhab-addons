@@ -286,8 +286,7 @@ public class SmartThingsApi {
 
         final String accessToken = accessTokenResponse == null ? null : accessTokenResponse.getAccessToken();
         if (accessToken == null || accessToken.isEmpty()) {
-            throw new SmartThingsException(
-                    "No SmartThings access token. Did you authorize SmartThings via /smartthings?");
+            throw new SmartThingsException("No SmartThings access token. Did you authorize the SmartThings account?");
         }
 
         return accessToken;

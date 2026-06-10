@@ -26,10 +26,11 @@ class SmartThingsApiTest {
 
     @Test
     void createAppUsesBrowserReachableOAuthRedirectUri() {
-        AppRequest request = SmartThingsApi.createAppRequest("openhab123", "https://openhab.example.org/smartthings/cb",
-                "https://openhab.example.org/smartthings");
+        AppRequest request = SmartThingsApi.createAppRequest("openhab123",
+                "https://openhab.example.org/smartthings/account/cb",
+                "https://openhab.example.org/smartthings/account");
 
-        assertEquals("https://openhab.example.org/smartthings", request.oauth.redirectUris[0]);
-        assertEquals("https://openhab.example.org/smartthings/cb", request.apiOnly.targetUrl());
+        assertEquals("https://openhab.example.org/smartthings/account", request.oauth.redirectUris[0]);
+        assertEquals("https://openhab.example.org/smartthings/account/cb", request.apiOnly.targetUrl());
     }
 }
