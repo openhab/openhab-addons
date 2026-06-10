@@ -58,6 +58,12 @@ public class FineOffsetWeatherStationBindingConstants {
 
     public static final ChannelTypeUID CHANNEL_TYPE_FREE_HEAP_SIZE = new ChannelTypeUID(BINDING_ID, "free-heap-size");
 
+    // channel types only available via the Ecowitt HTTP API
+    public static final ChannelTypeUID CHANNEL_TYPE_SOLAR_RADIATION = new ChannelTypeUID(BINDING_ID, "solar-radiation");
+    public static final ChannelTypeUID CHANNEL_TYPE_RAIN_STATE = new ChannelTypeUID(BINDING_ID, "rain-state");
+    public static final ChannelTypeUID CHANNEL_TYPE_VAPOR_PRESSURE_DEFICIT = new ChannelTypeUID(BINDING_ID,
+            "vapor-pressure-deficit");
+
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_GATEWAY, THING_TYPE_SENSOR);
 
     public static final String SENSOR_CHANNEL_SIGNAL = "signal";

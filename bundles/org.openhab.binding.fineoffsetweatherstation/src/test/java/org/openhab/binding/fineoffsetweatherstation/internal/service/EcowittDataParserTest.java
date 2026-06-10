@@ -1,0 +1,137 @@
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.fineoffsetweatherstation.internal.service;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Map;
+
+import org.assertj.core.api.Assertions;
+import org.assertj.core.groups.Tuple;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.junit.jupiter.api.Test;
+import org.openhab.binding.fineoffsetweatherstation.internal.domain.SensorGatewayBinding;
+import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.MeasuredValue;
+import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.SensorDevice;
+import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.SystemInfo;
+
+/**
+ * Tests the {@link EcowittDataParser} against payloads captured from a real gateway (GW1200A, firmware V1.4.7).
+ *
+ * @author Andreas Berger - Initial contribution
+ */
+@NonNullByDefault
+class EcowittDataParserTest {
+
+    private final EcowittDataParser parser = new EcowittDataParser();
+
+    @Test
+    void testLiveData() {
+        List<MeasuredValue> data = parser.parseLiveData(resource("livedata_celsius.json"));
+        Assertions.assertThat(data)
+                .extracting(MeasuredValue::getChannelId, measuredValue -> measuredValue.getState().toString())
+                .containsExactly(new Tuple("temperature-outdoor", "21.4 °C"), new Tuple("humidity-outdoor", "41 %"),
+                        new Tuple("temperature-feels-like", "21.4 °C"),
+                        new Tuple("vapor-pressure-deficit", "1.504 kPa"), new Tuple("temperature-dew-point", "7.6 °C"),
+                        new Tuple("speed-wind", "0 m/s"), new Tuple("speed-gust", "0 m/s"),
+                        new Tuple("wind-max-day", "0.6 m/s"),
+                        // 0x15 is reported in W/m², so it is routed to the solar-radiation channel, not illumination
+                        new Tuple("irradiation-solar", "365.66 W/m²"), new Tuple("uv-index", "3"),
+                        new Tuple("direction-wind", "29 °"), new Tuple("rain-event", "0 mm"),
+                        new Tuple("rain-rate", "0 mm/h"), new Tuple("rain-day", "0 mm"), new Tuple("rain-week", "0 mm"),
+                        new Tuple("rain-month", "0 mm"), new Tuple("rain-year", "0 mm"),
+                        new Tuple("piezo-rain-state", "OFF"), new Tuple("piezo-rain-event", "0 mm"),
+                        new Tuple("piezo-rain-rate", "0 mm/h"), new Tuple("piezo-rain-day", "0 mm"),
+                        new Tuple("piezo-rain-week", "0 mm"), new Tuple("piezo-rain-month", "0 mm"),
+                        new Tuple("piezo-rain-year", "0 mm"), new Tuple("temperature-indoor", "22.3 °C"),
+                        new Tuple("humidity-indoor", "49 %"), new Tuple("pressure-absolute", "1003.8 hPa"),
+                        new Tuple("pressure-relative", "1003.8 hPa"));
+    }
+
+    @Test
+    void testUnitsAreNormalizedToCanonical() {
+        // the same gateway configured to imperial units must yield the same canonical channel states
+        Map<String, String> states = stateByChannel(parser.parseLiveData(resource("livedata_fahrenheit.json")));
+        Assertions.assertThat(states).containsEntry("temperature-outdoor", "20 °C") // 68 °F
+                .containsEntry("temperature-dew-point", "9.7222 °C") // 49.5 °F
+                .containsEntry("wind-max-day", "0.2682 m/s") // 0.6 mph
+                .containsEntry("pressure-absolute", "1003.7254 hPa") // 29.64 inHg
+                .containsEntry("piezo-rain-state", "ON") // srain_piezo = 1
+                .containsEntry("vapor-pressure-deficit", "1.153 kPa") // kept in kPa
+                .containsEntry("irradiation-solar", "461.08 W/m²");
+    }
+
+    @Test
+    void testLightUnitRouting() {
+        // depending on the gateway's light-unit setting, 0x15 is an illuminance (lux/kLux) or an irradiance (W/m²);
+        // each is routed to the matching channel and normalized to its canonical unit, never cross-converted
+        Assertions
+                .assertThat(stateByChannel(
+                        parser.parseLiveData("{\"common_list\":[{\"id\":\"0x15\",\"val\":\"12.3 Klux\"}]}")))
+                .containsEntry("illumination", "12300 lx"); // kLux -> canonical lux
+        Assertions
+                .assertThat(stateByChannel(
+                        parser.parseLiveData("{\"common_list\":[{\"id\":\"0x15\",\"val\":\"365.66 W/m2\"}]}")))
+                .containsEntry("irradiation-solar", "365.66 W/m²"); // W/m² -> dedicated solar-radiation channel
+    }
+
+    @Test
+    void testRegisteredSensors() {
+        Map<SensorGatewayBinding, SensorDevice> sensors = parser.parseSensors(List.of(resource("sensors_page1.json")),
+                false);
+        // the disabled WH34 slot (id FFFFFFFE, idst 0) must be skipped
+        Assertions.assertThat(sensors.values())
+                .extracting(device -> device.getSensorGatewayBinding().getSensor().name(), SensorDevice::getId,
+                        SensorDevice::getSignal, device -> device.getBatteryStatus().isLow())
+                .containsExactlyInAnyOrder(new Tuple("WS85", 0x2C75, 4, false), new Tuple("WH65", 0x2B, 4, false),
+                        new Tuple("WH25", 0xB9, 4, true));
+    }
+
+    @Test
+    void testSystemInfo() {
+        @Nullable
+        SystemInfo systemInfo = parser.parseSystemInfo(resource("device_info.json"));
+        Assertions.assertThat(systemInfo).isNotNull();
+        Assertions.assertThat(systemInfo.getFrequency()).isEqualTo(868);
+        Assertions.assertThat(systemInfo.isDst()).isTrue();
+        Assertions.assertThat(systemInfo.isUseWh24()).isFalse();
+        Assertions.assertThat(systemInfo.getDateTime().toString()).isEqualTo("2026-06-09T17:46");
+    }
+
+    @Test
+    void testVersion() {
+        String version = resource("version.json");
+        Assertions.assertThat(parser.parseFirmwareVersion(version)).isEqualTo("GW1200A_V1.4.7");
+        Assertions.assertThat(parser.parseSensorPageCount(version)).isEqualTo(4);
+        Assertions.assertThat(parser.isEcowittPlatform(version)).isTrue();
+    }
+
+    private static Map<String, String> stateByChannel(List<MeasuredValue> values) {
+        return values.stream()
+                .collect(java.util.stream.Collectors.toMap(MeasuredValue::getChannelId, v -> v.getState().toString()));
+    }
+
+    private static String resource(String name) {
+        try (InputStream in = EcowittDataParserTest.class.getResourceAsStream("/http/" + name)) {
+            if (in == null) {
+                throw new IllegalStateException("missing test resource /http/" + name);
+            }
+            return new String(in.readAllBytes(), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+}
