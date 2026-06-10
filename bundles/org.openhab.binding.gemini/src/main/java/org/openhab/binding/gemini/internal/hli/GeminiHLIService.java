@@ -44,8 +44,6 @@ import org.openhab.core.voice.text.interpreter.llm.LLMTool;
 import org.openhab.core.voice.text.interpreter.llm.LLMToolCall;
 import org.openhab.core.voice.text.interpreter.llm.LLMToolException;
 import org.osgi.service.component.annotations.Component;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link GeminiHLIService} is a {@link HumanLanguageInterpreter} implementation based on Google Gemini.
@@ -56,8 +54,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class GeminiHLIService implements ThingHandlerService, HumanLanguageInterpreter {
     private static final String LABEL = "Gemini Human Language Interpreter";
-
-    private final Logger logger = LoggerFactory.getLogger(GeminiHLIService.class);
 
     private @Nullable GeminiHandler handler;
 
