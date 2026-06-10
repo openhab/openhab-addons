@@ -5,8 +5,8 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="account" extensible="chat">
-		<label>@text/thing.type.account.label</label>
-		<description>@text/thing.type.account.description</description>
+		<label>Gemini Account</label>
+		<description>Integrates the Google Gemini API with openHAB.</description>
 
 		<config-description>
 			<parameter-group name="authentication">
@@ -66,8 +66,8 @@
 
 	<channel-type id="chat">
 		<item-type>String</item-type>
-		<label>@text/channel.type.chat.label</label>
-		<description>@text/channel.type.chat.description</description>
+		<label>Chat</label>
+		<description>Send a prompt to a model and receive a response.</description>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<config-description>
 			<parameter name="model" type="text" required="true">
