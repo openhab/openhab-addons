@@ -277,7 +277,9 @@ public class ShellyDeviceProfile {
         }
         int idx = i + 1;
         if (isDimmer) {
-            return CHANNEL_GROUP_DIMMER_CONTROL;
+            List<ShellySettingsDimmer> dimmers = settings.dimmers;
+            return dimmers == null || dimmers.size() <= 1 ? CHANNEL_GROUP_DIMMER_CONTROL
+                    : CHANNEL_GROUP_DIMMER_CONTROL + idx;
         } else if (isRoller) {
             return numRollers <= 1 ? CHANNEL_GROUP_ROL_CONTROL : CHANNEL_GROUP_ROL_CONTROL + idx;
         } else if (hasRelays) {
