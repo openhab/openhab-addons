@@ -80,11 +80,12 @@ public class GeminiHandler extends BaseThingHandler {
         if (CHANNEL_CHAT.equals(channelUID.getId()) && command instanceof StringType stringCommand) {
             String lastPrompt = stringCommand.toFullString();
 
+            GeminiConfiguration config = this.config;
             GeminiApiClient client = apiClient;
             if (client != null) {
                 Channel channel = getThing().getChannel(channelUID);
-                int timeout = DEFAULT_REQUEST_TIMEOUT;
-                String model = DEFAULT_MODEL;
+                int timeout = config != null ? config.requestTimeout : DEFAULT_REQUEST_TIMEOUT;
+                String model = config != null ? config.model : DEFAULT_MODEL;
                 double temp = DEFAULT_TEMPERATURE;
                 double topP = DEFAULT_TOP_P;
                 int maxTokens = DEFAULT_MAX_OUTPUT_TOKENS;
@@ -93,10 +94,6 @@ public class GeminiHandler extends BaseThingHandler {
                 if (channel != null) {
                     GeminiChannelConfiguration channelConfig = channel.getConfiguration()
                             .as(GeminiChannelConfiguration.class);
-                    Integer channelTimeout = channelConfig.requestTimeout;
-                    if (channelTimeout != null) {
-                        timeout = channelTimeout;
-                    }
 
                     String channelModel = channelConfig.model;
                     if (channelModel != null && !channelModel.isBlank()) {
@@ -174,12 +171,6 @@ public class GeminiHandler extends BaseThingHandler {
         }
 
         if (invalidTimeout(c.requestTimeout)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/requestTimeout.configuration-error");
-            return;
-        }
-        if (thing.getChannels().stream().map(channel -> channel.getConfiguration().as(GeminiChannelConfiguration.class))
-                .anyMatch(channelConfig -> invalidTimeout(channelConfig.requestTimeout))) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/requestTimeout.configuration-error");
             return;

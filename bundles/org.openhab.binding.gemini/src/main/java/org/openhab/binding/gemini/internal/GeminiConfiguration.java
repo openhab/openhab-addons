@@ -14,7 +14,6 @@ package org.openhab.binding.gemini.internal;
 
 import static org.openhab.binding.gemini.internal.GeminiBindingConstants.DEFAULT_MODEL;
 import static org.openhab.binding.gemini.internal.GeminiBindingConstants.DEFAULT_REQUEST_TIMEOUT;
-import static org.openhab.binding.gemini.internal.GeminiBindingConstants.DEFAULT_SYSTEM_MESSAGE;
 import static org.openhab.binding.gemini.internal.GeminiBindingConstants.DEFAULT_TEMPERATURE;
 import static org.openhab.binding.gemini.internal.GeminiBindingConstants.DEFAULT_TOP_P;
 
@@ -35,8 +34,6 @@ public class GeminiConfiguration {
     public String model = DEFAULT_MODEL;
     public Double temperature = DEFAULT_TEMPERATURE;
     public Double topP = DEFAULT_TOP_P;
-    // shorter answers for the HLI (1024 tokens is still a lot)
-    public Integer maxOutputTokens = 1024;
-    // TODO: Remove config parameter as soon as InterpreterContext provides the system prompt
-    public String systemMessage = DEFAULT_SYSTEM_MESSAGE;
+    // shorter answers for the HLI (2048 tokens is still a lot)
+    public Integer maxOutputTokens = 2048;
 }

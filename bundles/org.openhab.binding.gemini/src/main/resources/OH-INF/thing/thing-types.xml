@@ -14,57 +14,51 @@
 				<label>Authentication</label>
 				<description>Authentication Settings</description>
 			</parameter-group>
+			<parameter-group name="hli">
+				<label>HLI Configuration</label>
+				<description>Human Language Interpreter Configuration</description>
+			</parameter-group>
 			<parameter-group name="connection">
 				<context>network</context>
 				<label>Connection</label>
 				<description>Connection Settings</description>
 			</parameter-group>
-			<parameter-group name="hli">
-				<label>HLI Configuration</label>
-				<description>Human Language Interpreter Configuration</description>
-			</parameter-group>
 
 			<!-- Authentication Settings -->
 			<parameter name="apiKey" type="text" required="true" groupName="authentication">
 				<context>password</context>
-				<label>@text/config.apiKey.label</label>
-				<description>@text/config.apiKey.description</description>
-			</parameter>
-			<!-- Connection Settings -->
-			<parameter name="requestTimeout" type="integer" unit="s" groupName="connection">
-				<label>@text/config.requestTimeout.label</label>
-				<description>@text/config.requestTimeout.description</description>
-				<default>30</default>
-				<advanced>true</advanced>
+				<label>API Key</label>
+				<description>The Google Gemini API key.</description>
 			</parameter>
 			<!-- HLI Settings -->
 			<parameter name="model" type="text" groupName="hli">
-				<label>@text/config.model.label</label>
-				<description>@text/config.model.description</description>
+				<label>Model</label>
+				<description>The Gemini model to use.</description>
 				<default>gemini-2.5-flash</default>
 			</parameter>
 			<parameter name="temperature" type="decimal" groupName="hli">
-				<label>@text/config.temperature.label</label>
-				<description>@text/config.temperature.description</description>
-				<default>0.7</default>
+				<label>Temperature</label>
+				<description>Controls randomness. Higher values mean more random responses.</description>
+				<default>1.0</default>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="topP" type="decimal" groupName="hli">
-				<label>@text/config.topP.label</label>
-				<description>@text/config.topP.description</description>
+				<label>Top-P</label>
+				<description>Controls the cumulative probability threshold for token selection.</description>
 				<default>1.0</default>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="maxOutputTokens" type="integer" groupName="hli">
-				<label>@text/config.maxOutputTokens.label</label>
-				<description>@text/config.maxOutputTokens.description</description>
-				<default>1024</default>
+				<label>Max Output Tokens</label>
+				<description>The maximum number of tokens to generate in the response.</description>
+				<default>2048</default>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="systemMessage" type="text" groupName="hli">
-				<label>@text/config.systemMessage.label</label>
-				<description>@text/config.systemMessage.description</description>
-				<default>You are a helpful assistant.</default>
+			<!-- Connection Settings -->
+			<parameter name="requestTimeout" type="integer" unit="s" groupName="connection">
+				<label>Request Timeout</label>
+				<description>The timeout in seconds for API requests.</description>
+				<default>30</default>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
@@ -77,39 +71,33 @@
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<config-description>
 			<parameter name="model" type="text" required="true">
-				<label>@text/config.model.label</label>
-				<description>@text/config.model.description</description>
+				<label>Model</label>
+				<description>The Gemini model to use.</description>
 				<default>gemini-2.5-flash</default>
 			</parameter>
 			<parameter name="temperature" type="decimal" required="true">
-				<label>@text/config.temperature.label</label>
-				<description>@text/config.temperature.description</description>
-				<default>0.7</default>
+				<label>Temperature</label>
+				<description>Controls randomness. Higher values mean more random responses.</description>
+				<default>1.0</default>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="topP" type="decimal" required="true">
-				<label>@text/config.topP.label</label>
-				<description>@text/config.topP.description</description>
+				<label>Top-P</label>
+				<description>Controls the cumulative probability threshold for token selection.</description>
 				<default>1.0</default>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="maxOutputTokens" type="integer" required="true">
-				<label>@text/config.maxOutputTokens.label</label>
-				<description>@text/config.maxOutputTokens.description</description>
-				<default>8192</default>
+				<label>Max Output Tokens</label>
+				<description>The maximum number of tokens to generate in the response.</description>
+				<default>2048</default>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="systemMessage" type="text" required="true">
-				<label>@text/config.systemMessage.label</label>
-				<description>@text/config.systemMessage.description</description>
+				<label>System Message</label>
+				<description>The system instruction provided to the model.</description>
 				<default>You are a helpful assistant.</default>
-				<advanced>true</advanced>
-			</parameter>
-			<parameter name="requestTimeout" type="integer" unit="s" required="true">
-				<label>@text/config.requestTimeout.label</label>
-				<description>@text/config.requestTimeout.description</description>
-				<default>30</default>
-				<advanced>true</advanced>
+				<advanced>false</advanced>
 			</parameter>
 		</config-description>
 	</channel-type>

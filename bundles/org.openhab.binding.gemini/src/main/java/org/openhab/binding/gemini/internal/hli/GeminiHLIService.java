@@ -14,6 +14,7 @@ package org.openhab.binding.gemini.internal.hli;
 
 import static org.openhab.binding.gemini.internal.GeminiBindingConstants.BINDING_ID;
 import static org.openhab.binding.gemini.internal.GeminiBindingConstants.DEFAULT_MODEL;
+import static org.openhab.binding.gemini.internal.GeminiBindingConstants.DEFAULT_SYSTEM_MESSAGE;
 
 import java.util.HashMap;
 import java.util.List;
@@ -112,7 +113,7 @@ public class GeminiHLIService implements ThingHandlerService, HumanLanguageInter
         }
         String m = config.model.isBlank() ? DEFAULT_MODEL : config.model;
         try {
-            GeminiResponse geminiResponse = client.sendPrompt(m, text, config.systemMessage, config.temperature,
+            GeminiResponse geminiResponse = client.sendPrompt(m, text, DEFAULT_SYSTEM_MESSAGE, config.temperature,
                     config.topP, config.maxOutputTokens, config.requestTimeout);
             List<GeminiCandidate> candidates = geminiResponse.candidates();
             if (candidates != null && !candidates.isEmpty()) {
@@ -156,7 +157,7 @@ public class GeminiHLIService implements ThingHandlerService, HumanLanguageInter
         List<LLMTool> tools = interpreterContext.tools();
 
         // TODO: Use systemMessage from InterpretationContext once available
-        String systemMessage = config.systemMessage;
+        String systemMessage = DEFAULT_SYSTEM_MESSAGE;
         if (!tools.isEmpty()) {
             String toolGuidance = "You have tools available to interact with the environment. Use them when appropriate. "
                     + "However, if the user's request cannot be fulfilled by any tool, or if they ask a general question, "

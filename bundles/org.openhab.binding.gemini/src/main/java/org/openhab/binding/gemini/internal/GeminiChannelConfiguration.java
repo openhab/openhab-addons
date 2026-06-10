@@ -28,5 +28,4 @@ public class GeminiChannelConfiguration {
     public @Nullable Double topP;
     public @Nullable Integer maxOutputTokens;
     public @Nullable String systemMessage;
-    public @Nullable Integer requestTimeout;
 }
