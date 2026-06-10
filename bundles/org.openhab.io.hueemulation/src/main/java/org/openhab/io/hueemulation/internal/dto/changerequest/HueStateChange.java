@@ -35,4 +35,11 @@ public class HueStateChange {
     public Integer sat_inc;
     public List<Double> xy_inc;
     public Integer ct_inc;
+
+    @Override
+    public String toString() {
+        return "on: " + on + ", bri: " + bri + ", hue: " + hue + ", sat: " + sat + ", effect: " + effect + ", ct: " + ct
+                + ", alert: " + alert + ", xy: " + xy + ", transitiontime: " + transitiontime + ", bri_inc: " + bri_inc
+                + ", hue_inc: " + hue_inc + ", sat_inc: " + sat_inc + ", xy_inc: " + xy_inc + ", ct_inc: " + ct_inc;
+    }
 }

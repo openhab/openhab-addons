@@ -12,6 +12,7 @@
  */
 package org.openhab.io.hueemulation.internal.dto;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.OnOffType;
 
 /**
@@ -20,6 +21,7 @@ import org.openhab.core.library.types.OnOffType;
  * @author David Graeff - Initial contribution
  *
  */
+@NonNullByDefault
 public class HueStatePlug extends AbstractHueState {
     public boolean on;
 
