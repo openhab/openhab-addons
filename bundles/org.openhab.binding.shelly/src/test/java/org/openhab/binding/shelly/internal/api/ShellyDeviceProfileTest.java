@@ -29,6 +29,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyInputState;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDevice;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDimmer;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsGlobal;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRgbwLight;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
@@ -105,6 +106,7 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYPLUSEM, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUS3EM63, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUSDIMMER, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPRODM2PM, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUSDIMMERUS, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUSDIMMER10V, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUSHT, true, false), //
@@ -197,6 +199,33 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYSENSE, "", 0, 0, 0, 5, CHANNEL_GROUP_SENSOR),
                 Arguments.of(THING_TYPE_SHELLYTRV, "", 0, 0, 0, 5, CHANNEL_GROUP_SENSOR),
                 Arguments.of(THING_TYPE_SHELLYPLUSWALLDISPLAY, "", 0, 0, 0, 5, CHANNEL_GROUP_SENSOR));
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForDimmerControlGroup")
+    void getControlGroupForDimmer(int numDimmers, int index, String expectedControlGroup) throws ShellyApiException {
+        ShellyDeviceProfile deviceProfile = new ShellyDeviceProfile(THING_TYPE_SHELLYPRODM2PM);
+        ShellySettingsGlobal settingsGlobal = new ShellySettingsGlobal();
+        ShellySettingsDevice settingsDevice = new ShellySettingsDevice();
+
+        settingsGlobal.relays = new ArrayList<>();
+        settingsGlobal.dimmers = IntStream.range(0, numDimmers).mapToObj(i -> new ShellySettingsDimmer())
+                .collect(Collectors.toCollection(ArrayList::new));
+        deviceProfile.initialize(THING_TYPE_SHELLYPRODM2PM, gson.toJson(settingsGlobal), settingsDevice);
+
+        String actualControlGroup = deviceProfile.getControlGroup(index);
+        assertThat("numDimmers: " + numDimmers + ", index: " + index, actualControlGroup,
+                is(equalTo(expectedControlGroup)));
+    }
+
+    private static Stream<Arguments> provideTestCasesForDimmerControlGroup() {
+        return Stream.of( //
+                // Single-channel dimmers keep the unnumbered control group
+                Arguments.of(0, 0, CHANNEL_GROUP_DIMMER_CONTROL), //
+                Arguments.of(1, 0, CHANNEL_GROUP_DIMMER_CONTROL), //
+                // Multi-channel dimmers (e.g. Pro Dimmer 2PM) get numbered control groups
+                Arguments.of(2, 0, CHANNEL_GROUP_DIMMER_CONTROL + "1"), //
+                Arguments.of(2, 1, CHANNEL_GROUP_DIMMER_CONTROL + "2"));
     }
 
     @Test
