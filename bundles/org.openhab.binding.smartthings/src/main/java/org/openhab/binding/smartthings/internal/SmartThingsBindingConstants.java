@@ -111,10 +111,10 @@ public class SmartThingsBindingConstants {
 
     public static final String CHANNEL_NAME_DEFAULT = "default";
 
-    public static final String GROUPD_ID_MAIN = "main";
+    public static final String GROUP_ID_MAIN = "main";
 
     public static final String CAPA_COLOR_CONTROL = "colorControl";
-    public static final String CAPA_SWITH_LEVEL = "switchLevel";
+    public static final String CAPA_SWITCH_LEVEL = "switchLevel";
 
     public static final String CMD_SET_COLOR = "setColor";
     public static final String CMD_SET_LEVEL = "setLevel";

@@ -93,7 +93,7 @@ public class SmartThingsNetworkRequestListener<T> extends BufferingResponseListe
         int status = response.getStatus();
 
         String content = getContentAsString();
-        logger.trace("response complete: {}", content);
+        logger.trace("Response complete with status {} for {}", status, request.getURI());
 
         try {
             if (status < 200 || status >= 300) {

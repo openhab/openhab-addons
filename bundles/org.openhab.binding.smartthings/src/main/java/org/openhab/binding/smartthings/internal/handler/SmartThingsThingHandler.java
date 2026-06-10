@@ -31,6 +31,7 @@ import org.openhab.binding.smartthings.internal.dto.SmartThingsStatusComponent;
 import org.openhab.binding.smartthings.internal.dto.SmartThingsStatusProperties;
 import org.openhab.binding.smartthings.internal.type.SmartThingsException;
 import org.openhab.binding.smartthings.internal.type.SmartThingsTypeRegistryImpl;
+import org.openhab.binding.smartthings.internal.type.UidUtils;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -115,10 +116,13 @@ public class SmartThingsThingHandler extends BaseThingHandler {
     public void refreshChannel(String deviceType, String componentId, String namespace, String capaKey, String attr,
             Object value) throws SmartThingsException {
         String channelName = SmartThingsTypeRegistryImpl.getChannelName(attr);
+        String capabilityId = namespace.isBlank() ? capaKey : namespace + "." + capaKey;
 
-        String groupId = componentId;
-
-        ChannelUID channelUID = new ChannelUID(this.getThing().getUID(), groupId, channelName);
+        String dynamicGroupId = SmartThingsTypeRegistryImpl.getChannelGroupId(deviceType, componentId, capabilityId);
+        ChannelUID channelUID = new ChannelUID(this.getThing().getUID(), dynamicGroupId, channelName);
+        if (thing.getChannel(channelUID) == null) {
+            channelUID = new ChannelUID(this.getThing().getUID(), UidUtils.sanitizeId(componentId), channelName);
+        }
 
         logger.trace("refreshDevice called: channelName:{}", channelName);
 
@@ -170,7 +174,7 @@ public class SmartThingsThingHandler extends BaseThingHandler {
     }
 
     public void refreshDevice() {
-        logger.trace("refreh Device called");
+        logger.trace("Refresh device called");
         Bridge bridge = getBridge();
         if (bridge == null) {
             return;
@@ -185,12 +189,12 @@ public class SmartThingsThingHandler extends BaseThingHandler {
             return;
         }
 
-        logger.trace("refrehDevice for deviceId: {}", deviceId);
+        logger.trace("Refresh device for deviceId: {}", deviceId);
 
         try {
             SmartThingsStatus status = api.getStatus(deviceId);
 
-            logger.trace("refrehDevice for deviceId: status : {}", status);
+            logger.trace("Refresh device for deviceId: status : {}", status);
 
             if (status != null) {
                 for (String componentKey : status.components.keySet()) {
@@ -227,7 +231,7 @@ public class SmartThingsThingHandler extends BaseThingHandler {
                 Object value = props.value;
 
                 if (value != null) {
-                    logger.trace("refrehDevice for deviceId: value : {}", value);
+                    logger.trace("Refresh device for deviceId: value : {}", value);
 
                     if (SmartThingsTypeRegistryImpl.shouldIgnoreCapaKey(capaKey)) {
                         continue;
@@ -285,18 +289,39 @@ public class SmartThingsThingHandler extends BaseThingHandler {
             return;
         }
 
-        deviceId = (String) getConfig().get(SmartThingsBindingConstants.DEVICE_ID);
+        deviceId = resolveDeviceId();
 
         if (deviceId.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Device ID is not configured");
             return;
         }
 
+        updateDeviceIdProperty(deviceId);
         refreshDevice();
 
         pollingJob = scheduler.scheduleWithFixedDelay(this::pollingCode, 0, 1, TimeUnit.SECONDS);
 
         updateStatus(ThingStatus.ONLINE);
+    }
+
+    String resolveDeviceId() {
+        Object configuredDeviceId = getConfig().get(SmartThingsBindingConstants.DEVICE_ID);
+        if (configuredDeviceId instanceof String value && !value.isBlank()) {
+            return value;
+        }
+
+        String propertyDeviceId = thing.getProperties().get(SmartThingsBindingConstants.DEVICE_ID);
+        if (propertyDeviceId != null && !propertyDeviceId.isBlank()) {
+            return propertyDeviceId;
+        }
+
+        return "";
+    }
+
+    private void updateDeviceIdProperty(String resolvedDeviceId) {
+        Map<String, String> properties = new HashMap<>(editProperties());
+        properties.put(SmartThingsBindingConstants.DEVICE_ID, resolvedDeviceId);
+        updateProperties(properties);
     }
 
     @Override

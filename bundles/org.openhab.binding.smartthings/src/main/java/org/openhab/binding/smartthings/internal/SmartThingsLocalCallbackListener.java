@@ -16,7 +16,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URI;
@@ -29,7 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link SmartThingsLocalCallbackListener} : implemts a callback listener simple http server to handle oauth
+ * The {@link SmartThingsLocalCallbackListener} implements a simple HTTP server to handle the SmartThings OAuth
  * callback request.
  *
  * @author Kai Kreuzer - Initial contribution
@@ -37,6 +36,8 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SmartThingsLocalCallbackListener {
+
+    private static final String CALLBACK_PATH = "/finish";
 
     private final Logger logger = LoggerFactory.getLogger(SmartThingsLocalCallbackListener.class);
 
@@ -54,11 +55,19 @@ public class SmartThingsLocalCallbackListener {
         this.listener = listener;
     }
 
-    public void startCallbackListener() {
+    public boolean startCallbackListener() {
         stopCallbackListener();
+        final ServerSocket listenerSocket;
+        try {
+            listenerSocket = new ServerSocket(61973);
+            this.callbackServerSocket = listenerSocket;
+        } catch (IOException e) {
+            logger.warn("Failed to start OAuth callback listener on port 61973", e);
+            return false;
+        }
+
         Thread thread = new Thread(() -> {
-            try (ServerSocket serverSocket = new ServerSocket(61973, 0, InetAddress.getLoopbackAddress())) {
-                this.callbackServerSocket = serverSocket;
+            try (ServerSocket serverSocket = listenerSocket) {
                 logger.debug("Started OAuth callback listener on port 61973");
                 while (!serverSocket.isClosed()) {
                     try (Socket socket = serverSocket.accept();
@@ -81,19 +90,17 @@ public class SmartThingsLocalCallbackListener {
                         String path = Objects.requireNonNullElse(uri.getPath(), "");
                         String query = uri.getQuery();
 
+                        if (!CALLBACK_PATH.equals(path)) {
+                            writeResponse(out, "404 Not Found", "");
+                            continue;
+                        }
+
                         String responseBody = "";
                         ResponseHandlerListener responseHandler = listener;
                         if (responseHandler != null) {
                             responseBody = responseHandler.handle(path, query);
                         }
-                        byte[] bytes = responseBody.getBytes(StandardCharsets.UTF_8);
-
-                        write(out, "HTTP/1.1 200 OK\r\n");
-                        write(out, "Content-Type: text/html; charset=UTF-8\r\n");
-                        write(out, "Content-Length: " + bytes.length + "\r\n");
-                        write(out, "\r\n");
-                        out.write(bytes);
-                        out.flush();
+                        writeResponse(out, "200 OK", responseBody);
                     } catch (Exception e) {
                         if (!serverSocket.isClosed()) {
                             logger.error("Error in OAuth callback listener", e);
@@ -101,8 +108,12 @@ public class SmartThingsLocalCallbackListener {
                     }
                 }
             } catch (IOException e) {
-                if (callbackServerSocket != null) {
-                    logger.error("Failed to start OAuth callback listener", e);
+                if (!listenerSocket.isClosed()) {
+                    logger.warn("OAuth callback listener stopped unexpectedly", e);
+                }
+            } finally {
+                if (callbackServerSocket == listenerSocket) {
+                    callbackServerSocket = null;
                 }
             }
         });
@@ -110,10 +121,22 @@ public class SmartThingsLocalCallbackListener {
         thread.setDaemon(true);
         thread.start();
         this.callbackThread = thread;
+        return true;
     }
 
     private void write(OutputStream out, String st) throws IOException {
         out.write(st.getBytes(StandardCharsets.UTF_8));
+    }
+
+    private void writeResponse(OutputStream out, String status, String responseBody) throws IOException {
+        byte[] bytes = responseBody.getBytes(StandardCharsets.UTF_8);
+
+        write(out, "HTTP/1.1 " + status + "\r\n");
+        write(out, "Content-Type: text/html; charset=UTF-8\r\n");
+        write(out, "Content-Length: " + bytes.length + "\r\n");
+        write(out, "\r\n");
+        out.write(bytes);
+        out.flush();
     }
 
     public void stopCallbackListener() {

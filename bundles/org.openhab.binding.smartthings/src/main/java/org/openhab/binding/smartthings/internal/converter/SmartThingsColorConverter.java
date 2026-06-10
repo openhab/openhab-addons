@@ -72,7 +72,7 @@ public class SmartThingsColorConverter extends SmartThingsConverter {
             // call setLevel of switchLevel instead
             arguments = new Object[1];
             arguments[0] = level;
-            this.pushCommand(componentKey, SmartThingsBindingConstants.CAPA_SWITH_LEVEL,
+            this.pushCommand(componentKey, SmartThingsBindingConstants.CAPA_SWITCH_LEVEL,
                     SmartThingsBindingConstants.CMD_SET_LEVEL, arguments);
         }
     }

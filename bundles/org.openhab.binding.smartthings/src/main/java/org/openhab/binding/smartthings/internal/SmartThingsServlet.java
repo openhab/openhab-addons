@@ -18,9 +18,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -43,6 +45,7 @@ import org.eclipse.jetty.util.StringUtil;
 import org.eclipse.jetty.util.UrlEncoded;
 import org.openhab.binding.smartthings.internal.api.SmartThingsApi;
 import org.openhab.binding.smartthings.internal.api.SmartThingsNetworkConnector;
+import org.openhab.binding.smartthings.internal.dto.Event;
 import org.openhab.binding.smartthings.internal.dto.LifeCycle;
 import org.openhab.binding.smartthings.internal.dto.LifeCycle.Data;
 import org.openhab.binding.smartthings.internal.dto.SmartThingsDevice;
@@ -91,6 +94,8 @@ public class SmartThingsServlet extends HttpServlet
     private final String confirmTemplate;
     private static final String HTML_ERROR = "<p class='block error'>%s<pre>%s</pre></p>";
     private static final String HTML_WARNING = "<p class='block warn'>%s</p>";
+    private static final String STEP_CREATE_APP = "step1";
+    private static final String STEP_AUTHORIZE_LOCATION = "step2";
 
     // Keys present in the index.html
     private static final String KEY_ERROR = "error";
@@ -105,9 +110,12 @@ public class SmartThingsServlet extends HttpServlet
 
     private static final String TEMPLATE_PATH = "templates/";
 
+    private final SecureRandom secureRandom = new SecureRandom();
     private Gson gson = new Gson();
 
     private String callBackURL = "";
+    private String createAppState = "";
+    private String authorizeLocationState = "";
 
     protected final SmartThingsBridgeHandler bridgeHandler;
     protected final HttpService httpService;
@@ -137,7 +145,6 @@ public class SmartThingsServlet extends HttpServlet
             logger.trace("registerServlet: {}", PATH);
             httpService.registerServlet(PATH, this, servletParams, httpService.createDefaultHttpContext());
             httpService.registerResources(PATH + SmartThingsBindingConstants.SMARTTHINGS_IMG_ALIAS, "img", null);
-            smartThingsLocalCallbackListener.startCallbackListener();
         } catch (ServletException | NamespaceException e) {
             logger.warn("Could not start SmartThings servlet service: {}", e.getMessage());
         }
@@ -254,7 +261,7 @@ public class SmartThingsServlet extends HttpServlet
         SmartThingsOAuthHandler oauthHandler = smartThingsAuthService.getSmartThingsOAuthHandler();
 
         if (oauthHandler == null) {
-            logger.error("accountHandler==nul in SmartThingsServlet::handleTemplate");
+            logger.error("Account handler is null in SmartThingsServlet::handleTemplate");
             return "";
         }
 
@@ -264,6 +271,9 @@ public class SmartThingsServlet extends HttpServlet
         replaceMap.put(KEY_LOCATION, "");
         replaceMap.put(KEY_DEVICES_COUNT, "");
         replaceMap.put(KEY_ERROR, "");
+        replaceMap.put(KEY_BRIDGE_URI, "");
+        replaceMap.put(KEY_AUTHORIZATION_URI, "");
+        replaceMap.put(KEY_AUTHORIZATION_URI_JS, "");
 
         template = indexTemplate;
 
@@ -288,31 +298,38 @@ public class SmartThingsServlet extends HttpServlet
                 try {
                     if (!StringUtil.isBlank(reqCode)) {
                         if ("/finish".equals(requestUrl)) {
-                            if ("step1".equals(reqState)) {
+                            Optional<String> stateStep = getStateStep(reqState);
+                            if (stateStep.isEmpty()) {
+                                template = errorTemplate;
+                                replaceMap.put(KEY_ERROR, String.format(HTML_ERROR, Encode.forHtml("Invalid state"),
+                                        Encode.forHtml("The SmartThings authorization state did not match.")));
+                            } else if (STEP_CREATE_APP.equals(stateStep.get())) {
                                 template = step1Template;
 
-                                logger.debug("Captured auth code: {}", reqCode);
+                                logger.debug("Captured SmartThings authorization callback for app setup.");
 
                                 // Finish OAuth flow
                                 bridgeHandler.finishOAuth(callBackURL, reqCode,
                                         bridgeHandler.getThing().getUID().getId());
+                                authorizeLocationState = createOAuthState(STEP_AUTHORIZE_LOCATION);
                                 String authorizationUri = oauthHandler.formatAuthorizationUrl(
-                                        SmartThingsBindingConstants.REDIRECT_URI, "step2", false);
+                                        SmartThingsBindingConstants.REDIRECT_URI, authorizeLocationState, false);
                                 String authorizationUriJs = authorizationUri.replace("\\", "\\\\").replace("\"",
                                         "\\\"");
 
                                 replaceMap.put(KEY_AUTHORIZATION_URI, Encode.forHtml(authorizationUri));
                                 replaceMap.put(KEY_AUTHORIZATION_URI_JS, Encode.forJavaScript(authorizationUriJs));
-                            } else if ("step2".equals(reqState)) {
+                            } else if (STEP_AUTHORIZE_LOCATION.equals(stateStep.get())) {
                                 template = confirmTemplate;
 
                                 smartThingsAuthService.authorize(SmartThingsBindingConstants.REDIRECT_URI, reqState,
                                         reqCode);
+                                smartThingsLocalCallbackListener.stopCallbackListener();
 
                                 SmartThingsApi api = bridgeHandler.getSmartThingsApi();
                                 if (api == null) {
-                                    logger.warn("Api is null on step2 authentification");
-                                    replaceMap.put(KEY_LOCATION, "Unknow location");
+                                    logger.warn("API is null on step2 authentication");
+                                    replaceMap.put(KEY_LOCATION, "Unknown location");
                                     replaceMap.put(KEY_DEVICES_COUNT, "0");
                                 } else {
                                     SmartThingsDevice[] devices = api.getAllDevices();
@@ -339,7 +356,7 @@ public class SmartThingsServlet extends HttpServlet
                     }
                 } catch (SmartThingsException e) {
                     template = errorTemplate;
-                    logger.debug("Exception during authorizaton: ", e);
+                    logger.debug("Exception during authorization: ", e);
                     Locale locale = Locale.getDefault();
                     Bundle bundle = FrameworkUtil.getBundle(getClass());
                     String smartthingsError = translationProvider.getText(bundle, "redirect-uri-not-https", null,
@@ -370,15 +387,23 @@ public class SmartThingsServlet extends HttpServlet
 
             try {
                 String authorizationUri = "";
+                if (!smartThingsLocalCallbackListener.startCallbackListener()) {
+                    replaceMap.put(KEY_ERROR,
+                            String.format(HTML_ERROR, Encode.forHtml("Unable to start OAuth callback listener"),
+                                    Encode.forHtml("Port 61973 is not available.")));
+                    return replaceKeysFromMap(template, replaceMap);
+                }
 
                 SmartThingsAccountHandler bridgeAccountHandler = (SmartThingsAccountHandler) bridgeHandler;
                 // if app already create, go directly to step2 to reauthenticate a location
                 if (bridgeAccountHandler.appCreated()) {
+                    authorizeLocationState = createOAuthState(STEP_AUTHORIZE_LOCATION);
                     authorizationUri = oauthHandler.formatAuthorizationUrl(SmartThingsBindingConstants.REDIRECT_URI,
-                            "step2", false);
+                            authorizeLocationState, false);
                 } else {
+                    createAppState = createOAuthState(STEP_CREATE_APP);
                     authorizationUri = oauthHandler.formatAuthorizationUrl(SmartThingsBindingConstants.REDIRECT_URI,
-                            "step1", true);
+                            createAppState, true);
                 }
 
                 // handle first redirection to Smartthings when user click button
@@ -398,6 +423,22 @@ public class SmartThingsServlet extends HttpServlet
         }
 
         return requestUrl + "/cb";
+    }
+
+    private String createOAuthState(String step) {
+        byte[] bytes = new byte[16];
+        secureRandom.nextBytes(bytes);
+        return step + ":" + HexFormat.of().formatHex(bytes);
+    }
+
+    private Optional<String> getStateStep(String state) {
+        if (state.equals(createAppState)) {
+            return Optional.of(STEP_CREATE_APP);
+        }
+        if (state.equals(authorizeLocationState)) {
+            return Optional.of(STEP_AUTHORIZE_LOCATION);
+        }
+        return Optional.empty();
     }
 
     @Override
@@ -442,36 +483,7 @@ public class SmartThingsServlet extends HttpServlet
             // ========================================
 
             if (eventType.equals(SmartThingsBindingConstants.EVENT_TYPE_EVENT)) {
-                Data data = resultObj.eventData;
-                String deviceId = data.events[0].deviceEvent.deviceId;
-                String componentId = data.events[0].deviceEvent.componentId;
-                String capa = data.events[0].deviceEvent.capability;
-                String attr = data.events[0].deviceEvent.attribute;
-                Object value = data.events[0].deviceEvent.value;
-
-                logger.error(
-                        "Callback called with lifeCycle (Event): deviceId : {}, componentId: {}, capa: {}, attr: {}, value:{} ",
-                        deviceId, componentId, capa, attr, value);
-
-                Bridge bridge = bridgeHandler.getThing();
-                List<Thing> things = bridge.getThings();
-
-                Optional<Thing> theThingOpt = things.stream().filter(x -> x.getProperties().containsValue(deviceId))
-                        .findFirst();
-                if (theThingOpt.isPresent()) {
-                    logger.info("EVENT: {} {} {} {} {}", deviceId, componentId, capa, attr, value);
-                    Thing theThing = theThingOpt.get();
-
-                    ThingHandler handler = theThing.getHandler();
-                    SmartThingsThingHandler smarthingsHandler = (SmartThingsThingHandler) handler;
-                    if (smarthingsHandler != null) {
-                        smarthingsHandler.refreshDevice(theThing.getThingTypeUID().getId(), componentId, capa, attr,
-                                value);
-                    }
-                } else {
-                    logger.info("Can't find device for EVENT: {} {} {} {} {}", deviceId, componentId, capa, attr,
-                            value);
-                }
+                handleLifecycleEvents(resultObj.eventData);
             } else if (eventType.equals(SmartThingsBindingConstants.EVENT_TYPE_CONFIRMATION)) {
                 String confirmUrl = resultObj.confirmationData.confirmationUrl();
 
@@ -492,6 +504,52 @@ public class SmartThingsServlet extends HttpServlet
             }
         }
         logger.trace("SmartThings servlet returning.");
+    }
+
+    private void handleLifecycleEvents(@Nullable Data data) {
+        if (data == null || data.events == null || data.events.length == 0) {
+            logger.debug("SmartThings callback did not contain any events");
+            return;
+        }
+
+        Bridge bridge = bridgeHandler.getThing();
+        List<Thing> things = bridge.getThings();
+
+        for (Event event : data.events) {
+            if (event == null || event.deviceEvent == null) {
+                continue;
+            }
+
+            String deviceId = event.deviceEvent.deviceId;
+            String componentId = event.deviceEvent.componentId;
+            String capa = event.deviceEvent.capability;
+            String attr = event.deviceEvent.attribute;
+            Object value = event.deviceEvent.value;
+
+            logger.debug("SmartThings event: deviceId: {}, componentId: {}, capability: {}, attribute: {}, value: {}",
+                    deviceId, componentId, capa, attr, value);
+
+            if (deviceId == null) {
+                continue;
+            }
+
+            Optional<Thing> theThingOpt = things.stream()
+                    .filter(x -> deviceId.equals(x.getProperties().get(SmartThingsBindingConstants.DEVICE_ID)))
+                    .findFirst();
+            if (theThingOpt.isPresent()) {
+                logger.info("EVENT: {} {} {} {} {}", deviceId, componentId, capa, attr, value);
+                Thing theThing = theThingOpt.get();
+
+                ThingHandler handler = theThing.getHandler();
+                SmartThingsThingHandler smartThingsHandler = (SmartThingsThingHandler) handler;
+                if (smartThingsHandler != null) {
+                    smartThingsHandler.refreshDevice(theThing.getThingTypeUID().getId(), componentId, capa, attr,
+                            value);
+                }
+            } else {
+                logger.info("Can't find device for EVENT: {} {} {} {} {}", deviceId, componentId, capa, attr, value);
+            }
+        }
     }
 
     /**
@@ -531,7 +589,7 @@ public class SmartThingsServlet extends HttpServlet
 
             if (url == null) {
                 throw new FileNotFoundException(
-                        String.format("Cannot find {}' - failed to initialize Linky servlet".formatted(templateName)));
+                        "Cannot find '%s' - failed to initialize SmartThings servlet".formatted(templateName));
             } else {
                 try (InputStream inputStream = url.openStream()) {
                     return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);

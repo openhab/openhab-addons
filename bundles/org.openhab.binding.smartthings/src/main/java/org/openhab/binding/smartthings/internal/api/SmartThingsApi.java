@@ -283,7 +283,7 @@ public class SmartThingsApi {
         final String accessToken = accessTokenResponse == null ? null : accessTokenResponse.getAccessToken();
         if (accessToken == null || accessToken.isEmpty()) {
             throw new SmartThingsException(
-                    "No SmartThings accesstoken. Did you authorize SmartThings via /connectsmartthings ?");
+                    "No SmartThings access token. Did you authorize SmartThings via /smartthings?");
         }
 
         return accessToken;
@@ -345,7 +345,7 @@ public class SmartThingsApi {
 
     public boolean registerSSESubscription() {
         try {
-            String installedAppId = bridgeHandler.getdInstalledAppId();
+            String installedAppId = bridgeHandler.getInstalledAppId();
             if ("".equals(installedAppId)) {
                 return false;
             }
@@ -403,7 +403,7 @@ public class SmartThingsApi {
 
     public boolean registerCallbackSubscription() {
         try {
-            String installedAppId = bridgeHandler.getdInstalledAppId();
+            String installedAppId = bridgeHandler.getInstalledAppId();
 
             if ("".equals(installedAppId)) {
                 return false;
@@ -439,7 +439,7 @@ public class SmartThingsApi {
 
                     SMEvent evt = new SMEvent();
                     evt.sourceType = SmartThingsBindingConstants.EVT_TYPE_DEVICE;
-                    evt.device = new device(dev.deviceId, SmartThingsBindingConstants.GROUPD_ID_MAIN, true, null);
+                    evt.device = new device(dev.deviceId, SmartThingsBindingConstants.GROUP_ID_MAIN, true, null);
 
                     String body = gson.toJson(evt);
                     doRequest(HttpMethod.POST, JsonObject.class, subscriptionUri, body, null);
@@ -448,7 +448,7 @@ public class SmartThingsApi {
                 }
             }
 
-            logger.info("Succcess register callbackSubscription: {}", installedAppId);
+            logger.info("Successfully registered callback subscription: {}", installedAppId);
 
             return true;
         } catch (SmartThingsException ex) {
@@ -481,15 +481,17 @@ public class SmartThingsApi {
             Bridge bridge = bridgeHandler.getThing();
             List<Thing> things = bridge.getThings();
 
-            Optional<Thing> theThingOpt = things.stream().filter(x -> x.getProperties().containsValue(deviceId))
+            Optional<Thing> theThingOpt = things.stream()
+                    .filter(x -> deviceId.equals(x.getProperties().get(SmartThingsBindingConstants.DEVICE_ID)))
                     .findFirst();
             if (theThingOpt.isPresent()) {
                 Thing theThing = theThingOpt.get();
 
                 ThingHandler handler = theThing.getHandler();
-                SmartThingsThingHandler smarthingsHandler = (SmartThingsThingHandler) handler;
-                if (smarthingsHandler != null) {
-                    smarthingsHandler.refreshDevice(theThing.getThingTypeUID().getId(), componentId, capa, attr, value);
+                SmartThingsThingHandler smartThingsHandler = (SmartThingsThingHandler) handler;
+                if (smartThingsHandler != null) {
+                    smartThingsHandler.refreshDevice(theThing.getThingTypeUID().getId(), componentId, capa, attr,
+                            value);
                 }
             }
         } catch (Exception ex) {

@@ -54,7 +54,7 @@ import org.slf4j.LoggerFactory;
  * @author Laurent Arnal - Refactor for new version of the binding
  */
 @NonNullByDefault
-@Component(service = { ThingHandlerFactory.class }, configurationPid = "binding.smarthings")
+@Component(service = { ThingHandlerFactory.class }, configurationPid = "binding.smartthings")
 public class SmartThingsHandlerFactory extends BaseThingHandlerFactory implements ThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(SmartThingsHandlerFactory.class);
@@ -83,15 +83,14 @@ public class SmartThingsHandlerFactory extends BaseThingHandlerFactory implement
     public SmartThingsHandlerFactory(final @Reference HttpService httpService,
             final @Reference SmartThingsAuthService authService,
             final @Reference TranslationProvider translationProvider, final @Reference OAuthFactory oAuthFactory,
-            final @Reference HttpClientFactory httpClientFactory,
-            final @Reference SmartThingsTypeRegistry typeRegistery, final @Reference ClientBuilder clientBuilder,
-            final @Reference SseEventSourceFactory eventSourceFactory) {
+            final @Reference HttpClientFactory httpClientFactory, final @Reference SmartThingsTypeRegistry typeRegistry,
+            final @Reference ClientBuilder clientBuilder, final @Reference SseEventSourceFactory eventSourceFactory) {
         this.httpService = httpService;
         this.authService = authService;
         this.translationProvider = translationProvider;
         this.httpClientFactory = httpClientFactory;
         this.oAuthFactory = oAuthFactory;
-        this.typeRegistry = typeRegistery;
+        this.typeRegistry = typeRegistry;
         this.clientBuilder = clientBuilder;
         this.eventSourceFactory = eventSourceFactory;
     }
@@ -126,7 +125,7 @@ public class SmartThingsHandlerFactory extends BaseThingHandlerFactory implement
                 logger.warn(
                         "The SmartThings binding only supports one bridge. Please change your configuration to only use one Bridge. This bridge {} will be ignored.",
                         thing.getUID().getAsString());
-                return bridgeHandler;
+                return null;
             }
 
             bridgeHandler = new SmartThingsAccountHandler((Bridge) thing, this, authService, translationProvider,
@@ -156,5 +155,19 @@ public class SmartThingsHandlerFactory extends BaseThingHandlerFactory implement
             return thingHandler;
         }
         return null;
+    }
+
+    @Override
+    protected void removeHandler(ThingHandler thingHandler) {
+        SmartThingsBridgeHandler currentBridgeHandler = bridgeHandler;
+        if (thingHandler == currentBridgeHandler) {
+            authService.unsetSmartThingsOAuthHandler(currentBridgeHandler);
+            bridgeHandler = null;
+            bridgeUID = null;
+            thingHandlers.clear();
+        } else if (thingHandler instanceof SmartThingsThingHandler smartThingsHandler) {
+            thingHandlers.remove(smartThingsHandler);
+        }
+        super.removeHandler(thingHandler);
     }
 }

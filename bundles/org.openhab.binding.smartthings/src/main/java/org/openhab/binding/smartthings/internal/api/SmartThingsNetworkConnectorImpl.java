@@ -153,7 +153,7 @@ public class SmartThingsNetworkConnectorImpl implements SmartThingsNetworkConnec
                 request.send(requestListener);
             } else {
                 response = request.send();
-                logger.trace("request response: {}", response.getContentAsString());
+                logger.trace("Request completed with status {}", response.getStatus());
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             throw new SmartThingsException(
@@ -202,14 +202,14 @@ public class SmartThingsNetworkConnectorImpl implements SmartThingsNetworkConnec
                 String result = response.getContentAsString();
 
                 ErrorObject err = gSon.fromJson(result, ErrorObject.class);
-                throw new SmartThingsException("Error occured during request:", Objects.requireNonNull(err));
+                throw new SmartThingsException("Error occurred during request:", Objects.requireNonNull(err));
             } else if (statusCode == HttpStatus.TOO_MANY_REQUESTS_429) {
                 String result = response.getContentAsString();
 
                 ErrorObject err = gSon.fromJson(result, ErrorObject.class);
-                throw new SmartThingsException("Two many request", Objects.requireNonNull(err));
+                throw new SmartThingsException("Too many requests", Objects.requireNonNull(err));
             } else {
-                throw new SmartThingsException("Unexepected return code : " + statusCode);
+                throw new SmartThingsException("Unexpected return code: " + statusCode);
             }
         }
         return null;

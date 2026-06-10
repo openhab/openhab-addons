@@ -89,7 +89,7 @@ public class SmartThingsDefaultConverter extends SmartThingsConverter {
             } else if (SmartThingsBindingConstants.SM_TYPE_NUMBER.equals(targetType)) {
                 value = dc.doubleValue();
             } else {
-                throw new SmartThingsException("Unknow conversion type:" + targetType);
+                throw new SmartThingsException("Unknown conversion type:" + targetType);
             }
         } else if (command instanceof IncreaseDecreaseType) {
             value = commandSt;

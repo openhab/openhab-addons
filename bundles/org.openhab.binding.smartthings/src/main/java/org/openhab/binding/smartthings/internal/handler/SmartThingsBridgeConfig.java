@@ -35,7 +35,7 @@ public class SmartThingsBridgeConfig {
         StringBuffer sb = new StringBuffer();
         sb.append("appName = ").append(appName);
         sb.append("clientId = ").append(clientId);
-        sb.append("clientSecret = ").append(clientSecret);
+        sb.append("clientSecret = ").append(clientSecret.isBlank() ? "" : "<redacted>");
         sb.append("pollingTime = ").append(pollingTime);
         sb.append("useCloudWebhook = ").append(useCloudWebhook);
         sb.append("useDynamicThings = ").append(useDynamicThings);

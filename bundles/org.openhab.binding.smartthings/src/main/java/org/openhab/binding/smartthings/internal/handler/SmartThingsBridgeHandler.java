@@ -226,19 +226,20 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
     }
 
     public void registerOAuth(boolean forceCli) {
+        releaseOAuthService();
         OAuthClientService oAuthService;
 
-        // if no user app created, use the smarthings cli end point to create the app
+        // if no user app created, use the SmartThings CLI end point to create the app
         if ("".equals(config.clientId) || forceCli) {
             config.clientId = SmartThingsBindingConstants.CLIENT_ID;
-            oAuthService = oAuthFactory.createOAuthClientService(thing.getUID().getAsString(),
+            oAuthService = oAuthFactory.createOAuthClientService(getOAuthServiceHandle(),
                     SmartThingsBindingConstants.SMARTTHINGS_API_TOKEN_URL,
                     SmartThingsBindingConstants.SMARTTHINGS_AUTHORIZE_URL, config.clientId, null,
                     SmartThingsBindingConstants.SMARTTHINGS_SCOPES, true);
         }
         // if the user app created, use the clientId/clientSecret from the app
         else {
-            oAuthService = oAuthFactory.createOAuthClientService(thing.getUID().getAsString(),
+            oAuthService = oAuthFactory.createOAuthClientService(getOAuthServiceHandle(),
                     SmartThingsBindingConstants.SMARTTHINGS_API_TOKEN_URL,
                     SmartThingsBindingConstants.SMARTTHINGS_AUTHORIZE_URL, config.clientId, config.clientSecret,
                     SmartThingsBindingConstants.SMARTTHINGS_SCOPES_ST, true);
@@ -256,7 +257,7 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
                 org.openhab.core.auth.client.oauth2.AccessTokenResponse response = srv
                         .getAccessTokenResponseByAuthorizationCode(code, SmartThingsBindingConstants.REDIRECT_URI);
                 if (response.getAccessToken() != null) {
-                    logger.info("token: {}", response.getAccessToken());
+                    logger.debug("SmartThings OAuth token exchange completed");
                     setupClient(eventCallbackuri);
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -455,9 +456,9 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.unable-to-create-app");
                 if (lastExp != null) {
-                    throw new SmartThingsException("unable to create SmartThins app", lastExp);
+                    throw new SmartThingsException("Unable to create SmartThings app", lastExp);
                 } else {
-                    throw new SmartThingsException("unable to create SmartThins app");
+                    throw new SmartThingsException("Unable to create SmartThings app");
                 }
             }
         }
@@ -480,8 +481,38 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
         SmartThingsServlet s = servlet;
         if (s != null) {
             s.deactivate();
+            servlet = null;
         }
+        releaseOAuthService();
         super.dispose();
+    }
+
+    @Override
+    public void handleRemoval() {
+        removeOAuthServiceAndToken();
+        super.handleRemoval();
+    }
+
+    private String getOAuthServiceHandle() {
+        return thing.getUID().getAsString();
+    }
+
+    private void releaseOAuthService() {
+        OAuthClientService service = oAuthService;
+        if (service != null) {
+            service.removeAccessTokenRefreshListener(this);
+            oAuthFactory.ungetOAuthService(getOAuthServiceHandle());
+            oAuthService = null;
+        }
+    }
+
+    private void removeOAuthServiceAndToken() {
+        OAuthClientService service = oAuthService;
+        if (service != null) {
+            service.removeAccessTokenRefreshListener(this);
+            oAuthService = null;
+        }
+        oAuthFactory.deleteServiceAndAccessToken(getOAuthServiceHandle());
     }
 
     protected boolean validateConfig(SmartThingsBridgeConfig config) {
@@ -517,7 +548,7 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
             }
             return null;
         } catch (OAuthException | IOException | OAuthResponseException | RuntimeException e) {
-            throw new SmartThingsException("Error durring getAccessTokenResponse", e);
+            throw new SmartThingsException("Error during getAccessTokenResponse", e);
         }
     }
 
@@ -526,7 +557,7 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
             OAuthClientService oAuthService = this.oAuthService;
             return oAuthService == null ? null : oAuthService.refreshToken();
         } catch (OAuthException | IOException | OAuthResponseException | RuntimeException e) {
-            throw new SmartThingsException("Error durring refreshToken", e);
+            throw new SmartThingsException("Error during refreshToken", e);
         }
     }
 
@@ -583,7 +614,7 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
 
             return authorizationUri;
         } catch (final OAuthException e) {
-            throw new SmartThingsException("Error constructing AuthorizationUr", e);
+            throw new SmartThingsException("Error constructing authorization URL", e);
         }
     }
 
@@ -591,7 +622,7 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
         this.installedAppId = installedAppId;
     }
 
-    public String getdInstalledAppId() {
+    public String getInstalledAppId() {
         return this.installedAppId;
     }
 

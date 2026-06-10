@@ -125,7 +125,7 @@ public class SmartThingsDiscoveryService extends AbstractDiscoveryService
                 for (SmartThingsCategory cat : component.categories) {
                     String catId = cat.name;
 
-                    if (SmartThingsBindingConstants.GROUPD_ID_MAIN.equals(compId)) {
+                    if (SmartThingsBindingConstants.GROUP_ID_MAIN.equals(compId)) {
                         deviceCategory = catId;
                     }
                 }

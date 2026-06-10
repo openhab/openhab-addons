@@ -497,6 +497,11 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
         return (String.join("-", StringUtils.splitByCharacterType(propKey))).toLowerCase(Locale.ROOT);
     }
 
+    public static String getChannelGroupId(String deviceType, String componentId, String capabilityId) {
+        return UidUtils.sanitizeId(deviceType) + "_" + UidUtils.sanitizeId(componentId) + "_"
+                + UidUtils.sanitizeId(capabilityId);
+    }
+
     private void addChannels(String deviceCategory, String deviceType, List<ChannelGroupType> groupTypes,
             SmartThingsComponent component, SmartThingsCapability capa) {
         if (shouldIgnoreCapa(capa)) {
@@ -630,12 +635,7 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
         }
 
         // generate group
-        String groupId = deviceType + "_" + componentId + "_";
-
-        if (!"".equals(namespace)) {
-            groupId = groupId + namespace + "_";
-        }
-        groupId = groupId + capaKey;
+        String groupId = getChannelGroupId(deviceType, componentId, capa.id);
 
         logger.trace("addChannels: groupId:{}", groupId);
         ChannelGroupTypeUID groupTypeUID = UidUtils.generateChannelGroupTypeUID(groupId);
@@ -707,7 +707,7 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
         if (semanticTags.containsKey(deviceType)) {
             return semanticTags.get(deviceType);
         } else {
-            logger.debug("@todo: need review, missing semanticTag for deviceType: {}", deviceType);
+            logger.debug("Missing semantic tag for deviceType: {}", deviceType);
         }
         return null;
     }
