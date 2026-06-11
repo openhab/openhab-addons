@@ -26,7 +26,7 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class RoborockBindingConstants {
 
-    private static final String BINDING_ID = "roborock";
+    public static final String BINDING_ID = "roborock";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID ROBOROCK_ACCOUNT = new ThingTypeUID(BINDING_ID, "account");
@@ -115,6 +115,7 @@ public class RoborockBindingConstants {
 
     public static final String CHANNEL_CONTROL = "actions#control";
     public static final String CHANNEL_COMMAND = "actions#commands";
+    public static final String CHANNEL_DP_COMMAND = "actions#dpcommand";
     public static final String CHANNEL_RPC = "actions#rpc";
     public static final String CHANNEL_VACUUM = "actions#vacuum";
     public static final String CHANNEL_FAN_CONTROL = "actions#fan";
