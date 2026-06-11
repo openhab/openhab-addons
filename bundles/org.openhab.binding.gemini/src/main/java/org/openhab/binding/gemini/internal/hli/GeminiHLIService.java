@@ -160,6 +160,10 @@ public class GeminiHLIService implements ThingHandlerService, HumanLanguageInter
         if (systemMessage == null || systemMessage.isBlank()) {
             throw new InterpretationException("System prompt is missing or empty");
         }
+        if (interpreterContext.locationItem() != null && !interpreterContext.locationItem().isBlank()) {
+            systemMessage = systemMessage.trim() + "\n\n" + "Your location (item name): "
+                    + interpreterContext.locationItem();
+        }
         if (!tools.isEmpty()) {
             String toolGuidance = "You have tools available to interact with the environment. Use them when appropriate. "
                     + "However, if the user's request cannot be fulfilled by any tool, or if they ask a general question, "
