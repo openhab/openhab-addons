@@ -159,6 +159,10 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
         return config.useDynamicThings;
     }
 
+    public boolean useCloudWebhook() {
+        return config.useCloudWebhook;
+    }
+
     public boolean appCreated() {
         if ("".equals(config.appName) || "".equals(config.clientId)) {
             return false;

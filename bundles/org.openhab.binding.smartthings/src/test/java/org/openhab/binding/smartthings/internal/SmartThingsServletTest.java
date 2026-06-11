@@ -99,6 +99,37 @@ class SmartThingsServletTest {
         assertTrue(callbackInfo.contains("SmartThings uses this URL for event callbacks."));
     }
 
+    @Test
+    void callbackInfoWarnsAboutCloudWebhookRequirements() {
+        String callbackInfo = SmartThingsServlet.formatCallbackInfo("https://cloud.example.org/smartthings/account/cb",
+                true);
+
+        assertTrue(callbackInfo.contains("Webhook URL"));
+        assertTrue(callbackInfo.contains("SmartThings requires an HTTPS webhook URL"));
+        assertTrue(callbackInfo.contains("reachable from the internet"));
+    }
+
+    @Test
+    void callbackInfoWarnsWhenCloudWebhookIsNotHttps() {
+        String callbackInfo = SmartThingsServlet.formatCallbackInfo("http://cloud.example.org/smartthings/account/cb",
+                true);
+
+        assertTrue(callbackInfo.contains("Webhook URL"));
+        assertTrue(callbackInfo.contains("href=\"http://cloud.example.org/smartthings/account/cb\""));
+        assertTrue(callbackInfo.contains("does not use HTTPS"));
+        assertTrue(callbackInfo.contains("reachable from the internet"));
+    }
+
+    @Test
+    void callbackInfoWarnsWhenCloudWebhookIsMissing() {
+        String callbackInfo = SmartThingsServlet.formatCallbackInfo("", true);
+
+        assertTrue(callbackInfo.contains("Webhook URL"));
+        assertTrue(callbackInfo.contains("No openHAB Cloud webhook URL is available yet."));
+        assertTrue(callbackInfo.contains("event callbacks cannot be registered"));
+        assertTrue(callbackInfo.contains("reachable from the internet"));
+    }
+
     private static class TestSmartThingsServlet extends SmartThingsServlet {
         TestSmartThingsServlet(TranslationProvider translationProvider) throws SmartThingsException {
             super(mock(SmartThingsBridgeHandler.class), "/smartthings/account", mock(SmartThingsAuthService.class),
