@@ -36,6 +36,7 @@
 					subscriptions; enable pollingTime for polling fallback. When the openHAB Cloud Connector add-on is
 					available, the
 					binding fills this value automatically.</description>
+				<advanced>true</advanced>
 			</parameter>
 			<parameter name="useDynamicThings" type="boolean" required="false">
 				<label>Create Things Using Dynamic Capability Discovery</label>

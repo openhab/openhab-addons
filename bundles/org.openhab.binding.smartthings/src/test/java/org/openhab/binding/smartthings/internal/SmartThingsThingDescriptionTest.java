@@ -45,6 +45,18 @@ class SmartThingsThingDescriptionTest {
     }
 
     @Test
+    void callbackUrlIsAdvancedBridgeConfiguration() throws Exception {
+        Document document = parseThingDescription("OH-INF/thing/account.xml");
+
+        Element parameter = findParameter(document, "callbackUrl");
+
+        assertNotNull(parameter);
+        Node advanced = parameter.getElementsByTagName("advanced").item(0);
+        assertNotNull(advanced);
+        assertEquals("true", advanced.getTextContent());
+    }
+
+    @Test
     void configParameterLabelsUseTitleStyleCapitalization() throws Exception {
         Document accountDocument = parseThingDescription("OH-INF/thing/account.xml");
         Document sceneDocument = parseThingDescription("OH-INF/thing/scene.xml");
