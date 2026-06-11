@@ -159,5 +159,17 @@ For more information on human language interpreters, refer to the [Voice documen
 
 ### Thing Configuration
 
+```java
+Thing gemini:account:myaccount [apiKey="xxx-yyy-zzz", model="gemini-2.5-flash", temperature=1.0, topP=1.0, maxOutputTokens=2048, requestTimeout=30] {
+  Channels:
+    Type chat : chat "Chat" [model="gemini-2.5-flash", temperature=1.0, topP=1.0, maxOutputTokens=2048, systemMessage="You are a helpful assistant."]
+}
+```
+
+Additional channels of type `chat` can be added to the thing.
+
 ### Item Configuration
 
+```java
+String GeminiChat "Gemini Chat" { channel="gemini:account:myaccount:chat" }
+```
