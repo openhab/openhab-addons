@@ -72,7 +72,10 @@ public class EcovacsHandlerFactory extends BaseThingHandlerFactory {
         this.i18Provider = i18Provider;
 
         Roster.setRosterLoadedAtLoginDefault(false);
-        DNSUtil.setDNSResolver(JavaxResolver.getInstance());
+        var dnsResolver = JavaxResolver.getInstance();
+        if (dnsResolver != null) {
+            DNSUtil.setDNSResolver(dnsResolver);
+        }
         SmackConfiguration.setDefaultHostnameVerifier(new XmppHostnameVerifier());
         Base64.setEncoder(Java7Base64Encoder.getInstance());
         Base64UrlSafeEncoder.setEncoder(Java7Base64UrlSafeEncoder.getInstance());

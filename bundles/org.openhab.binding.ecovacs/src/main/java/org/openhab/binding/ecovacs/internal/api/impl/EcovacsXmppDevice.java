@@ -45,7 +45,6 @@ import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
 import org.jivesoftware.smack.util.PacketParserUtils;
 import org.jivesoftware.smack.xml.XmlPullParser;
-import org.jivesoftware.smack.xml.XmlPullParser.Event;
 import org.jivesoftware.smack.xml.XmlPullParserException;
 import org.jivesoftware.smackx.ping.PingManager;
 import org.jxmpp.JxmppContext;
@@ -456,14 +455,14 @@ public class EcovacsXmppDevice implements EcovacsDevice {
 
             outerloop: while (true) {
                 switch (parser.next()) {
-                    case Event.START_ELEMENT:
+                    case START_ELEMENT:
                         if (parser.getDepth() == initialDepth + 1) {
                             String id = parser.getAttributeValue("", "id");
                             String payload = PacketParserUtils.parseElement(parser).toString();
                             packet = new DeviceCommandIQ(id, payload);
                         }
                         break;
-                    case Event.END_ELEMENT:
+                    case END_ELEMENT:
                         if (parser.getDepth() == initialDepth) {
                             break outerloop;
                         }
