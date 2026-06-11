@@ -33,8 +33,8 @@ Dynamic discovery is an advanced option and is mainly useful for unsupported dev
 Discovery requires an authorized `smartthings:account` bridge.
 After the account is online, start a scan from the Inbox to discover devices and scenes from the SmartThings account.
 
-Discovery creates Inbox entries using the device type reported by SmartThings.
-If that type is available as a static Thing type, openHAB uses the static Thing definition.
+By default, discovery maps supported SmartThings device categories to the included static Thing definitions.
+Unsupported device categories are skipped unless dynamic Thing discovery is enabled.
 If the bridge option `useDynamicThings` is enabled, the binding also registers dynamic Thing types and channels from the capabilities reported by SmartThings.
 Dynamic Thing types can expose more device-specific channels, but they are less stable than static Thing definitions.
 

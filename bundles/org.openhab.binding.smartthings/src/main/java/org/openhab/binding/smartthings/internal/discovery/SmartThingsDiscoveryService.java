@@ -22,6 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smartthings.internal.SmartThingsBindingConstants;
 import org.openhab.binding.smartthings.internal.api.SmartThingsApi;
+import org.openhab.binding.smartthings.internal.dto.SmartThingsCapability;
 import org.openhab.binding.smartthings.internal.dto.SmartThingsCategory;
 import org.openhab.binding.smartthings.internal.dto.SmartThingsComponent;
 import org.openhab.binding.smartthings.internal.dto.SmartThingsDevice;
@@ -152,22 +153,95 @@ public class SmartThingsDiscoveryService extends AbstractDiscoveryService
         deviceType = UidUtils.sanitizeId(deviceType);
         SmartThingsTypeRegistry registry = this.typeRegistry;
         SmartThingsBridgeHandler bridgeHandler = smartThingsBridgeHandler;
+        boolean useDynamicThings = bridgeHandler != null && bridgeHandler.useDynamicThings();
 
-        if (registry != null && bridgeHandler != null && bridgeHandler.useDynamicThings()) {
+        if (registry != null && useDynamicThings) {
             registry.register(deviceCategory, deviceType, device);
         }
         if (addDevice) {
-            createDevice(deviceCategory, deviceType, Objects.requireNonNull(device));
+            String thingTypeId = getThingTypeId(deviceCategory, deviceType, device, useDynamicThings);
+            if (thingTypeId != null) {
+                createDevice(deviceCategory, thingTypeId, deviceType, Objects.requireNonNull(device));
+            }
         }
+    }
+
+    private @Nullable String getThingTypeId(String deviceCategory, String deviceType, SmartThingsDevice device,
+            boolean useDynamicThings) {
+        if (useDynamicThings) {
+            return deviceType;
+        }
+
+        String staticThingTypeId = getStaticThingTypeId(deviceCategory, device);
+        if (staticThingTypeId == null) {
+            logger.debug(
+                    "No static SmartThings thing type for category {} and device type {}. Enable dynamic thing discovery to discover this device.",
+                    deviceCategory, deviceType);
+        }
+        return staticThingTypeId;
+    }
+
+    private @Nullable String getStaticThingTypeId(String deviceCategory, SmartThingsDevice device) {
+        switch (deviceCategory) {
+            case "air_conditioner":
+            case "airconditioner":
+                return SmartThingsBindingConstants.THING_TYPE_SAMSUNG_ROOM_A_C.getId();
+            case "illuminance_sensor":
+            case "light_sensor":
+            case "lightsensor":
+                return SmartThingsBindingConstants.THING_TYPE_GENERIC_LIGHT_SENSOR.getId();
+            case "light":
+            case "light_bulb":
+            case "lightbulb":
+                return hasCapability(device, SmartThingsBindingConstants.CAPA_COLOR_CONTROL)
+                        ? SmartThingsBindingConstants.THING_TYPE_GENERIC_COLOR_LIGHT_BULB.getId()
+                        : SmartThingsBindingConstants.THING_TYPE_GENERIC_LIGHT_BULB.getId();
+            case "presence":
+            case "presence_sensor":
+            case "presencesensor":
+                return SmartThingsBindingConstants.THING_TYPE_GENERIC_PRESENCE_SENSOR.getId();
+            case "television":
+            case "tv":
+                return SmartThingsBindingConstants.THING_TYPE_GENERIC_TELEVISION.getId();
+            case "washer":
+            case "washing_machine":
+            case "washingmachine":
+                return SmartThingsBindingConstants.THING_TYPE_GENERIC_WASHER.getId();
+            default:
+                return null;
+        }
+    }
+
+    private boolean hasCapability(SmartThingsDevice device, String capabilityId) {
+        SmartThingsComponent[] components = device.components;
+        if (components == null) {
+            return false;
+        }
+
+        for (SmartThingsComponent component : components) {
+            SmartThingsCapability[] capabilities = component.capabilities;
+            if (capabilities == null) {
+                continue;
+            }
+            for (SmartThingsCapability capability : capabilities) {
+                if (capabilityId.equals(capability.id)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
      * Create a device with the data from the SmartThings account
      *
-     * @param deviceData Device data from the account
+     * @param deviceCategory SmartThings category from the main component
+     * @param thingTypeId openHAB Thing type ID used for the discovery result
+     * @param deviceType SmartThings device type reported by the API
+     * @param device Device data from the account
      */
-    private void createDevice(String deviceCategory, String deviceType, SmartThingsDevice device) {
-        logger.trace("Discovery: Creating device: ThingType {} with name {}", deviceCategory, device.name);
+    private void createDevice(String deviceCategory, String thingTypeId, String deviceType, SmartThingsDevice device) {
+        logger.trace("Discovery: Creating device: ThingType {} with name {}", thingTypeId, device.name);
 
         // Build the UID as a string "smartthings:{ThingType}:{BridgeName}:{DeviceName}"
         String label = device.label; // Note: this is necessary for null analysis to work
@@ -182,7 +256,7 @@ public class SmartThingsDiscoveryService extends AbstractDiscoveryService
         if (bridgeHandler != null) {
             ThingUID bridgeUid = bridgeHandler.getThing().getUID();
             String bridgeId = bridgeUid.getId();
-            String uidStr = String.format("smartthings:%s:%s:%s", deviceType, bridgeId, smartthingsDeviceName);
+            String uidStr = String.format("smartthings:%s:%s:%s", thingTypeId, bridgeId, smartthingsDeviceName);
 
             Map<String, Object> properties = new HashMap<>();
             properties.put(SmartThingsBindingConstants.DEVICE_ID, device.deviceId);
