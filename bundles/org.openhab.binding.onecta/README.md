@@ -1,6 +1,6 @@
-# Onecta Binding 
+# Onecta Binding
 
-This binding allows you to control Daikin units connected to Onecta. 
+This binding allows you to control Daikin units connected to Onecta.
 Onecta is a Daikin cloud platform that allows user's to control their Daikin units via the internet.
 The Daikin Onecta app can be used to control the units and to register the units in the Daikin Onecta cloud.
 After the initial setup in de Daikin app, the binding will recognize all units connected to the Daikin cloud and create the corresponding things.
@@ -17,8 +17,8 @@ Basically all devices connected to Daikin Onecta cloud could be connected with t
 
 ## Discovery
 
-Once a Onecta account is paired, all supported appliances are automatically discovered as individual things and placed in the inbox. 
-They can then be paired with your favorite management UI. 
+Once a Onecta account is paired, all supported appliances are automatically discovered as individual things and placed in the inbox.
+They can then be paired with your favorite management UI.
 As an alternative, the binding configuration UI provides a things-file template per paired account that can be used to pair the appliances.
 
 For a detailed walk through the account configuration, see [Account Configuration Example](#account-configuration-example).
@@ -36,13 +36,14 @@ For a detailed walk through the account configuration, see [Account Configuratio
 | `unitID`        | text    | UID Unique Identifier. <br>If this thing is created in a thing-file this UID can be found in the logging | N/A     | yes      | no       |
 | `refreshDelay`  | integer | Refresh Delay in sec. <br>Only available for thing 'device' and 'domestic-hot-water-tank'                | 15      | yes      | no       |
 
-### Explanation Refresh Delay:
-If a command is sent from the binding to OnectaCloud, it needs time to be processed by Daikin. 
+### Explanation Refresh Delay
+
+If a command is sent from the binding to OnectaCloud, it needs time to be processed by Daikin.
 This can cause items to flip-flop. <br>
-For example: You switch a Unit 'On' with the binding. 
-Daikin will process this command and control the unit, this processing can take 15 seconds. 
-During this time, the binding may have requested a data refresh from OnectaCloud. 
-If this 'On' command has not yet been processed by Daikin, this will result in the openHab item returning to 'Off'. 
+For example: You switch a Unit 'On' with the binding.
+Daikin will process this command and control the unit, this processing can take 15 seconds.
+During this time, the binding may have requested a data refresh from OnectaCloud.
+If this 'On' command has not yet been processed by Daikin, this will result in the openHab item returning to 'Off'.
 After a while, when Daikin has processed it and another data refresh is performed by the binding, the openHab item will return to 'On'.
 The Refresh Delay prevents an item from being refreshed (for x seconds) after a command has been issued from this item.
 Other items will be updated during this time with a data refresh.
@@ -226,7 +227,7 @@ Number:Energy   EnergyHeatingMonth22 "Energy Heating current year November"   <E
 Number:Energy   EnergyHeatingMonth23 "Energy Heating current year December"   <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-heating#energy-heating-month-23"}
 ```
 
-### Item Configuration gateway
+### Item Configuration - gateway
 
 ```java
 Switch        DaylightSavingTime      "Daylight saving time enabled" <switch>            ["Point"] {channel="onecta:gateway:bridge:livingRoom:basic#daylight-savingtime-enabled", readOnly="true"}
@@ -241,10 +242,10 @@ String        TimeZone                "Time zone"                               
 String        WiFiConnectionSSID      "WiFi Connection SSID"         <network>           ["Point"] {channel="onecta:gateway:bridge:livingRoom:basic#wifi-connection-ssid", readOnly="true"}
 Number        WifiConnectionStrength  "Wifi connection strength"     <QualityOfService>  ["Point"] {channel="onecta:gateway:bridge:livingRoom:basic#wifi-connection-power", readOnly="true"}
 String        ModelInfo               "Model info"                                       ["Point"] {channel="onecta:gateway:bridge:livingRoom:basic#model-info", readOnly="true"}
-String        IPAddress               "IP Address"                   <network>           ["Point"] {channel="onecta:gateway:bridge:livingRoom:basic#ip-address", readOnly="true"}
 String        MacAddress              "MAC Address"                  <network>           ["Point"] {channel="onecta:gateway:bridge:livingRoom:basic#mac-address", readOnly="true"}
 ```
-### Item Configuration domestic-hot-water-tank
+
+### Item Configuration - Domestic Hot Water Tank
 
 ```java
 Switch        Power                     "Power for the AC unit"    <switch>         ["Point"] {channel="onecta:domestic-hot-water-tank:bridge:livingroom:basic#power"}
@@ -268,7 +269,7 @@ Number:Temperature   SetPointStep       "SetTempStep [%.1f °C]"      <Temperatu
 Number:Temperature   TankTemperature   "Tank temperature [%.1f °C]" <Temperature> ["Point"] {channel="onecta:domestic-hot-water-tank:bridge:livingroom:basic#tanktemperature" , readOnly="true"}
 ```
 
-### Item Configuration indoor-unit
+### Item Configuration - indoor unit
 
 ```java
 String              ModelInformation      "Model information"                                  ["Point"] {channel="onecta:indoor-unit:bridge:livingroom:basic#modelinfo", readOnly="true"}
@@ -283,32 +284,30 @@ Number:Temperature  HeatExchangerTemp     "Heatexchanger temperature [%.1f °C]"
 Number:Temperature  SuctionTemp           "Suction temperature [%.1f °C]"       <Temperature>  ["Point"] {channel="onecta:indoor-unit:bridge:livingroom:basic#suctiontemp", readOnly="true"}
 ```
 
-
 ## Prerequisites using the binding
+
 Please take the following steps prior to using the binding.
 Create a Onecta cloud account in the Onecta app for [Android](https://play.google.com/store/apps/details?id=com.daikineurope.online.controller&hl=en_US) or [iOS](https://apps.apple.com/de/app/onecta/id1474811586?l=en) (if not already done).
 Afterwards, pair your Daikin units in the Onecta App.
 
 There is no auto discovery for the Onecta cloud account.
 The account is paired using OAuth2 with your Onecta login and the developer credentials obtained from the Onecta Developer Portal.
-To pair the account go to the binding's configuration UI at https://<your openHAB address>/onecta. For a standard openHABian Pi installation the address is https://openhabianpi:8443/onecta or https://pi-adres:8443/onecta.
+To pair the account go to the binding's configuration UI at `https://<your openHAB address>/onecta`. For a standard openHABian Pi installation the address is `https://openhabianpi:8443/onecta` or `https://pi-adres:8443/onecta`.
 Note that your browser will file a warning that the certificate is self-signed.
 This is fine and you can safely continue.
 It is NOT possible to use an unsecured connection (http://) for pairing.<br>
 Allowed pairing formats are:
-- https://<your-domain>/onecta
-- https://<your-local-ip>:<your-port>/onecta (standard port 8443)
-- https://home.myopenhab.org/onecta
-- https://openhabianpi:8443/onecta
+
+- `https://<your-domain>/onecta`
+- `https://<your-local-ip>:<your-port>/onecta` (standard port 8443)
+- `https://home.myopenhab.org/onecta`
+- `https://openhabianpi:8443/onecta`
 
 **note:** It is **not** allowed to use localhost (Onecta will not accept this)
-- https://localhost:8443
+
+- `https://localhost:8443`
 
 ## Account Configuration Example
-
-
-
-
 
 The best way to perform the following steps is in an incognito browser to prevent historical settings and accounts from causing problems.
 
@@ -325,10 +324,13 @@ If not already done, go to the [Daikin Developer Portal](https://developer.cloud
 Obtain your client ID and client secret according to the instructions presented there. (**Open the Daikin Developer portal in a incognito browser.**)
 
 Once you obtained your client ID and client secret continue pairing by filling in your client ID, client secret and Redirect URI.
-<br>**Important** : 
+
+<br>**Important:**
+
 - The redirect URI must be set to `https://<your openHAB address>/onecta/result`.
 - It has to be https, otherwise the pairing will fail.
 - Localhost is not supported, you have to use the actual hostname of your openHAB installation.
+
 ![img.png](doc/CloudBindingSettings.png)
 
 A click on `Pair Account` will take you to the Daikin cloud service login form where you need to log in with the same account as you used for the Onecta@mobile app.
@@ -346,7 +348,7 @@ Either let the binding automatically configure a bridge instance or copy the pre
 Once the bridge instance is `ONLINE`, you can either pair things for all appliances via your favorite management UI or use a things-file.
 The account overview provides a things-file template that is shown when you expand the account.
 This can serve as a starting point for your own things-file.
-In the properties of the Onecta account thing, you can also find the available units and their details of your system. 
+In the properties of the Onecta account thing, you can also find the available units and their details of your system.
 Sometimes you need to Disable and then re-Enable the account thing to see the updated list of units.
 
 ![Account Overview With Bridge](doc/account-overview-with-bridge.png)
