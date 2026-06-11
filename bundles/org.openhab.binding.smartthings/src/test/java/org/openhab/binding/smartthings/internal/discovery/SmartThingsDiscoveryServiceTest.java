@@ -62,7 +62,8 @@ class SmartThingsDiscoveryServiceTest {
 
         DiscoveryResult result = discoveryService.discoveryResult;
         assertNotNull(result);
-        assertEquals("smartthings:Samsung_The_Frame:account:Samsung_The_Frame", result.getThingUID().getAsString());
+        assertEquals("smartthings:dynamic-Samsung_The_Frame:account:Samsung_The_Frame",
+                result.getThingUID().getAsString());
         verify(typeRegistry).register("television", "Samsung_The_Frame", device);
     }
 

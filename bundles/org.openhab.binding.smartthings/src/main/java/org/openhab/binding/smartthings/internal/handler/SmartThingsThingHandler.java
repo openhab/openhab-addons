@@ -254,7 +254,7 @@ public class SmartThingsThingHandler extends BaseThingHandler {
                         continue;
                     }
 
-                    refreshDevice(thing.getThingTypeUID().getId(), componentKey, capaKey, propertyKey, value);
+                    refreshDevice(getSmartThingsDeviceType(), componentKey, capaKey, propertyKey, value);
                 }
             }
         }
@@ -333,6 +333,11 @@ public class SmartThingsThingHandler extends BaseThingHandler {
         }
 
         return "";
+    }
+
+    public String getSmartThingsDeviceType() {
+        String deviceType = thing.getProperties().get(SmartThingsBindingConstants.DEVICE_TYPE);
+        return deviceType != null && !deviceType.isBlank() ? deviceType : thing.getThingTypeUID().getId();
     }
 
     private void updateDeviceIdProperty(String resolvedDeviceId) {

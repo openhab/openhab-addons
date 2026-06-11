@@ -76,6 +76,9 @@ import com.google.gson.Gson;
 @NonNullByDefault
 @Component(immediate = true)
 public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
+    private static final URI DYNAMIC_DEVICE_CONFIG_DESCRIPTION_URI = URI
+            .create(SmartThingsBindingConstants.CONFIG_DESCRIPTION_URI_THING_PREFIX + ":"
+                    + SmartThingsBindingConstants.BINDING_ID + ":dynamic-device");
 
     private final Logger logger = LoggerFactory.getLogger(SmartThingsTypeRegistryImpl.class);
 
@@ -430,7 +433,8 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
 
         if (lcThingTypeProvider != null) {
             ThingType tt = null;
-            ThingTypeUID thingTypeUID = UidUtils.generateThingTypeUID(deviceType);
+            String thingTypeId = UidUtils.generateDynamicThingTypeId(deviceType);
+            ThingTypeUID thingTypeUID = UidUtils.generateThingTypeUID(thingTypeId);
 
             tt = lcThingTypeProvider.getInternalThingType(thingTypeUID);
 
@@ -490,7 +494,7 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
                     }
                 }
 
-                tt = createThingType(deviceCategory, deviceType, groupTypes);
+                tt = createThingType(deviceCategory, deviceType, thingTypeId, groupTypes);
                 lcThingTypeProvider.addThingType(tt);
             }
         }
@@ -663,7 +667,8 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
     /**
      * Creates the ThingType for the given device.
      */
-    private ThingType createThingType(String deviceCategory, String deviceType, List<ChannelGroupType> groupTypes) {
+    private ThingType createThingType(String deviceCategory, String deviceType, String thingTypeId,
+            List<ChannelGroupType> groupTypes) {
         SmartThingsConfigDescriptionProvider lcConfigDescriptionProvider = configDescriptionProvider;
 
         logger.trace("createThingType: device:{} {}", deviceCategory, deviceType);
@@ -671,15 +676,14 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
         List<String> supportedBridgeTypeUids = new ArrayList<>();
         supportedBridgeTypeUids.add(SmartThingsBindingConstants.THING_TYPE_ACCOUNT.toString());
 
-        logger.trace("GenerateThingTypeUID: device:{}", deviceType);
-        ThingTypeUID thingTypeUID = UidUtils.generateThingTypeUID(deviceType);
+        logger.trace("GenerateThingTypeUID: device:{}", thingTypeId);
+        ThingTypeUID thingTypeUID = UidUtils.generateThingTypeUID(thingTypeId);
 
         Map<String, String> properties = new HashMap<>();
 
-        URI configDescriptionURI = getConfigDescriptionURI(deviceType);
-        if (lcConfigDescriptionProvider != null
-                && lcConfigDescriptionProvider.getInternalConfigDescription(configDescriptionURI) == null) {
-            generateConfigDescription(deviceType, groupTypes, configDescriptionURI);
+        if (lcConfigDescriptionProvider != null && lcConfigDescriptionProvider
+                .getInternalConfigDescription(DYNAMIC_DEVICE_CONFIG_DESCRIPTION_URI) == null) {
+            generateConfigDescription(DYNAMIC_DEVICE_CONFIG_DESCRIPTION_URI);
         }
 
         List<ChannelGroupDefinition> groupDefinitions = new ArrayList<>();
@@ -693,7 +697,7 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
         builder = builder.withSupportedBridgeTypeUIDs(supportedBridgeTypeUids);
         builder = builder.withLabel(deviceType);
         builder = builder.withRepresentationProperty(Thing.PROPERTY_MODEL_ID);
-        builder = builder.withConfigDescriptionURI(configDescriptionURI);
+        builder = builder.withConfigDescriptionURI(DYNAMIC_DEVICE_CONFIG_DESCRIPTION_URI);
         builder = builder.withCategory(SmartThingsBindingConstants.CATEGORY_THING_SMARTTHINGS);
         builder = builder.withChannelGroupDefinitions(groupDefinitions);
         builder = builder.withProperties(properties);
@@ -715,15 +719,7 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
         return null;
     }
 
-    private URI getConfigDescriptionURI(String device) {
-        logger.trace("getConfigDescriptionURI: device: {}", device);
-        ThingTypeUID thingTypeUID = UidUtils.generateThingTypeUID(device);
-
-        return URI.create((String.format("%s:%s", SmartThingsBindingConstants.CONFIG_DESCRIPTION_URI_THING_PREFIX,
-                thingTypeUID)));
-    }
-
-    private void generateConfigDescription(String device, List<ChannelGroupType> groupTypes, URI configDescriptionURI) {
+    private void generateConfigDescription(URI configDescriptionURI) {
         SmartThingsConfigDescriptionProvider lcConfigDescriptionProvider = configDescriptionProvider;
         List<ConfigDescriptionParameter> parms = new ArrayList<>();
         List<ConfigDescriptionParameterGroup> groups = new ArrayList<>();

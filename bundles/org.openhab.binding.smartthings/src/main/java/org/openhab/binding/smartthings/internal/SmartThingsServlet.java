@@ -624,8 +624,8 @@ public class SmartThingsServlet extends HttpServlet
                 ThingHandler handler = theThing.getHandler();
                 SmartThingsThingHandler smartThingsHandler = (SmartThingsThingHandler) handler;
                 if (smartThingsHandler != null) {
-                    smartThingsHandler.refreshDevice(theThing.getThingTypeUID().getId(), componentId, capa, attr,
-                            value);
+                    smartThingsHandler.refreshDevice(smartThingsHandler.getSmartThingsDeviceType(), componentId, capa,
+                            attr, value);
                 }
             } else {
                 logger.info("Can't find device for EVENT: {} {} {} {} {}", deviceId, componentId, capa, attr, value);

@@ -14,6 +14,7 @@ package org.openhab.binding.smartthings.internal.type;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.URI;
@@ -28,12 +29,16 @@ import org.openhab.binding.smartthings.internal.dto.SmartThingsDevice;
 import org.openhab.core.config.core.ConfigDescription;
 import org.openhab.core.config.core.ConfigDescriptionParameter;
 import org.openhab.core.config.core.ConfigDescriptionParameter.Type;
+import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.type.ThingType;
 
 /**
  * Tests for dynamic SmartThings type UID helpers.
  */
 @NonNullByDefault
 class SmartThingsTypeRegistryImplTest {
+    private static final URI DYNAMIC_DEVICE_CONFIG_DESCRIPTION_URI = URI
+            .create("thing-type:smartthings:dynamic-device");
 
     @Test
     void getChannelGroupIdMatchesDynamicTypeGeneration() {
@@ -57,7 +62,7 @@ class SmartThingsTypeRegistryImplTest {
         registry.register("washer", "Dynamic_Washer", createDevice());
 
         ConfigDescription configDescription = configDescriptionProvider
-                .getConfigDescription(URI.create("thing-type:smartthings:Dynamic_Washer"), null);
+                .getConfigDescription(DYNAMIC_DEVICE_CONFIG_DESCRIPTION_URI, null);
         assertNotNull(configDescription);
 
         Optional<ConfigDescriptionParameter> deviceIdParameter = configDescription.getParameters().stream()
@@ -65,6 +70,27 @@ class SmartThingsTypeRegistryImplTest {
         assertNotNull(deviceIdParameter.orElse(null));
         assertEquals(Type.TEXT, deviceIdParameter.get().getType());
         assertTrue(deviceIdParameter.get().isRequired());
+    }
+
+    @Test
+    void generatedThingTypeDoesNotReuseStaticThingTypeConfigDescriptionUri() {
+        SmartThingsTypeRegistryImpl registry = new SmartThingsTypeRegistryImpl();
+        SmartThingsThingTypeProviderImpl thingTypeProvider = new SmartThingsThingTypeProviderImpl();
+        SmartThingsConfigDescriptionProviderImpl configDescriptionProvider = new SmartThingsConfigDescriptionProviderImpl();
+        registry.setThingTypeProvider(thingTypeProvider);
+        registry.setConfigDescriptionProvider(configDescriptionProvider);
+
+        registry.register("air_conditioner", "Samsung_Room_A_C", createDevice());
+
+        ThingType thingType = thingTypeProvider.getInternalThingType(
+                new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "dynamic-Samsung_Room_A_C"));
+        assertNotNull(thingType);
+        assertEquals(DYNAMIC_DEVICE_CONFIG_DESCRIPTION_URI, thingType.getConfigDescriptionURI());
+        assertNotNull(configDescriptionProvider.getConfigDescription(DYNAMIC_DEVICE_CONFIG_DESCRIPTION_URI, null));
+        assertNull(configDescriptionProvider.getConfigDescription(URI.create("thing-type:smartthings:Samsung_Room_A_C"),
+                null));
+        assertNull(configDescriptionProvider
+                .getConfigDescription(URI.create("thing-type:smartthings:dynamic-Samsung_Room_A_C"), null));
     }
 
     private SmartThingsDevice createDevice() {

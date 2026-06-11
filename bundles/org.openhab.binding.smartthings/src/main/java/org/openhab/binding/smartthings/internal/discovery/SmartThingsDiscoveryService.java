@@ -169,7 +169,7 @@ public class SmartThingsDiscoveryService extends AbstractDiscoveryService
     private @Nullable String getThingTypeId(String deviceCategory, String deviceType, SmartThingsDevice device,
             boolean useDynamicThings) {
         if (useDynamicThings) {
-            return deviceType;
+            return UidUtils.generateDynamicThingTypeId(deviceType);
         }
 
         String staticThingTypeId = getStaticThingTypeId(deviceCategory, device);

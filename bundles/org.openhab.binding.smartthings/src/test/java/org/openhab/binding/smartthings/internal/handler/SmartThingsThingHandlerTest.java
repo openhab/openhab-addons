@@ -21,6 +21,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.smartthings.internal.SmartThingsBindingConstants;
 import org.openhab.binding.smartthings.internal.converter.SmartThingsConverterFactory;
+import org.openhab.binding.smartthings.internal.dto.SmartThingsStatusCapabilities;
+import org.openhab.binding.smartthings.internal.dto.SmartThingsStatusProperties;
 import org.openhab.binding.smartthings.internal.type.SmartThingsTypeRegistryImpl;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.OnOffType;
@@ -96,6 +98,28 @@ class SmartThingsThingHandlerTest {
         SmartThingsConverterFactory.registerConverters(new SmartThingsTypeRegistryImpl());
 
         handler.refreshDevice("Samsung_Room_A_C", "main", "switch", "switch", "on");
+
+        assertEquals(1, handler.updatedStates);
+        assertEquals(new ChannelUID(handler.getThing().getUID(), dynamicGroupId, "switch"), handler.lastUpdatedChannel);
+        assertEquals(OnOffType.ON, handler.lastUpdatedState);
+    }
+
+    @Test
+    void refreshDeviceFromCapaUsesOriginalDeviceTypeForPrefixedDynamicThingType() {
+        String dynamicGroupId = SmartThingsTypeRegistryImpl.getChannelGroupId("Samsung_Room_A_C", "main", "switch");
+        ThingUID thingUID = new ThingUID("smartthings:dynamic-Samsung_Room_A_C:account:dynamic-air-conditioner");
+        Thing thing = ThingBuilder
+                .create(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "dynamic-Samsung_Room_A_C"), thingUID)
+                .withProperties(Map.of(SmartThingsBindingConstants.DEVICE_TYPE, "Samsung_Room_A_C"))
+                .withChannel(createSwitchChannel(thingUID, dynamicGroupId)).build();
+        TestSmartThingsThingHandler handler = new TestSmartThingsThingHandler(thing);
+        SmartThingsConverterFactory.registerConverters(new SmartThingsTypeRegistryImpl());
+        SmartThingsStatusCapabilities capa = new SmartThingsStatusCapabilities();
+        SmartThingsStatusProperties property = new SmartThingsStatusProperties();
+        property.value = "on";
+        capa.put("switch", property);
+
+        handler.refreshDeviceFromCapa(capa, "main", "switch");
 
         assertEquals(1, handler.updatedStates);
         assertEquals(new ChannelUID(handler.getThing().getUID(), dynamicGroupId, "switch"), handler.lastUpdatedChannel);

@@ -25,6 +25,7 @@ import org.openhab.core.thing.type.ChannelTypeUID;
  */
 @NonNullByDefault
 public class UidUtils {
+    private static final String DYNAMIC_THING_TYPE_PREFIX = "dynamic-";
 
     public static String sanitizeId(String st) {
         StringBuffer buffer = new StringBuffer();
@@ -102,6 +103,10 @@ public class UidUtils {
 
     public static ThingTypeUID generateThingTypeUID(String name) {
         return new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, name);
+    }
+
+    public static String generateDynamicThingTypeId(String deviceType) {
+        return DYNAMIC_THING_TYPE_PREFIX + deviceType;
     }
 
     /**
