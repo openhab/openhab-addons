@@ -1,0 +1,19 @@
+{
+  "annotationLibrary": "none",
+  "library": "native",
+  "dateLibrary": "java8",
+  "serializationLibrary": "jackson",
+  "developerEmail": "patrik.gfeller@gmail.com",
+  "developerName": "Patrik Gfeller",
+  "developerOrganization": "openHAB project",
+  "developerOrganizationUrl": "https://www.openhab.org",
+  "documentationProvider": "none",
+  "failOnUnknownProperties": false,
+  "generateBuilders": true,
+  "generatedAnnotation": false,
+  "hideGenerationTimestamp": true,
+  "ignoreAnyOfInEnum": true,
+  "openApiNullable": false,
+  "templateDir": "tools/generate-sources/scripts/templates",
+  "outputEncoding": "UTF-8"
+}
