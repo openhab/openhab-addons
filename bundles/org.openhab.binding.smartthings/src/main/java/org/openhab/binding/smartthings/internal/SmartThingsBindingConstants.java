@@ -150,8 +150,7 @@ public class SmartThingsBindingConstants {
     // Bridge config properties
     public static final String IP_ADDRESS = "ipAddress";
     public static final String PORT = "port";
-    public static final String USE_CLOUD_WEBHOOK = "useCloudWebhook";
-    public static final String WEBHOOK_URL = "webHookUrl";
+    public static final String CALLBACK_URL = "callbackUrl";
     public static final String LOCATIONS = "locations";
 
     // Thing config properties

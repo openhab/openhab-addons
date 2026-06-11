@@ -14,7 +14,14 @@ package org.openhab.binding.smartthings.internal.handler;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.net.URI;
+import java.time.Instant;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import javax.ws.rs.client.ClientBuilder;
 
@@ -28,8 +35,11 @@ import org.openhab.binding.smartthings.internal.discovery.SmartThingsDiscoverySe
 import org.openhab.binding.smartthings.internal.type.SmartThingsException;
 import org.openhab.binding.smartthings.internal.type.SmartThingsTypeRegistry;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.io.rest.Webhook;
+import org.openhab.core.io.rest.WebhookService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -55,18 +65,103 @@ class SmartThingsAccountHandlerTest {
         assertEquals(ThingStatus.ONLINE, handler.lastStatus);
     }
 
+    @Test
+    void emptyCallbackUrlIsFilledFromCloudWebhook() throws Exception {
+        WebhookService webhookService = mock(WebhookService.class);
+        when(webhookService.requestWebhook("/smartthings/account/cb")).thenReturn(
+                CompletableFuture.completedFuture(webhook("https://cloud.example.org/smartthings/account/cb")));
+        TestSmartThingsAccountHandler handler = new TestSmartThingsAccountHandler(accountBridge(), webhookService);
+
+        handler.registerCloudWebhook();
+
+        assertEquals("https://cloud.example.org/smartthings/account/cb",
+                handler.updatedConfiguration.get(SmartThingsBindingConstants.CALLBACK_URL));
+    }
+
+    @Test
+    void customCallbackUrlIsNotReplacedByCloudWebhook() throws Exception {
+        WebhookService webhookService = mock(WebhookService.class);
+        when(webhookService.requestWebhook("/smartthings/account/cb")).thenReturn(
+                CompletableFuture.completedFuture(webhook("https://cloud.example.org/smartthings/account/cb")));
+        when(webhookService.removeWebhook("/smartthings/account/cb"))
+                .thenReturn(CompletableFuture.<Void> completedFuture(null));
+        TestSmartThingsAccountHandler handler = new TestSmartThingsAccountHandler(accountBridge(
+                Map.of(SmartThingsBindingConstants.CALLBACK_URL, "https://openhab.example.org/smartthings/account/cb")),
+                webhookService);
+
+        handler.registerCloudWebhook();
+
+        verify(webhookService).removeWebhook("/smartthings/account/cb");
+        assertEquals("https://openhab.example.org/smartthings/account/cb",
+                handler.getThing().getConfiguration().get(SmartThingsBindingConstants.CALLBACK_URL));
+    }
+
+    @Test
+    void sameHostCustomCallbackUrlIsNotReplacedByCloudWebhook() throws Exception {
+        WebhookService webhookService = mock(WebhookService.class);
+        when(webhookService.requestWebhook("/smartthings/account/cb"))
+                .thenReturn(CompletableFuture.completedFuture(webhook("https://cloud.example.org/new-callback")));
+        when(webhookService.removeWebhook("/smartthings/account/cb"))
+                .thenReturn(CompletableFuture.<Void> completedFuture(null));
+        TestSmartThingsAccountHandler handler = new TestSmartThingsAccountHandler(
+                accountBridge(
+                        Map.of(SmartThingsBindingConstants.CALLBACK_URL, "https://cloud.example.org/old-callback")),
+                webhookService);
+
+        handler.registerCloudWebhook();
+
+        verify(webhookService).removeWebhook("/smartthings/account/cb");
+        assertEquals("https://cloud.example.org/old-callback",
+                handler.getThing().getConfiguration().get(SmartThingsBindingConstants.CALLBACK_URL));
+    }
+
+    @Test
+    void matchingCloudCallbackUrlKeepsCloudWebhook() throws Exception {
+        WebhookService webhookService = mock(WebhookService.class);
+        when(webhookService.requestWebhook("/smartthings/account/cb")).thenReturn(
+                CompletableFuture.completedFuture(webhook("https://cloud.example.org/smartthings/account/cb")));
+        TestSmartThingsAccountHandler handler = new TestSmartThingsAccountHandler(accountBridge(
+                Map.of(SmartThingsBindingConstants.CALLBACK_URL, "https://cloud.example.org/smartthings/account/cb")),
+                webhookService);
+
+        handler.registerCloudWebhook();
+
+        verify(webhookService, never()).removeWebhook("/smartthings/account/cb");
+        assertEquals("https://cloud.example.org/smartthings/account/cb",
+                handler.getThing().getConfiguration().get(SmartThingsBindingConstants.CALLBACK_URL));
+    }
+
     private Bridge accountBridge() {
-        return BridgeBuilder.create(SmartThingsBindingConstants.THING_TYPE_ACCOUNT, "account").build();
+        return accountBridge(Map.of());
+    }
+
+    private Bridge accountBridge(Map<String, @Nullable Object> configuration) {
+        return BridgeBuilder.create(SmartThingsBindingConstants.THING_TYPE_ACCOUNT, "account")
+                .withConfiguration(new Configuration(configuration)).build();
+    }
+
+    private static Webhook webhook(String url) throws Exception {
+        return new Webhook(URI.create(url).toURL(), Instant.now());
     }
 
     private static class TestSmartThingsAccountHandler extends SmartThingsAccountHandler {
         private @Nullable ThingStatus lastStatus;
+        private Configuration updatedConfiguration = new Configuration();
 
         TestSmartThingsAccountHandler(Bridge bridge, SmartThingsDiscoveryService discoveryService) {
+            this(bridge, discoveryService, null);
+        }
+
+        TestSmartThingsAccountHandler(Bridge bridge, @Nullable WebhookService webhookService) {
+            this(bridge, mock(SmartThingsDiscoveryService.class), webhookService);
+        }
+
+        TestSmartThingsAccountHandler(Bridge bridge, SmartThingsDiscoveryService discoveryService,
+                @Nullable WebhookService webhookService) {
             super(bridge, mock(SmartThingsHandlerFactory.class), mock(SmartThingsAuthService.class),
                     mock(TranslationProvider.class), mock(BundleContext.class), mock(HttpService.class),
                     mock(OAuthFactory.class), mock(HttpClientFactory.class), mock(SmartThingsTypeRegistry.class),
-                    mock(ClientBuilder.class), mock(SseEventSourceFactory.class), null);
+                    mock(ClientBuilder.class), mock(SseEventSourceFactory.class), webhookService);
             this.discoService = discoveryService;
         }
 
@@ -86,6 +181,12 @@ class SmartThingsAccountHandlerTest {
         @Override
         protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
             lastStatus = status;
+        }
+
+        @Override
+        protected void updateConfiguration(Configuration configuration) {
+            updatedConfiguration = configuration;
+            getThing().getConfiguration().setProperties(configuration.getProperties());
         }
     }
 }

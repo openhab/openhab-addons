@@ -30,13 +30,12 @@
 				<default>-1</default>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="useCloudWebhook" type="boolean" required="false">
-				<label>Use openHAB Cloud Webhooks</label>
-				<description>When enabled, uses the openHAB Cloud service to provide publicly-reachable webhook URLs for receiving
-					SmartThings events. Requires the openHAB Cloud Connector add-on to be installed and connected. This
-					eliminates the
-					need for port forwarding or a reverse proxy.</description>
-				<default>false</default>
+			<parameter name="callbackUrl" type="text" required="false">
+				<label>Callback URL</label>
+				<description>Public HTTPS URL that SmartThings uses for event callbacks. Leave empty to use SSE without callback
+					subscriptions; enable pollingTime for polling fallback. When the openHAB Cloud Connector add-on is
+					available, the
+					binding fills this value automatically.</description>
 			</parameter>
 			<parameter name="useDynamicThings" type="boolean" required="false">
 				<label>Create Things Using Dynamic Capability Discovery</label>

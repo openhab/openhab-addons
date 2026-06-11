@@ -50,8 +50,8 @@ Leave `appName`, `clientId` and `clientSecret` empty during first setup; the bin
 | `appName` | text | SmartThings app name created for this bridge | N/A | no | yes |
 | `clientId` | text | OAuth client ID of the SmartThings app | N/A | no | yes |
 | `clientSecret` | text | OAuth client secret of the SmartThings app | N/A | no | yes |
+| `callbackUrl` | text | Public HTTPS URL for SmartThings event callbacks; filled automatically when openHAB Cloud webhooks are available | N/A | no | no |
 | `pollingTime` | integer | Polling interval in seconds; `-1` disables polling | `-1` | no | yes |
-| `useCloudWebhook` | boolean | Use openHAB Cloud webhooks for SmartThings event callbacks | `false` | no | no |
 | `useDynamicThings` | boolean | Create dynamic Thing types from SmartThings capabilities | `false` | no | yes |
 
 ### Authorization
@@ -73,8 +73,8 @@ They do not change the initial app bootstrap described below.
 | Mode | Configuration | Notes |
 |------|---------------|-------|
 | SSE subscription | No additional bridge setting | Tried automatically before callback registration |
-| Public openHAB URL | Access the authorization page through the public HTTPS reverse proxy URL | SmartThings calls the same public URL for event callbacks |
-| openHAB Cloud webhook | Enable `useCloudWebhook` and make sure the openHAB Cloud Connector is installed and connected | Optional convenience mode; not required for eventless or polling usage |
+| Public openHAB URL | Set `callbackUrl` to your public HTTPS callback endpoint, for example `https://openhab.example.org/smartthings/home/cb` | Requires a reverse proxy or port forwarding that reaches openHAB from the internet |
+| openHAB Cloud webhook | Install and connect the openHAB Cloud Connector add-on, then leave `callbackUrl` empty | The binding requests a cloud webhook and fills `callbackUrl` automatically |
 | Polling | Set `pollingTime` to a positive value | Works without public callbacks, but state updates can be delayed |
 
 #### Initial App Bootstrap Redirect
@@ -196,7 +196,7 @@ Check the generated Thing in the openHAB UI for the exact channel list.
 ### Thing Configuration
 
 ```java
-Bridge smartthings:account:home [ useCloudWebhook=false, pollingTime=60 ] {
+Bridge smartthings:account:home [ callbackUrl="https://openhab.example.org/smartthings/home/cb", pollingTime=60 ] {
     Thing generic-color-light-bulb living_room_lamp [ deviceId="11111111-2222-3333-4444-555555555555" ]
     Thing generic-light-sensor hallway_sensor [ deviceId="22222222-3333-4444-5555-666666666666" ]
     Thing generic-scene good_night [ sceneId="33333333-4444-5555-6666-777777777777" ]
@@ -231,7 +231,7 @@ sitemap smartthings label="SmartThings" {
 ## Troubleshooting
 
 If the account bridge stays offline, open the authorization link from the bridge status and complete the SmartThings authorization flow again.
-If callbacks cannot be registered, make sure the authorization page is opened through a public HTTPS reverse proxy URL, enable openHAB Cloud webhooks, or enable polling with `pollingTime`.
+If callbacks cannot be registered, make sure `callbackUrl` is a public HTTPS URL, install and connect the openHAB Cloud Connector add-on so the binding can fill `callbackUrl`, or enable polling with `pollingTime`.
 If a discovered device is not matched to a useful static Thing type, enable the advanced `useDynamicThings` bridge option and scan again.
 
 ## References

@@ -112,14 +112,10 @@ public class SmartThingsApi {
 
     public AppResponse setupApp(String appName, String callbackUrl, String oauthRedirectUri)
             throws SmartThingsException {
-        SmartThingsApp[] appList = getAllApps();
-
-        Optional<SmartThingsApp> appOptional = Arrays.stream(appList).filter(x -> appName.equals(x.appName))
-                .findFirst();
-
+        Optional<SmartThingsApp> appOptional = getAppByName(appName);
         if (appOptional.isPresent()) {
-            SmartThingsApp app = appOptional.get(); // Get it from optional
-            app = getApp(app.appId);
+            SmartThingsApp app = appOptional.get();
+            updateApp(app.appId, appName, callbackUrl, oauthRedirectUri);
 
             AppResponse result = new AppResponse();
             result.app = app;
@@ -217,6 +213,20 @@ public class SmartThingsApi {
         return false;
     }
 
+    public Optional<SmartThingsApp> getAppByName(String appName) throws SmartThingsException {
+        SmartThingsApp[] appList = getAllApps();
+
+        Optional<SmartThingsApp> appOptional = Arrays.stream(appList).filter(x -> appName.equals(x.appName))
+                .findFirst();
+
+        if (appOptional.isPresent()) {
+            SmartThingsApp app = getApp(appOptional.get().appId);
+            return app == null ? Optional.empty() : Optional.of(app);
+        }
+
+        return Optional.empty();
+    }
+
     public SmartThingsApp[] getAllApps() throws SmartThingsException {
         try {
             return doRequest(SmartThingsApp[].class, baseUrl + appEndPoint);
@@ -248,6 +258,18 @@ public class SmartThingsApi {
             return appResponse;
         } catch (final Exception e) {
             throw new SmartThingsException("SmartThingsApi : Unable to create app", e);
+        }
+    }
+
+    public void updateApp(String appId, String appName, String eventCallbackUri, String oauthRedirectUri)
+            throws SmartThingsException {
+        try {
+            String uri = baseUrl + appEndPoint + "/" + appId;
+
+            String body = gson.toJson(createAppRequest(appName, eventCallbackUri, oauthRedirectUri));
+            doRequest(HttpMethod.PUT, JsonObject.class, uri, body);
+        } catch (final Exception e) {
+            throw new SmartThingsException("SmartThingsApi : Unable to update app", e);
         }
     }
 

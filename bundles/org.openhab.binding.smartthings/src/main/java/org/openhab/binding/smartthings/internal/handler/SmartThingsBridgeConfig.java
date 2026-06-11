@@ -26,8 +26,8 @@ public class SmartThingsBridgeConfig {
     public String appName = "";
     public String clientId = "";
     public String clientSecret = "";
+    public String callbackUrl = "";
     public int pollingTime = -1;
-    public boolean useCloudWebhook = false;
     public boolean useDynamicThings = false;
 
     @Override
@@ -36,8 +36,8 @@ public class SmartThingsBridgeConfig {
         sb.append("appName = ").append(appName);
         sb.append("clientId = ").append(clientId);
         sb.append("clientSecret = ").append(clientSecret.isBlank() ? "" : "<redacted>");
+        sb.append("callbackUrl = ").append(callbackUrl);
         sb.append("pollingTime = ").append(pollingTime);
-        sb.append("useCloudWebhook = ").append(useCloudWebhook);
         sb.append("useDynamicThings = ").append(useDynamicThings);
         return sb.toString();
     }

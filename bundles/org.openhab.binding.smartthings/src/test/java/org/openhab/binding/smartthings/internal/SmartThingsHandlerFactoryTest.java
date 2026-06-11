@@ -34,10 +34,8 @@ import org.openhab.binding.smartthings.internal.type.SmartThingsThingTypeProvide
 import org.openhab.binding.smartthings.internal.type.SmartThingsThingTypeProviderImpl;
 import org.openhab.binding.smartthings.internal.type.SmartThingsTypeRegistry;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
-import org.openhab.core.io.rest.WebhookService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -132,39 +130,6 @@ class SmartThingsHandlerFactoryTest {
     }
 
     @Test
-    void newAccountDefaultsCloudWebhookWhenWebhookServiceIsPresent() {
-        TestSmartThingsHandlerFactory factory = createFactory();
-        factory.setCloudWebhookService(mock(WebhookService.class));
-        Configuration configuration = new Configuration();
-
-        factory.applyAccountThingCreationDefaults(SmartThingsBindingConstants.THING_TYPE_ACCOUNT, configuration);
-
-        assertEquals(Boolean.TRUE, configuration.get(SmartThingsBindingConstants.USE_CLOUD_WEBHOOK));
-    }
-
-    @Test
-    void newAccountKeepsExplicitlyDisabledCloudWebhook() {
-        TestSmartThingsHandlerFactory factory = createFactory();
-        factory.setCloudWebhookService(mock(WebhookService.class));
-        Configuration configuration = new Configuration();
-        configuration.put(SmartThingsBindingConstants.USE_CLOUD_WEBHOOK, false);
-
-        factory.applyAccountThingCreationDefaults(SmartThingsBindingConstants.THING_TYPE_ACCOUNT, configuration);
-
-        assertEquals(Boolean.FALSE, configuration.get(SmartThingsBindingConstants.USE_CLOUD_WEBHOOK));
-    }
-
-    @Test
-    void newAccountLeavesCloudWebhookUnsetWhenWebhookServiceIsMissing() {
-        TestSmartThingsHandlerFactory factory = createFactory();
-        Configuration configuration = new Configuration();
-
-        factory.applyAccountThingCreationDefaults(SmartThingsBindingConstants.THING_TYPE_ACCOUNT, configuration);
-
-        assertFalse(configuration.containsKey(SmartThingsBindingConstants.USE_CLOUD_WEBHOOK));
-    }
-
-    @Test
     void removeHandlerOnlyRemovesTheSelectedAccountBridge() {
         TestSmartThingsHandlerFactory factory = createFactory();
         Bridge firstAccount = accountBridge("first");
@@ -236,10 +201,6 @@ class SmartThingsHandlerFactoryTest {
 
         public void remove(ThingHandler thingHandler) {
             removeHandler(thingHandler);
-        }
-
-        public void setCloudWebhookService(WebhookService webHookService) {
-            setWebHookService(webHookService);
         }
 
         public @Nullable SmartThingsOAuthHandler getOAuthHandler(ThingUID bridgeUID) {

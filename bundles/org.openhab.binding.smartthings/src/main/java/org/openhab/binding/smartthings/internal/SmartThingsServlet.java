@@ -104,19 +104,12 @@ public class SmartThingsServlet extends HttpServlet
                 %s
             </section>""";
     private static final String HTML_CALLBACK_LINK = "<a class=\"callback-link\" href=\"%s\">%s</a>";
-    private static final String HTML_CALLBACK_UNAVAILABLE = "<p>No openHAB Cloud webhook URL is available yet.</p>";
-    private static final String EVENT_CALLBACK_DESCRIPTION = "SmartThings uses this URL for event callbacks. "
-            + "It must be reachable from the internet and use HTTPS for callback subscriptions. "
-            + "Polling remains available as a fallback.";
-    private static final String CLOUD_WEBHOOK_DESCRIPTION = "SmartThings uses this webhook URL for event callbacks.";
-    private static final String CLOUD_WEBHOOK_MISSING = """
-            <p class="block warn">SmartThings event callbacks cannot be registered until openHAB Cloud provides
-                an HTTPS webhook URL that is reachable from the internet.</p>""";
-    private static final String CLOUD_WEBHOOK_REQUIREMENTS = """
-            <p class="block warn">SmartThings requires an HTTPS webhook URL that is reachable from the internet.
+    private static final String EVENT_CALLBACK_DESCRIPTION = "SmartThings uses this URL for event callbacks.";
+    private static final String CALLBACK_REQUIREMENTS = """
+            <p class="block warn">SmartThings requires an HTTPS callback URL that is reachable from the internet.
                 Verify that the displayed URL starts with https:// and can be reached by SmartThings.</p>""";
-    private static final String CLOUD_WEBHOOK_NOT_HTTPS = """
-            <p class="block warn">This webhook URL does not use HTTPS. SmartThings will not register event callbacks
+    private static final String CALLBACK_NOT_HTTPS = """
+            <p class="block warn">This callback URL does not use HTTPS. SmartThings will not register event callbacks
                 until the URL uses HTTPS and is reachable from the internet.</p>""";
     private static final String STEP_CREATE_APP = "step1";
     private static final String STEP_AUTHORIZE_LOCATION = "step2";
@@ -396,17 +389,14 @@ public class SmartThingsServlet extends HttpServlet
         // index case, first time we go to servlet without any queryString
         else {
             String requestUrl = externalRequestUrl != null ? externalRequestUrl : requestPath;
-            String cloudWebhookUrl = bridgeHandler.getCloudWebhookUrl();
-            boolean cloudWebhookEnabled = bridgeHandler.useCloudWebhook();
-            boolean cloudWebhookAvailable = cloudWebhookUrl != null && !cloudWebhookUrl.isBlank();
+            String callbackUrl = bridgeHandler.getCallbackUrl();
 
             // calculate the callback URL
-            callBackURL = getExternalRequestUrl(requestUrl, cloudWebhookAvailable ? cloudWebhookUrl : null);
+            callBackURL = callbackUrl;
             oauthRedirectUri = getOAuthRedirectUri(requestUrl);
             assetBaseUri = getAssetBaseUrl(requestUrl);
 
-            String callbackInfoUri = cloudWebhookEnabled && !cloudWebhookAvailable ? "" : callBackURL;
-            replaceMap.put(KEY_CALLBACK_INFO, formatCallbackInfo(callbackInfoUri, cloudWebhookEnabled));
+            replaceMap.put(KEY_CALLBACK_INFO, formatCallbackInfo(callBackURL, !callBackURL.isBlank()));
             replaceMap.put(KEY_ASSET_BASE_URI, Encode.forHtmlAttribute(assetBaseUri));
 
             try {
@@ -449,28 +439,22 @@ public class SmartThingsServlet extends HttpServlet
         return formatCallbackInfo(callbackUri, false);
     }
 
-    static String formatCallbackInfo(String callbackUri, boolean cloudWebhookUsed) {
+    static String formatCallbackInfo(String callbackUri, boolean callbackUrlConfigured) {
         boolean uriAvailable = !callbackUri.isBlank();
         boolean httpsUri = uriAvailable && isHttpsUri(callbackUri);
-        if (!cloudWebhookUsed && !httpsUri) {
+        if (!uriAvailable || (!callbackUrlConfigured && !httpsUri)) {
             return "";
         }
 
-        String label = cloudWebhookUsed ? "Webhook URL" : "Callback URL";
-        String callbackTarget = uriAvailable
-                ? HTML_CALLBACK_LINK.formatted(Encode.forHtmlAttribute(callbackUri), Encode.forHtml(callbackUri))
-                : HTML_CALLBACK_UNAVAILABLE;
-        String description = cloudWebhookUsed ? CLOUD_WEBHOOK_DESCRIPTION : EVENT_CALLBACK_DESCRIPTION;
-        String warning = cloudWebhookUsed ? formatCloudWebhookWarning(uriAvailable, httpsUri) : "";
-        return HTML_CALLBACK_INFO.formatted(Encode.forHtml(label), callbackTarget, Encode.forHtml(description),
-                warning);
+        String callbackTarget = HTML_CALLBACK_LINK.formatted(Encode.forHtmlAttribute(callbackUri),
+                Encode.forHtml(callbackUri));
+        String warning = callbackUrlConfigured ? formatCallbackWarning(httpsUri) : "";
+        return HTML_CALLBACK_INFO.formatted(Encode.forHtml("Callback URL"), callbackTarget,
+                Encode.forHtml(EVENT_CALLBACK_DESCRIPTION), warning);
     }
 
-    private static String formatCloudWebhookWarning(boolean uriAvailable, boolean httpsUri) {
-        if (!uriAvailable) {
-            return CLOUD_WEBHOOK_MISSING;
-        }
-        return httpsUri ? CLOUD_WEBHOOK_REQUIREMENTS : CLOUD_WEBHOOK_NOT_HTTPS;
+    private static String formatCallbackWarning(boolean httpsUri) {
+        return httpsUri ? CALLBACK_REQUIREMENTS : CALLBACK_NOT_HTTPS;
     }
 
     private static boolean isHttpsUri(String uri) {
@@ -486,14 +470,6 @@ public class SmartThingsServlet extends HttpServlet
         Bundle bundle = FrameworkUtil.getBundle(getClass());
         String text = translationProvider.getText(bundle, key, null, locale);
         return text != null ? text : key;
-    }
-
-    private String getExternalRequestUrl(String requestUrl, @Nullable String cloudUrl) {
-        if (cloudUrl != null) {
-            return cloudUrl;
-        }
-
-        return getAssetBaseUrl(requestUrl) + "/cb";
     }
 
     private String getOAuthRedirectUri(String requestUrl) {

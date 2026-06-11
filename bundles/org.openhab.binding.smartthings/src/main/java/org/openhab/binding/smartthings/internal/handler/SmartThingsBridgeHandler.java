@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
@@ -39,6 +40,7 @@ import org.openhab.binding.smartthings.internal.api.SmartThingsNetworkConnectorI
 import org.openhab.binding.smartthings.internal.converter.SmartThingsConverterFactory;
 import org.openhab.binding.smartthings.internal.discovery.SmartThingsDiscoveryService;
 import org.openhab.binding.smartthings.internal.dto.AppResponse;
+import org.openhab.binding.smartthings.internal.dto.SmartThingsApp;
 import org.openhab.binding.smartthings.internal.type.SmartThingsException;
 import org.openhab.binding.smartthings.internal.type.SmartThingsTypeRegistry;
 import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
@@ -102,7 +104,6 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
     private @Nullable ScheduledFuture<?> webhookRefreshTask;
 
     private @Nullable WebhookService webHookService;
-    private @Nullable String cloudWebHook;
 
     private static final long WEBHOOK_REFRESH_INTERVAL_HOURS = 24;
 
@@ -130,17 +131,13 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
 
     public void setWebHookService(WebhookService webHookService) {
         this.webHookService = webHookService;
-        if (config.useCloudWebhook) {
-            registerCloudWebhook();
-        }
+        registerCloudWebhook();
     }
 
     public void unsetWebHookService(WebhookService webHookService) {
         if (webHookService.equals(this.webHookService)) {
             removeRefreshTask();
             this.webHookService = null;
-            cloudWebHook = null;
-            updateWebhookProperties(null);
         }
     }
 
@@ -159,8 +156,8 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
         return config.useDynamicThings;
     }
 
-    public boolean useCloudWebhook() {
-        return config.useCloudWebhook;
+    public String getCallbackUrl() {
+        return normalize(config.callbackUrl);
     }
 
     public boolean appCreated() {
@@ -318,33 +315,24 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
     }
 
     public void registerCloudWebhook() {
-        if (config.useCloudWebhook) {
-            if (webHookService == null) {
-                logger.error("Webhook is enabled, but webHookService is null");
-                return;
-            }
-
-            // Always register at startup because if we have not run for more then 24 hours webhook is not there anymore
-            cloudWebHook = setupWebHookUrl();
-
-            // Schedule daily refresh to keep the 30-day TTL from expiring
-            webhookRefreshTask = scheduler.scheduleWithFixedDelay(() -> {
-                setupWebHookUrl();
-            }, WEBHOOK_REFRESH_INTERVAL_HOURS, WEBHOOK_REFRESH_INTERVAL_HOURS, TimeUnit.HOURS);
-
-            String currentCloudWebHook = cloudWebHook;
-            if (currentCloudWebHook != null) {
-                updateWebhookProperties(currentCloudWebHook);
-            }
-        } else {
+        if (webHookService == null) {
             removeRefreshTask();
-            removeCloudWebhooks();
-            updateWebhookProperties(null);
+            return;
         }
-    }
 
-    public @Nullable String getCloudWebhookUrl() {
-        return cloudWebHook;
+        ensureWebhookRefreshTask();
+
+        // Always register at startup because if we have not run for more than 24 hours the webhook might have expired.
+        String cloudWebhookUrl = setupWebHookUrl();
+        if (cloudWebhookUrl != null) {
+            String callbackUrl = getCallbackUrl();
+            if (callbackUrl.isBlank()) {
+                updateCallbackUrl(cloudWebhookUrl);
+            } else if (!callbackUrl.equals(cloudWebhookUrl)) {
+                removeRefreshTask();
+                removeCloudWebhooks();
+            }
+        }
     }
 
     private void removeRefreshTask() {
@@ -355,8 +343,17 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
         }
     }
 
+    private void ensureWebhookRefreshTask() {
+        ScheduledFuture<?> task = webhookRefreshTask;
+        if (task == null || task.isCancelled()) {
+            // Schedule daily refresh to keep the 30-day TTL from expiring.
+            webhookRefreshTask = scheduler.scheduleWithFixedDelay(this::registerCloudWebhook,
+                    WEBHOOK_REFRESH_INTERVAL_HOURS, WEBHOOK_REFRESH_INTERVAL_HOURS, TimeUnit.HOURS);
+        }
+    }
+
     public @Nullable String setupWebHookUrl() {
-        logger.info("try register webhook");
+        logger.debug("Try to register openHAB Cloud webhook");
 
         try {
             WebhookService service = webHookService;
@@ -365,11 +362,11 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
 
                 URL result = webHook.url();
                 String urlSt = result.toString();
-                logger.info("try register webhook, result={}", urlSt);
+                logger.debug("Registered openHAB Cloud webhook: {}", urlSt);
                 return urlSt;
             }
         } catch (Exception ex) {
-            logger.warn("try register webhook failed", ex);
+            logger.warn("Could not register openHAB Cloud webhook", ex);
             return null;
         }
         return null;
@@ -382,22 +379,24 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
         }
     }
 
+    private void updateCallbackUrl(String callbackUrl) {
+        config.callbackUrl = callbackUrl;
+
+        Configuration configuration = getConfig();
+        configuration.put(SmartThingsBindingConstants.CALLBACK_URL, callbackUrl);
+        updateConfiguration(configuration);
+    }
+
+    private static String normalize(@Nullable String value) {
+        return value == null ? "" : value.trim();
+    }
+
     public String getAuthServletPath() {
         return SmartThingsServlet.getServletPath(getThing().getUID().getId());
     }
 
     public String getAuthCallbackPath() {
         return getAuthServletPath() + "/cb";
-    }
-
-    private void updateWebhookProperties(@Nullable String webHookUrl) {
-        Map<String, String> properties = new HashMap<>(editProperties());
-        if (webHookUrl == null) {
-            properties.put(SmartThingsBindingConstants.WEBHOOK_URL, "");
-        } else {
-            properties.put(SmartThingsBindingConstants.WEBHOOK_URL, webHookUrl);
-        }
-        updateProperties(properties);
     }
 
     protected void updateLocationProperties(@Nullable String location) {
@@ -444,9 +443,19 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
     }
 
     protected void setupApp(String eventCallbackUri, String oauthRedirectUri) throws SmartThingsException {
-        boolean appExist = smartthingsApi.isAppExist(config.appName);
+        Optional<SmartThingsApp> appOptional = Optional.empty();
+        if (!config.appName.isBlank()) {
+            try {
+                appOptional = smartthingsApi.getAppByName(config.appName);
+            } catch (SmartThingsException e) {
+                logger.debug("Unable to look up existing SmartThings app {}", config.appName, e);
+            }
+        }
+
         SmartThingsException lastExp = null;
-        if (!appExist) {
+        if (appOptional.isPresent()) {
+            smartthingsApi.updateApp(appOptional.get().appId, config.appName, eventCallbackUri, oauthRedirectUri);
+        } else {
             int retry = 0;
             boolean success = false;
             AppResponse appResponse = null;

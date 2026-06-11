@@ -100,37 +100,36 @@ class SmartThingsServletTest {
     }
 
     @Test
-    void callbackInfoWarnsAboutCloudWebhookRequirements() {
+    void callbackInfoWarnsAboutCallbackRequirements() {
         String callbackInfo = SmartThingsServlet.formatCallbackInfo("https://cloud.example.org/smartthings/account/cb",
                 true);
 
-        assertTrue(callbackInfo.contains("Webhook URL"));
-        assertTrue(callbackInfo.contains("SmartThings requires an HTTPS webhook URL"));
+        assertTrue(callbackInfo.contains("Callback URL"));
+        assertTrue(callbackInfo.contains("SmartThings requires an HTTPS callback URL"));
         assertTrue(callbackInfo.contains("reachable from the internet"));
     }
 
     @Test
-    void callbackInfoWarnsWhenCloudWebhookIsNotHttps() {
+    void callbackInfoWarnsWhenCallbackUrlIsNotHttps() {
         String callbackInfo = SmartThingsServlet.formatCallbackInfo("http://cloud.example.org/smartthings/account/cb",
                 true);
 
-        assertTrue(callbackInfo.contains("Webhook URL"));
+        assertTrue(callbackInfo.contains("Callback URL"));
         assertTrue(callbackInfo.contains("href=\"http://cloud.example.org/smartthings/account/cb\""));
         assertTrue(callbackInfo.contains("does not use HTTPS"));
         assertTrue(callbackInfo.contains("reachable from the internet"));
     }
 
     @Test
-    void callbackInfoWarnsWhenCloudWebhookIsMissing() {
+    void callbackInfoIsHiddenWhenCallbackUrlIsMissing() {
         String callbackInfo = SmartThingsServlet.formatCallbackInfo("", true);
 
-        assertTrue(callbackInfo.contains("Webhook URL"));
-        assertTrue(callbackInfo.contains("No openHAB Cloud webhook URL is available yet."));
-        assertTrue(callbackInfo.contains("event callbacks cannot be registered"));
-        assertTrue(callbackInfo.contains("reachable from the internet"));
+        assertEquals("", callbackInfo);
     }
 
     private static class TestSmartThingsServlet extends SmartThingsServlet {
+        private static final long serialVersionUID = 1L;
+
         TestSmartThingsServlet(TranslationProvider translationProvider) throws SmartThingsException {
             super(mock(SmartThingsBridgeHandler.class), "/smartthings/account", mock(SmartThingsAuthService.class),
                     translationProvider, mock(HttpService.class));
