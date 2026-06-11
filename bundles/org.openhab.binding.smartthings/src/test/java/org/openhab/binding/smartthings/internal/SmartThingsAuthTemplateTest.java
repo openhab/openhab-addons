@@ -22,6 +22,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -61,6 +62,14 @@ class SmartThingsAuthTemplateTest {
             assertNotNull(stream);
             assertTrue(stream.readAllBytes().length > 0);
         }
+    }
+
+    @Test
+    void authIndexTemplateUsesConditionalCallbackInfo() throws IOException {
+        String template = readTemplate("index-oauth.html");
+
+        assertTrue(template.contains("${callbackInfo}"));
+        assertFalse(template.contains("${callBackUri}"));
     }
 
     private String readTemplate(String templateName) throws IOException {

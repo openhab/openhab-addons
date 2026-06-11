@@ -84,6 +84,21 @@ class SmartThingsServletTest {
                 servlet.formatSmartThingsError("network failure"));
     }
 
+    @Test
+    void callbackInfoIsHiddenWhenEventCallbackCannotBeRegistered() {
+        assertEquals("", SmartThingsServlet.formatCallbackInfo("http://localhost:8080/smartthings/account/cb"));
+    }
+
+    @Test
+    void callbackInfoIsShownForHttpsEventCallbacks() {
+        String callbackInfo = SmartThingsServlet
+                .formatCallbackInfo("https://openhab.example.org/smartthings/account/cb");
+
+        assertTrue(callbackInfo.contains("Callback URL"));
+        assertTrue(callbackInfo.contains("href=\"https://openhab.example.org/smartthings/account/cb\""));
+        assertTrue(callbackInfo.contains("SmartThings uses this URL for event callbacks."));
+    }
+
     private static class TestSmartThingsServlet extends SmartThingsServlet {
         TestSmartThingsServlet(TranslationProvider translationProvider) throws SmartThingsException {
             super(mock(SmartThingsBridgeHandler.class), "/smartthings/account", mock(SmartThingsAuthService.class),

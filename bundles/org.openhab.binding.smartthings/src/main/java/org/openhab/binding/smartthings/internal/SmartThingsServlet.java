@@ -16,6 +16,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
@@ -95,17 +96,22 @@ public class SmartThingsServlet extends HttpServlet
     private final String errorTemplate;
     private final String confirmTemplate;
     private static final String HTML_ERROR = "<p class='block error'>%s<pre>%s</pre></p>";
-    private static final String HTML_WARNING = "<p class='block warn'>%s</p>";
+    private static final String HTML_CALLBACK_INFO = """
+            <section class="info-panel">
+                <div class="panel-label">Callback URL</div>
+                <a class="callback-link" href="%s">%s</a>
+                <p>SmartThings uses this URL for event callbacks. It must be reachable from the internet and use HTTPS
+                    for callback subscriptions. Polling remains available as a fallback.</p>
+            </section>""";
     private static final String STEP_CREATE_APP = "step1";
     private static final String STEP_AUTHORIZE_LOCATION = "step2";
     private static final String MESSAGE_KEY_MISSING_REQ_CODE = "missing-req-code";
-    private static final String MESSAGE_KEY_REDIRECT_URI_NOT_HTTPS = "redirect-uri-not-https";
     private static final String MESSAGE_KEY_SMARTTHINGS_ERROR = "smartthing-error";
 
     // Keys present in the index.html
     private static final String KEY_ERROR = "error";
     private static final String KEY_BRIDGE_URI = "bridge.uri";
-    private static final String KEY_CALLBACK_URI = "callBackUri";
+    private static final String KEY_CALLBACK_INFO = "callbackInfo";
     private static final String KEY_LOCATION = "location";
     private static final String KEY_DEVICES_COUNT = "devicesCount";
     private static final String KEY_AUTHORIZATION_URI = "authorizationUri";
@@ -286,6 +292,7 @@ public class SmartThingsServlet extends HttpServlet
         replaceMap.put(KEY_DEVICES_COUNT, "");
         replaceMap.put(KEY_ERROR, "");
         replaceMap.put(KEY_BRIDGE_URI, "");
+        replaceMap.put(KEY_CALLBACK_INFO, "");
         replaceMap.put(KEY_AUTHORIZATION_URI, "");
         replaceMap.put(KEY_AUTHORIZATION_URI_JS, "");
         replaceMap.put(KEY_ASSET_BASE_URI, Encode.forHtmlAttribute(assetBaseUri));
@@ -380,15 +387,8 @@ public class SmartThingsServlet extends HttpServlet
             oauthRedirectUri = getOAuthRedirectUri(requestUrl);
             assetBaseUri = getAssetBaseUrl(requestUrl);
 
-            // Display it in page rendering for user confirmation
-
-            replaceMap.put(KEY_CALLBACK_URI, Encode.forHtml(callBackURL));
+            replaceMap.put(KEY_CALLBACK_INFO, formatCallbackInfo(callBackURL));
             replaceMap.put(KEY_ASSET_BASE_URI, Encode.forHtmlAttribute(assetBaseUri));
-
-            if (!callBackURL.startsWith("https://")) {
-                String redirectUriError = getTranslation(MESSAGE_KEY_REDIRECT_URI_NOT_HTTPS);
-                replaceMap.put(KEY_ERROR, String.format(HTML_WARNING, Encode.forHtml(redirectUriError)));
-            }
 
             try {
                 String authorizationUri = "";
@@ -424,6 +424,21 @@ public class SmartThingsServlet extends HttpServlet
     String formatSmartThingsError(String message) {
         return String.format(HTML_ERROR, Encode.forHtml(getTranslation(MESSAGE_KEY_SMARTTHINGS_ERROR)),
                 Encode.forHtml(message));
+    }
+
+    static String formatCallbackInfo(String callbackUri) {
+        if (!isHttpsUri(callbackUri)) {
+            return "";
+        }
+        return HTML_CALLBACK_INFO.formatted(Encode.forHtmlAttribute(callbackUri), Encode.forHtml(callbackUri));
+    }
+
+    private static boolean isHttpsUri(String uri) {
+        try {
+            return "https".equalsIgnoreCase(URI.create(uri).getScheme());
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
     }
 
     private String getTranslation(String key) {

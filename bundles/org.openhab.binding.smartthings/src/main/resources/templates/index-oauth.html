@@ -29,11 +29,7 @@
 
             ${error}
 
-            <section class="info-panel">
-                <div class="panel-label">Callback URL</div>
-                <a class="callback-link" href="${callBackUri}">${callBackUri}</a>
-                <p>SmartThings uses this URL for event callbacks. It must be reachable from the internet and use HTTPS for callback subscriptions. Polling remains available as a fallback.</p>
-            </section>
+            ${callbackInfo}
 
             <div class="action-row">
                 <a class="primary-button" href="${bridge.uri}">Authorize Bridge</a>
