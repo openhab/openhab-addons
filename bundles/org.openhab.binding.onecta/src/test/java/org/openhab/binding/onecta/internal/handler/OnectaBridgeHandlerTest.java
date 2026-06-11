@@ -106,7 +106,7 @@ public class OnectaBridgeHandlerTest {
 
         when(handler.getThing().getThings()).thenReturn(things);
         when(handler.getThing().getStatus()).thenReturn(ThingStatus.ONLINE);
-
+        when(onectaConnectionClientMock.isOnline()).thenReturn(true);
         privateMethod.invoke(handler);
 
         verify(onectaConnectionClientMock).refreshUnitsData();
@@ -123,6 +123,7 @@ public class OnectaBridgeHandlerTest {
         privateMethod.setAccessible(true);
 
         when(handler.getThing().getStatus()).thenReturn(ThingStatus.OFFLINE);
+        when(onectaConnectionClientMock.isOnline()).thenReturn(true);
 
         List<Thing> things = new java.util.ArrayList<>(List.of());
 

@@ -29,6 +29,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.onecta.internal.OnectaConfiguration;
 import org.openhab.binding.onecta.internal.api.Enums;
+import org.openhab.binding.onecta.internal.api.OnectaConnectionClient;
 import org.openhab.binding.onecta.internal.service.ChannelsRefreshDelay;
 import org.openhab.binding.onecta.internal.service.DataTransportService;
 import org.openhab.core.config.core.Configuration;
@@ -57,6 +58,9 @@ public class OnectaWaterTankHandlerTest {
     private Thing thingMock;
 
     @Mock
+    private OnectaConnectionClient onectaConnectionClientMock;
+
+    @Mock
     private DataTransportService dataTransServiceMock;
 
     @Mock
@@ -79,6 +83,8 @@ public class OnectaWaterTankHandlerTest {
         Field privateChannelsRefreshDelayField = OnectaWaterTankHandler.class.getDeclaredField("channelsRefreshDelay");
         privateChannelsRefreshDelayField.setAccessible(true);
         privateChannelsRefreshDelayField.set(handler, channelsRefreshDelayMock);
+
+        when(onectaConfigurationMock.getOnectaConnectionClient()).thenReturn(onectaConnectionClientMock);
 
         lenient().when(thingMock.getUID()).thenReturn(new ThingUID("onecta", "domesticHotWaterTank", "bridge"));
     }

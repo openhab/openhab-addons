@@ -17,24 +17,7 @@ Basically all devices connected to Daikin Onecta cloud could be connected with t
 
 ## Discovery
 
-Please take the following steps prior to using the binding. 
-Create a Onecta cloud account in the Onecta app for [Android](https://play.google.com/store/apps/details?id=com.daikineurope.online.controller&hl=en_US) or [iOS](https://apps.apple.com/de/app/onecta/id1474811586?l=en) (if not already done).
-Afterwards, pair your Daikin units in the Onecta App.
 
-There is no auto discovery for the Onecta cloud account. 
-The account is paired using OAuth2 with your Onecta login and the developer credentials obtained from the Onecta Developer Portal. 
-To pair the account go to the binding's configuration UI at https://<your openHAB address>/onecta. For a standard openHABian Pi installation the address is https://openhabianpi:8443/onecta or https://pi-adres:8443/onecta. 
-Note that your browser will file a warning that the certificate is self-signed. 
-This is fine and you can safely continue. 
-It is NOT possible to use an unsecured connection (http://) for pairing.<br>
-Allowed pairing formats are:
-- https://<your-domain>/onecta
-- https://<your-local-ip>:<your-port>/onecta (standard port 8443)
-- https://home.myopenhab.org/onecta
-- https://openhabianpi:8443/onecta 
-
-**note:** It is **not** allowed to use localhost (Onecta will not accept this)
-- https://localhost:8443
 
 Once a Onecta account is paired, all supported appliances are automatically discovered as individual things and placed in the inbox. 
 They can then be paired with your favorite management UI. 
@@ -302,18 +285,43 @@ Number:Temperature  HeatExchangerTemp     "Heatexchanger temperature [%.1f °C]"
 Number:Temperature  SuctionTemp           "Suction temperature [%.1f °C]"       <Temperature>  ["Point"] {channel="onecta:indoor-unit:bridge:livingroom:basic#suctiontemp", readOnly="true"}
 ```
 
+
+## Prerequisites using the binding
+Please take the following steps prior to using the binding.
+Create a Onecta cloud account in the Onecta app for [Android](https://play.google.com/store/apps/details?id=com.daikineurope.online.controller&hl=en_US) or [iOS](https://apps.apple.com/de/app/onecta/id1474811586?l=en) (if not already done).
+Afterwards, pair your Daikin units in the Onecta App.
+
+There is no auto discovery for the Onecta cloud account.
+The account is paired using OAuth2 with your Onecta login and the developer credentials obtained from the Onecta Developer Portal.
+To pair the account go to the binding's configuration UI at https://<your openHAB address>/onecta. For a standard openHABian Pi installation the address is https://openhabianpi:8443/onecta or https://pi-adres:8443/onecta.
+Note that your browser will file a warning that the certificate is self-signed.
+This is fine and you can safely continue.
+It is NOT possible to use an unsecured connection (http://) for pairing.<br>
+Allowed pairing formats are:
+- https://<your-domain>/onecta
+- https://<your-local-ip>:<your-port>/onecta (standard port 8443)
+- https://home.myopenhab.org/onecta
+- https://openhabianpi:8443/onecta
+
+**note:** It is **not** allowed to use localhost (Onecta will not accept this)
+- https://localhost:8443
+
 ## Account Configuration Example
+
+
+
+
 
 The best way to perform the following steps is in an incognito browser to prevent historical settings and accounts from causing problems.
 
 The configuration UI is accessible at `https://<your openHAB address>/onecta`.
-See [Discovery](#discovery) for a detailed description of how to open the configuration UI in a browser.
+See [Prerequisites using the binding](#Prerequisites using the binding) for a detailed description of how to open the configuration UI in a browser.
 
 When first opening the configuration UI no account will be paired.
 
 ![Empty Account Overview](doc/CloudBindingConfigEmpty.png)
 
-We strongly recommend to use a secure connection for pairing, details on this topic can also be found in the [Discovery](#discovery) section.
+We strongly recommend to use a secure connection for pairing, details on this topic can also be found in the [Prerequisites using the binding](#Prerequisites using the binding) section.
 Click `Pair Account` to start the pairing process.
 If not already done, go to the [Daikin Developer Portal](https://developer.cloud.daikineurope.com/login), register there and wait for the confirmation e-mail.
 Obtain your client ID and client secret according to the instructions presented there. (**Open the Daikin Developer portal in a incognito browser.**)
