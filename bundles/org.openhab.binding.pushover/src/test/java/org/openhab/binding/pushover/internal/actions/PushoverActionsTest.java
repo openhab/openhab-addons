@@ -62,7 +62,7 @@ public class PushoverActionsTest {
         }
     };
 
-    private @NonNullByDefault({}) @Mock PushoverAccountHandler mockPushoverAccountHandler;
+    private @Mock @NonNullByDefault({}) PushoverAccountHandler mockPushoverAccountHandler;
     private @NonNullByDefault({}) PushoverActions pushoverThingActions;
 
     @BeforeEach

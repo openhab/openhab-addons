@@ -29,12 +29,10 @@ public class PowerTopologyCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x009C;
     public static final String CLUSTER_NAME = "PowerTopology";
     public static final String CLUSTER_PREFIX = "powerTopology";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_AVAILABLE_ENDPOINTS = "availableEndpoints";
     public static final String ATTRIBUTE_ACTIVE_ENDPOINTS = "activeEndpoints";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * Indicates the list of endpoints capable of providing power to and/or consuming power from the endpoint hosting
@@ -46,6 +44,35 @@ public class PowerTopologyCluster extends BaseCluster {
      * this server. This list shall be a subset of the value of the AvailableEndpoints attribute.
      */
     public List<Integer> activeEndpoints; // 1 list R V
+
+    // Structs
+    /**
+     * This indicates a device on the circuit represented by this server.
+     */
+    public static class CircuitNodeStruct {
+        /**
+         * This field shall indicate the ID of a node which is on the electrical circuit represented by this server.
+         */
+        public BigInteger node; // node-id
+        /**
+         * This field shall indicate the endpoint ID of the indicated node which is on the electrical circuit
+         * represented by this server.
+         */
+        public Integer endpoint; // endpoint-no
+        /**
+         * This field shall indicate a friendly name for the node, to be used when the client does not have access to
+         * the node's fabric.
+         */
+        public String label; // string
+        public Integer fabricIndex; // FabricIndex
+
+        public CircuitNodeStruct(BigInteger node, Integer endpoint, String label, Integer fabricIndex) {
+            this.node = node;
+            this.endpoint = endpoint;
+            this.label = label;
+            this.fabricIndex = fabricIndex;
+        }
+    }
 
     // Bitmaps
     public static class FeatureMap {
@@ -89,7 +116,6 @@ public class PowerTopologyCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "availableEndpoints : " + availableEndpoints + "\n";
         str += "activeEndpoints : " + activeEndpoints + "\n";

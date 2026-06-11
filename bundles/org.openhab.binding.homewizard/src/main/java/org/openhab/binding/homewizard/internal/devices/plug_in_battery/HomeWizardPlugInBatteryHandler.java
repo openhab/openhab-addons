@@ -16,7 +16,8 @@ import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homewizard.internal.HomeWizardBindingConstants;
-import org.openhab.binding.homewizard.internal.devices.HomeWizardEnergyMeterHandler;
+import org.openhab.binding.homewizard.internal.devices.HomeWizardDeviceHandler;
+import org.openhab.binding.homewizard.internal.devices.HomeWizardEnergyMeterSubHandler;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.Thing;
 
@@ -27,8 +28,7 @@ import org.openhab.core.thing.Thing;
  *
  */
 @NonNullByDefault
-public class HomeWizardPlugInBatteryHandler extends HomeWizardEnergyMeterHandler {
-
+public class HomeWizardPlugInBatteryHandler extends HomeWizardDeviceHandler {
     /**
      * Constructor
      *
@@ -48,7 +48,7 @@ public class HomeWizardPlugInBatteryHandler extends HomeWizardEnergyMeterHandler
      */
     @Override
     protected void handleMeasurementData(String data) {
-        super.handleMeasurementData(data);
+        HomeWizardEnergyMeterSubHandler.handleMeasurementData(data, this);
 
         var payload = gson.fromJson(data, HomeWizardPlugInBatteryMeasurementPayload.class);
         if (payload != null) {
@@ -57,5 +57,6 @@ public class HomeWizardPlugInBatteryHandler extends HomeWizardEnergyMeterHandler
             updateState(HomeWizardBindingConstants.CHANNEL_GROUP_ENERGY, HomeWizardBindingConstants.CHANNEL_CYCLES,
                     new DecimalType(payload.getCycles()));
         }
+        super.handleMeasurementData(data);
     }
 }

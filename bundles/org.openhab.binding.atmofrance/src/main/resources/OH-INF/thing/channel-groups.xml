@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="atmofrance"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="aq">
+		<label>Air Quality Information</label>
+		<channels>
+			<channel id="index" typeId="index"/>
+			<channel id="no2-index" typeId="index-adv">
+				<label>NO₂</label>
+				<description>Nitrogen dioxide</description>
+			</channel>
+			<channel id="so2-index" typeId="index-adv">
+				<label>SO₂</label>
+				<description>Sulfur dioxide</description>
+			</channel>
+			<channel id="o3-index" typeId="index-adv">
+				<label>O₃</label>
+				<description>Ozone</description>
+			</channel>
+			<channel id="pm10-index" typeId="index-adv">
+				<label>PM 10</label>
+				<description>Particulate matter &lt; 10 µm</description>
+			</channel>
+			<channel id="pm25-index" typeId="index-adv">
+				<label>PM 2.5</label>
+				<description>Particulate matter &lt; 2,5 µm</description>
+			</channel>
+			<channel id="effective-date" typeId="localdate">
+				<label>Effective date</label>
+			</channel>
+			<channel id="release-date" typeId="localdate">
+				<label>Release date</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="pollens">
+		<label>Pollen Information</label>
+		<channels>
+			<channel id="index" typeId="pollen-index"/>
+			<channel id="alder-conc" typeId="concentration">
+				<label>Alder concentration</label>
+			</channel>
+			<channel id="alder-level" typeId="alder-level">
+				<label>Alder index</label>
+			</channel>
+			<channel id="birch-conc" typeId="concentration">
+				<label>Birch concentration</label>
+			</channel>
+			<channel id="birch-level" typeId="birch-level">
+				<label>Birch index</label>
+			</channel>
+			<channel id="grasses-conc" typeId="concentration">
+				<label>Grasses concentration</label>
+			</channel>
+			<channel id="grasses-level" typeId="grasses-level">
+				<label>Grasses index</label>
+			</channel>
+			<channel id="olive-conc" typeId="concentration">
+				<label>Olive concentration</label>
+			</channel>
+			<channel id="olive-level" typeId="olive-level">
+				<label>Olive index</label>
+			</channel>
+			<channel id="ragweed-conc" typeId="concentration">
+				<label>Ragweed concentration</label>
+			</channel>
+			<channel id="ragweed-level" typeId="ragweed-level">
+				<label>Ragweed index</label>
+			</channel>
+			<channel id="wormwood-conc" typeId="concentration">
+				<label>Wormwood concentration</label>
+			</channel>
+			<channel id="wormwood-level" typeId="wormwood-level">
+				<label>Wormwood index</label>
+			</channel>
+			<channel id="effective-date" typeId="localdate">
+				<label>Effective date</label>
+			</channel>
+			<channel id="release-date" typeId="localdate">
+				<label>Publication date</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

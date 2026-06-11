@@ -115,9 +115,11 @@
 			</channel>
 			<channel id="enabled" typeId="enabled-channel"/>
 			<channel id="disable-enable" typeId="disable-enable-channel"/>
+			<channel id="gravity-file-exists" typeId="gravity-file-exists-channel"/>
+			<channel id="gravity-last-update" typeId="gravity-last-update-channel"/>
 		</channels>
 		<properties>
-			<property name="thingTypeVersion">2</property>
+			<property name="thingTypeVersion">3</property>
 		</properties>
 
 		<config-description>

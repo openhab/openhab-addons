@@ -19,10 +19,12 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.openhab.core.io.transport.modbus.ModbusBitUtilities;
 import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
 import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.types.State;
 
@@ -31,8 +33,9 @@ import org.openhab.core.types.State;
  */
 @NonNullByDefault
 class SungrowInverterRegistersTest {
+
     @Test
-    public void testCreatePercentTypeState() {
+    public void testCreatePercentState() {
         SungrowInverterRegisters batteryLevelRegister = SungrowInverterRegisters.BATTERY_LEVEL;
 
         ModbusRegisterArray registers = new ModbusRegisterArray(1000);
@@ -47,8 +50,8 @@ class SungrowInverterRegistersTest {
         assertEquals(BigDecimal.valueOf(1000), decimalTypeValue.toBigDecimal());
 
         State state = batteryLevelRegister.createState(decimalTypeValue);
-        assertInstanceOf(PercentType.class, state);
-        assertEquals("100.0", state.toFullString());
+        assertInstanceOf(QuantityType.class, state);
+        assertEquals("100 %", state.toFullString());
     }
 
     @Test
@@ -69,5 +72,37 @@ class SungrowInverterRegistersTest {
         State state = mpttVoltage.createState(decimalTypeValue);
         assertInstanceOf(QuantityType.class, state);
         assertEquals("123.4 V", state.toFullString());
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = SungrowInverterRegisters.class, names = { "POWER_FLOW_STATUS_PV_POWER",
+            "POWER_FLOW_STATUS_BATTERY_CHARGING", "POWER_FLOW_STATUS_FEED_IN_POWER",
+            "POWER_FLOW_STATUS_NEGATIVE_LOAD_POWER" })
+    public void testCreatePowerFlowStatesOn(SungrowInverterRegisters register) {
+        State state = getPowerFlowState(register);
+        assertEquals(OnOffType.ON, state);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = SungrowInverterRegisters.class, names = { "POWER_FLOW_STATUS_BATTERY_DISCHARGING",
+            "POWER_FLOW_STATUS_POSITIVE_LOAD_POWER", "POWER_FLOW_STATUS_IMPORT_FROM_GRID" })
+    public void testCreatePowerFlowStatesOff(SungrowInverterRegisters register) {
+        State state = getPowerFlowState(register);
+        assertEquals(OnOffType.OFF, state);
+    }
+
+    private static State getPowerFlowState(SungrowInverterRegisters register) {
+        final String stateValue = "10010011";
+        int valueFromHex = Integer.parseInt(stateValue, 2); // the second bit from the right is bit with index 1
+        ModbusRegisterArray registers = new ModbusRegisterArray(valueFromHex);
+        Optional<DecimalType> value = ModbusBitUtilities.extractStateFromRegisters(registers, 0, register.getType());
+        assertTrue(value.isPresent());
+        DecimalType decimalTypeValue = value.get();
+        // Value is not scaled yet
+        assertEquals(BigDecimal.valueOf(valueFromHex), decimalTypeValue.toBigDecimal());
+
+        State state = register.createState(decimalTypeValue);
+        assertInstanceOf(OnOffType.class, state);
+        return state;
     }
 }

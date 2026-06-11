@@ -34,8 +34,9 @@ repo root folder
 #### Comments and Documentation
 - Add meaningful code comments where helpful
 - Avoid obvious comments (e.g., `// constructor`)
-- Use JavaDoc for API/class/method documentation
+- Use Javadoc for API/class/method documentation
 - Follow guidelines at: https://www.openhab.org/docs/developer/guidelines.html
+- Follow checklist at: https://github.com/openhab/openhab-addons/wiki/Review-Checklist
 
 #### Import Organization
 - Sort imports alphabetically
@@ -70,6 +71,10 @@ When upgrading Maven dependencies:
 - Reference documentation: https://bnd.bndtools.org/chapters/825-instructions-ref.html
 - Used to define OSGi runtime configurations for testing
 
+### OH-INF/i18n/*_xx.properties
+- I18N properties files for specific languages, e.g. foobar_de.properties, should be omitted.
+- Reference documentation: https://www.openhab.org/docs/developer/utils/i18n.html#managing-translations
+
 ### AGENTS.md
 There might be AGENTS.md files in subfolders. Consider them when files from that binding are open in the editor:
 - bundles/org.openhab.*/AGENTS.md
@@ -90,6 +95,10 @@ There might be AGENTS.md files in subfolders. Consider them when files from that
 - **Binding Name:** Must be CamelCase matching pattern `[A-Z][A-Za-z]*`
 - **GitHub Username:** Must match pattern `[a-z0-9]*` 
 - **Author Name:** Can contain spaces (use quotes when scripting)
+
+### Declare Connnection
+- Declare connection in OH-INF/addon/addon.xml
+- Reference documentation: https://www.openhab.org/docs/developer/addons/addon.html#xml-structure-for-add-on-definitions
 
 ### Creation Process
 

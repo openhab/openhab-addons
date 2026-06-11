@@ -100,7 +100,7 @@ public class BindingServlet extends HttpServlet {
             String ua = req.getHeader("User-Agent");
             logger.trace("User-Agent: {}", ua);
 
-            if (!ua.contains("Jetty")) {
+            if (ua == null || !ua.contains("Jetty")) {
                 html.append(errorCallUriFromBrowser);
                 logger.warn("doGet Authcode warn: {}", errorCallUriFromBrowser);
             } else {

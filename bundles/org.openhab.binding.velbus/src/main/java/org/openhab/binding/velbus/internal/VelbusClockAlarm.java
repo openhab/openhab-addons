@@ -31,9 +31,9 @@ public class VelbusClockAlarm {
     public VelbusClockAlarm() {
         this.enabled = true;
         this.isLocal = true;
-        this.wakeupHour = 7;
+        this.wakeupHour = 0;
         this.wakeupMinute = 0;
-        this.bedtimeHour = 23;
+        this.bedtimeHour = 0;
         this.bedtimeMinute = 0;
     }
 
@@ -83,5 +83,9 @@ public class VelbusClockAlarm {
 
     public void setBedtimeMinute(byte value) {
         this.bedtimeMinute = value;
+    }
+
+    public boolean hasDefaultValues() {
+        return enabled && isLocal && wakeupHour == 0 && wakeupMinute == 0 && bedtimeHour == 0 && bedtimeMinute == 0;
     }
 }

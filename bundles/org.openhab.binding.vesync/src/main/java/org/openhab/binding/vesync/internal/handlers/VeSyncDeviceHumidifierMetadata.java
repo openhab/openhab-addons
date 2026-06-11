@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.vesync.internal.handlers;
 
-import static org.openhab.binding.vesync.internal.dto.requests.VeSyncProtocolConstants.MODE_AUTO;
-import static org.openhab.binding.vesync.internal.dto.requests.VeSyncProtocolConstants.MODE_AUTO_HUMIDITY;
+import static org.openhab.binding.vesync.internal.dto.requests.ProtocolConstants.MODE_AUTO;
+import static org.openhab.binding.vesync.internal.dto.requests.ProtocolConstants.MODE_AUTO_HUMIDITY;
 
 import java.util.List;
 

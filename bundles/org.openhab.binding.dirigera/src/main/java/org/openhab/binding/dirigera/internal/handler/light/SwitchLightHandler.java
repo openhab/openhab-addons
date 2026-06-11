@@ -15,7 +15,6 @@ package org.openhab.binding.dirigera.internal.handler.light;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.json.JSONObject;
 import org.openhab.core.thing.Thing;
 
 /**
@@ -29,14 +28,5 @@ public class SwitchLightHandler extends BaseLight {
     public SwitchLightHandler(Thing thing, Map<String, String> mapping) {
         super(thing, mapping);
         super.setChildHandler(this);
-    }
-
-    @Override
-    public void initialize() {
-        super.initialize();
-        if (super.checkHandler()) {
-            JSONObject values = gateway().api().readDevice(config.id);
-            handleUpdate(values);
-        }
     }
 }

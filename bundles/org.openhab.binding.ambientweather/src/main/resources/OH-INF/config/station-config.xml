@@ -6,6 +6,7 @@
 
 	<config-description uri="thing-type:ambientweather:station">
 		<parameter name="macAddress" type="text" required="true">
+			<context>mac-address</context>
 			<label>MAC Address</label>
 			<description>Enter the MAC address of the weather station</description>
 		</parameter>

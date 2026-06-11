@@ -64,11 +64,14 @@ public class IntesisBoxMessage {
     }
 
     public List<String> getLimitsValue() {
+        if (value.length() <= 2) {
+            return List.of();
+        }
         return Arrays.asList(value.substring(1, value.length() - 1).split(","));
     }
 
     public static @Nullable IntesisBoxMessage parse(String message) {
-        Matcher m = REGEX.matcher(message);
+        Matcher m = REGEX.matcher(message.trim());
         if (!m.find()) {
             return null;
         }

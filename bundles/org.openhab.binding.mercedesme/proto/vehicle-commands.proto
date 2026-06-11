@@ -91,20 +91,46 @@ message CommandRequest {
 
     AutomaticValetParkingActivate automatic_valet_parking_activate = 42;
 
-    // ChargeFlapUnlock charge_flap_unlock = 45; # removed 1.51
+    ChargeFlapUnlock charge_flap_unlock = 45;
     ChargeCouplerUnlock charge_coupler_unlock = 46;
 
     DeactivateVehicleKeys deactivate_vehicle_keys = 48;
     ActivateVehicleKeys activate_vehicle_keys = 49;
 
     ChargingBreakClocktimerConfigure chargingbreak_clocktimer_configure = 50;
-    // WiperHealthReset wiper_health_reset = 64; # removed 1.62
 
+    SelectiveKeyDeactivation selective_key_deactivation = 61;
+    SunroofBlindsMove sunroof_blinds_move = 62;
+    WindowBlindsMove window_blinds_move = 63;
+
+    ChildPresenceDetectionDeactivateAlarm child_presence_detection_deactivate_alarm = 65;
+    InteriorMonitoringTakePicture interior_monitoring_take_picture = 66;
+    ExteriorMonitoringTakePicture exterior_monitoring_take_picture = 67;
+    RemoteUpdateStart remote_update_start = 68;
+    TheftAlarmSelectPictureTaking theftalarm_select_picture_taking = 69;
+    TheftAlarmDeselectPictureTaking theftalarm_deselect_picture_taking = 70;
+    ClockTimerConfigure clock_timer_configure = 71;
+    ChargingConfigure charging_configure = 72;
+    ChildPresenceDetectionTakePicture child_presence_detection_take_picture = 73;
+    StagemodeStart stagemode_start = 74;
+    StagemodeStop stagemode_stop = 75;
     HvBatteryStartConditioning hv_battery_start_conditioning = 76;
     HvBatteryStopConditioning hv_battery_stop_conditioning = 77;
 
-
   }
+}
+
+message ChargingConfigure {
+  enum ChargeProgram {
+    DEFAULT_CHARGE_PROGRAM = 0;
+    // Instant charge program should not be used
+    // INSTANT_CHARGE_PROGRAM = 1;
+    HOME_CHARGE_PROGRAM = 2;
+    WORK_CHARGE_PROGRAM = 3;
+  }
+  ChargeProgram charge_program = 3 [ json_name = "chargeprogram" ];
+
+  google.protobuf.Int32Value max_soc = 5;
 }
 
 message HvBatteryStartConditioning {}
@@ -616,7 +642,9 @@ message AutomaticValetParkingActivate {
   DriveType drive_type = 2 [ json_name = "driveType" ];
 }
 
-// message ChargeFlapUnlock {} # removed 1.51
+message ChargeFlapUnlock {
+  string pin = 1;
+}
 
 message ChargeCouplerUnlock {}
 
@@ -641,3 +669,71 @@ message ChargingBreakClockTimerConfigureEntry {
 }
 
 message WiperHealthReset {}
+
+// New commands added from mbabeu163-1
+
+message SelectiveKeyDeactivation {
+  string pin = 1;
+}
+
+message SunroofBlindsMove {
+  google.protobuf.Int32Value sunroof_blind_front = 1;
+  google.protobuf.Int32Value sunroof_blind_rear = 2;
+}
+
+message WindowBlindsMove {
+  google.protobuf.Int32Value rear_blind = 1;
+  google.protobuf.Int32Value rear_left_blind = 2;
+  google.protobuf.Int32Value rear_right_blind = 3;
+}
+
+message ChildPresenceDetectionDeactivateAlarm {}
+
+message ChildPresenceDetectionTakePicture {}
+
+message InteriorMonitoringTakePicture {}
+
+message ExteriorMonitoringTakePicture {}
+
+message RemoteUpdateStart {
+  string pkg_id = 1;
+  string release_pkg_id = 2;
+}
+
+message TheftAlarmSelectPictureTaking {}
+
+message TheftAlarmDeselectPictureTaking {}
+
+message StagemodeStart {}
+
+message StagemodeStop {}
+
+message ClockTimerConfigure {
+  repeated ClockTimerConfigureEntry clock_timer_configure_entry = 1;
+}
+
+message ClockTimerConfigureEntry {
+  enum Action {
+    DELETE = 0;
+    DEACTIVATE = 1;
+    ACTIVATE = 2;
+  }
+
+  enum Day {
+    MONDAY = 0;
+    TUESDAY = 1;
+    WEDNESDAY = 2;
+    THURSDAY = 3;
+    FRIDAY = 4;
+    SATURDAY = 5;
+    SUNDAY = 6;
+  }
+
+  Action action = 1;
+  int64 end_time_hour = 2;
+  int64 end_time_min = 3;
+  int64 start_time_hour = 4;
+  int64 start_time_min = 5;
+  int64 timer_id = 6;
+  repeated Day days = 7;
+}

@@ -83,6 +83,7 @@ public class ShellyBluJsonDTO {
         public Long firmware32;
 
         public Integer rssi;
-        public Integer tx_power;
+        @SerializedName("tx_power")
+        public Integer txPower;
     }
 }

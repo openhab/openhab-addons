@@ -1,7 +1,7 @@
 # Android Debug Bridge Binding
 
 :::warning
-There is much evidence that installing Debug Bridge on your Android device poses a strong security threat e.g. to enable Trojan horse software that could compromise it, or other LAN devices!_
+Enabling debugging over the network on your Android device can pose a serious security risk, potentially allowing unauthorized access to your device and other devices on your network.
 :::
 
 This binding allows to connect to android devices through the adb protocol.

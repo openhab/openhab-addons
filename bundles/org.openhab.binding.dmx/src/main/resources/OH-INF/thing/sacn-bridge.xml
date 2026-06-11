@@ -11,7 +11,6 @@
 		</channels>
 		<config-description>
 			<parameter name="mode" type="text" required="true">
-				<context></context>
 				<label>Transmission Mode</label>
 				<description>Set UDP mode to multicast (default)/unicast</description>
 				<options>

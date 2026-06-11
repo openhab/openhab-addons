@@ -27,6 +27,8 @@ public class HomeAssistantBindingConstants {
     public static final String LEGACY_BINDING_ID = "mqtt";
     public static final String BINDING_ID = "homeassistant";
 
+    public static final String DEVICE_COMPONENT = "device";
+
     // List of all Thing Type UIDs
     public static final ThingTypeUID LEGACY_MQTT_HOMEASSISTANT_THING = new ThingTypeUID(LEGACY_BINDING_ID,
             "homeassistant");

@@ -109,8 +109,8 @@ public enum KaleidescapeMessageHandler {
         public void handleMessage(String message, KaleidescapeHandler handler) {
             Matcher matcher = p.matcher(message);
             if (matcher.find()) {
-                handler.updateChannel(PLAY_MODE,
-                        new StringType(KaleidescapeStatusCodes.PLAY_MODE.get(matcher.group(1))));
+                handler.updateChannel(PLAY_MODE, new StringType(
+                        KaleidescapeStatusCodes.PLAY_MODE.getOrDefault(matcher.group(1), UNKNOWN + matcher.group(1))));
 
                 handler.updateChannel(CONTROL, "2".equals(matcher.group(1)) ? PlayPauseType.PLAY : PlayPauseType.PAUSE);
 
@@ -144,14 +144,14 @@ public enum KaleidescapeMessageHandler {
         @Override
         public void handleMessage(String message, KaleidescapeHandler handler) {
             handler.updateChannel(KaleidescapeBindingConstants.MOVIE_MEDIA_TYPE,
-                    new StringType(KaleidescapeStatusCodes.MEDIA_TYPE.get(message)));
+                    new StringType(KaleidescapeStatusCodes.MEDIA_TYPE.getOrDefault(message, UNKNOWN + message)));
         }
     },
     MOVIE_LOCATION {
         @Override
         public void handleMessage(String message, KaleidescapeHandler handler) {
             handler.updateChannel(KaleidescapeBindingConstants.MOVIE_LOCATION,
-                    new StringType(KaleidescapeStatusCodes.MOVIE_LOCATION.get(message)));
+                    new StringType(KaleidescapeStatusCodes.MOVIE_LOCATION.getOrDefault(message, UNKNOWN + message)));
         }
     },
     VIDEO_MODE {
@@ -167,14 +167,14 @@ public enum KaleidescapeMessageHandler {
 
             Matcher matcher = p.matcher(message);
             if (matcher.find()) {
-                handler.updateChannel(VIDEO_MODE_COMPOSITE,
-                        new StringType(KaleidescapeStatusCodes.VIDEO_MODE.get(matcher.group(1))));
+                handler.updateChannel(VIDEO_MODE_COMPOSITE, new StringType(
+                        KaleidescapeStatusCodes.VIDEO_MODE.getOrDefault(matcher.group(1), UNKNOWN + matcher.group(1))));
 
-                handler.updateChannel(VIDEO_MODE_COMPONENT,
-                        new StringType(KaleidescapeStatusCodes.VIDEO_MODE.get(matcher.group(2))));
+                handler.updateChannel(VIDEO_MODE_COMPONENT, new StringType(
+                        KaleidescapeStatusCodes.VIDEO_MODE.getOrDefault(matcher.group(2), UNKNOWN + matcher.group(2))));
 
-                handler.updateChannel(VIDEO_MODE_HDMI,
-                        new StringType(KaleidescapeStatusCodes.VIDEO_MODE.get(matcher.group(3))));
+                handler.updateChannel(VIDEO_MODE_HDMI, new StringType(
+                        KaleidescapeStatusCodes.VIDEO_MODE.getOrDefault(matcher.group(3), UNKNOWN + matcher.group(3))));
             } else {
                 logger.debug("VIDEO_MODE - no match on message: {}", message);
             }
@@ -193,8 +193,8 @@ public enum KaleidescapeMessageHandler {
 
             Matcher matcher = p.matcher(message);
             if (matcher.find()) {
-                handler.updateChannel(VIDEO_COLOR_EOTF,
-                        new StringType(KaleidescapeStatusCodes.EOTF.get(matcher.group(1))));
+                handler.updateChannel(VIDEO_COLOR_EOTF, new StringType(
+                        KaleidescapeStatusCodes.EOTF.getOrDefault(matcher.group(1), UNKNOWN + matcher.group(1))));
             } else {
                 logger.debug("VIDEO_COLOR - no match on message: {}", message);
             }
@@ -213,8 +213,8 @@ public enum KaleidescapeMessageHandler {
 
             Matcher matcher = p.matcher(message);
             if (matcher.find()) {
-                handler.updateChannel(CONTENT_COLOR_EOTF,
-                        new StringType(KaleidescapeStatusCodes.EOTF.get(matcher.group(1))));
+                handler.updateChannel(CONTENT_COLOR_EOTF, new StringType(
+                        KaleidescapeStatusCodes.EOTF.getOrDefault(matcher.group(1), UNKNOWN + matcher.group(1))));
             } else {
                 logger.debug("CONTENT_COLOR - no match on message: {}", message);
             }
@@ -233,10 +233,10 @@ public enum KaleidescapeMessageHandler {
 
             // per API reference rev 3.3.1, ASPECT_RATIO message should not be used
             // the first element of SCREEN_MASK now provides this info
-            if (!message.equals(EMPTY)) {
-                String[] msgSplit = message.split(":", 2);
-                handler.updateChannel(KaleidescapeBindingConstants.ASPECT_RATIO,
-                        new StringType(KaleidescapeStatusCodes.ASPECT_RATIO.get(msgSplit[0])));
+            if (!EMPTY.equals(message)) {
+                final String[] msgSplit = message.split(":", 2);
+                handler.updateChannel(KaleidescapeBindingConstants.ASPECT_RATIO, new StringType(
+                        KaleidescapeStatusCodes.ASPECT_RATIO.getOrDefault(msgSplit[0], UNKNOWN + msgSplit[0])));
             }
         }
     },
@@ -320,8 +320,8 @@ public enum KaleidescapeMessageHandler {
         public void handleMessage(String message, KaleidescapeHandler handler) {
             Matcher matcher = p.matcher(message);
             if (matcher.find()) {
-                handler.updateChannel(MUSIC_PLAY_MODE,
-                        new StringType(KaleidescapeStatusCodes.PLAY_MODE.get(matcher.group(1))));
+                handler.updateChannel(MUSIC_PLAY_MODE, new StringType(
+                        KaleidescapeStatusCodes.PLAY_MODE.getOrDefault(matcher.group(1), UNKNOWN + matcher.group(1))));
 
                 handler.updateChannel(MUSIC_CONTROL,
                         "2".equals(matcher.group(1)) ? PlayPauseType.PLAY : PlayPauseType.PAUSE);
@@ -424,8 +424,7 @@ public enum KaleidescapeMessageHandler {
                             try {
                                 ContentResponse contentResponse = handler.httpClient.newRequest(value).method(GET)
                                         .timeout(10, TimeUnit.SECONDS).send();
-                                int httpStatus = contentResponse.getStatus();
-                                if (httpStatus == OK_200) {
+                                if (contentResponse.getStatus() == OK_200) {
                                     handler.updateDetailChannel(DETAIL_COVER_ART,
                                             new RawType(contentResponse.getContent(), "image/jpeg"));
                                 } else {
@@ -554,7 +553,7 @@ public enum KaleidescapeMessageHandler {
         public void handleMessage(String message, KaleidescapeHandler handler) {
             // example 1, 2 or 3
             handler.updateChannel(KaleidescapeBindingConstants.SYSTEM_READINESS_STATE,
-                    new StringType(KaleidescapeStatusCodes.READINESS_STATE.get(message)));
+                    new StringType(KaleidescapeStatusCodes.READINESS_STATE.getOrDefault(message, UNKNOWN + message)));
         }
     },
     SYSTEM_VERSION {
@@ -604,11 +603,11 @@ public enum KaleidescapeMessageHandler {
     FRIENDLY_NAME {
         @Override
         public void handleMessage(String message, KaleidescapeHandler handler) {
-            // example: 'Living Room'
-            handler.friendlyName = message;
             handler.updateThingProperty(PROPERTY_FRIENDLY_NAME, message);
         }
     };
 
     public abstract void handleMessage(String message, KaleidescapeHandler handler);
+
+    private static final String UNKNOWN = "UNKNOWN-";
 }

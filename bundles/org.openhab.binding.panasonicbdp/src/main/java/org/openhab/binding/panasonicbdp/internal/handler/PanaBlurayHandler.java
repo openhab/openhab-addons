@@ -84,6 +84,7 @@ public class PanaBlurayHandler extends BaseThingHandler {
     private final TranslationProvider translationProvider;
     private final LocaleProvider localeProvider;
     private final @Nullable Bundle bundle;
+    private final StringType offlineStr;
 
     public PanaBlurayHandler(Thing thing, HttpClient httpClient, @Reference TranslationProvider translationProvider,
             @Reference LocaleProvider localeProvider) {
@@ -92,6 +93,9 @@ public class PanaBlurayHandler extends BaseThingHandler {
         this.translationProvider = translationProvider;
         this.localeProvider = localeProvider;
         this.bundle = FrameworkUtil.getBundle(PanaBlurayHandler.class);
+
+        offlineStr = new StringType(
+                translationProvider.getText(bundle, "status.offline", "Offline", localeProvider.getLocale()));
     }
 
     @Override
@@ -234,6 +238,8 @@ public class PanaBlurayHandler extends BaseThingHandler {
             refreshJob.cancel(true);
             this.refreshJob = null;
         }
+
+        updateState(PLAYER_STATUS, offlineStr);
     }
 
     @Override
@@ -332,7 +338,9 @@ public class PanaBlurayHandler extends BaseThingHandler {
             return output;
         } catch (TimeoutException | ExecutionException e) {
             logger.debug("Error executing command: {}, {}", fields.getNames().iterator().next(), e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "@text/error.exception");
+
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.exception");
+            updateState(PLAYER_STATUS, offlineStr);
         } catch (InterruptedException e) {
             logger.debug("InterruptedException executing command: {}, {}", fields.getNames().iterator().next(),
                     e.getMessage());

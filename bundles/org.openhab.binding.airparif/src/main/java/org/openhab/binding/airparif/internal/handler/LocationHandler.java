@@ -17,17 +17,15 @@ import static org.openhab.binding.airparif.internal.AirParifBindingConstants.*;
 import java.time.Duration;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.airparif.internal.api.AirParifApi.Pollen;
 import org.openhab.binding.airparif.internal.api.AirParifDto.Concentration;
-import org.openhab.binding.airparif.internal.api.AirParifDto.PollensResponse;
 import org.openhab.binding.airparif.internal.api.AirParifDto.Route;
-import org.openhab.binding.airparif.internal.api.PollenAlertLevel;
 import org.openhab.binding.airparif.internal.api.Pollutant;
 import org.openhab.binding.airparif.internal.config.LocationConfiguration;
 import org.openhab.core.library.types.DecimalType;
@@ -55,7 +53,6 @@ public class LocationHandler extends BaseThingHandler implements HandlerUtils {
     private final Logger logger = LoggerFactory.getLogger(LocationHandler.class);
     private final Map<String, ScheduledFuture<?>> jobs = new HashMap<>();
 
-    private Map<Pollen, PollenAlertLevel> myPollens = Map.of();
     private @Nullable LocationConfiguration config;
 
     public LocationHandler(Thing thing) {
@@ -71,23 +68,8 @@ public class LocationHandler extends BaseThingHandler implements HandlerUtils {
 
     @Override
     public void dispose() {
-        logger.debug("Disposing the AirParif bridge handler.");
+        logger.debug("Disposing the AirParif Location handler.");
         cleanJobs();
-    }
-
-    public void setPollens(PollensResponse pollens) {
-        LocationConfiguration local = config;
-        if (local != null) {
-            updatePollenChannels(pollens.getDepartment(local.department));
-            updateStatus(ThingStatus.ONLINE);
-        }
-    }
-
-    private void updatePollenChannels(Map<Pollen, PollenAlertLevel> pollens) {
-        ChannelGroupUID pollensUID = new ChannelGroupUID(thing.getUID(), GROUP_POLLENS);
-        myPollens = pollens;
-        pollens.forEach((pollen, level) -> updateState(new ChannelUID(pollensUID, pollen.name().toLowerCase()),
-                new DecimalType(level.ordinal())));
     }
 
     private void getConcentrations() {
@@ -95,10 +77,6 @@ public class LocationHandler extends BaseThingHandler implements HandlerUtils {
         LocationConfiguration local = config;
         long delay = 3600;
         if (apiHandler != null && local != null) {
-            if (myPollens.isEmpty()) {
-                updatePollenChannels(apiHandler.requestPollens(local.department));
-            }
-
             Route route = apiHandler.getConcentrations(local.location);
             if (route != null) {
                 int maxAlert = route.concentrations().stream().filter(conc -> conc.pollutant().hasUnit())
@@ -106,7 +84,8 @@ public class LocationHandler extends BaseThingHandler implements HandlerUtils {
 
                 route.concentrations().stream().forEach(concentration -> {
                     Pollutant pollutant = concentration.pollutant();
-                    ChannelGroupUID groupUID = new ChannelGroupUID(thing.getUID(), pollutant.name().toLowerCase());
+                    ChannelGroupUID groupUID = new ChannelGroupUID(thing.getUID(),
+                            pollutant.name().toLowerCase(Locale.ROOT));
                     updateState(new ChannelUID(groupUID, CHANNEL_MESSAGE), concentration.getMessage());
                     if (!pollutant.hasUnit()) {
                         updateState(new ChannelUID(groupUID, CHANNEL_TIMESTAMP), concentration.getDate());

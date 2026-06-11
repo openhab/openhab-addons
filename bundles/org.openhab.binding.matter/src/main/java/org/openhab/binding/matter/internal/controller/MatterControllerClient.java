@@ -16,6 +16,7 @@ import java.lang.reflect.Type;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -29,6 +30,7 @@ import org.openhab.binding.matter.internal.client.dto.cluster.ClusterCommand;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.BaseCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.OperationalCredentialsCluster;
 import org.openhab.binding.matter.internal.client.dto.ws.ActiveSessionInformation;
+import org.openhab.binding.matter.internal.client.dto.ws.OtaUpdateInfo;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -143,7 +145,8 @@ public class MatterControllerClient extends MatterWebsocketClient {
             future = sendMessage("nodes", "pairNode", new Object[] { "", parts[0], parts[1] }, PAIRING_TIMEOUT_SECONDS);
         } else {
             // MT is a matter QR code, other wise remove any dashes in a manual pairing code
-            String pairCode = parts[0].toUpperCase().indexOf("MT:") == 0 ? parts[0] : parts[0].replaceAll("-", "");
+            String pairCode = parts[0].toUpperCase(Locale.ROOT).indexOf("MT:") == 0 ? parts[0]
+                    : parts[0].replaceAll("-", "");
             future = sendMessage("nodes", "pairNode", new Object[] { pairCode }, PAIRING_TIMEOUT_SECONDS);
         }
         return future.thenApply(obj -> {
@@ -344,6 +347,60 @@ public class MatterControllerClient extends MatterWebsocketClient {
         return future.thenApply(obj -> {
             ActiveSessionInformation[] sessions = gson.fromJson(obj, ActiveSessionInformation[].class);
             return sessions == null ? new ActiveSessionInformation[0] : sessions;
+        });
+    }
+
+    /**
+     * Query for available OTA firmware updates for a node
+     * 
+     * @param nodeId the node ID to query for updates
+     * @param includeStoredUpdates whether to include cached updates in the query
+     * @return a future that completes with the update information, or null if no update is available
+     * @throws JsonParseException when completing the future if the update info cannot be deserialized
+     * @throws MatterRequestException if the request fails
+     */
+    public CompletableFuture<@Nullable OtaUpdateInfo> otaQueryForUpdates(BigInteger nodeId,
+            boolean includeStoredUpdates) {
+        CompletableFuture<JsonElement> future = sendMessage("nodes", "otaQueryForUpdates",
+                new Object[] { nodeId, includeStoredUpdates });
+        return future.thenApply(obj -> {
+            if (obj == null || obj.isJsonNull()) {
+                return null;
+            }
+            // TypeScript returns undefined when no update is available, which serializes as "undefined"
+            if (obj.isJsonPrimitive() && obj.getAsJsonPrimitive().isString() && "undefined".equals(obj.getAsString())) {
+                return null;
+            }
+            OtaUpdateInfo updateInfo = gson.fromJson(obj, OtaUpdateInfo.class);
+            return updateInfo;
+        });
+    }
+
+    /**
+     * Start an OTA firmware update for a node
+     * 
+     * @param nodeId the node ID to start the update for
+     * @return a future that completes when the update is started
+     * @throws MatterRequestException if the request fails
+     */
+    public CompletableFuture<Void> otaStartUpdate(BigInteger nodeId) {
+        CompletableFuture<JsonElement> future = sendMessage("nodes", "otaStartUpdate", new Object[] { nodeId });
+        return future.thenAccept(obj -> {
+            // Do nothing, just to complete the future
+        });
+    }
+
+    /**
+     * Cancel an OTA firmware update for a node
+     * 
+     * @param nodeId the node ID to cancel the update for
+     * @return a future that completes when the update is cancelled
+     * @throws MatterRequestException if the request fails
+     */
+    public CompletableFuture<Void> otaCancelUpdate(BigInteger nodeId) {
+        CompletableFuture<JsonElement> future = sendMessage("nodes", "otaCancelUpdate", new Object[] { nodeId });
+        return future.thenAccept(obj -> {
+            // Do nothing, just to complete the future
         });
     }
 }

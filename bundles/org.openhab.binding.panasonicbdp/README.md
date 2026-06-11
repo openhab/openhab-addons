@@ -57,31 +57,31 @@ The Thing has a few configuration parameters:
 |-----------|---------|-------------------------------------------------------------------------------------------------------|---------|----------|
 | hostName  | text    | The host name or IP address of the player.                                                            | N/A     | yes      |
 | refresh   | integer | Overrides the refresh interval for the player status. The minimum interval is 5 seconds.              | 5       | no       |
-| playerKey | text    | For UHD models, to enable authentication of control commands, specify the player's key.               | N/A     | no       |
+| playerKey | text    | For `uhd-player` models, to enable authentication of control commands, specify the player's key.      | N/A     | no       |
 
 Some notes:
 
 - The control protocol for these players is undocumented and may not work consistently in all situations.
-- The UHD models only report playback elapsed time (not total title time or chapter information).
+- The `uhd-player` models only report playback elapsed time (not total title time or chapter information).
 - The time and chapter information is only available when playing a Blu-ray disc (not DVD or CD)
 - There are reports in forum postings that not all commands work on all of the older models (e.g., Power does not work on the DMP-BDT110).
-- Not all status information is available from all BD models (e.g., playback elapsed time is not reported by some models).
-- Netflix is no longer supported on the BD models.
+- Not all status information is available from all `bd-player` models (e.g., playback elapsed time is not reported by some models).
+- Netflix is no longer supported on the `bd-player` models.
 
 ## Channels
 
 The following channels are available:
 
-| Channel ID      | Item Type   | Read/Write | Description                                                                           |
-|-----------------|-------------|------------|---------------------------------------------------------------------------------------|
-| power           | Switch      | RW         | Turn the power for the player ON or OFF.                                              |
-| button          | String      | W          | Sends a command to the player. See lists of available commands in Appendix A below.   |
-| control         | Player      | RW         | Control playback, e.g., Play/Pause/Next/Previous/Fast Forward/Rewind.                 |
-| player-status   | String      | R          | The player status, such as Power Off, Tray Open, Stopped, Playback, Pause Playback.   |
-| time-elapsed    | Number:Time | R          | The total playback time elapsed.                                                      |
-| time-total      | Number:Time | R          | The total length of the current playing title. Not available on UHD models.           |
-| chapter-current | Number      | R          | The current chapter number. Not available on UHD models.                              |
-| chapter-total   | Number      | R          | The total number of chapters in the current title. Not available on UHD models.       |
+| Channel ID      | Item Type   | Read/Write | Description                                                                                |
+|-----------------|-------------|------------|--------------------------------------------------------------------------------------------|
+| power           | Switch      | RW         | Turn the power for the player ON or OFF.                                                   |
+| button          | String      | W          | Sends a command to the player. See lists of available commands in Appendix A below.        |
+| control         | Player      | RW         | Control playback, e.g., Play/Pause/Next/Previous/Fast Forward/Rewind.                      |
+| player-status   | String      | R          | The player status, e.g., Power Off, Tray Open, Stopped, Playback, Pause Playback, Offline. |
+| time-elapsed    | Number:Time | R          | The total playback time elapsed.                                                           |
+| time-total      | Number:Time | R          | The total length of the current playing title. Not available on `uhd-player` models.       |
+| chapter-current | Number      | R          | The current chapter number. Not available on `uhd-player` models.                          |
+| chapter-total   | Number      | R          | The total number of chapters in the current title. Not available on `uhd-player` models.   |
 
 ## Full Example
 
@@ -95,7 +95,7 @@ panasonicbdp:uhd-player:myuhdplayer "My UHD Blu-ray player" [ hostName="192.168.
 ### `panasonicbdp.items` Example
 
 ```java
-// BD Player
+// `bd-player`
 Switch Player_Power            "Power"                     { channel="panasonicbdp:bd-player:mybdplayer:power" }
 String Player_Button           "Send Command"              { channel="panasonicbdp:bd-player:mybdplayer:button" }
 Player Player_Control          "Control"                   { channel="panasonicbdp:bd-player:mybdplayer:control" }
@@ -105,7 +105,7 @@ Number:Time Player_TimeTotal   "Total Time: [%s]"          { channel="panasonicb
 Number Player_ChapterCurrent   "Current Chapter: [%d]"     { channel="panasonicbdp:bd-player:mybdplayer:chapter-current" }
 Number Player_ChapterTotal     "Total Chapters: [%d]"      { channel="panasonicbdp:bd-player:mybdplayer:chapter-total" }
 
-// UHD Player
+// `uhd-player`
 Switch Player_Power            "Power"                     { channel="panasonicbdp:uhd-player:myuhdplayer:power" }
 String Player_Button           "Send Command"              { channel="panasonicbdp:uhd-player:myuhdplayer:button" }
 Player Player_Control          "Control"                   { channel="panasonicbdp:uhd-player:myuhdplayer:control" }
@@ -124,7 +124,7 @@ sitemap panasonicbdp label="Panasonic Blu-ray" {
         Default item=Player_Control
         Text item=Player_PlayerStatus
         Text item=Player_TimeElapsed icon="time"
-        // The following three channels are not available on UHD models
+        // The following three channels are not available on `uhd-player` models
         Text item=Player_TimeTotal icon="time"
         Text item=Player_ChapterCurrent icon="time"
         Text item=Player_ChapterTotal icon="time"
@@ -135,7 +135,7 @@ sitemap panasonicbdp label="Panasonic Blu-ray" {
 
 ### Appendix A - 'button' channel command codes
 
-**List of available button commands for BD players:**
+**List of available button commands for `bd-player` models:**
 
 | Function                 | Command  |
 |--------------------------|----------|
@@ -192,7 +192,7 @@ sitemap panasonicbdp label="Panasonic Blu-ray" {
 | Swipe in CW circle       | SHFWD2   |
 | Swipe in CCW circle      | SHREV2   |
 
-**List of available button commands for UHD players:**
+**List of available button commands for `uhd-player` models:**
 
 | Function         | Command          |
 |------------------|------------------|

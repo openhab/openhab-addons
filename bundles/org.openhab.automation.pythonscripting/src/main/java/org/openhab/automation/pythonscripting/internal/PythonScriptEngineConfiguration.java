@@ -48,7 +48,7 @@ public class PythonScriptEngineConfiguration {
     private final Logger logger = LoggerFactory.getLogger(PythonScriptEngineConfiguration.class);
 
     private static final String SYSTEM_PROPERTY_POLYGLOT_ENGINE_USERRESOURCECACHE = "polyglot.engine.userResourceCache";
-
+    private static final String SYSTEM_PROPERTY_ATTACH_LIBRARY_FAILURE_ACTION = "polyglotimpl.AttachLibraryFailureAction";
     private static final String SYSTEM_PROPERTY_JAVA_IO_TMPDIR = "java.io.tmpdir";
 
     public static final String PATH_SEPARATOR = FileSystems.getDefault().getSeparator();
@@ -62,18 +62,21 @@ public class PythonScriptEngineConfiguration {
     public static final Path PYTHON_WRAPPER_FILE_PATH = PYTHON_OPENHAB_LIB_PATH.resolve("__wrapper__.py");
     public static final Path PYTHON_INIT_FILE_PATH = PYTHON_OPENHAB_LIB_PATH.resolve("__init__.py");
 
-    public static final int INJECTION_DISABLED = 0;
-    public static final int INJECTION_ENABLED_FOR_ALL_SCRIPTS = 1;
-    public static final int INJECTION_ENABLED_FOR_NON_FILE_BASED_SCRIPTS = 2;
+    private static final int INJECTION_DISABLED = 1;
+    private static final int INJECTION_ENABLED_FOR_SCRIPT_MODULES_ONLY = 2;
+    private static final int INJECTION_ENABLED_FOR_SCRIPT_MODULES_AND_TRANSFORMATIONS = 3;
+    private static final int INJECTION_ENABLED_FOR_ALL_SCRIPTS = 4;
+
+    private static final int DEBUGGER_PORT_DEFAULT = 9230;
 
     // The variable names must match the configuration keys in config.xml
     public static class PythonScriptingConfiguration {
-        public boolean scopeEnabled = true;
-        public boolean helperEnabled = true;
-        public int injectionEnabled = INJECTION_ENABLED_FOR_NON_FILE_BASED_SCRIPTS;
+        public int injectionEnabled = INJECTION_ENABLED_FOR_SCRIPT_MODULES_ONLY;
         public boolean dependencyTrackingEnabled = true;
         public boolean cachingEnabled = true;
         public boolean jythonEmulation = false;
+        public boolean debuggerEnabled = false;
+        public int debuggerPort = DEBUGGER_PORT_DEFAULT;
         public String pipModules = "";
     }
 
@@ -93,6 +96,11 @@ public class PythonScriptEngineConfiguration {
     public static Version parseHelperLibVersion(@Nullable String version) throws IllegalArgumentException {
         // substring(1) => remove leading 'v'
         return Version.parse(version != null && version.startsWith("v") ? version.substring(1) : version);
+    }
+
+    static {
+        // disable warning about missing TruffleAttach library (is only available in graalvm)
+        System.getProperties().setProperty(SYSTEM_PROPERTY_ATTACH_LIBRARY_FAILURE_ACTION, "ignore");
     }
 
     @Activate
@@ -124,6 +132,7 @@ public class PythonScriptEngineConfiguration {
         Properties props = System.getProperties();
         props.setProperty(SYSTEM_PROPERTY_POLYGLOT_ENGINE_USERRESOURCECACHE,
                 userdataDir.resolve("cache").resolve("org.graalvm.polyglot").toString());
+        props.setProperty(SYSTEM_PROPERTY_ATTACH_LIBRARY_FAILURE_ACTION, "ignore");
 
         String packageName = PythonScriptEngineConfiguration.class.getPackageName();
         packageName = packageName.substring(0, packageName.lastIndexOf("."));
@@ -152,27 +161,32 @@ public class PythonScriptEngineConfiguration {
      * @param initial
      */
     public void modified(Map<String, Object> config, PythonScriptEngineFactory factory) {
-        boolean oldScopeEnabled = configuration.scopeEnabled;
-        boolean oldInjectionEnabled = !isInjection(PythonScriptEngineConfiguration.INJECTION_DISABLED);
+        int oldInjectionEnabled = configuration.injectionEnabled;
         boolean oldDependencyTrackingEnabled = isDependencyTrackingEnabled();
-
         String oldPipModules = configuration.pipModules;
+        boolean oldDebuggerEnabled = configuration.debuggerEnabled;
+        int oldDebuggerPort = configuration.debuggerPort;
+
         configuration = new Configuration(config).as(PythonScriptingConfiguration.class);
+
         if (!oldPipModules.equals(configuration.pipModules)) {
             PythonScriptEngineHelper.initPipModules(this, factory);
         }
 
-        if (oldScopeEnabled != isScopeEnabled()) {
-            logger.info("{} scope for Python Scripting. Please resave your scripts to apply this change.",
-                    isScopeEnabled() ? "Enabled" : "Disabled");
-        }
-        if (oldInjectionEnabled != !isInjection(PythonScriptEngineConfiguration.INJECTION_DISABLED)) {
-            logger.info("{} injection for Python Scripting. Please resave your UI-based scripts to apply this change.",
-                    !isInjection(PythonScriptEngineConfiguration.INJECTION_DISABLED) ? "Enabled" : "Disabled");
+        if (oldInjectionEnabled != configuration.injectionEnabled) {
+            logger.warn(
+                    "Changed helper module setting for Python Scripting. Please resave your python scripts to apply this change.");
         }
         if (oldDependencyTrackingEnabled != isDependencyTrackingEnabled()) {
-            logger.info("{} dependency tracking for Python Scripting. Please resave your scripts to apply this change.",
+            logger.warn(
+                    "{} dependency tracking for Python Scripting. Please resave your python scripts to apply this change.",
                     isDependencyTrackingEnabled() ? "Enabled" : "Disabled");
+        }
+        if (oldDebuggerEnabled != configuration.debuggerEnabled) {
+            logger.warn("{} debugger for Python Scripting. Restart openHAB to apply this change.",
+                    configuration.debuggerEnabled ? "Enabled" : "Disabled");
+        } else if (oldDebuggerPort != configuration.debuggerPort) {
+            logger.warn("Reconfigured debugger for Python Scripting. Restart openHAB to apply this change.");
         }
     }
 
@@ -180,16 +194,20 @@ public class PythonScriptEngineConfiguration {
         installedHelperLibVersion = version;
     }
 
-    public boolean isScopeEnabled() {
-        return configuration.scopeEnabled;
+    public boolean isInjectionEnabledForAllScripts() {
+        return configuration.injectionEnabled == INJECTION_ENABLED_FOR_ALL_SCRIPTS;
+    }
+
+    public boolean isInjectionEnabledForScriptModules() {
+        return configuration.injectionEnabled == INJECTION_ENABLED_FOR_SCRIPT_MODULES_ONLY;
+    }
+
+    public boolean isInjectionEnabledForTransformations() {
+        return configuration.injectionEnabled == INJECTION_ENABLED_FOR_SCRIPT_MODULES_AND_TRANSFORMATIONS;
     }
 
     public boolean isHelperEnabled() {
-        return configuration.helperEnabled;
-    }
-
-    public boolean isInjection(int type) {
-        return configuration.injectionEnabled == type;
+        return configuration.injectionEnabled > 0;
     }
 
     public boolean isDependencyTrackingEnabled() {
@@ -202,6 +220,14 @@ public class PythonScriptEngineConfiguration {
 
     public boolean isJythonEmulation() {
         return configuration.jythonEmulation;
+    }
+
+    public boolean isDebuggerEnabled() {
+        return configuration.debuggerEnabled;
+    }
+
+    public int getDebuggerPort() {
+        return configuration.debuggerPort;
     }
 
     public String getPIPModules() {

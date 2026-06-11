@@ -22,8 +22,8 @@ import com.google.gson.annotations.SerializedName;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public record StatAnswer(Queries queries, Clients client, Gravity gravity, double took) {
-    record Clients(int active, int total) {
+public record StatAnswer(Queries queries, Clients clients, Gravity gravity, double took) {
+    public record Clients(int active, int total) {
 
     }
 

@@ -22,9 +22,13 @@ import org.openhab.binding.enocean.internal.config.EnOceanChannelContactConfig;
 import org.openhab.binding.enocean.internal.eep.Base._1BSMessage;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
+import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -32,6 +36,11 @@ import org.openhab.core.types.UnDefType;
  */
 @NonNullByDefault
 public class D5_00_01 extends _1BSMessage {
+
+    @SuppressWarnings("null")
+    private final Logger logger = LoggerFactory.getLogger(D5_00_01.class);
+
+    private static final String CHANNEL_SWITCH = "switch";
 
     protected static final byte OPEN = 0 | TEACHIN_BIT;
     protected static final byte CLOSED = 1 | TEACHIN_BIT;
@@ -41,6 +50,22 @@ public class D5_00_01 extends _1BSMessage {
 
     public D5_00_01(ERP1Message packet) {
         super(packet);
+    }
+
+    @Override
+    protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command,
+            Function<String, State> getCurrentStateFunc, @Nullable Configuration config) {
+        if (!channelId.equals(CHANNEL_SWITCH)) {
+            throw new IllegalArgumentException("Unsupported channel for D5_00_01 outbound command: " + channelId);
+        }
+
+        if (command instanceof OnOffType switchCommand) {
+            logger.debug("D5_00_01 outbound switch command: {}", switchCommand);
+            setData(switchCommand == OnOffType.ON ? CLOSED : OPEN);
+            return;
+        }
+
+        throw new IllegalArgumentException("Unsupported command for D5_00_01 outbound switch: " + command);
     }
 
     @Override

@@ -5,24 +5,22 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
 		https://openhab.org/schemas/config-description-1.0.0.xsd">
 	<config-description uri="binding:unifiprotect">
-		<parameter name="downloadBinaries" type="boolean">
+		<parameter name="downloadBinaries" type="boolean" required="true">
 			<label>Download Stream Binaries</label>
 			<description>Download the stream binaries for go2rtc and ffmpeg if not already present on the system PATH</description>
 			<default>true</default>
-			<required>true</required>
 		</parameter>
-		<parameter name="useStun" type="boolean">
+		<parameter name="useStun" type="boolean" required="true">
 			<label>Use STUN for external IP discovery</label>
 			<description>Use STUN for external IP discovery. This will allow camera streams to work behind NATs when outside your
 				local network (e.g. when using the openHAB cloud service). STUN will incur an approximately 5 second delay starting
 				the stream as it discovers your external IP.
 			</description>
 			<default>true</default>
-			<required>true</required>
 		</parameter>
 	</config-description>
 	<config-description uri="thing-type:unifiprotect:snapshot-config">
-		<parameter name="sequence" type="text" required="false">
+		<parameter name="sequence" type="text" required="true">
 			<label>Sequence</label>
 			<description>The order in which a snapshot is taken relative to the event or item state change. By default, a
 				snapshot is taken before the trigger event fires or item state updates so it's immediately available for use in
@@ -31,7 +29,6 @@
 				take a snapshot on a trigger event or item state update, you can set this to "none". Image items can also be updated
 				in rules using either the setImage action (`actions.HTTP.setImage`) or by sending a `REFRESH` command to the item.</description>
 			<default>before</default>
-			<required>true</required>
 			<options>
 				<option value="before">Take a snapshot before firing the trigger event or updating the item state.</option>
 				<option value="after">Take a snapshot after firing the trigger event or updating the item state.</option>
@@ -45,7 +42,6 @@
 			<description>The delay in milliseconds to wait before the contact is considered latched/closed after the last motion
 				event.</description>
 			<default>5000</default>
-			<required>false</required>
 		</parameter>
 	</config-description>
 </config-description:config-descriptions>

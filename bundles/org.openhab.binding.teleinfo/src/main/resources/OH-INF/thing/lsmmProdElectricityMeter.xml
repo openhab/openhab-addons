@@ -4,17 +4,18 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="lsmm_prod_electricitymeter" listed="false">
+	<thing-type id="lsmm_prod_electricitymeter" listed="true">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="serialcontroller"/>
+			<bridge-type-ref id="d2lcontroller"/>
 		</supported-bridge-type-refs>
 
 		<label>Linky Single-phase Producer</label>
 		<description>Single-phase producer Linky Electricity meter in standard mode</description>
 		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channel-groups>
-			<channel-group id="commonLSMGroup" typeId="commonLSMGroupType"/>
-			<channel-group id="producerLSMGroup" typeId="producerLSMGroupType"/>
+			<channel-group id="commonLSMGroup" typeId="common-lsm-group-type"/>
+			<channel-group id="producerLSMGroup" typeId="three-phased-lsm-group-type"/>
 		</channel-groups>
 
 		<config-description-ref uri="thing-type:teleinfo:adco"/>

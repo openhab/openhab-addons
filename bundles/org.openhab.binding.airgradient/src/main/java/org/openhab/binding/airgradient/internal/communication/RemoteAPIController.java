@@ -19,7 +19,6 @@ import static org.openhab.binding.airgradient.internal.AirGradientBindingConstan
 
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -85,9 +84,7 @@ public class RemoteAPIController {
                     switch (contentType) {
                         case CONTENTTYPE_JSON:
                             return JsonParserHelper.parseJson(gson, stringResponse);
-                        case CONTENTTYPE_TEXT:
-                            return PrometheusParserHelper.parsePrometheus(stringResponse);
-                        case CONTENTTYPE_OPENMETRICS:
+                        case CONTENTTYPE_TEXT, CONTENTTYPE_OPENMETRICS:
                             return PrometheusParserHelper.parsePrometheus(stringResponse);
                         default:
                             logger.debug("Unhandled content type returned: {}", contentType);
@@ -96,7 +93,7 @@ public class RemoteAPIController {
             }
         }
 
-        return Collections.emptyList();
+        return List.of();
     }
 
     public @Nullable LocalConfiguration getConfig() throws AirGradientCommunicationException {

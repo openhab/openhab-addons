@@ -14,6 +14,7 @@ package org.openhab.binding.ipobserver.internal;
 
 import static org.openhab.binding.ipobserver.internal.IpObserverBindingConstants.*;
 
+import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -28,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import javax.measure.Unit;
+import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -104,35 +106,78 @@ public class IpObserverHandler extends BaseThingHandler {
         public void processValue(String sensorValue) {
             if (!sensorValue.equals(previousValue)) {
                 previousValue = sensorValue;
-                switch (channel.getUID().getId()) {
-                    case LAST_UPDATED_TIME:
-                        try {
-                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm MM/dd/yyyy")
-                                    .withZone(TimeZone.getDefault().toZoneId());
-                            ZonedDateTime zonedDateTime = ZonedDateTime.parse(sensorValue, formatter);
-                            this.handler.updateState(this.channel.getUID(), new DateTimeType(zonedDateTime));
-                        } catch (DateTimeParseException e) {
-                            logger.debug("Could not parse {} as a valid dateTime", sensorValue);
-                        }
-                        return;
-                    case INDOOR_BATTERY:
-                    case OUTDOOR_BATTERY:
-                        if ("1".equals(sensorValue)) {
-                            handler.updateState(this.channel.getUID(), OnOffType.ON);
-                        } else {
-                            handler.updateState(this.channel.getUID(), OnOffType.OFF);
-                        }
-                        return;
+                if (LAST_UPDATED_TIME.equals(channel.getUID().getId())) {
+                    try {
+                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm MM/dd/yyyy")
+                                .withZone(TimeZone.getDefault().toZoneId());
+                        ZonedDateTime zonedDateTime = ZonedDateTime.parse(sensorValue, formatter);
+                        handler.updateState(this.channel.getUID(), new DateTimeType(zonedDateTime));
+                    } catch (DateTimeParseException e) {
+                        logger.debug("Could not parse {} as a valid dateTime", sensorValue);
+                    }
+                    return;
                 }
+
                 State state = TypeParser.parseState(this.acceptedDataTypes, sensorValue);
                 if (state == null) {
                     return;
                 } else if (state instanceof QuantityType) {
+                    switch (channel.getUID().getId()) {
+                        case TEMP_OUTDOOR:
+                        case TEMP_WIND_CHILL:
+                        case TEMP_INDOOR:
+                        case TEMP_DEW_POINT:
+                            QuantityType<Temperature> quantityType = new QuantityType<Temperature>(
+                                    ((QuantityType) state).toBigDecimal(), (Unit<Temperature>) unit);
+                            if (quantityType.compareTo(MAX_TEMPERATURE) > 0
+                                    || quantityType.compareTo(MIN_TEMPERATURE) < 0) {
+                                logger.debug("A temperature reading was outside of allowed values:{}", sensorValue);
+                                return; // RF packet must be corrupt.
+                            }
+                            break;
+                        // prevent negative values for these channels.
+                        case HOURLY_RAIN_RATE:
+                        case DAILY_RAIN:
+                        case WEEKLY_RAIN:
+                        case MONTHLY_RAIN:
+                        case YEARLY_RAIN:
+                        case TOTAL_RAIN:
+                        case SOLAR_RADIATION:
+                        case WIND_AVERAGE_SPEED:
+                        case WIND_SPEED:
+                        case WIND_GUST:
+                        case WIND_MAX_GUST:
+                            if (((QuantityType) state).toBigDecimal().compareTo(BigDecimal.ZERO) < 0) {
+                                return; // RF packet must be corrupt.
+                            }
+                            break;
+                    }
                     handler.updateState(this.channel.getUID(),
-                            QuantityType.valueOf(Double.parseDouble(sensorValue), unit));
-                } else {
-                    handler.updateState(this.channel.getUID(), state);
+                            new QuantityType<>(((QuantityType) state).toBigDecimal(), unit));
+                    return;
+                } else if (state instanceof DecimalType) {
+                    DecimalType decimalType = (DecimalType) state;
+                    switch (channel.getUID().getId()) {
+                        case INDOOR_HUMIDITY:
+                        case OUTDOOR_HUMIDITY:
+                            if (decimalType.compareTo(DecimalType.ZERO) < 0) {
+                                return; // RF packet must be corrupt.
+                            }
+                            break;
+                    }
+                } else if (state instanceof StringType) {
+                    switch (channel.getUID().getId()) {
+                        case INDOOR_BATTERY:
+                        case OUTDOOR_BATTERY:
+                            if ("1".equals(sensorValue)) {
+                                handler.updateState(this.channel.getUID(), OnOffType.ON);
+                            } else {
+                                handler.updateState(this.channel.getUID(), OnOffType.OFF);
+                            }
+                            return;
+                    }
                 }
+                handler.updateState(this.channel.getUID(), state);
             }
         }
     }
@@ -385,9 +430,8 @@ public class IpObserverHandler extends BaseThingHandler {
         // The units for the following are ignored as they are not a QuantityType.class
         createChannelHandler(UV, DecimalType.class, SIUnits.CELSIUS, "uv");
         createChannelHandler(UV_INDEX, DecimalType.class, SIUnits.CELSIUS, "uvi");
-        // was outBattSta1 so some units may use this instead?
+        // was outBattSta1 so some units may use this instead? Can not create same channel twice
         createChannelHandler(OUTDOOR_BATTERY, StringType.class, Units.PERCENT, "outBattSta");
-        createChannelHandler(OUTDOOR_BATTERY, StringType.class, Units.PERCENT, "outBattSta1");
         createChannelHandler(INDOOR_BATTERY, StringType.class, Units.PERCENT, "inBattSta");
         createChannelHandler(LAST_UPDATED_TIME, DateTimeType.class, SIUnits.CELSIUS, "CurrTime");
     }

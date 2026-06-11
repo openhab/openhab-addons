@@ -292,7 +292,6 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler 
             if (tryReconnect()) {
                 logger.debug("WebThing {} reconnected", getWebThingLabel());
             }
-
         } else {
             // force reconnecting periodically, to fix erroneous states that occurs for unknown reasons
             var elapsedSinceLastReconnect = Duration.between(lastReconnect.get(), Instant.now());
@@ -303,7 +302,6 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler 
                     logger.debug("could not reconnect WebThing {} (periodic reconnect failed). Next trial in {} sec",
                             getWebThingLabel(), HEALTH_CHECK_PERIOD.getSeconds());
                 }
-
             }
         }
     }

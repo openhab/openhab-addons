@@ -329,6 +329,12 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                         }
                         break;
                     }
+                    case SHARE: {
+                        if (command instanceof StringType) {
+                            shareAddress(command.toString());
+                        }
+                        break;
+                    }
                     case SUN_ROOF_STATE: {
                         if (command instanceof StringType) {
                             setSunroof(command.toString());
@@ -799,6 +805,19 @@ public class TeslaVehicleHandler extends BaseThingHandler {
         JsonObject payloadObject = new JsonObject();
         payloadObject.addProperty("on", isOn);
         sendCommand(COMMAND_STEERING_WHEEL_HEATER, gson.toJson(payloadObject), account.commandTarget);
+    }
+
+    public void shareAddress(String address) {
+        JsonObject payloadObject = new JsonObject();
+        payloadObject.addProperty("type", "share_ext_content_raw");
+        payloadObject.addProperty("locale", "en-US");
+        payloadObject.addProperty("timestamp_ms", String.valueOf(System.currentTimeMillis()));
+
+        JsonObject valueObject = new JsonObject();
+        valueObject.addProperty("android.intent.extra.TEXT", address);
+        payloadObject.add("value", valueObject);
+
+        sendCommand(COMMAND_SHARE, gson.toJson(payloadObject), account.commandTarget);
     }
 
     protected @Nullable Vehicle queryVehicle() {

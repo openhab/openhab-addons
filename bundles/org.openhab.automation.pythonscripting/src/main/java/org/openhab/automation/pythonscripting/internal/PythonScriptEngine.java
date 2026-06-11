@@ -45,20 +45,20 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Engine;
 import org.graalvm.polyglot.HostAccess;
-import org.graalvm.polyglot.Language;
 import org.graalvm.polyglot.PolyglotException;
 import org.graalvm.polyglot.Source;
 import org.graalvm.polyglot.Value;
 import org.graalvm.polyglot.io.IOAccess;
 import org.openhab.automation.pythonscripting.internal.context.ContextInput;
 import org.openhab.automation.pythonscripting.internal.context.ContextOutput;
-import org.openhab.automation.pythonscripting.internal.context.ContextOutputLogger;
+import org.openhab.automation.pythonscripting.internal.context.ThreadLocalContextOutputLogger;
 import org.openhab.automation.pythonscripting.internal.fs.DelegatingFileSystem;
 import org.openhab.automation.pythonscripting.internal.provider.LifecycleTracker;
 import org.openhab.automation.pythonscripting.internal.provider.ScriptExtensionModuleProvider;
 import org.openhab.automation.pythonscripting.internal.scriptengine.InvocationInterceptingPythonScriptEngine;
 import org.openhab.automation.pythonscripting.internal.scriptengine.graal.GraalPythonScriptEngine;
 import org.openhab.core.automation.module.script.ScriptExtensionAccessor;
+import org.openhab.core.automation.module.script.internal.handler.AbstractScriptModuleHandler;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -82,10 +82,6 @@ public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine
     public static final String CONTEXT_KEY_ENGINE_LOGGER_INPUT = "ctx.engine-logger-input";
     private static final String CONTEXT_KEY_SCRIPT_FILENAME = "javax.script.filename";
 
-    private static final String PYTHON_OPTION_ENGINE_WARNINTERPRETERONLY = "engine.WarnInterpreterOnly";
-
-    private static final String SYSTEM_PROPERTY_ATTACH_LIBRARY_FAILURE_ACTION = "polyglotimpl.AttachLibraryFailureAction";
-
     private static final String PYTHON_OPTION_PYTHONPATH = "python.PythonPath";
     private static final String PYTHON_OPTION_EMULATEJYTHON = "python.EmulateJython";
     private static final String PYTHON_OPTION_POSIXMODULEBACKEND = "python.PosixModuleBackend";
@@ -104,16 +100,6 @@ public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine
     private static final int STACK_TRACE_LENGTH = 5;
 
     private static final String LOGGER_INIT_NAME = "__logger_init__";
-
-    /** Shared Polyglot {@link Engine} across all instances of {@link PythonScriptEngine} */
-    private static Engine engine = Engine.newBuilder()
-            // disable warning about fallback runtime (is only available in graalvm)
-            .option(PYTHON_OPTION_ENGINE_WARNINTERPRETERONLY, Boolean.toString(false)).build();
-
-    static {
-        // disable warning about missing TruffleAttach library (is only available in graalvm)
-        System.getProperties().setProperty(SYSTEM_PROPERTY_ATTACH_LIBRARY_FAILURE_ACTION, "ignore");
-    }
 
     // private static final boolean isPosix = FileSystems.getDefault().supportedFileAttributeViews().contains("posix");
 
@@ -165,12 +151,12 @@ public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine
      * Creates an implementation of ScriptEngine {@code (& Invocable)}, wrapping the contained engine,
      * that tracks the script lifecycle and provides hooks for scripts to do so too.
      */
-    public PythonScriptEngine(PythonScriptEngineConfiguration pythonScriptEngineConfiguration,
+    public PythonScriptEngine(PythonScriptEngineConfiguration pythonScriptEngineConfiguration, Engine engine,
             PythonScriptEngineFactory pythonScriptEngineFactory) {
         this.pythonScriptEngineConfiguration = pythonScriptEngineConfiguration;
 
-        this.scriptOutputStream = new ContextOutput(new ContextOutputLogger(logger, Level.INFO));
-        this.scriptErrorStream = new ContextOutput(new ContextOutputLogger(logger, Level.ERROR));
+        this.scriptOutputStream = new ContextOutput(new ThreadLocalContextOutputLogger(logger, Level.INFO));
+        this.scriptErrorStream = new ContextOutput(new ThreadLocalContextOutputLogger(logger, Level.ERROR));
         this.scriptInputStream = new ContextInput(null);
 
         this.lifecycleTracker = new LifecycleTracker();
@@ -289,7 +275,7 @@ public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine
             }
         }
 
-        if (pythonScriptEngineConfiguration.isScopeEnabled()) {
+        if (pythonScriptEngineConfiguration.isHelperEnabled()) {
             ScriptExtensionAccessor scriptExtensionAccessor = (ScriptExtensionAccessor) ctx
                     .getAttribute(CONTEXT_KEY_EXTENSION_ACCESSOR);
             if (scriptExtensionAccessor == null) {
@@ -305,6 +291,12 @@ public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine
                 getBindings(ScriptContext.ENGINE_SCOPE).put(ScriptExtensionModuleProvider.IMPORT_PROXY_NAME,
                         wrapImportFn);
                 try {
+                    if (!isScriptFile() && !isScriptModule() && !isTransformation()) {
+                        logger.warn(
+                                "Unknown script environment detected for engine '{}': Neither script file, script module nor transformation.",
+                                engineIdentifier);
+                    }
+
                     String wrapperContent = new String(
                             Files.readAllBytes(PythonScriptEngineConfiguration.PYTHON_WRAPPER_FILE_PATH));
                     getPolyglotContext()
@@ -314,9 +306,11 @@ public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine
                                     .build());
 
                     // inject scope, Registry and logger
-                    if (!pythonScriptEngineConfiguration.isInjection(PythonScriptEngineConfiguration.INJECTION_DISABLED)
-                            && (ctx.getAttribute(CONTEXT_KEY_SCRIPT_FILENAME) == null || pythonScriptEngineConfiguration
-                                    .isInjection(PythonScriptEngineConfiguration.INJECTION_ENABLED_FOR_ALL_SCRIPTS))) {
+                    if (pythonScriptEngineConfiguration.isInjectionEnabledForAllScripts()
+                            || (isScriptModule()
+                                    && pythonScriptEngineConfiguration.isInjectionEnabledForScriptModules())
+                            || (isTransformation()
+                                    && pythonScriptEngineConfiguration.isInjectionEnabledForTransformations())) {
                         String injectionContent = "import scope\nfrom openhab import Registry, logger";
                         getPolyglotContext().eval(
                                 Source.newBuilder(GraalPythonScriptEngine.LANGUAGE_ID, injectionContent, "<generated>")
@@ -404,7 +398,7 @@ public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine
                 value = lifecycleTracker;
             }
             if (key != null && value != null) {
-                if (pythonScriptEngineConfiguration.isScopeEnabled()) {
+                if (pythonScriptEngineConfiguration.isHelperEnabled()) {
                     scriptExtensionModuleProvider.put(key, value);
                 } else {
                     super.put(key, value);
@@ -448,31 +442,7 @@ public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine
     }
 
     @Override
-    public Object invokeFunction(String name, Object... objects) throws ScriptException, NoSuchMethodException {
-        if ("scriptUnloaded".equals(name)) {
-            /*
-             * is called from
-             * => org.openhab.core.automation.module.script.internal.ScriptEngineManagerImpl:removeEngine
-             *
-             * must be skipped, because ScriptTransformationService:disposeScriptEngine is calling engine.close several
-             * times before. Specially if the
-             * same script is used for more then 1 transformations. If the engine is already closed, the script
-             * "scriptUnloaded" will fail.
-             */
-            return null;
-        } else {
-            return super.invokeFunction(name, objects);
-        }
-    }
-
-    @Override
     public void close() {
-        /*
-         * is called from
-         * => org.openhab.core.automation.module.script.ScriptTransformationService:disposeScriptEngine
-         * => org.openhab.core.automation.module.script.internal.ScriptEngineManagerImpl:removeEngine
-         */
-
         lock.lock();
 
         if (!isClosed()) {
@@ -525,8 +495,8 @@ public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine
 
         Logger scriptLogger = LoggerFactory.getLogger("org.openhab.automation.pythonscripting." + identifier);
 
-        scriptOutputStream.setOutputStream(new ContextOutputLogger(scriptLogger, Level.INFO));
-        scriptErrorStream.setOutputStream(new ContextOutputLogger(scriptLogger, Level.ERROR));
+        scriptOutputStream.setOutputStream(new ThreadLocalContextOutputLogger(scriptLogger, Level.INFO));
+        scriptErrorStream.setOutputStream(new ThreadLocalContextOutputLogger(scriptLogger, Level.ERROR));
     }
 
     private String stringifyThrowable(Throwable throwable) {
@@ -536,6 +506,64 @@ public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine
                 .map(t -> "        at " + t.toString()).collect(Collectors.joining(System.lineSeparator()))
                 + System.lineSeparator() + "        ... " + stackTraceElements.length + " more";
         return (message != null) ? message + System.lineSeparator() + stackTrace : stackTrace;
+    }
+
+    /**
+     * Tests if the script is a script file, i.e. it is loaded from a Python file.
+     *
+     * @return true if the script is loaded from a Python file, false otherwise
+     */
+    private boolean isScriptFile() {
+        ScriptContext ctx = getContext();
+        if (ctx == null) {
+            logger.warn("Failed to retrieve script context from engine '{}'.", engineIdentifier);
+            return false;
+        }
+        return ctx.getAttribute("javax.script.filename") != null;
+    }
+
+    /**
+     * Get the module type id (if any) of the module executing the script.
+     *
+     * @return the module type id (if any) of the module executing the script, or null if the script is not a module
+     */
+    private @Nullable String getModuleTypeId() {
+        ScriptContext ctx = getContext();
+        if (ctx == null) {
+            logger.warn("Failed to retrieve script context from engine '{}'.", engineIdentifier);
+            return null;
+        }
+
+        Object value = ctx.getAttribute(AbstractScriptModuleHandler.CONTEXT_KEY_MODULE_TYPE_ID);
+        if (value instanceof String str) {
+            return str;
+        }
+        return null;
+    }
+
+    /**
+     * Tests if the script is a script module, i.e. executed by an implementation of
+     * {@link AbstractScriptModuleHandler}.
+     *
+     * @return true if the script is a script module, false otherwise
+     */
+    private boolean isScriptModule() {
+        String moduleTypeId = getModuleTypeId();
+        return moduleTypeId != null && moduleTypeId.startsWith("script.");
+    }
+
+    /**
+     * Tests if the script is a transformation script, i.e. created from the script transformation service.
+     *
+     * @return true if it is a transformation script, false otherwise
+     */
+    private boolean isTransformation() {
+        ScriptContext ctx = getContext();
+        if (ctx == null) {
+            logger.warn("Failed to retrieve script context from engine '{}'.", engineIdentifier);
+            return false;
+        }
+        return engineIdentifier.startsWith(OPENHAB_TRANSFORMATION_SCRIPT);
     }
 
     private static Set<String> transformArrayToSet(Value value) {
@@ -587,9 +615,5 @@ public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine
                 + (!value.hasMember("tzinfo") || value.getMember("tzinfo").isNull()
                         ? OffsetDateTime.now().getOffset().getId()
                         : ""));
-    }
-
-    public static @Nullable Language getLanguage() {
-        return engine.getLanguages().get(GraalPythonScriptEngine.LANGUAGE_ID);
     }
 }

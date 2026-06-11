@@ -14,14 +14,18 @@ package org.openhab.binding.mspa.internal;
 
 import static org.openhab.binding.mspa.internal.MSpaConstants.*;
 
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.HexFormat;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.openhab.binding.mspa.internal.MSpaConstants.ServiceRegion;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
@@ -49,7 +53,7 @@ public class MSpaUtils {
     public static String getMd5(String input) {
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
-            md.update(input.getBytes());
+            md.update(input.getBytes(StandardCharsets.UTF_8));
             byte[] digest = md.digest();
             return HexFormat.of().formatHex(digest);
         } catch (NoSuchAlgorithmException e) {
@@ -75,7 +79,7 @@ public class MSpaUtils {
             String toSign = appId + "," + appSecret + "," + nonce + "," + timestamp;
             String signature = getMd5(toSign);
             if (!UNKNOWN.equals(signature)) {
-                return signature.toUpperCase();
+                return signature.toUpperCase(Locale.ROOT);
             }
         }
         return UNKNOWN;
@@ -92,7 +96,7 @@ public class MSpaUtils {
         if (UNKNOWN.equals(passwordHash)) {
             return UNKNOWN;
         } else {
-            return passwordHash.toLowerCase();
+            return passwordHash.toLowerCase(Locale.ROOT);
         }
     }
 
@@ -219,5 +223,14 @@ public class MSpaUtils {
             return responseJson.getString("message");
         }
         return UNKNOWN;
+    }
+
+    public static Optional<JSONObject> toJson(String response) {
+        try {
+            return Optional.of(new JSONObject(response));
+        } catch (JSONException e) {
+            LOGGER.warn("Failed to parse response to JSON: {}. Exception: {}", response, e.getMessage());
+            return Optional.empty();
+        }
     }
 }

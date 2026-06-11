@@ -41,7 +41,8 @@ import org.openhab.core.types.RefreshType;
  */
 @NonNullByDefault
 public class VelbusVMBPIROHandler extends VelbusTemperatureSensorHandler {
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(Arrays.asList(THING_TYPE_VMBPIRO));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(
+            Arrays.asList(THING_TYPE_VMBPIRO, THING_TYPE_VMBPIRO_10, THING_TYPE_VMBPIRO_20));
 
     private ChannelUID illuminanceChannel;
 

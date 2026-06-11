@@ -32,12 +32,10 @@ public class AudioOutputCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x050B;
     public static final String CLUSTER_NAME = "AudioOutput";
     public static final String CLUSTER_PREFIX = "audioOutput";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_OUTPUT_LIST = "outputList";
     public static final String ATTRIBUTE_CURRENT_OUTPUT = "currentOutput";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * This attribute provides the list of outputs supported by the device.
@@ -142,7 +140,7 @@ public class AudioOutputCluster extends BaseCluster {
 
     /**
      * Upon receipt, this shall rename the output at a specific index in the Output List.
-     * Updates to the output name shall appear in the device’s settings menus. Name updates may automatically be sent to
+     * Updates to the output name shall appear in the device's settings menus. Name updates may automatically be sent to
      * the actual device to which the output connects.
      */
     public static ClusterCommand renameOutput(Integer index, String name) {
@@ -159,7 +157,6 @@ public class AudioOutputCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "outputList : " + outputList + "\n";
         str += "currentOutput : " + currentOutput + "\n";

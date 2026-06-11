@@ -192,7 +192,12 @@ public class GroupePSABridgeHandler extends BaseBridgeHandler {
                 result = localOAuthService.getAccessTokenByResourceOwnerPasswordCredentials(userName, password,
                         localVendorConstants.scope);
             }
-            return result.getAccessToken();
+            String token = result.getAccessToken();
+            if (token == null) {
+                throw new GroupePSACommunicationException("Unable to authenticate, no access token available");
+            } else {
+                return token;
+            }
         } catch (OAuthException | IOException | OAuthResponseException e) {
             throw new GroupePSACommunicationException("Unable to authenticate: " + getRootCause(e).getMessage(), e);
         }

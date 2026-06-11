@@ -31,14 +31,12 @@ public class RefrigeratorAlarmCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0057;
     public static final String CLUSTER_NAME = "RefrigeratorAlarm";
     public static final String CLUSTER_PREFIX = "refrigeratorAlarm";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_MASK = "mask";
     public static final String ATTRIBUTE_LATCH = "latch";
     public static final String ATTRIBUTE_STATE = "state";
     public static final String ATTRIBUTE_SUPPORTED = "supported";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * Indicates a bitmap where each bit set in the Mask attribute corresponds to an alarm that shall be enabled.
@@ -64,7 +62,7 @@ public class RefrigeratorAlarmCluster extends BaseCluster {
 
     // Structs
     /**
-     * This event shall be generated when one or more alarms change state, and shall have these fields:
+     * This event shall be generated when one or more alarms change state.
      */
     public static class Notify {
         /**
@@ -149,7 +147,6 @@ public class RefrigeratorAlarmCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "mask : " + mask + "\n";
         str += "latch : " + latch + "\n";

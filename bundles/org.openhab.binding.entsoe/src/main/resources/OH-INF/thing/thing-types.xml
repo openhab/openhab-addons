@@ -120,6 +120,10 @@
 		<item-type>Number:EnergyPrice</item-type>
 		<label>Spot Price</label>
 		<category>Price</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Price</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 

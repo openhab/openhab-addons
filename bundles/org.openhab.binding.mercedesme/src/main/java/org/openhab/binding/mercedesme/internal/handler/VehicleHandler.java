@@ -211,7 +211,7 @@ public class VehicleHandler extends BaseThingHandler {
 
         AccountHandler localAccountHandler = accountHandler;
         if (localAccountHandler == null) {
-            logger.info("Sending command not possible without active account");
+            logger.warn("Sending command not possible without active account");
             return;
         }
         var crBuilder = CommandRequest.newBuilder().setVin(config.vin).setRequestId(UUID.randomUUID().toString());
@@ -286,12 +286,12 @@ public class VehicleHandler extends BaseThingHandler {
                             return;
                         }
                         switch (((DecimalType) command).intValue()) {
-                            case 0:
+                            case 2:
                                 DoorsLock dl = DoorsLock.newBuilder().build();
                                 cr = crBuilder.setDoorsLock(dl).build();
                                 localAccountHandler.sendCommand(createCM(cr));
                                 break;
-                            case 1:
+                            case 0:
                                 if (Constants.NOT_SET.equals(pin)) {
                                     logger.trace("Security PIN missing in Account bridge");
                                     return;
@@ -1162,7 +1162,7 @@ public class VehicleHandler extends BaseThingHandler {
     public void sendPoi(JSONObject poi) {
         AccountHandler localAccountHandler = accountHandler;
         if (localAccountHandler == null) {
-            logger.info("Sending POI not possible without active account");
+            logger.warn("Sending POI not possible without active account");
             return;
         }
         localAccountHandler.sendPoi(config.vin, poi);

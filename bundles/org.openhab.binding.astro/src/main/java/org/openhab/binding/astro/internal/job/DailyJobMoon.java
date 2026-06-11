@@ -18,6 +18,7 @@ import static org.openhab.binding.astro.internal.job.Job.scheduleEvent;
 import java.time.Instant;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 
@@ -26,6 +27,7 @@ import org.openhab.binding.astro.internal.handler.AstroThingHandler;
 import org.openhab.binding.astro.internal.model.DistanceType;
 import org.openhab.binding.astro.internal.model.Moon;
 import org.openhab.binding.astro.internal.model.MoonPhase;
+import org.openhab.binding.astro.internal.model.MoonPhaseSet;
 import org.openhab.binding.astro.internal.model.Planet;
 
 /**
@@ -75,25 +77,10 @@ public final class DailyJobMoon extends AbstractJob {
                 scheduleEvent(handler, cal, EVENT_END, EVENT_CHANNEL_ID_SET, false, zone, locale);
             }
 
-            MoonPhase moonPhase = moon.getPhase();
-            cal = moonPhase.getFirstQuarter();
-            if (cal != null) {
-                scheduleEvent(handler, cal, EVENT_PHASE_FIRST_QUARTER, EVENT_CHANNEL_ID_MOON_PHASE, false, zone,
-                        locale);
-            }
-            cal = moonPhase.getThirdQuarter();
-            if (cal != null) {
-                scheduleEvent(handler, cal, EVENT_PHASE_THIRD_QUARTER, EVENT_CHANNEL_ID_MOON_PHASE, false, zone,
-                        locale);
-            }
-            cal = moonPhase.getFull();
-            if (cal != null) {
-                scheduleEvent(handler, cal, EVENT_PHASE_FULL, EVENT_CHANNEL_ID_MOON_PHASE, false, zone, locale);
-            }
-            cal = moonPhase.getNew();
-            if (cal != null) {
-                scheduleEvent(handler, cal, EVENT_PHASE_NEW, EVENT_CHANNEL_ID_MOON_PHASE, false, zone, locale);
-            }
+            MoonPhaseSet moonPhase = moon.getPhaseSet();
+            MoonPhase.remarkables().stream().map(phase -> Map.entry(phase, moonPhase.getPhase(phase)))
+                    .forEach(e -> scheduleEvent(handler, e.getValue(), e.getKey().toString(),
+                            EVENT_CHANNEL_ID_MOON_PHASE, false, zone.toZoneId()));
 
             moon.getEclipseSet().getEclipses().forEach(eclipse -> {
                 scheduleEvent(handler, eclipse.when(), eclipse.kind().toString(), EVENT_CHANNEL_ID_ECLIPSE, false,

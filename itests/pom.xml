@@ -18,6 +18,7 @@
 
   <modules>
     <module>org.openhab.automation.groovyscripting.tests</module>
+    <module>org.openhab.automation.jsscripting.tests</module>
     <module>org.openhab.automation.jsscriptingnashorn.tests</module>
     <module>org.openhab.binding.avmfritz.tests</module>
     <module>org.openhab.binding.feed.tests</module>
@@ -29,6 +30,7 @@
     <module>org.openhab.binding.modbus.tests</module>
     <module>org.openhab.binding.mqtt.ruuvigateway.tests</module>
     <module>org.openhab.binding.ntp.tests</module>
+    <module>org.openhab.io.yamlcomposer.tests</module>
     <module>org.openhab.binding.systeminfo.tests</module>
     <module>org.openhab.binding.tradfri.tests</module>
     <module>org.openhab.persistence.mapdb.tests</module>
@@ -79,7 +81,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
-        <version>3.9.0</version>
+        <version>3.11.0</version>
         <executions>
           <execution>
             <id>unpack-eea</id>

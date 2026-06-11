@@ -37,7 +37,7 @@ import org.openhab.core.types.UnDefType;
 @ExtendWith(MockitoExtension.class)
 public class DeviceUtilTest extends JavaTest {
 
-    private @NonNullByDefault({}) @Mock MieleTranslationProvider translationProvider;
+    private @Mock @NonNullByDefault({}) MieleTranslationProvider translationProvider;
 
     @Test
     public void bytesToHexWhenTopBitIsUsedReturnsCorrectString() {

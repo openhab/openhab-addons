@@ -11,6 +11,7 @@
 			<description>IP Address or hostname of the device</description>
 		</parameter>
 		<parameter name="macAddress" type="text" required="true">
+			<context>mac-address</context>
 			<label>MAC Address</label>
 			<description>MAC Address of the device</description>
 		</parameter>

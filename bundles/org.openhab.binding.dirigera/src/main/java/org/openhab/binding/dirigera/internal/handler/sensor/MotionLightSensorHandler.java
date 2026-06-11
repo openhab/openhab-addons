@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.dirigera.internal.handler.sensor;
 
-import static org.openhab.binding.dirigera.internal.Constants.*;
+import static org.openhab.binding.dirigera.internal.Constants.CHANNEL_ILLUMINANCE;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -21,6 +21,7 @@ import java.util.TreeMap;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.interfaces.Model;
+import org.openhab.binding.dirigera.internal.model.ConversionModel;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
@@ -42,21 +43,17 @@ public class MotionLightSensorHandler extends MotionSensorHandler {
     }
 
     @Override
-    public void initialize() {
-        super.initialize();
+    public void initializeDevice() {
         if (super.checkHandler()) {
-            JSONObject values = gateway().api().readDevice(config.id);
-            handleUpdate(values);
-            // assure deviceType is set from main device
-            if (values.has(PROPERTY_DEVICE_TYPE)) {
-                deviceType = values.getString(PROPERTY_DEVICE_TYPE);
-            }
-
+            updateProperties();
             // get all relations and register
             String relationId = gateway().model().getRelationId(config.id);
             relations = gateway().model().getRelations(relationId);
-            // register for updates of twin devices
             relations.forEach((key, value) -> {
+                // assure deviceType is set from main device
+                if (config.id.equals(key)) {
+                    deviceType = value;
+                }
                 gateway().registerDevice(this, key);
                 JSONObject relationValues = gateway().api().readDevice(key);
                 handleUpdate(relationValues);
@@ -83,8 +80,8 @@ public class MotionLightSensorHandler extends MotionSensorHandler {
     @Override
     public void handleUpdate(JSONObject update) {
         super.handleUpdate(update);
-        if (update.has(Model.ATTRIBUTES)) {
-            JSONObject attributes = update.getJSONObject(Model.ATTRIBUTES);
+        if (update.has(Model.JSON_KEY_ATTRIBUTES)) {
+            JSONObject attributes = update.getJSONObject(Model.JSON_KEY_ATTRIBUTES);
             Iterator<String> attributesIterator = attributes.keys();
             while (attributesIterator.hasNext()) {
                 String key = attributesIterator.next();
@@ -92,7 +89,9 @@ public class MotionLightSensorHandler extends MotionSensorHandler {
                 if (targetChannel != null) {
                     if (CHANNEL_ILLUMINANCE.equals(targetChannel)) {
                         updateState(new ChannelUID(thing.getUID(), targetChannel),
-                                QuantityType.valueOf(attributes.getInt(key), Units.LUX));
+                                QuantityType.valueOf(
+                                        ConversionModel.convert(targetChannel, attributes.getInt(key)).doubleValue(),
+                                        Units.LUX));
                     }
                 }
             }

@@ -256,12 +256,15 @@ public class TuyaChannelTypeProvider implements ChannelTypeProvider {
         StateDescriptionFragmentBuilder stateDescriptionFragmentBuilder = null;
         boolean advanced = false;
 
-        if (DIMMER_CHANNEL_CODES.contains(channelTypeId)) {
-            acceptedItemType = DIMMER;
-            category = "slider";
-            configurationRef = "channel-type:tuya:dimmer";
+        if ("bitmap".equals(schemaDp.type)) {
+            acceptedItemType = NUMBER;
+            category = "";
+            configurationRef = "channel-type:tuya:bitmap";
             tags.add(schemaDp.readOnly ? "Status" : "Control");
-            tags.add("Brightness");
+
+            stateDescriptionFragmentBuilder = StateDescriptionFragmentBuilder.create() //
+                    .withReadOnly(schemaDp.readOnly) //
+                    .withPattern("%x");
         } else if ("bool".equals(schemaDp.type)) {
             acceptedItemType = SWITCH;
             category = "switch";
@@ -296,7 +299,14 @@ public class TuyaChannelTypeProvider implements ChannelTypeProvider {
             category = "";
             configurationRef = "channel-type:tuya:number";
 
-            if (!schemaDp.unit.isEmpty()) {
+            if ((schemaDp.unit.isEmpty() && DIMMER_CHANNEL_CODES.contains(channelTypeId)) //
+                    || (!schemaDp.readOnly && "%".equals(schemaDp.unit))) {
+                acceptedItemType = DIMMER;
+                category = "slider";
+                configurationRef = "channel-type:tuya:dimmer";
+                tags.add(schemaDp.readOnly ? "Status" : "Control");
+                tags.add("Brightness");
+            } else if (!schemaDp.unit.isEmpty()) {
                 Unit<?> unit = schemaDp.parsedUnit;
                 if (unit == null) {
                     unit = UnitUtils.parseUnit(schemaDp.unit);
@@ -361,8 +371,12 @@ public class TuyaChannelTypeProvider implements ChannelTypeProvider {
         } catch (URISyntaxException e) {
         }
 
-        if (!schemaDp.unit.isEmpty()) {
+        if (!schemaDp.unit.isEmpty() && acceptedItemType.startsWith(NUMBER + ":")) {
             channelTypeBuilder.withUnitHint(schemaDp.unit);
+        } else if (!schemaDp.unit.isEmpty() && !acceptedItemType.contains(":")) {
+            logger.error("Channel {} creation aborted, unit  \"{}\" has no known dimension, please report as bug.",
+                    channelTypeId, schemaDp.unit);
+            return null;
         }
 
         if (stateDescriptionFragmentBuilder != null) {

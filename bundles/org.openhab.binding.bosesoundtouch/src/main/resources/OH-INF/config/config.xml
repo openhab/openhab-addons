@@ -10,6 +10,7 @@
 			</description>
 		</parameter>
 		<parameter name="macAddress" type="text" required="true">
+			<context>mac-address</context>
 			<label>MAC Address</label>
 			<description>The MAC Address used for communication to this device.
 			</description>

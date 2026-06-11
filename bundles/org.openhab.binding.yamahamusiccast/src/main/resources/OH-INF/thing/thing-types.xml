@@ -28,12 +28,12 @@
 			</parameter>
 			<parameter name="syncVolume" type="boolean">
 				<label>Sync Volume</label>
-				<description>Sync Volume across linked Music Cast models</description>
+				<description>Sync volume across linked MusicCast models.</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="defaultAfterMCLink" type="text">
 				<label>MC Link Default Value</label>
-				<description>Default value for client when MC Link is broken</description>
+				<description>Default input value for the client when MC Link is broken.</description>
 				<default>net_radio</default>
 				<options>
 					<option value="none">None</option>
@@ -118,7 +118,7 @@
 	<channel-type id="soundProgram">
 		<item-type>String</item-type>
 		<label>Sound Program</label>
-		<description>SoundProgram</description>
+		<description>Sound program</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>SoundVolume</tag>
@@ -246,8 +246,8 @@
 	</channel-type>
 	<channel-type id="mclinkStatus">
 		<item-type>String</item-type>
-		<label>Status MusicCast</label>
-		<description>MusicCast Status</description>
+		<label>MusicCast Link Status</label>
+		<description>Status of the MusicCast link</description>
 	</channel-type>
 	<channel-type id="playTime">
 		<item-type>Number:Time</item-type>

@@ -30,4 +30,8 @@ public interface IRequest {
     boolean isTimeStampExpired(long expirationTreshold);
 
     RequestType getType();
+
+    default boolean isResponseExpected() {
+        return true;
+    }
 }

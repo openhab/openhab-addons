@@ -28,4 +28,5 @@ public class PhilipsTVConfiguration {
     public Integer refreshRate = 10;
     public boolean useUpnpDiscovery = true;
     public String pairingCode = "";
+    public boolean skipPowerRefresh = false;
 }

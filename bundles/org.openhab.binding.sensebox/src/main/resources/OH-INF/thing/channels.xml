@@ -48,14 +48,14 @@
 		"sensorType": "VEML6070",
 	-->
 	<channel-type id="uvIntensity">
-		<item-type>Number:Intensity</item-type>
+		<item-type unitHint="µW/cm²">Number:Intensity</item-type>
 		<label>UV Intensity</label>
 		<description>Current UV intensity.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Ultraviolet</tag>
 		</tags>
-		<state readOnly="true" pattern="%.2f µW/cm²"></state>
+		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 
 	<channel-type id="uvIntensityLastReported" advanced="true">
@@ -78,7 +78,7 @@
 			<tag>Measurement</tag>
 			<tag>Illuminance</tag>
 		</tags>
-		<state readOnly="true" pattern="%.2f lx"></state>
+		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 
 	<channel-type id="illuminanceLastReported" advanced="true">
@@ -130,14 +130,14 @@
 		"sensorType": "SDS 011",
 	-->
 	<channel-type id="particulateMatter2dot5">
-		<item-type>Number:Density</item-type>
+		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Particulate Matter - PM2.5</label>
 		<description>Current density of particles less than 2.5 µm in diameter.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>ParticulateMatter</tag>
 		</tags>
-		<state readOnly="true" pattern="%.2f µg/m³">
+		<state readOnly="true" pattern="%.2f %unit%">
 		</state>
 	</channel-type>
 
@@ -154,14 +154,14 @@
 		"sensorType": "SDS 011",
 	-->
 	<channel-type id="particulateMatter10">
-		<item-type>Number:Density</item-type>
+		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Particulate Matter - PM10</label>
 		<description>Current density of particles less than 10 µm in diameter.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>ParticulateMatter</tag>
 		</tags>
-		<state readOnly="true" pattern="%.2f µg/m³">
+		<state readOnly="true" pattern="%.2f %unit%">
 		</state>
 	</channel-type>
 

@@ -14,6 +14,7 @@ package org.openhab.binding.matter.internal.util;
 
 import java.net.Inet6Address;
 import java.net.UnknownHostException;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -137,7 +138,7 @@ public class MatterLabelUtils {
             return "";
         }
         return Pattern.compile("(?<=[a-z])(?=[A-Z])").splitAsStream(camelCase)
-                .map(word -> word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase())
+                .map(word -> word.substring(0, 1).toUpperCase(Locale.ROOT) + word.substring(1).toLowerCase(Locale.ROOT))
                 .collect(Collectors.joining(" "));
     }
 

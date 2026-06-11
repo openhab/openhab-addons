@@ -181,7 +181,7 @@ public class HueCommandExtension extends AbstractConsoleCommandExtension impleme
                                     for (Resource resource : resources) {
                                         MetaData metaData = resource.getMetaData();
                                         if (Objects.nonNull(metaData)
-                                                && (metaData.getArchetype() == Archetype.BRIDGE_V2)) {
+                                                && Archetype.BRIDGES.contains(metaData.getArchetype())) {
                                             // do not list the bridge itself
                                             continue;
                                         }

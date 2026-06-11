@@ -20,8 +20,9 @@ https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="thing-type:sensibo:sensibosky">
 		<parameter name="macAddress" type="text" required="true">
+			<context>mac-address</context>
 			<label>MAC Address</label>
-			<description>With or without colons</description>
+			<description>With or without delimiters</description>
 		</parameter>
 	</config-description>
 

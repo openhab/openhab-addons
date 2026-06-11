@@ -147,9 +147,9 @@ public class SetLightState implements HasErrorResponse {
         }
     }
 
-    @NonNullByDefault
     @SerializedName("smartlife.iot.lightStrip")
     @Expose
+    @NonNullByDefault
     private final LightingStrip strip = new LightingStrip();
 
     @Expose(deserialize = false)

@@ -97,7 +97,7 @@ public class VelbusColorChannel {
     public void setBrightness(byte brightness) {
         if (brightness != VALUE_UNCHANGED) {
             if (this.curveType == CURVE_TYPE_LINEAR) {
-                this.brightness = convertFromVelbus(Byte.toUnsignedInt(brightness), Byte.toUnsignedInt(DALI_MAX_VALUE),
+                this.brightness = convertFromVelbus(Byte.toUnsignedInt(brightness), DALI_MAX_VALUE,
                         BRIGHTNESS_MAX_VALUE);
             } else {
                 this.brightness = BRIGHTNESS_CURVE_VALUES[Byte.toUnsignedInt(brightness)];
@@ -124,7 +124,7 @@ public class VelbusColorChannel {
      */
     public byte getBrightnessVelbus() {
         if (this.curveType == CURVE_TYPE_LINEAR) {
-            return convertToVelbus(getBrightness(), BRIGHTNESS_MAX_VALUE, Byte.toUnsignedInt(DALI_MAX_VALUE));
+            return convertToVelbus(getBrightness(), BRIGHTNESS_MAX_VALUE, DALI_MAX_VALUE);
         } else {
             return convertToVelbusBrightnessCurve(getBrightness());
         }
@@ -276,8 +276,7 @@ public class VelbusColorChannel {
      */
     public void setWhite(byte white) {
         if (white != VALUE_UNCHANGED) {
-            this.white = convertFromVelbus(Byte.toUnsignedInt(white), Byte.toUnsignedInt(DALI_MAX_VALUE),
-                    WHITE_MAX_VALUE);
+            this.white = convertFromVelbus(Byte.toUnsignedInt(white), DALI_MAX_VALUE, WHITE_MAX_VALUE);
         }
     }
 
@@ -299,7 +298,7 @@ public class VelbusColorChannel {
      * @return the white value for velbus packet
      */
     public byte getWhiteVelbus() {
-        return convertToVelbus(this.white, WHITE_MAX_VALUE, Byte.toUnsignedInt(DALI_MAX_VALUE));
+        return convertToVelbus(this.white, WHITE_MAX_VALUE, DALI_MAX_VALUE);
     }
 
     /**

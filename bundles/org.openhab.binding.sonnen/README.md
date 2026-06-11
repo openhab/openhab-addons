@@ -18,7 +18,7 @@ If you want to use the V2 API, which supports more channels, you need to provide
 
 ## Channels
 
-The following channels are yet supported:
+The following channels are supported:
 
 | Channel                        | Type          | Access     | Description                                                                                                                                                                                                                                |
 |--------------------------------|---------------|------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -30,6 +30,8 @@ The following channels are yet supported:
 | gridFeedIn                     | Number:Power  | read       | Indicates the actual current feeding to the Grid in watt. 0 if nothing is fed                                                                                                                                                              |
 | gridConsumption                | Number:Power  | read       | Indicates the actual current consumption from the Grid in watt. 0 if nothing is received                                                                                                                                                   |
 | solarProduction                | Number:Power  | read       | Indicates the actual production of the Solar system in watt                                                                                                                                                                                |
+| batteryChargeRate              | Number:Power  | read/write | Indicates the desired charge rate for the battery.                                                                                                                                                                                         |
+| batteryDischargeRate           | Number:Power  | read/write | Indicates the desired discharge rate for the battery.                                                                                                                                                                                      |
 | batteryLevel                   | Number        | read       | Indicates the actual Battery Level in % from 0 - 100                                                                                                                                                                                       |
 | flowConsumptionBatteryState    | Switch        | read       | Indicates if there is a current flow from Battery towards Consumption                                                                                                                                                                      |
 | flowConsumptionGridState       | Switch        | read       | Indicates if there is a current flow from Grid towards Consumption                                                                                                                                                                         |
@@ -40,7 +42,8 @@ The following channels are yet supported:
 | energyExportedStateProduction  | Number:Energy | read       | Indicates the exported kWh Production                                                                                                                                                                                                      |
 | energyImportedStateConsumption | Number:Energy | read       | Indicates the imported kWh Consumption                                                                                                                                                                                                     |
 | energyExportedStateConsumption | Number:Energy | read       | Indicates the exported kWh Consumption                                                                                                                                                                                                     |
-| batteryChargingFromGrid        | Switch        | read/write | Starts/stops active battery charging from Grid. Note: "Write-API" must be activated in the local web interface, and the token must be entered in the binding's authentication field.                                                       |
+| batteryChargingFromGrid        | Switch        | read/write | Start/stop active battery charging from the Grid. Note: "Write-API" must be activated in the local web interface, and the token must be entered in the binding's authentication field.                                                     |
+| batteryDischargingToGrid       | Switch        | read/write | Start/stop active battery discharging to the Grid. Note: "Write-API" must be activated in the local web interface, and the token must be entered in the binding's authentication field.                                                    |
 | batteryOperationMode           | String        | read       | Indicates if the Battery is in automatic or manual mode. Manual mode is required for active charging. Ensure the battery is in automatic mode if not actively charging. Change operation mode using the "batteryChargingFromGrid" channel. |
 
 ## Full Example

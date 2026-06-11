@@ -15,6 +15,7 @@ package org.openhab.binding.matter.internal.util;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+import javax.measure.quantity.Illuminance;
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -23,6 +24,7 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.Type;
 
 /**
@@ -93,5 +95,24 @@ public class ValueUtils {
      */
     public static QuantityType<Temperature> valueToTemperature(int value) {
         return new QuantityType<>(BigDecimal.valueOf(value, 2), SIUnits.CELSIUS);
+    }
+
+    /**
+     * Converts a Matter illuminance measurement value to a {@link QuantityType} in lux.
+     * The Matter spec encodes illuminance as: MeasuredValue = 10,000 x log10(illuminance) + 1
+     * A value of 0 indicates illuminance too low to be measured.
+     *
+     * @param value the Matter measured value (0 = too low, 1-0xFFFE = encoded illuminance)
+     * @return the {@link QuantityType} in lux
+     */
+    public static @Nullable QuantityType<Illuminance> valueToIlluminance(int value) {
+        if (value <= 0) {
+            return new QuantityType<>(0, Units.LUX);
+        }
+        if (value > 0xFFFE) {
+            return null;
+        }
+        double illuminance = Math.pow(10, (value - 1) / 10000.0);
+        return new QuantityType<>(illuminance, Units.LUX);
     }
 }

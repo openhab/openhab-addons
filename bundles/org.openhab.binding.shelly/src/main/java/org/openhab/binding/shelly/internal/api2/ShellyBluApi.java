@@ -17,8 +17,11 @@ import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.ShellyBluJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
+import java.util.concurrent.ScheduledExecutorService;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyInputState;
@@ -35,7 +38,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSe
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2NotifyEvent;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcNotifyEvent;
 import org.openhab.binding.shelly.internal.api2.ShellyBluJsonDTO.Shelly2NotifyBluEventData;
-import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
+import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
 import org.openhab.binding.shelly.internal.discovery.ShellyThingCreator;
 import org.openhab.binding.shelly.internal.handler.ShellyBluHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyComponents;
@@ -54,7 +57,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class ShellyBluApi extends Shelly2ApiRpc {
     private final Logger logger = LoggerFactory.getLogger(ShellyBluApi.class);
-    private boolean connected = false; // true = BLU devices has connected
+    private boolean connected; // true = BLU devices has connected
     private ShellySettingsStatus deviceStatus = new ShellySettingsStatus();
     private int lastPid = -1;
     private static final int PID_CYCLE_TRESHHOLD = 50;
@@ -65,42 +68,32 @@ public class ShellyBluApi extends Shelly2ApiRpc {
      * @param thingName Symbolic thing name
      * @param thingTable Table of known things (build at runtime)
      * @param thing Thing Handler (ThingHandlerInterface)
+     * @param scheduler the {@link ScheduledExecutorService} to use for scheduling.
      */
-    public ShellyBluApi(String thingName, ShellyThingTable thingTable, ShellyThingInterface thing) {
-        super(thingName, thingTable, thing);
+    public ShellyBluApi(String thingName, ShellyThingTable thingTable, ShellyThingInterface thing,
+            ShellyApiConfiguration config, WebSocketClient webSocketClient, ScheduledExecutorService scheduler) {
+        super(thingName, thingTable, thing, config, webSocketClient, scheduler);
 
-        ShellyDeviceProfile profile = thing.getProfile();
         ThingTypeUID uid = thing.getThing().getThingTypeUID();
         profile.initializeInputs(uid, SHELLY_BTNT_MOMENTARY);
         deviceStatus = profile.status;
     }
 
     @Override
-    public void initialize() throws ShellyApiException {
+    public void initialize() {
         if (!initialized) {
-            initialized = true;
             connected = false;
+            initialized = true;
         }
-    }
-
-    @Override
-    public boolean isInitialized() {
-        return initialized;
-    }
-
-    @Override
-    public void setConfig(String thingName, ShellyThingConfiguration config) {
-        this.thingName = thingName;
-        this.config = config;
     }
 
     @Override
     public ShellySettingsDevice getDeviceInfo() throws ShellyApiException {
         ShellySettingsDevice info = new ShellySettingsDevice();
-        info.hostname = !config.serviceName.isEmpty() ? config.serviceName : "";
+        info.hostname = config.getRealm();
         info.fw = "";
         info.type = "BLU";
-        info.mac = config.deviceAddress;
+        info.mac = config.getBdAddr() instanceof String bdAddr ? bdAddr : "";
         info.auth = false;
         info.gen = 2;
         return info;
@@ -109,7 +102,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
     @Override
     public ShellyDeviceProfile getDeviceProfile(ThingTypeUID thingTypeUID, @Nullable ShellySettingsDevice devInfo)
             throws ShellyApiException {
-        ShellyDeviceProfile profile = thing != null ? getProfile() : new ShellyDeviceProfile();
+        ShellyDeviceProfile profile = thing != null ? getProfile() : new ShellyDeviceProfile(thingTypeUID);
 
         if (devInfo != null) {
             profile.device = devInfo;
@@ -124,8 +117,8 @@ public class ShellyBluApi extends Shelly2ApiRpc {
         }
 
         profile.device = getDeviceInfo();
-        if (config.serviceName.isEmpty()) {
-            config.serviceName = getString(profile.device.hostname);
+        if (config.getRealm().isBlank()) {
+            config.setRealm(getString(profile.device.hostname));
         }
 
         // for now we have no API to get this information
@@ -145,7 +138,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
     @Override
     public ShellySettingsStatus getStatus() throws ShellyApiException {
         if (!connected) {
-            throw new ShellyApiException("Thing is not yet initialized -> status not available");
+            throw new ShellyApiException("offline.status-error-blu-not-connected");
         }
         return deviceStatus;
     }
@@ -153,9 +146,8 @@ public class ShellyBluApi extends Shelly2ApiRpc {
     @Override
     public ShellyStatusSensor getSensorStatus() throws ShellyApiException {
         if (!connected) {
-            throw new ShellyApiException("Thing is not yet initialized -> sensor data not available");
+            throw new ShellyApiException("offline.status-error-blu-sensor-unavailable");
         }
-
         return sensorData;
     }
 
@@ -240,10 +232,9 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                                 sensorData.tmp.units = SHELLY_TEMP_CELSIUS;
                                 sensorData.tmp.isValid = true;
                                 sensorData.tmp.tC = e.blu.temperatures[0];
-                            } else {
-                                // BLU TRV reports current temp and target temp
-                                // However, we don't support BLU TRV yet, so ignore
                             }
+                            // BLU TRV reports current temp and target temp
+                            // However, we don't support BLU TRV yet, so ignore
                         }
                         if (e.blu.humidity != null) {
                             sensorData.hum.value = e.blu.humidity;

@@ -297,7 +297,7 @@ public class OSHISystemInfo implements SystemInfoInterface {
     @Override
     public StringType getStorageName(int index) throws DeviceNotFoundException {
         OSFileStore fileStore = getDevice(fileStores, index);
-        String name = fileStore.getName();
+        String name = fileStore.getMount();
         return new StringType(name);
     }
 

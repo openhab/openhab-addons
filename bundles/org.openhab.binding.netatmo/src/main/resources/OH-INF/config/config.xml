@@ -7,44 +7,44 @@
 
 	<config-description uri="netatmo:api_bridge">
 		<parameter name="clientId" type="text" required="true">
-			<label>@text/config.clientId.label</label>
-			<description>@text/config.clientId.description</description>
+			<label>Client ID</label>
+			<description>Client ID provided for the application you created on http://dev.netatmo.com/createapp</description>
 		</parameter>
 
 		<parameter name="clientSecret" type="text" required="true">
-			<label>@text/config.clientSecret.label</label>
-			<description>@text/config.clientSecret.description</description>
+			<label>Client Secret</label>
+			<description>Client Secret provided for the application you created.</description>
 			<context>password</context>
 		</parameter>
 
 		<parameter name="webHookUrl" type="text" required="false">
-			<label>@text/config.webHookUrl.label</label>
-			<description>@text/config.webHookUrl.description</description>
+			<label>Webhook Address</label>
+			<description>Protocol, public IP or hostname and port to access openHAB server from Internet.</description>
 		</parameter>
 
 		<parameter name="webHookPostfix" type="text" required="false">
-			<label>@text/config.webHookPostfix.label</label>
-			<description>@text/config.webHookPostfix.description</description>
+			<label>Webhook Postfix</label>
+			<description>String appended to the generated webhook address (should start with `/`).</description>
 		</parameter>
 
 		<parameter name="reconnectInterval" type="integer" unit="s">
-			<label>@text/config.reconnectInterval.label</label>
-			<description>@text/config.reconnectInterval.description</description>
+			<label>Reconnect Interval</label>
+			<description>The reconnection interval to Netatmo API (in s).</description>
 			<default>300</default>
 		</parameter>
 	</config-description>
 
 	<config-description uri="netatmo:sum_rain:config">
 		<parameter name="period" type="text">
-			<label>@text/config.period.label</label>
-			<description>@text/config.period.sum_rain.description</description>
+			<label>Period</label>
+			<description>Observation period for summing rain quantities.</description>
 			<options>
-				<option value="30min">@text/config.period.option.30min</option>
-				<option value="1hour">@text/config.period.option.1hour</option>
-				<option value="3hours">@text/config.period.option.3hours</option>
-				<option value="1day">@text/config.period.option.1day</option>
-				<option value="1week">@text/config.period.option.1week</option>
-				<option value="1month">@text/config.period.option.1month</option>
+				<option value="30min">30 minutes</option>
+				<option value="1hour">1 hour</option>
+				<option value="3hours">3 hours</option>
+				<option value="1day">This day</option>
+				<option value="1week">This week</option>
+				<option value="1month">This month</option>
 			</options>
 			<default>1week</default>
 		</parameter>
@@ -52,24 +52,24 @@
 
 	<config-description uri="netatmo:measure:config">
 		<parameter name="limit" type="text">
-			<label>@text/config.limit.label</label>
-			<description>@text/config.limit.description</description>
+			<label>Boundary</label>
+			<description>Defines the requested boundary.</description>
 			<options>
-				<option value="MIN">@text/config.limit.option.MIN</option>
-				<option value="MAX">@text/config.limit.option.MAX</option>
+				<option value="MIN">Minimum</option>
+				<option value="MAX">Maximum</option>
 			</options>
 			<default>MIN</default>
 		</parameter>
 		<parameter name="period" type="text">
-			<label>@text/config.period.label</label>
-			<description>@text/config.period.measure.description</description>
+			<label>Period</label>
+			<description>Observation period for searched boundary.</description>
 			<options>
-				<option value="30min">@text/config.period.option.30min</option>
-				<option value="1hour">@text/config.period.option.1hour</option>
-				<option value="3hours">@text/config.period.option.3hours</option>
-				<option value="1day">@text/config.period.option.1day</option>
-				<option value="1week">@text/config.period.option.1week</option>
-				<option value="1month">@text/config.period.option.1month</option>
+				<option value="30min">30 minutes</option>
+				<option value="1hour">1 hour</option>
+				<option value="3hours">3 hours</option>
+				<option value="1day">This day</option>
+				<option value="1week">This week</option>
+				<option value="1month">This month</option>
 			</options>
 			<default>1week</default>
 		</parameter>
@@ -77,20 +77,20 @@
 
 	<config-description uri="netatmo:timestamp:config">
 		<parameter name="limit" type="text">
-			<label>@text/config.limit.label</label>
-			<description>@text/config.limit.description</description>
+			<label>Boundary</label>
+			<description>Defines the requested boundary.</description>
 			<options>
-				<option value="DATE_MIN">@text/config.limit.option.DATE_MIN</option>
-				<option value="DATE_MAX">@text/config.limit.option.DATE_MAX</option>
+				<option value="DATE_MIN">Timestamp of minimum</option>
+				<option value="DATE_MAX">Timestamp of maximum</option>
 			</options>
 			<default>DATE_MIN</default>
 		</parameter>
 		<parameter name="period" type="text">
-			<label>@text/config.period.label</label>
-			<description>@text/config.period.timestamp.description</description>
+			<label>Period</label>
+			<description>Observation period for the queried value.</description>
 			<options>
-				<option value="1week">@text/config.period.option.1week</option>
-				<option value="1month">@text/config.period.option.1month</option>
+				<option value="1week">This week</option>
+				<option value="1month">This month</option>
 			</options>
 			<default>1week</default>
 		</parameter>
@@ -98,19 +98,19 @@
 
 	<config-description uri="netatmo:device">
 		<parameter name="id" type="text" pattern="([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})" required="true">
-			<label>@text/config.equipmentId.label</label>
-			<description>@text/config.equipmentId.description</description>
+			<label>Equipment ID</label>
+			<description>ID of the device (MAC address).</description>
 		</parameter>
 	</config-description>
 
 	<config-description uri="netatmo:weather">
 		<parameter name="id" type="text" pattern="([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})" required="true">
-			<label>@text/config.equipmentId.label</label>
-			<description>@text/config.equipmentId.description</description>
+			<label>Equipment ID</label>
+			<description>ID of the device (MAC address).</description>
 		</parameter>
 		<parameter name="refreshInterval" type="integer" min="120" unit="s">
-			<label>@text/config.refreshInterval.label</label>
-			<description>@text/config.refreshInterval.description</description>
+			<label>Refresh Interval</label>
+			<description>The refresh interval to poll Netatmo API (in seconds).</description>
 			<default>600</default>
 			<advanced>true</advanced>
 		</parameter>
@@ -118,44 +118,44 @@
 
 	<config-description uri="netatmo:camera">
 		<parameter name="id" type="text" pattern="([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})" required="true">
-			<label>@text/config.equipmentId.label</label>
-			<description>@text/config.equipmentId.description</description>
+			<label>Equipment ID</label>
+			<description>ID of the device (MAC address).</description>
 		</parameter>
 		<parameter name="ipAddress" type="text" required="false">
-			<label>@text/config.ipAddress.label</label>
-			<description>@text/config.ipAddress.description</description>
+			<label>Network Address</label>
+			<description>The IP or host name used as fallback in case of erroneous API answer to ping requests.</description>
 			<context>network-address</context>
 		</parameter>
 	</config-description>
 
 	<config-description uri="netatmo:virtual">
 		<parameter name="id" type="text" required="true">
-			<label>@text/config.thingId.label</label>
-			<description>@text/config.thingId.description</description>
+			<label>Thing ID</label>
+			<description>Unique identifier of the thing defined by Netatmo.</description>
 		</parameter>
 	</config-description>
 
 	<config-description uri="netatmo:home">
 		<parameter name="id" type="text" required="false">
-			<label>@text/config.thingId.label</label>
-			<description>@text/config.thingId.description</description>
+			<label>Thing ID</label>
+			<description>Unique identifier of the thing defined by Netatmo.</description>
 		</parameter>
 
 		<parameter name="securityId" type="text" required="false">
-			<label>@text/config.securityId.label</label>
-			<description>@text/config.securityId.description</description>
+			<label>Security ID</label>
+			<description>Unique identifier of the home handling security devices.</description>
 			<advanced>true</advanced>
 		</parameter>
 
 		<parameter name="energyId" type="text" required="false">
-			<label>@text/config.energyId.label</label>
-			<description>@text/config.energyId.description</description>
+			<label>Energy ID</label>
+			<description>Unique identifier of the home handling energy devices.</description>
 			<advanced>true</advanced>
 		</parameter>
 
 		<parameter name="refreshInterval" type="integer" min="60" unit="s">
-			<label>@text/config.refreshInterval.label</label>
-			<description>@text/config.refreshInterval.description</description>
+			<label>Refresh Interval</label>
+			<description>The refresh interval to poll Netatmo API (in seconds).</description>
 			<default>180</default>
 		</parameter>
 	</config-description>

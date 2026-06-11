@@ -150,11 +150,11 @@ public class RemoteGetUiFlgResponseDTO {
          * @return This DTO
          */
         public static UiFlgResponseCommmands fromResponseString(String commandString) {
-            var values = commandString.split(ArgoDeviceStatus.HMI_ELEMENT_SEPARATOR);
+            String[] values = commandString.split(ArgoDeviceStatus.HMI_ELEMENT_SEPARATOR);
             if (values.length != ArgoDeviceStatus.HMI_COMMAND_ELEMENT_COUNT) {
                 throw new IllegalArgumentException("commandString");
             }
-            return new UiFlgResponseCommmands(Arrays.asList(values));
+            return new UiFlgResponseCommmands(Arrays.stream(values).toList());
         }
 
         /**

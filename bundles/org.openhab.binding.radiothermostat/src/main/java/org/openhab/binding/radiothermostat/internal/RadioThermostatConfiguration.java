@@ -30,6 +30,7 @@ public class RadioThermostatConfiguration {
     public boolean disableLogs = false;
     public boolean clockSync = false;
     public String setpointMode = "temporary";
+    public boolean remoteTempDeadband = false;
 
     public @Nullable String monMorningHeatTime;
     public @Nullable String monDayHeatTime;

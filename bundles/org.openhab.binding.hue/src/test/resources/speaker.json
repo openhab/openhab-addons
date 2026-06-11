@@ -1,0 +1,73 @@
+{
+	"errors": [],
+	"data": [
+		{
+			"id": "31d70cf5-fd2b-489f-a9f2-78c7b82e5109",
+			"owner": {
+				"rid": "b8010fa9-808d-42bc-a3e1-a1a93bd4f89c",
+				"rtype": "device"
+			},
+			"alarm": {
+				"sound_values": [
+					"siren",
+					"no_sound"
+				],
+				"status": {
+					"sound": "no_sound",
+					"sound_values": [
+						"siren",
+						"no_sound"
+					]
+				}
+			},
+			"chime": {
+				"sound_values": [
+					"bleep",
+					"ding_dong_classic",
+					"ding_dong_modern",
+					"rise",
+					"westminster_classic",
+					"westminster_modern",
+					"ding_dong_xylo",
+					"hue_default",
+					"sonar",
+					"swing",
+					"bright"
+				],
+				"status": {
+					"sound": "no_sound",
+					"sound_values": [
+						"bleep",
+						"ding_dong_classic",
+						"ding_dong_modern",
+						"rise",
+						"westminster_classic",
+						"westminster_modern",
+						"ding_dong_xylo",
+						"hue_default",
+						"sonar",
+						"swing",
+						"bright",
+						"no_sound"
+					]
+				}
+			},
+			"alert": {
+				"sound_values": [
+					"alert"
+				],
+				"status": {
+					"sound": "no_sound",
+					"sound_values": [
+						"alert",
+						"no_sound"
+					]
+				}
+			},
+			"mute": {
+				"mute": "unmute"
+			},
+			"type": "speaker"
+		}
+	]
+}

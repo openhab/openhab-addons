@@ -19,6 +19,7 @@ import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.jmdns.ServiceInfo;
 
@@ -48,7 +49,7 @@ public class DirigeraMDNSDiscoveryParticipant implements MDNSDiscoveryParticipan
 
     private static final String SERVICE_TYPE = "_ihsp._tcp.local.";
     private final Logger logger = LoggerFactory.getLogger(DirigeraMDNSDiscoveryParticipant.class);
-
+    private final Set<String> unresolvedDevices = ConcurrentHashMap.newKeySet();
     protected final ThingRegistry thingRegistry;
 
     @Activate
@@ -81,7 +82,10 @@ public class DirigeraMDNSDiscoveryParticipant implements MDNSDiscoveryParticipan
                     InetAddress address = InetAddress.getByName(gatewayHostName);
                     ipAddress = address.getHostAddress();
                 } catch (Exception e) {
-                    logger.warn("DIRIGERA mDNS failed to resolve IP for {} reason {}", gatewayHostName, e.getMessage());
+                    if (unresolvedDevices.add(gatewayHostName)) {
+                        logger.warn("DIRIGERA mDNS failed to resolve IP for {} reason {}", gatewayHostName,
+                                e.getMessage(), e);
+                    }
                 }
             } else if (ipAddresses.length > 0) {
                 ipAddress = ipAddresses[0].getHostAddress();

@@ -1,0 +1,72 @@
+        {
+	"id": "8d89e4f6-cb60-443b-9c68-3094fc15e0e6_1",
+	"type": "light",
+	"deviceType": "light",
+	"createdAt": "2026-01-19T12:29:58.000Z",
+	"isReachable": true,
+	"lastSeen": "2026-02-05T07:14:42.000Z",
+	"customIcon": "products_led_bulb",
+	"attributes": {
+		"identifyStarted": "2026-01-16T03:31:01.000Z",
+		"identifyPeriod": 0,
+		"isOn": false,
+		"startupOnOff": "startOn",
+		"lightLevel": 10,
+		"startUpCurrentLevel": -1,
+		"colorHue": 14.837248802185059,
+		"colorSaturation": 0.9994151592254639,
+		"colorTemperature": 1801,
+		"colorTemperatureMin": 6535,
+		"colorTemperatureMax": 1801,
+		"colorMode": "color",
+		"customName": "Loft Floor Lamp",
+		"model": "KAJPLATS E27 CWS globe 1055lm",
+		"manufacturer": "IKEA of Sweden",
+		"firmwareVersion": "1.2.0",
+		"hardwareVersion": "P2.0",
+		"serialNumber": "UNKNOWN_SERIAL_NUMBER",
+		"productCode": "LED2405G8",
+		"permittingJoin": false,
+		"windowOpen": false,
+		"setupCode": "",
+		"discriminator": -1,
+		"qrCode": "",
+		"otaStatus": "upToDate",
+		"otaState": "readyToCheck",
+		"otaProgress": 0,
+		"otaPolicy": "autoUpdate",
+		"otaScheduleStart": "00:00",
+		"otaScheduleEnd": "00:00",
+		"deviceOnBehavior": {
+			"behavior": "adaptiveProfile",
+			"profileId": "c6919bee-e1da-4e7c-9c0e-41b7422f9162"
+		}
+	},
+	"capabilities": {
+		"canSend": [],
+		"canReceive": [
+			"isOn",
+			"lightLevel",
+			"colorHue",
+			"colorSaturation",
+			"colorTemperature",
+			"customName",
+			"windowOpen"
+		]
+	},
+	"room": {
+		"id": "893d50e0-f4bb-46ba-978d-e9280c6e299d",
+		"name": "Loft",
+		"color": "ikea_green_no_65",
+		"icon": "rooms_sofa"
+	},
+	"deviceSet": [],
+	"remoteLinks": [
+		"df7aec46-ebff-4203-ad8d-8619a51d9f61_3"
+	],
+	"isHidden": false,
+	"adaptiveProfile": {
+		"id": "c6919bee-e1da-4e7c-9c0e-41b7422f9162",
+		"active": true
+	}
+}

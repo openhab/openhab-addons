@@ -1,6 +1,10 @@
 # Modbus Binding
 
-This is the binding to access Modbus TCP and serial slaves.
+This binding supports generic Modbus TCP and serial slave devices.
+And it has specialist extensions for the following manufacturers products:
+
+<!--list-subs-->
+
 RTU, ASCII and BIN variants of Serial Modbus are supported.
 Modbus TCP slaves are usually also called as Modbus TCP servers.
 
@@ -11,10 +15,6 @@ The binding can act as
 
 The Modbus binding polls the slave data with a configurable poll period.
 openHAB commands are translated to write requests.
-
-The binding has the following extensions:
-
-<!--list-subs-->
 
 The rest of this page contains details for configuring this binding:
 

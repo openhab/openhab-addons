@@ -16,9 +16,15 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.openhab.core.bundles</groupId>
+      <artifactId>org.openhab.core.io.rest</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.json</groupId>
       <artifactId>json</artifactId>
-      <version>20231013</version>
+      <version>${json.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>

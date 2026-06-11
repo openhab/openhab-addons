@@ -29,10 +29,8 @@ public class PowerSourceConfigurationCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x002E;
     public static final String CLUSTER_NAME = "PowerSourceConfiguration";
     public static final String CLUSTER_PREFIX = "powerSourceConfiguration";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_SOURCES = "sources";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     /**
      * This list shall contain the set of all power sources capable of participating in the power system of this Node.
      * Each entry in the list shall be the endpoint number of an endpoint having a Power Source cluster, which
@@ -55,7 +53,6 @@ public class PowerSourceConfigurationCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "sources : " + sources + "\n";
         return str;
     }

@@ -128,8 +128,8 @@ public abstract class BridgeRemoteApiHandler extends BridgeRemoteBaseHandler {
     }
 
     public String authorize(String redirectUri, String reqState, String reqCode) throws LinkyException {
-        // Will work only in case of direct oAuth2 authentification to enedis
-        // this is not the case in v1 as we go trough MyElectricalData
+        // Will work only in case of direct oAuth2 authentication to enedis
+        // this is not the case in v1 as we go through MyElectricalData
 
         try {
             logger.debug("Make call to Enedis to get access token.");
@@ -142,8 +142,12 @@ public abstract class BridgeRemoteApiHandler extends BridgeRemoteBaseHandler {
                     .getAccessTokenByClientCredentials(LinkyBindingConstants.LINKY_SCOPES);
 
             String accessToken = credentials.getAccessToken();
+            if (accessToken == null) {
+                throw new LinkyException("Unable to authenticate, no access token available");
+            }
 
-            logger.debug("Acces token: {}", accessToken);
+            // avoid logging the full access token for security reasons
+            logger.debug("Access token: {}...", accessToken.substring(0, 3));
             return accessToken;
         } catch (RuntimeException | OAuthException | IOException e) {
             throw new LinkyException("Error during oAuth authorize :" + e.getMessage(), e);

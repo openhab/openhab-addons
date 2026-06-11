@@ -1,34 +1,36 @@
 # GridBox Binding
 
-The [Viessmann GridBox](https://www.viessmann.de/de/produkte/energiemanagement/gridbox.html) is an energy management device which gathers information about produced and consumed electrical power from compatible energy meters, photovoltaic inverters, batteries, heat pumps, EV charging stations, etc., and steers the connected components to increase the self-consumption rate and efficiency of the system.
+The [Viessmann GridBox](https://www.viessmann.de/de/produkte/energiemanagement/gridbox.html)/[E.ON Home Box](https://shop.eon.de/p/e.on-home-box-home-energy-management-system_EL1006651) is an energy management device which gathers information about produced and consumed electrical power from compatible energy meters, photovoltaic inverters, batteries, heat pumps, EV charging stations, etc., and steers the connected components to increase the self-consumption rate and efficiency of the system.
 
-The Viessmann GridBox is a variant of the [gridX Gateway](https://de.gridx.ai/edge-services) and uses the gridX Xenon cloud service to upload the fetched data and deliver the data to the GridBox app and web service.
+The Viessmann GridBox/E.ON Home Box is a variant of the [gridX Gateway](https://de.gridx.ai/edge-services) and uses the gridX Xenon cloud service to upload the fetched data and deliver the data to the GridBox app and web service.
 The measured data (energy production, consumption, etc.) cannot be accessed locally.
 However, thanks to the pioneer work in the [unl0ck/viessmann-gridbox-connector](https://github.com/unl0ck/viessmann-gridbox-connector) repository, we can retrieve the data from the gridX cloud service using REST API calls.
-The API is documented [at gridx.ai](https://developer.gridx.ai/reference/).
+The API is documented [at gridx.ai](https://community.developer.gridx.de/t/gridx-api-documentation/213).
 
 This binding polls the "live data" API endpoint to gather the available data from the GridBox.
 It creates a GridBox thing with the channels representing the data points of the live data API call.
 
-For connection to the cloud service, account E-Mail and password used to connect to the [GridBox web service](https://mygridbox.viessmann.com/login) are required.
+For connection to the cloud service, account E-Mail and password used to connect to the GridBox web service, either [Viessmann](https://mygridbox.viessmann.com/login) or [E.ON](https://eon.gridx.de/login) are required.
 Authentication is handled by an OAuth call generating an ID token which is required as a bearer token for subsequent calls to the gridX API.
 
 At the moment, only one API-"system" per account is supported by this binding.
 A "system" is the representation of a GridBox together with its connected appliances (PV inverter, heat pump etc.).
-The binding will use the first system ID retrieved by a call to the <https://api.gridx.de/systems> API.
-
-Also, only the live data API endpoint is supported by the binding, as it is the most interesting for openHAB use cases.
+The binding will use the first system ID retrieved by a call to the <https://api.gridx.de/systems> API. Also, only the live data API endpoint is supported by the binding, as it is the most interesting for openHAB use cases.
 There is another API endpoint for fetching aggregated measurement data which could be added in the future.
-Only the Viessmann GridBox variant is supported, other variants would need adaptions to the OAuth mechanism.
 
-This binding is not endorsed or supported by Viessmann or gridX.
+Only the Viessmann GridBox and E.ON Home Box variants are supported, other variants would need adaptions to the OAuth mechanism.
+To switch between Viessmann and E.ON authentication, set the "useEonAuthentication" parameter to true (for E.ON) or false (for Viessmann).
+The Viessmann service will be migrated to E.ON and is planned to be stopped after the December 31, 2025.
+After that date, only the E.ON connection type will work.
+
+This binding is not endorsed or supported by Viessmann, E.ON or gridX.
 Arbitrary breaking changes to the API can happen at any time, resulting in this binding failing to retrieve the data.
 
 ## Supported Things
 
 The following thing can be created with the binding:
 
-- `gridbox`: A thing representing the GridBox, tied to an account of the Viessmann GridBox.
+- `gridbox`: A thing representing the GridBox, tied to an account of the Viessmann GridBox or E.ON Home Box.
 
 ## Discovery
 
@@ -40,11 +42,12 @@ The following configuration parameters are available on the GridBox thing:
 
 ### `gridbox` Thing Configuration
 
-| Name            | Type    | Description                                       | Default | Required | Advanced |
-|-----------------|---------|---------------------------------------------------|---------|----------|----------|
-| email           | text    | E-Mail address used to log in to the GridBox API  | N/A     | yes      | no       |
-| password        | text    | Password to access the GridBox API                | N/A     | yes      | no       |
-| refreshInterval | integer | Interval the device is polled in seconds.         | 60      | no       | yes      |
+| Name                 | Type    | Description                                       | Default | Required | Advanced |
+|----------------------|---------|---------------------------------------------------|---------|----------|----------|
+| email                | text    | E-Mail address used to log in to the GridBox API  | N/A     | yes      | no       |
+| password             | text    | Password to access the GridBox API                | N/A     | yes      | no       |
+| useEonAuthentication | boolean | Use the E.ON (true) or Viessmann (false) API      | true    | no       | no       |
+| refreshInterval      | integer | Interval the device is polled in seconds.         | 60      | no       | yes      |
 
 ## Channels
 

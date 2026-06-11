@@ -19,7 +19,8 @@ Here is a product picture of how this Weather Station looks like:
 
 ![WH2650](doc/WH2650.png)
 
-This binding works offline by [implementing the wire protocol](https://community.openhab.org/uploads/short-url/cuV8oOaCYHZhdm0hVJUN7hxMMfe.pdf) of the WiFi gateway device.
+This binding works offline by [implementing the wire protocol](https://oss.ecowitt.net/uploads/20260112/TCP%20API%20Interface%20Communication%20Protocol%20V1.7.0.pdf) of the WiFi gateway device.
+Gateways that additionally expose the [Ecowitt HTTP API](https://oss.ecowitt.net/uploads/20260114/HTTP%20API%20interface%20Protocol%20(Generic)-(V1.0.6-2026-1-14)%20.pdf) are used via that API instead, which is selected automatically during discovery (see [Protocol](#protocol)).
 
 ## Discussion
 
@@ -27,7 +28,7 @@ If you have any issues or feedback, please feel free to [get in touch via the co
 
 ## Supported Things
 
-- `weatherstation`: A Fine Offset gateway device with the ThingTypeUID `fineoffsetweatherstation:weatherstation` which supports the [wire protocol](https://community.openhab.org/uploads/short-url/cuV8oOaCYHZhdm0hVJUN7hxMMfe.pdf) e.g.:
+- `weatherstation`: A Fine Offset gateway device with the ThingTypeUID `fineoffsetweatherstation:weatherstation` which supports the [wire protocol](https://oss.ecowitt.net/uploads/20260112/TCP%20API%20Interface%20Communication%20Protocol%20V1.7.0.pdf) e.g.:
   - HP2550
   - HP3500
   - GW1000
@@ -60,6 +61,7 @@ If you have any issues or feedback, please feel free to [get in touch via the co
   - WH40 - Rainfall sensor
   - WH41 - Outdoor air quality sensor
   - WH45 - Air quality sensor
+  - WH46D - 7-in-1 Indoor Air Quality Monitor
   - WH51 - Soil moisture sensor
   - WH55 - Water leak detection sensor
   - WH57 - Lightning detection sensor
@@ -67,6 +69,10 @@ If you have any issues or feedback, please feel free to [get in touch via the co
   - WH68 - 4-in-1 weather station - Solar-powered sensor for wind speed & direction, solar radiation & light
   - WH80 - 6-in-1 weather station - Ultrasonic sensor for wind speed & direction, solar radiation & light, temperature & humidity
   - WH90 - 7-in-1 weather station - Ultrasonic sensor for wind speed & direction, solar radiation & light, temperature, humidity and haptic rainfall Sensor
+  - WS85 - Sensor for wind speed & direction and rainfall
+  - WH54 - Liquid depth sensor (LDS)
+  - WN20 - Rain Gauge Mini
+  - WN38 - Black globe temperature sensor
 
 ### Unsupported Devices
 
@@ -93,15 +99,27 @@ This binding support discovery of Fine Offset gateway devices by sending a broad
 |------------------|---------|----------------------------------------------------------------------------------------------|---------|----------|----------|
 | ip               | text    | The Hostname or IP address of the device                                                     | N/A     | yes      | no       |
 | port             | integer | The network port of the gateway                                                              | 45000   | yes      | no       |
-| protocol         | text    | The protocol to use for communicating with the gateway, valid values are: `DEFAULT` or `ELV` | DEFAULT | no       | no       |
+| protocol         | text    | The protocol to use, see [Protocol](#protocol): `DEFAULT`, `ELV` or `HTTP_ECOWITT`           | DEFAULT | no       | no       |
 | pollingInterval  | integer | Polling period for refreshing the data in seconds                                            | 16      | yes      | yes      |
 | discoverInterval | integer | Interval in seconds to fetch registered sensors, battery status and signal strength          | 900     | yes      | yes      |
 
+#### Protocol
+
+| Value          | Description                                                                                                                       |
+|----------------|-----------------------------------------------------------------------------------------------------------------------------------|
+| `DEFAULT`      | The TCP binary protocol (port 45000), used by most Fine Offset gateways.                                                          |
+| `ELV`          | The TCP binary protocol variant used by ELV devices (e.g. WS980).                                                                 |
+| `HTTP_ECOWITT` | The Ecowitt HTTP API (port 80). It reports more data (e.g. the _feels like_ temperature, a _raining_ indicator and solar radiation in W/m²) and is preferred automatically during discovery when the gateway answers `get_version` with `"platform": "ecowitt"`. |
+
+Discovery probes the HTTP API first and falls back to the TCP protocols.
+Values reported by the HTTP API in the unit configured on the gateway (e.g. °F, inHg, mph) are normalized to the binding's units, so the channels are identical regardless of the transport or the gateway's display settings.
+A few channels are only available via the HTTP API and therefore only appear on gateways using the `HTTP_ECOWITT` protocol: `temperature-feels-like`, `vapor-pressure-deficit`, `irradiation-solar`, `rain-state` and `piezo-rain-state`.
+
 ### `sensor` Thing Configuration
 
-| Name             | Type    | Description                                                                                                                            | Default | Required | Advanced |
-|------------------|---------|----------------------------------------------------------------------------------------------------------------------------------------|---------|----------|----------|
-| sensor           | text    | The name of sensor attached to the gateway (multiple sensors of the same type may have different names according to the bound channel) | N/A     | yes      | no       |
+| Name   | Type | Description                                                                                                                            | Default | Required | Advanced |
+|--------|------|----------------------------------------------------------------------------------------------------------------------------------------|---------|----------|----------|
+| sensor | text | The name of sensor attached to the gateway (multiple sensors of the same type may have different names according to the bound channel) | N/A     | yes      | no       |
 
 Valid sensors:
 
@@ -155,6 +173,21 @@ Valid sensors:
 - WH35_CH7
 - WH35_CH8
 - WH90
+- WS85
+- WH51_CH9
+- WH51_CH10
+- WH51_CH11
+- WH51_CH12
+- WH51_CH13
+- WH51_CH14
+- WH51_CH15
+- WH51_CH16
+- WH54_CH1
+- WH54_CH2
+- WH54_CH3
+- WH54_CH4
+- WN20
+- WN38
 
 ## Channels
 
@@ -259,12 +292,17 @@ Valid sensors:
 | temperature-external-channel-8        | Number:Temperature   | R          | External Temperature Sensor Channel 8          |
 | sensor-co2-temperature                | Number:Temperature   | R          | Temperature (CO2-Sensor)                       |
 | sensor-co2-humidity                   | Number:Dimensionless | R          | Humidity (CO2-Sensor)                          |
+| sensor-co2-pm1                        | Number:Density       | R          | PM1 Air Quality (CO2-Sensor)                   |
+| sensor-co2-pm1-24-hour-average        | Number:Density       | R          | PM1 Air Quality 24 Hour Average (CO2-Sensor)   |
+| sensor-co2-pm4                        | Number:Density       | R          | PM4 Air Quality (CO2-Sensor)                   |
+| sensor-co2-pm4-24-hour-average        | Number:Density       | R          | PM4 Air Quality 24 Hour Average (CO2-Sensor)   |
 | sensor-co2-pm10                       | Number:Density       | R          | PM10 Air Quality (CO2-Sensor)                  |
 | sensor-co2-pm10-24-hour-average       | Number:Density       | R          | PM10 Air Quality 24 Hour Average (CO2-Sensor)  |
 | sensor-co2-pm25                       | Number:Density       | R          | PM2.5 Air Quality (CO2-Sensor)                 |
 | sensor-co2-pm25-24-hour-average       | Number:Density       | R          | PM2.5 Air Quality 24 Hour Average (CO2-Sensor) |
 | sensor-co2-co2                        | Number:Dimensionless | R          | CO2                                            |
 | sensor-co2-co2-24-hour-average        | Number:Dimensionless | R          | CO2 24 Hour Average                            |
+| sensor-co2-wh46-battery-level         | Number:Dimensionless | R          | Battery status WH46                            |
 | leaf-wetness-channel-1                | Number:Dimensionless | R          | Leaf Moisture Channel 1                        |
 | leaf-wetness-channel-2                | Number:Dimensionless | R          | Leaf Moisture Channel 2                        |
 | leaf-wetness-channel-3                | Number:Dimensionless | R          | Leaf Moisture Channel 3                        |

@@ -26,13 +26,13 @@ public class Stream {
      **/
     private Integer id;
 
-    @Schema(required = true)
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     /**
      * Friendly name
      **/
     private String name;
 
-    @Schema(required = true)
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     /**
      * stream type * pandora * shairport * dlna * internetradio * spotify
      **/

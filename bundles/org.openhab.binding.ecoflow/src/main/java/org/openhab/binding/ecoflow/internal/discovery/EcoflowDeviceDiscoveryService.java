@@ -12,9 +12,7 @@
  */
 package org.openhab.binding.ecoflow.internal.discovery;
 
-import static org.openhab.binding.ecoflow.internal.EcoflowBindingConstants.THING_TYPE_DELTA2;
-import static org.openhab.binding.ecoflow.internal.EcoflowBindingConstants.THING_TYPE_DELTA2MAX;
-import static org.openhab.binding.ecoflow.internal.EcoflowBindingConstants.THING_TYPE_POWERSTREAM;
+import static org.openhab.binding.ecoflow.internal.EcoflowBindingConstants.*;
 
 import java.time.Instant;
 import java.util.List;
@@ -101,15 +99,19 @@ public class EcoflowDeviceDiscoveryService extends AbstractThingHandlerDiscovery
             Instant timestampOfLastScan = getTimestampOfLastScan();
             try {
                 List<DeviceListResponseEntry> devices = api.getDeviceList();
-                logger.debug("Ecoflow discovery found {} devices", devices.size());
-                for (DeviceListResponseEntry device : devices) {
-                    deviceDiscovered(device);
-                }
-                for (Thing thing : thingHandler.getThing().getThings()) {
-                    String serial = thing.getUID().getId();
-                    if (!devices.stream().anyMatch(d -> serial.equals(d.serialNumber))) {
-                        thingRemoved(thing.getUID());
+                if (devices != null) {
+                    logger.debug("Ecoflow discovery found {} devices", devices.size());
+                    for (DeviceListResponseEntry device : devices) {
+                        deviceDiscovered(device);
                     }
+                    for (Thing thing : thingHandler.getThing().getThings()) {
+                        String serial = thing.getUID().getId();
+                        if (!devices.stream().anyMatch(d -> serial.equals(d.serialNumber))) {
+                            thingRemoved(thing.getUID());
+                        }
+                    }
+                } else {
+                    logger.debug("No devices available in Ecoflow API");
                 }
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();

@@ -48,7 +48,12 @@ message VehicleAPI {
         FAILED = 6;
         // added 20241105
         ACKED_BY_APPTWIN = 7;
+        // added 20260130
         PIN_VALID = 8;
+        WAKEUP_SENT = 9;
+        WAITING_WAKEUP = 10;
+        WAITING_SYNC = 11;
+        COMMAND_SENT = 12;
     }
 
     enum AttributeStatus {

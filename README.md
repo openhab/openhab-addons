@@ -85,11 +85,12 @@ mvn clean install karaf:kar -pl :org.openhab.binding.astro
 To improve build times you can add the following options to the command:
 
 | Option                        | Description                                         |
-| ----------------------------- | --------------------------------------------------- |
+|-------------------------------|-----------------------------------------------------|
 | `-DskipChecks`                | Skip the static analysis (Checkstyle, FindBugs)     |
 | `-DskipTests`                 | Skip the execution of tests                         |
 | `-Dmaven.test.skip=true`      | Skip the compilation and execution of tests         |
 | `-Dfeatures.verify.skip=true` | Skip the Karaf feature verification                 |
+| `-Dmarkdownlint.skip=true`    | Skip the Markdown linting                           |
 | `-Dspotless.check.skip=true`  | Skip the Spotless code style checks                 |
 | `-o`                          | Work offline so Maven does not download any updates |
 | `-T 1C`                       | Build in parallel, using 1 thread per core          |
@@ -151,6 +152,14 @@ mvn clean install -DwithResolver -DskipChecks
 ```
 
 The build generates a `.jar` file per bundle in the respective bundle `/target` directory.
+
+#### Troubleshooting
+
+When having issues with running the integration tests, try the following steps:
+
+1. Clear the bnd cache: Remove the `~/.bnd` directory.
+1. Rebuild the `bom` index: Execute `mvn clean install` in the [`bom`](bom) directory.
+1. Rebuild the `itests` index: Execute `mvn clean install -N` in the [`itests`](itests) directory.
 
 ### How to develop via an Integrated Development Environment (IDE)
 

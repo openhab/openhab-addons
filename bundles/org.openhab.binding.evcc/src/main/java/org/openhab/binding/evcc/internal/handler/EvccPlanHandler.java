@@ -100,9 +100,7 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
                 endpoint = String.join("/", endpoint, API_PATH_PLAN_REPEATING);
             }
             handler.register(this);
-            updateStatus(ThingStatus.ONLINE);
-            isInitialized = true;
-            prepareApiResponseForChannelStateUpdate(stateOpt);
+            commonInitialize(new JsonObject());
         });
     }
 

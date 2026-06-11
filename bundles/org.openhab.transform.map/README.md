@@ -21,7 +21,7 @@ To organize the various transformations one might use subfolders.
 
 ## Inline Map
 
-Instead of providing the file name from which to load, the mapping table can be specified inline by prefixing it with the pipe character `|` .
+Instead of providing the file name from which to load, the mapping table can be specified inline by prefixing it with the pipe character `|`.
 
 The inline map entries are delimited with semicolons (`;`) by default.
 For example, the following map function translates open/closed to ON/OFF: `|open=ON; closed=OFF`
@@ -66,11 +66,11 @@ To do so, it can be configured in the `.items` file as follows:
 String <itemName> { channel="<channelUID>" [profile="transform:MAP", function="<filename>", sourceFormat="<valueFormat>" ] }
 ```
 
-The mapping filename (within the `transform` folder) has to be set in the `function` parameter.
-The parameter `sourceFormat` is optional and can be used to format the input value **before** the transformation, i.e. `%.3f`.
-If omitted the default is `%s`, so the input value will be put into the transformation without any format changes.
+The mapping filename (within the `transform` folder) must be set in the `function` parameter.
+The parameter `sourceFormat` is optional and can be used to format the input value **before** the transformation, e.g., `%.3f`.
+If omitted, the default is `%s`, so the input value will be passed to the transformation without any format changes.
 
-Please note: This profile is a one-way transformation, i.e. only values from a device towards the item are changed, the other direction is left untouched.
+Please note: This profile is a one-way transformation, i.e., only values from a device towards the Item are changed; the other direction is left untouched.
 
 To use an inline map in the profile:
 

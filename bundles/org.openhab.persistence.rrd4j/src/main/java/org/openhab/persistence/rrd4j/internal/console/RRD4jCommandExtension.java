@@ -14,6 +14,7 @@ package org.openhab.persistence.rrd4j.internal.console;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -76,7 +77,7 @@ public class RRD4jCommandExtension extends AbstractConsoleCommandExtension imple
             return;
         }
         if (args.length == 1 && CMD_LIST.equalsIgnoreCase(args[0])) {
-            List<String> filenames = persistenceService.getRrdFiles();
+            List<String> filenames = new ArrayList<>(persistenceService.getRrdFiles());
             Collections.sort(filenames, Comparator.naturalOrder());
             console.println("Existing RRD files...");
             filenames.forEach(filename -> console.println("  - " + filename));
@@ -107,7 +108,7 @@ public class RRD4jCommandExtension extends AbstractConsoleCommandExtension imple
         if (itemName != null) {
             filenames = List.of(itemName + ".rrd");
         } else {
-            filenames = persistenceService.getRrdFiles();
+            filenames = new ArrayList<>(persistenceService.getRrdFiles());
             Collections.sort(filenames, Comparator.naturalOrder());
         }
 

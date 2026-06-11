@@ -26,11 +26,35 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class HomeWizardWaterMeterMeasurementPayload {
 
+    @SerializedName("wifi_ssid")
+    private String wifiSsid = "";
+
+    @SerializedName("wifi_strength")
+    private int wifiRssi = 0;
+
     @SerializedName("active_liter_lpm")
     private double activeLiter;
 
     @SerializedName("total_liter_m3")
     private double totalLiter;
+
+    /**
+     * Getter for the wifi ssid
+     *
+     * @return wifiSsid
+     */
+    public String getWifiSsid() {
+        return wifiSsid;
+    }
+
+    /**
+     * Getter for the wifi rssi. The value is converted from percentage to dB.
+     *
+     * @return wifiRssi
+     */
+    public int getWifiRssi() {
+        return (wifiRssi / 2) - 100;
+    }
 
     /**
      * Getter for the active liter per minute
@@ -53,7 +77,7 @@ public class HomeWizardWaterMeterMeasurementPayload {
     @Override
     public String toString() {
         return String.format("""
-                Water Meter Data [activeLiter: %f totalLiter: %f"]
-                 """, activeLiter, totalLiter);
+                Water Meter Data [wifiSsid: %s wifiRssi: %d activeLiter: %f totalLiter: %f"]
+                 """, wifiSsid, wifiRssi, activeLiter, totalLiter);
     }
 }

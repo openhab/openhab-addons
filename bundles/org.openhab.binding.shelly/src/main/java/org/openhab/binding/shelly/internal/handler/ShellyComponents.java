@@ -17,6 +17,7 @@ import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.List;
+import java.util.Locale;
 
 import javax.measure.MetricPrefix;
 
@@ -416,7 +417,7 @@ public class ShellyComponents {
                 updated |= changed;
             }
             if (sdata.tmp != null && getBool(sdata.tmp.isValid)) {
-                Double temp = getString(sdata.tmp.units).toUpperCase().equals(SHELLY_TEMP_CELSIUS)
+                Double temp = getString(sdata.tmp.units).toUpperCase(Locale.ROOT).equals(SHELLY_TEMP_CELSIUS)
                         ? getDouble(sdata.tmp.tC)
                         : getDouble(sdata.tmp.tF);
                 updated |= updateTempChannel(thingHandler, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TEMP,
@@ -544,7 +545,7 @@ public class ShellyComponents {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LEVEL,
                         toQuantityType(getDouble(sdata.bat.value), 0, Units.PERCENT));
 
-                int lowBattery = thingHandler.getThingConfig().lowBattery;
+                int lowBattery = thingHandler.getThingConfig().getLowBattery();
                 boolean changed = thingHandler.updateChannel(CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LOW,
                         getOnOff(!charger && getDouble(sdata.bat.value) < lowBattery));
                 updated |= changed;
@@ -642,9 +643,7 @@ public class ShellyComponents {
 
             int l = 0;
             for (ShellyShortLightStatus dimmer : dstatus.dimmers) {
-                Integer r = l + 1;
-                String groupName = profile.numRelays <= 1 ? CHANNEL_GROUP_DIMMER_CONTROL
-                        : CHANNEL_GROUP_DIMMER_CONTROL + r.toString();
+                String groupName = profile.getControlGroup(l);
 
                 if (!thingHandler.areChannelsCreated()) {
                     thingHandler.updateChannelDefinitions(ShellyChannelDefinitions

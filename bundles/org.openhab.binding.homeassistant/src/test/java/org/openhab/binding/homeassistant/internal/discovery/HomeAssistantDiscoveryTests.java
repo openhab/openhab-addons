@@ -16,6 +16,7 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -183,6 +184,69 @@ public class HomeAssistantDiscoveryTests extends AbstractHomeAssistantTests {
         assertThat(result.getLabel(), is("th1"));
         assertThat((List<String>) result.getProperties().get(HandlerConfiguration.PROPERTY_TOPICS),
                 hasItems("climate/0x847127fffe11dd6a_climate_zigbee2mqtt"));
+    }
+
+    @Test
+    public void testDeviceDiscoveryAddsFullPayloadToDeviceConfigProperty() throws Exception {
+        var discoveryListener = new LatchDiscoveryListener();
+        var latch = discoveryListener.createWaitForThingsDiscoveredLatch(1);
+
+        discovery.addDiscoveryListener(discoveryListener);
+        byte[] payload = getResourceAsByteArray("component/configDevice1.json");
+        discovery.receivedMessage(HA_UID, bridgeConnection, "homeassistant/device/mydevice/config", payload);
+
+        assertTrue(latch.await(DISCOVERY_TIMEOUT_SECONDS, TimeUnit.SECONDS));
+        var discoveryResults = discoveryListener.getDiscoveryResults();
+        assertThat(discoveryResults.size(), is(1));
+
+        DiscoveryResult result = discoveryResults.getFirst();
+        assertThat(result.getProperties().get(HandlerConfiguration.PROPERTY_DEVICE_CONFIG),
+                is(new String(payload, StandardCharsets.UTF_8)));
+    }
+
+    @Test
+    public void testDeviceDiscoveryWithoutComponentsStillCreatesThing() throws Exception {
+        var discoveryListener = new LatchDiscoveryListener();
+        var latch = discoveryListener.createWaitForThingsDiscoveredLatch(1);
+        String payload = """
+                {
+                  "dev": {
+                    "ids": ["ea334450945afc"],
+                    "name": "Kitchen",
+                    "mf": "Bla electronics",
+                    "mdl": "xya",
+                    "sw": "1.0",
+                    "sn": "ea334450945afc",
+                    "hw": "1.0rev2"
+                  },
+                  "o": {
+                    "name":"bla2mqtt",
+                    "sw": "2.1",
+                    "url": "https://bla2mqtt.example.com/support"
+                  },
+                  "cmps": {},
+                  "state_topic":"sensorBedroom/state",
+                  "qos": 2
+                }
+                """;
+
+        discovery.addDiscoveryListener(discoveryListener);
+        discovery.receivedMessage(HA_UID, bridgeConnection, "homeassistant/device/mydevice/config",
+                payload.getBytes(StandardCharsets.UTF_8));
+
+        assertTrue(latch.await(DISCOVERY_TIMEOUT_SECONDS, TimeUnit.SECONDS));
+        var discoveryResults = discoveryListener.getDiscoveryResults();
+        assertThat(discoveryResults.size(), is(1));
+
+        DiscoveryResult result = discoveryResults.getFirst();
+        assertThat(result.getBridgeUID(), is(HA_UID));
+        assertThat(result.getLabel(), is("Kitchen"));
+        assertThat(result.getProperties().get(Thing.PROPERTY_VENDOR), is("Bla electronics"));
+        assertThat(result.getProperties().get(Thing.PROPERTY_MODEL_ID), is("xya"));
+        assertThat(result.getProperties().get(Thing.PROPERTY_FIRMWARE_VERSION), is("1.0"));
+        assertThat((List<String>) result.getProperties().get(HandlerConfiguration.PROPERTY_TOPICS),
+                hasItems("device/mydevice"));
+        assertThat(result.getProperties().get(HandlerConfiguration.PROPERTY_DEVICE_CONFIG), is(payload));
     }
 
     private static class TestHomeAssistantDiscovery extends HomeAssistantDiscovery {

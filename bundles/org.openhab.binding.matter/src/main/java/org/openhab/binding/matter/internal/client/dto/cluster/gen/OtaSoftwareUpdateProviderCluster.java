@@ -32,13 +32,10 @@ public class OtaSoftwareUpdateProviderCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0029;
     public static final String CLUSTER_NAME = "OtaSoftwareUpdateProvider";
     public static final String CLUSTER_PREFIX = "otaSoftwareUpdateProvider";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
-
-    public Integer clusterRevision; // 65533 ClusterRevision
 
     // Enums
     /**
-     * See Section 11.20.3.2, “Querying the OTA Provider” for the semantics of these values.
+     * See Section 11.20.3.2, "Querying the OTA Provider" for the semantics of these values.
      */
     public enum StatusEnum implements MatterEnum {
         UPDATE_AVAILABLE(0, "Update Available"),
@@ -66,7 +63,7 @@ public class OtaSoftwareUpdateProviderCluster extends BaseCluster {
     }
 
     /**
-     * See Section 11.20.3.6, “Applying a software update” for the semantics of the values. This enumeration is used in
+     * See Section 11.20.3.6, "Applying a software update" for the semantics of the values. This enumeration is used in
      * the Action field of the ApplyUpdateResponse command. See (Action).
      */
     public enum ApplyUpdateActionEnum implements MatterEnum {
@@ -96,6 +93,8 @@ public class OtaSoftwareUpdateProviderCluster extends BaseCluster {
     /**
      * Note that only HTTP over TLS (HTTPS) is supported (see RFC 7230). Using HTTP without TLS shall NOT be supported,
      * as there is no way to authenticate the involved participants.
+     * > [!NOTE]
+     * > NOTE: Support for the asynchronous BDX mode is provisional.
      */
     public enum DownloadProtocolEnum implements MatterEnum {
         BDX_SYNCHRONOUS(0, "Bdx Synchronous"),
@@ -133,7 +132,7 @@ public class OtaSoftwareUpdateProviderCluster extends BaseCluster {
     // commands
     /**
      * Upon receipt, this command shall trigger an attempt to find an updated Software Image by the OTA Provider to
-     * match the OTA Requestor’s constraints provided in the payload fields.
+     * match the OTA Requestor's constraints provided in the payload fields.
      */
     public static ClusterCommand queryImage(Integer vendorId, Integer productId, Integer softwareVersion,
             List<DownloadProtocolEnum> protocolsSupported, Integer hardwareVersion, String location,
@@ -166,6 +165,9 @@ public class OtaSoftwareUpdateProviderCluster extends BaseCluster {
         return new ClusterCommand("queryImage", map);
     }
 
+    /**
+     * This command requests the specified version be installed on the device.
+     */
     public static ClusterCommand applyUpdateRequest(OctetString updateToken, Integer newVersion) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (updateToken != null) {
@@ -177,6 +179,9 @@ public class OtaSoftwareUpdateProviderCluster extends BaseCluster {
         return new ClusterCommand("applyUpdateRequest", map);
     }
 
+    /**
+     * This command tells the Provider that the specified update has been applied.
+     */
     public static ClusterCommand notifyUpdateApplied(OctetString updateToken, Integer softwareVersion) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (updateToken != null) {
@@ -191,7 +196,6 @@ public class OtaSoftwareUpdateProviderCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         return str;
     }
 }

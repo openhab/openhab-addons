@@ -631,7 +631,7 @@ public class SystemInfoOSGiTest extends JavaOSGiTest {
         String channnelID = SystemInfoBindingConstants.CHANNEL_STORAGE_NAME;
         String acceptedItemType = "String";
 
-        StringType mockedStorageName = new StringType("Mocked Storage Name");
+        StringType mockedStorageName = new StringType("/mocked/mount/point");
         when(mockedSystemInfo.getStorageName(DEFAULT_DEVICE_INDEX)).thenReturn(mockedStorageName);
 
         initializeThingWithChannel(channnelID, acceptedItemType);

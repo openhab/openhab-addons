@@ -34,7 +34,6 @@
 			</parameter-group>
 			<!-- Trigger actions -->
 			<parameter-group name="actions">
-				<context></context>
 				<label>Actions</label>
 				<description>Action Buttons</description>
 			</parameter-group>

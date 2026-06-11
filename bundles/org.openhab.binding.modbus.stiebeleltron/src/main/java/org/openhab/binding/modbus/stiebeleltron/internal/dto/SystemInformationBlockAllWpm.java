@@ -78,7 +78,6 @@ public class SystemInformationBlockAllWpm extends SystemInformationBlock {
     public HeatPumpInfo[] heatPumps;
 
     public SystemInformationBlockAllWpm(int nrOfHps) {
-        super();
         heatPumps = new HeatPumpInfo[nrOfHps];
         for (int i = 0; i < heatPumps.length; i++) {
             heatPumps[i] = new HeatPumpInfo();

@@ -15,7 +15,6 @@ package org.openhab.binding.enocean.internal.transceiver;
 import java.lang.reflect.ParameterizedType;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.EnOceanException;
 import org.openhab.binding.enocean.internal.messages.Response;
 
@@ -24,7 +23,7 @@ import org.openhab.binding.enocean.internal.messages.Response;
  * @author Daniel Weber - Initial contribution
  */
 @NonNullByDefault
-public abstract class ResponseListener<T extends @Nullable Response> {
+public abstract class ResponseListener<T extends Response> {
 
     protected Class<T> persistentClass;
 

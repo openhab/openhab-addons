@@ -21,15 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public enum Region {
-    US("United States");
-
-    private final String label;
-
-    Region(final String label) {
-        this.label = label;
-    }
-
-    public String getLabel() {
-        return label;
-    }
+    CA,
+    EU,
+    US
 }

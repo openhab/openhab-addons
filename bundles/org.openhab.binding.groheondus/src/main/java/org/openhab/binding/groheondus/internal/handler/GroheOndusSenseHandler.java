@@ -15,6 +15,7 @@ package org.openhab.binding.groheondus.internal.handler;
 import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.CHANNEL_BATTERY;
 import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.CHANNEL_HUMIDITY;
 import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.CHANNEL_NAME;
+import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.CHANNEL_PAUSE;
 import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.CHANNEL_TEMPERATURE;
 
 import java.io.IOException;
@@ -27,6 +28,7 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.groheondus.internal.GroheOndusBindingConstants;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -56,8 +58,6 @@ import io.github.floriansw.ondus.api.model.sense.ApplianceData.Measurement;
 @NonNullByDefault
 public class GroheOndusSenseHandler<T, M> extends GroheOndusBaseHandler<Appliance, Measurement> {
 
-    private static final int DEFAULT_POLLING_INTERVAL = 900;
-
     private final Logger logger = LoggerFactory.getLogger(GroheOndusSenseHandler.class);
 
     public GroheOndusSenseHandler(Thing thing, int thingCounter) {
@@ -69,7 +69,7 @@ public class GroheOndusSenseHandler<T, M> extends GroheOndusBaseHandler<Applianc
         if (config.pollingInterval > 0) {
             return config.pollingInterval;
         }
-        return DEFAULT_POLLING_INTERVAL;
+        return GroheOndusBindingConstants.DEFAULT_POLLING_INTERVAL;
     }
 
     @Override
@@ -95,6 +95,9 @@ public class GroheOndusSenseHandler<T, M> extends GroheOndusBaseHandler<Applianc
                 if (batteryStatus != null) {
                     newState = new DecimalType(batteryStatus);
                 }
+                break;
+            case CHANNEL_PAUSE:
+                newState = getPauseState();
                 break;
             default:
                 throw new IllegalArgumentException("Channel " + channelUID + " not supported.");
@@ -173,6 +176,9 @@ public class GroheOndusSenseHandler<T, M> extends GroheOndusBaseHandler<Applianc
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             updateChannels();
+            return;
         }
+
+        handlePauseCommand(channelUID, command);
     }
 }

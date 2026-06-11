@@ -1,0 +1,57 @@
+        {
+            "id": "0d9da61c-2c59-4d32-90a4-b165b8cc4cbe_1",
+            "type": "sensor",
+            "deviceType": "environmentSensor",
+            "createdAt": "2026-01-13T15:00:01.000Z",
+            "isReachable": true,
+            "lastSeen": "2026-01-13T17:25:43.000Z",
+            "customIcon": "products_matter_air_quality_sensor",
+            "attributes": {
+                "identifyPeriod": 0,
+                "identifyStarted": "2026-01-08T16:30:27.000Z",
+                "isOn": true,
+                "currentTemperature": 19.81999969482422,
+                "currentRH": 52,
+                "currentCO2": 766,
+                "maxMeasuredCO2": 5000,
+                "minMeasuredCO2": 0,
+                "currentPM25": 4,
+                "maxMeasuredPM25": 1000,
+                "minMeasuredPM25": 0,
+                "customName": "ALPSTUGA air quality",
+                "firmwareVersion": "1.0.13",
+                "hardwareVersion": "P2.0",
+                "manufacturer": "IKEA of Sweden",
+                "model": "ALPSTUGA air quality monitor",
+                "productCode": "E2495",
+                "serialNumber": "UNKNOWN_SERIAL_NUMBER",
+                "discriminator": -1,
+                "permittingJoin": false,
+                "qrCode": "",
+                "setupCode": "",
+                "windowOpen": false,
+                "otaPolicy": "autoUpdate",
+                "otaProgress": 0,
+                "otaScheduleEnd": "00:00",
+                "otaScheduleStart": "00:00",
+                "otaState": "readyToCheck",
+                "otaStatus": "upToDate"
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "isOn",
+                    "customName",
+                    "windowOpen"
+                ]
+            },
+            "room": {
+                "id": "88f27266-14a8-4d66-8e4f-e10a3318868e",
+                "name": "Kitchen",
+                "color": "ikea_red_no_39",
+                "icon": "rooms_kitchen"
+            },
+            "deviceSet": [],
+            "remoteLinks": [],
+            "isHidden": false
+        }

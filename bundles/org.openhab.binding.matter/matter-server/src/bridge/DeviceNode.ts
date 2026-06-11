@@ -83,15 +83,16 @@ export class DeviceNode {
 
     public async initializeBridge(resetStorage: boolean = false) {
         await this.close();
+        // Give the OS a moment to release the operational port before re-binding.
+        await new Promise(resolve => setTimeout(resolve, 250));
         logger.info(`Initializing bridge`);
         await this.#init();
         if (resetStorage) {
             logger.info(`!!! Erasing ServerNode Storage !!!`);
             await this.server?.erase();
             await this.close();
-            // generate a new uniqueId for the bridge (bridgeBasicInformation.uniqueId)
             const ohStorage = await this.#ohBridgeStorage();
-            await ohStorage.set("basicInformation.uniqueId", BasicInformationServer.createUniqueId());
+            await ohStorage.clear();
             logger.info(`Initializing bridge again`);
             await this.#init();
         }
@@ -256,7 +257,11 @@ export class DeviceNode {
 
     public async removeFabric(fabricIndex: number) {
         const fabricManager = this.#getStartedServer().env.get(FabricManager);
-        await fabricManager.removeFabric(FabricIndex(fabricIndex));
+        const fabric = fabricManager.maybeFor(FabricIndex(fabricIndex));
+        if(!fabric) {
+            throw new Error(`Fabric ${fabricIndex} not found`);
+        }
+        await fabric.leave();
     }
 
     //private methods
@@ -307,7 +312,6 @@ export class DeviceNode {
             });
             this.aggregator = new Endpoint(AggregatorEndpoint, { id: "aggregator" });
             await this.server.add(this.aggregator);
-            await ohStorage.set("basicInformation.uniqueId", uniqueId);
             logger.info(`ServerNode created with uniqueId: ${uniqueId}`);
         } catch (e) {
             logger.error(`Error starting server: ${e}`);
@@ -327,8 +331,13 @@ export class DeviceNode {
     }
 
     async #uniqueIdForBridge() {
-        const rootContext = await this.#ohBridgeStorage();
-        return rootContext.get("basicInformation.uniqueId", BasicInformationServer.createUniqueId());
+        const basicContext = (await this.#ohBridgeStorage()).createContext("basicInformation");
+        if(await basicContext.has("uniqueId")) {
+            return await basicContext.get("uniqueId") as string;
+        }
+        const uniqueId = BasicInformationServer.createUniqueId();
+        await basicContext.set("uniqueId", uniqueId);
+        return uniqueId;
     }
 
     #sendCommissioningStatus() {

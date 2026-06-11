@@ -17,7 +17,9 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -110,7 +112,7 @@ public class HomeWizardP1MeterMeasurementPayload extends HomeWizardEnergyMeterMe
         var gas = external.stream().filter(e -> e.getType().equals(EXTERNAL_GAS_METER)).findFirst();
         try {
             return Double.parseDouble(gas.get().getValue());
-        } catch (Exception e) {
+        } catch (NumberFormatException | NoSuchElementException ex) {
             return 0.0;
         }
     }
@@ -153,15 +155,15 @@ public class HomeWizardP1MeterMeasurementPayload extends HomeWizardEnergyMeterMe
 
             try {
                 zonedDateTime = ZonedDateTime.of(year, month, day, hours, minutes, seconds, 0, timeZoneId);
-            } catch (Exception ex) {
+            } catch (DateTimeException ex) {
                 return null;
             }
-        } catch (Exception e) {
+        } catch (NumberFormatException | NoSuchElementException ex) {
             try {
                 zonedDateTime = ZonedDateTime.of(
                         LocalDateTime.parse(gas.get().getTimestamp(), DateTimeFormatter.ISO_LOCAL_DATE_TIME),
                         timeZoneId);
-            } catch (Exception ex) {
+            } catch (DateTimeParseException | NoSuchElementException e) {
                 return null;
             }
         }

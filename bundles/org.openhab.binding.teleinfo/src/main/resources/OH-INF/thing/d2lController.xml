@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="teleinfo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="d2lcontroller">
+		<label>D2L Controller</label>
+		<description>D2L dongle with Wifi Interface</description>
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
+
+		<channels>
+			<channel id="invalidFrameCounter" typeId="invalid-frame-counter"/>
+		</channels>
+
+		<config-description>
+			<parameter name="listenningPort" type="text" required="false">
+				<label>TCP Port</label>
+				<description>The tcp port we receive data from d2l</description>
+			</parameter>
+			<parameter name="encryptionKeys" type="text" required="true">
+				<label>Encryption Key</label>
+				<description>The different encryptionKey of your d2l</description>
+			</parameter>
+			<parameter name="ticMode" type="text" required="true">
+				<label>TIC Mode</label>
+				<description>TIC Mode of the telemeter (Standard TIC mode is only available on Linky telemeters)</description>
+				<default>HISTORICAL</default>
+				<options>
+					<option value="HISTORICAL">Historical</option>
+					<option value="STANDARD">Standard</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+			</parameter>
+			<parameter name="verifyChecksum" type="boolean" required="true">
+				<label>Checksum Verification</label>
+				<description>Activate checksum verification</description>
+				<default>true</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="autoRepairInvalidADPSgroupLine" type="boolean" required="false">
+				<label>Auto Repair Malformed ADPS Data</label>
+				<description>Try to auto repair malformed ADPS data from hardware issues (e.g: "ADPS032" instead of "ADPS 032"
+					expected/well-formed data)</description>
+				<default>true</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+</thing:thing-descriptions>

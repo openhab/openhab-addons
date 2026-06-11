@@ -173,7 +173,7 @@ public class InfluxDBPersistenceService implements ModifiablePersistenceService 
     }
 
     @Override
-    public Set<PersistenceItemInfo> getItemInfo() {
+    public Set<PersistenceItemInfo> getItemInfo() throws UnsupportedOperationException {
         if (checkConnection()) {
             return influxDBRepository.getStoredItemsCount().entrySet().stream().map(InfluxDBPersistentItemInfo::new)
                     .collect(Collectors.toUnmodifiableSet());

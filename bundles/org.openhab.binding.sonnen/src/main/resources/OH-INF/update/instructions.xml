@@ -48,5 +48,18 @@
 				<type>sonnen:batteryOperationMode</type>
 			</update-channel>
 		</instruction-set>
+		<instruction-set targetVersion="4">
+			<add-channel id="batteryDischargingToGrid">
+				<type>sonnen:batteryDischargingToGrid</type>
+			</add-channel>
+		</instruction-set>
+		<instruction-set targetVersion="5">
+			<add-channel id="batteryDischargeRate">
+				<type>sonnen:batteryDischargeRate</type>
+			</add-channel>
+			<add-channel id="batteryChargeRate">
+				<type>sonnen:batteryChargeRate</type>
+			</add-channel>
+		</instruction-set>
 	</thing-type>
 </update:update-descriptions>

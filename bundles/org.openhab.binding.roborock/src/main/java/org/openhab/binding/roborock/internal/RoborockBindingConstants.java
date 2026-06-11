@@ -26,7 +26,7 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class RoborockBindingConstants {
 
-    private static final String BINDING_ID = "roborock";
+    public static final String BINDING_ID = "roborock";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID ROBOROCK_ACCOUNT = new ThingTypeUID(BINDING_ID, "account");
@@ -53,18 +53,47 @@ public class RoborockBindingConstants {
     public static final String SIGN_KEY_V3 = "/api/v3/key/sign";
 
     // Protocol constants
+    /** Message digest algorithm used for key derivation helpers. */
     public static final String MD5_ALGORITHM = "MD5";
+    /** Cipher transformation for protocol-level AES/ECB encryption/decryption. */
     public static final String AES_ECB_PADDING = "AES/ECB/PKCS5Padding";
+    /** Cipher transformation for map body AES/CBC decryption. */
     public static final String AES_CBC_NO_PADDING = "AES/CBC/NoPadding";
+    /** Wire protocol version expected in Roborock transport headers. */
     public static final String VERSION_1_0 = "1.0";
+    /** Protocol id for JSON payload frames. */
+    public static final int PROTOCOL_JSON = 102;
+    /** Protocol id for map transport frames. */
+    public static final int PROTOCOL_MAP = 301;
+    /** Byte offset for the sequence number in the common message header. */
     public static final int SEQ_OFFSET = 3;
+    /** Byte offset for the random value in the common message header. */
     public static final int RANDOM_OFFSET = 7;
+    /** Byte offset for the timestamp in the common message header. */
     public static final int TIMESTAMP_OFFSET = 11;
+    /** Byte offset for the protocol id in the common message header. */
     public static final int PROTOCOL_OFFSET = 15;
+    /** Byte offset where encrypted payload bytes begin in the common message header. */
     public static final int PAYLOAD_OFFSET = 17;
+    /**
+     * Size of the protocol message header excluding CRC bytes.
+     */
     public static final int HEADER_LENGTH_WITHOUT_CRC = 19; // 3 (version) + 4 (seq) + 4 (random) + 4 (timestamp) + 2
                                                             // (protocol) + 2 (payloadLen)
+    /** Number of trailing CRC32 bytes in a transport frame. */
     public static final int CRC_LENGTH = 4;
+    /** Total bytes in the map transport header before encrypted map body bytes. */
+    public static final int MAP_TRANSPORT_HEADER_LENGTH = 24;
+    /** Endpoint field length in bytes within a map transport header. */
+    public static final int MAP_ENDPOINT_LENGTH = 8;
+    /** Reserved field length in bytes within a map transport header. */
+    public static final int MAP_RESERVED_LENGTH = 8;
+    /** Request-id field offset in bytes within a map transport header. */
+    public static final int MAP_REQUEST_ID_OFFSET = 16;
+    /** Tail field length in bytes within a map transport header. */
+    public static final int MAP_TAIL_LENGTH = 6;
+    /** Correlation timeout used to map map responses back to originating requests. */
+    public static final int MAP_REQUEST_CORRELATION_TIMEOUT_MS = 120000;
 
     // List of all Channel ids
     public static final String CHANNEL_BATTERY = "status#battery";
@@ -86,6 +115,7 @@ public class RoborockBindingConstants {
 
     public static final String CHANNEL_CONTROL = "actions#control";
     public static final String CHANNEL_COMMAND = "actions#commands";
+    public static final String CHANNEL_DP_COMMAND = "actions#dpcommand";
     public static final String CHANNEL_RPC = "actions#rpc";
     public static final String CHANNEL_VACUUM = "actions#vacuum";
     public static final String CHANNEL_FAN_CONTROL = "actions#fan";
@@ -166,6 +196,15 @@ public class RoborockBindingConstants {
     public static final String COMMAND_GET_MAP = "get_map_v1";
 
     public static final String THING_CONFIG_DUID = "duid";
+    public static final String THING_CONFIG_COMMUNICATION = "communication";
+    public static final String THING_CONFIG_LOCAL_HOST = "localHost";
+    public static final String THING_CONFIG_LOCAL_PORT = "localPort";
+    public static final String THING_CONFIG_CLOUD_MAP_REFRESH = "cloudMapRefresh";
+    public static final String THING_CONFIG_CLOUD_METADATA_REFRESH = "cloudMetadataRefresh";
+    public static final String THING_CONFIG_CLOUD_REFRESH_INTERVAL = "cloudRefreshInterval";
+    public static final String THING_CONFIG_FAST_REFRESH_INTERVAL = "fastRefreshInterval";
+    public static final String THING_PROPERTY_DEVICE_NAME = "deviceName";
+    public static final String THING_PROPERTY_PROTOCOL = "protocol";
     public static final String THING_PROPERTY_SN = "sn";
 
     public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Set.of(ROBOROCK_ACCOUNT);

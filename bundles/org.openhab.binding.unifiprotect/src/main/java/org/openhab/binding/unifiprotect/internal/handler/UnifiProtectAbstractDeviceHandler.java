@@ -14,8 +14,8 @@ package org.openhab.binding.unifiprotect.internal.handler;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -24,10 +24,9 @@ import javax.measure.quantity.Time;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.unifiprotect.internal.api.UniFiProtectApiClient;
-import org.openhab.binding.unifiprotect.internal.api.dto.ApiValueEnum;
-import org.openhab.binding.unifiprotect.internal.api.dto.Device;
-import org.openhab.binding.unifiprotect.internal.api.dto.events.BaseEvent;
+import org.openhab.binding.unifiprotect.internal.api.hybrid.UniFiProtectHybridClient;
+import org.openhab.binding.unifiprotect.internal.api.priv.dto.base.UniFiProtectModel;
+import org.openhab.binding.unifiprotect.internal.api.pub.dto.events.BaseEvent;
 import org.openhab.binding.unifiprotect.internal.config.UnifiProtectContactConfiguration;
 import org.openhab.binding.unifiprotect.internal.config.UnifiProtectDeviceConfiguration;
 import org.openhab.core.library.types.DateTimeType;
@@ -57,11 +56,11 @@ import org.slf4j.LoggerFactory;
  * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
-public abstract class UnifiProtectAbstractDeviceHandler<T extends Device> extends BaseThingHandler {
-    protected final Logger logger = LoggerFactory.getLogger(UnifiProtectAbstractDeviceHandler.class);
+public abstract class UnifiProtectAbstractDeviceHandler<T extends UniFiProtectModel> extends BaseThingHandler {
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
     protected @Nullable T device;
     protected String deviceId = "";
-    protected Map<String, State> stateCache = new HashMap<>();
+    protected Map<String, State> stateCache = new ConcurrentHashMap<>();
 
     private Map<String, ScheduledFuture<?>> latchJobs = new ConcurrentHashMap<>();
 
@@ -74,8 +73,11 @@ public abstract class UnifiProtectAbstractDeviceHandler<T extends Device> extend
         super(thing);
     }
 
-    public void updateFromDevice(T device) {
+    public void refreshFromDevice(T device) {
         this.device = device;
+        if (getThing().getStatus() != ThingStatus.ONLINE) {
+            updateStatus(ThingStatus.ONLINE);
+        }
     }
 
     public abstract void handleEvent(BaseEvent event, WSEventType eventType);
@@ -110,7 +112,7 @@ public abstract class UnifiProtectAbstractDeviceHandler<T extends Device> extend
     }
 
     public void markGone() {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "GONE");
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "@text/offline.gone");
     }
 
     protected void refreshState(String channelId) {
@@ -120,15 +122,23 @@ public abstract class UnifiProtectAbstractDeviceHandler<T extends Device> extend
         }
     }
 
-    protected @Nullable UniFiProtectApiClient getApiClient() {
+    protected @Nullable UniFiProtectHybridClient getApiClient() {
         Thing bridge = getBridge();
-        if (bridge != null) {
-            BaseThingHandler h = (BaseThingHandler) bridge.getHandler();
-            if (h instanceof UnifiProtectNVRHandler) {
-                return ((UnifiProtectNVRHandler) h).getApiClient();
-            }
+        if (bridge != null && bridge.getHandler() instanceof UnifiProtectNVRHandler nvrHandler) {
+            return nvrHandler.getApiClient();
         }
         return null;
+    }
+
+    /**
+     * Attach a whenComplete handler that logs failures at debug level.
+     */
+    protected <T> void logOnFailure(CompletableFuture<T> future, String action) {
+        future.whenComplete((result, ex) -> {
+            if (ex != null) {
+                logger.debug("Failed to {}", action, ex);
+            }
+        });
     }
 
     protected boolean hasChannel(String channelId) {
@@ -149,10 +159,6 @@ public abstract class UnifiProtectAbstractDeviceHandler<T extends Device> extend
 
     protected void updateStringChannel(String channelId, @Nullable String value) {
         updateState(channelId, value == null ? UnDefType.NULL : new StringType(value));
-    }
-
-    protected void updateApiValueChannel(String channelId, ApiValueEnum value) {
-        updateStringChannel(channelId, value.getApiValue());
     }
 
     protected void updateDateTimeChannel(String channelId, long epochMillis) {

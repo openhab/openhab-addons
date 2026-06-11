@@ -6,6 +6,7 @@
 
 	<config-description uri="thing-type:shelly:blubattery">
 		<parameter name="deviceAddress" type="text" required="true">
+			<context>mac-address</context>
 			<label>MAC Address</label>
 			<description>MAC Address of the Shelly device</description>
 		</parameter>

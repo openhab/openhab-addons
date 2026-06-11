@@ -14,8 +14,12 @@ package org.openhab.binding.roborock.internal.util;
 
 import static org.openhab.binding.roborock.internal.RoborockBindingConstants.*;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -23,11 +27,14 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.HexFormat;
 import java.util.zip.CRC32;
+import java.util.zip.GZIPInputStream;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.GCMParameterSpec;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -42,6 +49,31 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public final class ProtocolUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProtocolUtils.class);
+    private static final String SHA_256_ALGORITHM = "SHA-256";
+    private static final String AES_GCM_NO_PADDING = "AES/GCM/NoPadding";
+    private static final String AES_CBC_PKCS5_PADDING = "AES/CBC/PKCS5Padding";
+    private static final int GCM_TAG_LENGTH_BITS = 128;
+    private static final int PROTOCOL_GENERAL_REQUEST = 4;
+    private static final int PROTOCOL_GENERAL_RESPONSE = 5;
+    private static final String VERSION_L01 = "L01";
+    private static final String VERSION_B01 = "B01";
+    // "\x81S\x19" uses identical B01 crypto
+    private static final String VERSION_B01_ALT = "\u0081S\u0019";
+    private static final String B01_SALT = "5wwh9ikChRjASpMU8cxg7o1d2E";
+    private static final int MAX_GZIP_DECOMPRESSED_SIZE_BYTES = 10 * 1024 * 1024;
+    private static final int GZIP_DECOMPRESSION_BUFFER_SIZE_BYTES = 8192;
+
+    public sealed interface DecodedMessage permits JsonPayloadResponse, MapPayloadResponse, IgnoredResponse {
+    }
+
+    public record JsonPayloadResponse(String payload) implements DecodedMessage {
+    }
+
+    public record MapPayloadResponse(int requestId, byte[] payload) implements DecodedMessage {
+    }
+
+    public record IgnoredResponse() implements DecodedMessage {
+    }
 
     private static byte[] md5bin(String key) {
         try {
@@ -83,8 +115,144 @@ public final class ProtocolUtils {
         }
     }
 
+    public static byte[] encryptL01(byte[] payload, String localKey, int timestamp, int sequence, int nonce,
+            int connectNonce, int ackNonce) throws RoborockException {
+        try {
+            byte[] key = deriveL01Key(localKey, timestamp);
+            byte[] iv = deriveL01Iv(timestamp, nonce, sequence);
+            byte[] aad = deriveL01Aad(timestamp, nonce, sequence, connectNonce, ackNonce);
+
+            Cipher cipher = Cipher.getInstance(AES_GCM_NO_PADDING);
+            SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
+            GCMParameterSpec gcmSpec = new GCMParameterSpec(GCM_TAG_LENGTH_BITS, iv);
+            cipher.init(Cipher.ENCRYPT_MODE, keySpec, gcmSpec);
+            cipher.updateAAD(aad);
+            return cipher.doFinal(payload);
+        } catch (GeneralSecurityException e) {
+            throw new RoborockException("Failed to encrypt data using AES/GCM/NoPadding (L01).", e);
+        }
+    }
+
+    public static byte[] decryptL01(byte[] payload, String localKey, int timestamp, int sequence, int nonce,
+            int connectNonce, int ackNonce) throws RoborockException {
+        try {
+            byte[] key = deriveL01Key(localKey, timestamp);
+            byte[] iv = deriveL01Iv(timestamp, nonce, sequence);
+            byte[] aad = deriveL01Aad(timestamp, nonce, sequence, connectNonce, ackNonce);
+
+            Cipher cipher = Cipher.getInstance(AES_GCM_NO_PADDING);
+            SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
+            GCMParameterSpec gcmSpec = new GCMParameterSpec(GCM_TAG_LENGTH_BITS, iv);
+            cipher.init(Cipher.DECRYPT_MODE, keySpec, gcmSpec);
+            cipher.updateAAD(aad);
+            return cipher.doFinal(payload);
+        } catch (GeneralSecurityException e) {
+            throw new RoborockException("Failed to decrypt data using AES/GCM/NoPadding (L01).", e);
+        }
+    }
+
+    private static byte[] deriveL01Key(String localKey, int timestamp) throws RoborockException {
+        String encodedTimestamp = encodeTimestamp(timestamp);
+        byte[] hashInput = (encodedTimestamp + localKey + SALT).getBytes(StandardCharsets.UTF_8);
+        try {
+            return MessageDigest.getInstance(SHA_256_ALGORITHM).digest(hashInput);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RoborockException("SHA-256 algorithm not available for L01 key derivation.", e);
+        }
+    }
+
+    private static byte[] deriveL01Iv(int timestamp, int nonce, int sequence) throws RoborockException {
+        byte[] digestInput = new byte[12];
+        writeInt32BE(digestInput, sequence, 0);
+        writeInt32BE(digestInput, nonce, 4);
+        writeInt32BE(digestInput, timestamp, 8);
+        try {
+            byte[] digest = MessageDigest.getInstance(SHA_256_ALGORITHM).digest(digestInput);
+            return Arrays.copyOf(digest, 12);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RoborockException("SHA-256 algorithm not available for L01 IV derivation.", e);
+        }
+    }
+
+    private static byte[] deriveL01Aad(int timestamp, int nonce, int sequence, int connectNonce, int ackNonce) {
+        byte[] aad = new byte[20];
+        writeInt32BE(aad, sequence, 0);
+        writeInt32BE(aad, connectNonce, 4);
+        writeInt32BE(aad, ackNonce, 8);
+        writeInt32BE(aad, nonce, 12);
+        writeInt32BE(aad, timestamp, 16);
+        return aad;
+    }
+
+    // ---------- B01 (AES-128-CBC) ----------
+
+    /**
+     * Encrypts a payload for the B01 protocol (used by Q7 and similar models).
+     * The "\x81S\x19" protocol variant uses identical crypto.
+     *
+     * @param payload the plaintext bytes
+     * @param localKey the device local key (must be exactly 16 UTF-8 bytes)
+     * @param random the 32-bit random value from the frame header
+     */
+    public static byte[] encryptB01(byte[] payload, String localKey, int random) throws RoborockException {
+        byte[] keyBytes = localKey.getBytes(StandardCharsets.UTF_8);
+        if (keyBytes.length != 16) {
+            throw new RoborockException(
+                    "B01 localKey must be exactly 16 bytes (UTF-8) but was " + keyBytes.length + ".");
+        }
+        try {
+            SecretKeySpec key = new SecretKeySpec(keyBytes, "AES");
+            IvParameterSpec iv = deriveB01IV(random);
+            Cipher cipher = Cipher.getInstance(AES_CBC_PKCS5_PADDING);
+            cipher.init(Cipher.ENCRYPT_MODE, key, iv);
+            return cipher.doFinal(payload);
+        } catch (GeneralSecurityException e) {
+            throw new RoborockException("Failed to encrypt data using AES/CBC/PKCS5Padding (B01).", e);
+        }
+    }
+
+    /**
+     * Decrypts a B01 protocol payload.
+     *
+     * @param payload the encrypted bytes from the frame
+     * @param localKey the device local key (must be exactly 16 UTF-8 bytes)
+     * @param random the 32-bit random value from the frame header
+     */
+    public static byte[] decryptB01(byte[] payload, String localKey, int random) throws RoborockException {
+        byte[] keyBytes = localKey.getBytes(StandardCharsets.UTF_8);
+        if (keyBytes.length != 16) {
+            throw new RoborockException(
+                    "B01 localKey must be exactly 16 bytes (UTF-8) but was " + keyBytes.length + ".");
+        }
+        try {
+            SecretKeySpec key = new SecretKeySpec(keyBytes, "AES");
+            IvParameterSpec iv = deriveB01IV(random);
+            Cipher cipher = Cipher.getInstance(AES_CBC_PKCS5_PADDING);
+            cipher.init(Cipher.DECRYPT_MODE, key, iv);
+            return cipher.doFinal(payload);
+        } catch (GeneralSecurityException e) {
+            throw new RoborockException("Failed to decrypt data using AES/CBC/PKCS5Padding (B01).", e);
+        }
+    }
+
+    /**
+     * Derives the 16-byte IV for B01 encryption/decryption.
+     *
+     * Algorithm (matches cryptoEngine.ts#deriveB01IV in the ioBroker reference implementation):
+     * 1. Encode {@code random} as big-endian 4 bytes, hex-encode to 8 lowercase chars
+     * 2. Concatenate with B01_SALT
+     * 3. MD5 the result to a 32-char lowercase hex string
+     * 4. Take chars [9, 25) as UTF-8 bytes — that is the IV
+     */
+    private static IvParameterSpec deriveB01IV(int random) {
+        String randomHex = String.format("%08x", random);
+        String md5 = md5Hex(randomHex + B01_SALT);
+        String ivStr = md5.substring(9, 25);
+        return new IvParameterSpec(ivStr.getBytes(StandardCharsets.UTF_8));
+    }
+
     private static String bytesToString(byte[] data, int start, int length) {
-        return new String(data, start, length, StandardCharsets.UTF_8);
+        return new String(data, start, length, StandardCharsets.ISO_8859_1);
     }
 
     /**
@@ -182,17 +350,71 @@ public final class ProtocolUtils {
     }
 
     /**
-     * Handles messages with protocol 301 (images).
-     * This method is currently a placeholder as image handling is not fully implemented.
+     * Handles messages with protocol 301 (map/image payload).
+     * Decrypts the transport payload, validates and parses the map transport header,
+     * then decrypts, unpads, and decompresses the map body.
      *
      * @param message The full message byte array.
      * @param header The parsed message header.
-     * @param nonce The nonce for decryption.
-     * @return An empty string, indicating no string result for image protocol.
+     * @param localKey The local key for transport payload decryption.
+     * @param nonce The nonce used for AES/CBC decryption of the map body.
+     * @param endpointPrefix Optional endpoint prefix for validation/logging.
+     * @return A {@link MapPayloadResponse} when decoding succeeds, otherwise {@link IgnoredResponse}.
      */
-    private static String handleImageProtocol(byte[] message, MessageHeader header, byte[] nonce) {
-        LOGGER.debug("Protocol 301 (image) received, not handled yet.");
-        return "";
+    private static DecodedMessage handleImageProtocol(byte[] message, MessageHeader header, String localKey,
+            byte[] nonce, String endpointPrefix) {
+        int payloadStart = HEADER_LENGTH_WITHOUT_CRC;
+        int payloadEnd = payloadStart + header.payloadLen;
+        if (payloadEnd > message.length - CRC_LENGTH) {
+            LOGGER.debug("Protocol {} payload boundaries are invalid. payloadLen={}", PROTOCOL_MAP, header.payloadLen);
+            return new IgnoredResponse();
+        }
+
+        byte[] payload = Arrays.copyOfRange(message, payloadStart, payloadEnd);
+        byte[] decryptedTransportPayload;
+        String encryptionKey = encodeTimestamp(header.timestamp) + localKey + SALT;
+        try {
+            decryptedTransportPayload = decrypt(payload, encryptionKey);
+        } catch (RoborockException e) {
+            LOGGER.debug("Failed to decrypt protocol {} transport payload: {}", PROTOCOL_MAP, e.getMessage());
+            return new IgnoredResponse();
+        }
+
+        payload = decryptedTransportPayload;
+        if (payload.length < MAP_TRANSPORT_HEADER_LENGTH) {
+            LOGGER.debug("Protocol {} payload too short: {}", PROTOCOL_MAP, payload.length);
+            return new IgnoredResponse();
+        }
+
+        byte[] endpointBytes = Arrays.copyOfRange(payload, 0, MAP_ENDPOINT_LENGTH);
+        byte[] reservedBytes = Arrays.copyOfRange(payload, MAP_ENDPOINT_LENGTH,
+                MAP_ENDPOINT_LENGTH + MAP_RESERVED_LENGTH);
+        int requestId = readInt16LE(payload, MAP_REQUEST_ID_OFFSET);
+        byte[] tailBytes = Arrays.copyOfRange(payload, MAP_REQUEST_ID_OFFSET + 2,
+                MAP_REQUEST_ID_OFFSET + 2 + MAP_TAIL_LENGTH);
+        String endpoint = new String(endpointBytes, StandardCharsets.UTF_8).replace("\0", "");
+        if (!endpointPrefix.isEmpty() && !endpoint.startsWith(endpointPrefix)) {
+            LOGGER.debug(
+                    "Protocol {} endpoint mismatch for requestId={}. expectedPrefix='{}', actualEndpoint='{}'. Continuing decode.",
+                    PROTOCOL_MAP, requestId, endpointPrefix, endpoint);
+        }
+
+        if (LOGGER.isTraceEnabled()) {
+            LOGGER.trace("Decoded map transport header. endpoint='{}' reserved={} tail={}", endpoint,
+                    reservedBytes.length, tailBytes.length);
+        }
+
+        byte[] encryptedBody = Arrays.copyOfRange(payload, MAP_TRANSPORT_HEADER_LENGTH, payload.length);
+
+        try {
+            byte[] decryptedBody = decryptCbcNoPadding(encryptedBody, nonce);
+            byte[] unpaddedBody = unpadPkcs7(decryptedBody);
+            byte[] decompressed = decompressGzip(unpaddedBody);
+            return new MapPayloadResponse(requestId, decompressed);
+        } catch (RoborockException e) {
+            LOGGER.debug("Failed to decode protocol {} map payload: {}", PROTOCOL_MAP, e.getMessage());
+            return new IgnoredResponse();
+        }
     }
 
     /**
@@ -204,7 +426,8 @@ public final class ProtocolUtils {
      * @param localKey The local key for decryption.
      * @return The decrypted payload as a string, or an empty string on decryption failure.
      */
-    private static String handleDataProtocol(byte[] message, MessageHeader header, String localKey) {
+    private static String handleDataProtocol(byte[] message, MessageHeader header, String localKey, int connectNonce,
+            int ackNonce, boolean handshakeContextAvailable) {
         int payloadStart = HEADER_LENGTH_WITHOUT_CRC;
         int payloadEnd = payloadStart + header.payloadLen;
 
@@ -214,9 +437,23 @@ public final class ProtocolUtils {
 
         byte[] payload = Arrays.copyOfRange(message, payloadStart, payloadEnd);
 
-        String encryptionKey = encodeTimestamp(header.timestamp) + localKey + SALT;
         try {
-            byte[] decryptedResult = decrypt(payload, encryptionKey);
+            byte[] decryptedResult;
+            if (VERSION_L01.equals(header.version)) {
+                if (!handshakeContextAvailable) {
+                    LOGGER.debug(
+                            "Received L01 frame but local handshake context is unavailable (connectNonce={}, ackNonce={}).",
+                            connectNonce, ackNonce);
+                    return "";
+                }
+                decryptedResult = decryptL01(payload, localKey, header.timestamp, header.sequence, header.random,
+                        connectNonce, ackNonce);
+            } else if (VERSION_B01.equals(header.version) || VERSION_B01_ALT.equals(header.version)) {
+                decryptedResult = decryptB01(payload, localKey, header.random);
+            } else {
+                String encryptionKey = encodeTimestamp(header.timestamp) + localKey + SALT;
+                decryptedResult = decrypt(payload, encryptionKey);
+            }
             return new String(decryptedResult, StandardCharsets.UTF_8);
         } catch (RoborockException e) {
             LOGGER.debug("Exception decrypting payload for protocol 102: {}", e.getMessage(), e);
@@ -235,30 +472,56 @@ public final class ProtocolUtils {
      *         or the protocol is not handled.
      */
     public static String handleMessage(byte[] message, String localKey, byte[] nonce) {
+        DecodedMessage decoded = decodeMessage(message, localKey, nonce, "");
+        if (decoded instanceof JsonPayloadResponse jsonPayloadResponse) {
+            return jsonPayloadResponse.payload();
+        }
+        return "";
+    }
+
+    public static DecodedMessage decodeMessage(byte[] message, String localKey, byte[] nonce, String endpointPrefix) {
+        return decodeMessage(message, localKey, nonce, endpointPrefix, -1, -1, false);
+    }
+
+    public static DecodedMessage decodeMessage(byte[] message, String localKey, byte[] nonce, String endpointPrefix,
+            int connectNonce, int ackNonce) {
+        boolean handshakeContextAvailable = !(connectNonce == -1 && ackNonce == -1);
+        return decodeMessage(message, localKey, nonce, endpointPrefix, connectNonce, ackNonce,
+                handshakeContextAvailable);
+    }
+
+    public static DecodedMessage decodeMessage(byte[] message, String localKey, byte[] nonce, String endpointPrefix,
+            int connectNonce, int ackNonce, boolean handshakeContextAvailable) {
         if (message.length < HEADER_LENGTH_WITHOUT_CRC + CRC_LENGTH) {
-            return "";
+            return new IgnoredResponse();
         }
 
         MessageHeader header = parseMessageHeader(message);
-        if (!VERSION_1_0.equals(header.version)) {
-            LOGGER.debug("Received message version is not 1.0: {}", header.version);
-            return "";
+        if (!VERSION_1_0.equals(header.version) && !VERSION_L01.equals(header.version)
+                && !VERSION_B01.equals(header.version) && !VERSION_B01_ALT.equals(header.version)) {
+            LOGGER.debug("Received unsupported message version: {}", header.version);
+            return new IgnoredResponse();
         }
 
         int messageCrc32 = readInt32BE(message, message.length - CRC_LENGTH);
         if (!validateCrc32(message, messageCrc32)) {
             LOGGER.warn("Message CRC32 checksum mismatch. Message discarded.");
-            return "";
+            return new IgnoredResponse();
         }
 
         switch (header.protocol) {
-            case 301:
-                return handleImageProtocol(message, header, nonce);
-            case 102:
-                return handleDataProtocol(message, header, localKey);
+            case PROTOCOL_MAP:
+                return handleImageProtocol(message, header, localKey, nonce, endpointPrefix);
+            case PROTOCOL_JSON, PROTOCOL_GENERAL_RESPONSE, PROTOCOL_GENERAL_REQUEST:
+                String payload = handleDataProtocol(message, header, localKey, connectNonce, ackNonce,
+                        handshakeContextAvailable);
+                if (!payload.isEmpty()) {
+                    return new JsonPayloadResponse(payload);
+                }
+                return new IgnoredResponse();
             default:
                 LOGGER.debug("Unknown protocol received: {}", header.protocol);
-                return "";
+                return new IgnoredResponse();
         }
     }
 
@@ -267,6 +530,65 @@ public final class ProtocolUtils {
      */
     private record MessageHeader(String version, int sequence, int random, int timestamp, int protocol,
             int payloadLen) {
+    }
+
+    private static int readInt16LE(byte[] data, int start) {
+        return (data[start] & 0xFF) | ((data[start + 1] & 0xFF) << 8);
+    }
+
+    private static byte[] decryptCbcNoPadding(byte[] payload, byte[] key) throws RoborockException {
+        if (payload.length == 0 || payload.length % AES_BLOCK_SIZE != 0 || key.length != AES_BLOCK_SIZE) {
+            throw new RoborockException("Invalid map payload/key size for AES-CBC decryption.");
+        }
+
+        try {
+            Cipher cipher = Cipher.getInstance(AES_CBC_NO_PADDING);
+            SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
+            cipher.init(Cipher.DECRYPT_MODE, keySpec, new IvParameterSpec(new byte[AES_BLOCK_SIZE]));
+            return cipher.doFinal(payload);
+        } catch (GeneralSecurityException e) {
+            throw new RoborockException("Failed to decrypt map payload with AES-CBC.", e);
+        }
+    }
+
+    private static byte[] unpadPkcs7(byte[] bytes) throws RoborockException {
+        if (bytes.length == 0) {
+            throw new RoborockException("Cannot unpad empty payload.");
+        }
+
+        int padLength = bytes[bytes.length - 1] & 0xFF;
+        if (padLength <= 0 || padLength > AES_BLOCK_SIZE || padLength > bytes.length) {
+            throw new RoborockException("Invalid PKCS7 padding in map payload.");
+        }
+
+        for (int i = bytes.length - padLength; i < bytes.length; i++) {
+            if ((bytes[i] & 0xFF) != padLength) {
+                throw new RoborockException("Invalid PKCS7 padding bytes in map payload.");
+            }
+        }
+
+        return Arrays.copyOf(bytes, bytes.length - padLength);
+    }
+
+    private static byte[] decompressGzip(byte[] payload) throws RoborockException {
+        try (ByteArrayInputStream bais = new ByteArrayInputStream(payload);
+                GZIPInputStream gzipInputStream = new GZIPInputStream(bais);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            byte[] buffer = new byte[GZIP_DECOMPRESSION_BUFFER_SIZE_BYTES];
+            int decompressedBytes = 0;
+            int read;
+            while ((read = gzipInputStream.read(buffer)) != -1) {
+                if (read > MAX_GZIP_DECOMPRESSED_SIZE_BYTES - decompressedBytes) {
+                    throw new RoborockException("Map payload decompressed size exceeds limit of "
+                            + MAX_GZIP_DECOMPRESSED_SIZE_BYTES + " bytes.");
+                }
+                baos.write(buffer, 0, read);
+                decompressedBytes += read;
+            }
+            return baos.toByteArray();
+        } catch (IOException e) {
+            throw new RoborockException("Failed to decompress map payload.", e);
+        }
     }
 
     public static String getEndpoint(Rriot rriot) {

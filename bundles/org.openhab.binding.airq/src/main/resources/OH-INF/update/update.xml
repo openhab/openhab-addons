@@ -95,6 +95,12 @@
 				<description>Maximum tolerated error in the Mold-Free Index measurement.</description>
 			</add-channel>
 		</instruction-set>
+		<instruction-set targetVersion="4">
+			<add-channel id="radon">
+				<type>airq:radon</type>
+				<label>Radon</label>
+			</add-channel>
+		</instruction-set>
 	</thing-type>
 
 </update:update-descriptions>

@@ -49,7 +49,7 @@ import org.openhab.core.types.RefreshType;
 @NonNullByDefault
 public class VelbusNewDimmerHandler extends VelbusSensorWithAlarmClockHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(
-            Arrays.asList(THING_TYPE_VMB4LEDPWM_20, THING_TYPE_VMB8DC_20));
+            Arrays.asList(THING_TYPE_VMB8DC_20, THING_TYPE_VMB2DC_20));
     private @Nullable ScheduledFuture<?> refreshJob;
     private @NonNullByDefault({}) VelbusSensorConfig sensorConfig;
 
@@ -88,13 +88,8 @@ public class VelbusNewDimmerHandler extends VelbusSensorWithAlarmClockHandler {
     }
 
     private void initializeColorChannel() {
-        byte curveType;
-
-        curveType = (this.thing.getThingTypeUID().equals(THING_TYPE_VMB8DC_20)) ? CURVE_TYPE_LINEAR
-                : CURVE_TYPE_EXPONENTIAL;
-
         for (int i = 0; i <= 7; i++) {
-            colorChannels[i] = new VelbusColorChannel(curveType);
+            colorChannels[i] = new VelbusColorChannel(CURVE_TYPE_LINEAR);
         }
     }
 

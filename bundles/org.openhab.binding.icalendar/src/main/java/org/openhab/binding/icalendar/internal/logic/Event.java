@@ -31,11 +31,13 @@ public class Event implements Comparable<Event> {
     public final Instant end;
     public final Instant start;
     public final String title;
+    public final String location;
 
-    public Event(String title, Instant start, Instant end, String description) {
+    public Event(String title, Instant start, Instant end, String description, String location) {
         this.title = title;
         this.start = start;
         this.end = end;
+        this.location = location;
 
         if (description.isEmpty()) {
             return;
@@ -67,7 +69,16 @@ public class Event implements Comparable<Event> {
         }
         final Event otherEvent = (Event) other;
         return (this.title.equals(otherEvent.title) && this.start.equals(otherEvent.start)
-                && this.end.equals(otherEvent.end));
+                && this.end.equals(otherEvent.end) && this.location.equals(otherEvent.location));
+    }
+
+    @Override
+    public int hashCode() {
+        int result = title.hashCode();
+        result = 31 * result + start.hashCode();
+        result = 31 * result + end.hashCode();
+        result = 31 * result + location.hashCode();
+        return result;
     }
 
     @Override

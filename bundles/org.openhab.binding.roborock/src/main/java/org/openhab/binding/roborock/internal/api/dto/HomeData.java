@@ -80,11 +80,11 @@ public class HomeData {
         @SerializedName("124")
         public int waterBoxMode;
         @SerializedName("125")
-        public int mainBrushWorkTime;
+        public long mainBrushWorkTime;
         @SerializedName("126")
-        public int sideBrushWorkTime;
+        public long sideBrushWorkTime;
         @SerializedName("127")
-        public int filterWorkTime;
+        public long filterWorkTime;
         @SerializedName("128")
         public int additionProps;
         @SerializedName("133")

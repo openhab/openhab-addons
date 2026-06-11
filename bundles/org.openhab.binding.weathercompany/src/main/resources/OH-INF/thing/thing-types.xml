@@ -140,7 +140,7 @@
 				<description>This is the night-time weather forecast in 3 days</description>
 			</channel-group>
 			<channel-group id="forecastDay4Day" typeId="forecastDaypart">
-				<label>Daytime Weather Forecast Day 3</label>
+				<label>Daytime Weather Forecast Day 4</label>
 				<description>This is the daytime weather forecast in 4 days</description>
 			</channel-group>
 			<channel-group id="forecastDay4Night" typeId="forecastDaypart">
@@ -403,7 +403,7 @@
 		<item-type>Number</item-type>
 		<label>QC Status</label>
 		<description>QC status</description>
-		<state readOnly="true" pattern="%.0f %unit%"/>
+		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 
 	<channel-type id="qualifierPhrase" advanced="true">

@@ -198,10 +198,28 @@ message VehicleAttributeStatus {
     ChargeProgramsValue charge_programs_value = 31;
     ChargingBreakClockTimerValue chargingbreak_clocktimer_value = 32;
     ChargingPowerControl charging_power_control = 33;
+    KeylineActivationStateValue keyline_activation_state_value = 36;
+    NextDepartureTimeValue next_departure_time_value = 37;
     TcuConnectionStateLowChannelStatus tcu_connection_state_low_channel = 38;
+    TurnOffEnginePreWarning turn_off_engine_pre_warning = 39;
+    ChildPresenceDetectionWarningLastEvent child_presence_detection_warning_last_event = 40;
+    ChildPresenceDetectionWarningLevel child_presence_detection_warning_level = 41;
+    PerformanceLimitationModeStatus performance_limitation_mode_status = 42;
+    BatteryHealth battery_health = 43;
     PrecondState precond_state = 44;
+    ExteriorMonitoringStatus exterior_monitoring_status = 45;
+    InteriorMonitoringStatus interior_monitoring_status = 46;
+    RemoteUpdateStartStatus remote_update_start_status = 47;
+    SohCalibrationRequired soh_calibration_required = 48;
+    SocCalibrationRequest soc_calibration_request = 49;
+    SohCalibrationRequest soh_calibration_request = 50;
+    SohCalibrationState soh_calibration_state = 51;
+    SohCalibrationPlanned soh_calibration_planned = 52;
+    SohFavorableConditions soh_favorable_conditions = 53;
+    SohCalibrationNotifications soh_calibration_notifications = 54;
     ChargingPowerRestrictions charging_power_restrictions = 55;
     ChargingCouplerErrorDetails charging_coupler_error_details = 56;
+    ChargingStopErrorDetails charging_stop_error_details = 57;
     ChargingErrorVehicleNoSupport400V charging_error_vehicle_no_support_400v = 58;
     ChargingErrorImpossibleChangeTo400V charging_error_impossible_change_to_400v = 59;
     ChargingErrorImpossibleChangeTo800V charging_error_impossible_change_to_800v = 60;
@@ -222,19 +240,351 @@ message VehicleAttributeStatus {
     EvsePairingState evse_pairing_state = 79;
     ChargingPredictionSoc charging_prediction_soc = 80;
     ChargingPredictionDepartureTime charging_prediction_departure_time = 81;
-    // ChargingScheduleActive charging_schedule_active = 82;
+    ChargingScheduleActive charging_schedule_active = 82;
+    DcChargingProfile dc_charging_profile = 83;
     ChargeFlaps charge_flaps = 84;
     ChargeInlets charge_inlets = 85;
     ChargingTimer charging_timer = 86;
-    // ParkEventPictureTransmissionStatus park_event_picture_transmission_status = 87;
+    ParkEventPictureTransmissionStatus park_event_picture_transmission_status = 87;
     ChargingScheduleRequested charging_schedule_requested = 88;
     ChargingFlapErrorDetails charging_flap_error_details = 89;
     ChargingCompatibilityError charging_compatibility_error = 90;
     HvBatteryPrecondAvailability hv_battery_precond_availability = 91;
     HvBatteryPrecondRequestState hv_battery_precond_request_state = 92;
     HvBatteryPrecondState hv_battery_precond_state = 93;
-
+    AmgStageModeState amg_stage_mode_state = 94;
+    AmgStageModeError amg_stage_mode_error = 95;
   }
+}
+
+message AmgStageModeError {
+  bool rear_spoiler = 1;
+  bool bow_wave = 2;
+  bool diffuser = 3;
+  bool light = 4;
+  bool mirror = 5;
+  bool sound = 6;
+  bool air_control_system = 7;
+  bool venturi = 8;
+}
+
+enum AmgStageModeState {
+  AMG_STAGE_MODE_STATE_STAGING_NOT_ACTIVE = 0;
+  AMG_STAGE_MODE_STATE_REVERTING_IN_PROGRESS = 1;
+  AMG_STAGE_MODE_STATE_TRANSFORMING_FINISHED_TRANSFORMED_POS = 2;
+  AMG_STAGE_MODE_STATE_TRANSFORMING_FINISHED_DEFAULT_POS = 3;
+  AMG_STAGE_MODE_STATE_TRANSFORMATION_ABORTED = 4;
+}
+
+// Child presence detection warning level
+enum ChildPresenceDetectionWarningLevel {
+  NO_WARNING = 0;
+  INITIAL = 1;
+  ESCALATION = 2;
+  SILENT_ESCALATION = 3;
+  WARNING_LEVEL_DEACTIVATED_ERROR = 4;
+  WARNING_LEVEL_ACTIVE_ECALL_SOON = 5;
+  WARNING_LEVEL_ACTIVE_ECALL_TRANSMITTED = 6;
+  WARNING_LEVEL_ACTIVE_ECALL_NOT_AVAILABLE = 7;
+  WARNING_LEVEL_DELAYED = 8;
+  WARNING_LEVEL_ACTIVE_NO_ECALL_SIL_ESC = 9;
+  WARNING_LEVEL_ACTIVE_NO_ECALL_ESC = 10;
+  WARNING_LEVEL_ACTIVE_ECALL_NOT_AVAILABLE_SECOND_STAGE = 11;
+}
+
+// Child presence detection warning last event
+enum ChildPresenceDetectionWarningLastEvent {
+  NO_WARNING_INITIAL = 0;
+  WARNING_ACTIVE_TEMPERATURE_DECREASE = 1;
+  WARNING_ACTIVE_TEMPERATURE_INCREASE = 2;
+  WARNING_ACTIVE_BATTERY_LOW = 3;
+  WARNING_ACTIVE_ECALL_SOON = 4;
+  WARNING_ACTIVE_ECALL_TRANSMITTED = 5;
+  WARNING_DEACTIVATED = 6;
+  NO_WARNING_NO_EVENT = 7;
+  WARNING_DELAYED = 8;
+  WARNING_DEACTIVATED_BATTERY = 9;
+  WARNING_DEACTIVATED_ERROR = 10;
+  WARNING_DEACTIVATED_UNLOCK = 11;
+  WARNING_ACTIVE_ECALL_NOT_AVAILABLE = 12;
+  WARNING_ACTIVE_ECALL_NOT_AVAILABLE_PUSH_NOTIFICATION = 13;
+  CAMERA_NOT_AVAILABLE = 14;
+}
+
+// Keyline activation states for vehicle keys
+enum KeylineActivationStates {
+  UNKNOWN_KEYLINE_ACTIVATION_STATE = 0;
+  ALL_ACTIVE = 1;
+  SELECTIVE_DEACTIVATED = 2;
+  ALL_DEACTIVATED = 3;
+}
+
+// Keyline activation state value with active keylines
+message KeylineActivationStateValue {
+  KeylineActivationStates state = 1;
+  repeated int64 active_keylines = 2;
+}
+
+// Next departure time value
+message NextDepartureTimeValue {
+  int64 hour = 1;
+  int64 minute = 2;
+}
+
+// Performance limitation mode status
+enum PerformanceLimitationModeStatus {
+  PLM_NO_WARNING = 0;
+  SVH_EVENT_MANAGED = 1;
+  PLM_REQUESTED = 2;
+  PLM_SUCCESSFUL_REQUESTED = 3;
+  PLM_NOT_AUTHORIZED = 4;
+  PLM_ERROR = 5;
+  PLM_INCAPABLE = 6;
+}
+
+// Exterior monitoring status
+enum ExteriorMonitoringStatus {
+  EXM_IDLE = 0;
+  EXM_WAKE_UP = 1;
+  EXM_REQUEST_SUBMITTED = 2;
+  EXM_RECORDING = 3;
+  EXM_ANNOUNCE = 4;
+  EXM_UPLOADING = 5;
+  EXM_COMPLETED = 6;
+  EXM_AE_REQUEST_DENIED = 101;
+  EXM_AE_INCAPABLE = 106;
+  EXM_AE_OVERRULED = 108;
+  EXM_AE_PLAY_PROTECTION_ACTIVE = 110;
+  EXM_AE_PRECONDITION_MISSING = 111;
+}
+
+// Interior monitoring status
+enum InteriorMonitoringStatus {
+  INM_IDLE = 0;
+  INM_WAKE_UP = 1;
+  INM_RECORDING = 2;
+  INM_PICTURE_TAKEN = 3;
+  INM_ANNOUNCE = 4;
+  INM_UPLOADING = 5;
+  INM_COMPLETED = 6;
+  INM_CAMERA_BROKEN = 101;
+  INM_MEMORY_FULL = 103;
+  INM_PRIVACY_MODE_ACTIVE = 105;
+  INM_PICTURE_TAKING_DISABLED = 106;
+  INM_ACTIVE_BURSTMODE = 108;
+  INM_PICTURE_TAKING_INTERRUPTED = 110;
+}
+
+// Update status for remote updates
+enum UpdateStatus {
+  UPDATE_STATUS_UNKNOWN = 0;
+  AWAIT_REPROGRAMMING = 1;
+  AWAIT_REPROGRAMMING_STARTABLE = 2;
+  REPROG_ACTIVE = 3;
+  POSTPONED = 4;
+  SUCCESSFUL = 5;
+  FAILURE = 6;
+  PANIC = 7;
+  ERROR = 8;
+  CONFIRMED_STARTED = 9;
+}
+
+// Remote update start status message
+message RemoteUpdateStartStatus {
+  int32 duration_after_runtime = 1;
+  string package_id = 2;
+  UpdateStatus update_status = 3;
+  string release_id = 4;
+}
+
+// SOH calibration planned status
+enum SohCalibrationPlanned {
+  SOH_CALIBRATION_NOT_PLANNED = 0;
+  SOH_CALIBRATION_PLANNED = 1;
+}
+
+// DC charging profile
+enum DcChargingProfile {
+  DC_CHARGING_PROFILE_UNKNOWN = 0;
+  DC_CHARGING_PROFILE_STANDARD = 1;
+  DC_CHARGING_PROFILE_SILENT_OR_ECO = 2;
+  DC_CHARGING_PROFILE_ULTRAFAST = 3;
+  DC_CHARGING_PROFILE_PITSTOP = 4;
+  DC_CHARGING_PROFILE_FAST_ECO_1 = 5;
+  DC_CHARGING_PROFILE_FAST_ECO_2 = 6;
+}
+
+// Park event picture transmission status
+enum ParkEventPictureTransmissionStatus {
+  PARK_EVENT_PICTURE_TRANSMISSION_STATUS_IDLE = 0;
+  PARK_EVENT_PICTURE_TRANSMISSION_STATUS_WAKE_UP = 1;
+  PARK_EVENT_PICTURE_TRANSMISSION_STATUS_REQUEST_SUBMITTED = 2;
+  PARK_EVENT_PICTURE_TRANSMISSION_STATUS_RECORDING = 3;
+  PARK_EVENT_PICTURE_TRANSMISSION_STATUS_ANNOUNCE = 4;
+  PARK_EVENT_PICTURE_TRANSMISSION_STATUS_UPLOADING = 5;
+  PARK_EVENT_PICTURE_TRANSMISSION_STATUS_COMPLETED = 6;
+}
+
+// Charging schedule use case ID (non-deprecated version)
+enum ChargingScheduleUseCaseId {
+  CHARGING_SCHEDULE_USE_CASE_ID_SMART_CHARGING = 0;
+  CHARGING_SCHEDULE_USE_CASE_ID_MERCEDES_INTELLIGENT_CHARGING = 1;
+  CHARGING_SCHEDULE_USE_CASE_ID_BETA_COMMUNITY_CHARGING = 2;
+  CHARGING_SCHEDULE_USE_CASE_ID_SOLAR_CHARGING = 10;
+  CHARGING_SCHEDULE_USE_CASE_ID_GREEN_CHARGING = 11;
+  CHARGING_SCHEDULE_USE_CASE_ID_EFFICIENT_CHARGING = 12;
+  CHARGING_SCHEDULE_USE_CASE_ID_ECO_FRIENDLY_CHARGING = 13;
+  CHARGING_SCHEDULE_USE_CASE_ID_SUSTAINABLE_CHARGING = 14;
+  CHARGING_SCHEDULE_USE_CASE_ID_INTELLIGENT_CHARGING = 15;
+  CHARGING_SCHEDULE_USE_CASE_ID_WORKPLACE_CHARGING_PLAN = 16;
+  CHARGING_SCHEDULE_USE_CASE_ID_HOME_CHARGING_PLAN = 17;
+  CHARGING_SCHEDULE_USE_CASE_ID_FLEET_MANAGED_CHARGING = 18;
+  CHARGING_SCHEDULE_USE_CASE_ID_PRICE_OPTIMIZED_CHARGING = 19;
+  CHARGING_SCHEDULE_USE_CASE_ID_BATTERY_FRIENDLY_CHARGING = 20;
+  CHARGING_SCHEDULE_USE_CASE_ID_EXTERNAL_NOISE_OPTIMIZED_CHARGING = 21;
+  CHARGING_SCHEDULE_USE_CASE_ID_VIDEO_WATCHING_OPTIMIZED_CHARGING = 22;
+  CHARGING_SCHEDULE_USE_CASE_ID_TIME_CONTROLLED_CHARGING = 23;
+  CHARGING_SCHEDULE_USE_CASE_ID_PEAK_SHAVING_CHARGING = 24;
+  CHARGING_SCHEDULE_USE_CASE_ID_DYNAMIC_LOAD_BALANCED_CHARGING = 25;
+  CHARGING_SCHEDULE_USE_CASE_ID_BUSINESS_SPECIFIC_CHARGING = 26;
+  CHARGING_SCHEDULE_USE_CASE_ID_PREFERRED_CHARGING_TIMES = 27;
+  CHARGING_SCHEDULE_USE_CASE_ID_ENPAL = 100;
+  CHARGING_SCHEDULE_USE_CASE_ID_TIBBER = 101;
+  CHARGING_SCHEDULE_USE_CASE_ID_THE_MOBILITY_HOUSE = 102;
+  CHARGING_SCHEDULE_USE_CASE_ID_AWATTAR = 103;
+  CHARGING_SCHEDULE_USE_CASE_ID_TRONITY = 104;
+  CHARGING_SCHEDULE_USE_CASE_ID_DPD = 200;
+  CHARGING_SCHEDULE_USE_CASE_ID_DEUTSCHE_POST = 201;
+  CHARGING_SCHEDULE_USE_CASE_ID_HACKATHON = 250;
+  CHARGING_SCHEDULE_USE_CASE_ID_SANDBOX_MODE = 251;
+  CHARGING_SCHEDULE_USE_CASE_ID_DEVELOPER_MODE = 252;
+  CHARGING_SCHEDULE_USE_CASE_ID_TEST_MODE = 253;
+  CHARGING_SCHEDULE_USE_CASE_ID_DEBUG_MODE = 254;
+}
+
+// Schedule ID status
+enum ScheduleIdStatus {
+  SCHEDULE_ID_STATUS_INITIAL = 0;
+  SCHEDULE_ID_STATUS_DELETED = 210;
+}
+
+// Charging schedule active message
+message ChargingScheduleActive {
+  int64 schedule_id_deprecated = 1 [deprecated = true];
+  ChargingScheduleActiveUseCaseId use_case_id_deprecated = 2 [deprecated = true];
+  google.protobuf.Timestamp start_time = 3;
+  ChargingScheduleActiveOfflineMode offline_mode = 4;
+  repeated ChargingScheduleActiveSchedule schedule = 5;
+  ChargingScheduleUseCaseId use_case_id = 6;
+  ScheduleIdStatus schedule_id_status = 7;
+
+  // Nested enum for use case id (deprecated)
+  enum ChargingScheduleActiveUseCaseId {
+    option deprecated = true;
+    CHARGING_SCHEDULE_ACTIVE_USE_CASE_ID_SMART_CHARGING = 0;
+    CHARGING_SCHEDULE_ACTIVE_USE_CASE_ID_MERCEDES_INTELLIGENT_CHARGING = 1;
+    CHARGING_SCHEDULE_ACTIVE_USE_CASE_ID_BETA_COMMUNITY_CHARGING = 2;
+    CHARGING_SCHEDULE_ACTIVE_USE_CASE_ID_SOLAR_CHARGING = 10;
+    CHARGING_SCHEDULE_ACTIVE_USE_CASE_ID_GREEN_CHARGING = 11;
+    CHARGING_SCHEDULE_ACTIVE_USE_CASE_ID_EFFICIENT_CHARGING = 12;
+    CHARGING_SCHEDULE_ACTIVE_USE_CASE_ID_ECO_FRIENDLY_CHARGING = 13;
+    CHARGING_SCHEDULE_ACTIVE_USE_CASE_ID_SUSTAINABLE_CHARGING = 14;
+    CHARGING_SCHEDULE_ACTIVE_USE_CASE_ID_INTELLIGENT_CHARGING = 15;
+    CHARGING_SCHEDULE_ACTIVE_USE_CASE_ID_WORKPLACE_CHARGING_PLAN = 16;
+    CHARGING_SCHEDULE_ACTIVE_USE_CASE_ID_HOME_CHARGING_PLAN = 17;
+    CHARGING_SCHEDULE_ACTIVE_USE_CASE_ID_FLEET_MANAGED_CHARGING = 18;
+    CHARGING_SCHEDULE_ACTIVE_USE_CASE_ID_PRICE_OPTIMIZED_CHARGING = 19;
+    CHARGING_SCHEDULE_ACTIVE_USE_CASE_ID_BATTERY_FRIENDLY_CHARGING = 20;
+    CHARGING_SCHEDULE_ACTIVE_USE_CASE_ID_EXTERNAL_NOISE_OPTIMIZED_CHARGING = 21;
+    CHARGING_SCHEDULE_ACTIVE_USE_CASE_ID_VIDEO_WATCHING_OPTIMIZED_CHARGING = 22;
+    CHARGING_SCHEDULE_ACTIVE_USE_CASE_ID_TIME_CONTROLLED_CHARGING = 23;
+    CHARGING_SCHEDULE_ACTIVE_USE_CASE_ID_PEAK_SHAVING_CHARGING = 24;
+    CHARGING_SCHEDULE_ACTIVE_USE_CASE_ID_DYNAMIC_LOAD_BALANCED_CHARGING = 25;
+    CHARGING_SCHEDULE_ACTIVE_USE_CASE_ID_BUSINESS_SPECIFIC_CHARGING = 26;
+    CHARGING_SCHEDULE_ACTIVE_USE_CASE_ID_PREFERRED_CHARGING_TIMES = 27;
+    CHARGING_SCHEDULE_ACTIVE_USE_CASE_ID_ENPAL = 100;
+    CHARGING_SCHEDULE_ACTIVE_USE_CASE_ID_TIBBER = 101;
+    CHARGING_SCHEDULE_ACTIVE_USE_CASE_ID_THE_MOBILITY_HOUSE = 102;
+    CHARGING_SCHEDULE_ACTIVE_USE_CASE_ID_AWATTAR = 103;
+    CHARGING_SCHEDULE_ACTIVE_USE_CASE_ID_TRONITY = 104;
+    CHARGING_SCHEDULE_ACTIVE_USE_CASE_ID_DPD = 200;
+    CHARGING_SCHEDULE_ACTIVE_USE_CASE_ID_DEUTSCHE_POST = 201;
+    CHARGING_SCHEDULE_ACTIVE_USE_CASE_ID_HACKATHON = 250;
+    CHARGING_SCHEDULE_ACTIVE_USE_CASE_ID_SANDBOX_MODE = 251;
+    CHARGING_SCHEDULE_ACTIVE_USE_CASE_ID_DEVELOPER_MODE = 252;
+    CHARGING_SCHEDULE_ACTIVE_USE_CASE_ID_TEST_MODE = 253;
+    CHARGING_SCHEDULE_ACTIVE_USE_CASE_ID_DEBUG_MODE = 254;
+  }
+
+  // Nested enum for offline mode
+  enum ChargingScheduleActiveOfflineMode {
+    CHARGING_SCHEDULE_ACTIVE_OFFLINE_MODE_UNKNOWN = 0;
+    CHARGING_SCHEDULE_ACTIVE_OFFLINE_MODE_OFF = 1;
+    CHARGING_SCHEDULE_ACTIVE_OFFLINE_MODE_ON = 2;
+  }
+
+  // Nested message for schedule entry
+  message ChargingScheduleActiveSchedule {
+    double power_values = 1;
+    int64 duration_values = 2;
+  }
+}
+
+enum SocCalibrationRequest {
+  SOC_CALIBRATION_REQUEST_NO_REQUEST = 0;
+  SOC_CALIBRATION_REQUEST_LOW_REQUEST = 1;
+  SOC_CALIBRATION_REQUEST_HIGH_REQUEST = 2;
+}
+
+enum SohFavorableConditions {
+  SOH_FAVORABLE_CONDITIONS_NOT_FAVORABLE = 0;
+  SOH_FAVORABLE_CONDITIONS_FAVOURABLE_LEVEL_1 = 1;
+  SOH_FAVORABLE_CONDITIONS_FAVOURABLE_LEVEL_2 = 2;
+}
+
+enum ChargingStopErrorDetails {
+  CHARGING_STOP_ERROR_DETAILS_NO_INFO_OR_ERROR_MESSAGE = 0;
+  CHARGING_STOP_ERROR_DETAILS_CHARGE_STOP_BUTTON_DEFECT = 1;
+}
+
+enum SohCalibrationState {
+  SOH_CALIBRATION_STATE_NOT_ACTIVE = 0;
+  SOH_CALIBRATION_STATE_ACTIVE = 1;
+  SOH_CALIBRATION_STATE_SUCCESSFUL = 2;
+  SOH_CALIBRATION_STATE_BMS_UNDEFINED_ERROR = 3;
+  SOH_CALIBRATION_STATE_BMS_TEMPERATURE_ERROR = 4;
+  SOH_CALIBRATION_STATE_NO_CUSTOMER_PERMISSION_ERROR = 5;
+  SOH_CALIBRATION_STATE_NOT_ENOUGH_TIME_UNTIL_DEPARTURE_ERROR = 6;
+  SOH_CALIBRATION_STATE_USER_CANCELLED_ERROR = 7;
+  SOH_CALIBRATION_STATE_CHARGING_PROCESS_CANCELLED_ERROR = 8;
+  SOH_CALIBRATION_STATE_CHARGING_INFRASTRUCTURE_PROTOCOL_ERROR = 9;
+  SOH_CALIBRATION_STATE_CHARGING_INFRASTRUCTURE_POWER_REDUCTION_ERROR = 10;
+  SOH_CALIBRATION_STATE_UNDEFINED_ERROR = 11;
+}
+
+enum SohCalibrationRequired {
+  SOH_CALIBRATION_NOT_REQUIRED = 0;
+  SOH_CALIBRATION_REQUIRED = 1;
+}
+
+enum SohCalibrationRequest {
+  SOH_CALIBRATION_REQUEST_NO_REQUEST = 0;
+  SOH_CALIBRATION_REQUEST_LOW_REQUEST = 1;
+  SOH_CALIBRATION_REQUEST_HIGH_REQUEST = 2;
+}
+
+enum TurnOffEnginePreWarning {
+  NO_MESSAGE_ACTIVE = 0;
+  VEHICLE_READY_AUTOMATIC_SHUTDOWN_ON_LOCK = 1;
+  VEHICLE_READY_AUTOMATIC_SHUTDOWN_ON_TIMEOUT = 2;
+}
+
+enum SohCalibrationNotifications {
+  SOH_CALIBRATION_NOTIFICATIONS_NO_SOH_CALIBRATION_NECESSARY = 0;
+  SOH_CALIBRATION_NOTIFICATIONS_SEND_NOTIFICATION_LEVEL_1 = 1;
+  SOH_CALIBRATION_NOTIFICATIONS_SEND_NOTIFICATION_LEVEL_2 = 2;
+  SOH_CALIBRATION_NOTIFICATIONS_SEND_NOTIFICATION_LEVEL_3 = 3;
+  SOH_CALIBRATION_NOTIFICATIONS_SEND_NOTIFICATION_LEVEL_4 = 4;
 }
 
 enum HvBatteryPrecondStatesDischarging {
@@ -591,6 +941,20 @@ message ChargingPowerRestrictions {
 
 message ChargingBreakClockTimerValue {
   repeated ChargingBreakClockTimerEntry chargingbreak_clocktimer_entry = 1;
+}
+
+enum BatteryHealth {
+  BATTERY_GREEN_STATE = 0;
+  BATTERY_YELLOW_STATE = 1;
+  BATTERY_RED_STATE = 2;
+  ISSUE_WITH_DATA_EVALUATION = 3;
+  NO_EVALUATION_POSSIBLE = 4;
+  BATTERY_CHANGED = 5;
+  BATTERY_HEALTH_CANNOT_BE_CALCULATED = 6;
+  NO_MB_ORIGINAL_BATTERY = 7;
+  TECHNICAL_LIMITATION_FROM_VEHICLE = 8;
+  GENERAL_TECHNICAL_ERROR = 9;
+  GENERAL_PROCESS_ERROR = 10;
 }
 
 enum PrecondStateType {

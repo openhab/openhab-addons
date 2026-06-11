@@ -269,7 +269,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
     }
 
     private static Optional<String> getAccessToken(LivisiClient client) throws IOException {
-        return Optional.of(client.getAccessTokenResponse().getAccessToken());
+        return Optional.ofNullable(client.getAccessTokenResponse().getAccessToken());
     }
 
     @Override

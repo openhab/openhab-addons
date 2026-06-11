@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.vigicrues.internal.dto.vigicrues;
 
+import java.util.List;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -21,36 +23,71 @@ import com.google.gson.annotations.SerializedName;
  * @author Gaël L'hopital - Initial contribution
  */
 public class InfoVigiCru {
-    public class VicInfoVigiCru {
-        @SerializedName("vic:NivInfoVigiCru")
-        public int vicNivInfoVigiCru;
-        @SerializedName("vic:SituActuInfoVigiCru")
-        public String vicSituActuInfoVigiCru;
-        @SerializedName("vic:QualifInfoVigiCru")
-        public String vicQualifInfoVigiCru;
-        /*
-         * Currently unused, maybe interesting in the future
-         *
-         * @SerializedName("vic:RefInfoVigiCru")
-         * private String vicRefInfoVigiCru;
-         *
-         * @SerializedName("vic:TypInfoVigiCru")
-         * private int vicTypInfoVigiCru;
-         *
-         * @SerializedName("vic:DtHrInfoVigiCru")
-         * private String vicDtHrInfoVigiCru;
-         *
-         * @SerializedName("vic:DtHrSuivInfoVigiCru")
-         * private String vicDtHrSuivInfoVigiCru;
-         *
-         * @SerializedName("vic:EstNivCalInfoVigiCru")
-         * private Boolean vicEstNivCalInfoVigiCru;
-         *
-         * @SerializedName("vic:StInfoVigiCru")
-         * private int vicStInfoVigiCru;
-         */
-    }
 
-    @SerializedName("vic:InfoVigiCru")
-    public VicInfoVigiCru vicInfoVigiCru;
+    @SerializedName("type")
+    public String type;
+
+    @SerializedName("features")
+    public List<Feature> features;
+
+    public class Feature {
+        @SerializedName("type")
+        public String type;
+
+        @SerializedName("properties")
+        public FeatureProperties properties;
+
+        public class FeatureProperties {
+
+            @SerializedName("CdTCC")
+            public String cdTCC;
+
+            @SerializedName("id")
+            public int id;
+
+            @SerializedName("CdEntCru")
+            public String cdEntCru;
+
+            @SerializedName("typentcru")
+            public String typEntCru;
+
+            @SerializedName("lbentcru")
+            public String lbEntCru;
+
+            @SerializedName("acroentcru")
+            public String acroEntCru;
+
+            @SerializedName("cddient_1")
+            public String cdDient1;
+
+            @SerializedName("dhcentcru")
+            public String dhcEntCru;
+
+            @SerializedName("dhmentcru")
+            public String dhmEntCru;
+
+            @SerializedName("stentcru")
+            public String stEntCru;
+
+            @SerializedName("cdensup_1")
+            public String cdEnSup1;
+
+            @SerializedName("typensup_1")
+            public String typEnSup1;
+
+            @SerializedName("cdint")
+            public String cdInt;
+
+            @SerializedName("NivInfViCr")
+            public int nivInfViCr;
+
+            @SerializedName("geometry")
+            public Geometry geometry;
+
+            public class Geometry {
+                @SerializedName("type")
+                public String type;
+            }
+        }
+    }
 }

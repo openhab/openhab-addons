@@ -62,8 +62,9 @@ public class PlayStreamServlet extends HttpServlet {
         if (req == null || resp == null) {
             return;
         }
-        resp.setStatus(200);
-        resp.getOutputStream().write("Only POST is supported".getBytes());
+        resp.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+        resp.setHeader("Allow", "POST, OPTIONS");
+        resp.getOutputStream().write("Only POST is supported".getBytes(StandardCharsets.UTF_8));
         resp.getOutputStream().flush();
     }
 

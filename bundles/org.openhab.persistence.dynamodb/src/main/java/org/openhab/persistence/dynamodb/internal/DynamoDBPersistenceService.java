@@ -22,7 +22,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
@@ -46,7 +45,6 @@ import org.openhab.core.library.items.NumberItem;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.HistoricItem;
-import org.openhab.core.persistence.PersistenceItemInfo;
 import org.openhab.core.persistence.PersistenceService;
 import org.openhab.core.persistence.QueryablePersistenceService;
 import org.openhab.core.persistence.strategy.PersistenceStrategy;
@@ -341,11 +339,6 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
     @Override
     public String getLabel(@Nullable Locale locale) {
         return "DynamoDB";
-    }
-
-    @Override
-    public Set<PersistenceItemInfo> getItemInfo() {
-        return Collections.emptySet();
     }
 
     @Override

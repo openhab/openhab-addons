@@ -19,7 +19,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 
 import org.bson.Document;
 import org.bson.types.ObjectId;
@@ -34,7 +33,6 @@ import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.FilterCriteria.Ordering;
 import org.openhab.core.persistence.HistoricItem;
 import org.openhab.core.persistence.ModifiablePersistenceService;
-import org.openhab.core.persistence.PersistenceItemInfo;
 import org.openhab.core.persistence.PersistenceService;
 import org.openhab.core.persistence.QueryablePersistenceService;
 import org.openhab.core.persistence.strategy.PersistenceStrategy;
@@ -134,11 +132,6 @@ public class MongoDBPersistenceService implements ModifiablePersistenceService {
     @Override
     public String getLabel(@Nullable Locale locale) {
         return "MongoDB";
-    }
-
-    @Override
-    public Set<PersistenceItemInfo> getItemInfo() {
-        return Collections.emptySet();
     }
 
     /**

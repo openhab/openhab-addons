@@ -44,6 +44,7 @@ public class HueEmulationConfig {
      */
     public @Nullable String discoveryIp;
     public int discoveryHttpPort = 0;
+    public boolean useSemanticModel = false;
     /** Comma separated list of tags */
     public String restrictToTagsSwitches = "Switchable";
     /** Comma separated list of tags */

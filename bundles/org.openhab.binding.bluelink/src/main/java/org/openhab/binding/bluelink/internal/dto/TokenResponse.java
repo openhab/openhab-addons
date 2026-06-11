@@ -20,5 +20,5 @@ import com.google.gson.annotations.SerializedName;
  * @author Marcus Better - Initial contribution
  */
 public record TokenResponse(@SerializedName("access_token") String accessToken,
-        @SerializedName("refresh_token") String refreshToken, @SerializedName("expires_in") String expiresIn) {
+        @SerializedName("expires_in") String expiresIn) implements Token {
 }

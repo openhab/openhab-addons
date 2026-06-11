@@ -116,12 +116,6 @@ public class EvccSiteHandler extends EvccBaseThingHandler {
                     state.add(JSON_KEY_GRID + Utils.capitalizeFirstLetter(entry.getKey()), entry.getValue());
             }
         }
-        // Backwards compatibility for evcc 0.209.8 and older
-        JsonElement startup = state.get("startup");
-        if (null != startup && startup.isJsonPrimitive() && startup.getAsJsonPrimitive().isBoolean()) {
-            state.add("startupComplete", startup);
-            state.remove("startup");
-        }
         state.remove(JSON_KEY_GRID);
         state.remove(JSON_KEY_GRID_CONFIGURED);
     }

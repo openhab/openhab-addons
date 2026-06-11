@@ -12,29 +12,30 @@
  */
 package org.openhab.binding.bluelink.internal.handler;
 
-import static java.time.format.DateTimeFormatter.ISO_ZONED_DATE_TIME;
 import static java.util.stream.Collectors.toUnmodifiableSet;
 import static org.openhab.binding.bluelink.internal.BluelinkBindingConstants.*;
 import static org.openhab.core.library.CoreItemFactory.SWITCH;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.time.format.DateTimeParseException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 
+import javax.measure.quantity.Length;
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluelink.internal.api.BluelinkApiException;
+import org.openhab.binding.bluelink.internal.api.VehicleStatusCallback;
 import org.openhab.binding.bluelink.internal.config.BluelinkVehicleConfiguration;
-import org.openhab.binding.bluelink.internal.dto.VehicleInfo;
-import org.openhab.binding.bluelink.internal.dto.VehicleStatus;
-import org.openhab.binding.bluelink.internal.dto.VehicleStatus.VehicleStatusData;
+import org.openhab.binding.bluelink.internal.dto.CommonVehicleStatus;
+import org.openhab.binding.bluelink.internal.dto.EvStatus;
+import org.openhab.binding.bluelink.internal.model.IVehicle;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -48,6 +49,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
@@ -65,17 +67,20 @@ import org.slf4j.LoggerFactory;
  * @author Marcus Better - Initial contribution
  */
 @NonNullByDefault
-public class BluelinkVehicleHandler extends BaseThingHandler {
+public class BluelinkVehicleHandler extends BaseThingHandler implements VehicleStatusCallback {
 
     private static final Duration DEFAULT_REFRESH_INTERVAL = Duration.ofMinutes(30);
     private static final Duration DEFAULT_FORCE_REFRESH_INTERVAL = Duration.ofMinutes(240);
 
     private final Logger logger = LoggerFactory.getLogger(BluelinkVehicleHandler.class);
 
+    private final ReentrantLock refreshLock = new ReentrantLock();
+    private final ReentrantLock forceRefreshLock = new ReentrantLock();
+
     private volatile @Nullable ScheduledFuture<?> refreshJob;
     private volatile @Nullable ScheduledFuture<?> forceRefreshJob;
     private volatile @Nullable ScheduledFuture<?> initTask;
-    private volatile @Nullable VehicleInfo vehicle;
+    private volatile @Nullable IVehicle vehicle;
     private @Nullable Duration forceRefreshInterval;
 
     public BluelinkVehicleHandler(final Thing thing) {
@@ -101,14 +106,21 @@ public class BluelinkVehicleHandler extends BaseThingHandler {
 
         final Duration refreshInterval = config.refreshInterval >= 1 ? Duration.ofMinutes(config.refreshInterval)
                 : DEFAULT_REFRESH_INTERVAL;
-        final Duration forceRefreshInterval = config.forceRefreshInterval >= 1
-                ? Duration.ofMinutes(config.forceRefreshInterval)
-                : DEFAULT_FORCE_REFRESH_INTERVAL;
-        this.forceRefreshInterval = forceRefreshInterval;
         refreshJob = scheduler.scheduleWithFixedDelay(() -> refreshVehicleStatus(false), 5, refreshInterval.toSeconds(),
                 TimeUnit.SECONDS);
-        forceRefreshJob = scheduler.scheduleWithFixedDelay(() -> refreshVehicleStatus(true), 30,
-                forceRefreshInterval.toSeconds(), TimeUnit.SECONDS);
+
+        final @Nullable Duration forceRefreshInterval;
+        if (config.forceRefreshInterval == 0) {
+            forceRefreshInterval = null;
+        } else {
+            forceRefreshInterval = config.forceRefreshInterval >= 1 ? Duration.ofMinutes(config.forceRefreshInterval)
+                    : DEFAULT_FORCE_REFRESH_INTERVAL;
+        }
+        this.forceRefreshInterval = forceRefreshInterval;
+        if (forceRefreshInterval != null) {
+            forceRefreshJob = scheduler.scheduleWithFixedDelay(() -> refreshVehicleStatus(true), 30,
+                    forceRefreshInterval.toSeconds(), TimeUnit.SECONDS);
+        }
 
         updateStatus(ThingStatus.UNKNOWN);
         initTask = scheduler.schedule(() -> loadVehicle(vin), 0, TimeUnit.MILLISECONDS);
@@ -124,8 +136,8 @@ public class BluelinkVehicleHandler extends BaseThingHandler {
         try {
             bridgeHnd.getVehicles().stream().filter(v -> vin.equals(v.vin())).findFirst().ifPresentOrElse(v -> {
                 this.vehicle = v;
-                updateProperty(PROPERTY_MODEL, v.modelCode());
-                updateProperty(PROPERTY_ENGINE_TYPE, v.evStatus());
+                updateProperty(PROPERTY_MODEL, v.model());
+                updateProperty(PROPERTY_ENGINE_TYPE, v.engineType().name());
                 createDynamicChannels();
                 updateStatus(ThingStatus.ONLINE);
             }, () -> updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -163,10 +175,59 @@ public class BluelinkVehicleHandler extends BaseThingHandler {
     }
 
     @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE && vehicle == null) {
+            final BluelinkVehicleConfiguration config = getConfigAs(BluelinkVehicleConfiguration.class);
+            final String vin = config.vin;
+            if (vin != null && !vin.isBlank()) {
+                ScheduledFuture<?> job = initTask;
+                if (job != null) {
+                    job.cancel(true);
+                }
+                initTask = scheduler.schedule(() -> loadVehicle(vin), 0, TimeUnit.MILLISECONDS);
+            }
+        }
+    }
+
+    @Override
     public void handleCommand(final ChannelUID channelUID, final Command command) {
         if (command instanceof RefreshType) {
             // we do not force a refresh from the vehicle because of the low rate limit
             refreshVehicleStatus(false);
+            return;
+        }
+
+        final String channelId = channelUID.getIdWithoutGroup();
+        try {
+            if (CHANNEL_CHARGE_LIMIT_DC.equals(channelId)) {
+                if (command instanceof QuantityType<?> qt) {
+                    qt = qt.toUnit(Units.PERCENT);
+                    if (qt != null) {
+                        setChargeLimitDC(qt.intValue());
+                    } else {
+                        logger.debug("Failed to convert QuantityType to PERCENT!");
+                    }
+                } else if (command instanceof DecimalType decimal) {
+                    setChargeLimitDC(decimal.intValue());
+                } else {
+                    logger.debug("Command has wrong type, QuantityType or DecimalType required!");
+                }
+            } else if (CHANNEL_CHARGE_LIMIT_AC.equals(channelId)) {
+                if (command instanceof QuantityType<?> qt) {
+                    qt = qt.toUnit(Units.PERCENT);
+                    if (qt != null) {
+                        setChargeLimitAC(qt.intValue());
+                    } else {
+                        logger.debug("Failed to convert QuantityType to PERCENT!");
+                    }
+                } else if (command instanceof DecimalType decimal) {
+                    setChargeLimitAC(decimal.intValue());
+                } else {
+                    logger.debug("Command has wrong type, QuantityType or DecimalType required!");
+                }
+            }
+        } catch (final BluelinkApiException e) {
+            logger.debug("Failed to set charge limit: {}", e.getMessage());
         }
     }
 
@@ -222,66 +283,105 @@ public class BluelinkVehicleHandler extends BaseThingHandler {
         return res;
     }
 
-    public boolean climateStart(final QuantityType<Temperature> temperature, final boolean heat, final boolean defrost)
-            throws BluelinkApiException {
-        final VehicleInfo vehicle = this.vehicle;
+    public boolean setChargeLimitDC(final int limit) throws BluelinkApiException {
+        if (limit < 50 || limit > 100) {
+            logger.debug("Invalid DC charge limit: {}. Must be between 50 and 100.", limit);
+            return false;
+        }
         final var bridgeHnd = getBridgeHandler();
+        final var vehicle = this.vehicle;
+        if (vehicle == null || bridgeHnd == null) {
+            return false;
+        }
+        final boolean res = bridgeHnd.setChargeLimitDC(vehicle, limit);
+        if (res) {
+            scheduleForceRefresh();
+        }
+        return res;
+    }
+
+    public boolean setChargeLimitAC(final int limit) throws BluelinkApiException {
+        if (limit < 50 || limit > 100) {
+            logger.debug("Invalid AC charge limit: {}. Must be between 50 and 100.", limit);
+            return false;
+        }
+        final var bridgeHnd = getBridgeHandler();
+        final var vehicle = this.vehicle;
+        if (vehicle == null || bridgeHnd == null) {
+            return false;
+        }
+        final boolean res = bridgeHnd.setChargeLimitAC(vehicle, limit);
+        if (res) {
+            scheduleForceRefresh();
+        }
+        return res;
+    }
+
+    public boolean climateStart(final QuantityType<Temperature> temperature, final boolean heat, final boolean defrost,
+            final @Nullable Integer igniOnDuration) throws BluelinkApiException {
+        final var bridgeHnd = getBridgeHandler();
+        final IVehicle vehicle = this.vehicle;
         if (vehicle == null || bridgeHnd == null) {
             return false;
         }
 
-        return bridgeHnd.climateStart(vehicle, temperature, heat, defrost);
+        final boolean res = bridgeHnd.climateStart(vehicle, temperature, heat, defrost, igniOnDuration);
+        if (res) {
+            scheduleForceRefresh();
+        }
+        return res;
     }
 
     public boolean climateStop() throws BluelinkApiException {
-        final VehicleInfo vehicle = this.vehicle;
         final var bridgeHnd = getBridgeHandler();
+        final IVehicle vehicle = this.vehicle;
         if (vehicle == null || bridgeHnd == null) {
             return false;
         }
 
-        return bridgeHnd.climateStop(vehicle);
+        final boolean res = bridgeHnd.climateStop(vehicle);
+        if (res) {
+            scheduleForceRefresh();
+        }
+        return res;
     }
 
     public void refreshVehicleStatus(boolean forceRefresh) {
-        final VehicleInfo vehicle = this.vehicle;
         final var bridgeHnd = getBridgeHandler();
+        final IVehicle vehicle = this.vehicle;
         if (vehicle == null || bridgeHnd == null) {
             return;
         }
 
+        final ReentrantLock lock = forceRefresh ? forceRefreshLock : refreshLock;
+        if (!lock.tryLock()) {
+            logger.debug("{} status refresh already in progress, skipping", forceRefresh ? "Forced" : "Vehicle");
+            return;
+        }
+
         try {
-            logger.debug("refreshing vehicle status");
-            final VehicleStatus status = bridgeHnd.getVehicleStatus(vehicle, forceRefresh);
-            if (status != null) {
+            logger.debug("Refreshing {}vehicle status", forceRefresh ? "forced " : "");
+            if (bridgeHnd.getVehicleStatus(vehicle, forceRefresh, this)) {
                 updateStatus(ThingStatus.ONLINE);
-                updateChannels(status);
             }
         } catch (final BluelinkApiException e) {
-            logger.debug("Failed to refresh vehicle status: {}", e.getMessage());
+            logger.debug("Failed to refresh {}vehicle status: {}", forceRefresh ? "forced " : "", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        } finally {
+            lock.unlock();
         }
     }
 
-    private void updateChannels(final VehicleStatus status) {
-        final VehicleStatusData data = status.vehicleStatus();
-        final VehicleInfo info = vehicle;
-        if (data == null || info == null) {
+    @Override
+    public void acceptStatus(final CommonVehicleStatus data) {
+        final var vehicle = this.vehicle;
+        if (vehicle == null) {
             return;
         }
 
         // Status group
         updateState(GROUP_STATUS, CHANNEL_LOCKED, OnOffType.from(data.doorLock()));
         updateState(GROUP_STATUS, CHANNEL_ENGINE_RUNNING, OnOffType.from(data.engine()));
-        updateState(GROUP_STATUS, CHANNEL_ODOMETER, new QuantityType<>(info.odometer(), ImperialUnits.MILE));
-        if (data.dateTime() != null) {
-            try {
-                final Instant lastUpdate = ISO_ZONED_DATE_TIME.parse(data.dateTime(), Instant::from);
-                updateState(GROUP_STATUS, CHANNEL_LAST_UPDATE, new DateTimeType(lastUpdate));
-            } catch (final DateTimeParseException e) {
-                logger.warn("unexpected dateTime format: {}", data.dateTime());
-            }
-        }
 
         // 12V Battery
         if (data.battery() != null) {
@@ -314,7 +414,7 @@ public class BluelinkVehicleHandler extends BaseThingHandler {
         updateState(GROUP_CLIMATE, CHANNEL_DEFROST, OnOffType.from(data.defrost()));
         final var airTemp = data.airTemp();
         if (airTemp != null) {
-            updateState(GROUP_CLIMATE, CHANNEL_TEMPERATURE, airTemp.getTemperature());
+            updateState(GROUP_CLIMATE, CHANNEL_TEMPERATURE, airTemp.getTemperature(vehicle));
         }
         updateState(GROUP_CLIMATE, CHANNEL_STEERING_HEATER, OnOffType.from(data.steerWheelHeat() > 0));
         updateState(GROUP_CLIMATE, CHANNEL_REAR_WINDOW_HEATER, OnOffType.from(data.sideBackWindowHeat() > 0));
@@ -330,11 +430,11 @@ public class BluelinkVehicleHandler extends BaseThingHandler {
 
         // EV-specific
         final var evStatus = data.evStatus();
-        if (info.isElectric() && evStatus != null) {
+        if (vehicle.isElectric() && evStatus != null) {
             updateState(GROUP_CHARGING, CHANNEL_EV_BATTERY_SOC,
                     new QuantityType<>(evStatus.batteryStatus(), Units.PERCENT));
             updateState(GROUP_CHARGING, CHANNEL_EV_CHARGING, OnOffType.from(evStatus.batteryCharge()));
-            updateState(GROUP_CHARGING, CHANNEL_EV_PLUGGED_IN, OnOffType.from(evStatus.batteryPlugin() > 0));
+            updateState(GROUP_CHARGING, CHANNEL_EV_PLUGGED_IN, OnOffType.from(evStatus.batteryPlugin()));
 
             // Driving ranges
             if (evStatus.drvDistance() != null && !evStatus.drvDistance().isEmpty()) {
@@ -355,11 +455,11 @@ public class BluelinkVehicleHandler extends BaseThingHandler {
             // Charge limits
             final var reservChargeInfos = evStatus.reservChargeInfos();
             if (reservChargeInfos != null && reservChargeInfos.targetSocList() != null) {
-                for (final VehicleStatus.TargetSOC target : reservChargeInfos.targetSocList()) {
-                    if (target.plugType() == 0) {
+                for (final var target : reservChargeInfos.targetSocList()) {
+                    if (target.plugType() == EvStatus.ReserveChargeInfo.PlugType.DC) {
                         updateState(GROUP_CHARGING, CHANNEL_CHARGE_LIMIT_DC,
                                 new QuantityType<>(target.targetSocLevel(), Units.PERCENT));
-                    } else if (target.plugType() == 1) {
+                    } else if (target.plugType() == EvStatus.ReserveChargeInfo.PlugType.AC) {
                         updateState(GROUP_CHARGING, CHANNEL_CHARGE_LIMIT_AC,
                                 new QuantityType<>(target.targetSocLevel(), Units.PERCENT));
                     }
@@ -369,27 +469,27 @@ public class BluelinkVehicleHandler extends BaseThingHandler {
             // Charge times
             final var remainTime2 = evStatus.remainTime2();
             if (remainTime2 != null) {
-                if (remainTime2.atc() != null) {
+                if (remainTime2.current() != null) {
                     updateState(GROUP_CHARGING, CHANNEL_TIME_TO_FULL_CURRENT,
-                            new QuantityType<>(remainTime2.atc().value(), Units.MINUTE));
+                            new QuantityType<>(remainTime2.current().value(), Units.MINUTE));
                 }
-                if (remainTime2.etc1() != null) {
+                if (remainTime2.fast() != null) {
                     updateState(GROUP_CHARGING, CHANNEL_TIME_TO_FULL_FAST,
-                            new QuantityType<>(remainTime2.etc1().value(), Units.MINUTE));
+                            new QuantityType<>(remainTime2.fast().value(), Units.MINUTE));
                 }
-                if (remainTime2.etc2() != null) {
+                if (remainTime2.portable() != null) {
                     updateState(GROUP_CHARGING, CHANNEL_TIME_TO_FULL_PORTABLE,
-                            new QuantityType<>(remainTime2.etc2().value(), Units.MINUTE));
+                            new QuantityType<>(remainTime2.portable().value(), Units.MINUTE));
                 }
-                if (remainTime2.etc3() != null) {
+                if (remainTime2.station() != null) {
                     updateState(GROUP_CHARGING, CHANNEL_TIME_TO_FULL_STATION,
-                            new QuantityType<>(remainTime2.etc3().value(), Units.MINUTE));
+                            new QuantityType<>(remainTime2.station().value(), Units.MINUTE));
                 }
             }
         }
 
         // Fuel (ICE only)
-        if (!info.isElectric()) {
+        if (!vehicle.isElectric()) {
             updateState(GROUP_FUEL, CHANNEL_FUEL_LEVEL, new QuantityType<>(data.fuelLevel(), Units.PERCENT));
             updateState(GROUP_FUEL, CHANNEL_FUEL_LOW_WARNING, OnOffType.from(data.lowFuelLight()));
             if (data.dte() != null) {
@@ -401,7 +501,6 @@ public class BluelinkVehicleHandler extends BaseThingHandler {
         // Warnings
         updateState(GROUP_WARNINGS, CHANNEL_WASHER_FLUID_WARNING, OnOffType.from(data.washerFluidStatus()));
         updateState(GROUP_WARNINGS, CHANNEL_BRAKE_FLUID_WARNING, OnOffType.from(data.brakeOilStatus()));
-        updateState(GROUP_WARNINGS, CHANNEL_SMART_KEY_BATTERY_WARNING, OnOffType.from(data.smartKeyBatteryWarning()));
         final var tirePressureWarning = data.tirePressureWarning();
         if (tirePressureWarning != null) {
             updateState(GROUP_WARNINGS, CHANNEL_TIRE_PRESSURE_WARNING, OnOffType.from(tirePressureWarning.all() > 0));
@@ -414,21 +513,30 @@ public class BluelinkVehicleHandler extends BaseThingHandler {
             updateState(GROUP_WARNINGS, CHANNEL_TIRE_PRESSURE_WARNING_RL,
                     OnOffType.from(tirePressureWarning.rearLeft() > 0));
         }
+    }
 
-        // Location
-        final var location = data.vehicleLocation();
-        if (location != null && location.coord() != null) {
-            updateState(GROUP_STATUS, CHANNEL_LOCATION, new PointType(new DecimalType(location.coord().latitude()),
-                    new DecimalType(location.coord().longitude()), new DecimalType(location.coord().altitude())));
-        }
+    @Override
+    public void acceptLastUpdateTimestamp(final Instant lastUpdated) {
+        updateState(GROUP_STATUS, CHANNEL_LAST_UPDATE, new DateTimeType(lastUpdated));
+    }
+
+    @Override
+    public void acceptSmartKeyBatteryWarning(final boolean smartKeyBattery) {
+        updateState(GROUP_WARNINGS, CHANNEL_SMART_KEY_BATTERY_WARNING, OnOffType.from(smartKeyBattery));
+    }
+
+    @Override
+    public void acceptLocation(final PointType location) {
+        updateState(GROUP_STATUS, CHANNEL_LOCATION, location);
+    }
+
+    @Override
+    public void acceptOdometer(final QuantityType<Length> odometer) {
+        updateState(GROUP_STATUS, CHANNEL_ODOMETER, odometer);
     }
 
     private void updateState(final String group, final String channel, final State state) {
         updateState(new ChannelUID(getThing().getUID(), group, channel), state);
-    }
-
-    private OpenClosedType toOpenClosed(final int value) {
-        return value > 0 ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
     }
 
     private OpenClosedType toOpenClosed(final boolean value) {
@@ -467,10 +575,13 @@ public class BluelinkVehicleHandler extends BaseThingHandler {
         }
         final Set<ChannelUID> currentChannels = getThing().getChannelsOfGroup(group).stream().map(Channel::getUID)
                 .collect(toUnmodifiableSet());
-        final ThingBuilder thingBuilder = editThing();
-        newChannels.stream().map(ChannelBuilder::build).filter(c -> !currentChannels.contains(c.getUID()))
-                .forEach(thingBuilder::withChannel);
-        updateThing(thingBuilder.build());
+        final List<Channel> channelsToAdd = newChannels.stream().map(ChannelBuilder::build)
+                .filter(c -> !currentChannels.contains(c.getUID())).toList();
+        if (!channelsToAdd.isEmpty()) {
+            final ThingBuilder thingBuilder = editThing();
+            channelsToAdd.forEach(thingBuilder::withChannel);
+            updateThing(thingBuilder.build());
+        }
     }
 
     private ChannelBuilder buildChannel(final String group, final String channelId, final String itemType,
@@ -491,14 +602,19 @@ public class BluelinkVehicleHandler extends BaseThingHandler {
     /**
      * Reschedule the forced refresh so the first execution starts in 10 seconds.
      */
-    private void scheduleForceRefresh() {
+    private synchronized void scheduleForceRefresh() {
         final ScheduledFuture<?> job = forceRefreshJob;
-        final Duration forceRefreshInterval = this.forceRefreshInterval;
-        if (job == null || forceRefreshInterval == null) {
-            return;
+        if (job != null) {
+            job.cancel(false);
         }
-        job.cancel(false);
-        scheduler.scheduleWithFixedDelay(() -> refreshVehicleStatus(true), 10, forceRefreshInterval.toSeconds(),
-                TimeUnit.SECONDS);
+        final @Nullable Duration forceRefreshInterval = this.forceRefreshInterval;
+        if (forceRefreshInterval != null) {
+            // schedule a periodic job according to forceRefreshInterval
+            forceRefreshJob = scheduler.scheduleWithFixedDelay(() -> refreshVehicleStatus(true), 10,
+                    forceRefreshInterval.toSeconds(), TimeUnit.SECONDS);
+        } else {
+            // schedule a one-shot job if forceRefreshInterval is null
+            forceRefreshJob = scheduler.schedule(() -> refreshVehicleStatus(true), 10, TimeUnit.SECONDS);
+        }
     }
 }

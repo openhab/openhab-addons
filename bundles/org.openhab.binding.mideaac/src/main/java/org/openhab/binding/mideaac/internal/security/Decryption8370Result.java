@@ -52,7 +52,6 @@ public class Decryption8370Result {
      * @param buffer buffer
      */
     public Decryption8370Result(ArrayList<byte[]> responses, byte[] buffer) {
-        super();
         this.responses = responses;
         this.buffer = buffer;
     }

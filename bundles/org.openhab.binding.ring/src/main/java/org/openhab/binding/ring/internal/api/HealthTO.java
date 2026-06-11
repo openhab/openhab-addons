@@ -25,4 +25,16 @@ import com.google.gson.annotations.SerializedName;
 public class HealthTO {
     @SerializedName("battery_percentage")
     public int batteryPercentage;
+
+    @SerializedName("floodlight_on")
+    public boolean floodlightOn;
+
+    @SerializedName("white_led_on")
+    public boolean whiteLedOn;
+
+    @SerializedName("second_battery_percentage")
+    public int secondBatteryPercentage;
+
+    @SerializedName("siren_on")
+    public boolean sirenOn;
 }

@@ -3,9 +3,12 @@
 import jinja2
 
 from homeassistant.components.alarm_control_panel import AlarmControlPanelEntityFeature
-from homeassistant.const import CONF_PAYLOAD
+from homeassistant.const import CONF_PAYLOAD, Platform
 from homeassistant.exceptions import TemplateError
 
+ATTR_DISCOVERY_HASH = "discovery_hash"
+ATTR_DISCOVERY_PAYLOAD = "discovery_payload"
+ATTR_DISCOVERY_TOPIC = "discovery_topic"
 ATTR_QOS = "qos"
 ATTR_RETAIN = "retain"
 
@@ -22,14 +25,18 @@ CONF_AVAILABILITY = "availability"
 CONF_AVAILABILITY_MODE = "availability_mode"
 CONF_AVAILABILITY_TEMPLATE = "availability_template"
 CONF_AVAILABILITY_TOPIC = "availability_topic"
+CONF_AVAILABLE_TONES = "available_tones"
 CONF_CODE_ARM_REQUIRED = "code_arm_required"
 CONF_CODE_DISARM_REQUIRED = "code_disarm_required"
 CONF_CODE_FORMAT = "code_format"
 CONF_CODE_TRIGGER_REQUIRED = "code_trigger_required"
 CONF_COMMAND_TEMPLATE = "command_template"
 CONF_COMMAND_TOPIC = "command_topic"
+CONF_CONTENT_TYPE = "content_type"
 CONF_DEFAULT_ENTITY_ID = "default_entity_id"
 CONF_ENCODING = "encoding"
+CONF_IMAGE_ENCODING = "image_encoding"
+CONF_IMAGE_TOPIC = "image_topic"
 CONF_JSON_ATTRS_TOPIC = "json_attributes_topic"
 CONF_JSON_ATTRS_TEMPLATE = "json_attributes_template"
 CONF_OPTIONS = "options"
@@ -181,6 +188,8 @@ CONF_STATE_UNLOCKED = "state_unlocked"
 CONF_STATE_UNLOCKING = "state_unlocking"
 CONF_STEP = "step"
 CONF_SUGGESTED_DISPLAY_PRECISION = "suggested_display_precision"
+CONF_SUPPORT_DURATION = "support_duration"
+CONF_SUPPORT_VOLUME_SET = "support_volume_set"
 CONF_SUPPORTED_COLOR_MODES = "supported_color_modes"
 CONF_SWING_HORIZONTAL_MODE_COMMAND_TEMPLATE = "swing_horizontal_mode_command_template"
 CONF_SWING_HORIZONTAL_MODE_COMMAND_TOPIC = "swing_horizontal_mode_command_topic"
@@ -218,6 +227,8 @@ CONF_TILT_MIN = "tilt_min"
 CONF_TILT_OPEN_POSITION = "tilt_opened_value"
 CONF_TILT_STATE_OPTIMISTIC = "tilt_optimistic"
 CONF_TRANSITION = "transition"
+CONF_URL_TEMPLATE = "url_template"
+CONF_URL_TOPIC = "url_topic"
 CONF_XY_COMMAND_TEMPLATE = "xy_command_template"
 CONF_XY_COMMAND_TOPIC = "xy_command_topic"
 CONF_XY_STATE_TOPIC = "xy_state_topic"
@@ -307,4 +318,64 @@ ALARM_CONTROL_PANEL_SUPPORTED_FEATURES = {
     "trigger": AlarmControlPanelEntityFeature.TRIGGER,
 }
 
+ENTITY_PLATFORMS = [
+    Platform.ALARM_CONTROL_PANEL,
+    Platform.BINARY_SENSOR,
+    Platform.BUTTON,
+    Platform.CAMERA,
+    Platform.CLIMATE,
+    Platform.COVER,
+    Platform.DEVICE_TRACKER,
+    Platform.EVENT,
+    Platform.FAN,
+    Platform.HUMIDIFIER,
+    Platform.IMAGE,
+    Platform.LIGHT,
+    Platform.LAWN_MOWER,
+    Platform.LOCK,
+    Platform.NOTIFY,
+    Platform.NUMBER,
+    Platform.SCENE,
+    Platform.SELECT,
+    Platform.SENSOR,
+    Platform.SIREN,
+    Platform.SWITCH,
+    Platform.TEXT,
+    Platform.UPDATE,
+    Platform.VACUUM,
+    Platform.VALVE,
+    Platform.WATER_HEATER,
+]
+
 TEMPLATE_ERRORS = (jinja2.TemplateError, TemplateError, TypeError, ValueError)
+
+SUPPORTED_COMPONENTS = (
+    "alarm_control_panel",
+    "binary_sensor",
+    "button",
+    "camera",
+    "climate",
+    "cover",
+    "device_automation",
+    "device_tracker",
+    "event",
+    "fan",
+    "humidifier",
+    "image",
+    "lawn_mower",
+    "light",
+    "lock",
+    "notify",
+    "number",
+    "scene",
+    "siren",
+    "select",
+    "sensor",
+    "switch",
+    "tag",
+    "text",
+    "update",
+    "vacuum",
+    "valve",
+    "water_heater",
+)

@@ -275,12 +275,17 @@
 
 		<channels>
 			<channel id="temperature" typeId="temperature"/>
+			<channel id="temperature-offset" typeId="temperature-offset"/>
 			<channel id="valve-tappet-position" typeId="valve-tappet-position"/>
 			<channel id="child-lock" typeId="child-lock"/>
 			<channel id="silent-mode" typeId="silent-mode"/>
 			<channel id="battery-level" typeId="system.battery-level"/>
 			<channel id="low-battery" typeId="system.low-battery"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description-ref uri="thing-type:boschshc:device"/>
 
@@ -297,6 +302,7 @@
 
 		<channels>
 			<channel id="temperature" typeId="temperature"/>
+			<channel id="temperature-offset" typeId="temperature-offset"/>
 			<channel id="valve-tappet-position" typeId="valve-tappet-position"/>
 			<channel id="child-lock" typeId="child-lock"/>
 			<channel id="battery-level" typeId="system.battery-level"/>
@@ -304,6 +310,10 @@
 			<channel id="display-direction" typeId="display-direction"/>
 			<channel id="displayed-temperature" typeId="displayed-temperature"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description-ref uri="thing-type:boschshc:device"/>
 
@@ -320,6 +330,7 @@
 
 		<channels>
 			<channel id="temperature" typeId="temperature"/>
+			<channel id="temperature-offset" typeId="temperature-offset"/>
 			<channel id="valve-tappet-position" typeId="valve-tappet-position"/>
 			<channel id="child-lock" typeId="child-lock"/>
 			<channel id="battery-level" typeId="system.battery-level"/>
@@ -327,6 +338,10 @@
 			<channel id="display-direction" typeId="display-direction"/>
 			<channel id="displayed-temperature" typeId="displayed-temperature"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description-ref uri="thing-type:boschshc:device"/>
 
@@ -728,6 +743,16 @@
 			<tag>Temperature</tag>
 		</tags>
 		<state min="0" max="40" step="0.5" pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperature-offset">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature Offset</label>
+		<description>Temperature offset to be added or subtracted from the measured temperature.</description>
+		<tags>
+			<tag>Temperature</tag>
+		</tags>
+		<state min="-9" max="9" step="0.1" pattern="%.1f %unit%" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="temperature-rating">

@@ -78,6 +78,10 @@ import io.github.hapjava.characteristics.impl.accessoryinformation.IdentifyChara
 import io.github.hapjava.characteristics.impl.accessoryinformation.ManufacturerCharacteristic;
 import io.github.hapjava.characteristics.impl.accessoryinformation.ModelCharacteristic;
 import io.github.hapjava.characteristics.impl.accessoryinformation.SerialNumberCharacteristic;
+import io.github.hapjava.characteristics.impl.airpurifier.CurrentAirPurifierCharacteristic;
+import io.github.hapjava.characteristics.impl.airpurifier.CurrentAirPurifierStateEnum;
+import io.github.hapjava.characteristics.impl.airpurifier.TargetAirPurifierStateCharacteristic;
+import io.github.hapjava.characteristics.impl.airpurifier.TargetAirPurifierStateEnum;
 import io.github.hapjava.characteristics.impl.airquality.NitrogenDioxideDensityCharacteristic;
 import io.github.hapjava.characteristics.impl.airquality.OzoneDensityCharacteristic;
 import io.github.hapjava.characteristics.impl.airquality.PM10DensityCharacteristic;
@@ -227,6 +231,7 @@ public class HomekitCharacteristicFactory {
             put(CONFIGURED, HomekitCharacteristicFactory::createIsConfiguredCharacteristic);
             put(CONFIGURED_NAME, HomekitCharacteristicFactory::createConfiguredNameCharacteristic);
             put(COOLING_THRESHOLD_TEMPERATURE, HomekitCharacteristicFactory::createCoolingThresholdCharacteristic);
+            put(CURRENT_AIR_PURIFIER_STATE, HomekitCharacteristicFactory::createCurrentAirPurifierStateCharacteristic);
             put(CURRENT_DOOR_STATE, HomekitCharacteristicFactory::createCurrentDoorStateCharacteristic);
             put(CURRENT_HEATING_COOLING_STATE,
                     HomekitCharacteristicFactory::createCurrentHeatingCoolingStateCharacteristic);
@@ -278,6 +283,7 @@ public class HomekitCharacteristicFactory {
             put(SULPHUR_DIOXIDE_DENSITY, HomekitCharacteristicFactory::createSulphurDioxideDensityCharacteristic);
             put(SWING_MODE, HomekitCharacteristicFactory::createSwingModeCharacteristic);
             put(TAMPERED_STATUS, HomekitCharacteristicFactory::createStatusTamperedCharacteristic);
+            put(TARGET_AIR_PURIFIER_STATE, HomekitCharacteristicFactory::createTargetAirPurifierStateCharacteristic);
             put(TARGET_DOOR_STATE, HomekitCharacteristicFactory::createTargetDoorStateCharacteristic);
             put(TARGET_FAN_STATE, HomekitCharacteristicFactory::createTargetFanStateCharacteristic);
             put(TARGET_HEATING_COOLING_STATE,
@@ -901,6 +907,15 @@ public class HomekitCharacteristicFactory {
                 getUnsubscriber(taggedItem, COOLING_THRESHOLD_TEMPERATURE, updater));
     }
 
+    private static CurrentAirPurifierCharacteristic createCurrentAirPurifierStateCharacteristic(
+            HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
+        var map = createMapping(taggedItem, CurrentAirPurifierStateEnum.class);
+        return new CurrentAirPurifierCharacteristic(
+                () -> getEnumFromItem(taggedItem, map, CurrentAirPurifierStateEnum.INACTIVE),
+                getSubscriber(taggedItem, CURRENT_AIR_PURIFIER_STATE, updater),
+                getUnsubscriber(taggedItem, CURRENT_AIR_PURIFIER_STATE, updater));
+    }
+
     private static CurrentDoorStateCharacteristic createCurrentDoorStateCharacteristic(HomekitTaggedItem taggedItem,
             HomekitAccessoryUpdater updater) {
         if (taggedItem.getBaseItem() instanceof RollershutterItem) {
@@ -1478,6 +1493,16 @@ public class HomekitCharacteristicFactory {
         return new SwingModeCharacteristic(() -> getEnumFromItem(taggedItem, map, SwingModeEnum.SWING_DISABLED),
                 (value) -> setValueFromEnum(taggedItem, value, map), getSubscriber(taggedItem, SWING_MODE, updater),
                 getUnsubscriber(taggedItem, SWING_MODE, updater));
+    }
+
+    private static TargetAirPurifierStateCharacteristic createTargetAirPurifierStateCharacteristic(
+            HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
+        var map = createMapping(taggedItem, TargetAirPurifierStateEnum.class);
+        return new TargetAirPurifierStateCharacteristic(
+                () -> getEnumFromItem(taggedItem, map, TargetAirPurifierStateEnum.AUTO),
+                (targetState) -> setValueFromEnum(taggedItem, targetState, map),
+                getSubscriber(taggedItem, TARGET_AIR_PURIFIER_STATE, updater),
+                getUnsubscriber(taggedItem, TARGET_AIR_PURIFIER_STATE, updater));
     }
 
     private static TargetDoorStateCharacteristic createTargetDoorStateCharacteristic(HomekitTaggedItem taggedItem,

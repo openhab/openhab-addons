@@ -1,6 +1,6 @@
 # VeSync Binding
 
-Its current support is for the Air Purifiers & Humidifer's branded as Levoit which utilise the VeSync app based on the V2 protocol.
+Its current support is for the Air Purifiers & Humidifiers branded as Levoit which utilise the VeSync app based on the V2 protocol.
 
 ## Verified Models
 
@@ -14,7 +14,7 @@ Air Humidifier Classic 200S (Same as 300S without the nightlight from initial ch
 
 ## Supported Things
 
-This binding supports the follow thing types:
+This binding supports the follow Thing types:
 
 | Thing          | Thing Type | Thing Type UID | Discovery | Description                                                           |
 |----------------|------------|----------------|-----------|-----------------------------------------------------------------------|
@@ -42,8 +42,6 @@ Once the bridge is configured auto discovery will discover supported devices fro
 | password                         | String | The password as used in the VeSync mobile application     |                    |
 | airPurifierPollInterval          | Number | The poll interval (seconds) for air filters / humidifiers | 60                 |
 | outletPollInterval               | Number | The poll interval (seconds) for outlets                   | 60                 |
-| backgroundDeviceDiscovery        | Switch | Should the system scan periodically for new devices       | ON                 |
-| refreshBackgroundDeviceDiscovery | Number | Frequency (seconds) of scans for new new devices          | 120                |
 
 - Note Air PM Levels don't usually change quickly - 60s seems reasonable if openHAB is controlling it and your don't want near instant feedback of physical interactions with the devices.
 

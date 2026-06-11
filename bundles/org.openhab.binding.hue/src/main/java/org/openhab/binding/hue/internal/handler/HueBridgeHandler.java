@@ -698,7 +698,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
                     scheduler.submit(() -> {
                         // register trustmanager service
                         HueTlsTrustManagerProvider tlsTrustManagerProvider = new HueTlsTrustManagerProvider(
-                                ip + ":" + hueBridgeConfig.getPort(), hueBridgeConfig.useSelfSignedCertificate, false);
+                                ip + ":" + hueBridgeConfig.getPort(), hueBridgeConfig.useSelfSignedCertificate);
 
                         // Check before registering that the PEM certificate can be downloaded
                         if (tlsTrustManagerProvider.getPEMTrustManager() == null) {

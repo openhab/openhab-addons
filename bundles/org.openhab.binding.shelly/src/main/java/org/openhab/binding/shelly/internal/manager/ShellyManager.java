@@ -17,6 +17,7 @@ import static org.openhab.binding.shelly.internal.util.ShellyUtils.getString;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -43,7 +44,23 @@ import org.slf4j.LoggerFactory;
 /**
  * {@link ShellyManager} implements the Shelly Manager
  *
+ * built-in management interface is served at /shelly/manager via ShellyManagerServlet
+ *
+ * It provides:
+ *
+ * - Device overview: all registered things, their status, firmware version, WiFi signal
+ * - Per-device control panel: relay toggle, roller position, reboot, factory reset
+ * - OTA firmware update trigger with version comparison
+ *
+ * Pages extend ShellyManagerPage and return a ShellyMgrResponse containing MIME
+ * type and HTML body. The servlet routes to the appropriate page class based on URL path.
+ *
+ * Handlers expose themselves to the manager via ShellyManagerInterface, which
+ * ShellyBaseHandler implements. ShellyThingTable holds the registry of all active
+ * handlers, making them accessible from the servlet without direct coupling.
+ *
  * @author Markus Michels - Initial contribution
+ *
  */
 @NonNullByDefault
 @Component(service = ShellyManager.class)
@@ -91,7 +108,7 @@ public class ShellyManager {
 
     public ShellyMgrResponse generateContent(String path, Map<String, String[]> parameters) throws ShellyApiException {
         for (Map.Entry<String, ShellyManagerPage> page : pages.entrySet()) {
-            if (path.toLowerCase().startsWith(page.getKey())) {
+            if (path.toLowerCase(Locale.ROOT).startsWith(page.getKey())) {
                 ShellyManagerPage p = page.getValue();
                 return p.generateContent(path, parameters);
             }

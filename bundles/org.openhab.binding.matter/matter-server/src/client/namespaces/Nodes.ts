@@ -1,8 +1,11 @@
-import { Logger } from "@matter/main";
-import { GeneralCommissioning, OperationalCredentialsCluster } from "@matter/main/clusters";
+import { Logger, ObserverGroup, SoftwareUpdateManager } from "@matter/main";
+import { GeneralCommissioning, OperationalCredentialsCluster, OtaSoftwareUpdateRequestor, OtaSoftwareUpdateRequestorCluster } from "@matter/main/clusters";
 import { FabricIndex, ManualPairingCodeCodec, NodeId, QrCode, QrPairingCodeCodec } from "@matter/types";
 import { NodeCommissioningOptions } from "@project-chip/matter.js";
 import { ControllerNode } from "../ControllerNode";
+import { OtaSoftwareUpdateRequestorClient } from "@matter/node/behaviors";
+import { EventType } from "../../MessageTypes";
+import { PeerAddress } from "@matter/main/protocol";
 
 const logger = Logger.get("matter");
 
@@ -63,7 +66,7 @@ export class Nodes {
                 if (!node.isConnected) {
                     continue;
                 }
-                const nodeData = await this.controllerNode.serializePairedNode(node);
+                const nodeData = await this.controllerNode.serializePairedNode(node, undefined, false);
                 data.push(nodeData);
             } catch (error) {
                 logger.error(`Error serializing node ${nodeId}: ${error}`);
@@ -153,22 +156,24 @@ export class Nodes {
             regulatoryCountryCode: "XX",
         };
 
-        if (this.controllerNode.Store.has("WiFiSsid") && this.controllerNode.Store.has("WiFiPassword")) {
-            options.commissioning.wifiNetwork = {
-                wifiSsid: await this.controllerNode.Store.get<string>("WiFiSsid", ""),
-                wifiCredentials: await this.controllerNode.Store.get<string>("WiFiPassword", ""),
-            };
+        // Only pass network credentials when they are actually present and non-empty. matter.js 0.17 rejects an
+        // empty wifiNetwork/threadNetwork with "must not be empty" before commissioning even starts. Devices that
+        // are already on their operational network (e.g. a Thread device joined externally beforehand) are
+        // commissioned over IP without re-provisioning, so omitting the credentials here is the correct behaviour.
+        const wifiSsid = await this.controllerNode.Store.get<string>("WiFiSsid", "");
+        const wifiCredentials = await this.controllerNode.Store.get<string>("WiFiPassword", "");
+        if (wifiSsid.length > 0 && wifiCredentials.length > 0) {
+            options.commissioning.wifiNetwork = { wifiSsid, wifiCredentials };
         }
-        if (this.controllerNode.Store.has("ThreadName") && this.controllerNode.Store.has("ThreadOperationalDataset")) {
-            options.commissioning.threadNetwork = {
-                networkName: await this.controllerNode.Store.get<string>("ThreadName", ""),
-                operationalDataset: await this.controllerNode.Store.get<string>("ThreadOperationalDataset", ""),
-            };
+        const threadName = await this.controllerNode.Store.get<string>("ThreadName", "");
+        const threadOperationalDataset = await this.controllerNode.Store.get<string>("ThreadOperationalDataset", "");
+        if (threadName.length > 0 && threadOperationalDataset.length > 0) {
+            options.commissioning.threadNetwork = { networkName: threadName, operationalDataset: threadOperationalDataset };
         }
 
         const commissionedNodeId = await this.controllerNode.commissioningController.commissionNode(options);
 
-        console.log(`Commissioned Node: ${commissionedNodeId}`);
+        logger.info(`Commissioned Node: ${commissionedNodeId}`);
         return commissionedNodeId;
     }
 
@@ -212,7 +217,7 @@ export class Nodes {
      */
     async removeFabric(nodeId: number | string, index: number) {
         if (this.controllerNode.commissioningController === undefined) {
-            console.log("Controller not initialized, nothing to disconnect.");
+            logger.warn("Controller not initialized, nothing to disconnect.");
             return;
         }
 
@@ -227,13 +232,22 @@ export class Nodes {
         }
 
         const fabricInstance = FabricIndex(index);
-        const ourFabricIndex = await operationalCredentialsCluster.getCurrentFabricIndexAttribute(true);
+        const ourFabricIndex = await this.getOurFabricIndex(nodeId);
 
         if (ourFabricIndex == fabricInstance) {
             throw new Error("Will not delete our own fabric");
         }
 
         await operationalCredentialsCluster.commands.removeFabric({ fabricIndex: fabricInstance });
+    }
+
+    async getOurFabricIndex(nodeId: number | string) {
+        const node = this.controllerNode.getNode(nodeId);
+        const operationalCredentialsCluster = node.getRootClusterClient(OperationalCredentialsCluster);
+        if (operationalCredentialsCluster === undefined) {
+            throw new Error(`OperationalCredentialsCluster for node ${nodeId} not found.`);
+        }
+        return await operationalCredentialsCluster.getCurrentFabricIndexAttribute(true);
     }
 
     /**
@@ -260,7 +274,7 @@ export class Nodes {
     async basicCommissioningWindow(nodeId: number | string, timeout = 900) {
         const node = this.controllerNode.getNode(nodeId);
         await node.openBasicCommissioningWindow(timeout);
-        console.log(`Basic Commissioning Window for node ${nodeId} opened`);
+        logger.info(`Basic Commissioning Window for node ${nodeId} opened`);
     }
 
     /**
@@ -273,12 +287,12 @@ export class Nodes {
         const node = this.controllerNode.getNode(nodeId);
         const data = await node.openEnhancedCommissioningWindow(timeout);
 
-        console.log(`Enhanced Commissioning Window for node ${nodeId} opened`);
+        logger.info(`Enhanced Commissioning Window for node ${nodeId} opened`);
         const { qrPairingCode, manualPairingCode } = data;
 
-        console.log(QrCode.get(qrPairingCode));
-        console.log(`QR Code URL: https://project-chip.github.io/connectedhomeip/qrcode.html?data=${qrPairingCode}`);
-        console.log(`Manual pairing code: ${manualPairingCode}`);
+        logger.debug(QrCode.get(qrPairingCode));
+        logger.debug(`QR Code URL: https://project-chip.github.io/connectedhomeip/qrcode.html?data=${qrPairingCode}`);
+        logger.info(`Manual pairing code: ${manualPairingCode}`);
         return data;
     }
 
@@ -288,7 +302,57 @@ export class Nodes {
      */
     async logNode(nodeId: number | string) {
         const node = this.controllerNode.getNode(nodeId);
-        console.log("Logging structure of Node ", node.nodeId.toString());
+        logger.info("Logging structure of Node ", node.nodeId.toString());
         node.logStructure();
+    }
+
+    async otaQueryForUpdates(nodeId: number | string, includeStoredUpdates: boolean = false) {
+        const node = this.controllerNode.getNode(nodeId);
+       // Query a specific node for updates
+        const updates = await this.controllerNode.commissioningController?.otaProvider.act(agent =>
+            agent.get(SoftwareUpdateManager).queryUpdates({ peerToCheck: node.node, includeStoredUpdates: includeStoredUpdates })
+        );
+        if (updates && updates.length > 0) {
+            return updates[0].info;
+        } 
+        return undefined;
+    }
+    
+    async otaStartUpdate(nodeId: number | string): Promise<void> {
+        const node = this.controllerNode.getNode(nodeId);
+        const observers = new ObserverGroup();
+    
+        // Get OTA events from the ClientNode
+        const otaEvents = node.node.eventsOf(OtaSoftwareUpdateRequestorClient);
+    
+        const updateInfo = await this.otaQueryForUpdates(nodeId, true);
+        if (updateInfo === undefined) {
+            throw new Error(`No update info found for node ${nodeId}`);
+        }
+        const { vendorId, productId, softwareVersion, softwareVersionString } = updateInfo;
+        logger.info(`Updating node ${nodeId} to version ${softwareVersionString} with vendorId ${vendorId} and productId ${productId}`);
+        const peerAddress = this.controllerNode.commissioningController?.fabric.addressOf(node.nodeId);
+        if (peerAddress === undefined) {
+            throw new Error(`Peer address not found for node ${nodeId}`);
+        }
+        logger.info(`Updating node ${nodeId} to firmware with vendorId ${vendorId} and productId ${productId} and softwareVersion ${softwareVersion}`);
+        await this.controllerNode.commissioningController?.otaProvider.act(agent => {
+            return agent
+                .get(SoftwareUpdateManager).forceUpdate(peerAddress, vendorId, productId, softwareVersion);
+        });
+    }
+
+    async otaCancelUpdate(nodeId: number | string): Promise<void> {
+        const node = this.controllerNode.getNode(nodeId);
+        const peerAddress = this.controllerNode.commissioningController?.fabric.addressOf(node.nodeId);
+        if (peerAddress === undefined) {
+            throw new Error(`Peer address not found for node ${nodeId}`);
+        }
+        await this.controllerNode.commissioningController?.otaProvider.act(agent =>
+            agent
+                .get(SoftwareUpdateManager)
+                .removeConsent(peerAddress)
+        );
+        logger.info(`Consent removed for node ${nodeId}`);
     }
 }

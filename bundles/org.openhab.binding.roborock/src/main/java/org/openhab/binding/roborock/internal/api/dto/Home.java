@@ -29,7 +29,6 @@ public class Home {
         public String name = "";
         public int tuyaHomeId;
         public int rrHomeId;
-        public String deviceListOrder = "";
     }
 
     public Home() {

@@ -20,6 +20,7 @@ import static org.mockito.Mockito.*;
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.NUMBER_ENERGY;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -63,6 +64,7 @@ public class EvccBaseThingHandlerTest {
     @BeforeEach
     public void setUp() {
         handler = spy(new BaseThingHandlerTestClass(thing, channelTypeRegistry));
+        when(handler.getThing()).thenReturn(thing);
         when(thing.getUID()).thenReturn(new ThingUID("test:thing:uid"));
         when(thing.getProperties()).thenReturn(Map.of("index", "0", "type", "battery"));
         when(thing.getChannels()).thenReturn(new ArrayList<>());
@@ -121,13 +123,20 @@ public class EvccBaseThingHandlerTest {
 
         @Test
         public void updateFromEvccStateWithExistingChannelDoesNotCreateChannel() {
-            handler.isInitialized = true;
             JsonObject state = new JsonObject();
+            handler.type = "battery";
             state.add("capacity", new JsonPrimitive(5.5));
             @SuppressWarnings("null")
             Channel mockChannel = mock(Channel.class);
+            ChannelUID channelUID = new ChannelUID("test:thing:uid:battery-capacity");
+            when(mockChannel.getUID()).thenReturn(channelUID);
+            when(thing.getChannel(channelUID)).thenReturn(mockChannel);
+            when(thing.getChannels()).thenReturn(List.of(mockChannel));
             when(thing.getChannel(anyString())).thenReturn(mockChannel);
 
+            when(handler.getStateFromCachedState(state)).thenReturn(state);
+            handler.isInitialized = true;
+            handler.updateThingCalled = false; // Assure that it is false before calling
             handler.updateStatesFromApiResponse(state);
 
             assertTrue(handler.prepareApiResponseForChannelStateUpdateCalled);

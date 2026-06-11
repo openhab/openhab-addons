@@ -14,6 +14,7 @@ package org.openhab.binding.homeconnect.internal.client;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -34,6 +35,7 @@ public class CircularQueue<E> {
     }
 
     public synchronized void add(E element) {
+        Objects.requireNonNull(element);
         ArrayBlockingQueue<E> myQueue = queue;
         if (myQueue.remainingCapacity() <= 0) {
             myQueue.poll();

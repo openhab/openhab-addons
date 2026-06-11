@@ -128,6 +128,7 @@ public class CommonSetup {
             cs = new ConfigStoreWithoutMetadata(networkAddressService, configAdmin, scheduler);
         }
         cs.activate(Map.of("uuid", "a668dc9b-7172-49c3-832f-acb07dda2a20"));
+        cs.useSemanticModel = false;
         cs.switchFilter = Set.of("Switchable");
         cs.whiteFilter = Set.of("Switchable");
         cs.colorFilter = Set.of("ColorLighting");

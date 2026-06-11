@@ -134,9 +134,9 @@ public class RadioThermostatSchedule {
             return "";
         }
 
-        // some were null, the schedule is invalid
+        // if any of the time or temp fields are null, the schedule is invalid
         if (schedule.stream().anyMatch(day -> day.isAnyNull())) {
-            throw new IllegalStateException();
+            throw new IllegalStateException("One or more time or temperature fields are empty");
         }
 
         final StringBuilder json = new StringBuilder("{");
@@ -151,12 +151,7 @@ public class RadioThermostatSchedule {
         return json.toString();
     }
 
-    private @Nullable String getDaySchedule(DaySchedule day) {
-        // if any of the time or temp fields are null, this day schedule is not valid
-        if (day.isAnyNull()) {
-            return null;
-        }
-
+    private String getDaySchedule(DaySchedule day) throws IllegalStateException {
         final ArrayList<SetPeriod> setPeriods = day.getSchedule();
 
         final int morningMin;
@@ -171,12 +166,12 @@ public class RadioThermostatSchedule {
             nightMin = setPeriods.get(3).getMinutes();
         } catch (NumberFormatException nfe) {
             // if any of the times could not be parsed into minutes, the schedule is invalid
-            return null;
+            throw new IllegalStateException("Unable to parse time value", nfe);
         }
 
         // the minute value for each period must be greater than the previous period otherwise the schedule is invalid
         if (morningMin >= dayMin || dayMin >= eveningMin || eveningMin >= nightMin) {
-            return null;
+            throw new IllegalStateException("At least one time period is after the previous period");
         }
 
         return "[" + morningMin + "," + setPeriods.get(0).getTemp() + "," + dayMin + "," + setPeriods.get(1).getTemp()

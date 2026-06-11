@@ -81,7 +81,7 @@ public class HaID {
      * @param nodeID The node ID (can be the empty string)
      * @param component The component ID
      */
-    private HaID(String baseTopic, String objectID, String nodeID, String component) {
+    public HaID(String baseTopic, String objectID, String nodeID, String component) {
         this.baseTopic = baseTopic;
         this.objectID = objectID;
         this.nodeID = nodeID;

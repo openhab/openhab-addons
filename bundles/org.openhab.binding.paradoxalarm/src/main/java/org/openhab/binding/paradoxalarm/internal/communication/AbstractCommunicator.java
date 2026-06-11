@@ -120,7 +120,11 @@ public abstract class AbstractCommunicator implements IParadoxInitialLoginCommun
             byte[] packetBytes = request.getRequestPacket().getBytes();
             ParadoxUtil.printPacket("Tx Packet:", packetBytes);
             tx.write(packetBytes);
-            syncQueue.moveRequest();
+            if (request.isResponseExpected()) {
+                syncQueue.moveRequest();
+            } else {
+                syncQueue.removeSendRequest();
+            }
         } catch (SocketException e) {
             logger.debug("Socket time out occurred. Informing listener. Request={}. Exception=", request, e);
             syncQueue.removeSendRequest();

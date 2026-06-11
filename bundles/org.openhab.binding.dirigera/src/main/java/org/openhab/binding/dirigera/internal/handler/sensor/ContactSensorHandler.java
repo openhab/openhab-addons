@@ -43,15 +43,6 @@ public class ContactSensorHandler extends BaseHandler {
     }
 
     @Override
-    public void initialize() {
-        super.initialize();
-        if (super.checkHandler()) {
-            JSONObject values = gateway().api().readDevice(config.id);
-            handleUpdate(values);
-        }
-    }
-
-    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         super.handleCommand(channelUID, command);
     }
@@ -61,8 +52,8 @@ public class ContactSensorHandler extends BaseHandler {
         // handle reachable flag
         super.handleUpdate(update);
         // now device specific
-        if (update.has(Model.ATTRIBUTES)) {
-            JSONObject attributes = update.getJSONObject(Model.ATTRIBUTES);
+        if (update.has(Model.JSON_KEY_ATTRIBUTES)) {
+            JSONObject attributes = update.getJSONObject(Model.JSON_KEY_ATTRIBUTES);
             Iterator<String> attributesIterator = attributes.keys();
             while (attributesIterator.hasNext()) {
                 String key = attributesIterator.next();

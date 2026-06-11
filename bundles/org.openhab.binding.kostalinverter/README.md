@@ -125,16 +125,16 @@ None
 
 The following Channels are writeable
 
-| Channel Type ID                          | Item Type                | Description                                                                      | Read Write |
-|------------------------------------------|--------------------------|----------------------------------------------------------------------------------|:----------:|
-| device-local-battery-usage-consumption-set| String                  | Battery usage consumption level for power consumption from battery, value = 100 (W)                                                                                                                                                         |     W      |
-| device-local-battery-usage-strategy-set  | String                   | Battery usage strategy, Value = 1 = Automatic, Value = 2 = Automatic economical  |     W      |
-| device-local-smart-battery-control-set   | Switch                   | Smart battery control, Value = OFF / ON                                          |     W      |
-| device-local-battery-charge-time-from-set| String                   | Battery charge time from, Value = 00:00                                          |     W      |
-| device-local-battery-charge-time-to-set  | String                   | Battery charge time to, Value = 23:59                                            |     W      |
-| device-local-max-depth-of-discharge-set  | String                   | Max depth of discharge (SoC), Value = 10                                         |     W      |
-| device-local-shadow-management-set       | String                   | Shadow management, Value = 0 = No shadow management enabled, Value = 1 = Shadow management enabled for DC-Input String 1, Value = 2 = Shadow  management enabled for DC-Input String 2,  Value = 3 = Shadow management enabled for DC-Input String 1 and 2               |     W      |
-| device-local-external-module-control-set | String                   | External module control, Value = 0 = Not Activated, Value = 1 = Activated                                        |     W      |
+| Channel Type ID                            | Item Type | Description                                                                                                 | Read Write |
+|--------------------------------------------|-----------|-------------------------------------------------------------------------------------------------------------|:----------:|
+| device-local-battery-usage-consumption-set | String    | Battery usage consumption level for power consumption from battery, value = 100 (W)                         |     W      |
+| device-local-battery-usage-strategy-set    | String    | Battery usage strategy, Value = 1 = Automatic, Value = 2 = Automatic economical                             |     W      |
+| device-local-smart-battery-control-set     | Switch    | Smart battery control, Value = OFF / ON                                                                     |     W      |
+| device-local-battery-charge-time-from-set  | String    | Battery charge time from, Value = 00:00                                                                     |     W      |
+| device-local-battery-charge-time-to-set    | String    | Battery charge time to, Value = 23:59                                                                       |     W      |
+| device-local-max-depth-of-discharge-set    | String    | Max depth of discharge (SoC), Value = 10                                                                    |     W      |
+| device-local-shadow-management-set         | String    | Shadow management: 0 = Disabled, 1 = DC-Input String 1, 2 = DC-Input String 2, 3 = DC-Input Strings 1 and 2 |     W      |
+| device-local-external-module-control-set   | String    | External module control, Value = 0 = Not Activated, Value = 1 = Activated                                   |     W      |
 
 ### Third generation devices (PIKO IQ / PLENTICORE plus)
 

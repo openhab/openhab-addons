@@ -19,6 +19,7 @@ import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -28,14 +29,14 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.shelly.internal.ShellyHandlerFactory;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
-import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
+import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyDeviceStats;
+import org.openhab.binding.shelly.internal.handler.ShellyDeviceStats.ShellyDeviceAlarm;
 import org.openhab.binding.shelly.internal.handler.ShellyManagerInterface;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.binding.shelly.internal.util.ShellyVersionDTO;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -62,9 +63,9 @@ public class ShellyManagerOverviewPage extends ShellyManagerPage {
 
     @Override
     public ShellyMgrResponse generateContent(String path, Map<String, String[]> parameters) throws ShellyApiException {
-        String filter = getUrlParm(parameters, URLPARM_FILTER).toLowerCase();
-        String action = getUrlParm(parameters, URLPARM_ACTION).toLowerCase();
-        String uidParm = getUrlParm(parameters, URLPARM_UID).toLowerCase();
+        String filter = getUrlParm(parameters, URLPARM_FILTER).toLowerCase(Locale.ROOT);
+        String action = getUrlParm(parameters, URLPARM_ACTION).toLowerCase(Locale.ROOT);
+        String uidParm = getUrlParm(parameters, URLPARM_UID).toLowerCase(Locale.ROOT);
 
         logger.debug("Generating overview for {} devices", getThingHandlers().size());
 
@@ -258,11 +259,10 @@ public class ShellyManagerOverviewPage extends ShellyManagerPage {
     }
 
     private Map<String, String> getStatusWarnings(ShellyManagerInterface handler) {
-        Thing thing = handler.getThing();
         ThingStatus status = handler.getThing().getStatus();
         ShellyDeviceStats stats = handler.getStats();
         ShellyDeviceProfile profile = handler.getProfile();
-        ShellyThingConfiguration config = thing.getConfiguration().as(ShellyThingConfiguration.class);
+        ShellyApiConfiguration config = handler.getApiConfig();
         TreeMap<String, String> result = new TreeMap<>();
 
         if (status != ThingStatus.ONLINE && status != ThingStatus.UNKNOWN) {
@@ -281,9 +281,11 @@ public class ShellyManagerOverviewPage extends ShellyManagerPage {
             }
         }
 
-        if (stats.lastAlarm.equalsIgnoreCase(ALARM_TYPE_RESTARTED)) {
-            result.put("Device Alarm", ALARM_TYPE_RESTARTED + " (" + convertTimestamp(stats.lastAlarmTs) + ")");
+        ShellyDeviceAlarm lastAlarm = stats.lastAlarm.get();
+        if (lastAlarm != null && lastAlarm.message().equalsIgnoreCase(ALARM_TYPE_RESTARTED)) {
+            result.put("Device Alarm", ALARM_TYPE_RESTARTED + " (" + convertTimestamp(lastAlarm.timeStamp()) + ")");
         }
+
         if (getBool(profile.status.overtemperature)) {
             result.put("Device Alarm", ALARM_TYPE_OVERTEMP);
         }
@@ -302,13 +304,16 @@ public class ShellyManagerOverviewPage extends ShellyManagerPage {
             }
         }
         if (profile.alwaysOn && (status == ThingStatus.ONLINE)) {
-            if ((config.eventsCoIoT) && (profile.settings.coiot != null)) {
-                if ((profile.settings.coiot.enabled != null) && !profile.settings.coiot.enabled) {
+            if (config.getEnableCoIOT() && profile.settings.coiot != null) {
+                if (profile.settings.coiot.enabled != null && !profile.settings.coiot.enabled) {
                     result.put("CoIoT Status", "COIOT_DISABLED");
-                } else if (stats.protocolMessages == 0) {
-                    result.put("CoIoT Discovery", "NO_COIOT_DISCOVERY");
-                } else if (stats.protocolMessages < 2) {
-                    result.put("CoIoT Multicast", "NO_COIOT_MULTICAST");
+                } else {
+                    long protocolMessages = stats.protocolMessages.get();
+                    if (protocolMessages == 0) {
+                        result.put("CoIoT Discovery", "NO_COIOT_DISCOVERY");
+                    } else if (protocolMessages < 2) {
+                        result.put("CoIoT Multicast", "NO_COIOT_MULTICAST");
+                    }
                 }
             }
         }

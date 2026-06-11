@@ -309,6 +309,7 @@ public class UniFiController {
                 throw new UniFiCommunicationException(e);
             } else {
                 login();
+                request.setCsrfToken(csrfToken);
                 result = (T) executeRequest(request);
             }
         } catch (final UniFiNotAuthorizedException e) {

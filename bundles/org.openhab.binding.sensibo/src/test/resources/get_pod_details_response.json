@@ -2,7 +2,7 @@
     "status": "success",
     "result": {
         "configGroup": "stable1",
-        "macAddress": "MA:C:AD:DR:ES:S0",
+        "macAddress": "AA:BB:CC:DD:EE:FF",
         "cleanFiltersNotificationEnabled": true,
         "room": {
             "name": "Basement",

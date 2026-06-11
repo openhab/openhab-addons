@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.sensorcommunity.internal;
 
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
@@ -30,6 +32,9 @@ public class SensorCommunityBindingConstants {
     public static final ThingTypeUID THING_TYPE_PARTICULATE = new ThingTypeUID(BINDING_ID, "particulate");
     public static final ThingTypeUID THING_TYPE_CONDITIONS = new ThingTypeUID(BINDING_ID, "conditions");
     public static final ThingTypeUID THING_TYPE_NOISE = new ThingTypeUID(BINDING_ID, "noise");
+    public static final ThingTypeUID THING_TYPE_RADIATION = new ThingTypeUID(BINDING_ID, "radiation");
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_PARTICULATE, THING_TYPE_CONDITIONS,
+            THING_TYPE_NOISE, THING_TYPE_RADIATION);
 
     // List of all Channel ids
     public static final String PM25_CHANNEL = "pm25";
@@ -41,4 +46,9 @@ public class SensorCommunityBindingConstants {
     public static final String NOISE_EQ_CHANNEL = "noise-eq";
     public static final String NOISE_MIN_CHANNEL = "noise-min";
     public static final String NOISE_MAX_CHANNEL = "noise-max";
+
+    public static final String RADIATION_CHANNEL = "radiation";
+    public static final String RADIATION_LEVEL_CHANNEL = "radiation-level";
+    public static final String RADIATION_CPM_CHANNEL = "counts-per-minute";
+    public static final String RADIATION_PULSE_CHANNEL = "hv-pulses";
 }

@@ -16,7 +16,6 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * {@link CapabilityMap} is a specialized Map designed to store capabilities
@@ -29,33 +28,27 @@ public class CapabilityMap extends ConcurrentHashMap<Class<?>, Capability> {
     private static final long serialVersionUID = -3043492242108419801L;
 
     public void put(Capability capability) {
-        Class<?> clazz = capability.getClass();
-        if (super.get(clazz) == null) {
+        Class<? extends Capability> clazz = capability.getClass();
+
+        if (getOrDescendant(clazz).isEmpty()) {
             super.put(clazz, capability);
             capability.initialize();
+        } else {
+            throw new IllegalArgumentException("%s is already present".formatted(clazz.getSimpleName()));
         }
     }
 
     public <T extends Capability> Optional<T> get(Class<T> clazz) {
-        @SuppressWarnings("unchecked")
-        T cap = (T) super.get(clazz);
-        return Optional.ofNullable(cap);
-    }
-
-    public <T extends Capability> void remove(Class<?> clazz) {
-        @Nullable
-        Capability cap = super.remove(clazz);
-        if (cap != null) {
-            cap.dispose();
+        Capability cap = super.get(clazz);
+        if (cap == null) {
+            return Optional.empty();
         }
+        return Optional.of(clazz.cast(cap));
     }
 
-    public Optional<RefreshCapability> getRefresh() {
-        return values().stream().filter(RefreshCapability.class::isInstance).map(RefreshCapability.class::cast)
-                .findFirst();
-    }
-
-    public Optional<Capability> getParentUpdate() {
-        return values().stream().filter(ParentUpdateCapability.class::isInstance).findFirst();
+    public <T extends Capability> Optional<T> getOrDescendant(Class<T> clazz) {
+        return values().stream()
+                .filter(cap -> clazz.isAssignableFrom(cap.getClass()) || cap.getClass().isAssignableFrom(clazz))
+                .map(cap -> clazz.cast(cap)).findFirst();
     }
 }

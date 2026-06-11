@@ -5,7 +5,7 @@ openHAB Cloud service hosted by the [openHAB Foundation](https://www.openhabfoun
 
 ## Features
 
-The openHAB Cloud service (and thus the connector to it) is useful for different use cases:
+The openHAB Cloud service (and thus, the connector to it) is useful for different use cases:
 
 - It allows remote access to local openHAB instances without having to expose ports to the Internet or to require a complex VPN setup.
 - It serves as a connector to Firebase Cloud Messaging (FCM) for pushing notifications to mobile phone apps.
@@ -28,7 +28,7 @@ One can think of it as something similar like a username for the cloud authentic
 The second one is a random secret key which serves as a password.
 Both values are written to the local file system.
 
-If you loose these files for some reason, openHAB will automatically generate new ones.
+If you lose these files for some reason, openHAB will automatically generate new ones.
 You will then have to reconfigure UUID and secret in the openHAB Cloud service under the _My account_ section.
 You will need these values to register on the website before connection is accepted.
 
@@ -49,10 +49,10 @@ By default, both remote access and push notifications are enabled.
 
 ### Advanced Configuration
 
-For private hosted myopenHAB installations, the base URL can be changed to point another cloud instance.
+For privately hosted myopenHAB installations, the base URL can be changed to point to another cloud instance.
 
-Private hosted myopenHAB installations may enable selected items in openHAB to have their state updates pushed to the cloud service for integrations with services like IFTTT.
-Note that this is not supported on the community hosted myopenHAB service due to high load concerns and will have no effect if enabled with the default URL configured.
+Privately hosted myopenHAB installations may enable selected items in openHAB to have their state updates pushed to the cloud service for integrations with services like IFTTT.
+Note that this is not supported on the community-hosted myopenHAB service due to high load concerns and will have no effect if enabled with the default URL configured.
 This is also not required for remote access through the cloud service to function.
 
 Alternatively, you can configure the settings in the file `conf/services/openhabcloud.cfg`:
@@ -103,7 +103,7 @@ For each of the three actions, there's another variant accepting an icon name an
 - `sendBroadcastNotification(message, icon, tag)`
 - `sendLogNotification(message, icon, tag)`
 
-Icon and tag can potentially be used by cloud instance clients (such as the openHAB apps for Android or iOS) to be displayed in the notification itself and the list of notifications.
+Icon and tag can potentially be used by cloud instance clients (such as the openHAB apps for Android or iOS) to be displayed in the notification itself and in the list of notifications.
 
 The parameters for these actions have the following meaning:
 
@@ -140,7 +140,7 @@ The additional parameter for these variants have the following meaning:
 - `title`: The title of the notification. Defaults to "openHAB" inside the Android and iOS apps.
 - `referenceId`: A user supplied id to both replace existing messages when pushed, and later remove messages with the `hideNotificationByReferenceId` actions.
 - `onClickAction`: The action to be performed when the user clicks on the notification. Specified using the [action syntax](#action-syntax).
-- `mediaAttachmentUrl`: The URL of the media attachment to be displayed with the notification. This can either be a fully qualified URL, prefixed with `http://` or `https://` and reachable by the client device, a relative path on the user's openHAB instance starting with `/`, or an image item with the format `item:MyImageItem`. If the media attachment URL is not reachable by the client device (ie. the URL is not available on the public internet), use the `setImage` action to set the image item to the URL first then use `item:MyImageItem` as the media attachment URL. See [example](#examples) for more details.
+- `mediaAttachmentUrl`: The URL of the media attachment to be displayed with the notification. This can either be a fully qualified URL, prefixed with `http://` or `https://` and reachable by the client device, a relative path on the user's openHAB instance starting with `/`, or an image item with the format `item:MyImageItem`. If the media attachment URL is not reachable by the client device (i.e., the URL is not available on the public internet), use the `setImage` action to set the image item to the URL first, then use `item:MyImageItem` as the media attachment URL. See [example](#examples) for more details.
 - `actionButton1`: The action to be performed when the user clicks on the first action button. Specified as `Title=$action`, where `$action` follows the [action syntax](#action-syntax).
 - `actionButton2`: The action to be performed when the user clicks on the second action button. Specified as `Title=$action`, where `$action` follows the [action syntax](#action-syntax).
 - `actionButton3`: The action to be performed when the user clicks on the third action button. Specified as `Title=$action`, where `$action` follows the [action syntax](#action-syntax).
@@ -155,7 +155,7 @@ There are several types of actions available:
 
 - `command`: Sends a command to an Item by using the following syntax: `command:$itemName:$commandString` where `$itemName` is the name of the Item and `$commandString` is the command to be sent.
 - `ui`: Controls the UI in two possible ways:
-  - `ui:$path` where `$path` is either `/basicui/app?...` for navigating sitemaps (using the native renderer) or `/some/absolute/path` for navigating (using the web view).
+  - `ui:$path` where `$path` is either `/basicui/app?...` for navigating sitemaps (using the native renderer) or `/some/absolute/path` for navigating (using the webview).
   - `ui:$commandItemSyntax` where `$commandItemSyntax` is the same syntax as used for the [UI Command Item]({{base}}/mainui/about.html#ui-command-item).
 - `http:` or `https:`: Opens the fully qualified URL in an embedded browser on the device.
 - `rule` (currently only on iOS): Runs a rule by using the following syntax: `rule:$ruleId:$prop1Key=$prop1Value,$prop2Key=$prop2Value,...` where `$ruleId` is the id of the rule, and optional properties to send to the rule are in the format `name=value` separated by commas. Most rules can omit the properties.
@@ -166,16 +166,16 @@ Examples:
 - `command:KitchenLights:ON`
 - `command:KitchenBlinds:50`
 - `ui:/basicui/app?w=0000&sitemap=main` (use Basic UI to get sitemap URL locations)
-- `ui:/some/absolute/path`: Navigates to the absolut path `/some/absolute/path`.
+- `ui:/some/absolute/path`: Navigates to the absolute path `/some/absolute/path`.
 - `ui:navigate:/page/my_floorplan_page`: Navigates Main UI to the page with the ID `my_floorplan_page`.
 - `ui:popup:oh-clock-card`: Opens a popup with `oh-clock-card`.
-- `https://openhab.org`: Opens an embedded browser to the site `https://openhab.org`
-- `rule:02ffc3a297:prop1=foo`: Runs the rule with an id of `02ffc3a297` passing in an optional parameter named `prop1` with a value of `foo`
-- `app:android=com.sonos.acr2,ios=sonos-2://`: Opens the Sonos app depending on the device type (Android or iOS)
+- `https://openhab.org`: Opens an embedded browser to the site `https://openhab.org`.
+- `rule:02ffc3a297:prop1=foo`: Runs the rule with an ID of `02ffc3a297`, passing in an optional parameter named `prop1` with a value of `foo`.
+- `app:android=com.sonos.acr2,ios=sonos-2://`: Opens the Sonos app depending on the device type (Android or iOS).
 
 ### Hide Notification Actions
 
-There are also actions to hide existing notifications, either by `referenceId` or `tag` (formerly severity):
+There are also actions to hide existing notifications, either by `referenceId` or `tag` (formerly "severity"):
 
 - `hideNotificationByReferenceId(emailAddress, referenceId)`
 - `hideBroadcastNotificationByReferenceId(referenceId)`
@@ -336,7 +336,7 @@ end
 
 ::::
 
-Notify all openHAB Cloud users that motion was detected, attach a camera snapshot from a network local camera using an image item and add an action button to turn on the light:
+Notify all openHAB Cloud users that motion was detected, attach a camera snapshot from a local network camera using an image item, and add an action button to turn on the light:
 
 :::: tabs
 
@@ -360,7 +360,7 @@ end
 
 ```javascript
 rules.when().item('Apartment_MotionSensor').changed().to('ON').then(() => {
-  actions.HTTP.setImage("Apartment_Camera_Snapshot", "http://camera.local/camera-snapshot.jpg");
+  actions.HTTP.setImage('Apartment_Camera_Snapshot', 'http://camera.local/camera-snapshot.jpg');
   actions.notificationBuilder('Motion detected in the apartment!')
     .withIcon('motion')
     .withTag('Motion Tag')
@@ -380,7 +380,7 @@ rules.when().item('Apartment_MotionSensor').changed().to('ON').then(() => {
 rule "Motion Detected Notification" do
   changed Apartment_MotionSensor, to: ON
   run do
-    HTTP.setImage("Apartment_Camera_Snapshot", "http://camera.local/camera-snapshot.jpg");
+    HTTP.setImage("Apartment_Camera_Snapshot", "http://camera.local/camera-snapshot.jpg")
     Notification.send "Motion detected in the apartment!",
                       icon: "motion",
                       tag: "Motion Tag",

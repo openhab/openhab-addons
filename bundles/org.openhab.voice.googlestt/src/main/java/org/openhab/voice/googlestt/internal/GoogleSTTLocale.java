@@ -71,7 +71,7 @@ public class GoogleSTTLocale {
             Matcher matcher = pattern.matcher(html);
             Locale lastLocale = null;
             while (matcher.find()) {
-                Locale locale = new Locale(matcher.group("lang"), matcher.group("country"));
+                Locale locale = Locale.of(matcher.group("lang"), matcher.group("country"));
                 if (lastLocale == null || !lastLocale.equals(locale)) {
                     lastLocale = locale;
                     SUPPORTED_LOCALES.add(locale);
@@ -87,7 +87,7 @@ public class GoogleSTTLocale {
     private static void loadLocalesFromLocal() {
         Arrays.stream(LOCAL_COPY.split(",")).map((localeTag) -> {
             String[] localeTagParts = localeTag.split("-");
-            return new Locale(localeTagParts[0], localeTagParts[1]);
+            return Locale.of(localeTagParts[0], localeTagParts[1]);
         }).forEach(SUPPORTED_LOCALES::add);
     }
 }

@@ -15,5 +15,11 @@
 			<description>MQTT base prefix</description>
 			<default>homeassistant</default>
 		</parameter>
+
+		<parameter name="deviceConfig" type="text">
+			<label>Device Config</label>
+			<description>Full device configuration in JSON</description>
+			<advanced>true</advanced>
+		</parameter>
 	</config-description>
 </config-description:config-descriptions>

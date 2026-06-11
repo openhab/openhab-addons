@@ -72,18 +72,20 @@ class IlluminanceMeasurementConverterTest extends BaseMatterConverterTest {
         AttributeChangedMessage message = new AttributeChangedMessage();
         message.path = new Path();
         message.path.attributeName = "measuredValue";
-        message.value = 100;
+        message.value = 10001;
         converter.onEvent(message);
+        // 10001 -> 10^((10001-1)/10000) = 10^1 = 10 lux
         verify(mockHandler, times(1)).updateState(eq(1), eq("illuminancemeasurement-measuredvalue"),
-                eq(new QuantityType<Illuminance>(100, Units.LUX)));
+                eq(new QuantityType<Illuminance>(10.0, Units.LUX)));
     }
 
     @Test
     void testInitState() {
-        mockCluster.measuredValue = 100;
+        mockCluster.measuredValue = 20001;
         converter.initState();
+        // 20001 -> 10^((20001-1)/10000) = 10^2 = 100 lux
         verify(mockHandler, times(1)).updateState(eq(1), eq("illuminancemeasurement-measuredvalue"),
-                eq(new QuantityType<Illuminance>(100, Units.LUX)));
+                eq(new QuantityType<Illuminance>(100.0, Units.LUX)));
     }
 
     @Test

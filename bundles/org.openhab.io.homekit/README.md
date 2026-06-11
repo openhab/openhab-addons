@@ -12,39 +12,40 @@ Some accessory types require a specific set of characteristics.
 
 HomeKit integration supports following accessory types:
 
-- Switchable
-- Outlet
-- Lighting (simple, dimmable, color)
-- Fan
-- Thermostat
-- Heater / Cooler
-- Lock
-- Security System
-- Garage Door Opener
-- Motorized Door
-- Motorized Window
-- Window Covering/Blinds
-- Slat
-- Valve
-- Faucet / Shower
-- Speaker
-- SmartSpeaker
-- Microphone
+- Air Purifier
 - Air Quality Sensor
-- Contact Sensor
-- Leak Sensor
-- Motion Sensor
-- Occupancy Sensor
-- Smoke Sensor
-- Temperature Sensor
-- Humidity Sensor
-- Light Sensor
+- Battery
 - Carbon Dioxide Sensor
 - Carbon Monoxide Sensor
-- Battery
+- Contact Sensor
+- Fan
+- Faucet / Shower
 - Filter Maintenance
-- Television
+- Garage Door Opener
+- Heater / Cooler
+- Humidity Sensor
 - Irrigation System
+- Leak Sensor
+- Light Sensor
+- Lighting (simple, dimmable, color)
+- Lock
+- Microphone
+- Motion Sensor
+- Motorized Door
+- Motorized Window
+- Occupancy Sensor
+- Outlet
+- Security System
+- Slat
+- SmartSpeaker
+- Smoke Sensor
+- Speaker
+- Switchable
+- Temperature Sensor
+- Television
+- Thermostat
+- Valve
+- Window Covering/Blinds
 
 ## Quick start
 
@@ -65,7 +66,7 @@ HomeKit integration supports following accessory types:
 
   ![ios_add_accessory.png](doc/ios_add_accessory.png)
 
-- scan QR code from UI->Setting-HomeKit Integration
+- scan QR code from UI->Settings->HomeKit Integration
 
   ![ios_scan_qrcode.png](doc/ios_scan_qrcode.png)
 
@@ -81,11 +82,11 @@ Add metadata to more items or fine-tune your configuration using further setting
 
 ## Global Configuration
 
-You can define HomeKit settings either via mainUI or via `$OPENHAB_CONF/services/homekit.cfg`.
-HomeKit works with default settings, but we recommend changing the pin for the bridge.
-This will be used in iOS when pairing without QR Code. The pin code is in the form "###-##-###".
-Requirements beyond this are not clear, and Apple enforces limitations on eligible pins within iOS.
-At the very least, you cannot use repeating (111-11-111) or sequential (123-45-678) pin codes.
+You can define HomeKit settings either via Main UI or via `$OPENHAB_CONF/services/homekit.cfg`.
+HomeKit works with default settings, but we recommend changing the PIN for the bridge.
+This will be used in iOS when pairing without QR code. The PIN code is in the form "###-##-###".
+Requirements beyond this are not clear, and Apple enforces limitations on eligible PINs within iOS.
+At the very least, you cannot use repeating (111-11-111) or sequential (123-45-678) PIN codes.
 
 Other settings, such as using Fahrenheit temperatures and specifying the interface to advertise the HomeKit bridge are also illustrated in the following sample:
 
@@ -109,9 +110,9 @@ Some settings are only visible in UI if the checkbox "Show advanced" is activate
 |:-------------------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:---------------------|
 | networkInterface         | IP address or domain name under which the HomeKit bridge can be reached. If no value is configured, the add-on uses the primary IP address configured for openHAB. If unsure, keep it empty                                                                                                                                                                                          | (none)               |
 | port                     | Port under which the HomeKit bridge can be reached.                                                                                                                                                                                                                                                                                                                                  | 9123                 |
-| useOHmDNS                | mDNS service is used to advertise openHAB as HomeKit bridge in the network so that HomeKit clients can find it. openHAB has already mDNS service running. This option defines whether the mDNS service of openHAB or a separate service should be used.                                                                                                                              | false                |
-| blockUserDeletion        | Blocks HomeKit user deletion in openHAB and as result unpairing of devices. If you experience an issue with accessories becoming non-responsive after some time, try to enable this setting. You can also enable this setting if your HomeKit setup is done and you will not re-pair ios devices.                                                                                    | false                |
-| pin                      | Pin code used for pairing with iOS devices. Apparently, pin codes are provided by Apple and represent specific device types, so they cannot be chosen freely. The pin code 031-45-154 is used in sample applications and known to work.                                                                                                                                              | 031-45-154           |
+| useOHmDNS                | mDNS service is used to advertise openHAB as HomeKit bridge in the network so that HomeKit clients can find it. openHAB already has an mDNS service running. This option defines whether the mDNS service of openHAB or a separate service should be used.                                                                                                                           | false                |
+| blockUserDeletion        | Blocks HomeKit user deletion in openHAB and as a result unpairing of devices. If you experience an issue with accessories becoming non-responsive after some time, try to enable this setting. You can also enable this setting if your HomeKit setup is done and you will not re-pair iOS devices.                                                                                  | false                |
+| pin                      | PIN code used for pairing with iOS devices. Apparently, PIN codes are provided by Apple and represent specific device types, so they cannot be chosen freely. The PIN code 031-45-154 is used in sample applications and known to work.                                                                                                                                              | 031-45-154           |
 | useFahrenheitTemperature | Set to true to use Fahrenheit degrees, or false to use Celsius degrees. Note if an item has a QuantityType as its state, this configuration is ignored and it's always converted properly.                                                                                                                                                                                           | false                |
 | name                     | Name under which this HomeKit bridge is announced on the network. This is also the name displayed on the iOS device when searching for available bridges.                                                                                                                                                                                                                            | openHAB              |
 | instances                | Defines how many bridges to expose. Necessary if you have more than 149 accessories. Accessories must be assigned to additional instances via metadata. Additional bridges will use incrementing port numbers.                                                                                                                                                                       | 1                    |
@@ -119,24 +120,24 @@ Some settings are only visible in UI if the checkbox "Show advanced" is activate
 
 ## Item Configuration
 
-After setting the global configuration, you will need to tag your [openHAB items](https://www.openhab.org/docs/configuration/items.html) for HomeKit with accessory type.
+After setting the global configuration, you will need to tag your [openHAB items](https://www.openhab.org/docs/configuration/items.html) for HomeKit with an accessory type.
 For our purposes, you may consider HomeKit accessories to be of two types: simple and complex.
 
-A simple accessory will be mapped to a single openHAB item, e.g. HomeKit lighting can represent an openHAB Switch, Dimmer, or Color item.
-A complex accessory will be made up of multiple openHAB items, e.g. HomeKit Thermostat can be composed of mode, and current & target temperature.
+A simple accessory will be mapped to a single openHAB item, e.g., HomeKit lighting can represent an openHAB Switch, Dimmer, or Color item.
+A complex accessory will be made up of multiple openHAB items, e.g., HomeKit Thermostat can be composed of mode, and current & target temperature.
 Complex accessories require a tag on a Group Item indicating the accessory type, as well as tags on the items it composes.
 
 A HomeKit accessory has mandatory and optional characteristics (listed below in the table).
-The mapping between openHAB items and HomeKit accessory and characteristics is done by means of [metadata](https://www.openhab.org/docs/concepts/items.html#item-metadata)
+The mapping between openHAB items and HomeKit accessory and characteristics is done by means of [metadata](https://www.openhab.org/docs/concepts/items.html#item-metadata).
 
-If the first word of the item name match the room name in Home app, Home app will hide it.
-E.g. item with the name "Kitchen Light" will be shown in "Kitchen" room as "Light". This is recommended naming convention for HomeKit items and rooms.
+If the first word of the item name matches the room name in the Home app, the Home app will hide it.
+E.g., an item with the name "Kitchen Light" will be shown in the "Kitchen" room as "Light". This is the recommended naming convention for HomeKit items and rooms.
 
-### UI based Configuration
+### UI Based Configuration
 
 In order to add metadata to an item:
 
-- select desired item in mainUI
+- select the desired item in Main UI
 - click on "Add Metadata"
 
   ![item_add_metadata_button.png](doc/item_add_metadata_button.png)
@@ -149,7 +150,7 @@ In order to add metadata to an item:
 
   ![add_homekit_tag.png](doc/add_homekit_tag.png)
 
-- select required HomeKit accessory type or characteristic
+- select the required HomeKit accessory type or characteristic
 
   ![select_homekit_accessory_type.png](doc/select_homekit_accessory_type.png)
 
@@ -163,21 +164,21 @@ Switch leaksensor_metadata  "Leak Sensor"           {homekit="LeakSensor"}
 
 The tag can be:
 
-- full qualified: i.e. with accessory type and characteristic, e.g. "LeakSensor.LeakDetectedState"
-- shorthand version: with only either accessory type or characteristic, e.g. "LeakSensor", "LeakDetectedState".
+- fully qualified: i.e., with accessory type and characteristic, e.g., "LeakSensor.LeakDetectedState"
+- shorthand version: with only either accessory type or characteristic, e.g., "LeakSensor", "LeakDetectedState".
 
-if shorthand version has only accessory type, then HomeKit will automatically link _all_ mandatory characteristics of this accessory type to the openHAB item.
-e.g. HomeKit window covering has 3 mandatory characteristics: CurrentPosition, TargetPosition, PositionState.
-Following are equal configuration:
+If the shorthand version has only an accessory type, then HomeKit will automatically link _all_ mandatory characteristics of this accessory type to the openHAB item.
+E.g., HomeKit window covering has 3 mandatory characteristics: CurrentPosition, TargetPosition, PositionState.
+The following are equal configurations:
 
 ```java
 Rollershutter    window_covering    "Window Rollershutter"     {homekit="WindowCovering"}
 Rollershutter    window_covering    "Window Rollershutter"     {homekit="WindowCovering, WindowCovering.CurrentPosition, WindowCovering.TargetPosition, WindowCovering.PositionState"}
 ```
 
-If the shorthand version has only a characteristic then it must be a part of a group which has a HomeKit accessory type.
-You can use openHAB group to define complex accessories. The group item must indicate the HomeKit accessory type,
-e.g. LeakSensor definition
+If the shorthand version has only a characteristic, then it must be part of a group which has a HomeKit accessory type.
+You can use an openHAB group to define complex accessories. The group item must indicate the HomeKit accessory type,
+e.g., LeakSensor definition
 
 ```java
 Group  gLeakSensor                      "Leak Sensor Group"                                              {homekit="LeakSensor"}
@@ -187,10 +188,10 @@ Switch leaksensor_battery               "Leak Sensor Battery"                   
 
 ### Complex Multiple Service Accessories
 
-Alternatively, you may want to have a choice of controlling the items individually, OR as a group, from HomeKit.
-The following examples defines a single HomeKit accessory _with multiple services_ that the Home app will allow you to control together, or drill down and control individually.
-Note that `AccessoryGroup` doesn't expose any services itself, but allows you to group other services together underneath it.
-Also note that when nesting accessories, you cannot use the shorthand of naming only a characteristic, and not its accessory type, since it would be ambiguous if that item belongs to a secondary service, or to the primary service it's nested under.
+Alternatively, you may want to have a choice of controlling the items individually, or as a group, from HomeKit.
+The following example defines a single HomeKit accessory _with multiple services_ that the Home app will allow you to control together, or drill down and control individually.
+Note that `AccessoryGroup` doesn't expose any services itself but allows you to group other services together underneath it.
+Also note that when nesting accessories, you cannot use the shorthand of naming only a characteristic and not its accessory type, since it would be ambiguous whether that item belongs to a secondary service or to the primary service it's nested under.
 
 ```java
 Group:Switch:OR(ON,OFF) gLight "Light Group" {homekit="AccessoryGroup"}
@@ -202,7 +203,7 @@ Switch light2 "Light 2" (gLight) {homekit="Lighting"}
 
 You can also group additional accessories directly under another accessory.
 In this example, HomeKit will show three separate light controls.
-As this is somewhat confusing that Home will allow controlling all members as a group, and you also have the group as a distinct switch inside the HomeKit accessory, this is not a recommended configuration.
+As this is somewhat confusing (Home will allow controlling all members as a group, and you also have the group as a distinct switch inside the HomeKit accessory), this is not a recommended configuration.
 
 ```java
 Group:Switch:OR(ON,OFF) gLight "Light Group" {homekit="Lighting"}
@@ -222,8 +223,8 @@ Switch fan1_light "Fan Light" (gFan) {homekit="Lighting"}
 
 ![Fan With Light](doc/fan_with_light.png)
 
-Another way to build complex accessories is to associate multiple accessory types with the root group, and then define all of the individual characteristics on group members.
-When using this style, you cannot have multiple instance of the same accessory type.
+Another way to build complex accessories is to associate multiple accessory types with the root group and then define all of the individual characteristics on group members.
+When using this style, you cannot have multiple instances of the same accessory type.
 
 ```java
 Group           FanWithLight        "Fan with Light"                           {homekit = "Fan,Lighting"}
@@ -245,7 +246,7 @@ Switch occupancy_and_motion_sensor       "Occupancy and Motion Sensor Tag"  {hom
 ```
 
 You can even form complex sensors this way.
-Just be sure that you fully specify additional characteristics, so that the addon knows which root service to add it to.
+Just be sure that you fully specify additional characteristics so that the add-on knows which root service to add it to.
 
 ```java
 Group eBunkAirthings "Bunk Room Airthings Wave Plus" { homekit="AirQualitySensor,TemperatureSensor,HumiditySensor" }
@@ -261,18 +262,18 @@ A sensor with a battery configured in MainUI:
 ![ui_sensor_with_battery.png](doc/ui_sensor_with_battery.png)
 
 The Home app uses the first accessory in a group as the icon for the group as a whole.
-E.g. an accessory defined as `homekit="Fan,Light"` will be shown as a fan and an accessory defined as `homekit="Light,Fan"` will be shown as a light in the Home app.
-You can also override the primary service by using adding `primary=<type>` to the HomeKit metadata configuration:
+E.g., an accessory defined as `homekit="Fan,Light"` will be shown as a fan and an accessory defined as `homekit="Light,Fan"` will be shown as a light in the Home app.
+You can also override the primary service by adding `primary=<type>` to the HomeKit metadata configuration:
 
 ```java
 Group           FanWithLight        "Fan with Light"                           {homekit = "Light,Fan" [primary = "Fan"]}
 ```
 
-on in MainUI:
+or in Main UI:
 
 ![ui_fan_with_light_primary.png](doc/ui_fan_with_light_primary.png)
 
-Unusual combinations are also possible, e.g. you can combine temperature sensor with blinds and light.
+Unusual combinations are also possible, e.g., you can combine a temperature sensor with blinds and light.
 
 It will be represented by the Home app as follows:
 
@@ -285,48 +286,48 @@ Note that for sensors that aren't interactive, the Home app will show the consti
 
 ## Dummy Accessories
 
-OpenHAB is a highly dynamic system, and prone to occasional misconfigurations where items can't be loaded for various reasons, especially if you're using something besides the UI to manage your items.
-This is a problem for HomeKit because if the bridge makes a connection, but accessories are missing, then the HomeKit database will simply remove that accessory.
-When the accessory does come back (i.e. because you corrected a syntax error in an .items file, or openHAB completes booting), all customization of that accessory will be lost - the room assignment, customized  name, custom icon, status/home screen/favorite preferences, etc.
-In order to work around this, the HomeKit addon can create dummy accessories for any accessory it has previously published to HomeKit.
+openHAB is a highly dynamic system and prone to occasional misconfigurations where items can't be loaded for various reasons, especially if you're using something besides the UI to manage your items.
+This is a problem for HomeKit because if the bridge makes a connection but accessories are missing, then the HomeKit database will simply remove that accessory.
+When the accessory does come back (i.e., because you corrected a syntax error in an .items file, or openHAB completes booting), all customization of that accessory will be lost - the room assignment, customized name, custom icon, status/home screen/favorite preferences, etc.
+In order to work around this, the HomeKit add-on can create dummy accessories for any accessory it has previously published to HomeKit.
 To enable this behavior, turn on the `useDummyAccessories` setting.
-OpenHAB will then simply present a non-interactive accessory for any that are missing.
+openHAB will then simply present a non-interactive accessory for any that are missing.
 The openHAB log will also contain information whenever a dummy accessory is created.
-If the item backing the accessory is later re-created, everything will sync back up and nothing will be lost.
+If the item backing the accessory is later re-created, everything will sync back up, and nothing will be lost.
 You can also run the console command `openhab:homekit listDummyAccessories` to see which items are missing.
-Apple devices may or may not show "Not Responding" for some or all accessories when there are dummy accessories, since they will no longer be backed by actual items with state.
-It's recommended that you resolve this state as soon as possible, since HomeKit may decide your entire bridge is being uncooperative, and remove everything itself.
+Apple devices may or may not show "Not Responding" for some or all accessories when there are dummy accessories since they will no longer be backed by actual items with state.
+It's recommended that you resolve this state as soon as possible since HomeKit may decide your entire bridge is being uncooperative and remove everything itself.
 If you actually meant to remove an item, you will need to purge the dummy items from the database so that they'll disappear from the Home app altogether.
 In order to do so, run the console command `openhab:homekit pruneDummyAccessories`.
-Alternatively, disabling, saving, and then re-enabling `useDummyAccessories` in the addon settings will have the same effect.
+Alternatively, disabling, saving, and then re-enabling `useDummyAccessories` in the add-on settings will have the same effect.
 
 ## Accessory Configuration Details
 
-This section provides examples widely used accessory types.
-For complete list of supported accessory types and characteristics please see section [Supported accessory type](#Supported accessory type)
+This section provides examples of widely used accessory types.
+For a complete list of supported accessory types and characteristics, please see section [Supported accessory type](#Supported accessory type).
 
 ### Dimmers
 
-The way HomeKit handles dimmer devices can be different to the actual dimmers' way of working.
-HomeKit Home app sends following commands/update:
+The way HomeKit handles dimmer devices can be different from the actual dimmers' way of working.
+The HomeKit Home app sends the following commands/updates:
 
-- On brightness change Home app sends "ON" event along with target brightness, e.g. "Brightness = 50%" + "State = ON".
-- On "ON" event Home app sends "ON" along with brightness 100%, i.e. "Brightness = 100%" + "State = ON"
-- On "OFF" event Home app sends "OFF" without brightness information.
+- On brightness change, the Home app sends "ON" event along with target brightness, e.g., "Brightness = 50%" + "State = ON".
+- On "ON" event, the Home app sends "ON" along with brightness 100%, i.e., "Brightness = 100%" + "State = ON"
+- On "OFF" event, the Home app sends "OFF" without brightness information.
 
-However, some dimmer devices for example do not expect brightness on "ON" event, some others do not expect "ON" upon brightness change.
-In order to support different devices HomeKit integration can filter some events. Which events should be filtered is defined via dimmerMode configuration.
+However, some dimmer devices, for example, do not expect brightness on "ON" event; some others do not expect "ON" upon brightness change.
+In order to support different devices, the HomeKit integration can filter some events. Which events should be filtered is defined via the dimmerMode configuration.
 
 ```java
 Dimmer dimmer_light   "Dimmer Light"     {homekit="Lighting, Lighting.Brightness" [dimmerMode="<mode>"]}
 ```
 
-Following modes are supported:
+The following modes are supported:
 
-- "normal" - no filtering. The commands will be sent to device as received from HomeKit. This is default mode.
-- "filterOn" - ON events are filtered out. only OFF events and brightness information are sent
-- "filterBrightness100" - only Brightness=100% is filtered out. everything else sent unchanged. This allows custom logic for soft launch in devices.
-- "filterOnExceptBrightness100"  - ON events are filtered out in all cases except of brightness = 100%.
+- "normal" - no filtering. The commands will be sent to the device as received from HomeKit. This is the default mode.
+- "filterOn" - ON events are filtered out. Only OFF events and brightness information are sent.
+- "filterBrightness100" - only Brightness=100% is filtered out. Everything else is sent unchanged. This allows custom logic for soft launch in devices.
+- "filterOnExceptBrightness100" - ON events are filtered out in all cases except for brightness = 100%.
 
 Examples:
 
@@ -415,18 +416,18 @@ Dimmer Television_Volume "Volume" (gTelevisionSpeaker) { homekit="TelevisionSpea
 ```
 
 Note that seemingly most of these characteristics are not accessible from the Home app.
-At the least, you should be able to edit names, control main power, switch inputs, alter input visibility, and be notified when the user wants to open the TV's menu.
+At the very least, you should be able to edit names, control main power, switch inputs, alter input visibility, and be notified when the user wants to open the TV's menu.
 
-### Windows Covering (Blinds) / Window / Door
+### Window Covering (Blinds) / Window / Door
 
-HomeKit Windows Covering, Window and Door accessory types have following mandatory characteristics:
+HomeKit Window Covering, Window, and Door accessory types have the following mandatory characteristics:
 
 - CurrentPosition (0-100% of current window covering position)
 - TargetPosition (0-100% of target position)
-- PositionState (DECREASING,INCREASING or STOPPED as state). If no state provided, HomeKit will send STOPPED
+- PositionState (DECREASING, INCREASING, or STOPPED as state). If no state is provided, HomeKit will send STOPPED.
 
-These characteristics can be mapped to a single openHAB rollershutter item. In such case currentPosition will always equal target position, means if you request to close a blind/window/door, HomeKit will immediately report that the blind/window/door is closed.
-As discussed above, one can use full or shorthand definition. Following two definitions are equal:
+These characteristics can be mapped to a single openHAB rollershutter item. In such a case, currentPosition will always equal target position, meaning if you request to close a blind/window/door, HomeKit will immediately report that the blind/window/door is closed.
+As discussed above, one can use full or shorthand definition. The following two definitions are equal:
 
 ```java
 Rollershutter    window                "Window"                    {homekit = "Window"}
@@ -437,16 +438,16 @@ Rollershutter    window_covering_long  "Window Rollershutter long" {homekit = "W
 
 openHAB Rollershutter is defined by default as:
 
-- OPEN if position is 0%,
-- CLOSED if position is 100%.
+- OPEN if position is 0%
+- CLOSED if position is 100%
 
-In contrast, HomeKit window covering/door/window have inverted mapping
+In contrast, HomeKit window covering/door/window have inverted mapping:
 
-- OPEN if position 100%
+- OPEN if position is 100%
 - CLOSED if position is 0%
 
-Therefore, HomeKit integration inverts by default the values between openHAB and HomeKit, e.g. if openHAB current position is 30% then it will send 70% to HomeKit app.
-In case you need to disable this logic you can do it with configuration parameter inverted=false, e.g.
+Therefore, the HomeKit integration inverts by default the values between openHAB and HomeKit, e.g., if the openHAB current position is 30%, then it will send 70% to the HomeKit app.
+In case you need to disable this logic, you can do it with the configuration parameter inverted=false, e.g.:
 
 ```java
 Rollershutter window_covering "Window Rollershutter" {homekit = "WindowCovering"  [inverted=false]}
@@ -454,30 +455,30 @@ Rollershutter window          "Window"               {homekit = "Window" [invert
 Rollershutter door            "Door"                 {homekit = "Door" [inverted=false]}
  ```
 
-HomeKit home app never sends "STOP" but only the target position.
-If you add configuration parameter "stop=true", openHAB will emulate stop and send "STOP" command to rollershutter item if you click on the blind icon in the iOS home app while the blind is moving.
+The HomeKit Home app never sends "STOP" but only the target position.
+If you add the configuration parameter "stop=true", openHAB will emulate stop and send the "STOP" command to the rollershutter item if you click on the blind icon in the iOS Home app while the blind is moving.
 
 ```java
 Rollershutter window_covering "Window Rollershutter" {homekit = "WindowCovering"  [stop=true]}
  ```
 
-Some blinds devices do support "STOP" command but would stop if they receive UP/DOWN while moving om the same direction. In order to support such devices add "stopSameDirection" parameter.
+Some blinds devices do support the "STOP" command but would stop if they receive UP/DOWN while moving in the same direction. In order to support such devices, add the "stopSameDirection" parameter.
 
 ```java
 Rollershutter window_covering "Window Rollershutter" {homekit = "WindowCovering"  [stop=true, stopSameDirection=true]}
  ```
 
 Some blinds devices do not support going to a specific position, even though they are modeled as Rollershutter items.
-The Home App only sends exact percentages by default.
-To avoid creating a rule, you can have the HomeKit addon translate 0%/100% to UP/DOWN commands.
+The Home app only sends exact percentages by default.
+To avoid creating a rule, you can have the HomeKit add-on translate 0%/100% to UP/DOWN commands.
 
 ```java
 Rollershutter window_covering "Window Rollershutter" {homekit = "WindowCovering" [sendUpDownForExtents=true]}
 ```
 
-Window covering can have a number of optional characteristics like horizontal & vertical tilt, obstruction status and hold position trigger.
-If your blind supports tilt, and you want to control tilt via HomeKit you need to define blind as a group.
-e.g.
+Window covering can have a number of optional characteristics like horizontal & vertical tilt, obstruction status, and hold position trigger.
+If your blind supports tilt and you want to control tilt via HomeKit, you need to define the blind as a group.
+E.g.:
 
 ```java
 Group           gBlind                  "Blind with tilt"                               {homekit = "WindowCovering"}
@@ -487,7 +488,7 @@ Dimmer          window_covering_vtilt   "Blind vertical tilt"           (gBlind)
  ```
 
 Current and Target Position characteristics can be linked to Rollershutter but also to Number or Dimmer item types.
-e.g.
+E.g.:
 
 ```java
 Group           gBlind   "Blinds"                        {homekit = "WindowCovering"}
@@ -498,14 +499,14 @@ String          blind_position            (gBlind)       {homekit = "PositionSta
 
 ### Thermostat
 
-A HomeKit thermostat has following mandatory characteristics:
+A HomeKit thermostat has the following mandatory characteristics:
 
 - CurrentTemperature
 - TargetTemperature
 - CurrentHeatingCoolingMode
 - TargetHeatingCoolingMode
 
-In order to define a thermostat you need to create a group with at least these 4 items.
+In order to define a thermostat, you need to create a group with at least these 4 items.
 Example:
 
 ```java
@@ -546,15 +547,15 @@ Number          thermostat_cool_thrs       "Thermostat Cool Threshold Temp [%.1f
 Number          thermostat_heat_thrs       "Thermostat Heat Threshold Temp [%.1f °C]" (gThermostat) {homekit = "HeatingThresholdTemperature"}
 ```
 
-#### Min / max temperatures
+#### Min/Max Temperatures
 
-Current  and target temperatures have default min and max values. Any values below or above max limits will be replaced with min or max limits.
-Default limits are:
+Current and target temperatures have default min and max values. Any values below or above the max limits will be replaced with min or max limits.
+The default limits are:
 
 - current temperature: min value = 0 °C, max value = 100 °C
 - target temperature: min value = 10 °C, max value = 38 °C
 
-You can overwrite default values using minValue and maxValue configuration at item level, e.g.
+You can overwrite default values using minValue and maxValue configuration at the item level, e.g.:
 
 ```java
 Number          thermostat_current_temp    "Thermostat Current Temp [%.1f °C]"     (gThermostat)       {homekit = "CurrentTemperature" [minValue=5, maxValue=30]}
@@ -563,15 +564,15 @@ Number          thermostat_target_temp     "Thermostat Target Temp[%.1f °C]"   
 
 If "useFahrenheitTemperature" is set to true, the min and max temperature must be provided in Fahrenheit.
 
-#### Thermostat modes
+#### Thermostat Modes
 
-HomeKit thermostat supports following modes
+The HomeKit thermostat accessory supports the following modes:
 
 - CurrentHeatingCoolingMode: OFF, HEAT, COOL
 - TargetHeatingCoolingMode: OFF, HEAT, COOL, AUTO
 
 These modes are mapped to string values of openHAB items using configuration at the item level.
-e.g. if your current mode item can have following values: "OFF", "HEATING", "COOLING" then you need following mapping at item level
+E.g., if your current mode item can have the following values: "OFF", "HEATING", "COOLING", then you need the following mapping at the item level:
 
 ```java
 String          thermostat_current_mode     "Thermostat Current Mode" (gThermostat) {homekit = "CurrentHeatingCoolingMode" [OFF="OFF", HEAT="HEATING", COOL="COOLING"]}
@@ -579,34 +580,34 @@ String          thermostat_current_mode     "Thermostat Current Mode" (gThermost
 
 You can provide mapping for target mode in a similar way.
 
-The custom mapping can be also used to reduce number of modes shown in Home app.
-The modes can be only reduced, but not added, i.e. it is not possible to add a new custom mode to HomeKit thermostat.
+The custom mapping can also be used to reduce the number of modes shown in the Home app.
+The modes can only be reduced, but not added, i.e., it is not possible to add a new custom mode to the HomeKit thermostat.
 
-Example: if your thermostat does not support cooling, then you need to limit mapping to OFF and HEAT values only:
+Example: if your thermostat does not support cooling, then you need to limit the mapping to OFF and HEAT values only:
 
 ```java
 String          thermostat_current_mode    "Thermostat Current Mode"            (gThermostat) {homekit = "CurrentHeatingCoolingMode" [HEAT="HEATING", OFF="OFF"]}
 String          thermostat_target_mode     "Thermostat Target Mode"             (gThermostat) {homekit = "TargetHeatingCoolingMode" [HEAT="HEATING", OFF="OFF"]}
 ```
 
-The mapping using main UI looks like following:
+The mapping using Main UI looks like the following:
 
 ![mode_mapping.png](doc/mode_mapping.png)
 
 ### Valve
 
-The HomeKit valve accessory supports following 2 optional characteristics:
+The HomeKit valve accessory supports the following 2 optional characteristics:
 
-- duration: this describes how long the valve should set "InUse" once it is activated. The duration changes will apply to the next operation. If valve is already active then duration changes have no effect.
+- duration: this describes how long the valve should be set to "InUse" once it is activated. The duration changes will apply to the next operation. If the valve is already active, then duration changes have no effect.
 
-- remaining duration: this describes the remaining duration on the valve. Notifications on this characteristic must only be used if the remaining duration increases/decreases from the accessoryʼs usual countdown of remaining duration.
+- remaining duration: this describes the remaining duration on the valve. Notifications on this characteristic must only be used if the remaining duration increases/decreases from the accessory's usual countdown of remaining duration.
 
-Upon valve activation in Home app, Home app starts to count down from the "duration" to "0" without contacting the server. Home app also does not trigger any action if it remaining duration get 0.
-It is up to valve to have an own timer and stop valve once the timer is over.
-Some valves have such timer, e.g. pretty common for sprinklers.
-In case the valve has no timer capability, openHAB can take care on this -  start an internal timer and send "Off" command to the valve once the timer is over.
+Upon valve activation in the Home app, the Home app starts to count down from the "duration" to "0" without contacting the server. The Home app also does not trigger any action if the remaining duration reaches 0.
+It is up to the valve to have its own timer and stop the valve once the timer is over.
+Some valves have such a timer, e.g., it is pretty common for sprinklers.
+In case the valve has no timer capability, openHAB can take care of this - start an internal timer and send an "Off" command to the valve once the timer is over.
 
-configuration for these two cases looks as follow:
+The configuration for these two cases looks as follows:
 
 - valve with timer:
 
@@ -652,23 +653,37 @@ Number valve2SetDuration (gValve2) { homekit="Duration" }
 Number valve2RemainingDuration (gValve2) { homekit="RemainingDuration" }
 ```
 
+### Air Purifier
+
+You can attach a filter maintenance service to an air purifier. The filter service will be linked under the air purifier in HomeKit:
+
+```java
+Group  gPurifier                "Living Room Purifier"              { homekit="AirPurifier"}
+Switch purifierActive           "Purifier Active"       (gPurifier) { homekit="Active" }
+String purifierCurrentState     "Purifier State"        (gPurifier) { homekit="CurrentAirPurifierState" }
+String purifierTargetState      "Purifier Mode"         (gPurifier) { homekit="TargetAirPurifierState" }
+Group gFilter                                           (gPurifier) { homekit="Filter" }
+Switch purifierFilterChange     "Filter Change Needed"  (gFilter)   { homekit="FilterChangeIndication" }
+```
+
 ### Sensors
 
-Sensors have typically one mandatory characteristic, e.g. temperature or lead trigger, and several optional characteristics which are typically used for battery powered sensors and/or wireless sensors.
-Following table summarizes the optional characteristics supported by sensors.
+Sensors typically have one mandatory characteristic, e.g., temperature or leak trigger, and several optional characteristics which are typically used for battery-powered sensors and/or wireless sensors.
+The following table summarizes the optional characteristics supported by sensors.
 
 |  Characteristics             | Supported openHAB items  | Description                                                                                                                                                                                                              |
 |:-----------------------------|:-------------------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Name                         | String                   | Name of the sensor. This characteristic is interesting only for very specific cases in which the name of accessory is dynamic. if you not sure then you don't need it.                                                   |
+| Name                         | String                   | Name of the sensor. This characteristic is interesting only for very specific cases in which the name of the accessory is dynamic. If you are not sure, then you don't need it.                                          |
 | ActiveStatus                 | Switch, Contact          | Accessory current working status. "ON"/"OPEN" indicates that the accessory is active and is functioning without any errors.                                                                                              |
 | FaultStatus                  | Switch, Contact          | Accessory fault status. "ON"/"OPEN" value indicates that the accessory has experienced a fault that may be interfering with its intended functionality. A value of "OFF"/"CLOSED" indicates that there is no fault.      |
-| TamperedStatus               | Switch, Contact          | Accessory tampered status. "ON"/"OPEN" indicates that the accessory has been tampered. Value should return to "OFF"/"CLOSED" when the accessory has been reset to a non-tampered state.                                  |
+| TamperedStatus               | Switch, Contact          | Accessory tampered status. "ON"/"OPEN" indicates that the accessory has been tampered with. Value should return to "OFF"/"CLOSED" when the accessory has been reset to a non-tampered state.                             |
 | BatteryLowStatus             | Switch, Contact, Number  | Accessory battery status. "ON"/"OPEN" indicates that the battery level of the accessory is low. Value should return to "OFF"/"CLOSED" when the battery charges to a level that's above the low threshold. Alternatively, you can give a Number item that's the battery level, and if it's lower than the lowThreshold configuration, it will report low. |
 
-Switch and Contact items support inversion of the state mapping, e.g. by default the openHAB switch state "ON" is mapped to HomeKit contact sensor state "Open", and "OFF" to "Closed".
-The configuration "inverted=true" inverts this mapping, so that "ON" will be mapped to "Closed" and "OFF" to "Open".
+Switch and Contact items support inversion of the state mapping, e.g., by default the openHAB switch state "ON" is mapped to HomeKit contact sensor state "Open", and "OFF" to "Closed".
+The configuration "inverted=true" inverts this mapping so that "ON" will be mapped to "Closed" and "OFF" to "Open".
 
-Examples of sensor definitions.
+Examples of sensor definitions:
+
 Sensors without optional characteristics:
 
 ```java
@@ -707,8 +722,8 @@ or using UI
 
 ### Stateless Programmable Switch Groups
 
-To expose multiple Stateless Programmable Switches as a single accessory with multiple buttons (aka a scene controller), you need to configure ServiceLabel on the accessory group and ServiceIndex on each switch.
-Note that in the Home app, the individual switch names will be ignored, and will simply be displayed as "Button 1", "Button 2", etc. (for ARABIC_NUMERALS style).
+To expose multiple Stateless Programmable Switches as a single accessory with multiple buttons (a.k.a. a scene controller), you need to configure ServiceLabel on the accessory group and ServiceIndex on each switch.
+Note that in the Home app, the individual switch names will be ignored and will simply be displayed as "Button 1", "Button 2", etc. (for ARABIC_NUMERALS style).
 
 ```java
 Group gSceneController "Scene Controller" { homekit="AccessoryGroup"[ServiceLabel="ARABIC_NUMERALS"] }
@@ -722,15 +737,15 @@ Switch Button4 "Switch D" (gSceneController) { homekit="StatelessProgrammableSwi
 
 For configuration options, the default values are in parentheses.
 For enum values, the parentheses indicate the default values if the item is a Number or a Switch.
-All enum values can be customized via item metadata. I.e. `HEAT="heating", COOL="cooling"`, or `HEAT=5, COOL=7` for a Number.
+All enum values can be customized via item metadata, i.e., `HEAT="heating", COOL="cooling"`, or `HEAT=5, COOL=7` for a Number.
 <a name="customizable-enum">Some enums can have the list of valid values customized, meaning that if you customize the mapping, any value that is missing will not be presented to the user.</a>
 They are appropriately marked.
-Enums that are linked to Switches or Contacts have an `inverted` param that will reverse the sense of `ON`/`OFF` or `OPEN`/`CLOSED`.
+Enums that are linked to Switches or Contacts have an `inverted` parameter that will reverse the sense of `ON`/`OFF` or `OPEN`/`CLOSED`.
 
 Enum mappings can have multiple values for a single key.
-These must be an array, not a comma separated string.
+These must be an array, not a comma-separated string.
 If the characteristic can be set by HomeKit, the first value will be used when sending the command to the linked item.
-Such a mapping can be configured manually in MainUI on HomeKit metadata in the Code editor:
+Such a mapping can be configured manually in Main UI on HomeKit metadata in the Code editor:
 
 ```yaml
 value: "Lock"
@@ -766,6 +781,13 @@ All accessories also support the following optional characteristic that can be l
 
 | Accessory Tag               | Mandatory Characteristics   | Optional Characteristics    | Supported openHAB item types                   | Description                                                                                                                                                                                                                                                                                                                                                   | Configuration Options                                                 | Valid Enum Values                                                                                           |
 |-----------------------------|-----------------------------|-----------------------------|------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------|
+| AirPurifier                 |                             |                             |                                                | Air purifier                                                                                                                                                                                                                                                                                                                                                  |                                                                       |                                                                                                             |
+|                             | Active                      |                             | Contact, Dimmer, Number, String, Switch        | Accessory current working status                                                                                                                                                                                                                                                                                                                              | inverted (false)                                                      | INACTIVE (0, OFF), ACTIVE (1, ON)                                                                           |
+|                             | CurrentAirPurifierState     |                             | Number, String                                 | Current air purifier state                                                                                                                                                                                                                                                                                                                                    |                                                                       | INACTIVE (0), IDLE (1), PURIFYING_AIR (2)                                                                   |
+|                             | TargetAirPurifierState      |                             | Number, Switch, String                         | Target air purifier state                                                                                                                                                                                                                                                                                                                                     | inverted (false)                                                      | MANUAL (0, OFF), AUTO (1, ON)                                                                               |
+|                             |                             | LockControl                 | Number, Switch, String                         | Status of physical control lock                                                                                                                                                                                                                                                                                                                               | inverted (false)                                                      | CONTROL_LOCK_DISABLED (0, OFF), CONTROL_LOCK_ENABLED (1, ON)                                                |
+|                             |                             | RotationSpeed               | Dimmer, Number                                 | Fan rotation speed in % (1-100)                                                                                                                                                                                                                                                                                                                               |                                                                       |                                                                                                             |
+|                             |                             | SwingMode                   | Number, Switch, String                         | Swing mode                                                                                                                                                                                                                                                                                                                                                    | inverted (false)                                                      | SWING_DISABLED (0, OFF), SWING_ENABLED (1, ON)                                                              |
 | AirQualitySensor            |                             |                             |                                                | Air Quality Sensor which can measure different parameters                                                                                                                                                                                                                                                                                                     |                                                                       |                                                                                                             |
 |                             | AirQuality                  |                             | Number, String, Switch                         | Air quality state                                                                                                                                                                                                                                                                                                                                             |                                                                       | UNKNOWN (0, OFF), EXCELLENT (1, ON), GOOD (2), FAIR (3), INFERIOR (4), POOR (5)                             |
 |                             |                             | ActiveStatus                | Contact, Switch                                | Working status                                                                                                                                                                                                                                                                                                                                                |                                                                       |                                                                                                             |
@@ -1081,8 +1103,8 @@ Number          cooler_heat_thrs           "Cooler Heat Threshold Temp [%.1f °C
 
 HomeKit has a limitation of 150 accessories per bridge.
 The bridge itself counts as an accessory, so in practice it's 149.
-In order to overcome this limitation, you can instruct openHAB to expose multiple bridges to HomeKit, and then manually assign specific accessories to different instances.
-You will need to manually add each additional bridge in the Home app, since the QR Code in settings will only be for the primary bridge; however the same PIN is still used.
+In order to overcome this limitation, you can instruct openHAB to expose multiple bridges to HomeKit and then manually assign specific accessories to different instances.
+You will need to manually add each additional bridge in the Home app since the QR code in settings will only be for the primary bridge; however, the same PIN is still used.
 In order to assign a particular accessory to a different bridge, set the `instance` metadata parameter:
 
 ```java
@@ -1109,8 +1131,8 @@ To do this, you can issue the command `openhab:homekit clearPairings` from the [
 After doing this, you may need to remove the file `$OPENHAB_USERDATA/jsondb/homekit.json` and restart openHAB.
 
 HomeKit requires a unique identifier for each accessory advertised by the bridge.
-This unique identifier is hashed from the Item's name.
-For that reason, it is important that the name of your Items exposed to HomeKit remain consistent.
+This unique identifier is hashed from the item's name.
+For that reason, it is important that the names of your items exposed to HomeKit remain consistent.
 
 HomeKit listens by default on port 9124.
 Java prefers the IPv6 network stack by default.
@@ -1141,30 +1163,30 @@ openhab> log:tail org.openhab.io.homekit.internal
 
 ## Troubleshooting
 
-### openHAB is not listed in Home app
+### openHAB is not listed in the Home app
 
-if you don't see openHAB in the Home app, probably multicast DNS (mDNS) traffic is not routed correctly from openHAB to Home app device or openHAB is already in paired state.
-You can verify this with [Discovery DNS iOS app](https://apps.apple.com/us/app/discovery-dns-sd-browser/id305441017) as follow:
+If you don't see openHAB in the Home app, probably multicast DNS (mDNS) traffic is not routed correctly from openHAB to the Home app device, or openHAB is already in a paired state.
+You can verify this with the [Discovery DNS iOS app](https://apps.apple.com/us/app/discovery-dns-sd-browser/id305441017) as follows:
 
-- install discovery dns app from app store
-- start discovery app
-- find `_hap._tcp`  in the list of service types
-- if you don't find _hap._tcp on the list, probably the traffic is blocked.
-  - to confirm this, check whether you can find _openhab-server._tcp. if you don't see it as well, traffic is blocked. check your network router/firewall settings.
-- if you found _hap._tcp, open it. you should see the name of your openHAB HomeKit bridge (default name is openHAB)
+- install the Discovery DNS app from the App Store
+- start the Discovery app
+- find `_hap._tcp` in the list of service types
+- if you don't find _hap._tcp on the list, the traffic is probably blocked.
+  - to confirm this, check whether you can find _openhab-server._tcp. If you don't see it as well, traffic is blocked. Check your network router/firewall settings.
+- if you found _hap._tcp, open it. You should see the name of your openHAB HomeKit bridge (the default name is openHAB)
 
 ![discovery_hap_list.png](doc/discovery_hap_list.png)
 
-- if you don't see openHAB bridge name, the traffic is blocked
-- if you see openHAB HomeKit bridge, open it
+- if you don't see the openHAB bridge name, the traffic is blocked
+- if you see the openHAB HomeKit bridge, open it
 
 ![discovery_openhab_details.png](doc/discovery_openhab_details.png)
 
-- verify the IP address. it must be the IP address of your openHAB server, if not, set the correct IP address using `networkInterface` settings
+- verify the IP address. It must be the IP address of your openHAB server; if not, set the correct IP address using the `networkInterface` settings
 - verify the flag "sf".
-  - if sf is equal 1, openHAB is accepting pairing from new iOS device.
-  - if sf is equal 0 (as on screenshot), openHAB is already paired and does not accept any new pairing request. you can reset pairing using `openhab:homekit clearPairings` command in karaf console.
-- if you see openHAB bridge and sf is equal to 1 but you dont see openHAB in the Home app, the Home app probably still thinks it is already paired with openHAB. remove your home from the Home app and restart the iOS device.
+  - if sf is equal to 1, openHAB is accepting pairing from a new iOS device.
+  - if sf is equal to 0 (as in the screenshot), openHAB is already paired and does not accept any new pairing request. You can reset pairing using the `openhab:homekit clearPairings` command in the Karaf console.
+- if you see the openHAB bridge and sf is equal to 1 but you don't see openHAB in the Home app, the Home app probably still thinks it is already paired with openHAB. Remove your home from the Home app and restart the iOS device.
 
 ### Re-adding the openHAB HomeKit bridge reports that a bridge is already added, even though it has clearly been removed.
 
@@ -1172,13 +1194,13 @@ There are various reasons this may happen.
 Try the following:
 
 - In [openhab-cli](https://www.openhab.org/docs/administration/console.html), run `openhab:homekit clearPairings`.
-Try again.
-- In the HomeKit settings, change the port, setupId, and pin.
-Save the settings, then re-open the settings so as to refresh the QR code.
-Re-add the device.
-- Remove HomeKit state in `${OPENHAB_USERDATA}/jsondb/homekit.json`, and HomeKit config in `${OPENHAB_USERDATA}/config/org/openhab/homekit.config`.
+  Try again.
+- In the HomeKit settings, change the port, setupId, and PIN.
+  Save the settings, then re-open the settings to refresh the QR code.
+  Re-add the device.
+- Remove HomeKit state in `${OPENHAB_USERDATA}/jsondb/homekit.json` and HomeKit config in `${OPENHAB_USERDATA}/config/org/openhab/homekit.config`.
   Restart openHAB.
-  Reboot iPhone.
+  Reboot your iPhone.
   Try again.
 
 ### A stale HomeKit accessory will not go away after deleting the related item.
@@ -1188,22 +1210,21 @@ See the [Dummy Accessories](#dummy-accessories) section in the help, above.
 
 ### I added an accessory as the wrong type in Home, and updating the item configuration does not cause the change to reflect in the Home app
 
-HomeKit remembers certain configurations about an accessory, from its name to its fundamental type (i.e. fan, light or
-switch?).
+HomeKit remembers certain configurations about an accessory, from its name to its fundamental type (i.e., fan, light, or switch?).
 If you added it incorrectly, simply updating the item type will not cause Home to update the type.
 To resolve:
 
 1. If using text configuration: Comment out the HomeKit metadata for an accessory.
-If in the GUI, delete the HomeKit metadata for all items associated with the accessory.
+   If in the GUI, delete the HomeKit metadata for all items associated with the accessory.
 
 1. If you have `useDummyAccessories` enabled, open the
-[openhab-cli](https://www.openhab.org/docs/administration/console.html).
-Run `openhab:homekit listDummyAccessories` and
-confirm your item is in the list.
-Once you've confirmed, clear it with `openhab:homekit clearDummyAccessories`.
+   [openhab-cli](https://www.openhab.org/docs/administration/console.html).
+   Run `openhab:homekit listDummyAccessories` and
+   confirm your item is in the list.
+   Once you've confirmed, clear it with `openhab:homekit clearDummyAccessories`.
 
 1. Kill your Home app on your iOS device.
-Re-open it, and confirm that the accessory is gone.
+   Re-open it and confirm that the accessory is gone.
 
 1. Uncomment the HomeKit metadata or re-add it via the UI.
 

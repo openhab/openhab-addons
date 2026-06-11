@@ -17,9 +17,10 @@ import static org.openhab.binding.ftpupload.internal.FtpUploadBindingConstants.*
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.ftpupload.internal.config.FtpUploadConfig;
-import org.openhab.binding.ftpupload.internal.ftp.FtpServer;
 import org.openhab.binding.ftpupload.internal.ftp.FtpServerEventListener;
+import org.openhab.binding.ftpupload.internal.ftp.FtpServerManager;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.thing.Channel;
@@ -39,14 +40,15 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pauli Anttila - Initial contribution
  */
+@NonNullByDefault
 public class FtpUploadHandler extends BaseThingHandler implements FtpServerEventListener {
 
     private Logger logger = LoggerFactory.getLogger(FtpUploadHandler.class);
 
-    private FtpUploadConfig configuration;
-    private FtpServer ftpServer;
+    private @NonNullByDefault({}) FtpUploadConfig configuration;
+    private final FtpServerManager ftpServer;
 
-    public FtpUploadHandler(Thing thing, FtpServer ftpServer) {
+    public FtpUploadHandler(Thing thing, FtpServerManager ftpServer) {
         super(thing);
         this.ftpServer = ftpServer;
     }

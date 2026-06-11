@@ -28,12 +28,10 @@ public class ThermostatUserInterfaceConfigurationCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0204;
     public static final String CLUSTER_NAME = "ThermostatUserInterfaceConfiguration";
     public static final String CLUSTER_PREFIX = "thermostatUserInterfaceConfiguration";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_TEMPERATURE_DISPLAY_MODE = "temperatureDisplayMode";
     public static final String ATTRIBUTE_KEYPAD_LOCKOUT = "keypadLockout";
     public static final String ATTRIBUTE_SCHEDULE_PROGRAMMING_VISIBILITY = "scheduleProgrammingVisibility";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     /**
      * Indicates the units of the temperature displayed on the thermostat screen.
      */
@@ -141,7 +139,6 @@ public class ThermostatUserInterfaceConfigurationCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "temperatureDisplayMode : " + temperatureDisplayMode + "\n";
         str += "keypadLockout : " + keypadLockout + "\n";
         str += "scheduleProgrammingVisibility : " + scheduleProgrammingVisibility + "\n";

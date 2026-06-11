@@ -19,6 +19,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HexFormat;
 import java.util.Locale;
 import java.util.Set;
 import java.util.TimeZone;
@@ -143,6 +144,11 @@ public class ValueDecoder {
                     value = translator.getValue();
                     dptId = "5.006";
                     translatorDptId = dptId;
+                } else if ("0.000".equals(dptId)) {
+                    // DPT 0.000 is used as a placeholder for unknown DPTs, output raw frame data as hex string
+                    String hexString = HexFormat.of().withLowerCase().formatHex(data);
+                    LOGGER.trace("Raw ASDU '{}'", hexString);
+                    return new StringType(hexString);
                 } else {
                     // no known special case, handle unknown translator outer try block
                     throw e;

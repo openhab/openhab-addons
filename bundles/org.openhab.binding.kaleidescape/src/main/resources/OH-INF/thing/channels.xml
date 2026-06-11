@@ -33,7 +33,7 @@
 			<property name="Control Protocol ID">unknown</property>
 			<property name="System Version">unknown</property>
 			<property name="Protocol Version">unknown</property>
-			<property name="thingTypeVersion">3</property>
+			<property name="thingTypeVersion">4</property>
 		</properties>
 
 		<config-description-ref uri="thing-type:kaleidescape:kaleidescapedevice"/>
@@ -68,7 +68,7 @@
 			<property name="Control Protocol ID">unknown</property>
 			<property name="System Version">unknown</property>
 			<property name="Protocol Version">unknown</property>
-			<property name="thingTypeVersion">3</property>
+			<property name="thingTypeVersion">4</property>
 		</properties>
 
 		<config-description-ref uri="thing-type:kaleidescape:kaleidescapedevice"/>
@@ -99,7 +99,7 @@
 			<property name="Control Protocol ID">unknown</property>
 			<property name="System Version">unknown</property>
 			<property name="Protocol Version">unknown</property>
-			<property name="thingTypeVersion">3</property>
+			<property name="thingTypeVersion">4</property>
 		</properties>
 
 		<config-description-ref uri="thing-type:kaleidescape:kaleidescapedevice"/>
@@ -130,7 +130,7 @@
 			<property name="Control Protocol ID">unknown</property>
 			<property name="System Version">unknown</property>
 			<property name="Protocol Version">unknown</property>
-			<property name="thingTypeVersion">3</property>
+			<property name="thingTypeVersion">4</property>
 		</properties>
 
 		<config-description-ref uri="thing-type:kaleidescape:kaleidescapedevice"/>
@@ -173,6 +173,7 @@
 			<channel id="user_input" typeId="user_input"/>
 			<channel id="user_input_prompt" typeId="user_input_prompt"/>
 			<channel id="sendcmd" typeId="sendcmd"/>
+			<channel id="search" typeId="search"/>
 		</channels>
 	</channel-group-type>
 
@@ -213,6 +214,7 @@
 			<channel id="user_input" typeId="user_input"/>
 			<channel id="user_input_prompt" typeId="user_input_prompt"/>
 			<channel id="sendcmd" typeId="sendcmd"/>
+			<channel id="search" typeId="search"/>
 		</channels>
 	</channel-group-type>
 
@@ -257,6 +259,7 @@
 			<channel id="user_input" typeId="user_input"/>
 			<channel id="user_input_prompt" typeId="user_input_prompt"/>
 			<channel id="sendcmd" typeId="sendcmd"/>
+			<channel id="search" typeId="search"/>
 		</channels>
 	</channel-group-type>
 
@@ -971,7 +974,14 @@
 	<channel-type id="sendcmd" advanced="true">
 		<item-type>String</item-type>
 		<label>Send Command</label>
-		<description>Send a command to the component</description>
+		<description>Send a command to the component (write-only)</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="search">
+		<item-type>String</item-type>
+		<label>Search</label>
+		<description>Executes a movie title search in the UI for the given string (write-only)</description>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 

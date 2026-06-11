@@ -79,6 +79,7 @@ public class BoschSHCBindingConstants {
     public static final String CHANNEL_TRIGGER_SCENARIO = "trigger-scenario";
     public static final String CHANNEL_POWER_SWITCH = "power-switch";
     public static final String CHANNEL_TEMPERATURE = "temperature";
+    public static final String CHANNEL_TEMPERATURE_OFFSET = "temperature-offset";
     public static final String CHANNEL_TEMPERATURE_RATING = "temperature-rating";
     public static final String CHANNEL_HUMIDITY = "humidity";
     public static final String CHANNEL_HUMIDITY_RATING = "humidity-rating";

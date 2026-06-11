@@ -68,6 +68,8 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
             "lock/0x2222222222222222_test_lock_zigbee2mqtt", "binary_sensor/abc/activeEnergyReports",
             "number/abc/activeEnergyReports", "sensor/abc/activeEnergyReports");
 
+    private static final List<String> DEVICE_ONLY_TOPICS = List.of("device/mydevice");
+
     private static final List<String> MQTT_TOPICS = CONFIG_TOPICS.stream()
             .map(AbstractHomeAssistantTests::configTopicToMqtt).collect(Collectors.toList());
 
@@ -98,6 +100,15 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
         thingHandler.setCallback(callbackMock);
         nonSpyThingHandler = thingHandler;
         thingHandler = spy(thingHandler);
+    }
+
+    private void setupThingHandlerWithTopics(List<String> topics) {
+        Configuration thingConfiguration = new Configuration();
+        thingConfiguration.put(HandlerConfiguration.PROPERTY_BASETOPIC, HandlerConfiguration.DEFAULT_BASETOPIC);
+        thingConfiguration.put(HandlerConfiguration.PROPERTY_TOPICS, topics);
+        haThing = ThingBuilder.create(HA_TYPE_UID, HA_UID).withBridge(BRIDGE_UID).withConfiguration(thingConfiguration)
+                .build();
+        setupThingHandler();
     }
 
     @Test
@@ -481,5 +492,227 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
 
         Channel sensorChannel = nonSpyThingHandler.getThing().getChannel("activeEnergyReports_sensor#sensor");
         assertThat("Sensor channel is created", sensorChannel, notNullValue());
+    }
+
+    @Test
+    public void testDevices() {
+        setupThingHandlerWithTopics(DEVICE_ONLY_TOPICS);
+
+        // When initialize
+        thingHandler.initialize();
+
+        verify(thingHandler, never()).componentDiscovered(any(), any());
+        assertThat(haThing.getChannels().size(), is(0));
+
+        // Components discovered after messages in corresponding topics
+        var configTopic = "homeassistant/device/mydevice/config";
+        thingHandler.discoverComponents.processMessage(configTopic,
+                getResourceAsByteArray("component/configDevice1.json"));
+        verify(thingHandler).componentDiscovered(
+                eq(new HaID("homeassistant/sensor/mydevice/some_unique_component_id1/config")), any(Sensor.class));
+        verify(thingHandler).componentDiscovered(eq(new HaID("homeassistant/sensor/mydevice/some_unique_id2/config")),
+                any(Sensor.class));
+
+        thingHandler.delayedProcessing.forceProcessNow();
+        assertThat(nonSpyThingHandler.getThing().getChannels().size(), is(2));
+        nonSpyThingHandler.getThing().getChannels()
+                .forEach(channel -> assertThat(channel.getConfiguration().containsKey("config"), is(false)));
+    }
+
+    @Test
+    public void testFileConfiguredTopicsCreateChannelsAfterMqttConfigMessages() {
+        setupThingHandlerWithTopics(List.of("switch/0x847127fffe11dd6a_auto_lock_zigbee2mqtt"));
+        thingHandler.initialize();
+
+        assertThat("no channels before discovery payload arrives", nonSpyThingHandler.getThing().getChannels().size(),
+                is(0));
+
+        String configTopic = "homeassistant/switch/0x847127fffe11dd6a_auto_lock_zigbee2mqtt/config";
+        thingHandler.discoverComponents.processMessage(configTopic,
+                getResourceAsByteArray("component/configTS0601AutoLock.json"));
+        thingHandler.delayedProcessing.forceProcessNow();
+
+        waitForAssert(() -> {
+            assertThat("channels created from MQTT discovery payload",
+                    nonSpyThingHandler.getThing().getChannels().size(), is(2));
+        });
+    }
+
+    @Test
+    public void testDeviceJsonChangeRemovesMissingComponents() {
+        setupThingHandlerWithTopics(DEVICE_ONLY_TOPICS);
+        thingHandler.initialize();
+
+        String configTopic = "homeassistant/device/mydevice/config";
+        thingHandler.discoverComponents.processMessage(configTopic,
+                getResourceAsByteArray("component/configDevice1.json"));
+        thingHandler.delayedProcessing.forceProcessNow();
+
+        waitForAssert(() -> {
+            assertThat(nonSpyThingHandler.getThing().getChannels().size(), is(2));
+        });
+
+        thingHandler.discoverComponents.processMessage(configTopic, """
+                {
+                  "dev": {
+                    "ids": "ea334450945afc",
+                    "name": "Kitchen"
+                  },
+                  "o": {
+                    "name":"bla2mqtt",
+                    "sw": "2.1",
+                    "url": "https://bla2mqtt.example.com/support"
+                  },
+                  "cmps": {
+                    "some_unique_component_id1": {
+                      "p": "sensor",
+                      "device_class": "temperature",
+                      "unit_of_measurement": "°C",
+                      "value_template": "{{ value_json.temperature}}",
+                      "unique_id": "temp01ae_t"
+                    }
+                  },
+                  "state_topic": "sensorBedroom/state",
+                  "qos": 2
+                }
+                """.getBytes(StandardCharsets.UTF_8));
+        thingHandler.delayedProcessing.forceProcessNow();
+
+        waitForAssert(() -> {
+            assertThat(nonSpyThingHandler.getThing().getChannels().size(), is(1));
+        });
+    }
+
+    @Test
+    public void testDeviceDiscoveryRestoredFromPersistedConfigCache() {
+        setupThingHandlerWithTopics(DEVICE_ONLY_TOPICS);
+        String configTopic = "homeassistant/device/mydevice/config";
+
+        thingHandler.initialize();
+        thingHandler.discoverComponents.processMessage(configTopic,
+                getResourceAsByteArray("component/configDevice1.json"));
+        thingHandler.delayedProcessing.forceProcessNow();
+
+        waitForAssert(() -> {
+            assertThat(nonSpyThingHandler.getThing().getChannels().size(), is(2));
+        });
+
+        String persistedCache = thingHandler.config.deviceConfig;
+        assertThat(persistedCache, notNullValue());
+        assertThat("persisted device cache is written after device discovery", persistedCache.isBlank(), is(false));
+        assertThat("persisted cache contains device components payload", persistedCache.contains("\"cmps\""), is(true));
+
+        Configuration thingConfiguration = new Configuration();
+        thingConfiguration.put(HandlerConfiguration.PROPERTY_BASETOPIC, HandlerConfiguration.DEFAULT_BASETOPIC);
+        thingConfiguration.put(HandlerConfiguration.PROPERTY_TOPICS, DEVICE_ONLY_TOPICS);
+        thingConfiguration.put(HandlerConfiguration.PROPERTY_DEVICE_CONFIG, persistedCache);
+        haThing = ThingBuilder.create(HA_TYPE_UID, HA_UID).withBridge(BRIDGE_UID).withConfiguration(thingConfiguration)
+                .build();
+
+        setupThingHandler();
+        thingHandler.initialize();
+        assertThat("persisted cache available after reinitialize", thingHandler.config.deviceConfig,
+                is(persistedCache));
+        verify(thingHandler, never()).componentDiscovered(any(), any());
+        waitForAssert(() -> assertThat("components restored from persisted cache before new MQTT messages",
+                nonSpyThingHandler.getComponents().size(), is(2)));
+        waitForAssert(() -> assertThat("channels restored from deviceConfig before new MQTT messages",
+                nonSpyThingHandler.getThing().getChannels().size(), is(2)));
+        nonSpyThingHandler.getThing().getChannels()
+                .forEach(channel -> assertThat(channel.getConfiguration().containsKey("config"), is(false)));
+
+        var beforeChannelIds = nonSpyThingHandler.getThing().getChannels().stream().map(Channel::getUID)
+                .collect(Collectors.toSet());
+        var beforeComponentIds = nonSpyThingHandler.getComponents().keySet().stream().filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+
+        thingHandler.discoverComponents.processMessage(configTopic,
+                getResourceAsByteArray("component/configDevice1.json"));
+        thingHandler.delayedProcessing.forceProcessNow();
+
+        waitForAssert(() -> assertThat("channels unchanged after same MQTT device message arrives",
+                nonSpyThingHandler.getThing().getChannels().size(), is(2)));
+        assertThat("channel IDs unchanged after same MQTT device message arrives",
+                nonSpyThingHandler.getThing().getChannels().stream().map(Channel::getUID).collect(Collectors.toSet()),
+                is(beforeChannelIds));
+        assertThat(
+                "component IDs unchanged after same MQTT device message arrives", nonSpyThingHandler.getComponents()
+                        .keySet().stream().filter(Objects::nonNull).collect(Collectors.toSet()),
+                is(beforeComponentIds));
+    }
+
+    @Test
+    public void testMultipleDevicesAreRejected() {
+        Configuration thingConfiguration = new Configuration();
+        thingConfiguration.put(HandlerConfiguration.PROPERTY_BASETOPIC, HandlerConfiguration.DEFAULT_BASETOPIC);
+        thingConfiguration.put(HandlerConfiguration.PROPERTY_TOPICS, List.of("device/mydevice", "device/mydevice2"));
+        haThing = ThingBuilder.create(HA_TYPE_UID, HA_UID).withBridge(BRIDGE_UID).withConfiguration(thingConfiguration)
+                .build();
+        setupThingHandler();
+
+        thingHandler.initialize();
+
+        verify(thingHandler, never()).start(any());
+        verify(bridgeConnection, never()).subscribe(anyString(), any());
+    }
+
+    @Test
+    public void testMigrationMessageRemovesChannelsAndPrunesTopic() {
+        thingHandler.initialize();
+        nonSpyThingHandler.config.topics = thingHandler.config.topics;
+
+        String configTopic = "homeassistant/sensor/abc/activeEnergyReports/config";
+        thingHandler.discoverComponents.processMessage(configTopic, """
+                {
+                  "command_topic":"zigbee2mqtt/Mud Room Cans Switch (Garage)/set/activeEnergyReports",
+                  "max":32767,
+                  "min":0,
+                  "name":"ActiveEnergyReports",
+                  "object_id":"mud_room_cans_switch_(garage)_activeEnergyReports",
+                  "state_topic":"zigbee2mqtt/Mud Room Cans Switch (Garage)",
+                  "unique_id":"0x04cd15fffedb7f81_activeEnergyReports_zigbee2mqtt",
+                  "value_template":"{{ value_json.activeEnergyReports }}"
+                }
+                """.getBytes(StandardCharsets.UTF_8));
+        thingHandler.delayedProcessing.forceProcessNow();
+        assertThat(nonSpyThingHandler.config.topics.contains("sensor/abc/activeEnergyReports"), is(true));
+
+        waitForAssert(() -> {
+            assertThat(nonSpyThingHandler.getThing().getChannels().size(), is(1));
+        });
+
+        thingHandler.discoverComponents.processMessage(configTopic, """
+                {"migrate_discovery": true}
+                """.getBytes(StandardCharsets.UTF_8));
+        thingHandler.delayedProcessing.forceProcessNow();
+
+        waitForAssert(() -> {
+            assertThat(nonSpyThingHandler.getThing().getChannels().size(), is(0));
+        });
+        assertThat(nonSpyThingHandler.config.topics.contains("sensor/abc/activeEnergyReports"), is(false));
+    }
+
+    @Test
+    public void testDeviceMigrationMessageRemovesAllDeviceComponents() {
+        setupThingHandlerWithTopics(DEVICE_ONLY_TOPICS);
+        thingHandler.initialize();
+
+        String configTopic = "homeassistant/device/mydevice/config";
+        thingHandler.discoverComponents.processMessage(configTopic,
+                getResourceAsByteArray("component/configDevice1.json"));
+        thingHandler.delayedProcessing.forceProcessNow();
+
+        waitForAssert(() -> {
+            assertThat(nonSpyThingHandler.getThing().getChannels().size(), is(2));
+        });
+
+        thingHandler.discoverComponents.processMessage(configTopic, """
+                {"migrate_discovery": true}
+                """.getBytes(StandardCharsets.UTF_8));
+        thingHandler.delayedProcessing.forceProcessNow();
+
+        waitForAssert(() -> {
+            assertThat(nonSpyThingHandler.getThing().getChannels().size(), is(0));
+        });
     }
 }

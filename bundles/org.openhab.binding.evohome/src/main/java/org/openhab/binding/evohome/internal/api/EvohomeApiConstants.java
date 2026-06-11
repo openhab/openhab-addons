@@ -22,9 +22,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class EvohomeApiConstants {
-    public static final String URL_V2_AUTH = "https://tccna.honeywell.com/Auth/OAuth/Token";
+    public static final String URL_V2_AUTH = "https://tccna.resideo.com/Auth/OAuth/Token"; // tccna.honeywell.com
+                                                                                           // appears to have been
+                                                                                           // deprecated February 2026
 
-    public static final String URL_V2_BASE = "https://tccna.honeywell.com/WebAPI/emea/api/v1/";
+    public static final String URL_V2_BASE = "https://tccna.resideo.com/WebAPI/emea/api/v1/"; // tccna.honeywell.com
+                                                                                              // appears to have been
+                                                                                              // deprecated February
+                                                                                              // 2026
 
     public static final String URL_V2_ACCOUNT = "userAccount";
     public static final String URL_V2_INSTALLATION_INFO = "location/installationInfo?userId=%s&includeTemperatureControlSystems=True";// {userId}

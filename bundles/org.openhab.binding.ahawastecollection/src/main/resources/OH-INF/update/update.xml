@@ -7,13 +7,13 @@
 		<instruction-set targetVersion="1">
 			<remove-channel id="leightweightPackaging"/>
 			<add-channel id="lightweightPackaging">
-				<typeId>ahawastecollection:collectionDateLightweightPackaging</typeId>
+				<type>ahawastecollection:collectionDateLightweightPackaging</type>
 			</add-channel>
 		</instruction-set>
 
 		<instruction-set targetVersion="2">
 			<add-channel id="christmasTree">
-				<typeId>ahawastecollection:collectionDateChristmasTree</typeId>
+				<type>ahawastecollection:collectionDateChristmasTree</type>
 			</add-channel>
 		</instruction-set>
 	</thing-type>

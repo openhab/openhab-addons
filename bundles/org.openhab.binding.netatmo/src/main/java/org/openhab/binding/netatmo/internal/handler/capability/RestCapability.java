@@ -33,7 +33,7 @@ import org.openhab.binding.netatmo.internal.handler.CommonInterface;
  *
  */
 @NonNullByDefault
-public abstract class RestCapability<T extends RestManager> extends DeviceCapability {
+public abstract class RestCapability<T extends RestManager> extends Capability {
     private @Nullable T api;
     private Class<T> restManagerClass;
 
@@ -61,7 +61,7 @@ public abstract class RestCapability<T extends RestManager> extends DeviceCapabi
         return result;
     }
 
-    protected List<NAObject> updateReadings(T api) {
+    protected List<NAObject> updateReadings(@SuppressWarnings("unused") T api) {
         return List.of();
     }
 

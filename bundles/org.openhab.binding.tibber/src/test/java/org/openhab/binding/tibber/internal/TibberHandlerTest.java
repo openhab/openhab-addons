@@ -36,6 +36,7 @@ import org.openhab.binding.tibber.internal.handler.TibberHandler;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.scheduler.CronScheduler;
+import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.internal.ThingImpl;
 import org.osgi.framework.BundleContext;
@@ -44,6 +45,7 @@ import org.osgi.framework.BundleContext;
  * The {@link TibberHandlerTest} checks handler initialization
  *
  * @author Bernd Weymann - Initial contribution
+ * @author Bernd Weymann - Add history channel group
  */
 @NonNullByDefault
 public class TibberHandlerTest {
@@ -79,7 +81,7 @@ public class TibberHandlerTest {
         thing.setConfiguration(config);
 
         TibberHandlerMock handler = new TibberHandlerMock(thing, httpClientMock, mock(CronScheduler.class),
-                mock(BundleContext.class), mock(TimeZoneProvider.class));
+                mock(BundleContext.class), mock(TimeZoneProvider.class), mock(StorageService.class));
         TibberHandlerCallbackMock callback = new TibberHandlerCallbackMock();
         handler.setCallback(callback);
         Map<String, Object> initialResponse = new HashMap<>();

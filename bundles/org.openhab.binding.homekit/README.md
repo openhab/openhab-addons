@@ -81,6 +81,57 @@ The Pairing Code must match the format `XXX-XX-XXX` or `XXXX-XXXX` or `XXXXXXXX`
 For case 1. above, the `With External Authentication` switch must be `OFF`.
 Whereas for case 2. above, must be `ON`.
 
+## Thing and Bridge Architecture
+
+The architecture comprises three types of Things `accessory`, `bridge`, and `bridged-accessory` which may be nested according to the architecture shown below.
+
+Case 1: Simple accessory device.
+
+```text
+homekit:accessory (with Ethernet connection)
+    |_channel 1
+    |_..
+    |_channel N
+```
+
+Case 2: Bridge accessory with external child accessories connected e.g. by Zigbee.
+
+```text
+homekit:bridge (with Ethernet connection)
+    |_ homekit:bridged-accessory (remote accessory connected by Zigbee)
+        |_channel 1
+        |_..
+        |_channel N
+    |_ homekit:bridged-accessory (remote accessory connected by Zigbee)
+        |_channel 1
+        |_..
+        |_channel N
+```
+
+Case 2a: Bridge accessory with external child accessories connected e.g. by Zigbee, **AND** its own internal channels.
+In this case an extra 'virtual' `bridged-accessory` is created that hosts the device's own internal channels.
+
+```text
+homekit:bridge (with Ethernet connection)
+    |_ homekit:bridged-accessory ('virtual' accessory with device's own internal channels)
+        |_channel 1
+        |_..
+        |_channel N
+    |_ homekit:bridged-accessory (remote accessory connected by Zigbee)
+        |_channel 1
+        |_..
+        |_channel N
+    |_ homekit:bridged-accessory (remote accessory connected by Zigbee)
+        |_channel 1
+        |_..
+        |_channel N
+```
+
+Sometimes devices confusingly advertise themselves as simple accessory devices (case 1 above) when in fact they have child accessories too.
+Initially such Things are discovered in the Inbox as an `accessory`, but after the Inbox Thing has been instantiated and paired, it may subsequently discover that it has child accessories as well.
+In such a case the binding will try to auto-migrate the Thing from being a case 1 `accessory` to being a case 2a `bridge`.
+Such an auto-migrated 'bridge' will have both a 'virtual' `bridged-accessory` for its own internal channels, plus additional `bridged-accessory` Thing(s) for the remote child accessories.
+
 ## Channels
 
 For `accessory` and `bridged-accessory` Things, the Channels are auto-created depending on the services and characteristics published by the HomeKit accessory.
@@ -99,6 +150,31 @@ Such values appear in openHAB as properties of the respective Thing.
 In openHAB the norm is that lighting objects shall be represented by a single `HSBType` Channel which manages hue, saturation, brightness, and on-off states.
 By contrast a HomeKit accessory has four separate characteristics for hue, saturation, brightness, and on-off.
 So the Thing creates one additional `HSBType` Channel that amalgamates hue, saturation, brightness, and on-off characteristics, according to the openHAB norm.
+
+### Special Extra Image Type Channel
+
+Camera and video doorbell devices often provide an image snapshot feature that allows openHAB to capture a single actual frame from the current video feed.
+In such devices the Thing creates an additional `Image` Channel that contains this captured snapshot image.
+The default snaphot image size is 640x360 but you can change this via the snapshot Channel configuration as below.
+
+| Parameter     | Type    | Description                             | Default | Required |
+|---------------|---------|-----------------------------------------|---------|----------|
+| `imageWidth`  | integer | Width of the snapshot image in pixels.  | 640     | no       |
+| `imageHeight` | integer | Height of the snapshot image in pixels. | 360     | no       |
+
+The snapshot image is automatically updated at the `refreshInterval` as described above.
+However if you want to update the image faster, then you need to have openHAB send a `REFRESH` command to the snapshot channel.
+This can be done through a dummy Item that triggers a rule to send the `REFRESH` command as (for example) shown below.
+
+```java
+rule "Refresh snapshot image when a switch is toggled"
+when
+    Item MyRefreshSwitchItem received command
+then
+    logInfo("refresh-rule", "Refresh switch activated, sending REFRESH to snapshot image item")
+    MySnapshotImageItem.sendCommand(REFRESH)
+end
+```
 
 ## Integration with Apple Home App / Ecosystem
 

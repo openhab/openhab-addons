@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-group-type id="price">
 		<label>Price</label>
-		<description>Price Informations</description>
+		<description>Price Information</description>
 		<channels>
 			<channel id="total" typeId="price">
 				<label>Total Price</label>
@@ -13,7 +13,7 @@
 			</channel>
 			<channel id="spot-price" typeId="advanced-price">
 				<label>Spot Price (DEPRECATED)</label>
-				<description>(DEPRECATED) Use total channel from price group</description>
+				<description>(DEPRECATED) Use the total channel from the price group</description>
 			</channel>
 			<channel id="spot" typeId="price">
 				<label>Spot Price</label>

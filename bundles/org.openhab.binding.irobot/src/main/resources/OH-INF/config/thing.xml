@@ -5,11 +5,10 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="thing-type:irobot:thing">
-		<parameter name="ipaddress" type="text">
+		<parameter name="ipaddress" type="text" required="true">
 			<context>network-address</context>
 			<label>Network Address</label>
 			<description>Network address of the robot</description>
-			<required>true</required>
 		</parameter>
 		<parameter name="blid" type="text">
 			<label>Robot ID</label>

@@ -15,6 +15,7 @@ package org.openhab.binding.dirigera.internal.console;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -86,7 +87,7 @@ public class DirigeraCommandExtension extends AbstractConsoleCommandExtension {
             if (args.length == 0 || args.length > 3) {
                 return;
             }
-            command = args[0].toLowerCase();
+            command = args[0].toLowerCase(Locale.ENGLISH);
             if (!COMMANDS.contains(command)) {
                 return;
             }
@@ -101,17 +102,17 @@ public class DirigeraCommandExtension extends AbstractConsoleCommandExtension {
                 case CMD_JSON:
                     // Take second parameter for device ID or 'all'
                     if (args.length == 2) {
-                        target = args[1].toLowerCase();
+                        target = args[1].toLowerCase(Locale.ENGLISH);
                         valid = true;
                     }
                     break;
                 case CMD_DEBUG:
                     // Three parameters expected for debug command, second as target and third as boolean
                     if (args.length == 3) {
-                        target = args[1].toLowerCase();
-                        String booleanCandidate = args[2].toLowerCase();
-                        if (Boolean.TRUE.toString().toLowerCase().equals(booleanCandidate)
-                                || Boolean.FALSE.toString().toLowerCase().equals(booleanCandidate)) {
+                        target = args[1].toLowerCase(Locale.ENGLISH);
+                        String booleanCandidate = args[2].toLowerCase(Locale.ENGLISH);
+                        if (Boolean.TRUE.toString().equalsIgnoreCase(booleanCandidate)
+                                || Boolean.FALSE.toString().equalsIgnoreCase(booleanCandidate)) {
                             enable = Boolean.valueOf(booleanCandidate);
                             valid = true;
                         }

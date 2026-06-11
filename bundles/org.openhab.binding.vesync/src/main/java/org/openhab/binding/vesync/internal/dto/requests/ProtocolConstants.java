@@ -1,0 +1,69 @@
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.vesync.internal.dto.requests;
+
+/**
+ * The {@link ProtocolConstants} contains common Strings used by various elements of the protocol.
+ *
+ * @author David Goodyear - Initial contribution
+ */
+public interface ProtocolConstants {
+
+    // Common Payloads
+    String MODE_AUTO = "auto";
+    String MODE_MANUAL = "manual";
+    String MODE_SLEEP = "sleep";
+    String MODE_PET = "pet";
+    String MODE_AUTO_HUMIDITY = "humidity";
+
+    String MODE_ON = "on";
+    String MODE_DIM = "dim";
+    String MODE_OFF = "off";
+
+    // Common Commands
+    String DEVICE_SET_SWITCH = "setSwitch";
+    String DEVICE_SET_DISPLAY = "setDisplay";
+    String DEVICE_SET_LEVEL = "setLevel";
+
+    // Outlet Commands
+    String DEVICE_GET_OUTLET_STATUS = "getOutletStatus";
+    String DEVICE_GET_ENEGERGY_HISTORY = "getEnergyHistory";
+
+    // Humidifier Commands
+    String DEVICE_SET_AUTOMATIC_STOP = "setAutomaticStop";
+    String DEVICE_SET_HUMIDITY_MODE = "setHumidityMode";
+    String DEVICE_SET_TARGET_HUMIDITY_MODE = "setTargetHumidity";
+    String DEVICE_SET_VIRTUAL_LEVEL = "setVirtualLevel";
+    String DEVICE_SET_NIGHT_LIGHT_BRIGHTNESS = "setNightLightBrightness";
+    String DEVICE_GET_HUMIDIFIER_STATUS = "getHumidifierStatus";
+
+    String DEVICE_LEVEL_TYPE_MIST = "mist";
+    String DEVICE_LEVEL_TYPE_WARM_MIST = "warm";
+
+    // Air Purifier Commands
+    String DEVICE_SET_PURIFIER_MODE = "setPurifierMode";
+    String DEVICE_SET_CHILD_LOCK = "setChildLock";
+    String DEVICE_SET_NIGHT_LIGHT = "setNightLight";
+    String DEVICE_GET_PURIFIER_STATUS = "getPurifierStatus";
+    String DEVICE_LEVEL_TYPE_WIND = "wind";
+    String DEVICE_SET_LIGHT_DETECTION = "setLightDetection";
+
+    /**
+     * Base URL for AUTHENTICATION REQUESTS
+     */
+    String US_SERVER = "https://smartapi.vesync.com";
+    String EU_SERVER = "https://smartapi.vesync.eu";
+
+    String V1_MANAGED_DEVICES_ENDPOINT = "/cloud/v1/deviceManaged/devices";
+    String V2_BYPASS_ENDPOINT = "/cloud/v2/deviceManaged/bypassV2";
+}

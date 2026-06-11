@@ -430,6 +430,7 @@ public class PrinterHandler extends BaseBridgeHandler
             case CHANNEL_BIG_FAN_2_SPEED -> parseDecimalType(print.bigFan2Speed());
             case CHANNEL_HEAT_BREAK_FAN_SPEED -> parseDecimalType(print.heatbreakFanSpeed());
             case CHANNEL_LAYER_NUM -> parseDecimalType(print.layerNum());
+            case CHANNEL_LAYER_TOTAL -> parseDecimalType(print.totalLayerNum());
             // boolean
             case CHANNEL_TIME_LAPS -> parseOnOffType(print.timelapse());
             case CHANNEL_USE_AMS -> parseOnOffType(print.useAms());

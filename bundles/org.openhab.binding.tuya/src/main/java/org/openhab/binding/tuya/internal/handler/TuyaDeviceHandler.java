@@ -23,7 +23,6 @@ import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CONFIG_MIN;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CONFIG_PRODUCT_ID;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CONFIG_PROTOCOL;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CONFIG_RANGE;
-import static org.openhab.binding.tuya.internal.TuyaBindingConstants.DIMMER_CHANNEL_CODES;
 import static org.openhab.core.library.CoreItemFactory.COLOR;
 import static org.openhab.core.library.CoreItemFactory.DIMMER;
 import static org.openhab.core.library.CoreItemFactory.NUMBER;
@@ -147,17 +146,6 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
 
     @Override
     public void processDeviceStatus(Map<Integer, Object> deviceStatus) {
-        // Older devices may need to use the control method to request device status.
-        if (deviceStatus.isEmpty()) {
-            TuyaDevice tuyaDevice = this.tuyaDevice;
-            if (tuyaDevice != null) {
-                logger.debug("'{}' switching to control instead of query", thing.getUID());
-                tuyaDevice.setQueryUsesControl();
-                tuyaDevice.requestStatus(List.of());
-            }
-            return;
-        }
-
         // Changes to function DPs might lead to changes in status DPs. For instance, if a
         // power switch is turned on the measured current and power can be expected to change
         // within a few seconds.
@@ -178,6 +166,8 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
         }
 
         if (needRefresh && configuration.pollingInterval > 0) {
+            // We cannot assume that DPs are current or that the device will automatically
+            // re-measure on a function change.
             TuyaDevice tuyaDevice = this.tuyaDevice;
             if (tuyaDevice != null) {
                 ScheduledFuture<?> pollingJob = this.pollingJob;
@@ -186,7 +176,7 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
                 }
 
                 pollBurst = 3;
-                this.pollingJob = scheduler.scheduleWithFixedDelay(this::burstPoller, 1, 1, TimeUnit.SECONDS);
+                this.pollingJob = scheduler.scheduleWithFixedDelay(this::burstPoller, 0, 1, TimeUnit.SECONDS);
             }
         } else if (!missingStatus) {
             // If we have updates for everything we can stand down the burst polling.
@@ -200,19 +190,19 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
         TuyaDevice tuyaDevice = this.tuyaDevice;
         if (tuyaDevice != null) {
             if (pollBurst > 0) {
-                tuyaDevice.refreshStatus(List.of());
+                tuyaDevice.refreshStatus();
                 pollBurst = pollBurst - 1;
             } else {
                 ScheduledFuture<?> pollingJob = this.pollingJob;
                 if (pollingJob != null) {
                     this.pollingJob = null;
-                    pollingJob.cancel(true);
+                    pollingJob.cancel(false);
                 }
 
                 int pollingInterval = configuration.pollingInterval;
                 if (pollingInterval > 0) {
                     this.pollingJob = scheduler.scheduleWithFixedDelay(() -> {
-                        tuyaDevice.refreshStatus(List.of());
+                        tuyaDevice.refreshStatus();
                     }, pollingInterval, pollingInterval, TimeUnit.SECONDS);
                 }
             }
@@ -324,7 +314,7 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
     }
 
     @Override
-    public void connectionStatus(boolean status) {
+    public void connectionStatus(boolean status, int initialDelay) {
         if (status) {
             logger.debug("{}: connected", thing.getUID().getId());
 
@@ -335,17 +325,25 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
 
             TuyaDevice tuyaDevice = this.tuyaDevice;
             if (tuyaDevice != null) {
-                // When we first connect the device state is unknown so we want to know everything
-                // it is willing to tell us.
-                tuyaDevice.requestStatus(List.of());
-
                 if (pollingJob == null) {
-                    int pollingInterval = configuration.pollingInterval;
-                    if (pollingInterval > 0) {
-                        pollingJob = scheduler.scheduleWithFixedDelay(() -> {
-                            tuyaDevice.refreshStatus(List.of());
-                        }, pollingInterval, pollingInterval, TimeUnit.SECONDS);
-                    }
+                    // When we first connect the device state is unknown so we want to query for everything.
+                    // Some devices seem to initialize their stacks in the wrong order and
+                    // requests that come too soon can be either ignored completely or responded
+                    // to with a, "not supported". The lower level protocol handler suggests an
+                    // initial delay where it might be advisable.
+                    this.pollingJob = scheduler.schedule(() -> {
+                        tuyaDevice.requestStatus();
+
+                        // After that we poll for the measurable DPs.
+                        int pollingInterval = configuration.pollingInterval;
+                        if (pollingInterval > 0) {
+                            // The first refresh request is immediate because we do not know how old
+                            // the current status might be.
+                            pollingJob = scheduler.scheduleWithFixedDelay(() -> {
+                                tuyaDevice.refreshStatus();
+                            }, 0, pollingInterval, TimeUnit.SECONDS);
+                        }
+                    }, initialDelay, TimeUnit.MILLISECONDS);
                 } else {
                     logger.debug("{}: polling job already exists?!?", thing.getUID().getId());
                 }
@@ -585,7 +583,8 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "@text/online.wait-for-device");
 
             this.tuyaDevice = new TuyaDevice(gson, this, eventLoopGroup, configuration.deviceId,
-                    configuration.localKey.getBytes(StandardCharsets.UTF_8), configuration.ip, configuration.protocol);
+                    configuration.localKey.getBytes(StandardCharsets.UTF_8), configuration.ip, configuration.port,
+                    configuration.protocol, schemaDps.values().stream().map(e -> e.id).toList());
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "@text/offline.wait-for-ip");
         }
@@ -616,8 +615,8 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
                 updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "@text/online.wait-for-device");
 
                 this.tuyaDevice = new TuyaDevice(gson, this, eventLoopGroup, configuration.deviceId,
-                        configuration.localKey.getBytes(StandardCharsets.UTF_8), configuration.ip,
-                        configuration.protocol);
+                        configuration.localKey.getBytes(StandardCharsets.UTF_8), configuration.ip, configuration.port,
+                        configuration.protocol, schemaDps.values().stream().map(e -> e.id).toList());
             } catch (IllegalArgumentException e) {
                 logger.warn("{}", e.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -645,10 +644,7 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
             Map<@Nullable String, @Nullable Object> configuration = new HashMap<>();
             configuration.put(CONFIG_DP, schemaDp.id);
 
-            if (DIMMER_CHANNEL_CODES.contains(channelId)) {
-                configuration.put(CONFIG_MIN, schemaDp.min);
-                configuration.put(CONFIG_MAX, schemaDp.max);
-            } else if ("enum".equals(schemaDp.type)) {
+            if ("enum".equals(schemaDp.type)) {
                 List<String> range = Objects.requireNonNullElse(schemaDp.range, List.of());
                 configuration.put(CONFIG_RANGE, String.join(",", range));
             } else if ("value".equals(schemaDp.type)) {

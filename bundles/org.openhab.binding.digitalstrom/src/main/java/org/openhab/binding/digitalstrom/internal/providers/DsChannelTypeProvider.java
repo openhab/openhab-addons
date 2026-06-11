@@ -428,7 +428,7 @@ public class DsChannelTypeProvider extends BaseDsI18n implements ChannelTypeProv
     }
 
     private Set<String> getSimpleTags(String channelID, Locale locale) {
-        return new HashSet<>(Arrays.asList(getText(channelID, locale), getText(channelID, locale)));
+        return new HashSet<>(Arrays.asList(getText(channelID, locale)));
     }
 
     /**

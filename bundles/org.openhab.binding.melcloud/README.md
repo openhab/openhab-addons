@@ -1,7 +1,7 @@
 # MELCloud Binding
 
 This is an openHAB binding for [Mitsubishi MELCloud](https://www.melcloud.com/).
-Installing this binding you can control your Mitsubishi devices from openHAB without accessing the MELCloud App and benefiting from all openHAB automations.
+Installing this binding, you can control your Mitsubishi devices from openHAB without accessing the MELCloud App and benefiting from all openHAB automations.
 
 ## Supported Things
 
@@ -68,10 +68,10 @@ MELCloud account configuration:
 
 A.C. device and Heatpump device configuration:
 
-| Config          | Mandatory | Description                                                                           |
-|-----------------|-----------|---------------------------------------------------------------------------------------|
-| deviceID        | x         | MELCloud device ID.                                                                   |
-| buildingID      |           | MELCloud building ID. If not defined, binding tries to find matching id by device ID. |
+| Config          | Mandatory | Description                                                                                                                                                                                                                                       |
+|-----------------|-----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| deviceID        | x         | MELCloud device ID.                                                                                                                                                                                                                               |
+| buildingID      |           | MELCloud building ID. If not defined, binding tries to find matching id by device ID.                                                                                                                                                             |
 | pollingInterval |           | Refresh time interval in seconds for updates from MELCloud. Minimum is 180, defaults to 360 seconds. Mitsubishi Electric introduced limits on their API so changing default value may cause excessive traffic and lock you out for several hours. |
 
 ## Channels
@@ -94,23 +94,31 @@ A.C. device channels
 
 Heatpump device channels
 
-| Channel             | Type               | Description                                                                | Read Only |
-|---------------------|--------------------|----------------------------------------------------------------------------|-----------|
-| power               | Switch             | Power Status of Device.                                                    | False     |
-| forcedHotWaterMode  | Switch             | If water mode is Heat Now (true) or Auto (false)                           | False     |
-| setTemperatureZone1 | Number:Temperature | Set Temperature Zone 1: Min = 10, Max = 30.                                | False     |
-| roomTemperatureZone1| Number:Temperature | Room temperature Zone 1.                                                   | True      |
-| tankWaterTemperature| Number:Temperature | Tank water temperature.                                                    | True      |
-| lastCommunication   | DateTime           | Last Communication time when MELCloud communicated to the device.          | True      |
-| nextCommunication   | DateTime           | Next communication time when MELCloud will communicate to the device.      | True      |
-| offline             | Switch             | Is device in offline state.                                                | True      |
-| hasPendingCommand   | Switch             | Device has a pending command(s).                                           | True      |
+| Channel                    | Type               | Description                                                                                                                              | Read Only |
+|----------------------------|--------------------|------------------------------------------------------------------------------------------------------------------------------------------|-----------|
+| power                      | Switch             | Power Status of Device.                                                                                                                  | False     |
+| forcedHotWaterMode         | Switch             | If water mode is Heat Now (true) or Auto (false)                                                                                         | False     |
+| setTemperatureZone1        | Number:Temperature | Set Temperature Zone 1: Min = 10, Max = 30.                                                                                              | False     |
+| roomTemperatureZone1       | Number:Temperature | Room temperature Zone 1.                                                                                                                 | True      |
+| setTemperatureZone2        | Number:Temperature | Set Temperature Zone 2: Min = 10, Max = 30.                                                                                              | False     |
+| roomTemperatureZone2       | Number:Temperature | Room temperature Zone 2.                                                                                                                 | True      |
+| tankWaterTemperature       | Number:Temperature | Tank water temperature.                                                                                                                  | True      |
+| tankTargetWaterTemperature | Number:Temperature | Tank water target temperature for heating.                                                                                               | False     |
+| lastCommunication          | DateTime           | Last Communication time when MELCloud communicated to the device.                                                                        | True      |
+| nextCommunication          | DateTime           | Next communication time when MELCloud will communicate to the device.                                                                    | True      |
+| offline                    | Switch             | Is device in offline state.                                                                                                              | True      |
+| hasPendingCommand          | Switch             | Device has a pending command(s).                                                                                                         | True      |
+| heatFlowTemperatureZone1   | Number:Temperature | Heat flow temperature Zone 1.                                                                                                            | False     |
+| heatFlowTemperatureZone2   | Number:Temperature | Heat flow temperature Zone 2.                                                                                                            | False     |
+| heatTemperatureModeZone1   | Number             | Temperature control mode for Zone 1 (0 = "Heat thermostat", 1 = "Heat flow", 2 = "Heat curve", 3 = "Cool thermostat", 4 = "Cool flow"    | False     |
+| heatTemperatureModeZone2   | Number             | Temperature control mode for Zone 2 (0 = "Heat thermostat", 1 = "Heat flow", 2 = "Heat curve", 3 = "Cool thermostat", 4 = "Cool flow"    | False     |
+| operationMode              | String             | Operation mode: "0" = Idle, "1" = Heat water, "2" = Heat zones, "3" = Cooling, "4" = Defrost, "5" = Stand-by, "6" = Legionella           | False     |
 
 ## Full Example for items configuration
 
 ### melcloud.things
 
-```java
+```plaintext
 Bridge melcloud:melcloudaccount:myaccount "My MELCloud account" [ username="user.name@example.com", password="xxxxxx", language="0" ] {
  Thing acdevice livingroom "Livingroom A.C. device" [ deviceID=123456, pollingInterval=360 ]
  Thing heatpumpdevice attic "Attic Heatpump device" [ deviceID=789012, pollingInterval=360 ]
@@ -119,7 +127,7 @@ Bridge melcloud:melcloudaccount:myaccount "My MELCloud account" [ username="user
 
 ### melcloud.items
 
-```java
+```plaintext
 Switch      power               { channel="melcloud:acdevice:myaccount:livingroom:power" }
 String      operationMode       { channel="melcloud:acdevice:myaccount:livingroom:operationMode" }
 Number      setTemperature      { channel="melcloud:acdevice:myaccount:livingroom:setTemperature" }
@@ -132,13 +140,21 @@ DateTime    nextCommunication   { channel="melcloud:acdevice:myaccount:livingroo
 Switch      offline             { channel="melcloud:acdevice:myaccount:livingroom:offline" }
 Switch      hasPendingCommand   { channel="melcloud:acdevice:myaccount:livingroom:hasPendingCommand" }
 
-Switch      heatpumpPower               { channel="melcloud:heatpumpdevice:myaccount:attic:power" }
-Switch      heatpumpForcedHotWaterMode  { channel="melcloud:heatpumpdevice:myaccount:attic:forcedHotWaterMode" }
-Number      heatpumpSetTemperatureZone1 { channel="melcloud:heatpumpdevice:myaccount:attic:setTemperatureZone1" }
-Number      heatpumpRoomTemperatureZone1{ channel="melcloud:heatpumpdevice:myaccount:attic:roomTemperatureZone1" }
-Number      heatpumpTankWaterTemperature{ channel="melcloud:heatpumpdevice:myaccount:attic:tankWaterTemperature" }
-DateTime    heatpumpLastCommunication   { channel="melcloud:heatpumpdevice:myaccount:attic:lastCommunication" }
-DateTime    heatpumpNextCommunication   { channel="melcloud:heatpumpdevice:myaccount:attic:nextCommunication" }
-Switch      heatpumpOffline             { channel="melcloud:heatpumpdevice:myaccount:attic:offline" }
-Switch      heatpumpHasPendingCommand   { channel="melcloud:heatpumpdevice:myaccount:attic:hasPendingCommand" }
+Switch      heatpumpPower                       { channel="melcloud:heatpumpdevice:myaccount:attic:power" }
+Switch      heatpumpForcedHotWaterMode          { channel="melcloud:heatpumpdevice:myaccount:attic:forcedHotWaterMode" }
+Number      heatpumpSetTemperatureZone1         { channel="melcloud:heatpumpdevice:myaccount:attic:setTemperatureZone1" }
+Number      heatpumpRoomTemperatureZone1        { channel="melcloud:heatpumpdevice:myaccount:attic:roomTemperatureZone1" }
+Number      heatpumpSetTemperatureZone2         { channel="melcloud:heatpumpdevice:myaccount:attic:setTemperatureZone2" }
+Number      heatpumpRoomTemperatureZone2        { channel="melcloud:heatpumpdevice:myaccount:attic:roomTemperatureZone2" }
+Number      heatpumpTankWaterTemperature        { channel="melcloud:heatpumpdevice:myaccount:attic:tankWaterTemperature" }
+Number      heatpumpTankTargetWaterTemperature  { channel="melcloud:heatpumpdevice:myaccount:attic:tankTargetWaterTemperature" }
+DateTime    heatpumpLastCommunication           { channel="melcloud:heatpumpdevice:myaccount:attic:lastCommunication" }
+DateTime    heatpumpNextCommunication           { channel="melcloud:heatpumpdevice:myaccount:attic:nextCommunication" }
+Switch      heatpumpOffline                     { channel="melcloud:heatpumpdevice:myaccount:attic:offline" }
+Switch      heatpumpHasPendingCommand           { channel="melcloud:heatpumpdevice:myaccount:attic:hasPendingCommand" }
+Number      heatpumpFlowTemperatureZone1        { channel="melcloud:heatpumpdevice:myaccount:attic:heatFlowTemperatureZone1" }
+Number      heatpumpFlowTemperatureZone2        { channel="melcloud:heatpumpdevice:myaccount:attic:heatFlowTemperatureZone2" }
+String      heatpumpHeatTemperatureModeZone1    { channel="melcloud:heatpumpdevice:myaccount:attic:heatTemperatureModeZone1" }
+String      heatpumpHeatTemperatureModeZone2    { channel="melcloud:heatpumpdevice:myaccount:attic:heatTemperatureModeZone2" }
+String      heatpumpHeatPumpOperationMode       { channel="melcloud:heatpumpdevice:myaccount:attic:operationMode" }
 ```

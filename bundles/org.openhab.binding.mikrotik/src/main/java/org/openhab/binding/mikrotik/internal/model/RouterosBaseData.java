@@ -66,4 +66,9 @@ public abstract class RouterosBaseData {
         String val = propMap.get(key);
         return val == null ? null : Float.valueOf(val);
     }
+
+    protected @Nullable Long getLongProp(String key) {
+        String val = propMap.get(key);
+        return val == null ? null : Long.valueOf(val);
+    }
 }

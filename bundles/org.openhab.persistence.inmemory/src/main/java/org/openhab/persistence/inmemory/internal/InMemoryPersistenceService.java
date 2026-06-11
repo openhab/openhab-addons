@@ -116,6 +116,16 @@ public class InMemoryPersistenceService implements ModifiablePersistenceService 
     }
 
     @Override
+    public @Nullable PersistenceItemInfo getItemInfo(String itemName, @Nullable String alias) {
+        String finalName = Objects.requireNonNullElse(alias, itemName);
+        PersistItem item = persistMap.get(finalName);
+        if (item == null) {
+            return null;
+        }
+        return toItemInfo(Map.entry(finalName, item));
+    }
+
+    @Override
     public void store(Item item) {
         internalStore(item.getName(), ZonedDateTime.now(), item.getState());
     }

@@ -118,9 +118,11 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
             case CHANNEL_CURRENT_EVENT_TITLE:
             case CHANNEL_CURRENT_EVENT_START:
             case CHANNEL_CURRENT_EVENT_END:
+            case CHANNEL_CURRENT_EVENT_LOCATION:
             case CHANNEL_NEXT_EVENT_TITLE:
             case CHANNEL_NEXT_EVENT_START:
             case CHANNEL_NEXT_EVENT_END:
+            case CHANNEL_NEXT_EVENT_LOCATION:
             case CHANNEL_LAST_UPDATE:
                 if (command instanceof RefreshType) {
                     updateStates();
@@ -400,12 +402,15 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
                             new DateTimeType(currentEvent.start.atZone(tzProvider.getTimeZone())));
                     updateState(CHANNEL_CURRENT_EVENT_END,
                             new DateTimeType(currentEvent.end.atZone(tzProvider.getTimeZone())));
+                    updateState(CHANNEL_CURRENT_EVENT_LOCATION,
+                            currentEvent.location.isEmpty() ? UnDefType.UNDEF : new StringType(currentEvent.location));
                 }
             } else {
                 updateState(CHANNEL_CURRENT_EVENT_PRESENT, OnOffType.OFF);
                 updateState(CHANNEL_CURRENT_EVENT_TITLE, UnDefType.UNDEF);
                 updateState(CHANNEL_CURRENT_EVENT_START, UnDefType.UNDEF);
                 updateState(CHANNEL_CURRENT_EVENT_END, UnDefType.UNDEF);
+                updateState(CHANNEL_CURRENT_EVENT_LOCATION, UnDefType.UNDEF);
             }
 
             final Event nextEvent = calendar.getNextEvent(now);
@@ -414,10 +419,13 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
                 updateState(CHANNEL_NEXT_EVENT_START,
                         new DateTimeType(nextEvent.start.atZone(tzProvider.getTimeZone())));
                 updateState(CHANNEL_NEXT_EVENT_END, new DateTimeType(nextEvent.end.atZone(tzProvider.getTimeZone())));
+                updateState(CHANNEL_NEXT_EVENT_LOCATION,
+                        nextEvent.location.isEmpty() ? UnDefType.UNDEF : new StringType(nextEvent.location));
             } else {
                 updateState(CHANNEL_NEXT_EVENT_TITLE, UnDefType.UNDEF);
                 updateState(CHANNEL_NEXT_EVENT_START, UnDefType.UNDEF);
                 updateState(CHANNEL_NEXT_EVENT_END, UnDefType.UNDEF);
+                updateState(CHANNEL_NEXT_EVENT_LOCATION, UnDefType.UNDEF);
             }
 
             final Instant lastUpdate = calendarDownloadedTime;

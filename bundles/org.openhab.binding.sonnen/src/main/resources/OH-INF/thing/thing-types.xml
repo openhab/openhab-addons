@@ -15,6 +15,7 @@
 			<channel id="batteryCharging" typeId="batteryCharging"/>
 			<channel id="batteryDischarging" typeId="batteryDischarging"/>
 			<channel id="batteryChargingFromGrid" typeId="batteryChargingFromGrid"/>
+			<channel id="batteryDischargingToGrid" typeId="batteryDischargingToGrid"/>
 			<channel id="batteryOperationMode" typeId="batteryOperationMode"/>
 			<channel id="consumption" typeId="consumption"/>
 			<channel id="gridFeedIn" typeId="gridFeedIn"/>
@@ -31,10 +32,12 @@
 			<channel id="energyExportedStateProduction" typeId="energyExportedStateProduction"/>
 			<channel id="energyImportedStateConsumption" typeId="energyImportedStateConsumption"/>
 			<channel id="energyExportedStateConsumption" typeId="energyExportedStateConsumption"/>
+			<channel id="batteryChargeRate" typeId="batteryChargeRate"/>
+			<channel id="batteryDischargeRate" typeId="batteryDischargeRate"/>
 		</channels>
 		<properties>
 			<property name="vendor">sonnen</property>
-			<property name="thingTypeVersion">3</property>
+			<property name="thingTypeVersion">5</property>
 		</properties>
 
 		<config-description>
@@ -48,14 +51,6 @@
 				<label>sonnen Authentication Token</label>
 				<description>Authentication Token which can be found under "Software Integration" if you connect locally to your
 					sonnen battery. If empty the old deprecated API will be used.</description>
-			</parameter>
-			<parameter name="chargingPower" type="integer" unit="W" min="1" max="10000">
-				<label>Maximum Charging Power</label>
-				<description>Maximum charging power in watt which is supported by sonnen battery type. Be cautious to not enter a
-					higher value then supported by the battery. Details can be found on the datasheet of your battery.
-				</description>
-				<advanced>true</advanced>
-				<default>0</default>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" unit="s" min="0" max="1000">
 				<label>Refresh Interval</label>
@@ -227,6 +222,13 @@
 			<tag>Mode</tag>
 		</tags>
 	</channel-type>
+	<channel-type id="batteryDischargingToGrid">
+		<item-type>Switch</item-type>
+		<label>Discharging to Grid</label>
+		<description>Starts and stops the active battery discharging to Grid. Note: "Write-API" in Software-Integration page
+			of the local web interface from the sonnen battery must be activated and the given token must be entered in
+			authentication token field of the binding.</description>
+	</channel-type>
 	<channel-type id="batteryOperationMode">
 		<item-type>String</item-type>
 		<label>Battery Operation Mode</label>
@@ -238,5 +240,25 @@
 			<tag>Mode</tag>
 		</tags>
 		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="batteryChargeRate">
+		<item-type>Number:Power</item-type>
+		<label>Battery Charge Rate</label>
+		<description>Indicates the desired charge rate for the battery. (0 - 10000W)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="batteryDischargeRate">
+		<item-type>Number:Power</item-type>
+		<label>Battery Discharge Rate</label>
+		<description>Indicates the desired discharge rate for the battery. (0 - 10000W)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f %unit%"/>
 	</channel-type>
 </thing:thing-descriptions>

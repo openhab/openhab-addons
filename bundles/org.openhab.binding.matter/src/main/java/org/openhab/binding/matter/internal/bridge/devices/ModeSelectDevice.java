@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -92,8 +93,8 @@ public class ModeSelectDevice extends BaseDevice {
                         logger.debug("Invalid semantic tag format (expected namespace.tag): {}", tagString);
                         continue;
                     }
-                    String namespaceName = tagParts[0].toUpperCase();
-                    String tagName = tagParts[1].toUpperCase().replace('-', '_').replace(' ', '_');
+                    String namespaceName = tagParts[0].toUpperCase(Locale.ROOT);
+                    String tagName = tagParts[1].toUpperCase(Locale.ROOT).replace('-', '_').replace(' ', '_');
                     try {
                         SemanticTags.Namespace namespaceEnum = SemanticTags.Namespace.valueOf(namespaceName);
                         SemanticTags.Namespace existingNamespace = standardNamespace.get();
@@ -181,14 +182,14 @@ public class ModeSelectDevice extends BaseDevice {
             } else if (primaryItem instanceof SwitchItem switchItem) {
                 switchItem.send(OnOffType.from(value), MATTER_SOURCE);
             } else if (primaryItem instanceof RollershutterItem rollershutterItem) {
-                switch (value.toUpperCase()) {
+                switch (value.toUpperCase(Locale.ROOT)) {
                     case "UP":
                     case "DOWN":
-                        rollershutterItem.send(UpDownType.valueOf(value.toUpperCase()), MATTER_SOURCE);
+                        rollershutterItem.send(UpDownType.valueOf(value.toUpperCase(Locale.ROOT)), MATTER_SOURCE);
                         break;
                     case "STOP":
                     case "MOVE":
-                        rollershutterItem.send(StopMoveType.valueOf(value.toUpperCase()), MATTER_SOURCE);
+                        rollershutterItem.send(StopMoveType.valueOf(value.toUpperCase(Locale.ROOT)), MATTER_SOURCE);
                         break;
                     default:
                         try {

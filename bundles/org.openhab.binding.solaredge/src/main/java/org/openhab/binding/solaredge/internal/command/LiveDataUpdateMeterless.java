@@ -63,9 +63,9 @@ public class LiveDataUpdateMeterless extends AbstractCommand implements SolarEdg
         logger.debug("onComplete()");
 
         if (!HttpStatus.Code.OK.equals(getCommunicationStatus().getHttpCode())) {
-            updateListenerStatus();
             if (retries++ < MAX_RETRIES) {
                 handler.getWebInterface().enqueueCommand(this);
+                return;
             }
         } else {
             String json = getContentAsString(StandardCharsets.UTF_8);
@@ -77,5 +77,6 @@ public class LiveDataUpdateMeterless extends AbstractCommand implements SolarEdg
                 }
             }
         }
+        updateListenerStatus();
     }
 }

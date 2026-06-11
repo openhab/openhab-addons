@@ -65,7 +65,6 @@ public class JettyAdminServiceV6 extends AdminService {
 
     private @Nullable String sid;
     private @Nullable Instant sessionValidity;
-    private @Nullable Instant midnightUtc;
 
     public JettyAdminServiceV6(String token, URI baseUrl, HttpClient client, Gson gson) {
         super(client, gson);
@@ -110,18 +109,6 @@ public class JettyAdminServiceV6 extends AdminService {
         return updateSid();
     }
 
-    private long getTodayMidnight() {
-        Instant now = Instant.now();
-        Instant local = midnightUtc;
-
-        if (local == null || now.minus(1, ChronoUnit.DAYS).isAfter(local)) {
-            local = now.truncatedTo(ChronoUnit.DAYS);
-            midnightUtc = local;
-        }
-
-        return local.getEpochSecond();
-    }
-
     @Override
     public Optional<DnsStatistics> summary() throws PiHoleException {
         logger.debug("Building the as if it was a v5 API");
@@ -132,9 +119,12 @@ public class JettyAdminServiceV6 extends AdminService {
 
         DnsBlockingAnswer blockingAnswer = get(dnsBlockingURI, DnsBlockingAnswer.class);
 
-        long todayMidnight = getTodayMidnight();
-        StatDatabaseSummary statDatabase = get(databaseSummaryURI, StatDatabaseSummary.class, "from",
-                Long.toString(todayMidnight), "until", Long.toString(todayMidnight + 24 * 60 * 60));
+        Instant now = Instant.now();
+        String oneDayAgo = Long.toString(now.minus(24, ChronoUnit.HOURS).getEpochSecond());
+        String toNow = Long.toString(now.getEpochSecond());
+
+        StatDatabaseSummary statDatabase = get(databaseSummaryURI, StatDatabaseSummary.class, "from", oneDayAgo,
+                "until", toNow);
 
         HistoryClients historyClients = get(historyClientsURI, HistoryClients.class, "N", "0");
         ConfigAnswer configAnswer = get(configURI, ConfigAnswer.class);
@@ -143,12 +133,13 @@ public class JettyAdminServiceV6 extends AdminService {
 
         DnsStatistics translated = new DnsStatistics(gravity.domainsBeingBlocked(), statDatabase.sumQueries(),
                 statDatabase.sumBlocked(), statDatabase.percentBlocked(), statQueries.uniqueDomains(),
-                statQueries.forwarded(), statQueries.cached(), historyClients.clients().size(), null,
-                statQueries.types().all(), replies.unknown(), replies.nodata(), replies.nxdomain(), replies.cname(),
-                replies.ip(), replies.domain(), replies.rrname(), replies.servfail(), replies.refused(),
-                replies.notimp(), replies.other(), replies.dnssec(), replies.none(), replies.blob(), replies.all(),
-                configAnswer.config().misc().privacylevel(), blockingAnswer.blocking(), new GravityLastUpdated(
-                        configAnswer.config().files().gravity() != null, gravity.lastUpdate(), relative));
+                statQueries.forwarded(), statQueries.cached(), historyClients.clients().size(),
+                statAnswer.clients().active(), statQueries.types().all(), replies.unknown(), replies.nodata(),
+                replies.nxdomain(), replies.cname(), replies.ip(), replies.domain(), replies.rrname(),
+                replies.servfail(), replies.refused(), replies.notimp(), replies.other(), replies.dnssec(),
+                replies.none(), replies.blob(), replies.all(), configAnswer.config().misc().privacylevel(),
+                blockingAnswer.blocking(), new GravityLastUpdated(configAnswer.config().files().gravity() != null,
+                        gravity.lastUpdate(), relative));
 
         return Optional.of(translated);
     }

@@ -421,13 +421,13 @@ public class HeatpumpHandler extends BaseThingHandler {
         updateState(channelUID(GROUP_HEAT_PUMP, CHANNEL_HEAT_PUMP_T_RETURN),
                 getScaled(block.heatpumpTReturn, CELSIUS, -2.0));
         updateState(channelUID(GROUP_HEAT_PUMP, CHANNEL_HEAT_PUMP_VOL_SINK),
-                getScaled(block.heatpumpVolSink, LITRE_PER_MINUTE, -2.0));
+                getScaled(block.heatpumpVolSink, CUBICMETRE_PER_HOUR, -3.0));
         updateState(channelUID(GROUP_HEAT_PUMP, CHANNEL_HEAT_PUMP_T_EQIN),
                 getScaled(block.heatpumpTEQin, CELSIUS, -2.0));
         updateState(channelUID(GROUP_HEAT_PUMP, CHANNEL_HEAT_PUMP_T_EQOUT),
                 getScaled(block.heatpumpTEQout, CELSIUS, -2.0));
         updateState(channelUID(GROUP_HEAT_PUMP, CHANNEL_HEAT_PUMP_VOL_SOURCE),
-                getScaled(block.heatpumpVolSource, LITRE_PER_MINUTE, -2.0));
+                getScaled(block.heatpumpVolSource, CUBICMETRE_PER_HOUR, -3.0));
         updateState(channelUID(GROUP_HEAT_PUMP, CHANNEL_HEAT_PUMP_COMPRESSOR_RATING),
                 getScaled(block.heatpumpCompressorRating, PERCENT, -2.0));
         updateState(channelUID(GROUP_HEAT_PUMP, CHANNEL_HEAT_PUMP_QP_HEATING),

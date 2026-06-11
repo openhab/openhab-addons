@@ -11,9 +11,10 @@
 		<semantic-equipment-tag>WaterMeter</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="water" typeId="es-water-group"/>
+			<channel-group id="system" typeId="hw-v1-system-group"/>
 		</channel-groups>
 		<properties>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<config-description-ref uri="thing-type:homewizard:device"/>

@@ -19,6 +19,7 @@ import javax.measure.Unit;
 import javax.measure.quantity.Power;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ThingTypeUID;
 
@@ -79,4 +80,9 @@ public class SolarForecastBindingConstants {
     public static final String SLASH = "/";
     public static final String EMPTY = "";
     public static final String PATTERN_FORMAT = "yyyy-MM-dd HH:mm:ss";
+
+    // HTTP Staus Codes as Strings
+    public static final String HTTP_OK = String.valueOf(HttpStatus.OK_200);
+    public static final String HTTP_TOO_MANY_REQUESTS = String.valueOf(HttpStatus.TOO_MANY_REQUESTS_429);
+    public static final String HTTP_OTHER = String.valueOf("other");
 }

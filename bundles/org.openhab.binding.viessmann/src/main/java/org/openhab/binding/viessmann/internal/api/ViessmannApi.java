@@ -16,6 +16,7 @@ import static org.openhab.binding.viessmann.internal.ViessmannBindingConstants.*
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Properties;
 
@@ -54,7 +55,7 @@ public class ViessmannApi {
 
     private static final String HTTP_METHOD_GET = "GET";
     private static final String HTTP_METHOD_POST = "POST";
-    private static final String CONTENT_TYPE_APPLICATION_JSON = "application/json";
+    private static final String CONTENT_TYPE_APPLICATION_JSON = "application/json; charset=UTF-8";
     private static final String PARAM_VI_ERROR_ID = "viErrorId";
 
     private final Logger logger = LoggerFactory.getLogger(ViessmannApi.class);
@@ -227,7 +228,7 @@ public class ViessmannApi {
             response = response.replace("enum", "enumValue");
             int i = response.indexOf("\"entries\":{\"type\":\"array\",\"value\"");
             while (i > 0) {
-                response = response.substring(0, i) + "\"errorEntries\"" + response.substring(i + 9, response.length());
+                response = response.substring(0, i) + "\"errorEntries\"" + response.substring(i + 9);
                 i = response.indexOf("\"entries\":{\"type\":\"array\",\"value\"");
             }
             return GSON.fromJson(response, FeaturesDTO.class);
@@ -244,7 +245,7 @@ public class ViessmannApi {
             response = response.replace("enum", "enumValue");
             int i = response.indexOf("\"entries\":{\"type\":\"array\",\"value\"");
             while (i > 0) {
-                response = response.substring(0, i) + "\"errorEntries\"" + response.substring(i + 9, response.length());
+                response = response.substring(0, i) + "\"errorEntries\"" + response.substring(i + 9);
                 i = response.indexOf("\"entries\":{\"type\":\"array\",\"value\"");
             }
             return GSON.fromJson(response, FeaturesDTO.class);
@@ -331,7 +332,7 @@ public class ViessmannApi {
             throws ViessmannCommunicationException {
         String response = null;
         try {
-            logger.trace("API: GET Request URL is '{}'", url);
+            logger.debug("API: GET Request URL is '{}'", url);
             long startTime = System.currentTimeMillis();
             response = HttpUtil.executeUrl(HTTP_METHOD_GET, url, setHeaders(), null, null, API_TIMEOUT_MS);
             logger.trace("API: Response took {} msec: {}", System.currentTimeMillis() - startTime, response);
@@ -351,10 +352,11 @@ public class ViessmannApi {
     private boolean executePost(ApiInterface interfaceHandler, String url, String json)
             throws ViessmannCommunicationException {
         try {
-            logger.trace("API: POST Request URL is '{}', JSON is '{}'", url, json);
+            logger.debug("API: POST Request URL is '{}', JSON is '{}'", url, json);
             long startTime = System.currentTimeMillis();
+            byte[] payload = json.getBytes(StandardCharsets.UTF_8);
             String response = HttpUtil.executeUrl(HTTP_METHOD_POST, url, setHeaders(),
-                    new ByteArrayInputStream(json.getBytes()), CONTENT_TYPE_APPLICATION_JSON, API_TIMEOUT_MS);
+                    new ByteArrayInputStream(payload), CONTENT_TYPE_APPLICATION_JSON, API_TIMEOUT_MS);
             logger.trace("API: Response took {} msec: {}", System.currentTimeMillis() - startTime, response);
             if (response.contains(PARAM_VI_ERROR_ID)) {
                 handleViError(interfaceHandler, response);
@@ -409,8 +411,10 @@ public class ViessmannApi {
                         logger.debug("ViError: {} | Device not reachable", viError.getMessage());
                         throw new ViessmannCommunicationException(viError.getMessage());
                     case HttpStatus.BAD_REQUEST_400:
-                        logger.debug("ViError: {} | Gateway offline", viError.getExtendedPayload().getReason());
-                        throw new ViessmannCommunicationException(viError.getExtendedPayload().getReason());
+                        logger.debug("ViError: {} | {}", viError.getExtendedPayload().getReason(),
+                                viError.getExtendedPayload().getDetails());
+                        throw new ViessmannCommunicationException(viError.getExtendedPayload().getReason() + " | "
+                                + viError.getExtendedPayload().getDetails());
                     default:
                         logger.error("ViError: {} | StatusCode: {} | Reason: {}", viError.getMessage(),
                                 viError.getStatusCode(), viError.getExtendedPayload().getReason());

@@ -1,0 +1,35 @@
+{
+	"errors": [],
+	"data": [
+		{
+			"id": "57b994be-ef04-40d7-88f9-2bb2897377d0",
+			"owner": {
+				"rid": "1166743f-fe3d-47d1-bd7d-b5bb378098cc",
+				"rtype": "room"
+			},
+			"enabled": true,
+			"light": {
+				"light_level_report": {
+					"changed": "2026-03-15T14:29:50.625Z",
+					"light_level": 17227
+				}
+			},
+			"type": "grouped_light_level"
+		},
+		{
+			"id": "7b373eed-4dd0-46c3-a863-d7bcc98607a9",
+			"owner": {
+				"rid": "f467cdcc-405f-40ab-8db9-4664aa1c3d63",
+				"rtype": "bridge_home"
+			},
+			"enabled": true,
+			"light": {
+				"light_level_report": {
+					"changed": "2026-03-15T14:29:50.665Z",
+					"light_level": 17227
+				}
+			},
+			"type": "grouped_light_level"
+		}
+	]
+}
