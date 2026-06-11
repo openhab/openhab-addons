@@ -14,6 +14,7 @@ package org.openhab.binding.pirateweather.internal.discovery;
 
 import static org.openhab.binding.pirateweather.internal.PirateWeatherBindingConstants.*;
 
+import java.time.Instant;
 import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -65,7 +66,7 @@ public class PirateWeatherDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     public void deactivate() {
-        removeOlderResults(java.time.Instant.now(), bridgeHandler.getThing().getUID());
+        removeOlderResults(Instant.now(), bridgeHandler.getThing().getUID());
         super.deactivate();
     }
 

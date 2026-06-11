@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.pirateweather.internal.handler.PirateWeatherAPIHandler;
 
 /**
@@ -39,7 +38,7 @@ public class PirateWeatherAPIConfiguration {
                             "sv", "ta", "te", "tet", "tr", "uk", "ur", "vi", "x-pig-latin", "zh", "zh-tw")
                     .collect(Collectors.toSet()));
 
-    public @Nullable String apikey;
+    public String apikey = "";
     public int refreshInterval = 60;
-    public @Nullable String language;
+    public String language = "";
 }

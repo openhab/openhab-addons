@@ -72,9 +72,9 @@ public class PirateWeatherAPIHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         logger.debug("Initialize Pirate Weather API handler '{}'.", getThing().getUID());
-        config = getConfigAs(PirateWeatherAPIConfiguration.class);
+        PirateWeatherAPIConfiguration config = this.config = getConfigAs(PirateWeatherAPIConfiguration.class);
 
-        if (config.apikey == null || config.apikey.isBlank()) {
+        if (config.apikey.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-missing-apikey");
             return;
@@ -86,7 +86,7 @@ public class PirateWeatherAPIHandler extends BaseBridgeHandler {
             return;
         }
 
-        if (config.language == null || config.language.isBlank()) {
+        if (config.language.isBlank()) {
             String language = localeProvider.getLocale().getLanguage();
             if (PirateWeatherAPIConfiguration.SUPPORTED_LANGUAGES.contains(language)) {
                 logger.debug("Language set to '{}'.", language);

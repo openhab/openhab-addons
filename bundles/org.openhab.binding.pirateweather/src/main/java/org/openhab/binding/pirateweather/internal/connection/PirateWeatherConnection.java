@@ -91,7 +91,7 @@ public class PirateWeatherConnection {
 
         PirateWeatherAPIConfiguration config = handler.getPirateWeatherAPIConfig();
         String apikey = config.apikey;
-        if (apikey == null || apikey.isBlank()) {
+        if (apikey.isBlank()) {
             throw new PirateWeatherConfigurationException("@text/offline.conf-error-missing-apikey");
         }
 
@@ -109,8 +109,8 @@ public class PirateWeatherConnection {
         params.put(PARAM_UNITS, "si");
 
         String language = config.language;
-        if (language != null && !(language = language.trim()).isEmpty()) {
-            params.put(PARAM_LANG, language.toLowerCase());
+        if (!(language = language.trim()).isEmpty()) {
+            params.put(PARAM_LANG, language.toLowerCase(Locale.ROOT));
         }
         return params;
     }

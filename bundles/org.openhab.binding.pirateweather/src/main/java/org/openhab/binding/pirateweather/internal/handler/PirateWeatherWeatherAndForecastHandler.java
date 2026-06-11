@@ -17,6 +17,7 @@ import static org.openhab.core.library.unit.MetricPrefix.*;
 import static org.openhab.core.library.unit.SIUnits.*;
 import static org.openhab.core.library.unit.Units.*;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -26,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
@@ -43,7 +45,9 @@ import org.openhab.binding.pirateweather.internal.connection.PirateWeatherCommun
 import org.openhab.binding.pirateweather.internal.connection.PirateWeatherConfigurationException;
 import org.openhab.binding.pirateweather.internal.connection.PirateWeatherConnection;
 import org.openhab.binding.pirateweather.internal.dto.PirateWeatherCurrentlyData;
+import org.openhab.binding.pirateweather.internal.dto.PirateWeatherDailyData;
 import org.openhab.binding.pirateweather.internal.dto.PirateWeatherDailyData.DailyData;
+import org.openhab.binding.pirateweather.internal.dto.PirateWeatherHourlyData;
 import org.openhab.binding.pirateweather.internal.dto.PirateWeatherHourlyData.HourlyData;
 import org.openhab.binding.pirateweather.internal.dto.PirateWeatherJsonWeatherData;
 import org.openhab.binding.pirateweather.internal.dto.PirateWeatherJsonWeatherData.AlertsData;
@@ -370,6 +374,10 @@ public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {
      */
     private void updateChannel(ChannelUID channelUID) {
         String channelGroupId = channelUID.getGroupId();
+        if (channelGroupId == null) {
+            logger.debug("Channel '{}' is not part of a channel group. Cannot update channel.", channelUID);
+            return;
+        }
         switch (channelGroupId) {
             case CHANNEL_GROUP_CURRENT_WEATHER:
                 updateCurrentChannel(channelUID);
@@ -412,6 +420,7 @@ public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {
     private void updateCurrentChannel(ChannelUID channelUID) {
         String channelId = channelUID.getIdWithoutGroup();
         String channelGroupId = channelUID.getGroupId();
+        PirateWeatherJsonWeatherData weatherData = this.weatherData;
         if (weatherData != null && weatherData.getCurrently() != null) {
             PirateWeatherCurrentlyData currentData = weatherData.getCurrently();
             State state = UnDefType.UNDEF;
@@ -498,80 +507,81 @@ public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {
     private void updateHourlyForecastChannel(ChannelUID channelUID, int count) {
         String channelId = channelUID.getIdWithoutGroup();
         String channelGroupId = channelUID.getGroupId();
-        if (weatherData != null && weatherData.getHourly() != null
-                && weatherData.getHourly().getData().size() > count) {
-            HourlyData forecastData = weatherData.getHourly().getData().get(count);
-            State state = UnDefType.UNDEF;
-            switch (channelId) {
-                case CHANNEL_TIME_STAMP:
-                    state = getDateTimeTypeState(forecastData.getTime());
-                    break;
-                case CHANNEL_CONDITION:
-                    state = getStringTypeState(forecastData.getSummary());
-                    break;
-                case CHANNEL_CONDITION_ICON_ID:
-                    state = getStringTypeState(forecastData.getIcon());
-                    break;
-                case CHANNEL_TEMPERATURE:
-                    state = getQuantityTypeState(forecastData.getTemperature(), CELSIUS);
-                    break;
-                case CHANNEL_APPARENT_TEMPERATURE:
-                    state = getQuantityTypeState(forecastData.getApparentTemperature(), CELSIUS);
-                    break;
-                case CHANNEL_PRESSURE:
-                    state = getQuantityTypeState(forecastData.getPressure(), HECTO(PASCAL));
-                    break;
-                case CHANNEL_HUMIDITY:
-                    state = getQuantityTypeState(forecastData.getHumidity() * 100, PERCENT);
-                    break;
-                case CHANNEL_WIND_SPEED:
-                    state = getQuantityTypeState(forecastData.getWindSpeed(), METRE_PER_SECOND);
-                    break;
-                case CHANNEL_WIND_DIRECTION:
-                    state = getQuantityTypeState(forecastData.getWindBearing(), DEGREE_ANGLE);
-                    break;
-                case CHANNEL_GUST_SPEED:
-                    state = getQuantityTypeState(forecastData.getWindGust(), METRE_PER_SECOND);
-                    break;
-                case CHANNEL_CLOUDINESS:
-                    state = getQuantityTypeState(forecastData.getCloudCover() * 100, PERCENT);
-                    break;
-                case CHANNEL_VISIBILITY:
-                    state = getQuantityTypeState(forecastData.getVisibility(), KILO(METRE));
-                    break;
-                case CHANNEL_RAIN:
-                    state = getQuantityTypeState(
-                            PRECIP_TYPE_RAIN.equals(forecastData.getPrecipType()) ? forecastData.getPrecipIntensity()
-                                    : 0,
-                            MILLIMETRE_PER_HOUR);
-                    break;
-                case CHANNEL_SNOW:
-                    state = getQuantityTypeState(
-                            PRECIP_TYPE_SNOW.equals(forecastData.getPrecipType()) ? forecastData.getPrecipIntensity()
-                                    : 0,
-                            MILLIMETRE_PER_HOUR);
-                    break;
-                case CHANNEL_PRECIPITATION_INTENSITY:
-                    state = getQuantityTypeState(forecastData.getPrecipIntensity(), MILLIMETRE_PER_HOUR);
-                    break;
-                case CHANNEL_PRECIPITATION_PROBABILITY:
-                    state = getQuantityTypeState(forecastData.getPrecipProbability() * 100, PERCENT);
-                    break;
-                case CHANNEL_PRECIPITATION_TYPE:
-                    state = getStringTypeState(forecastData.getPrecipType());
-                    break;
-                case CHANNEL_UVINDEX:
-                    state = getDecimalTypeState(forecastData.getUvIndexInt());
-                    break;
-                case CHANNEL_OZONE:
-                    state = getQuantityTypeState(forecastData.getOzone(), DOBSON_UNIT);
-                    break;
-            }
-            logger.debug("Update channel '{}' of group '{}' with new state '{}'.", channelId, channelGroupId, state);
-            updateState(channelUID, state);
-        } else {
+        PirateWeatherJsonWeatherData weatherData = this.weatherData;
+        if (weatherData == null || !(weatherData.getHourly() instanceof PirateWeatherHourlyData hourlyData)
+                || !(hourlyData.getData() instanceof List<HourlyData> hourlyDataList)
+                || hourlyDataList.size() > count) {
             logger.debug("No weather data available to update channel '{}' of group '{}'.", channelId, channelGroupId);
+            return;
         }
+
+        HourlyData forecastData = Objects.requireNonNull(hourlyDataList.get(count));
+        State state = UnDefType.UNDEF;
+        switch (channelId) {
+            case CHANNEL_TIME_STAMP:
+                state = getDateTimeTypeState(forecastData.getTime());
+                break;
+            case CHANNEL_CONDITION:
+                state = getStringTypeState(forecastData.getSummary());
+                break;
+            case CHANNEL_CONDITION_ICON_ID:
+                state = getStringTypeState(forecastData.getIcon());
+                break;
+            case CHANNEL_TEMPERATURE:
+                state = getQuantityTypeState(forecastData.getTemperature(), CELSIUS);
+                break;
+            case CHANNEL_APPARENT_TEMPERATURE:
+                state = getQuantityTypeState(forecastData.getApparentTemperature(), CELSIUS);
+                break;
+            case CHANNEL_PRESSURE:
+                state = getQuantityTypeState(forecastData.getPressure(), HECTO(PASCAL));
+                break;
+            case CHANNEL_HUMIDITY:
+                state = getQuantityTypeState(forecastData.getHumidity() * 100, PERCENT);
+                break;
+            case CHANNEL_WIND_SPEED:
+                state = getQuantityTypeState(forecastData.getWindSpeed(), METRE_PER_SECOND);
+                break;
+            case CHANNEL_WIND_DIRECTION:
+                state = getQuantityTypeState(forecastData.getWindBearing(), DEGREE_ANGLE);
+                break;
+            case CHANNEL_GUST_SPEED:
+                state = getQuantityTypeState(forecastData.getWindGust(), METRE_PER_SECOND);
+                break;
+            case CHANNEL_CLOUDINESS:
+                state = getQuantityTypeState(forecastData.getCloudCover() * 100, PERCENT);
+                break;
+            case CHANNEL_VISIBILITY:
+                state = getQuantityTypeState(forecastData.getVisibility(), KILO(METRE));
+                break;
+            case CHANNEL_RAIN:
+                state = getQuantityTypeState(
+                        PRECIP_TYPE_RAIN.equals(forecastData.getPrecipType()) ? forecastData.getPrecipIntensity() : 0,
+                        MILLIMETRE_PER_HOUR);
+                break;
+            case CHANNEL_SNOW:
+                state = getQuantityTypeState(
+                        PRECIP_TYPE_SNOW.equals(forecastData.getPrecipType()) ? forecastData.getPrecipIntensity() : 0,
+                        MILLIMETRE_PER_HOUR);
+                break;
+            case CHANNEL_PRECIPITATION_INTENSITY:
+                state = getQuantityTypeState(forecastData.getPrecipIntensity(), MILLIMETRE_PER_HOUR);
+                break;
+            case CHANNEL_PRECIPITATION_PROBABILITY:
+                state = getQuantityTypeState(forecastData.getPrecipProbability() * 100, PERCENT);
+                break;
+            case CHANNEL_PRECIPITATION_TYPE:
+                state = getStringTypeState(forecastData.getPrecipType());
+                break;
+            case CHANNEL_UVINDEX:
+                state = getDecimalTypeState(forecastData.getUvIndexInt());
+                break;
+            case CHANNEL_OZONE:
+                state = getQuantityTypeState(forecastData.getOzone(), DOBSON_UNIT);
+                break;
+        }
+        logger.debug("Update channel '{}' of group '{}' with new state '{}'.", channelId, channelGroupId, state);
+        updateState(channelUID, state);
     }
 
     /**
@@ -583,100 +593,97 @@ public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {
     private void updateDailyForecastChannel(ChannelUID channelUID, int count) {
         String channelId = channelUID.getIdWithoutGroup();
         String channelGroupId = channelUID.getGroupId();
-        if (weatherData != null && weatherData.getDaily() != null && weatherData.getDaily().getData().size() > count) {
-            DailyData forecastData = weatherData.getDaily().getData().get(count);
-            State state = UnDefType.UNDEF;
-            switch (channelId) {
-                case CHANNEL_TIME_STAMP:
-                    state = getDateTimeTypeState(forecastData.getTime());
-                    break;
-                case CHANNEL_CONDITION:
-                    state = getStringTypeState(forecastData.getSummary());
-                    break;
-                case CHANNEL_CONDITION_ICON_ID:
-                    state = getStringTypeState(forecastData.getIcon());
-                    break;
-                case CHANNEL_MIN_TEMPERATURE:
-                    state = getQuantityTypeState(forecastData.getTemperatureMin(), CELSIUS);
-                    break;
-                case CHANNEL_MAX_TEMPERATURE:
-                    state = getQuantityTypeState(forecastData.getTemperatureMax(), CELSIUS);
-                    break;
-                case CHANNEL_MIN_APPARENT_TEMPERATURE:
-                    state = getQuantityTypeState(forecastData.getApparentTemperatureMin(), CELSIUS);
-                    break;
-                case CHANNEL_MAX_APPARENT_TEMPERATURE:
-                    state = getQuantityTypeState(forecastData.getApparentTemperatureMax(), CELSIUS);
-                    break;
-                case CHANNEL_PRESSURE:
-                    state = getQuantityTypeState(forecastData.getPressure(), HECTO(PASCAL));
-                    break;
-                case CHANNEL_HUMIDITY:
-                    state = getQuantityTypeState(forecastData.getHumidity() * 100, PERCENT);
-                    break;
-                case CHANNEL_WIND_SPEED:
-                    state = getQuantityTypeState(forecastData.getWindSpeed(), METRE_PER_SECOND);
-                    break;
-                case CHANNEL_WIND_DIRECTION:
-                    state = getQuantityTypeState(forecastData.getWindBearing(), DEGREE_ANGLE);
-                    break;
-                case CHANNEL_GUST_SPEED:
-                    state = getQuantityTypeState(forecastData.getWindGust(), METRE_PER_SECOND);
-                    break;
-                case CHANNEL_CLOUDINESS:
-                    state = getQuantityTypeState(forecastData.getCloudCover() * 100, PERCENT);
-                    break;
-                case CHANNEL_VISIBILITY:
-                    state = getQuantityTypeState(forecastData.getVisibility(), KILO(METRE));
-                    break;
-                case CHANNEL_RAIN:
-                    state = getQuantityTypeState(
-                            PRECIP_TYPE_RAIN.equals(forecastData.getPrecipType()) ? forecastData.getPrecipIntensity()
-                                    : 0,
-                            MILLIMETRE_PER_HOUR);
-                    break;
-                case CHANNEL_SNOW:
-                    state = getQuantityTypeState(
-                            PRECIP_TYPE_SNOW.equals(forecastData.getPrecipType()) ? forecastData.getPrecipIntensity()
-                                    : 0,
-                            MILLIMETRE_PER_HOUR);
-                    break;
-                case CHANNEL_PRECIPITATION_INTENSITY:
-                    state = getQuantityTypeState(forecastData.getPrecipIntensity(), MILLIMETRE_PER_HOUR);
-                    break;
-                case CHANNEL_PRECIPITATION_PROBABILITY:
-                    state = getQuantityTypeState(forecastData.getPrecipProbability() * 100, PERCENT);
-                    break;
-                case CHANNEL_PRECIPITATION_TYPE:
-                    state = getStringTypeState(forecastData.getPrecipType());
-                    break;
-                case CHANNEL_UVINDEX:
-                    state = getDecimalTypeState(forecastData.getUvIndexInt());
-                    break;
-                case CHANNEL_OZONE:
-                    state = getQuantityTypeState(forecastData.getOzone(), DOBSON_UNIT);
-                    break;
-                case CHANNEL_SUNRISE:
-                    state = getDateTimeTypeState(forecastData.getSunriseTime());
-                    if (count == 0 && state instanceof DateTimeType) {
-                        scheduleJob(TRIGGER_SUNRISE,
-                                applyChannelConfig(((DateTimeType) state).getZonedDateTime(getLocationZoneId()),
-                                        sunriseTriggerChannelConfig));
-                    }
-                    break;
-                case CHANNEL_SUNSET:
-                    state = getDateTimeTypeState(forecastData.getSunsetTime());
-                    if (count == 0 && state instanceof DateTimeType) {
-                        scheduleJob(TRIGGER_SUNSET,
-                                applyChannelConfig(((DateTimeType) state).getZonedDateTime(getLocationZoneId()),
-                                        sunsetTriggerChannelConfig));
-                    }
-                    break;
-            }
-            logger.debug("Update channel '{}' of group '{}' with new state '{}'.", channelId, channelGroupId, state);
-            updateState(channelUID, state);
-        } else {
+        PirateWeatherJsonWeatherData weatherData = this.weatherData;
+        if (weatherData == null || !(weatherData.getDaily() instanceof PirateWeatherDailyData dailyData)
+                || !(dailyData.getData() instanceof List<DailyData> dailyDataList) || dailyDataList.size() > count) {
             logger.debug("No weather data available to update channel '{}' of group '{}'.", channelId, channelGroupId);
+            return;
+        }
+
+        DailyData forecastData = Objects.requireNonNull(dailyDataList.get(count));
+        State state = UnDefType.UNDEF;
+        switch (channelId) {
+            case CHANNEL_TIME_STAMP:
+                state = getDateTimeTypeState(forecastData.getTime());
+                break;
+            case CHANNEL_CONDITION:
+                state = getStringTypeState(forecastData.getSummary());
+                break;
+            case CHANNEL_CONDITION_ICON_ID:
+                state = getStringTypeState(forecastData.getIcon());
+                break;
+            case CHANNEL_MIN_TEMPERATURE:
+                state = getQuantityTypeState(forecastData.getTemperatureMin(), CELSIUS);
+                break;
+            case CHANNEL_MAX_TEMPERATURE:
+                state = getQuantityTypeState(forecastData.getTemperatureMax(), CELSIUS);
+                break;
+            case CHANNEL_MIN_APPARENT_TEMPERATURE:
+                state = getQuantityTypeState(forecastData.getApparentTemperatureMin(), CELSIUS);
+                break;
+            case CHANNEL_MAX_APPARENT_TEMPERATURE:
+                state = getQuantityTypeState(forecastData.getApparentTemperatureMax(), CELSIUS);
+                break;
+            case CHANNEL_PRESSURE:
+                state = getQuantityTypeState(forecastData.getPressure(), HECTO(PASCAL));
+                break;
+            case CHANNEL_HUMIDITY:
+                state = getQuantityTypeState(forecastData.getHumidity() * 100, PERCENT);
+                break;
+            case CHANNEL_WIND_SPEED:
+                state = getQuantityTypeState(forecastData.getWindSpeed(), METRE_PER_SECOND);
+                break;
+            case CHANNEL_WIND_DIRECTION:
+                state = getQuantityTypeState(forecastData.getWindBearing(), DEGREE_ANGLE);
+                break;
+            case CHANNEL_GUST_SPEED:
+                state = getQuantityTypeState(forecastData.getWindGust(), METRE_PER_SECOND);
+                break;
+            case CHANNEL_CLOUDINESS:
+                state = getQuantityTypeState(forecastData.getCloudCover() * 100, PERCENT);
+                break;
+            case CHANNEL_VISIBILITY:
+                state = getQuantityTypeState(forecastData.getVisibility(), KILO(METRE));
+                break;
+            case CHANNEL_RAIN:
+                state = getQuantityTypeState(
+                        PRECIP_TYPE_RAIN.equals(forecastData.getPrecipType()) ? forecastData.getPrecipIntensity() : 0,
+                        MILLIMETRE_PER_HOUR);
+                break;
+            case CHANNEL_SNOW:
+                state = getQuantityTypeState(
+                        PRECIP_TYPE_SNOW.equals(forecastData.getPrecipType()) ? forecastData.getPrecipIntensity() : 0,
+                        MILLIMETRE_PER_HOUR);
+                break;
+            case CHANNEL_PRECIPITATION_INTENSITY:
+                state = getQuantityTypeState(forecastData.getPrecipIntensity(), MILLIMETRE_PER_HOUR);
+                break;
+            case CHANNEL_PRECIPITATION_PROBABILITY:
+                state = getQuantityTypeState(forecastData.getPrecipProbability() * 100, PERCENT);
+                break;
+            case CHANNEL_PRECIPITATION_TYPE:
+                state = getStringTypeState(forecastData.getPrecipType());
+                break;
+            case CHANNEL_UVINDEX:
+                state = getDecimalTypeState(forecastData.getUvIndexInt());
+                break;
+            case CHANNEL_OZONE:
+                state = getQuantityTypeState(forecastData.getOzone(), DOBSON_UNIT);
+                break;
+            case CHANNEL_SUNRISE:
+                state = getDateTimeTypeState(forecastData.getSunriseTime());
+                if (count == 0 && state instanceof DateTimeType) {
+                    scheduleJob(TRIGGER_SUNRISE, applyChannelConfig(
+                            ((DateTimeType) state).getZonedDateTime(getLocationZoneId()), sunriseTriggerChannelConfig));
+                }
+                break;
+            case CHANNEL_SUNSET:
+                state = getDateTimeTypeState(forecastData.getSunsetTime());
+                if (count == 0 && state instanceof DateTimeType) {
+                    scheduleJob(TRIGGER_SUNSET, applyChannelConfig(
+                            ((DateTimeType) state).getZonedDateTime(getLocationZoneId()), sunsetTriggerChannelConfig));
+                }
+                break;
         }
     }
 
@@ -689,6 +696,7 @@ public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {
     private void updateAlertsChannel(ChannelUID channelUID, int count) {
         String channelId = channelUID.getIdWithoutGroup();
         String channelGroupId = channelUID.getGroupId();
+        PirateWeatherJsonWeatherData weatherData = this.weatherData;
         List<AlertsData> alerts = weatherData != null ? weatherData.getAlerts() : null;
         State state = UnDefType.UNDEF;
         if (alerts != null && alerts.size() >= count) {
@@ -804,7 +812,7 @@ public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {
      */
     @SuppressWarnings("null")
     private synchronized void scheduleJob(String channelId, ZonedDateTime dateTime) {
-        long delay = dateTime.toEpochSecond() - ZonedDateTime.now().toEpochSecond();
+        long delay = Duration.between(Instant.now(), dateTime.toInstant()).getSeconds();
         if (delay > 0) {
             Job job = jobs.get(channelId);
             if (job == null || job.getFuture().isCancelled()) {
