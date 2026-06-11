@@ -26,7 +26,7 @@
 				<description>SmartThings scene UUID. Find it via the SmartThings CLI: smartthings scenes</description>
 			</parameter>
 			<parameter name="locationId" type="text">
-				<label>Location ID (optional)</label>
+				<label>Location ID (Optional)</label>
 				<description>SmartThings location UUID. Required only when the account has multiple locations.</description>
 				<default></default>
 			</parameter>

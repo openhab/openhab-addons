@@ -44,6 +44,17 @@ class SmartThingsThingDescriptionTest {
         assertEquals("true", advanced.getTextContent());
     }
 
+    @Test
+    void configParameterLabelsUseTitleStyleCapitalization() throws Exception {
+        Document accountDocument = parseThingDescription("OH-INF/thing/account.xml");
+        Document sceneDocument = parseThingDescription("OH-INF/thing/scene.xml");
+
+        assertEquals("App Name", findParameterLabel(accountDocument, "appName"));
+        assertEquals("Create Things Using Dynamic Capability Discovery",
+                findParameterLabel(accountDocument, "useDynamicThings"));
+        assertEquals("Location ID (Optional)", findParameterLabel(sceneDocument, "locationId"));
+    }
+
     private Document parseThingDescription(String resourceName) throws Exception {
         InputStream stream = SmartThingsThingDescriptionTest.class.getResourceAsStream("/" + resourceName);
         assertNotNull(stream);
@@ -63,5 +74,12 @@ class SmartThingsThingDescriptionTest {
             }
         }
         throw new AssertionError("Missing parameter: " + parameterName);
+    }
+
+    private String findParameterLabel(Document document, String parameterName) {
+        Element parameter = findParameter(document, parameterName);
+        Node label = parameter.getElementsByTagName("label").item(0);
+        assertNotNull(label);
+        return label.getTextContent();
     }
 }

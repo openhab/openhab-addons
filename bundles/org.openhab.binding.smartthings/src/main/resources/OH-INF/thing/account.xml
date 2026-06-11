@@ -10,7 +10,7 @@
 
 		<config-description>
 			<parameter name="appName" type="text" required="false">
-				<label>AppName</label>
+				<label>App Name</label>
 				<description>The Samsung apps name</description>
 				<advanced>true</advanced>
 			</parameter>
@@ -39,7 +39,7 @@
 				<default>false</default>
 			</parameter>
 			<parameter name="useDynamicThings" type="boolean" required="false">
-				<label>Create things using dynamic capability discovery</label>
+				<label>Create Things Using Dynamic Capability Discovery</label>
 				<description>When enabled, the binding will scan available devices and create channels based on their available
 					capabilities.
 					When disabled, only static thing definitions from the resource files are used.
