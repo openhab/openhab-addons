@@ -158,7 +158,7 @@ public enum Measurand {
     // This is for heap : the available stack top. If it is reducing, it means the stack is using up.
     ITEM_HEAP_FREE("free-heap-size", 0x6c, "Free Heap Size", MeasureType.MEMORY, CHANNEL_TYPE_FREE_HEAP_SIZE),
 
-    WIND_DIRECTION_AVG_10M("direction-wind-avg-10min", 0x6D, "Wind Direction (10 minutes average)", MeasureType.DEGREE,
+    WIND_DIRECTION_AVG_10M("direction-wind-avg-10min", 0x6D, "Wind Direction (10-minute average)", MeasureType.DEGREE,
             DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_TYPE_UID_WIND_DIRECTION, http(HttpGroup.COMMON_LIST)),
 
     ITEM_SENSOR_CO2_WH46(0x6B,
