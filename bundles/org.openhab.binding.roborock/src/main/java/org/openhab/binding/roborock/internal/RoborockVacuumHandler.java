@@ -241,7 +241,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                         logger.warn("Received non-object DP payload (expected JSON object): {}", jsonPayload);
                     }
                 } catch (JsonSyntaxException e) {
-                    logger.warn("Failed to parse incoming DP payload.", e.getMessage());
+                    logger.warn("Failed to parse incoming DP payload. {}", e.getMessage());
                 }
                 return;
             }
