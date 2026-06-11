@@ -16,13 +16,26 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.ArgumentMatchers.nullable;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.util.Dictionary;
+import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.openhab.binding.smartthings.internal.handler.SmartThingsBridgeHandler;
+import org.openhab.binding.smartthings.internal.type.SmartThingsException;
+import org.openhab.core.i18n.TranslationProvider;
+import org.osgi.framework.Bundle;
+import org.osgi.service.http.HttpService;
 
 /**
  * Tests for {@link SmartThingsServlet}.
@@ -57,5 +70,29 @@ class SmartThingsServletTest {
         assertEquals("org.openhab.binding.smartthings.internal.SmartThingsServlet.smartthings.second",
                 secondParams.get("servlet-name"));
         assertNotEquals(firstParams.get("servlet-name"), secondParams.get("servlet-name"));
+    }
+
+    @Test
+    void smartThingsRequestErrorsUseGenericSmartThingsTitle() throws SmartThingsException {
+        TranslationProvider translationProvider = mock(TranslationProvider.class);
+        when(translationProvider.getText(nullable(Bundle.class), eq("smartthing-error"), isNull(), any(Locale.class)))
+                .thenReturn("Call to SmartThings failed with error:");
+
+        SmartThingsServlet servlet = new TestSmartThingsServlet(translationProvider);
+
+        assertEquals("<p class='block error'>Call to SmartThings failed with error:<pre>network failure</pre></p>",
+                servlet.formatSmartThingsError("network failure"));
+    }
+
+    private static class TestSmartThingsServlet extends SmartThingsServlet {
+        TestSmartThingsServlet(TranslationProvider translationProvider) throws SmartThingsException {
+            super(mock(SmartThingsBridgeHandler.class), "/smartthings/account", mock(SmartThingsAuthService.class),
+                    translationProvider, mock(HttpService.class));
+        }
+
+        @Override
+        protected String readTemplate(String templateName) throws IOException {
+            return "";
+        }
     }
 }

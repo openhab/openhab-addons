@@ -98,6 +98,9 @@ public class SmartThingsServlet extends HttpServlet
     private static final String HTML_WARNING = "<p class='block warn'>%s</p>";
     private static final String STEP_CREATE_APP = "step1";
     private static final String STEP_AUTHORIZE_LOCATION = "step2";
+    private static final String MESSAGE_KEY_MISSING_REQ_CODE = "missing-req-code";
+    private static final String MESSAGE_KEY_REDIRECT_URI_NOT_HTTPS = "redirect-uri-not-https";
+    private static final String MESSAGE_KEY_SMARTTHINGS_ERROR = "smartthing-error";
 
     // Keys present in the index.html
     private static final String KEY_ERROR = "error";
@@ -300,12 +303,7 @@ public class SmartThingsServlet extends HttpServlet
                 template = confirmTemplate;
                 logger.debug("SmartThings redirected with an error: {}", reqError);
 
-                Locale locale = Locale.getDefault();
-                Bundle bundle = FrameworkUtil.getBundle(getClass());
-                String smartthingsError = translationProvider.getText(bundle, "redirect-uri-not-https", null, locale);
-
-                replaceMap.put(KEY_ERROR,
-                        String.format(HTML_ERROR, Encode.forHtml(smartthingsError), Encode.forHtml(reqError)));
+                replaceMap.put(KEY_ERROR, formatSmartThingsError(reqError));
             } else if (!StringUtil.isBlank(reqState)) {
                 try {
                     if (!StringUtil.isBlank(reqCode)) {
@@ -358,10 +356,7 @@ public class SmartThingsServlet extends HttpServlet
                         }
                     } else {
                         template = errorTemplate;
-                        Locale locale = Locale.getDefault();
-                        Bundle bundle = FrameworkUtil.getBundle(getClass());
-                        String missingReqCodeError = translationProvider.getText(bundle, "missing-req-code", null,
-                                locale);
+                        String missingReqCodeError = getTranslation(MESSAGE_KEY_MISSING_REQ_CODE);
 
                         replaceMap.put(KEY_ERROR, String.format(HTML_ERROR, Encode.forHtml(missingReqCodeError),
                                 Encode.forHtml(reqError)));
@@ -369,13 +364,8 @@ public class SmartThingsServlet extends HttpServlet
                 } catch (SmartThingsException e) {
                     template = errorTemplate;
                     logger.debug("Exception during authorization: ", e);
-                    Locale locale = Locale.getDefault();
-                    Bundle bundle = FrameworkUtil.getBundle(getClass());
-                    String smartthingsError = translationProvider.getText(bundle, "redirect-uri-not-https", null,
-                            locale);
 
-                    replaceMap.put(KEY_ERROR, String.format(HTML_ERROR, Encode.forHtml(smartthingsError),
-                            Encode.forHtml(SmartThingsException.getRootCauseMessage(e))));
+                    replaceMap.put(KEY_ERROR, formatSmartThingsError(SmartThingsException.getRootCauseMessage(e)));
                 }
             } else {
                 bridgeHandler.registerOAuth(true);
@@ -396,9 +386,7 @@ public class SmartThingsServlet extends HttpServlet
             replaceMap.put(KEY_ASSET_BASE_URI, Encode.forHtmlAttribute(assetBaseUri));
 
             if (!callBackURL.startsWith("https://")) {
-                Locale locale = Locale.getDefault();
-                Bundle bundle = FrameworkUtil.getBundle(getClass());
-                String redirectUriError = translationProvider.getText(bundle, "redirect-uri-not-https", null, locale);
+                String redirectUriError = getTranslation(MESSAGE_KEY_REDIRECT_URI_NOT_HTTPS);
                 replaceMap.put(KEY_ERROR, String.format(HTML_WARNING, Encode.forHtml(redirectUriError)));
             }
 
@@ -431,6 +419,18 @@ public class SmartThingsServlet extends HttpServlet
         }
 
         return replaceKeysFromMap(template, replaceMap);
+    }
+
+    String formatSmartThingsError(String message) {
+        return String.format(HTML_ERROR, Encode.forHtml(getTranslation(MESSAGE_KEY_SMARTTHINGS_ERROR)),
+                Encode.forHtml(message));
+    }
+
+    private String getTranslation(String key) {
+        Locale locale = Locale.getDefault();
+        Bundle bundle = FrameworkUtil.getBundle(getClass());
+        String text = translationProvider.getText(bundle, key, null, locale);
+        return text != null ? text : key;
     }
 
     private String getExternalRequestUrl(String requestUrl) {
