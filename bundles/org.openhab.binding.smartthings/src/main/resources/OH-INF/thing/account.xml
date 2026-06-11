@@ -45,6 +45,7 @@
 					When disabled, only static thing definitions from the resource files are used.
 				</description>
 				<default>false</default>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</bridge-type>
