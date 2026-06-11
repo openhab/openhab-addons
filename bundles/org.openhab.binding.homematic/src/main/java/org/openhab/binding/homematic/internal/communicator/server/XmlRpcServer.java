@@ -21,6 +21,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
@@ -37,6 +39,7 @@ import org.xml.sax.SAXException;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class XmlRpcServer implements RpcServer {
     private final Logger logger = LoggerFactory.getLogger(XmlRpcServer.class);
 
@@ -44,7 +47,7 @@ public class XmlRpcServer implements RpcServer {
     private static final String XML_EMPTY_ARRAY = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n<methodResponse><params><param><value><array><data></data></array></value></param></params></methodResponse>";
     private static final String XML_EMPTY_EVENT_LIST = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n<methodResponse><params><param><value><array><data><value>event</value></data></array></value></param></params></methodResponse>";
 
-    private Server xmlRpcHTTPD;
+    private @Nullable Server xmlRpcHTTPD;
     private HomematicConfig config;
     private RpcResponseHandler<String> rpcResponseHander;
     private final ResponseHandler jettyResponseHandler = new ResponseHandler();
@@ -80,8 +83,10 @@ public class XmlRpcServer implements RpcServer {
         logger.debug("Initializing XML-RPC server at port {}", config.getXmlCallbackPort());
 
         InetSocketAddress callbackAddress = new InetSocketAddress(config.getXmlCallbackPort());
-        xmlRpcHTTPD = new Server(callbackAddress);
+        Server xmlRpcHTTPD = new Server(callbackAddress);
         xmlRpcHTTPD.setHandler(jettyResponseHandler);
+
+        this.xmlRpcHTTPD = xmlRpcHTTPD;
 
         try {
             xmlRpcHTTPD.start();
@@ -95,6 +100,7 @@ public class XmlRpcServer implements RpcServer {
 
     @Override
     public void shutdown() {
+        Server xmlRpcHTTPD = this.xmlRpcHTTPD;
         if (xmlRpcHTTPD != null) {
             logger.debug("Stopping XML-RPC server");
             try {
@@ -107,9 +113,12 @@ public class XmlRpcServer implements RpcServer {
 
     /**
      * Response handler for Jetty implementing a XML-RPC server
+     * This class extends the Jetty AbstractHandler that is not annotated with @NonNullByDefault, so we have to disable
+     * null annotations for this class.
      *
      * @author Martin Herbst
      */
+    @NonNullByDefault({})
     private class ResponseHandler extends AbstractHandler {
         @Override
         public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)

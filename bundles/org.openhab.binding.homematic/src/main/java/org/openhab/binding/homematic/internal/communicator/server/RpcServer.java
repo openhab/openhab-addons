@@ -14,11 +14,14 @@ package org.openhab.binding.homematic.internal.communicator.server;
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Simple RPC server interface.
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public interface RpcServer {
 
     /**

@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.homematic.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Definition of the Homematic interfaces.
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public enum HmInterface {
     RF,
     WIRED,
@@ -40,6 +43,6 @@ public enum HmInterface {
             case GROUP:
                 return "Group";
         }
-        return null;
+        return this.name();
     }
 }

@@ -14,6 +14,8 @@ package org.openhab.binding.homematic.internal.communicator.virtual;
 
 import static org.openhab.binding.homematic.internal.misc.HomematicConstants.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDatapointInfo;
@@ -25,6 +27,7 @@ import org.openhab.binding.homematic.internal.model.HmValueType;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class StateContactVirtualDatapointHandler extends AbstractVirtualDatapointHandler {
     @Override
     public String getName() {
@@ -54,14 +57,16 @@ public class StateContactVirtualDatapointHandler extends AbstractVirtualDatapoin
     public void handleEvent(VirtualGateway gateway, HmDatapoint dp) {
         Object value = convertState(dp.getValue());
         HmDatapoint vdp = getVirtualDatapoint(dp.getChannel());
-        vdp.setValue(value);
+        if (vdp != null) {
+            vdp.setValue(value);
+        }
     }
 
     private boolean isApplicable(HmDevice device) {
         return device.getType().toUpperCase().startsWith("HMIP-SWD");
     }
 
-    private Boolean convertState(Object value) {
+    private @Nullable Boolean convertState(@Nullable Object value) {
         if (!(value instanceof Integer)) {
             return null;
         }

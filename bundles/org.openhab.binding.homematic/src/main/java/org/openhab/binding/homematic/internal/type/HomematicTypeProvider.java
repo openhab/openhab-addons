@@ -91,8 +91,7 @@ public class HomematicTypeProvider extends AbstractStorageBasedTypeProvider impl
     }
 
     @Override
-    @Nullable
-    public ConfigDescription getConfigDescription(URI uri, @Nullable Locale locale) {
+    public @Nullable ConfigDescription getConfigDescription(URI uri, @Nullable Locale locale) {
         synchronized (configDescriptionsByURI) {
             return configDescriptionsByURI.get(uri);
         }

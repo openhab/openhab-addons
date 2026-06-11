@@ -12,20 +12,26 @@
  */
 package org.openhab.binding.homematic.internal.model;
 
+import java.util.Objects;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Configuration object for sending a datapoint.
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class HmDatapointConfig {
-    private Double delay;
-    private Double receiveDelay;
+    private @Nullable Double delay;
+    private @Nullable Double receiveDelay;
 
     /**
      * Returns the delay in seconds for sending the datapoint.
      */
     public double getDelay() {
-        return delay == null ? 0.0 : delay;
+        return Objects.requireNonNullElse(delay, 0.0);
     }
 
     /**
@@ -39,7 +45,7 @@ public class HmDatapointConfig {
      * Returns the delay in seconds for receiving a new datapoint event.
      */
     public Double getReceiveDelay() {
-        return receiveDelay == null ? 0.0 : receiveDelay;
+        return Objects.requireNonNullElse(receiveDelay, 0.0);
     }
 
     /**

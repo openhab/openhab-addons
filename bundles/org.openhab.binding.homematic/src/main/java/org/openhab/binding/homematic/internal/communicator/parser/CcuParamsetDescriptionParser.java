@@ -13,7 +13,10 @@
 package org.openhab.binding.homematic.internal.communicator.parser;
 
 import java.io.IOException;
+import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmInterface;
@@ -26,7 +29,8 @@ import org.openhab.binding.homematic.internal.model.TclScriptDataList;
  *
  * @author Gerhard Riegler - Initial contribution
  */
-public class CcuParamsetDescriptionParser extends CommonRpcParser<TclScriptDataList, Void> {
+@NonNullByDefault
+public class CcuParamsetDescriptionParser extends CommonRpcParser<TclScriptDataList, @Nullable Void> {
     private HmParamsetType paramsetType;
     private HmChannel channel;
     private boolean isHmIpDevice;
@@ -38,9 +42,10 @@ public class CcuParamsetDescriptionParser extends CommonRpcParser<TclScriptDataL
     }
 
     @Override
-    public Void parse(TclScriptDataList resultList) throws IOException {
-        if (resultList.getEntries() != null) {
-            for (TclScriptDataEntry entry : resultList.getEntries()) {
+    public @Nullable Void parse(TclScriptDataList resultList) throws IOException {
+        List<TclScriptDataEntry> entries = resultList.getEntries();
+        if (entries != null) {
+            for (TclScriptDataEntry entry : entries) {
                 HmDatapoint dp = assembleDatapoint(entry.name, entry.unit, entry.valueType,
                         this.toOptionList(entry.options), convertToType(entry.minValue), convertToType(entry.maxValue),
                         toInteger(entry.operations), convertToType(entry.value), null, paramsetType, isHmIpDevice);
@@ -50,7 +55,7 @@ public class CcuParamsetDescriptionParser extends CommonRpcParser<TclScriptDataL
         return null;
     }
 
-    private String[] toOptionList(String options) {
+    private String @Nullable [] toOptionList(@Nullable String options) {
         String[] result = options == null ? null : options.split(";");
         return result == null || result.length == 0 ? null : result;
     }
