@@ -34,6 +34,7 @@ import org.openhab.binding.smartthings.internal.type.SmartThingsException;
 import org.openhab.binding.smartthings.internal.type.SmartThingsTypeRegistryImpl;
 import org.openhab.binding.smartthings.internal.type.UidUtils;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -150,6 +151,23 @@ public class SmartThingsThingHandler extends BaseThingHandler {
             return channelUID;
         }
 
+        return findChannelUIDByProperties(componentId, capabilityId, channelName);
+    }
+
+    private @Nullable ChannelUID findChannelUIDByProperties(String componentId, String capabilityId,
+            String channelName) {
+        for (Channel channel : thing.getChannels()) {
+            ChannelUID channelUID = channel.getUID();
+            if (!channelName.equals(channelUID.getIdWithoutGroup())) {
+                continue;
+            }
+
+            Map<String, String> properties = channel.getProperties();
+            if (componentId.equals(properties.get(SmartThingsBindingConstants.COMPONENT))
+                    && capabilityId.equals(properties.get(SmartThingsBindingConstants.CAPABILITY))) {
+                return channelUID;
+            }
+        }
         return null;
     }
 

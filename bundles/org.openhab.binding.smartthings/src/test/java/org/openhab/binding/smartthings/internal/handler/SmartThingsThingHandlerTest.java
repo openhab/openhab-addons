@@ -27,6 +27,7 @@ import org.openhab.binding.smartthings.internal.dto.SmartThingsStatusCapabilitie
 import org.openhab.binding.smartthings.internal.dto.SmartThingsStatusProperties;
 import org.openhab.binding.smartthings.internal.type.SmartThingsTypeRegistryImpl;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -120,8 +121,46 @@ class SmartThingsThingHandlerTest {
         handler.refreshDevice("Samsung_Room_A_C", "main", "switch", "switch", "on");
 
         assertEquals(1, handler.updatedStates);
-        assertEquals(new ChannelUID(handler.getThing().getUID(), "main", "switch"), handler.lastUpdatedChannel);
+        assertEquals(new ChannelUID(handler.getThing().getUID(), "control", "switch"), handler.lastUpdatedChannel);
         assertEquals(OnOffType.ON, handler.lastUpdatedState);
+    }
+
+    @Test
+    void refreshDeviceUpdatesStaticAirConditionerCoolingSetpointChannel() {
+        ThingUID thingUID = new ThingUID("smartthings:Samsung_Room_A_C:account:air-conditioner");
+        Thing thing = ThingBuilder
+                .create(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Samsung_Room_A_C"), thingUID)
+                .withChannel(createChannel(thingUID, "control", "cooling-setpoint",
+                        SmartThingsBindingConstants.TYPE_NUMBER, "thermostatCoolingSetpoint", "coolingSetpoint"))
+                .build();
+        TestSmartThingsThingHandler handler = new TestSmartThingsThingHandler(thing);
+        SmartThingsConverterFactory.registerConverters(new SmartThingsTypeRegistryImpl());
+
+        handler.refreshDevice("Samsung_Room_A_C", "main", "thermostatCoolingSetpoint", "coolingSetpoint", 21.0);
+
+        assertEquals(1, handler.updatedStates);
+        assertEquals(new ChannelUID(handler.getThing().getUID(), "control", "cooling-setpoint"),
+                handler.lastUpdatedChannel);
+        assertEquals(new DecimalType(21), handler.lastUpdatedState);
+    }
+
+    @Test
+    void refreshDeviceUpdatesStaticAirConditionerPowerConsumptionSubChannel() {
+        ThingUID thingUID = new ThingUID("smartthings:Samsung_Room_A_C:account:air-conditioner");
+        Thing thing = ThingBuilder
+                .create(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Samsung_Room_A_C"), thingUID)
+                .withChannel(createChannel(thingUID, "energy", "power", SmartThingsBindingConstants.TYPE_NUMBER,
+                        "powerConsumptionReport", "powerConsumption"))
+                .build();
+        TestSmartThingsThingHandler handler = new TestSmartThingsThingHandler(thing);
+        SmartThingsConverterFactory.registerConverters(new SmartThingsTypeRegistryImpl());
+
+        handler.refreshDevice("Samsung_Room_A_C", "main", "powerConsumptionReport", "powerConsumption",
+                Map.of("power", 123.0));
+
+        assertEquals(1, handler.updatedStates);
+        assertEquals(new ChannelUID(handler.getThing().getUID(), "energy", "power"), handler.lastUpdatedChannel);
+        assertEquals(new DecimalType(123), handler.lastUpdatedState);
     }
 
     @Test
@@ -168,15 +207,19 @@ class SmartThingsThingHandlerTest {
 
         return ThingBuilder
                 .create(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Samsung_Room_A_C"), thingUID)
-                .withChannel(createSwitchChannel(thingUID, "main")).build();
+                .withChannel(createSwitchChannel(thingUID, "control")).build();
     }
 
     private Channel createSwitchChannel(ThingUID thingUID, String groupId) {
-        return ChannelBuilder
-                .create(new ChannelUID(thingUID, groupId, "switch"), SmartThingsBindingConstants.TYPE_SWITCH)
+        return createChannel(thingUID, groupId, "switch", SmartThingsBindingConstants.TYPE_SWITCH, "switch", "switch");
+    }
+
+    private Channel createChannel(ThingUID thingUID, String groupId, String channelId, String itemType,
+            String capability, String attribute) {
+        return ChannelBuilder.create(new ChannelUID(thingUID, groupId, channelId), itemType)
                 .withProperties(
                         Map.of(SmartThingsBindingConstants.COMPONENT, "main", SmartThingsBindingConstants.CAPABILITY,
-                                "switch", SmartThingsBindingConstants.ATTRIBUTE, "switch"))
+                                capability, SmartThingsBindingConstants.ATTRIBUTE, attribute))
                 .build();
     }
 
