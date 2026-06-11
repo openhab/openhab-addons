@@ -28,7 +28,6 @@ import org.openhab.core.thing.profiles.ProfileTypeUID;
 import org.openhab.core.thing.profiles.StateProfile;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
-import org.openhab.core.types.Type;
 import org.openhab.transform.basicprofiles.internal.config.StateDelayStateProfileConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,23 +85,17 @@ public class StateDelayStateProfile implements StateProfile {
 
     @Override
     public void onCommandFromHandler(Command command) {
-        handleFromHandler(command, () -> callback.sendCommand(command));
+        // commands are not state and are forwarded immediately; only state updates are delayed
+        callback.sendCommand(command);
     }
 
     @Override
-    public void onStateUpdateFromHandler(State state) {
-        handleFromHandler(state, () -> callback.sendUpdate(state));
-    }
-
-    private synchronized void handleFromHandler(Type value, Runnable forward) {
-        Boolean active = asActive(value);
+    public synchronized void onStateUpdateFromHandler(State state) {
+        Boolean active = asActive(state);
         if (active == null) {
             // non-binary values (e.g. UNDEF/NULL) are forwarded immediately and reset the delay state
             cancelPending();
-            if (value instanceof State state) {
-                lastForwarded = state;
-            }
-            forward.run();
+            doForward(state);
             return;
         }
 
@@ -122,7 +115,7 @@ public class StateDelayStateProfile implements StateProfile {
         // 4. forward now or schedule
         int delay = active ? config.onDelay : config.offDelay;
         if (delay <= 0) {
-            doForward(value, forward);
+            doForward(state);
         } else {
             pendingActive = active;
             long generation = ++pendingGeneration;
@@ -132,7 +125,7 @@ public class StateDelayStateProfile implements StateProfile {
                         // superseded or cancelled while we waited for the lock
                         return;
                     }
-                    doForward(value, forward);
+                    doForward(state);
                     pendingJob = null;
                     pendingActive = null;
                 }
@@ -140,11 +133,9 @@ public class StateDelayStateProfile implements StateProfile {
         }
     }
 
-    private void doForward(Type value, Runnable forward) {
-        if (value instanceof State state) {
-            lastForwarded = state;
-        }
-        forward.run();
+    private void doForward(State state) {
+        lastForwarded = state;
+        callback.sendUpdate(state);
     }
 
     private void cancelPending() {
@@ -158,11 +149,11 @@ public class StateDelayStateProfile implements StateProfile {
         pendingActive = null;
     }
 
-    private static @Nullable Boolean asActive(Type value) {
-        if (value instanceof OnOffType onOff) {
+    private static @Nullable Boolean asActive(State state) {
+        if (state instanceof OnOffType onOff) {
             return onOff == OnOffType.ON;
         }
-        if (value instanceof OpenClosedType openClosed) {
+        if (state instanceof OpenClosedType openClosed) {
             return openClosed == OpenClosedType.OPEN;
         }
         return null;

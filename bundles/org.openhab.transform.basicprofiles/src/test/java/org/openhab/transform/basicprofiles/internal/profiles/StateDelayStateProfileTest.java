@@ -174,6 +174,33 @@ class StateDelayStateProfileTest {
     }
 
     @Test
+    public void testCommandsFromHandlerForwardImmediately() {
+        StateProfile profile = initProfile(5000, 5000);
+        profile.onCommandFromHandler(OnOffType.ON);
+        verify(mockCallback, times(1)).sendCommand(OnOffType.ON);
+        profile.onCommandFromHandler(OnOffType.OFF);
+        verify(mockCallback, times(1)).sendCommand(OnOffType.OFF);
+        verify(mockScheduler, never()).schedule(any(Runnable.class), anyLong(), any());
+    }
+
+    @Test
+    public void testCommandFromHandlerDoesNotAffectPendingStateUpdate() {
+        StateProfile profile = initProfile(0, 5000);
+        profile.onStateUpdateFromHandler(OnOffType.ON);
+        profile.onStateUpdateFromHandler(OnOffType.OFF);
+        Runnable job = captureScheduled(5000);
+
+        // a command arriving while an OFF state update is pending must not interfere with the delay
+        profile.onCommandFromHandler(OnOffType.ON);
+        verify(mockCallback, times(1)).sendCommand(OnOffType.ON);
+        verify(mockFuture, never()).cancel(anyBoolean());
+
+        // the pending OFF still fires after its delay
+        job.run();
+        verify(mockCallback, times(1)).sendUpdate(OnOffType.OFF);
+    }
+
+    @Test
     public void testItemEventsPassThrough() {
         StateProfile profile = initProfile(0, 5000);
         profile.onCommandFromItem(OnOffType.ON);
