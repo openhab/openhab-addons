@@ -32,8 +32,19 @@ public class SmartThingsBindingConstants {
 
     public static final String BINDING_ID = "smartthings";
 
-    // List of Bridge Type UIDs
+    // Static Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_ACCOUNT = new ThingTypeUID(BINDING_ID, "account");
+    public static final ThingTypeUID THING_TYPE_GENERIC_COLOR_LIGHT_BULB = new ThingTypeUID(BINDING_ID,
+            "generic-color-light-bulb");
+    public static final ThingTypeUID THING_TYPE_GENERIC_LIGHT_BULB = new ThingTypeUID(BINDING_ID, "generic-light-bulb");
+    public static final ThingTypeUID THING_TYPE_GENERIC_LIGHT_SENSOR = new ThingTypeUID(BINDING_ID,
+            "generic-light-sensor");
+    public static final ThingTypeUID THING_TYPE_GENERIC_PRESENCE_SENSOR = new ThingTypeUID(BINDING_ID,
+            "generic-presence-sensor");
+    public static final ThingTypeUID THING_TYPE_GENERIC_SCENE = new ThingTypeUID(BINDING_ID, "generic-scene");
+    public static final ThingTypeUID THING_TYPE_GENERIC_TELEVISION = new ThingTypeUID(BINDING_ID, "generic-television");
+    public static final ThingTypeUID THING_TYPE_GENERIC_WASHER = new ThingTypeUID(BINDING_ID, "generic-washer");
+    public static final ThingTypeUID THING_TYPE_SAMSUNG_ROOM_A_C = new ThingTypeUID(BINDING_ID, "Samsung_Room_A_C");
 
     // Authorization related Servlet and resources aliases.
     public static final String SMARTTHINGS_IMG_ALIAS = "/img";
@@ -63,7 +74,15 @@ public class SmartThingsBindingConstants {
     public static final String SMARTTHINGS_API_TOKEN_URL = SMARTTHINGS_ACCOUNT_URL + "/token";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(SmartThingsBindingConstants.THING_TYPE_ACCOUNT).collect(Collectors.toSet()));
+            .unmodifiableSet(Stream.of(SmartThingsBindingConstants.THING_TYPE_ACCOUNT,
+                    SmartThingsBindingConstants.THING_TYPE_GENERIC_COLOR_LIGHT_BULB,
+                    SmartThingsBindingConstants.THING_TYPE_GENERIC_LIGHT_BULB,
+                    SmartThingsBindingConstants.THING_TYPE_GENERIC_LIGHT_SENSOR,
+                    SmartThingsBindingConstants.THING_TYPE_GENERIC_PRESENCE_SENSOR,
+                    SmartThingsBindingConstants.THING_TYPE_GENERIC_SCENE,
+                    SmartThingsBindingConstants.THING_TYPE_GENERIC_TELEVISION,
+                    SmartThingsBindingConstants.THING_TYPE_GENERIC_WASHER,
+                    SmartThingsBindingConstants.THING_TYPE_SAMSUNG_ROOM_A_C).collect(Collectors.toSet()));
 
     public static final String THING_LIGHT = "light";
 

@@ -13,11 +13,14 @@
 package org.openhab.binding.smartthings.internal;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import javax.ws.rs.client.ClientBuilder;
 
@@ -27,6 +30,8 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.smartthings.internal.handler.SmartThingsAccountHandler;
 import org.openhab.binding.smartthings.internal.handler.SmartThingsBridgeHandler;
 import org.openhab.binding.smartthings.internal.handler.SmartThingsThingHandler;
+import org.openhab.binding.smartthings.internal.type.SmartThingsThingTypeProvider;
+import org.openhab.binding.smartthings.internal.type.SmartThingsThingTypeProviderImpl;
 import org.openhab.binding.smartthings.internal.type.SmartThingsTypeRegistry;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.i18n.TranslationProvider;
@@ -38,6 +43,7 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.builder.BridgeBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.type.ThingType;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.jaxrs.client.SseEventSourceFactory;
 
@@ -46,6 +52,31 @@ import org.osgi.service.jaxrs.client.SseEventSourceFactory;
  */
 @NonNullByDefault
 class SmartThingsHandlerFactoryTest {
+
+    @Test
+    void supportsOnlyStaticOrRegisteredDynamicThingTypes() {
+        TestSmartThingsHandlerFactory factory = createFactory();
+
+        assertTrue(factory.supportsThingType(SmartThingsBindingConstants.THING_TYPE_ACCOUNT));
+        assertTrue(factory
+                .supportsThingType(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "generic-television")));
+        assertFalse(factory
+                .supportsThingType(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Samsung_The_Frame")));
+    }
+
+    @Test
+    void supportsRegisteredDynamicThingTypes() {
+        SmartThingsThingTypeProviderImpl thingTypeProvider = new SmartThingsThingTypeProviderImpl();
+        TestSmartThingsHandlerFactory factory = createFactory(thingTypeProvider);
+        ThingTypeUID dynamicThingTypeUID = new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID,
+                "Samsung_The_Frame");
+        ThingType dynamicThingType = mock(ThingType.class);
+        when(dynamicThingType.getUID()).thenReturn(dynamicThingTypeUID);
+
+        thingTypeProvider.addThingType(dynamicThingType);
+
+        assertTrue(factory.supportsThingType(dynamicThingTypeUID));
+    }
 
     @Test
     void createHandlerAllowsMultipleAccountBridges() {
@@ -120,19 +151,23 @@ class SmartThingsHandlerFactoryTest {
         return new TestSmartThingsHandlerFactory();
     }
 
+    private TestSmartThingsHandlerFactory createFactory(SmartThingsThingTypeProvider thingTypeProvider) {
+        return new TestSmartThingsHandlerFactory(thingTypeProvider);
+    }
+
     private Bridge accountBridge(String id) {
         return BridgeBuilder.create(SmartThingsBindingConstants.THING_TYPE_ACCOUNT, id).build();
     }
 
     private Thing childThing(String id, Bridge bridge) {
         ThingUID bridgeUID = bridge.getUID();
-        ThingTypeUID thingTypeUID = new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Washer");
+        ThingTypeUID thingTypeUID = SmartThingsBindingConstants.THING_TYPE_GENERIC_WASHER;
 
         return ThingBuilder.create(thingTypeUID, id).withBridge(bridgeUID).withLabel(id).build();
     }
 
     private Thing standaloneChildThing(String id) {
-        ThingTypeUID thingTypeUID = new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Washer");
+        ThingTypeUID thingTypeUID = SmartThingsBindingConstants.THING_TYPE_GENERIC_WASHER;
 
         return ThingBuilder.create(thingTypeUID, id).withLabel(id).build();
     }
@@ -145,9 +180,18 @@ class SmartThingsHandlerFactoryTest {
         }
 
         TestSmartThingsHandlerFactory(SmartThingsAuthService authService) {
+            this(authService, new SmartThingsThingTypeProviderImpl());
+        }
+
+        TestSmartThingsHandlerFactory(SmartThingsThingTypeProvider thingTypeProvider) {
+            this(new SmartThingsAuthService(), thingTypeProvider);
+        }
+
+        TestSmartThingsHandlerFactory(SmartThingsAuthService authService,
+                SmartThingsThingTypeProvider thingTypeProvider) {
             super(mock(HttpService.class), authService, mock(TranslationProvider.class), mock(OAuthFactory.class),
                     mock(HttpClientFactory.class), mock(SmartThingsTypeRegistry.class), mock(ClientBuilder.class),
-                    mock(SseEventSourceFactory.class));
+                    mock(SseEventSourceFactory.class), thingTypeProvider);
             this.authService = authService;
         }
 

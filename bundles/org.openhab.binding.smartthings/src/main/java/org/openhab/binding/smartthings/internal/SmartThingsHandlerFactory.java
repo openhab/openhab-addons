@@ -27,6 +27,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smartthings.internal.handler.SmartThingsAccountHandler;
 import org.openhab.binding.smartthings.internal.handler.SmartThingsBridgeHandler;
 import org.openhab.binding.smartthings.internal.handler.SmartThingsThingHandler;
+import org.openhab.binding.smartthings.internal.type.SmartThingsThingTypeProvider;
 import org.openhab.binding.smartthings.internal.type.SmartThingsTypeRegistry;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.i18n.TranslationProvider;
@@ -70,13 +71,15 @@ public class SmartThingsHandlerFactory extends BaseThingHandlerFactory implement
     private final TranslationProvider translationProvider;
     private final OAuthFactory oAuthFactory;
     private final SmartThingsTypeRegistry typeRegistry;
+    private final SmartThingsThingTypeProvider thingTypeProvider;
     private final ClientBuilder clientBuilder;
     private final SseEventSourceFactory eventSourceFactory;
     private volatile @Nullable WebhookService webHookService;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return SmartThingsBindingConstants.BINDING_ID.equals(thingTypeUID.getBindingId());
+        return SmartThingsBindingConstants.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)
+                || thingTypeProvider.getInternalThingType(thingTypeUID) != null;
     }
 
     @Activate
@@ -84,13 +87,15 @@ public class SmartThingsHandlerFactory extends BaseThingHandlerFactory implement
             final @Reference SmartThingsAuthService authService,
             final @Reference TranslationProvider translationProvider, final @Reference OAuthFactory oAuthFactory,
             final @Reference HttpClientFactory httpClientFactory, final @Reference SmartThingsTypeRegistry typeRegistry,
-            final @Reference ClientBuilder clientBuilder, final @Reference SseEventSourceFactory eventSourceFactory) {
+            final @Reference ClientBuilder clientBuilder, final @Reference SseEventSourceFactory eventSourceFactory,
+            final @Reference SmartThingsThingTypeProvider thingTypeProvider) {
         this.httpService = httpService;
         this.authService = authService;
         this.translationProvider = translationProvider;
         this.httpClientFactory = httpClientFactory;
         this.oAuthFactory = oAuthFactory;
         this.typeRegistry = typeRegistry;
+        this.thingTypeProvider = thingTypeProvider;
         this.clientBuilder = clientBuilder;
         this.eventSourceFactory = eventSourceFactory;
     }
@@ -127,7 +132,7 @@ public class SmartThingsHandlerFactory extends BaseThingHandlerFactory implement
             logger.debug("SmartThingsHandlerFactory created SmartThingsAccountHandler for {}",
                     thingTypeUID.getAsString());
             return bridgeHandler;
-        } else if (SmartThingsBindingConstants.BINDING_ID.equals(thing.getThingTypeUID().getBindingId())) {
+        } else if (supportsThingType(thingTypeUID)) {
             ThingUID bridgeUID = thing.getBridgeUID();
             // Everything but the bridge is handled by this one handler
             // Make sure this thing belongs to a registered bridge
