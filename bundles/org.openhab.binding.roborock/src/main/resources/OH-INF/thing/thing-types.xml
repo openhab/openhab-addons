@@ -975,6 +975,15 @@
 			<tag>Mode</tag>
 		</tags>
 	</channel-type>
+	<channel-type id="dpcommand" advanced="true">
+		<item-type>String</item-type>
+		<label>Execute DP (cloud) Command</label>
+		<description>Execute a raw flat data-point payload to B01/Q10 devices. (Example payload: {"201": {"cmd": 1}})</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
+	</channel-type>
 	<channel-type id="power">
 		<item-type>Switch</item-type>
 		<label>Power On/Off</label>

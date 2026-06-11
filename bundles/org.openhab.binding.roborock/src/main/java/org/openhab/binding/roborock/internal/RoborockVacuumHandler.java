@@ -67,6 +67,7 @@ import org.openhab.binding.roborock.internal.transport.RoborockCommandTransport;
 import org.openhab.binding.roborock.internal.util.ProtocolUtils;
 import org.openhab.binding.roborock.internal.util.RequestCorrelationTracker;
 import org.openhab.binding.roborock.internal.util.SchedulerTask;
+import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -88,6 +89,7 @@ import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -218,6 +220,28 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                     sendRPCCommand(commandArray[0]);
                 } else {
                     sendRPCCommand(commandArray[0], commandArray[1]);
+                }
+                return;
+            }
+            if (channelUID.getId().equals(CHANNEL_DP_COMMAND)) {
+                String jsonPayload = command.toString();
+                try {
+                    JsonElement parsed = JsonParser.parseString(jsonPayload);
+                    if (parsed.isJsonObject()) {
+                        Map<String, Object> dpsMap = new HashMap<>();
+                        for (Map.Entry<String, JsonElement> e : parsed.getAsJsonObject().entrySet()) {
+                            dpsMap.put(e.getKey(), e.getValue());
+                        }
+                        if (!dpsMap.isEmpty()) {
+                            sendQ10DpCommand(dpsMap);
+                            logger.debug("Successfully forwarded DP command map to device: {}", jsonPayload);
+                        } else {
+                            logger.warn("Received empty or invalid DP payload.");
+                        }
+                        logger.warn("Received non-object DP payload (expected JSON object): {}", jsonPayload);
+                    }
+                } catch (JsonSyntaxException e) {
+                    logger.warn("Failed to parse incoming DP payload. {}", e.getMessage());
                 }
                 return;
             }
@@ -401,6 +425,16 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             q7 = true;
         } else if (nameUpper.contains("Q10")) {
             q10 = true;
+            ChannelUID channelUID = new ChannelUID(getThing().getUID(), CHANNEL_DP_COMMAND);
+            Channel channel = thing.getChannel(channelUID);
+            if (channel == null) {
+                logger.debug("Adding channel for DP commands, on device {}", getThing().getUID());
+                ThingBuilder thingBuilder = editThing();
+                channel = ChannelBuilder.create(channelUID, CoreItemFactory.STRING).withLabel("Execute DP Command")
+                        .withType(new ChannelTypeUID(BINDING_ID, "DPCommand")).build();
+                thingBuilder.withChannel(channel);
+                updateThing(thingBuilder.build());
+            }
         }
         return true;
     }
@@ -1503,21 +1537,20 @@ public class RoborockVacuumHandler extends BaseThingHandler {
      *   122 = battery
      *   123 = fan_power
      *   124 = water_box_mode
-     *   125 = main_brush_life   (consumable remaining life — NOT clean area)
-     *   126 = side_brush_life   (consumable remaining life — NOT clean time)
-     *   127 = filter_life       (consumable remaining life — NOT clean percent)
-     *   136 = clean_times       (number of cleans completed in this session)
+     *   125 = main_brush_life   (consumable remaining life)
+     *   126 = side_brush_life   (consumable remaining life)
+     *   127 = filter_life       (consumable remaining life)
+     *   136 = clean_times       (number of cleans completed)
      *   137 = clean_mode        (current cleaning mode)
-     *   138 = clean_task_type   (type of cleaning task — NOT dock state)
+     *   138 = clean_task_type   (type of cleaning task)
      *   139 = back_type         (return-to-dock trigger type)
      *   141 = cleaning_progress (0–100%)
      *   142 = fleeing_goods     (obstacle avoidance active flag)
      * </pre>
      * 
-     * Clean area and time arrive inside dps.101 sub-keys 7 and 6 respectively.
      */
     private void handleFlatDpPush(JsonObject dpsRoot) {
-        // DP 121 — vacuum state ID (shared: Q7 and Q10)
+        // DP 121 — vacuum state ID
         if (dpsRoot.has("121")) {
             int stateInt = dpsRoot.get("121").getAsInt();
             // On the Q10, status updates are provided automatically, so just update the channel.
@@ -1528,7 +1561,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             }
         }
 
-        // DP 122 — battery % (shared: Q7 and Q10)
+        // DP 122 — battery %
         if (dpsRoot.has("122")) {
             updateState(CHANNEL_BATTERY, new DecimalType(dpsRoot.get("122").getAsInt()));
         }
@@ -1545,33 +1578,31 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             updateState(RobotCapabilities.WATERBOX_MODE.getChannel(), new DecimalType(dpsRoot.get("124").getAsInt()));
         }
 
-        // DP 125 — main brush remaining life
-        // Value is either already remaining-hours (<=100) or seconds-used (>100).
-        // Convert to seconds-used for ConsumablesType.remainingHours compatibility.
+        // DP 125 — main brush use time in s
         if (dpsRoot.has("125")) {
-            int workTimeSecs = q10ConsumableToSecondsUsed(dpsRoot.get("125").getAsLong(), ConsumablesType.MAIN_BRUSH);
+            int brushSecs = 3600 * dpsRoot.get("125").getAsInt();
             updateState(CHANNEL_CONSUMABLE_MAIN_TIME, new QuantityType<>(
-                    ConsumablesType.remainingHours(workTimeSecs, ConsumablesType.MAIN_BRUSH), Units.HOUR));
+                    ConsumablesType.remainingHours(brushSecs, ConsumablesType.MAIN_BRUSH), Units.HOUR));
             updateState(CHANNEL_CONSUMABLE_MAIN_PERC,
-                    new DecimalType(ConsumablesType.remainingPercent(workTimeSecs, ConsumablesType.MAIN_BRUSH)));
+                    new DecimalType(ConsumablesType.remainingPercent(brushSecs, ConsumablesType.MAIN_BRUSH)));
         }
 
-        // DP 126 — side brush remaining life (same encoding as DP 125)
+        // DP 126 — side brush use time in s
         if (dpsRoot.has("126")) {
-            int workTimeSecs = q10ConsumableToSecondsUsed(dpsRoot.get("126").getAsLong(), ConsumablesType.SIDE_BRUSH);
+            int sideBrushSecs = 3600 * dpsRoot.get("126").getAsInt();
             updateState(CHANNEL_CONSUMABLE_SIDE_TIME, new QuantityType<>(
-                    ConsumablesType.remainingHours(workTimeSecs, ConsumablesType.SIDE_BRUSH), Units.HOUR));
+                    ConsumablesType.remainingHours(sideBrushSecs, ConsumablesType.SIDE_BRUSH), Units.HOUR));
             updateState(CHANNEL_CONSUMABLE_SIDE_PERC,
-                    new DecimalType(ConsumablesType.remainingPercent(workTimeSecs, ConsumablesType.SIDE_BRUSH)));
+                    new DecimalType(ConsumablesType.remainingPercent(sideBrushSecs, ConsumablesType.SIDE_BRUSH)));
         }
 
-        // DP 127 — filter remaining life (same encoding as DP 125)
+        // DP 127 — filter use time in s
         if (dpsRoot.has("127")) {
-            int workTimeSecs = q10ConsumableToSecondsUsed(dpsRoot.get("127").getAsLong(), ConsumablesType.FILTER);
-            updateState(CHANNEL_CONSUMABLE_FILTER_TIME, new QuantityType<>(
-                    ConsumablesType.remainingHours(workTimeSecs, ConsumablesType.FILTER), Units.HOUR));
+            int filterSecs = 3600 * dpsRoot.get("127").getAsInt();
+            updateState(CHANNEL_CONSUMABLE_FILTER_TIME,
+                    new QuantityType<>(ConsumablesType.remainingHours(filterSecs, ConsumablesType.FILTER), Units.HOUR));
             updateState(CHANNEL_CONSUMABLE_FILTER_PERC,
-                    new DecimalType(ConsumablesType.remainingPercent(workTimeSecs, ConsumablesType.FILTER)));
+                    new DecimalType(ConsumablesType.remainingPercent(filterSecs, ConsumablesType.FILTER)));
         }
 
         // DP 136 — clean_times: number of cleaning passes completed in this task
@@ -1584,7 +1615,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             logger.debug("Q10 dp137 clean_mode: {}", dpsRoot.get("137").getAsInt());
         }
 
-        // DP 138 — clean_task_type: type of cleaning task currently running (not dock state)
+        // DP 138 — clean_task_type: type of cleaning task currently running
         if (dpsRoot.has("138")) {
             logger.debug("Q10 dp138 clean_task_type: {}", dpsRoot.get("138").getAsInt());
         }
@@ -1609,53 +1640,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         if (dp101Element != null && dp101Element.isJsonObject()) {
             handleQ10Dp101(dp101Element.getAsJsonObject());
         }
-    }
-
-    /**
-     * Converts a Q10 shadow consumable value to seconds-used for use with
-     * {@link ConsumablesType#remainingHours} and {@link ConsumablesType#remainingPercent}.
-     *
-     * <p>
-     * Q10 shadow DPs 125/126/127 encode consumable life in one of two ways:
-     * <ul>
-     * <li>Value &le; 100: already a remaining-hours figure — convert to seconds-used
-     * by subtracting from the lifespan and multiplying by 3600.</li>
-     * <li>Value &gt; 100: already seconds-used — pass through directly.</li>
-     * </ul>
-     *
-     * <p>
-     * Lifespan values (from Q10ShadowDataService): main brush 300h, side brush 200h,
-     * filter 150h, sensor 30h.
-     */
-    private int q10ConsumableToSecondsUsed(long rawValue, ConsumablesType type) {
-        if (rawValue <= 100) {
-            // Value is remaining hours — derive seconds used from known lifespan
-            final long lifespanHours;
-            switch (type) {
-                case MAIN_BRUSH:
-                    lifespanHours = 300;
-                    break;
-                case SIDE_BRUSH:
-                    lifespanHours = 200;
-                    break;
-                case FILTER:
-                    lifespanHours = 150;
-                    break;
-                case SENSOR:
-                    lifespanHours = 30;
-                    break;
-                default:
-                    lifespanHours = 0;
-                    break;
-            }
-            if (lifespanHours == 0)
-                return 0;
-            long remainingSecs = rawValue * 3600L;
-            long lifespanSecs = lifespanHours * 3600L;
-            return (int) Math.max(0, lifespanSecs - remainingSecs);
-        }
-        // Value is already seconds used
-        return (int) Math.min(rawValue, Integer.MAX_VALUE);
     }
 
     /**
@@ -1698,10 +1682,15 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             updateState(CHANNEL_CLEAN_AREA, new QuantityType<>(areaMm2 / 1000000D, SIUnits.SQUARE_METRE));
         }
 
+        // Sub-key 25 — quiet_is_open: Quiet Is Open (DND Mode)
+        if (dp101.has("25")) {
+            updateState(CHANNEL_DND_ENABLED, OnOffType.from(1 == dp101.get("25").getAsInt()));
+        }
+
         // Sub-key 29 — total_clean_area: lifetime total clean area in m²
         if (dp101.has("29")) {
-            long totalAreaMm2 = dp101.get("29").getAsLong() * 10000L;
-            updateState(CHANNEL_HISTORY_TOTALAREA, new QuantityType<>(totalAreaMm2 / 1000000D, SIUnits.SQUARE_METRE));
+            long totalArea = dp101.get("29").getAsLong();
+            updateState(CHANNEL_HISTORY_TOTALAREA, new QuantityType<>(totalArea, SIUnits.SQUARE_METRE));
         }
 
         // Sub-key 30 — total_clean_count: lifetime total clean cycles
@@ -1709,15 +1698,14 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             updateState(CHANNEL_HISTORY_COUNT, new DecimalType(dp101.get("30").getAsLong()));
         }
 
-        // Sub-key 31 — total_clean_time: lifetime total clean time in seconds
+        // Sub-key 31 — total_clean_time: lifetime total clean time in minutes
         if (dp101.has("31")) {
-            updateState(CHANNEL_HISTORY_TOTALTIME,
-                    new QuantityType<>(TimeUnit.SECONDS.toMinutes(dp101.get("31").getAsLong()), Units.MINUTE));
+            updateState(CHANNEL_HISTORY_TOTALTIME, new QuantityType<>(dp101.get("31").getAsLong(), Units.MINUTE));
         }
 
         // Sub-key 67 — sensor_dirty_time: sensor consumable seconds used
         if (dp101.has("67")) {
-            int sensorSecs = dp101.get("67").getAsInt();
+            int sensorSecs = 3600 * dp101.get("67").getAsInt();
             updateState(CHANNEL_CONSUMABLE_SENSOR_TIME,
                     new QuantityType<>(ConsumablesType.remainingHours(sensorSecs, ConsumablesType.SENSOR), Units.HOUR));
             updateState(CHANNEL_CONSUMABLE_SENSOR_PERC,
@@ -1793,12 +1781,18 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         }
 
         // Sub-keys logged at trace — known but no channel mapping yet
-        if (dp101.has("25"))
-            logger.trace("Q10 dp101.25 quiet_is_open: {}", dp101.get("25"));
         if (dp101.has("26"))
             logger.trace("Q10 dp101.26 volume: {}", dp101.get("26"));
-        if (dp101.has("32"))
-            logger.trace("Q10 dp101.32 local_timer_blob: {}", dp101.get("32"));
+        if (dp101.has("32")) {
+            try {
+                byte[] b = java.util.Base64.getDecoder().decode(dp101.get("32").getAsString());
+                int timerCount = b.length >= 2 ? b[1] & 0xFF : 0;
+                logger.debug("Q10 dp101.32 TIMER: version={} timerCount={} (full schedule has {} bytes)",
+                        b.length >= 1 ? b[0] & 0xFF : 0, timerCount, b.length);
+            } catch (IllegalArgumentException e) {
+                logger.trace("Q10 dp101.32 TIMER decode failed: {}", e.getMessage());
+            }
+        }
         if (dp101.has("33"))
             logger.trace("Q10 dp101.33 dnd_data_blob: {}", dp101.get("33"));
         if (dp101.has("36"))
