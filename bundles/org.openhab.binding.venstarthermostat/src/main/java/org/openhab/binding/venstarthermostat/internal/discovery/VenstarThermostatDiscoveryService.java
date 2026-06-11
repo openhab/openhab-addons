@@ -155,7 +155,7 @@ public class VenstarThermostatDiscoveryService extends AbstractDiscoveryService 
             socket.setSoTimeout(2000);
             socket.setReuseAddress(true);
             socket.setNetworkInterface(ni);
-            socket.joinGroup(m);
+            socket.joinGroup(new InetSocketAddress(m, port), ni);
 
             logger.trace("Joined UPnP Multicast group on Interface: {}", ni.getName());
             byte[] requestMessage = COLOR_TOUCH_DISCOVERY_MESSAGE.getBytes(StandardCharsets.UTF_8);
