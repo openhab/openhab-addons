@@ -316,7 +316,7 @@ See [Prerequisites using the binding](#Prerequisites using the binding) for a de
 
 When first opening the configuration UI no account will be paired.
 
-![Empty Account Overview](doc/CloudBindingConfigEmpty.png)
+![Empty Account Overview](doc/CloudBindingConfigEmpty.jpg)
 
 We strongly recommend to use a secure connection for pairing, details on this topic can also be found in the [Prerequisites using the binding](#Prerequisites using the binding) section.
 Click `Pair Account` to start the pairing process.
@@ -331,24 +331,27 @@ Once you obtained your client ID and client secret continue pairing by filling i
 - It has to be https, otherwise the pairing will fail.
 - Localhost is not supported, you have to use the actual hostname of your openHAB installation.
 
-![img.png](doc/CloudBindingSettings.png)
+![img.png](doc/CloudBindingSettings.jpg)
 
 A click on `Pair Account` will take you to the Daikin cloud service login form where you need to log in with the same account as you used for the Onecta@mobile app.
 
-![Onecta Login Form](doc/onecta-login.png)
+![Onecta Login Form](doc/onecta-login.jpg)
+
 When this is the first time you pair an account, you will need to allow openHAB to access your account.
-![Onecta Permissions](doc/onecta-permision.png)
+
+![Onecta Permissions](doc/onecta-permision.jpg)
 
 When everything worked, you are presented with a page stating that pairing was successful.
 Select the locale which should be used to display localized texts in openHAB channels.
 From here, you have two options:
 Either let the binding automatically configure a bridge instance or copy the presented things-file template to a things-file and return to the overview page.
 
-![Pairing Successful](doc/pairing-success.png)
+![Pairing Successful](doc/pairing-success.jpg)
+
 Once the bridge instance is `ONLINE`, you can either pair things for all appliances via your favorite management UI or use a things-file.
 The account overview provides a things-file template that is shown when you expand the account.
 This can serve as a starting point for your own things-file.
 In the properties of the Onecta account thing, you can also find the available units and their details of your system.
 Sometimes you need to Disable and then re-Enable the account thing to see the updated list of units.
 
-![Account Overview With Bridge](doc/account-overview-with-bridge.png)
+![Account Overview With Bridge](doc/account-overview-with-bridge.jpg)
