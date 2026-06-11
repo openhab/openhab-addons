@@ -3,7 +3,7 @@
 This bundle provides a list of useful profiles:
 
 | Profile                                                         | Description                                                                                   |
-| --------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+|-----------------------------------------------------------------|-----------------------------------------------------------------------------------------------|
 | [Generic Command Profile](#generic-command-profile)             | Sends a command to the Item when an event is triggered                                        |
 | [Generic Toggle Switch Profile](#generic-toggle-switch-profile) | Toggles a Switch Item when an event is triggered                                              |
 | [Debounce (Counting) Profile](#debounce-counting-profile)       | Counts and skips a number of state changes                                                    |
@@ -14,6 +14,7 @@ This bundle provides a list of useful profiles:
 | [Time Range Command Profile](#time-range-command-profile)       | An enhanced implementation of a follow profile which converts `OnOffType` to a `PercentType`  |
 | [State Filter Profile](#state-filter-profile)                   | Filters input data using arithmetic comparison conditions                                     |
 | [Inactivity Profile](#inactivity-profile)                       | Sets the linked Item to ON or OFF depending on whether the channel has recently produced data |
+| [State Delay Profile](#state-delay-profile)                     | Delays ON/OFF (or OPEN/CLOSED) state changes per direction with an independent cooldown       |
 | [Time-weighted Average Profile](#time-weighted-average-profile) | Collects updates for given duration to calculate time-weighted average value                  |
 
 ## Generic Command Profile
@@ -414,4 +415,27 @@ This will break the steady time frame but reports rapid changes e.g. for power c
 Number:Power SmartmeterPower {
   channel="mybinding:mything:mychannel" [ profile="basic-profiles:time-weighted-average", duration="1m" ]
 }
+```
+
+## State Delay Profile
+
+Delays `ON`/`OFF` (Switch) or `OPEN`/`CLOSED` (Contact) state updates coming from the handler, with an independent delay per direction.
+An `ON`/`OPEN` value is held for `onDelay` milliseconds, an `OFF`/`CLOSED` value for `offDelay` milliseconds.
+A pending value is cancelled if the opposite value arrives before the delay elapses, and repeated identical values do not restart the timer.
+
+A typical use is a "cooldown" for a flapping binary sensor: forward `ON` immediately (`onDelay=0`) but keep it `ON` for a while after the device reports `OFF` (`offDelay` set to the cooldown), so it does not rapidly switch on and off.
+
+### State Delay Profile Configuration
+
+| Configuration Parameter | Type    | Description                                                                                   |
+|-------------------------|---------|-----------------------------------------------------------------------------------------------|
+| `onDelay`               | integer | Delay in ms before an `ON` (Switch) / `OPEN` (Contact) value is forwarded. `0` = immediate.   |
+| `offDelay`              | integer | Delay in ms before an `OFF` (Switch) / `CLOSED` (Contact) value is forwarded. `0` = immediate. |
+
+### State Delay Profile Example
+
+Hold the "is it raining" status `ON` for 2 minutes after the device reports dry:
+
+```java
+Switch Raining { channel="fineoffsetweatherstation:gateway:xxx:rain-state" [profile="basic-profiles:state-delay", onDelay=0, offDelay=120000] }
 ```

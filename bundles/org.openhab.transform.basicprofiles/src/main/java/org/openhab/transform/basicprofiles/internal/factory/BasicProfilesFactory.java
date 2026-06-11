@@ -48,6 +48,7 @@ import org.openhab.transform.basicprofiles.internal.profiles.GenericToggleSwitch
 import org.openhab.transform.basicprofiles.internal.profiles.InactivityProfile;
 import org.openhab.transform.basicprofiles.internal.profiles.InvertStateProfile;
 import org.openhab.transform.basicprofiles.internal.profiles.RoundStateProfile;
+import org.openhab.transform.basicprofiles.internal.profiles.StateDelayStateProfile;
 import org.openhab.transform.basicprofiles.internal.profiles.StateFilterProfile;
 import org.openhab.transform.basicprofiles.internal.profiles.ThresholdStateProfile;
 import org.openhab.transform.basicprofiles.internal.profiles.TimeRangeCommandProfile;
@@ -77,6 +78,7 @@ public class BasicProfilesFactory implements ProfileFactory, ProfileTypeProvider
     public static final ProfileTypeUID STATE_FILTER_UID = new ProfileTypeUID(SCOPE, "state-filter");
     public static final ProfileTypeUID INACTIVITY_UID = new ProfileTypeUID(SCOPE, "inactivity");
     public static final ProfileTypeUID TIME_WEIGHTED_AVERAGE_UID = new ProfileTypeUID(SCOPE, "time-weighted-average");
+    public static final ProfileTypeUID STATE_DELAY_UID = new ProfileTypeUID(SCOPE, "state-delay");
 
     private static final ProfileType PROFILE_TYPE_GENERIC_COMMAND = ProfileTypeBuilder
             .newTrigger(GENERIC_COMMAND_UID, "Generic Command") //
@@ -118,14 +120,19 @@ public class BasicProfilesFactory implements ProfileFactory, ProfileTypeProvider
             .newState(TIME_WEIGHTED_AVERAGE_UID, "Time-Weighted Average")
             .withSupportedItemTypesOfChannel(CoreItemFactory.NUMBER).withSupportedItemTypes(CoreItemFactory.NUMBER)
             .build();
+    private static final ProfileType PROFILE_TYPE_STATE_DELAY = ProfileTypeBuilder
+            .newState(STATE_DELAY_UID, "State Delay") //
+            .withSupportedItemTypes(CoreItemFactory.SWITCH, CoreItemFactory.CONTACT) //
+            .withSupportedItemTypesOfChannel(CoreItemFactory.SWITCH, CoreItemFactory.CONTACT) //
+            .build();
 
     private static final Set<ProfileTypeUID> SUPPORTED_PROFILE_TYPE_UIDS = Set.of(GENERIC_COMMAND_UID,
             GENERIC_TOGGLE_SWITCH_UID, DEBOUNCE_COUNTING_UID, DEBOUNCE_TIME_UID, INVERT_UID, ROUND_UID, THRESHOLD_UID,
-            TIME_RANGE_COMMAND_UID, STATE_FILTER_UID, INACTIVITY_UID, TIME_WEIGHTED_AVERAGE_UID);
+            TIME_RANGE_COMMAND_UID, STATE_FILTER_UID, INACTIVITY_UID, TIME_WEIGHTED_AVERAGE_UID, STATE_DELAY_UID);
     private static final Set<ProfileType> SUPPORTED_PROFILE_TYPES = Set.of(PROFILE_TYPE_GENERIC_COMMAND,
             PROFILE_TYPE_GENERIC_TOGGLE_SWITCH, PROFILE_TYPE_DEBOUNCE_COUNTING, PROFILE_TYPE_DEBOUNCE_TIME,
             PROFILE_TYPE_INVERT, PROFILE_TYPE_ROUND, PROFILE_TYPE_THRESHOLD, PROFILE_TYPE_TIME_RANGE_COMMAND,
-            PROFILE_STATE_FILTER, PROFILE_TYPE_INACTIVITY, PROFILE_TIME_WEIGHTED_AVERAGE);
+            PROFILE_STATE_FILTER, PROFILE_TYPE_INACTIVITY, PROFILE_TIME_WEIGHTED_AVERAGE, PROFILE_TYPE_STATE_DELAY);
 
     private final Map<LocalizedKey, ProfileType> localizedProfileTypeCache = new ConcurrentHashMap<>();
 
@@ -172,6 +179,8 @@ public class BasicProfilesFactory implements ProfileFactory, ProfileTypeProvider
             return new InactivityProfile(callback, context, linkRegistry);
         } else if (TIME_WEIGHTED_AVERAGE_UID.equals(profileTypeUID)) {
             return new TimeweightedAverageStateProfile(callback, context);
+        } else if (STATE_DELAY_UID.equals(profileTypeUID)) {
+            return new StateDelayStateProfile(callback, context);
         }
         return null;
     }
