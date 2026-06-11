@@ -112,7 +112,7 @@ public class SmartThingsLocalCallbackListener {
                     logger.warn("OAuth callback listener stopped unexpectedly", e);
                 }
             } finally {
-                if (callbackServerSocket == listenerSocket) {
+                if (listenerSocket.equals(callbackServerSocket)) {
                     callbackServerSocket = null;
                 }
             }
@@ -151,7 +151,9 @@ public class SmartThingsLocalCallbackListener {
         }
         Thread thread = callbackThread;
         if (thread != null) {
-            thread.interrupt();
+            if (!thread.equals(Thread.currentThread())) {
+                thread.interrupt();
+            }
             callbackThread = null;
         }
     }

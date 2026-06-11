@@ -503,7 +503,7 @@ public class SmartThingsServlet extends HttpServlet
             return;
         }
 
-        logger.info("SmartThingsServlet:service");
+        logger.trace("SmartThingsServlet:service");
         String path = req.getRequestURI();
 
         if (path == null) {

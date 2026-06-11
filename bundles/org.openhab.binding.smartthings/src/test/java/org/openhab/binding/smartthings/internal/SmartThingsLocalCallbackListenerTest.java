@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.smartthings.internal;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.lang.reflect.Field;
@@ -41,6 +42,26 @@ class SmartThingsLocalCallbackListenerTest {
         } finally {
             listener.stopCallbackListener();
         }
+    }
+
+    @Test
+    void stoppingCallbackListenerFromCallbackThreadDoesNotInterruptCurrentThread() throws Exception {
+        SmartThingsLocalCallbackListener listener = new SmartThingsLocalCallbackListener();
+        setCallbackThread(listener, Thread.currentThread());
+
+        try {
+            listener.stopCallbackListener();
+
+            assertFalse(Thread.currentThread().isInterrupted());
+        } finally {
+            Thread.interrupted();
+        }
+    }
+
+    private void setCallbackThread(SmartThingsLocalCallbackListener listener, Thread thread) throws Exception {
+        Field threadField = SmartThingsLocalCallbackListener.class.getDeclaredField("callbackThread");
+        threadField.setAccessible(true);
+        threadField.set(listener, thread);
     }
 
     private ServerSocket waitForServerSocket(SmartThingsLocalCallbackListener listener) throws Exception {
