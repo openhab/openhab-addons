@@ -194,6 +194,21 @@ Number:Illuminance HallwayIlluminance "Hallway illuminance" { channel="smartthin
 Switch GoodNightScene "Good night" { channel="smartthings:generic-scene:home:good_night:main#trigger" }
 ```
 
+### Sitemap Configuration
+
+```perl
+sitemap smartthings label="SmartThings" {
+    Frame label="Living Room" {
+        Switch item=LivingRoomLampPower
+        Slider item=LivingRoomLampLevel
+        Colorpicker item=LivingRoomLampColor
+    }
+    Frame label="Scenes" {
+        Switch item=GoodNightScene mappings=[ON="Run"]
+    }
+}
+```
+
 ## Troubleshooting
 
 If the account bridge stays offline, open the authorization link from the bridge status and complete the SmartThings authorization flow again.
