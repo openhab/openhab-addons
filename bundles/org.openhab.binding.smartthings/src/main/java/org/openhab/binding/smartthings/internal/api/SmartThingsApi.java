@@ -13,6 +13,7 @@
 package org.openhab.binding.smartthings.internal.api;
 
 import java.io.IOException;
+import java.net.URI;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Dictionary;
@@ -257,7 +258,7 @@ public class SmartThingsApi {
         appRequest.description = "Desc " + appName;
         appRequest.appType = "API_ONLY";
         appRequest.principalType = "LOCATION";
-        if (eventCallbackUri.contains("https://")) {
+        if (isHttpsUri(eventCallbackUri)) {
             appRequest.apiOnly = new AppRequest.apiOnlyApp(eventCallbackUri);
         }
 
@@ -270,6 +271,14 @@ public class SmartThingsApi {
         oAuthConfig.redirectUris = new String[] { oauthRedirectUri };
         appRequest.oauth = oAuthConfig;
         return appRequest;
+    }
+
+    private static boolean isHttpsUri(String uri) {
+        try {
+            return "https".equalsIgnoreCase(URI.create(uri).getScheme());
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
     }
 
     public String getToken() throws SmartThingsException {
