@@ -284,7 +284,7 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
         final org.openhab.core.auth.client.oauth2.OAuthClientService oAuthService = this.oAuthService;
 
         if (oAuthService != null) {
-            this.networkConnector = new SmartThingsNetworkConnectorImpl(httpClientFactory, oAuthService);
+            this.networkConnector = new SmartThingsNetworkConnectorImpl(httpClientFactory);
             smartthingsApi = new SmartThingsApi(httpClientFactory, this, networkConnector, clientBuilder,
                     eventSourceFactory);
 

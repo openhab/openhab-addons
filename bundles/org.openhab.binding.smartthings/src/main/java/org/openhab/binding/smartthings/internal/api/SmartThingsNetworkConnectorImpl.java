@@ -27,12 +27,9 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.smartthings.internal.dto.ErrorObject;
 import org.openhab.binding.smartthings.internal.type.SmartThingsException;
-import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.io.net.http.HttpClientFactory;
-import org.osgi.service.component.annotations.Activate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,41 +48,17 @@ public class SmartThingsNetworkConnectorImpl implements SmartThingsNetworkConnec
 
     private final Gson gSon;
 
-    protected final HttpClientFactory httpClientFactory;
-
     protected HttpClient httpClient;
 
     private static int startedRequest = 0;
     private static int completedRequest = 0;
     private Lock lockObj = new ReentrantLock();
 
-    @Activate
-    public SmartThingsNetworkConnectorImpl(HttpClientFactory httpClientFactory, OAuthClientService oAuthClientService) {
-        this.httpClientFactory = httpClientFactory;
-
+    public SmartThingsNetworkConnectorImpl(HttpClientFactory httpClientFactory) {
         GsonBuilder builder = new GsonBuilder();
         gSon = builder.setPrettyPrinting().create();
 
-        SslContextFactory ctxFactory = new SslContextFactory.Client(true);
-        ctxFactory.setRenegotiationAllowed(false);
-        ctxFactory.setEnableCRLDP(false);
-        ctxFactory.setEnableOCSP(false);
-        ctxFactory.setTrustAll(true);
-        ctxFactory.setValidateCerts(false);
-        ctxFactory.setValidatePeerCerts(false);
-        ctxFactory.setEndpointIdentificationAlgorithm(null);
-
-        this.httpClient = new HttpClient(ctxFactory);
-        this.httpClient.setMaxConnectionsPerDestination(10);
-        this.httpClient.setMaxRequestsQueuedPerDestination(1000);
-        this.httpClient.setConnectTimeout(10000);
-        this.httpClient.setFollowRedirects(false);
-
-        try {
-            this.httpClient.start();
-        } catch (Exception e) {
-            logger.error("Failed to start http client: {}", e.getMessage());
-        }
+        this.httpClient = httpClientFactory.getCommonHttpClient();
     }
 
     @Override
@@ -155,11 +128,22 @@ public class SmartThingsNetworkConnectorImpl implements SmartThingsNetworkConnec
                 response = request.send();
                 logger.trace("Request completed with status {}", response.getStatus());
             }
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            throw new SmartThingsException(
-                    "network:Exception by executing request: " + request.getQuery() + " ; " + e.getLocalizedMessage());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw createNetworkException(request, e);
+        } catch (TimeoutException | ExecutionException e) {
+            throw createNetworkException(request, e);
         }
         return response;
+    }
+
+    private static SmartThingsException createNetworkException(Request request, Exception e) {
+        return new SmartThingsException("network: Exception while executing request " + describeRequest(request) + ": "
+                + SmartThingsException.getRootCauseMessage(e), e);
+    }
+
+    static String describeRequest(Request request) {
+        return request.getMethod() + " " + request.getURI();
     }
 
     public <T> @Nullable String doBasicRequest(Class<T> resultClass, String uri, String accessToken,
