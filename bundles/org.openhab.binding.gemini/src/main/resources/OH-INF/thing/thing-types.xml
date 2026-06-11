@@ -8,6 +8,10 @@
 		<label>Gemini Account</label>
 		<description>Integrates the Google Gemini API with openHAB.</description>
 
+		<channels>
+			<channel id="chat" typeId="chat"/>
+		</channels>
+
 		<config-description>
 			<parameter-group name="authentication">
 				<context>network-security</context>
@@ -70,30 +74,30 @@
 		<description>Send a prompt to a model and receive a response.</description>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<config-description>
-			<parameter name="model" type="text" required="true">
+			<parameter name="model" type="text">
 				<label>Model</label>
 				<description>The Gemini model to use.</description>
 				<default>gemini-2.5-flash</default>
 			</parameter>
-			<parameter name="temperature" type="decimal" required="true">
+			<parameter name="temperature" type="decimal">
 				<label>Temperature</label>
 				<description>Controls randomness. Higher values mean more random responses.</description>
 				<default>1.0</default>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="topP" type="decimal" required="true">
+			<parameter name="topP" type="decimal">
 				<label>Top-P</label>
 				<description>Controls the cumulative probability threshold for token selection.</description>
 				<default>1.0</default>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="maxOutputTokens" type="integer" required="true">
+			<parameter name="maxOutputTokens" type="integer">
 				<label>Max Output Tokens</label>
 				<description>The maximum number of tokens to generate in the response.</description>
 				<default>2048</default>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="systemMessage" type="text" required="true">
+			<parameter name="systemMessage" type="text">
 				<label>System Message</label>
 				<description>The system instruction provided to the model.</description>
 				<default>You are a helpful assistant.</default>

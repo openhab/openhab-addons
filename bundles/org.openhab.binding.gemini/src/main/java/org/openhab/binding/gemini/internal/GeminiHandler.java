@@ -77,13 +77,14 @@ public class GeminiHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (CHANNEL_CHAT.equals(channelUID.getId()) && command instanceof StringType stringCommand) {
+        Channel channel = getThing().getChannel(channelUID);
+        if (channel != null && CHANNEL_TYPE_UID_CHAT.equals(channel.getChannelTypeUID())
+                && command instanceof StringType stringCommand) {
             String lastPrompt = stringCommand.toFullString();
 
             GeminiConfiguration config = this.config;
             GeminiApiClient client = apiClient;
             if (client != null) {
-                Channel channel = getThing().getChannel(channelUID);
                 int timeout = config != null ? config.requestTimeout : DEFAULT_REQUEST_TIMEOUT;
                 String model = config != null ? config.model : DEFAULT_MODEL;
                 double temp = DEFAULT_TEMPERATURE;
@@ -91,36 +92,34 @@ public class GeminiHandler extends BaseThingHandler {
                 int maxTokens = DEFAULT_MAX_OUTPUT_TOKENS;
                 String systemMessage = DEFAULT_SYSTEM_MESSAGE;
 
-                if (channel != null) {
-                    GeminiChannelConfiguration channelConfig = channel.getConfiguration()
-                            .as(GeminiChannelConfiguration.class);
+                GeminiChannelConfiguration channelConfig = channel.getConfiguration()
+                        .as(GeminiChannelConfiguration.class);
 
-                    String channelModel = channelConfig.model;
-                    if (channelModel != null && !channelModel.isBlank()) {
-                        model = channelModel;
-                    } else {
-                        model = DEFAULT_MODEL;
-                    }
+                String channelModel = channelConfig.model;
+                if (channelModel != null && !channelModel.isBlank()) {
+                    model = channelModel;
+                } else {
+                    model = DEFAULT_MODEL;
+                }
 
-                    Double channelTemp = channelConfig.temperature;
-                    if (channelTemp != null) {
-                        temp = channelTemp;
-                    }
+                Double channelTemp = channelConfig.temperature;
+                if (channelTemp != null) {
+                    temp = channelTemp;
+                }
 
-                    Double channelTopP = channelConfig.topP;
-                    if (channelTopP != null) {
-                        topP = channelTopP;
-                    }
+                Double channelTopP = channelConfig.topP;
+                if (channelTopP != null) {
+                    topP = channelTopP;
+                }
 
-                    Integer channelMaxTokens = channelConfig.maxOutputTokens;
-                    if (channelMaxTokens != null) {
-                        maxTokens = channelMaxTokens;
-                    }
+                Integer channelMaxTokens = channelConfig.maxOutputTokens;
+                if (channelMaxTokens != null) {
+                    maxTokens = channelMaxTokens;
+                }
 
-                    String channelSystemMessage = channelConfig.systemMessage;
-                    if (channelSystemMessage != null && !channelSystemMessage.isBlank()) {
-                        systemMessage = channelSystemMessage;
-                    }
+                String channelSystemMessage = channelConfig.systemMessage;
+                if (channelSystemMessage != null && !channelSystemMessage.isBlank()) {
+                    systemMessage = channelSystemMessage;
                 }
 
                 try {

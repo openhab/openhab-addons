@@ -32,8 +32,8 @@ For Gemini 3.x models, Google recommends keeping both values at their default.
 
 ## Channels
 
-The `account` thing comes with no channels by default, but supports any number of channels of type `chat`.
-Channels have to be added manually to the thing, specifying the configuration for the channel.
+The `account` thing comes with a single `chat` channel of type `chat` channel by default.
+Additional channels can be added to the thing, allowing to specify different models and parameters for each channel.
 
 Channels of type `chat` take the following configuration parameters:
 
