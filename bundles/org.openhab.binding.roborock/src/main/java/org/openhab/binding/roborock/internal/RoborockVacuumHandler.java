@@ -226,19 +226,22 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             if (channelUID.getId().equals(CHANNEL_DP_COMMAND)) {
                 String jsonPayload = command.toString();
                 try {
-                    // Deserialize the incoming JSON string into a Map<String, Object>
-                    @SuppressWarnings("unchecked")
-                    Map<String, Object> dpsMap = gson.fromJson(jsonPayload, Map.class);
-
-                    if (dpsMap != null && !dpsMap.isEmpty()) {
-                        sendQ10DpCommand(dpsMap);
-                        logger.debug("Successfully forwarded DP command map to device: {}", jsonPayload);
-                    } else {
-                        logger.warn("Received empty or invalid DP payload: {}", jsonPayload);
+                    JsonElement parsed = JsonParser.parseString(jsonPayload);
+                    if (parsed.isJsonObject()) {
+                        Map<String, Object> dpsMap = new HashMap<>();
+                        for (Map.Entry<String, JsonElement> e : parsed.getAsJsonObject().entrySet()) {
+                            dpsMap.put(e.getKey(), e.getValue());
+                        }
+                        if (!dpsMap.isEmpty()) {
+                            sendQ10DpCommand(dpsMap);
+                            logger.debug("Successfully forwarded DP command map to device: {}", jsonPayload);
+                        } else {
+                            logger.warn("Received empty or invalid DP payload.");
+                        }
+                        logger.warn("Received non-object DP payload (expected JSON object): {}", jsonPayload);
                     }
                 } catch (JsonSyntaxException e) {
-                    logger.error("Failed to parse incoming DP payload '{}'. Invalid JSON syntax: {}", jsonPayload,
-                            e.getMessage());
+                    logger.warn("Failed to parse incoming DP payload.", e.getMessage());
                 }
                 return;
             }
@@ -1575,7 +1578,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             updateState(RobotCapabilities.WATERBOX_MODE.getChannel(), new DecimalType(dpsRoot.get("124").getAsInt()));
         }
 
-        // DP 125 — main brush remaining life in s
+        // DP 125 — main brush use time in s
         if (dpsRoot.has("125")) {
             int brushSecs = 3600 * dpsRoot.get("125").getAsInt();
             updateState(CHANNEL_CONSUMABLE_MAIN_TIME, new QuantityType<>(
@@ -1584,7 +1587,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                     new DecimalType(ConsumablesType.remainingPercent(brushSecs, ConsumablesType.MAIN_BRUSH)));
         }
 
-        // DP 126 — side brush remaining life in s
+        // DP 126 — side brush use time in s
         if (dpsRoot.has("126")) {
             int sideBrushSecs = 3600 * dpsRoot.get("126").getAsInt();
             updateState(CHANNEL_CONSUMABLE_SIDE_TIME, new QuantityType<>(
@@ -1593,9 +1596,9 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                     new DecimalType(ConsumablesType.remainingPercent(sideBrushSecs, ConsumablesType.SIDE_BRUSH)));
         }
 
-        // DP 127 — filter remaining life in s
+        // DP 127 — filter use time in s
         if (dpsRoot.has("127")) {
-            int filterSecs = 3600 * dpsRoot.get("126").getAsInt();
+            int filterSecs = 3600 * dpsRoot.get("127").getAsInt();
             updateState(CHANNEL_CONSUMABLE_FILTER_TIME,
                     new QuantityType<>(ConsumablesType.remainingHours(filterSecs, ConsumablesType.FILTER), Units.HOUR));
             updateState(CHANNEL_CONSUMABLE_FILTER_PERC,
@@ -1681,7 +1684,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
 
         // Sub-key 25 — quiet_is_open: Quiet Is Open (DND Mode)
         if (dp101.has("25")) {
-            updateState(CHANNEL_DND_ENABLED, OnOffType.from((dp101.get("25").getAsString())));
+            updateState(CHANNEL_DND_ENABLED, OnOffType.from(1 == dp101.get("25").getAsInt()));
         }
 
         // Sub-key 29 — total_clean_area: lifetime total clean area in m²
