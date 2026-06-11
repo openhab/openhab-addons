@@ -17,7 +17,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.Thing;
 
 /**
- * Resolves SmartThings device identifiers from Thing metadata.
+ * Resolves SmartThings device identifiers from Thing configuration.
  */
 @NonNullByDefault
 public final class SmartThingsDeviceIdResolver {
@@ -25,16 +25,6 @@ public final class SmartThingsDeviceIdResolver {
     }
 
     public static String getDeviceId(Thing thing) {
-        String configuredDeviceId = getConfiguredDeviceId(thing);
-        if (!configuredDeviceId.isBlank()) {
-            return configuredDeviceId;
-        }
-
-        String propertyDeviceId = thing.getProperties().get(SmartThingsBindingConstants.DEVICE_ID);
-        return propertyDeviceId != null && !propertyDeviceId.isBlank() ? propertyDeviceId : "";
-    }
-
-    public static String getConfiguredDeviceId(Thing thing) {
         Object configuredDeviceId = thing.getConfiguration().get(SmartThingsBindingConstants.DEVICE_ID);
         return configuredDeviceId instanceof String value && !value.isBlank() ? value : "";
     }

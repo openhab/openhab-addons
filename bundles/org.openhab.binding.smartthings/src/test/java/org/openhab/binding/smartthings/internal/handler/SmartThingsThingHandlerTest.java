@@ -44,18 +44,18 @@ import org.openhab.core.types.State;
 class SmartThingsThingHandlerTest {
 
     @Test
-    void resolveDeviceIdFallsBackToDiscoveredThingProperty() {
+    void resolveDeviceIdIgnoresThingProperty() {
         Thing thing = ThingBuilder
                 .create(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Washer"),
                         new ThingUID("smartthings:Washer:account:Washer"))
                 .withProperties(Map.of(SmartThingsBindingConstants.DEVICE_ID, "device-123")).build();
         SmartThingsThingHandler handler = new SmartThingsThingHandler(thing);
 
-        assertEquals("device-123", handler.resolveDeviceId());
+        assertEquals("", handler.resolveDeviceId());
     }
 
     @Test
-    void resolveDeviceIdPrefersThingConfiguration() {
+    void resolveDeviceIdUsesThingConfiguration() {
         Configuration config = new Configuration(Map.of(SmartThingsBindingConstants.DEVICE_ID, "configured-device"));
         Thing thing = ThingBuilder
                 .create(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Washer"),
@@ -86,7 +86,7 @@ class SmartThingsThingHandlerTest {
     }
 
     @Test
-    void syncDeviceIdMetadataRemovesDeviceIdThingProperty() {
+    void removeDeviceIdPropertyRemovesDeviceIdThingProperty() {
         Configuration config = new Configuration(Map.of(SmartThingsBindingConstants.DEVICE_ID, "configured-device"));
         Thing thing = ThingBuilder
                 .create(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Washer"),
@@ -95,25 +95,11 @@ class SmartThingsThingHandlerTest {
                 .withProperties(Map.of(SmartThingsBindingConstants.DEVICE_ID, "configured-device")).build();
         TestSmartThingsThingHandler handler = new TestSmartThingsThingHandler(thing);
 
-        handler.syncDeviceIdMetadata("configured-device");
+        handler.removeDeviceIdProperty();
 
         assertFalse(handler.lastUpdatedProperties.containsKey(SmartThingsBindingConstants.DEVICE_ID));
         assertEquals("configured-device",
                 handler.getThing().getConfiguration().get(SmartThingsBindingConstants.DEVICE_ID));
-    }
-
-    @Test
-    void syncDeviceIdMetadataMigratesLegacyDeviceIdThingPropertyToConfiguration() {
-        Thing thing = ThingBuilder
-                .create(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Washer"),
-                        new ThingUID("smartthings:Washer:account:Washer"))
-                .withProperties(Map.of(SmartThingsBindingConstants.DEVICE_ID, "property-device")).build();
-        TestSmartThingsThingHandler handler = new TestSmartThingsThingHandler(thing);
-
-        handler.syncDeviceIdMetadata("property-device");
-
-        assertFalse(handler.lastUpdatedProperties.containsKey(SmartThingsBindingConstants.DEVICE_ID));
-        assertEquals("property-device", handler.lastUpdatedConfiguration.get(SmartThingsBindingConstants.DEVICE_ID));
     }
 
     @Test
@@ -199,7 +185,6 @@ class SmartThingsThingHandlerTest {
         private @Nullable ChannelUID lastUpdatedChannel;
         private @Nullable State lastUpdatedState;
         private Map<String, String> lastUpdatedProperties = Map.of();
-        private Configuration lastUpdatedConfiguration = new Configuration();
 
         TestSmartThingsThingHandler(Thing thing) {
             super(thing);
@@ -213,14 +198,9 @@ class SmartThingsThingHandlerTest {
         }
 
         @Override
-        protected void updateProperties(Map<String, String> properties) {
-            lastUpdatedProperties = new HashMap<>(properties);
-        }
-
-        @Override
-        protected void updateConfiguration(@Nullable Configuration configuration) {
-            if (configuration != null) {
-                lastUpdatedConfiguration = new Configuration(configuration);
+        protected void updateProperties(@Nullable Map<String, String> properties) {
+            if (properties != null) {
+                lastUpdatedProperties = new HashMap<>(properties);
             }
         }
     }

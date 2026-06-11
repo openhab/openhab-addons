@@ -33,7 +33,6 @@ import org.openhab.binding.smartthings.internal.dto.SmartThingsStatusProperties;
 import org.openhab.binding.smartthings.internal.type.SmartThingsException;
 import org.openhab.binding.smartthings.internal.type.SmartThingsTypeRegistryImpl;
 import org.openhab.binding.smartthings.internal.type.UidUtils;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -309,14 +308,14 @@ public class SmartThingsThingHandler extends BaseThingHandler {
             return;
         }
 
-        deviceId = resolveDeviceId();
+        removeDeviceIdProperty();
 
+        deviceId = resolveDeviceId();
         if (deviceId.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Device ID is not configured");
             return;
         }
 
-        syncDeviceIdMetadata(deviceId);
         refreshDevice();
 
         pollingJob = scheduler.scheduleWithFixedDelay(this::pollingCode, 0, 1, TimeUnit.SECONDS);
@@ -333,13 +332,7 @@ public class SmartThingsThingHandler extends BaseThingHandler {
         return deviceType != null && !deviceType.isBlank() ? deviceType : thing.getThingTypeUID().getId();
     }
 
-    void syncDeviceIdMetadata(String resolvedDeviceId) {
-        if (SmartThingsDeviceIdResolver.getConfiguredDeviceId(thing).isBlank()) {
-            Configuration configuration = editConfiguration();
-            configuration.put(SmartThingsBindingConstants.DEVICE_ID, resolvedDeviceId);
-            updateConfiguration(configuration);
-        }
-
+    void removeDeviceIdProperty() {
         Map<String, String> properties = new HashMap<>(editProperties());
         if (properties.remove(SmartThingsBindingConstants.DEVICE_ID) != null) {
             updateProperties(properties);

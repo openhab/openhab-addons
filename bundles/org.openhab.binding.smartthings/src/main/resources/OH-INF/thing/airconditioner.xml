@@ -13,8 +13,8 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
-		<label>Samsung A/C</label>
-		<description>A Samsung A/C</description>
+		<label>Samsung Windfree A/C</label>
+		<description>A Samsung Windfree Air Conditioner</description>
 
 		<channel-groups>
 			<channel-group typeId="main-group-type-ac" id="main"/>
