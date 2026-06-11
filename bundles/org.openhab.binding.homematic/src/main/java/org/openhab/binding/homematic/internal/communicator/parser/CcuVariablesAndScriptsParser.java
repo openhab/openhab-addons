@@ -57,7 +57,8 @@ public class CcuVariablesAndScriptsParser extends CommonRpcParser<TclScriptDataL
                         dp.setMaxValue(toDouble(entry.maxValue));
                     }
                     dp.setUnit(entry.unit);
-                    String[] result = entry.options.isEmpty() ? null : entry.options.split(";");
+                    String[] result = entry.options == null || entry.options.isEmpty() ? null
+                            : entry.options.split(";");
                     dp.setOptions(result);
 
                     if (result != null) {

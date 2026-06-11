@@ -30,6 +30,7 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.homematic.internal.HomematicBindingConstants;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
 import org.openhab.binding.homematic.internal.communicator.message.RpcRequest;
 import org.openhab.binding.homematic.internal.communicator.parser.GetAllScriptsParser;
@@ -322,7 +323,7 @@ public abstract class RpcClient<T> {
             gwId = HmGatewayInfo.ID_DEFAULT;
             gwFirmware = biParser.getFirmware();
         }
-        HmGatewayInfo gatewayInfo = new HmGatewayInfo(gwAddress, gwId, gwType, gwFirmware);
+        HmGatewayInfo gatewayInfo = new HmGatewayInfo(gwId, gwType, gwFirmware, gwAddress);
 
         if (gatewayInfo.isCCU() || config.hasRfPort()) {
             gatewayInfo.setRfInterface(hasInterface(HmInterface.RF, id));
