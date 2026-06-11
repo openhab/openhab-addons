@@ -68,51 +68,23 @@ public class GeminiActions implements ThingActions {
         return handler;
     }
 
+    public @Nullable String sendMessage(String prompt) {
+        return sendMessage(prompt, null);
+    }
+
+    public @Nullable String sendMessage(String prompt, @Nullable String model) {
+        return sendMessage(prompt, model, null, null, null, null, null);
+    }
+
     @RuleAction(label = "@text/action.sendMessage.label", description = "@text/action.sendMessage.description")
     public @Nullable @ActionOutput(label = "@text/action.sendMessage.result.label", description = "@text/action.sendMessage.result.description", type = "java.lang.String") String sendMessage(
             @ActionInput(name = "prompt", label = "@text/action.sendMessage.prompt.label", description = "@text/action.sendMessage.prompt.description", type = "java.lang.String", required = true) String prompt,
-            @ActionInput(name = "model", label = "@text/action.sendMessage.model.label", description = "@text/action.sendMessage.model.description", type = "java.lang.String", defaultValue = DEFAULT_MODEL) @Nullable String model) {
-        GeminiHandler h = handler;
-        if (h == null) {
-            logger.warn("Cannot send message: Gemini handler is not initialized.");
-            return null;
-        }
-        GeminiApiClient client = h.getApiClient();
-        if (client == null) {
-            logger.warn("Cannot send message: Gemini API client is not initialized.");
-            return null;
-        }
-
-        try {
-            GeminiResponse response = client.sendPrompt(Objects.requireNonNullElse(model, DEFAULT_MODEL),
-                    Objects.requireNonNull(prompt, "prompt must not be null"), DEFAULT_SYSTEM_MESSAGE,
-                    DEFAULT_TEMPERATURE, DEFAULT_TOP_P, DEFAULT_MAX_OUTPUT_TOKENS, null);
-            List<GeminiCandidate> candidates = response.candidates();
-            if (candidates != null && !candidates.isEmpty()) {
-                GeminiCandidate candidate = candidates.getFirst();
-                GeminiContent content = candidate.content();
-                if (content != null) {
-                    List<GeminiPart> parts = content.parts();
-                    if (parts != null && !parts.isEmpty()) {
-                        return parts.getFirst().text();
-                    }
-                }
-            }
-        } catch (GeminiApiException e) {
-            logger.debug("Request to Gemini via action failed: {}", e.getMessage(), e);
-        }
-        return null;
-    }
-
-    @RuleAction(label = "@text/action.sendMessageExtended.label", description = "@text/action.sendMessageExtended.description")
-    public @Nullable @ActionOutput(label = "@text/action.sendMessageExtended.result.label", description = "@text/action.sendMessageExtended.result.description", type = "java.lang.String") String sendMessageExtended(
-            @ActionInput(name = "prompt", label = "@text/action.sendMessageExtended.prompt.label", description = "@text/action.sendMessageExtended.prompt.description", type = "java.lang.String", required = true) String prompt,
-            @ActionInput(name = "model", label = "@text/action.sendMessageExtended.model.label", description = "@text/action.sendMessageExtended.model.description", type = "java.lang.String", defaultValue = DEFAULT_MODEL) @Nullable String model,
-            @ActionInput(name = "systemMessage", label = "@text/action.sendMessageExtended.systemMessage.label", description = "@text/action.sendMessageExtended.systemMessage.description", type = "java.lang.String", defaultValue = DEFAULT_SYSTEM_MESSAGE) @Nullable String systemMessage,
-            @ActionInput(name = "temperature", label = "@text/action.sendMessageExtended.temperature.label", description = "@text/action.sendMessageExtended.temperature.description", type = "java.lang.Double", defaultValue = DEFAULT_TEMPERATURE_STR) @Nullable Double temperature,
-            @ActionInput(name = "topP", label = "@text/action.sendMessageExtended.topP.label", description = "@text/action.sendMessageExtended.topP.description", type = "java.lang.Double", defaultValue = DEFAULT_TOP_P_STR) @Nullable Double topP,
-            @ActionInput(name = "maxOutputTokens", label = "@text/action.sendMessageExtended.maxOutputTokens.label", description = "@text/action.sendMessageExtended.maxOutputTokens.description", type = "java.lang.Integer", defaultValue = MAX_OUTPUT_TOKENS_STR) @Nullable Integer maxOutputTokens,
-            @ActionInput(name = "requestTimeout", label = "@text/action.sendMessageExtended.requestTimeout.label", description = "@text/action.sendMessageExtended.requestTimeout.description", type = "java.lang.Integer") @Nullable Integer requestTimeout) {
+            @ActionInput(name = "model", label = "@text/action.sendMessage.model.label", description = "@text/action.sendMessage.model.description", type = "java.lang.String", defaultValue = DEFAULT_MODEL) @Nullable String model,
+            @ActionInput(name = "systemMessage", label = "@text/action.sendMessage.systemMessage.label", description = "@text/action.sendMessage.systemMessage.description", type = "java.lang.String", defaultValue = DEFAULT_SYSTEM_MESSAGE) @Nullable String systemMessage,
+            @ActionInput(name = "temperature", label = "@text/action.sendMessage.temperature.label", description = "@text/action.sendMessage.temperature.description", type = "java.lang.Double", defaultValue = DEFAULT_TEMPERATURE_STR) @Nullable Double temperature,
+            @ActionInput(name = "topP", label = "@text/action.sendMessage.topP.label", description = "@text/action.sendMessage.topP.description", type = "java.lang.Double", defaultValue = DEFAULT_TOP_P_STR) @Nullable Double topP,
+            @ActionInput(name = "maxOutputTokens", label = "@text/action.sendMessage.maxOutputTokens.label", description = "@text/action.sendMessage.maxOutputTokens.description", type = "java.lang.Integer", defaultValue = MAX_OUTPUT_TOKENS_STR) @Nullable Integer maxOutputTokens,
+            @ActionInput(name = "requestTimeout", label = "@text/action.sendMessage.requestTimeout.label", description = "@text/action.sendMessage.requestTimeout.description", type = "java.lang.Integer") @Nullable Integer requestTimeout) {
         GeminiHandler h = handler;
         if (h == null) {
             logger.warn("Cannot send message: Gemini handler is not initialized.");
@@ -148,6 +120,13 @@ public class GeminiActions implements ThingActions {
         return null;
     }
 
+    public static @Nullable String sendMessage(ThingActions actions, @Nullable String prompt) {
+        if (!(actions instanceof GeminiActions geminiActions)) {
+            throw new IllegalArgumentException("The 'actions' argument is not an instance of GeminiActions");
+        }
+        return geminiActions.sendMessage(Objects.requireNonNull(prompt, "prompt must not be null"));
+    }
+
     public static @Nullable String sendMessage(ThingActions actions, @Nullable String prompt, @Nullable String model) {
         if (!(actions instanceof GeminiActions geminiActions)) {
             throw new IllegalArgumentException("The 'actions' argument is not an instance of GeminiActions");
@@ -155,14 +134,14 @@ public class GeminiActions implements ThingActions {
         return geminiActions.sendMessage(Objects.requireNonNull(prompt, "prompt must not be null"), model);
     }
 
-    public static @Nullable String sendMessageExtended(ThingActions actions, @Nullable String prompt,
-            @Nullable String model, @Nullable String systemMessage, double temperature, double topP,
-            int maxOutputTokens, @Nullable Integer requestTimeout) {
+    public static @Nullable String sendMessage(ThingActions actions, @Nullable String prompt, @Nullable String model,
+            @Nullable String systemMessage, double temperature, double topP, int maxOutputTokens,
+            @Nullable Integer requestTimeout) {
         if (!(actions instanceof GeminiActions geminiActions)) {
             throw new IllegalArgumentException("The 'actions' argument is not an instance of GeminiActions");
         }
 
-        return geminiActions.sendMessageExtended(Objects.requireNonNull(prompt, "prompt must not be null"), model,
+        return geminiActions.sendMessage(Objects.requireNonNull(prompt, "prompt must not be null"), model,
                 systemMessage, temperature, topP, maxOutputTokens, requestTimeout);
     }
 }
