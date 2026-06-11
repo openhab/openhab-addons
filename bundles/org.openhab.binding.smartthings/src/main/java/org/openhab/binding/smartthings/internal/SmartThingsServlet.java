@@ -83,6 +83,7 @@ public class SmartThingsServlet extends HttpServlet
     private static final String PATH = "/smartthings";
 
     private static final String CONTENT_TYPE = "text/html;charset=UTF-8";
+    private static final String INIT_PARAM_SERVLET_NAME = "servlet-name";
     private final Logger logger = LoggerFactory.getLogger(SmartThingsServlet.class);
     private final SmartThingsAuthService smartThingsAuthService;
     private final SmartThingsLocalCallbackListener smartThingsLocalCallbackListener;
@@ -147,7 +148,7 @@ public class SmartThingsServlet extends HttpServlet
 
     public void activate() {
         try {
-            Dictionary<String, String> servletParams = new Hashtable<String, String>();
+            Dictionary<String, String> servletParams = createServletParams(servletPath);
             logger.trace("registerServlet: {}", servletPath);
             httpService.registerServlet(servletPath, this, servletParams, httpService.createDefaultHttpContext());
             httpService.registerResources(servletPath + SmartThingsBindingConstants.SMARTTHINGS_IMG_ALIAS, "img", null);
@@ -473,6 +474,17 @@ public class SmartThingsServlet extends HttpServlet
 
     public static String getServletPath(String bridgeId) {
         return PATH + "/" + bridgeId;
+    }
+
+    static Dictionary<String, String> createServletParams(String servletPath) {
+        Dictionary<String, String> servletParams = new Hashtable<>();
+        servletParams.put(INIT_PARAM_SERVLET_NAME, getServletName(servletPath));
+        return servletParams;
+    }
+
+    private static String getServletName(String servletPath) {
+        String normalizedPath = servletPath.startsWith("/") ? servletPath.substring(1) : servletPath;
+        return SmartThingsServlet.class.getName() + "." + normalizedPath.replace('/', '.');
     }
 
     static boolean isOAuthCallbackPath(String requestPath, String servletPath) {

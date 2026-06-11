@@ -14,7 +14,10 @@ package org.openhab.binding.smartthings.internal;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.Dictionary;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -42,5 +45,17 @@ class SmartThingsServletTest {
     @Test
     void accountServletPathUsesBridgeId() {
         assertEquals("/smartthings/account", SmartThingsServlet.getServletPath("account"));
+    }
+
+    @Test
+    void accountServletRegistrationUsesUniqueServletName() {
+        Dictionary<String, String> firstParams = SmartThingsServlet.createServletParams("/smartthings/first");
+        Dictionary<String, String> secondParams = SmartThingsServlet.createServletParams("/smartthings/second");
+
+        assertEquals("org.openhab.binding.smartthings.internal.SmartThingsServlet.smartthings.first",
+                firstParams.get("servlet-name"));
+        assertEquals("org.openhab.binding.smartthings.internal.SmartThingsServlet.smartthings.second",
+                secondParams.get("servlet-name"));
+        assertNotEquals(firstParams.get("servlet-name"), secondParams.get("servlet-name"));
     }
 }
