@@ -156,18 +156,16 @@ public class GeminiHLIService implements ThingHandlerService, HumanLanguageInter
         Conversation conversation = interpreterContext.conversation();
         List<LLMTool> tools = interpreterContext.tools();
 
-        // TODO: Use systemMessage from InterpretationContext once available
-        String systemMessage = DEFAULT_SYSTEM_MESSAGE;
+        String systemMessage = interpreterContext.systemPrompt();
+        if (systemMessage == null || systemMessage.isBlank()) {
+            throw new InterpretationException("System prompt is missing or empty");
+        }
         if (!tools.isEmpty()) {
             String toolGuidance = "You have tools available to interact with the environment. Use them when appropriate. "
                     + "However, if the user's request cannot be fulfilled by any tool, or if they ask a general question, "
                     + "answer them directly using your general knowledge. Do not try to force a tool call or state that "
                     + "you can only perform actions supported by the tools.";
-            if (systemMessage.isBlank()) {
-                systemMessage = toolGuidance;
-            } else {
-                systemMessage = systemMessage.trim() + "\n\n" + toolGuidance;
-            }
+            systemMessage = systemMessage.trim() + "\n\n" + toolGuidance;
         }
 
         while (true) {
