@@ -15,7 +15,7 @@
 
   <properties>
     <bnd.importpackage>org.eclipse.jetty.ee10.websocket.server</bnd.importpackage>
-    <jetty.version>12.1.9</jetty.version>
+    <jetty.version>12.1.10</jetty.version>
   </properties>
 
   <dependencies>
