@@ -13,6 +13,7 @@
 package org.openhab.binding.smartthings.internal;
 
 import static org.openhab.binding.smartthings.internal.SmartThingsBindingConstants.THING_TYPE_ACCOUNT;
+import static org.openhab.binding.smartthings.internal.SmartThingsBindingConstants.USE_CLOUD_WEBHOOK;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,6 +31,7 @@ import org.openhab.binding.smartthings.internal.handler.SmartThingsThingHandler;
 import org.openhab.binding.smartthings.internal.type.SmartThingsThingTypeProvider;
 import org.openhab.binding.smartthings.internal.type.SmartThingsTypeRegistry;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.io.rest.WebhookService;
@@ -80,6 +82,20 @@ public class SmartThingsHandlerFactory extends BaseThingHandlerFactory implement
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SmartThingsBindingConstants.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)
                 || thingTypeProvider.getInternalThingType(thingTypeUID) != null;
+    }
+
+    @Override
+    public @Nullable Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration,
+            @Nullable ThingUID thingUID, @Nullable ThingUID bridgeUID) {
+        applyAccountThingCreationDefaults(thingTypeUID, configuration);
+        return super.createThing(thingTypeUID, configuration, thingUID, bridgeUID);
+    }
+
+    void applyAccountThingCreationDefaults(ThingTypeUID thingTypeUID, Configuration configuration) {
+        if (THING_TYPE_ACCOUNT.equals(thingTypeUID) && webHookService != null
+                && !configuration.containsKey(USE_CLOUD_WEBHOOK)) {
+            configuration.put(USE_CLOUD_WEBHOOK, true);
+        }
     }
 
     @Activate
