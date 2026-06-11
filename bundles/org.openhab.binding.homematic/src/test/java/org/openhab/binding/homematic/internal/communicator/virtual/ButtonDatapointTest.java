@@ -14,9 +14,13 @@ package org.openhab.binding.homematic.internal.communicator.virtual;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
 
 import java.io.IOException;
+import java.util.Objects;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.homematic.internal.misc.HomematicClientException;
@@ -37,22 +41,23 @@ import org.openhab.core.thing.CommonTriggerEvents;
  * @author Michael Reitler - Initial Contribution
  *
  */
+@NonNullByDefault
 public class ButtonDatapointTest extends JavaTest {
 
     private static final int DISABLE_DATAPOINT_DELAY = 50;
 
-    private MockEventReceiver mockEventReceiver;
+    private MockEventReceiver mockEventReceiver = new MockEventReceiver();
     private final ButtonVirtualDatapointHandler bvdpHandler = new ButtonVirtualDatapointHandler();
 
     @BeforeEach
-    public void setup() throws IOException {
+    public void setup() {
         this.mockEventReceiver = new MockEventReceiver();
     }
 
     @Test
     public void testShortPress() throws IOException, HomematicClientException {
         HmDatapoint shortPressDp = createPressDatapoint("PRESS_SHORT", Boolean.TRUE);
-        HmDatapoint buttonVirtualDatapoint = getButtonVirtualDatapoint(shortPressDp);
+        HmDatapoint buttonVirtualDatapoint = Objects.requireNonNull(getButtonVirtualDatapoint(shortPressDp));
 
         mockEventReceiver.eventReceived(shortPressDp);
 
@@ -62,7 +67,7 @@ public class ButtonDatapointTest extends JavaTest {
     @Test
     public void testLongPressHm() throws IOException, HomematicClientException {
         HmDatapoint longPressDp = createPressDatapoint("PRESS_LONG", Boolean.TRUE);
-        HmDatapoint buttonVirtualDatapoint = getButtonVirtualDatapoint(longPressDp);
+        HmDatapoint buttonVirtualDatapoint = Objects.requireNonNull(getButtonVirtualDatapoint(longPressDp));
 
         mockEventReceiver.eventReceived(longPressDp);
         assertThat(buttonVirtualDatapoint.getValue(), is(CommonTriggerEvents.LONG_PRESSED));
@@ -91,7 +96,7 @@ public class ButtonDatapointTest extends JavaTest {
     @Test
     public void testLongPressHmIp() throws IOException, HomematicClientException {
         HmDatapoint longPressDp = createPressDatapoint("PRESS_LONG_START", Boolean.TRUE);
-        HmDatapoint buttonVirtualDatapoint = getButtonVirtualDatapoint(longPressDp);
+        HmDatapoint buttonVirtualDatapoint = Objects.requireNonNull(getButtonVirtualDatapoint(longPressDp));
 
         mockEventReceiver.eventReceived(longPressDp);
         assertThat(buttonVirtualDatapoint.getValue(), is(CommonTriggerEvents.LONG_PRESSED));
@@ -115,12 +120,12 @@ public class ButtonDatapointTest extends JavaTest {
     @Test
     public void testUnsupportedEvents() throws IOException, HomematicClientException {
         HmDatapoint contPressDp = createPressDatapoint("PRESS_CONT", Boolean.TRUE);
-        HmDatapoint contButtonVirtualDatapoint = getButtonVirtualDatapoint(contPressDp);
+        HmDatapoint contButtonVirtualDatapoint = Objects.requireNonNull(getButtonVirtualDatapoint(contPressDp));
 
         mockEventReceiver.eventReceived(contPressDp);
 
         HmDatapoint releaseDp = createPressDatapoint("PRESS_LONG_RELEASE", Boolean.TRUE);
-        HmDatapoint releaseButtonVirtualDatapoint = getButtonVirtualDatapoint(releaseDp);
+        HmDatapoint releaseButtonVirtualDatapoint = Objects.requireNonNull(getButtonVirtualDatapoint(releaseDp));
 
         mockEventReceiver.eventReceived(releaseDp);
 
@@ -137,9 +142,9 @@ public class ButtonDatapointTest extends JavaTest {
 
     private HmDatapoint createPressDatapoint(String channelName, Object value) {
         HmDatapoint pressDp = new HmDatapoint(channelName, "", HmValueType.ACTION, value, true, HmParamsetType.VALUES);
-        HmChannel hmChannel = new HmChannel(channelName, 1);
         HmDevice device = new HmDevice("ABC12345", HmInterface.RF, "HM-MOCK", "mockid", "mockid", "mockfw");
-        hmChannel.setDevice(device);
+        HmChannel hmChannel = new HmChannel(channelName, 1, device);
+
         device.addChannel(hmChannel);
         hmChannel.addDatapoint(pressDp);
         pressDp.setChannel(hmChannel);
@@ -157,7 +162,7 @@ public class ButtonDatapointTest extends JavaTest {
         return pressDp;
     }
 
-    private HmDatapoint getButtonVirtualDatapoint(HmDatapoint originalDatapoint) {
+    private @Nullable HmDatapoint getButtonVirtualDatapoint(HmDatapoint originalDatapoint) {
         return originalDatapoint.getChannel().getDatapoints().stream()
                 .filter(dp -> HomematicConstants.VIRTUAL_DATAPOINT_NAME_BUTTON.equals(dp.getName())).findFirst()
                 .orElse(null);
@@ -170,7 +175,8 @@ public class ButtonDatapointTest extends JavaTest {
 
         public void eventReceived(HmDatapoint dp) throws IOException, HomematicClientException {
             if (bvdpHandler.canHandleEvent(dp)) {
-                bvdpHandler.handleEvent(null, dp);
+                VirtualGateway gateway = mock(VirtualGateway.class);
+                bvdpHandler.handleEvent(gateway, dp);
             }
             if (dp.isPressDatapoint() && MiscUtils.isTrueValue(dp.getValue())) {
                 disableDatapoint(dp);

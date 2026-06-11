@@ -17,7 +17,7 @@ import java.util.Collection;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.config.discovery.DiscoveryListener;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -32,6 +32,7 @@ import org.openhab.core.thing.ThingUID;
  * @author Florian Stolte - Initial Contribution
  *
  */
+@NonNullByDefault
 public class SimpleDiscoveryListener implements DiscoveryListener {
 
     public Queue<DiscoveryResult> discoveredResults = new ConcurrentLinkedQueue<>();
@@ -46,8 +47,8 @@ public class SimpleDiscoveryListener implements DiscoveryListener {
     }
 
     @Override
-    public @Nullable Collection<@NonNull ThingUID> removeOlderResults(DiscoveryService source, Instant timestamp,
-            @Nullable Collection<@NonNull ThingTypeUID> thingTypeUIDs, @Nullable ThingUID bridgeUID) {
+    public @Nullable Collection<ThingUID> removeOlderResults(DiscoveryService source, Instant timestamp,
+            @Nullable Collection<ThingTypeUID> thingTypeUIDs, @Nullable ThingUID bridgeUID) {
         return null;
     }
 }

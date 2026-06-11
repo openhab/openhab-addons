@@ -13,7 +13,9 @@
 package org.openhab.binding.homematic.internal.converter.type;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homematic.internal.converter.ConverterException;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.core.library.types.DecimalType;
@@ -24,6 +26,7 @@ import org.openhab.core.types.Type;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class DecimalTypeConverter extends AbstractTypeConverter<DecimalType> {
     @Override
     protected boolean toBindingValidation(HmDatapoint dp, Class<? extends Type> typeClass) {
@@ -40,12 +43,12 @@ public class DecimalTypeConverter extends AbstractTypeConverter<DecimalType> {
 
     @Override
     protected boolean fromBindingValidation(HmDatapoint dp) {
-        return dp.isNumberType() && dp.getValue() instanceof Number;
+        return dp.getNumericValue() != null;
     }
 
     @Override
     protected DecimalType fromBinding(HmDatapoint dp) throws ConverterException {
-        Number number = ((Number) dp.getValue()).doubleValue();
+        Number number = Objects.requireNonNull(dp.getNumericValue()).doubleValue();
         if (dp.isIntegerType()) {
             return new DecimalType(new BigDecimal(number.intValue()));
         }

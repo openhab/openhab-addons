@@ -15,8 +15,11 @@ package org.openhab.binding.homematic.internal.communicator.parser;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homematic.internal.model.HmDevice;
 import org.openhab.binding.homematic.internal.model.TclScriptDataEntry;
 import org.openhab.binding.homematic.internal.model.TclScriptDataList;
@@ -26,7 +29,8 @@ import org.openhab.binding.homematic.internal.model.TclScriptDataList;
  *
  * @author Gerhard Riegler - Initial contribution
  */
-public class CcuLoadDeviceNamesParser extends CommonRpcParser<TclScriptDataList, Void> {
+@NonNullByDefault
+public class CcuLoadDeviceNamesParser extends CommonRpcParser<TclScriptDataList, @Nullable Void> {
     private Collection<HmDevice> devices;
 
     public CcuLoadDeviceNamesParser(Collection<HmDevice> devices) {
@@ -34,14 +38,15 @@ public class CcuLoadDeviceNamesParser extends CommonRpcParser<TclScriptDataList,
     }
 
     @Override
-    public Void parse(TclScriptDataList resultList) throws IOException {
-        if (resultList.getEntries() != null) {
+    public @Nullable Void parse(TclScriptDataList resultList) throws IOException {
+        List<TclScriptDataEntry> entries = resultList.getEntries();
+        if (entries != null) {
             Map<String, HmDevice> devicesByAddress = new HashMap<>();
             for (HmDevice device : devices) {
                 devicesByAddress.put(device.getAddress(), device);
             }
 
-            for (TclScriptDataEntry entry : resultList.getEntries()) {
+            for (TclScriptDataEntry entry : entries) {
                 HmDevice device = devicesByAddress.get(getSanitizedAddress(entry.name));
                 if (device != null) {
                     device.setName(entry.value);

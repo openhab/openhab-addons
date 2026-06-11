@@ -14,6 +14,8 @@ package org.openhab.binding.homematic.internal.communicator.virtual;
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homematic.internal.misc.HomematicClientException;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
@@ -26,6 +28,7 @@ import org.openhab.binding.homematic.internal.model.HmDevice;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public interface VirtualDatapointHandler {
 
     /**
@@ -41,7 +44,7 @@ public interface VirtualDatapointHandler {
     /**
      * Returns true, if the virtual datapoint can handle a command for the given datapoint.
      */
-    boolean canHandleCommand(HmDatapoint dp, Object value);
+    boolean canHandleCommand(HmDatapoint dp, @Nullable Object value);
 
     /**
      * Handles the special functionality for the given virtual datapoint.
@@ -62,5 +65,6 @@ public interface VirtualDatapointHandler {
     /**
      * Returns the virtual datapoint in the given channel.
      */
+    @Nullable
     HmDatapoint getVirtualDatapoint(HmChannel channel);
 }

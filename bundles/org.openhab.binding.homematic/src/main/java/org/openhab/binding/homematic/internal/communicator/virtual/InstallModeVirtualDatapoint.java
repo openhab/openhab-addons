@@ -16,6 +16,8 @@ import static org.openhab.binding.homematic.internal.misc.HomematicConstants.*;
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homematic.internal.misc.HomematicClientException;
 import org.openhab.binding.homematic.internal.misc.MiscUtils;
 import org.openhab.binding.homematic.internal.model.HmChannel;
@@ -31,7 +33,10 @@ import org.openhab.binding.homematic.internal.model.HmValueType;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class InstallModeVirtualDatapoint extends AbstractVirtualDatapointHandler {
+    private static final int DEFAULT_INSTALL_MODE_DURATION = 60;
+
     @Override
     public String getName() {
         return VIRTUAL_DATAPOINT_NAME_INSTALL_MODE;
@@ -45,7 +50,7 @@ public class InstallModeVirtualDatapoint extends AbstractVirtualDatapointHandler
     }
 
     @Override
-    public boolean canHandleCommand(HmDatapoint dp, Object value) {
+    public boolean canHandleCommand(HmDatapoint dp, @Nullable Object value) {
         return getName().equals(dp.getName());
     }
 
@@ -68,7 +73,7 @@ public class InstallModeVirtualDatapoint extends AbstractVirtualDatapointHandler
     private Integer getDuration(HmChannel channel) {
         HmDatapoint dpDuration = channel
                 .getDatapoint(HmDatapointInfo.createValuesInfo(channel, VIRTUAL_DATAPOINT_NAME_INSTALL_MODE_DURATION));
-        return dpDuration == null || dpDuration.getValue() == null || dpDuration.getType() != HmValueType.INTEGER ? 60
-                : ((Number) dpDuration.getValue()).intValue();
+        Number value = dpDuration != null ? dpDuration.getNumericValue() : null;
+        return value != null ? value.intValue() : DEFAULT_INSTALL_MODE_DURATION;
     }
 }

@@ -17,6 +17,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
 import org.openhab.binding.homematic.internal.communicator.client.RpcClient;
 import org.openhab.binding.homematic.internal.communicator.message.RpcRequest;
@@ -24,12 +26,13 @@ import org.openhab.binding.homematic.internal.communicator.message.RpcRequest;
 /**
  * @author Florian Stolte - Initial contribution
  */
+@NonNullByDefault
 public class RpcClientMockImpl extends RpcClient<String> {
 
     public static final String GET_PARAMSET_DESCRIPTION_NAME = "getParamsetDescription";
     public static final String GET_PARAMSET_NAME = "getParamset";
 
-    public Map<String, Integer> numberOfCalls = new HashMap<>();
+    public Map<@Nullable String, Integer> numberOfCalls = new HashMap<>();
 
     public RpcClientMockImpl() throws IOException {
         this(new HomematicConfig());
@@ -50,7 +53,7 @@ public class RpcClientMockImpl extends RpcClient<String> {
         return mockResponse();
     }
 
-    private void increaseNumberOfCalls(String methodName) {
+    private void increaseNumberOfCalls(@Nullable String methodName) {
         Integer currentNumber = numberOfCalls.get(methodName);
         if (currentNumber == null) {
             numberOfCalls.put(methodName, 1);
@@ -75,11 +78,11 @@ public class RpcClientMockImpl extends RpcClient<String> {
 
             @Override
             public String createMessage() {
-                return null;
+                return "MockMessage";
             }
 
             @Override
-            public String getMethodName() {
+            public @Nullable String getMethodName() {
                 return methodName;
             }
         };
@@ -91,6 +94,6 @@ public class RpcClientMockImpl extends RpcClient<String> {
 
     @Override
     protected String getRpcCallbackUrl() {
-        return null;
+        return "mock://callback";
     }
 }
