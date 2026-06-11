@@ -615,8 +615,7 @@ public class SmartThingsServlet extends HttpServlet
             }
 
             Optional<Thing> theThingOpt = things.stream()
-                    .filter(x -> deviceId.equals(x.getProperties().get(SmartThingsBindingConstants.DEVICE_ID)))
-                    .findFirst();
+                    .filter(thing -> SmartThingsDeviceIdResolver.matches(thing, deviceId)).findFirst();
             if (theThingOpt.isPresent()) {
                 logger.info("EVENT: {} {} {} {} {}", deviceId, componentId, capa, attr, value);
                 Thing theThing = theThingOpt.get();

@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smartthings.internal.SmartThingsBindingConstants;
+import org.openhab.binding.smartthings.internal.SmartThingsDeviceIdResolver;
 import org.openhab.binding.smartthings.internal.api.SmartThingsApi;
 import org.openhab.binding.smartthings.internal.converter.SmartThingsConverter;
 import org.openhab.binding.smartthings.internal.converter.SmartThingsConverterFactory;
@@ -32,6 +33,7 @@ import org.openhab.binding.smartthings.internal.dto.SmartThingsStatusProperties;
 import org.openhab.binding.smartthings.internal.type.SmartThingsException;
 import org.openhab.binding.smartthings.internal.type.SmartThingsTypeRegistryImpl;
 import org.openhab.binding.smartthings.internal.type.UidUtils;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -262,6 +264,7 @@ public class SmartThingsThingHandler extends BaseThingHandler {
 
     public void refreshDeviceProps(SmartThingsStatusCapabilities capa, String componentKey, String capaKey) {
         Map<String, String> propMaps = new HashMap<>(editProperties());
+        propMaps.remove(SmartThingsBindingConstants.DEVICE_ID);
         for (String propertyKey : capa.keySet()) {
             SmartThingsStatusProperties props = capa.get(propertyKey);
 
@@ -313,7 +316,7 @@ public class SmartThingsThingHandler extends BaseThingHandler {
             return;
         }
 
-        updateDeviceIdProperty(deviceId);
+        syncDeviceIdMetadata(deviceId);
         refreshDevice();
 
         pollingJob = scheduler.scheduleWithFixedDelay(this::pollingCode, 0, 1, TimeUnit.SECONDS);
@@ -322,17 +325,7 @@ public class SmartThingsThingHandler extends BaseThingHandler {
     }
 
     String resolveDeviceId() {
-        Object configuredDeviceId = getConfig().get(SmartThingsBindingConstants.DEVICE_ID);
-        if (configuredDeviceId instanceof String value && !value.isBlank()) {
-            return value;
-        }
-
-        String propertyDeviceId = thing.getProperties().get(SmartThingsBindingConstants.DEVICE_ID);
-        if (propertyDeviceId != null && !propertyDeviceId.isBlank()) {
-            return propertyDeviceId;
-        }
-
-        return "";
+        return SmartThingsDeviceIdResolver.getDeviceId(thing);
     }
 
     public String getSmartThingsDeviceType() {
@@ -340,10 +333,17 @@ public class SmartThingsThingHandler extends BaseThingHandler {
         return deviceType != null && !deviceType.isBlank() ? deviceType : thing.getThingTypeUID().getId();
     }
 
-    private void updateDeviceIdProperty(String resolvedDeviceId) {
+    void syncDeviceIdMetadata(String resolvedDeviceId) {
+        if (SmartThingsDeviceIdResolver.getConfiguredDeviceId(thing).isBlank()) {
+            Configuration configuration = editConfiguration();
+            configuration.put(SmartThingsBindingConstants.DEVICE_ID, resolvedDeviceId);
+            updateConfiguration(configuration);
+        }
+
         Map<String, String> properties = new HashMap<>(editProperties());
-        properties.put(SmartThingsBindingConstants.DEVICE_ID, resolvedDeviceId);
-        updateProperties(properties);
+        if (properties.remove(SmartThingsBindingConstants.DEVICE_ID) != null) {
+            updateProperties(properties);
+        }
     }
 
     @Override

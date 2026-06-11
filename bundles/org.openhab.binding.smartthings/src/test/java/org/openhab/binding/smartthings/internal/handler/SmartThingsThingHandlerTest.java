@@ -13,7 +13,9 @@
 package org.openhab.binding.smartthings.internal.handler;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -63,6 +65,55 @@ class SmartThingsThingHandlerTest {
         SmartThingsThingHandler handler = new SmartThingsThingHandler(thing);
 
         assertEquals("configured-device", handler.resolveDeviceId());
+    }
+
+    @Test
+    void refreshDevicePropsDoesNotExposeDeviceIdProperty() {
+        Thing thing = ThingBuilder
+                .create(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Samsung_Room_A_C"),
+                        new ThingUID("smartthings:Samsung_Room_A_C:account:air-conditioner"))
+                .withProperties(Map.of(SmartThingsBindingConstants.DEVICE_ID, "device-123")).build();
+        TestSmartThingsThingHandler handler = new TestSmartThingsThingHandler(thing);
+        SmartThingsStatusCapabilities capa = new SmartThingsStatusCapabilities();
+        SmartThingsStatusProperties property = new SmartThingsStatusProperties();
+        property.value = "device-123";
+        capa.put("di", property);
+
+        handler.refreshDeviceProps(capa, "main", "ocf");
+
+        assertFalse(handler.lastUpdatedProperties.containsKey(SmartThingsBindingConstants.DEVICE_ID));
+        assertFalse(handler.lastUpdatedProperties.containsKey("Device ID"));
+    }
+
+    @Test
+    void syncDeviceIdMetadataRemovesDeviceIdThingProperty() {
+        Configuration config = new Configuration(Map.of(SmartThingsBindingConstants.DEVICE_ID, "configured-device"));
+        Thing thing = ThingBuilder
+                .create(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Washer"),
+                        new ThingUID("smartthings:Washer:account:Washer"))
+                .withConfiguration(config)
+                .withProperties(Map.of(SmartThingsBindingConstants.DEVICE_ID, "configured-device")).build();
+        TestSmartThingsThingHandler handler = new TestSmartThingsThingHandler(thing);
+
+        handler.syncDeviceIdMetadata("configured-device");
+
+        assertFalse(handler.lastUpdatedProperties.containsKey(SmartThingsBindingConstants.DEVICE_ID));
+        assertEquals("configured-device",
+                handler.getThing().getConfiguration().get(SmartThingsBindingConstants.DEVICE_ID));
+    }
+
+    @Test
+    void syncDeviceIdMetadataMigratesLegacyDeviceIdThingPropertyToConfiguration() {
+        Thing thing = ThingBuilder
+                .create(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Washer"),
+                        new ThingUID("smartthings:Washer:account:Washer"))
+                .withProperties(Map.of(SmartThingsBindingConstants.DEVICE_ID, "property-device")).build();
+        TestSmartThingsThingHandler handler = new TestSmartThingsThingHandler(thing);
+
+        handler.syncDeviceIdMetadata("property-device");
+
+        assertFalse(handler.lastUpdatedProperties.containsKey(SmartThingsBindingConstants.DEVICE_ID));
+        assertEquals("property-device", handler.lastUpdatedConfiguration.get(SmartThingsBindingConstants.DEVICE_ID));
     }
 
     @Test
@@ -147,6 +198,8 @@ class SmartThingsThingHandlerTest {
         private int updatedStates;
         private @Nullable ChannelUID lastUpdatedChannel;
         private @Nullable State lastUpdatedState;
+        private Map<String, String> lastUpdatedProperties = Map.of();
+        private Configuration lastUpdatedConfiguration = new Configuration();
 
         TestSmartThingsThingHandler(Thing thing) {
             super(thing);
@@ -157,6 +210,18 @@ class SmartThingsThingHandlerTest {
             updatedStates++;
             lastUpdatedChannel = channelUID;
             lastUpdatedState = state;
+        }
+
+        @Override
+        protected void updateProperties(Map<String, String> properties) {
+            lastUpdatedProperties = new HashMap<>(properties);
+        }
+
+        @Override
+        protected void updateConfiguration(@Nullable Configuration configuration) {
+            if (configuration != null) {
+                lastUpdatedConfiguration = new Configuration(configuration);
+            }
         }
     }
 }

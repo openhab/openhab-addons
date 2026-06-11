@@ -34,6 +34,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.smartthings.internal.SmartThingsBindingConstants;
+import org.openhab.binding.smartthings.internal.SmartThingsDeviceIdResolver;
 import org.openhab.binding.smartthings.internal.dto.AppRequest;
 import org.openhab.binding.smartthings.internal.dto.AppResponse;
 import org.openhab.binding.smartthings.internal.dto.Event;
@@ -516,8 +517,7 @@ public class SmartThingsApi {
             List<Thing> things = bridge.getThings();
 
             Optional<Thing> theThingOpt = things.stream()
-                    .filter(x -> deviceId.equals(x.getProperties().get(SmartThingsBindingConstants.DEVICE_ID)))
-                    .findFirst();
+                    .filter(thing -> SmartThingsDeviceIdResolver.matches(thing, deviceId)).findFirst();
             if (theThingOpt.isPresent()) {
                 Thing theThing = theThingOpt.get();
 

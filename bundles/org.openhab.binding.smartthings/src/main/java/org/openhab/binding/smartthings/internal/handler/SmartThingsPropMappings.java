@@ -57,7 +57,6 @@ public class SmartThingsPropMappings {
     public SmartThingsPropMappings() {
         isPropertiesMap.put("ocf", Boolean.TRUE);
 
-        propNameMap.put("di", "Device ID");
         propNameMap.put("dmv", "Data Model Version");
         propNameMap.put("mnmo", "Model Number");
         propNameMap.put("mnmn", "Manufacturer Name");

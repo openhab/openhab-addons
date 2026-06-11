@@ -12,11 +12,9 @@
  */
 package org.openhab.binding.smartthings.internal.handler;
 
-import java.util.Map;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.smartthings.internal.SmartThingsBindingConstants;
+import org.openhab.binding.smartthings.internal.SmartThingsDeviceIdResolver;
 import org.openhab.binding.smartthings.internal.api.SmartThingsApi;
 import org.openhab.binding.smartthings.internal.type.SmartThingsException;
 import org.openhab.core.automation.annotation.ActionInput;
@@ -63,9 +61,8 @@ public class SmartThingsActions implements ThingActions {
             throw new SmartThingsException("handler is not initialized");
         }
 
-        Map<String, String> properties = lcHandler.getThing().getProperties();
-        String deviceId = properties.get(SmartThingsBindingConstants.DEVICE_ID);
-        if (deviceId == null) {
+        String deviceId = SmartThingsDeviceIdResolver.getDeviceId(lcHandler.getThing());
+        if (deviceId.isBlank()) {
             return "Missing device id";
         }
 
