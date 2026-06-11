@@ -172,7 +172,12 @@ public final class OAuthAuthorizationHandlerImpl implements OAuthAuthorizationHa
                 throw new OAuthException(
                         "There is no access token in the persistent storage or it already expired and could not be refreshed");
             } else {
-                return response.getAccessToken();
+                String accessToken = response.getAccessToken();
+                if (accessToken == null) {
+                    throw new OAuthException(
+                            "There is no access token in the persistent storage or it already expired and could not be refreshed");
+                }
+                return accessToken;
             }
         } catch (org.openhab.core.auth.client.oauth2.OAuthException e) {
             throw new OAuthException("Failed to read access token from persistent storage: " + e.getMessage(), e);

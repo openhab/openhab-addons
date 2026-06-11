@@ -10,14 +10,12 @@ After the initial setup in de Daikin app, the binding will recognize all units c
 Basically all devices connected to Daikin Onecta cloud could be connected with the binding.
 
 - `account`: Acts as bridge and ensures the connection to Onecta cloud and the recognition of connected units
-- `climate-control`: The unit itself. With this items like climate can controled.
+- `climate-control`: The unit itself. With this items like climate can controlled.
 - `gateway`: The network controller of the unit.
 - `IndoorUnit`: Gives information about the indoor unit.
 - `domestic-hot-water-tank`: Is the thing to control the Hot water tank.
 
 ## Discovery
-
-
 
 Once a Onecta account is paired, all supported appliances are automatically discovered as individual things and placed in the inbox. 
 They can then be paired with your favorite management UI. 
