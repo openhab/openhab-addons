@@ -50,15 +50,16 @@ class EcowittDataParserTest {
                         new Tuple("wind-max-day", "0.6 m/s"),
                         // 0x15 is reported in W/m², so it is routed to the solar-radiation channel, not illumination
                         new Tuple("irradiation-solar", "365.66 W/m²"), new Tuple("uv-index", "3"),
-                        new Tuple("direction-wind", "29 °"), new Tuple("rain-event", "0 mm"),
-                        new Tuple("rain-rate", "0 mm/h"), new Tuple("rain-day", "0 mm"), new Tuple("rain-week", "0 mm"),
-                        new Tuple("rain-month", "0 mm"), new Tuple("rain-year", "0 mm"),
+                        new Tuple("direction-wind", "29 °"), new Tuple("direction-wind-avg-10min", "23 °"),
+                        new Tuple("rain-event", "0 mm"), new Tuple("rain-rate", "0 mm/h"),
+                        new Tuple("rain-24-hours", "0 mm"), new Tuple("rain-day", "0 mm"),
+                        new Tuple("rain-week", "0 mm"), new Tuple("rain-month", "0 mm"), new Tuple("rain-year", "0 mm"),
                         new Tuple("piezo-rain-state", "OFF"), new Tuple("piezo-rain-event", "0 mm"),
-                        new Tuple("piezo-rain-rate", "0 mm/h"), new Tuple("piezo-rain-day", "0 mm"),
-                        new Tuple("piezo-rain-week", "0 mm"), new Tuple("piezo-rain-month", "0 mm"),
-                        new Tuple("piezo-rain-year", "0 mm"), new Tuple("temperature-indoor", "22.3 °C"),
-                        new Tuple("humidity-indoor", "49 %"), new Tuple("pressure-absolute", "1003.8 hPa"),
-                        new Tuple("pressure-relative", "1003.8 hPa"));
+                        new Tuple("piezo-rain-rate", "0 mm/h"), new Tuple("piezo-rain-24-hours", "0 mm"),
+                        new Tuple("piezo-rain-day", "0 mm"), new Tuple("piezo-rain-week", "0 mm"),
+                        new Tuple("piezo-rain-month", "0 mm"), new Tuple("piezo-rain-year", "0 mm"),
+                        new Tuple("temperature-indoor", "22.3 °C"), new Tuple("humidity-indoor", "49 %"),
+                        new Tuple("pressure-absolute", "1003.8 hPa"), new Tuple("pressure-relative", "1003.8 hPa"));
     }
 
     @Test
