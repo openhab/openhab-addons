@@ -20,6 +20,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -39,6 +40,8 @@ import org.openhab.binding.smartthings.internal.handler.SmartThingsBridgeHandler
 import org.openhab.binding.smartthings.internal.handler.SmartThingsPropMappings;
 import org.openhab.core.config.core.ConfigDescriptionBuilder;
 import org.openhab.core.config.core.ConfigDescriptionParameter;
+import org.openhab.core.config.core.ConfigDescriptionParameter.Type;
+import org.openhab.core.config.core.ConfigDescriptionParameterBuilder;
 import org.openhab.core.config.core.ConfigDescriptionParameterGroup;
 import org.openhab.core.semantics.SemanticTag;
 import org.openhab.core.semantics.model.DefaultSemanticTags.Equipment;
@@ -724,11 +727,18 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
         SmartThingsConfigDescriptionProvider lcConfigDescriptionProvider = configDescriptionProvider;
         List<ConfigDescriptionParameter> parms = new ArrayList<>();
         List<ConfigDescriptionParameterGroup> groups = new ArrayList<>();
+        parms.add(createDeviceIdParameter());
 
         if (lcConfigDescriptionProvider != null) {
             lcConfigDescriptionProvider.addConfigDescription(ConfigDescriptionBuilder.create(configDescriptionURI)
                     .withParameters(parms).withParameterGroups(groups).build());
         }
+    }
+
+    private ConfigDescriptionParameter createDeviceIdParameter() {
+        return Objects.requireNonNull(
+                ConfigDescriptionParameterBuilder.create(SmartThingsBindingConstants.DEVICE_ID, Type.TEXT)
+                        .withRequired(true).withLabel("Device ID").withDescription("SmartThings device UUID.").build());
     }
 
     @Override
