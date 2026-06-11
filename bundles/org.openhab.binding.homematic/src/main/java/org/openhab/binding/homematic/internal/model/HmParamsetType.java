@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.homematic.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Definition of the Homematic paramset types.
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public enum HmParamsetType {
     VALUES,
     MASTER;
@@ -25,14 +28,12 @@ public enum HmParamsetType {
      * Parses the string and returns the HmParamsetType object.
      */
     public static HmParamsetType parse(String type) {
-        if (type != null) {
-            if (type.equals(VALUES.toString()) || type.equals(VALUES.getId())) {
-                return VALUES;
-            } else if (type.equals(MASTER.toString()) || type.equals(MASTER.getId())) {
-                return MASTER;
-            }
+        if (type.equals(VALUES.toString()) || type.equals(VALUES.getId())) {
+            return VALUES;
+        } else if (type.equals(MASTER.toString()) || type.equals(MASTER.getId())) {
+            return MASTER;
         }
-        throw new RuntimeException("Unknown HmParamsetType " + type);
+        throw new IllegalArgumentException("Unknown HmParamsetType " + type);
     }
 
     /**

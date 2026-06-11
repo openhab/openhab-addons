@@ -14,11 +14,14 @@ package org.openhab.binding.homematic.internal.communicator.client;
 
 import java.net.Socket;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Info class which holds some infos for caching a socket.
  * 
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class SocketInfo {
     private Socket socket;
     private long created;

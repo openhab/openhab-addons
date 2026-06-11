@@ -16,12 +16,15 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Random;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Generates a UDP request to discover Homematic CCU gateways.
  *
  * @author Gerhard Riegler - Initial contribution
  */
 
+@NonNullByDefault
 public class Eq3UdpRequest {
     private static final byte UDP_IDENTIFY = 73;
     private static final byte UDP_SEPARATOR = 0;

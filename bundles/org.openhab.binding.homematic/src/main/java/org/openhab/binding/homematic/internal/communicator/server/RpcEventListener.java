@@ -14,6 +14,7 @@ package org.openhab.binding.homematic.internal.communicator.server;
 
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homematic.internal.model.HmDatapointInfo;
 
 /**
@@ -21,6 +22,7 @@ import org.openhab.binding.homematic.internal.model.HmDatapointInfo;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public interface RpcEventListener {
 
     /**
