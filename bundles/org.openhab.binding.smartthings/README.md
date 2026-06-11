@@ -67,6 +67,8 @@ The binding first tries to register a SmartThings SSE subscription for device st
 If SSE registration is not available, it tries callback subscriptions.
 Callback subscriptions require a public HTTPS URL.
 Polling can be enabled as a fallback when neither event mechanism is available.
+The following modes only describe how device state updates are received after authorization.
+They do not change the initial app bootstrap described below.
 
 | Mode | Configuration | Notes |
 |------|---------------|-------|
@@ -75,7 +77,24 @@ Polling can be enabled as a fallback when neither event mechanism is available.
 | openHAB Cloud webhook | Enable `useCloudWebhook` and make sure the openHAB Cloud Connector is installed and connected | Optional convenience mode; not required for eventless or polling usage |
 | Polling | Set `pollingTime` to a positive value | Works without public callbacks, but state updates can be delayed |
 
-When SmartThings redirects to `localhost:61973` during the initial app bootstrap, replace `localhost` in the browser address bar with the openHAB host name or IP address and keep the rest of the URL unchanged.
+#### Initial App Bootstrap Redirect
+
+During first authorization, the binding creates a bridge-specific SmartThings app through the fixed SmartThings CLI OAuth client.
+That client always redirects to `http://localhost:61973/finish`, and the binding temporarily listens on port `61973` on the openHAB server.
+This bootstrap is the same for public openHAB URLs, openHAB Cloud webhooks and polling when no `clientId` and `clientSecret` are stored yet.
+
+If the browser runs on another machine, replace only `localhost` with the openHAB server host name or IP address when the redirect appears.
+Keep the port, path and query string unchanged:
+
+```text
+http://localhost:61973/finish?code=...&state=...
+http://openhab-server:61973/finish?code=...&state=...
+```
+
+The browser must be able to reach the openHAB server on TCP port `61973` while the authorization window is open.
+This temporary redirect is only used for the app bootstrap; it is independent of SmartThings event callbacks, openHAB Cloud webhooks and HTTPS.
+After the app has been created, the binding stores the generated `clientId` and `clientSecret` in the bridge configuration.
+If a later authorization step also redirects to `localhost:61973`, repeat the same replacement.
 
 ### Device Thing Configuration
 
