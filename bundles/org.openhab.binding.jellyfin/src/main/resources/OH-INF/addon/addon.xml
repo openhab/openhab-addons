@@ -5,7 +5,69 @@
 
 	<type>binding</type>
 	<name>Jellyfin Binding</name>
-	<description>This is the binding for Jellyfin the free software media system.</description>
+	<description>Binding for Jellyfin, the free and open-source media server. Integrates active client sessions for
+		playback control and now-playing status.</description>
 	<connection>local</connection>
+
+	<config-description>
+		<parameter-group name="discovery">
+			<label>Discovery</label>
+			<description><![CDATA[
+				<p>Fine-tune Jellyfin server discovery behaviour on the local network.</p>
+				<p>These settings only affect the UDP-based auto-discovery mechanism and do not change how the binding
+				connects to the server over HTTP/HTTPS.</p>
+			]]></description>
+		</parameter-group>
+
+		<parameter name="discoveryPort" type="integer" min="0" max="65535" required="true" groupName="discovery">
+			<label>Discovery Port</label>
+			<advanced>true</advanced>
+			<description><![CDATA[
+				<p>UDP port used to broadcast discovery queries on the local network.</p>
+				<p>This is the Jellyfin auto-discovery port (default <b>7359</b>), <em>not</em> the HTTP/HTTPS port used by
+				the server for client connections.</p>
+			]]></description>
+			<default>7359</default>
+		</parameter>
+		<parameter name="discoveryTimeout" type="integer" min="500" max="5000" required="true" unit="ms"
+			groupName="discovery">
+			<label>Discovery Timeout</label>
+			<advanced>true</advanced>
+			<description><![CDATA[
+				<p>Maximum time (in milliseconds) to wait for discovery responses from servers on the network.</p>
+				<p>Shorter timeouts make discovery faster but may miss slow or busy devices; longer timeouts increase
+				discovery latency.</p>
+			]]></description>
+			<default>2000</default>
+		</parameter>
+
+	</config-description>
+
+	<discovery-methods>
+		<!-- UDP broadcast "who is JellyfinServer?" on port 7359 -->
+		<discovery-method>
+			<service-type>ip</service-type>
+			<discovery-parameters>
+				<discovery-parameter>
+					<name>type</name>
+					<value>ipBroadcast</value>
+				</discovery-parameter>
+				<discovery-parameter>
+					<name>destPort</name>
+					<value>7359</value>
+				</discovery-parameter>
+				<discovery-parameter>
+					<name>requestPlain</name>
+					<value>who is JellyfinServer?</value>
+				</discovery-parameter>
+			</discovery-parameters>
+			<match-properties>
+				<match-property>
+					<name>response</name>
+					<regex>.*&quot;Name&quot;\s*:\s*&quot;Jellyfin&quot;.*</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+	</discovery-methods>
 
 </addon:addon>
