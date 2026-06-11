@@ -13,8 +13,13 @@
 package org.openhab.binding.smartthings.internal.handler;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.nullable;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -22,6 +27,8 @@ import java.net.URI;
 import java.time.Instant;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.client.ClientBuilder;
 
@@ -34,6 +41,8 @@ import org.openhab.binding.smartthings.internal.SmartThingsHandlerFactory;
 import org.openhab.binding.smartthings.internal.discovery.SmartThingsDiscoveryService;
 import org.openhab.binding.smartthings.internal.type.SmartThingsException;
 import org.openhab.binding.smartthings.internal.type.SmartThingsTypeRegistry;
+import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
+import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.TranslationProvider;
@@ -63,6 +72,44 @@ class SmartThingsAccountHandlerTest {
 
         verify(discoveryService).doScan(true);
         assertEquals(ThingStatus.ONLINE, handler.lastStatus);
+    }
+
+    @Test
+    void initializeSetsUnknownAndWaitsForStartupDiscoveryBeforeMarkingBridgeOnline() throws Exception {
+        OAuthClientService oAuthService = mock(OAuthClientService.class);
+        AccessTokenResponse accessTokenResponse = mock(AccessTokenResponse.class);
+        when(accessTokenResponse.getAccessToken()).thenReturn("access-token");
+        when(oAuthService.getAccessTokenResponse()).thenReturn(accessTokenResponse);
+
+        OAuthFactory oAuthFactory = mock(OAuthFactory.class);
+        when(oAuthFactory.createOAuthClientService(anyString(), anyString(), nullable(String.class), anyString(),
+                nullable(String.class), nullable(String.class), nullable(Boolean.class))).thenReturn(oAuthService);
+
+        TestSmartThingsAccountHandler handler = new TestSmartThingsAccountHandler(accountBridge(), oAuthFactory);
+
+        handler.initialize();
+
+        assertEquals(1, handler.setupClientCalls);
+        assertEquals(ThingStatus.UNKNOWN, handler.lastStatus);
+    }
+
+    @Test
+    void setupClientRunsStartupDiscoveryBeforeMarkingBridgeOnlineWithoutStoredLocations() throws Exception {
+        SmartThingsDiscoveryService discoveryService = mock(SmartThingsDiscoveryService.class);
+        TestSmartThingsAccountHandler handler = new TestSmartThingsAccountHandler(accountBridge(), discoveryService);
+        handler.runRealSetupClient();
+        handler.setHasLocations(false);
+        doAnswer(invocation -> {
+            handler.markStartupDiscoveryCompleted();
+            return null;
+        }).when(discoveryService).doScan(false);
+
+        handler.setupClient(null);
+
+        verify(discoveryService, timeout(1000)).doScan(false);
+        assertEquals(ThingStatus.ONLINE, handler.awaitStatusUpdate());
+        assertFalse(handler.onlineBeforeStartupDiscovery);
+        assertEquals(0, handler.registerSubscriptionsCalls);
     }
 
     @Test
@@ -147,6 +194,13 @@ class SmartThingsAccountHandlerTest {
     private static class TestSmartThingsAccountHandler extends SmartThingsAccountHandler {
         private @Nullable ThingStatus lastStatus;
         private Configuration updatedConfiguration = new Configuration();
+        private int setupClientCalls;
+        private int registerSubscriptionsCalls;
+        private final CountDownLatch statusUpdateLatch = new CountDownLatch(1);
+        private boolean runRealSetupClient;
+        private boolean hasLocations;
+        private volatile boolean startupDiscoveryCompleted;
+        private volatile boolean onlineBeforeStartupDiscovery;
 
         TestSmartThingsAccountHandler(Bridge bridge, SmartThingsDiscoveryService discoveryService) {
             this(bridge, discoveryService, null);
@@ -156,17 +210,39 @@ class SmartThingsAccountHandlerTest {
             this(bridge, mock(SmartThingsDiscoveryService.class), webhookService);
         }
 
+        TestSmartThingsAccountHandler(Bridge bridge, OAuthFactory oAuthFactory) {
+            this(bridge, mock(SmartThingsDiscoveryService.class), null, oAuthFactory);
+        }
+
         TestSmartThingsAccountHandler(Bridge bridge, SmartThingsDiscoveryService discoveryService,
                 @Nullable WebhookService webhookService) {
+            this(bridge, discoveryService, webhookService, mock(OAuthFactory.class));
+        }
+
+        TestSmartThingsAccountHandler(Bridge bridge, SmartThingsDiscoveryService discoveryService,
+                @Nullable WebhookService webhookService, OAuthFactory oAuthFactory) {
             super(bridge, mock(SmartThingsHandlerFactory.class), mock(SmartThingsAuthService.class),
-                    mock(TranslationProvider.class), mock(BundleContext.class), mock(HttpService.class),
-                    mock(OAuthFactory.class), mock(HttpClientFactory.class), mock(SmartThingsTypeRegistry.class),
-                    mock(ClientBuilder.class), mock(SseEventSourceFactory.class), webhookService);
+                    mock(TranslationProvider.class), mock(BundleContext.class), mock(HttpService.class), oAuthFactory,
+                    mock(HttpClientFactory.class), mock(SmartThingsTypeRegistry.class), mock(ClientBuilder.class),
+                    mock(SseEventSourceFactory.class), webhookService);
             this.discoService = discoveryService;
         }
 
         @Override
         public void registerSubscriptions() {
+            registerSubscriptionsCalls++;
+        }
+
+        @Override
+        public void registerServlet() throws SmartThingsException {
+        }
+
+        @Override
+        protected void setupClient(@Nullable String eventCallbackUri) throws SmartThingsException {
+            setupClientCalls++;
+            if (runRealSetupClient) {
+                super.setupClient(eventCallbackUri);
+            }
         }
 
         @Override
@@ -176,17 +252,48 @@ class SmartThingsAccountHandlerTest {
         @Override
         protected void updateStatus(ThingStatus status) {
             lastStatus = status;
+            if (ThingStatus.ONLINE.equals(status)) {
+                onlineBeforeStartupDiscovery = !startupDiscoveryCompleted;
+            }
+            statusUpdateLatch.countDown();
         }
 
         @Override
         protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
             lastStatus = status;
+            statusUpdateLatch.countDown();
         }
 
         @Override
         protected void updateConfiguration(Configuration configuration) {
             updatedConfiguration = configuration;
             getThing().getConfiguration().setProperties(configuration.getProperties());
+        }
+
+        @Override
+        public boolean hasLocations() {
+            return hasLocations;
+        }
+
+        @Override
+        public void initRegistry() {
+        }
+
+        private void runRealSetupClient() {
+            runRealSetupClient = true;
+        }
+
+        private void setHasLocations(boolean hasLocations) {
+            this.hasLocations = hasLocations;
+        }
+
+        private void markStartupDiscoveryCompleted() {
+            startupDiscoveryCompleted = true;
+        }
+
+        private @Nullable ThingStatus awaitStatusUpdate() throws InterruptedException {
+            statusUpdateLatch.await(1, TimeUnit.SECONDS);
+            return lastStatus;
         }
     }
 }

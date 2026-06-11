@@ -198,7 +198,6 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
             AccessTokenResponse response = oAuthService.getAccessTokenResponse();
             if (response != null && response.getAccessToken() != null) {
                 setupClient(null);
-                updateStatus(ThingStatus.ONLINE);
             } else {
                 setStatusToAuthRequired();
             }

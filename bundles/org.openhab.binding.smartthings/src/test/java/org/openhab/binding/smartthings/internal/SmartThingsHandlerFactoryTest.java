@@ -22,6 +22,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.Map;
+
 import javax.ws.rs.client.ClientBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -34,6 +36,7 @@ import org.openhab.binding.smartthings.internal.type.SmartThingsThingTypeProvide
 import org.openhab.binding.smartthings.internal.type.SmartThingsThingTypeProviderImpl;
 import org.openhab.binding.smartthings.internal.type.SmartThingsTypeRegistry;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
@@ -54,14 +57,25 @@ import org.osgi.service.jaxrs.client.SseEventSourceFactory;
 class SmartThingsHandlerFactoryTest {
 
     @Test
-    void supportsOnlyStaticOrRegisteredDynamicThingTypes() {
-        TestSmartThingsHandlerFactory factory = createFactory();
+    void supportsStaticAndRegisteredDynamicThingTypes() {
+        SmartThingsThingTypeProviderImpl thingTypeProvider = new SmartThingsThingTypeProviderImpl();
+        TestSmartThingsHandlerFactory factory = createFactory(thingTypeProvider);
+        ThingTypeUID dynamicThingTypeUID = new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID,
+                "Samsung_The_Frame");
+        ThingType dynamicThingType = mock(ThingType.class);
+        when(dynamicThingType.getUID()).thenReturn(dynamicThingTypeUID);
 
         assertTrue(factory.supportsThingType(SmartThingsBindingConstants.THING_TYPE_ACCOUNT));
         assertTrue(factory
                 .supportsThingType(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "generic-television")));
-        assertFalse(factory
-                .supportsThingType(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Samsung_The_Frame")));
+        assertFalse(factory.supportsThingType(dynamicThingTypeUID));
+
+        thingTypeProvider.addThingType(dynamicThingType);
+
+        assertInstanceOf(SmartThingsAccountHandler.class, factory.create(accountBridge("dynamic", true)));
+
+        assertTrue(factory.supportsThingType(dynamicThingTypeUID));
+        assertFalse(factory.supportsThingType(new ThingTypeUID("other", "Samsung_The_Frame")));
     }
 
     @Test
@@ -105,6 +119,29 @@ class SmartThingsHandlerFactoryTest {
 
         assertInstanceOf(SmartThingsThingHandler.class, factory.create(childThing("first-washer", firstAccount)));
         assertInstanceOf(SmartThingsThingHandler.class, factory.create(childThing("second-washer", secondAccount)));
+    }
+
+    @Test
+    void createHandlerAllowsRegisteredDynamicThingTypesOnlyForDynamicAccountBridges() {
+        SmartThingsThingTypeProviderImpl thingTypeProvider = new SmartThingsThingTypeProviderImpl();
+        TestSmartThingsHandlerFactory factory = createFactory(thingTypeProvider);
+        ThingTypeUID dynamicThingTypeUID = new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID,
+                "Samsung_The_Frame");
+        ThingType dynamicThingType = mock(ThingType.class);
+        when(dynamicThingType.getUID()).thenReturn(dynamicThingTypeUID);
+        Bridge staticAccount = accountBridge("static", false);
+        Bridge dynamicAccount = accountBridge("dynamic", true);
+
+        assertInstanceOf(SmartThingsAccountHandler.class, factory.create(staticAccount));
+        assertInstanceOf(SmartThingsAccountHandler.class, factory.create(dynamicAccount));
+
+        assertNull(factory.create(childThing("static-frame", staticAccount, dynamicThingTypeUID)));
+
+        thingTypeProvider.addThingType(dynamicThingType);
+
+        assertNull(factory.create(childThing("static-frame-registered", staticAccount, dynamicThingTypeUID)));
+        assertInstanceOf(SmartThingsThingHandler.class,
+                factory.create(childThing("dynamic-frame", dynamicAccount, dynamicThingTypeUID)));
     }
 
     @Test
@@ -159,9 +196,17 @@ class SmartThingsHandlerFactoryTest {
         return BridgeBuilder.create(SmartThingsBindingConstants.THING_TYPE_ACCOUNT, id).build();
     }
 
+    private Bridge accountBridge(String id, boolean useDynamicThings) {
+        return BridgeBuilder.create(SmartThingsBindingConstants.THING_TYPE_ACCOUNT, id)
+                .withConfiguration(new Configuration(Map.of("useDynamicThings", useDynamicThings))).build();
+    }
+
     private Thing childThing(String id, Bridge bridge) {
+        return childThing(id, bridge, SmartThingsBindingConstants.THING_TYPE_GENERIC_WASHER);
+    }
+
+    private Thing childThing(String id, Bridge bridge, ThingTypeUID thingTypeUID) {
         ThingUID bridgeUID = bridge.getUID();
-        ThingTypeUID thingTypeUID = SmartThingsBindingConstants.THING_TYPE_GENERIC_WASHER;
 
         return ThingBuilder.create(thingTypeUID, id).withBridge(bridgeUID).withLabel(id).build();
     }

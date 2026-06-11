@@ -80,8 +80,8 @@ public class SmartThingsAccountHandler extends SmartThingsBridgeHandler {
                 initRegistry();
                 if (hasLocations()) {
                     registerSubscriptions();
-                    discoService.doScan(false);
                 }
+                discoService.doScan(false);
                 updateStatus(ThingStatus.ONLINE);
             } catch (SmartThingsException e) {
                 logger.error("Unable to initialize", e);

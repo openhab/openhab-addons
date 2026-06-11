@@ -132,7 +132,7 @@ public class SmartThingsHandlerFactory extends BaseThingHandlerFactory implement
             logger.debug("SmartThingsHandlerFactory created SmartThingsAccountHandler for {}",
                     thingTypeUID.getAsString());
             return bridgeHandler;
-        } else if (supportsThingType(thingTypeUID)) {
+        } else if (canCreateThingHandler(thing)) {
             ThingUID bridgeUID = thing.getBridgeUID();
             // Everything but the bridge is handled by this one handler
             // Make sure this thing belongs to a registered bridge
@@ -148,6 +148,18 @@ public class SmartThingsHandlerFactory extends BaseThingHandlerFactory implement
             return thingHandler;
         }
         return null;
+    }
+
+    private boolean canCreateThingHandler(Thing thing) {
+        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+        if (SmartThingsBindingConstants.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
+            return true;
+        }
+
+        ThingUID bridgeUID = thing.getBridgeUID();
+        SmartThingsBridgeHandler bridgeHandler = bridgeUID != null ? bridgeHandlers.get(bridgeUID) : null;
+        return bridgeHandler != null && bridgeHandler.useDynamicThings()
+                && thingTypeProvider.getInternalThingType(thingTypeUID) != null;
     }
 
     @Override
