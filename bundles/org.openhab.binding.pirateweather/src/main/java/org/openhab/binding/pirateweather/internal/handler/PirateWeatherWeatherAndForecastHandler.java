@@ -510,7 +510,7 @@ public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {
         PirateWeatherJsonWeatherData weatherData = this.weatherData;
         if (weatherData == null || !(weatherData.getHourly() instanceof PirateWeatherHourlyData hourlyData)
                 || !(hourlyData.getData() instanceof List<HourlyData> hourlyDataList)
-                || hourlyDataList.size() > count) {
+                || hourlyDataList.size() <= count) {
             logger.debug("No weather data available to update channel '{}' of group '{}'.", channelId, channelGroupId);
             return;
         }
@@ -595,7 +595,7 @@ public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {
         String channelGroupId = channelUID.getGroupId();
         PirateWeatherJsonWeatherData weatherData = this.weatherData;
         if (weatherData == null || !(weatherData.getDaily() instanceof PirateWeatherDailyData dailyData)
-                || !(dailyData.getData() instanceof List<DailyData> dailyDataList) || dailyDataList.size() > count) {
+                || !(dailyData.getData() instanceof List<DailyData> dailyDataList) || dailyDataList.size() <= count) {
             logger.debug("No weather data available to update channel '{}' of group '{}'.", channelId, channelGroupId);
             return;
         }
@@ -685,6 +685,8 @@ public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {
                 }
                 break;
         }
+        logger.debug("Update channel '{}' of group '{}' with new state '{}'.", channelId, channelGroupId, state);
+        updateState(channelUID, state);
     }
 
     /**

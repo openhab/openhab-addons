@@ -147,13 +147,21 @@ public class PirateWeatherAPIHandler extends BaseBridgeHandler {
     }
 
     private void determineBridgeStatus() {
-        ThingStatus status = ThingStatus.OFFLINE;
+        ThingStatus status = ThingStatus.ONLINE;
+
         for (Thing thing : getThing().getThings()) {
-            if (ThingStatus.ONLINE.equals(thing.getStatus())) {
-                status = ThingStatus.ONLINE;
-                break;
+            if (!thing.isEnabled()) {
+                continue;
             }
+
+            if (ThingStatus.ONLINE.equals(thing.getStatus())) {
+                updateStatus(ThingStatus.ONLINE);
+                return;
+            }
+
+            status = ThingStatus.OFFLINE;
         }
+
         updateStatus(status);
     }
 
