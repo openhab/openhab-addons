@@ -98,6 +98,7 @@ public class SmartThingsAccountHandler extends SmartThingsBridgeHandler {
         updateLocationProperties(locationId);
         registerSubscriptions();
         discoService.doScan(true);
+        updateStatus(ThingStatus.ONLINE);
     }
 
     public void registerSubscriptions() {
