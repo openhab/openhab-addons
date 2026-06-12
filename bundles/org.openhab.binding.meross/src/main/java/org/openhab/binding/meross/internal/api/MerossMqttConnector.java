@@ -70,17 +70,17 @@ public class MerossMqttConnector implements MqttConnectionObserver {
         this.scheduler = scheduler;
 
         String userId = credentials.userId();
-        mqttMessageBuilder.setUserId(userId);
         String key = credentials.key();
-        mqttMessageBuilder.setKey(key);
         String brokerAddress = credentials.mqttDomain();
-        mqttMessageBuilder.setBrokerAddress(brokerAddress);
 
         if (brokerAddress == null || key == null || userId == null) {
             logger.debug("MQTT broker not configured");
             return;
         }
-        String clearPassword = "%s%s".formatted(mqttMessageBuilder.userId, mqttMessageBuilder.key);
+        mqttMessageBuilder.setUserId(userId);
+        mqttMessageBuilder.setKey(key);
+
+        String clearPassword = "%s%s".formatted(userId, key);
         String hashedPassword = MD5Util.getMD5String(clearPassword);
         String clientId = mqttMessageBuilder.getClientId();
 

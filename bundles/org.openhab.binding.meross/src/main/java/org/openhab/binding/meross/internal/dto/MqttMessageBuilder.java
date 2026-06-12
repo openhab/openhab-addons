@@ -33,10 +33,9 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class MqttMessageBuilder {
-    public @Nullable String brokerAddress;
-    public @Nullable String userId;
-    public volatile @Nullable String appId;
-    public @Nullable String key;
+    private @Nullable String userId;
+    private volatile @Nullable String appId;
+    private @Nullable String key;
 
     /**
      * @param method The method
@@ -115,10 +114,6 @@ public class MqttMessageBuilder {
 
     public void setUserId(String userId) {
         this.userId = userId;
-    }
-
-    public void setBrokerAddress(String brokerAddress) {
-        this.brokerAddress = brokerAddress;
     }
 
     public void setKey(String key) {
