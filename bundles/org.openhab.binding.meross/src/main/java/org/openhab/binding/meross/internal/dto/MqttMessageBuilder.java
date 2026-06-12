@@ -80,11 +80,10 @@ public class MqttMessageBuilder {
 
     public static String getAppId() {
         String appId = MqttMessageBuilder.appId;
-        if (appId != null) {
-            return appId;
+        if (appId == null) {
+            String randomString = "API" + UUID.randomUUID();
+            MqttMessageBuilder.appId = appId = MD5Util.getMD5String(randomString);
         }
-        String randomString = "API" + UUID.randomUUID();
-        appId = MD5Util.getMD5String(randomString);
         return appId;
     }
 
