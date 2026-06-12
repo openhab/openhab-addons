@@ -130,11 +130,8 @@ public class MerossBridgeHandler extends BaseBridgeHandler {
     }
 
     public synchronized List<Device> discoverDevices() throws ConnectException {
-        if (ThingStatus.ONLINE.equals(thing.getStatus())) {
-            devices = merossHttpConnector.getDevices();
-            return devices;
-        }
-        return List.of();
+        devices = merossHttpConnector.getDevices();
+        return devices;
     }
 
     public List<Device> getDevices() {
