@@ -160,6 +160,10 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_CONTROL_SCHEDULE = "schedule";
     public static final String CHANNEL_CONTROL_PROFILE = "selectedProfile";
 
+    // Flood Gen4
+    public static final String CHANNEL_FLOOD_ALARM_MODE = "alarmMode";
+    public static final String CHANNEL_FLOOD_REPORT_HOLDOFF = "reportHoldoff";
+
     // External sensors for Shelly1/1PM
     public static final String CHANNEL_ESENSOR_TEMP1 = CHANNEL_SENSOR_TEMP + "1";
     public static final String CHANNEL_ESENSOR_TEMP2 = CHANNEL_SENSOR_TEMP + "2";
@@ -258,6 +262,7 @@ public class ShellyBindingConstants {
     public static final String ALARM_TYPE_SENSOR_ERROR = "SENSOR_ERROR";
     public static final String ALARM_TYPE_LOW_BATTERY = "LOW_BATTERY";
     public static final String ALARM_TYPE_VALVE_ERROR = "VALVE_ERROR";
+    public static final String ALARM_TYPE_FLOOD = "FLOOD";
     public static final String EVENT_TYPE_VIBRATION = "VIBRATION";
 
     // Event types

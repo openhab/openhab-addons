@@ -64,6 +64,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSe
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellySensorLux;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2AuthChallenge;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2CBStatus;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2ConfigFlood;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2DevConfigCover;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2DevConfigInput;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2DevConfigPm1;
@@ -384,6 +385,11 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             profile.settings.sleepMode = new ShellySensorSleepMode();
             profile.settings.sleepMode.unit = "m";
             profile.settings.sleepMode.period = dc.sys.sleep != null ? dc.sys.sleep.wakeupPeriod / 60 : 720;
+        }
+
+        if (profile.isFlood && dc.flood0 != null) {
+            profile.floodAlarmMode = getString(dc.flood0.alarmMode);
+            profile.reportHoldoff = dc.flood0.reportHoldoff != null ? dc.flood0.reportHoldoff : 0;
         }
 
         if (dc.led != null) {
@@ -1278,6 +1284,20 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             return;
         }
         sdata.flood = getBool(value.alarm);
+        sdata.mute = getBool(value.mute);
+        sdata.sensorError = (value.errors != null && value.errors.length > 0) ? String.join(",", value.errors) : null;
+    }
+
+    public void setFloodConfig(int id, @Nullable String alarmMode, int reportHoldoff) throws ShellyApiException {
+        Shelly2ConfigFlood params = new Shelly2ConfigFlood();
+        params.id = id;
+        params.alarmMode = alarmMode;
+        params.reportHoldoff = reportHoldoff;
+        apiRequest(SHELLYRPC_METHOD_FLOOD_SETCONFIG, params, String.class);
+        if (alarmMode != null) {
+            profile.floodAlarmMode = alarmMode;
+        }
+        profile.reportHoldoff = reportHoldoff;
     }
 
     protected void updateBatteryStatus(ShellyStatusSensor sdata, @Nullable Shelly2DeviceStatusPower value) {

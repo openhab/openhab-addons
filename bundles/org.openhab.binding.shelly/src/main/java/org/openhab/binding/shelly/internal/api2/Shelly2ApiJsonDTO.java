@@ -75,6 +75,7 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLYRPC_METHOD_EM1DATARESET = "EM1Data.DeleteAllData";
     public static final String SHELLYRPC_METHOD_SMOKE_SETCONFIG = "Smoke.SetConfig";
     public static final String SHELLYRPC_METHOD_SMOKE_MUTE = "Smoke.Mute";
+    public static final String SHELLYRPC_METHOD_FLOOD_SETCONFIG = "Flood.SetConfig";
     public static final String SHELLYRPC_METHOD_SCRIPT_LIST = "Script.List";
     public static final String SHELLYRPC_METHOD_SCRIPT_SETCONFIG = "Script.SetConfig";
     public static final String SHELLYRPC_METHOD_SCRIPT_GETSTATUS = "Script.GetStatus";
@@ -419,6 +420,15 @@ public class Shelly2ApiJsonDTO {
             public Boolean mute;
         }
 
+        public static class Shelly2ConfigFlood {
+            public Integer id;
+            public String name;
+            @SerializedName("alarm_mode")
+            public String alarmMode;
+            @SerializedName("report_holdoff")
+            public Integer reportHoldoff;
+        }
+
         public static class Shelly2GetConfigLight {
             public static class Shelly2GetConfigLightDefault {
                 public Integer brightness;
@@ -534,6 +544,9 @@ public class Shelly2ApiJsonDTO {
 
             @SerializedName("smoke:0")
             public Shelly2ConfigSmoke smoke0;
+
+            @SerializedName("flood:0")
+            public Shelly2ConfigFlood flood0;
         }
 
         public class Shelly2DeviceConfigSta {

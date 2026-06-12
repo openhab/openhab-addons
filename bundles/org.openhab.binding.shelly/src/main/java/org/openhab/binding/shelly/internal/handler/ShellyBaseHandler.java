@@ -535,6 +535,20 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                         updateChannel(getString(channelUID.getGroupId()), CHANNEL_SENSOR_MUTE, OnOffType.OFF);
                     }
                     break;
+                case CHANNEL_FLOOD_ALARM_MODE:
+                    if (profile.isFlood) {
+                        logger.debug("{}: Set Flood alarm mode to {}", thingName, command);
+                        api.setFloodConfig(0, command.toString(), profile.reportHoldoff);
+                        update = true;
+                    }
+                    break;
+                case CHANNEL_FLOOD_REPORT_HOLDOFF:
+                    if (profile.isFlood) {
+                        logger.debug("{}: Set Flood report holdoff to {}", thingName, command);
+                        api.setFloodConfig(0, profile.floodAlarmMode, getNumber(command).intValue());
+                        update = true;
+                    }
+                    break;
                 default:
                     update = handleDeviceCommand(channelUID, command);
                     break;
