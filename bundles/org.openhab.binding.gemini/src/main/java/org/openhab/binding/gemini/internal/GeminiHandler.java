@@ -16,7 +16,9 @@ import static org.openhab.binding.gemini.internal.GeminiBindingConstants.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -56,7 +58,7 @@ public class GeminiHandler extends BaseThingHandler {
     private final HttpClient httpClient;
     private @Nullable GeminiConfiguration config;
     private @Nullable GeminiApiClient apiClient;
-    private List<String> models = List.of();
+    private List<GeminiModel> models = List.of();
 
     public GeminiHandler(Thing thing, HttpClientFactory httpClientFactory) {
         super(thing);
@@ -71,7 +73,7 @@ public class GeminiHandler extends BaseThingHandler {
         return apiClient;
     }
 
-    public List<String> getModels() {
+    public List<GeminiModel> getModels() {
         return models;
     }
 
@@ -182,20 +184,25 @@ public class GeminiHandler extends BaseThingHandler {
         scheduler.execute(() -> {
             try {
                 GeminiApiClient client = this.apiClient;
-                if (client == null) {
+                GeminiConfiguration currentConfig = this.config;
+                if (client == null || currentConfig == null) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "@text/offline.configuration-error");
                     return;
                 }
-                List<GeminiModel> apiModels = client.fetchModels(config.requestTimeout);
+                List<GeminiModel> apiModels = client.fetchModels(currentConfig.requestTimeout);
                 if (!apiModels.isEmpty()) {
-                    List<String> modelList = new ArrayList<>();
+                    List<GeminiModel> modelList = new ArrayList<>();
+                    Set<String> seenNames = new HashSet<>();
                     for (GeminiModel model : apiModels) {
                         String name = model.name();
                         if (name != null) {
                             List<String> methods = model.supportedGenerationMethods();
                             if (methods != null && methods.contains("generateContent")) {
-                                modelList.add(name.replace("models/", ""));
+                                String cleanName = name.replace("models/", "");
+                                if (seenNames.add(cleanName)) {
+                                    modelList.add(model);
+                                }
                             }
                         }
                     }

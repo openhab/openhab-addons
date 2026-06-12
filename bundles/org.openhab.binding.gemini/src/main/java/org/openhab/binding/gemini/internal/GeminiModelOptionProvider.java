@@ -57,7 +57,15 @@ public class GeminiModelOptionProvider implements ThingHandlerService, ConfigOpt
             if ("model".equals(param)) {
                 List<ParameterOption> options = new ArrayList<>();
                 if (thingHandler instanceof GeminiHandler geminiHandler) {
-                    geminiHandler.getModels().forEach(model -> options.add(new ParameterOption(model, model)));
+                    geminiHandler.getModels().forEach(model -> {
+                        String name = model.name();
+                        if (name != null) {
+                            String cleanName = name.replace("models/", "");
+                            String displayName = model.displayName();
+                            String label = displayName != null ? displayName : cleanName;
+                            options.add(new ParameterOption(cleanName, label));
+                        }
+                    });
                 }
                 return options;
             }
