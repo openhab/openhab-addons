@@ -76,7 +76,7 @@ public class MerossMqttConnector implements MqttConnectionObserver {
         String brokerAddress = credentials.mqttDomain();
         mqttMessageBuilder.setBrokerAddress(brokerAddress);
 
-        if (brokerAddress == null || userId == null) {
+        if (brokerAddress == null || key == null || userId == null) {
             logger.debug("MQTT broker not configured");
             return;
         }

@@ -28,7 +28,6 @@ import org.openhab.binding.meross.internal.config.MerossBridgeConfiguration;
 import org.openhab.binding.meross.internal.discovery.MerossDiscoveryService;
 import org.openhab.binding.meross.internal.dto.CloudCredentials;
 import org.openhab.binding.meross.internal.dto.Device;
-import org.openhab.binding.meross.internal.dto.MqttMessageBuilder;
 import org.openhab.binding.meross.internal.exception.MerossApiException;
 import org.openhab.core.io.transport.mqtt.MqttException;
 import org.openhab.core.thing.Bridge;
@@ -57,7 +56,6 @@ public class MerossBridgeHandler extends BaseBridgeHandler {
     private MerossBridgeConfiguration config = new MerossBridgeConfiguration();
     private @NonNullByDefault({}) MerossCloudHttpConnector merossHttpConnector;
     private @NonNullByDefault({}) MerossMqttConnector merossMqttConnector;
-    private MqttMessageBuilder mqttMessageBuilder = new MqttMessageBuilder();
     private @Nullable MerossDiscoveryService discoveryService;
     private final HttpClient httpClient;
 
@@ -90,6 +88,7 @@ public class MerossBridgeHandler extends BaseBridgeHandler {
     public void dispose() {
         if (merossMqttConnector != null) {
             merossMqttConnector.stopConnection();
+            merossMqttConnector = null;
         }
         super.dispose();
     }
