@@ -33,10 +33,10 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class MqttMessageBuilder {
-    public static @Nullable String brokerAddress;
-    public static @Nullable String userId;
-    public static @Nullable String appId;
-    public static @Nullable String key;
+    public @Nullable String brokerAddress;
+    public @Nullable String userId;
+    public volatile @Nullable String appId;
+    public @Nullable String key;
 
     /**
      * @param method The method
@@ -44,7 +44,7 @@ public class MqttMessageBuilder {
      * @param payload The payload
      * @return the message
      */
-    public static byte[] buildMqttMessage(String method, String namespace, @Nullable String destinationDeviceUUID,
+    public byte[] buildMqttMessage(String method, String namespace, @Nullable String destinationDeviceUUID,
             Map<String, Object> payload) {
         int timestamp = Math.round(Instant.now().getEpochSecond());
         String randomString = UUID.randomUUID().toString().replace("-", "").substring(0, 16);
@@ -74,15 +74,15 @@ public class MqttMessageBuilder {
      *
      * @return The client user topic
      */
-    public static String buildClientUserTopic() {
-        return "/app/" + MqttMessageBuilder.userId + "/subscribe";
+    public String buildClientUserTopic() {
+        return "/app/" + userId + "/subscribe";
     }
 
-    public static String getAppId() {
-        String appId = MqttMessageBuilder.appId;
+    public synchronized String getAppId() {
+        String appId = this.appId;
         if (appId == null) {
             String randomString = "API" + UUID.randomUUID();
-            MqttMessageBuilder.appId = appId = MD5Util.getMD5String(randomString);
+            this.appId = appId = MD5Util.getMD5String(randomString);
         }
         return appId;
     }
@@ -94,11 +94,11 @@ public class MqttMessageBuilder {
      *
      * @return The response topic
      */
-    public static String buildClientResponseTopic() {
-        return "/app/" + MqttMessageBuilder.userId + "-" + getAppId() + "/subscribe";
+    public String buildClientResponseTopic() {
+        return "/app/" + userId + "-" + getAppId() + "/subscribe";
     }
 
-    public static String getClientId() {
+    public String getClientId() {
         return "app:" + getAppId();
     }
 
@@ -109,19 +109,19 @@ public class MqttMessageBuilder {
      * @return The topic to be published
      */
 
-    public static String buildDeviceRequestTopic(String deviceUUID) {
+    public String buildDeviceRequestTopic(String deviceUUID) {
         return "/appliance/" + deviceUUID + "/subscribe";
     }
 
-    public static void setUserId(String userId) {
-        MqttMessageBuilder.userId = userId;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
-    public static void setBrokerAddress(String brokerAddress) {
-        MqttMessageBuilder.brokerAddress = brokerAddress;
+    public void setBrokerAddress(String brokerAddress) {
+        this.brokerAddress = brokerAddress;
     }
 
-    public static void setKey(String key) {
-        MqttMessageBuilder.key = key;
+    public void setKey(String key) {
+        this.key = key;
     }
 }

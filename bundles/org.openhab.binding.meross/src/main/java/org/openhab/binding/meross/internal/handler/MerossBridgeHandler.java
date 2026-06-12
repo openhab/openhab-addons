@@ -57,6 +57,7 @@ public class MerossBridgeHandler extends BaseBridgeHandler {
     private MerossBridgeConfiguration config = new MerossBridgeConfiguration();
     private @NonNullByDefault({}) MerossCloudHttpConnector merossHttpConnector;
     private @NonNullByDefault({}) MerossMqttConnector merossMqttConnector;
+    private MqttMessageBuilder mqttMessageBuilder = new MqttMessageBuilder();
     private @Nullable MerossDiscoveryService discoveryService;
     private final HttpClient httpClient;
 
@@ -157,15 +158,8 @@ public class MerossBridgeHandler extends BaseBridgeHandler {
         if (credentials == null) {
             logger.debug("No credentials found");
         } else {
-            String userId = credentials.userId();
-            MqttMessageBuilder.setUserId(userId);
-            String key = credentials.key();
-            MqttMessageBuilder.setKey(key);
-            String brokerAddress = credentials.mqttDomain();
-            MqttMessageBuilder.setBrokerAddress(brokerAddress);
-
             if (merossMqttConnector == null) {
-                merossMqttConnector = new MerossMqttConnector(this, scheduler);
+                merossMqttConnector = new MerossMqttConnector(this, credentials, scheduler);
             } else {
                 merossMqttConnector.stopConnection();
             }

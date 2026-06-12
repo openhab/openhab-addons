@@ -13,6 +13,7 @@
 package org.openhab.binding.meross.internal.command;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.meross.internal.dto.MqttMessageBuilder;
 
 /**
  * The {@link MerossCommand} interface is responsible for implementing command type
@@ -22,5 +23,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public interface MerossCommand {
-    byte[] command(String deviceUUID);
+    byte[] command(MqttMessageBuilder mqttMessageBuilder, String deviceUUID);
 }

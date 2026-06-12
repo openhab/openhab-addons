@@ -21,6 +21,7 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.meross.internal.dto.CloudCredentials;
 import org.openhab.binding.meross.internal.dto.MqttMessageBuilder;
 import org.openhab.binding.meross.internal.handler.MerossBridgeHandler;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
@@ -57,24 +58,31 @@ public class MerossMqttConnector implements MqttConnectionObserver {
     private MerossBridgeHandler callback;
     private ScheduledExecutorService scheduler;
 
+    private MqttMessageBuilder mqttMessageBuilder = new MqttMessageBuilder();
     private @Nullable MqttBrokerConnection mqttConnection;
     private @Nullable CompletableFuture<Boolean> stoppedFuture;
     private @Nullable ScheduledFuture<?> disconnectFuture;
     private CompletableFuture<Boolean> connected = new CompletableFuture<>();
 
-    public MerossMqttConnector(MerossBridgeHandler callback, ScheduledExecutorService scheduler) {
+    public MerossMqttConnector(MerossBridgeHandler callback, CloudCredentials credentials,
+            ScheduledExecutorService scheduler) {
         this.callback = callback;
         this.scheduler = scheduler;
 
-        String brokerAddress = MqttMessageBuilder.brokerAddress;
-        String userId = MqttMessageBuilder.userId;
+        String userId = credentials.userId();
+        mqttMessageBuilder.setUserId(userId);
+        String key = credentials.key();
+        mqttMessageBuilder.setKey(key);
+        String brokerAddress = credentials.mqttDomain();
+        mqttMessageBuilder.setBrokerAddress(brokerAddress);
+
         if (brokerAddress == null || userId == null) {
             logger.debug("MQTT broker not configured");
             return;
         }
-        String clearPassword = "%s%s".formatted(MqttMessageBuilder.userId, MqttMessageBuilder.key);
+        String clearPassword = "%s%s".formatted(mqttMessageBuilder.userId, mqttMessageBuilder.key);
         String hashedPassword = MD5Util.getMD5String(clearPassword);
-        String clientId = MqttMessageBuilder.getClientId();
+        String clientId = mqttMessageBuilder.getClientId();
 
         MqttBrokerConnection connection = mqttConnection = new MqttBrokerConnection(Protocol.TCP, MqttVersion.V3,
                 brokerAddress, SECURE_TCP_PORT, true, clientId);
@@ -84,6 +92,15 @@ public class MerossMqttConnector implements MqttConnectionObserver {
         connection.setKeepAliveInterval(KEEP_ALIVE_SECONDS);
         connection.setCleanSessionStart(false);
         connection.addConnectionObserver(this);
+    }
+
+    /**
+     * Get the mqtt message builder for this connection.
+     *
+     * @return the mqtt message builder
+     */
+    public MqttMessageBuilder getMqttMessageBuilder() {
+        return mqttMessageBuilder;
     }
 
     /**
@@ -116,7 +133,7 @@ public class MerossMqttConnector implements MqttConnectionObserver {
         }
 
         logger.debug("Starting connection...");
-        logger.trace("Connecting with clientId: {}", MqttMessageBuilder.getClientId());
+        logger.trace("Connecting with clientId: {}", mqttMessageBuilder.getClientId());
         try {
             connected = mqttConnection.start();
             if (!connected.get(RECEPTION_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
@@ -193,15 +210,15 @@ public class MerossMqttConnector implements MqttConnectionObserver {
     }
 
     public void addClientUserTopicSubscriber(MqttMessageSubscriber subscriber) {
-        addTopicSubscriber(MqttMessageBuilder.buildClientUserTopic(), subscriber);
+        addTopicSubscriber(mqttMessageBuilder.buildClientUserTopic(), subscriber);
     }
 
     public void addClientResponseTopicSubscriber(MqttMessageSubscriber subscriber) {
-        addTopicSubscriber(MqttMessageBuilder.buildClientResponseTopic(), subscriber);
+        addTopicSubscriber(mqttMessageBuilder.buildClientResponseTopic(), subscriber);
     }
 
     public void addDeviceRequestTopicSubscriber(MqttMessageSubscriber subscriber, String deviceUUID) {
-        addTopicSubscriber(MqttMessageBuilder.buildDeviceRequestTopic(deviceUUID), subscriber);
+        addTopicSubscriber(mqttMessageBuilder.buildDeviceRequestTopic(deviceUUID), subscriber);
     }
 
     private void addTopicSubscriber(String topic, MqttMessageSubscriber subscriber) {
@@ -215,15 +232,15 @@ public class MerossMqttConnector implements MqttConnectionObserver {
     }
 
     public void removeClientUserTopicSubscriber(MqttMessageSubscriber subscriber) {
-        removeTopicSubscriber(MqttMessageBuilder.buildClientUserTopic(), subscriber);
+        removeTopicSubscriber(mqttMessageBuilder.buildClientUserTopic(), subscriber);
     }
 
     public void removeClientResponseTopicSubscriber(MqttMessageSubscriber subscriber) {
-        removeTopicSubscriber(MqttMessageBuilder.buildClientResponseTopic(), subscriber);
+        removeTopicSubscriber(mqttMessageBuilder.buildClientResponseTopic(), subscriber);
     }
 
     public void removeDeviceRequestTopicSubscriber(MqttMessageSubscriber subscriber, String deviceUUID) {
-        removeTopicSubscriber(MqttMessageBuilder.buildDeviceRequestTopic(deviceUUID), subscriber);
+        removeTopicSubscriber(mqttMessageBuilder.buildDeviceRequestTopic(deviceUUID), subscriber);
     }
 
     private void removeTopicSubscriber(String topic, MqttMessageSubscriber subscriber) {
