@@ -582,6 +582,18 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                     logger.debug("{}: WiFi disconnected, reason {}", thingName, getInteger(e.reason));
                     getThing().postEvent(e.event, false);
                     break;
+                case SHELLY2_EVENT_FLOOD_ALARM:
+                    logger.debug("{}: Flood alarm triggered", thingName);
+                    getThing().postEvent(ALARM_TYPE_FLOOD, true);
+                    break;
+                case SHELLY2_EVENT_FLOOD_ALARM_OFF:
+                    logger.debug("{}: Flood alarm cleared", thingName);
+                    getThing().postEvent(ALARM_TYPE_NONE, true);
+                    break;
+                case SHELLY2_EVENT_FLOOD_CABLE_UNPLUGGED:
+                    logger.debug("{}: Flood sensor cable unplugged", thingName);
+                    getThing().postEvent(ALARM_TYPE_SENSOR_ERROR, true);
+                    break;
                 default:
                     logger.debug("{}: Event {} was not handled", thingName, e.event);
             }

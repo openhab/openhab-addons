@@ -149,6 +149,9 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLY2_EVENT_RESTART = "scheduled_restart";
     public static final String SHELLY2_EVENT_WIFICONNFAILED = "sta_connect_fail";
     public static final String SHELLY2_EVENT_WIFIDISCONNECTED = "sta_disconnected";
+    public static final String SHELLY2_EVENT_FLOOD_ALARM = "flood.alarm";
+    public static final String SHELLY2_EVENT_FLOOD_ALARM_OFF = "flood.alarm_off";
+    public static final String SHELLY2_EVENT_FLOOD_CABLE_UNPLUGGED = "flood.cable_unplugged";
 
     // Error Codes
     public static final String SHELLY2_ERROR_OVERPOWER = "overpower";
