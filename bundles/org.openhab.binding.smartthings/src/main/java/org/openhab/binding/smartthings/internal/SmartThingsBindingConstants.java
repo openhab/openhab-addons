@@ -159,6 +159,7 @@ public class SmartThingsBindingConstants {
     public static final String COMPONENT = "component";
     public static final String CAPABILITY = "capability";
     public static final String ATTRIBUTE = "attribute";
+    public static final String UNIT = "unit";
 
     public static final String EVENT_TYPE_EVENT = "EVENT";
     public static final String EVENT_TYPE_INSTALL = "INSTALL";

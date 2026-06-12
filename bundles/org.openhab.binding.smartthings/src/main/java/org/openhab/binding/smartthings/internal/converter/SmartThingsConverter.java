@@ -31,8 +31,10 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.PlayPauseType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -239,6 +241,16 @@ public abstract class SmartThingsConverter {
                 }
 
             case SmartThingsBindingConstants.TYPE_NUMBER:
+                String unit = channel.getProperties().get(SmartThingsBindingConstants.UNIT);
+                if (unit != null && !unit.isBlank()) {
+                    State quantity = convertToQuantity(dataFromSmartThings, unit);
+                    if (quantity != null) {
+                        return quantity;
+                    }
+                    logger.warn("Failed to convert Number with a value of {} and unit {} from class {}.",
+                            dataFromSmartThings, unit, dataFromSmartThings.getClass().getName());
+                    return UnDefType.UNDEF;
+                }
                 if (dataFromSmartThings instanceof String stringCommandNumber) {
                     // review this, oven return a bad value of format 00:00:00
                     try {
@@ -333,5 +345,27 @@ public abstract class SmartThingsConverter {
                         dataFromSmartThings, dataFromSmartThings.getClass().getName());
                 return UnDefType.UNDEF;
         }
+    }
+
+    private @Nullable State convertToQuantity(Object dataFromSmartThings, String unit) {
+        BigDecimal value = null;
+        if (dataFromSmartThings instanceof String stringValue) {
+            try {
+                value = new BigDecimal(stringValue);
+            } catch (NumberFormatException ex) {
+                return null;
+            }
+        } else if (dataFromSmartThings instanceof Number number) {
+            value = new BigDecimal(number.toString());
+        }
+
+        if (value == null) {
+            return null;
+        }
+
+        if ("Wh".equals(unit)) {
+            return new QuantityType<>(value, Units.WATT_HOUR);
+        }
+        return new QuantityType<>(value + " " + unit);
     }
 }

@@ -29,6 +29,7 @@ import org.openhab.binding.smartthings.internal.type.SmartThingsTypeRegistryImpl
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -161,6 +162,48 @@ class SmartThingsThingHandlerTest {
         assertEquals(1, handler.updatedStates);
         assertEquals(new ChannelUID(handler.getThing().getUID(), "energy", "power"), handler.lastUpdatedChannel);
         assertEquals(new DecimalType(123), handler.lastUpdatedState);
+    }
+
+    @Test
+    void refreshDeviceUpdatesStaticAirConditionerEnergySubChannelAsWattHours() {
+        ThingUID thingUID = new ThingUID("smartthings:Samsung_Room_A_C:account:air-conditioner");
+        Thing thing = ThingBuilder
+                .create(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Samsung_Room_A_C"), thingUID)
+                .withChannel(ChannelBuilder.create(new ChannelUID(thingUID, "energy", "energy"), "Number:Energy")
+                        .withProperties(Map.of(SmartThingsBindingConstants.COMPONENT, "main",
+                                SmartThingsBindingConstants.CAPABILITY, "powerConsumptionReport",
+                                SmartThingsBindingConstants.ATTRIBUTE, "powerConsumption",
+                                SmartThingsBindingConstants.UNIT, "Wh"))
+                        .build())
+                .build();
+        TestSmartThingsThingHandler handler = new TestSmartThingsThingHandler(thing);
+        SmartThingsConverterFactory.registerConverters(new SmartThingsTypeRegistryImpl());
+
+        handler.refreshDevice("Samsung_Room_A_C", "main", "powerConsumptionReport", "powerConsumption",
+                Map.of("energy", 3014134.0));
+
+        assertEquals(1, handler.updatedStates);
+        assertEquals(new ChannelUID(handler.getThing().getUID(), "energy", "energy"), handler.lastUpdatedChannel);
+        assertEquals(new QuantityType<>("3014134 Wh"), handler.lastUpdatedState);
+    }
+
+    @Test
+    void refreshDeviceUpdatesStaticAirConditionerAutoCleaningModeAsSwitch() {
+        ThingUID thingUID = new ThingUID("smartthings:Samsung_Room_A_C:account:air-conditioner");
+        Thing thing = ThingBuilder
+                .create(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Samsung_Room_A_C"), thingUID)
+                .withChannel(createChannel(thingUID, "advanced", "auto-cleaning-mode",
+                        SmartThingsBindingConstants.TYPE_SWITCH, "custom.autoCleaningMode", "autoCleaningMode"))
+                .build();
+        TestSmartThingsThingHandler handler = new TestSmartThingsThingHandler(thing);
+        SmartThingsConverterFactory.registerConverters(new SmartThingsTypeRegistryImpl());
+
+        handler.refreshDevice("Samsung_Room_A_C", "main", "custom.autoCleaningMode", "autoCleaningMode", "off");
+
+        assertEquals(1, handler.updatedStates);
+        assertEquals(new ChannelUID(handler.getThing().getUID(), "advanced", "auto-cleaning-mode"),
+                handler.lastUpdatedChannel);
+        assertEquals(OnOffType.OFF, handler.lastUpdatedState);
     }
 
     @Test

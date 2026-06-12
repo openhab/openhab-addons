@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -163,13 +164,16 @@ class SmartThingsThingDescriptionTest {
                 Map.entry("ac-temperature", "Number:Temperature"),
                 Map.entry("ac-cooling-setpoint", "Number:Temperature"),
                 Map.entry("ac-humidity", "Number:Dimensionless"), Map.entry("ac-power-consumption", "Number:Power"),
-                Map.entry("ac-energy", "Number:Energy"),
+                Map.entry("ac-energy", "Number:Energy"), Map.entry("ac-auto-cleaning-mode", "Switch"),
                 Map.entry("ac-auto-cleaning-progress", "Number:Dimensionless"));
 
         for (Map.Entry<String, String> entry : expectedItemTypes.entrySet()) {
             assertEquals(entry.getValue(), findChannelTypeItemType(document, entry.getKey()), entry.getKey());
         }
+        assertEquals("Wh", findPropertyValue(findChannel(document, "energy"), "unit"));
         assertEquals("%.0f Wh", findChannelTypeStatePattern(document, "ac-energy"));
+        assertEquals(Map.of("off", "Off", "quiet", "Quiet", "sleep", "Sleep", "windFree", "WindFree"),
+                findChannelTypeStateOptions(document, "ac-optional-mode"));
     }
 
     private Document parseThingDescription(String resourceName) throws Exception {
@@ -256,6 +260,17 @@ class SmartThingsThingDescriptionTest {
         Node state = channelType.getElementsByTagName("state").item(0);
         assertNotNull(state);
         return ((Element) state).getAttribute("pattern");
+    }
+
+    private Map<String, String> findChannelTypeStateOptions(Document document, String channelTypeId) {
+        Map<String, String> result = new HashMap<>();
+        Element channelType = findChannelType(document, channelTypeId);
+        NodeList options = channelType.getElementsByTagName("option");
+        for (int i = 0; i < options.getLength(); i++) {
+            Element option = (Element) options.item(i);
+            result.put(option.getAttribute("value"), option.getTextContent());
+        }
+        return result;
     }
 
     private Element findChannelType(Document document, String channelTypeId) {

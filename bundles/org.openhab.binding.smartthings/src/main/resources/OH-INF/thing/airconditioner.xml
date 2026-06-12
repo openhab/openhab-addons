@@ -107,6 +107,7 @@
 					<property name="component">main</property>
 					<property name="capability">powerConsumptionReport</property>
 					<property name="attribute">powerConsumption</property>
+					<property name="unit">Wh</property>
 				</properties>
 			</channel>
 		</channels>
@@ -238,11 +239,18 @@
 		<item-type>String</item-type>
 		<label>Optional Mode</label>
 		<description>Additional Samsung air conditioner mode, such as quiet, sleep, or WindFree.</description>
-		<state readOnly="false"/>
+		<state readOnly="false">
+			<options>
+				<option value="off">Off</option>
+				<option value="quiet">Quiet</option>
+				<option value="sleep">Sleep</option>
+				<option value="windFree">WindFree</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="ac-auto-cleaning-mode" advanced="true">
-		<item-type>String</item-type>
+		<item-type>Switch</item-type>
 		<label>Auto Cleaning Mode</label>
 		<description>Auto-cleaning mode of the air conditioner.</description>
 		<state readOnly="false"/>
