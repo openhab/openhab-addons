@@ -35,7 +35,7 @@ import com.google.gson.Gson;
 public class MqttMessageBuilder {
     public static @Nullable String brokerAddress;
     public static @Nullable String userId;
-    public static @Nullable String clientId;
+    public static @Nullable String appId;
     public static @Nullable String key;
 
     /**
@@ -65,7 +65,7 @@ public class MqttMessageBuilder {
         dataMap.put("header", headerMap);
         dataMap.put("payload", payload);
         String jsonString = new Gson().toJson(dataMap);
-        return StandardCharsets.UTF_8.encode(jsonString).array();
+        return jsonString.getBytes(StandardCharsets.UTF_8);
     }
 
     /**
@@ -78,10 +78,14 @@ public class MqttMessageBuilder {
         return "/app/" + MqttMessageBuilder.userId + "/subscribe";
     }
 
-    public static String buildAppId() {
+    public static String getAppId() {
+        String appId = MqttMessageBuilder.appId;
+        if (appId != null) {
+            return appId;
+        }
         String randomString = "API" + UUID.randomUUID();
-        String encodedString = StandardCharsets.UTF_8.encode(randomString).toString();
-        return MD5Util.getMD5String(encodedString);
+        appId = MD5Util.getMD5String(randomString);
+        return appId;
     }
 
     /**
@@ -92,11 +96,11 @@ public class MqttMessageBuilder {
      * @return The response topic
      */
     public static String buildClientResponseTopic() {
-        return "/app/" + MqttMessageBuilder.userId + "-" + buildAppId() + "/subscribe";
+        return "/app/" + MqttMessageBuilder.userId + "-" + getAppId() + "/subscribe";
     }
 
-    public static String buildClientId() {
-        return "app:" + buildAppId();
+    public static String getClientId() {
+        return "app:" + getAppId();
     }
 
     /**
@@ -112,10 +116,6 @@ public class MqttMessageBuilder {
 
     public static void setUserId(String userId) {
         MqttMessageBuilder.userId = userId;
-    }
-
-    public static void setClientId(String clientId) {
-        MqttMessageBuilder.clientId = clientId;
     }
 
     public static void setBrokerAddress(String brokerAddress) {

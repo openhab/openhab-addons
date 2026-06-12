@@ -63,8 +63,6 @@ public class MerossBridgeHandler extends BaseBridgeHandler {
     private @Nullable CloudCredentials credentials;
     private List<Device> devices = List.of();
 
-    private @Nullable String clientId;
-
     private final Logger logger = LoggerFactory.getLogger(MerossBridgeHandler.class);
 
     public MerossBridgeHandler(Thing thing, HttpClient httpClient) {
@@ -155,15 +153,6 @@ public class MerossBridgeHandler extends BaseBridgeHandler {
      *
      */
     private void initializeMerossMqttConnector() throws MqttException, InterruptedException {
-        // Make sure to keep the clientId when restarting the connection
-        String clientId = this.clientId;
-        if (clientId == null) {
-            clientId = MqttMessageBuilder.buildClientId();
-            this.clientId = clientId;
-        } else {
-            MqttMessageBuilder.setClientId(clientId);
-        }
-        MqttMessageBuilder.setClientId(clientId);
         CloudCredentials credentials = this.credentials;
         if (credentials == null) {
             logger.debug("No credentials found");
