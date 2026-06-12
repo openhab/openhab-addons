@@ -9,7 +9,7 @@
 			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 
-		<label>Onecta domestic Hot Water Tank</label>
+		<label>Domestic Hot Water Tank</label>
 		<description>Daikin Onecta Domestic HotWater Tank</description>
 		<semantic-equipment-tag>Boiler</semantic-equipment-tag>
 
@@ -30,7 +30,7 @@
 				<description>Daikin unit</description>
 			</parameter>
 			<parameter name="refreshDelay" type="integer" unit="s" min="5">
-				<label>Refresh delay</label>
+				<label>Refresh Delay</label>
 				<description>Channel refresh delay after update command in sec</description>
 				<default>15</default>
 			</parameter>
