@@ -274,7 +274,6 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_VIBRATION, "sensorVibration", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_FLOOD, "sensorFlood", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_SMOKE, "sensorSmoke", ITEMT_SWITCH))
-                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_MUTE, "sensorMute", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_PPM, "sensorPPM", ITEMT_NUMBER))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_VALVE, "sensorValve", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_ALARM_STATE, "alarmState", ITEMT_STRING))
@@ -328,8 +327,9 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_SCHEDULE, "controlSchedule", ITEMT_SWITCH))
 
                 // Flood Gen4
-                .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_FLOOD_ALARM_MODE, "floodAlarmMode", ITEMT_STRING))
-                .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_FLOOD_REPORT_HOLDOFF, "floodReportHoldoff",
+                .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_ALARM_MODE, "floodAlarmMode", ITEMT_STRING))
+                .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_MUTE, "sensorMute", ITEMT_SWITCH))
+                .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_REPORT_HOLDOFF, "floodReportHoldoff",
                         ITEMT_TIME));
     }
 
@@ -613,7 +613,7 @@ public class ShellyChannelDefinitions {
                 CHANNEL_SENSOR_ILLUM);
         addChannel(thing, newChannels, sdata.flood != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_FLOOD);
         addChannel(thing, newChannels, sdata.smoke != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_SMOKE);
-        addChannel(thing, newChannels, sdata.mute != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MUTE);
+        addChannel(thing, newChannels, sdata.mute != null, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_MUTE);
         addChannel(thing, newChannels, profile.settings.externalPower != null || sdata.charger != null, CHGR_DEVST,
                 CHANNEL_DEVST_CHARGER);
         addChannel(thing, newChannels, sdata.motion != null || (sdata.sensor != null && sdata.sensor.motion != null),
@@ -684,8 +684,8 @@ public class ShellyChannelDefinitions {
 
         // Flood Gen4
         if (profile.isFlood && profile.isGen2) {
-            addChannel(thing, newChannels, true, CHANNEL_GROUP_CONTROL, CHANNEL_FLOOD_ALARM_MODE);
-            addChannel(thing, newChannels, true, CHANNEL_GROUP_CONTROL, CHANNEL_FLOOD_REPORT_HOLDOFF);
+            addChannel(thing, newChannels, true, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_ALARM_MODE);
+            addChannel(thing, newChannels, true, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_REPORT_HOLDOFF);
         }
 
         // Battery

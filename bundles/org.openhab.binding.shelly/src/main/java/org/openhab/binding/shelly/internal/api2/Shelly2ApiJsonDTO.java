@@ -1059,6 +1059,12 @@ public class Shelly2ApiJsonDTO {
         // BLE
         public Shelly2DevConfigBleRpc rpc;
         public Shelly2DevConfigBleObserver observer;
+
+        // Flood.SetConfig
+        @SerializedName("alarm_mode")
+        public @Nullable String alarmMode;
+        @SerializedName("report_holdoff")
+        public @Nullable Integer reportHoldoff;
     }
 
     public static class Shelly2RpcRequest {

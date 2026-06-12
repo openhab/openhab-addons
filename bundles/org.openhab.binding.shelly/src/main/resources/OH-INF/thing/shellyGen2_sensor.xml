@@ -68,13 +68,14 @@
 	<channel-type id="floodAlarmMode">
 		<item-type>String</item-type>
 		<label>Alarm Mode</label>
-		<description>Flood sensor alarm mode (disabled/normal/intense/rain)</description>
+		<description>Flood sensor alarm mode. Rain mode: rain detection only, no flood alarm. Flood mode options: intense
+			(loud alarm, mutable), normal (alarm, mutable), disabled (silent, no acoustic alarm).</description>
 		<state readOnly="false">
 			<options>
-				<option value="disabled">Disabled</option>
-				<option value="normal">Normal</option>
-				<option value="intense">Intense</option>
-				<option value="rain">Rain</option>
+				<option value="rain">Rain — rain detection only, no flood alarm</option>
+				<option value="intense">Flood, Intense — loud acoustic alarm, can be muted</option>
+				<option value="normal">Flood, Normal — acoustic alarm enabled, can be muted</option>
+				<option value="disabled">Flood, Silent — flood detection only, no acoustic alarm</option>
 			</options>
 		</state>
 	</channel-type>

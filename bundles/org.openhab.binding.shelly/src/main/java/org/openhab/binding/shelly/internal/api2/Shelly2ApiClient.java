@@ -64,7 +64,6 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSe
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellySensorLux;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2AuthChallenge;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2CBStatus;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2ConfigFlood;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2DevConfigCover;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2DevConfigInput;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2DevConfigPm1;
@@ -1289,13 +1288,15 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
     }
 
     public void setFloodConfig(int id, @Nullable String alarmMode, int reportHoldoff) throws ShellyApiException {
-        Shelly2ConfigFlood params = new Shelly2ConfigFlood();
+        // Flood.SetConfig expects {"id":n,"config":{"alarm_mode":"...","report_holdoff":n}}
+        Shelly2RpcRequestParams params = new Shelly2RpcRequestParams();
         params.id = id;
-        params.alarmMode = (alarmMode != null && !alarmMode.isEmpty()) ? alarmMode : null;
-        params.reportHoldoff = reportHoldoff;
+        params.withConfig();
+        params.config.alarmMode = (alarmMode != null && !alarmMode.isEmpty()) ? alarmMode : null;
+        params.config.reportHoldoff = reportHoldoff;
         apiRequest(SHELLYRPC_METHOD_FLOOD_SETCONFIG, params, String.class);
-        if (params.alarmMode != null) {
-            profile.floodAlarmMode = params.alarmMode;
+        if (params.config.alarmMode != null) {
+            profile.floodAlarmMode = params.config.alarmMode;
         }
         profile.reportHoldoff = reportHoldoff;
     }

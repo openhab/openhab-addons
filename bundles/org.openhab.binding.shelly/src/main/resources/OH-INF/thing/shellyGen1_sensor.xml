@@ -369,8 +369,9 @@
 
 	<channel-type id="sensorMute">
 		<item-type>Switch</item-type>
-		<label>Mute</label>
-		<description>Indicates mute setting (ON=muted)</description>
+		<label>Mute Alarm</label>
+		<description>Smoke: send ON to mute the alarm via API (resets to OFF). Flood: read-only — reflects ON when muted via
+			the physical button on the device (no API mute command available).</description>
 	</channel-type>
 
 	<channel-type id="sensorLux">
