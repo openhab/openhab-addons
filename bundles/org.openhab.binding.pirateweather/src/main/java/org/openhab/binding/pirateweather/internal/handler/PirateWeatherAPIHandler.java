@@ -15,7 +15,6 @@ package org.openhab.binding.pirateweather.internal.handler;
 import static org.openhab.binding.pirateweather.internal.PirateWeatherBindingConstants.*;
 
 import java.util.Collections;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -24,9 +23,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.pirateweather.internal.config.PirateWeatherAPIConfiguration;
+import org.openhab.binding.pirateweather.internal.connection.PirateWeatherCommunicationException;
+import org.openhab.binding.pirateweather.internal.connection.PirateWeatherConfigurationException;
 import org.openhab.binding.pirateweather.internal.connection.PirateWeatherConnection;
+import org.openhab.binding.pirateweather.internal.dto.PirateWeatherJsonWeatherData;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.library.types.PointType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -55,13 +58,11 @@ public class PirateWeatherAPIHandler extends BaseBridgeHandler {
     private static final long INITIAL_DELAY_IN_SECONDS = 15;
 
     private @Nullable ScheduledFuture<?> refreshJob;
+    private @Nullable PirateWeatherConnection connection;
+    private @Nullable PirateWeatherAPIConfiguration config;
 
     private final HttpClient httpClient;
     private final LocaleProvider localeProvider;
-    private @Nullable PirateWeatherConnection connection;
-
-    // keeps track of the parsed config
-    private @Nullable PirateWeatherAPIConfiguration config;
 
     public PirateWeatherAPIHandler(Bridge bridge, HttpClient httpClient, LocaleProvider localeProvider) {
         super(bridge);
@@ -102,7 +103,7 @@ public class PirateWeatherAPIHandler extends BaseBridgeHandler {
         }
 
         updateStatus(ThingStatus.UNKNOWN);
-        connection = new PirateWeatherConnection(this, httpClient);
+        connection = new PirateWeatherConnection(config, httpClient);
 
         ScheduledFuture<?> localRefreshJob = refreshJob;
         if (localRefreshJob == null || localRefreshJob.isCancelled()) {
@@ -136,54 +137,20 @@ public class PirateWeatherAPIHandler extends BaseBridgeHandler {
     @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
         scheduler.schedule(() -> {
-            updateThing((PirateWeatherWeatherAndForecastHandler) childHandler, childThing);
-            determineBridgeStatus();
+            if (thing.getHandler() instanceof PirateWeatherWeatherAndForecastHandler pirateChildHandler) {
+                pirateChildHandler.updateData();
+            }
         }, INITIAL_DELAY_IN_SECONDS, TimeUnit.SECONDS);
     }
 
-    @Override
-    public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
-        determineBridgeStatus();
-    }
-
-    private void determineBridgeStatus() {
-        ThingStatus status = ThingStatus.ONLINE;
-
+    private void updateThings() {
         for (Thing thing : getThing().getThings()) {
             if (!thing.isEnabled()) {
                 continue;
             }
-
-            if (ThingStatus.ONLINE.equals(thing.getStatus())) {
-                updateStatus(ThingStatus.ONLINE);
-                return;
+            if (thing.getHandler() instanceof PirateWeatherWeatherAndForecastHandler childHandler) {
+                childHandler.updateData();
             }
-
-            status = ThingStatus.OFFLINE;
-        }
-
-        updateStatus(status);
-    }
-
-    private void updateThings() {
-        ThingStatus status = ThingStatus.OFFLINE;
-        for (Thing thing : getThing().getThings()) {
-            if (ThingStatus.ONLINE
-                    .equals(updateThing((PirateWeatherWeatherAndForecastHandler) thing.getHandler(), thing))) {
-                status = ThingStatus.ONLINE;
-            }
-        }
-        updateStatus(status);
-    }
-
-    private ThingStatus updateThing(@Nullable PirateWeatherWeatherAndForecastHandler handler, Thing thing) {
-        if (handler != null && connection != null) {
-            PirateWeatherConnection safeConnection = Objects.requireNonNull(connection);
-            handler.updateData(safeConnection);
-            return thing.getStatus();
-        } else {
-            logger.warn("Cannot update weather data of thing '{}' as location handler is null.", thing.getUID());
-            return ThingStatus.OFFLINE;
         }
     }
 
@@ -193,5 +160,23 @@ public class PirateWeatherAPIHandler extends BaseBridgeHandler {
             throw new IllegalStateException("Handler not yet initialized");
         }
         return cfg;
+    }
+
+    public @Nullable PirateWeatherJsonWeatherData getWeatherData(PointType location)
+            throws PirateWeatherCommunicationException, PirateWeatherConfigurationException {
+        PirateWeatherConnection connection = this.connection;
+        if (connection == null) {
+            throw new PirateWeatherCommunicationException("Pirate Weather connection is not initialized");
+        }
+
+        try {
+            return connection.getWeatherData(location);
+        } catch (PirateWeatherConfigurationException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            throw e;
+        } catch (PirateWeatherCommunicationException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            throw e;
+        }
     }
 }

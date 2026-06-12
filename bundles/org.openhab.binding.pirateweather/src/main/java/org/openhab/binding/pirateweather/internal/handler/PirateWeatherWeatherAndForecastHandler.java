@@ -43,7 +43,6 @@ import org.openhab.binding.pirateweather.internal.config.PirateWeatherChannelCon
 import org.openhab.binding.pirateweather.internal.config.PirateWeatherWeatherAndForecastConfiguration;
 import org.openhab.binding.pirateweather.internal.connection.PirateWeatherCommunicationException;
 import org.openhab.binding.pirateweather.internal.connection.PirateWeatherConfigurationException;
-import org.openhab.binding.pirateweather.internal.connection.PirateWeatherConnection;
 import org.openhab.binding.pirateweather.internal.dto.PirateWeatherCurrentlyData;
 import org.openhab.binding.pirateweather.internal.dto.PirateWeatherDailyData;
 import org.openhab.binding.pirateweather.internal.dto.PirateWeatherDailyData.DailyData;
@@ -63,9 +62,9 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
@@ -77,8 +76,6 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link PirateWeatherWeatherAndForecastHandler} is responsible for handling commands, which are sent to one of the
@@ -195,17 +192,6 @@ public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {
         }
     }
 
-    @Override
-    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        if (ThingStatus.ONLINE.equals(bridgeStatusInfo.getStatus())
-                && ThingStatusDetail.BRIDGE_OFFLINE.equals(getThing().getStatusInfo().getStatusDetail())) {
-            updateStatus(ThingStatus.UNKNOWN);
-        } else if (ThingStatus.OFFLINE.equals(bridgeStatusInfo.getStatus())
-                && !ThingStatus.OFFLINE.equals(getThing().getStatus())) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-        }
-    }
-
     private void rebuildChannels(int newForecastHours, int newForecastDays, int newNumberOfAlerts) {
         logger.debug("Rebuilding thing '{}'.", getThing().getUID());
         List<Channel> toBeAddedChannels = new ArrayList<>();
@@ -316,14 +302,17 @@ public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {
         return getThing().getChannelsOfGroup(channelGroupId);
     }
 
-    /**
-     * Updates Pirate Weather data for this location.
-     *
-     * @param connection {@link PirateWeatherConnection} instance
-     */
-    public void updateData(PirateWeatherConnection connection) {
+    public void updateData() {
+        Bridge bridge = getBridge();
+        ThingHandler handler = bridge != null ? bridge.getHandler() : null;
+
+        if (!(handler instanceof PirateWeatherAPIHandler apiHandler)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            return;
+        }
+
         try {
-            if (requestData(connection)) {
+            if (requestData(apiHandler)) {
                 updateChannels();
                 updateStatus(ThingStatus.ONLINE);
             }
@@ -334,24 +323,15 @@ public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {
         }
     }
 
-    /**
-     * Requests the data from Pirate Weather API.
-     *
-     * @param connection {@link PirateWeatherConnection} instance
-     * @return true, if the request for the Pirate Weather data was successful
-     * @throws PirateWeatherCommunicationException
-     * @throws PirateWeatherConfigurationException
-     */
-    private boolean requestData(PirateWeatherConnection connection)
+    private boolean requestData(PirateWeatherAPIHandler apiHandler)
             throws PirateWeatherCommunicationException, PirateWeatherConfigurationException {
         logger.debug("Update weather and forecast data of thing '{}'.", getThing().getUID());
-        try {
-            weatherData = connection.getWeatherData(location);
-            return true;
-        } catch (JsonSyntaxException e) {
-            logger.debug("JsonSyntaxException occurred during execution: {}", e.getLocalizedMessage(), e);
-            return false;
+        PointType location = this.location;
+        if (location == null) {
+            throw new PirateWeatherConfigurationException("@text/offline.conf-error-missing-location");
         }
+        weatherData = apiHandler.getWeatherData(location);
+        return true;
     }
 
     /**

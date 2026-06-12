@@ -33,7 +33,6 @@ import org.eclipse.jetty.client.HttpResponseException;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.openhab.binding.pirateweather.internal.config.PirateWeatherAPIConfiguration;
 import org.openhab.binding.pirateweather.internal.dto.PirateWeatherJsonWeatherData;
-import org.openhab.binding.pirateweather.internal.handler.PirateWeatherAPIHandler;
 import org.openhab.core.cache.ExpiringCacheMap;
 import org.openhab.core.library.types.PointType;
 import org.slf4j.Logger;
@@ -58,18 +57,15 @@ public class PirateWeatherConnection {
 
     private static final String WEATHER_URL = "https://api.pirateweather.net/forecast/%s/%f,%f";
 
-    private final PirateWeatherAPIHandler handler;
     private final HttpClient httpClient;
-
+    private final PirateWeatherAPIConfiguration config;
     private final ExpiringCacheMap<String, String> cache;
 
     private final Gson gson = new Gson();
 
-    public PirateWeatherConnection(PirateWeatherAPIHandler handler, HttpClient httpClient) {
-        this.handler = handler;
+    public PirateWeatherConnection(PirateWeatherAPIConfiguration config, HttpClient httpClient) {
+        this.config = config;
         this.httpClient = httpClient;
-
-        PirateWeatherAPIConfiguration config = handler.getPirateWeatherAPIConfig();
         cache = new ExpiringCacheMap<>(TimeUnit.MINUTES.toMillis(config.refreshInterval));
     }
 
@@ -83,13 +79,8 @@ public class PirateWeatherConnection {
      * @throws PirateWeatherCommunicationException
      * @throws PirateWeatherConfigurationException
      */
-    public synchronized @Nullable PirateWeatherJsonWeatherData getWeatherData(@Nullable PointType location)
-            throws JsonSyntaxException, PirateWeatherCommunicationException, PirateWeatherConfigurationException {
-        if (location == null) {
-            throw new PirateWeatherConfigurationException("@text/offline.conf-error-missing-location");
-        }
-
-        PirateWeatherAPIConfiguration config = handler.getPirateWeatherAPIConfig();
+    public synchronized @Nullable PirateWeatherJsonWeatherData getWeatherData(PointType location)
+            throws PirateWeatherCommunicationException, PirateWeatherConfigurationException {
         String apikey = config.apikey;
         if (apikey.isBlank()) {
             throw new PirateWeatherConfigurationException("@text/offline.conf-error-missing-apikey");
@@ -98,8 +89,13 @@ public class PirateWeatherConnection {
         String url = String.format(Locale.ROOT, WEATHER_URL, apikey, location.getLatitude().doubleValue(),
                 location.getLongitude().doubleValue());
 
-        return gson.fromJson(getResponseFromCache(buildURL(url, getRequestParams(config))),
-                PirateWeatherJsonWeatherData.class);
+        try {
+            return gson.fromJson(getResponseFromCache(buildURL(url, getRequestParams(config))),
+                    PirateWeatherJsonWeatherData.class);
+        } catch (JsonSyntaxException e) {
+            logger.debug("JsonSyntaxException occurred during execution: {}", e.getLocalizedMessage(), e);
+            throw new PirateWeatherCommunicationException("Error parsing weather data", e);
+        }
     }
 
     private Map<String, String> getRequestParams(PirateWeatherAPIConfiguration config) {
@@ -158,7 +154,9 @@ public class PirateWeatherConnection {
                     .send();
             int httpStatus = contentResponse.getStatus();
             String content = contentResponse.getContentAsString();
-            logger.trace("Pirate Weather response: status = {}, content = '{}'", httpStatus, content);
+            if (logger.isTraceEnabled()) {
+                logger.trace("Pirate Weather response: status = {}, content = '{}'", httpStatus, content);
+            }
             switch (httpStatus) {
                 case OK_200:
                     return content;
