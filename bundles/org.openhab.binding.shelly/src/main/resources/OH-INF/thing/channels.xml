@@ -32,10 +32,12 @@
 		<item-type>Number:Angle</item-type>
 		<label>@text/channel-type.shelly.sensorWindDirection.label</label>
 		<description>@text/channel-type.shelly.sensorWindDirection.description</description>
+		<category>wind</category>
 		<tags>
 			<tag>Measurement</tag>
+			<tag>Wind</tag>
 		</tags>
-		<state readOnly="true" pattern="%.1f %unit%">
+		<state readOnly="true" pattern="%.0f %unit%">
 		</state>
 	</channel-type>
 

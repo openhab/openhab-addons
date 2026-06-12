@@ -79,14 +79,12 @@ public class ShellyChannelDefinitions {
     public static final String ITEMT_AMP = "Number:ElectricCurrent"; // Amperes
     public static final String ITEMT_FREQ = "Number:Frequency";
     public static final String ITEMT_ANGLE = "Number:Angle"; // Degrees (tilt, rotation)
-    public static final String ITEMT_DISTANCE = "Number:Length"; // Meters
+    public static final String ITEMT_DISTANCE = "Number:Length"; // Length (m, mm, …)
     public static final String ITEMT_SPEED = "Number:Speed";
     public static final String ITEMT_VOLUME = "Number:Volume";
     public static final String ITEMT_TIME = "Number:Time"; // Seconds
     public static final String ITEMT_PERCENT = "Number:Dimensionless"; // 0–100% (battery, humidity)
-    public static final String ITEMT_INTENSITY = "Number:Intensity";
     public static final String ITEMT_PRESSURE = "Number:Pressure";
-    public static final String ITEMT_LENGTH = "Number:Length";
 
     // shortcuts to avoid line breaks (make code more readable)
     private static final String CHGR_DEVST = CHANNEL_GROUP_DEV_STATUS;
@@ -288,7 +286,7 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_PRESSURE, "sensorPressure", ITEMT_PRESSURE))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_DEWPOINT, "sensorDewPoint", ITEMT_TEMP))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_PRECIPITATION, "sensorPrecipitation",
-                        ITEMT_LENGTH))
+                        ITEMT_DISTANCE))
 
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_ALARM_STATE, "alarmState", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_ERROR, "sensorError", ITEMT_STRING))
