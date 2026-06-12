@@ -89,6 +89,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceS
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2InputStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RelayStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcBaseMessage;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcRequest.Shelly2RpcRequestParams;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2StatusEm1;
 import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyBaseHandler;
@@ -1296,7 +1297,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         params.config.reportHoldoff = reportHoldoff;
         apiRequest(SHELLYRPC_METHOD_FLOOD_SETCONFIG, params, String.class);
         if (params.config.alarmMode != null) {
-            profile.floodAlarmMode = params.config.alarmMode;
+            profile.floodAlarmMode = getString(params.config.alarmMode);
         }
         profile.reportHoldoff = reportHoldoff;
     }
