@@ -17,10 +17,12 @@ import static org.openhab.binding.gemini.internal.GeminiBindingConstants.DEFAULT
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Queue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -134,7 +136,7 @@ public class GeminiApiClient {
         GeminiContent systemInstruction = createSystemInstruction(systemMessage);
 
         List<GeminiContent> contents = new ArrayList<>();
-        String lastToolCallName = null;
+        Queue<String> pendingToolCallNames = new LinkedList<>();
 
         for (Conversation.Message msg : history) {
             switch (msg.role()) {
@@ -150,15 +152,19 @@ public class GeminiApiClient {
                 }
                 case TOOL_CALL: {
                     LLMToolCall toolCall = LLMToolCall.fromJson(msg.content());
-                    lastToolCallName = toolCall.tool().replaceAll("[^a-zA-Z0-9_-]", "_");
-                    GeminiFunctionCall fc = new GeminiFunctionCall(lastToolCallName, toolCall.params());
+                    String name = toolCall.tool().replaceAll("[^a-zA-Z0-9_-]", "_");
+                    pendingToolCallNames.add(name);
+                    GeminiFunctionCall fc = new GeminiFunctionCall(name, toolCall.params());
                     GeminiPart part = new GeminiPart(null, fc, null, null);
                     contents.add(new GeminiContent(ROLE_MODEL, List.of(part)));
                     break;
                 }
                 case TOOL_RETURN: {
-                    GeminiFunctionResponse fr = new GeminiFunctionResponse(lastToolCallName,
-                            Map.of("result", msg.content()));
+                    String name = pendingToolCallNames.poll();
+                    if (name == null) {
+                        name = "";
+                    }
+                    GeminiFunctionResponse fr = new GeminiFunctionResponse(name, Map.of("result", msg.content()));
                     GeminiPart part = new GeminiPart(null, null, fr, null);
                     contents.add(new GeminiContent(ROLE_USER, List.of(part)));
                     break;
