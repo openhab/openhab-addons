@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import org.bluez.exceptions.BluezFailedException;
 import org.bluez.exceptions.BluezInvalidArgumentsException;
@@ -31,8 +32,10 @@ import org.openhab.binding.bluetooth.AbstractBluetoothBridgeHandler;
 import org.openhab.binding.bluetooth.BluetoothAddress;
 import org.openhab.binding.bluetooth.bluez.internal.events.AdapterDiscoveringChangedEvent;
 import org.openhab.binding.bluetooth.bluez.internal.events.AdapterPoweredChangedEvent;
+import org.openhab.binding.bluetooth.bluez.internal.events.AdapterRemovedEvent;
 import org.openhab.binding.bluetooth.bluez.internal.events.BlueZEvent;
 import org.openhab.binding.bluetooth.bluez.internal.events.BlueZEventListener;
+import org.openhab.binding.bluetooth.bluez.internal.events.DeviceRemovedEvent;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -67,6 +70,11 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
     private @Nullable BluetoothAddress adapterAddress;
 
     private boolean lazyScan;
+
+    private final Consumer<String> deviceRemovedListener = this::onDeviceRemoved;
+    private final Consumer<String> adapterRemovedListener = this::onAdapterRemoved;
+
+    private boolean removalListenersRegistered;
 
     private @Nullable ScheduledFuture<?> discoveryJob;
 
@@ -107,6 +115,12 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
     @Override
     public void dispose() {
         deviceManagerFactory.getPropertiesChangedHandler().removeListener(this);
+        DeviceManagerWrapper deviceManager = deviceManagerFactory.getDeviceManager();
+        if (deviceManager != null && removalListenersRegistered) {
+            deviceManager.unregisterDeviceRemovedListener(deviceRemovedListener);
+            deviceManager.unregisterAdapterRemovedListener(adapterRemovedListener);
+            removalListenersRegistered = false;
+        }
         logger.debug("Termination of DBus BlueZ handler");
 
         Future<?> job = discoveryJob;
@@ -185,6 +199,12 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
 
             deviceManager.setLazyScan(this.lazyScan);
 
+            if (!removalListenersRegistered) {
+                deviceManager.registerDeviceRemovedListener(deviceRemovedListener);
+                deviceManager.registerAdapterRemovedListener(adapterRemovedListener);
+                removalListenersRegistered = true;
+            }
+
             BluetoothAdapter localAdapter = prepareAdapter(deviceManager);
             if (localAdapter == null) {
                 // adapter isn't prepared yet
@@ -232,6 +252,33 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
         }
     }
 
+    /**
+     * Invoked (via {@link DeviceManagerWrapper#registerDeviceRemovedListener}) when BlueZ removes a
+     * device object, with that device's DBus object path. A removal means any connection to the
+     * device is gone and its cached GATT state is invalid — but the {@code Connected=false}
+     * PropertiesChanged signal can be missed under continuous discovery, leaving the device's handler
+     * stuck believing it is still connected. Wrap it as a {@link DeviceRemovedEvent} and route it
+     * through the same adapter-filtered dispatch as every other BlueZ event, so the matching
+     * {@link BlueZBluetoothDevice} resets its state and the reconnect job can recover.
+     *
+     * @param dbusPath the removed device's DBus object path, e.g. {@code /org/bluez/hci0/dev_AA_BB_CC_DD_EE_FF}
+     */
+    private void onDeviceRemoved(String dbusPath) {
+        onDBusBlueZEvent(new DeviceRemovedEvent(dbusPath));
+    }
+
+    /**
+     * Invoked (via {@link DeviceManagerWrapper#registerAdapterRemovedListener}) when BlueZ removes an
+     * adapter object, with that adapter's DBus object path (e.g. {@code /org/bluez/hci0}) — typically
+     * a USB BT dongle being unplugged. Wrap it as an {@link AdapterRemovedEvent} and route it through
+     * the same adapter-filtered dispatch as every other BlueZ event.
+     *
+     * @param dbusPath the removed adapter's DBus object path
+     */
+    private void onAdapterRemoved(String dbusPath) {
+        onDBusBlueZEvent(new AdapterRemovedEvent(dbusPath));
+    }
+
     @Override
     public @Nullable BluetoothAddress getAddress() {
         return adapterAddress;
@@ -264,7 +311,23 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
             // now lets forward the event to the corresponding bluetooth device
             BlueZBluetoothDevice device = getDevice(address);
             event.dispatch(device);
+        } else {
+            // adapter-scoped event (no device in the path), e.g. adapter removed - handle it here
+            event.dispatch(this);
         }
+    }
+
+    @Override
+    public void onAdapterRemoved(AdapterRemovedEvent event) {
+        logger.debug("BlueZ removed our adapter {}; resetting adapter and all of its devices", adapterAddress);
+        // Drop the cached adapter proxy so the next refresh re-resolves a live one when the adapter
+        // (e.g. a USB dongle) reappears - reusing a stale proxy is the core adapter-staleness bug.
+        this.adapter = null;
+        // Cascade the reset to every device under this adapter. BlueZ does not reliably emit a
+        // per-device InterfacesRemoved before removing the adapter, so the devices would otherwise
+        // stay stuck believing they are still connected.
+        forEachDevice(BlueZBluetoothDevice::resetForRemoval);
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Adapter removed");
     }
 
     @Override

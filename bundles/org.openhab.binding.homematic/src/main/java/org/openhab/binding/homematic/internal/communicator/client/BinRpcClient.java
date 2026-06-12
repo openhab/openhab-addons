@@ -15,6 +15,7 @@ package org.openhab.binding.homematic.internal.communicator.client;
 import java.io.IOException;
 import java.net.Socket;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
 import org.openhab.binding.homematic.internal.communicator.message.BinRpcMessage;
 import org.openhab.binding.homematic.internal.communicator.message.RpcRequest;
@@ -28,6 +29,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class BinRpcClient extends RpcClient<byte[]> {
     private final Logger logger = LoggerFactory.getLogger(BinRpcClient.class);
 

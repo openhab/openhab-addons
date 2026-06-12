@@ -304,7 +304,7 @@ public class LGWebOSHandler extends BaseThingHandler
                 break;
             case REGISTERED:
                 startKeepAliveJob();
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "@text/online.connected");
+                updateStatus(ThingStatus.ONLINE);
 
                 channelHandlers.forEach((k, v) -> {
                     // refresh subscriptions except on channel, which can only be subscribe in livetv app. see

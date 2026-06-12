@@ -14,11 +14,15 @@ package org.openhab.binding.homematic.internal.model;
 
 import java.util.Objects;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Simple representation of a datapoint.
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class HmDatapointInfo {
     private String address;
     private Integer channel;
@@ -95,13 +99,12 @@ public class HmDatapointInfo {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof HmDatapointInfo)) {
-            return false;
+    public boolean equals(@Nullable Object obj) {
+        if (obj instanceof HmDatapointInfo other) {
+            return Objects.equals(address, other.getAddress()) && Objects.equals(paramsetType, other.getParamsetType())
+                    && Objects.equals(channel, other.getChannel()) && Objects.equals(name, other.getName());
         }
-        HmDatapointInfo comp = (HmDatapointInfo) obj;
-        return Objects.equals(address, comp.getAddress()) && Objects.equals(paramsetType, comp.getParamsetType())
-                && Objects.equals(channel, comp.getChannel()) && Objects.equals(name, comp.getName());
+        return false;
     }
 
     @Override

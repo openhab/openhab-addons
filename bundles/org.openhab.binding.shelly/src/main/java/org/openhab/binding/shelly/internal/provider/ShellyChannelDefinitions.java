@@ -62,27 +62,27 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = ShellyChannelDefinitions.class)
 public class ShellyChannelDefinitions {
 
-    public static final String ITEMT_STRING = "String";
-    public static final String ITEMT_NUMBER = "Number";
-    public static final String ITEMT_SWITCH = "Switch";
-    public static final String ITEMT_CONTACT = "Contact";
-    public static final String ITEMT_ROLLER = "Rollershutter";
-    public static final String ITEMT_DIMMER = "Dimmer";
+    public static final String ITEMT_STRING = "String"; // Text, event types, modes
+    public static final String ITEMT_NUMBER = "Number"; // Plain dimensionless number
+    public static final String ITEMT_SWITCH = "Switch"; // On/Off
+    public static final String ITEMT_CONTACT = "Contact"; // Contact state Door/window sensors
+    public static final String ITEMT_ROLLER = "Rollershutter"; // Roller shutter control
+    public static final String ITEMT_DIMMER = "Dimmer"; // Brightness (0–100%)
     public static final String ITEMT_LOCATION = "Location";
     public static final String ITEMT_DATETIME = "DateTime";
-    public static final String ITEMT_TEMP = "Number:Temperature";
+    public static final String ITEMT_TEMP = "Number:Temperature"; // Temperature with unit
     public static final String ITEMT_LUX = "Number:Illuminance";
-    public static final String ITEMT_POWER = "Number:Power";
-    public static final String ITEMT_ENERGY = "Number:Energy";
-    public static final String ITEMT_VOLT = "Number:ElectricPotential";
-    public static final String ITEMT_AMP = "Number:ElectricCurrent";
+    public static final String ITEMT_POWER = "Number:Power"; // Watts
+    public static final String ITEMT_ENERGY = "Number:Energy"; // kWh
+    public static final String ITEMT_VOLT = "Number:ElectricPotential"; // Volts
+    public static final String ITEMT_AMP = "Number:ElectricCurrent"; // Amperes
     public static final String ITEMT_FREQ = "Number:Frequency";
-    public static final String ITEMT_ANGLE = "Number:Angle";
-    public static final String ITEMT_DISTANCE = "Number:Length";
+    public static final String ITEMT_ANGLE = "Number:Angle"; // Degrees (tilt, rotation)
+    public static final String ITEMT_DISTANCE = "Number:Length"; // Meters
     public static final String ITEMT_SPEED = "Number:Speed";
     public static final String ITEMT_VOLUME = "Number:Volume";
-    public static final String ITEMT_TIME = "Number:Time";
-    public static final String ITEMT_PERCENT = "Number:Dimensionless";
+    public static final String ITEMT_TIME = "Number:Time"; // Seconds
+    public static final String ITEMT_PERCENT = "Number:Dimensionless"; // 0–100% (battery, humidity)
 
     // shortcuts to avoid line breaks (make code more readable)
     private static final String CHGR_DEVST = CHANNEL_GROUP_DEV_STATUS;
@@ -119,6 +119,52 @@ public class ShellyChannelDefinitions {
     @Activate
     public ShellyChannelDefinitions(@Reference ShellyTranslationProvider translationProvider) {
         ShellyTranslationProvider m = translationProvider;
+
+        /*
+         * Channel registry - Design Principle
+         *
+         * Channels are **not** declared statically in thing-type XML. They are added to the thing
+         * programmatically after the first successful device status read.
+         *
+         * This allows:
+         *
+         * - Conditional channels based on firmware/settings (e.g. autoOn timer only if the
+         * device actually reports autoOn in its settings)
+         * - Indexed channels for multi-relay/multi-meter devices (relay1, relay2, meter2)
+         * - Add-on sensor channels only when an add-on module is physically connected
+         *
+         *
+         * Channel Registry
+         *
+         * CHANNEL_DEFINITIONS is a static ChannelMap populated once at OSGi activation.
+         * Each entry maps a group#channel key to a ShellyChannel descriptor:
+         *
+         * new ShellyChannel(translationProvider, groupId, channelId, channelTypeId, itemType)
+         *
+         * The channelTypeId references either a system channel type (e.g. system:power) or
+         * a binding-specific type defined in device.xml (e.g. meterWatts).
+         *
+         * Dynamic Channel Creation - All createXXX() methods follow the same pattern:
+         *
+         * public static Map<String, Channel> createRelayChannels(Thing thing,
+         * ShellyDeviceProfile profile, ShellySettingsRelay rstatus, int idx) {
+         * Map<String, Channel> add = new LinkedHashMap<>();
+         * String group = profile.getControlGroup(idx); // "relay1", "relay2", ...
+         *
+         * // Only add a channel if the device actually reports the field
+         * addChannel(thing, add, rs.ison != null, group, CHANNEL_OUTPUT);
+         * addChannel(thing, add, rs.autoOn != null, group, CHANNEL_TIMER_AUTOON);
+         * addChannel(thing, add, rs.autoOff != null, group, CHANNEL_TIMER_AUTOOFF);
+         * ...
+         * return add;
+         * }
+         *
+         * addChannel(thing, add, condition, group, channelId) creates a Channel from the
+         * type and item type registered in CHANNEL_DEFINITIONS, and inserts it into add only
+         * when condition is true and the channel does not already exist on the thing.
+         *
+         * The collected maps are merged and applied in ShellyBaseHandler.updateChannelDefinitions():
+         */
 
         // Device
         CHANNEL_DEFINITIONS

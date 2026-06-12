@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.homematic.internal.misc;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Exception if something happens in the communication to the Homematic gateway.
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class HomematicClientException extends Exception {
     private static final long serialVersionUID = 76348991234346L;
 

@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  * @author Andreas Berger - Initial contribution
  */
 @NonNullByDefault
-public class FineOffsetGatewayQueryService extends GatewayQueryService {
+public class FineOffsetGatewayQueryService extends TcpGatewayQueryService {
     private static final Protocol PROTOCOL = Protocol.DEFAULT;
     private final Logger logger = LoggerFactory.getLogger(FineOffsetGatewayQueryService.class);
 

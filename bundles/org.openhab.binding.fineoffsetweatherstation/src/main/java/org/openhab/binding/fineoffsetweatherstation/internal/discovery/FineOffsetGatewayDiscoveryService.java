@@ -39,8 +39,8 @@ import org.openhab.binding.fineoffsetweatherstation.internal.domain.Command;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.Protocol;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.MeasuredValue;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.SensorDevice;
+import org.openhab.binding.fineoffsetweatherstation.internal.service.EcowittHttpGatewayQueryService;
 import org.openhab.binding.fineoffsetweatherstation.internal.service.GatewayQueryService;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -65,6 +65,7 @@ import org.slf4j.LoggerFactory;
 @Component(service = { DiscoveryService.class, FineOffsetGatewayDiscoveryService.class }, immediate = true)
 public class FineOffsetGatewayDiscoveryService extends AbstractDiscoveryService {
     private static final int DISCOVERY_PORT = 46000;
+    private static final int HTTP_PORT = 80;
     private static final int BUFFER_LENGTH = 255;
 
     private final Logger logger = LoggerFactory.getLogger(FineOffsetGatewayDiscoveryService.class);
@@ -176,10 +177,16 @@ public class FineOffsetGatewayDiscoveryService extends AbstractDiscoveryService 
         properties.put(Thing.PROPERTY_MAC_ADDRESS, Utils.toHexString(macAddr, macAddr.length, ":"));
         properties.put(FineOffsetGatewayConfiguration.IP, ip);
         properties.put(FineOffsetGatewayConfiguration.PORT, port);
-        FineOffsetGatewayConfiguration config = new Configuration(properties).as(FineOffsetGatewayConfiguration.class);
+        FineOffsetGatewayConfiguration config = new FineOffsetGatewayConfiguration();
+        config.ip = ip;
+        config.port = port;
         Protocol protocol = determineProtocol(config);
         if (protocol != null) {
             properties.put(FineOffsetGatewayConfiguration.PROTOCOL, protocol.name());
+            if (protocol == Protocol.HTTP_ECOWITT) {
+                // the Ecowitt HTTP API is served on port 80, not the UDP/TCP port reported by the broadcast
+                properties.put(FineOffsetGatewayConfiguration.PORT, HTTP_PORT);
+            }
         }
 
         ThingUID uid = new ThingUID(THING_TYPE_GATEWAY, id);
@@ -193,7 +200,21 @@ public class FineOffsetGatewayDiscoveryService extends AbstractDiscoveryService 
 
     @Nullable
     private Protocol determineProtocol(FineOffsetGatewayConfiguration config) {
+        // prefer the Ecowitt HTTP API when the gateway supports it
+        try (GatewayQueryService gatewayQueryService = Protocol.HTTP_ECOWITT.getGatewayQueryService(config, null)) {
+            if (gatewayQueryService instanceof EcowittHttpGatewayQueryService httpService
+                    && httpService.isEcowittGateway()) {
+                logger.trace("gateway supports the Ecowitt HTTP API");
+                return Protocol.HTTP_ECOWITT;
+            }
+        } catch (IOException e) {
+            logger.debug("error probing the Ecowitt HTTP API on {}: {}", config.ip, e.getMessage());
+        }
+        // fall back to the TCP binary protocols
         for (Protocol protocol : Protocol.values()) {
+            if (protocol == Protocol.HTTP_ECOWITT) {
+                continue;
+            }
             try (GatewayQueryService gatewayQueryService = protocol.getGatewayQueryService(config, null)) {
                 Collection<MeasuredValue> result = gatewayQueryService.getMeasuredValues();
                 logger.trace("found {} measured values via protocol {}", result.size(), protocol);
@@ -201,7 +222,7 @@ public class FineOffsetGatewayDiscoveryService extends AbstractDiscoveryService 
                     return protocol;
                 }
             } catch (IOException e) {
-                logger.warn("", e);
+                logger.debug("error probing protocol {} on {}: {}", protocol, config.ip, e.getMessage());
             }
         }
         return null;

@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.homematic.internal.communicator.client;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Enumeration for available transfer modes.
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public enum TransferMode {
     XML_RPC,
     BIN_RPC

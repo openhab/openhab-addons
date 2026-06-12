@@ -13,6 +13,7 @@
 package org.openhab.binding.mihome.internal.handler;
 
 import static org.openhab.binding.mihome.internal.XiaomiGatewayBindingConstants.*;
+import static org.openhab.core.util.ColorUtil.hsbTosRgb;
 
 import org.openhab.binding.mihome.internal.ColorUtil;
 import org.openhab.core.library.types.DecimalType;
@@ -79,7 +80,7 @@ public class XiaomiActorGatewayHandler extends XiaomiActorBaseHandler {
                 break;
             case CHANNEL_COLOR:
                 if (command instanceof HSBType hsbCommand) {
-                    lastColor = hsbCommand.getRGB() & 0xffffff;
+                    lastColor = hsbTosRgb(hsbCommand) & 0xffffff;
                     writeBridgeLightColor(lastColor, lastBrigthness);
                     return;
                 }

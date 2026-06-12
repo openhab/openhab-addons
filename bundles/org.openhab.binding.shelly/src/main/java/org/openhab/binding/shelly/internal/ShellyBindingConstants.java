@@ -57,6 +57,26 @@ public class ShellyBindingConstants {
     public static final String PROPERTY_COAP_VERSION = "coapVersion";
     public static final String PROPERTY_COIOTAUTO = "coiotAutoEnable";
 
+    /*
+     * Channel Groups Used at Runtime
+     *
+     * CHANNEL_GROUP_DEV_STATUS device Firmware, uptime, WiFi, heartbeat
+     * CHANNEL_GROUP_RELAY_CONTROL relay1..n Relay output, input, timers
+     * CHANNEL_GROUP_ROL_CONTROL roller Rollershutter, position, safety
+     * CHANNEL_GROUP_DIMMER_CONTROL dimmer Brightness
+     * CHANNEL_GROUP_LIGHT_CONTROL control Light power, color mode, timers
+     * CHANNEL_GROUP_COLOR_CONTROL color HSB, RGBW values
+     * CHANNEL_GROUP_WHITE_CONTROL white White brightness and temperature
+     * CHANNEL_GROUP_LIGHT_CHANNEL channel1..n RGBW2 individual white channels
+     * CHANNEL_GROUP_METER meter1..n Watts, kWh, voltage, current
+     * CHANNEL_GROUP_NMETER nmeter 3EM neutral current
+     * CHANNEL_GROUP_SENSOR sensors All environmental readings
+     * CHANNEL_GROUP_BATTERY battery Level, low-battery flag
+     * CHANNEL_GROUP_CONTROL control TRV mode, setpoint, boost
+     * CHANNEL_GROUP_STATUS status1..n Button/input events
+     *
+     */
+
     // Relay
     public static final String CHANNEL_GROUP_RELAY_CONTROL = "relay";
     public static final String CHANNEL_OUTPUT_NAME = "outputName";

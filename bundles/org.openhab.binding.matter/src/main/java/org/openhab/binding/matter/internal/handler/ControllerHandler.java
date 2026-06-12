@@ -165,6 +165,11 @@ public class ControllerHandler extends BaseBridgeHandler implements MatterClient
         if (childHandler instanceof NodeHandler handler) {
             BigInteger nodeId = handler.getNodeId();
             linkedNodes.put(nodeId, handler);
+            // A freshly linked handler has no node data yet. Drop any "already enumerated" marker so the full data is
+            // actually (re)requested for it. Otherwise requestAllNodeDataIfNeeded skips the request for sleepy nodes
+            // that were enumerated before their Thing existed (e.g. discovered via a scan), leaving the Thing online
+            // but without any channels.
+            enumeratedNodes.remove(nodeId);
             PhysicalDeviceProperties pending = pendingPhysicalProperties.remove(nodeId);
             if (pending != null) {
                 handler.applyPhysicalProperties(pending);
@@ -243,6 +248,11 @@ public class ControllerHandler extends BaseBridgeHandler implements MatterClient
                 requestAllNodeDataIfNeeded(message.nodeId);
                 break;
             case STRUCTURECHANGED:
+                // A structure change means the node's endpoints/clusters changed, so the channels must be rebuilt
+                // from fresh data. Drop the "already enumerated" marker first: otherwise the data request that the
+                // reconnect's Connected event triggers is skipped for sleepy nodes (see requestAllNodeDataIfNeeded),
+                // leaving the Thing online but with stale channels. Same marker handling as removeNode/dispose.
+                enumeratedNodes.remove(message.nodeId);
                 updateNode(message.nodeId);
                 break;
             case DECOMMISSIONED:

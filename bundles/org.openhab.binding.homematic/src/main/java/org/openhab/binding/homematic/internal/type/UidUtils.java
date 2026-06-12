@@ -14,6 +14,7 @@ package org.openhab.binding.homematic.internal.type;
 
 import static org.openhab.binding.homematic.internal.HomematicBindingConstants.BINDING_ID;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDatapointInfo;
@@ -33,6 +34,7 @@ import org.openhab.core.thing.type.ChannelTypeUID;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class UidUtils {
 
     /**

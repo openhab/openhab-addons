@@ -21,7 +21,7 @@ For more information on the Matter specification, see the [Matter Ecosystem Over
 
 This binding uses the excellent [matter.js](https://github.com/project-chip/matter.js) implementation of the Matter 1.5.1 protocol.
 
-As such, this binding requires NodesJS 18+ and will attempt to download and cache an appropriate version when started if a version is not already installed on the system.
+As such, this binding requires Node.js 22+ and will attempt to download and cache an appropriate version when started if a version is not already installed on the system.
 Alpine Linux users (typically docker) and those on older Linux distributions will need to install this manually as the official NodeJS versions are not compatible.
 
 ## Matter and IPv6

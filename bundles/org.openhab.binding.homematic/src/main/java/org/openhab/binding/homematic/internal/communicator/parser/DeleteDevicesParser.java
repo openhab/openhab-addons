@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homematic.internal.misc.MiscUtils;
 
 /**
@@ -23,13 +24,13 @@ import org.openhab.binding.homematic.internal.misc.MiscUtils;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class DeleteDevicesParser extends CommonRpcParser<Object[], List<String>> {
     @Override
     public List<String> parse(Object[] message) throws IOException {
         List<String> adresses = new ArrayList<>();
-        if (message != null && message.length > 1) {
-            Object[] data = (Object[]) message[1];
-            for (int i = 0; i < message.length; i++) {
+        if (message.length > 1 && message[1] instanceof Object[] data) {
+            for (int i = 0; i < data.length; i++) {
                 String address = getSanitizedAddress(data[i]);
                 if (MiscUtils.isDevice(address)) {
                     adresses.add(address);
