@@ -574,7 +574,8 @@ public class ShellyComponents {
             }
             if (sdata.precipitation != null) {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_PRECIPITATION,
-                        toQuantityType(getDouble(sdata.precipitation), DIGITS_NONE, MetricPrefix.MILLI(SIUnits.METRE)));
+                        toQuantityType(getDouble(sdata.precipitation), DIGITS_SPEED,
+                                MetricPrefix.MILLI(SIUnits.METRE)));
             }
             if (sdata.dewPoint != null) {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_DEWPOINT,

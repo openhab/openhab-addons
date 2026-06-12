@@ -36,7 +36,7 @@ public class ShellyBluWS90Test {
 
     private static final String WS90_JSON = """
             {
-              "Rain": 1.0,
+              "Moisture": 1.0,
               "Speed": [3.5, 7.2],
               "Direction": 270.0,
               "UVIndex": 5.3,
@@ -140,6 +140,7 @@ public class ShellyBluWS90Test {
                 """;
         Shelly2NotifyBluEventData data = GSON.fromJson(json, Shelly2NotifyBluEventData.class);
 
+        assertNotNull(data);
         assertNull(data.rain, "rain should be null when not present in JSON");
         assertNotNull(data.speeds);
         assertThat("windSpeed", data.speeds[0], is(equalTo(2.0)));
