@@ -45,7 +45,7 @@ public class MqttMessageBuilder {
      */
     public byte[] buildMqttMessage(String method, String namespace, @Nullable String destinationDeviceUUID,
             Map<String, Object> payload) {
-        int timestamp = Math.round(Instant.now().getEpochSecond());
+        long timestamp = Instant.now().getEpochSecond();
         String randomString = UUID.randomUUID().toString().replace("-", "").substring(0, 16);
         String messageId = MD5Util.getMD5String(randomString.toLowerCase());
         String signatureToHash = "%s%s%d".formatted(messageId, key, timestamp);

@@ -257,9 +257,9 @@ public class MerossMqttConnector implements MqttConnectionObserver {
     public void connectionStateChanged(MqttConnectionState state, @Nullable Throwable error) {
         logger.trace("Connection state changed: {}", state);
         switch (state) {
-            case MqttConnectionState.CONNECTING:
+            case CONNECTING:
                 break;
-            case MqttConnectionState.CONNECTED:
+            case CONNECTED:
                 ScheduledFuture<?> disconnectFuture = this.disconnectFuture;
                 if (disconnectFuture != null) {
                     disconnectFuture.cancel(true);
@@ -268,7 +268,7 @@ public class MerossMqttConnector implements MqttConnectionObserver {
                 callback.updateBridgeStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
                 connected.complete(true);
                 break;
-            case MqttConnectionState.DISCONNECTED:
+            case DISCONNECTED:
                 connected = new CompletableFuture<>();
                 // The transport tries to reconnect anyway. If we put the bridge offline immediately, it will trigger a
                 // re-initialization of all devices creating a lot of traffic. Devices can still be commanded through
