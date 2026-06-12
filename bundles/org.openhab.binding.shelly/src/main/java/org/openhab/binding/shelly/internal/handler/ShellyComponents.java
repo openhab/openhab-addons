@@ -504,9 +504,11 @@ public class ShellyComponents {
                         getStringType(sdata.sensorError));
             }
 
-            if (profile.isFlood && profile.isGen2 && !profile.floodAlarmMode.isEmpty()) {
-                updated |= thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_FLOOD_ALARM_MODE,
-                        getStringType(profile.floodAlarmMode));
+            if (profile.isFlood && profile.isGen2) {
+                if (!profile.floodAlarmMode.isEmpty()) {
+                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_FLOOD_ALARM_MODE,
+                            getStringType(profile.floodAlarmMode));
+                }
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_FLOOD_REPORT_HOLDOFF,
                         toQuantityType((double) profile.reportHoldoff, DIGITS_NONE, Units.SECOND));
             }

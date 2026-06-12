@@ -1291,11 +1291,11 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
     public void setFloodConfig(int id, @Nullable String alarmMode, int reportHoldoff) throws ShellyApiException {
         Shelly2ConfigFlood params = new Shelly2ConfigFlood();
         params.id = id;
-        params.alarmMode = alarmMode;
+        params.alarmMode = (alarmMode != null && !alarmMode.isEmpty()) ? alarmMode : null;
         params.reportHoldoff = reportHoldoff;
         apiRequest(SHELLYRPC_METHOD_FLOOD_SETCONFIG, params, String.class);
-        if (alarmMode != null) {
-            profile.floodAlarmMode = alarmMode;
+        if (params.alarmMode != null) {
+            profile.floodAlarmMode = params.alarmMode;
         }
         profile.reportHoldoff = reportHoldoff;
     }

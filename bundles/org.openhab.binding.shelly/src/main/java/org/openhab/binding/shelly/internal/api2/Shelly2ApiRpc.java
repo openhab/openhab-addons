@@ -576,11 +576,11 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                     break;
                 case SHELLY2_EVENT_WIFICONNFAILED:
                     logger.debug("{}: WiFi connect failed, check setup, reason {}", thingName, getInteger(e.reason));
-                    getThing().postEvent(e.event, false);
+                    getThing().postEvent(SHELLY2_EVENT_WIFICONNFAILED, false);
                     break;
                 case SHELLY2_EVENT_WIFIDISCONNECTED:
                     logger.debug("{}: WiFi disconnected, reason {}", thingName, getInteger(e.reason));
-                    getThing().postEvent(e.event, false);
+                    getThing().postEvent(SHELLY2_EVENT_WIFIDISCONNECTED, false);
                     break;
                 case SHELLY2_EVENT_FLOOD_ALARM:
                     logger.debug("{}: Flood alarm triggered", thingName);
