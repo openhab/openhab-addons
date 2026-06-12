@@ -249,6 +249,7 @@ public class MerossMqttConnector implements MqttConnectionObserver {
                     this.disconnectFuture = null;
                 }
                 callback.updateBridgeStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+                connected.complete(true);
                 break;
             case MqttConnectionState.DISCONNECTED:
                 connected = new CompletableFuture<>();
