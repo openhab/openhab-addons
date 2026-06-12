@@ -101,8 +101,6 @@ public class GeminiHandler extends BaseThingHandler {
                 String channelModel = channelConfig.model;
                 if (channelModel != null && !channelModel.isBlank()) {
                     model = channelModel;
-                } else {
-                    model = DEFAULT_MODEL;
                 }
 
                 Double channelTemp = channelConfig.temperature;
