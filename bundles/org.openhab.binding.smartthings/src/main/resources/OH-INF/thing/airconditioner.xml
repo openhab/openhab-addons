@@ -89,13 +89,6 @@
 					<property name="attribute">humidity</property>
 				</properties>
 			</channel>
-			<channel id="air-quality" typeId="ac-air-quality">
-				<properties>
-					<property name="component">main</property>
-					<property name="capability">airQualitySensor</property>
-					<property name="attribute">airQuality</property>
-				</properties>
-			</channel>
 		</channels>
 	</channel-group-type>
 
@@ -122,34 +115,6 @@
 	<channel-group-type id="air-conditioner-advanced-group">
 		<label>Advanced</label>
 		<channels>
-			<channel id="dust-level" typeId="ac-dust-level">
-				<properties>
-					<property name="component">main</property>
-					<property name="capability">dustSensor</property>
-					<property name="attribute">dustLevel</property>
-				</properties>
-			</channel>
-			<channel id="fine-dust-level" typeId="ac-fine-dust-level">
-				<properties>
-					<property name="component">main</property>
-					<property name="capability">dustSensor</property>
-					<property name="attribute">fineDustLevel</property>
-				</properties>
-			</channel>
-			<channel id="very-fine-dust-level" typeId="ac-very-fine-dust-level">
-				<properties>
-					<property name="component">main</property>
-					<property name="capability">veryFineDustSensor</property>
-					<property name="attribute">veryFineDustLevel</property>
-				</properties>
-			</channel>
-			<channel id="remote-control-enabled" typeId="ac-remote-control-enabled">
-				<properties>
-					<property name="component">main</property>
-					<property name="capability">remoteControlStatus</property>
-					<property name="attribute">remoteControlEnabled</property>
-				</properties>
-			</channel>
 			<channel id="ac-optional-mode" typeId="ac-optional-mode">
 				<properties>
 					<property name="component">main</property>
@@ -176,13 +141,6 @@
 					<property name="component">main</property>
 					<property name="capability">custom.autoCleaningMode</property>
 					<property name="attribute">progress</property>
-				</properties>
-			</channel>
-			<channel id="energy-saving-operation" typeId="ac-energy-saving-operation">
-				<properties>
-					<property name="component">main</property>
-					<property name="capability">custom.energyType</property>
-					<property name="attribute">energySavingOperation</property>
 				</properties>
 			</channel>
 			<channel id="dust-filter-status" typeId="ac-filter-status">
@@ -262,41 +220,6 @@
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
 
-	<channel-type id="ac-air-quality">
-		<item-type>String</item-type>
-		<label>Air Quality</label>
-		<description>Air quality level reported by the air conditioner.</description>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="ac-dust-level" advanced="true">
-		<item-type>Number</item-type>
-		<label>Dust Level</label>
-		<description>Dust level reported by the air conditioner.</description>
-		<state readOnly="true" pattern="%.0f"/>
-	</channel-type>
-
-	<channel-type id="ac-fine-dust-level" advanced="true">
-		<item-type>Number</item-type>
-		<label>Fine Dust Level</label>
-		<description>Fine dust level reported by the air conditioner.</description>
-		<state readOnly="true" pattern="%.0f"/>
-	</channel-type>
-
-	<channel-type id="ac-very-fine-dust-level" advanced="true">
-		<item-type>Number</item-type>
-		<label>Very Fine Dust Level</label>
-		<description>Very fine dust level reported by the air conditioner.</description>
-		<state readOnly="true" pattern="%.0f"/>
-	</channel-type>
-
-	<channel-type id="ac-remote-control-enabled" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Remote Control Enabled</label>
-		<description>ON when remote control is enabled for the air conditioner.</description>
-		<state readOnly="true"/>
-	</channel-type>
-
 	<channel-type id="ac-power-consumption">
 		<item-type>Number:Power</item-type>
 		<label>Power Consumption</label>
@@ -308,7 +231,7 @@
 		<item-type>Number:Energy</item-type>
 		<label>Energy Usage</label>
 		<description>Accumulated energy consumption reported by the air conditioner.</description>
-		<state readOnly="true" pattern="%.2f kWh"/>
+		<state readOnly="true" pattern="%.0f Wh"/>
 	</channel-type>
 
 	<channel-type id="ac-optional-mode" advanced="true">
@@ -337,13 +260,6 @@
 		<label>Auto Cleaning Progress</label>
 		<description>Progress of the current auto-cleaning operation.</description>
 		<state readOnly="true" pattern="%.0f %%" min="0" max="100"/>
-	</channel-type>
-
-	<channel-type id="ac-energy-saving-operation" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Energy Saving</label>
-		<description>Energy-saving operation state of the air conditioner.</description>
-		<state readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="ac-filter-status" advanced="true">

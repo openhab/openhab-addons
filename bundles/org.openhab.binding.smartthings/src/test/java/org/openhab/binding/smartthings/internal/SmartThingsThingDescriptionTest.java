@@ -93,22 +93,11 @@ class SmartThingsThingDescriptionTest {
                         new ExpectedChannel("environment", "ac-temperature", "temperatureMeasurement", "temperature")),
                 Map.entry("humidity",
                         new ExpectedChannel("environment", "ac-humidity", "relativeHumidityMeasurement", "humidity")),
-                Map.entry("air-quality",
-                        new ExpectedChannel("environment", "ac-air-quality", "airQualitySensor", "airQuality")),
                 Map.entry("power",
                         new ExpectedChannel("energy", "ac-power-consumption", "powerConsumptionReport",
                                 "powerConsumption")),
                 Map.entry("energy",
                         new ExpectedChannel("energy", "ac-energy", "powerConsumptionReport", "powerConsumption")),
-                Map.entry("dust-level", new ExpectedChannel("advanced", "ac-dust-level", "dustSensor", "dustLevel")),
-                Map.entry("fine-dust-level",
-                        new ExpectedChannel("advanced", "ac-fine-dust-level", "dustSensor", "fineDustLevel")),
-                Map.entry("very-fine-dust-level",
-                        new ExpectedChannel("advanced", "ac-very-fine-dust-level", "veryFineDustSensor",
-                                "veryFineDustLevel")),
-                Map.entry("remote-control-enabled",
-                        new ExpectedChannel("advanced", "ac-remote-control-enabled", "remoteControlStatus",
-                                "remoteControlEnabled")),
                 Map.entry("ac-optional-mode",
                         new ExpectedChannel("advanced", "ac-optional-mode", "custom.airConditionerOptionalMode",
                                 "acOptionalMode")),
@@ -121,13 +110,10 @@ class SmartThingsThingDescriptionTest {
                 Map.entry("progress",
                         new ExpectedChannel("advanced", "ac-auto-cleaning-progress", "custom.autoCleaningMode",
                                 "progress")),
-                Map.entry("energy-saving-operation",
-                        new ExpectedChannel("advanced", "ac-energy-saving-operation", "custom.energyType",
-                                "energySavingOperation")),
                 Map.entry("dust-filter-status",
                         new ExpectedChannel("advanced", "ac-filter-status", "custom.dustFilter", "dustFilterStatus")));
 
-        assertEquals(20, getChannelCount(document));
+        assertEquals(14, getChannelCount(document));
         assertEquals(Set.of("control", "environment", "energy", "advanced"), findChannelGroupIds(document));
 
         for (Map.Entry<String, ExpectedChannel> entry : expectedChannels.entrySet()) {
@@ -145,12 +131,11 @@ class SmartThingsThingDescriptionTest {
     @Test
     void airConditionerThingKeepsSecondaryChannelsAdvanced() throws Exception {
         Document document = parseThingDescription("OH-INF/thing/airconditioner.xml");
-        Set<String> advancedChannels = Set.of("dust-level", "fine-dust-level", "very-fine-dust-level",
-                "remote-control-enabled", "ac-optional-mode", "auto-cleaning-mode", "operating-state", "progress",
-                "energy-saving-operation", "dust-filter-status");
+        Set<String> advancedChannels = Set.of("ac-optional-mode", "auto-cleaning-mode", "operating-state", "progress",
+                "dust-filter-status");
 
-        assertEquals(10, advancedChannels.size());
-        assertEquals(20, getChannelCount(document));
+        assertEquals(5, advancedChannels.size());
+        assertEquals(14, getChannelCount(document));
 
         NodeList channels = document.getElementsByTagName("channel");
         int advancedCount = 0;
@@ -167,7 +152,7 @@ class SmartThingsThingDescriptionTest {
             }
         }
 
-        assertEquals(10, advancedCount);
+        assertEquals(5, advancedCount);
     }
 
     @Test
@@ -177,14 +162,14 @@ class SmartThingsThingDescriptionTest {
                 Map.entry("fan-mode", "String"), Map.entry("fan-oscillation-mode", "String"),
                 Map.entry("ac-temperature", "Number:Temperature"),
                 Map.entry("ac-cooling-setpoint", "Number:Temperature"),
-                Map.entry("ac-humidity", "Number:Dimensionless"), Map.entry("ac-air-quality", "String"),
-                Map.entry("ac-dust-level", "Number"), Map.entry("ac-power-consumption", "Number:Power"),
+                Map.entry("ac-humidity", "Number:Dimensionless"), Map.entry("ac-power-consumption", "Number:Power"),
                 Map.entry("ac-energy", "Number:Energy"),
                 Map.entry("ac-auto-cleaning-progress", "Number:Dimensionless"));
 
         for (Map.Entry<String, String> entry : expectedItemTypes.entrySet()) {
             assertEquals(entry.getValue(), findChannelTypeItemType(document, entry.getKey()), entry.getKey());
         }
+        assertEquals("%.0f Wh", findChannelTypeStatePattern(document, "ac-energy"));
     }
 
     private Document parseThingDescription(String resourceName) throws Exception {
@@ -264,6 +249,13 @@ class SmartThingsThingDescriptionTest {
         Node itemType = channelType.getElementsByTagName("item-type").item(0);
         assertNotNull(itemType);
         return itemType.getTextContent();
+    }
+
+    private String findChannelTypeStatePattern(Document document, String channelTypeId) {
+        Element channelType = findChannelType(document, channelTypeId);
+        Node state = channelType.getElementsByTagName("state").item(0);
+        assertNotNull(state);
+        return ((Element) state).getAttribute("pattern");
     }
 
     private Element findChannelType(Document document, String channelTypeId) {
