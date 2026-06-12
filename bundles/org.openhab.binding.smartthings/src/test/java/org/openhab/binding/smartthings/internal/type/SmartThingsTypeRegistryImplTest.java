@@ -73,24 +73,33 @@ class SmartThingsTypeRegistryImplTest {
     }
 
     @Test
-    void generatedThingTypeDoesNotReuseStaticThingTypeConfigDescriptionUri() {
+    void generatedThingTypeUsesSharedDynamicDeviceConfigDescriptionUri() {
         SmartThingsTypeRegistryImpl registry = new SmartThingsTypeRegistryImpl();
         SmartThingsThingTypeProviderImpl thingTypeProvider = new SmartThingsThingTypeProviderImpl();
         SmartThingsConfigDescriptionProviderImpl configDescriptionProvider = new SmartThingsConfigDescriptionProviderImpl();
         registry.setThingTypeProvider(thingTypeProvider);
         registry.setConfigDescriptionProvider(configDescriptionProvider);
 
-        registry.register("air_conditioner", "Samsung_Room_A_C", createDevice());
+        registry.register("vacuum", "Robot_Vacuum", createDevice());
 
-        ThingType thingType = thingTypeProvider.getInternalThingType(
-                new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "dynamic-Samsung_Room_A_C"));
+        ThingType thingType = thingTypeProvider
+                .getInternalThingType(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Robot_Vacuum"));
         assertNotNull(thingType);
         assertEquals(DYNAMIC_DEVICE_CONFIG_DESCRIPTION_URI, thingType.getConfigDescriptionURI());
         assertNotNull(configDescriptionProvider.getConfigDescription(DYNAMIC_DEVICE_CONFIG_DESCRIPTION_URI, null));
-        assertNull(configDescriptionProvider.getConfigDescription(URI.create("thing-type:smartthings:Samsung_Room_A_C"),
+        assertNull(configDescriptionProvider.getConfigDescription(URI.create("thing-type:smartthings:Robot_Vacuum"),
                 null));
-        assertNull(configDescriptionProvider
-                .getConfigDescription(URI.create("thing-type:smartthings:dynamic-Samsung_Room_A_C"), null));
+    }
+
+    @Test
+    void generatedThingTypeDoesNotCollideWithStaticThingTypeUid() {
+        SmartThingsTypeRegistryImpl registry = new SmartThingsTypeRegistryImpl();
+        SmartThingsThingTypeProviderImpl thingTypeProvider = new SmartThingsThingTypeProviderImpl();
+        registry.setThingTypeProvider(thingTypeProvider);
+
+        registry.register("air_conditioner", "Samsung_Room_A_C", createDevice());
+
+        assertNull(thingTypeProvider.getInternalThingType(SmartThingsBindingConstants.THING_TYPE_SAMSUNG_ROOM_A_C));
     }
 
     private SmartThingsDevice createDevice() {

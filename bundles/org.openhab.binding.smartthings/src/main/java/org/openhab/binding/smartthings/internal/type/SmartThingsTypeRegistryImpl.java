@@ -433,8 +433,14 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
 
         if (lcThingTypeProvider != null) {
             ThingType tt = null;
-            String thingTypeId = UidUtils.generateDynamicThingTypeId(deviceType);
+            String thingTypeId = deviceType;
             ThingTypeUID thingTypeUID = UidUtils.generateThingTypeUID(thingTypeId);
+
+            if (SmartThingsBindingConstants.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
+                logger.debug("Skipping generated SmartThings thing type {} because a static thing type already exists.",
+                        thingTypeUID);
+                return;
+            }
 
             tt = lcThingTypeProvider.getInternalThingType(thingTypeUID);
 

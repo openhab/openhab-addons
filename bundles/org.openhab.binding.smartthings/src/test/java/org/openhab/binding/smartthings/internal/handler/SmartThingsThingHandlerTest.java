@@ -181,12 +181,12 @@ class SmartThingsThingHandlerTest {
     }
 
     @Test
-    void refreshDeviceFromCapaUsesOriginalDeviceTypeForPrefixedDynamicThingType() {
-        String dynamicGroupId = SmartThingsTypeRegistryImpl.getChannelGroupId("Samsung_Room_A_C", "main", "switch");
-        ThingUID thingUID = new ThingUID("smartthings:dynamic-Samsung_Room_A_C:account:dynamic-air-conditioner");
+    void refreshDeviceFromCapaUsesOriginalDeviceTypeForGeneratedThingType() {
+        String dynamicGroupId = SmartThingsTypeRegistryImpl.getChannelGroupId("Robot_Vacuum", "main", "switch");
+        ThingUID thingUID = new ThingUID("smartthings:Robot_Vacuum:account:robot-vacuum");
         Thing thing = ThingBuilder
-                .create(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "dynamic-Samsung_Room_A_C"), thingUID)
-                .withProperties(Map.of(SmartThingsBindingConstants.DEVICE_TYPE, "Samsung_Room_A_C"))
+                .create(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Robot_Vacuum"), thingUID)
+                .withProperties(Map.of(SmartThingsBindingConstants.DEVICE_TYPE, "Robot_Vacuum"))
                 .withChannel(createSwitchChannel(thingUID, dynamicGroupId)).build();
         TestSmartThingsThingHandler handler = new TestSmartThingsThingHandler(thing);
         SmartThingsConverterFactory.registerConverters(new SmartThingsTypeRegistryImpl());

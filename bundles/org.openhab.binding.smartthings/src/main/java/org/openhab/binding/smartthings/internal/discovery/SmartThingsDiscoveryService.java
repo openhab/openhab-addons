@@ -154,31 +154,31 @@ public class SmartThingsDiscoveryService extends AbstractDiscoveryService
         SmartThingsTypeRegistry registry = this.typeRegistry;
         SmartThingsBridgeHandler bridgeHandler = smartThingsBridgeHandler;
         boolean useDynamicThings = bridgeHandler != null && bridgeHandler.useDynamicThings();
+        String staticThingTypeId = getStaticThingTypeId(deviceCategory, device);
 
-        if (registry != null && useDynamicThings) {
+        if (registry != null && useDynamicThings && staticThingTypeId == null) {
             registry.register(deviceCategory, deviceType, device);
         }
         if (addDevice) {
-            String thingTypeId = getThingTypeId(deviceCategory, deviceType, device, useDynamicThings);
+            String thingTypeId = getThingTypeId(deviceCategory, deviceType, staticThingTypeId, useDynamicThings);
             if (thingTypeId != null) {
                 createDevice(deviceCategory, thingTypeId, deviceType, Objects.requireNonNull(device));
             }
         }
     }
 
-    private @Nullable String getThingTypeId(String deviceCategory, String deviceType, SmartThingsDevice device,
-            boolean useDynamicThings) {
+    private @Nullable String getThingTypeId(String deviceCategory, String deviceType,
+            @Nullable String staticThingTypeId, boolean useDynamicThings) {
+        if (staticThingTypeId != null) {
+            return staticThingTypeId;
+        }
         if (useDynamicThings) {
-            return UidUtils.generateDynamicThingTypeId(deviceType);
+            return deviceType;
         }
-
-        String staticThingTypeId = getStaticThingTypeId(deviceCategory, device);
-        if (staticThingTypeId == null) {
-            logger.debug(
-                    "No static SmartThings thing type for category {} and device type {}. Enable dynamic thing discovery to discover this device.",
-                    deviceCategory, deviceType);
-        }
-        return staticThingTypeId;
+        logger.debug(
+                "No static SmartThings thing type for category {} and device type {}. Enable dynamic thing discovery to discover this device.",
+                deviceCategory, deviceType);
+        return null;
     }
 
     private @Nullable String getStaticThingTypeId(String deviceCategory, SmartThingsDevice device) {

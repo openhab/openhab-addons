@@ -53,18 +53,31 @@ class SmartThingsDiscoveryServiceTest {
     }
 
     @Test
-    void registerDeviceUsesDynamicThingTypeWhenDynamicThingsAreEnabled() {
+    void registerDeviceUsesStaticThingTypeForKnownDeviceWhenDynamicThingsAreEnabled() {
         SmartThingsTypeRegistry typeRegistry = mock(SmartThingsTypeRegistry.class);
         TestDiscoveryService discoveryService = createDiscoveryService(typeRegistry, true);
-        SmartThingsDevice device = createTelevisionDevice();
+        SmartThingsDevice device = createAirConditionerDevice();
 
         discoveryService.registerDevice(device, true);
 
         DiscoveryResult result = discoveryService.discoveryResult;
         assertNotNull(result);
-        assertEquals("smartthings:dynamic-Samsung_The_Frame:account:Samsung_The_Frame",
-                result.getThingUID().getAsString());
-        verify(typeRegistry).register("television", "Samsung_The_Frame", device);
+        assertEquals("smartthings:Samsung_Room_A_C:account:Raumklimaanlage_Enzo", result.getThingUID().getAsString());
+        verifyNoInteractions(typeRegistry);
+    }
+
+    @Test
+    void registerDeviceUsesDynamicThingTypeForUnknownDeviceWhenDynamicThingsAreEnabled() {
+        SmartThingsTypeRegistry typeRegistry = mock(SmartThingsTypeRegistry.class);
+        TestDiscoveryService discoveryService = createDiscoveryService(typeRegistry, true);
+        SmartThingsDevice device = createUnknownDevice();
+
+        discoveryService.registerDevice(device, true);
+
+        DiscoveryResult result = discoveryService.discoveryResult;
+        assertNotNull(result);
+        assertEquals("smartthings:Robot_Vacuum:account:Robot_Vacuum", result.getThingUID().getAsString());
+        verify(typeRegistry).register("vacuum", "Robot_Vacuum", device);
     }
 
     private TestDiscoveryService createDiscoveryService(SmartThingsTypeRegistry typeRegistry,
@@ -83,8 +96,20 @@ class SmartThingsDiscoveryServiceTest {
     }
 
     private SmartThingsDevice createTelevisionDevice() {
+        return createDevice("Television", "Samsung The Frame", "Samsung The Frame");
+    }
+
+    private SmartThingsDevice createAirConditionerDevice() {
+        return createDevice("Air Conditioner", "Samsung Room A/C", "Raumklimaanlage Enzo");
+    }
+
+    private SmartThingsDevice createUnknownDevice() {
+        return createDevice("Vacuum", "Robot Vacuum", "Robot Vacuum");
+    }
+
+    private SmartThingsDevice createDevice(String categoryName, String name, String label) {
         SmartThingsCategory category = new SmartThingsCategory();
-        category.name = "Television";
+        category.name = categoryName;
 
         SmartThingsComponent component = new SmartThingsComponent();
         component.id = SmartThingsBindingConstants.GROUP_ID_MAIN;
@@ -92,8 +117,8 @@ class SmartThingsDiscoveryServiceTest {
 
         SmartThingsDevice device = new SmartThingsDevice();
         device.deviceId = "device-123";
-        device.name = "Samsung The Frame";
-        device.label = "Samsung The Frame";
+        device.name = name;
+        device.label = label;
         device.components = new SmartThingsComponent[] { component };
         return device;
     }
