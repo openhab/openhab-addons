@@ -24,7 +24,7 @@
 			<tag>Measurement</tag>
 			<tag>Speed</tag>
 		</tags>
-		<state readOnly="true" pattern="%.1f %unit%">
+		<state readOnly="true" pattern="%.2f %unit%">
 		</state>
 	</channel-type>
 
@@ -49,7 +49,7 @@
 			<tag>Measurement</tag>
 			<tag>Speed</tag>
 		</tags>
-		<state readOnly="true" pattern="%.1f %unit%">
+		<state readOnly="true" pattern="%.2f %unit%">
 		</state>
 	</channel-type>
 
@@ -97,7 +97,7 @@
 			<tag>Measurement</tag>
 			<tag>Rain</tag>
 		</tags>
-		<state readOnly="true" pattern="%.1f %unit%">
+		<state readOnly="true" pattern="%.1f mm">
 		</state>
 	</channel-type>
 

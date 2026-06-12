@@ -557,7 +557,7 @@ public class ShellyComponents {
             }
             if (sdata.windSpeed != null) {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_WINDSP,
-                        toQuantityType(getDouble(sdata.windSpeed), DIGITS_SPEED, Units.METRE_PER_SECOND));
+                        toQuantityType(getDouble(sdata.windSpeed), DIGITS_WIND, Units.METRE_PER_SECOND));
             }
             if (sdata.windDirection != null) {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_WINDDIR,
@@ -565,7 +565,7 @@ public class ShellyComponents {
             }
             if (sdata.gustSpeed != null) {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_GUSTSP,
-                        toQuantityType(getDouble(sdata.gustSpeed), DIGITS_SPEED, Units.METRE_PER_SECOND));
+                        toQuantityType(getDouble(sdata.gustSpeed), DIGITS_WIND, Units.METRE_PER_SECOND));
             }
             if (sdata.pressure != null) {
                 Unit<Pressure> hpa = MetricPrefix.HECTO(SIUnits.PASCAL).asType(Pressure.class);

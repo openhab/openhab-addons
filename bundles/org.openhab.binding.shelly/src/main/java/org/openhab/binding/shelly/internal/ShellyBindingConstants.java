@@ -293,6 +293,7 @@ public class ShellyBindingConstants {
     public static final int DIGITS_ROTATION = 1;
     public static final int DIGITS_DISTANCE = 0;
     public static final int DIGITS_SPEED = 1;
+    public static final int DIGITS_WIND = 2; // BTHome 0x44 Speed has 0.01 m/s resolution
     public static final int DIGITS_PRESSURE = 0;
 
     public static final int SHELLY_API_TIMEOUT_MS = 10000;
