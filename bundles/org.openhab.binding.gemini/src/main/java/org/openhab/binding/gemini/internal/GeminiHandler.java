@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -189,8 +190,11 @@ public class GeminiHandler extends BaseThingHandler {
                             List<String> methods = model.supportedGenerationMethods();
                             if (methods != null && methods.contains("generateContent")) {
                                 String cleanName = name.replace("models/", "");
-                                if (seenNames.add(cleanName)) {
-                                    modelList.add(model);
+                                String lowerName = cleanName.toLowerCase(Locale.ROOT);
+                                if (lowerName.startsWith("gemini") || lowerName.startsWith("gemma")) {
+                                    if (seenNames.add(cleanName)) {
+                                        modelList.add(model);
+                                    }
                                 }
                             }
                         }

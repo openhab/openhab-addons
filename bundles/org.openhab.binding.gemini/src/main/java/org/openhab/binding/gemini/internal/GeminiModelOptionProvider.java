@@ -28,13 +28,14 @@ import org.openhab.core.config.core.ParameterOption;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 
 /**
  * The {@link GeminiModelOptionProvider} provides the available models from Gemini as configuration options.
  *
  * @author Florian Hotze - Initial contribution
  */
-@Component(service = { GeminiModelOptionProvider.class, ConfigOptionProvider.class })
+@Component(scope = ServiceScope.PROTOTYPE, service = { GeminiModelOptionProvider.class, ConfigOptionProvider.class })
 @NonNullByDefault
 public class GeminiModelOptionProvider implements ThingHandlerService, ConfigOptionProvider {
     private @Nullable ThingHandler thingHandler;
