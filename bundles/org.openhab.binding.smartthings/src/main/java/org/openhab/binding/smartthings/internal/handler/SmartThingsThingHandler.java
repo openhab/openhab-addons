@@ -90,28 +90,53 @@ public class SmartThingsThingHandler extends BaseThingHandler {
         SmartThingsAccountHandler accountHander = (SmartThingsAccountHandler) bridge.getHandler();
 
         if (accountHander != null && accountHander.getThing().getStatus().equals(ThingStatus.ONLINE)) {
-            // channelUID
-            SmartThingsConverter converter = SmartThingsConverterFactory.getConverter(channelUID.getIdWithoutGroup());
-
-            String jsonMsg = "";
             if (command instanceof RefreshType) {
                 refreshDevice();
             } else {
-                try {
-                    if (converter != null) {
-                        jsonMsg = converter.convertToSmartThings(thing, channelUID, command);
-                    }
-
-                    SmartThingsApi api = accountHander.getSmartThingsApi();
-                    if (api == null) {
-                        return;
-                    }
-                    api.sendCommand(deviceId, jsonMsg);
-                } catch (SmartThingsException ex) {
-                    logger.error("Unable to send command: {}", ex.toString());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
+                SmartThingsApi api = accountHander.getSmartThingsApi();
+                if (api != null) {
+                    handleCommand(api, channelUID, command);
                 }
             }
+        }
+    }
+
+    void handleCommand(SmartThingsApi api, ChannelUID channelUID, Command command) {
+        SmartThingsConverter converter = SmartThingsConverterFactory.getConverter(channelUID.getIdWithoutGroup());
+        if (converter == null) {
+            logger.warn("No converter found for command {} on channel {}.", command.toFullString(), channelUID);
+            return;
+        }
+
+        String jsonMsg;
+        try {
+            jsonMsg = converter.convertToSmartThings(thing, channelUID, command);
+        } catch (SmartThingsException ex) {
+            logger.warn("Unable to convert command {} for channel {}: {}", command.toFullString(), channelUID,
+                    ex.getMessage());
+            logger.debug("Unable to convert SmartThings command.", ex);
+            return;
+        }
+
+        if (jsonMsg.isBlank()) {
+            logger.warn("No SmartThings command was created for command {} on channel {}.", command.toFullString(),
+                    channelUID);
+            return;
+        }
+
+        try {
+            api.sendCommand(deviceId, jsonMsg);
+            updateAcceptedCommandState(channelUID, command);
+        } catch (SmartThingsException ex) {
+            logger.warn("Unable to send command {} to SmartThings channel {}: {}", command.toFullString(), channelUID,
+                    ex.getMessage());
+            logger.debug("Unable to send SmartThings command payload: {}", jsonMsg, ex);
+        }
+    }
+
+    private void updateAcceptedCommandState(ChannelUID channelUID, Command command) {
+        if (command instanceof State state) {
+            updateState(channelUID, state);
         }
     }
 

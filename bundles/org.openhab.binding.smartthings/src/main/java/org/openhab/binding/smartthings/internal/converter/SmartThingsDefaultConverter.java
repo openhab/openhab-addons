@@ -17,11 +17,13 @@ import java.util.Objects;
 import java.util.Stack;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smartthings.internal.SmartThingsBindingConstants;
 import org.openhab.binding.smartthings.internal.dto.SmartThingsArgument;
 import org.openhab.binding.smartthings.internal.dto.SmartThingsAttribute;
 import org.openhab.binding.smartthings.internal.dto.SmartThingsCapability;
 import org.openhab.binding.smartthings.internal.dto.SmartThingsCommand;
+import org.openhab.binding.smartthings.internal.dto.SmartThingsEnumCommand;
 import org.openhab.binding.smartthings.internal.type.SmartThingsException;
 import org.openhab.binding.smartthings.internal.type.SmartThingsTypeRegistry;
 import org.openhab.core.library.types.DateTimeType;
@@ -34,6 +36,7 @@ import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.library.types.PointType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RewindFastforwardType;
 import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.StringListType;
@@ -84,13 +87,9 @@ public class SmartThingsDefaultConverter extends SmartThingsConverter {
                     hsbCommand.getSaturation().intValue(), hsbCommand.getBrightness().intValue());
         } else if (command instanceof DecimalType) {
             DecimalType dc = (DecimalType) command;
-            if (SmartThingsBindingConstants.SM_TYPE_INTEGER.equals(targetType)) {
-                value = dc.intValue();
-            } else if (SmartThingsBindingConstants.SM_TYPE_NUMBER.equals(targetType)) {
-                value = dc.doubleValue();
-            } else {
-                throw new SmartThingsException("Unknown conversion type:" + targetType);
-            }
+            value = getNumberValue(dc.intValue(), dc.doubleValue(), targetType);
+        } else if (command instanceof QuantityType<?> quantityCommand) {
+            value = getNumberValue(quantityCommand.intValue(), quantityCommand.doubleValue(), targetType);
         } else if (command instanceof IncreaseDecreaseType) {
             value = commandSt;
         } else if (command instanceof NextPreviousType) {
@@ -135,6 +134,16 @@ public class SmartThingsDefaultConverter extends SmartThingsConverter {
         return Objects.requireNonNull(value);
     }
 
+    private Object getNumberValue(int intValue, double doubleValue, String targetType) throws SmartThingsException {
+        if (SmartThingsBindingConstants.SM_TYPE_INTEGER.equals(targetType)) {
+            return intValue;
+        } else if (SmartThingsBindingConstants.SM_TYPE_NUMBER.equals(targetType)) {
+            return doubleValue;
+        } else {
+            throw new SmartThingsException("Unknown conversion type:" + targetType);
+        }
+    }
+
     @Override
     public void convertToSmartThingsInternal(Thing thing, ChannelUID channelUid, Command command,
             SmartThingsCapability capa, SmartThingsAttribute attr, String componentKey, String capaKey, String attrKey,
@@ -149,25 +158,57 @@ public class SmartThingsDefaultConverter extends SmartThingsConverter {
         }
 
         if (attr.setter != null) {
-            SmartThingsCommand cmd = capa.commands.get(attr.setter);
-            if (cmd != null) {
-                cmdName = cmd.name;
-
-                Stack<Object> stack = new Stack<Object>();
-                for (SmartThingsArgument arg : cmd.arguments) {
-                    if (Boolean.TRUE.equals(arg.optional)) {
-                        continue;
-                    }
-
-                    stack.push(value);
-                }
-                arguments = stack.toArray();
-            }
+            SmartThingsCommand cmd = getCommand(capa, attr.setter);
+            cmdName = cmd.name;
+            arguments = getCommandArguments(cmd, value);
         } else {
-            cmdName = value.toString();
+            String enumCommand = getEnumCommand(attr, value.toString());
+            if (enumCommand != null) {
+                SmartThingsCommand cmd = getCommand(capa, enumCommand);
+                cmdName = cmd.name;
+            } else {
+                cmdName = value.toString();
+            }
         }
 
         pushCommand(componentKey, capaKey, cmdName, arguments);
+    }
+
+    private SmartThingsCommand getCommand(SmartThingsCapability capa, String commandName) throws SmartThingsException {
+        SmartThingsCommand cmd = capa.commands.get(commandName);
+        if (cmd == null) {
+            throw new SmartThingsException("Command not found for capaKey: " + capa.id + " command: " + commandName);
+        }
+        return cmd;
+    }
+
+    private Object[] getCommandArguments(SmartThingsCommand cmd, Object value) {
+        if (cmd.arguments == null) {
+            return new Object[0];
+        }
+
+        Stack<Object> stack = new Stack<Object>();
+        for (SmartThingsArgument arg : cmd.arguments) {
+            if (Boolean.TRUE.equals(arg.optional)) {
+                continue;
+            }
+
+            stack.push(value);
+        }
+        return stack.toArray();
+    }
+
+    private @Nullable String getEnumCommand(SmartThingsAttribute attr, String value) {
+        if (attr.enumCommands == null) {
+            return null;
+        }
+
+        for (SmartThingsEnumCommand enumCommand : attr.enumCommands) {
+            if (value.equals(enumCommand.value)) {
+                return enumCommand.command;
+            }
+        }
+        return null;
     }
 
     @Override

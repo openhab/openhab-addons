@@ -15,6 +15,7 @@ package org.openhab.binding.smartthings.internal.converter;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Queue;
 
@@ -78,6 +79,7 @@ public abstract class SmartThingsConverter {
         String componentKey = properties.get(SmartThingsBindingConstants.COMPONENT);
         String capaKey = properties.get(SmartThingsBindingConstants.CAPABILITY);
         String attrKey = properties.get(SmartThingsBindingConstants.ATTRIBUTE);
+        String commandKey = properties.get(SmartThingsBindingConstants.COMMAND);
         String targetType = "";
 
         if (componentKey == null) {
@@ -91,6 +93,9 @@ public abstract class SmartThingsConverter {
         SmartThingsCapability capa = typeRegistry.getCapability(capaKey);
 
         if (capa == null) {
+            if (convertToStaticCommand(componentKey, capaKey, commandKey, command)) {
+                return getJSonCommands();
+            }
             throw new SmartThingsException("capa not found for capaKey : " + capaKey);
         }
 
@@ -101,6 +106,9 @@ public abstract class SmartThingsConverter {
         SmartThingsAttribute attr = capa.attributes.get(attrKey);
 
         if (attr == null) {
+            if (convertToStaticCommand(componentKey, capaKey, commandKey, command)) {
+                return getJSonCommands();
+            }
             throw new SmartThingsException("attr not found for capaKey : " + capaKey);
         }
 
@@ -115,6 +123,40 @@ public abstract class SmartThingsConverter {
                 targetType);
         String jsonMsg = getJSonCommands();
         return jsonMsg;
+    }
+
+    private boolean convertToStaticCommand(String componentKey, String capaKey, @Nullable String commandKey,
+            Command command) throws SmartThingsException {
+        if (commandKey == null || commandKey.isBlank()) {
+            if (command instanceof OnOffType) {
+                pushCommand(componentKey, capaKey, command.toString().toLowerCase(Locale.ROOT), null);
+                return true;
+            }
+            return false;
+        }
+
+        pushCommand(componentKey, capaKey, commandKey, new Object[] { convertStaticCommandArgument(command) });
+        return true;
+    }
+
+    private Object convertStaticCommandArgument(Command command) throws SmartThingsException {
+        if (command instanceof OnOffType || command instanceof OpenClosedType || command instanceof UpDownType
+                || command instanceof PlayPauseType) {
+            return command.toString().toLowerCase(Locale.ROOT);
+        }
+        if (command instanceof PercentType percentCommand) {
+            return percentCommand.intValue();
+        }
+        if (command instanceof DecimalType decimalCommand) {
+            return decimalCommand.doubleValue();
+        }
+        if (command instanceof QuantityType<?> quantityCommand) {
+            return quantityCommand.doubleValue();
+        }
+        if (command instanceof StringType) {
+            return command.toString();
+        }
+        throw new SmartThingsException("No static command conversion for: " + command.getClass().getName());
     }
 
     public State convertToOpenHab(Thing thing, ChannelUID channelUid, Object dataFromSmartThings)

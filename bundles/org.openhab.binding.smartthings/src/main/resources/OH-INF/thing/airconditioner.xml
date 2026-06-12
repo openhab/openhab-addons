@@ -46,6 +46,7 @@
 					<property name="component">main</property>
 					<property name="capability">airConditionerMode</property>
 					<property name="attribute">airConditionerMode</property>
+					<property name="command">setAirConditionerMode</property>
 				</properties>
 			</channel>
 			<channel id="fan-mode" typeId="fan-mode">
@@ -53,6 +54,7 @@
 					<property name="component">main</property>
 					<property name="capability">airConditionerFanMode</property>
 					<property name="attribute">fanMode</property>
+					<property name="command">setFanMode</property>
 				</properties>
 			</channel>
 			<channel id="fan-oscillation-mode" typeId="fan-oscillation-mode">
@@ -60,6 +62,7 @@
 					<property name="component">main</property>
 					<property name="capability">fanOscillationMode</property>
 					<property name="attribute">fanOscillationMode</property>
+					<property name="command">setFanOscillationMode</property>
 				</properties>
 			</channel>
 			<channel id="cooling-setpoint" typeId="ac-cooling-setpoint">
@@ -67,6 +70,7 @@
 					<property name="component">main</property>
 					<property name="capability">thermostatCoolingSetpoint</property>
 					<property name="attribute">coolingSetpoint</property>
+					<property name="command">setCoolingSetpoint</property>
 				</properties>
 			</channel>
 		</channels>
@@ -121,6 +125,7 @@
 					<property name="component">main</property>
 					<property name="capability">custom.airConditionerOptionalMode</property>
 					<property name="attribute">acOptionalMode</property>
+					<property name="command">setAcOptionalMode</property>
 				</properties>
 			</channel>
 			<channel id="auto-cleaning-mode" typeId="ac-auto-cleaning-mode">
@@ -128,6 +133,7 @@
 					<property name="component">main</property>
 					<property name="capability">custom.autoCleaningMode</property>
 					<property name="attribute">autoCleaningMode</property>
+					<property name="command">setAutoCleaningMode</property>
 				</properties>
 			</channel>
 			<channel id="operating-state" typeId="ac-auto-cleaning-operating-state">

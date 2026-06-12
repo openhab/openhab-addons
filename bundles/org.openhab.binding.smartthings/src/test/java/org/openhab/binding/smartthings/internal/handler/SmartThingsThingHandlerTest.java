@@ -14,25 +14,48 @@ package org.openhab.binding.smartthings.internal.handler;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.openhab.binding.smartthings.internal.SmartThingsBindingConstants;
+import org.openhab.binding.smartthings.internal.api.SmartThingsApi;
 import org.openhab.binding.smartthings.internal.converter.SmartThingsConverterFactory;
+import org.openhab.binding.smartthings.internal.converter.SmartThingsDefaultConverter;
+import org.openhab.binding.smartthings.internal.dto.SmartThingsArgument;
+import org.openhab.binding.smartthings.internal.dto.SmartThingsAttribute;
+import org.openhab.binding.smartthings.internal.dto.SmartThingsCapability;
+import org.openhab.binding.smartthings.internal.dto.SmartThingsCommand;
+import org.openhab.binding.smartthings.internal.dto.SmartThingsEnumCommand;
+import org.openhab.binding.smartthings.internal.dto.SmartThingsProperty;
+import org.openhab.binding.smartthings.internal.dto.SmartThingsSchema;
 import org.openhab.binding.smartthings.internal.dto.SmartThingsStatusCapabilities;
 import org.openhab.binding.smartthings.internal.dto.SmartThingsStatusProperties;
+import org.openhab.binding.smartthings.internal.type.SmartThingsException;
+import org.openhab.binding.smartthings.internal.type.SmartThingsTypeRegistry;
 import org.openhab.binding.smartthings.internal.type.SmartThingsTypeRegistryImpl;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
@@ -245,6 +268,117 @@ class SmartThingsThingHandlerTest {
         assertEquals(OnOffType.ON, handler.lastUpdatedState);
     }
 
+    @Test
+    void handleCommandUsesStaticCommandMetadataAndUpdatesAcceptedState() throws SmartThingsException {
+        ThingUID thingUID = new ThingUID("smartthings:Samsung_Room_A_C:account:air-conditioner");
+        ChannelUID channelUID = new ChannelUID(thingUID, "control", "cooling-setpoint");
+        Thing thing = ThingBuilder
+                .create(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Samsung_Room_A_C"), thingUID)
+                .withChannel(ChannelBuilder.create(channelUID, SmartThingsBindingConstants.TYPE_NUMBER)
+                        .withProperties(Map.of(SmartThingsBindingConstants.COMPONENT, "main",
+                                SmartThingsBindingConstants.CAPABILITY, "thermostatCoolingSetpoint",
+                                SmartThingsBindingConstants.ATTRIBUTE, "coolingSetpoint",
+                                SmartThingsBindingConstants.COMMAND, "setCoolingSetpoint"))
+                        .build())
+                .build();
+        TestSmartThingsThingHandler handler = new TestSmartThingsThingHandler(thing);
+        SmartThingsApi api = mock(SmartThingsApi.class);
+        SmartThingsConverterFactory.registerConverters(new SmartThingsTypeRegistryImpl());
+
+        handler.handleCommand(api, channelUID, new DecimalType(24));
+
+        ArgumentCaptor<String> body = ArgumentCaptor.forClass(String.class);
+        verify(api).sendCommand(eq(""), body.capture());
+        assertEquals(
+                "{\"commands\":[{\"component\":\"main\",\"capability\":\"thermostatCoolingSetpoint\",\"command\":\"setCoolingSetpoint\",\"arguments\":[24.0]}]}",
+                body.getValue());
+        assertEquals(1, handler.updatedStates);
+        assertEquals(channelUID, handler.lastUpdatedChannel);
+        assertEquals(new DecimalType(24), handler.lastUpdatedState);
+        assertNull(handler.lastStatus);
+    }
+
+    @Test
+    void handleCommandKeepsThingStatusOnConversionFailure() throws SmartThingsException {
+        ThingUID thingUID = new ThingUID("smartthings:Samsung_Room_A_C:account:air-conditioner");
+        ChannelUID channelUID = new ChannelUID(thingUID, "control", "fan-mode");
+        Thing thing = ThingBuilder
+                .create(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Samsung_Room_A_C"), thingUID)
+                .withChannel(createChannel(thingUID, "control", "fan-mode", SmartThingsBindingConstants.TYPE_STRING,
+                        "airConditionerFanMode", "fanMode"))
+                .build();
+        TestSmartThingsThingHandler handler = new TestSmartThingsThingHandler(thing);
+        SmartThingsApi api = mock(SmartThingsApi.class);
+        SmartThingsConverterFactory.registerConverters(new SmartThingsTypeRegistryImpl());
+
+        handler.handleCommand(api, channelUID, new StringType("auto"));
+
+        verify(api, never()).sendCommand(anyString(), anyString());
+        assertEquals(0, handler.updatedStates);
+        assertNull(handler.lastStatus);
+    }
+
+    @Test
+    void handleCommandKeepsThingStatusOnSendFailure() throws SmartThingsException {
+        ThingUID thingUID = new ThingUID("smartthings:Samsung_Room_A_C:account:air-conditioner");
+        ChannelUID channelUID = new ChannelUID(thingUID, "control", "switch");
+        Thing thing = ThingBuilder
+                .create(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Samsung_Room_A_C"), thingUID)
+                .withChannel(createSwitchChannel(thingUID, "control")).build();
+        TestSmartThingsThingHandler handler = new TestSmartThingsThingHandler(thing);
+        SmartThingsApi api = mock(SmartThingsApi.class);
+        SmartThingsConverterFactory.registerConverters(new SmartThingsTypeRegistryImpl());
+        when(api.sendCommand(anyString(), anyString())).thenThrow(new SmartThingsException("bad command"));
+
+        handler.handleCommand(api, channelUID, OnOffType.ON);
+
+        assertEquals(0, handler.updatedStates);
+        assertNull(handler.lastStatus);
+    }
+
+    @Test
+    void defaultConverterSendsQuantityCommandAsNumericSetterArgument() throws SmartThingsException {
+        SmartThingsTypeRegistry registry = mock(SmartThingsTypeRegistry.class);
+        when(registry.getCapability("thermostatCoolingSetpoint"))
+                .thenReturn(createSetterCapability("thermostatCoolingSetpoint", "coolingSetpoint",
+                        SmartThingsBindingConstants.SM_TYPE_NUMBER, "setCoolingSetpoint"));
+        SmartThingsDefaultConverter converter = new SmartThingsDefaultConverter(registry);
+        ThingUID thingUID = new ThingUID("smartthings:Samsung_Room_A_C:account:air-conditioner");
+        ChannelUID channelUID = new ChannelUID(thingUID, "control", "cooling-setpoint");
+        Thing thing = ThingBuilder
+                .create(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Samsung_Room_A_C"), thingUID)
+                .withChannel(createChannel(thingUID, "control", "cooling-setpoint",
+                        SmartThingsBindingConstants.TYPE_NUMBER, "thermostatCoolingSetpoint", "coolingSetpoint"))
+                .build();
+
+        String json = converter.convertToSmartThings(thing, channelUID, new QuantityType<>("21 °C"));
+
+        assertEquals(
+                "{\"commands\":[{\"component\":\"main\",\"capability\":\"thermostatCoolingSetpoint\",\"command\":\"setCoolingSetpoint\",\"arguments\":[21.0]}]}",
+                json);
+    }
+
+    @Test
+    void defaultConverterUsesEnumCommandMapping() throws SmartThingsException {
+        SmartThingsTypeRegistry registry = mock(SmartThingsTypeRegistry.class);
+        when(registry.getCapability("airConditionerMode"))
+                .thenReturn(createEnumCapability("airConditionerMode", "airConditionerMode", "cool", "setCoolMode"));
+        SmartThingsDefaultConverter converter = new SmartThingsDefaultConverter(registry);
+        ThingUID thingUID = new ThingUID("smartthings:Samsung_Room_A_C:account:air-conditioner");
+        ChannelUID channelUID = new ChannelUID(thingUID, "control", "air-conditioner-mode");
+        Thing thing = ThingBuilder
+                .create(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Samsung_Room_A_C"), thingUID)
+                .withChannel(createChannel(thingUID, "control", "air-conditioner-mode",
+                        SmartThingsBindingConstants.TYPE_STRING, "airConditionerMode", "airConditionerMode"))
+                .build();
+
+        String json = converter.convertToSmartThings(thing, channelUID, new StringType("cool"));
+
+        assertEquals(
+                "{\"commands\":[{\"component\":\"main\",\"capability\":\"airConditionerMode\",\"command\":\"setCoolMode\"}]}",
+                json);
+    }
+
     private Thing createAirConditionerThing() {
         ThingUID thingUID = new ThingUID("smartthings:Samsung_Room_A_C:account:air-conditioner");
 
@@ -266,10 +400,62 @@ class SmartThingsThingHandlerTest {
                 .build();
     }
 
+    private SmartThingsCapability createSetterCapability(String capabilityId, String attributeId, String valueType,
+            String commandName) {
+        SmartThingsCapability capability = createCapability(capabilityId);
+        SmartThingsAttribute attribute = createAttribute(attributeId, valueType);
+        attribute.setter = commandName;
+        capability.attributes.put(attributeId, attribute);
+
+        SmartThingsCommand command = new SmartThingsCommand();
+        command.name = commandName;
+        command.arguments = new SmartThingsArgument[] { new SmartThingsArgument() };
+        capability.commands.put(commandName, command);
+        return capability;
+    }
+
+    private SmartThingsCapability createEnumCapability(String capabilityId, String attributeId, String value,
+            String commandName) {
+        SmartThingsCapability capability = createCapability(capabilityId);
+        SmartThingsAttribute attribute = createAttribute(attributeId, SmartThingsBindingConstants.SM_TYPE_STRING);
+        SmartThingsEnumCommand enumCommand = new SmartThingsEnumCommand();
+        enumCommand.value = value;
+        enumCommand.command = commandName;
+        attribute.enumCommands = new SmartThingsEnumCommand[] { enumCommand };
+        capability.attributes.put(attributeId, attribute);
+
+        SmartThingsCommand command = new SmartThingsCommand();
+        command.name = commandName;
+        command.arguments = new SmartThingsArgument[0];
+        capability.commands.put(commandName, command);
+        return capability;
+    }
+
+    private SmartThingsCapability createCapability(String capabilityId) {
+        SmartThingsCapability capability = new SmartThingsCapability();
+        capability.id = capabilityId;
+        capability.attributes = new Hashtable<>();
+        capability.commands = new Hashtable<>();
+        return capability;
+    }
+
+    private SmartThingsAttribute createAttribute(String attributeId, String valueType) {
+        SmartThingsAttribute attribute = new SmartThingsAttribute();
+        attribute.schema = new SmartThingsSchema();
+        attribute.schema.properties = new Hashtable<>();
+
+        SmartThingsProperty value = new SmartThingsProperty();
+        value.type = valueType;
+        value.title = attributeId;
+        attribute.schema.properties.put("value", value);
+        return attribute;
+    }
+
     private static class TestSmartThingsThingHandler extends SmartThingsThingHandler {
         private int updatedStates;
         private @Nullable ChannelUID lastUpdatedChannel;
         private @Nullable State lastUpdatedState;
+        private @Nullable ThingStatus lastStatus;
         private Map<String, String> lastUpdatedProperties = Map.of();
 
         TestSmartThingsThingHandler(Thing thing) {
@@ -288,6 +474,11 @@ class SmartThingsThingHandlerTest {
             if (properties != null) {
                 lastUpdatedProperties = new HashMap<>(properties);
             }
+        }
+
+        @Override
+        protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
+            lastStatus = status;
         }
     }
 }

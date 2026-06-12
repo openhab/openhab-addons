@@ -176,6 +176,19 @@ class SmartThingsThingDescriptionTest {
                 findChannelTypeStateOptions(document, "ac-optional-mode"));
     }
 
+    @Test
+    void airConditionerWritableChannelsDeclareSmartThingsCommands() throws Exception {
+        Document document = parseThingDescription("OH-INF/thing/airconditioner.xml");
+        Map<String, String> expectedCommands = Map.of("air-conditioner-mode", "setAirConditionerMode", "fan-mode",
+                "setFanMode", "fan-oscillation-mode", "setFanOscillationMode", "cooling-setpoint", "setCoolingSetpoint",
+                "ac-optional-mode", "setAcOptionalMode", "auto-cleaning-mode", "setAutoCleaningMode");
+
+        for (Map.Entry<String, String> entry : expectedCommands.entrySet()) {
+            assertEquals(entry.getValue(), findPropertyValue(findChannel(document, entry.getKey()), "command"),
+                    entry.getKey());
+        }
+    }
+
     private Document parseThingDescription(String resourceName) throws Exception {
         InputStream stream = SmartThingsThingDescriptionTest.class.getResourceAsStream("/" + resourceName);
         assertNotNull(stream);
