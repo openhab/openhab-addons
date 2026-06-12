@@ -17,7 +17,6 @@ import static org.openhab.binding.gemini.internal.GeminiBindingConstants.DEFAULT
 import static org.openhab.binding.gemini.internal.GeminiBindingConstants.DEFAULT_TEMPERATURE;
 import static org.openhab.binding.gemini.internal.GeminiBindingConstants.DEFAULT_TOP_P;
 
-import java.util.List;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -25,9 +24,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.gemini.internal.GeminiHandler;
 import org.openhab.binding.gemini.internal.api.GeminiApiClient;
 import org.openhab.binding.gemini.internal.api.GeminiApiException;
-import org.openhab.binding.gemini.internal.api.dto.GeminiContent;
-import org.openhab.binding.gemini.internal.api.dto.GeminiPart;
-import org.openhab.binding.gemini.internal.api.dto.response.GeminiCandidate;
 import org.openhab.binding.gemini.internal.api.dto.response.GeminiResponse;
 import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.ActionOutput;
@@ -85,35 +81,25 @@ public class GeminiActions implements ThingActions {
             @ActionInput(name = "topP", label = "@text/action.sendMessage.topP.label", description = "@text/action.sendMessage.topP.description", type = "java.lang.Double", defaultValue = DEFAULT_TOP_P_STR) @Nullable Double topP,
             @ActionInput(name = "maxOutputTokens", label = "@text/action.sendMessage.maxOutputTokens.label", description = "@text/action.sendMessage.maxOutputTokens.description", type = "java.lang.Integer", defaultValue = MAX_OUTPUT_TOKENS_STR) @Nullable Integer maxOutputTokens,
             @ActionInput(name = "requestTimeout", label = "@text/action.sendMessage.requestTimeout.label", description = "@text/action.sendMessage.requestTimeout.description", type = "java.lang.Integer") @Nullable Integer requestTimeout) {
-        GeminiHandler h = handler;
-        if (h == null) {
+        GeminiHandler geminiHandler = handler;
+        if (geminiHandler == null) {
             logger.warn("Cannot send message: Gemini handler is not initialized.");
             return null;
         }
-        GeminiApiClient client = h.getApiClient();
-        if (client == null) {
+        GeminiApiClient apiClient = geminiHandler.getApiClient();
+        if (apiClient == null) {
             logger.warn("Cannot send message: Gemini API client is not initialized.");
             return null;
         }
 
         try {
-            GeminiResponse response = client.sendPrompt(Objects.requireNonNullElse(model, DEFAULT_MODEL),
+            GeminiResponse response = apiClient.sendPrompt(Objects.requireNonNullElse(model, DEFAULT_MODEL),
                     Objects.requireNonNull(prompt, "prompt must not be null"),
                     Objects.requireNonNullElse(systemMessage, DEFAULT_SYSTEM_MESSAGE),
                     Objects.requireNonNullElse(temperature, DEFAULT_TEMPERATURE),
                     Objects.requireNonNullElse(topP, DEFAULT_TOP_P),
                     Objects.requireNonNullElse(maxOutputTokens, DEFAULT_MAX_OUTPUT_TOKENS), requestTimeout);
-            List<GeminiCandidate> candidates = response.candidates();
-            if (candidates != null && !candidates.isEmpty()) {
-                GeminiCandidate candidate = candidates.getFirst();
-                GeminiContent content = candidate.content();
-                if (content != null) {
-                    List<GeminiPart> parts = content.parts();
-                    if (parts != null && !parts.isEmpty()) {
-                        return parts.getFirst().text();
-                    }
-                }
-            }
+            return response.getFirstText();
         } catch (GeminiApiException e) {
             logger.debug("Request to Gemini via action failed: {}", e.getMessage(), e);
         }
@@ -135,8 +121,8 @@ public class GeminiActions implements ThingActions {
     }
 
     public static @Nullable String sendMessage(ThingActions actions, @Nullable String prompt, @Nullable String model,
-            @Nullable String systemMessage, double temperature, double topP, int maxOutputTokens,
-            @Nullable Integer requestTimeout) {
+            @Nullable String systemMessage, @Nullable Double temperature, @Nullable Double topP,
+            @Nullable Integer maxOutputTokens, @Nullable Integer requestTimeout) {
         if (!(actions instanceof GeminiActions geminiActions)) {
             throw new IllegalArgumentException("The 'actions' argument is not an instance of GeminiActions");
         }

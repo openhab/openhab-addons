@@ -14,9 +14,11 @@ package org.openhab.binding.gemini.internal.api;
 
 import static org.openhab.binding.gemini.internal.GeminiBindingConstants.DEFAULT_REQUEST_TIMEOUT;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
@@ -98,13 +100,7 @@ public class GeminiApiClient {
     public GeminiResponse sendPrompt(String model, String prompt, @Nullable String systemMessage,
             @Nullable Double temperature, @Nullable Double topP, @Nullable Integer maxOutputTokens,
             @Nullable Integer timeoutSeconds) throws GeminiApiException {
-
-        // System Instruction
-        GeminiContent systemInstruction = null;
-        if (systemMessage != null && !systemMessage.isBlank()) {
-            GeminiPart sysPart = new GeminiPart(systemMessage, null, null, null);
-            systemInstruction = new GeminiContent(null, List.of(sysPart));
-        }
+        GeminiContent systemInstruction = createSystemInstruction(systemMessage);
 
         // Contents
         GeminiPart userPart = new GeminiPart(prompt, null, null, null);
@@ -135,12 +131,7 @@ public class GeminiApiClient {
     public GeminiResponse sendPrompt(String model, List<Conversation.Message> history, List<LLMTool> tools,
             @Nullable String systemMessage, @Nullable Double temperature, @Nullable Double topP,
             @Nullable Integer maxOutputTokens, @Nullable Integer timeoutSeconds) throws GeminiApiException {
-
-        GeminiContent systemInstruction = null;
-        if (systemMessage != null && !systemMessage.isBlank()) {
-            GeminiPart sysPart = new GeminiPart(systemMessage, null, null, null);
-            systemInstruction = new GeminiContent(null, List.of(sysPart));
-        }
+        GeminiContent systemInstruction = createSystemInstruction(systemMessage);
 
         List<GeminiContent> contents = new ArrayList<>();
         String lastToolCallName = null;
@@ -186,7 +177,7 @@ public class GeminiApiClient {
 
                 for (LLMToolParam p : t.getParamDescriptions(null)) {
                     List<String> enumValues = p.options().isEmpty() ? null : p.options();
-                    String typeStr = p.type().name().toLowerCase();
+                    String typeStr = p.type().name().toLowerCase(Locale.ROOT);
                     GeminiSchema itemsSchema = null;
                     if ("array".equals(typeStr)) {
                         itemsSchema = new GeminiSchema("string");
@@ -238,7 +229,7 @@ public class GeminiApiClient {
         Request request = httpClient.newRequest(url).method(HttpMethod.POST)
                 .timeout((Objects.requireNonNullElse(timeoutSeconds, DEFAULT_REQUEST_TIMEOUT)), TimeUnit.SECONDS)
                 .header(HttpHeader.CONTENT_TYPE, MimeTypes.Type.APPLICATION_JSON.asString())
-                .header(HEADER_API_KEY, apiKey).content(new StringContentProvider(queryJson));
+                .header(HEADER_API_KEY, apiKey).content(new StringContentProvider(queryJson, StandardCharsets.UTF_8));
         if (logger.isDebugEnabled()) {
             try {
                 String prettyJson = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(requestPayload);
@@ -266,13 +257,16 @@ public class GeminiApiClient {
                     throw new GeminiApiException("Failed to parse Gemini response: " + e.getMessage(), e);
                 }
             } else {
-                logger.error("Gemini request resulted in HTTP {} with message: {}", response.getStatus(),
+                logger.warn("Gemini request resulted in HTTP {} with message: {}", response.getStatus(),
                         response.getReason());
                 logger.debug("Gemini error response: {}", response.getContentAsString());
                 throw new GeminiApiException("Gemini request resulted in HTTP status " + response.getStatus()
                         + " with message: " + response.getReason());
             }
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new GeminiApiException("Could not connect to Gemini API: " + e.getMessage(), e);
+        } catch (TimeoutException | ExecutionException e) {
             throw new GeminiApiException("Could not connect to Gemini API: " + e.getMessage(), e);
         }
     }
@@ -315,10 +309,21 @@ public class GeminiApiClient {
                 throw new GeminiApiException(
                         "Gemini request for models resulted in HTTP status " + response.getStatus());
             }
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new GeminiApiException("Could not retrieve models from Gemini API: " + e.getMessage(), e);
+        } catch (TimeoutException | ExecutionException e) {
             throw new GeminiApiException("Could not retrieve models from Gemini API: " + e.getMessage(), e);
         }
         return new ArrayList<>();
+    }
+
+    private @Nullable GeminiContent createSystemInstruction(@Nullable String systemMessage) {
+        if (systemMessage != null && !systemMessage.isBlank()) {
+            GeminiPart sysPart = new GeminiPart(systemMessage, null, null, null);
+            return new GeminiContent(null, List.of(sysPart));
+        }
+        return null;
     }
 
     private <T> @Nullable T readNullableValue(String content, Class<T> valueType) throws JsonProcessingException {

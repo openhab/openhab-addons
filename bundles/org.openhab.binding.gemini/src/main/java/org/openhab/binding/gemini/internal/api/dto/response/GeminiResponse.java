@@ -28,4 +28,20 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @NonNullByDefault
 public record GeminiResponse(@Nullable List<GeminiCandidate> candidates, @Nullable GeminiUsageMetadata usageMetadata) {
+
+    public @Nullable String getFirstText() {
+        List<GeminiCandidate> candidatesList = candidates;
+        if (candidatesList != null && !candidatesList.isEmpty()) {
+            GeminiCandidate candidate = candidatesList.getFirst();
+            var content = candidate.content();
+            if (content != null) {
+                var parts = content.parts();
+                if (parts != null && !parts.isEmpty()) {
+                    var part = parts.getFirst();
+                    return part.text();
+                }
+            }
+        }
+        return null;
+    }
 }

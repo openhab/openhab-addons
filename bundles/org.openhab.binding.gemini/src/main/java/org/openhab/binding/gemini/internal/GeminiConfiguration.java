@@ -29,11 +29,11 @@ public class GeminiConfiguration {
     // Authentication
     public String apiKey = "";
     // Connection
-    public Integer requestTimeout = DEFAULT_REQUEST_TIMEOUT;
+    public int requestTimeout = DEFAULT_REQUEST_TIMEOUT;
     // HLI
     public String model = DEFAULT_MODEL;
-    public Double temperature = DEFAULT_TEMPERATURE;
-    public Double topP = DEFAULT_TOP_P;
+    public double temperature = DEFAULT_TEMPERATURE;
+    public double topP = DEFAULT_TOP_P;
     // shorter answers for the HLI (2048 tokens is still a lot)
-    public Integer maxOutputTokens = 2048;
+    public int maxOutputTokens = 2048;
 }

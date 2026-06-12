@@ -99,35 +99,25 @@ public class GeminiHLIService implements ThingHandlerService, HumanLanguageInter
 
     @Override
     public String interpret(Locale locale, String text) throws InterpretationException {
-        GeminiHandler h = handler;
-        if (h == null) {
+        GeminiHandler geminiHandler = handler;
+        if (geminiHandler == null) {
             throw new InterpretationException("GeminiHandler is not initialized");
         }
-        GeminiApiClient client = h.getApiClient();
-        if (client == null) {
+        GeminiApiClient apiClient = geminiHandler.getApiClient();
+        if (apiClient == null) {
             throw new InterpretationException("Gemini API client is not available");
         }
-        GeminiConfiguration config = h.getGeminiConfiguration();
+        GeminiConfiguration config = geminiHandler.getGeminiConfiguration();
         if (config == null) {
             throw new InterpretationException("Gemini HLI configuration is not available");
         }
-        String m = config.model.isBlank() ? DEFAULT_MODEL : config.model;
+        String model = config.model.isBlank() ? DEFAULT_MODEL : config.model;
         try {
-            GeminiResponse geminiResponse = client.sendPrompt(m, text, DEFAULT_SYSTEM_MESSAGE, config.temperature,
-                    config.topP, config.maxOutputTokens, config.requestTimeout);
-            List<GeminiCandidate> candidates = geminiResponse.candidates();
-            if (candidates != null && !candidates.isEmpty()) {
-                GeminiCandidate candidate = candidates.getFirst();
-                GeminiContent content = candidate.content();
-                if (content != null) {
-                    List<GeminiPart> parts = content.parts();
-                    if (parts != null && !parts.isEmpty()) {
-                        String txt = parts.getFirst().text();
-                        if (txt != null) {
-                            return txt;
-                        }
-                    }
-                }
+            GeminiResponse geminiResponse = apiClient.sendPrompt(model, text, DEFAULT_SYSTEM_MESSAGE,
+                    config.temperature, config.topP, config.maxOutputTokens, config.requestTimeout);
+            String response = geminiResponse.getFirstText();
+            if (response != null) {
+                return response;
             }
         } catch (GeminiApiException e) {
             var ex = new InterpretationException("Failed to get response from Gemini: " + e.getMessage());
@@ -139,16 +129,16 @@ public class GeminiHLIService implements ThingHandlerService, HumanLanguageInter
 
     @Override
     public String interpret(Locale locale, InterpreterContext interpreterContext) throws InterpretationException {
-        GeminiHandler h = handler;
-        if (h == null) {
+        GeminiHandler geminiHandler = handler;
+        if (geminiHandler == null) {
             throw new InterpretationException("GeminiHandler is not initialized");
         }
-        GeminiApiClient client = h.getApiClient();
-        if (client == null) {
+        GeminiApiClient apiClient = geminiHandler.getApiClient();
+        if (apiClient == null) {
             throw new InterpretationException("Gemini API client is not available");
         }
 
-        GeminiConfiguration config = h.getGeminiConfiguration();
+        GeminiConfiguration config = geminiHandler.getGeminiConfiguration();
         if (config == null) {
             throw new InterpretationException("Gemini HLI configuration is not available");
         }
@@ -160,9 +150,9 @@ public class GeminiHLIService implements ThingHandlerService, HumanLanguageInter
         if (systemMessage == null || systemMessage.isBlank()) {
             throw new InterpretationException("System prompt is missing or empty");
         }
-        if (interpreterContext.locationItem() != null && !interpreterContext.locationItem().isBlank()) {
-            systemMessage = systemMessage.trim() + "\n\n" + "Your location (item name): "
-                    + interpreterContext.locationItem();
+        String locationItem = interpreterContext.locationItem();
+        if (locationItem != null && !locationItem.isBlank()) {
+            systemMessage = systemMessage.trim() + "\n\n" + "Your location (item name): " + locationItem;
         }
         if (!tools.isEmpty()) {
             String toolGuidance = "You have tools available to interact with the environment. Use them when appropriate. "
@@ -173,10 +163,10 @@ public class GeminiHLIService implements ThingHandlerService, HumanLanguageInter
         }
 
         while (true) {
-            String m = config.model.isBlank() ? DEFAULT_MODEL : config.model;
+            String model = config.model.isBlank() ? DEFAULT_MODEL : config.model;
             try {
-                GeminiResponse geminiResponse = client.sendPrompt(m, conversation.getMessages(), tools, systemMessage,
-                        config.temperature, config.topP, config.maxOutputTokens, config.requestTimeout);
+                GeminiResponse geminiResponse = apiClient.sendPrompt(model, conversation.getMessages(), tools,
+                        systemMessage, config.temperature, config.topP, config.maxOutputTokens, config.requestTimeout);
 
                 List<GeminiCandidate> candidates = geminiResponse.candidates();
                 if (candidates == null || candidates.isEmpty()) {

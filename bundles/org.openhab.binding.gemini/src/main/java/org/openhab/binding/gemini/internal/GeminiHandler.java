@@ -19,6 +19,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -26,9 +28,6 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.gemini.internal.action.GeminiActions;
 import org.openhab.binding.gemini.internal.api.GeminiApiClient;
 import org.openhab.binding.gemini.internal.api.GeminiApiException;
-import org.openhab.binding.gemini.internal.api.dto.GeminiContent;
-import org.openhab.binding.gemini.internal.api.dto.GeminiPart;
-import org.openhab.binding.gemini.internal.api.dto.response.GeminiCandidate;
 import org.openhab.binding.gemini.internal.api.dto.response.GeminiModel;
 import org.openhab.binding.gemini.internal.api.dto.response.GeminiResponse;
 import org.openhab.binding.gemini.internal.hli.GeminiHLIService;
@@ -59,6 +58,7 @@ public class GeminiHandler extends BaseThingHandler {
     private @Nullable GeminiConfiguration config;
     private @Nullable GeminiApiClient apiClient;
     private List<GeminiModel> models = List.of();
+    private @Nullable ScheduledFuture<?> initFuture;
 
     public GeminiHandler(Thing thing, HttpClientFactory httpClientFactory) {
         super(thing);
@@ -139,20 +139,9 @@ public class GeminiHandler extends BaseThingHandler {
     }
 
     private void processChatResponse(ChannelUID channelUID, GeminiResponse response) {
-        List<GeminiCandidate> candidates = response.candidates();
-        if (candidates != null && !candidates.isEmpty()) {
-            GeminiCandidate candidate = candidates.getFirst();
-            GeminiContent content = candidate.content();
-            if (content != null) {
-                List<GeminiPart> parts = content.parts();
-                if (parts != null && !parts.isEmpty()) {
-                    @Nullable
-                    String msg = parts.getFirst().text();
-                    if (msg != null) {
-                        updateState(channelUID, new StringType(msg));
-                    }
-                }
-            }
+        String msg = response.getFirstText();
+        if (msg != null) {
+            updateState(channelUID, new StringType(msg));
         } else {
             logger.warn("Didn't receive any chat response candidates from Gemini - this is unexpected.");
         }
@@ -181,7 +170,7 @@ public class GeminiHandler extends BaseThingHandler {
 
         updateStatus(ThingStatus.UNKNOWN);
 
-        scheduler.execute(() -> {
+        this.initFuture = scheduler.schedule(() -> {
             try {
                 GeminiApiClient client = this.apiClient;
                 GeminiConfiguration currentConfig = this.config;
@@ -215,7 +204,17 @@ public class GeminiHandler extends BaseThingHandler {
             } catch (GeminiApiException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
-        });
+        }, 0, TimeUnit.MILLISECONDS);
+    }
+
+    @Override
+    public void dispose() {
+        ScheduledFuture<?> future = initFuture;
+        if (future != null) {
+            future.cancel(true);
+            this.initFuture = null;
+        }
+        super.dispose();
     }
 
     @Override
@@ -223,7 +222,7 @@ public class GeminiHandler extends BaseThingHandler {
         return List.of(GeminiModelOptionProvider.class, GeminiActions.class, GeminiHLIService.class);
     }
 
-    private boolean invalidTimeout(@Nullable Integer timeout) {
-        return timeout != null && timeout <= 0;
+    private boolean invalidTimeout(int timeout) {
+        return timeout <= 0;
     }
 }

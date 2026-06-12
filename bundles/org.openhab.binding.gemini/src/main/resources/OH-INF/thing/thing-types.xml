@@ -40,26 +40,26 @@
 				<description>The Gemini model to use.</description>
 				<default>gemini-2.5-flash</default>
 			</parameter>
-			<parameter name="temperature" type="decimal" groupName="hli">
+			<parameter name="temperature" type="decimal" groupName="hli" min="0.0" max="2.0">
 				<label>Temperature</label>
 				<description>Controls randomness. Higher values mean more random responses.</description>
 				<default>1.0</default>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="topP" type="decimal" groupName="hli">
+			<parameter name="topP" type="decimal" groupName="hli" min="0.0" max="1.0">
 				<label>Top-P</label>
 				<description>Controls the cumulative probability threshold for token selection.</description>
 				<default>1.0</default>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="maxOutputTokens" type="integer" groupName="hli">
+			<parameter name="maxOutputTokens" type="integer" groupName="hli" min="1">
 				<label>Max Output Tokens</label>
 				<description>The maximum number of tokens to generate in the response.</description>
 				<default>2048</default>
 				<advanced>true</advanced>
 			</parameter>
 			<!-- Connection Settings -->
-			<parameter name="requestTimeout" type="integer" unit="s" groupName="connection">
+			<parameter name="requestTimeout" type="integer" min="1" unit="s" groupName="connection">
 				<label>Request Timeout</label>
 				<description>The timeout in seconds for API requests.</description>
 				<default>30</default>
@@ -79,19 +79,19 @@
 				<description>The Gemini model to use.</description>
 				<default>gemini-2.5-flash</default>
 			</parameter>
-			<parameter name="temperature" type="decimal">
+			<parameter name="temperature" type="decimal" min="0.0" max="2.0">
 				<label>Temperature</label>
 				<description>Controls randomness. Higher values mean more random responses.</description>
 				<default>1.0</default>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="topP" type="decimal">
+			<parameter name="topP" type="decimal" min="0.0" max="1.0">
 				<label>Top-P</label>
 				<description>Controls the cumulative probability threshold for token selection.</description>
 				<default>1.0</default>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="maxOutputTokens" type="integer">
+			<parameter name="maxOutputTokens" type="integer" min="1">
 				<label>Max Output Tokens</label>
 				<description>The maximum number of tokens to generate in the response.</description>
 				<default>2048</default>
