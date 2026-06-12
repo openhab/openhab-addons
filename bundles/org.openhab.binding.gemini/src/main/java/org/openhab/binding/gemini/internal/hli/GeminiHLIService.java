@@ -162,7 +162,14 @@ public class GeminiHLIService implements ThingHandlerService, HumanLanguageInter
             systemMessage = systemMessage.trim() + "\n\n" + toolGuidance;
         }
 
+        int loopCount = 0;
+        final int maxLoops = 10;
         while (true) {
+            if (loopCount >= maxLoops) {
+                throw new InterpretationException(
+                        "Tool execution loop limit exceeded (max " + maxLoops + " iterations)");
+            }
+            loopCount++;
             String model = config.model.isBlank() ? DEFAULT_MODEL : config.model;
             try {
                 GeminiResponse geminiResponse = apiClient.sendPrompt(model, conversation.getMessages(), tools,
