@@ -70,6 +70,18 @@
     </dependency>
     <dependency>
       <groupId>org.igniterealtime.smack</groupId>
+      <artifactId>smack-xmlparser</artifactId>
+      <version>${smack.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.igniterealtime.smack</groupId>
+      <artifactId>smack-xmlparser-xpp3</artifactId>
+      <version>${smack.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.igniterealtime.smack</groupId>
       <artifactId>smack-resolver-javax</artifactId>
       <version>${smack.version}</version>
       <scope>provided</scope>

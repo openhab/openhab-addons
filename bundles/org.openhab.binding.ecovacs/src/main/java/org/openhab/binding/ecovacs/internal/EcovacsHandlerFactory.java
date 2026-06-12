@@ -28,6 +28,8 @@ import org.jivesoftware.smack.util.stringencoder.Base64;
 import org.jivesoftware.smack.util.stringencoder.Base64UrlSafeEncoder;
 import org.jivesoftware.smack.util.stringencoder.java7.Java7Base64Encoder;
 import org.jivesoftware.smack.util.stringencoder.java7.Java7Base64UrlSafeEncoder;
+import org.jivesoftware.smack.xml.SmackXmlParser;
+import org.jivesoftware.smack.xml.xpp3.Xpp3XmlPullParserFactory;
 import org.jivesoftware.smackx.disco.provider.DiscoverInfoProvider;
 import org.jivesoftware.smackx.disco.provider.DiscoverItemsProvider;
 import org.jivesoftware.smackx.xdata.provider.DataFormProvider;
@@ -71,6 +73,7 @@ public class EcovacsHandlerFactory extends BaseThingHandlerFactory {
         this.localeProvider = localeProvider;
         this.i18Provider = i18Provider;
 
+        SmackXmlParser.setXmlPullParserFactory(new Xpp3XmlPullParserFactory());
         Roster.setRosterLoadedAtLoginDefault(false);
         var dnsResolver = JavaxResolver.getInstance();
         if (dnsResolver != null) {
