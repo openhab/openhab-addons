@@ -269,7 +269,7 @@ class SmartThingsThingHandlerTest {
     }
 
     @Test
-    void handleCommandUsesStaticCommandMetadataAndUpdatesAcceptedState() throws SmartThingsException {
+    void handleCommandUsesStaticCommandMetadataWithoutUpdatingState() throws SmartThingsException {
         ThingUID thingUID = new ThingUID("smartthings:Samsung_Room_A_C:account:air-conditioner");
         ChannelUID channelUID = new ChannelUID(thingUID, "control", "cooling-setpoint");
         Thing thing = ThingBuilder
@@ -292,9 +292,9 @@ class SmartThingsThingHandlerTest {
         assertEquals(
                 "{\"commands\":[{\"component\":\"main\",\"capability\":\"thermostatCoolingSetpoint\",\"command\":\"setCoolingSetpoint\",\"arguments\":[24.0]}]}",
                 body.getValue());
-        assertEquals(1, handler.updatedStates);
-        assertEquals(channelUID, handler.lastUpdatedChannel);
-        assertEquals(new DecimalType(24), handler.lastUpdatedState);
+        assertEquals(0, handler.updatedStates);
+        assertNull(handler.lastUpdatedChannel);
+        assertNull(handler.lastUpdatedState);
         assertNull(handler.lastStatus);
     }
 

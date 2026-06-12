@@ -126,17 +126,10 @@ public class SmartThingsThingHandler extends BaseThingHandler {
 
         try {
             api.sendCommand(deviceId, jsonMsg);
-            updateAcceptedCommandState(channelUID, command);
         } catch (SmartThingsException ex) {
             logger.warn("Unable to send command {} to SmartThings channel {}: {}", command.toFullString(), channelUID,
                     ex.getMessage());
             logger.debug("Unable to send SmartThings command payload: {}", jsonMsg, ex);
-        }
-    }
-
-    private void updateAcceptedCommandState(ChannelUID channelUID, Command command) {
-        if (command instanceof State state) {
-            updateState(channelUID, state);
         }
     }
 
