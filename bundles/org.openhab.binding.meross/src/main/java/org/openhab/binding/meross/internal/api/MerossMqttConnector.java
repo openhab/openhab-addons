@@ -149,6 +149,7 @@ public class MerossMqttConnector implements MqttConnectionObserver {
         }
 
         logger.debug("Stopping connection...");
+        connected.complete(false);
         ScheduledFuture<?> disconnectFuture = this.disconnectFuture;
         if (disconnectFuture != null) {
             disconnectFuture.cancel(true);
@@ -250,6 +251,7 @@ public class MerossMqttConnector implements MqttConnectionObserver {
                 callback.updateBridgeStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
                 break;
             case MqttConnectionState.DISCONNECTED:
+                connected = new CompletableFuture<>();
                 // The transport tries to reconnect anyway. If we put the bridge offline immediately, it will trigger a
                 // re-initialization of all devices creating a lot of traffic. Devices can still be commanded through
                 // local http connections even if the connection to the Meross MQTT broker is disrupted. So don't put
