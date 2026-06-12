@@ -78,6 +78,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceS
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2CoverStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusEm;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusEmData;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusFlood;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusHumidity;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusIlluminance;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusPower;
@@ -559,6 +560,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         updateTemperatureStatus(sensorData, result.temperature0);
         updateIlluminanceStatus(sensorData, result.illuminance0);
         updateSmokeStatus(sensorData, result.smoke0);
+        updateFloodStatus(sensorData, result.flood0);
         updateBatteryStatus(sensorData, result.devicepower0);
         updateAddonStatus(status, result);
         updated |= ShellyComponents.updateSensors(getThing(), status);
@@ -1269,6 +1271,13 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         }
         sdata.smoke = getBool(value.alarm);
         sdata.mute = getBool(value.mute);
+    }
+
+    protected void updateFloodStatus(ShellyStatusSensor sdata, @Nullable Shelly2DeviceStatusFlood value) {
+        if (value == null) {
+            return;
+        }
+        sdata.flood = getBool(value.alarm);
     }
 
     protected void updateBatteryStatus(ShellyStatusSensor sdata, @Nullable Shelly2DeviceStatusPower value) {

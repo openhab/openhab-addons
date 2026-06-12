@@ -4,6 +4,21 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
+	<thing-type id="shellyplusflood">
+		<label>Shelly Plus Flood</label>
+		<description>Shelly Flood Gen4 - Water Leak Detector (battery powered)</description>
+		<category>Sensor</category>
+		<semantic-equipment-tag>LeakSensor</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="sensors" typeId="sensorData"/>
+			<channel-group id="battery" typeId="batteryStatus"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:battery-gen2"/>
+	</thing-type>
+
 	<thing-type id="shellyplusht">
 		<label>ShellyPlus H&amp;T</label>
 		<description>Shelly Plus HT - Humidity and Temperature sensor with display</description>

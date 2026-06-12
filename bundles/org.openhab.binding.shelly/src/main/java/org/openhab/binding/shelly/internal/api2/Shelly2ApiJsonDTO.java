@@ -758,6 +758,13 @@ public class Shelly2ApiJsonDTO {
                 public Boolean mute;
             }
 
+            public class Shelly2DeviceStatusFlood {
+                public Integer id;
+                public Boolean alarm;
+                public Boolean mute;
+                public String[] errors;
+            }
+
             public static class Shelly2RGBWStatus {
                 public Integer id;
                 public String source;
@@ -858,6 +865,9 @@ public class Shelly2ApiJsonDTO {
 
             @SerializedName("smoke:0")
             public Shelly2DeviceStatusSmoke smoke0;
+
+            @SerializedName("flood:0")
+            public Shelly2DeviceStatusFlood flood0;
 
             @SerializedName("voltmeter:0")
             public @Nullable Shelly2DeviceStatusVoltage voltmeter0;
