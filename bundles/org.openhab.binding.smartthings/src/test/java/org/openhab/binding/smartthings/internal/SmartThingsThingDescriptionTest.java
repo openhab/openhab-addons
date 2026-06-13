@@ -80,16 +80,14 @@ class SmartThingsThingDescriptionTest {
         Document document = parseThingDescription("OH-INF/thing/airconditioner.xml");
         Map<String, ExpectedChannel> expectedChannels = Map.ofEntries(
                 Map.entry("switch", new ExpectedChannel("control", "system.power", "switch", "switch")),
-                Map.entry("air-conditioner-mode",
-                        new ExpectedChannel("control", "air-conditioner-mode", "airConditionerMode",
-                                "airConditionerMode")),
+                Map.entry("mode",
+                        new ExpectedChannel("control", "ac-mode", "airConditionerMode", "airConditionerMode")),
                 Map.entry("fan-mode", new ExpectedChannel("control", "fan-mode", "airConditionerFanMode", "fanMode")),
                 Map.entry("fan-oscillation-mode",
                         new ExpectedChannel("control", "fan-oscillation-mode", "fanOscillationMode",
                                 "fanOscillationMode")),
-                Map.entry("cooling-setpoint",
-                        new ExpectedChannel("control", "ac-cooling-setpoint", "thermostatCoolingSetpoint",
-                                "coolingSetpoint")),
+                Map.entry("setpoint",
+                        new ExpectedChannel("control", "ac-setpoint", "thermostatCoolingSetpoint", "coolingSetpoint")),
                 Map.entry("temperature",
                         new ExpectedChannel("environment", "ac-temperature", "temperatureMeasurement", "temperature")),
                 Map.entry("humidity",
@@ -99,9 +97,6 @@ class SmartThingsThingDescriptionTest {
                                 "powerConsumption")),
                 Map.entry("energy",
                         new ExpectedChannel("energy", "ac-energy", "powerConsumptionReport", "powerConsumption")),
-                Map.entry("ac-optional-mode",
-                        new ExpectedChannel("advanced", "ac-optional-mode", "custom.airConditionerOptionalMode",
-                                "acOptionalMode")),
                 Map.entry("operating-state",
                         new ExpectedChannel("advanced", "ac-auto-cleaning-operating-state", "custom.autoCleaningMode",
                                 "operatingState")),
@@ -111,7 +106,7 @@ class SmartThingsThingDescriptionTest {
                 Map.entry("dust-filter-status",
                         new ExpectedChannel("advanced", "ac-filter-status", "custom.dustFilter", "dustFilterStatus")));
 
-        assertEquals(13, getChannelCount(document));
+        assertEquals(12, getChannelCount(document));
         assertEquals(Set.of("control", "environment", "energy", "advanced"), findChannelGroupIds(document));
 
         for (Map.Entry<String, ExpectedChannel> entry : expectedChannels.entrySet()) {
@@ -129,10 +124,10 @@ class SmartThingsThingDescriptionTest {
     @Test
     void airConditionerThingKeepsSecondaryChannelsAdvanced() throws Exception {
         Document document = parseThingDescription("OH-INF/thing/airconditioner.xml");
-        Set<String> advancedChannels = Set.of("ac-optional-mode", "operating-state", "progress", "dust-filter-status");
+        Set<String> advancedChannels = Set.of("operating-state", "progress", "dust-filter-status");
 
-        assertEquals(4, advancedChannels.size());
-        assertEquals(13, getChannelCount(document));
+        assertEquals(3, advancedChannels.size());
+        assertEquals(12, getChannelCount(document));
 
         NodeList channels = document.getElementsByTagName("channel");
         int advancedCount = 0;
@@ -149,16 +144,15 @@ class SmartThingsThingDescriptionTest {
             }
         }
 
-        assertEquals(4, advancedCount);
+        assertEquals(3, advancedCount);
     }
 
     @Test
     void airConditionerChannelTypesUseSuitableItemTypes() throws Exception {
         Document document = parseThingDescription("OH-INF/thing/airconditioner.xml");
-        Map<String, String> expectedItemTypes = Map.ofEntries(Map.entry("air-conditioner-mode", "String"),
+        Map<String, String> expectedItemTypes = Map.ofEntries(Map.entry("ac-mode", "String"),
                 Map.entry("fan-mode", "String"), Map.entry("fan-oscillation-mode", "String"),
-                Map.entry("ac-temperature", "Number:Temperature"),
-                Map.entry("ac-cooling-setpoint", "Number:Temperature"),
+                Map.entry("ac-temperature", "Number:Temperature"), Map.entry("ac-setpoint", "Number:Temperature"),
                 Map.entry("ac-humidity", "Number:Dimensionless"), Map.entry("ac-power-consumption", "Number:Power"),
                 Map.entry("ac-energy", "Number:Energy"),
                 Map.entry("ac-auto-cleaning-progress", "Number:Dimensionless"));
@@ -168,16 +162,20 @@ class SmartThingsThingDescriptionTest {
         }
         assertEquals("Wh", findPropertyValue(findChannel(document, "energy"), "unit"));
         assertEquals("%.0f Wh", findChannelTypeStatePattern(document, "ac-energy"));
-        assertEquals(Map.of("off", "Off", "quiet", "Quiet", "sleep", "Sleep", "windFree", "WindFree"),
-                findChannelTypeStateOptions(document, "ac-optional-mode"));
+        assertEquals(Map.of("auto", "Auto", "cool", "Cool", "dry", "Dry", "fanOnly", "Fan Only", "heat", "Heat", "wind",
+                "Clean"), findChannelTypeStateOptions(document, "ac-mode"));
+        assertEquals(
+                Map.of("auto", "Auto", "low", "Low", "medium", "Medium", "high", "High", "turbo", "Turbo", "quiet",
+                        "Quiet", "sleep", "Sleep", "windFree", "WindFree"),
+                findChannelTypeStateOptions(document, "fan-mode"));
+        assertEquals("Setpoint", findChannelTypeLabel(document, "ac-setpoint"));
     }
 
     @Test
     void airConditionerWritableChannelsDeclareSmartThingsCommands() throws Exception {
         Document document = parseThingDescription("OH-INF/thing/airconditioner.xml");
-        Map<String, String> expectedCommands = Map.of("air-conditioner-mode", "setAirConditionerMode", "fan-mode",
-                "setFanMode", "fan-oscillation-mode", "setFanOscillationMode", "cooling-setpoint", "setCoolingSetpoint",
-                "ac-optional-mode", "setAcOptionalMode");
+        Map<String, String> expectedCommands = Map.of("mode", "setAirConditionerMode", "fan-mode", "setFanMode",
+                "fan-oscillation-mode", "setFanOscillationMode", "setpoint", "setCoolingSetpoint");
 
         for (Map.Entry<String, String> entry : expectedCommands.entrySet()) {
             assertEquals(entry.getValue(), findPropertyValue(findChannel(document, entry.getKey()), "command"),
@@ -186,9 +184,13 @@ class SmartThingsThingDescriptionTest {
     }
 
     @Test
-    void airConditionerDoesNotExposeAutoCleaningModeCommandChannel() throws Exception {
+    void airConditionerDoesNotExposeOptionalModeOrAutoCleaningModeCommandChannels() throws Exception {
         Document document = parseThingDescription("OH-INF/thing/airconditioner.xml");
 
+        assertFalse(hasChannel(document, "ac-optional-mode"));
+        assertFalse(hasChannelType(document, "ac-optional-mode"));
+        assertFalse(hasChannelType(document, "air-conditioner-mode"));
+        assertFalse(hasChannelType(document, "ac-cooling-setpoint"));
         assertFalse(hasChannel(document, "auto-cleaning-mode"));
         assertFalse(hasChannelType(document, "ac-auto-cleaning-mode"));
     }
@@ -288,6 +290,13 @@ class SmartThingsThingDescriptionTest {
         Node state = channelType.getElementsByTagName("state").item(0);
         assertNotNull(state);
         return ((Element) state).getAttribute("pattern");
+    }
+
+    private String findChannelTypeLabel(Document document, String channelTypeId) {
+        Element channelType = findChannelType(document, channelTypeId);
+        Node label = channelType.getElementsByTagName("label").item(0);
+        assertNotNull(label);
+        return label.getTextContent();
     }
 
     private Map<String, String> findChannelTypeStateOptions(Document document, String channelTypeId) {

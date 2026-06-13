@@ -43,6 +43,7 @@ public class SmartThingsConverterFactory {
             registerConverter(SmartThingsBindingConstants.CHANNEL_NAME_DEFAULT,
                     new SmartThingsDefaultConverter(typeRegistry));
         }
+        registerConverter("fan-mode", new SmartThingsAirConditionerFanModeConverter(typeRegistry));
     }
 
     private static void registerConverter(String key, SmartThingsConverter tp) {
@@ -54,6 +55,12 @@ public class SmartThingsConverterFactory {
      */
     public static @Nullable SmartThingsConverter getConverter(String itemType) {
         SmartThingsConverter converter = converterCache.get(itemType);
+        if (converter == null) {
+            int groupSeparator = itemType.lastIndexOf('#');
+            if (groupSeparator >= 0 && groupSeparator < itemType.length() - 1) {
+                converter = converterCache.get(itemType.substring(groupSeparator + 1));
+            }
+        }
         if (converter == null) {
             converter = converterCache.get(SmartThingsBindingConstants.CHANNEL_NAME_DEFAULT);
         }

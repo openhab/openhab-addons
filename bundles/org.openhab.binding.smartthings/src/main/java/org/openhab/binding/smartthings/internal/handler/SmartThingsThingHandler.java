@@ -44,6 +44,7 @@ import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,6 +54,17 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SmartThingsThingHandler extends BaseThingHandler {
+    private static final String CAPABILITY_AIR_CONDITIONER_FAN_MODE = "airConditionerFanMode";
+    private static final String CAPABILITY_AIR_CONDITIONER_MODE = "airConditionerMode";
+    private static final String CAPABILITY_AIR_CONDITIONER_OPTIONAL_MODE = "custom.airConditionerOptionalMode";
+    private static final String CAPABILITY_THERMOSTAT_COOLING_SETPOINT = "thermostatCoolingSetpoint";
+    private static final String CHANNEL_AIR_CONDITIONER_MODE = "air-conditioner-mode";
+    private static final String CHANNEL_FAN_MODE = "fan-mode";
+    private static final String CHANNEL_OPTIONAL_MODE = "ac-optional-mode";
+    private static final String CHANNEL_SETPOINT = "cooling-setpoint";
+    private static final String STATIC_CHANNEL_MODE = "mode";
+    private static final String STATIC_CHANNEL_SETPOINT = "setpoint";
+    private static final String OPTIONAL_MODE_OFF = "off";
 
     private final Logger logger = LoggerFactory.getLogger(SmartThingsThingHandler.class);
 
@@ -62,6 +74,8 @@ public class SmartThingsThingHandler extends BaseThingHandler {
 
     private @Nullable ScheduledFuture<?> pollingJob = null;
     private long lastRefresh = System.nanoTime();
+    private @Nullable Object airConditionerFanModeValue;
+    private boolean airConditionerOptionalModeActive;
 
     public SmartThingsThingHandler(Thing thing) {
         super(thing);
@@ -137,6 +151,11 @@ public class SmartThingsThingHandler extends BaseThingHandler {
             Object value) throws SmartThingsException {
         String channelName = SmartThingsTypeRegistryImpl.getChannelName(attr);
         String capabilityId = namespace.isBlank() ? capaKey : namespace + "." + capaKey;
+
+        if (handleMergedAirConditionerFanMode(deviceType, componentId, capabilityId, channelName, value)) {
+            return;
+        }
+
         ChannelUID channelUID = findChannelUID(deviceType, componentId, capabilityId, channelName);
 
         if (channelUID == null) {
@@ -147,9 +166,51 @@ public class SmartThingsThingHandler extends BaseThingHandler {
 
         logger.trace("refreshDevice called: channelName:{}", channelName);
 
-        // channelUID
-        SmartThingsConverter converter = SmartThingsConverterFactory.getConverter(channelUID.getIdWithoutGroup());
+        updateChannelState(channelUID, value);
+    }
 
+    private boolean handleMergedAirConditionerFanMode(String deviceType, String componentId, String capabilityId,
+            String channelName, Object value) throws SmartThingsException {
+        if (CAPABILITY_AIR_CONDITIONER_FAN_MODE.equals(capabilityId) && CHANNEL_FAN_MODE.equals(channelName)) {
+            airConditionerFanModeValue = value;
+            return airConditionerOptionalModeActive;
+        }
+
+        if (!CAPABILITY_AIR_CONDITIONER_OPTIONAL_MODE.equals(capabilityId)
+                || !CHANNEL_OPTIONAL_MODE.equals(channelName)) {
+            return false;
+        }
+
+        ChannelUID optionalModeChannel = findChannelUIDByChannelName(deviceType, componentId, capabilityId,
+                channelName);
+        if (optionalModeChannel != null) {
+            return false;
+        }
+
+        ChannelUID fanModeChannel = findChannelUID(deviceType, componentId, CAPABILITY_AIR_CONDITIONER_FAN_MODE,
+                CHANNEL_FAN_MODE);
+        if (fanModeChannel == null) {
+            return true;
+        }
+
+        if (OPTIONAL_MODE_OFF.equalsIgnoreCase(value.toString())) {
+            airConditionerOptionalModeActive = false;
+            Object fanModeValue = airConditionerFanModeValue;
+            if (fanModeValue != null) {
+                updateChannelState(fanModeChannel, fanModeValue);
+            } else {
+                updateState(fanModeChannel, UnDefType.UNDEF);
+            }
+            return true;
+        }
+
+        airConditionerOptionalModeActive = true;
+        updateChannelState(fanModeChannel, value);
+        return true;
+    }
+
+    private void updateChannelState(ChannelUID channelUID, Object value) throws SmartThingsException {
+        SmartThingsConverter converter = SmartThingsConverterFactory.getConverter(channelUID.getIdWithoutGroup());
         if (converter != null) {
             State state = converter.convertToOpenHab(thing, channelUID, value);
             updateState(channelUID, state);
@@ -157,6 +218,18 @@ public class SmartThingsThingHandler extends BaseThingHandler {
     }
 
     private @Nullable ChannelUID findChannelUID(String deviceType, String componentId, String capabilityId,
+            String channelName) {
+        ChannelUID channelUID = findChannelUIDByChannelName(deviceType, componentId, capabilityId, channelName);
+        if (channelUID != null) {
+            return channelUID;
+        }
+
+        String staticChannelName = getStaticAirConditionerChannelName(capabilityId, channelName);
+        return channelName.equals(staticChannelName) ? null
+                : findChannelUIDByChannelName(deviceType, componentId, capabilityId, staticChannelName);
+    }
+
+    private @Nullable ChannelUID findChannelUIDByChannelName(String deviceType, String componentId, String capabilityId,
             String channelName) {
         String dynamicGroupId = SmartThingsTypeRegistryImpl.getChannelGroupId(deviceType, componentId, capabilityId);
         ChannelUID channelUID = new ChannelUID(this.getThing().getUID(), dynamicGroupId, channelName);
@@ -170,6 +243,16 @@ public class SmartThingsThingHandler extends BaseThingHandler {
         }
 
         return findChannelUIDByProperties(componentId, capabilityId, channelName);
+    }
+
+    private String getStaticAirConditionerChannelName(String capabilityId, String channelName) {
+        if (CAPABILITY_AIR_CONDITIONER_MODE.equals(capabilityId) && CHANNEL_AIR_CONDITIONER_MODE.equals(channelName)) {
+            return STATIC_CHANNEL_MODE;
+        }
+        if (CAPABILITY_THERMOSTAT_COOLING_SETPOINT.equals(capabilityId) && CHANNEL_SETPOINT.equals(channelName)) {
+            return STATIC_CHANNEL_SETPOINT;
+        }
+        return channelName;
     }
 
     private @Nullable ChannelUID findChannelUIDByProperties(String componentId, String capabilityId,

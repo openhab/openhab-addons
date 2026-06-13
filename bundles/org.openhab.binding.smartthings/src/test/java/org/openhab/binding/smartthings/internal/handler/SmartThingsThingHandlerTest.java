@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.openhab.binding.smartthings.internal.SmartThingsBindingConstants;
 import org.openhab.binding.smartthings.internal.api.SmartThingsApi;
+import org.openhab.binding.smartthings.internal.converter.SmartThingsAirConditionerFanModeConverter;
 import org.openhab.binding.smartthings.internal.converter.SmartThingsConverterFactory;
 import org.openhab.binding.smartthings.internal.converter.SmartThingsDefaultConverter;
 import org.openhab.binding.smartthings.internal.dto.SmartThingsArgument;
@@ -61,6 +62,7 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 
 /**
  * Tests for {@link SmartThingsThingHandler}.
@@ -150,12 +152,12 @@ class SmartThingsThingHandlerTest {
     }
 
     @Test
-    void refreshDeviceUpdatesStaticAirConditionerCoolingSetpointChannel() {
+    void refreshDeviceUpdatesStaticAirConditionerSetpointChannel() {
         ThingUID thingUID = new ThingUID("smartthings:Samsung_Room_A_C:account:air-conditioner");
         Thing thing = ThingBuilder
                 .create(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Samsung_Room_A_C"), thingUID)
-                .withChannel(createChannel(thingUID, "control", "cooling-setpoint",
-                        SmartThingsBindingConstants.TYPE_NUMBER, "thermostatCoolingSetpoint", "coolingSetpoint"))
+                .withChannel(createChannel(thingUID, "control", "setpoint", SmartThingsBindingConstants.TYPE_NUMBER,
+                        "thermostatCoolingSetpoint", "coolingSetpoint"))
                 .build();
         TestSmartThingsThingHandler handler = new TestSmartThingsThingHandler(thing);
         SmartThingsConverterFactory.registerConverters(new SmartThingsTypeRegistryImpl());
@@ -163,9 +165,93 @@ class SmartThingsThingHandlerTest {
         handler.refreshDevice("Samsung_Room_A_C", "main", "thermostatCoolingSetpoint", "coolingSetpoint", 21.0);
 
         assertEquals(1, handler.updatedStates);
-        assertEquals(new ChannelUID(handler.getThing().getUID(), "control", "cooling-setpoint"),
-                handler.lastUpdatedChannel);
+        assertEquals(new ChannelUID(handler.getThing().getUID(), "control", "setpoint"), handler.lastUpdatedChannel);
         assertEquals(new DecimalType(21), handler.lastUpdatedState);
+    }
+
+    @Test
+    void refreshDeviceMergesActiveAirConditionerOptionalModeIntoFanMode() {
+        ThingUID thingUID = new ThingUID("smartthings:Samsung_Room_A_C:account:air-conditioner");
+        Thing thing = ThingBuilder
+                .create(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Samsung_Room_A_C"), thingUID)
+                .withChannel(createChannel(thingUID, "control", "fan-mode", SmartThingsBindingConstants.TYPE_STRING,
+                        "airConditionerFanMode", "fanMode"))
+                .build();
+        TestSmartThingsThingHandler handler = new TestSmartThingsThingHandler(thing);
+        SmartThingsConverterFactory.registerConverters(new SmartThingsTypeRegistryImpl());
+
+        handler.refreshDevice("Samsung_Room_A_C", "main", "custom.airConditionerOptionalMode", "acOptionalMode",
+                "sleep");
+
+        assertEquals(1, handler.updatedStates);
+        assertEquals(new ChannelUID(handler.getThing().getUID(), "control", "fan-mode"), handler.lastUpdatedChannel);
+        assertEquals(new StringType("sleep"), handler.lastUpdatedState);
+    }
+
+    @Test
+    void refreshDeviceKeepsOptionalModeStateUntilOptionalModeTurnsOff() {
+        ThingUID thingUID = new ThingUID("smartthings:Samsung_Room_A_C:account:air-conditioner");
+        Thing thing = ThingBuilder
+                .create(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Samsung_Room_A_C"), thingUID)
+                .withChannel(createChannel(thingUID, "control", "fan-mode", SmartThingsBindingConstants.TYPE_STRING,
+                        "airConditionerFanMode", "fanMode"))
+                .build();
+        TestSmartThingsThingHandler handler = new TestSmartThingsThingHandler(thing);
+        SmartThingsConverterFactory.registerConverters(new SmartThingsTypeRegistryImpl());
+
+        handler.refreshDevice("Samsung_Room_A_C", "main", "airConditionerFanMode", "fanMode", "high");
+        handler.refreshDevice("Samsung_Room_A_C", "main", "custom.airConditionerOptionalMode", "acOptionalMode",
+                "windFree");
+        handler.refreshDevice("Samsung_Room_A_C", "main", "airConditionerFanMode", "fanMode", "auto");
+
+        assertEquals(2, handler.updatedStates);
+        assertEquals(new StringType("windFree"), handler.lastUpdatedState);
+
+        handler.refreshDevice("Samsung_Room_A_C", "main", "custom.airConditionerOptionalMode", "acOptionalMode", "off");
+
+        assertEquals(3, handler.updatedStates);
+        assertEquals(new ChannelUID(handler.getThing().getUID(), "control", "fan-mode"), handler.lastUpdatedChannel);
+        assertEquals(new StringType("auto"), handler.lastUpdatedState);
+    }
+
+    @Test
+    void refreshDeviceClearsOptionalModeStateWhenNormalFanModeIsUnknown() {
+        ThingUID thingUID = new ThingUID("smartthings:Samsung_Room_A_C:account:air-conditioner");
+        Thing thing = ThingBuilder
+                .create(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Samsung_Room_A_C"), thingUID)
+                .withChannel(createChannel(thingUID, "control", "fan-mode", SmartThingsBindingConstants.TYPE_STRING,
+                        "airConditionerFanMode", "fanMode"))
+                .build();
+        TestSmartThingsThingHandler handler = new TestSmartThingsThingHandler(thing);
+        SmartThingsConverterFactory.registerConverters(new SmartThingsTypeRegistryImpl());
+
+        handler.refreshDevice("Samsung_Room_A_C", "main", "custom.airConditionerOptionalMode", "acOptionalMode",
+                "sleep");
+        handler.refreshDevice("Samsung_Room_A_C", "main", "custom.airConditionerOptionalMode", "acOptionalMode", "off");
+
+        assertEquals(2, handler.updatedStates);
+        assertEquals(new ChannelUID(handler.getThing().getUID(), "control", "fan-mode"), handler.lastUpdatedChannel);
+        assertEquals(UnDefType.UNDEF, handler.lastUpdatedState);
+    }
+
+    @Test
+    void refreshDeviceUpdatesSeparateOptionalModeChannelWhenDeclared() {
+        ThingUID thingUID = new ThingUID("smartthings:Samsung_Room_A_C:account:dynamic-air-conditioner");
+        Thing thing = ThingBuilder
+                .create(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Samsung_Room_A_C"), thingUID)
+                .withChannel(createChannel(thingUID, "advanced", "ac-optional-mode",
+                        SmartThingsBindingConstants.TYPE_STRING, "custom.airConditionerOptionalMode", "acOptionalMode"))
+                .build();
+        TestSmartThingsThingHandler handler = new TestSmartThingsThingHandler(thing);
+        SmartThingsConverterFactory.registerConverters(new SmartThingsTypeRegistryImpl());
+
+        handler.refreshDevice("Samsung_Room_A_C", "main", "custom.airConditionerOptionalMode", "acOptionalMode",
+                "sleep");
+
+        assertEquals(1, handler.updatedStates);
+        assertEquals(new ChannelUID(handler.getThing().getUID(), "advanced", "ac-optional-mode"),
+                handler.lastUpdatedChannel);
+        assertEquals(new StringType("sleep"), handler.lastUpdatedState);
     }
 
     @Test
@@ -271,7 +357,7 @@ class SmartThingsThingHandlerTest {
     @Test
     void handleCommandUsesStaticCommandMetadataWithoutUpdatingState() throws SmartThingsException {
         ThingUID thingUID = new ThingUID("smartthings:Samsung_Room_A_C:account:air-conditioner");
-        ChannelUID channelUID = new ChannelUID(thingUID, "control", "cooling-setpoint");
+        ChannelUID channelUID = new ChannelUID(thingUID, "control", "setpoint");
         Thing thing = ThingBuilder
                 .create(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Samsung_Room_A_C"), thingUID)
                 .withChannel(ChannelBuilder.create(channelUID, SmartThingsBindingConstants.TYPE_NUMBER)
@@ -296,6 +382,84 @@ class SmartThingsThingHandlerTest {
         assertNull(handler.lastUpdatedChannel);
         assertNull(handler.lastUpdatedState);
         assertNull(handler.lastStatus);
+    }
+
+    @Test
+    void handleCommandRoutesOptionalFanModeToOptionalModeCapability() throws SmartThingsException {
+        ThingUID thingUID = new ThingUID("smartthings:Samsung_Room_A_C:account:air-conditioner");
+        ChannelUID channelUID = new ChannelUID(thingUID, "control", "fan-mode");
+        Thing thing = ThingBuilder
+                .create(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Samsung_Room_A_C"), thingUID)
+                .withChannel(ChannelBuilder.create(channelUID, SmartThingsBindingConstants.TYPE_STRING)
+                        .withProperties(Map.of(SmartThingsBindingConstants.COMPONENT, "main",
+                                SmartThingsBindingConstants.CAPABILITY, "airConditionerFanMode",
+                                SmartThingsBindingConstants.ATTRIBUTE, "fanMode", SmartThingsBindingConstants.COMMAND,
+                                "setFanMode"))
+                        .build())
+                .build();
+        TestSmartThingsThingHandler handler = new TestSmartThingsThingHandler(thing);
+        SmartThingsApi api = mock(SmartThingsApi.class);
+        SmartThingsConverterFactory.registerConverters(new SmartThingsTypeRegistryImpl());
+
+        handler.handleCommand(api, channelUID, new StringType("windFree"));
+
+        ArgumentCaptor<String> body = ArgumentCaptor.forClass(String.class);
+        verify(api).sendCommand(eq(""), body.capture());
+        assertEquals(
+                "{\"commands\":[{\"component\":\"main\",\"capability\":\"custom.airConditionerOptionalMode\",\"command\":\"setAcOptionalMode\",\"arguments\":[\"windFree\"]}]}",
+                body.getValue());
+    }
+
+    @Test
+    void handleCommandRoutesNormalFanModeToFanModeCapability() throws SmartThingsException {
+        ThingUID thingUID = new ThingUID("smartthings:Samsung_Room_A_C:account:air-conditioner");
+        ChannelUID channelUID = new ChannelUID(thingUID, "control", "fan-mode");
+        Thing thing = ThingBuilder
+                .create(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Samsung_Room_A_C"), thingUID)
+                .withChannel(ChannelBuilder.create(channelUID, SmartThingsBindingConstants.TYPE_STRING)
+                        .withProperties(Map.of(SmartThingsBindingConstants.COMPONENT, "main",
+                                SmartThingsBindingConstants.CAPABILITY, "airConditionerFanMode",
+                                SmartThingsBindingConstants.ATTRIBUTE, "fanMode", SmartThingsBindingConstants.COMMAND,
+                                "setFanMode"))
+                        .build())
+                .build();
+        TestSmartThingsThingHandler handler = new TestSmartThingsThingHandler(thing);
+        SmartThingsApi api = mock(SmartThingsApi.class);
+        SmartThingsConverterFactory.registerConverters(new SmartThingsTypeRegistryImpl());
+
+        handler.handleCommand(api, channelUID, new StringType("high"));
+
+        ArgumentCaptor<String> body = ArgumentCaptor.forClass(String.class);
+        verify(api).sendCommand(eq(""), body.capture());
+        assertEquals(
+                "{\"commands\":[{\"component\":\"main\",\"capability\":\"airConditionerFanMode\",\"command\":\"setFanMode\",\"arguments\":[\"high\"]}]}",
+                body.getValue());
+    }
+
+    @Test
+    void handleCommandKeepsNonAirConditionerFanModeOnOriginalCapability() throws SmartThingsException {
+        ThingUID thingUID = new ThingUID("smartthings:Other_Device:account:other-device");
+        ChannelUID channelUID = new ChannelUID(thingUID, "control", "fan-mode");
+        Thing thing = ThingBuilder
+                .create(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Other_Device"), thingUID)
+                .withChannel(ChannelBuilder.create(channelUID, SmartThingsBindingConstants.TYPE_STRING)
+                        .withProperties(Map.of(SmartThingsBindingConstants.COMPONENT, "main",
+                                SmartThingsBindingConstants.CAPABILITY, "custom.fanMode",
+                                SmartThingsBindingConstants.ATTRIBUTE, "fanMode", SmartThingsBindingConstants.COMMAND,
+                                "setFanMode"))
+                        .build())
+                .build();
+        TestSmartThingsThingHandler handler = new TestSmartThingsThingHandler(thing);
+        SmartThingsApi api = mock(SmartThingsApi.class);
+        SmartThingsConverterFactory.registerConverters(new SmartThingsTypeRegistryImpl());
+
+        handler.handleCommand(api, channelUID, new StringType("sleep"));
+
+        ArgumentCaptor<String> body = ArgumentCaptor.forClass(String.class);
+        verify(api).sendCommand(eq(""), body.capture());
+        assertEquals(
+                "{\"commands\":[{\"component\":\"main\",\"capability\":\"custom.fanMode\",\"command\":\"setFanMode\",\"arguments\":[\"sleep\"]}]}",
+                body.getValue());
     }
 
     @Test
@@ -344,11 +508,11 @@ class SmartThingsThingHandlerTest {
                         SmartThingsBindingConstants.SM_TYPE_NUMBER, "setCoolingSetpoint"));
         SmartThingsDefaultConverter converter = new SmartThingsDefaultConverter(registry);
         ThingUID thingUID = new ThingUID("smartthings:Samsung_Room_A_C:account:air-conditioner");
-        ChannelUID channelUID = new ChannelUID(thingUID, "control", "cooling-setpoint");
+        ChannelUID channelUID = new ChannelUID(thingUID, "control", "setpoint");
         Thing thing = ThingBuilder
                 .create(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Samsung_Room_A_C"), thingUID)
-                .withChannel(createChannel(thingUID, "control", "cooling-setpoint",
-                        SmartThingsBindingConstants.TYPE_NUMBER, "thermostatCoolingSetpoint", "coolingSetpoint"))
+                .withChannel(createChannel(thingUID, "control", "setpoint", SmartThingsBindingConstants.TYPE_NUMBER,
+                        "thermostatCoolingSetpoint", "coolingSetpoint"))
                 .build();
 
         String json = converter.convertToSmartThings(thing, channelUID, new QuantityType<>("21 °C"));
@@ -365,11 +529,11 @@ class SmartThingsThingHandlerTest {
                 .thenReturn(createEnumCapability("airConditionerMode", "airConditionerMode", "cool", "setCoolMode"));
         SmartThingsDefaultConverter converter = new SmartThingsDefaultConverter(registry);
         ThingUID thingUID = new ThingUID("smartthings:Samsung_Room_A_C:account:air-conditioner");
-        ChannelUID channelUID = new ChannelUID(thingUID, "control", "air-conditioner-mode");
+        ChannelUID channelUID = new ChannelUID(thingUID, "control", "mode");
         Thing thing = ThingBuilder
                 .create(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Samsung_Room_A_C"), thingUID)
-                .withChannel(createChannel(thingUID, "control", "air-conditioner-mode",
-                        SmartThingsBindingConstants.TYPE_STRING, "airConditionerMode", "airConditionerMode"))
+                .withChannel(createChannel(thingUID, "control", "mode", SmartThingsBindingConstants.TYPE_STRING,
+                        "airConditionerMode", "airConditionerMode"))
                 .build();
 
         String json = converter.convertToSmartThings(thing, channelUID, new StringType("cool"));
@@ -386,7 +550,7 @@ class SmartThingsThingHandlerTest {
                 .thenReturn(createEnumCapability("airConditionerMode", "airConditionerMode", "cool", "setCoolMode"));
         SmartThingsDefaultConverter converter = new SmartThingsDefaultConverter(registry);
         ThingUID thingUID = new ThingUID("smartthings:Samsung_Room_A_C:account:air-conditioner");
-        ChannelUID channelUID = new ChannelUID(thingUID, "control", "air-conditioner-mode");
+        ChannelUID channelUID = new ChannelUID(thingUID, "control", "mode");
         Thing thing = ThingBuilder
                 .create(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Samsung_Room_A_C"), thingUID)
                 .withChannel(ChannelBuilder.create(channelUID, SmartThingsBindingConstants.TYPE_STRING)
@@ -426,6 +590,27 @@ class SmartThingsThingHandlerTest {
 
         assertEquals(
                 "{\"commands\":[{\"component\":\"main\",\"capability\":\"airConditionerFanMode\",\"command\":\"setFanMode\",\"arguments\":[\"turbo\"]}]}",
+                json);
+    }
+
+    @Test
+    void airConditionerFanModeConverterKeepsOtherFanModeCapabilitiesUnchanged() throws SmartThingsException {
+        SmartThingsTypeRegistry registry = mock(SmartThingsTypeRegistry.class);
+        when(registry.getCapability("custom.fanMode")).thenReturn(createSetterCapability("custom.fanMode", "fanMode",
+                SmartThingsBindingConstants.SM_TYPE_STRING, "setFanMode"));
+        SmartThingsAirConditionerFanModeConverter converter = new SmartThingsAirConditionerFanModeConverter(registry);
+        ThingUID thingUID = new ThingUID("smartthings:Other_Device:account:other-device");
+        ChannelUID channelUID = new ChannelUID(thingUID, "control", "fan-mode");
+        Thing thing = ThingBuilder
+                .create(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Other_Device"), thingUID)
+                .withChannel(createChannel(thingUID, "control", "fan-mode", SmartThingsBindingConstants.TYPE_STRING,
+                        "custom.fanMode", "fanMode"))
+                .build();
+
+        String json = converter.convertToSmartThings(thing, channelUID, new StringType("sleep"));
+
+        assertEquals(
+                "{\"commands\":[{\"component\":\"main\",\"capability\":\"custom.fanMode\",\"command\":\"setFanMode\",\"arguments\":[\"sleep\"]}]}",
                 json);
     }
 

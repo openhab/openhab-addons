@@ -217,7 +217,7 @@ public abstract class SmartThingsConverter {
         smartthingsActions.pushCommand(component, capability, command, arguments);
     }
 
-    private String getJSonCommands() {
+    protected String getJSonCommands() {
         String result = gson.toJson(smartthingsActions);
         result = result.replace("\\u003d", "=");
         smartthingsActions.commands.clear();
