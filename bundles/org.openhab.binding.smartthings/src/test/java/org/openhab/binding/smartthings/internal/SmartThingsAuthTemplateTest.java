@@ -72,6 +72,13 @@ class SmartThingsAuthTemplateTest {
         assertFalse(template.contains("${callBackUri}"));
     }
 
+    @Test
+    void authIndexTemplateShowsLocalhostRedirectInfo() throws IOException {
+        String template = readTemplate("index-oauth.html");
+
+        assertTrue(template.contains("${localhostRedirectInfo}"));
+    }
+
     private String readTemplate(String templateName) throws IOException {
         try (InputStream stream = getClass().getResourceAsStream("/templates/" + templateName)) {
             assertNotNull(stream);

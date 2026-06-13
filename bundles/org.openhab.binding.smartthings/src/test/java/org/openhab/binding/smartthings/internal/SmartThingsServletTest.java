@@ -127,6 +127,16 @@ class SmartThingsServletTest {
         assertEquals("", callbackInfo);
     }
 
+    @Test
+    void localhostRedirectInfoExplainsRemoteOpenhabHostReplacement() {
+        String localhostRedirectInfo = SmartThingsServlet.formatLocalhostRedirectInfo();
+
+        assertTrue(localhostRedirectInfo.contains("localhost"));
+        assertTrue(localhostRedirectInfo.contains("openHAB host name or IP address"));
+        assertTrue(localhostRedirectInfo.contains("Keep the port, path, and query string unchanged"));
+        assertTrue(localhostRedirectInfo.contains("class=\"block warn localhost-redirect-info\""));
+    }
+
     private static class TestSmartThingsServlet extends SmartThingsServlet {
         private static final long serialVersionUID = 1L;
 

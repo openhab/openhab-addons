@@ -111,6 +111,14 @@ public class SmartThingsServlet extends HttpServlet
     private static final String CALLBACK_NOT_HTTPS = """
             <p class="block warn">This callback URL does not use HTTPS. SmartThings will not register event callbacks
                 until the URL uses HTTPS and is reachable from the internet.</p>""";
+    private static final String HTML_LOCALHOST_REDIRECT_INFO = """
+            <section class="block warn localhost-redirect-info">
+                <strong>Remote openHAB installation?</strong>
+                <p>During this first authorization SmartThings may return your browser to
+                    <code>http://localhost:61973/finish</code>. If openHAB runs on another computer, replace only
+                    <code>localhost</code> in the browser address bar with your openHAB host name or IP address.
+                    Keep the port, path, and query string unchanged.</p>
+            </section>""";
     private static final String STEP_CREATE_APP = "step1";
     private static final String STEP_AUTHORIZE_LOCATION = "step2";
     private static final String MESSAGE_KEY_MISSING_REQ_CODE = "missing-req-code";
@@ -120,6 +128,7 @@ public class SmartThingsServlet extends HttpServlet
     private static final String KEY_ERROR = "error";
     private static final String KEY_BRIDGE_URI = "bridge.uri";
     private static final String KEY_CALLBACK_INFO = "callbackInfo";
+    private static final String KEY_LOCALHOST_REDIRECT_INFO = "localhostRedirectInfo";
     private static final String KEY_LOCATION = "location";
     private static final String KEY_DEVICES_COUNT = "devicesCount";
     private static final String KEY_AUTHORIZATION_URI = "authorizationUri";
@@ -301,6 +310,7 @@ public class SmartThingsServlet extends HttpServlet
         replaceMap.put(KEY_ERROR, "");
         replaceMap.put(KEY_BRIDGE_URI, "");
         replaceMap.put(KEY_CALLBACK_INFO, "");
+        replaceMap.put(KEY_LOCALHOST_REDIRECT_INFO, "");
         replaceMap.put(KEY_AUTHORIZATION_URI, "");
         replaceMap.put(KEY_AUTHORIZATION_URI_JS, "");
         replaceMap.put(KEY_ASSET_BASE_URI, Encode.forHtmlAttribute(assetBaseUri));
@@ -416,6 +426,7 @@ public class SmartThingsServlet extends HttpServlet
                             false);
                 } else {
                     createAppState = createOAuthState(STEP_CREATE_APP);
+                    replaceMap.put(KEY_LOCALHOST_REDIRECT_INFO, formatLocalhostRedirectInfo());
                     authorizationUri = oauthHandler.formatAuthorizationUrl(SmartThingsBindingConstants.REDIRECT_URI,
                             createAppState, true);
                 }
@@ -455,6 +466,10 @@ public class SmartThingsServlet extends HttpServlet
 
     private static String formatCallbackWarning(boolean httpsUri) {
         return httpsUri ? CALLBACK_REQUIREMENTS : CALLBACK_NOT_HTTPS;
+    }
+
+    static String formatLocalhostRedirectInfo() {
+        return HTML_LOCALHOST_REDIRECT_INFO;
     }
 
     private static boolean isHttpsUri(String uri) {
