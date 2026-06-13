@@ -102,9 +102,6 @@ class SmartThingsThingDescriptionTest {
                 Map.entry("ac-optional-mode",
                         new ExpectedChannel("advanced", "ac-optional-mode", "custom.airConditionerOptionalMode",
                                 "acOptionalMode")),
-                Map.entry("auto-cleaning-mode",
-                        new ExpectedChannel("advanced", "ac-auto-cleaning-mode", "custom.autoCleaningMode",
-                                "autoCleaningMode")),
                 Map.entry("operating-state",
                         new ExpectedChannel("advanced", "ac-auto-cleaning-operating-state", "custom.autoCleaningMode",
                                 "operatingState")),
@@ -114,7 +111,7 @@ class SmartThingsThingDescriptionTest {
                 Map.entry("dust-filter-status",
                         new ExpectedChannel("advanced", "ac-filter-status", "custom.dustFilter", "dustFilterStatus")));
 
-        assertEquals(14, getChannelCount(document));
+        assertEquals(13, getChannelCount(document));
         assertEquals(Set.of("control", "environment", "energy", "advanced"), findChannelGroupIds(document));
 
         for (Map.Entry<String, ExpectedChannel> entry : expectedChannels.entrySet()) {
@@ -132,11 +129,10 @@ class SmartThingsThingDescriptionTest {
     @Test
     void airConditionerThingKeepsSecondaryChannelsAdvanced() throws Exception {
         Document document = parseThingDescription("OH-INF/thing/airconditioner.xml");
-        Set<String> advancedChannels = Set.of("ac-optional-mode", "auto-cleaning-mode", "operating-state", "progress",
-                "dust-filter-status");
+        Set<String> advancedChannels = Set.of("ac-optional-mode", "operating-state", "progress", "dust-filter-status");
 
-        assertEquals(5, advancedChannels.size());
-        assertEquals(14, getChannelCount(document));
+        assertEquals(4, advancedChannels.size());
+        assertEquals(13, getChannelCount(document));
 
         NodeList channels = document.getElementsByTagName("channel");
         int advancedCount = 0;
@@ -153,7 +149,7 @@ class SmartThingsThingDescriptionTest {
             }
         }
 
-        assertEquals(5, advancedCount);
+        assertEquals(4, advancedCount);
     }
 
     @Test
@@ -164,7 +160,7 @@ class SmartThingsThingDescriptionTest {
                 Map.entry("ac-temperature", "Number:Temperature"),
                 Map.entry("ac-cooling-setpoint", "Number:Temperature"),
                 Map.entry("ac-humidity", "Number:Dimensionless"), Map.entry("ac-power-consumption", "Number:Power"),
-                Map.entry("ac-energy", "Number:Energy"), Map.entry("ac-auto-cleaning-mode", "Switch"),
+                Map.entry("ac-energy", "Number:Energy"),
                 Map.entry("ac-auto-cleaning-progress", "Number:Dimensionless"));
 
         for (Map.Entry<String, String> entry : expectedItemTypes.entrySet()) {
@@ -181,12 +177,20 @@ class SmartThingsThingDescriptionTest {
         Document document = parseThingDescription("OH-INF/thing/airconditioner.xml");
         Map<String, String> expectedCommands = Map.of("air-conditioner-mode", "setAirConditionerMode", "fan-mode",
                 "setFanMode", "fan-oscillation-mode", "setFanOscillationMode", "cooling-setpoint", "setCoolingSetpoint",
-                "ac-optional-mode", "setAcOptionalMode", "auto-cleaning-mode", "setAutoCleaningMode");
+                "ac-optional-mode", "setAcOptionalMode");
 
         for (Map.Entry<String, String> entry : expectedCommands.entrySet()) {
             assertEquals(entry.getValue(), findPropertyValue(findChannel(document, entry.getKey()), "command"),
                     entry.getKey());
         }
+    }
+
+    @Test
+    void airConditionerDoesNotExposeAutoCleaningModeCommandChannel() throws Exception {
+        Document document = parseThingDescription("OH-INF/thing/airconditioner.xml");
+
+        assertFalse(hasChannel(document, "auto-cleaning-mode"));
+        assertFalse(hasChannelType(document, "ac-auto-cleaning-mode"));
     }
 
     private Document parseThingDescription(String resourceName) throws Exception {
@@ -219,6 +223,17 @@ class SmartThingsThingDescriptionTest {
             }
         }
         throw new AssertionError("Missing channel: " + channelId);
+    }
+
+    private boolean hasChannel(Document document, String channelId) {
+        NodeList channels = document.getElementsByTagName("channel");
+        for (int i = 0; i < channels.getLength(); i++) {
+            Element channel = (Element) channels.item(i);
+            if (channelId.equals(channel.getAttribute("id"))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private int getChannelCount(Document document) {
@@ -295,6 +310,17 @@ class SmartThingsThingDescriptionTest {
             }
         }
         throw new AssertionError("Missing channel type: " + channelTypeId);
+    }
+
+    private boolean hasChannelType(Document document, String channelTypeId) {
+        NodeList channelTypes = document.getElementsByTagName("channel-type");
+        for (int i = 0; i < channelTypes.getLength(); i++) {
+            Element channelType = (Element) channelTypes.item(i);
+            if (channelTypeId.equals(channelType.getAttribute("id"))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean isAdvancedChannelType(Document document, String channelTypeId) {

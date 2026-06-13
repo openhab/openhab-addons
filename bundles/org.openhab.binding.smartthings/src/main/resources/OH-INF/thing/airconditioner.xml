@@ -128,14 +128,6 @@
 					<property name="command">setAcOptionalMode</property>
 				</properties>
 			</channel>
-			<channel id="auto-cleaning-mode" typeId="ac-auto-cleaning-mode">
-				<properties>
-					<property name="component">main</property>
-					<property name="capability">custom.autoCleaningMode</property>
-					<property name="attribute">autoCleaningMode</property>
-					<property name="command">setAutoCleaningMode</property>
-				</properties>
-			</channel>
 			<channel id="operating-state" typeId="ac-auto-cleaning-operating-state">
 				<properties>
 					<property name="component">main</property>
@@ -253,13 +245,6 @@
 				<option value="windFree">WindFree</option>
 			</options>
 		</state>
-	</channel-type>
-
-	<channel-type id="ac-auto-cleaning-mode" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Auto Cleaning Mode</label>
-		<description>Auto-cleaning mode of the air conditioner.</description>
-		<state readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="ac-auto-cleaning-operating-state" advanced="true">
