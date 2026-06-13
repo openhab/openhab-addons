@@ -435,9 +435,9 @@ public class ShellyChannelDefinitions {
             return add;
         }
 
-        addChannel(thing, add, profile.settings.loraRxEnabled != null, CHGR_LORA, CHANNEL_LORA_RXDATA);
-        addChannel(thing, add, profile.settings.loraRxEnabled != null, CHGR_LORA, CHANNEL_LORA_RXDATARAW);
-        addChannel(thing, add, profile.settings.loraRxEnabled != null, CHGR_LORA, CHANNEL_LORA_RXBYTES);
+        addChannel(thing, add, profile.settings.loraRxEnabled, CHGR_LORA, CHANNEL_LORA_RXDATA);
+        addChannel(thing, add, profile.settings.loraRxEnabled, CHGR_LORA, CHANNEL_LORA_RXDATARAW);
+        addChannel(thing, add, profile.settings.loraRxEnabled, CHGR_LORA, CHANNEL_LORA_RXBYTES);
         addChannel(thing, add, true, CHGR_LORA, CHANNEL_LORA_TXDATA);
         addChannel(thing, add, true, CHGR_LORA, CHANNEL_LORA_TXDATARAW);
         addChannel(thing, add, true, CHGR_LORA, CHANNEL_LORA_TXBYTES);

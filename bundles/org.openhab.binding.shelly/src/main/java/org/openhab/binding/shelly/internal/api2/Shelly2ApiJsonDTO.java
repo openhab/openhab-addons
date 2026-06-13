@@ -460,15 +460,15 @@ public class Shelly2ApiJsonDTO {
         }
 
         public class Shelly2DeviceConfigLora {
-            public Integer id;
-            public Long freq;
-            public Integer bw;
-            public Integer dr;
-            public Integer cr;
-            public Integer plen;
-            public Integer txp;
+            public @Nullable Integer id;
+            public @Nullable Long freq;
+            public @Nullable Integer bw;
+            public @Nullable Integer dr;
+            public @Nullable Integer cr;
+            public @Nullable Integer plen;
+            public @Nullable Integer txp;
             @SerializedName("rx_enable")
-            public Boolean rxEnabled;
+            public @Nullable Boolean rxEnabled;
         }
 
         public static class Shelly2GetConfigResult {
@@ -1190,19 +1190,19 @@ public class Shelly2ApiJsonDTO {
     }
 
     public static class Shelly2DeviceStatusLora {
-        public Integer id;
+        public @Nullable Integer id;
         @SerializedName("bytes_recd")
-        public Long rxBytes;
+        public @Nullable Long rxBytes;
         @SerializedName("bytes_sent")
-        public Long txBytes;
+        public @Nullable Long txBytes;
         @SerializedName("send_fails")
-        public Long txErrors;
+        public @Nullable Long txErrors;
         @SerializedName("air_time_hr_ms")
-        public Long airtime;
+        public @Nullable Long airtime;
         @SerializedName("fw_version")
-        public String fw;
+        public @Nullable String fw;
         @SerializedName("available_updates")
-        public Shelly2DeviceStatusSysAvlUpdate availableUpdates;
+        public @Nullable Shelly2DeviceStatusSysAvlUpdate availableUpdates;
     }
 
     public static class Shelly2RpcNotifyStatus {
@@ -1248,14 +1248,14 @@ public class Shelly2ApiJsonDTO {
     }
 
     public static class ShellyNotifyLoraEvent {
-        public String component;
-        public Integer id;
-        public String event;
-        public Double ts;
-        public String data;
-        public Integer rssi;
-        public Integer snr;
-        public Long tsu;
+        public @Nullable String component;
+        public @Nullable Integer id;
+        public @Nullable String event;
+        public @Nullable Double ts;
+        public @Nullable String data;
+        public @Nullable Integer rssi;
+        public @Nullable Integer snr;
+        public @Nullable Long tsu;
     }
 
     public class Shelly2NotifyEvent {
@@ -1274,9 +1274,13 @@ public class Shelly2ApiJsonDTO {
         public Shelly2NotifyBluEventData blu;
 
         // LoRa
+        @Nullable
         String lora;
+        @Nullable
         Integer rssi;
+        @Nullable
         Integer snr;
+        @Nullable
         Long tsu;
     }
 

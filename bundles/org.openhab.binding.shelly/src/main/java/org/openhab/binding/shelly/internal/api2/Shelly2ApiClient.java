@@ -393,9 +393,10 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
 
         if (dc.lora100 != null && config.getEnableLoRa()) {
             profile.settings.loraDetected = true;
-            profile.settings.loraRxEnabled = dc.lora100.rxEnabled;
+            profile.settings.loraRxEnabled = Boolean.TRUE.equals(dc.lora100.rxEnabled);
             profile.settings.loraComponentIds = new Integer[1];
-            profile.settings.loraComponentIds[0] = dc.lora100.id != null ? dc.lora100.id : 100;
+            Integer loraId = dc.lora100.id;
+            profile.settings.loraComponentIds[0] = loraId != null ? loraId : 100;
         }
 
         return dc;
