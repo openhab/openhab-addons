@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.rachio.internal.handler;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -25,6 +25,8 @@ import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.ConfigStatusBridgeHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Base class for Rachio bridge-like handlers that own child status listeners and scheduled refresh work.
@@ -34,10 +36,12 @@ import org.openhab.core.thing.binding.ConfigStatusBridgeHandler;
  */
 @NonNullByDefault
 public abstract class AbstractRachioBridgeHandler extends ConfigStatusBridgeHandler {
-    protected final List<RachioStatusListener> rachioStatusListeners = new CopyOnWriteArrayList<>();
+    private final Logger logger = LoggerFactory.getLogger(AbstractRachioBridgeHandler.class);
+    protected final Set<RachioStatusListener> rachioStatusListeners = new CopyOnWriteArraySet<>();
 
     private @Nullable ScheduledFuture<?> pollingJob;
     private boolean refreshPending = false;
+    private boolean pollingPreviouslyStarted = false;
 
     protected AbstractRachioBridgeHandler(Bridge bridge) {
         super(bridge);
@@ -48,12 +52,16 @@ public abstract class AbstractRachioBridgeHandler extends ConfigStatusBridgeHand
      */
     protected synchronized void updateListenerManagement() {
         ScheduledFuture<?> job = pollingJob;
-        if (!rachioStatusListeners.isEmpty() && (job == null || job.isCancelled())) {
-            pollingJob = scheduler.scheduleWithFixedDelay(this::runScheduledRefresh, getPollingIntervalSeconds(),
-                    getPollingIntervalSeconds(), TimeUnit.SECONDS);
-        } else if (rachioStatusListeners.isEmpty() && job != null && !job.isCancelled()) {
-            job.cancel(true);
-            pollingJob = null;
+        int listenerCount = rachioStatusListeners.size();
+        int pollingInterval = getPollingIntervalSeconds();
+        if (listenerCount > 0 && (job == null || job.isDone())) {
+            logger.debug("RachioCloud: {} scheduled polling (listeners={}, pollingInterval={}s)",
+                    pollingPreviouslyStarted ? "Restarting" : "Starting", listenerCount, pollingInterval);
+            pollingJob = scheduler.scheduleWithFixedDelay(this::runScheduledRefresh, pollingInterval, pollingInterval,
+                    TimeUnit.SECONDS);
+            pollingPreviouslyStarted = true;
+        } else if (listenerCount == 0) {
+            cancelPollingJob("no status listeners");
         }
     }
 
@@ -63,7 +71,9 @@ public abstract class AbstractRachioBridgeHandler extends ConfigStatusBridgeHand
      * @param listener the listener to register
      */
     public void registerStatusListener(final RachioStatusListener listener) {
-        rachioStatusListeners.add(listener);
+        boolean added = rachioStatusListeners.add(listener);
+        logger.debug("RachioCloud: Status listener registration {} (listeners={})", added ? "added" : "already present",
+                rachioStatusListeners.size());
         updateListenerManagement();
     }
 
@@ -76,6 +86,8 @@ public abstract class AbstractRachioBridgeHandler extends ConfigStatusBridgeHand
      */
     public boolean unregisterStatusListener(final RachioStatusListener listener) {
         boolean result = rachioStatusListeners.remove(listener);
+        logger.debug("RachioCloud: Status listener unregistration {} (listeners={})", result ? "removed" : "not found",
+                rachioStatusListeners.size());
         if (result) {
             updateListenerManagement();
         }
@@ -106,19 +118,30 @@ public abstract class AbstractRachioBridgeHandler extends ConfigStatusBridgeHand
     protected abstract void runScheduledRefresh();
 
     public void shutdown() {
-        cancelPollingJob();
+        cancelPollingJob("bridge shutdown");
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
     }
 
     @Override
     public synchronized void dispose() {
-        cancelPollingJob();
+        cancelPollingJob("bridge disposal");
         super.dispose();
     }
 
-    private void cancelPollingJob() {
+    synchronized int getStatusListenerCount() {
+        return rachioStatusListeners.size();
+    }
+
+    synchronized boolean isPollingJobActive() {
         ScheduledFuture<?> job = pollingJob;
-        if (job != null && !job.isCancelled()) {
+        return job != null && !job.isDone();
+    }
+
+    private synchronized void cancelPollingJob(String reason) {
+        ScheduledFuture<?> job = pollingJob;
+        if (job != null) {
+            logger.debug("RachioCloud: Cancelling scheduled polling ({}, listeners={}, pollingInterval={}s)", reason,
+                    rachioStatusListeners.size(), getPollingIntervalSeconds());
             job.cancel(true);
             pollingJob = null;
         }

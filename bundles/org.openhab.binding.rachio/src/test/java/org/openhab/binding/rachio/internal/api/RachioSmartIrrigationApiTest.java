@@ -13,16 +13,26 @@
 package org.openhab.binding.rachio.internal.api;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.lang.reflect.Field;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.rachio.internal.api.json.RachioSmartIrrigationGsonDTO.RachioCurrentScheduleResponse;
 import org.openhab.binding.rachio.internal.api.json.RachioSmartIrrigationGsonDTO.RachioDeviceEvent;
 import org.openhab.binding.rachio.internal.api.json.RachioSmartIrrigationGsonDTO.RachioDeviceEventListResponse;
 import org.openhab.binding.rachio.internal.api.json.RachioSmartIrrigationGsonDTO.RachioForecastEntry;
 import org.openhab.binding.rachio.internal.api.json.RachioSmartIrrigationGsonDTO.RachioForecastResponse;
+import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager;
+import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager.PRIORITY;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -33,7 +43,25 @@ import com.google.gson.JsonParser;
  *
  * @author openHAB Contributors - Initial contribution
  */
+@NonNullByDefault
+@SuppressWarnings({ "null" })
 class RachioSmartIrrigationApiTest {
+    @Test
+    void currentScheduleRemainsEssentialWhenOptionalForecastIsLocallyThrottled() throws Exception {
+        RachioApi api = new RachioApi("person-id");
+        RecordingRachioHttp http = new RecordingRachioHttp();
+        LowPriorityThrottlingRateLimitManager rateLimitManager = new LowPriorityThrottlingRateLimitManager();
+        setField(api, "httpApi", http);
+        setField(api, "rateLimitManager", rateLimitManager);
+
+        RachioCurrentScheduleResponse currentSchedule = api.getCurrentSchedule("device-id");
+        assertThrows(RachioApiThrottledException.class, () -> api.getDeviceForecast("device-id", "US"));
+
+        assertThat(currentSchedule.isRunning(), is(true));
+        assertThat(rateLimitManager.priorities, contains(PRIORITY.MED, PRIORITY.LOW));
+        assertThat(http.getUrls.size(), is(1));
+    }
+
     @Test
     void moistureLevelPayloadContainsDocumentedFields() {
         JsonObject json = JsonParser.parseString(RachioApi.buildMoistureLevelPayload("zone-id", 12.5))
@@ -139,5 +167,48 @@ class RachioSmartIrrigationApiTest {
         assertThat(response.getUpdated(), is("2026-05-17T03:00:00Z"));
         assertThat(todayForecast.getHighTemperature(), is(24.5));
         assertThat(todayForecast.getWind(), is(10.5));
+    }
+
+    private static void setField(Object target, String fieldName, Object value) throws ReflectiveOperationException {
+        Field field = target.getClass().getDeclaredField(fieldName);
+        field.setAccessible(true);
+        field.set(target, value);
+    }
+
+    private static class LowPriorityThrottlingRateLimitManager extends ClientRateLimitManager {
+        private final List<PRIORITY> priorities = new ArrayList<>();
+
+        LowPriorityThrottlingRateLimitManager() {
+            super(10, Duration.ofSeconds(30));
+        }
+
+        @Override
+        public void tryThrottle(PRIORITY priority, ClientRateLimitManager.RequestPurpose requestPurpose)
+                throws RateLimitThrottleException {
+            priorities.add(priority);
+            if (priority == PRIORITY.LOW) {
+                throw new RateLimitThrottleException(priority, requestPurpose, 0.1, 0.2);
+            }
+        }
+    }
+
+    private static class RecordingRachioHttp extends RachioHttp {
+        private final List<String> getUrls = new ArrayList<>();
+
+        @Override
+        public RachioApiResult httpGet(String url, @Nullable String urlParameters) {
+            getUrls.add(url);
+            RachioApiResult result = new RachioApiResult();
+            result.url = url;
+            result.requestMethod = "GET";
+            result.responseCode = 200;
+            result.resultString = """
+                    {
+                      "running": true,
+                      "scheduleId": "schedule-id"
+                    }
+                    """;
+            return result;
+        }
     }
 }

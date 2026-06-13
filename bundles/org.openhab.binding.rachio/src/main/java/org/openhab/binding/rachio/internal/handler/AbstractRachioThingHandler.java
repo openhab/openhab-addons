@@ -14,6 +14,7 @@ package org.openhab.binding.rachio.internal.handler;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -28,6 +29,8 @@ import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.State;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Base class for Rachio child thing handlers with common bridge lookup, cached refresh, and status propagation logic.
@@ -40,6 +43,7 @@ public abstract class AbstractRachioThingHandler extends BaseThingHandler implem
     private static final long[] LOCAL_THROTTLE_RETRY_DELAYS_SECONDS = { 15, 30, 60, 120 };
     private static final long MAX_INITIALIZATION_THROTTLE_RETRY_DELAY_SECONDS = 30;
     private static final String INITIALIZATION_THROTTLE_STATUS_MESSAGE = "Waiting for local Rachio API bootstrap budget; initialization will retry automatically.";
+    private final Logger logger = LoggerFactory.getLogger(AbstractRachioThingHandler.class);
 
     protected String thingId = "";
     protected final Map<String, State> channelData = new HashMap<>();
@@ -49,6 +53,7 @@ public abstract class AbstractRachioThingHandler extends BaseThingHandler implem
     protected @Nullable RachioBridgeHandler cloudHandler;
 
     private @Nullable ScheduledFuture<?> localThrottleRetryJob;
+    private @Nullable RachioBridgeHandler registeredStatusListenerHandler;
     private int localThrottleRetryAttempt = 0;
     private boolean localThrottleInitializationDeferred = false;
 
@@ -65,10 +70,40 @@ public abstract class AbstractRachioThingHandler extends BaseThingHandler implem
 
         ThingHandler handler = currentBridge.getHandler();
         if (handler instanceof RachioBridgeHandler bridgeHandler) {
-            cloudHandler = bridgeHandler;
+            bindCloudHandler(bridgeHandler);
             return true;
         }
         return false;
+    }
+
+    protected synchronized void bindCloudHandler(RachioBridgeHandler bridgeHandler) {
+        RachioBridgeHandler previousHandler = cloudHandler;
+        cloudHandler = bridgeHandler;
+        RachioBridgeHandler registeredHandler = registeredStatusListenerHandler;
+        if (!Objects.equals(previousHandler, bridgeHandler) && registeredHandler != null) {
+            logger.debug("Rebinding Rachio status listener for Thing '{}' to replacement bridge handler",
+                    getThing().getUID());
+            registeredHandler.unregisterStatusListener(this);
+            bridgeHandler.registerStatusListener(this);
+            registeredStatusListenerHandler = bridgeHandler;
+        }
+    }
+
+    protected synchronized void registerStatusListener() {
+        RachioBridgeHandler handler = cloudHandler;
+        if (handler == null) {
+            return;
+        }
+
+        RachioBridgeHandler registeredHandler = registeredStatusListenerHandler;
+        if (Objects.equals(registeredHandler, handler)) {
+            return;
+        }
+        if (registeredHandler != null && !Objects.equals(registeredHandler, handler)) {
+            registeredHandler.unregisterStatusListener(this);
+        }
+        handler.registerStatusListener(this);
+        registeredStatusListenerHandler = handler;
     }
 
     protected String getThingConfigurationString(String parameterName) {
@@ -183,7 +218,11 @@ public abstract class AbstractRachioThingHandler extends BaseThingHandler implem
         super.bridgeStatusChanged(bridgeStatusInfo);
 
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
-            onBridgeOnline();
+            if (initializeCloudHandler()) {
+                onBridgeOnline();
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
@@ -215,11 +254,12 @@ public abstract class AbstractRachioThingHandler extends BaseThingHandler implem
         localThrottleInitializationDeferred = false;
     }
 
-    private void unregisterStatusListener() {
-        RachioBridgeHandler handler = cloudHandler;
+    private synchronized void unregisterStatusListener() {
+        RachioBridgeHandler handler = registeredStatusListenerHandler;
         if (handler != null) {
             handler.unregisterStatusListener(this);
         }
+        registeredStatusListenerHandler = null;
     }
 
     protected abstract void goOnline();

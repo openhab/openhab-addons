@@ -18,6 +18,7 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_DEVICE_ONLINE;
@@ -37,6 +38,7 @@ import org.openhab.binding.rachio.internal.api.RachioApiThrottledException;
 import org.openhab.binding.rachio.internal.api.RachioDevice;
 import org.openhab.binding.rachio.internal.api.json.RachioDeviceGsonDTO.RachioCloudDevice;
 import org.openhab.binding.rachio.internal.api.json.RachioEventGsonDTO;
+import org.openhab.binding.rachio.internal.api.json.RachioSmartIrrigationGsonDTO.RachioCurrentScheduleResponse;
 import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager.PRIORITY;
 import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager.RateLimitThrottleException;
 import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager.RequestPurpose;
@@ -161,6 +163,28 @@ class RachioDeviceHandlerStatusTest {
         verify(callback, never()).statusUpdated(eq(thing), argThat(status -> status.getStatus() == ThingStatus.ONLINE));
     }
 
+    @Test
+    void currentScheduleRefreshRunsEveryPollWhileOptionalEnrichmentKeepsLongerCadence() throws Exception {
+        Thing thing = thing();
+        RachioDevice device = device("ONLINE");
+        RachioBridgeHandler bridgeHandler = bridgeHandler(thing, device);
+        RachioCurrentScheduleResponse currentSchedule = new RachioCurrentScheduleResponse();
+        currentSchedule.running = true;
+        currentSchedule.scheduleId = "schedule-id";
+        when(bridgeHandler.getCurrentSchedule(DEVICE_ID)).thenReturn(currentSchedule);
+        doThrow(optionalThrottle()).when(bridgeHandler).getDeviceForecast(DEVICE_ID, "US");
+        when(bridgeHandler.getEventHistoryLookbackHours()).thenReturn(0);
+        PollingDeviceHandler handler = new PollingDeviceHandler(thing, bridgeHandler, device);
+        handler.setCallback(Mockito.mock(ThingHandlerCallback.class));
+
+        handler.refreshSmartIrrigationReadExtensions(false);
+        handler.refreshSmartIrrigationReadExtensions(false);
+
+        assertThat(device.currentScheduleRunning, is(true));
+        verify(bridgeHandler, times(2)).getCurrentSchedule(DEVICE_ID);
+        verify(bridgeHandler, times(1)).getDeviceForecast(DEVICE_ID, "US");
+    }
+
     private Thing thing() {
         Thing thing = Mockito.mock(Thing.class);
         when(thing.getUID()).thenReturn(new ThingUID(THING_TYPE_DEVICE, "bridge", "controller"));
@@ -202,6 +226,12 @@ class RachioDeviceHandlerStatusTest {
                 new RachioApiResult());
     }
 
+    private static RachioApiThrottledException optionalThrottle() {
+        return new RachioApiThrottledException(
+                new RateLimitThrottleException(PRIORITY.LOW, RequestPurpose.BACKGROUND_REFRESH, 0.1, 0.2),
+                new RachioApiResult());
+    }
+
     private static RachioApiException serverRateLimitException() {
         RachioApiResult result = new RachioApiResult();
         result.responseCode = HttpStatus.TOO_MANY_REQUESTS_429;
@@ -240,6 +270,15 @@ class RachioDeviceHandlerStatusTest {
         protected void scheduleWebhookRegistrationRetry(String deviceId, long delaySeconds) {
             retryScheduled = true;
             retryAction = () -> retryDeferredWebhookRegistration();
+        }
+    }
+
+    private static class PollingDeviceHandler extends RachioDeviceHandler {
+        PollingDeviceHandler(Thing thing, RachioBridgeHandler bridgeHandler, RachioDevice device) {
+            super(thing);
+            cloudHandler = bridgeHandler;
+            dev = device;
+            thingId = device.name;
         }
     }
 }

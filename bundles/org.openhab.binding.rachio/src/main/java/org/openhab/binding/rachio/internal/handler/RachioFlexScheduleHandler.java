@@ -71,10 +71,7 @@ public class RachioFlexScheduleHandler extends AbstractRachioThingHandler {
             return;
         }
 
-        RachioBridgeHandler handler = cloudHandler;
-        if (handler != null) {
-            handler.registerStatusListener(this);
-        }
+        registerStatusListener();
         goOnline();
     }
 

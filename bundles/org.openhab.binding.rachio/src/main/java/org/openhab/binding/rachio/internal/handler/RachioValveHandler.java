@@ -66,7 +66,6 @@ public class RachioValveHandler extends AbstractRachioThingHandler {
     private @Nullable RachioValveDayRun nextPlannedRun;
     private @Nullable RachioValveDayRun nextSkippedRun;
     private @Nullable RachioValveDayRun lastCompletedRun;
-    private boolean statusListenerRegistered = false;
 
     public RachioValveHandler(Thing thing) {
         super(thing);
@@ -211,10 +210,7 @@ public class RachioValveHandler extends AbstractRachioThingHandler {
                 return false;
             }
             thingId = currentValve.getThingName();
-            if (!statusListenerRegistered) {
-                handler.registerStatusListener(this);
-                statusListenerRegistered = true;
-            }
+            registerStatusListener();
             if (initialLoad || getThing().getStatus() != ThingStatus.ONLINE) {
                 handler.registerValveWebHook(currentValve.id,
                         initialLoad ? RequestPurpose.INITIALIZATION : RequestPurpose.BACKGROUND_REFRESH);

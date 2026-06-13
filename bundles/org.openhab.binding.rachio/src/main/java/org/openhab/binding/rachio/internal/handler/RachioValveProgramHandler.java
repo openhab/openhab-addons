@@ -62,7 +62,6 @@ public class RachioValveProgramHandler extends AbstractRachioThingHandler {
     private @Nullable DateTimeType lastEventTime;
     private String lastRainSkipPlannedRunStartTime = "";
     private String lastRainSkipCanceledPlannedRunStartTime = "";
-    private boolean statusListenerRegistered = false;
 
     public RachioValveProgramHandler(Thing thing) {
         super(thing);
@@ -153,10 +152,7 @@ public class RachioValveProgramHandler extends AbstractRachioThingHandler {
                 return false;
             }
             thingId = currentProgram.getThingName();
-            if (!statusListenerRegistered) {
-                handler.registerStatusListener(this);
-                statusListenerRegistered = true;
-            }
+            registerStatusListener();
             if (initialLoad || getThing().getStatus() != ThingStatus.ONLINE) {
                 handler.registerValveProgramWebHook(currentProgram.id,
                         initialLoad ? RequestPurpose.INITIALIZATION : RequestPurpose.BACKGROUND_REFRESH);

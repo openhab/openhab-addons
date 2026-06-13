@@ -132,6 +132,7 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
 
             logger.info("RachioCloud: Connector initialized");
             updateStatus(ThingStatus.ONLINE);
+            updateListenerManagement();
             triggerPostInitializationDiscovery();
         } catch (RachioApiException e) {
             errorMessage = e.toString();
@@ -302,13 +303,18 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
                     }
                     if (deviceHandler != null) {
                         deviceHandler.retryDeferredWebhookRegistrationIfDue();
+                        if (refreshReason == RefreshReason.SCHEDULED_POLL) {
+                            logger.debug(
+                                    "RachioCloud: Core scheduled status poll completed for controller '{}'; refreshing essential running state before optional enrichments",
+                                    checkDev.id);
+                        }
                         deviceHandler.refreshSmartIrrigationReadExtensions(false);
                     }
                 }
             }
         } catch (RachioApiThrottledException e) {
-            logger.debug("Skipping low-priority Rachio refresh because the local API budget guard is active: {}",
-                    e.getMessage());
+            logger.debug("RachioCloud: {} refresh deferred by the local API budget guard at priority {}: {}",
+                    refreshReason, e.getPriority(), e.getMessage());
         } catch (RachioApiException e) {
             errorMessage = e.toString();
         } catch (RuntimeException | UnknownHostException e) {
@@ -340,15 +346,14 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
         }
 
         // initialize API access, may throw an exception
-        api.initialize(thingConfig.apikey, this.getThing().getUID(), getPriority(refreshReason),
+        api.initialize(thingConfig.apikey, this.getThing().getUID(), getRefreshPriority(refreshReason),
                 getRequestPurpose(refreshReason));
         personId = api.getPersonId();
     }
 
-    private PRIORITY getPriority(RefreshReason refreshReason) {
+    PRIORITY getRefreshPriority(RefreshReason refreshReason) {
         switch (refreshReason) {
             case SCHEDULED_POLL:
-                return PRIORITY.LOW;
             case WEBHOOK_RECONCILIATION:
             case INITIALIZATION:
             case MANUAL:

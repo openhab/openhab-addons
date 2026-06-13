@@ -23,6 +23,8 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.openhab.binding.rachio.internal.handler.RachioBridgeHandler.RefreshReason;
+import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager.PRIORITY;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
@@ -36,6 +38,14 @@ import org.openhab.core.thing.binding.builder.BridgeBuilder;
 @NonNullByDefault
 @SuppressWarnings({ "null" })
 class RachioBridgeHandlerConfigurationTest {
+    @Test
+    void scheduledCorePollUsesMediumPriority() {
+        Bridge bridge = BridgeBuilder.create(THING_TYPE_CLOUD, "bridge").build();
+        RachioBridgeHandler handler = new RachioBridgeHandler(bridge);
+
+        assertThat(handler.getRefreshPriority(RefreshReason.SCHEDULED_POLL), is(PRIORITY.MED));
+    }
+
     @Test
     void handleConfigurationUpdatePersistsCloudThingConfiguration() {
         Bridge bridge = BridgeBuilder.create(THING_TYPE_CLOUD, "bridge")

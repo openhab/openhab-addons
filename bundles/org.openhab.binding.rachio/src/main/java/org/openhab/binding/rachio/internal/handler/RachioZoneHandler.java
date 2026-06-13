@@ -115,10 +115,7 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
             }
 
             // listen to bridge events
-            RachioBridgeHandler handler = cloudHandler;
-            if (handler != null) {
-                handler.registerStatusListener(this);
-            }
+            registerStatusListener();
             if (!isBridgeOnline()) {
                 logger.debug("{}: Bridge is offline!", thingId);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);

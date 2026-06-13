@@ -57,14 +57,14 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class RachioDeviceHandler extends AbstractRachioThingHandler {
-    private static final long READ_EXTENSION_REFRESH_INTERVAL_MS = 15 * 60 * 1000L;
+    private static final long OPTIONAL_ENRICHMENT_REFRESH_INTERVAL_MS = 15 * 60 * 1000L;
     private static final long DEFAULT_WEBHOOK_REGISTRATION_RETRY_DELAY_SECONDS = 30;
     private static final long MIN_WEBHOOK_REGISTRATION_RETRY_DELAY_SECONDS = 5;
     private static final long MAX_WEBHOOK_REGISTRATION_RETRY_DELAY_SECONDS = 5 * 60;
     private final Logger logger = LoggerFactory.getLogger(RachioDeviceHandler.class);
 
     protected @Nullable RachioDevice dev;
-    private long lastReadExtensionRefresh = 0;
+    private long lastOptionalEnrichmentRefresh = 0;
     private @Nullable ScheduledFuture<?> webhookRegistrationRetryJob;
     private boolean webhookRegistrationPending = false;
     private long nextWebhookRegistrationRetryAtMillis = 0;
@@ -98,7 +98,7 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
 
             thingId = d.name;
             d.setThingHandler(this);
-            handler.registerStatusListener(this);
+            registerStatusListener();
             registerControllerWebhook(handler, d, RequestPurpose.INITIALIZATION);
             if (configuredDeviceId.isBlank()) {
                 logger.debug(
@@ -340,32 +340,39 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
             return;
         }
 
-        long now = System.currentTimeMillis();
-        if (!force && (now - lastReadExtensionRefresh) < READ_EXTENSION_REFRESH_INTERVAL_MS) {
-            logger.trace("{}: Smart Irrigation read extension refresh skipped; last refresh was {} ms ago", thingId,
-                    now - lastReadExtensionRefresh);
-            return;
-        }
-        lastReadExtensionRefresh = now;
-
         try {
             d.applyCurrentSchedule(handler.getCurrentSchedule(d.id));
             logger.debug("{}: Loaded current schedule for controller '{}': running={}, id='{}'", thingId, d.id,
                     d.currentScheduleRunning, d.currentScheduleId);
         } catch (RachioApiThrottledException e) {
             logger.debug(
-                    "{}: Skipping current schedule refresh for controller '{}' because the local API budget guard is active: {}",
+                    "{}: Essential current schedule refresh for controller '{}' was deferred by the local API budget guard: {}",
                     thingId, d.id, e.getMessage());
         } catch (RachioApiException e) {
             logger.debug("{}: Unable to load current schedule for controller '{}': {}; retaining last known values",
                     thingId, d.id, e.getMessage());
         }
 
+        refreshOptionalEnrichments(handler, d, force);
+        postChannelData();
+    }
+
+    private void refreshOptionalEnrichments(RachioBridgeHandler handler, RachioDevice d, boolean force) {
+        long now = System.currentTimeMillis();
+        if (!force && (now - lastOptionalEnrichmentRefresh) < OPTIONAL_ENRICHMENT_REFRESH_INTERVAL_MS) {
+            logger.trace("{}: Optional Smart Irrigation enrichment skipped; last refresh was {} ms ago", thingId,
+                    now - lastOptionalEnrichmentRefresh);
+            return;
+        }
+        lastOptionalEnrichmentRefresh = now;
+        boolean optionalEnrichmentThrottled = false;
+
         try {
             d.applyForecast(handler.getDeviceForecast(d.id, handler.getForecastUnits()));
             logger.debug("{}: Loaded forecast for controller '{}' using {} units", thingId, d.id,
                     handler.getForecastUnits());
         } catch (RachioApiThrottledException e) {
+            optionalEnrichmentThrottled = true;
             logger.debug(
                     "{}: Skipping forecast refresh for controller '{}' because the local API budget guard is active: {}",
                     thingId, d.id, e.getMessage());
@@ -384,6 +391,7 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
                 logger.debug("{}: Loaded {} recent controller events over {} hours", thingId, events.events.size(),
                         lookbackHours);
             } catch (RachioApiThrottledException e) {
+                optionalEnrichmentThrottled = true;
                 logger.debug(
                         "{}: Skipping recent event refresh for controller '{}' because the local API budget guard is active: {}",
                         thingId, d.id, e.getMessage());
@@ -395,7 +403,11 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
             d.applyApiEvent(null);
             logger.trace("{}: Event history polling is disabled", thingId);
         }
-        postChannelData();
+        if (optionalEnrichmentThrottled) {
+            logger.debug(
+                    "{}: Optional enrichments were throttled independently from core controller and current schedule polling",
+                    thingId);
+        }
     }
 
     @Override

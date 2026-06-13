@@ -657,7 +657,7 @@ public class RachioApi {
         logger.debug("Load current schedule for device '{}'.", deviceId);
         String json = httpGet(
                 APIURL_BASE + APIURL_GET_DEVICE + "/" + deviceId + "/" + APIURL_GET_DEVICE_CURRENT_SCHEDULE, null,
-                PRIORITY.LOW).resultString;
+                PRIORITY.MED).resultString;
         RachioCurrentScheduleResponse response = new Gson().fromJson(json, RachioCurrentScheduleResponse.class);
         return response != null ? response : new RachioCurrentScheduleResponse();
     }
