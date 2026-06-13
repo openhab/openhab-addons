@@ -1080,6 +1080,7 @@ public class RachioApi {
             logger.warn("Failed to build callback URL for webhook target '{}': {}", target.describe(), e.getMessage());
             throw e;
         }
+        logWebhookRegistrationUrlDiagnostic(target, callbackUrl, callbackUsername, callbackPassword, registrationUrl);
 
         String expectedExternalId = externalId != null ? externalId : "";
         logger.debug("Register WebHook for target '{}'", target.describe());
@@ -1098,8 +1099,15 @@ public class RachioApi {
         }
 
         try {
-            httpPost(APIURL_CLOUD_REST_BASE + WEBHOOK_CREATE,
-                    new Gson().toJson(target.buildCreatePayload(registrationUrl, expectedExternalId)), PRIORITY.HI,
+            Map<String, Object> createPayload = target.buildCreatePayload(registrationUrl, expectedExternalId);
+            Object payloadUrlValue = createPayload.get("url");
+            String payloadUrl = payloadUrlValue instanceof String url ? url : "";
+            logger.debug(
+                    "WEBHOOK_DIAG createWebhook target={} eventTypes={} resourceId={} externalId={} payloadUrlUserInfo={} payloadUrlSanitized={}",
+                    target.getResourceType().getApiValue(), target.getEventTypes(), target.getResourceId(),
+                    expectedExternalId, webhookUrlContainsUserInfo(payloadUrl),
+                    sanitizeWebhookUrlForDiagnostic(payloadUrl));
+            httpPost(APIURL_CLOUD_REST_BASE + WEBHOOK_CREATE, new Gson().toJson(createPayload), PRIORITY.HI,
                     requestPurpose);
         } catch (RachioApiException e) {
             throw sanitizeWebhookRegistrationException(e, registrationUrl);
@@ -1162,6 +1170,72 @@ public class RachioApi {
         String encodedUserInfo = encodeURIComponent(callbackUsername) + ":" + encodeURIComponent(callbackPassword);
         String registrationUrl = buildUriString(callbackUri, encodedUserInfo + "@" + authorityWithoutUserInfo);
         return parseWebhookCallbackUri(registrationUrl, true).toASCIIString();
+    }
+
+    private void logWebhookRegistrationUrlDiagnostic(RachioWebhookTarget target, String callbackUrl,
+            String callbackUsername, String callbackPassword, String registrationUrl) {
+        String scheme = "<invalid>";
+        String host = "<invalid>";
+        String path = "<invalid>";
+        try {
+            URI uri = new URI(registrationUrl);
+            scheme = Objects.requireNonNullElse(uri.getScheme(), "");
+            host = Objects.requireNonNullElse(uri.getHost(), "");
+            path = Objects.requireNonNullElse(uri.getRawPath(), "");
+        } catch (URISyntaxException e) {
+            // The validated registration URL should always parse; retain safe placeholders if it does not.
+        }
+        logger.debug(
+                "WEBHOOK_DIAG target={} resourceId={} scheme={} host={} path={} explicitUser={} explicitPassword={} originalUserInfo={} finalUserInfo={} sanitizedUrl={}",
+                target.getResourceType().getApiValue(), target.getResourceId(), scheme, host, path,
+                !callbackUsername.isEmpty(), !callbackPassword.isEmpty(), webhookUrlContainsUserInfo(callbackUrl),
+                webhookUrlContainsUserInfo(registrationUrl), sanitizeWebhookUrlForDiagnostic(registrationUrl));
+    }
+
+    static boolean webhookUrlContainsUserInfo(@Nullable String url) {
+        if (url == null || url.isBlank()) {
+            return false;
+        }
+        try {
+            URI uri = new URI(url.trim());
+            String rawAuthority = uri.getRawAuthority();
+            return uri.getRawUserInfo() != null || (rawAuthority != null && rawAuthority.contains("@"));
+        } catch (URISyntaxException e) {
+            return false;
+        }
+    }
+
+    static String sanitizeWebhookUrlForDiagnostic(@Nullable String url) {
+        if (url == null || url.isBlank()) {
+            return "<none>";
+        }
+        try {
+            URI uri = new URI(url.trim());
+            String rawAuthority = uri.getRawAuthority();
+            if (!uri.isAbsolute() || rawAuthority == null) {
+                return callbackUrlLogReference(url);
+            }
+
+            int userInfoSeparator = rawAuthority.lastIndexOf('@');
+            String sanitizedAuthority = userInfoSeparator >= 0
+                    ? "<user>:***@" + rawAuthority.substring(userInfoSeparator + 1)
+                    : rawAuthority;
+            StringBuilder sanitizedUrl = new StringBuilder();
+            sanitizedUrl.append(uri.getScheme()).append("://").append(sanitizedAuthority);
+            String path = uri.getRawPath();
+            if (path != null) {
+                sanitizedUrl.append(path);
+            }
+            if (uri.getRawQuery() != null) {
+                sanitizedUrl.append("?<redacted>");
+            }
+            if (uri.getRawFragment() != null) {
+                sanitizedUrl.append("#<redacted>");
+            }
+            return sanitizedUrl.toString();
+        } catch (URISyntaxException e) {
+            return callbackUrlLogReference(url);
+        }
     }
 
     private URI parseWebhookCallbackUri(String callbackUrl, boolean requireValidHost) throws RachioApiException {

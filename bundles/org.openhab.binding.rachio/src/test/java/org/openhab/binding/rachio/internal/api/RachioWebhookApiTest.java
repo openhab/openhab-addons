@@ -30,6 +30,7 @@ import static org.openhab.binding.rachio.internal.RachioBindingConstants.WEBHOOK
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.WEBHOOK_QUERY_VALVE_ID;
 
 import java.lang.reflect.Field;
+import java.net.URI;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +48,9 @@ import org.openhab.binding.rachio.internal.api.webhook.RachioWebhookResourceType
 import org.openhab.binding.rachio.internal.api.webhook.RachioWebhookTarget;
 import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager;
 import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager.RequestPurpose;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 /**
  * Tests generic WebhookService API helpers.
@@ -229,6 +233,46 @@ class RachioWebhookApiTest {
     }
 
     @Test
+    void createWebhookPayloadContainsExplicitBasicAuthUserInfoWithoutDiagnosticSecretLeak() throws Exception {
+        RachioApi api = new RachioApi("person-id");
+        RecordingRachioHttp http = new RecordingRachioHttp();
+        setField(api, "httpApi", http);
+        setField(api, "rateLimitManager", new RecordingRateLimitManager(0));
+
+        api.registerWebHook("device-id", "https://webhook.site/57b-example", "rachio-test", "test-secret-123",
+                "external-id", false, RequestPurpose.INITIALIZATION);
+
+        JsonObject payload = JsonParser.parseString(http.postBodies.getFirst()).getAsJsonObject();
+        String payloadUrl = payload.get("url").getAsString();
+        String sanitizedUrl = RachioApi.sanitizeWebhookUrlForDiagnostic(payloadUrl);
+
+        assertThat(payloadUrl, is("https://rachio-test:test-secret-123@webhook.site/57b-example"));
+        assertThat(new URI(payloadUrl).getRawUserInfo(), is("rachio-test:test-secret-123"));
+        assertThat(RachioApi.webhookUrlContainsUserInfo(payloadUrl), is(true));
+        assertThat(sanitizedUrl, is("https://<user>:***@webhook.site/57b-example"));
+        assertThat(sanitizedUrl.contains("rachio-test"), is(false));
+        assertThat(sanitizedUrl.contains("test-secret-123"), is(false));
+    }
+
+    @Test
+    void createWebhookPayloadPercentEncodesSpecialCredentialCharacters() throws Exception {
+        RachioApi api = new RachioApi("person-id");
+        RecordingRachioHttp http = new RecordingRachioHttp();
+        setField(api, "httpApi", http);
+        setField(api, "rateLimitManager", new RecordingRateLimitManager(0));
+
+        api.registerWebHook("device-id", "https://webhook.site/57b-example", "rachio test", "test-secret-123:/?@",
+                "external-id", false, RequestPurpose.INITIALIZATION);
+
+        JsonObject payload = JsonParser.parseString(http.postBodies.getFirst()).getAsJsonObject();
+        String payloadUrl = payload.get("url").getAsString();
+
+        assertThat(payloadUrl, is("https://rachio%20test:test-secret-123%3A%2F%3F%40@webhook.site/57b-example"));
+        assertThat(RachioApi.sanitizeWebhookUrlForDiagnostic(payloadUrl),
+                is("https://<user>:***@webhook.site/57b-example"));
+    }
+
+    @Test
     void registerWebhookListLookupLocalThrottlePropagatesForDeferredHandlerRetry() throws Exception {
         RachioApi api = new RachioApi("person-id");
         RecordingRachioHttp http = new RecordingRachioHttp();
@@ -304,6 +348,7 @@ class RachioWebhookApiTest {
     private static class RecordingRachioHttp extends RachioHttp {
         private final List<String> getUrls = new ArrayList<>();
         private final List<String> postUrls = new ArrayList<>();
+        private final List<String> postBodies = new ArrayList<>();
         private int eventTypeLookupResponseCode = HttpStatus.OK_200;
 
         @Override
@@ -336,6 +381,7 @@ class RachioWebhookApiTest {
         @Override
         public RachioApiResult httpPost(String url, String postData) {
             postUrls.add(url);
+            postBodies.add(postData);
             RachioApiResult result = new RachioApiResult();
             result.url = url;
             result.requestMethod = "POST";
