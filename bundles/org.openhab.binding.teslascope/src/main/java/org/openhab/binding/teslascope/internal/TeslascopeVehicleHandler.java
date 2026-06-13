@@ -398,6 +398,7 @@ public class TeslascopeVehicleHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
         } catch (Exception e) {
             logger.debug("Failed to parse vehicle details: {}", e.getMessage(), e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Invalid JSON response");
         }
     }
 
