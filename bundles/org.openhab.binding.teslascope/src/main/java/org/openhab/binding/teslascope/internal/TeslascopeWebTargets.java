@@ -111,31 +111,32 @@ public class TeslascopeWebTargets {
                 }
                 ContentResponse response = request.send();
                 status = response.getStatus();
+
                 if (HttpStatus.isSuccess(status)) {
-                    return response.getContentAsString(); // Return immediately on success
+                    return response.getContentAsString();
                 } else {
                     switch (status) {
-                        case HttpStatus.UNAUTHORIZED_401:
-                            throw new TeslascopeAuthenticationException("Unauthorized");
-                        case HttpStatus.INTERNAL_SERVER_ERROR_500:
-                        case HttpStatus.BAD_GATEWAY_502:
-                        case HttpStatus.SERVICE_UNAVAILABLE_503:
-                        case HttpStatus.GATEWAY_TIMEOUT_504:
+                        case HttpStatus.UNAUTHORIZED_401 -> throw new TeslascopeAuthenticationException("Unauthorized");
+
+                        case HttpStatus.INTERNAL_SERVER_ERROR_500, HttpStatus.BAD_GATEWAY_502,
+                                HttpStatus.SERVICE_UNAVAILABLE_503, HttpStatus.GATEWAY_TIMEOUT_504 -> {
+
                             if (retryCounter == MAX_RETRIES) {
                                 throw new TeslascopeCommunicationException("Teslascope API unavailable after "
                                         + MAX_RETRIES + " attempts (HTTP " + status + ")");
                             }
                             logger.debug("Teslascope returned {}, retrying", status);
                             Thread.sleep(2000);
-                            break;
-                        default:
-                            throw new TeslascopeCommunicationException(
-                                    String.format("Teslascope returned error <%d> while invoking %s", status, uri));
+                        }
+
+                        default -> throw new TeslascopeCommunicationException(
+                                String.format("Teslascope returned error <%d> while invoking %s", status, uri));
                     }
                 }
+
             } catch (InterruptedException ex) {
                 Thread.currentThread().interrupt();
-                throw new TeslascopeCommunicationException(ex.getLocalizedMessage(), ex);
+                throw new TeslascopeCommunicationException("Thread was interrupted during API call");
             } catch (TimeoutException | ExecutionException ex) {
                 throw new TeslascopeCommunicationException(ex.getLocalizedMessage(), ex);
             }

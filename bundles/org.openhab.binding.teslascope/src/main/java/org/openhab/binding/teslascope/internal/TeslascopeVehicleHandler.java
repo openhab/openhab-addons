@@ -112,63 +112,48 @@ public class TeslascopeVehicleHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         switch (channelUID.getId()) {
-            case TeslascopeBindingConstants.CHANNEL_AUTOCONDITIONING:
-                if (command instanceof OnOffType onOffCommand) {
+            case TeslascopeBindingConstants.CHANNEL_AUTOCONDITIONING -> {
+                if (command instanceof OnOffType onOffCommand)
                     setAutoConditioning(onOffCommand == OnOffType.ON);
-                }
-                break;
-            case TeslascopeBindingConstants.CHANNEL_CHARGE:
-                if (command instanceof OnOffType onOffCommand) {
+            }
+            case TeslascopeBindingConstants.CHANNEL_CHARGE -> {
+                if (command instanceof OnOffType onOffCommand)
                     charge(onOffCommand == OnOffType.ON);
-                }
-                break;
-            case TeslascopeBindingConstants.CHANNEL_CHARGE_LIMIT_SOC:
-                if (command instanceof QuantityType quantityCommand) {
+            }
+            case TeslascopeBindingConstants.CHANNEL_CHARGE_LIMIT_SOC -> {
+                if (command instanceof QuantityType<?> quantityCommand)
                     setChargeLimit(quantityCommand);
-                }
-                break;
-            case TeslascopeBindingConstants.CHANNEL_CHARGE_PORT:
-                if (command instanceof OnOffType onOffCommand) {
+            }
+            case TeslascopeBindingConstants.CHANNEL_CHARGE_PORT -> {
+                if (command instanceof OnOffType onOffCommand)
                     chargeDoor(onOffCommand == OnOffType.ON);
-                }
-                break;
-            case TeslascopeBindingConstants.CHANNEL_DOOR_LOCK:
-                if (command instanceof OnOffType onOffCommand) {
+            }
+            case TeslascopeBindingConstants.CHANNEL_DOOR_LOCK -> {
+                if (command instanceof OnOffType onOffCommand)
                     lock(onOffCommand == OnOffType.ON);
-                }
-                break;
-            case TeslascopeBindingConstants.CHANNEL_FLASH_LIGHTS:
-                if (command instanceof OnOffType) {
+            }
+            case TeslascopeBindingConstants.CHANNEL_FLASH_LIGHTS -> {
+                if (command instanceof OnOffType)
                     flashLights();
-                    return;
-                }
-                break;
-            case TeslascopeBindingConstants.CHANNEL_FRONT_TRUNK:
-                if (command instanceof OnOffType) {
+            }
+            case TeslascopeBindingConstants.CHANNEL_FRONT_TRUNK -> {
+                if (command instanceof OnOffType)
                     openFrunk();
-                    return;
-                }
-                break;
-            case TeslascopeBindingConstants.CHANNEL_HONK_HORN:
-                if (command instanceof OnOffType) {
+            }
+            case TeslascopeBindingConstants.CHANNEL_HONK_HORN -> {
+                if (command instanceof OnOffType)
                     honkHorn();
-                    return;
-                }
-                break;
-            case TeslascopeBindingConstants.CHANNEL_REAR_TRUNK:
-                if (command instanceof OnOffType) {
+            }
+            case TeslascopeBindingConstants.CHANNEL_REAR_TRUNK -> {
+                if (command instanceof OnOffType)
                     openTrunk();
-                    return;
-                }
-                break;
-            case TeslascopeBindingConstants.CHANNEL_SENTRY_MODE:
-                if (command instanceof OnOffType onOffCommand) {
+            }
+            case TeslascopeBindingConstants.CHANNEL_SENTRY_MODE -> {
+                if (command instanceof OnOffType onOffCommand)
                     sentry(onOffCommand == OnOffType.ON);
-                }
-                break;
-            default:
-                logger.debug("Received command ({}) of wrong type for thing '{}' on channel {}", command,
-                        thing.getUID().getAsString(), channelUID.getId());
+            }
+            default -> logger.debug("Received command ({}) of wrong type for thing '{}' on channel {}", command,
+                    thing.getUID().getAsString(), channelUID.getId());
         }
     }
 
