@@ -94,12 +94,13 @@ public class RestClient {
                 throw new AuthenticationException("Bad request");
             case HttpStatus.UNAUTHORIZED_401:
                 throw new AuthenticationException("Invalid username or password");
-            case HttpStatus.PRECONDITION_FAILED_412:
-                if (response.getReason().startsWith("Precondition")
-                        || response.getReason().startsWith("Verification Code")) {
+            case HttpStatus.PRECONDITION_FAILED_412: {
+                String reason = Objects.toString(response.getReason(), "");
+                if (reason.startsWith("Precondition") || reason.startsWith("Verification Code")) {
                     throw new AuthenticationException("Two factor authentication enabled, enter code");
                 }
                 throw new AuthenticationException("Invalid username or password");
+            }
             case HttpStatus.TOO_MANY_REQUESTS_429:
                 throw new AuthenticationException("Account rate-limited");
             default:
