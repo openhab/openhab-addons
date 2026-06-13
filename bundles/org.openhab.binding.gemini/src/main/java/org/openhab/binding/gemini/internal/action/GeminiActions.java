@@ -13,9 +13,6 @@
 package org.openhab.binding.gemini.internal.action;
 
 import static org.openhab.binding.gemini.internal.GeminiBindingConstants.*;
-import static org.openhab.binding.gemini.internal.GeminiBindingConstants.DEFAULT_SYSTEM_MESSAGE;
-import static org.openhab.binding.gemini.internal.GeminiBindingConstants.DEFAULT_TEMPERATURE;
-import static org.openhab.binding.gemini.internal.GeminiBindingConstants.DEFAULT_TOP_P;
 
 import java.util.Objects;
 

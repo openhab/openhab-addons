@@ -51,7 +51,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Florian Hotze - Initial contribution
  */
-@Component(service = { ThingHandlerService.class, HumanLanguageInterpreter.class })
+@Component(service = { GeminiHLIService.class, HumanLanguageInterpreter.class })
 @NonNullByDefault
 public class GeminiHLIService implements ThingHandlerService, HumanLanguageInterpreter {
     private static final String LABEL = "Gemini Human Language Interpreter";

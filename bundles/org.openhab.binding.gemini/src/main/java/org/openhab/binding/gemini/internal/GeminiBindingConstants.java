@@ -37,12 +37,12 @@ public class GeminiBindingConstants {
     public static final String DEFAULT_MODEL = "gemini-2.5-flash";
     public static final double DEFAULT_TEMPERATURE = 1.0;
     public static final double DEFAULT_TOP_P = 1.0;
-    public static final int DEFAULT_MAX_OUTPUT_TOKENS = 8092;
+    public static final int DEFAULT_MAX_OUTPUT_TOKENS = 2048;
     public static final String DEFAULT_SYSTEM_MESSAGE = "You are a helpful assistant.";
     public static final int DEFAULT_REQUEST_TIMEOUT = 30;
 
     // Default values as string needed for annotations
     public static final String DEFAULT_TEMPERATURE_STR = "1.0";
     public static final String DEFAULT_TOP_P_STR = "1.0";
-    public static final String MAX_OUTPUT_TOKENS_STR = "8092";
+    public static final String MAX_OUTPUT_TOKENS_STR = "2048";
 }

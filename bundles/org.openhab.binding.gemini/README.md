@@ -42,13 +42,13 @@ Additional channels can be added to the thing, allowing to specify different mod
 
 Channels of type `chat` take the following configuration parameters:
 
-| Name            | Type    | Description                                                                                   | Default                      | Required | Advanced |
-|-----------------|---------|-----------------------------------------------------------------------------------------------|------------------------------|----------|----------|
-| model           | text    | The model to be used for the responses, overriding the thing-level model.                     | gemini-2.5-flash             | no       | no       |
-| systemMessage   | text    | The system message helps set the behavior of the assistant.                                   | You are a helpful assistant. | no       | no       |
-| temperature     | decimal | A value between 0.0 and 2.0, which overrides the thing-level temperature.                     | 1.0                          | no       | yes      |
-| topP            | decimal | A value between 0.0 and 1.0, which overrides the thing-level topP.                            | 1.0                          | no       | yes      |
-| maxOutputTokens | integer | The maximum number of tokens to include in a candidate, overriding the thing-level max tokens. | 8192                         | no       | yes      |
+| Name            | Type    | Description                                                                                    | Default                      | Required | Advanced |
+|-----------------|---------|------------------------------------------------------------------------------------------------|------------------------------|----------|----------|
+| model           | text    | The model to be used for the responses, overriding the thing-level model.                      | gemini-2.5-flash             | no       | no       |
+| systemMessage   | text    | The system message helps set the behavior of the assistant.                                    | You are a helpful assistant. | no       | no       |
+| temperature     | decimal | A value between 0.0 and 2.0, which overrides the thing-level temperature.                      | 1.0                          | no       | yes      |
+| topP            | decimal | A value between 0.0 and 1.0, which overrides the thing-level topP.                             | 1.0                          | no       | yes      |
+| maxOutputTokens | integer | The maximum number of tokens to include in a candidate, overriding the thing-level max tokens. | 2048                         | no       | yes      |
 
 ## Thing Actions
 

@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.gemini.internal;
 
+import static org.openhab.binding.gemini.internal.GeminiBindingConstants.DEFAULT_MAX_OUTPUT_TOKENS;
 import static org.openhab.binding.gemini.internal.GeminiBindingConstants.DEFAULT_MODEL;
 import static org.openhab.binding.gemini.internal.GeminiBindingConstants.DEFAULT_REQUEST_TIMEOUT;
 import static org.openhab.binding.gemini.internal.GeminiBindingConstants.DEFAULT_TEMPERATURE;
@@ -34,6 +35,5 @@ public class GeminiConfiguration {
     public String model = DEFAULT_MODEL;
     public double temperature = DEFAULT_TEMPERATURE;
     public double topP = DEFAULT_TOP_P;
-    // shorter answers for the HLI (2048 tokens is still a lot)
-    public int maxOutputTokens = 2048;
+    public int maxOutputTokens = DEFAULT_MAX_OUTPUT_TOKENS;
 }
