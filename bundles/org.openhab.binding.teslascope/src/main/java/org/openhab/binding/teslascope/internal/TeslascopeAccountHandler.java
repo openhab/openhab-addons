@@ -145,7 +145,8 @@ public class TeslascopeAccountHandler extends BaseBridgeHandler {
         }
         updateStatus(ThingStatus.UNKNOWN);
 
-        this.pollFuture = scheduler.scheduleWithFixedDelay(this::pollStatus, 0, 300, TimeUnit.SECONDS);
+        this.pollFuture = scheduler.scheduleWithFixedDelay(this::pollStatus, 0, localConfig.refreshInterval,
+                TimeUnit.SECONDS);
 
         updateStatus(ThingStatus.ONLINE);
     }
@@ -158,16 +159,26 @@ public class TeslascopeAccountHandler extends BaseBridgeHandler {
 
     private void pollStatus() {
         String responseVehicleList = getVehicleList();
-        JsonArray jsonArrayVehicleList = JsonParser.parseString(responseVehicleList).getAsJsonArray();
-        if (jsonArrayVehicleList.size() > 0) {
-            VehicleList vehicleList = gson.fromJson(jsonArrayVehicleList.get(0), VehicleList.class);
-            if (vehicleList == null) {
+
+        if (responseVehicleList == null || responseVehicleList.isBlank()) {
+            return; // Status is already updated to OFFLINE in getVehicleList()
+        }
+
+        try {
+            JsonArray jsonArrayVehicleList = JsonParser.parseString(responseVehicleList).getAsJsonArray();
+            if (jsonArrayVehicleList.size() > 0) {
+                VehicleList vehicleList = gson.fromJson(jsonArrayVehicleList.get(0), VehicleList.class);
+                if (vehicleList == null) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "@text/offline.comm-error.no-vehicles");
+                }
+            } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/offline.comm-error.no-vehicles");
             }
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.comm-error.no-vehicles");
+        } catch (Exception e) {
+            logger.debug("Failed to parse vehicle list JSON: {}", e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Invalid JSON response");
         }
     }
 

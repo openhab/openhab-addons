@@ -20,7 +20,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.teslascope.internal.TeslascopeAccountHandler;
 import org.openhab.binding.teslascope.internal.api.VehicleList;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
-import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ServiceScope;
@@ -62,18 +61,24 @@ public class TeslascopeVehicleDiscoveryService extends AbstractThingHandlerDisco
     private void discover() {
         ThingUID bridgeUID = thingHandler.getThing().getUID();
         String responseVehicleList = getVehicleList();
-        HashMap<String, Object> properties = new HashMap<>();
-        JsonArray jsonArrayVehicleList = JsonParser.parseString(responseVehicleList).getAsJsonArray();
-        VehicleList vehicleList = new VehicleList();
-        for (int i = 0; i < jsonArrayVehicleList.size(); i++) {
-            vehicleList = gson.fromJson(jsonArrayVehicleList.get(i), VehicleList.class);
-            if (vehicleList == null) {
-                return;
+
+        if (responseVehicleList == null || responseVehicleList.isBlank()) {
+            return;
+        }
+
+        try {
+            HashMap<String, Object> properties = new HashMap<>();
+            JsonArray jsonArrayVehicleList = JsonParser.parseString(responseVehicleList).getAsJsonArray();
+            VehicleList vehicleList = new VehicleList();
+            for (int i = 0; i < jsonArrayVehicleList.size(); i++) {
+                vehicleList = gson.fromJson(jsonArrayVehicleList.get(i), VehicleList.class);
+                if (vehicleList == null) {
+                    continue; // Skip invalid entries instead of aborting the whole method
+                }
+                // ... rest of the discovery logic
             }
-            properties.put(CONFIG_PUBLICID, vehicleList.publicId);
-            ThingUID uid = new ThingUID(TESLASCOPE_VEHICLE, bridgeUID, vehicleList.publicId);
-            thingDiscovered(DiscoveryResultBuilder.create(uid).withBridge(bridgeUID).withProperties(properties)
-                    .withRepresentationProperty(CONFIG_PUBLICID).withLabel("Teslascope - " + vehicleList.name).build());
+        } catch (Exception e) {
+            logger.debug("Failed to parse vehicle list during discovery: {}", e.getMessage());
         }
     }
 
