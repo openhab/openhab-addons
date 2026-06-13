@@ -80,49 +80,28 @@ public class TeslascopeAccountHandler extends BaseBridgeHandler {
         return "";
     }
 
-    public String getDetailedInformation(String publicID) {
+    public String getDetailedInformation(String publicID)
+            throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
         TeslascopeAccountConfiguration config = this.config;
         if (config != null) {
-            try {
-                return webTargets.getDetailedInformation(publicID, config.apiKey, config.personalAccessToken);
-            } catch (TeslascopeAuthenticationException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Authentication problem: " + e.getMessage());
-            } catch (TeslascopeCommunicationException e) {
-                logger.warn("Communication problem while fetching details for vehicle {}: {}", publicID,
-                        e.getMessage());
-            }
+            return webTargets.getDetailedInformation(publicID, config.apiKey, config.personalAccessToken);
         }
         return "";
     }
 
-    public void sendCommand(String publicID, String command) {
+    public void sendCommand(String publicID, String command)
+            throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
         TeslascopeAccountConfiguration config = this.config;
         if (config != null) {
-            try {
-                webTargets.sendCommand(publicID, config.apiKey, config.personalAccessToken, command);
-            } catch (TeslascopeAuthenticationException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Authentication problem: " + e.getMessage());
-            } catch (TeslascopeCommunicationException e) {
-                logger.warn("Communication problem while fetching details for vehicle {}: {}", publicID,
-                        e.getMessage());
-            }
+            webTargets.sendCommand(publicID, config.apiKey, config.personalAccessToken, command);
         }
     }
 
-    public void sendCommand(String publicID, String command, String params) {
+    public void sendCommand(String publicID, String command, String params)
+            throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
         TeslascopeAccountConfiguration config = this.config;
         if (config != null) {
-            try {
-                webTargets.sendCommand(publicID, config.apiKey, config.personalAccessToken, command, params);
-            } catch (TeslascopeAuthenticationException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Authentication problem: " + e.getMessage());
-            } catch (TeslascopeCommunicationException e) {
-                logger.warn("Communication problem while fetching details for vehicle {}: {}", publicID,
-                        e.getMessage());
-            }
+            webTargets.sendCommand(publicID, config.apiKey, config.personalAccessToken, command, params);
         }
     }
 
@@ -177,7 +156,7 @@ public class TeslascopeAccountHandler extends BaseBridgeHandler {
                         "@text/offline.comm-error.no-vehicles");
             }
         } catch (Exception e) {
-            logger.debug("Failed to parse vehicle list JSON: {}", e.getMessage());
+            logger.debug("Failed to parse vehicle list JSON: {}", e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Invalid JSON response");
         }
     }

@@ -75,14 +75,23 @@ public class TeslascopeWebTargets {
 
     public void sendCommand(String publicID, String apiKey, String personalAccessToken, String command, String params)
             throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
+        String cleanParams = (params == null) ? "" : params.replaceFirst("^[?&]", "");
+
         if (personalAccessToken.isBlank()) {
-            invoke(BASE_VEHICLE_URI + publicID + "/command/" + command + "?api_key=" + apiKey + params, HttpMethod.POST,
-                    "");
+            // Legacy API Key method (needs & separator because ? is already used)
+            String url = BASE_VEHICLE_URI + publicID + "/command/" + command + "?api_key=" + apiKey;
+            if (!cleanParams.isEmpty()) {
+                url += "&" + cleanParams;
+            }
+            invoke(url, HttpMethod.POST, "");
         } else {
-            invoke(BASE_VEHICLE_URI + publicID + "/command/" + command + "?" + params, HttpMethod.POST,
-                    personalAccessToken);
+            // Personal Access Token method (needs ? separator)
+            String url = BASE_VEHICLE_URI + publicID + "/command/" + command;
+            if (!cleanParams.isEmpty()) {
+                url += "?" + cleanParams;
+            }
+            invoke(url, HttpMethod.POST, personalAccessToken);
         }
-        return;
     }
 
     private String invoke(String uri, HttpMethod method, String personalAccessToken)

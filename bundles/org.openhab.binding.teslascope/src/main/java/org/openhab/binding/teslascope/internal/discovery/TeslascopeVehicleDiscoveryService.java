@@ -83,7 +83,7 @@ public class TeslascopeVehicleDiscoveryService extends AbstractThingHandlerDisco
                         .build());
             }
         } catch (Exception e) {
-            logger.debug("Failed to parse vehicle list during discovery: {}", e.getMessage());
+            logger.debug("Failed to parse vehicle list during discovery: {}", e.getMessage(), e);
         }
     }
 
