@@ -19,7 +19,6 @@ import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -345,25 +344,32 @@ public class RestClient {
                     StringBuilder vidUrl = new StringBuilder();
                     vidUrl.append(ApiConstants.URL_RECORDING_START).append(eventId)
                             .append(ApiConstants.URL_RECORDING_END);
+
                     for (int i = 0; i < 10; i++) {
                         try {
                             String jsonResult = getRequest(vidUrl.toString(), Map.of(), tokens);
                             JsonObject obj = JsonParser.parseString(jsonResult).getAsJsonObject();
+
                             if (obj.get("url").getAsString().startsWith("http")) {
                                 URL url = new URI(obj.get("url").getAsString()).toURL();
-                                URLConnection connection = url.openConnection();
+
+                                // Explicit connection with timeouts to prevent thread starvation
+                                java.net.URLConnection connection = url.openConnection();
                                 connection.setConnectTimeout(10000); // 10 seconds
                                 connection.setReadTimeout(30000); // 30 seconds
+
                                 try (InputStream in = connection.getInputStream()) {
-                                    Files.copy(in, Paths.get(fullfilepath), StandardCopyOption.REPLACE_EXISTING);
+                                    Files.copy(in, path, StandardCopyOption.REPLACE_EXISTING);
                                 }
-                                if (!fullfilepath.isEmpty()) {
+
+                                if (Files.exists(path)) {
                                     urlFound = true;
-                                    break;
+                                    break; // Success: instantly exit the loop
                                 }
                             }
-                        } catch (AuthenticationException | URISyntaxException e) {
-                            logger.debug("RingVideo: Error downloading file: {}", e.getMessage());
+                        } catch (AuthenticationException | URISyntaxException | IOException e) {
+                            // Catching IOException here ensures timeouts trigger a retry, not a total abort
+                            logger.debug("RingVideo: Error downloading file on attempt {}: {}", i + 1, e.getMessage());
                         }
 
                         // Sleep only if the download failed and we are going to retry
@@ -404,7 +410,7 @@ public class RestClient {
             } else {
                 return "";
             }
-        } catch (IOException | InterruptedException e) {
+        } catch (InterruptedException e) {
             logger.warn("RingVideo: Unable to process request: {}", e.getMessage());
             return "";
         }
