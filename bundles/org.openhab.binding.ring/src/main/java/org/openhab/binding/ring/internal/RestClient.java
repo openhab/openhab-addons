@@ -368,7 +368,12 @@ public class RestClient {
 
                         // Sleep only if the download failed and we are going to retry
                         if (i < 9) {
-                            Thread.sleep(15000);
+                             try {
+                                 Thread.sleep(15000);
+                             } catch (InterruptedException ie) {
+                                 Thread.currentThread().interrupt();
+                                 throw ie;
+                             }
                         }
                     }
                 }
