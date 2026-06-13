@@ -220,8 +220,8 @@ public class TeslascopeVehicleHandler extends BaseThingHandler {
             DetailedInformation detailedInformation = gson.fromJson(response, DetailedInformation.class);
 
             if (detailedInformation != null) {
+                updateStatus(ThingStatus.ONLINE);
                 updateState(TeslascopeBindingConstants.CHANNEL_VIN, new StringType(detailedInformation.vin));
-                updateState(TeslascopeBindingConstants.CHANNEL_VEHICLE_NAME, new StringType(detailedInformation.name));
                 updateState(TeslascopeBindingConstants.CHANNEL_VEHICLE_STATE,
                         new StringType(detailedInformation.state));
                 updateState(TeslascopeBindingConstants.CHANNEL_LOCATED_AT_HOME,
