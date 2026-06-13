@@ -22,7 +22,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -44,7 +43,6 @@ import org.openhab.binding.ring.internal.discovery.RingDiscoveryService;
 import org.openhab.binding.ring.internal.errors.AuthenticationException;
 import org.openhab.binding.ring.internal.utils.RingUtils;
 import org.openhab.core.OpenHAB;
-import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
@@ -106,8 +104,6 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
      */
     private int eventIndex = 0;
 
-    private @Nullable ScheduledExecutorService videoExecutorService;
-
     /*
      * The number of video files to keep when auto-downloading
      */
@@ -133,74 +129,61 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         this.registry = new RingDeviceRegistry();
         this.restClient = new RestClient(httpClient);
         this.servlet = ringVideoServlet;
-        this.videoExecutorService = ThreadPoolManager.getScheduledPool("ring");
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof RefreshType) {
-            boolean eventListOk = lastEvents.size() > eventIndex;
-            switch (channelUID.getId()) {
-                case CHANNEL_EVENT_URL:
-                    if (eventListOk) {
-                        String videoFile = restClient.downloadEventVideo(lastEvents.get(eventIndex), tokens,
-                                videoStoragePath, videoRetentionCount);
-                        String localIP = networkAddressService.getPrimaryIpv4HostAddress();
+        switch (command) {
+            case RefreshType r -> handleRefresh(channelUID);
+            case OnOffType onOffCommand -> handleOnOff(channelUID, onOffCommand);
+            default -> logger.debug("Command {} is not supported for channel: {}", command, channelUID.getId());
+        }
+    }
 
-                        if (videoFile.endsWith(".mp4")) {
-                            updateState(channelUID,
-                                    new StringType("http://" + localIP + ":" + httpPort + "/ring/video/" + videoFile));
-                        } else {
-                            updateState(channelUID, new StringType(videoFile));
-                        }
-                    }
-                    break;
-                case CHANNEL_EVENT_CREATED_AT:
-                    if (eventListOk) {
-                        updateState(channelUID, lastEvents.get(eventIndex).getCreatedAt());
-                    }
-                    break;
-                case CHANNEL_EVENT_KIND:
-                    if (eventListOk) {
-                        updateState(channelUID, new StringType(lastEvents.get(eventIndex).kind));
-                    }
-                    break;
-                case CHANNEL_EVENT_DOORBOT_ID:
-                    if (eventListOk) {
-                        updateState(channelUID, new StringType(lastEvents.get(eventIndex).doorbot.id));
-                    }
-                    break;
-                case CHANNEL_EVENT_DOORBOT_DESCRIPTION:
-                    if (eventListOk) {
-                        updateState(channelUID, new StringType(lastEvents.get(eventIndex).doorbot.description));
-                    }
-                    break;
-                case CHANNEL_CONTROL_ENABLED:
+    private void handleRefresh(ChannelUID channelUID) {
+        boolean eventListOk = lastEvents.size() > eventIndex;
+        if (!eventListOk && !channelUID.getId().equals(CHANNEL_CONTROL_ENABLED)) {
+            return;
+        }
+
+        switch (channelUID.getId()) {
+            case CHANNEL_EVENT_URL -> {
+                String videoFile = restClient.downloadEventVideo(lastEvents.get(eventIndex), tokens, videoStoragePath,
+                        videoRetentionCount);
+                String localIP = networkAddressService.getPrimaryIpv4HostAddress();
+
+                if (videoFile.endsWith(".mp4")) {
+                    updateState(channelUID,
+                            new StringType("http://" + localIP + ":" + httpPort + "/ring/video/" + videoFile));
+                } else {
+                    updateState(channelUID, new StringType(videoFile));
+                }
+            }
+            case CHANNEL_EVENT_CREATED_AT -> updateState(channelUID, lastEvents.get(eventIndex).getCreatedAt());
+            case CHANNEL_EVENT_KIND -> updateState(channelUID, new StringType(lastEvents.get(eventIndex).kind));
+            case CHANNEL_EVENT_DOORBOT_ID ->
+                updateState(channelUID, new StringType(lastEvents.get(eventIndex).doorbot.id));
+            case CHANNEL_EVENT_DOORBOT_DESCRIPTION ->
+                updateState(channelUID, new StringType(lastEvents.get(eventIndex).doorbot.description));
+            case CHANNEL_CONTROL_ENABLED -> updateState(channelUID, enabled);
+            default -> logger.debug("Refresh command received for an unknown channel: {}", channelUID.getId());
+        }
+    }
+
+    private void handleOnOff(ChannelUID channelUID, OnOffType xcommand) {
+        switch (channelUID.getId()) {
+            case CHANNEL_CONTROL_ENABLED -> {
+                if (!enabled.equals(xcommand)) {
+                    enabled = xcommand;
                     updateState(channelUID, enabled);
-                    break;
-                default:
-                    logger.debug("Command received for an unknown channel: {}", channelUID.getId());
-                    break;
-            }
-        } else if (command instanceof OnOffType xcommand) {
-            switch (channelUID.getId()) {
-                case CHANNEL_CONTROL_ENABLED:
-                    if (!enabled.equals(xcommand)) {
-                        enabled = xcommand;
-                        updateState(channelUID, enabled);
-                        if (enabled.equals(OnOffType.ON)) {
-                            startAutomaticRefresh(config.refreshInterval);
-                        } else {
-                            stopAutomaticRefresh();
-                        }
+                    if (enabled.equals(OnOffType.ON)) {
+                        startAutomaticRefresh(config.refreshInterval);
+                    } else {
+                        stopAutomaticRefresh();
                     }
-                    break;
-                default:
-                    logger.debug("Command received for an unknown channel: {}", channelUID.getId());
-                    break;
+                }
             }
-        } else {
-            logger.debug("Command {} is not supported for channel: {}", command, channelUID.getId());
+            default -> logger.debug("OnOff command received for an unknown channel: {}", channelUID.getId());
         }
     }
 
@@ -447,10 +430,8 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
 
                         updateState(CHANNEL_EVENT_EXTENDED_DESCRIPTION, new StringType(message));
                     }
-                    ScheduledExecutorService service = videoExecutorService;
-                    if (service != null) {
-                        service.submit(() -> getVideo(lastEvents.getFirst()));
-                    }
+                    RingEventTO latestEvent = lastEvents.getFirst();
+                    Thread.ofVirtual().name("ring-video-dl-" + latestEvent.id).start(() -> getVideo(latestEvent));
                 }
             } else {
                 logger.debug("AccountHandler - eventTick - lastEvents null");
