@@ -84,7 +84,7 @@ public class TeslascopeVehicleHandler extends BaseThingHandler {
             throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
         TeslascopeAccountHandler localBridge = bridgeHandler;
         if (localBridge == null) {
-            throw new IllegalStateException("Bridge is offline");
+            throw new IllegalStateException("@text/offline.conf-error.bridge-offline");
         }
         return localBridge.getDetailedInformation(publicID);
     }

@@ -136,7 +136,7 @@ public class TeslascopeWebTargets {
 
             } catch (InterruptedException ex) {
                 Thread.currentThread().interrupt();
-                throw new TeslascopeCommunicationException("Thread was interrupted during API call");
+                throw new TeslascopeCommunicationException("Thread was interrupted during API call.", ex);
             } catch (TimeoutException | ExecutionException ex) {
                 throw new TeslascopeCommunicationException(ex.getLocalizedMessage(), ex);
             }
