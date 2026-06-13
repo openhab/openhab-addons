@@ -16,8 +16,7 @@ import static org.openhab.binding.ring.RingBindingConstants.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collection;
@@ -90,7 +89,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     /**
      * The user profile retrieved when authenticating.
      */
-    private Tokens tokens = new Tokens("", "");
+    private volatile Tokens tokens = new Tokens("", "");
     /**
      * The registry.
      */
@@ -102,7 +101,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     /**
      * The list with events.
      */
-    private List<RingEventTO> lastEvents = List.of();
+    private volatile List<RingEventTO> lastEvents = List.of();
     /**
      * The index to the current event.
      */
@@ -238,7 +237,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
             folder.mkdirs();
         }
         try {
-            Files.write(Paths.get(fileName), refreshToken.getBytes());
+            Files.write(Paths.get(fileName), refreshToken.getBytes(StandardCharsets.UTF_8));
         } catch (IOException ex) {
             logger.debug("IOException when writing refreshToken to file {}", ex.getMessage());
         }
@@ -302,24 +301,11 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         String hardwareId = config.hardwareId;
         logger.debug("getHardwareId H:{}", hardwareId);
         Configuration updatedConfiguration = getThing().getConfiguration();
-        try {
-            if (hardwareId.isBlank()) {
-                hardwareId = getLocalMAC();
-                if (hardwareId.isBlank()) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Hardware ID missing, check thing config");
-                    return hardwareId;
-                }
-                logger.debug("getHardwareId getLocalMac H:{}", hardwareId);
-                // write hardwareId to thing config
-                config.hardwareId = hardwareId;
-                updatedConfiguration.put("hardwareId", config.hardwareId);
-                updateConfiguration(updatedConfiguration);
-            }
-        } catch (IOException e) {
-            logger.debug("getHardwareId failed to get local mac address {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Initialization failed: " + e.getMessage());
+        if (hardwareId.isBlank()) {
+            hardwareId = java.util.UUID.randomUUID().toString();
+            config.hardwareId = hardwareId;
+            updatedConfiguration.put("hardwareId", config.hardwareId);
+            updateConfiguration(updatedConfiguration);
         }
         return hardwareId;
     }
@@ -445,7 +431,10 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                     updateState(CHANNEL_EVENT_DOORBOT_ID, new StringType(lastEvents.getFirst().doorbot.id));
                     updateState(CHANNEL_EVENT_DOORBOT_DESCRIPTION,
                             new StringType(lastEvents.getFirst().doorbot.description));
-                    String detectionType = lastEvents.getFirst().cvProperties.detectionType;
+                    String detectionType = null;
+                    if (lastEvents.getFirst().cvProperties != null) {
+                        detectionType = lastEvents.getFirst().cvProperties.detectionType;
+                    }
                     if (detectionType == null) {
                         detectionType = "";
                     }
@@ -530,31 +519,6 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
             job.cancel(true);
         }
         eventRefresh = null;
-    }
-
-    private String getLocalMAC() throws IOException {
-        // get local ip from OH system settings
-        String localIP = networkAddressService.getPrimaryIpv4HostAddress();
-        if ((localIP == null) || (localIP.isBlank())) {
-            logger.debug("No local IP selected in openHAB system configuration");
-            return "";
-        }
-
-        // get MAC address
-        InetAddress ip = InetAddress.getByName(localIP);
-        NetworkInterface network = NetworkInterface.getByInetAddress(ip);
-        if (network != null) {
-            byte[] mac = network.getHardwareAddress();
-
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < mac.length; i++) {
-                sb.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? "-" : ""));
-            }
-            String localMAC = sb.toString();
-            logger.debug("Local IP address='{}', local MAC address = '{}'", localIP, localMAC);
-            return localMAC;
-        }
-        return "";
     }
 
     /**

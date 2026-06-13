@@ -19,6 +19,7 @@ import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
@@ -135,9 +136,13 @@ public class RestClient {
             }
 
             result = response.getContentAsString();
-        } catch (ExecutionException | InterruptedException | TimeoutException e) {
+        } catch (ExecutionException | TimeoutException e) {
+            logger.warn("RestApi error in postRequest!", e);
+            throw new AuthenticationException("Communication error during POST request: " + e.getMessage());
+        } catch (InterruptedException e) {
             logger.warn("RestApi error in postRequest!", e);
             Thread.currentThread().interrupt();
+            throw new AuthenticationException("POST request was interrupted.");
         }
         return result;
     }
@@ -172,9 +177,13 @@ public class RestClient {
             }
 
             result = response.getContentAsString();
-        } catch (ExecutionException | InterruptedException | TimeoutException e) {
+        } catch (ExecutionException | TimeoutException e) {
+            logger.warn("RestApi error in getRequest!", e);
+            throw new AuthenticationException("Communication error during GET request: " + e.getMessage());
+        } catch (InterruptedException e) {
             logger.warn("RestApi error in getRequest!", e);
             Thread.currentThread().interrupt();
+            throw new AuthenticationException("GET request was interrupted.");
         }
         return result;
     }
@@ -325,7 +334,8 @@ public class RestClient {
                 // get FileSystem object
                 FileSystem fs = path.getFileSystem();
                 String sep = fs.getSeparator();
-                String filename = event.doorbot.description.replace(" ", "") + "-" + event.kind + "-"
+                String safeDescription = event.doorbot.description.replaceAll("[^a-zA-Z0-9\\-_]", "");
+                String filename = safeDescription + "-" + event.kind + "-"
                         + event.getCreatedAt().toString().replace(":", "-") + ".mp4";
                 String fullfilepath = filePath + (filePath.endsWith(sep) ? "" : sep) + filename;
                 logger.debug("fullfilepath = {}", fullfilepath);
@@ -342,7 +352,10 @@ public class RestClient {
                             JsonObject obj = JsonParser.parseString(jsonResult).getAsJsonObject();
                             if (obj.get("url").getAsString().startsWith("http")) {
                                 URL url = new URI(obj.get("url").getAsString()).toURL();
-                                try (InputStream in = url.openStream()) {
+                                URLConnection connection = url.openConnection();
+                                connection.setConnectTimeout(10000); // 10 seconds
+                                connection.setReadTimeout(30000); // 30 seconds
+                                try (InputStream in = connection.getInputStream()) {
                                     Files.copy(in, Paths.get(fullfilepath), StandardCopyOption.REPLACE_EXISTING);
                                 }
                                 if (!fullfilepath.isEmpty()) {
@@ -352,7 +365,10 @@ public class RestClient {
                             }
                         } catch (AuthenticationException | URISyntaxException e) {
                             logger.debug("RingVideo: Error downloading file: {}", e.getMessage());
-                        } finally {
+                        }
+
+                        // Sleep only if the download failed and we are going to retry
+                        if (i < 9) {
                             Thread.sleep(15000);
                         }
                     }
@@ -422,10 +438,10 @@ public class RestClient {
                             "Unhandled HTTP error: " + responseCode + " - " + response.getReason());
             }
 
-        } catch (ExecutionException | InterruptedException e) {
+        } catch (InterruptedException e) {
             logger.warn("RestApi error in sendCommand!", e);
             Thread.currentThread().interrupt();
-        } catch (TimeoutException e) {
+        } catch (ExecutionException | TimeoutException e) {
             logger.warn("RestApi error in sendCommand!", e);
         }
     }
