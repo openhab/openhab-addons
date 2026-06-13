@@ -21,7 +21,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -86,6 +85,29 @@ public class RestClient {
         this.httpClient = httpClient;
     }
 
+    private void validateResponse(ContentResponse response) throws AuthenticationException {
+        int responseCode = response.getStatus();
+        switch (responseCode) {
+            case HttpStatus.OK_200, HttpStatus.CREATED_201:
+                return; // Success
+            case HttpStatus.BAD_REQUEST_400:
+                throw new AuthenticationException("Bad request");
+            case HttpStatus.UNAUTHORIZED_401:
+                throw new AuthenticationException("Invalid username or password");
+            case HttpStatus.PRECONDITION_FAILED_412:
+                if (response.getReason().startsWith("Precondition")
+                        || response.getReason().startsWith("Verification Code")) {
+                    throw new AuthenticationException("Two factor authentication enabled, enter code");
+                }
+                throw new AuthenticationException("Invalid username or password");
+            case HttpStatus.TOO_MANY_REQUESTS_429:
+                throw new AuthenticationException("Account rate-limited");
+            default:
+                throw new AuthenticationException(
+                        "Unhandled HTTP error: " + responseCode + " - " + response.getReason());
+        }
+    }
+
     /**
      * Post data to given url
      *
@@ -113,28 +135,7 @@ public class RestClient {
             additionalHeaders.forEach(request::header);
 
             ContentResponse response = request.send();
-            int responseCode = response.getStatus();
-            switch (responseCode) {
-                case HttpStatus.OK_200, HttpStatus.CREATED_201:
-                    break;
-                case HttpStatus.BAD_REQUEST_400:
-                    throw new AuthenticationException("Bad request");
-                case HttpStatus.UNAUTHORIZED_401:
-                    throw new AuthenticationException("Invalid username or password");
-                case HttpStatus.PRECONDITION_FAILED_412:
-                    if (response.getReason().startsWith("Precondition")
-                            || response.getReason().startsWith("Verification Code")) {
-                        throw new AuthenticationException("Two factor authentication enabled, enter code");
-                    } else {
-                        throw new AuthenticationException("Invalid username or password");
-                    }
-                case HttpStatus.TOO_MANY_REQUESTS_429:
-                    throw new AuthenticationException("Account rate-limited");
-                default:
-                    throw new AuthenticationException(
-                            "Unhandled HTTP error: " + responseCode + " - " + response.getReason());
-            }
-
+            validateResponse(response);
             result = response.getContentAsString();
         } catch (ExecutionException | TimeoutException e) {
             logger.warn("RestApi error in postRequest!", e);
@@ -161,21 +162,7 @@ public class RestClient {
             additionalHeaders.forEach(request::header);
 
             ContentResponse response = request.send();
-            int responseCode = response.getStatus();
-            switch (responseCode) {
-                case HttpStatus.OK_200, HttpStatus.CREATED_201:
-                    break;
-                case HttpStatus.BAD_REQUEST_400:
-                    throw new AuthenticationException("Bad request");
-                case HttpStatus.UNAUTHORIZED_401:
-                    throw new AuthenticationException("Invalid username or password");
-                case HttpStatus.TOO_MANY_REQUESTS_429:
-                    throw new AuthenticationException("Account rate-limited");
-                default:
-                    throw new AuthenticationException(
-                            "Unhandled HTTP error: " + responseCode + " - " + response.getReason());
-            }
-
+            validateResponse(response);
             result = response.getContentAsString();
         } catch (ExecutionException | TimeoutException e) {
             logger.warn("RestApi error in getRequest!", e);
@@ -331,15 +318,27 @@ public class RestClient {
                 return "";
             }
             if (retentionCount > 0 && Files.exists(path)) {
-                // get FileSystem object
-                FileSystem fs = path.getFileSystem();
-                String sep = fs.getSeparator();
+                Path baseDirPath = path.toAbsolutePath().normalize();
+
                 String safeDescription = event.doorbot.description.replaceAll("[^a-zA-Z0-9\\-_]", "");
-                String filename = safeDescription + "-" + event.kind + "-"
+                String safeKind = event.kind != null ? event.kind.replaceAll("[^a-zA-Z0-9\\-_]", "") : "unknown";
+
+                String filename = safeDescription + "-" + safeKind + "-"
                         + event.getCreatedAt().toString().replace(":", "-") + ".mp4";
-                String fullfilepath = filePath + (filePath.endsWith(sep) ? "" : sep) + filename;
+
+                Path targetPath = baseDirPath.resolve(filename).normalize();
+
+                if (!targetPath.startsWith(baseDirPath)) {
+                    logger.error("RingVideo: Path traversal attempt detected! Filename: {}", filename);
+                    return ""; // Abort the download
+                }
+
+                String fullfilepath = targetPath.toString();
                 logger.debug("fullfilepath = {}", fullfilepath);
-                path = Paths.get(fullfilepath);
+
+                // Reassign 'path' to the secure target for the rest of the method
+                path = targetPath;
+
                 boolean urlFound = false;
                 if (Files.notExists(path)) {
                     long eventId = event.id;
@@ -423,21 +422,7 @@ public class RestClient {
                 request.content(new StringContentProvider(payload), "application/json");
             }
             ContentResponse response = request.send();
-            int responseCode = response.getStatus();
-            switch (responseCode) {
-                case HttpStatus.OK_200, HttpStatus.CREATED_201:
-                    break;
-                case HttpStatus.BAD_REQUEST_400:
-                    throw new AuthenticationException("Bad request");
-                case HttpStatus.UNAUTHORIZED_401:
-                    throw new AuthenticationException("Invalid username or password");
-                case HttpStatus.TOO_MANY_REQUESTS_429:
-                    throw new AuthenticationException("Account rate-limited");
-                default:
-                    throw new AuthenticationException(
-                            "Unhandled HTTP error: " + responseCode + " - " + response.getReason());
-            }
-
+            validateResponse(response);
         } catch (InterruptedException e) {
             logger.warn("RestApi error in sendCommand!", e);
             Thread.currentThread().interrupt();

@@ -16,7 +16,6 @@ import static org.openhab.binding.ring.RingBindingConstants.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collection;
@@ -237,7 +236,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
             folder.mkdirs();
         }
         try {
-            Files.write(Paths.get(fileName), refreshToken.getBytes(StandardCharsets.UTF_8));
+            Files.writeString(Paths.get(fileName), refreshToken);
         } catch (IOException ex) {
             logger.debug("IOException when writing refreshToken to file {}", ex.getMessage());
         }
@@ -254,8 +253,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
             return refreshToken;
         }
         try {
-            final byte[] contents = Files.readAllBytes(Paths.get(fileName));
-            refreshToken = new String(contents);
+            refreshToken = Files.readString(Paths.get(fileName));
         } catch (IOException ex) {
             logger.debug("IOException when reading refreshToken from file {}", ex.getMessage());
         }
@@ -438,21 +436,16 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                     if (detectionType == null) {
                         detectionType = "";
                     }
-                    if (lastEvents.getFirst().kind.equals("motion")) {
-                        switch (detectionType) {
-                            case "human":
-                                updateState(CHANNEL_EVENT_EXTENDED_DESCRIPTION, new StringType(
-                                        "There is a Person at your " + lastEvents.getFirst().doorbot.description));
-                                break;
-                            case "vehicle":
-                                updateState(CHANNEL_EVENT_EXTENDED_DESCRIPTION, new StringType(
-                                        "There is a Vehicle at your " + lastEvents.getFirst().doorbot.description));
-                                break;
-                            default:
-                                updateState(CHANNEL_EVENT_EXTENDED_DESCRIPTION, new StringType(
-                                        "There is motion at your " + lastEvents.getFirst().doorbot.description));
-                                break;
-                        }
+                    if ("motion".equals(lastEvents.getFirst().kind)) {
+                        String desc = lastEvents.getFirst().doorbot.description;
+
+                        String message = switch (detectionType) {
+                            case "human" -> "There is a Person at your " + desc;
+                            case "vehicle" -> "There is a Vehicle at your " + desc;
+                            default -> "There is motion at your " + desc;
+                        };
+
+                        updateState(CHANNEL_EVENT_EXTENDED_DESCRIPTION, new StringType(message));
                     }
                     ScheduledExecutorService service = videoExecutorService;
                     if (service != null) {
