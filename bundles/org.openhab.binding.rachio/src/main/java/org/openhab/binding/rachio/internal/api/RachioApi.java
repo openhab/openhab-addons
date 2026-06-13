@@ -654,10 +654,15 @@ public class RachioApi {
     }
 
     public RachioCurrentScheduleResponse getCurrentSchedule(String deviceId) throws RachioApiException {
+        return getCurrentSchedule(deviceId, RequestPurpose.BACKGROUND_REFRESH);
+    }
+
+    public RachioCurrentScheduleResponse getCurrentSchedule(String deviceId, RequestPurpose requestPurpose)
+            throws RachioApiException {
         logger.debug("Load current schedule for device '{}'.", deviceId);
         String json = httpGet(
                 APIURL_BASE + APIURL_GET_DEVICE + "/" + deviceId + "/" + APIURL_GET_DEVICE_CURRENT_SCHEDULE, null,
-                PRIORITY.MED).resultString;
+                PRIORITY.MED, requestPurpose).resultString;
         RachioCurrentScheduleResponse response = new Gson().fromJson(json, RachioCurrentScheduleResponse.class);
         return response != null ? response : new RachioCurrentScheduleResponse();
     }

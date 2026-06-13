@@ -171,17 +171,17 @@ class RachioDeviceHandlerStatusTest {
         RachioCurrentScheduleResponse currentSchedule = new RachioCurrentScheduleResponse();
         currentSchedule.running = true;
         currentSchedule.scheduleId = "schedule-id";
-        when(bridgeHandler.getCurrentSchedule(DEVICE_ID)).thenReturn(currentSchedule);
+        when(bridgeHandler.getCurrentSchedule(DEVICE_ID, RequestPurpose.CORE_STATUS_POLL)).thenReturn(currentSchedule);
         doThrow(optionalThrottle()).when(bridgeHandler).getDeviceForecast(DEVICE_ID, "US");
         when(bridgeHandler.getEventHistoryLookbackHours()).thenReturn(0);
         PollingDeviceHandler handler = new PollingDeviceHandler(thing, bridgeHandler, device);
         handler.setCallback(Mockito.mock(ThingHandlerCallback.class));
 
-        handler.refreshSmartIrrigationReadExtensions(false);
-        handler.refreshSmartIrrigationReadExtensions(false);
+        handler.refreshSmartIrrigationReadExtensions(false, RequestPurpose.CORE_STATUS_POLL);
+        handler.refreshSmartIrrigationReadExtensions(false, RequestPurpose.CORE_STATUS_POLL);
 
         assertThat(device.currentScheduleRunning, is(true));
-        verify(bridgeHandler, times(2)).getCurrentSchedule(DEVICE_ID);
+        verify(bridgeHandler, times(2)).getCurrentSchedule(DEVICE_ID, RequestPurpose.CORE_STATUS_POLL);
         verify(bridgeHandler, times(1)).getDeviceForecast(DEVICE_ID, "US");
     }
 

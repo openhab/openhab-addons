@@ -45,6 +45,34 @@ class ClientRateLimitManagerTest {
     }
 
     @Test
+    void coreStatusPollBypassesLocalAverageOnlyWhenServerHeadroomIsHealthy() {
+        ClientRateLimitManager manager = new ClientRateLimitManager(1, Duration.ofSeconds(60));
+        manager.updateRateLimit(3500, 3000, Long.toString(Instant.now().plusSeconds(7 * 24 * 3600).getEpochSecond()));
+
+        assertThrows(RateLimitThrottleException.class,
+                () -> manager.tryThrottle(PRIORITY.MED, RequestPurpose.BACKGROUND_REFRESH));
+        assertThrows(RateLimitThrottleException.class,
+                () -> manager.tryThrottle(PRIORITY.LOW, RequestPurpose.BACKGROUND_REFRESH));
+        assertDoesNotThrow(() -> manager.tryThrottle(PRIORITY.MED, RequestPurpose.CORE_STATUS_POLL));
+    }
+
+    @Test
+    void coreStatusPollStillRespectsCriticalAndExhaustedServerLimits() {
+        ClientRateLimitManager criticalManager = new ClientRateLimitManager(1, Duration.ofSeconds(60));
+        criticalManager.updateRateLimit(3500, 100, Long.toString(Instant.now().plusSeconds(3600).getEpochSecond()));
+        ClientRateLimitManager exhaustedManager = new ClientRateLimitManager(1, Duration.ofSeconds(60));
+        exhaustedManager.updateRateLimit(3500, 0, Long.toString(Instant.now().plusSeconds(3600).getEpochSecond()));
+
+        RateLimitThrottleException critical = assertThrows(RateLimitThrottleException.class,
+                () -> criticalManager.tryThrottle(PRIORITY.MED, RequestPurpose.CORE_STATUS_POLL));
+        RateLimitThrottleException exhausted = assertThrows(RateLimitThrottleException.class,
+                () -> exhaustedManager.tryThrottle(PRIORITY.MED, RequestPurpose.CORE_STATUS_POLL));
+
+        assertThat(critical.requestPurpose, is(RequestPurpose.CORE_STATUS_POLL));
+        assertThat(exhausted.requestPurpose, is(RequestPurpose.CORE_STATUS_POLL));
+    }
+
+    @Test
     void initializationRequestUsesBoundedBootstrapAllowanceWhenBackgroundRequestWouldThrottle() {
         ClientRateLimitManager manager = new ClientRateLimitManager(1, Duration.ofSeconds(60));
         manager.updateRateLimit(100, 50, Long.toString(Instant.now().plusSeconds(3600).getEpochSecond()));

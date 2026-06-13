@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.rachio.internal.utils;
 
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.RACHIO_RATE_LIMIT_CRITICAL;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.RACHIO_RATE_LIMIT_WARNING;
+
 import java.time.DateTimeException;
 import java.time.Duration;
 import java.time.Instant;
@@ -42,6 +45,7 @@ public class ClientRateLimitManager {
 
     public enum RequestPurpose {
         BACKGROUND_REFRESH,
+        CORE_STATUS_POLL,
         INITIALIZATION,
         USER_COMMAND;
     }
@@ -59,6 +63,7 @@ public class ClientRateLimitManager {
     private final int[] buckets;
     private long bucket0EndMillis = 0;
     private long total = 0;
+    private boolean rateLimitKnown = false;
 
     public ClientRateLimitManager(int numBuckets, Duration bucketSize) {
         this.numBuckets = numBuckets;
@@ -73,6 +78,7 @@ public class ClientRateLimitManager {
             boolean remainingIncreased = this.rateRemaining >= 0 && rateRemaining > this.rateRemaining;
             this.rateLimitCap = rateLimitCap;
             this.rateRemaining = rateRemaining;
+            rateLimitKnown = true;
             if (rateReset != null && !rateReset.isBlank()) {
                 this.rateResetTime = updatedResetTime;
             }
@@ -97,13 +103,28 @@ public class ClientRateLimitManager {
     }
 
     public void tryThrottle(PRIORITY priority, RequestPurpose requestPurpose) throws RateLimitThrottleException {
-        if (priority == PRIORITY.HI || rateResetTime == Instant.MAX
-                || System.currentTimeMillis() >= rateResetTime.toEpochMilli()) {
+        if (priority == PRIORITY.HI || !rateLimitKnown
+                || (rateResetTime != Instant.MAX && System.currentTimeMillis() >= rateResetTime.toEpochMilli())) {
             return;
         }
 
         if (rateRemaining <= 0) {
             throw new RateLimitThrottleException(priority, requestPurpose, 0.0, currentRate());
+        }
+
+        if (requestPurpose == RequestPurpose.CORE_STATUS_POLL) {
+            if (rateRemaining <= RACHIO_RATE_LIMIT_CRITICAL) {
+                throw new RateLimitThrottleException(priority, requestPurpose, budgetRate(), currentRate());
+            }
+            // Only the minimal MED-priority person/current_schedule polling path may bypass the local average.
+            // Optional enrichments remain LOW/BACKGROUND_REFRESH and are still throttled normally.
+            if (priority == PRIORITY.MED && rateRemaining >= RACHIO_RATE_LIMIT_WARNING) {
+                return;
+            }
+        }
+
+        if (rateResetTime == Instant.MAX) {
+            return;
         }
 
         double budgetRate = budgetRate();

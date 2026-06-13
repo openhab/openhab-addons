@@ -334,6 +334,10 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
     }
 
     public void refreshSmartIrrigationReadExtensions(boolean force) {
+        refreshSmartIrrigationReadExtensions(force, RequestPurpose.BACKGROUND_REFRESH);
+    }
+
+    public void refreshSmartIrrigationReadExtensions(boolean force, RequestPurpose currentSchedulePurpose) {
         RachioBridgeHandler handler = cloudHandler;
         RachioDevice d = dev;
         if (handler == null || d == null) {
@@ -341,7 +345,7 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
         }
 
         try {
-            d.applyCurrentSchedule(handler.getCurrentSchedule(d.id));
+            d.applyCurrentSchedule(handler.getCurrentSchedule(d.id, currentSchedulePurpose));
             logger.debug("{}: Loaded current schedule for controller '{}': running={}, id='{}'", thingId, d.id,
                     d.currentScheduleRunning, d.currentScheduleId);
         } catch (RachioApiThrottledException e) {

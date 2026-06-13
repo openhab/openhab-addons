@@ -33,6 +33,7 @@ import org.openhab.binding.rachio.internal.api.json.RachioSmartIrrigationGsonDTO
 import org.openhab.binding.rachio.internal.api.json.RachioSmartIrrigationGsonDTO.RachioForecastResponse;
 import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager;
 import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager.PRIORITY;
+import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager.RequestPurpose;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -54,11 +55,14 @@ class RachioSmartIrrigationApiTest {
         setField(api, "httpApi", http);
         setField(api, "rateLimitManager", rateLimitManager);
 
-        RachioCurrentScheduleResponse currentSchedule = api.getCurrentSchedule("device-id");
+        RachioCurrentScheduleResponse currentSchedule = api.getCurrentSchedule("device-id",
+                RequestPurpose.CORE_STATUS_POLL);
         assertThrows(RachioApiThrottledException.class, () -> api.getDeviceForecast("device-id", "US"));
 
         assertThat(currentSchedule.isRunning(), is(true));
         assertThat(rateLimitManager.priorities, contains(PRIORITY.MED, PRIORITY.LOW));
+        assertThat(rateLimitManager.requestPurposes,
+                contains(RequestPurpose.CORE_STATUS_POLL, RequestPurpose.BACKGROUND_REFRESH));
         assertThat(http.getUrls.size(), is(1));
     }
 
@@ -177,6 +181,7 @@ class RachioSmartIrrigationApiTest {
 
     private static class LowPriorityThrottlingRateLimitManager extends ClientRateLimitManager {
         private final List<PRIORITY> priorities = new ArrayList<>();
+        private final List<RequestPurpose> requestPurposes = new ArrayList<>();
 
         LowPriorityThrottlingRateLimitManager() {
             super(10, Duration.ofSeconds(30));
@@ -186,6 +191,7 @@ class RachioSmartIrrigationApiTest {
         public void tryThrottle(PRIORITY priority, ClientRateLimitManager.RequestPurpose requestPurpose)
                 throws RateLimitThrottleException {
             priorities.add(priority);
+            requestPurposes.add(requestPurpose);
             if (priority == PRIORITY.LOW) {
                 throw new RateLimitThrottleException(priority, requestPurpose, 0.1, 0.2);
             }

@@ -308,7 +308,7 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
                                     "RachioCloud: Core scheduled status poll completed for controller '{}'; refreshing essential running state before optional enrichments",
                                     checkDev.id);
                         }
-                        deviceHandler.refreshSmartIrrigationReadExtensions(false);
+                        deviceHandler.refreshSmartIrrigationReadExtensions(false, getRequestPurpose(refreshReason));
                     }
                 }
             }
@@ -362,13 +362,14 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
         }
     }
 
-    private RequestPurpose getRequestPurpose(RefreshReason refreshReason) {
+    RequestPurpose getRequestPurpose(RefreshReason refreshReason) {
         switch (refreshReason) {
             case INITIALIZATION:
                 return RequestPurpose.INITIALIZATION;
             case MANUAL:
                 return RequestPurpose.USER_COMMAND;
             case SCHEDULED_POLL:
+                return RequestPurpose.CORE_STATUS_POLL;
             case WEBHOOK_RECONCILIATION:
             default:
                 return RequestPurpose.BACKGROUND_REFRESH;
@@ -469,6 +470,11 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
 
     public RachioCurrentScheduleResponse getCurrentSchedule(String deviceId) throws RachioApiException {
         return rachioApi.getCurrentSchedule(deviceId);
+    }
+
+    public RachioCurrentScheduleResponse getCurrentSchedule(String deviceId, RequestPurpose requestPurpose)
+            throws RachioApiException {
+        return rachioApi.getCurrentSchedule(deviceId, requestPurpose);
     }
 
     public RachioDeviceEventListResponse getDeviceEvents(String deviceId, long startTime, long endTime)

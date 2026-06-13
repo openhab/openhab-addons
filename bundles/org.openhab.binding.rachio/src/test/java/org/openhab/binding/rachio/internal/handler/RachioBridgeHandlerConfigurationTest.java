@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.openhab.binding.rachio.internal.handler.RachioBridgeHandler.RefreshReason;
 import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager.PRIORITY;
+import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager.RequestPurpose;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
@@ -44,6 +45,7 @@ class RachioBridgeHandlerConfigurationTest {
         RachioBridgeHandler handler = new RachioBridgeHandler(bridge);
 
         assertThat(handler.getRefreshPriority(RefreshReason.SCHEDULED_POLL), is(PRIORITY.MED));
+        assertThat(handler.getRequestPurpose(RefreshReason.SCHEDULED_POLL), is(RequestPurpose.CORE_STATUS_POLL));
     }
 
     @Test
