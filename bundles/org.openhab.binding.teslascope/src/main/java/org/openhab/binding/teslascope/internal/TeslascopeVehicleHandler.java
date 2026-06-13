@@ -221,6 +221,7 @@ public class TeslascopeVehicleHandler extends BaseThingHandler {
 
             if (detailedInformation != null) {
                 updateStatus(ThingStatus.ONLINE);
+                updateState(TeslascopeBindingConstants.CHANNEL_VEHICLE_NAME, new StringType(detailedInformation.name));
                 updateState(TeslascopeBindingConstants.CHANNEL_VIN, new StringType(detailedInformation.vin));
                 updateState(TeslascopeBindingConstants.CHANNEL_VEHICLE_STATE,
                         new StringType(detailedInformation.state));
