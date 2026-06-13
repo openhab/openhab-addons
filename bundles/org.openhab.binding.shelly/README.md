@@ -520,23 +520,25 @@ Depending on the device type and firmware release channels might be not availabl
 
 ### LoRa Add-On (Channel Group: lora)
 
-The LoRa Add-On is a radio module for the LoRa WAN Network.
-This can be attached to various Shelly Gen3 or Gen4 devices like Shelly Plus 1PM or Shelly Shutter.
-Gen1 or Gen2 devices do not support the LoRa Add-On even you might be able to activate it in the device's Web UI.
-Shelly Dimmer Gen 3 is an exception, it does NOT support any Add-Ons incl. the LoRa Add-On.
+Two LoRa add-on variants are supported:
+
+- **Shelly LoRa Add-On** (standard form factor): attaches to Gen3 and Gen4 Plus devices — Plus 1, Plus 1PM, Plus 2PM, Plus Shutter, Plus EM, and Dimmer 0/1-10V PM Gen3/Gen4. Gen2 Plus devices and the Shelly Wall Dimmer Gen3 do not support this add-on.
+- **Shelly Pro LoRa Add-On** (DIN-rail): attaches to Pro series devices — Pro 1, Pro 1PM, Pro 2, Pro 2PM, Pro 3EM, Pro EM-50, and Pro Dimmer 2PM.
 
 Note: To enable LoRa support set thing configuration option `enableLoRa = true`.
 
 | Group   | Channel      | Type    | read-only | Description                                                                       |
 | ------- | ------------ | ------- | --------- | --------------------------------------------------------------------------------- |
-| lora    | dataRxRaw    | String  | yes       | Received LoRa Datagram, BASE64-encoded. Use the LORA_RECEIVED trigger event.      |
+| lora    | dataRx       | String  | yes       | Received LoRa datagram decoded as UTF-8 text. Use the LORA_RECEIVED trigger event.|
+|         | dataRxRaw    | String  | yes       | Received LoRa datagram, BASE64-encoded raw payload.                               |
 |         | bytesRx      | Number  | yes       | Number of bytes received from LoRa network so far.                                |
-|         | dataTxRaw    | String  | r/w       | Use this channel to send a BASE64-encoded datagram to the LoRa network.           |
-|         | bytesTx      | Number  | yes       | Number of bytes sent to the LoRa network so far                                   |
-|         | errorsTx     | Number  | yes       | Number of failed transmissions to the LoRa network                                |
-|         | snr          | Number  | yes       | SNR (signal / noise ratio) of the received packet                                 |
-|         | rssi         | Number  | yes       | LoRa signal strength (0-4, 0 being worst and 4 being best strength)               |
-|         | airtime      | Number  | yes       | Time in milliseconds of the transmission time in the last 60 minutes              |
+|         | dataTx       | String  | r/w       | Send a UTF-8 text string; the binding encodes it as BASE64 before transmitting.   |
+|         | dataTxRaw    | String  | r/w       | Send a BASE64-encoded datagram directly to the LoRa network.                      |
+|         | bytesTx      | Number  | yes       | Number of bytes sent to the LoRa network so far.                                  |
+|         | errorsTx     | Number  | yes       | Number of failed transmissions to the LoRa network.                               |
+|         | snr          | Number  | yes       | SNR (signal-to-noise ratio in dB) of the last received packet.                    |
+|         | rssi         | Number  | yes       | RSSI (received signal strength in dBm) of the last received packet.               |
+|         | airtime      | Number  | yes       | Cumulative transmission air time in milliseconds over the last hour.              |
 
 ### Shelly 1 (thing-type: shelly1)
 

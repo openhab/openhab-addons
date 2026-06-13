@@ -638,7 +638,6 @@
 		<channel-groups>
 			<channel-group id="relay" typeId="dimmerChannel"/>
 			<channel-group id="meter" typeId="meter"/>
-			<channel-group id="lora" typeId="loraAddon"/>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 

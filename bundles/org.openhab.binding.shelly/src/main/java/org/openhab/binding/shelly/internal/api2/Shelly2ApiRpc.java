@@ -591,16 +591,21 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                     break;
                 case SHELLY2_EVENT_LORADATA:
                     logger.debug("{}: LoRa data received, payload = {}", thingName, e.lora);
-                    if (e.lora != null) {
-                        String rxB64 = e.lora;
+                    String loraRaw = e.lora;
+                    if (loraRaw != null) {
+                        String rxB64 = loraRaw;
                         int rxRem = rxB64.length() % 4;
                         if (rxRem == 2)
                             rxB64 += "==";
                         else if (rxRem == 3)
                             rxB64 += "=";
-                        String rxData = new String(Base64.getDecoder().decode(rxB64), StandardCharsets.UTF_8);
-                        updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_RXDATARAW, getStringType(e.lora));
-                        updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_RXDATA, getStringType(rxData));
+                        updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_RXDATARAW, getStringType(loraRaw));
+                        try {
+                            String rxData = new String(Base64.getDecoder().decode(rxB64), StandardCharsets.UTF_8);
+                            updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_RXDATA, getStringType(rxData));
+                        } catch (IllegalArgumentException ex) {
+                            logger.debug("{}: LoRa RX payload is not valid Base64: {}", thingName, ex.getMessage());
+                        }
                     }
                     updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_RSSI, getDecimal(e.rssi));
                     updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_SNR, getDecimal(e.snr));
@@ -1054,11 +1059,13 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     @Override
     public void loraSendData(int index, String data) throws ShellyApiException {
         ShellyDeviceProfile profile = getProfile();
-        if (profile.settings.loraComponentIds == null || index >= profile.settings.loraComponentIds.length) {
+        if (profile.settings.loraComponentIds == null || index < 0
+                || index >= profile.settings.loraComponentIds.length) {
             throw new IllegalArgumentException("Invalid LoRa component id");
         }
+        Integer componentId = profile.settings.loraComponentIds[index];
         Shelly2RpcRequest req = new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_LORA_SENDDATA)
-                .withId(profile.settings.loraComponentIds[index]).withData(data);
+                .withId(componentId != null ? componentId.intValue() : 100).withData(data);
         apiRequest(req);
     }
 

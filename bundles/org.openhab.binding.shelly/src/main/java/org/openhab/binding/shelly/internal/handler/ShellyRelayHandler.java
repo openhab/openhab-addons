@@ -163,9 +163,13 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                     txB64 += "==";
                 else if (txRem == 3)
                     txB64 += "=";
-                String txData = new String(Base64.getDecoder().decode(txB64), StandardCharsets.UTF_8);
-                api.loraSendData(0, txRawData);
-                updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_TXDATA, getStringType(txData));
+                try {
+                    String txData = new String(Base64.getDecoder().decode(txB64), StandardCharsets.UTF_8);
+                    api.loraSendData(0, txRawData);
+                    updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_TXDATA, getStringType(txData));
+                } catch (IllegalArgumentException e) {
+                    logger.debug("{}: LoRa TXDATARAW is not valid Base64: {}", thingName, e.getMessage());
+                }
                 break;
         }
         return true;
