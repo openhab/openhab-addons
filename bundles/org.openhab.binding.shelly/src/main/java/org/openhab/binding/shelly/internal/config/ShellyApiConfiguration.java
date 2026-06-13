@@ -457,6 +457,7 @@ public class ShellyApiConfiguration {
                 + "/" + (credentials == null || credentials.password.isEmpty() ? "<none>" : "***") + "\n"
                 + "Events: Button: " + eventsButton + ", Switch (on/off): " + eventsSwitch + ", Push: " + eventsPush
                 + ", Roller: " + eventsRoller + ", Sensor: " + eventsSensorReport + ", CoIoT: " + enableCoIOT + "\n"
-                + "Blu Gateway=" + enableBluGateway + ", Range Extender: " + enableRangeExtender;
+                + "Blu Gateway=" + enableBluGateway + ", Range Extender: " + enableRangeExtender + ", LoRa support"
+                + enableLoRa;
     }
 }

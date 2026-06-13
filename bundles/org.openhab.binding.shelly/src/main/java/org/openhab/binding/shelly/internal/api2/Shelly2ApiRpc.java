@@ -184,13 +184,6 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             profile.settings.ledPowerDisable = "off".equals(getString(dc.led.powerLed));
         }
 
-        if (dc.lora100 != null && config.getEnableLoRa()) {
-            profile.settings.loraDetected = true;
-            profile.settings.loraRxEnabled = dc.lora100.rxEnabled;
-            profile.settings.loraComponentIds = new Integer[1]; // so far only 1 add-on is supported
-            profile.settings.loraComponentIds[0] = dc.lora100.id != null ? dc.lora100.id : 100;
-        }
-
         profile.initialized = true;
 
         try {
@@ -599,7 +592,13 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 case SHELLY2_EVENT_LORADATA:
                     logger.debug("{}: LoRa data received, payload = {}", thingName, e.lora);
                     if (e.lora != null) {
-                        String rxData = new String(Base64.getDecoder().decode(e.lora.getBytes(StandardCharsets.UTF_8)));
+                        String rxB64 = e.lora;
+                        int rxRem = rxB64.length() % 4;
+                        if (rxRem == 2)
+                            rxB64 += "==";
+                        else if (rxRem == 3)
+                            rxB64 += "=";
+                        String rxData = new String(Base64.getDecoder().decode(rxB64), StandardCharsets.UTF_8);
                         updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_RXDATARAW, getStringType(e.lora));
                         updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_RXDATA, getStringType(rxData));
                     }

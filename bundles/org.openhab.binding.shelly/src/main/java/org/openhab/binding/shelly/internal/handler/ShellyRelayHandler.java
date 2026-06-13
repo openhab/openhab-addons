@@ -157,7 +157,13 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
             case CHANNEL_LORA_TXDATARAW: // BASE64-encoded data, send transparent
                 logger.debug("{}: Send LoRa Raw Data {}", thingName, command);
                 String txRawData = getString(command);
-                String txData = new String(Base64.getDecoder().decode(txRawData.getBytes(StandardCharsets.UTF_8)));
+                String txB64 = txRawData;
+                int txRem = txB64.length() % 4;
+                if (txRem == 2)
+                    txB64 += "==";
+                else if (txRem == 3)
+                    txB64 += "=";
+                String txData = new String(Base64.getDecoder().decode(txB64), StandardCharsets.UTF_8);
                 api.loraSendData(0, txRawData);
                 updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_TXDATA, getStringType(txData));
                 break;

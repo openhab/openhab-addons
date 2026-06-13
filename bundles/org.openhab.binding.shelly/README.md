@@ -109,8 +109,8 @@ See section [Discovery](#discovery) for details.
 | shellyplusuni        | Shelly Plus UNI                                          | SNSN-0043X                                                                |
 | shellyplusht         | Shelly Plus HT with temperature + humidity sensor        | SNSN-0013A, S3SN-0U12A                                                    |
 | shellyplussmoke      | Shelly Plus Smoke sensor                                 | SNSN-0031Z                                                                |
-| shellypluswdus       | Shelly Plus Wall Dimmer US                               | SNDM-0013US                                                               |
-| shellyplusdimmer     | Shelly Plus Dimmer Gen 3                                 | S3DM-0A101WWL                                                             |
+| shellypluswdus       | Shelly Plus Wall Dimmer US                               | SNDM-0013US, S4DM-0A102US                                                 |
+| shellyplusdimmer     | Shelly Plus Wall Dimmer EU / Dimmer Gen 3                | SNDM-0011EU, S3DM-0A101WWL                                                |
 | shellyprodm2pm       | Shelly Pro Dimmer 2PM                                    | SPDM-002PE01EU                                                            |
 | shellyplusrgbwpm     | Shelly Plus RGBW PM                                      | SNDC-0D4P10WW                                                             |
 | shellywalldisplay    | Shelly Plus Wall Display                                 | SAWD-0A1XX10EU1                                                           |
@@ -173,7 +173,7 @@ See section [Discovery](#discovery) for details.
 
 The binding has the following configuration options:
 
-### Generation 1
+### Gen 1 Configuration
 
 | Parameter       | Description                                                         | Mandatory | Default |
 | --------------- | ------------------------------------------------------------------- | --------- | ------- |
@@ -496,7 +496,7 @@ A new alarm will be triggered on a new condition or every 5 minutes if the condi
 | VALVE_ERROR  | Device reported a problem with the valve.                                         |
 | VIBRATION    | Device reported vibration.                                                        |
 | LOW_BATTERY  | Device reported low battery.                                                      |
-| LORA_RECEIVED| A datagram has been receive via LoRa protocol                                     |
+| LORA_RECEIVED| A datagram has been received via LoRa protocol                                    |
 
 ### Sensors
 
@@ -518,13 +518,14 @@ Refer to section [Full Example](#full-example) for examples how to catch alarm t
 
 Depending on the device type and firmware release channels might be not available or stay with value NaN.
 
-### LoRa Add-On - Channel Group lora
+### LoRa Add-On (Channel Group: lora)
 
 The LoRa Add-On is a radio module for the LoRa WAN Network.
 This can be attached to various Shelly Gen3 or Gen4 devices like Shelly Plus 1PM or Shelly Shutter.
 Gen1 or Gen2 devices do not support the LoRa Add-On even you might be able to activate it in the device's Web UI.
 Shelly Dimmer Gen 3 is an exception, it does NOT support any Add-Ons incl. the LoRa Add-On.
 
+Note: To enable LoRa support set thing configuration option `enableLoRa = true`.
 
 | Group   | Channel      | Type    | read-only | Description                                                                       |
 | ------- | ------------ | ------- | --------- | --------------------------------------------------------------------------------- |
@@ -712,7 +713,7 @@ Check the Shelly documentation for details.
 |        | lastPower1   | Number   | yes       | Average power consumption during the previous minute                              |
 |        | totalKWH     | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart)   |
 |        | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
-|        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                       |
+|        | returnedKWH  | Number   | yes       | Total returned energy, kWh                                                        |
 
 | Group  | Channel      | Type          | read-only | Description                                                                           |
 | ------ | ------------ | ------------- | --------- | ------------------------------------------------------------------------------------- |
@@ -2039,7 +2040,7 @@ pre-requisites:
 
 - Install Send Mail Action
 - Define a group called gBatteries
-'Group   gBattery        "Batterien"         <battery>       (All)'
+  `Group   gBattery        "Batterien"         <battery>       (All)`
 - Link battery channel for all your Shelly battery powered devices
 - Add battery items to group gBattery
 

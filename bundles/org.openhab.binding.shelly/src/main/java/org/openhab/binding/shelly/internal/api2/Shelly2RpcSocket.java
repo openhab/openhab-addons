@@ -14,6 +14,7 @@ package org.openhab.binding.shelly.internal.api2;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.SHELLY_API_TIMEOUT_MS;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
+import static org.openhab.binding.shelly.internal.api2.ShellyBluJsonDTO.*;
 import static org.openhab.binding.shelly.internal.discovery.ShellyThingCreator.addBluThing;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
@@ -356,7 +357,7 @@ public class Shelly2RpcSocket implements WriteCallback {
                         if (receivedMessage.contains("lora:")) {
                             // The LoRa add-on doesn't report the data in the structured event format, but raw data
                             // string modify JSON to avoid an exception, because data is a String and not a structure
-                            // Non-LoRa event, uses standard formal
+                            // Non-LoRa events use standard formal
                             receivedMessage = eventMessage.replace("\"data\":\"", "\"lora\":\"");
                         }
 
