@@ -134,7 +134,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         switch (command) {
-            case RefreshType r -> handleRefresh(channelUID);
+            case RefreshType ignored -> handleRefresh(channelUID);
             case OnOffType onOffCommand -> handleOnOff(channelUID, onOffCommand);
             default -> logger.debug("Command {} is not supported for channel: {}", command, channelUID.getId());
         }
@@ -431,7 +431,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                         updateState(CHANNEL_EVENT_EXTENDED_DESCRIPTION, new StringType(message));
                     }
                     RingEventTO latestEvent = lastEvents.getFirst();
-                    Thread.ofVirtual().name("ring-video-dl-" + latestEvent.id).start(() -> getVideo(latestEvent));
+                    scheduler.execute(() -> getVideo(latestEvent));
                 }
             } else {
                 logger.debug("AccountHandler - eventTick - lastEvents null");
