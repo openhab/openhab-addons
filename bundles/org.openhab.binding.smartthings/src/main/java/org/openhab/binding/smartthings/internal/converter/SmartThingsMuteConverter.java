@@ -43,7 +43,7 @@ public class SmartThingsMuteConverter extends SmartThingsConverter {
     @Override
     public void convertToSmartThingsInternal(Thing thing, ChannelUID channelUid, Command command,
             SmartThingsCapability capa, SmartThingsAttribute attr, String componentKey, String capaKey, String attrKey,
-            String targetType) throws SmartThingsException {
+            String targetType, String commandKey) throws SmartThingsException {
         if (command instanceof OnOffType onOffType) {
             String cmdName = SmartThingsBindingConstants.CMD_SET_MUTE;
             Object[] arguments = new Object[1];

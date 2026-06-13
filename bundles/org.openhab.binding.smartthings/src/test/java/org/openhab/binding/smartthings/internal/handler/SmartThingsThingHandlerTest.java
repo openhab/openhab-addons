@@ -379,6 +379,56 @@ class SmartThingsThingHandlerTest {
                 json);
     }
 
+    @Test
+    void defaultConverterPrefersEnumCommandOverStaticCommandMetadata() throws SmartThingsException {
+        SmartThingsTypeRegistry registry = mock(SmartThingsTypeRegistry.class);
+        when(registry.getCapability("airConditionerMode"))
+                .thenReturn(createEnumCapability("airConditionerMode", "airConditionerMode", "cool", "setCoolMode"));
+        SmartThingsDefaultConverter converter = new SmartThingsDefaultConverter(registry);
+        ThingUID thingUID = new ThingUID("smartthings:Samsung_Room_A_C:account:air-conditioner");
+        ChannelUID channelUID = new ChannelUID(thingUID, "control", "air-conditioner-mode");
+        Thing thing = ThingBuilder
+                .create(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Samsung_Room_A_C"), thingUID)
+                .withChannel(ChannelBuilder.create(channelUID, SmartThingsBindingConstants.TYPE_STRING)
+                        .withProperties(Map.of(SmartThingsBindingConstants.COMPONENT, "main",
+                                SmartThingsBindingConstants.CAPABILITY, "airConditionerMode",
+                                SmartThingsBindingConstants.ATTRIBUTE, "airConditionerMode",
+                                SmartThingsBindingConstants.COMMAND, "setAirConditionerMode"))
+                        .build())
+                .build();
+
+        String json = converter.convertToSmartThings(thing, channelUID, new StringType("cool"));
+
+        assertEquals(
+                "{\"commands\":[{\"component\":\"main\",\"capability\":\"airConditionerMode\",\"command\":\"setCoolMode\"}]}",
+                json);
+    }
+
+    @Test
+    void defaultConverterUsesStaticCommandMetadataWhenCapabilityHasNoSetter() throws SmartThingsException {
+        SmartThingsTypeRegistry registry = mock(SmartThingsTypeRegistry.class);
+        when(registry.getCapability("airConditionerFanMode")).thenReturn(createAttributeOnlyCapability(
+                "airConditionerFanMode", "fanMode", SmartThingsBindingConstants.SM_TYPE_STRING));
+        SmartThingsDefaultConverter converter = new SmartThingsDefaultConverter(registry);
+        ThingUID thingUID = new ThingUID("smartthings:Samsung_Room_A_C:account:air-conditioner");
+        ChannelUID channelUID = new ChannelUID(thingUID, "control", "fan-mode");
+        Thing thing = ThingBuilder
+                .create(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Samsung_Room_A_C"), thingUID)
+                .withChannel(ChannelBuilder.create(channelUID, SmartThingsBindingConstants.TYPE_STRING)
+                        .withProperties(Map.of(SmartThingsBindingConstants.COMPONENT, "main",
+                                SmartThingsBindingConstants.CAPABILITY, "airConditionerFanMode",
+                                SmartThingsBindingConstants.ATTRIBUTE, "fanMode", SmartThingsBindingConstants.COMMAND,
+                                "setFanMode"))
+                        .build())
+                .build();
+
+        String json = converter.convertToSmartThings(thing, channelUID, new StringType("turbo"));
+
+        assertEquals(
+                "{\"commands\":[{\"component\":\"main\",\"capability\":\"airConditionerFanMode\",\"command\":\"setFanMode\",\"arguments\":[\"turbo\"]}]}",
+                json);
+    }
+
     private Thing createAirConditionerThing() {
         ThingUID thingUID = new ThingUID("smartthings:Samsung_Room_A_C:account:air-conditioner");
 
@@ -428,6 +478,13 @@ class SmartThingsThingHandlerTest {
         command.name = commandName;
         command.arguments = new SmartThingsArgument[0];
         capability.commands.put(commandName, command);
+        return capability;
+    }
+
+    private SmartThingsCapability createAttributeOnlyCapability(String capabilityId, String attributeId,
+            String valueType) {
+        SmartThingsCapability capability = createCapability(capabilityId);
+        capability.attributes.put(attributeId, createAttribute(attributeId, valueType));
         return capability;
     }
 

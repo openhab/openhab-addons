@@ -53,7 +53,7 @@ public class SmartThingsColorConverter extends SmartThingsConverter {
     @Override
     public void convertToSmartThingsInternal(Thing thing, ChannelUID channelUid, Command command,
             SmartThingsCapability capa, SmartThingsAttribute attr, String componentKey, String capaKey, String attrKey,
-            String targetType) throws SmartThingsException {
+            String targetType, String commandKey) throws SmartThingsException {
         if (command instanceof HSBType hsbCommand) {
             double hue = hsbCommand.getHue().doubleValue() / 3.60;
             double sat = hsbCommand.getSaturation().doubleValue();

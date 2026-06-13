@@ -79,7 +79,7 @@ public abstract class SmartThingsConverter {
         String componentKey = properties.get(SmartThingsBindingConstants.COMPONENT);
         String capaKey = properties.get(SmartThingsBindingConstants.CAPABILITY);
         String attrKey = properties.get(SmartThingsBindingConstants.ATTRIBUTE);
-        String commandKey = properties.get(SmartThingsBindingConstants.COMMAND);
+        String commandKey = properties.getOrDefault(SmartThingsBindingConstants.COMMAND, "");
         String targetType = "";
 
         if (componentKey == null) {
@@ -119,8 +119,8 @@ public abstract class SmartThingsConverter {
             }
         }
 
-        convertToSmartThingsInternal(thing, channelUid, command, capa, attr, componentKey, capaKey, attrKey,
-                targetType);
+        convertToSmartThingsInternal(thing, channelUid, command, capa, attr, componentKey, capaKey, attrKey, targetType,
+                commandKey);
         String jsonMsg = getJSonCommands();
         return jsonMsg;
     }
@@ -139,7 +139,7 @@ public abstract class SmartThingsConverter {
         return true;
     }
 
-    private Object convertStaticCommandArgument(Command command) throws SmartThingsException {
+    protected Object convertStaticCommandArgument(Command command) throws SmartThingsException {
         if (command instanceof OnOffType || command instanceof OpenClosedType || command instanceof UpDownType
                 || command instanceof PlayPauseType) {
             return command.toString().toLowerCase(Locale.ROOT);
@@ -167,7 +167,7 @@ public abstract class SmartThingsConverter {
 
     public abstract void convertToSmartThingsInternal(Thing thing, ChannelUID channelUid, Command command,
             SmartThingsCapability capa, SmartThingsAttribute attr, String componentKey, String capaKey, String attrKey,
-            String targetType) throws SmartThingsException;
+            String targetType, String commandKey) throws SmartThingsException;
 
     public abstract State convertToOpenHabInternal(Thing thing, ChannelUID channelUid, Object dataFromSmartThings)
             throws SmartThingsException;

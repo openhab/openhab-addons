@@ -147,7 +147,7 @@ public class SmartThingsDefaultConverter extends SmartThingsConverter {
     @Override
     public void convertToSmartThingsInternal(Thing thing, ChannelUID channelUid, Command command,
             SmartThingsCapability capa, SmartThingsAttribute attr, String componentKey, String capaKey, String attrKey,
-            String targetType) throws SmartThingsException {
+            String targetType, String commandKey) throws SmartThingsException {
         String cmdName = "";
         Object[] arguments = null;
 
@@ -166,6 +166,9 @@ public class SmartThingsDefaultConverter extends SmartThingsConverter {
             if (enumCommand != null) {
                 SmartThingsCommand cmd = getCommand(capa, enumCommand);
                 cmdName = cmd.name;
+            } else if (!commandKey.isBlank()) {
+                cmdName = commandKey;
+                arguments = new Object[] { convertStaticCommandArgument(command) };
             } else {
                 cmdName = value.toString();
             }
