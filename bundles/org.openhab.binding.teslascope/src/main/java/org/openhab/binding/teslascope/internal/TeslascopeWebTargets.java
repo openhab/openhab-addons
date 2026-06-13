@@ -107,7 +107,7 @@ public class TeslascopeWebTargets {
                     request.header(HttpHeader.AUTHORIZATION.asString(), "Bearer " + personalAccessToken);
                 }
                 if (logger.isTraceEnabled()) {
-                    logger.trace("{} request for {}", HttpMethod.GET, uri);
+                    logger.trace("{} request for {}", method, uri);
                 }
                 ContentResponse response = request.send();
                 status = response.getStatus();

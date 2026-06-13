@@ -150,7 +150,9 @@ public class TeslascopeAccountHandler extends BaseBridgeHandler {
                 if (vehicleList == null) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "@text/offline.comm-error.no-vehicles");
+                    return;
                 }
+                updateStatus(ThingStatus.ONLINE);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/offline.comm-error.no-vehicles");

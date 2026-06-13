@@ -411,7 +411,7 @@ public class TeslascopeVehicleHandler extends BaseThingHandler {
         } catch (IllegalStateException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
         } catch (Exception e) {
-            logger.debug("Failed to parse vehicle details: {}", e.getMessage());
+            logger.debug("Failed to parse vehicle details: {}", e.getMessage(), e);
         }
     }
 
@@ -425,7 +425,7 @@ public class TeslascopeVehicleHandler extends BaseThingHandler {
         } catch (IllegalStateException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
         } catch (Exception e) {
-            logger.debug("Failed to parse vehicle details: {}", e.getMessage());
+            logger.debug("Failed to send setAutoConditioning command: {}", e.getMessage(), e);
         }
     }
 
@@ -439,7 +439,7 @@ public class TeslascopeVehicleHandler extends BaseThingHandler {
         } catch (IllegalStateException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
         } catch (Exception e) {
-            logger.debug("Failed to parse vehicle details: {}", e.getMessage());
+            logger.debug("Failed to send charge command: {}", e.getMessage(), e);
         }
     }
 
@@ -453,7 +453,7 @@ public class TeslascopeVehicleHandler extends BaseThingHandler {
         } catch (IllegalStateException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
         } catch (Exception e) {
-            logger.debug("Failed to parse vehicle details: {}", e.getMessage());
+            logger.debug("Failed to send chargeDoor command: {}", e.getMessage(), e);
         }
     }
 
@@ -468,7 +468,7 @@ public class TeslascopeVehicleHandler extends BaseThingHandler {
         } catch (IllegalStateException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
         } catch (Exception e) {
-            logger.debug("Failed to parse vehicle details: {}", e.getMessage());
+            logger.debug("Failed to send flashLights command: {}", e.getMessage(), e);
         }
     }
 
@@ -483,7 +483,7 @@ public class TeslascopeVehicleHandler extends BaseThingHandler {
         } catch (IllegalStateException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
         } catch (Exception e) {
-            logger.debug("Failed to parse vehicle details: {}", e.getMessage());
+            logger.debug("Failed to send honkHorn command: {}", e.getMessage(), e);
         }
     }
 
@@ -497,7 +497,7 @@ public class TeslascopeVehicleHandler extends BaseThingHandler {
         } catch (IllegalStateException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
         } catch (Exception e) {
-            logger.debug("Failed to parse vehicle details: {}", e.getMessage());
+            logger.debug("Failed to send lock command: {}", e.getMessage(), e);
         }
     }
 
@@ -511,7 +511,7 @@ public class TeslascopeVehicleHandler extends BaseThingHandler {
         } catch (IllegalStateException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
         } catch (Exception e) {
-            logger.debug("Failed to parse vehicle details: {}", e.getMessage());
+            logger.debug("Failed to send openFrunk command: {}", e.getMessage(), e);
         }
     }
 
@@ -525,7 +525,7 @@ public class TeslascopeVehicleHandler extends BaseThingHandler {
         } catch (IllegalStateException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
         } catch (Exception e) {
-            logger.debug("Failed to parse vehicle details: {}", e.getMessage());
+            logger.debug("Failed to send openTrunk command: {}", e.getMessage(), e);
         }
     }
 
@@ -539,7 +539,7 @@ public class TeslascopeVehicleHandler extends BaseThingHandler {
         } catch (IllegalStateException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
         } catch (Exception e) {
-            logger.debug("Failed to parse vehicle details: {}", e.getMessage());
+            logger.debug("Failed to send sentry command: {}", e.getMessage(), e);
         }
     }
 
@@ -553,7 +553,7 @@ public class TeslascopeVehicleHandler extends BaseThingHandler {
         } catch (IllegalStateException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
         } catch (Exception e) {
-            logger.debug("Failed to parse vehicle details: {}", e.getMessage());
+            logger.debug("Failed to send setChargeLimit command: {}", e.getMessage(), e);
         }
     }
 }
