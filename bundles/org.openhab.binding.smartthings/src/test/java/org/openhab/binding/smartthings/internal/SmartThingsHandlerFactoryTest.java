@@ -61,13 +61,15 @@ class SmartThingsHandlerFactoryTest {
         SmartThingsThingTypeProviderImpl thingTypeProvider = new SmartThingsThingTypeProviderImpl();
         TestSmartThingsHandlerFactory factory = createFactory(thingTypeProvider);
         ThingTypeUID dynamicThingTypeUID = new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID,
-                "Samsung_The_Frame");
+                "Samsung_Unknown_TV");
         ThingType dynamicThingType = mock(ThingType.class);
         when(dynamicThingType.getUID()).thenReturn(dynamicThingTypeUID);
 
         assertTrue(factory.supportsThingType(SmartThingsBindingConstants.THING_TYPE_ACCOUNT));
         assertTrue(factory
                 .supportsThingType(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "generic-television")));
+        assertTrue(factory
+                .supportsThingType(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Samsung_The_Frame")));
         assertFalse(factory.supportsThingType(dynamicThingTypeUID));
 
         thingTypeProvider.addThingType(dynamicThingType);
@@ -83,7 +85,7 @@ class SmartThingsHandlerFactoryTest {
         SmartThingsThingTypeProviderImpl thingTypeProvider = new SmartThingsThingTypeProviderImpl();
         TestSmartThingsHandlerFactory factory = createFactory(thingTypeProvider);
         ThingTypeUID dynamicThingTypeUID = new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID,
-                "Samsung_The_Frame");
+                "Samsung_Unknown_TV");
         ThingType dynamicThingType = mock(ThingType.class);
         when(dynamicThingType.getUID()).thenReturn(dynamicThingTypeUID);
 
@@ -126,7 +128,7 @@ class SmartThingsHandlerFactoryTest {
         SmartThingsThingTypeProviderImpl thingTypeProvider = new SmartThingsThingTypeProviderImpl();
         TestSmartThingsHandlerFactory factory = createFactory(thingTypeProvider);
         ThingTypeUID dynamicThingTypeUID = new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID,
-                "Samsung_The_Frame");
+                "Samsung_Unknown_TV");
         ThingType dynamicThingType = mock(ThingType.class);
         when(dynamicThingType.getUID()).thenReturn(dynamicThingTypeUID);
         Bridge staticAccount = accountBridge("static", false);

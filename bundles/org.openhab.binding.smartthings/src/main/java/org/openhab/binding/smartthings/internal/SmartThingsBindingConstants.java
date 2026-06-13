@@ -44,6 +44,7 @@ public class SmartThingsBindingConstants {
     public static final ThingTypeUID THING_TYPE_GENERIC_SCENE = new ThingTypeUID(BINDING_ID, "generic-scene");
     public static final ThingTypeUID THING_TYPE_GENERIC_TELEVISION = new ThingTypeUID(BINDING_ID, "generic-television");
     public static final ThingTypeUID THING_TYPE_GENERIC_WASHER = new ThingTypeUID(BINDING_ID, "generic-washer");
+    public static final ThingTypeUID THING_TYPE_SAMSUNG_THE_FRAME = new ThingTypeUID(BINDING_ID, "Samsung_The_Frame");
     public static final ThingTypeUID THING_TYPE_SAMSUNG_ROOM_A_C = new ThingTypeUID(BINDING_ID, "Samsung_Room_A_C");
 
     // Authorization related Servlet and resources aliases.
@@ -82,6 +83,7 @@ public class SmartThingsBindingConstants {
                     SmartThingsBindingConstants.THING_TYPE_GENERIC_SCENE,
                     SmartThingsBindingConstants.THING_TYPE_GENERIC_TELEVISION,
                     SmartThingsBindingConstants.THING_TYPE_GENERIC_WASHER,
+                    SmartThingsBindingConstants.THING_TYPE_SAMSUNG_THE_FRAME,
                     SmartThingsBindingConstants.THING_TYPE_SAMSUNG_ROOM_A_C).collect(Collectors.toSet()));
 
     public static final String THING_LIGHT = "light";
@@ -160,6 +162,7 @@ public class SmartThingsBindingConstants {
     public static final String CAPABILITY = "capability";
     public static final String ATTRIBUTE = "attribute";
     public static final String COMMAND = "command";
+    public static final String CONVERTER = "smartthings-converter";
     public static final String UNIT = "unit";
 
     public static final String EVENT_TYPE_EVENT = "EVENT";

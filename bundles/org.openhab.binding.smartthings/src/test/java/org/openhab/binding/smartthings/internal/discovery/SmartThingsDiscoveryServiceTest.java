@@ -48,7 +48,37 @@ class SmartThingsDiscoveryServiceTest {
 
         DiscoveryResult result = discoveryService.discoveryResult;
         assertNotNull(result);
-        assertEquals("smartthings:generic-television:account:Samsung_The_Frame", result.getThingUID().getAsString());
+        assertEquals("smartthings:Samsung_The_Frame:account:Samsung_The_Frame", result.getThingUID().getAsString());
+        verifyNoInteractions(typeRegistry);
+    }
+
+    @Test
+    void registerDeviceUsesGenericTelevisionThingTypeForOtherTelevisions() {
+        SmartThingsTypeRegistry typeRegistry = mock(SmartThingsTypeRegistry.class);
+        TestDiscoveryService discoveryService = createDiscoveryService(typeRegistry, false);
+        SmartThingsDevice device = createDevice("Television", "Samsung TV", "Living Room TV");
+
+        discoveryService.registerDevice(device, true);
+
+        DiscoveryResult result = discoveryService.discoveryResult;
+        assertNotNull(result);
+        assertEquals("smartthings:generic-television:account:Living_Room_TV", result.getThingUID().getAsString());
+        verifyNoInteractions(typeRegistry);
+    }
+
+    @Test
+    void registerDeviceUsesStaticThingTypeForFrameDeviceTypeName() {
+        SmartThingsTypeRegistry typeRegistry = mock(SmartThingsTypeRegistry.class);
+        TestDiscoveryService discoveryService = createDiscoveryService(typeRegistry, false);
+        SmartThingsDevice device = createDevice("Television", "Samsung TV", "Living Room TV");
+        device.name = null;
+        device.deviceTypeName = "Samsung The Frame";
+
+        discoveryService.registerDevice(device, true);
+
+        DiscoveryResult result = discoveryService.discoveryResult;
+        assertNotNull(result);
+        assertEquals("smartthings:Samsung_The_Frame:account:Living_Room_TV", result.getThingUID().getAsString());
         verifyNoInteractions(typeRegistry);
     }
 

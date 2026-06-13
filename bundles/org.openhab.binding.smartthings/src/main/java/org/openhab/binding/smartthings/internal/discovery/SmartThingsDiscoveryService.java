@@ -202,7 +202,8 @@ public class SmartThingsDiscoveryService extends AbstractDiscoveryService
                 return SmartThingsBindingConstants.THING_TYPE_GENERIC_PRESENCE_SENSOR.getId();
             case "television":
             case "tv":
-                return SmartThingsBindingConstants.THING_TYPE_GENERIC_TELEVISION.getId();
+                return isSamsungTheFrame(device) ? SmartThingsBindingConstants.THING_TYPE_SAMSUNG_THE_FRAME.getId()
+                        : SmartThingsBindingConstants.THING_TYPE_GENERIC_TELEVISION.getId();
             case "washer":
             case "washing_machine":
             case "washingmachine":
@@ -210,6 +211,12 @@ public class SmartThingsDiscoveryService extends AbstractDiscoveryService
             default:
                 return null;
         }
+    }
+
+    private boolean isSamsungTheFrame(SmartThingsDevice device) {
+        String deviceType = device.name != null ? device.name : device.deviceTypeName;
+        return deviceType != null && SmartThingsBindingConstants.THING_TYPE_SAMSUNG_THE_FRAME.getId()
+                .equals(UidUtils.sanitizeId(deviceType));
     }
 
     private boolean hasCapability(SmartThingsDevice device, String capabilityId) {

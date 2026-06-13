@@ -57,13 +57,20 @@ public class SmartThingsThingHandler extends BaseThingHandler {
     private static final String CAPABILITY_AIR_CONDITIONER_FAN_MODE = "airConditionerFanMode";
     private static final String CAPABILITY_AIR_CONDITIONER_MODE = "airConditionerMode";
     private static final String CAPABILITY_AIR_CONDITIONER_OPTIONAL_MODE = "custom.airConditionerOptionalMode";
+    private static final String CAPABILITY_FRAME_AMBIENT = "samsungvd.ambient";
     private static final String CAPABILITY_THERMOSTAT_COOLING_SETPOINT = "thermostatCoolingSetpoint";
+    private static final String CAPABILITY_TV_CHANNEL = "tvChannel";
     private static final String CHANNEL_AIR_CONDITIONER_MODE = "air-conditioner-mode";
+    private static final String CHANNEL_AMBIENT = "ambient";
+    private static final String CHANNEL_AMBIENT_MODE = "ambient-mode";
     private static final String CHANNEL_FAN_MODE = "fan-mode";
     private static final String CHANNEL_OPTIONAL_MODE = "ac-optional-mode";
     private static final String CHANNEL_SETPOINT = "cooling-setpoint";
+    private static final String CHANNEL_TV_CHANNEL = "tv-channel";
     private static final String STATIC_CHANNEL_MODE = "mode";
+    private static final String STATIC_CHANNEL_ART_MODE = "art-mode";
     private static final String STATIC_CHANNEL_SETPOINT = "setpoint";
+    private static final String STATIC_CHANNEL_TV_CHANNEL = "channel";
     private static final String OPTIONAL_MODE_OFF = "off";
 
     private final Logger logger = LoggerFactory.getLogger(SmartThingsThingHandler.class);
@@ -116,7 +123,7 @@ public class SmartThingsThingHandler extends BaseThingHandler {
     }
 
     void handleCommand(SmartThingsApi api, ChannelUID channelUID, Command command) {
-        SmartThingsConverter converter = SmartThingsConverterFactory.getConverter(channelUID.getIdWithoutGroup());
+        SmartThingsConverter converter = getConverter(channelUID);
         if (converter == null) {
             logger.warn("No converter found for command {} on channel {}.", command.toFullString(), channelUID);
             return;
@@ -133,7 +140,7 @@ public class SmartThingsThingHandler extends BaseThingHandler {
         }
 
         if (jsonMsg.isBlank()) {
-            logger.warn("No SmartThings command was created for command {} on channel {}.", command.toFullString(),
+            logger.debug("No SmartThings command was created for command {} on channel {}.", command.toFullString(),
                     channelUID);
             return;
         }
@@ -210,11 +217,22 @@ public class SmartThingsThingHandler extends BaseThingHandler {
     }
 
     private void updateChannelState(ChannelUID channelUID, Object value) throws SmartThingsException {
-        SmartThingsConverter converter = SmartThingsConverterFactory.getConverter(channelUID.getIdWithoutGroup());
+        SmartThingsConverter converter = getConverter(channelUID);
         if (converter != null) {
             State state = converter.convertToOpenHab(thing, channelUID, value);
             updateState(channelUID, state);
         }
+    }
+
+    private @Nullable SmartThingsConverter getConverter(ChannelUID channelUID) {
+        Channel channel = thing.getChannel(channelUID);
+        if (channel != null) {
+            String converterKey = channel.getProperties().get(SmartThingsBindingConstants.CONVERTER);
+            if (converterKey != null && !converterKey.isBlank()) {
+                return SmartThingsConverterFactory.getConverter(converterKey);
+            }
+        }
+        return SmartThingsConverterFactory.getConverter(channelUID.getIdWithoutGroup());
     }
 
     private @Nullable ChannelUID findChannelUID(String deviceType, String componentId, String capabilityId,
@@ -224,7 +242,7 @@ public class SmartThingsThingHandler extends BaseThingHandler {
             return channelUID;
         }
 
-        String staticChannelName = getStaticAirConditionerChannelName(capabilityId, channelName);
+        String staticChannelName = getStaticChannelName(capabilityId, channelName);
         return channelName.equals(staticChannelName) ? null
                 : findChannelUIDByChannelName(deviceType, componentId, capabilityId, staticChannelName);
     }
@@ -245,12 +263,19 @@ public class SmartThingsThingHandler extends BaseThingHandler {
         return findChannelUIDByProperties(componentId, capabilityId, channelName);
     }
 
-    private String getStaticAirConditionerChannelName(String capabilityId, String channelName) {
+    private String getStaticChannelName(String capabilityId, String channelName) {
         if (CAPABILITY_AIR_CONDITIONER_MODE.equals(capabilityId) && CHANNEL_AIR_CONDITIONER_MODE.equals(channelName)) {
             return STATIC_CHANNEL_MODE;
         }
         if (CAPABILITY_THERMOSTAT_COOLING_SETPOINT.equals(capabilityId) && CHANNEL_SETPOINT.equals(channelName)) {
             return STATIC_CHANNEL_SETPOINT;
+        }
+        if (CAPABILITY_TV_CHANNEL.equals(capabilityId) && CHANNEL_TV_CHANNEL.equals(channelName)) {
+            return STATIC_CHANNEL_TV_CHANNEL;
+        }
+        if (CAPABILITY_FRAME_AMBIENT.equals(capabilityId)
+                && (CHANNEL_AMBIENT.equals(channelName) || CHANNEL_AMBIENT_MODE.equals(channelName))) {
+            return STATIC_CHANNEL_ART_MODE;
         }
         return channelName;
     }

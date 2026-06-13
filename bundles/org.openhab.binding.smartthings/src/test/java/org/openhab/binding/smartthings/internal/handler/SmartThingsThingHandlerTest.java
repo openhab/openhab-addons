@@ -170,6 +170,42 @@ class SmartThingsThingHandlerTest {
     }
 
     @Test
+    void refreshDeviceUpdatesStaticFrameTvChannelAlias() {
+        ThingUID thingUID = new ThingUID("smartthings:Samsung_The_Frame:account:frame-tv");
+        Thing thing = ThingBuilder
+                .create(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Samsung_The_Frame"), thingUID)
+                .withChannel(createChannel(thingUID, "control", "channel", SmartThingsBindingConstants.TYPE_STRING,
+                        "tvChannel", "tvChannel"))
+                .build();
+        TestSmartThingsThingHandler handler = new TestSmartThingsThingHandler(thing);
+        SmartThingsConverterFactory.registerConverters(new SmartThingsTypeRegistryImpl());
+
+        handler.refreshDevice("Samsung_The_Frame", "main", "tvChannel", "tvChannel", "12");
+
+        assertEquals(1, handler.updatedStates);
+        assertEquals(new ChannelUID(handler.getThing().getUID(), "control", "channel"), handler.lastUpdatedChannel);
+        assertEquals(new StringType("12"), handler.lastUpdatedState);
+    }
+
+    @Test
+    void refreshDeviceUpdatesStaticFrameArtModeAlias() {
+        ThingUID thingUID = new ThingUID("smartthings:Samsung_The_Frame:account:frame-tv");
+        Thing thing = ThingBuilder
+                .create(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Samsung_The_Frame"), thingUID)
+                .withChannel(createChannel(thingUID, "control", "art-mode", SmartThingsBindingConstants.TYPE_STRING,
+                        "samsungvd.ambient", "ambient"))
+                .build();
+        TestSmartThingsThingHandler handler = new TestSmartThingsThingHandler(thing);
+        SmartThingsConverterFactory.registerConverters(new SmartThingsTypeRegistryImpl());
+
+        handler.refreshDevice("Samsung_The_Frame", "main", "samsungvd.ambient", "ambient", "on");
+
+        assertEquals(1, handler.updatedStates);
+        assertEquals(new ChannelUID(handler.getThing().getUID(), "control", "art-mode"), handler.lastUpdatedChannel);
+        assertEquals(new StringType("on"), handler.lastUpdatedState);
+    }
+
+    @Test
     void refreshDeviceMergesActiveAirConditionerOptionalModeIntoFanMode() {
         ThingUID thingUID = new ThingUID("smartthings:Samsung_Room_A_C:account:air-conditioner");
         Thing thing = ThingBuilder
@@ -433,6 +469,78 @@ class SmartThingsThingHandlerTest {
         verify(api).sendCommand(eq(""), body.capture());
         assertEquals(
                 "{\"commands\":[{\"component\":\"main\",\"capability\":\"airConditionerFanMode\",\"command\":\"setFanMode\",\"arguments\":[\"high\"]}]}",
+                body.getValue());
+    }
+
+    @Test
+    void handleCommandSendsFrameRemoteChannelCommandWithoutArguments() throws SmartThingsException {
+        ThingUID thingUID = new ThingUID("smartthings:Samsung_The_Frame:account:frame-tv");
+        ChannelUID channelUID = new ChannelUID(thingUID, "remote", "channel-up");
+        Thing thing = ThingBuilder
+                .create(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Samsung_The_Frame"), thingUID)
+                .withChannel(ChannelBuilder.create(channelUID, SmartThingsBindingConstants.TYPE_SWITCH)
+                        .withProperties(Map.of(SmartThingsBindingConstants.COMPONENT, "main",
+                                SmartThingsBindingConstants.CAPABILITY, "tvChannel",
+                                SmartThingsBindingConstants.ATTRIBUTE, "tvChannel", SmartThingsBindingConstants.COMMAND,
+                                "channelUp", SmartThingsBindingConstants.CONVERTER, "no-argument-command"))
+                        .build())
+                .build();
+        TestSmartThingsThingHandler handler = new TestSmartThingsThingHandler(thing);
+        SmartThingsApi api = mock(SmartThingsApi.class);
+        SmartThingsConverterFactory.registerConverters(new SmartThingsTypeRegistryImpl());
+
+        handler.handleCommand(api, channelUID, OnOffType.ON);
+
+        ArgumentCaptor<String> body = ArgumentCaptor.forClass(String.class);
+        verify(api).sendCommand(eq(""), body.capture());
+        assertEquals("{\"commands\":[{\"component\":\"main\",\"capability\":\"tvChannel\",\"command\":\"channelUp\"}]}",
+                body.getValue());
+    }
+
+    @Test
+    void handleCommandIgnoresFrameRemoteChannelOffCommand() throws SmartThingsException {
+        ThingUID thingUID = new ThingUID("smartthings:Samsung_The_Frame:account:frame-tv");
+        ChannelUID channelUID = new ChannelUID(thingUID, "remote", "channel-down");
+        Thing thing = ThingBuilder
+                .create(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Samsung_The_Frame"), thingUID)
+                .withChannel(ChannelBuilder.create(channelUID, SmartThingsBindingConstants.TYPE_SWITCH)
+                        .withProperties(Map.of(SmartThingsBindingConstants.COMPONENT, "main",
+                                SmartThingsBindingConstants.CAPABILITY, "tvChannel",
+                                SmartThingsBindingConstants.ATTRIBUTE, "tvChannel", SmartThingsBindingConstants.COMMAND,
+                                "channelDown", SmartThingsBindingConstants.CONVERTER, "no-argument-command"))
+                        .build())
+                .build();
+        TestSmartThingsThingHandler handler = new TestSmartThingsThingHandler(thing);
+        SmartThingsApi api = mock(SmartThingsApi.class);
+        SmartThingsConverterFactory.registerConverters(new SmartThingsTypeRegistryImpl());
+
+        handler.handleCommand(api, channelUID, OnOffType.OFF);
+
+        verify(api, never()).sendCommand(anyString(), anyString());
+    }
+
+    @Test
+    void handleCommandDoesNotUseNoArgumentConverterForChannelNameAlone() throws SmartThingsException {
+        ThingUID thingUID = new ThingUID("smartthings:Some_TV:account:tv");
+        ChannelUID channelUID = new ChannelUID(thingUID, "remote", "channel-up");
+        Thing thing = ThingBuilder.create(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Some_TV"), thingUID)
+                .withChannel(ChannelBuilder.create(channelUID, SmartThingsBindingConstants.TYPE_SWITCH)
+                        .withProperties(Map.of(SmartThingsBindingConstants.COMPONENT, "main",
+                                SmartThingsBindingConstants.CAPABILITY, "tvChannel",
+                                SmartThingsBindingConstants.ATTRIBUTE, "tvChannel", SmartThingsBindingConstants.COMMAND,
+                                "channelUp"))
+                        .build())
+                .build();
+        TestSmartThingsThingHandler handler = new TestSmartThingsThingHandler(thing);
+        SmartThingsApi api = mock(SmartThingsApi.class);
+        SmartThingsConverterFactory.registerConverters(new SmartThingsTypeRegistryImpl());
+
+        handler.handleCommand(api, channelUID, OnOffType.ON);
+
+        ArgumentCaptor<String> body = ArgumentCaptor.forClass(String.class);
+        verify(api).sendCommand(eq(""), body.capture());
+        assertEquals(
+                "{\"commands\":[{\"component\":\"main\",\"capability\":\"tvChannel\",\"command\":\"channelUp\",\"arguments\":[\"on\"]}]}",
                 body.getValue());
     }
 
