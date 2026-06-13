@@ -1080,6 +1080,8 @@ public class RachioApi {
             logger.warn("Failed to build callback URL for webhook target '{}': {}", target.describe(), e.getMessage());
             throw e;
         }
+        // TEMPORARY UNSAFE DIAGNOSTIC: logs callback credentials. Remove before PR.
+        logger.debug("WEBHOOK_UNSAFE_DIAG finalCallbackUrl={}", registrationUrl);
         logWebhookRegistrationUrlDiagnostic(target, callbackUrl, callbackUsername, callbackPassword, registrationUrl);
 
         String expectedExternalId = externalId != null ? externalId : "";
@@ -1102,6 +1104,8 @@ public class RachioApi {
             Map<String, Object> createPayload = target.buildCreatePayload(registrationUrl, expectedExternalId);
             Object payloadUrlValue = createPayload.get("url");
             String payloadUrl = payloadUrlValue instanceof String url ? url : "";
+            // TEMPORARY UNSAFE DIAGNOSTIC: logs callback credentials. Remove before PR.
+            logger.debug("WEBHOOK_UNSAFE_DIAG createWebhookPayloadUrl={}", payloadUrl);
             logger.debug(
                     "WEBHOOK_DIAG createWebhook target={} eventTypes={} resourceId={} externalId={} payloadUrlUserInfo={} payloadUrlSanitized={}",
                     target.getResourceType().getApiValue(), target.getEventTypes(), target.getResourceId(),
@@ -1177,14 +1181,18 @@ public class RachioApi {
         String scheme = "<invalid>";
         String host = "<invalid>";
         String path = "<invalid>";
+        String userInfo = "<invalid>";
         try {
             URI uri = new URI(registrationUrl);
             scheme = Objects.requireNonNullElse(uri.getScheme(), "");
             host = Objects.requireNonNullElse(uri.getHost(), "");
             path = Objects.requireNonNullElse(uri.getRawPath(), "");
+            userInfo = Objects.requireNonNullElse(uri.getRawUserInfo(), "");
         } catch (URISyntaxException e) {
             // The validated registration URL should always parse; retain safe placeholders if it does not.
         }
+        // TEMPORARY UNSAFE DIAGNOSTIC: logs callback credentials. Remove before PR.
+        logger.debug("WEBHOOK_UNSAFE_DIAG scheme={} host={} path={} userInfo={}", scheme, host, path, userInfo);
         logger.debug(
                 "WEBHOOK_DIAG target={} resourceId={} scheme={} host={} path={} explicitUser={} explicitPassword={} originalUserInfo={} finalUserInfo={} sanitizedUrl={}",
                 target.getResourceType().getApiValue(), target.getResourceId(), scheme, host, path,
