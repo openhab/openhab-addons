@@ -269,11 +269,11 @@ public class TeslascopeVehicleHandler extends BaseThingHandler {
                 updateState(TeslascopeBindingConstants.CHANNEL_SCHEDULED_CHARGING_START,
                         new StringType(detailedInformation.chargeState.scheduledChargingStartTime));
                 updateState(TeslascopeBindingConstants.CHANNEL_CHARGE_AMPS,
-                        new DecimalType(detailedInformation.chargeState.chargeAmps));
+                        new QuantityType<>(detailedInformation.chargeState.chargeAmps, Units.AMPERE));
                 updateState(TeslascopeBindingConstants.CHANNEL_CHARGE_CURRENT_REQUEST,
-                        new DecimalType(detailedInformation.chargeState.chargeCurrentRequest));
+                        new QuantityType<>(detailedInformation.chargeState.chargeCurrentRequest, Units.AMPERE));
                 updateState(TeslascopeBindingConstants.CHANNEL_CHARGE_CURRENT_REQUEST_MAX,
-                        new DecimalType(detailedInformation.chargeState.chargeCurrentRequestMax));
+                        new QuantityType<>(detailedInformation.chargeState.chargeCurrentRequestMax, Units.AMPERE));
             }
 
             // climate state
@@ -343,7 +343,7 @@ public class TeslascopeVehicleHandler extends BaseThingHandler {
             // vehicle state
             if (detailedInformation.vehicleState != null) {
                 Map<String, String> properties = editProperties();
-                properties.put("version", detailedInformation.vehicleState.carVersion);
+                properties.put(Thing.PROPERTY_FIRMWARE_VERSION, detailedInformation.vehicleState.carVersion);
                 updateProperties(properties);
                 updateState(TeslascopeBindingConstants.CHANNEL_DOOR_LOCK,
                         OnOffType.from(detailedInformation.vehicleState.locked));

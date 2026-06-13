@@ -102,14 +102,19 @@ public class TeslascopeWebTargets {
                 ContentResponse response = request.send();
                 status = response.getStatus();
                 if (HttpStatus.isSuccess(status)) {
-                    jsonResponse = response.getContentAsString();
-                    logger.trace("JSON response: '{}'", jsonResponse);
+                    return response.getContentAsString(); // Return immediately on success
                 } else {
                     switch (status) {
                         case HttpStatus.UNAUTHORIZED_401:
                             throw new TeslascopeAuthenticationException("Unauthorized");
                         case HttpStatus.INTERNAL_SERVER_ERROR_500:
                         case HttpStatus.BAD_GATEWAY_502:
+                        case HttpStatus.SERVICE_UNAVAILABLE_503:
+                        case HttpStatus.GATEWAY_TIMEOUT_504:
+                            if (retryCounter == MAX_RETRIES) {
+                                throw new TeslascopeCommunicationException("Teslascope API unavailable after "
+                                        + MAX_RETRIES + " attempts (HTTP " + status + ")");
+                            }
                             logger.debug("Teslascope returned {}, retrying", status);
                             Thread.sleep(2000);
                             break;
