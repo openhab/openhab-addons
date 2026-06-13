@@ -115,12 +115,15 @@ function addon_projects() {
     # include BOMs
     projects="$projects,:org.openhab.addons.bom.openhab-core-index,:org.openhab.addons.bom.runtime-index,:org.openhab.addons.bom.test-index"
 
+    # exclude features
+    projects="$projects,-:org.openhab.addons.reactor.features.karaf,-:org.openhab.addons.features.karaf.openhab-addons,-:org.openhab.addons.features.karaf.openhab-addons-external"
+
     echo $projects
 }
 
 function build_addon() {
     local addon="$1"
-    local command="./mvnw $ARGUMENTS -am -pl $(addon_projects $addon)"
+    local command="./mvnw $ARGUMENTS -am -amd -pl $(addon_projects $addon)"
 
     echo
     echo "Building add-on: $addon"
