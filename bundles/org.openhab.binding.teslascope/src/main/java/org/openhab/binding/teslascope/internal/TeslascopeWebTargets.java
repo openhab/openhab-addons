@@ -48,27 +48,27 @@ public class TeslascopeWebTargets {
     public String getVehicleList(String apiKey, String personalAccessToken)
             throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
         if (personalAccessToken.isBlank()) {
-            return invoke(BASE_URI + "vehicles?api_key=" + apiKey, "");
+            return invoke(BASE_URI + "vehicles?api_key=" + apiKey, HttpMethod.GET, "");
         } else {
-            return invoke(BASE_URI + "vehicles", personalAccessToken);
+            return invoke(BASE_URI + "vehicles", HttpMethod.GET, personalAccessToken);
         }
     }
 
     public String getDetailedInformation(String publicID, String apiKey, String personalAccessToken)
             throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
         if (personalAccessToken.isBlank()) {
-            return invoke(BASE_VEHICLE_URI + publicID + "/detailed?api_key=" + apiKey, "");
+            return invoke(BASE_VEHICLE_URI + publicID + "/detailed?api_key=" + apiKey, HttpMethod.GET, "");
         } else {
-            return invoke(BASE_VEHICLE_URI + publicID + "/detailed", personalAccessToken);
+            return invoke(BASE_VEHICLE_URI + publicID + "/detailed", HttpMethod.GET, personalAccessToken);
         }
     }
 
     public void sendCommand(String publicID, String apiKey, String personalAccessToken, String command)
             throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
         if (personalAccessToken.isBlank()) {
-            invoke(BASE_VEHICLE_URI + publicID + "/command/" + command + "?api_key=" + apiKey, "");
+            invoke(BASE_VEHICLE_URI + publicID + "/command/" + command + "?api_key=" + apiKey, HttpMethod.POST, "");
         } else {
-            invoke(BASE_VEHICLE_URI + publicID + "/command/" + command, personalAccessToken);
+            invoke(BASE_VEHICLE_URI + publicID + "/command/" + command, HttpMethod.POST, personalAccessToken);
         }
         return;
     }
@@ -76,14 +76,16 @@ public class TeslascopeWebTargets {
     public void sendCommand(String publicID, String apiKey, String personalAccessToken, String command, String params)
             throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
         if (personalAccessToken.isBlank()) {
-            invoke(BASE_VEHICLE_URI + publicID + "/command/" + command + "?api_key=" + apiKey + params, "");
+            invoke(BASE_VEHICLE_URI + publicID + "/command/" + command + "?api_key=" + apiKey + params, HttpMethod.POST,
+                    "");
         } else {
-            invoke(BASE_VEHICLE_URI + publicID + "/command/" + command + "?" + params, personalAccessToken);
+            invoke(BASE_VEHICLE_URI + publicID + "/command/" + command + "?" + params, HttpMethod.POST,
+                    personalAccessToken);
         }
         return;
     }
 
-    private String invoke(String uri, String personalAccessToken)
+    private String invoke(String uri, HttpMethod method, String personalAccessToken)
             throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
         logger.debug("Calling url: {}", uri);
         String jsonResponse = "";
@@ -91,8 +93,7 @@ public class TeslascopeWebTargets {
 
         for (int retryCounter = 1; retryCounter <= MAX_RETRIES; retryCounter++) {
             try {
-                Request request = httpClient.newRequest(uri).method(HttpMethod.GET).timeout(TIMEOUT_MS,
-                        TimeUnit.MILLISECONDS);
+                Request request = httpClient.newRequest(uri).method(method).timeout(TIMEOUT_MS, TimeUnit.MILLISECONDS);
                 if (!personalAccessToken.isBlank()) {
                     request.header(HttpHeader.AUTHORIZATION.asString(), "Bearer " + personalAccessToken);
                 }
