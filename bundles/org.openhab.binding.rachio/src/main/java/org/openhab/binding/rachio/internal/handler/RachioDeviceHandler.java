@@ -461,10 +461,17 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
         try {
             String etype = event.type;
             RachioZone zone = null;
-            if (etype.equals("ZONE_STATUS")) {
+            int zoneNumber = event.zoneNumber;
+            if ("ZONE_STATUS".equals(etype)) {
                 RachioZoneStatus runStatus = event.zoneRunStatus;
                 if (runStatus != null) {
-                    zone = d.getZoneByNumber(runStatus.zoneNumber);
+                    zoneNumber = runStatus.zoneNumber;
+                }
+                if (zoneNumber > 0) {
+                    zone = d.getZoneByNumber(zoneNumber);
+                }
+                if (zone == null && !event.zoneId.isBlank()) {
+                    zone = d.getZoneById(event.zoneId);
                 }
             } else if (event.subType.equals("ZONE_DELTA")) {
                 zone = d.getZoneById(event.zoneId);
@@ -480,10 +487,9 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
 
             boolean devicePauseChanged = false;
             boolean activeZoneChanged = false;
-            if (etype.equals("ZONE_STATUS")) {
+            if ("ZONE_STATUS".equals(etype)) {
                 RachioZoneStatus runStatus = event.zoneRunStatus;
                 String state = runStatus != null ? runStatus.state : event.subType;
-                int zoneNumber = runStatus != null ? runStatus.zoneNumber : event.zoneNumber;
                 if ("ZONE_STARTED".equals(state) || "ZONE_STOPPED".equals(state) || "ZONE_COMPLETED".equals(state)) {
                     if ("ZONE_STARTED".equals(state) && zone == null && zoneNumber > 0) {
                         logger.debug("{}: Active zone run started for zone number {}, but no matching zone was found",
@@ -515,7 +521,9 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
 
             String evt = event.subType.isEmpty() ? event.type : event.subType;
             dev.setEvent(evt, getTimestamp()); // and funnel all zone events to the device
-            if (event.subType.equals("RAIN_DELAY_ON")) {
+            if ("ZONE_STATUS".equals(etype)) {
+                update = zoneUpdated || devicePauseChanged || activeZoneChanged;
+            } else if (event.subType.equals("RAIN_DELAY_ON")) {
                 handleRainDelayOnEvent(event, d);
             } else if (event.subType.equals("RAIN_DELAY_OFF")) {
                 logger.info("{}: Device reported Rain Delay OFF.", thingId);

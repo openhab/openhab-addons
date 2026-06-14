@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.openhab.binding.rachio.internal.api.RachioDevice;
 import org.openhab.binding.rachio.internal.api.json.RachioDeviceGsonDTO.RachioCloudDevice;
@@ -59,23 +60,47 @@ class RachioBridgeHandlerConfigurationTest {
     }
 
     @Test
-    void validLegacyEventTriggersEssentialWebhookReconciliationRefresh() {
-        Bridge bridge = BridgeBuilder.create(THING_TYPE_CLOUD, "bridge").build();
-        RachioBridgeHandler handler = Mockito.spy(new RachioBridgeHandler(bridge));
-        RachioCloudDevice cloudDevice = new RachioCloudDevice();
-        cloudDevice.id = "controller-id";
-        HashMap<String, RachioDevice> devices = new HashMap<>();
-        devices.put(cloudDevice.id, new RachioDevice(cloudDevice));
-        Mockito.doReturn(devices).when(handler).getDevices();
-        Mockito.doNothing().when(handler).refreshDeviceStatus(RefreshReason.WEBHOOK_RECONCILIATION);
-        RachioEventGsonDTO event = new RachioEventGsonDTO();
-        event.deviceId = cloudDevice.id;
-        event.type = "ZONE_STATUS";
-        event.subType = "ZONE_STARTED";
+    void validLegacyZoneStartedDispatchesBeforeReconciliation() {
+        RachioBridgeHandler handler = legacyHandler();
+        RachioEventGsonDTO event = legacyEvent("ZONE_STATUS", "ZONE_STARTED");
+        Mockito.doReturn(true).when(handler).webHookEvent(event);
 
         assertThat(handler.legacyWebHookEvent(event), is(true));
 
-        verify(handler).refreshDeviceStatus(RefreshReason.WEBHOOK_RECONCILIATION);
+        verifyDispatchBeforeReconciliation(handler, event);
+    }
+
+    @Test
+    void validLegacyZoneStoppedDispatchesBeforeReconciliation() {
+        RachioBridgeHandler handler = legacyHandler();
+        RachioEventGsonDTO event = legacyEvent("ZONE_STATUS", "ZONE_STOPPED");
+        Mockito.doReturn(true).when(handler).webHookEvent(event);
+
+        assertThat(handler.legacyWebHookEvent(event), is(true));
+
+        verifyDispatchBeforeReconciliation(handler, event);
+    }
+
+    @Test
+    void validLegacyScheduleStartedDispatchesBeforeReconciliation() {
+        RachioBridgeHandler handler = legacyHandler();
+        RachioEventGsonDTO event = legacyEvent("SCHEDULE_STATUS", "SCHEDULE_STARTED");
+        Mockito.doReturn(true).when(handler).webHookEvent(event);
+
+        assertThat(handler.legacyWebHookEvent(event), is(true));
+
+        verifyDispatchBeforeReconciliation(handler, event);
+    }
+
+    @Test
+    void unhandledLegacyEventStillTriggersReconciliation() {
+        RachioBridgeHandler handler = legacyHandler();
+        RachioEventGsonDTO event = legacyEvent("ZONE_STATUS", "ZONE_STARTED");
+        Mockito.doReturn(false).when(handler).webHookEvent(event);
+
+        assertThat(handler.legacyWebHookEvent(event), is(true));
+
+        verifyDispatchBeforeReconciliation(handler, event);
     }
 
     @Test
@@ -89,6 +114,7 @@ class RachioBridgeHandlerConfigurationTest {
 
         assertThat(handler.legacyWebHookEvent(event), is(false));
 
+        verify(handler, never()).webHookEvent(event);
         verify(handler, never()).refreshDeviceStatus(RefreshReason.WEBHOOK_RECONCILIATION);
     }
 
@@ -113,5 +139,31 @@ class RachioBridgeHandlerConfigurationTest {
 
         assertThat(bridge.getConfiguration().get(PARAM_FORECAST_UNITS), is("US"));
         verify(callback).thingUpdated(bridge);
+    }
+
+    private RachioBridgeHandler legacyHandler() {
+        Bridge bridge = BridgeBuilder.create(THING_TYPE_CLOUD, "bridge").build();
+        RachioBridgeHandler handler = Mockito.spy(new RachioBridgeHandler(bridge));
+        RachioCloudDevice cloudDevice = new RachioCloudDevice();
+        cloudDevice.id = "controller-id";
+        HashMap<String, RachioDevice> devices = new HashMap<>();
+        devices.put(cloudDevice.id, new RachioDevice(cloudDevice));
+        Mockito.doReturn(devices).when(handler).getDevices();
+        Mockito.doNothing().when(handler).refreshDeviceStatus(RefreshReason.WEBHOOK_RECONCILIATION);
+        return handler;
+    }
+
+    private RachioEventGsonDTO legacyEvent(String type, String subType) {
+        RachioEventGsonDTO event = new RachioEventGsonDTO();
+        event.deviceId = "controller-id";
+        event.type = type;
+        event.subType = subType;
+        return event;
+    }
+
+    private void verifyDispatchBeforeReconciliation(RachioBridgeHandler handler, RachioEventGsonDTO event) {
+        InOrder order = Mockito.inOrder(handler);
+        order.verify(handler).webHookEvent(event);
+        order.verify(handler).refreshDeviceStatus(RefreshReason.WEBHOOK_RECONCILIATION);
     }
 }

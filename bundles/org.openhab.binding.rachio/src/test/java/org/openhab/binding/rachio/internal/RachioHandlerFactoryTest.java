@@ -73,6 +73,7 @@ class RachioHandlerFactoryTest {
 
         assertThat(factory.legacyWebHookEvent("127.0.0.1", event), is(false));
         verify(bridgeHandler, never()).legacyWebHookEvent(event);
+        verify(bridgeHandler, never()).webHookEvent(event);
     }
 
     @Test

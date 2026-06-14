@@ -27,6 +27,7 @@ import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_T
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.http.HttpStatus;
@@ -36,9 +37,11 @@ import org.openhab.binding.rachio.internal.api.RachioApiException;
 import org.openhab.binding.rachio.internal.api.RachioApiResult;
 import org.openhab.binding.rachio.internal.api.RachioApiThrottledException;
 import org.openhab.binding.rachio.internal.api.RachioDevice;
+import org.openhab.binding.rachio.internal.api.RachioZone;
 import org.openhab.binding.rachio.internal.api.json.RachioDeviceGsonDTO.RachioCloudDevice;
 import org.openhab.binding.rachio.internal.api.json.RachioEventGsonDTO;
 import org.openhab.binding.rachio.internal.api.json.RachioSmartIrrigationGsonDTO.RachioCurrentScheduleResponse;
+import org.openhab.binding.rachio.internal.api.json.RachioZoneGsonDTO.RachioCloudZone;
 import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager.PRIORITY;
 import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager.RateLimitThrottleException;
 import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager.RequestPurpose;
@@ -163,6 +166,16 @@ class RachioDeviceHandlerStatusTest {
     }
 
     @Test
+    void legacyZoneStartedEventUsesExistingZoneHandlerPath() {
+        assertLegacyZoneEventUsesExistingHandler("ZONE_STARTED");
+    }
+
+    @Test
+    void legacyZoneStoppedEventUsesExistingZoneHandlerPath() {
+        assertLegacyZoneEventUsesExistingHandler("ZONE_STOPPED");
+    }
+
+    @Test
     void missingConfiguredControllerRemainsAConfigurationFailure() {
         Thing thing = thing();
         RachioBridgeHandler bridgeHandler = bridgeHandler(thing, device("ONLINE"));
@@ -235,6 +248,40 @@ class RachioDeviceHandlerStatusTest {
         event.subType = subType;
         event.deviceId = DEVICE_ID;
         return event;
+    }
+
+    private void assertLegacyZoneEventUsesExistingHandler(String subType) {
+        Thing thing = thing();
+        RachioDevice device = deviceWithZone();
+        RachioZone zone = Objects.requireNonNull(device.getZoneByNumber(7));
+        RachioZoneHandler zoneHandler = Mockito.mock(RachioZoneHandler.class);
+        zone.setThingHandler(zoneHandler);
+        RachioEventGsonDTO event = new RachioEventGsonDTO();
+        event.type = "ZONE_STATUS";
+        event.subType = subType;
+        event.deviceId = DEVICE_ID;
+        event.zoneId = zone.id;
+        event.zoneNumber = zone.zoneNumber;
+        when(zoneHandler.webhookEvent(event)).thenReturn(true);
+        PollingDeviceHandler handler = new PollingDeviceHandler(thing, bridgeHandler(thing, device), device);
+        handler.setCallback(Mockito.mock(ThingHandlerCallback.class));
+
+        assertThat(handler.webhookEvent(event), is(true));
+
+        verify(zoneHandler).webhookEvent(event);
+    }
+
+    private RachioDevice deviceWithZone() {
+        RachioCloudDevice cloudDevice = new RachioCloudDevice();
+        cloudDevice.id = DEVICE_ID;
+        cloudDevice.name = "Rachio-E0ACCA";
+        cloudDevice.status = "ONLINE";
+        RachioCloudZone cloudZone = new RachioCloudZone();
+        cloudZone.id = "zone-id";
+        cloudZone.name = "Front lawn";
+        cloudZone.zoneNumber = 7;
+        cloudDevice.zones.add(cloudZone);
+        return new RachioDevice(cloudDevice);
     }
 
     private static RachioApiThrottledException throttledException() {

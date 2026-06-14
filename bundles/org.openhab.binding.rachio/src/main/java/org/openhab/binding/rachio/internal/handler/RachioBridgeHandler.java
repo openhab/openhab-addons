@@ -886,6 +886,14 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
                     event.deviceId);
             return false;
         }
+        logger.debug("RachioCloud: Dispatching validated legacy NotificationService event {}.{} before reconciliation",
+                event.type, event.subType);
+        boolean dispatched = webHookEvent(event);
+        if (!dispatched) {
+            logger.debug(
+                    "RachioCloud: Legacy NotificationService event {}.{} was not directly handled; reconciliation refresh remains active",
+                    event.type, event.subType);
+        }
         logger.debug("RachioCloud: Refreshing essential controller state after legacy NotificationService event {}.{}",
                 event.type, event.subType);
         refreshDeviceStatus(RefreshReason.WEBHOOK_RECONCILIATION);
