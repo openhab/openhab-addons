@@ -14,13 +14,22 @@ package org.openhab.binding.bluetooth.govee.internal;
 
 import static org.openhab.binding.bluetooth.govee.internal.GoveeBindingConstants.*;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.HexFormat;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Dimensionless;
@@ -28,25 +37,23 @@ import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.bluetooth.BeaconBluetoothHandler;
 import org.openhab.binding.bluetooth.BluetoothCharacteristic;
 import org.openhab.binding.bluetooth.BluetoothDevice;
 import org.openhab.binding.bluetooth.BluetoothDevice.ConnectionState;
-import org.openhab.binding.bluetooth.ConnectedBluetoothHandler;
-import org.openhab.binding.bluetooth.gattserial.MessageServicer;
-import org.openhab.binding.bluetooth.gattserial.SimpleGattSocket;
+import org.openhab.binding.bluetooth.BluetoothService;
 import org.openhab.binding.bluetooth.govee.internal.command.hygrometer.GetBatteryCommand;
 import org.openhab.binding.bluetooth.govee.internal.command.hygrometer.GetOrSetHumCaliCommand;
 import org.openhab.binding.bluetooth.govee.internal.command.hygrometer.GetOrSetHumWarningCommand;
 import org.openhab.binding.bluetooth.govee.internal.command.hygrometer.GetOrSetTemCaliCommand;
 import org.openhab.binding.bluetooth.govee.internal.command.hygrometer.GetOrSetTemWarningCommand;
 import org.openhab.binding.bluetooth.govee.internal.command.hygrometer.GetTemHumCommand;
+import org.openhab.binding.bluetooth.govee.internal.command.hygrometer.GoveeCommand;
 import org.openhab.binding.bluetooth.govee.internal.command.hygrometer.GoveeMessage;
 import org.openhab.binding.bluetooth.govee.internal.command.hygrometer.TemHumDTO;
 import org.openhab.binding.bluetooth.govee.internal.command.hygrometer.WarningSettingsDTO;
+import org.openhab.binding.bluetooth.notification.BluetoothConnectionStatusNotification;
 import org.openhab.binding.bluetooth.notification.BluetoothScanNotification;
-import org.openhab.binding.bluetooth.util.HeritableFuture;
-import org.openhab.binding.bluetooth.util.RetryException;
-import org.openhab.binding.bluetooth.util.RetryFuture;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
@@ -54,7 +61,6 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
@@ -65,23 +71,27 @@ import org.slf4j.LoggerFactory;
  * @author Matthias Bläsing - Fix reading advertisement data
  */
 @NonNullByDefault
-public class GoveeHygrometerHandler extends ConnectedBluetoothHandler {
+public class GoveeHygrometerHandler extends BeaconBluetoothHandler {
 
-    private static final UUID SERVICE_UUID = UUID.fromString("494e5445-4c4c-495f-524f-434b535f4857");
     private static final UUID PROTOCOL_CHAR_UUID = UUID.fromString("494e5445-4c4c-495f-524f-434b535f2011");
-    private static final UUID KEEP_ALIVE_CHAR_UUID = UUID.fromString("494e5445-4c4c-495f-524f-434b535f2012");
+    private static final UUID UUID_SVC_GOVEE_AUTH = UUID.fromString("00010203-0405-0607-0809-0a0b0c0d1910");
+    private static final UUID UUID_AUTH_NOTIFY = UUID.fromString("00010203-0405-0607-0809-0a0b0c0d2b10");
+    private static final UUID UUID_AUTH_WRITE = UUID.fromString("00010203-0405-0607-0809-0a0b0c0d2b11");
+
+    // the PSK is used for the initial handshake, which results in a session
+    // key that is used for the further communication
+    private static final byte[] PSK = "MakingLifeSmarte".getBytes(StandardCharsets.US_ASCII);
 
     private final Logger logger = LoggerFactory.getLogger(GoveeHygrometerHandler.class);
-
-    private final CommandSocket commandSocket = new CommandSocket();
 
     private GoveeHygrometerConfiguration config = new GoveeHygrometerConfiguration();
     private @Nullable GoveeModel model = null;// we use this as our default model
 
-    private CompletableFuture<?> initializeJob = CompletableFuture.completedFuture(null);// initially set to a dummy
-                                                                                         // future
     private Future<?> scanJob = CompletableFuture.completedFuture(null);
-    private Future<?> keepAliveJob = CompletableFuture.completedFuture(null);
+
+    private final Map<BluetoothCharacteristic, List<CompletableFuture<byte[]>>> characteristicListener = new ConcurrentHashMap<>();
+
+    private final AtomicBoolean refreshRunning = new AtomicBoolean();
 
     public GoveeHygrometerHandler(Thing thing) {
         super(thing);
@@ -97,102 +107,263 @@ public class GoveeHygrometerHandler extends ConnectedBluetoothHandler {
 
         config = getConfigAs(GoveeHygrometerConfiguration.class);
 
-        logger.debug("Initializing Govee Hygrometer {}", address);
-        initializeJob = RetryFuture.composeWithRetry(this::createInitSettingsJob, scheduler)//
-                .thenRun(() -> {
-                    updateStatus(ThingStatus.ONLINE);
-                });
         scanJob = scheduler.scheduleWithFixedDelay(() -> {
             try {
-                if (initializeJob.isDone() && !initializeJob.isCompletedExceptionally()) {
-                    logger.debug("refreshing temperature, humidity, and battery");
-                    refreshBattery().join();
-                    refreshTemperatureAndHumidity().join();
-                    disconnect();
-                    updateStatus(ThingStatus.ONLINE);
-                }
+                refresh();
             } catch (RuntimeException ex) {
-                logger.warn("unable to refresh", ex);
+                logger.info("Refresh failed for Govee Device {}", address, ex);
             }
-        }, 0, config.refreshInterval, TimeUnit.SECONDS);
-        keepAliveJob = scheduler.scheduleWithFixedDelay(() -> {
-            if (device.getConnectionState() == ConnectionState.CONNECTED) {
-                try {
-                    GoveeMessage message = new GoveeMessage((byte) 0xAA, (byte) 1, null);
-                    writeCharacteristic(SERVICE_UUID, KEEP_ALIVE_CHAR_UUID, message.getPayload(), false);
-                } catch (RuntimeException ex) {
-                    logger.warn("unable to send keep alive", ex);
+        }, 20, config.refreshInterval, TimeUnit.SECONDS);
+    }
+
+    private void refresh() {
+        // Refresh does in sequence:
+        //
+        // - fetch temperature and humidity
+        // - fetch battery state
+        // - set calibration data (temperature and humidity correction values)
+        // - set warning level data for temperature and humidiy
+        //
+        // The connection handshake was observered to be not 100% stable. The
+        // measurement data is also send as bluetooth notifications, which seem
+        // the be more stable The code for that can be found in
+        // #onScanRecordReceived
+        boolean wasRunning = refreshRunning.compareAndExchange(false, true);
+        if (wasRunning) {
+            logger.debug("Refresh is already running - skipping execution");
+            return;
+        }
+        try {
+            BluetoothDevice device = this.device;
+            if (device == null) {
+                logger.debug("Device not present - skipping execution");
+                return;
+            }
+            logger.info("Refreshing Govee Hygrometer {}", address);
+            device.connect();
+            device.awaitConnection(30, TimeUnit.SECONDS);
+            if (device.getConnectionState() != ConnectionState.CONNECTED) {
+                logger.info("Failed to establish connection");
+                return;
+            }
+            device.discoverServices();
+            device.awaitServiceDiscovery(10, TimeUnit.SECONDS);
+
+            EncryptionHelper encryptionHelper = encryptionHandshake();
+
+            BluetoothCharacteristic characteristic = device.getCharacteristic(PROTOCOL_CHAR_UUID);
+
+            QuantityType<Temperature> temCali = config.getTemperatureCalibration();
+            QuantityType<Dimensionless> humCali = config.getHumidityCalibration();
+            WarningSettingsDTO<Temperature> temWarnSettings = config.getTemperatureWarningSettings();
+            WarningSettingsDTO<Dimensionless> humWarnSettings = config.getHumidityWarningSettings();
+
+            if (characteristic != null) {
+                logger.debug("Before enable notifications");
+                CompletableFuture<?> future = device.enableNotifications(characteristic).thenCompose(v -> {
+                    CompletableFuture<@Nullable TemHumDTO> resultHandler = new CompletableFuture<>();
+                    logger.debug("Execute GetTemHumCommand");
+                    executeCommand(encryptionHelper, characteristic, new GetTemHumCommand(resultHandler));
+                    logger.debug("Executed GetTemHumCommand");
+                    return resultHandler;
+                }).handle((dto, th) -> {
+                    logger.debug("Received temperature and humidity data: {}", dto, th);
+                    updateTemperatureAndHumidity(dto, th);
+                    logger.debug("Update of temperature and humidity is done");
+                    return dto;
+                }).thenCompose(v -> {
+                    CompletableFuture<@Nullable QuantityType<Dimensionless>> resultHandler = new CompletableFuture<>();
+                    logger.debug("Execute GetBatteryCommand");
+                    executeCommand(encryptionHelper, characteristic, new GetBatteryCommand(resultHandler));
+                    logger.debug("Executed GetBatteryCommand");
+                    return resultHandler;
+                }).handle((dto, th) -> {
+                    logger.debug("Received battery data: {}", dto);
+                    updateBattery(dto, th);
+                    logger.debug("Update of battery data is done");
+                    return dto;
+                });
+                if (temCali != null) {
+                    future = future.thenCompose(v -> {
+                        CompletableFuture<@Nullable QuantityType<Temperature>> caliFuture = new CompletableFuture<>();
+                        logger.debug("Execute GetOrSetTemCaliCommand");
+                        executeCommand(encryptionHelper, characteristic,
+                                new GetOrSetTemCaliCommand(temCali, caliFuture));
+                        logger.debug("Executed GetOrSetTemCaliCommand");
+                        return caliFuture;
+                    });
                 }
+                if (humCali != null) {
+                    future = future.thenCompose(v -> {
+                        CompletableFuture<@Nullable QuantityType<Dimensionless>> caliFuture = new CompletableFuture<>();
+                        logger.debug("Execute GetOrSetHumCaliCommand");
+                        executeCommand(encryptionHelper, characteristic,
+                                new GetOrSetHumCaliCommand(humCali, caliFuture));
+                        logger.debug("Executed GetOrSetHumCaliCommand");
+                        return caliFuture;
+                    });
+                }
+                if (getModel().supportsWarningBroadcast()) {
+                    future = future.thenCompose(v -> {
+                        CompletableFuture<@Nullable WarningSettingsDTO<Temperature>> temWarnFuture = new CompletableFuture<>();
+                        logger.debug("Execute GetOrSetTemWarningCommand");
+                        executeCommand(encryptionHelper, characteristic,
+                                new GetOrSetTemWarningCommand(temWarnSettings, temWarnFuture));
+                        logger.debug("Executed GetOrSetTemWarningCommand");
+                        return temWarnFuture;
+                    });
+                    future = future.thenCompose(v -> {
+                        CompletableFuture<@Nullable WarningSettingsDTO<Dimensionless>> humWarnFuture = new CompletableFuture<>();
+                        logger.debug("Execute GetOrSetHumWarningCommand");
+                        executeCommand(encryptionHelper, characteristic,
+                                new GetOrSetHumWarningCommand(humWarnSettings, humWarnFuture));
+                        logger.debug("Executed GetOrSetHumWarningCommand");
+                        return humWarnFuture;
+                    });
+                }
+                future = future.thenCompose(v -> {
+                    logger.debug("Execute disableNotifications");
+                    CompletableFuture<@Nullable Void> result = device.disableNotifications(characteristic);
+                    logger.debug("Executed disableNotifications");
+                    return result;
+                });
+                future.get();
+                logger.debug("Refresh done");
             }
-        }, 1, 2, TimeUnit.SECONDS);
+        } catch (InterruptedException | ExecutionException | TimeoutException ex) {
+            logger.warn("Failed to run refresh", ex);
+        } finally {
+            if (device.getConnectionState() == ConnectionState.CONNECTED) {
+                device.disconnect();
+            }
+            logger.debug("Refresh done (finally-block)");
+            refreshRunning.set(false);
+        }
+    }
+
+    private CompletableFuture<@Nullable Void> executeCommand(EncryptionHelper encryptionHelper,
+            BluetoothCharacteristic characteristic, GoveeCommand command) {
+        // Register the listener for the reply to the command
+        // this will wait for max. 5 seconds for the reply
+        // from the device.
+        AtomicReference<CompletableFuture<@Nullable Void>> ref = new AtomicReference<>();
+        ref.set(listenForCharacteristicUpdate(characteristic).orTimeout(5, TimeUnit.SECONDS).handle((data, th) -> {
+            logger.debug("executeCommand, running notification listener: {}, {}", ref.get(), data, th);
+            try {
+                if (data != null) {
+                    byte[] decryptedData = encryptionHelper.decrypt(data);
+                    GoveeMessage reply = new GoveeMessage(decryptedData);
+                    if (command.matches(reply)) {
+                        command.handleResponse(reply.getData(), th);
+                    }
+                }
+                if (th != null) {
+                    command.handleResponse(null, th);
+                } else {
+                    command.handleResponse(null, new IllegalArgumentException("Received data did not match command "
+                            + command + ": " + HexFormat.ofDelimiter(" ").formatHex(data)));
+                }
+            } catch (Exception ex) {
+                logger.debug("executeCommand, notification listener raised exception", ex);
+                command.handleResponse(null, ex);
+            }
+            return null;
+        }));
+        logger.debug("Resolve completable future: {}", ref.get());
+        return device
+                .writeCharacteristic(characteristic, encryptionHelper.encrypt(command.createMessage().getPayload()))
+                .thenRun(() -> logger.debug("Write executed: {}", characteristic.getUuid()))
+                .thenCombine(ref.get(), (a, b) -> null);
     }
 
     @Override
     public void dispose() {
-        initializeJob.cancel(false);
         scanJob.cancel(false);
-        keepAliveJob.cancel(false);
         super.dispose();
     }
 
-    private CompletableFuture<@Nullable ?> createInitSettingsJob() {
-        logger.debug("Initializing Govee Hygrometer {} settings", address);
-
-        QuantityType<Temperature> temCali = config.getTemperatureCalibration();
-        QuantityType<Dimensionless> humCali = config.getHumidityCalibration();
-        WarningSettingsDTO<Temperature> temWarnSettings = config.getTemperatureWarningSettings();
-        WarningSettingsDTO<Dimensionless> humWarnSettings = config.getHumidityWarningSettings();
-
-        final CompletableFuture<@Nullable ?> parent = new HeritableFuture<>();
-        CompletableFuture<@Nullable ?> future = parent;
-        future.complete(null);
-
-        if (temCali != null) {
-            future = future.thenCompose(v -> {
-                CompletableFuture<@Nullable QuantityType<Temperature>> caliFuture = parent.newIncompleteFuture();
-                commandSocket.sendMessage(new GetOrSetTemCaliCommand(temCali, caliFuture));
-                return caliFuture;
-            });
-        }
-        if (humCali != null) {
-            future = future.thenCompose(v -> {
-                CompletableFuture<@Nullable QuantityType<Dimensionless>> caliFuture = parent.newIncompleteFuture();
-                commandSocket.sendMessage(new GetOrSetHumCaliCommand(humCali, caliFuture));
-                return caliFuture;
-            });
-        }
-        if (getModel().supportsWarningBroadcast()) {
-            future = future.thenCompose(v -> {
-                CompletableFuture<@Nullable WarningSettingsDTO<Temperature>> temWarnFuture = parent
-                        .newIncompleteFuture();
-                commandSocket.sendMessage(new GetOrSetTemWarningCommand(temWarnSettings, temWarnFuture));
-                return temWarnFuture;
-            }).thenCompose(v -> {
-                CompletableFuture<@Nullable WarningSettingsDTO<Dimensionless>> humWarnFuture = parent
-                        .newIncompleteFuture();
-                commandSocket.sendMessage(new GetOrSetHumWarningCommand(humWarnSettings, humWarnFuture));
-                return humWarnFuture;
-            });
+    /**
+     * Handle the encryption handshake required to communicate with the device.
+     * Newer Govee devices require the communication over the
+     * {@link #PROTOCOL_CHAR_UUID} characteristic to be encrypted. This method
+     * does the handshake and yields a helper that handles the encryption. If
+     * it is determined, that this device does not support encryption, a NOOP
+     * implementation is returned.
+     *
+     * @return EncryptionHelper to use for this session. This is never {@code null}.
+     * @throws InterruptedException
+     * @throws ExecutionException
+     * @throws TimeoutException
+     */
+    private EncryptionHelper encryptionHandshake() throws InterruptedException, ExecutionException, TimeoutException {
+        BluetoothService service = device.getServices(UUID_SVC_GOVEE_AUTH);
+        // For devices that don't support/require encryption and thus don't offer
+        // the authentication service, return a replacement, that just copys the
+        // input
+        if (service == null) {
+            return EncryptionHelper.NOOP;
         }
 
-        // CompletableFuture.exceptionallyCompose isn't available yet so we have to compose it manually for now.
-        CompletableFuture<@Nullable Void> retFuture = future.newIncompleteFuture();
-        future.whenComplete((v, th) -> {
-            if (th instanceof CompletionException) {
-                th = th.getCause();
+        BluetoothCharacteristic authNotifyInput = service.getCharacteristic(UUID_AUTH_NOTIFY);
+        BluetoothCharacteristic authWrite = service.getCharacteristic(UUID_AUTH_WRITE);
+
+        if (authNotifyInput == null || authWrite == null) {
+            return EncryptionHelper.NOOP;
+        }
+
+        BluetoothCharacteristic authNotify = authNotifyInput;
+
+        EncryptionHelper pskEncryption = new EncryptionHelper(PSK);
+
+        byte[] tx1 = createTxPacket((byte) 1);
+        byte[] encryptedTx1 = pskEncryption.encrypt(tx1);
+
+        byte[] tx2 = createTxPacket((byte) 2);
+        byte[] encryptedTx2 = pskEncryption.encrypt(tx2);
+
+        logger.debug("Enable notifications for {}", authNotify);
+        device.enableNotifications(authNotify).get();
+
+        try {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Sending TX1: {}", HexFormat.ofDelimiter(" ").formatHex(tx1));
             }
-            if (th instanceof RuntimeException) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Failed to initialize device: " + th.getMessage());
-                retFuture.completeExceptionally(th);
-            } else if (th != null) {
-                logger.debug("Failure to initialize device: {}. Retrying in 30 seconds", th.getMessage());
-                retFuture.completeExceptionally(new RetryException(30, TimeUnit.SECONDS));
-            } else {
-                retFuture.complete(null);
+            CompletableFuture<byte[]> result = listenForCharacteristicUpdate(authNotify);
+            device.writeCharacteristic(authWrite, encryptedTx1);
+            byte[] rx1 = pskEncryption.decrypt(result.get(30, TimeUnit.SECONDS));
+            if (logger.isDebugEnabled()) {
+                logger.debug("Received as RX1: {}", HexFormat.ofDelimiter(" ").formatHex(rx1));
             }
-        });
-        return retFuture;
+            if (rx1[0] != ((byte) 0xE7) || rx1[1] != ((byte) 0x01)) {
+                throw new IllegalStateException("Encryption Handshake failed");
+            }
+            byte[] sessionKey = Arrays.copyOfRange(rx1, 2, 18);
+            if (logger.isDebugEnabled()) {
+                logger.debug("Sending TX2: {}", HexFormat.ofDelimiter(" ").formatHex(tx2));
+            }
+            result = listenForCharacteristicUpdate(authNotify);
+            device.writeCharacteristic(authWrite, encryptedTx2);
+            byte[] rx2 = pskEncryption.decrypt(result.get(30, TimeUnit.SECONDS));
+            if (logger.isDebugEnabled()) {
+                logger.debug("Received as RX2: {}", HexFormat.ofDelimiter(" ").formatHex(rx2));
+            }
+            if (rx2[0] != ((byte) 0xE7) || rx2[1] != ((byte) 0x02)) {
+                throw new IllegalStateException("Encryption Handshake failed (2)");
+            }
+            return new EncryptionHelper(sessionKey);
+        } finally {
+            device.disableNotifications(authNotify).get();
+        }
+    }
+
+    private byte[] createTxPacket(byte phase) {
+        byte[] tx = new byte[20];
+        tx[0] = (byte) 0xE7;
+        tx[1] = phase;
+        for (int i = 0; i < (tx.length - 1); i++) {
+            tx[19] ^= tx[i];
+        }
+        return tx;
     }
 
     @Override
@@ -200,25 +371,12 @@ public class GoveeHygrometerHandler extends ConnectedBluetoothHandler {
         super.handleCommand(channelUID, command);
 
         switch (channelUID.getId()) {
-            case CHANNEL_ID_BATTERY:
+            case CHANNEL_ID_BATTERY, CHANNEL_ID_TEMPERATURE, CHANNEL_ID_HUMIDITY -> {
                 if (command == RefreshType.REFRESH) {
-                    refreshBattery();
+                    refresh();
                 }
-                return;
-            case CHANNEL_ID_TEMPERATURE:
-            case CHANNEL_ID_HUMIDITY:
-                if (command == RefreshType.REFRESH) {
-                    refreshTemperatureAndHumidity();
-                }
-                return;
+            }
         }
-    }
-
-    private CompletableFuture<@Nullable ?> refreshBattery() {
-        CompletableFuture<@Nullable QuantityType<Dimensionless>> future = new CompletableFuture<>();
-        commandSocket.sendMessage(new GetBatteryCommand(future));
-        future.whenCompleteAsync(this::updateBattery, scheduler);
-        return future;
     }
 
     private void updateBattery(@Nullable QuantityType<Dimensionless> result, @Nullable Throwable th) {
@@ -229,13 +387,6 @@ public class GoveeHygrometerHandler extends ConnectedBluetoothHandler {
             return;
         }
         updateState(CHANNEL_ID_BATTERY, result);
-    }
-
-    private CompletableFuture<@Nullable ?> refreshTemperatureAndHumidity() {
-        CompletableFuture<@Nullable TemHumDTO> future = new CompletableFuture<>();
-        commandSocket.sendMessage(new GetTemHumCommand(future));
-        future.whenCompleteAsync(this::updateTemperatureAndHumidity, scheduler);
-        return future;
     }
 
     private void updateTemperatureAndHumidity(@Nullable TemHumDTO result, @Nullable Throwable th) {
@@ -314,30 +465,42 @@ public class GoveeHygrometerHandler extends ConnectedBluetoothHandler {
     @Override
     public void onCharacteristicUpdate(BluetoothCharacteristic characteristic, byte[] value) {
         super.onCharacteristicUpdate(characteristic, value);
-        commandSocket.receivePacket(value);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Notification: {} // {}", characteristic.getUuid(),
+                    HexFormat.ofDelimiter(" ").formatHex(value));
+        }
+        characteristicListener.getOrDefault(characteristic, List.of()).forEach(cf -> {
+            logger.debug("Delivering to {}", cf);
+            cf.complete(value);
+        });
     }
 
-    private class CommandSocket extends SimpleGattSocket<GoveeMessage> {
+    private CompletableFuture<byte[]> listenForCharacteristicUpdate(BluetoothCharacteristic characteristic) {
+        CompletableFuture<byte[]> result = new CompletableFuture<>();
+        result.handle((innerResult, throwable) -> {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Removing characteristicListener for {}, {}", characteristic.getUuid(),
+                        HexFormat.ofDelimiter(" ").formatHex(innerResult), throwable);
+            }
+            Optional.ofNullable(characteristicListener.get(characteristic)).ifPresent(list -> list.remove(result));
+            return innerResult;
+        });
+        logger.debug("listenForCharacteristicUpdate future: {}", result);
+        characteristicListener
+                .computeIfAbsent(characteristic, c -> new CopyOnWriteArrayList<CompletableFuture<byte[]>>())
+                .add(result);
+        return result;
+    }
 
-        @Override
-        protected ScheduledExecutorService getScheduler() {
-            return scheduler;
-        }
-
-        @Override
-        public void sendMessage(MessageServicer<GoveeMessage, GoveeMessage> messageServicer) {
-            logger.debug("sending message: {}", messageServicer.getClass().getSimpleName());
-            super.sendMessage(messageServicer);
-        }
-
-        @Override
-        protected void parsePacket(byte[] packet, Consumer<GoveeMessage> messageHandler) {
-            messageHandler.accept(new GoveeMessage(packet));
-        }
-
-        @Override
-        protected CompletableFuture<@Nullable Void> sendPacket(byte[] data) {
-            return writeCharacteristic(SERVICE_UUID, PROTOCOL_CHAR_UUID, data, true);
+    @Override
+    public void onConnectionStateChange(BluetoothConnectionStatusNotification connectionNotification) {
+        super.onConnectionStateChange(connectionNotification);
+        if (connectionNotification.getConnectionState() == ConnectionState.DISCONNECTED) {
+            characteristicListener.values().stream().flatMap(l -> l.stream()).forEach(cf -> {
+                logger.debug("Canceling: {}", cf);
+                cf.cancel(true);
+            });
+            characteristicListener.clear();
         }
     }
 
