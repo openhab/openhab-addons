@@ -26,7 +26,7 @@ public class GetDndTimer {
 
     public Result[] result;
 
-    public class Result {
+    public static class Result {
         @SerializedName("start_hour")
         public int startHour;
 
@@ -43,7 +43,7 @@ public class GetDndTimer {
         public Actions actions;
     }
 
-    public class Actions {
+    public static class Actions {
         public int resume;
         public int vol;
         public int led;
