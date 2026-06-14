@@ -161,6 +161,23 @@ public class RachioHandlerFactory extends BaseThingHandlerFactory {
         return false;
     }
 
+    public boolean legacyWebHookEvent(String ipAddress, RachioEventGsonDTO event) {
+        for (Map.Entry<String, RachioBridge> be : bridgeList.entrySet()) {
+            RachioBridgeHandler cloudHandler = be.getValue().cloudHandler;
+            if (cloudHandler == null) {
+                continue;
+            }
+            String externalId = cloudHandler.getExternalId();
+            if (externalId != null && externalId.equals(event.externalId)) {
+                return cloudHandler.legacyWebHookEvent(event);
+            }
+        }
+
+        logger.warn("RachioCloud: Unauthorized legacy webhook event (wrong externalId: {}, source ip: {})",
+                event.externalId, ipAddress);
+        return false;
+    }
+
     public boolean isValidWebHookSignature(@Nullable String signature, byte[] requestBody) {
         boolean apiKeyAvailable = false;
 

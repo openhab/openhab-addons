@@ -45,6 +45,7 @@ import javax.crypto.spec.SecretKeySpec;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.rachio.internal.RachioBindingConstants;
+import org.openhab.binding.rachio.internal.api.json.RachioApiGsonDTO.RachioApiLegacyWebHookEventType;
 import org.openhab.binding.rachio.internal.api.json.RachioApiGsonDTO.RachioApiWebHookEntry;
 import org.openhab.binding.rachio.internal.api.json.RachioApiGsonDTO.RachioApiWebHookList;
 import org.openhab.binding.rachio.internal.api.json.RachioApiGsonDTO.RachioApiWebhookEventTypesResponse;
@@ -1031,6 +1032,119 @@ public class RachioApi {
 
     public void getDeviceInfo(String deviceId) throws RachioApiException {
         httpGet(APIURL_BASE + APIURL_GET_DEVICE + "/" + deviceId, null, PRIORITY.MED);
+    }
+
+    public List<RachioApiLegacyWebHookEventType> listLegacyNotificationEventTypes() throws RachioApiException {
+        return listLegacyNotificationEventTypes(RequestPurpose.BACKGROUND_REFRESH);
+    }
+
+    public List<RachioApiLegacyWebHookEventType> listLegacyNotificationEventTypes(RequestPurpose requestPurpose)
+            throws RachioApiException {
+        String json = httpGet(APIURL_BASE + APIURL_DEV_WEBHOOK_EVENT_TYPES, null, PRIORITY.MED,
+                requestPurpose).resultString;
+        return parseLegacyNotificationEventTypes(json);
+    }
+
+    static List<RachioApiLegacyWebHookEventType> parseLegacyNotificationEventTypes(String json) {
+        JsonElement root = JsonParser.parseString(json);
+        JsonArray entries;
+        if (root.isJsonArray()) {
+            entries = root.getAsJsonArray();
+        } else if (root.isJsonObject()) {
+            JsonElement eventTypes = root.getAsJsonObject().get("eventTypes");
+            if (eventTypes == null || !eventTypes.isJsonArray()) {
+                return List.of();
+            }
+            entries = eventTypes.getAsJsonArray();
+        } else {
+            return List.of();
+        }
+
+        Gson gson = new Gson();
+        List<RachioApiLegacyWebHookEventType> eventTypes = new ArrayList<>();
+        for (JsonElement entry : entries) {
+            if (entry != null && entry.isJsonObject()) {
+                RachioApiLegacyWebHookEventType eventType = gson.fromJson(entry, RachioApiLegacyWebHookEventType.class);
+                if (eventType != null && !eventType.id.isBlank()) {
+                    eventTypes.add(eventType);
+                }
+            }
+        }
+        return eventTypes;
+    }
+
+    public List<RachioApiWebHookEntry> listLegacyNotificationWebHooks(String deviceId, RequestPurpose requestPurpose)
+            throws RachioApiException {
+        String json = httpGet(APIURL_BASE + APIURL_DEV_QUERY_WEBHOOK + "/" + deviceId + "/webhook", null, PRIORITY.MED,
+                requestPurpose).resultString;
+        return parseWebHookList(json);
+    }
+
+    public void deleteLegacyNotificationWebHook(String hookId, RequestPurpose requestPurpose)
+            throws RachioApiException {
+        httpDelete(APIURL_BASE + APIURL_DEV_DELETE_WEBHOOK + "/" + hookId, null, PRIORITY.MED, requestPurpose);
+    }
+
+    public void registerLegacyNotificationWebHook(String deviceId, String callbackUrl, String callbackUsername,
+            String callbackPassword, @Nullable String externalId, Boolean clearAllCallbacks,
+            RequestPurpose requestPurpose) throws RachioApiException {
+        String registrationUrl = buildWebhookRegistrationUrl(callbackUrl, callbackUsername, callbackPassword);
+        String expectedExternalId = externalId != null ? externalId : "";
+        logger.debug(
+                "Register legacy NotificationService webhook for controller '{}', callbackUrl={}, userInfoPresent={}, clearAllCallbacks={}",
+                deviceId, sanitizeWebhookUrlForDiagnostic(registrationUrl), webhookUrlContainsUserInfo(registrationUrl),
+                clearAllCallbacks);
+
+        boolean matchingWebhookExists = reconcileLegacyNotificationWebHooks(
+                listLegacyNotificationWebHooks(deviceId, requestPurpose), registrationUrl, expectedExternalId,
+                getKnownExternalIds(externalId), clearAllCallbacks, requestPurpose);
+        if (matchingWebhookExists) {
+            logger.debug("Retain existing matching legacy NotificationService webhook for controller '{}'", deviceId);
+            return;
+        }
+
+        List<Map<String, String>> eventTypes = List
+                .of(WHE_DEVICE_STATUS, WHE_RAIN_DELAY, WEATHER_INTELLIGENCE, WHE_WATER_BUDGET, WHE_SCHEDULE_STATUS,
+                        WHE_ZONE_STATUS, WHE_RAIN_SENSOR_DETECTION, WHE_ZONE_DELTA, WHE_DELTA)
+                .stream().map(id -> Map.of("id", id)).toList();
+        Map<String, Object> createPayload = Map.of("device", Map.of("id", deviceId), "externalId", expectedExternalId,
+                "url", registrationUrl, "eventTypes", eventTypes);
+        try {
+            httpPost(APIURL_BASE + APIURL_DEV_POST_WEBHOOK, new Gson().toJson(createPayload), PRIORITY.HI,
+                    requestPurpose);
+        } catch (RachioApiException e) {
+            throw sanitizeWebhookRegistrationException(e, registrationUrl);
+        }
+    }
+
+    private boolean reconcileLegacyNotificationWebHooks(List<RachioApiWebHookEntry> webhooks, String callbackUrl,
+            String expectedExternalId, Collection<String> externalIds, Boolean clearAllCallbacks,
+            RequestPurpose requestPurpose) {
+        boolean deleteAll = Boolean.TRUE.equals(clearAllCallbacks);
+        boolean matchingWebhookRetained = false;
+        logger.debug("Registered legacy NotificationService webhook count: {}", webhooks.size());
+        for (RachioApiWebHookEntry webhook : webhooks) {
+            boolean matchesExpectedWebhook = Objects.equals(webhook.url, callbackUrl)
+                    && Objects.equals(webhook.externalId, expectedExternalId);
+            boolean ownedByBinding = Objects.equals(webhook.url, callbackUrl)
+                    || externalIds.stream().anyMatch(id -> Objects.equals(webhook.externalId, id));
+            if (!deleteAll && matchesExpectedWebhook && !matchingWebhookRetained) {
+                matchingWebhookRetained = true;
+                logger.debug("Retain existing matching legacy NotificationService webhook '{}'", webhook.id);
+            } else if (deleteAll || ownedByBinding) {
+                try {
+                    logger.debug("Delete legacy NotificationService webhook '{}' ({})", webhook.id,
+                            deleteAll ? "clearAllCallbacks=true" : "stale or duplicate binding callback");
+                    deleteLegacyNotificationWebHook(webhook.id, requestPurpose);
+                } catch (RachioApiException e) {
+                    logger.debug("Deleting legacy NotificationService webhook '{}' failed: {}", webhook.id,
+                            e.getMessage());
+                }
+            } else {
+                logger.debug("Retain unrelated legacy NotificationService webhook '{}'", webhook.id);
+            }
+        }
+        return matchingWebhookRetained;
     }
 
     public void registerWebHook(String deviceId, String callbackUrl, String callbackUsername, String callbackPassword,

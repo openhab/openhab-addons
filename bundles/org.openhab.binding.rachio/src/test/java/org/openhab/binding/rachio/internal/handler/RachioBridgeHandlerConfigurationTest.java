@@ -18,11 +18,17 @@ import static org.mockito.Mockito.verify;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.PARAM_FORECAST_UNITS;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_TYPE_CLOUD;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.openhab.binding.rachio.internal.api.RachioDevice;
+import org.openhab.binding.rachio.internal.api.json.RachioDeviceGsonDTO.RachioCloudDevice;
+import org.openhab.binding.rachio.internal.api.json.RachioEventGsonDTO;
+import org.openhab.binding.rachio.internal.api.webhook.RachioWebhookMode;
+import org.openhab.binding.rachio.internal.api.webhook.RachioWebhookResourceType;
 import org.openhab.binding.rachio.internal.handler.RachioBridgeHandler.RefreshReason;
 import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager.PRIORITY;
 import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager.RequestPurpose;
@@ -39,6 +45,38 @@ import org.openhab.core.thing.binding.builder.BridgeBuilder;
 @NonNullByDefault
 @SuppressWarnings({ "null" })
 class RachioBridgeHandlerConfigurationTest {
+    @Test
+    void controllerUsesLegacyNotificationServiceWhileSmartHoseResourcesRemainPollingOnly() {
+        assertThat(RachioBridgeHandler.selectWebhookMode(RachioWebhookResourceType.IRRIGATION_CONTROLLER, true),
+                is(RachioWebhookMode.LEGACY_NOTIFICATION_SERVICE));
+        assertThat(RachioBridgeHandler.selectWebhookMode(RachioWebhookResourceType.VALVE, true),
+                is(RachioWebhookMode.DISABLED));
+        assertThat(RachioBridgeHandler.selectWebhookMode(RachioWebhookResourceType.PROGRAM, true),
+                is(RachioWebhookMode.DISABLED));
+        assertThat(RachioBridgeHandler.selectWebhookMode(RachioWebhookResourceType.IRRIGATION_CONTROLLER, false),
+                is(RachioWebhookMode.DISABLED));
+    }
+
+    @Test
+    void validLegacyEventTriggersEssentialWebhookReconciliationRefresh() {
+        Bridge bridge = BridgeBuilder.create(THING_TYPE_CLOUD, "bridge").build();
+        RachioBridgeHandler handler = Mockito.spy(new RachioBridgeHandler(bridge));
+        RachioCloudDevice cloudDevice = new RachioCloudDevice();
+        cloudDevice.id = "controller-id";
+        HashMap<String, RachioDevice> devices = new HashMap<>();
+        devices.put(cloudDevice.id, new RachioDevice(cloudDevice));
+        Mockito.doReturn(devices).when(handler).getDevices();
+        Mockito.doNothing().when(handler).refreshDeviceStatus(RefreshReason.WEBHOOK_RECONCILIATION);
+        RachioEventGsonDTO event = new RachioEventGsonDTO();
+        event.deviceId = cloudDevice.id;
+        event.type = "ZONE_STATUS";
+        event.subType = "ZONE_STARTED";
+
+        assertThat(handler.legacyWebHookEvent(event), is(true));
+
+        verify(handler).refreshDeviceStatus(RefreshReason.WEBHOOK_RECONCILIATION);
+    }
+
     @Test
     void scheduledCorePollUsesMediumPriority() {
         Bridge bridge = BridgeBuilder.create(THING_TYPE_CLOUD, "bridge").build();

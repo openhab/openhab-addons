@@ -179,26 +179,38 @@ public class RachioWebHookServlet extends HttpServlet {
         }
 
         byte[] rawBody = request.getInputStream().readAllBytes();
-        String signature = request.getHeader(WEBHOOK_SIGNATURE_HEADER);
-        if (signature == null || signature.isBlank()) {
-            logger.warn("RachioWebHook: Rejecting webhook request from {} because the x-signature header is missing",
-                    ipAddress);
-            resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-            return;
-        }
-
-        if (!rachioHandlerFactory.isValidWebHookSignature(signature, rawBody)) {
-            logger.warn("RachioWebHook: Rejecting webhook request from {} because signature validation failed",
-                    ipAddress);
-            resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-            return;
-        }
-
         String data = new String(rawBody, StandardCharsets.UTF_8);
         RachioEventGsonDTO event = null;
         try {
             logger.trace("RachioWebHook: Received {} byte webhook payload", rawBody.length);
             event = parseEvent(data);
+            if (event.isLegacyNotificationEvent()) {
+                logger.trace("RachioWebHook: Processing legacy NotificationService event ({})", describeEvent(event));
+                if (!rachioHandlerFactory.legacyWebHookEvent(ipAddress, event)) {
+                    resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                    return;
+                }
+                resp.setStatus(HttpServletResponse.SC_OK);
+                resp.getWriter().write("");
+                return;
+            }
+
+            String signature = request.getHeader(WEBHOOK_SIGNATURE_HEADER);
+            if (signature == null || signature.isBlank()) {
+                logger.warn(
+                        "RachioWebHook: Rejecting webhook request from {} because the x-signature header is missing",
+                        ipAddress);
+                resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
+            }
+
+            if (!rachioHandlerFactory.isValidWebHookSignature(signature, rawBody)) {
+                logger.warn("RachioWebHook: Rejecting webhook request from {} because signature validation failed",
+                        ipAddress);
+                resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
+            }
+
             event.normalize();
             logger.trace("RachioEvent {}.{} for device '{}': {}", event.category, event.type, event.deviceId,
                     event.summary);

@@ -151,6 +151,58 @@ class RachioWebHookServletTest {
         verify(handlerFactory, never()).webHookEvent(anyString(), any(RachioEventGsonDTO.class));
     }
 
+    @Test
+    void validLegacyNotificationEventWithoutSignatureIsAccepted() throws Exception {
+        RachioHandlerFactory handlerFactory = mockHandlerFactory(false);
+        RachioWebHookServlet servlet = servlet(handlerFactory);
+        HttpServletResponse response = response();
+
+        servlet.service(request(legacyEventJson("external-id"), null), response);
+
+        verify(handlerFactory).legacyWebHookEvent(eq("127.0.0.1"), any(RachioEventGsonDTO.class));
+        verify(handlerFactory, never()).isValidWebHookSignature(anyString(), any(byte[].class));
+        verify(response).setStatus(HttpServletResponse.SC_OK);
+    }
+
+    @Test
+    void legacyNotificationEventWithWrongExternalIdIsRejected() throws Exception {
+        RachioHandlerFactory handlerFactory = mockHandlerFactory(false);
+        when(handlerFactory.legacyWebHookEvent(eq("127.0.0.1"), any(RachioEventGsonDTO.class))).thenReturn(false);
+        RachioWebHookServlet servlet = servlet(handlerFactory);
+        HttpServletResponse response = response();
+
+        servlet.service(request(legacyEventJson("wrong-external-id"), null), response);
+
+        verify(response).sendError(HttpServletResponse.SC_UNAUTHORIZED);
+        verify(handlerFactory, never()).webHookEvent(anyString(), any(RachioEventGsonDTO.class));
+    }
+
+    @Test
+    void newWebhookServiceEventWithoutSignatureIsRejected() throws Exception {
+        RachioHandlerFactory handlerFactory = mockHandlerFactory(true);
+        RachioWebHookServlet servlet = servlet(handlerFactory);
+        HttpServletResponse response = response();
+
+        servlet.service(request(eventJson("event-1"), null), response);
+
+        verify(response).sendError(HttpServletResponse.SC_UNAUTHORIZED);
+        verify(handlerFactory, never()).legacyWebHookEvent(anyString(), any(RachioEventGsonDTO.class));
+        verify(handlerFactory, never()).webHookEvent(anyString(), any(RachioEventGsonDTO.class));
+    }
+
+    @Test
+    void unknownUnsignedLegacyPayloadIsRejected() throws Exception {
+        RachioHandlerFactory handlerFactory = mockHandlerFactory(true);
+        RachioWebHookServlet servlet = servlet(handlerFactory);
+        HttpServletResponse response = response();
+
+        servlet.service(request(legacyEventJson("external-id").replace("ZONE_STATUS", "FUTURE_STATUS"), null),
+                response);
+
+        verify(response).sendError(HttpServletResponse.SC_UNAUTHORIZED);
+        verify(handlerFactory, never()).legacyWebHookEvent(anyString(), any(RachioEventGsonDTO.class));
+    }
+
     private RachioWebHookServlet servlet(RachioHandlerFactory handlerFactory) throws Exception {
         return new RachioWebHookServlet(handlerFactory);
     }
@@ -159,10 +211,11 @@ class RachioWebHookServletTest {
         RachioHandlerFactory handlerFactory = Mockito.mock(RachioHandlerFactory.class);
         when(handlerFactory.isValidWebHookSignature(anyString(), any(byte[].class))).thenReturn(validSignature);
         when(handlerFactory.webHookEvent(anyString(), any(RachioEventGsonDTO.class))).thenReturn(true);
+        when(handlerFactory.legacyWebHookEvent(anyString(), any(RachioEventGsonDTO.class))).thenReturn(true);
         return handlerFactory;
     }
 
-    private HttpServletRequest request(String body, String signature) throws IOException {
+    private HttpServletRequest request(String body, @Nullable String signature) throws IOException {
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         when(request.getRequestURI()).thenReturn(SERVLET_WEBHOOK_PATH);
         when(request.getMethod()).thenReturn("POST");
@@ -214,6 +267,19 @@ class RachioWebHookServletTest {
                   }
                 }
                 """;
+    }
+
+    private String legacyEventJson(String externalId) {
+        return """
+                {
+                  "type": "ZONE_STATUS",
+                  "subType": "ZONE_STARTED",
+                  "category": "ZONE",
+                  "deviceId": "controller-id",
+                  "externalId": "%s",
+                  "zoneNumber": 7
+                }
+                """.formatted(externalId);
     }
 
     private static class ByteArrayServletInputStream extends ServletInputStream {

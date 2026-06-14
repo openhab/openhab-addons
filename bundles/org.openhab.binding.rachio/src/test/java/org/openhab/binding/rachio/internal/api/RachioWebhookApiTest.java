@@ -19,6 +19,11 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.APIURL_BASE;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.APIURL_DEV_DELETE_WEBHOOK;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.APIURL_DEV_POST_WEBHOOK;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.APIURL_DEV_QUERY_WEBHOOK;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.APIURL_DEV_WEBHOOK_EVENT_TYPES;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.EVENT_DEVICE_ZONE_RUN_STARTED;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.EVENT_SCHEDULE_STARTED;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.EVENT_VALVE_RUN_END;
@@ -42,6 +47,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpStatus;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.rachio.internal.api.json.RachioApiGsonDTO.RachioApiLegacyWebHookEventType;
 import org.openhab.binding.rachio.internal.api.json.RachioApiGsonDTO.RachioApiWebHookEntry;
 import org.openhab.binding.rachio.internal.api.json.RachioApiGsonDTO.RachioApiWebHookResourceId;
 import org.openhab.binding.rachio.internal.api.webhook.RachioWebhookResourceType;
@@ -60,6 +66,22 @@ import com.google.gson.JsonParser;
 @NonNullByDefault
 @SuppressWarnings({ "null" })
 class RachioWebhookApiTest {
+    @Test
+    void legacyEventTypeListParsesNotificationServiceResponse() {
+        String json = """
+                [
+                  {"id":"5","type":"DEVICE_STATUS","description":"Device status"},
+                  {"id":"10","type":"ZONE_STATUS","description":"Zone status"}
+                ]
+                """;
+
+        List<RachioApiLegacyWebHookEventType> eventTypes = RachioApi.parseLegacyNotificationEventTypes(json);
+
+        assertThat(eventTypes.size(), is(2));
+        assertThat(eventTypes.getFirst().id, is("5"));
+        assertThat(eventTypes.getFirst().type, is("DEVICE_STATUS"));
+    }
+
     @Test
     void eventTypeListParsesStringAndObjectEntries() {
         String json = """
@@ -273,6 +295,64 @@ class RachioWebhookApiTest {
     }
 
     @Test
+    void legacyNotificationWebhookBuildsEncodedCredentialUrlWithoutSanitizerLeak() throws Exception {
+        RachioApi api = new RachioApi("person-id");
+        RecordingRachioHttp http = new RecordingRachioHttp();
+        setField(api, "httpApi", http);
+        setField(api, "rateLimitManager", new RecordingRateLimitManager(0));
+
+        api.registerLegacyNotificationWebHook("device-id", "https://webhook.site/57b-example", "rachio test",
+                "test-secret-123:/?@", "external-id", false, RequestPurpose.INITIALIZATION);
+
+        JsonObject payload = JsonParser.parseString(http.postBodies.getFirst()).getAsJsonObject();
+        String payloadUrl = payload.get("url").getAsString();
+        String sanitizedUrl = RachioApi.sanitizeWebhookUrlForDiagnostic(payloadUrl);
+
+        assertThat(http.getUrls.getFirst(), containsString(APIURL_DEV_QUERY_WEBHOOK + "/device-id/webhook"));
+        assertThat(http.postUrls.getFirst(), containsString(APIURL_DEV_POST_WEBHOOK));
+        assertThat(payloadUrl, is("https://rachio%20test:test-secret-123%3A%2F%3F%40@webhook.site/57b-example"));
+        assertThat(sanitizedUrl, is("https://<user>:***@webhook.site/57b-example"));
+        assertThat(sanitizedUrl.contains("test-secret-123"), is(false));
+        assertThat(payload.getAsJsonObject("device").get("id").getAsString(), is("device-id"));
+        assertThat(payload.getAsJsonArray("eventTypes").size(), is(9));
+    }
+
+    @Test
+    void clearAllLegacyNotificationWebhooksDeletesDeviceCallbacksThenRegistersAgain() throws Exception {
+        RachioApi api = new RachioApi("person-id");
+        RecordingRachioHttp http = new RecordingRachioHttp();
+        http.legacyWebhookListJson = """
+                [
+                  {"id":"hook-1","url":"https://other.example/hook","externalId":"other"},
+                  {"id":"hook-2","url":"https://host.example/rachio/webhook","externalId":"external-id"}
+                ]
+                """;
+        setField(api, "httpApi", http);
+        setField(api, "rateLimitManager", new RecordingRateLimitManager(0));
+
+        api.registerLegacyNotificationWebHook("device-id", "https://host.example/rachio/webhook", "", "", "external-id",
+                true, RequestPurpose.INITIALIZATION);
+
+        assertThat(http.deleteUrls, contains(APIURL_BASE + APIURL_DEV_DELETE_WEBHOOK + "/hook-1",
+                APIURL_BASE + APIURL_DEV_DELETE_WEBHOOK + "/hook-2"));
+        assertThat(http.postUrls.size(), is(1));
+    }
+
+    @Test
+    void legacyNotificationEventTypeEndpointUsesRequestThrottling() throws Exception {
+        RachioApi api = new RachioApi("person-id");
+        RecordingRachioHttp http = new RecordingRachioHttp();
+        RecordingRateLimitManager rateLimitManager = new RecordingRateLimitManager(0);
+        setField(api, "httpApi", http);
+        setField(api, "rateLimitManager", rateLimitManager);
+
+        api.listLegacyNotificationEventTypes(RequestPurpose.INITIALIZATION);
+
+        assertThat(http.getUrls.getFirst(), containsString(APIURL_DEV_WEBHOOK_EVENT_TYPES));
+        assertThat(rateLimitManager.requestPurposes, contains(RequestPurpose.INITIALIZATION));
+    }
+
+    @Test
     void registerWebhookListLookupLocalThrottlePropagatesForDeferredHandlerRetry() throws Exception {
         RachioApi api = new RachioApi("person-id");
         RecordingRachioHttp http = new RecordingRachioHttp();
@@ -349,7 +429,9 @@ class RachioWebhookApiTest {
         private final List<String> getUrls = new ArrayList<>();
         private final List<String> postUrls = new ArrayList<>();
         private final List<String> postBodies = new ArrayList<>();
+        private final List<String> deleteUrls = new ArrayList<>();
         private int eventTypeLookupResponseCode = HttpStatus.OK_200;
+        private String legacyWebhookListJson = "[]";
 
         @Override
         public RachioApiResult httpGet(String url, @Nullable String urlParameters) throws RachioApiException {
@@ -372,6 +454,14 @@ class RachioWebhookApiTest {
                           ]
                         }
                         """;
+            } else if (url.contains(APIURL_DEV_WEBHOOK_EVENT_TYPES)) {
+                result.resultString = """
+                        [
+                          {"id":"5","type":"DEVICE_STATUS","description":"Device status"}
+                        ]
+                        """;
+            } else if (url.contains(APIURL_DEV_QUERY_WEBHOOK)) {
+                result.resultString = legacyWebhookListJson;
             } else {
                 result.resultString = "{ \"webhooks\": [] }";
             }
@@ -387,6 +477,17 @@ class RachioWebhookApiTest {
             result.requestMethod = "POST";
             result.responseCode = HttpStatus.CREATED_201;
             result.resultString = "{}";
+            return result;
+        }
+
+        @Override
+        public RachioApiResult httpDelete(String url, @Nullable String urlParameters) {
+            deleteUrls.add(url);
+            RachioApiResult result = new RachioApiResult();
+            result.url = url;
+            result.requestMethod = "DELETE";
+            result.responseCode = HttpStatus.NO_CONTENT_204;
+            result.resultString = "";
             return result;
         }
     }

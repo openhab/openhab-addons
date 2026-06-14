@@ -61,6 +61,12 @@ public class RachioApiGsonDTO {
         public ArrayList<RachioApiWebHookEntry> webhooks = new ArrayList<>();
     }
 
+    public static class RachioApiLegacyWebHookEventType {
+        public String id = "";
+        public String type = "";
+        public String description = "";
+    }
+
     public static class RachioApiWebHookResourceId {
         public String irrigationControllerId = "";
         public String valveId = "";

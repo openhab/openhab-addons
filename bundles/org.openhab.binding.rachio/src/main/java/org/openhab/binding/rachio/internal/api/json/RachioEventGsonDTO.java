@@ -17,6 +17,7 @@ import static org.openhab.binding.rachio.internal.RachioBindingConstants.*;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
 import java.util.HashMap;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -32,6 +33,10 @@ import org.openhab.binding.rachio.internal.api.json.RachioDeviceGsonDTO.RachioCl
  */
 @NonNullByDefault
 public class RachioEventGsonDTO {
+    private static final Set<String> LEGACY_NOTIFICATION_TYPES = Set.of("DELTA", "DEVICE_DELTA", "DEVICE_STATUS",
+            "RAIN_DELAY", "RAIN_SENSOR_DETECTION", "SCHEDULE_DELTA", "SCHEDULE_STATUS", "WEATHER_INTELLIGENCE",
+            "WATER_BUDGET", "ZONE_DELTA", "ZONE_STATUS");
+
     public String eventId = "";
     public String resourceId = "";
     public String resourceType = "";
@@ -239,6 +244,11 @@ public class RachioEventGsonDTO {
                 category = resourceType;
                 break;
         }
+    }
+
+    public boolean isLegacyNotificationEvent() {
+        return eventType.isBlank() && resourceType.isBlank() && !externalId.isBlank() && !deviceId.isBlank()
+                && !subType.isBlank() && LEGACY_NOTIFICATION_TYPES.contains(type);
     }
 
     /**

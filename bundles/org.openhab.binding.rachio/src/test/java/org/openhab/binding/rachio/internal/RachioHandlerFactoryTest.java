@@ -17,6 +17,8 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.SUPPORTED_THING_TYPES_UIDS;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_TYPE_BASE_STATION;
@@ -28,11 +30,15 @@ import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_T
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_TYPE_VALVE_PROGRAM;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_TYPE_ZONE;
 
+import java.lang.reflect.Field;
 import java.util.Map;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.openhab.binding.rachio.internal.api.json.RachioEventGsonDTO;
+import org.openhab.binding.rachio.internal.handler.RachioBridgeHandler;
 import org.openhab.binding.rachio.internal.handler.RachioFlexScheduleHandler;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -47,6 +53,28 @@ import org.openhab.core.thing.binding.ThingHandler;
 @NonNullByDefault
 @SuppressWarnings({ "null" })
 class RachioHandlerFactoryTest {
+    @Test
+    void legacyWebhookRoutesOnlyToBridgeWithMatchingExternalId() throws Exception {
+        RachioHandlerFactory factory = new RachioHandlerFactory();
+        RachioBridgeHandler bridgeHandler = Mockito.mock(RachioBridgeHandler.class);
+        when(bridgeHandler.getExternalId()).thenReturn("expected-external-id");
+        when(bridgeHandler.legacyWebHookEvent(Mockito.any(RachioEventGsonDTO.class))).thenReturn(true);
+        RachioHandlerFactory.RachioBridge bridge = factory.new RachioBridge();
+        bridge.cloudHandler = bridgeHandler;
+        bridgeList(factory).put("bridge", bridge);
+        RachioEventGsonDTO event = new RachioEventGsonDTO();
+        event.externalId = "expected-external-id";
+
+        assertThat(factory.legacyWebHookEvent("127.0.0.1", event), is(true));
+        verify(bridgeHandler).legacyWebHookEvent(event);
+
+        Mockito.clearInvocations(bridgeHandler);
+        event.externalId = "wrong-external-id";
+
+        assertThat(factory.legacyWebHookEvent("127.0.0.1", event), is(false));
+        verify(bridgeHandler, never()).legacyWebHookEvent(event);
+    }
+
     @Test
     void supportsFlexScheduleThingType() {
         RachioHandlerFactory factory = new RachioHandlerFactory();
@@ -103,5 +131,13 @@ class RachioHandlerFactoryTest {
         ThingHandler handler = factory.createHandler(thing);
 
         assertThat(handler, nullValue());
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, RachioHandlerFactory.RachioBridge> bridgeList(RachioHandlerFactory factory)
+            throws ReflectiveOperationException {
+        Field field = RachioHandlerFactory.class.getDeclaredField("bridgeList");
+        field.setAccessible(true);
+        return Objects.requireNonNull((Map<String, RachioHandlerFactory.RachioBridge>) field.get(factory));
     }
 }
