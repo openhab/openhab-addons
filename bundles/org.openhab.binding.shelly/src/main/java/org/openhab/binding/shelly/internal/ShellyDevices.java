@@ -165,6 +165,7 @@ public class ShellyDevices {
     public static final String SHELLYDT_BLUTOUGHZB = "SBBT-102C";
     public static final String SHELLYDT_BLUWALLSWITCH4 = "SBBT-004CEU";
     public static final String SHELLYDT_BLURCBUTTON4 = "SBBT-004CUS";
+    public static final String SHELLYDT_BLURCBUTTON4ZB = "SBBT-104CUS";
     public static final String SHELLYDT_BLUHT = "SBHT-003C";
     public static final String SHELLYDT_BLUHTZB = "SBHT-203C";
     public static final String SHELLYDT_BLUDW = "SBDW-002C";
@@ -492,6 +493,7 @@ public class ShellyDevices {
             Map.entry(SHELLYDT_BLUTOUGHZB, THING_TYPE_SHELLYBLUBUTTON1),
             Map.entry(SHELLYDT_BLUWALLSWITCH4, THING_TYPE_SHELLYBLUWALLSWITCH4),
             Map.entry(SHELLYDT_BLURCBUTTON4, THING_TYPE_SHELLYBLURCBUTTON4),
+            Map.entry(SHELLYDT_BLURCBUTTON4ZB, THING_TYPE_SHELLYBLURCBUTTON4),
             Map.entry(SHELLYDT_BLUHT, THING_TYPE_SHELLYBLUHT), //
             Map.entry(SHELLYDT_BLUHTZB, THING_TYPE_SHELLYBLUHT), //
             Map.entry(SHELLYDT_BLUDW, THING_TYPE_SHELLYBLUDW),
