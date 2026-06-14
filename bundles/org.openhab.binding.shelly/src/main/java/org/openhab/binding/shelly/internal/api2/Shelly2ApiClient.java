@@ -1140,20 +1140,28 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         }
 
         if (ds.temperature100 != null) {
-            if (status.extTemperature == null) {
-                status.extTemperature = new ShellyExtTemperature();
+            ShellyExtTemperature extTemp = status.extTemperature;
+            if (extTemp == null) {
+                extTemp = new ShellyExtTemperature();
+                status.extTemperature = extTemp;
             }
-            status.extTemperature.sensor1 = updateExtTempSensor(ds.temperature100);
-            status.extTemperature.sensor2 = updateExtTempSensor(ds.temperature101);
-            status.extTemperature.sensor3 = updateExtTempSensor(ds.temperature102);
-            status.extTemperature.sensor4 = updateExtTempSensor(ds.temperature103);
-            status.extTemperature.sensor5 = updateExtTempSensor(ds.temperature104);
+            extTemp.sensor1 = updateExtTempSensor(ds.temperature100);
+            extTemp.sensor2 = updateExtTempSensor(ds.temperature101);
+            extTemp.sensor3 = updateExtTempSensor(ds.temperature102);
+            extTemp.sensor4 = updateExtTempSensor(ds.temperature103);
+            extTemp.sensor5 = updateExtTempSensor(ds.temperature104);
         }
         if (ds.humidity100 != null) {
-            status.extHumidity = new ShellyExtHumidity(ds.humidity100.rh);
+            Double rh = ds.humidity100.rh;
+            if (rh != null) {
+                status.extHumidity = new ShellyExtHumidity(rh);
+            }
         }
         if (ds.voltmeter100 != null) {
-            status.extVoltage = new ShellyExtVoltage(ds.voltmeter100.voltage);
+            Double voltage = ds.voltmeter100.voltage;
+            if (voltage != null) {
+                status.extVoltage = new ShellyExtVoltage(voltage);
+            }
         }
         if (ds.input100 != null) {
             if (ds.input100.state != null) {
@@ -1167,7 +1175,8 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
     private @Nullable ShellyShortTemp updateExtTempSensor(@Nullable Shelly2DeviceStatusTempId value) {
         if (value != null) {
             ShellyShortTemp temp = new ShellyShortTemp();
-            temp.hwID = value.id != null ? value.id.toString() : "999";
+            Integer idBox = value.id;
+            temp.hwID = idBox != null ? idBox.toString() : "999";
             temp.tC = getDouble(value.tC);
             temp.tF = getDouble(value.tF);
             return temp;

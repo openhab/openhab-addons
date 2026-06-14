@@ -40,6 +40,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettings
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortLightStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusLightChannel;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor;
+import org.openhab.binding.shelly.internal.handler.ShellyComponents;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -443,19 +444,22 @@ public class ShellyChannelDefinitions {
             addChannel(thing, add, addon, CHGR_SENSOR,
                     CHANNEL_ESENSOR_INPUT + (profile.settings.extSwitch.input0.relayNum + 1));
         }
-        if (profile.status.extTemperature != null) {
-            addChannel(thing, add, profile.status.extTemperature.sensor1 != null, CHGR_SENSOR, CHANNEL_ESENSOR_TEMP1);
-            addChannel(thing, add, profile.status.extTemperature.sensor2 != null, CHGR_SENSOR, CHANNEL_ESENSOR_TEMP2);
-            addChannel(thing, add, profile.status.extTemperature.sensor3 != null, CHGR_SENSOR, CHANNEL_ESENSOR_TEMP3);
-            addChannel(thing, add, profile.status.extTemperature.sensor4 != null, CHGR_SENSOR, CHANNEL_ESENSOR_TEMP4);
-            addChannel(thing, add, profile.status.extTemperature.sensor5 != null, CHGR_SENSOR, CHANNEL_ESENSOR_TEMP5);
+        ShellyStatusSensor.ShellyExtTemperature extTemp = profile.status.extTemperature;
+        if (extTemp != null) {
+            addChannel(thing, add, extTemp.sensor1 != null, CHGR_SENSOR, CHANNEL_ESENSOR_TEMP1);
+            addChannel(thing, add, extTemp.sensor2 != null, CHGR_SENSOR, CHANNEL_ESENSOR_TEMP2);
+            addChannel(thing, add, extTemp.sensor3 != null, CHGR_SENSOR, CHANNEL_ESENSOR_TEMP3);
+            addChannel(thing, add, extTemp.sensor4 != null, CHGR_SENSOR, CHANNEL_ESENSOR_TEMP4);
+            addChannel(thing, add, extTemp.sensor5 != null, CHGR_SENSOR, CHANNEL_ESENSOR_TEMP5);
         }
-        addChannel(thing, add, profile.status.extHumidity != null && profile.status.extHumidity.sensor1 != null,
-                CHGR_SENSOR, CHANNEL_ESENSOR_HUMIDITY);
+        ShellyStatusSensor.ShellyExtHumidity extHum = profile.status.extHumidity;
+        addChannel(thing, add, extHum != null && extHum.sensor1 != null, CHGR_SENSOR, CHANNEL_ESENSOR_HUMIDITY);
 
         addChannel(thing, add, profile.status.extVoltage != null, CHGR_SENSOR, CHANNEL_ESENSOR_VOLTAGE);
         addChannel(thing, add, profile.status.extDigitalInput != null, CHGR_SENSOR, CHANNEL_ESENSOR_DIGITALINPUT);
         addChannel(thing, add, profile.status.extAnalogInput != null, CHGR_SENSOR, CHANNEL_ESENSOR_ANALOGINPUT);
+
+        addChannel(thing, add, ShellyComponents.hasAddon(profile.status), CHGR_SENSOR, CHANNEL_LAST_UPDATE);
     }
 
     public static Map<String, Channel> createDimmerChannels(final Thing thing, final ShellyDeviceProfile profile,
