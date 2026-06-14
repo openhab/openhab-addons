@@ -14,9 +14,6 @@ package org.openhab.binding.bluetooth.govee.internal;
 
 import static org.openhab.binding.bluetooth.govee.internal.GoveeBindingConstants.*;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
@@ -32,6 +29,7 @@ import javax.measure.quantity.Temperature;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.BluetoothCharacteristic;
+import org.openhab.binding.bluetooth.BluetoothDevice;
 import org.openhab.binding.bluetooth.BluetoothDevice.ConnectionState;
 import org.openhab.binding.bluetooth.ConnectedBluetoothHandler;
 import org.openhab.binding.bluetooth.gattserial.MessageServicer;
@@ -64,7 +62,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * @author Connor Petty - Initial contribution
- *
+ * @author Matthias Bläsing - Fix reading advertisement data
  */
 @NonNullByDefault
 public class GoveeHygrometerHandler extends ConnectedBluetoothHandler {
@@ -73,14 +71,12 @@ public class GoveeHygrometerHandler extends ConnectedBluetoothHandler {
     private static final UUID PROTOCOL_CHAR_UUID = UUID.fromString("494e5445-4c4c-495f-524f-434b535f2011");
     private static final UUID KEEP_ALIVE_CHAR_UUID = UUID.fromString("494e5445-4c4c-495f-524f-434b535f2012");
 
-    private static final byte[] SCAN_HEADER = { (byte) 0xFF, (byte) 0x88, (byte) 0xEC };
-
     private final Logger logger = LoggerFactory.getLogger(GoveeHygrometerHandler.class);
 
     private final CommandSocket commandSocket = new CommandSocket();
 
     private GoveeHygrometerConfiguration config = new GoveeHygrometerConfiguration();
-    private GoveeModel model = GoveeModel.H5074;// we use this as our default model
+    private @Nullable GoveeModel model = null;// we use this as our default model
 
     private CompletableFuture<?> initializeJob = CompletableFuture.completedFuture(null);// initially set to a dummy
                                                                                          // future
@@ -101,18 +97,7 @@ public class GoveeHygrometerHandler extends ConnectedBluetoothHandler {
 
         config = getConfigAs(GoveeHygrometerConfiguration.class);
 
-        Map<String, String> properties = thing.getProperties();
-        String modelProp = properties.get(Thing.PROPERTY_MODEL_ID);
-        model = GoveeModel.H5074;
-        if (modelProp != null) {
-            try {
-                model = GoveeModel.valueOf(modelProp);
-            } catch (IllegalArgumentException ex) {
-                // ignore
-            }
-        }
-
-        logger.debug("Initializing Govee Hygrometer {} model: {}", address, model);
+        logger.debug("Initializing Govee Hygrometer {}", address);
         initializeJob = RetryFuture.composeWithRetry(this::createInitSettingsJob, scheduler)//
                 .thenRun(() -> {
                     updateStatus(ThingStatus.ONLINE);
@@ -176,7 +161,7 @@ public class GoveeHygrometerHandler extends ConnectedBluetoothHandler {
                 return caliFuture;
             });
         }
-        if (model.supportsWarningBroadcast()) {
+        if (getModel().supportsWarningBroadcast()) {
             future = future.thenCompose(v -> {
                 CompletableFuture<@Nullable WarningSettingsDTO<Temperature>> temWarnFuture = parent
                         .newIncompleteFuture();
@@ -267,7 +252,7 @@ public class GoveeHygrometerHandler extends ConnectedBluetoothHandler {
         }
         updateState(CHANNEL_ID_TEMPERATURE, tem);
         updateState(CHANNEL_ID_HUMIDITY, hum);
-        if (model.supportsWarningBroadcast()) {
+        if (getModel().supportsWarningBroadcast()) {
             updateAlarm(CHANNEL_ID_TEMPERATURE_ALARM, tem, config.getTemperatureWarningSettings());
             updateAlarm(CHANNEL_ID_HUMIDITY_ALARM, hum, config.getHumidityWarningSettings());
         }
@@ -279,122 +264,51 @@ public class GoveeHygrometerHandler extends ConnectedBluetoothHandler {
         updateState(channelName, OnOffType.from(outOfRange));
     }
 
-    private int scanPacketSize() {
-        switch (model) {
-            case B5175:
-            case B5178:
-                return 10;
-            case H5179:
-                return 8;
-            default:
-                return 7;
-        }
-    }
-
     @Override
     public void onScanRecordReceived(BluetoothScanNotification scanNotification) {
         super.onScanRecordReceived(scanNotification);
-        byte[] scanData = scanNotification.getData();
-        int dataPacketSize = scanPacketSize();
-        int recordIndex = indexOfTemHumRecord(scanData);
-        if (recordIndex == -1 || recordIndex + dataPacketSize >= scanData.length) {
-            return;
+        byte[] scanData = scanNotification.getManufacturerData();
+        GoveeModel.ManufacturerDataSet manufacturerDataset = getModel().parseManufacturerData(scanData);
+
+        if (manufacturerDataset != null) {
+            updateTemHumBattery(manufacturerDataset);
         }
-
-        ByteBuffer data = ByteBuffer.wrap(scanData, recordIndex, dataPacketSize);
-
-        short temperature;
-        int humidity;
-        int battery;
-        int wifiLevel = 0;
-
-        switch (model) {
-            default:
-                data.position(2);// we throw this away
-                // fall through
-            case H5072:
-            case H5075:
-                data.order(ByteOrder.BIG_ENDIAN);
-                int l = data.getInt();
-                l = l & 0xFFFFFF;
-
-                boolean positive = (l & 0x800000) == 0;
-                int tem = (short) ((l / 1000) * 10);
-                if (!positive) {
-                    tem = -tem;
-                }
-                temperature = (short) tem;
-                humidity = (l % 1000) * 10;
-                battery = data.get();
-                break;
-            case H5179:
-                data.order(ByteOrder.LITTLE_ENDIAN);
-                data.position(3);
-                temperature = data.getShort();
-                humidity = data.getShort();
-                battery = Byte.toUnsignedInt(data.get());
-                break;
-            case H5051:
-            case H5052:
-            case H5071:
-            case H5074:
-                data.order(ByteOrder.LITTLE_ENDIAN);
-                boolean hasWifi = data.get() == 0;
-                temperature = data.getShort();
-                humidity = Short.toUnsignedInt(data.getShort());
-                battery = Byte.toUnsignedInt(data.get());
-                wifiLevel = hasWifi ? Byte.toUnsignedInt(data.get()) : 0;
-                break;
-        }
-        updateTemHumBattery(temperature, humidity, battery, wifiLevel);
     }
 
-    private static int indexOfTemHumRecord(byte @Nullable [] scanData) {
-        if (scanData == null || scanData.length != 62) {
-            return -1;
-        }
-        int i = 0;
-        while (i < 57) {
-            int recordLength = scanData[i] & 0xFF;
-            if (scanData[i + 1] == SCAN_HEADER[0]//
-                    && scanData[i + 2] == SCAN_HEADER[1]//
-                    && scanData[i + 3] == SCAN_HEADER[2]) {
-                return i + 4;
-            }
-
-            i += recordLength + 1;
-        }
-        return -1;
-    }
-
-    private void updateTemHumBattery(short tem, int hum, int battery, int wifiLevel) {
-        if (Short.toUnsignedInt(tem) == 0xFFFF || hum == 0xFFFF) {
+    private void updateTemHumBattery(GoveeModel.ManufacturerDataSet manufacturerDataset) {
+        if (Short.toUnsignedInt(manufacturerDataset.temperature()) == 0xFFFF
+                || manufacturerDataset.humidity() == 0xFFFF) {
             logger.trace("Govee device [{}] received invalid data", this.address);
             return;
         }
 
-        logger.debug("Govee device [{}] received broadcast: tem = {}, hum = {}, battery = {}, wifiLevel = {}",
-                this.address, tem, hum, battery, wifiLevel);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Govee device [{}] received broadcast: tem = {}, hum = {}, battery = {}, wifiLevel = {}",
+                    this.address, manufacturerDataset.temperature(), manufacturerDataset.humidity(),
+                    manufacturerDataset.battery(), manufacturerDataset.wifiLevel());
+        }
 
-        if (tem == 0 && hum == 0 && battery == 0) {
+        if (manufacturerDataset.temperature() == 0 && manufacturerDataset.humidity() == 0
+                && manufacturerDataset.battery() == 0) {
             logger.trace("Govee device [{}] values are zero", this.address);
             return;
         }
-        if (tem < -4000 || tem > 10000) {
-            logger.trace("Govee device [{}] invalid temperature value: {}", this.address, tem);
+        if (manufacturerDataset.temperature() < -4000 || manufacturerDataset.temperature() > 10000) {
+            logger.trace("Govee device [{}] invalid temperature value: {}", this.address,
+                    manufacturerDataset.temperature());
             return;
         }
-        if (hum > 10000) {
-            logger.trace("Govee device [{}] invalid humidity valie: {}", this.address, hum);
+        if (manufacturerDataset.humidity() > 10000) {
+            logger.trace("Govee device [{}] invalid humidity valie: {}", this.address, manufacturerDataset.humidity());
             return;
         }
 
         TemHumDTO temhum = new TemHumDTO();
-        temhum.temperature = new QuantityType<>(tem / 100.0, SIUnits.CELSIUS);
-        temhum.humidity = new QuantityType<>(hum / 100.0, Units.PERCENT);
+        temhum.temperature = new QuantityType<>(manufacturerDataset.temperature() / 100.0, SIUnits.CELSIUS);
+        temhum.humidity = new QuantityType<>(manufacturerDataset.humidity() / 100.0, Units.PERCENT);
         updateTemperatureAndHumidity(temhum, null);
 
-        updateBattery(new QuantityType<>(battery, Units.PERCENT), null);
+        updateBattery(new QuantityType<>(manufacturerDataset.battery(), Units.PERCENT), null);
     }
 
     @Override
@@ -425,5 +339,24 @@ public class GoveeHygrometerHandler extends ConnectedBluetoothHandler {
         protected CompletableFuture<@Nullable Void> sendPacket(byte[] data) {
             return writeCharacteristic(SERVICE_UUID, PROTOCOL_CHAR_UUID, data, true);
         }
+    }
+
+    private GoveeModel getModel() {
+        GoveeModel result = model;
+        if (result == null) {
+            BluetoothDevice dev = device;
+            if (dev == null) {
+                result = GoveeModel.H5074;
+            } else {
+                GoveeModel model = GoveeModel.getGoveeModel(dev);
+                if (model != null) {
+                    this.model = model;
+                    result = model;
+                } else {
+                    result = GoveeModel.H5074;
+                }
+            }
+        }
+        return result;
     }
 }
