@@ -36,7 +36,16 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettings
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortLightStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyADC;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtAnalogInput;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtAnalogInput.ShellyShortAnalogInput;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtDigitalInput;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtDigitalInput.ShellyShortDigitalInput;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtHumidity;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtHumidity.ShellyShortHum;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtTemperature;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtTemperature.ShellyShortTemp;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtVoltage;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtVoltage.ShellyShortVoltage;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyThermnostat;
 import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
 import org.openhab.core.library.types.OnOffType;
@@ -577,31 +586,55 @@ public class ShellyComponents {
             }
         }
 
-        // Update Add-On channeös
-        if (status.extTemperature != null) {
+        // Update Add-On channels (Shelly 1/1PM and Plus 1/1PM with sensor addon)
+        boolean hasAddon = hasAddon(status);
+        ShellyExtTemperature extTemperature = status.extTemperature;
+        if (extTemperature != null) {
             // Shelly 1/1PM support up to 3 external sensors
             // for whatever reason those are not represented as an array, but 3 elements
-            updated |= updateTempChannel(status.extTemperature.sensor1, thingHandler, CHANNEL_ESENSOR_TEMP1);
-            updated |= updateTempChannel(status.extTemperature.sensor2, thingHandler, CHANNEL_ESENSOR_TEMP2);
-            updated |= updateTempChannel(status.extTemperature.sensor3, thingHandler, CHANNEL_ESENSOR_TEMP3);
-            updated |= updateTempChannel(status.extTemperature.sensor4, thingHandler, CHANNEL_ESENSOR_TEMP4);
-            updated |= updateTempChannel(status.extTemperature.sensor5, thingHandler, CHANNEL_ESENSOR_TEMP5);
+            updated |= updateTempChannel(extTemperature.sensor1, thingHandler, CHANNEL_ESENSOR_TEMP1);
+            updated |= updateTempChannel(extTemperature.sensor2, thingHandler, CHANNEL_ESENSOR_TEMP2);
+            updated |= updateTempChannel(extTemperature.sensor3, thingHandler, CHANNEL_ESENSOR_TEMP3);
+            updated |= updateTempChannel(extTemperature.sensor4, thingHandler, CHANNEL_ESENSOR_TEMP4);
+            updated |= updateTempChannel(extTemperature.sensor5, thingHandler, CHANNEL_ESENSOR_TEMP5);
         }
-        if ((status.extHumidity != null) && (status.extHumidity.sensor1 != null)) {
-            updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENSOR_HUMIDITY,
-                    toQuantityType(getDouble(status.extHumidity.sensor1.hum), DIGITS_PERCENT, Units.PERCENT));
+        ShellyExtHumidity extHumidity = status.extHumidity;
+        if (extHumidity != null) {
+            ShellyShortHum humSensor = extHumidity.sensor1;
+            if (humSensor != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENSOR_HUMIDITY,
+                        toQuantityType(getDouble(humSensor.hum), DIGITS_PERCENT, Units.PERCENT));
+            }
         }
-        if ((status.extVoltage != null) && (status.extVoltage.sensor1 != null)) {
-            updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENSOR_VOLTAGE,
-                    toQuantityType(getDouble(status.extVoltage.sensor1.voltage), 4, Units.VOLT));
+        ShellyExtVoltage extVoltage = status.extVoltage;
+        if (extVoltage != null) {
+            ShellyShortVoltage voltSensor = extVoltage.sensor1;
+            if (voltSensor != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENSOR_VOLTAGE,
+                        toQuantityType(getDouble(voltSensor.voltage), 4, Units.VOLT));
+            }
         }
-        if ((status.extDigitalInput != null) && (status.extDigitalInput.sensor1 != null)) {
-            updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENSOR_DIGITALINPUT,
-                    getOnOff(status.extDigitalInput.sensor1.state));
+        ShellyExtDigitalInput extDigitalInput = status.extDigitalInput;
+        if (extDigitalInput != null) {
+            ShellyShortDigitalInput digSensor = extDigitalInput.sensor1;
+            if (digSensor != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENSOR_DIGITALINPUT,
+                        getOnOff(digSensor.state));
+            }
         }
-        if ((status.extAnalogInput != null) && (status.extAnalogInput.sensor1 != null)) {
-            updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENSOR_ANALOGINPUT,
-                    toQuantityType(getDouble(status.extAnalogInput.sensor1.percent), DIGITS_PERCENT, Units.PERCENT));
+        ShellyExtAnalogInput extAnalogInput = status.extAnalogInput;
+        if (extAnalogInput != null) {
+            ShellyShortAnalogInput anaSensor = extAnalogInput.sensor1;
+            if (anaSensor != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENSOR_ANALOGINPUT,
+                        toQuantityType(getDouble(anaSensor.percent), DIGITS_PERCENT, Units.PERCENT));
+            }
+        }
+        if (hasAddon && !(profile.isSensor || profile.hasBattery)) {
+            // Relay devices with addon sensors: always refresh lastUpdate so the channel shows
+            // when sensor data was last received, even when temperature values are unchanged
+            thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_LAST_UPDATE, getTimestamp());
+            updated = true;
         }
 
         return updated;
@@ -687,15 +720,28 @@ public class ShellyComponents {
         return updated;
     }
 
+    public static boolean hasAddon(ShellySettingsStatus status) {
+        return status.extTemperature != null || status.extHumidity != null || status.extVoltage != null
+                || status.extDigitalInput != null || status.extAnalogInput != null;
+    }
+
     public static boolean updateTempChannel(@Nullable ShellyShortTemp sensor, ShellyThingInterface thingHandler,
             String channel) {
-        return sensor != null ? updateTempChannel(thingHandler, CHANNEL_GROUP_SENSOR, channel, sensor.tC, "") : false;
+        if (sensor == null) {
+            return false;
+        }
+        return updateTempChannel(thingHandler, CHANNEL_GROUP_SENSOR, channel, sensor.tC, "");
     }
 
     public static boolean updateTempChannel(ShellyThingInterface thingHandler, String group, String channel,
             @Nullable Double temp, @Nullable String unit) {
-        if (temp == null || temp == SHELLY_API_INVTEMP) {
+        if (temp == null) {
             return false;
+        }
+        if (temp == SHELLY_API_INVTEMP) {
+            // Sensor present but reading invalid (e.g. disconnected wire): publish UNDEF so that
+            // the cache does not block the next valid reading when the sensor recovers.
+            return thingHandler.updateChannel(group, channel, UnDefType.UNDEF);
         }
         return thingHandler.updateChannel(group, channel,
                 toQuantityType(convertToC(temp, unit), DIGITS_TEMP, SIUnits.CELSIUS));

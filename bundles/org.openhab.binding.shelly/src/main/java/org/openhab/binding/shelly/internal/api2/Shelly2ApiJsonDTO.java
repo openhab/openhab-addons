@@ -653,8 +653,8 @@ public class Shelly2ApiJsonDTO {
             }
 
             public class Shelly2DeviceStatusHumidity {
-                public Integer id;
-                public Double rh;
+                public @Nullable Integer id;
+                public @Nullable Double rh;
             }
 
             public class Shelly2DeviceStatusIlluminance {
@@ -664,12 +664,12 @@ public class Shelly2ApiJsonDTO {
             }
 
             public class Shelly2DeviceStatusVoltage {
-                public Integer id;
-                public Double voltage;
+                public @Nullable Integer id;
+                public @Nullable Double voltage;
             }
 
             public class Shelly2DeviceStatusTempId extends Shelly2DeviceStatusTemp {
-                public Integer id;
+                public @Nullable Integer id;
             }
 
             public static class Shelly2DeviceStatusPower {
