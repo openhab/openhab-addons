@@ -872,7 +872,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     private void handleGetCleanRecord(String response) {
         if (response != null && !response.isEmpty()) {
             String safeResponse = response;
-            JsonObject responseObj = JsonParser.parseString(response).getAsJsonObject();
+            JsonObject responseObj = JsonParser.parseString(safeResponse).getAsJsonObject();
             if (responseObj.get("result").isJsonArray()
                     && responseObj.getAsJsonObject().get("result").getAsJsonArray().size() > 0
                     && responseObj.get("result").getAsJsonArray().get(0).isJsonArray()) {
@@ -881,7 +881,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 for (int i = 0; i < historyData.size(); ++i) {
                     try {
                         BigInteger value = historyData.get(i).getAsBigInteger();
-                        // Replace the switch (i) block with:
                         switch (i) {
                             case 0 -> {
                                 DateTimeType begin = new DateTimeType(Instant.ofEpochSecond(value.longValue()));
@@ -1434,22 +1433,22 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 return;
             }
 
-            // Replace the switch (methodName) block with:
             switch (methodName) {
-                case COMMAND_GET_STATUS -> handleGetStatus(jsonString);
-                case COMMAND_GET_CONSUMABLE -> handleGetConsumables(jsonString);
-                case COMMAND_GET_ROOM_MAPPING -> handleGetRoomMapping(jsonString);
-                case COMMAND_GET_NETWORK_INFO -> handleGetNetworkInfo(jsonString);
-                case COMMAND_GET_CLEAN_RECORD -> handleGetCleanRecord(jsonString);
-                case COMMAND_GET_CLEAN_SUMMARY -> handleGetCleanSummary(jsonString);
-                case COMMAND_GET_DND_TIMER -> handleGetDndTimer(jsonString);
-                case COMMAND_GET_SEGMENT_STATUS -> handleGetSegmentStatus(jsonString);
-                case COMMAND_GET_MAP_STATUS -> handleGetMapStatus(jsonString);
-                case COMMAND_GET_LED_STATUS -> handleGetLedStatus(jsonString);
-                case COMMAND_GET_CARPET_MODE -> handleGetCarpetMode(jsonString);
-                case COMMAND_GET_FW_FEATURES -> handleGetFwFeatures(jsonString);
-                case COMMAND_GET_MULTI_MAP_LIST -> handleGetMultiMapsList(jsonString);
-                case COMMAND_GET_CUSTOMIZE_CLEAN_MODE -> handleGetCustomizeCleanMode(jsonString);
+                case "getStatus", COMMAND_GET_STATUS -> handleGetStatus(jsonString);
+                case "getConsumable", COMMAND_GET_CONSUMABLE -> handleGetConsumables(jsonString);
+                case "getRoomMapping", COMMAND_GET_ROOM_MAPPING -> handleGetRoomMapping(jsonString);
+                case "getNetworkInfo", COMMAND_GET_NETWORK_INFO -> handleGetNetworkInfo(jsonString);
+                case "getCleanRecord", COMMAND_GET_CLEAN_RECORD -> handleGetCleanRecord(jsonString);
+                case "getCleanSummary", COMMAND_GET_CLEAN_SUMMARY -> handleGetCleanSummary(jsonString);
+                case "getDndTimer", COMMAND_GET_DND_TIMER -> handleGetDndTimer(jsonString);
+                case "getSegmentStatus", COMMAND_GET_SEGMENT_STATUS -> handleGetSegmentStatus(jsonString);
+                case "getMapStatus", COMMAND_GET_MAP_STATUS -> handleGetMapStatus(jsonString);
+                case "getLedStatus", COMMAND_GET_LED_STATUS -> handleGetLedStatus(jsonString);
+                case "getCarpetMode", COMMAND_GET_CARPET_MODE -> handleGetCarpetMode(jsonString);
+                case "getFwFeatures", COMMAND_GET_FW_FEATURES -> handleGetFwFeatures(jsonString);
+                case "getMultiMapsList", COMMAND_GET_MULTI_MAP_LIST -> handleGetMultiMapsList(jsonString);
+                case "getCustomizeCleanMode", COMMAND_GET_CUSTOMIZE_CLEAN_MODE ->
+                    handleGetCustomizeCleanMode(jsonString);
                 default -> logger.debug("No handler for method: {}", methodName);
             }
             requestCorrelationTracker.removeByRequestId(messageId);
@@ -1871,7 +1870,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             JsonObject v1 = new JsonObject();
             v1.addProperty("id", id);
 
-            // Replace the switch (method) block with:
             switch (method) {
                 case "prop.get" -> {
                     if (data.has("main_brush")) {

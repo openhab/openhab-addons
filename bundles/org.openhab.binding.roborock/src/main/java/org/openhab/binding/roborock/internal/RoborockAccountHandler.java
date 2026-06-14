@@ -675,8 +675,6 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
         Object b01Params;
 
         // Translate V1 method names → B01 equivalents.
-        // Replace the entire switch (method) block with:
-
         switch (method) {
             case COMMAND_APP_START -> {
                 b01Method = "service.set_room_clean";
