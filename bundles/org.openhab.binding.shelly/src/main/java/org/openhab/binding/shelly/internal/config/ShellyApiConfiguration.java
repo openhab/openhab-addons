@@ -23,6 +23,7 @@ import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.shelly.internal.handler.ShellyBaseHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +32,7 @@ import org.slf4j.LoggerFactory;
  * Derived configuration consumed exclusively by the API layer.
  *
  * Thread-safe, mutable configuration (all access is synchronized). Created in
- * ShellyBaseHandler#initializeThingConfig()
+ * {@link ShellyBaseHandler#initializeThingConfig()}
  *
  * DNS resolution is controlled by the resolveHostname constructor parameter.
  * The handler constructor passes false (no DNS, safe on OSGi framework thread);
