@@ -117,8 +117,8 @@ Scene Things trigger SmartThings scenes.
 
 ## Channels
 
-Static Thing types define a `main` channel group.
-Item links therefore use the channel format `smartthings:<thingTypeId>:<bridgeId>:<thingId>:main#<channelId>`.
+Static Thing types define channel groups such as `main`, `control`, `picture`, or `remote`.
+Item links therefore use the channel format `smartthings:<thingTypeId>:<bridgeId>:<thingId>:<group>#<channelId>`.
 
 ### Light Channels
 
@@ -144,19 +144,18 @@ Item links therefore use the channel format `smartthings:<thingTypeId>:<bridgeId
 
 | Thing Type UID | Channel | Type | Read/Write | Description |
 |----------------|---------|------|------------|-------------|
-| `Samsung_Room_A_C` | `main#switch` | Switch | RW | Switches the air conditioner on or off |
-| `generic-television` | `main#switch` | Switch | RW | Switches the TV on or off |
-| `generic-television` | `main#tvVolume` | Number | RW | TV volume |
-| `generic-television` | `main#tvMute` | Switch | RW | TV mute state |
-| `generic-television` | `main#inputSource` | String | RW | Active input source |
-| `generic-television` | `main#tvChannel` | String | RW | Current TV channel |
-| `generic-television` | `main#tvChannelName` | String | R | Current TV channel name |
-| `generic-television` | `main#channelUp` | Switch | W | Sends `ON` to select the next channel |
-| `generic-television` | `main#channelDown` | Switch | W | Sends `ON` to select the previous channel |
-| `generic-television` | `main#pictureMode` | String | RW | TV picture mode |
-| `generic-television` | `main#soundMode` | String | RW | TV sound mode |
-| `generic-television` | `main#playbackStatus` | String | R | Media playback state |
-| `generic-television` | `main#onlineStatus` | String | R | SmartThings online status |
+| `Samsung_Room_A_C` | `control#switch` | Switch | RW | Switches the air conditioner on or off |
+| `generic-television`, `Samsung_The_Frame` | `control#switch` | Switch | RW | Switches the TV on or off |
+| `generic-television`, `Samsung_The_Frame` | `control#volume` | Number | RW | TV volume |
+| `generic-television`, `Samsung_The_Frame` | `control#mute` | Switch | RW | TV mute state |
+| `generic-television`, `Samsung_The_Frame` | `control#input-source` | String | RW | Active input source |
+| `generic-television`, `Samsung_The_Frame` | `control#channel` | String | RW | Current TV channel |
+| `generic-television`, `Samsung_The_Frame` | `control#playback` | Player | RW | Media playback control |
+| `generic-television`, `Samsung_The_Frame` | `picture#picture-mode` | String | RW | TV picture mode |
+| `generic-television`, `Samsung_The_Frame` | `picture#sound-mode` | String | RW | TV sound mode |
+| `generic-television`, `Samsung_The_Frame` | `remote#channel-up` | Switch | W | Sends `ON` to select the next channel |
+| `generic-television`, `Samsung_The_Frame` | `remote#channel-down` | Switch | W | Sends `ON` to select the previous channel |
+| `Samsung_The_Frame` | `control#art-mode` | Switch | W | Sends `ON` to activate art mode |
 | `generic-washer` | `main#switch` | Switch | RW | Switches the washer on or off |
 | `generic-washer` | `main#machineState` | String | RW | Overall machine state |
 | `generic-washer` | `main#jobState` | String | R | Current wash cycle phase |

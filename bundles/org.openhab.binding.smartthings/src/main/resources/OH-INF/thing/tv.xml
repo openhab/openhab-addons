@@ -18,7 +18,9 @@
 		<description>A television connected via SmartThings Cloud.</description>
 
 		<channel-groups>
-			<channel-group typeId="main-group-type-generic-tv" id="main"/>
+			<channel-group typeId="tv-control-group" id="control"/>
+			<channel-group typeId="tv-picture-group" id="picture"/>
+			<channel-group typeId="tv-remote-group" id="remote"/>
 		</channel-groups>
 
 		<config-description>
@@ -38,8 +40,8 @@
 
 		<channel-groups>
 			<channel-group typeId="frame-control-group" id="control"/>
-			<channel-group typeId="frame-picture-group" id="picture"/>
-			<channel-group typeId="frame-remote-group" id="remote"/>
+			<channel-group typeId="tv-picture-group" id="picture"/>
+			<channel-group typeId="tv-remote-group" id="remote"/>
 		</channel-groups>
 
 		<config-description>
@@ -50,7 +52,7 @@
 		</config-description>
 	</thing-type>
 
-	<channel-group-type id="main-group-type-generic-tv">
+	<channel-group-type id="tv-control-group">
 		<label>Control</label>
 		<channels>
 			<channel id="switch" typeId="system.power">
@@ -59,83 +61,48 @@
 					<property name="capability">switch</property>
 					<property name="attribute">switch</property>
 				</properties>
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
 			</channel>
-			<channel id="tvVolume" typeId="tvVolume">
+			<channel id="volume" typeId="system.volume">
 				<properties>
 					<property name="component">main</property>
 					<property name="capability">audioVolume</property>
 					<property name="attribute">volume</property>
+					<property name="command">setVolume</property>
 				</properties>
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
 			</channel>
-			<channel id="tvMute" typeId="tvMute">
+			<channel id="mute" typeId="system.mute">
 				<properties>
 					<property name="component">main</property>
-					<property name="capability">mute</property>
+					<property name="capability">audioMute</property>
 					<property name="attribute">mute</property>
 				</properties>
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
 			</channel>
-			<channel id="inputSource" typeId="inputSource">
+			<channel id="input-source" typeId="tv-input-source">
 				<properties>
 					<property name="component">main</property>
-					<property name="capability">inputSource</property>
+					<property name="capability">mediaInputSource</property>
 					<property name="attribute">inputSource</property>
+					<property name="command">setInputSource</property>
 				</properties>
 			</channel>
-			<channel id="tvChannel" typeId="tvChannel">
+			<channel id="channel" typeId="tv-channel">
 				<properties>
 					<property name="component">main</property>
 					<property name="capability">tvChannel</property>
 					<property name="attribute">tvChannel</property>
+					<property name="command">setTvChannel</property>
 				</properties>
 			</channel>
-			<channel id="tvChannelName" typeId="tvChannelName">
-				<properties>
-					<property name="component">main</property>
-					<property name="capability">tvChannel</property>
-					<property name="attribute">tvChannelName</property>
-				</properties>
-			</channel>
-			<channel id="channelUp" typeId="channelUp">
-				<properties>
-					<property name="component">main</property>
-					<property name="capability">tvChannel</property>
-					<property name="attribute">channelUp</property>
-				</properties>
-			</channel>
-			<channel id="channelDown" typeId="channelDown">
-				<properties>
-					<property name="component">main</property>
-					<property name="capability">tvChannel</property>
-					<property name="attribute">channelDown</property>
-				</properties>
-			</channel>
-			<channel id="pictureMode" typeId="pictureMode">
-				<properties>
-					<property name="component">main</property>
-					<property name="capability">custom.pictureMode</property>
-					<property name="attribute">pictureMode</property>
-				</properties>
-			</channel>
-			<channel id="soundMode" typeId="soundMode">
-				<properties>
-					<property name="component">main</property>
-					<property name="capability">custom.soundmode</property>
-					<property name="attribute">soundMode</property>
-				</properties>
-			</channel>
-			<channel id="playbackStatus" typeId="playbackStatus">
+			<channel id="playback" typeId="system.media-control">
 				<properties>
 					<property name="component">main</property>
 					<property name="capability">mediaPlayback</property>
 					<property name="attribute">playbackStatus</property>
 				</properties>
-			</channel>
-			<channel id="onlineStatus" typeId="onlineStatus">
-				<properties>
-					<property name="component">main</property>
-					<property name="capability">switch</property>
-					<property name="attribute">switch</property>
-				</properties>
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
 			</channel>
 		</channels>
 	</channel-group-type>
@@ -168,7 +135,7 @@
 				</properties>
 				<autoUpdatePolicy>veto</autoUpdatePolicy>
 			</channel>
-			<channel id="input-source" typeId="frame-input-source">
+			<channel id="input-source" typeId="tv-input-source">
 				<properties>
 					<property name="component">main</property>
 					<property name="capability">mediaInputSource</property>
@@ -176,7 +143,7 @@
 					<property name="command">setInputSource</property>
 				</properties>
 			</channel>
-			<channel id="channel" typeId="frame-channel">
+			<channel id="channel" typeId="tv-channel">
 				<properties>
 					<property name="component">main</property>
 					<property name="capability">tvChannel</property>
@@ -204,10 +171,10 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="frame-picture-group">
+	<channel-group-type id="tv-picture-group">
 		<label>Picture and Sound</label>
 		<channels>
-			<channel id="picture-mode" typeId="frame-picture-mode">
+			<channel id="picture-mode" typeId="tv-picture-mode">
 				<properties>
 					<property name="component">main</property>
 					<property name="capability">custom.picturemode</property>
@@ -215,7 +182,7 @@
 					<property name="command">setPictureMode</property>
 				</properties>
 			</channel>
-			<channel id="sound-mode" typeId="frame-sound-mode">
+			<channel id="sound-mode" typeId="tv-sound-mode">
 				<properties>
 					<property name="component">main</property>
 					<property name="capability">custom.soundmode</property>
@@ -226,10 +193,10 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="frame-remote-group">
+	<channel-group-type id="tv-remote-group">
 		<label>Remote</label>
 		<channels>
-			<channel id="channel-up" typeId="frame-channel-up">
+			<channel id="channel-up" typeId="tv-channel-up">
 				<properties>
 					<property name="component">main</property>
 					<property name="capability">tvChannel</property>
@@ -238,7 +205,7 @@
 					<property name="smartthings-converter">no-argument-command</property>
 				</properties>
 			</channel>
-			<channel id="channel-down" typeId="frame-channel-down">
+			<channel id="channel-down" typeId="tv-channel-down">
 				<properties>
 					<property name="component">main</property>
 					<property name="capability">tvChannel</property>
@@ -250,14 +217,14 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-type id="frame-input-source">
+	<channel-type id="tv-input-source">
 		<item-type>String</item-type>
 		<label>Input Source</label>
 		<description>Active TV input source.</description>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
-	<channel-type id="frame-channel">
+	<channel-type id="tv-channel">
 		<item-type>String</item-type>
 		<label>TV Channel</label>
 		<description>Current TV channel number.</description>
@@ -271,132 +238,32 @@
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
-	<channel-type id="frame-picture-mode">
+	<channel-type id="tv-picture-mode">
 		<item-type>String</item-type>
 		<label>Picture Mode</label>
 		<description>TV picture mode.</description>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
-	<channel-type id="frame-sound-mode">
+	<channel-type id="tv-sound-mode">
 		<item-type>String</item-type>
 		<label>Sound Mode</label>
 		<description>TV sound mode.</description>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
-	<channel-type id="frame-channel-up" advanced="true">
+	<channel-type id="tv-channel-up" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Channel Up</label>
 		<description>Send ON to switch to the next TV channel.</description>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
-	<channel-type id="frame-channel-down" advanced="true">
+	<channel-type id="tv-channel-down" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Channel Down</label>
 		<description>Send ON to switch to the previous TV channel.</description>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
-	</channel-type>
-
-	<!-- Television channel types -->
-
-	<channel-type id="tvVolume">
-		<item-type>Number</item-type>
-		<label>Volume</label>
-		<description>TV audio volume level (0–100)</description>
-		<state pattern="%.0f" min="0" max="100"/>
-	</channel-type>
-
-	<channel-type id="tvMute">
-		<item-type>Switch</item-type>
-		<label>Mute</label>
-		<description>TV audio mute state — ON = muted</description>
-	</channel-type>
-
-	<channel-type id="inputSource">
-		<item-type>String</item-type>
-		<label>Input Source</label>
-		<description>Active input source (e.g. digitalTv, HDMI1, HDMI2)</description>
-	</channel-type>
-
-	<channel-type id="supportedInputSources">
-		<item-type>String</item-type>
-		<label>Supported Input Sources</label>
-		<description>Available input sources as id=name pairs (e.g. dtv=TV, HDMI2=Nvidia Shield)</description>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="tvChannel">
-		<item-type>String</item-type>
-		<label>TV Channel</label>
-		<description>Current TV channel number — send a channel number string to change channel</description>
-	</channel-type>
-
-	<channel-type id="channelUp">
-		<item-type>Switch</item-type>
-		<label>Channel Up</label>
-		<description>Send ON to go to the next TV channel</description>
-	</channel-type>
-
-	<channel-type id="channelDown">
-		<item-type>Switch</item-type>
-		<label>Channel Down</label>
-		<description>Send ON to go to the previous TV channel</description>
-	</channel-type>
-
-	<channel-type id="tvChannelName">
-		<item-type>String</item-type>
-		<label>TV Channel Name</label>
-		<description>Current TV channel name</description>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="pictureMode">
-		<item-type>String</item-type>
-		<label>Picture Mode</label>
-		<description>TV picture mode (e.g. Standard, Movie, Dynamic)</description>
-	</channel-type>
-
-	<channel-type id="supportedPictureModes">
-		<item-type>String</item-type>
-		<label>Supported Picture Modes</label>
-		<description>Comma-separated list of available picture modes</description>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="soundMode">
-		<item-type>String</item-type>
-		<label>Sound Mode</label>
-		<description>TV sound mode (e.g. Standard, Music, Movie)</description>
-	</channel-type>
-
-	<channel-type id="supportedSoundModes">
-		<item-type>String</item-type>
-		<label>Supported Sound Modes</label>
-		<description>Comma-separated list of available sound modes</description>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="playbackStatus">
-		<item-type>String</item-type>
-		<label>Playback Status</label>
-		<description>Media playback status (playing, paused, stopped, etc.)</description>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="firmwareVersion">
-		<item-type>String</item-type>
-		<label>Firmware Version</label>
-		<description>TV firmware version string</description>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="onlineStatus">
-		<item-type>String</item-type>
-		<label>Online Status</label>
-		<description>SmartThings device online status (online/offline)</description>
-		<state readOnly="true"/>
 	</channel-type>
 
 

@@ -228,7 +228,33 @@ class SmartThingsThingDescriptionTest {
         assertEquals("SmartThings TV", findThingTypeLabel(document, "generic-television"));
         assertEquals("A television connected via SmartThings Cloud.",
                 findThingTypeDescription(document, "generic-television"));
-        assertEquals("Control", findChannelGroupTypeLabel(document, "main-group-type-generic-tv"));
+        assertEquals(Set.of("control", "picture", "remote"),
+                findThingTypeChannelGroupIds(document, "generic-television"));
+        assertEquals("tv-control-group", findThingTypeChannelGroupTypeId(document, "generic-television", "control"));
+        assertEquals("tv-picture-group", findThingTypeChannelGroupTypeId(document, "generic-television", "picture"));
+        assertEquals("tv-remote-group", findThingTypeChannelGroupTypeId(document, "generic-television", "remote"));
+        assertEquals("Control", findChannelGroupTypeLabel(document, "tv-control-group"));
+        assertFalse(hasChannelGroupType(document, "main-group-type-generic-tv"));
+
+        assertExpectedChannels(document, Map.ofEntries(
+                Map.entry("switch", new ExpectedChannel("tv-control-group", "system.power", "switch", "switch")),
+                Map.entry("volume", new ExpectedChannel("tv-control-group", "system.volume", "audioVolume", "volume")),
+                Map.entry("mute", new ExpectedChannel("tv-control-group", "system.mute", "audioMute", "mute")),
+                Map.entry("input-source",
+                        new ExpectedChannel("tv-control-group", "tv-input-source", "mediaInputSource", "inputSource")),
+                Map.entry("channel", new ExpectedChannel("tv-control-group", "tv-channel", "tvChannel", "tvChannel")),
+                Map.entry("playback",
+                        new ExpectedChannel("tv-control-group", "system.media-control", "mediaPlayback",
+                                "playbackStatus")),
+                Map.entry("picture-mode",
+                        new ExpectedChannel("tv-picture-group", "tv-picture-mode", "custom.picturemode",
+                                "pictureMode")),
+                Map.entry("sound-mode",
+                        new ExpectedChannel("tv-picture-group", "tv-sound-mode", "custom.soundmode", "soundMode")),
+                Map.entry("channel-up",
+                        new ExpectedChannel("tv-remote-group", "tv-channel-up", "tvChannel", "tvChannel")),
+                Map.entry("channel-down",
+                        new ExpectedChannel("tv-remote-group", "tv-channel-down", "tvChannel", "tvChannel"))));
     }
 
     @Test
@@ -240,39 +266,33 @@ class SmartThingsThingDescriptionTest {
                         new ExpectedChannel("frame-control-group", "system.volume", "audioVolume", "volume")),
                 Map.entry("mute", new ExpectedChannel("frame-control-group", "system.mute", "audioMute", "mute")),
                 Map.entry("input-source",
-                        new ExpectedChannel("frame-control-group", "frame-input-source", "mediaInputSource",
+                        new ExpectedChannel("frame-control-group", "tv-input-source", "mediaInputSource",
                                 "inputSource")),
                 Map.entry("channel",
-                        new ExpectedChannel("frame-control-group", "frame-channel", "tvChannel", "tvChannel")),
+                        new ExpectedChannel("frame-control-group", "tv-channel", "tvChannel", "tvChannel")),
                 Map.entry("playback",
                         new ExpectedChannel("frame-control-group", "system.media-control", "mediaPlayback",
                                 "playbackStatus")),
                 Map.entry("art-mode",
                         new ExpectedChannel("frame-control-group", "frame-art-mode", "samsungvd.ambient", "ambient")),
                 Map.entry("picture-mode",
-                        new ExpectedChannel("frame-picture-group", "frame-picture-mode", "custom.picturemode",
+                        new ExpectedChannel("tv-picture-group", "tv-picture-mode", "custom.picturemode",
                                 "pictureMode")),
                 Map.entry("sound-mode",
-                        new ExpectedChannel("frame-picture-group", "frame-sound-mode", "custom.soundmode",
-                                "soundMode")),
+                        new ExpectedChannel("tv-picture-group", "tv-sound-mode", "custom.soundmode", "soundMode")),
                 Map.entry("channel-up",
-                        new ExpectedChannel("frame-remote-group", "frame-channel-up", "tvChannel", "tvChannel")),
+                        new ExpectedChannel("tv-remote-group", "tv-channel-up", "tvChannel", "tvChannel")),
                 Map.entry("channel-down",
-                        new ExpectedChannel("frame-remote-group", "frame-channel-down", "tvChannel", "tvChannel")));
+                        new ExpectedChannel("tv-remote-group", "tv-channel-down", "tvChannel", "tvChannel")));
 
         assertEquals("Samsung The Frame", findThingTypeLabel(document, "Samsung_The_Frame"));
         assertEquals(Set.of("control", "picture", "remote"),
                 findThingTypeChannelGroupIds(document, "Samsung_The_Frame"));
+        assertEquals("frame-control-group", findThingTypeChannelGroupTypeId(document, "Samsung_The_Frame", "control"));
+        assertEquals("tv-picture-group", findThingTypeChannelGroupTypeId(document, "Samsung_The_Frame", "picture"));
+        assertEquals("tv-remote-group", findThingTypeChannelGroupTypeId(document, "Samsung_The_Frame", "remote"));
 
-        for (Map.Entry<String, ExpectedChannel> entry : expectedChannels.entrySet()) {
-            ExpectedChannel expected = entry.getValue();
-            Element channel = findChannel(document, expected.groupId(), entry.getKey());
-
-            assertEquals(expected.typeId(), channel.getAttribute("typeId"), entry.getKey());
-            assertEquals("main", findPropertyValue(channel, "component"), entry.getKey());
-            assertEquals(expected.capability(), findPropertyValue(channel, "capability"), entry.getKey());
-            assertEquals(expected.attribute(), findPropertyValue(channel, "attribute"), entry.getKey());
-        }
+        assertExpectedChannels(document, expectedChannels);
     }
 
     @Test
@@ -280,10 +300,10 @@ class SmartThingsThingDescriptionTest {
         Document document = parseThingDescription("OH-INF/thing/tv.xml");
 
         assertTrue(isAdvancedChannelType(document,
-                findChannel(document, "frame-remote-group", "channel-up").getAttribute("typeId")));
+                findChannel(document, "tv-remote-group", "channel-up").getAttribute("typeId")));
         assertTrue(isAdvancedChannelType(document,
-                findChannel(document, "frame-remote-group", "channel-down").getAttribute("typeId")));
-        for (String groupId : Set.of("frame-control-group", "frame-picture-group", "frame-remote-group")) {
+                findChannel(document, "tv-remote-group", "channel-down").getAttribute("typeId")));
+        for (String groupId : Set.of("frame-control-group", "tv-picture-group", "tv-remote-group")) {
             assertFalse(hasChannel(document, groupId, "firmware-version"));
             assertFalse(hasChannel(document, groupId, "diagnostics"));
             assertFalse(hasChannel(document, groupId, "error"));
@@ -306,17 +326,16 @@ class SmartThingsThingDescriptionTest {
         assertEquals("no-argument-command", findPropertyValue(findChannel(document, "frame-control-group", "art-mode"),
                 SmartThingsBindingConstants.CONVERTER));
         assertEquals("setPictureMode",
-                findPropertyValue(findChannel(document, "frame-picture-group", "picture-mode"), "command"));
+                findPropertyValue(findChannel(document, "tv-picture-group", "picture-mode"), "command"));
         assertEquals("setSoundMode",
-                findPropertyValue(findChannel(document, "frame-picture-group", "sound-mode"), "command"));
-        assertEquals("channelUp",
-                findPropertyValue(findChannel(document, "frame-remote-group", "channel-up"), "command"));
-        assertEquals("no-argument-command", findPropertyValue(findChannel(document, "frame-remote-group", "channel-up"),
+                findPropertyValue(findChannel(document, "tv-picture-group", "sound-mode"), "command"));
+        assertEquals("channelUp", findPropertyValue(findChannel(document, "tv-remote-group", "channel-up"), "command"));
+        assertEquals("no-argument-command", findPropertyValue(findChannel(document, "tv-remote-group", "channel-up"),
                 SmartThingsBindingConstants.CONVERTER));
         assertEquals("channelDown",
-                findPropertyValue(findChannel(document, "frame-remote-group", "channel-down"), "command"));
-        assertEquals("no-argument-command", findPropertyValue(
-                findChannel(document, "frame-remote-group", "channel-down"), SmartThingsBindingConstants.CONVERTER));
+                findPropertyValue(findChannel(document, "tv-remote-group", "channel-down"), "command"));
+        assertEquals("no-argument-command", findPropertyValue(findChannel(document, "tv-remote-group", "channel-down"),
+                SmartThingsBindingConstants.CONVERTER));
     }
 
     @Test
@@ -327,8 +346,8 @@ class SmartThingsThingDescriptionTest {
             assertEquals("veto", findChannelAutoUpdatePolicy(document, "frame-control-group", channelId), channelId);
         }
 
-        for (String channelTypeId : Set.of("frame-input-source", "frame-channel", "frame-art-mode",
-                "frame-picture-mode", "frame-sound-mode", "frame-channel-up", "frame-channel-down")) {
+        for (String channelTypeId : Set.of("tv-input-source", "tv-channel", "frame-art-mode", "tv-picture-mode",
+                "tv-sound-mode", "tv-channel-up", "tv-channel-down")) {
             assertEquals("veto", findChannelTypeAutoUpdatePolicy(document, channelTypeId), channelTypeId);
         }
     }
@@ -336,9 +355,9 @@ class SmartThingsThingDescriptionTest {
     @Test
     void frameTvChannelTypesUseSuitableItemTypes() throws Exception {
         Document document = parseThingDescription("OH-INF/thing/tv.xml");
-        Map<String, String> expectedItemTypes = Map.of("frame-input-source", "String", "frame-channel", "String",
-                "frame-art-mode", "Switch", "frame-picture-mode", "String", "frame-sound-mode", "String",
-                "frame-channel-up", "Switch", "frame-channel-down", "Switch");
+        Map<String, String> expectedItemTypes = Map.of("tv-input-source", "String", "tv-channel", "String",
+                "frame-art-mode", "Switch", "tv-picture-mode", "String", "tv-sound-mode", "String", "tv-channel-up",
+                "Switch", "tv-channel-down", "Switch");
 
         for (Map.Entry<String, String> entry : expectedItemTypes.entrySet()) {
             assertEquals(entry.getValue(), findChannelTypeItemType(document, entry.getKey()), entry.getKey());
@@ -355,6 +374,18 @@ class SmartThingsThingDescriptionTest {
         factory.setExpandEntityReferences(false);
         factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         return factory.newDocumentBuilder().parse(stream);
+    }
+
+    private void assertExpectedChannels(Document document, Map<String, ExpectedChannel> expectedChannels) {
+        for (Map.Entry<String, ExpectedChannel> entry : expectedChannels.entrySet()) {
+            ExpectedChannel expected = entry.getValue();
+            Element channel = findChannel(document, expected.groupId(), entry.getKey());
+
+            assertEquals(expected.typeId(), channel.getAttribute("typeId"), entry.getKey());
+            assertEquals("main", findPropertyValue(channel, "component"), entry.getKey());
+            assertEquals(expected.capability(), findPropertyValue(channel, "capability"), entry.getKey());
+            assertEquals(expected.attribute(), findPropertyValue(channel, "attribute"), entry.getKey());
+        }
     }
 
     private Element findParameter(Document document, String parameterName) {
@@ -454,6 +485,18 @@ class SmartThingsThingDescriptionTest {
         return groupIds;
     }
 
+    private String findThingTypeChannelGroupTypeId(Document document, String thingTypeId, String channelGroupId) {
+        Element thingType = findThingType(document, thingTypeId);
+        NodeList channelGroups = thingType.getElementsByTagName("channel-group");
+        for (int i = 0; i < channelGroups.getLength(); i++) {
+            Element channelGroup = (Element) channelGroups.item(i);
+            if (channelGroupId.equals(channelGroup.getAttribute("id"))) {
+                return channelGroup.getAttribute("typeId");
+            }
+        }
+        throw new AssertionError("Missing channel group: " + thingTypeId + "#" + channelGroupId);
+    }
+
     private Element findThingType(Document document, String thingTypeId) {
         NodeList thingTypes = document.getElementsByTagName("thing-type");
         for (int i = 0; i < thingTypes.getLength(); i++) {
@@ -499,6 +542,17 @@ class SmartThingsThingDescriptionTest {
             }
         }
         throw new AssertionError("Missing channel group type: " + channelGroupTypeId);
+    }
+
+    private boolean hasChannelGroupType(Document document, String channelGroupTypeId) {
+        NodeList channelGroupTypes = document.getElementsByTagName("channel-group-type");
+        for (int i = 0; i < channelGroupTypes.getLength(); i++) {
+            Element channelGroupType = (Element) channelGroupTypes.item(i);
+            if (channelGroupTypeId.equals(channelGroupType.getAttribute("id"))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private String findChannelGroupTypeLabel(Document document, String channelGroupTypeId) {
