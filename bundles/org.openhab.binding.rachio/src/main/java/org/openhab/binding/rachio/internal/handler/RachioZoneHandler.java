@@ -257,6 +257,16 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
         return false;
     }
 
+    void refreshThingStatusAfterSuccessfulCommunication() {
+        RachioDevice d = dev;
+        if (!isBridgeOnline() || d == null || zone == null) {
+            return;
+        }
+        logger.debug("{}: Refreshing zone Thing status after successful cloud poll, controllerStatus={}", thingId,
+                d.getStatus());
+        updateStatus(d.getStatus());
+    }
+
     @Override
     public void onConfigurationUpdated() {
     }

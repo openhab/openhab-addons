@@ -260,57 +260,7 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
                 if (dev == null) {
                     logger.info("RachioCloud: New device detected: {} - {}", checkDev.id, checkDev.name);
                 } else {
-                    RachioDeviceHandler deviceHandler = dev.getThingHandler();
-                    if (!dev.compare(checkDev)) {
-                        logger.trace("RachioCloud: Update data for device {}", dev.name);
-                        if (deviceHandler != null) {
-                            deviceHandler.onThingStateChanged(checkDev, null);
-                        } else {
-                            notifyThingStateChanged(checkDev, null);
-                        }
-                    } else {
-                        logger.trace("RachioCloud: Device {} was not updated", checkDev.id);
-                        if (deviceHandler != null) {
-                            deviceHandler.refreshThingStatusAfterSuccessfulCommunication();
-                        }
-                    }
-
-                    HashMap<String, RachioZone> zoneList = dev.getZones();
-                    HashMap<String, RachioZone> checkZoneList = checkDev.getZones();
-                    for (HashMap.Entry<String, RachioZone> ze : checkZoneList.entrySet()) {
-                        RachioZone checkZone = ze.getValue();
-                        RachioZone zone = zoneList.get(checkZone.id);
-                        if (zone == null) {
-                            logger.debug("RachioCloud: New zone detected: {} - {}", checkDev.id, checkZone.name);
-                        } else {
-                            if (!zone.compare(checkZone)) {
-                                logger.trace("RachioCloud: Update status for zone {}", zone.name);
-                                if (zone.getThingHandler() != null) {
-                                    zone.getThingHandler().onThingStateChanged(null, checkZone);
-                                } else {
-                                    notifyThingStateChanged(null, checkZone);
-                                }
-                            } else {
-                                logger.trace("RachioCloud: Zone {} was not updated.", checkZone.id);
-                            }
-                        }
-                    }
-                    // Sync the zoneList with the new state
-                    zoneList.keySet().retainAll(checkZoneList.keySet());
-                    for (HashMap.Entry<String, RachioZone> entry : checkZoneList.entrySet()) {
-                        if (!zoneList.containsKey(entry.getKey())) {
-                            zoneList.put(entry.getKey(), entry.getValue());
-                        }
-                    }
-                    if (deviceHandler != null) {
-                        deviceHandler.retryDeferredWebhookRegistrationIfDue();
-                        if (refreshReason == RefreshReason.SCHEDULED_POLL) {
-                            logger.debug(
-                                    "RachioCloud: Core scheduled status poll completed for controller '{}'; refreshing essential running state before optional enrichments",
-                                    checkDev.id);
-                        }
-                        deviceHandler.refreshSmartIrrigationReadExtensions(false, getRequestPurpose(refreshReason));
-                    }
+                    reconcileDeviceAndZones(dev, checkDev, refreshReason);
                 }
             }
         } catch (RachioApiThrottledException e) {
@@ -325,6 +275,64 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
                 logger.debug("RachioBridge: {}", errorMessage);
             }
             endRefresh();
+        }
+    }
+
+    void reconcileDeviceAndZones(RachioDevice dev, RachioDevice checkDev, RefreshReason refreshReason) {
+        RachioDeviceHandler deviceHandler = dev.getThingHandler();
+        if (!dev.compare(checkDev)) {
+            logger.trace("RachioCloud: Update data for device {}", dev.name);
+            if (deviceHandler != null) {
+                deviceHandler.onThingStateChanged(checkDev, null);
+            } else {
+                notifyThingStateChanged(checkDev, null);
+            }
+        } else {
+            logger.trace("RachioCloud: Device {} was not updated", checkDev.id);
+            if (deviceHandler != null) {
+                deviceHandler.refreshThingStatusAfterSuccessfulCommunication();
+            }
+        }
+
+        HashMap<String, RachioZone> zoneList = dev.getZones();
+        HashMap<String, RachioZone> checkZoneList = checkDev.getZones();
+        for (HashMap.Entry<String, RachioZone> ze : checkZoneList.entrySet()) {
+            RachioZone checkZone = ze.getValue();
+            RachioZone zone = zoneList.get(checkZone.id);
+            if (zone == null) {
+                logger.debug("RachioCloud: New zone detected: {} - {}", checkDev.id, checkZone.name);
+            } else if (!zone.compare(checkZone)) {
+                logger.trace("RachioCloud: Update status for zone {}", zone.name);
+                RachioZoneHandler zoneHandler = zone.getThingHandler();
+                if (zoneHandler != null) {
+                    zoneHandler.onThingStateChanged(null, checkZone);
+                } else {
+                    notifyThingStateChanged(null, checkZone);
+                }
+            } else {
+                logger.trace("RachioCloud: Zone {} was not updated.", checkZone.id);
+                RachioZoneHandler zoneHandler = zone.getThingHandler();
+                if (zoneHandler != null) {
+                    zoneHandler.refreshThingStatusAfterSuccessfulCommunication();
+                }
+            }
+        }
+
+        // Sync the zoneList with the new state
+        zoneList.keySet().retainAll(checkZoneList.keySet());
+        for (HashMap.Entry<String, RachioZone> entry : checkZoneList.entrySet()) {
+            if (!zoneList.containsKey(entry.getKey())) {
+                zoneList.put(entry.getKey(), entry.getValue());
+            }
+        }
+        if (deviceHandler != null) {
+            deviceHandler.retryDeferredWebhookRegistrationIfDue();
+            if (refreshReason == RefreshReason.SCHEDULED_POLL) {
+                logger.debug(
+                        "RachioCloud: Core scheduled status poll completed for controller '{}'; refreshing essential running state before optional enrichments",
+                        checkDev.id);
+            }
+            deviceHandler.refreshSmartIrrigationReadExtensions(false, getRequestPurpose(refreshReason));
         }
     }
 
