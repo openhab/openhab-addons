@@ -216,6 +216,12 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                         if (e.blu.battery != null) {
                             sensorData.bat.value = (double) e.blu.battery;
                         }
+                        if (e.blu.batteryLow != null) {
+                            if (sensorData.bat == null) {
+                                sensorData.bat = new ShellySensorBat();
+                            }
+                            sensorData.bat.batteryLow = e.blu.batteryLow == 1;
+                        }
                         if (e.blu.rssi != null) {
                             deviceStatus.wifiSta.rssi = e.blu.rssi;
                         }
@@ -327,6 +333,9 @@ public class ShellyBluApi extends Shelly2ApiRpc {
     private static void initializeSensorData(ShellyStatusSensor sensorData, Shelly2NotifyBluEventData data) {
         if (data.battery != null && sensorData.bat == null) {
             sensorData.bat = new ShellySensorBat();
+        }
+        if (data.batteryLow != null && sensorData.bat != null) {
+            sensorData.bat.batteryLow = data.batteryLow == 1;
         }
         if ((data.illuminance != null || data.lightLevel != null) && sensorData.lux == null) {
             sensorData.lux = new ShellySensorLux();

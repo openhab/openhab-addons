@@ -52,7 +52,7 @@ BTH[0x11] = { n: "Opening", t: uint8 };                                       //
 BTH[0x12] = { n: "Co2", t: uint16 };                                          // CO2 concentration ppm
 BTH[0x13] = { n: "TVOC", t: uint16 };                                         // TVOC Air Quality ug/m3
 BTH[0x14] = { n: "Moisture16", t: uint16, f: 0.01 };                          // Moisture (scaled by 0.01)
-BTH[0x15] = { n: "Battery", t: uint8 };                                       // Battery level normal/low status (boolean)
+BTH[0x15] = { n: "BatteryLow", t: uint8 };                                    // Battery low flag: 0=normal, 1=low
 BTH[0x16] = { n: "BatteryCharging", t: uint8 };                               // Battery charging status (boolean)
 BTH[0x17] = { n: "CarbonMonoxide", t: uint8 };                                // Carbon Monoxide not detected/detected status (boolean)
 BTH[0x18] = { n: "Cold", t: uint8 };                                          // Cold normal/cold status (boolean)
