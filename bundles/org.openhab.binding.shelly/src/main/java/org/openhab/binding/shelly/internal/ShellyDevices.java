@@ -608,6 +608,7 @@ public class ShellyDevices {
             Map.entry("shellyplugu1", THING_TYPE_SHELLYPLUGU1), //
             Map.entry("shellyplugus", THING_TYPE_SHELLYPLUSPLUGUS),
             Map.entry("shellyplusplug", THING_TYPE_SHELLYPLUSPLUGS), //
+            Map.entry("shellyplusplugs", THING_TYPE_SHELLYPLUSPLUGS), //
             Map.entry("shellyplugsg3", THING_TYPE_SHELLYPLUSPLUGS),
             Map.entry("shellyplugmg3", THING_TYPE_SHELLYPLUSPLUGS),
             Map.entry("shellyplusplugus", THING_TYPE_SHELLYPLUSPLUGUS),
