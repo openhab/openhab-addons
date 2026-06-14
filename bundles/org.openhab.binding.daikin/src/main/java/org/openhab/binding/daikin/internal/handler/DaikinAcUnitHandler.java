@@ -186,68 +186,69 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
         }
     }
 
-@Override
-protected boolean handleCommandInternal(ChannelUID channelUID, Command command) throws DaikinCommunicationException {
-    return switch (channelUID.getId()) {
-        case DaikinBindingConstants.CHANNEL_AC_FAN_DIR -> {
-            if (command instanceof StringType stringCommand) {
-                if (changeFanDir(stringCommand.toString())) {
-                    updateState(channelUID, stringCommand);
+    @Override
+    protected boolean handleCommandInternal(ChannelUID channelUID, Command command)
+            throws DaikinCommunicationException {
+        return switch (channelUID.getId()) {
+            case DaikinBindingConstants.CHANNEL_AC_FAN_DIR -> {
+                if (command instanceof StringType stringCommand) {
+                    if (changeFanDir(stringCommand.toString())) {
+                        updateState(channelUID, stringCommand);
+                    }
+                    yield true;
                 }
-                yield true;
+                yield false;
             }
-            yield false;
-        }
-        case DaikinBindingConstants.CHANNEL_AC_SPECIALMODE -> {
-            if (command instanceof StringType stringCommand) {
-                if (changeSpecialMode(stringCommand.toString())) {
-                    updateState(channelUID, stringCommand);
+            case DaikinBindingConstants.CHANNEL_AC_SPECIALMODE -> {
+                if (command instanceof StringType stringCommand) {
+                    if (changeSpecialMode(stringCommand.toString())) {
+                        updateState(channelUID, stringCommand);
+                    }
+                    yield true;
                 }
-                yield true;
+                yield false;
             }
-            yield false;
-        }
-        case DaikinBindingConstants.CHANNEL_AC_STREAMER -> {
-            if (command instanceof OnOffType onOffCommand) {
-                if (changeStreamer(onOffCommand == OnOffType.ON)) {
-                    updateState(channelUID, onOffCommand);
+            case DaikinBindingConstants.CHANNEL_AC_STREAMER -> {
+                if (command instanceof OnOffType onOffCommand) {
+                    if (changeStreamer(onOffCommand == OnOffType.ON)) {
+                        updateState(channelUID, onOffCommand);
+                    }
+                    yield true;
                 }
-                yield true;
+                yield false;
             }
-            yield false;
-        }
-        case DaikinBindingConstants.CHANNEL_AC_DEMAND_MODE -> {
-            if (command instanceof StringType stringCommand) {
-                changeDemandMode(stringCommand.toString());
-                yield true;
-            }
-            yield false;
-        }
-        case DaikinBindingConstants.CHANNEL_AC_DEMAND_MAX_POWER -> {
-            if (command instanceof PercentType percentCommand) {
-                if (changeDemandMaxPower(percentCommand.intValue())) {
-                    updateState(DaikinBindingConstants.CHANNEL_AC_DEMAND_MODE,
-                            new StringType(DemandControlMode.MANUAL.name()));
-                    updateState(channelUID, percentCommand);
+            case DaikinBindingConstants.CHANNEL_AC_DEMAND_MODE -> {
+                if (command instanceof StringType stringCommand) {
+                    changeDemandMode(stringCommand.toString());
+                    yield true;
                 }
-                yield true;
+                yield false;
             }
-            yield false;
-        }
-        case DaikinBindingConstants.CHANNEL_AC_DEMAND_SCHEDULE -> {
-            if (command instanceof StringType stringCommand) {
-                if (changeDemandSchedule(stringCommand.toString())) {
-                    updateState(DaikinBindingConstants.CHANNEL_AC_DEMAND_MODE,
-                            new StringType(DemandControlMode.SCHEDULED.name()));
-                    updateState(channelUID, stringCommand);
+            case DaikinBindingConstants.CHANNEL_AC_DEMAND_MAX_POWER -> {
+                if (command instanceof PercentType percentCommand) {
+                    if (changeDemandMaxPower(percentCommand.intValue())) {
+                        updateState(DaikinBindingConstants.CHANNEL_AC_DEMAND_MODE,
+                                new StringType(DemandControlMode.MANUAL.name()));
+                        updateState(channelUID, percentCommand);
+                    }
+                    yield true;
                 }
-                yield true;
+                yield false;
             }
-            yield false;
-        }
-        default -> false;
-    };
-}
+            case DaikinBindingConstants.CHANNEL_AC_DEMAND_SCHEDULE -> {
+                if (command instanceof StringType stringCommand) {
+                    if (changeDemandSchedule(stringCommand.toString())) {
+                        updateState(DaikinBindingConstants.CHANNEL_AC_DEMAND_MODE,
+                                new StringType(DemandControlMode.SCHEDULED.name()));
+                        updateState(channelUID, stringCommand);
+                    }
+                    yield true;
+                }
+                yield false;
+            }
+            default -> false;
+        };
+    }
 
     @Override
     protected boolean changePower(boolean power) throws DaikinCommunicationException {

@@ -153,8 +153,8 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
                     return;
                 }
             }
-             logger.debug("Received command ({}) for unsupported channel {} on thing '{}'", command, channelUID.getId(),
-                     thing.getUID().getAsString());
+            logger.debug("Received command ({}) for unsupported channel {} on thing '{}'", command, channelUID.getId(),
+                    thing.getUID().getAsString());
         } catch (DaikinCommunicationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
