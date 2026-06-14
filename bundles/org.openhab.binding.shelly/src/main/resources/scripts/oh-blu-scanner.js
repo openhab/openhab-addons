@@ -31,7 +31,6 @@ let uint32 = 6;
 let int32 = 7;
 
 let BTH_DIMMERSTEPS_INDEX = 0x3c;   // Dimmer (Wheel) Steps object ID
-let FORCE_ARRAY_VALUES = ["Temperature", "Button", "Rotation"];
 
 // BTHome object definitions: id => {name, type, optional scale factor}
 // https://bthome.io/format/
@@ -250,14 +249,6 @@ let BTHomeDecoder = {
 
     // Add events as arrays to the result
     if (dimmer.length > 0) result["Dimmer"] = dimmer;
-
-    // Special handling for values, which need to be converted to an array
-    for (let i = 0; i < FORCE_ARRAY_VALUES.length; i++) {
-      let key = FORCE_ARRAY_VALUES[i];
-      if (typeof result[key] !== "undefined" && !Array.isArray(result[key])) {
-        result[key] = [result[key]];
-      }
-    }
 
     return result;
   }
