@@ -14,14 +14,13 @@ package org.openhab.binding.bluetooth.govee.internal.command.hygrometer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.bluetooth.gattserial.GattMessage;
 
 /**
  * @author Connor Petty - Initial contribution
  *
  */
 @NonNullByDefault
-public class GoveeMessage implements GattMessage {
+public class GoveeMessage {
 
     private byte[] payload;
 
@@ -55,13 +54,12 @@ public class GoveeMessage implements GattMessage {
         return b;
     }
 
-    public byte @Nullable [] getData() {
+    public byte[] getData() {
         byte[] data = new byte[17];
         System.arraycopy(payload, 2, data, 0, Math.min(payload.length - 2, 17));
         return data;
     }
 
-    @Override
     public byte[] getPayload() {
         return payload;
     }
