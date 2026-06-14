@@ -1930,9 +1930,6 @@ See notes on discovery of Shelly BLU devices above.
 |         | rainStatus    | Switch               | yes       | ON: It's raining, OFF: It's not raining                                             |
 |         | precipitation | Number:Length        | yes       | Accumulated rainfall in mm                                                          |
 |         | lastUpdate    | DateTime             | yes       | Timestamp of the last update (any sensor value changed)                             |
-|         | button        | Trigger              | yes       | Event trigger with payload, see SHORT_PRESSED or LONG_PRESSED                       |
-|         | lastEvent     | String               | yes       | Last event type (S/SS/SSS/L/H) for button 1                                         |
-|         | eventCount    | Number               | yes       | Counter gets incremented every time the device issues a button event.               |
 | battery | batteryLevel  | Number               | yes       | Battery Level in %                                                                  |
 |         | lowBattery    | Switch               | yes       | Low battery alert (< 20%)                                                           |
 | device  | gatewayDevice | String               | yes       | Shelly forwarded last status update (BLU gateway), could vary from packet to packet |
