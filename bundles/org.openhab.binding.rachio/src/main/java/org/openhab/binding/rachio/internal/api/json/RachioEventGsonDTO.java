@@ -256,18 +256,18 @@ public class RachioEventGsonDTO {
     }
 
     public boolean isLegacyNotificationEvent() {
-        return isBlank(eventType) && isBlank(resourceType) && !isBlank(externalId) && !isBlank(deviceId)
-                && getLegacyNotificationType(type) != null;
+        return !isBlank(externalId) && !isBlank(deviceId) && isLegacyNotificationTypeRecognized();
     }
 
     public void normalizeLegacyNotificationEvent() {
-        if (!isBlank(eventType) || !isBlank(resourceType)) {
-            return;
-        }
         String normalizedType = getLegacyNotificationType(type);
         if (normalizedType != null) {
             type = normalizedType;
         }
+    }
+
+    public boolean isLegacyNotificationTypeRecognized() {
+        return getLegacyNotificationType(type) != null;
     }
 
     public String getLegacyNotificationTypeForLogging() {
