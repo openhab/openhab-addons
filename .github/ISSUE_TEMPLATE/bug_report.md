@@ -4,7 +4,7 @@ about: Something isn't working correctly with an add-on. This is the wrong place
 labels: bug
 
 ---
-
+<!-- markdownlint-disable MD041 -->
 <!-- Provide a general summary of the issue in the *Title* above -->
 <!-- If the issue is related to a binding, please include its short name in -->
 <!-- square brackets in the title - Example: "[astro] My issue..." -->
@@ -34,7 +34,7 @@ labels: bug
 <!-- Provide a link to a live example, or an unambiguous set of steps to -->
 <!-- reproduce this bug. Include code to reproduce, if relevant -->
 1.
-2.
+1.
 
 ## Context
 <!-- How has this issue affected you? What are you trying to accomplish? -->
@@ -42,6 +42,6 @@ labels: bug
 
 ## Your Environment
 <!-- Include as many relevant details about the environment you experienced the bug in -->
-* Version used: (e.g., openHAB and add-on versions)
-* Environment name and version (e.g. Chrome 76, Java 8, Node.js 12.9, ...):
-* Operating System and version (desktop or mobile, Windows 10, Raspbian Buster, ...):
+- Version used: (e.g., openHAB and add-on versions)
+- Environment name and version (e.g. Chrome 76, Java 8, Node.js 12.9, ...):
+- Operating System and version (desktop or mobile, Windows 10, Raspbian Buster, ...):
