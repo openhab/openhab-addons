@@ -196,8 +196,18 @@ class SmartThingsThingDescriptionTest {
     }
 
     @Test
+    void genericTelevisionUsesCleanLabelsAndDescription() throws Exception {
+        Document document = parseThingDescription("OH-INF/thing/tv.xml");
+
+        assertEquals("SmartThings TV", findThingTypeLabel(document, "generic-television"));
+        assertEquals("A television connected via SmartThings Cloud.",
+                findThingTypeDescription(document, "generic-television"));
+        assertEquals("Control", findChannelGroupTypeLabel(document, "main-group-type-generic-tv"));
+    }
+
+    @Test
     void frameTvThingExposesUsefulChannels() throws Exception {
-        Document document = parseThingDescription("OH-INF/thing/tvset.xml");
+        Document document = parseThingDescription("OH-INF/thing/tv.xml");
         Map<String, ExpectedChannel> expectedChannels = Map.ofEntries(
                 Map.entry("switch", new ExpectedChannel("frame-control-group", "system.power", "switch", "switch")),
                 Map.entry("volume",
@@ -241,7 +251,7 @@ class SmartThingsThingDescriptionTest {
 
     @Test
     void frameTvKeepsRemoteChannelsAdvancedAndOmitsInfoChannels() throws Exception {
-        Document document = parseThingDescription("OH-INF/thing/tvset.xml");
+        Document document = parseThingDescription("OH-INF/thing/tv.xml");
 
         assertTrue(isAdvancedChannelType(document,
                 findChannel(document, "frame-remote-group", "channel-up").getAttribute("typeId")));
@@ -258,13 +268,17 @@ class SmartThingsThingDescriptionTest {
 
     @Test
     void frameTvWritableChannelsDeclareSmartThingsCommands() throws Exception {
-        Document document = parseThingDescription("OH-INF/thing/tvset.xml");
+        Document document = parseThingDescription("OH-INF/thing/tv.xml");
 
         assertEquals("setVolume", findPropertyValue(findChannel(document, "frame-control-group", "volume"), "command"));
         assertEquals("setInputSource",
                 findPropertyValue(findChannel(document, "frame-control-group", "input-source"), "command"));
         assertEquals("setTvChannel",
                 findPropertyValue(findChannel(document, "frame-control-group", "channel"), "command"));
+        assertEquals("setAmbientOn",
+                findPropertyValue(findChannel(document, "frame-control-group", "art-mode"), "command"));
+        assertEquals("no-argument-command", findPropertyValue(findChannel(document, "frame-control-group", "art-mode"),
+                SmartThingsBindingConstants.CONVERTER));
         assertEquals("setPictureMode",
                 findPropertyValue(findChannel(document, "frame-picture-group", "picture-mode"), "command"));
         assertEquals("setSoundMode",
@@ -281,15 +295,16 @@ class SmartThingsThingDescriptionTest {
 
     @Test
     void frameTvChannelTypesUseSuitableItemTypes() throws Exception {
-        Document document = parseThingDescription("OH-INF/thing/tvset.xml");
+        Document document = parseThingDescription("OH-INF/thing/tv.xml");
         Map<String, String> expectedItemTypes = Map.of("frame-input-source", "String", "frame-channel", "String",
-                "frame-art-mode", "String", "frame-picture-mode", "String", "frame-sound-mode", "String",
+                "frame-art-mode", "Switch", "frame-picture-mode", "String", "frame-sound-mode", "String",
                 "frame-channel-up", "Switch", "frame-channel-down", "Switch");
 
         for (Map.Entry<String, String> entry : expectedItemTypes.entrySet()) {
             assertEquals(entry.getValue(), findChannelTypeItemType(document, entry.getKey()), entry.getKey());
         }
-        assertTrue(findChannelTypeStateReadOnly(document, "frame-art-mode"));
+        assertFalse(isChannelTypeReadOnly(document, "frame-art-mode"));
+        assertEquals("veto", findChannelTypeAutoUpdatePolicy(document, "frame-art-mode"));
     }
 
     private Document parseThingDescription(String resourceName) throws Exception {
@@ -381,6 +396,13 @@ class SmartThingsThingDescriptionTest {
         return label.getTextContent();
     }
 
+    private String findThingTypeDescription(Document document, String thingTypeId) {
+        Element thingType = findThingType(document, thingTypeId);
+        Node description = thingType.getElementsByTagName("description").item(0);
+        assertNotNull(description);
+        return description.getTextContent();
+    }
+
     private Set<String> findThingTypeChannelGroupIds(Document document, String thingTypeId) {
         Set<String> groupIds = new HashSet<>();
         Element thingType = findThingType(document, thingTypeId);
@@ -439,6 +461,13 @@ class SmartThingsThingDescriptionTest {
         throw new AssertionError("Missing channel group type: " + channelGroupTypeId);
     }
 
+    private String findChannelGroupTypeLabel(Document document, String channelGroupTypeId) {
+        Element channelGroupType = findChannelGroupType(document, channelGroupTypeId);
+        Node label = channelGroupType.getElementsByTagName("label").item(0);
+        assertNotNull(label);
+        return label.getTextContent();
+    }
+
     private String findChannelTypeItemType(Document document, String channelTypeId) {
         Element channelType = findChannelType(document, channelTypeId);
         Node itemType = channelType.getElementsByTagName("item-type").item(0);
@@ -453,11 +482,17 @@ class SmartThingsThingDescriptionTest {
         return ((Element) state).getAttribute("pattern");
     }
 
-    private boolean findChannelTypeStateReadOnly(Document document, String channelTypeId) {
+    private boolean isChannelTypeReadOnly(Document document, String channelTypeId) {
         Element channelType = findChannelType(document, channelTypeId);
         Node state = channelType.getElementsByTagName("state").item(0);
-        assertNotNull(state);
-        return "true".equals(((Element) state).getAttribute("readOnly"));
+        return state instanceof Element element && "true".equals(element.getAttribute("readOnly"));
+    }
+
+    private String findChannelTypeAutoUpdatePolicy(Document document, String channelTypeId) {
+        Element channelType = findChannelType(document, channelTypeId);
+        Node autoUpdatePolicy = channelType.getElementsByTagName("autoUpdatePolicy").item(0);
+        assertNotNull(autoUpdatePolicy);
+        return autoUpdatePolicy.getTextContent();
     }
 
     private String findChannelTypeLabel(Document document, String channelTypeId) {

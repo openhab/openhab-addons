@@ -326,8 +326,8 @@ public class SmartThingsThingHandler extends BaseThingHandler {
                 refreshChannel(deviceType, componentId, namespace, capaKey, attr, value);
             }
         } catch (Exception ex) {
-            logger.error("Unable to refresh device: {} {}", this.getThing().getUID(), ex.toString(), ex);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
+            logger.warn("Unable to refresh SmartThings state for {}: {}", this.getThing().getUID(), ex.getMessage());
+            logger.debug("Unable to refresh SmartThings state.", ex);
         }
     }
 
@@ -380,8 +380,14 @@ public class SmartThingsThingHandler extends BaseThingHandler {
                 }
             }
         } catch (SmartThingsException ex) {
-            logger.error("Unable to update device : {}", deviceId);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
+            if (ex.isCommunicationError()) {
+                logger.warn("Communication error while updating SmartThings device {}: {}", deviceId, ex.getMessage());
+                logger.debug("Unable to update SmartThings device.", ex);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
+            } else {
+                logger.warn("Unable to update SmartThings device {}: {}", deviceId, ex.getMessage());
+                logger.debug("Unable to update SmartThings device.", ex);
+            }
         }
     }
 

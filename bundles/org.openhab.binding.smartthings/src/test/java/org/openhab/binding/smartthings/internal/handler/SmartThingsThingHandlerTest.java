@@ -52,6 +52,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -192,7 +193,7 @@ class SmartThingsThingHandlerTest {
         ThingUID thingUID = new ThingUID("smartthings:Samsung_The_Frame:account:frame-tv");
         Thing thing = ThingBuilder
                 .create(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Samsung_The_Frame"), thingUID)
-                .withChannel(createChannel(thingUID, "control", "art-mode", SmartThingsBindingConstants.TYPE_STRING,
+                .withChannel(createChannel(thingUID, "control", "art-mode", SmartThingsBindingConstants.TYPE_SWITCH,
                         "samsungvd.ambient", "ambient"))
                 .build();
         TestSmartThingsThingHandler handler = new TestSmartThingsThingHandler(thing);
@@ -202,7 +203,7 @@ class SmartThingsThingHandlerTest {
 
         assertEquals(1, handler.updatedStates);
         assertEquals(new ChannelUID(handler.getThing().getUID(), "control", "art-mode"), handler.lastUpdatedChannel);
-        assertEquals(new StringType("on"), handler.lastUpdatedState);
+        assertEquals(OnOffType.ON, handler.lastUpdatedState);
     }
 
     @Test
@@ -520,6 +521,32 @@ class SmartThingsThingHandlerTest {
     }
 
     @Test
+    void handleCommandSendsFrameArtModeCommandWithoutArguments() throws SmartThingsException {
+        ThingUID thingUID = new ThingUID("smartthings:Samsung_The_Frame:account:frame-tv");
+        ChannelUID channelUID = new ChannelUID(thingUID, "control", "art-mode");
+        Thing thing = ThingBuilder
+                .create(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Samsung_The_Frame"), thingUID)
+                .withChannel(ChannelBuilder.create(channelUID, SmartThingsBindingConstants.TYPE_SWITCH)
+                        .withProperties(Map.of(SmartThingsBindingConstants.COMPONENT, "main",
+                                SmartThingsBindingConstants.CAPABILITY, "samsungvd.ambient",
+                                SmartThingsBindingConstants.ATTRIBUTE, "ambient", SmartThingsBindingConstants.COMMAND,
+                                "setAmbientOn", SmartThingsBindingConstants.CONVERTER, "no-argument-command"))
+                        .build())
+                .build();
+        TestSmartThingsThingHandler handler = new TestSmartThingsThingHandler(thing);
+        SmartThingsApi api = mock(SmartThingsApi.class);
+        SmartThingsConverterFactory.registerConverters(new SmartThingsTypeRegistryImpl());
+
+        handler.handleCommand(api, channelUID, OnOffType.ON);
+
+        ArgumentCaptor<String> body = ArgumentCaptor.forClass(String.class);
+        verify(api).sendCommand(eq(""), body.capture());
+        assertEquals(
+                "{\"commands\":[{\"component\":\"main\",\"capability\":\"samsungvd.ambient\",\"command\":\"setAmbientOn\"}]}",
+                body.getValue());
+    }
+
+    @Test
     void handleCommandDoesNotUseNoArgumentConverterForChannelNameAlone() throws SmartThingsException {
         ThingUID thingUID = new ThingUID("smartthings:Some_TV:account:tv");
         ChannelUID channelUID = new ChannelUID(thingUID, "remote", "channel-up");
@@ -606,6 +633,46 @@ class SmartThingsThingHandlerTest {
 
         assertEquals(0, handler.updatedStates);
         assertNull(handler.lastStatus);
+    }
+
+    @Test
+    void refreshDeviceKeepsThingStatusOnStatusFailure() throws SmartThingsException {
+        Thing thing = ThingBuilder.create(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Samsung_The_Frame"),
+                new ThingUID("smartthings:Samsung_The_Frame:account:frame-tv")).build();
+        TestSmartThingsThingHandler handler = new TestSmartThingsThingHandler(thing);
+        SmartThingsApi api = mock(SmartThingsApi.class);
+        when(api.getStatus(anyString())).thenThrow(new SmartThingsException("status failed"));
+        SmartThingsAccountHandler accountHandler = mock(SmartThingsAccountHandler.class);
+        when(accountHandler.getSmartThingsApi()).thenReturn(api);
+        Bridge bridge = mock(Bridge.class);
+        when(bridge.getHandler()).thenReturn(accountHandler);
+        handler.bridge = bridge;
+
+        handler.refreshDevice();
+
+        assertNull(handler.lastStatus);
+    }
+
+    @Test
+    void refreshDeviceSetsThingOfflineOnCommunicationFailure() throws SmartThingsException {
+        Thing thing = ThingBuilder.create(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Samsung_The_Frame"),
+                new ThingUID("smartthings:Samsung_The_Frame:account:frame-tv")).build();
+        TestSmartThingsThingHandler handler = new TestSmartThingsThingHandler(thing);
+        SmartThingsException networkFailure = new SmartThingsException("network failed", new Exception("timed out"),
+                true);
+        SmartThingsException statusFailure = new SmartThingsException("status failed", networkFailure);
+        SmartThingsApi api = mock(SmartThingsApi.class);
+        when(api.getStatus(anyString())).thenThrow(statusFailure);
+        SmartThingsAccountHandler accountHandler = mock(SmartThingsAccountHandler.class);
+        when(accountHandler.getSmartThingsApi()).thenReturn(api);
+        Bridge bridge = mock(Bridge.class);
+        when(bridge.getHandler()).thenReturn(accountHandler);
+        handler.bridge = bridge;
+
+        handler.refreshDevice();
+
+        assertEquals(ThingStatus.OFFLINE, handler.lastStatus);
+        assertEquals(ThingStatusDetail.COMMUNICATION_ERROR, handler.lastStatusDetail);
     }
 
     @Test
@@ -806,6 +873,8 @@ class SmartThingsThingHandlerTest {
         private @Nullable ChannelUID lastUpdatedChannel;
         private @Nullable State lastUpdatedState;
         private @Nullable ThingStatus lastStatus;
+        private @Nullable ThingStatusDetail lastStatusDetail;
+        private @Nullable Bridge bridge;
         private Map<String, String> lastUpdatedProperties = Map.of();
 
         TestSmartThingsThingHandler(Thing thing) {
@@ -829,6 +898,12 @@ class SmartThingsThingHandlerTest {
         @Override
         protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
             lastStatus = status;
+            lastStatusDetail = statusDetail;
+        }
+
+        @Override
+        public @Nullable Bridge getBridge() {
+            return bridge;
         }
     }
 }

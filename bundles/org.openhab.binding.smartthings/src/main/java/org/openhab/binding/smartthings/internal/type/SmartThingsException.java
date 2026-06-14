@@ -28,18 +28,29 @@ public class SmartThingsException extends Exception {
     private static final long serialVersionUID = -3398100220952729816L;
     @Nullable
     private ErrorObject err;
+    private final boolean communicationError;
 
     public SmartThingsException(String message, Exception e) {
         super(message, e);
+        communicationError = e instanceof SmartThingsException smartThingsException
+                && smartThingsException.isCommunicationError();
+    }
+
+    public SmartThingsException(String message, Exception e, boolean communicationError) {
+        super(message, e);
+        this.communicationError = communicationError || e instanceof SmartThingsException smartThingsException
+                && smartThingsException.isCommunicationError();
     }
 
     public SmartThingsException(String message) {
         super(message);
+        communicationError = false;
     }
 
     public SmartThingsException(String message, ErrorObject err) {
         super(message);
         this.err = err;
+        communicationError = false;
     }
 
     @Override
@@ -65,6 +76,10 @@ public class SmartThingsException extends Exception {
         }
 
         return msg;
+    }
+
+    public boolean isCommunicationError() {
+        return communicationError;
     }
 
     public static String getRootCauseMessage(Throwable t) {

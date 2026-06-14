@@ -139,7 +139,7 @@ public class SmartThingsNetworkConnectorImpl implements SmartThingsNetworkConnec
 
     private static SmartThingsException createNetworkException(Request request, Exception e) {
         return new SmartThingsException("network: Exception while executing request " + describeRequest(request) + ": "
-                + SmartThingsException.getRootCauseMessage(e), e);
+                + SmartThingsException.getRootCauseMessage(e), e, true);
     }
 
     static String describeRequest(Request request) {

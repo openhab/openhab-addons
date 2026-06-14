@@ -14,11 +14,11 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
-		<label>SmartThings Television</label>
-		<description>A Samsung Smart TV connected via SmartThings Cloud.</description>
+		<label>SmartThings TV</label>
+		<description>A television connected via SmartThings Cloud.</description>
 
 		<channel-groups>
-			<channel-group typeId="main-group-type-generic-tvset" id="main"/>
+			<channel-group typeId="main-group-type-generic-tv" id="main"/>
 		</channel-groups>
 
 		<config-description>
@@ -50,8 +50,8 @@
 		</config-description>
 	</thing-type>
 
-	<channel-group-type id="main-group-type-generic-tvset">
-		<label>Main group type generic TvSet</label>
+	<channel-group-type id="main-group-type-generic-tv">
+		<label>Control</label>
 		<channels>
 			<channel id="switch" typeId="system.power">
 				<properties>
@@ -193,6 +193,8 @@
 					<property name="component">main</property>
 					<property name="capability">samsungvd.ambient</property>
 					<property name="attribute">ambient</property>
+					<property name="command">setAmbientOn</property>
+					<property name="smartthings-converter">no-argument-command</property>
 				</properties>
 			</channel>
 		</channels>
@@ -257,10 +259,10 @@
 	</channel-type>
 
 	<channel-type id="frame-art-mode">
-		<item-type>String</item-type>
+		<item-type>Switch</item-type>
 		<label>Art Mode</label>
-		<description>Current Frame art or ambient mode state.</description>
-		<state readOnly="true"/>
+		<description>Frame art or ambient mode. Send ON to activate it.</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="frame-picture-mode">
