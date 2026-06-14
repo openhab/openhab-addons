@@ -203,12 +203,17 @@ public class Shelly1CoIoTVersion2 extends Shelly1CoIoTProtocol implements Shelly
             case "3201": // sensor_1: T, extTemp, C, -55/125; unknown 999
             case "3301": // sensor_2: T, extTemp, C, -55/125; unknown 999
                 int idx = getExtTempId(sen.id);
-                if (idx >= 0 && value != SHELLY_API_INVTEMP) {
-                    // H&T, Fllod, DW only have 1 channel, 1/1PM with Addon have up to to 3 sensors
+                if (idx >= 0) {
+                    // H&T, Flood, DW only have 1 channel; 1/1PM with Addon have up to 3 sensors
                     String channel = profile.isSensor ? CHANNEL_SENSOR_TEMP : CHANNEL_SENSOR_TEMP + idx;
-                    // Some devices report values = -999 or 99 during fw update
-                    updateChannel(updates, CHANNEL_GROUP_SENSOR, channel,
-                            toQuantityType(value, DIGITS_TEMP, SIUnits.CELSIUS));
+                    if (value == SHELLY_API_INVTEMP) {
+                        // Sensor present but reading invalid: publish UNDEF so the cache doesn't
+                        // block the next valid reading when the sensor recovers.
+                        updateChannel(updates, CHANNEL_GROUP_SENSOR, channel, UnDefType.UNDEF);
+                    } else {
+                        updateChannel(updates, CHANNEL_GROUP_SENSOR, channel,
+                                toQuantityType(value, DIGITS_TEMP, SIUnits.CELSIUS));
+                    }
                 } else {
                     logger.debug("{}: Unable to get extSensorId {} from {}/{}", thingName, sen.id, sen.type, sen.desc);
                 }
