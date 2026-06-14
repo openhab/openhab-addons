@@ -15,6 +15,7 @@ package org.openhab.binding.smartthings.internal.handler;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -50,8 +51,11 @@ import org.openhab.binding.smartthings.internal.type.SmartThingsTypeRegistry;
 import org.openhab.binding.smartthings.internal.type.SmartThingsTypeRegistryImpl;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.NextPreviousType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.RewindFastforwardType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
@@ -897,6 +901,64 @@ class SmartThingsThingHandlerTest {
                 json);
     }
 
+    @Test
+    void defaultConverterMapsPlaybackCommandsToSmartThingsPlaybackStatusValues() throws SmartThingsException {
+        SmartThingsTypeRegistry registry = mock(SmartThingsTypeRegistry.class);
+        when(registry.getCapability("mediaPlayback")).thenReturn(createSetterCapability("mediaPlayback",
+                "playbackStatus", SmartThingsBindingConstants.SM_TYPE_STRING, "setPlaybackStatus"));
+        SmartThingsDefaultConverter converter = new SmartThingsDefaultConverter(registry);
+        ThingUID thingUID = new ThingUID("smartthings:Samsung_The_Frame:account:frame-tv");
+        ChannelUID channelUID = new ChannelUID(thingUID, "control", "playback");
+        Thing thing = ThingBuilder
+                .create(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Samsung_The_Frame"), thingUID)
+                .withChannel(createChannel(thingUID, "control", "playback", SmartThingsBindingConstants.TYPE_PLAYER,
+                        "mediaPlayback", "playbackStatus"))
+                .build();
+
+        assertEquals(playbackCommandJson("playing"),
+                converter.convertToSmartThings(thing, channelUID, PlayPauseType.PLAY));
+        assertEquals(playbackCommandJson("paused"),
+                converter.convertToSmartThings(thing, channelUID, PlayPauseType.PAUSE));
+        assertEquals(playbackCommandJson("rewinding"),
+                converter.convertToSmartThings(thing, channelUID, RewindFastforwardType.REWIND));
+        assertEquals(playbackCommandJson("fast forwarding"),
+                converter.convertToSmartThings(thing, channelUID, RewindFastforwardType.FASTFORWARD));
+    }
+
+    @Test
+    void defaultConverterRejectsUnsupportedPlaybackNavigationCommands() {
+        SmartThingsTypeRegistry registry = mock(SmartThingsTypeRegistry.class);
+        when(registry.getCapability("mediaPlayback")).thenReturn(createSetterCapability("mediaPlayback",
+                "playbackStatus", SmartThingsBindingConstants.SM_TYPE_STRING, "setPlaybackStatus"));
+        SmartThingsDefaultConverter converter = new SmartThingsDefaultConverter(registry);
+        ThingUID thingUID = new ThingUID("smartthings:Samsung_The_Frame:account:frame-tv");
+        ChannelUID channelUID = new ChannelUID(thingUID, "control", "playback");
+        Thing thing = ThingBuilder
+                .create(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Samsung_The_Frame"), thingUID)
+                .withChannel(createChannel(thingUID, "control", "playback", SmartThingsBindingConstants.TYPE_PLAYER,
+                        "mediaPlayback", "playbackStatus"))
+                .build();
+
+        assertThrows(SmartThingsException.class,
+                () -> converter.convertToSmartThings(thing, channelUID, NextPreviousType.NEXT));
+        assertThrows(SmartThingsException.class,
+                () -> converter.convertToSmartThings(thing, channelUID, NextPreviousType.PREVIOUS));
+    }
+
+    @Test
+    void defaultConverterMapsStoppedPlaybackStatusToPauseState() throws SmartThingsException {
+        SmartThingsDefaultConverter converter = new SmartThingsDefaultConverter(mock(SmartThingsTypeRegistry.class));
+        ThingUID thingUID = new ThingUID("smartthings:Samsung_The_Frame:account:frame-tv");
+        ChannelUID channelUID = new ChannelUID(thingUID, "control", "playback");
+        Thing thing = ThingBuilder
+                .create(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Samsung_The_Frame"), thingUID)
+                .withChannel(createChannel(thingUID, "control", "playback", SmartThingsBindingConstants.TYPE_PLAYER,
+                        "mediaPlayback", "playbackStatus"))
+                .build();
+
+        assertEquals(PlayPauseType.PAUSE, converter.convertToOpenHab(thing, channelUID, "stopped"));
+    }
+
     private Thing createAirConditionerThing() {
         ThingUID thingUID = new ThingUID("smartthings:Samsung_Room_A_C:account:air-conditioner");
 
@@ -916,6 +978,11 @@ class SmartThingsThingHandlerTest {
                         Map.of(SmartThingsBindingConstants.COMPONENT, "main", SmartThingsBindingConstants.CAPABILITY,
                                 capability, SmartThingsBindingConstants.ATTRIBUTE, attribute))
                 .build();
+    }
+
+    private String playbackCommandJson(String playbackStatus) {
+        return "{\"commands\":[{\"component\":\"main\",\"capability\":\"mediaPlayback\",\"command\":\"setPlaybackStatus\",\"arguments\":[\""
+                + playbackStatus + "\"]}]}";
     }
 
     private SmartThingsCapability createSetterCapability(String capabilityId, String attributeId, String valueType,

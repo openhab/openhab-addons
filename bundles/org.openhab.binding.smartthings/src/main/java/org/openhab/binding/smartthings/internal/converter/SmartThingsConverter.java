@@ -316,7 +316,7 @@ public abstract class SmartThingsConverter {
                         return PlayPauseType.PLAY;
                     } else if ("paused".equals(stringCommand)) {
                         return PlayPauseType.PAUSE;
-                    } else if ("stop".equals(stringCommand)) {
+                    } else if ("stopped".equals(stringCommand)) {
                         return PlayPauseType.PAUSE;
                     }
                 } else {

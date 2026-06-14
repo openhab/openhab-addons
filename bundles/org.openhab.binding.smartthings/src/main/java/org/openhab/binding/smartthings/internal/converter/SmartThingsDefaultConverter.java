@@ -68,6 +68,13 @@ import com.google.gson.JsonElement;
  */
 @NonNullByDefault
 public class SmartThingsDefaultConverter extends SmartThingsConverter {
+    private static final String CAPABILITY_MEDIA_PLAYBACK = "mediaPlayback";
+    private static final String ATTRIBUTE_PLAYBACK_STATUS = "playbackStatus";
+    private static final String PLAYBACK_STATUS_FAST_FORWARDING = "fast forwarding";
+    private static final String PLAYBACK_STATUS_PAUSED = "paused";
+    private static final String PLAYBACK_STATUS_PLAYING = "playing";
+    private static final String PLAYBACK_STATUS_REWINDING = "rewinding";
+
     private final Logger logger = LoggerFactory.getLogger(SmartThingsDefaultConverter.class);
 
     public SmartThingsDefaultConverter(SmartThingsTypeRegistry typeRegistry) {
@@ -152,6 +159,7 @@ public class SmartThingsDefaultConverter extends SmartThingsConverter {
         Object[] arguments = null;
 
         Object value = getValue(command, thing.getThingTypeUID(), channelUid.getId(), targetType);
+        value = convertMediaPlaybackStatusCommand(capaKey, attrKey, command, value);
 
         if (SmartThingsBindingConstants.CHANNEL_NAME_COLOR.equals(attrKey)) {
             attr.setter = SmartThingsBindingConstants.CMD_SET_COLOR;
@@ -175,6 +183,29 @@ public class SmartThingsDefaultConverter extends SmartThingsConverter {
         }
 
         pushCommand(componentKey, capaKey, cmdName, arguments);
+    }
+
+    private Object convertMediaPlaybackStatusCommand(String capaKey, String attrKey, Command command, Object value)
+            throws SmartThingsException {
+        if (!CAPABILITY_MEDIA_PLAYBACK.equals(capaKey) || !ATTRIBUTE_PLAYBACK_STATUS.equals(attrKey)) {
+            return value;
+        }
+        if (PlayPauseType.PLAY.equals(command)) {
+            return PLAYBACK_STATUS_PLAYING;
+        }
+        if (PlayPauseType.PAUSE.equals(command)) {
+            return PLAYBACK_STATUS_PAUSED;
+        }
+        if (RewindFastforwardType.REWIND.equals(command)) {
+            return PLAYBACK_STATUS_REWINDING;
+        }
+        if (RewindFastforwardType.FASTFORWARD.equals(command)) {
+            return PLAYBACK_STATUS_FAST_FORWARDING;
+        }
+        if (command instanceof NextPreviousType) {
+            throw new SmartThingsException("mediaPlayback does not support navigation command: " + command);
+        }
+        return value;
     }
 
     private SmartThingsCommand getCommand(SmartThingsCapability capa, String commandName) throws SmartThingsException {
