@@ -23,14 +23,14 @@ Things must be added manually.
 The `account` thing requires the API key that allows accessing the account.
 API keys can be created and managed under Google AI Studio: <https://aistudio.google.com/app/apikey>.
 
-| Name            | Type    | Applies To              | Description                                                                                                                           | Default          | Required | Advanced |
-|-----------------|---------|-------------------------|---------------------------------------------------------------------------------------------------------------------------------------|------------------|----------|----------|
-| apiKey          | text    | Channels, HLI & Actions | The API key to authenticate against the Gemini API.                                                                                   | N/A              | yes      | no       |
-| requestTimeout  | integer | Channels & HLI          | Timeout in seconds for chat API requests.                                                                                             | 30               | no       | yes      |
-| model           | text    | Channels & HLI          | The model to be used for the HLI service and as default for all channels.                                                             | gemini-2.5-flash | no       | no       |
-| temperature     | decimal | HLI                     | A value between 0.0 and 2.0, where higher values make the output more random and lower values make it more focused and deterministic. | 1.0              | no       | yes      |
-| topP            | decimal | HLI                     | A value between 0.0 and 1.0 for nucleus sampling, where the model considers the results of the tokens with topP probability mass.     | 1.0              | no       | yes      |
-| maxOutputTokens | integer | HLI                     | The maximum number of tokens to include in a candidate.                                                                               | 2048             | no       | yes      |
+| Name            | Type    | Description                                                                                                                           | Default          | Required | Advanced |
+|-----------------|---------|---------------------------------------------------------------------------------------------------------------------------------------|------------------|----------|----------|
+| apiKey          | text    | The API key to authenticate against the Gemini API.                                                                                   | N/A              | yes      | no       |
+| requestTimeout  | integer | Timeout in seconds for chat API requests.                                                                                             | 30               | no       | yes      |
+| model           | text    | The model to be used.                                                                                                                 | gemini-2.5-flash | no       | no       |
+| temperature     | decimal | A value between 0.0 and 2.0, where higher values make the output more random and lower values make it more focused and deterministic. | 1.0              | no       | yes      |
+| topP            | decimal | A value between 0.0 and 1.0 for nucleus sampling, where the model considers the results of the tokens with topP probability mass.     | 1.0              | no       | yes      |
+| maxOutputTokens | integer | The maximum number of tokens to include in a candidate.                                                                               | 2048             | no       | yes      |
 
 It is generally recommended to either alter temperature or topP, but not both.
 For Gemini 3.x models, Google recommends keeping both values at their default.
@@ -38,17 +38,19 @@ For Gemini 3.x models, Google recommends keeping both values at their default.
 ## Channels
 
 The `account` thing comes with a single `chat` channel of type `chat` by default.
-Additional channels can be added to the thing, allowing to specify different models and parameters for each channel.
+Additional channels can be added to the thing, allowing specifying different models and parameters for each channel.
 
 Channels of type `chat` take the following configuration parameters:
 
-| Name            | Type    | Description                                                                                    | Default                      | Required | Advanced |
-|-----------------|---------|------------------------------------------------------------------------------------------------|------------------------------|----------|----------|
-| model           | text    | The model to be used for the responses, overriding the thing-level model.                      | gemini-2.5-flash             | no       | no       |
-| systemMessage   | text    | The system message helps set the behavior of the assistant.                                    | You are a helpful assistant. | no       | no       |
-| temperature     | decimal | A value between 0.0 and 2.0, which overrides the thing-level temperature.                      | 1.0                          | no       | yes      |
-| topP            | decimal | A value between 0.0 and 1.0, which overrides the thing-level topP.                             | 1.0                          | no       | yes      |
-| maxOutputTokens | integer | The maximum number of tokens to include in a candidate, overriding the thing-level max tokens. | 2048                         | no       | yes      |
+| Name            | Type    | Description                                                                                    | Required | Advanced |
+|-----------------|---------|------------------------------------------------------------------------------------------------|----------|----------|
+| model           | text    | The model to be used for the responses, overriding the thing-level model.                      | no       | no       |
+| systemMessage   | text    | The system message helps set the behavior of the assistant.                                    | no       | no       |
+| temperature     | decimal | A value between 0.0 and 2.0, which overrides the thing-level temperature.                      | no       | yes      |
+| topP            | decimal | A value between 0.0 and 1.0, which overrides the thing-level topP.                             | no       | yes      |
+| maxOutputTokens | integer | The maximum number of tokens to include in a candidate, overriding the thing-level max tokens. | no       | yes      |
+
+Channel configuration defaults to the [Thing configuration](#thing-configuration), except for `systemMessage`, which defaults to _You are a helpful assistants_.
 
 ## Thing Actions
 
@@ -81,11 +83,11 @@ var geminiActions = actions.thingActions("gemini", "gemini:account:myaccount");
 
 The `account` Thing provides the following actions:
 
-| Action Signature                                                                                                                                   | Return Type | Description                                                                                                                                                                |
-|----------------------------------------------------------------------------------------------------------------------------------------------------|-------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `sendMessage(String prompt)`                                                                                                                       | `String`    | Sends a prompt to Gemini using the Thing's configured model and parameters, and returns the response text, or `null` if the request failed.                                |
-| `sendMessage(String prompt, String model)`                                                                                                         | `String`    | Sends a prompt to Gemini using the specified model, falling back to default parameters, and returns the response text, or `null` if the request failed.                    |
-| `sendMessage(String prompt, String model, String systemMessage, Double temperature, Double topP, Integer maxOutputTokens, Integer requestTimeout)` | `String`    | Sends a prompt with detailed generation settings (where null values fall back to defaults), and returns the response text, or `null` if the request failed.                |
+| Action Signature                                                                                                                                   | Return Type | Description                                                                                                                                                                                    |
+|----------------------------------------------------------------------------------------------------------------------------------------------------|-------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `sendMessage(String prompt)`                                                                                                                       | `String`    | Sends a prompt to Gemini using the Thing's configured model and parameters, and returns the response text, or `null` if the request failed.                                                    |
+| `sendMessage(String prompt, String model)`                                                                                                         | `String`    | Sends a prompt to Gemini using the specified model, falling back to default parameters, and returns the response text, or `null` if the request failed.                                        |
+| `sendMessage(String prompt, String model, String systemMessage, Double temperature, Double topP, Integer maxOutputTokens, Integer requestTimeout)` | `String`    | Sends a prompt with detailed generation settings (where null values fall back to [Thing configuration](#thing-configuration)), and returns the response text, or `null` if the request failed. |
 
 ### Examples
 

@@ -18,6 +18,7 @@ import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.gemini.internal.GeminiConfiguration;
 import org.openhab.binding.gemini.internal.GeminiHandler;
 import org.openhab.binding.gemini.internal.api.GeminiApiClient;
 import org.openhab.binding.gemini.internal.api.GeminiApiException;
@@ -72,11 +73,11 @@ public class GeminiActions implements ThingActions {
     @RuleAction(label = "@text/action.sendMessage.label", description = "@text/action.sendMessage.description")
     public @Nullable @ActionOutput(label = "@text/action.sendMessage.result.label", description = "@text/action.sendMessage.result.description", type = "java.lang.String") String sendMessage(
             @ActionInput(name = "prompt", label = "@text/action.sendMessage.prompt.label", description = "@text/action.sendMessage.prompt.description", type = "java.lang.String", required = true) String prompt,
-            @ActionInput(name = "model", label = "@text/action.sendMessage.model.label", description = "@text/action.sendMessage.model.description", type = "java.lang.String", defaultValue = DEFAULT_MODEL) @Nullable String model,
-            @ActionInput(name = "systemMessage", label = "@text/action.sendMessage.systemMessage.label", description = "@text/action.sendMessage.systemMessage.description", type = "java.lang.String", defaultValue = DEFAULT_SYSTEM_MESSAGE) @Nullable String systemMessage,
-            @ActionInput(name = "temperature", label = "@text/action.sendMessage.temperature.label", description = "@text/action.sendMessage.temperature.description", type = "java.lang.Double", defaultValue = DEFAULT_TEMPERATURE_STR) @Nullable Double temperature,
-            @ActionInput(name = "topP", label = "@text/action.sendMessage.topP.label", description = "@text/action.sendMessage.topP.description", type = "java.lang.Double", defaultValue = DEFAULT_TOP_P_STR) @Nullable Double topP,
-            @ActionInput(name = "maxOutputTokens", label = "@text/action.sendMessage.maxOutputTokens.label", description = "@text/action.sendMessage.maxOutputTokens.description", type = "java.lang.Integer", defaultValue = MAX_OUTPUT_TOKENS_STR) @Nullable Integer maxOutputTokens,
+            @ActionInput(name = "model", label = "@text/action.sendMessage.model.label", description = "@text/action.sendMessage.model.description", type = "java.lang.String") @Nullable String model,
+            @ActionInput(name = "systemMessage", label = "@text/action.sendMessage.systemMessage.label", description = "@text/action.sendMessage.systemMessage.description", type = "java.lang.String") @Nullable String systemMessage,
+            @ActionInput(name = "temperature", label = "@text/action.sendMessage.temperature.label", description = "@text/action.sendMessage.temperature.description", type = "java.lang.Double") @Nullable Double temperature,
+            @ActionInput(name = "topP", label = "@text/action.sendMessage.topP.label", description = "@text/action.sendMessage.topP.description", type = "java.lang.Double") @Nullable Double topP,
+            @ActionInput(name = "maxOutputTokens", label = "@text/action.sendMessage.maxOutputTokens.label", description = "@text/action.sendMessage.maxOutputTokens.description", type = "java.lang.Integer") @Nullable Integer maxOutputTokens,
             @ActionInput(name = "requestTimeout", label = "@text/action.sendMessage.requestTimeout.label", description = "@text/action.sendMessage.requestTimeout.description", type = "java.lang.Integer") @Nullable Integer requestTimeout) {
         GeminiHandler geminiHandler = handler;
         if (geminiHandler == null) {
@@ -89,13 +90,23 @@ public class GeminiActions implements ThingActions {
             return null;
         }
 
+        GeminiConfiguration config = geminiHandler.getGeminiConfiguration();
+
+        String resolvedModel = model != null && !model.isBlank() ? model
+                : (config != null ? config.model : DEFAULT_MODEL);
+        String resolvedSystemMessage = Objects.requireNonNullElse(systemMessage, DEFAULT_SYSTEM_MESSAGE);
+        double resolvedTemperature = Objects.requireNonNullElse(temperature,
+                config != null ? config.temperature : DEFAULT_TEMPERATURE);
+        double resolvedTopP = Objects.requireNonNullElse(topP, config != null ? config.topP : DEFAULT_TOP_P);
+        int resolvedMaxOutputTokens = Objects.requireNonNullElse(maxOutputTokens,
+                config != null ? config.maxOutputTokens : DEFAULT_MAX_OUTPUT_TOKENS);
+        int resolvedRequestTimeout = Objects.requireNonNullElse(requestTimeout,
+                config != null ? config.requestTimeout : DEFAULT_REQUEST_TIMEOUT);
+
         try {
-            GeminiResponse response = apiClient.sendPrompt(Objects.requireNonNullElse(model, DEFAULT_MODEL),
-                    Objects.requireNonNull(prompt, "prompt must not be null"),
-                    Objects.requireNonNullElse(systemMessage, DEFAULT_SYSTEM_MESSAGE),
-                    Objects.requireNonNullElse(temperature, DEFAULT_TEMPERATURE),
-                    Objects.requireNonNullElse(topP, DEFAULT_TOP_P),
-                    Objects.requireNonNullElse(maxOutputTokens, DEFAULT_MAX_OUTPUT_TOKENS), requestTimeout);
+            GeminiResponse response = apiClient.sendPrompt(resolvedModel,
+                    Objects.requireNonNull(prompt, "prompt must not be null"), resolvedSystemMessage,
+                    resolvedTemperature, resolvedTopP, resolvedMaxOutputTokens, resolvedRequestTimeout);
             return response.getFirstText();
         } catch (GeminiApiException e) {
             logger.debug("Request to Gemini via action failed: {}", e.getMessage(), e);

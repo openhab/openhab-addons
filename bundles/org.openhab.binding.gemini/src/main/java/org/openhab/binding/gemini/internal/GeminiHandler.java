@@ -90,9 +90,9 @@ public class GeminiHandler extends BaseThingHandler {
             if (client != null) {
                 int timeout = config != null ? config.requestTimeout : DEFAULT_REQUEST_TIMEOUT;
                 String model = config != null ? config.model : DEFAULT_MODEL;
-                double temp = DEFAULT_TEMPERATURE;
-                double topP = DEFAULT_TOP_P;
-                int maxTokens = DEFAULT_MAX_OUTPUT_TOKENS;
+                double temp = config != null ? config.temperature : DEFAULT_TEMPERATURE;
+                double topP = config != null ? config.topP : DEFAULT_TOP_P;
+                int maxTokens = config != null ? config.maxOutputTokens : DEFAULT_MAX_OUTPUT_TOKENS;
                 String systemMessage = DEFAULT_SYSTEM_MESSAGE;
 
                 GeminiChannelConfiguration channelConfig = channel.getConfiguration()
