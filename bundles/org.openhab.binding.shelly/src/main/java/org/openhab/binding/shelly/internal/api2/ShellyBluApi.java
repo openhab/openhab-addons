@@ -49,7 +49,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link ShellyBluApi} implementsBLU interface
+ * {@link ShellyBluApi} handles the Shelly BLU Bluetooth Low Energy device protocol.
+ *
+ * <p>
+ * BLU devices (buttons, motion sensors, door/window sensors, H&amp;T sensors) are
+ * battery-powered and communicate via a Shelly Gen2/3/4 gateway. The gateway forwards
+ * BTHome-encoded advertisements as {@code NotifyBluGW} WebSocket events to the hub, which
+ * dispatches them to the individual per-device thing handlers via {@link ShellyThingTable}.
+ * </p>
+ *
+ * <p>
+ * Sensor data initialization follows a two-pass pattern: {@link #initializeSensorData} creates
+ * the sub-objects (bat, lux, tmp, …) whenever the corresponding BTHome fields are present,
+ * so the event-processing block can dereference them unconditionally.
+ * </p>
  *
  * @author Markus Michels - Initial contribution
  * @author Udo Hartmann - Add support for decoding multi button inputs
@@ -217,9 +230,6 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                             sensorData.bat.value = (double) e.blu.battery;
                         }
                         if (e.blu.batteryLow != null) {
-                            if (sensorData.bat == null) {
-                                sensorData.bat = new ShellySensorBat();
-                            }
                             sensorData.bat.batteryLow = e.blu.batteryLow == 1;
                         }
                         if (e.blu.rssi != null) {
@@ -234,11 +244,8 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                             sensorData.lux.value = (double) e.blu.illuminance;
                         }
                         if (e.blu.lightLevel != null) {
-                            if (sensorData.lux == null) {
-                                sensorData.lux = new ShellySensorLux();
-                            }
                             sensorData.lux.isValid = true;
-                            int ll = e.blu.lightLevel;
+                            int ll = getInteger(e.blu.lightLevel);
                             sensorData.lux.illumination = ll == 0 ? "dark"
                                     : ll == 1 ? "twilight" : ll == 2 ? "bright" : "unknown";
                         }
@@ -331,11 +338,8 @@ public class ShellyBluApi extends Shelly2ApiRpc {
     }
 
     private static void initializeSensorData(ShellyStatusSensor sensorData, Shelly2NotifyBluEventData data) {
-        if (data.battery != null && sensorData.bat == null) {
+        if ((data.battery != null || data.batteryLow != null) && sensorData.bat == null) {
             sensorData.bat = new ShellySensorBat();
-        }
-        if (data.batteryLow != null && sensorData.bat != null) {
-            sensorData.bat.batteryLow = data.batteryLow == 1;
         }
         if ((data.illuminance != null || data.lightLevel != null) && sensorData.lux == null) {
             sensorData.lux = new ShellySensorLux();
