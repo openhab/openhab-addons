@@ -14,3 +14,4 @@ labels: documentation
 
 <!-- Important: Please contact the openHAB community forum for questions or -->
 <!-- for configuration and usage guidance: https://community.openhab.org -->
+
