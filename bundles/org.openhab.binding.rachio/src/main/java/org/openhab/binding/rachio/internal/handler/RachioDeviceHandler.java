@@ -631,6 +631,20 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
             clearPendingWebhookRegistration();
         } catch (RachioApiThrottledException e) {
             deferWebhookRegistration(device.id, e);
+        } catch (RachioApiException e) {
+            clearPendingWebhookRegistration();
+            if (requestPurpose == RequestPurpose.USER_COMMAND) {
+                throw e;
+            }
+            logger.warn("Unable to register webhook for controller '{}'; polling fallback remains active: {}",
+                    device.id, e.getMessage());
+        } catch (RuntimeException e) {
+            clearPendingWebhookRegistration();
+            if (requestPurpose == RequestPurpose.USER_COMMAND) {
+                throw e;
+            }
+            logger.warn("Unable to register webhook for controller '{}'; polling fallback remains active: {}",
+                    device.id, e.getMessage());
         }
     }
 
@@ -706,10 +720,12 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
             deferWebhookRegistration(device.id, e);
         } catch (RachioApiException e) {
             clearPendingWebhookRegistration();
-            String errorMessage = e.toString();
-            logger.warn("{}: Deferred webhook registration for controller '{}' failed: {}", thingId, device.id,
-                    errorMessage);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
+            logger.warn("Unable to register webhook for controller '{}'; polling fallback remains active: {}",
+                    device.id, e.getMessage());
+        } catch (RuntimeException e) {
+            clearPendingWebhookRegistration();
+            logger.warn("Unable to register webhook for controller '{}'; polling fallback remains active: {}",
+                    device.id, e.getMessage());
         }
     }
 

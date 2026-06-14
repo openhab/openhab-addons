@@ -67,6 +67,93 @@ import com.google.gson.JsonParser;
 @SuppressWarnings({ "null" })
 class RachioWebhookApiTest {
     @Test
+    void webhookListParsesStringEventTypes() {
+        List<RachioApiWebHookEntry> webhooks = RachioApi.parseWebHookList("""
+                [
+                  {
+                    "id": "hook-id",
+                    "url": "https://example.org/rachio/webhook",
+                    "externalId": "external-id",
+                    "eventTypes": [ "ZONE_STATUS", "SCHEDULE_STATUS" ]
+                  }
+                ]
+                """);
+
+        assertThat(webhooks.size(), is(1));
+        assertThat(webhooks.getFirst().eventTypes, contains("ZONE_STATUS", "SCHEDULE_STATUS"));
+    }
+
+    @Test
+    void webhookListParsesObjectEventTypesByPreferredIdentifier() {
+        List<RachioApiWebHookEntry> webhooks = RachioApi.parseWebHookList("""
+                {
+                  "webhooks": [
+                    {
+                      "id": "hook-id",
+                      "url": "https://example.org/rachio/webhook",
+                      "externalId": "external-id",
+                      "eventTypes": [
+                        { "id": "ZONE_STATUS", "type": "ignored-type", "description": "Zone status" },
+                        { "type": "SCHEDULE_STATUS" },
+                        { "name": "DEVICE_STATUS" },
+                        { "eventType": "RAIN_DELAY" }
+                      ]
+                    }
+                  ]
+                }
+                """);
+
+        assertThat(webhooks.size(), is(1));
+        assertThat(webhooks.getFirst().eventTypes,
+                contains("ZONE_STATUS", "SCHEDULE_STATUS", "DEVICE_STATUS", "RAIN_DELAY"));
+    }
+
+    @Test
+    void webhookListParsesMixedEventTypesAndSkipsUnknownObjects() {
+        List<RachioApiWebHookEntry> webhooks = RachioApi.parseWebHookList("""
+                {
+                  "data": [
+                    {
+                      "id": "hook-id",
+                      "resourceId": { "irrigationControllerId": "controller-id" },
+                      "eventTypes": [
+                        "DEVICE_ZONE_RUN_STARTED_EVENT",
+                        { "id": "10" },
+                        { "description": "unsupported shape" },
+                        [ "unsupported nested array" ]
+                      ]
+                    }
+                  ]
+                }
+                """);
+
+        assertThat(webhooks.size(), is(1));
+        assertThat(webhooks.getFirst().eventTypes, contains("DEVICE_ZONE_RUN_STARTED_EVENT", "10"));
+        assertThat(webhooks.getFirst().resourceId.irrigationControllerId, is("controller-id"));
+    }
+
+    @Test
+    void webhookListReturnsEntryWhenLegacyEventTypesAreObjects() {
+        List<RachioApiWebHookEntry> webhooks = RachioApi.parseWebHookList("""
+                {
+                  "id": "hook-id",
+                  "url": "https://example.org/rachio/webhook",
+                  "externalId": "external-id",
+                  "eventTypes": [
+                    { "id": "ZONE_STATUS", "type": "ZONE_STATUS", "description": "Zone status" },
+                    { "id": "SCHEDULE_STATUS", "type": "SCHEDULE_STATUS" }
+                  ]
+                }
+                """);
+
+        assertThat(webhooks.size(), is(1));
+        assertThat(webhooks.getFirst().id, is("hook-id"));
+        assertThat(webhooks.getFirst().url, is("https://example.org/rachio/webhook"));
+        assertThat(webhooks.getFirst().externalId, is("external-id"));
+        assertThat(webhooks.getFirst().eventTypes, contains("ZONE_STATUS", "SCHEDULE_STATUS"));
+    }
+
+    @Test
     void legacyEventTypeListParsesNotificationServiceResponse() {
         String json = """
                 [

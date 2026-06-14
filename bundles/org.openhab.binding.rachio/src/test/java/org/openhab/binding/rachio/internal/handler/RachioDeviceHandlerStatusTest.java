@@ -89,7 +89,7 @@ class RachioDeviceHandlerStatusTest {
     }
 
     @Test
-    void initializationKeepsRealWebhookApiFailureFatal() throws Exception {
+    void initializationKeepsControllerOnlineWhenWebhookApiFails() throws Exception {
         Thing thing = thing();
         RachioDevice device = device("ONLINE");
         RachioBridgeHandler bridgeHandler = bridgeHandler(thing, device);
@@ -102,11 +102,28 @@ class RachioDeviceHandlerStatusTest {
         handler.initialize();
 
         assertThat(handler.isWebhookRegistrationPending(), is(false));
-        verify(callback).statusUpdated(eq(thing),
-                argThat(status -> status.getStatus() == ThingStatus.OFFLINE
-                        && status.getStatusDetail() == ThingStatusDetail.COMMUNICATION_ERROR
-                        && String.valueOf(status.getDescription()).contains("server rate limit")));
-        verify(callback, never()).statusUpdated(eq(thing), argThat(status -> status.getStatus() == ThingStatus.ONLINE));
+        verify(callback).statusUpdated(eq(thing), argThat(status -> status.getStatus() == ThingStatus.ONLINE));
+        verify(callback, never()).statusUpdated(eq(thing), argThat(status -> status.getStatus() == ThingStatus.OFFLINE
+                && String.valueOf(status.getDescription()).contains("server rate limit")));
+    }
+
+    @Test
+    void initializationKeepsControllerOnlineWhenWebhookParsingFails() throws Exception {
+        Thing thing = thing();
+        RachioDevice device = device("ONLINE");
+        RachioBridgeHandler bridgeHandler = bridgeHandler(thing, device);
+        doThrow(new IllegalStateException("Expected STRING but was BEGIN_OBJECT")).when(bridgeHandler)
+                .registerWebHook(DEVICE_ID, RequestPurpose.INITIALIZATION);
+        TestDeviceHandler handler = new TestDeviceHandler(thing, bridgeHandler);
+        ThingHandlerCallback callback = Mockito.mock(ThingHandlerCallback.class);
+        handler.setCallback(callback);
+
+        handler.initialize();
+
+        assertThat(handler.isWebhookRegistrationPending(), is(false));
+        verify(callback).statusUpdated(eq(thing), argThat(status -> status.getStatus() == ThingStatus.ONLINE));
+        verify(callback, never()).statusUpdated(eq(thing), argThat(status -> status.getStatus() == ThingStatus.OFFLINE
+                && String.valueOf(status.getDescription()).contains("Expected STRING")));
     }
 
     @Test

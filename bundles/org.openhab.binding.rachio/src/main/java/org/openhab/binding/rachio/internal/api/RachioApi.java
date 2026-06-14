@@ -47,7 +47,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.rachio.internal.RachioBindingConstants;
 import org.openhab.binding.rachio.internal.api.json.RachioApiGsonDTO.RachioApiLegacyWebHookEventType;
 import org.openhab.binding.rachio.internal.api.json.RachioApiGsonDTO.RachioApiWebHookEntry;
-import org.openhab.binding.rachio.internal.api.json.RachioApiGsonDTO.RachioApiWebHookList;
+import org.openhab.binding.rachio.internal.api.json.RachioApiGsonDTO.RachioApiWebHookResourceId;
 import org.openhab.binding.rachio.internal.api.json.RachioApiGsonDTO.RachioApiWebhookEventTypesResponse;
 import org.openhab.binding.rachio.internal.api.json.RachioApiGsonDTO.RachioCloudPersonId;
 import org.openhab.binding.rachio.internal.api.json.RachioApiGsonDTO.RachioCloudStatus;
@@ -94,6 +94,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 /**
@@ -1636,36 +1637,118 @@ public class RachioApi {
     }
 
     static List<RachioApiWebHookEntry> parseWebHookList(String json) {
-        Gson gson = new Gson();
         JsonElement root = JsonParser.parseString(json);
         JsonArray entries;
         if (root.isJsonArray()) {
             entries = root.getAsJsonArray();
         } else if (root.isJsonObject()) {
-            JsonElement webhooks = root.getAsJsonObject().get("webhooks");
+            JsonObject rootObject = root.getAsJsonObject();
+            JsonElement webhooks = rootObject.get("webhooks");
             if (webhooks == null || !webhooks.isJsonArray()) {
-                webhooks = root.getAsJsonObject().get("data");
+                webhooks = rootObject.get("data");
             }
-            if (webhooks == null || !webhooks.isJsonArray()) {
-                RachioApiWebHookList list = gson.fromJson(root, RachioApiWebHookList.class);
-                return list != null ? list.webhooks : new ArrayList<>();
+            if (webhooks != null && webhooks.isJsonArray()) {
+                entries = webhooks.getAsJsonArray();
+            } else if (rootObject.has("id") || rootObject.has("url")) {
+                entries = new JsonArray();
+                entries.add(rootObject);
+            } else {
+                return new ArrayList<>();
             }
-            entries = webhooks.getAsJsonArray();
         } else {
             return new ArrayList<>();
         }
 
         List<RachioApiWebHookEntry> webhooks = new ArrayList<>();
         for (JsonElement entry : entries) {
-            if (entry == null) {
+            if (entry == null || !entry.isJsonObject()) {
                 continue;
             }
-            RachioApiWebHookEntry webhook = gson.fromJson(entry, RachioApiWebHookEntry.class);
-            if (webhook != null) {
-                webhooks.add(webhook);
-            }
+            webhooks.add(parseWebHookEntry(entry.getAsJsonObject()));
         }
         return webhooks;
+    }
+
+    private static RachioApiWebHookEntry parseWebHookEntry(JsonObject entry) {
+        RachioApiWebHookEntry webhook = new RachioApiWebHookEntry();
+        webhook.createDate = readJsonLong(entry, "createDate");
+        webhook.lastUpdateDate = readJsonLong(entry, "lastUpdateDate");
+        webhook.id = readJsonString(entry, "id");
+        webhook.url = readJsonString(entry, "url");
+        webhook.externalId = readJsonString(entry, "externalId");
+        webhook.resourceId = parseWebHookResourceId(entry);
+
+        JsonElement eventTypes = entry.get("eventTypes");
+        if (eventTypes == null) {
+            eventTypes = entry.get("event_types");
+        }
+        if (eventTypes != null && eventTypes.isJsonArray()) {
+            for (JsonElement eventType : eventTypes.getAsJsonArray()) {
+                String normalizedEventType = parseWebHookEventType(eventType);
+                if (!normalizedEventType.isBlank()) {
+                    webhook.eventTypes.add(normalizedEventType);
+                }
+            }
+        }
+        return webhook;
+    }
+
+    private static RachioApiWebHookResourceId parseWebHookResourceId(JsonObject entry) {
+        RachioApiWebHookResourceId resourceId = new RachioApiWebHookResourceId();
+        JsonElement resourceIdElement = entry.get("resourceId");
+        if (resourceIdElement == null) {
+            resourceIdElement = entry.get("resource_id");
+        }
+        if (resourceIdElement == null || !resourceIdElement.isJsonObject()) {
+            return resourceId;
+        }
+
+        JsonObject resourceIdObject = resourceIdElement.getAsJsonObject();
+        resourceId.irrigationControllerId = readJsonString(resourceIdObject, "irrigationControllerId",
+                "irrigation_controller_id");
+        resourceId.valveId = readJsonString(resourceIdObject, "valveId", "valve_id");
+        resourceId.programId = readJsonString(resourceIdObject, "programId", "program_id");
+        resourceId.lightingControllerId = readJsonString(resourceIdObject, "lightingControllerId",
+                "lighting_controller_id");
+        resourceId.lightingZoneId = readJsonString(resourceIdObject, "lightingZoneId", "lighting_zone_id");
+        resourceId.lightingSceneId = readJsonString(resourceIdObject, "lightingSceneId", "lighting_scene_id");
+        resourceId.lightingProgramId = readJsonString(resourceIdObject, "lightingProgramId", "lighting_program_id");
+        return resourceId;
+    }
+
+    private static String parseWebHookEventType(@Nullable JsonElement eventType) {
+        if (eventType == null) {
+            return "";
+        }
+        if (eventType.isJsonPrimitive()) {
+            return eventType.getAsJsonPrimitive().getAsString();
+        }
+        if (eventType.isJsonObject()) {
+            return readJsonString(eventType.getAsJsonObject(), "id", "type", "name", "eventType");
+        }
+        return "";
+    }
+
+    private static String readJsonString(JsonObject object, String... memberNames) {
+        for (String memberName : memberNames) {
+            JsonElement value = object.get(memberName);
+            if (value != null && value.isJsonPrimitive()) {
+                return value.getAsJsonPrimitive().getAsString();
+            }
+        }
+        return "";
+    }
+
+    private static long readJsonLong(JsonObject object, String memberName) {
+        JsonElement value = object.get(memberName);
+        if (value == null || !value.isJsonPrimitive()) {
+            return -1;
+        }
+        try {
+            return value.getAsLong();
+        } catch (RuntimeException e) {
+            return -1;
+        }
     }
 
     private Boolean initializeDevices(ThingUID BridgeUID, PRIORITY priority, RequestPurpose requestPurpose)
