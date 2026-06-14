@@ -103,58 +103,61 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
             }
             switch (channelUID.getId()) {
                 case DaikinBindingConstants.CHANNEL_AC_POWER -> {
-                    if (command instanceof OnOffType onOffCommand && changePower(onOffCommand == OnOffType.ON)) {
-                        updateState(channelUID, onOffCommand);
+                    if (command instanceof OnOffType onOffCommand) {
+                        if (changePower(onOffCommand == OnOffType.ON)) {
+                            updateState(channelUID, onOffCommand);
+                        }
+                        return;
                     }
-                    return;
                 }
                 case DaikinBindingConstants.CHANNEL_AC_TEMP -> {
-                    double newTemperature;
-                    State newState;
-
-                    switch (command) {
-                        case DecimalType decimalCommand -> {
-                            newTemperature = decimalCommand.doubleValue();
-                            newState = decimalCommand;
+                    if (command instanceof DecimalType decimalCommand) {
+                        double newTemperature = Math.round(decimalCommand.doubleValue() * 2) / 2.0;
+                        if (changeSetPoint(newTemperature)) {
+                            updateState(channelUID, decimalCommand);
                         }
-                        case QuantityType<?> quantityCommand -> {
-                            newTemperature = ((QuantityType<Temperature>) quantityCommand).toUnit(SIUnits.CELSIUS)
-                                    .doubleValue();
-                            newState = (State) quantityCommand;
+                        return;
+                    } else if (command instanceof QuantityType<?> quantityCommand) {
+                        double newTemperature = Math.round(
+                                ((QuantityType<Temperature>) quantityCommand).toUnit(SIUnits.CELSIUS).doubleValue() * 2)
+                                / 2.0;
+                        if (changeSetPoint(newTemperature)) {
+                            updateState(channelUID, (State) quantityCommand);
                         }
-                        default -> {
-                            return; // Exit if unsupported command type
-                        }
+                        return;
                     }
-
-                    newTemperature = Math.round(newTemperature * 2) / 2.0;
-                    if (changeSetPoint(newTemperature)) {
-                        updateState(channelUID, newState);
-                    }
-                    return;
+                    // If neither, the block ends and drops to the wrong-type logger
                 }
                 case DaikinBindingConstants.CHANNEL_AIRBASE_AC_FAN_SPEED,
                         DaikinBindingConstants.CHANNEL_AC_FAN_SPEED -> {
-                    if (command instanceof StringType stringCommand && changeFanSpeed(stringCommand.toString())) {
-                        updateState(channelUID, stringCommand);
+                    if (command instanceof StringType stringCommand) {
+                        if (changeFanSpeed(stringCommand.toString())) {
+                            updateState(channelUID, stringCommand);
+                        }
+                        return;
                     }
-                    return;
                 }
                 case DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE -> {
-                    if (command instanceof StringType stringCommand && changeHomekitMode(stringCommand.toString())) {
-                        updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE, stringCommand);
+                    if (command instanceof StringType stringCommand) {
+                        if (changeHomekitMode(stringCommand.toString())) {
+                            updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE, stringCommand);
+                        }
+                        return;
                     }
-                    return;
                 }
                 case DaikinBindingConstants.CHANNEL_AC_MODE -> {
-                    if (command instanceof StringType stringCommand && changeMode(stringCommand.toString())) {
-                        updateState(channelUID, stringCommand);
+                    if (command instanceof StringType stringCommand) {
+                        if (changeMode(stringCommand.toString())) {
+                            updateState(channelUID, stringCommand);
+                        }
+                        return;
                     }
-                    return;
                 }
             }
-            logger.debug("Received command ({}) for unsupported channel {} on thing '{}'", command, channelUID.getId(),
-                    thing.getUID().getAsString());
+
+            // If execution reaches this point, the command type did not match the expected type inside the switch
+            logger.debug("Received command ({}) of wrong type for thing '{}' on channel {}", command,
+                    thing.getUID().getAsString(), channelUID.getId());
         } catch (DaikinCommunicationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
