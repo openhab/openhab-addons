@@ -144,6 +144,7 @@
 		<label>Control</label>
 		<channels>
 			<channel id="switch" typeId="system.power">
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
 				<properties>
 					<property name="component">main</property>
 					<property name="capability">switch</property>
@@ -151,6 +152,7 @@
 				</properties>
 			</channel>
 			<channel id="volume" typeId="system.volume">
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
 				<properties>
 					<property name="component">main</property>
 					<property name="capability">audioVolume</property>
@@ -159,6 +161,7 @@
 				</properties>
 			</channel>
 			<channel id="mute" typeId="system.mute">
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
 				<properties>
 					<property name="component">main</property>
 					<property name="capability">audioMute</property>
@@ -182,6 +185,7 @@
 				</properties>
 			</channel>
 			<channel id="playback" typeId="system.media-control">
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
 				<properties>
 					<property name="component">main</property>
 					<property name="capability">mediaPlayback</property>
@@ -250,12 +254,14 @@
 		<item-type>String</item-type>
 		<label>Input Source</label>
 		<description>Active TV input source.</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="frame-channel">
 		<item-type>String</item-type>
 		<label>TV Channel</label>
 		<description>Current TV channel number.</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="frame-art-mode">
@@ -269,24 +275,28 @@
 		<item-type>String</item-type>
 		<label>Picture Mode</label>
 		<description>TV picture mode.</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="frame-sound-mode">
 		<item-type>String</item-type>
 		<label>Sound Mode</label>
 		<description>TV sound mode.</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="frame-channel-up" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Channel Up</label>
 		<description>Send ON to switch to the next TV channel.</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="frame-channel-down" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Channel Down</label>
 		<description>Send ON to switch to the previous TV channel.</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<!-- Television channel types -->

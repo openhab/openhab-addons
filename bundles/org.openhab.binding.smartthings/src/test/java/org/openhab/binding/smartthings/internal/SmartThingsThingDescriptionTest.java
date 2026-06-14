@@ -294,6 +294,20 @@ class SmartThingsThingDescriptionTest {
     }
 
     @Test
+    void frameTvCommandChannelsDoNotPredictStateUpdates() throws Exception {
+        Document document = parseThingDescription("OH-INF/thing/tv.xml");
+
+        for (String channelId : Set.of("switch", "volume", "mute", "playback")) {
+            assertEquals("veto", findChannelAutoUpdatePolicy(document, "frame-control-group", channelId), channelId);
+        }
+
+        for (String channelTypeId : Set.of("frame-input-source", "frame-channel", "frame-art-mode",
+                "frame-picture-mode", "frame-sound-mode", "frame-channel-up", "frame-channel-down")) {
+            assertEquals("veto", findChannelTypeAutoUpdatePolicy(document, channelTypeId), channelTypeId);
+        }
+    }
+
+    @Test
     void frameTvChannelTypesUseSuitableItemTypes() throws Exception {
         Document document = parseThingDescription("OH-INF/thing/tv.xml");
         Map<String, String> expectedItemTypes = Map.of("frame-input-source", "String", "frame-channel", "String",
@@ -491,6 +505,13 @@ class SmartThingsThingDescriptionTest {
     private String findChannelTypeAutoUpdatePolicy(Document document, String channelTypeId) {
         Element channelType = findChannelType(document, channelTypeId);
         Node autoUpdatePolicy = channelType.getElementsByTagName("autoUpdatePolicy").item(0);
+        assertNotNull(autoUpdatePolicy);
+        return autoUpdatePolicy.getTextContent();
+    }
+
+    private String findChannelAutoUpdatePolicy(Document document, String groupId, String channelId) {
+        Element channel = findChannel(document, groupId, channelId);
+        Node autoUpdatePolicy = channel.getElementsByTagName("autoUpdatePolicy").item(0);
         assertNotNull(autoUpdatePolicy);
         return autoUpdatePolicy.getTextContent();
     }
