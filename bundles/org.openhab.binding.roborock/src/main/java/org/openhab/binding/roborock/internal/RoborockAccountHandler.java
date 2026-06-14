@@ -316,17 +316,17 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
                     updateConfiguration(configuration);
                     int code = 0;
                     String message = "";
-if (response != null && !response.isEmpty()) {
-    try {
-        JsonObject responseObj = JsonParser.parseString(response).getAsJsonObject();
-        if (responseObj.has("code")) {
-            code = responseObj.get("code").getAsInt();
-            message = responseObj.get("msg").getAsString();
-        }
-    } catch (RuntimeException e) {
-        logger.debug("Failed to parse login response JSON: {}", e.getMessage());
-    }
-}
+                    if (response != null && !response.isEmpty()) {
+                        try {
+                            JsonObject responseObj = JsonParser.parseString(response).getAsJsonObject();
+                            if (responseObj.has("code")) {
+                                code = responseObj.get("code").getAsInt();
+                                message = responseObj.get("msg").getAsString();
+                            }
+                        } catch (RuntimeException e) {
+                            logger.debug("Failed to parse login response JSON: {}", e.getMessage());
+                        }
+                    }
                     if (code == 200) {
                         Login loginResponse = gson.fromJson(response, Login.class);
                         if (loginResponse == null) {
