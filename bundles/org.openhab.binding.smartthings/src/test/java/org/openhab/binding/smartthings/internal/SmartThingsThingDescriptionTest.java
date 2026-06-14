@@ -18,15 +18,21 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.InputStream;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.openhab.core.thing.xml.internal.ThingDescriptionReader;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -38,6 +44,26 @@ import org.w3c.dom.NodeList;
 @NonNullByDefault
 class SmartThingsThingDescriptionTest {
     private record ExpectedChannel(String groupId, String typeId, String capability, String attribute) {
+    }
+
+    @Test
+    void thingDescriptionFilesCanBeParsedByOpenhabXmlReader() throws Exception {
+        ThingDescriptionReader reader = new ThingDescriptionReader();
+        URL thingDirectory = SmartThingsThingDescriptionTest.class.getResource("/OH-INF/thing");
+        assertNotNull(thingDirectory);
+
+        try (Stream<Path> thingDescriptionFiles = Files.list(Path.of(thingDirectory.toURI()))) {
+            List<String> resourceNames = thingDescriptionFiles
+                    .filter(path -> path.getFileName().toString().endsWith(".xml"))
+                    .map(path -> "OH-INF/thing/" + path.getFileName()).sorted().toList();
+            assertFalse(resourceNames.isEmpty());
+
+            for (String resourceName : resourceNames) {
+                URL resource = SmartThingsThingDescriptionTest.class.getResource("/" + resourceName);
+                assertNotNull(resource);
+                assertNotNull(reader.readFromXML(resource), resourceName);
+            }
+        }
     }
 
     @Test

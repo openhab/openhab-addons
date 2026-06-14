@@ -144,29 +144,29 @@
 		<label>Control</label>
 		<channels>
 			<channel id="switch" typeId="system.power">
-				<autoUpdatePolicy>veto</autoUpdatePolicy>
 				<properties>
 					<property name="component">main</property>
 					<property name="capability">switch</property>
 					<property name="attribute">switch</property>
 				</properties>
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
 			</channel>
 			<channel id="volume" typeId="system.volume">
-				<autoUpdatePolicy>veto</autoUpdatePolicy>
 				<properties>
 					<property name="component">main</property>
 					<property name="capability">audioVolume</property>
 					<property name="attribute">volume</property>
 					<property name="command">setVolume</property>
 				</properties>
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
 			</channel>
 			<channel id="mute" typeId="system.mute">
-				<autoUpdatePolicy>veto</autoUpdatePolicy>
 				<properties>
 					<property name="component">main</property>
 					<property name="capability">audioMute</property>
 					<property name="attribute">mute</property>
 				</properties>
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
 			</channel>
 			<channel id="input-source" typeId="frame-input-source">
 				<properties>
@@ -185,12 +185,12 @@
 				</properties>
 			</channel>
 			<channel id="playback" typeId="system.media-control">
-				<autoUpdatePolicy>veto</autoUpdatePolicy>
 				<properties>
 					<property name="component">main</property>
 					<property name="capability">mediaPlayback</property>
 					<property name="attribute">playbackStatus</property>
 				</properties>
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
 			</channel>
 			<channel id="art-mode" typeId="frame-art-mode">
 				<properties>
