@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.daikin.internal.api;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -49,8 +48,6 @@ public class BasicInfo {
     }
 
     public Map<String, String> getParamString() {
-        Map<String, String> params = new HashMap<>();
-        params.put("ssid", ssid);
-        return params;
+        return Map.of("ssid", ssid);
     }
 }

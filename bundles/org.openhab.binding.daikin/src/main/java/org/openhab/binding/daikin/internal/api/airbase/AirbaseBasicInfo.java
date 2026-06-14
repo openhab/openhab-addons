@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.daikin.internal.api.airbase;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -50,10 +49,6 @@ public class AirbaseBasicInfo {
     }
 
     public Map<String, String> getParamString() {
-        Map<String, String> params = new HashMap<>();
-        if (!"".equals(ssid)) {
-            params.put("ssid", ssid);
-        }
-        return params;
+        return ssid.isEmpty() ? Map.of() : Map.of("ssid", ssid);
     }
 }

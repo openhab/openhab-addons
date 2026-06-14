@@ -55,7 +55,7 @@ public class DaikinAirbaseUnitHandler extends DaikinBaseHandler {
     private @Nullable AirbaseModelInfo airbaseModelInfo;
 
     public DaikinAirbaseUnitHandler(Thing thing, DaikinDynamicStateDescriptionProvider stateDescriptionProvider,
-            @Nullable HttpClient httpClient) {
+            HttpClient httpClient) {
         super(thing, stateDescriptionProvider, httpClient);
     }
 

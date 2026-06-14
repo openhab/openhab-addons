@@ -57,7 +57,7 @@ import org.slf4j.LoggerFactory;
 public abstract class DaikinBaseHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(DaikinBaseHandler.class);
 
-    private final @Nullable HttpClient httpClient;
+    private final HttpClient httpClient;
 
     private long refreshInterval;
 
@@ -85,7 +85,7 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
     protected abstract void registerUuid(@Nullable String key);
 
     public DaikinBaseHandler(Thing thing, DaikinDynamicStateDescriptionProvider stateDescriptionProvider,
-            @Nullable HttpClient httpClient) {
+            HttpClient httpClient) {
         super(thing);
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.httpClient = httpClient;
@@ -102,59 +102,56 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
                 return;
             }
             switch (channelUID.getId()) {
-                case DaikinBindingConstants.CHANNEL_AC_POWER:
-                    if (command instanceof OnOffType onOffCommand) {
-                        if (changePower(onOffCommand.equals(OnOffType.ON))) {
-                            updateState(channelUID, onOffCommand);
-                        }
-                        return;
+                case DaikinBindingConstants.CHANNEL_AC_POWER -> {
+                    if (command instanceof OnOffType onOffCommand && changePower(onOffCommand == OnOffType.ON)) {
+                        updateState(channelUID, onOffCommand);
                     }
-                    break;
-                case DaikinBindingConstants.CHANNEL_AC_TEMP:
+                    return;
+                }
+                case DaikinBindingConstants.CHANNEL_AC_TEMP -> {
                     double newTemperature;
-                    State newState = UnDefType.UNDEF;
-                    if (command instanceof DecimalType decimalCommand) {
-                        newTemperature = decimalCommand.doubleValue();
-                        newState = decimalCommand;
-                    } else if (command instanceof QuantityType) {
-                        QuantityType<Temperature> quantityCommand = (QuantityType<Temperature>) command;
-                        newTemperature = quantityCommand.toUnit(SIUnits.CELSIUS).doubleValue();
-                        newState = quantityCommand;
-                    } else {
-                        break; // Exit switch statement but proceed to log about unsupported command type
+                    State newState;
+
+                    switch (command) {
+                        case DecimalType decimalCommand -> {
+                            newTemperature = decimalCommand.doubleValue();
+                            newState = decimalCommand;
+                        }
+                        case QuantityType<?> quantityCommand -> {
+                            newTemperature = ((QuantityType<Temperature>) quantityCommand).toUnit(SIUnits.CELSIUS)
+                                    .doubleValue();
+                            newState = (State) quantityCommand;
+                        }
+                        default -> {
+                            return; // Exit if unsupported command type
+                        }
                     }
 
-                    // Only half degree increments are allowed, all others are silently rejected by the A/C units
                     newTemperature = Math.round(newTemperature * 2) / 2.0;
                     if (changeSetPoint(newTemperature)) {
                         updateState(channelUID, newState);
                     }
-                    return; // return here and don't log about wrong type below
-                case DaikinBindingConstants.CHANNEL_AIRBASE_AC_FAN_SPEED:
-                case DaikinBindingConstants.CHANNEL_AC_FAN_SPEED:
-                    if (command instanceof StringType stringCommand) {
-                        if (changeFanSpeed(stringCommand.toString())) {
-                            updateState(channelUID, stringCommand);
-                        }
-                        return;
+                    return;
+                }
+                case DaikinBindingConstants.CHANNEL_AIRBASE_AC_FAN_SPEED,
+                        DaikinBindingConstants.CHANNEL_AC_FAN_SPEED -> {
+                    if (command instanceof StringType stringCommand && changeFanSpeed(stringCommand.toString())) {
+                        updateState(channelUID, stringCommand);
                     }
-                    break;
-                case DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE:
-                    if (command instanceof StringType stringCommand) {
-                        if (changeHomekitMode(stringCommand.toString())) {
-                            updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE, stringCommand);
-                        }
-                        return;
+                    return;
+                }
+                case DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE -> {
+                    if (command instanceof StringType stringCommand && changeHomekitMode(stringCommand.toString())) {
+                        updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE, stringCommand);
                     }
-                    break;
-                case DaikinBindingConstants.CHANNEL_AC_MODE:
-                    if (command instanceof StringType stringCommand) {
-                        if (changeMode(stringCommand.toString())) {
-                            updateState(channelUID, stringCommand);
-                        }
-                        return;
+                    return;
+                }
+                case DaikinBindingConstants.CHANNEL_AC_MODE -> {
+                    if (command instanceof StringType stringCommand && changeMode(stringCommand.toString())) {
+                        updateState(channelUID, stringCommand);
                     }
-                    break;
+                    return;
+                }
             }
             logger.debug("Received command ({}) of wrong type for thing '{}' on channel {}", command,
                     thing.getUID().getAsString(), channelUID.getId());
@@ -167,6 +164,13 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
     public void initialize() {
         logger.debug("Initializing Daikin AC Unit");
         config = getConfigAs(DaikinConfiguration.class);
+
+        if (httpClient == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
+                    "HTTP Client is not available. Check core services.");
+            return;
+        }
+
         if (config.host == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Host address must be set");
         } else {
