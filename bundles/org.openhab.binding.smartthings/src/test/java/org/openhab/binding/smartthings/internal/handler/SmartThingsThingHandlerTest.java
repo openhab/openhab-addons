@@ -42,6 +42,7 @@ import org.openhab.binding.smartthings.internal.dto.SmartThingsCommand;
 import org.openhab.binding.smartthings.internal.dto.SmartThingsEnumCommand;
 import org.openhab.binding.smartthings.internal.dto.SmartThingsProperty;
 import org.openhab.binding.smartthings.internal.dto.SmartThingsSchema;
+import org.openhab.binding.smartthings.internal.dto.SmartThingsStatus;
 import org.openhab.binding.smartthings.internal.dto.SmartThingsStatusCapabilities;
 import org.openhab.binding.smartthings.internal.dto.SmartThingsStatusProperties;
 import org.openhab.binding.smartthings.internal.type.SmartThingsException;
@@ -58,6 +59,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
@@ -654,7 +656,7 @@ class SmartThingsThingHandlerTest {
     }
 
     @Test
-    void refreshDeviceSetsThingOfflineOnCommunicationFailure() throws SmartThingsException {
+    void refreshDeviceSetsThingOfflineAfterRepeatedCommunicationFailures() throws SmartThingsException {
         Thing thing = ThingBuilder.create(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Samsung_The_Frame"),
                 new ThingUID("smartthings:Samsung_The_Frame:account:frame-tv")).build();
         TestSmartThingsThingHandler handler = new TestSmartThingsThingHandler(thing);
@@ -668,6 +670,112 @@ class SmartThingsThingHandlerTest {
         Bridge bridge = mock(Bridge.class);
         when(bridge.getHandler()).thenReturn(accountHandler);
         handler.bridge = bridge;
+
+        handler.refreshDevice();
+        assertNull(handler.lastStatus);
+
+        handler.refreshDevice();
+        assertNull(handler.lastStatus);
+
+        handler.refreshDevice();
+
+        assertEquals(ThingStatus.OFFLINE, handler.lastStatus);
+        assertEquals(ThingStatusDetail.COMMUNICATION_ERROR, handler.lastStatusDetail);
+    }
+
+    @Test
+    void refreshDeviceReturnsOnlineAfterSuccessfulStatusRefresh() throws SmartThingsException {
+        Thing thing = ThingBuilder.create(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Samsung_The_Frame"),
+                new ThingUID("smartthings:Samsung_The_Frame:account:frame-tv")).build();
+        TestSmartThingsThingHandler handler = new TestSmartThingsThingHandler(thing);
+        SmartThingsException networkFailure = new SmartThingsException("network failed", new Exception("timed out"),
+                true);
+        SmartThingsException statusFailure = new SmartThingsException("status failed", networkFailure);
+        SmartThingsStatus status = new SmartThingsStatus();
+        status.components = new Hashtable<>();
+        SmartThingsApi api = mock(SmartThingsApi.class);
+        when(api.getStatus(anyString())).thenThrow(statusFailure).thenThrow(statusFailure).thenThrow(statusFailure)
+                .thenReturn(status);
+        SmartThingsAccountHandler accountHandler = mock(SmartThingsAccountHandler.class);
+        when(accountHandler.getSmartThingsApi()).thenReturn(api);
+        Bridge bridge = mock(Bridge.class);
+        when(bridge.getHandler()).thenReturn(accountHandler);
+        when(bridge.getStatus()).thenReturn(ThingStatus.ONLINE);
+        handler.bridge = bridge;
+
+        handler.refreshDevice();
+        handler.refreshDevice();
+        handler.refreshDevice();
+        handler.refreshDevice();
+
+        assertEquals(ThingStatus.ONLINE, handler.lastStatus);
+        assertEquals(ThingStatusDetail.NONE, handler.lastStatusDetail);
+    }
+
+    @Test
+    void refreshDeviceKeepsCommunicationErrorWhenBridgeIsOffline() throws SmartThingsException {
+        Thing thing = ThingBuilder.create(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Samsung_The_Frame"),
+                new ThingUID("smartthings:Samsung_The_Frame:account:frame-tv")).build();
+        thing.setStatusInfo(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                "previous communication error"));
+        TestSmartThingsThingHandler handler = new TestSmartThingsThingHandler(thing);
+        SmartThingsStatus status = new SmartThingsStatus();
+        status.components = new Hashtable<>();
+        SmartThingsApi api = mock(SmartThingsApi.class);
+        when(api.getStatus(anyString())).thenReturn(status);
+        SmartThingsAccountHandler accountHandler = mock(SmartThingsAccountHandler.class);
+        when(accountHandler.getSmartThingsApi()).thenReturn(api);
+        Bridge bridge = mock(Bridge.class);
+        when(bridge.getHandler()).thenReturn(accountHandler);
+        when(bridge.getStatus()).thenReturn(ThingStatus.OFFLINE);
+        when(bridge.getStatusInfo()).thenReturn(new ThingStatusInfo(ThingStatus.OFFLINE,
+                ThingStatusDetail.COMMUNICATION_ERROR, "bridge communication error"));
+        handler.bridge = bridge;
+
+        handler.refreshDevice();
+
+        assertNull(handler.lastStatus);
+    }
+
+    @Test
+    void eventRefreshReturnsThingOnlineWhenBridgeIsOnline() {
+        Thing thing = createAirConditionerThing();
+        thing.setStatusInfo(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                "previous communication error"));
+        TestSmartThingsThingHandler handler = new TestSmartThingsThingHandler(thing);
+        Bridge bridge = mock(Bridge.class);
+        when(bridge.getStatus()).thenReturn(ThingStatus.ONLINE);
+        handler.bridge = bridge;
+        SmartThingsConverterFactory.registerConverters(new SmartThingsTypeRegistryImpl());
+
+        handler.refreshDevice("Samsung_Room_A_C", "main", "switch", "switch", "on");
+
+        assertEquals(ThingStatus.ONLINE, handler.lastStatus);
+        assertEquals(ThingStatusDetail.NONE, handler.lastStatusDetail);
+        assertEquals(OnOffType.ON, handler.lastUpdatedState);
+    }
+
+    @Test
+    void statusRefreshCommunicationFailureCounterSurvivesOtherStatusFailures() throws SmartThingsException {
+        Thing thing = ThingBuilder.create(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Samsung_The_Frame"),
+                new ThingUID("smartthings:Samsung_The_Frame:account:frame-tv")).build();
+        TestSmartThingsThingHandler handler = new TestSmartThingsThingHandler(thing);
+        SmartThingsException networkFailure = new SmartThingsException("network failed", new Exception("timed out"),
+                true);
+        SmartThingsException statusFailure = new SmartThingsException("status failed", networkFailure);
+        SmartThingsApi api = mock(SmartThingsApi.class);
+        when(api.getStatus(anyString())).thenThrow(statusFailure).thenThrow(new SmartThingsException("api failed"))
+                .thenThrow(statusFailure).thenThrow(statusFailure);
+        SmartThingsAccountHandler accountHandler = mock(SmartThingsAccountHandler.class);
+        when(accountHandler.getSmartThingsApi()).thenReturn(api);
+        Bridge bridge = mock(Bridge.class);
+        when(bridge.getHandler()).thenReturn(accountHandler);
+        handler.bridge = bridge;
+
+        handler.refreshDevice();
+        handler.refreshDevice();
+        handler.refreshDevice();
+        assertNull(handler.lastStatus);
 
         handler.refreshDevice();
 
@@ -899,6 +1007,7 @@ class SmartThingsThingHandlerTest {
         protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
             lastStatus = status;
             lastStatusDetail = statusDetail;
+            getThing().setStatusInfo(new ThingStatusInfo(status, statusDetail, description));
         }
 
         @Override

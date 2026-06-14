@@ -71,6 +71,7 @@ public class SmartThingsThingHandler extends BaseThingHandler {
     private static final String STATIC_CHANNEL_ART_MODE = "art-mode";
     private static final String STATIC_CHANNEL_SETPOINT = "setpoint";
     private static final String STATIC_CHANNEL_TV_CHANNEL = "channel";
+    private static final int STATUS_REFRESH_COMMUNICATION_FAILURE_THRESHOLD = 3;
     private static final String OPTIONAL_MODE_OFF = "off";
 
     private final Logger logger = LoggerFactory.getLogger(SmartThingsThingHandler.class);
@@ -83,6 +84,7 @@ public class SmartThingsThingHandler extends BaseThingHandler {
     private long lastRefresh = System.nanoTime();
     private @Nullable Object airConditionerFanModeValue;
     private boolean airConditionerOptionalModeActive;
+    private int consecutiveStatusRefreshCommunicationFailures;
 
     public SmartThingsThingHandler(Thing thing) {
         super(thing);
@@ -325,6 +327,8 @@ public class SmartThingsThingHandler extends BaseThingHandler {
             } else {
                 refreshChannel(deviceType, componentId, namespace, capaKey, attr, value);
             }
+
+            handleSuccessfulStateRefresh();
         } catch (Exception ex) {
             logger.warn("Unable to refresh SmartThings state for {}: {}", this.getThing().getUID(), ex.getMessage());
             logger.debug("Unable to refresh SmartThings state.", ex);
@@ -379,15 +383,42 @@ public class SmartThingsThingHandler extends BaseThingHandler {
                     }
                 }
             }
+
+            handleSuccessfulStateRefresh();
         } catch (SmartThingsException ex) {
             if (ex.isCommunicationError()) {
-                logger.warn("Communication error while updating SmartThings device {}: {}", deviceId, ex.getMessage());
-                logger.debug("Unable to update SmartThings device.", ex);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
+                handleStatusRefreshCommunicationFailure(ex);
             } else {
                 logger.warn("Unable to update SmartThings device {}: {}", deviceId, ex.getMessage());
                 logger.debug("Unable to update SmartThings device.", ex);
             }
+        }
+    }
+
+    private void handleSuccessfulStateRefresh() {
+        consecutiveStatusRefreshCommunicationFailures = 0;
+        if (ThingStatusDetail.COMMUNICATION_ERROR.equals(thing.getStatusInfo().getStatusDetail()) && isBridgeOnline()) {
+            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
+        }
+    }
+
+    private boolean isBridgeOnline() {
+        Bridge bridge = getBridge();
+        return bridge != null && ThingStatus.ONLINE.equals(bridge.getStatus());
+    }
+
+    private void handleStatusRefreshCommunicationFailure(SmartThingsException ex) {
+        consecutiveStatusRefreshCommunicationFailures++;
+        if (consecutiveStatusRefreshCommunicationFailures >= STATUS_REFRESH_COMMUNICATION_FAILURE_THRESHOLD) {
+            logger.warn("Communication error while updating SmartThings device {} after {} consecutive attempts: {}",
+                    deviceId, consecutiveStatusRefreshCommunicationFailures, ex.getMessage());
+            logger.debug("Unable to update SmartThings device.", ex);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
+        } else {
+            logger.debug("Transient communication error while updating SmartThings device {} ({} of {}): {}", deviceId,
+                    consecutiveStatusRefreshCommunicationFailures, STATUS_REFRESH_COMMUNICATION_FAILURE_THRESHOLD,
+                    ex.getMessage());
+            logger.trace("Transient SmartThings status refresh communication error.", ex);
         }
     }
 
