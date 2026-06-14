@@ -227,6 +227,15 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                             sensorData.lux.isValid = true;
                             sensorData.lux.value = (double) e.blu.illuminance;
                         }
+                        if (e.blu.lightLevel != null) {
+                            if (sensorData.lux == null) {
+                                sensorData.lux = new ShellySensorLux();
+                            }
+                            sensorData.lux.isValid = true;
+                            int ll = e.blu.lightLevel;
+                            sensorData.lux.illumination = ll == 0 ? "dark"
+                                    : ll == 1 ? "twilight" : ll == 2 ? "bright" : "unknown";
+                        }
                         if (e.blu.temperatures != null) {
                             if (e.blu.temperatures.length == 1) {
                                 sensorData.tmp.units = SHELLY_TEMP_CELSIUS;
@@ -319,7 +328,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
         if (data.battery != null && sensorData.bat == null) {
             sensorData.bat = new ShellySensorBat();
         }
-        if (data.illuminance != null && sensorData.lux == null) {
+        if ((data.illuminance != null || data.lightLevel != null) && sensorData.lux == null) {
             sensorData.lux = new ShellySensorLux();
         }
         if (data.temperatures != null && sensorData.tmp == null) {

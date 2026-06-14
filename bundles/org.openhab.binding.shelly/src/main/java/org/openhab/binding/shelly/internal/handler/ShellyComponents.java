@@ -475,8 +475,10 @@ public class ShellyComponents {
             }
             if ((sdata.lux != null) && getBool(sdata.lux.isValid)) {
                 // “lux”:{“value”:30, “illumination”: “dark”, “is_valid”:true},
-                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_LUX,
-                        toQuantityType(getDouble(sdata.lux.value), DIGITS_LUX, Units.LUX));
+                if (sdata.lux.value != null) {
+                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_LUX,
+                            toQuantityType(getDouble(sdata.lux.value), DIGITS_LUX, Units.LUX));
+                }
                 if (sdata.lux.illumination != null) {
                     updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ILLUM,
                             getStringType(sdata.lux.illumination));

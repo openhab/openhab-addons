@@ -114,6 +114,7 @@ BTH[0x5d] = { n: "Current", t: int16, f: 0.001 };                             //
 BTH[0x5e] = { n: "Direction", t: uint16, f: 0.01 };                           // Direction (scaled by 0.01)
 BTH[0x5f] = { n: "Precipitation", t: uint16, f: 0.1 };                        // Precipitation (scaled by 0.1)
 BTH[0x60] = { n: "Channel", t: uint8 };                                       // Channel
+BTH[0x64] = { n: "LightLevel", t: uint8 };                                    // Light level 0=dark, 1=twilight, 2=bright
 BTH[0xF0] = { n: "DeviceId", t: uint16};                                      // Device type ID
 BTH[0xF1] = { n: "Firmware32", t: uint32};                                    // Firmware version in 1.2.3.4 format
 BTH[0xF2] = { n: "Firmware24", t: uint24};                                    // Firmware version in 1.2.3 format
