@@ -31,12 +31,20 @@
 			<parameter name="apiKey" type="text" required="true" groupName="authentication">
 				<context>password</context>
 				<label>API Key</label>
-				<description>The Google Gemini API key.</description>
+				<description>
+					<![CDATA[
+					The Google Gemini API key (Create & Manage API keys in <a href="https://aistudio.google.com/api-keys">Google AI Studio</a>).
+					]]>
+				</description>
 			</parameter>
 			<!-- HLI Settings -->
 			<parameter name="model" type="text" groupName="hli">
 				<label>Model</label>
-				<description>The Gemini model to use.</description>
+				<description>
+					<![CDATA[
+					The Google Gemini model to use (<a href="https://ai.google.dev/gemini-api/docs/models">Models</a>, <a href="https://ai.google.dev/gemini-api/docs/pricing">Pricing</a>).
+					]]>
+				</description>
 				<default>gemini-2.5-flash</default>
 			</parameter>
 			<parameter name="temperature" type="decimal" groupName="hli" min="0.0" max="2.0">
