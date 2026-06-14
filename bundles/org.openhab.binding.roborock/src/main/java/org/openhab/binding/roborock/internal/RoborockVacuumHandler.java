@@ -1976,7 +1976,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                     }
                 }
 
-                // Grouped all ACK cases into one line
                 case "prop.set", "service.set_room_clean", "service.start_recharge", "service.find_device",
                         "service.reset_consumable", "201", "202", "204", "206" -> {
                     JsonArray ack = new JsonArray();
