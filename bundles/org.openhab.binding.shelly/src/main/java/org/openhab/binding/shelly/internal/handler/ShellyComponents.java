@@ -557,7 +557,8 @@ public class ShellyComponents {
                         toQuantityType(getDouble(sdata.bat.value), 0, Units.PERCENT));
 
                 int lowBattery = thingHandler.getThingConfig().getLowBattery();
-                boolean isLow = sdata.bat.batteryLow != null ? sdata.bat.batteryLow.booleanValue()
+                Boolean batteryLowFlag = sdata.bat.batteryLow;
+                boolean isLow = batteryLowFlag != null ? batteryLowFlag.booleanValue()
                         : (!charger && getDouble(sdata.bat.value) < lowBattery);
                 boolean changed = thingHandler.updateChannel(CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LOW,
                         getOnOff(isLow));

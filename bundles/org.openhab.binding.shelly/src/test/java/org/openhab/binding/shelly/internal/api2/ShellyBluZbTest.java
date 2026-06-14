@@ -71,6 +71,7 @@ public class ShellyBluZbTest {
     void lightLevelBrightDeserializes() {
         Shelly2NotifyBluEventData data = gson.fromJson("{\"LightLevel\":2,\"Battery\":85}",
                 Shelly2NotifyBluEventData.class);
+        assertNotNull(data);
         assertThat(data.lightLevel, is(2));
         assertThat(data.battery, is(85));
     }
@@ -78,6 +79,7 @@ public class ShellyBluZbTest {
     @Test
     void lightLevelDarkDeserializes() {
         Shelly2NotifyBluEventData data = gson.fromJson("{\"LightLevel\":0}", Shelly2NotifyBluEventData.class);
+        assertNotNull(data);
         assertThat(data.lightLevel, is(0));
     }
 
@@ -87,6 +89,7 @@ public class ShellyBluZbTest {
     void batteryLowSetDeserializes() {
         Shelly2NotifyBluEventData data = gson.fromJson("{\"Battery\":10,\"BatteryLow\":1}",
                 Shelly2NotifyBluEventData.class);
+        assertNotNull(data);
         assertThat(data.battery, is(10));
         assertThat(data.batteryLow, is(1));
     }
@@ -95,6 +98,7 @@ public class ShellyBluZbTest {
     void batteryLowClearedDeserializes() {
         Shelly2NotifyBluEventData data = gson.fromJson("{\"Battery\":80,\"BatteryLow\":0}",
                 Shelly2NotifyBluEventData.class);
+        assertNotNull(data);
         assertThat(data.batteryLow, is(0));
     }
 
@@ -103,6 +107,7 @@ public class ShellyBluZbTest {
     @Test
     void scalarButtonDeserializesToSingleElementArray() {
         Shelly2NotifyBluEventData data = gson.fromJson("{\"Button\":1}", Shelly2NotifyBluEventData.class);
+        assertNotNull(data);
         Integer[] buttons = data.buttons;
         assertNotNull(buttons);
         assertThat(buttons.length, is(1));
@@ -112,6 +117,7 @@ public class ShellyBluZbTest {
     @Test
     void arrayButtonDeserializesToMultiElementArray() {
         Shelly2NotifyBluEventData data = gson.fromJson("{\"Button\":[1,0,1,0]}", Shelly2NotifyBluEventData.class);
+        assertNotNull(data);
         Integer[] buttons = data.buttons;
         assertNotNull(buttons);
         assertThat(buttons.length, is(4));
@@ -124,6 +130,7 @@ public class ShellyBluZbTest {
     @Test
     void scalarTemperatureDeserializesToSingleElementArray() {
         Shelly2NotifyBluEventData data = gson.fromJson("{\"Temperature\":21.5}", Shelly2NotifyBluEventData.class);
+        assertNotNull(data);
         Double[] temperatures = data.temperatures;
         assertNotNull(temperatures);
         assertThat(temperatures.length, is(1));
@@ -134,6 +141,7 @@ public class ShellyBluZbTest {
     void arrayTemperatureDeserializesToMultiElementArray() {
         Shelly2NotifyBluEventData data = gson.fromJson("{\"Temperature\":[21.5,22.0]}",
                 Shelly2NotifyBluEventData.class);
+        assertNotNull(data);
         Double[] temperatures = data.temperatures;
         assertNotNull(temperatures);
         assertThat(temperatures.length, is(2));
