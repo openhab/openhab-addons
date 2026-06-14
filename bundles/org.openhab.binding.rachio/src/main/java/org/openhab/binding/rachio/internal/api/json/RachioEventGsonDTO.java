@@ -17,6 +17,8 @@ import static org.openhab.binding.rachio.internal.RachioBindingConstants.*;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
 import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -25,6 +27,8 @@ import org.openhab.binding.rachio.internal.api.RachioApiResult;
 import org.openhab.binding.rachio.internal.api.json.RachioApiGsonDTO.RachioEventProperty;
 import org.openhab.binding.rachio.internal.api.json.RachioApiGsonDTO.RachioZoneStatus;
 import org.openhab.binding.rachio.internal.api.json.RachioDeviceGsonDTO.RachioCloudNetworkSettings;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  * {@link RachioEventGsonDTO} maps the API result into a Java object (using GSon).
@@ -36,6 +40,10 @@ public class RachioEventGsonDTO {
     private static final Set<String> LEGACY_NOTIFICATION_TYPES = Set.of("DELTA", "DEVICE_DELTA", "DEVICE_STATUS",
             "RAIN_DELAY", "RAIN_SENSOR_DETECTION", "SCHEDULE_DELTA", "SCHEDULE_STATUS", "WEATHER_INTELLIGENCE",
             "WATER_BUDGET", "ZONE_DELTA", "ZONE_STATUS");
+    private static final Map<String, String> LEGACY_NOTIFICATION_TYPE_IDS = Map.of(WHE_DEVICE_STATUS, "DEVICE_STATUS",
+            WHE_RAIN_DELAY, "RAIN_DELAY", WEATHER_INTELLIGENCE, "WEATHER_INTELLIGENCE", WHE_WATER_BUDGET,
+            "WATER_BUDGET", WHE_SCHEDULE_STATUS, "SCHEDULE_STATUS", WHE_ZONE_STATUS, "ZONE_STATUS",
+            WHE_RAIN_SENSOR_DETECTION, "RAIN_SENSOR_DETECTION", WHE_ZONE_DELTA, "ZONE_DELTA", WHE_DELTA, "DELTA");
 
     public String eventId = "";
     public String resourceId = "";
@@ -111,6 +119,7 @@ public class RachioEventGsonDTO {
      * Subtype : SCHEDULE_DELTA
      */
     public String type = "";
+    @SerializedName(value = "subType", alternate = { "subtype", "sub_type", "eventSubType", "eventSubtype" })
     public String subType = "";
     public String eventType = "";
     public String category = "";
@@ -247,8 +256,23 @@ public class RachioEventGsonDTO {
     }
 
     public boolean isLegacyNotificationEvent() {
-        return eventType.isBlank() && resourceType.isBlank() && !externalId.isBlank() && !deviceId.isBlank()
-                && !subType.isBlank() && LEGACY_NOTIFICATION_TYPES.contains(type);
+        return isBlank(eventType) && isBlank(resourceType) && !isBlank(externalId) && !isBlank(deviceId)
+                && getLegacyNotificationType(type) != null;
+    }
+
+    public void normalizeLegacyNotificationEvent() {
+        if (!isBlank(eventType) || !isBlank(resourceType)) {
+            return;
+        }
+        String normalizedType = getLegacyNotificationType(type);
+        if (normalizedType != null) {
+            type = normalizedType;
+        }
+    }
+
+    public String getLegacyNotificationTypeForLogging() {
+        String normalizedType = getLegacyNotificationType(type);
+        return normalizedType != null ? normalizedType : "unrecognized";
     }
 
     /**
@@ -282,6 +306,22 @@ public class RachioEventGsonDTO {
 
     private boolean isLegacyEvent() {
         return !type.isEmpty() || !subType.isEmpty() || !deviceId.isEmpty();
+    }
+
+    private static @Nullable String getLegacyNotificationType(@Nullable String candidate) {
+        if (isBlank(candidate)) {
+            return null;
+        }
+        String normalizedCandidate = candidate.trim().toUpperCase(Locale.ROOT);
+        String mappedType = LEGACY_NOTIFICATION_TYPE_IDS.get(normalizedCandidate);
+        if (mappedType != null) {
+            return mappedType;
+        }
+        return LEGACY_NOTIFICATION_TYPES.contains(normalizedCandidate) ? normalizedCandidate : null;
+    }
+
+    private static boolean isBlank(@Nullable String value) {
+        return value == null || value.isBlank();
     }
 
     private void normalizeZoneStatus(RachioWebhookPayload eventPayload, String state) {

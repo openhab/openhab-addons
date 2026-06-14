@@ -186,6 +186,11 @@ public class RachioWebHookServlet extends HttpServlet {
             event = parseEvent(data);
             if (event.isLegacyNotificationEvent()) {
                 logger.trace("RachioWebHook: Processing legacy NotificationService event ({})", describeEvent(event));
+                if (isBlank(event.subType)) {
+                    logger.debug(
+                            "RachioWebHook: Legacy NotificationService event has no subtype; processing recognized type '{}'",
+                            event.type);
+                }
                 if (!rachioHandlerFactory.legacyWebHookEvent(ipAddress, event)) {
                     resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
                     return;
@@ -197,6 +202,8 @@ public class RachioWebHookServlet extends HttpServlet {
 
             String signature = request.getHeader(WEBHOOK_SIGNATURE_HEADER);
             if (signature == null || signature.isBlank()) {
+                logger.warn("RachioWebHook: Payload was not recognized as legacy NotificationService event: {}",
+                        describeLegacyClassification(event));
                 logger.warn(
                         "RachioWebHook: Rejecting webhook request from {} because the x-signature header is missing",
                         ipAddress);
@@ -276,6 +283,7 @@ public class RachioWebHookServlet extends HttpServlet {
         if (event == null) {
             throw new JsonSyntaxException("Webhook payload did not contain an event object");
         }
+        event.normalizeLegacyNotificationEvent();
         return event;
     }
 
@@ -381,7 +389,14 @@ public class RachioWebHookServlet extends HttpServlet {
                 + printable(event.deviceId) + ", externalId=" + printable(event.externalId);
     }
 
-    private boolean isBlank(@Nullable String value) {
+    static String describeLegacyClassification(RachioEventGsonDTO event) {
+        return "eventTypePresent=" + !isBlank(event.eventType) + ", resourceTypePresent=" + !isBlank(event.resourceType)
+                + ", type='" + event.getLegacyNotificationTypeForLogging() + "', subTypePresent="
+                + !isBlank(event.subType) + ", deviceIdPresent=" + !isBlank(event.deviceId) + ", externalIdPresent="
+                + !isBlank(event.externalId);
+    }
+
+    private static boolean isBlank(@Nullable String value) {
         return value == null || value.isBlank();
     }
 

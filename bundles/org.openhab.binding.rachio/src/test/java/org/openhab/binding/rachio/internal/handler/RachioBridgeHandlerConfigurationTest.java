@@ -14,6 +14,7 @@ package org.openhab.binding.rachio.internal.handler;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.PARAM_FORECAST_UNITS;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_TYPE_CLOUD;
@@ -75,6 +76,20 @@ class RachioBridgeHandlerConfigurationTest {
         assertThat(handler.legacyWebHookEvent(event), is(true));
 
         verify(handler).refreshDeviceStatus(RefreshReason.WEBHOOK_RECONCILIATION);
+    }
+
+    @Test
+    void legacyEventForUnknownControllerIsRejectedWithoutRefresh() {
+        Bridge bridge = BridgeBuilder.create(THING_TYPE_CLOUD, "bridge").build();
+        RachioBridgeHandler handler = Mockito.spy(new RachioBridgeHandler(bridge));
+        Mockito.doReturn(new HashMap<String, RachioDevice>()).when(handler).getDevices();
+        RachioEventGsonDTO event = new RachioEventGsonDTO();
+        event.deviceId = "unknown-controller";
+        event.type = "ZONE_STATUS";
+
+        assertThat(handler.legacyWebHookEvent(event), is(false));
+
+        verify(handler, never()).refreshDeviceStatus(RefreshReason.WEBHOOK_RECONCILIATION);
     }
 
     @Test

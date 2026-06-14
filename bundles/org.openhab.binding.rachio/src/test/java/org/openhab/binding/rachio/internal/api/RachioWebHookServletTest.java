@@ -12,6 +12,10 @@
  */
 package org.openhab.binding.rachio.internal.api;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -35,6 +39,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.openhab.binding.rachio.internal.RachioHandlerFactory;
 import org.openhab.binding.rachio.internal.api.json.RachioEventGsonDTO;
@@ -165,6 +170,95 @@ class RachioWebHookServletTest {
     }
 
     @Test
+    void numericLegacyZoneStatusTypeIsNormalizedAndAcceptedWithoutSignature() throws Exception {
+        RachioHandlerFactory handlerFactory = mockHandlerFactory(false);
+        RachioWebHookServlet servlet = servlet(handlerFactory);
+        ArgumentCaptor<RachioEventGsonDTO> eventCaptor = ArgumentCaptor.forClass(RachioEventGsonDTO.class);
+
+        servlet.service(request(legacyEventJson("\"10\"", "\"subType\": \"ZONE_STARTED\","), null), response());
+
+        verify(handlerFactory).legacyWebHookEvent(eq("127.0.0.1"), eventCaptor.capture());
+        assertThat(eventCaptor.getValue().type, is("ZONE_STATUS"));
+        assertThat(eventCaptor.getValue().subType, is("ZONE_STARTED"));
+        verify(handlerFactory, never()).isValidWebHookSignature(anyString(), any(byte[].class));
+    }
+
+    @Test
+    void numericLegacyScheduleStatusTypeIsNormalizedAndAcceptedWithoutSignature() throws Exception {
+        RachioHandlerFactory handlerFactory = mockHandlerFactory(false);
+        RachioWebHookServlet servlet = servlet(handlerFactory);
+        ArgumentCaptor<RachioEventGsonDTO> eventCaptor = ArgumentCaptor.forClass(RachioEventGsonDTO.class);
+
+        servlet.service(request(legacyEventJson("9", "\"subType\": \"SCHEDULE_COMPLETED\","), null), response());
+
+        verify(handlerFactory).legacyWebHookEvent(eq("127.0.0.1"), eventCaptor.capture());
+        assertThat(eventCaptor.getValue().type, is("SCHEDULE_STATUS"));
+    }
+
+    @Test
+    void lowercaseSubtypeFieldIsAcceptedForLegacyEvent() throws Exception {
+        RachioHandlerFactory handlerFactory = mockHandlerFactory(false);
+        RachioWebHookServlet servlet = servlet(handlerFactory);
+        ArgumentCaptor<RachioEventGsonDTO> eventCaptor = ArgumentCaptor.forClass(RachioEventGsonDTO.class);
+
+        servlet.service(request(legacyEventJson("\"ZONE_STATUS\"", "\"subtype\": \"ZONE_STARTED\","), null),
+                response());
+
+        verify(handlerFactory).legacyWebHookEvent(eq("127.0.0.1"), eventCaptor.capture());
+        assertThat(eventCaptor.getValue().subType, is("ZONE_STARTED"));
+    }
+
+    @Test
+    void eventSubTypeFieldIsAcceptedForLegacyEvent() throws Exception {
+        RachioHandlerFactory handlerFactory = mockHandlerFactory(false);
+        RachioWebHookServlet servlet = servlet(handlerFactory);
+        ArgumentCaptor<RachioEventGsonDTO> eventCaptor = ArgumentCaptor.forClass(RachioEventGsonDTO.class);
+
+        servlet.service(request(legacyEventJson("\"ZONE_STATUS\"", "\"eventSubType\": \"ZONE_STARTED\","), null),
+                response());
+
+        verify(handlerFactory).legacyWebHookEvent(eq("127.0.0.1"), eventCaptor.capture());
+        assertThat(eventCaptor.getValue().subType, is("ZONE_STARTED"));
+    }
+
+    @Test
+    void knownLegacyTypeWithoutSubtypeIsAcceptedWhenIdentifiersArePresent() throws Exception {
+        RachioHandlerFactory handlerFactory = mockHandlerFactory(false);
+        RachioWebHookServlet servlet = servlet(handlerFactory);
+
+        servlet.service(request(legacyEventJson("\"DEVICE_STATUS\"", ""), null), response());
+
+        verify(handlerFactory).legacyWebHookEvent(eq("127.0.0.1"), any(RachioEventGsonDTO.class));
+        verify(handlerFactory, never()).isValidWebHookSignature(anyString(), any(byte[].class));
+    }
+
+    @Test
+    void knownLegacyTypeWithoutExternalIdIsRejectedWhenUnsigned() throws Exception {
+        RachioHandlerFactory handlerFactory = mockHandlerFactory(false);
+        RachioWebHookServlet servlet = servlet(handlerFactory);
+        String body = legacyEventJson("\"DEVICE_STATUS\"", "").replace("\"externalId\": \"external-id\",", "");
+        HttpServletResponse response = response();
+
+        servlet.service(request(body, null), response);
+
+        verify(response).sendError(HttpServletResponse.SC_UNAUTHORIZED);
+        verify(handlerFactory, never()).legacyWebHookEvent(anyString(), any(RachioEventGsonDTO.class));
+    }
+
+    @Test
+    void knownLegacyTypeWithoutDeviceIdIsRejectedWhenUnsigned() throws Exception {
+        RachioHandlerFactory handlerFactory = mockHandlerFactory(false);
+        RachioWebHookServlet servlet = servlet(handlerFactory);
+        String body = legacyEventJson("\"DEVICE_STATUS\"", "").replace("\"deviceId\": \"controller-id\",", "");
+        HttpServletResponse response = response();
+
+        servlet.service(request(body, null), response);
+
+        verify(response).sendError(HttpServletResponse.SC_UNAUTHORIZED);
+        verify(handlerFactory, never()).legacyWebHookEvent(anyString(), any(RachioEventGsonDTO.class));
+    }
+
+    @Test
     void legacyNotificationEventWithWrongExternalIdIsRejected() throws Exception {
         RachioHandlerFactory handlerFactory = mockHandlerFactory(false);
         when(handlerFactory.legacyWebHookEvent(eq("127.0.0.1"), any(RachioEventGsonDTO.class))).thenReturn(false);
@@ -191,6 +285,21 @@ class RachioWebHookServletTest {
     }
 
     @Test
+    void newWebhookServiceMarkersPreventLegacyBypassEvenWithRecognizedType() throws Exception {
+        RachioHandlerFactory handlerFactory = mockHandlerFactory(true);
+        RachioWebHookServlet servlet = servlet(handlerFactory);
+        HttpServletResponse response = response();
+        String body = eventJson("event-1").replace("\"eventId\": \"event-1\",",
+                "\"eventId\": \"event-1\", \"type\": \"ZONE_STATUS\",");
+
+        servlet.service(request(body, null), response);
+
+        verify(response).sendError(HttpServletResponse.SC_UNAUTHORIZED);
+        verify(handlerFactory, never()).legacyWebHookEvent(anyString(), any(RachioEventGsonDTO.class));
+        verify(handlerFactory, never()).webHookEvent(anyString(), any(RachioEventGsonDTO.class));
+    }
+
+    @Test
     void unknownUnsignedLegacyPayloadIsRejected() throws Exception {
         RachioHandlerFactory handlerFactory = mockHandlerFactory(true);
         RachioWebHookServlet servlet = servlet(handlerFactory);
@@ -201,6 +310,41 @@ class RachioWebHookServletTest {
 
         verify(response).sendError(HttpServletResponse.SC_UNAUTHORIZED);
         verify(handlerFactory, never()).legacyWebHookEvent(anyString(), any(RachioEventGsonDTO.class));
+    }
+
+    @Test
+    void legacyNotificationEventWithUnknownDeviceIdIsRejected() throws Exception {
+        RachioHandlerFactory handlerFactory = mockHandlerFactory(false);
+        when(handlerFactory.legacyWebHookEvent(eq("127.0.0.1"), any(RachioEventGsonDTO.class))).thenReturn(false);
+        RachioWebHookServlet servlet = servlet(handlerFactory);
+        HttpServletResponse response = response();
+        String body = legacyEventJson("\"ZONE_STATUS\"", "\"subType\": \"ZONE_STARTED\",").replace("controller-id",
+                "unknown-controller");
+
+        servlet.service(request(body, null), response);
+
+        verify(response).sendError(HttpServletResponse.SC_UNAUTHORIZED);
+        verify(handlerFactory, never()).webHookEvent(anyString(), any(RachioEventGsonDTO.class));
+    }
+
+    @Test
+    void legacyClassificationSummaryDoesNotExposePayloadOrCredentials() {
+        RachioEventGsonDTO event = new RachioEventGsonDTO();
+        event.type = "callback-password";
+        event.subType = "payload-secret";
+        event.deviceId = "controller-secret";
+        event.externalId = "external-id-secret";
+
+        String summary = RachioWebHookServlet.describeLegacyClassification(event);
+
+        assertThat(summary, containsString("type='unrecognized'"));
+        assertThat(summary, containsString("subTypePresent=true"));
+        assertThat(summary, containsString("deviceIdPresent=true"));
+        assertThat(summary, containsString("externalIdPresent=true"));
+        assertThat(summary, not(containsString("callback-password")));
+        assertThat(summary, not(containsString("payload-secret")));
+        assertThat(summary, not(containsString("controller-secret")));
+        assertThat(summary, not(containsString("external-id-secret")));
     }
 
     private RachioWebHookServlet servlet(RachioHandlerFactory handlerFactory) throws Exception {
@@ -280,6 +424,19 @@ class RachioWebHookServletTest {
                   "zoneNumber": 7
                 }
                 """.formatted(externalId);
+    }
+
+    private String legacyEventJson(String type, String subtypeMember) {
+        return """
+                {
+                  "type": %s,
+                  %s
+                  "category": "ZONE",
+                  "deviceId": "controller-id",
+                  "externalId": "external-id",
+                  "zoneNumber": 7
+                }
+                """.formatted(type, subtypeMember);
     }
 
     private static class ByteArrayServletInputStream extends ServletInputStream {
