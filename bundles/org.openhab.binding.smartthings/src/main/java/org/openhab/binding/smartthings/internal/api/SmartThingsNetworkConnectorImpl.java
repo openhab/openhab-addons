@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.smartthings.internal.api;
 
-import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -36,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
 
 /**
  *
@@ -185,18 +185,33 @@ public class SmartThingsNetworkConnectorImpl implements SmartThingsNetworkConnec
             } else if (statusCode == HttpStatus.UNPROCESSABLE_ENTITY_422) {
                 String result = response.getContentAsString();
 
-                ErrorObject err = gSon.fromJson(result, ErrorObject.class);
-                throw new SmartThingsException("Error occurred during request:", Objects.requireNonNull(err));
+                throw createResponseException("Error occurred during request:", result);
             } else if (statusCode == HttpStatus.TOO_MANY_REQUESTS_429) {
                 String result = response.getContentAsString();
 
-                ErrorObject err = gSon.fromJson(result, ErrorObject.class);
-                throw new SmartThingsException("Too many requests", Objects.requireNonNull(err));
+                throw createResponseException("Too many requests", result);
             } else {
-                throw new SmartThingsException("Unexpected return code: " + statusCode);
+                throw createResponseException("Unexpected return code: " + statusCode, response.getContentAsString());
             }
         }
         return null;
+    }
+
+    private SmartThingsException createResponseException(String message, @Nullable String responseBody) {
+        if (responseBody == null || responseBody.isBlank()) {
+            return new SmartThingsException(message);
+        }
+
+        try {
+            ErrorObject err = gSon.fromJson(responseBody, ErrorObject.class);
+            if (err != null && (err.requestId != null || err.error != null)) {
+                return new SmartThingsException(message, err);
+            }
+        } catch (JsonSyntaxException e) {
+            logger.debug("Unable to parse SmartThings error response.", e);
+        }
+
+        return new SmartThingsException(message + ": " + responseBody);
     }
 
     @Override

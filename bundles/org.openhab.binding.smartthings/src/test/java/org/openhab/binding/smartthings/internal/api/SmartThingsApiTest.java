@@ -14,6 +14,7 @@ package org.openhab.binding.smartthings.internal.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -85,5 +86,27 @@ class SmartThingsApiTest {
                 isNull(), eq("token"), body.capture(), eq(HttpMethod.PUT));
         assertTrue(body.getValue().contains("\"targetUrl\":\"https://openhab.example.org/smartthings/account/cb\""));
         assertTrue(body.getValue().contains("\"redirectUris\":[\"https://openhab.example.org/smartthings/account\"]"));
+    }
+
+    @Test
+    void sendCommandExceptionIncludesSmartThingsResponseError() throws SmartThingsException {
+        SmartThingsBridgeHandler bridgeHandler = mock(SmartThingsBridgeHandler.class);
+        AccessTokenResponse tokenResponse = mock(AccessTokenResponse.class);
+        when(tokenResponse.getAccessToken()).thenReturn("token");
+        when(bridgeHandler.getAccessTokenResponse()).thenReturn(tokenResponse);
+
+        SmartThingsNetworkConnector networkConnector = mock(SmartThingsNetworkConnector.class);
+        when(networkConnector.doRequest(eq(JsonObject.class),
+                eq("https://api.smartthings.com/v1/devices/device-123/commands"), isNull(), eq("token"),
+                eq("{\"commands\":[]}"), eq(HttpMethod.POST)))
+                .thenThrow(new SmartThingsException("Unexpected return code: 422"));
+
+        SmartThingsApi api = new SmartThingsApi(mock(HttpClientFactory.class), bridgeHandler, networkConnector,
+                mock(ClientBuilder.class), mock(SseEventSourceFactory.class));
+
+        SmartThingsException exception = assertThrows(SmartThingsException.class,
+                () -> api.sendCommand("device-123", "{\"commands\":[]}"));
+
+        assertTrue(exception.getMessage().contains("Unexpected return code: 422"));
     }
 }

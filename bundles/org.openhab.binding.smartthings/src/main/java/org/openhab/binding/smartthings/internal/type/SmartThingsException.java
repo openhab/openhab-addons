@@ -56,26 +56,35 @@ public class SmartThingsException extends Exception {
     @Override
     public @Nullable String getMessage() {
         String msg = super.getMessage();
+        StringBuilder message = new StringBuilder(msg == null ? "" : msg);
         ErrorObject errL = err;
         if (errL != null) {
-            msg += "\r\n";
-            msg += "requestId : " + errL.requestId + "\r\n";
+            message.append("\r\n");
+            message.append("requestId : ").append(errL.requestId).append("\r\n");
 
             if (errL.error != null) {
-                msg += "code      : " + errL.error.code + "\r\n";
-                msg += "message   : " + errL.error.message + "\r\n";
+                message.append("code      : ").append(errL.error.code).append("\r\n");
+                message.append("message   : ").append(errL.error.message).append("\r\n");
 
                 if (errL.error.details != null) {
                     for (ErrorObject.Error.Detail detail : errL.error.details) {
-                        msg += "code      : " + detail.code() + "\r\n";
-                        msg += "target      : " + detail.target() + "\r\n";
-                        msg += "message      : " + detail.message() + "\r\n";
+                        message.append("code      : ").append(detail.code()).append("\r\n");
+                        message.append("target    : ").append(detail.target()).append("\r\n");
+                        message.append("message   : ").append(detail.message()).append("\r\n");
                     }
                 }
             }
         }
 
-        return msg;
+        Throwable cause = getCause();
+        if (cause != null) {
+            String causeMessage = cause.getMessage();
+            if (causeMessage != null && !causeMessage.isBlank() && !causeMessage.equals(msg)) {
+                message.append("\r\ncause     : ").append(causeMessage);
+            }
+        }
+
+        return message.toString();
     }
 
     public boolean isCommunicationError() {
