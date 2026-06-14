@@ -12,13 +12,14 @@
  */
 package org.openhab.binding.amberelectric.internal;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.io.net.http.HttpUtil;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.http.HttpMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,20 +34,22 @@ public class AmberElectricWebTargets {
     private static final int TIMEOUT_MS = 30000;
     private static final String BASE_URI = "https://api.amber.com.au/v1/";
     private final Logger logger = LoggerFactory.getLogger(AmberElectricWebTargets.class);
+    private final HttpClient httpClient;
 
-    public AmberElectricWebTargets() {
+    public AmberElectricWebTargets(HttpClient httpClient) {
+        this.httpClient = httpClient;
     }
 
     public String getSites(String apiKey) throws AmberElectricCommunicationException {
         String getSitesUri = BASE_URI + "sites";
-        String response = invoke("GET", getSitesUri, apiKey);
+        String response = invoke(getSitesUri, apiKey);
         logger.trace("Received response: \"{}\"", response);
         return response;
     }
 
     public String getCurrentPrices(String siteid, String apiKey) throws AmberElectricCommunicationException {
         String getCurrentPricesUri = BASE_URI + "sites/" + siteid + "/prices/current?next=288";
-        String response = invoke("GET", getCurrentPricesUri, apiKey);
+        String response = invoke(getCurrentPricesUri, apiKey);
         logger.trace("Received response: \"{}\"", response);
         return response;
     }
@@ -58,29 +61,21 @@ public class AmberElectricWebTargets {
         return httpHeaders;
     }
 
-    private String invoke(String httpMethod, String uri, String accessToken)
-            throws AmberElectricCommunicationException {
-        return invoke(httpMethod, uri, accessToken, null, null);
-    }
-
-    private String invoke(String httpMethod, String uri, String apiKey, @Nullable InputStream content,
-            @Nullable String contentType) throws AmberElectricCommunicationException {
-        logger.debug("Calling url: {}", uri);
-        @Nullable
-        String response;
+    private String invoke(String uri, String accessToken) throws AmberElectricCommunicationException {
         try {
-            response = HttpUtil.executeUrl(httpMethod, uri, getHttpHeaders(apiKey), content, contentType, TIMEOUT_MS);
-        } catch (IOException ex) {
-            logger.debug("{}", ex.getLocalizedMessage(), ex);
-            // Response will also be set to null if parsing in executeUrl fails so we use null here to make the
-            // error check below consistent.
-            response = null;
-        }
+            Request request = httpClient.newRequest(uri).method(HttpMethod.GET)
+                    .header("Authorization", "Bearer " + accessToken).header("Content-Type", "application/json")
+                    .timeout(TIMEOUT_MS, TimeUnit.MILLISECONDS);
 
-        if (response == null) {
-            throw new AmberElectricCommunicationException(
-                    String.format("AmberElectric returned no response while invoking %s", uri));
+            ContentResponse response = request.send();
+
+            if (response.getStatus() == 401) {
+                throw new AmberElectricCommunicationException("Unauthorized: Check API Key");
+            }
+
+            return response.getContentAsString();
+        } catch (Exception ex) {
+            throw new AmberElectricCommunicationException("Error communicating with Amber API", ex);
         }
-        return response;
     }
 }

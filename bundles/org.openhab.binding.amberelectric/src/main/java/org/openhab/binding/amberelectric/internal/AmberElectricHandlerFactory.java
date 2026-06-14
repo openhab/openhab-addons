@@ -14,6 +14,8 @@ package org.openhab.binding.amberelectric.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.scheduler.CronScheduler;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -34,13 +36,13 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 public class AmberElectricHandlerFactory extends BaseThingHandlerFactory {
     private final CronScheduler cronScheduler;
-    private final CronScheduler cronResetEstimatesScheduler;
+    private final HttpClient httpClient;
 
     @Activate
     public AmberElectricHandlerFactory(@Reference CronScheduler cronScheduler,
-            @Reference CronScheduler cronResetEstimatesScheduler) {
+            @Reference CronScheduler cronResetEstimatesScheduler, @Reference HttpClientFactory httpClientFactory) {
         this.cronScheduler = cronScheduler;
-        this.cronResetEstimatesScheduler = cronResetEstimatesScheduler;
+        this.httpClient = httpClientFactory.getCommonHttpClient();
     }
 
     @Override
@@ -53,7 +55,7 @@ public class AmberElectricHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(AmberElectricBindingConstants.AMBERELECTRIC_THING)) {
-            return new AmberElectricHandler(thing, cronScheduler, cronResetEstimatesScheduler);
+            return new AmberElectricHandler(thing, cronScheduler, httpClient);
         }
 
         return null;

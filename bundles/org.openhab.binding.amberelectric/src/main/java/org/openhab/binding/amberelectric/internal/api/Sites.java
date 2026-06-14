@@ -31,7 +31,7 @@ public class Sites {
     public String activeFrom = "";
     public int intervalLength;
 
-    public class Channels {
+    public static class Channels {
         public String identifier = "";
         public String type = "";
         public String tariff = "";
