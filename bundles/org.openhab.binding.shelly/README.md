@@ -14,6 +14,8 @@ The binding gets in sync with the next status refresh.
 
 Refer to [Advanced Users](doc/AdvancedUsers.md) for more information on openHAB Shelly integration, e.g. firmware update, network communication or log filtering.
 
+Refer to [Power Meter Devices](doc/PowerMeterDevices.md) for a reference of all Shelly devices with power measurement capability, including per-device channel lists, energy counter persistence behaviour, and known restrictions.
+
 Also check out the [Shelly Manager](doc/ShellyManager.md), which
 
 - provides detailed information on your Shellys
@@ -508,6 +510,42 @@ A new alarm will be triggered on a new condition or every 5 minutes if the condi
 | VIBRATION  | A vibration/tamper was detected (DW2 only)                                                       |
 
 Refer to section [Full Example](#full-example) for examples how to catch alarm triggers in openHAB rules.
+
+### Power Meter
+
+Many Shelly devices include one or more power meters.
+The binding exposes meter data through channel groups named `meter` (single-meter devices) or `meter1` / `meter2` / `meter3` (multi-meter devices).
+Dedicated energy-meter devices (EM, 3EM, Pro EM-50, Plus EM, …) use the same group naming.
+
+**Common per-meter channels:**
+
+| Channel         | Unit | Description                                             |
+| --------------- | ---- | ------------------------------------------------------- |
+| `currentWatts`  | W    | Active power                                            |
+| `totalKWH`      | kWh  | Consumed energy (see note on persistence below)         |
+| `returnedKWH`   | kWh  | Returned / feed-in energy (EM devices only)             |
+| `reactivePower` | VAR  | Reactive power (Gen1 EM/3EM only)                       |
+| `apparentPower` | VA   | Apparent power (Gen2+ EM devices)                       |
+| `powerFactor`   | −    | Power factor, range −1.0 … +1.0                         |
+| `voltage`       | V    | RMS voltage                                             |
+| `current`       | A    | RMS current                                             |
+| `frequency`     | Hz   | Line frequency (data-driven; Gen4+ on relay-PM devices) |
+
+**Device-level accumulated channels** (group `device`) aggregate values across all meters:
+
+| Channel               | Description                                     |
+| --------------------- | ----------------------------------------------- |
+| `accumulatedWatts`    | Sum of active power across all meters           |
+| `accumulatedTotal`    | Sum of consumed energy in kWh                   |
+| `accumulatedReturned` | Sum of returned energy in kWh (EM devices only) |
+
+**Energy counter persistence:**
+
+- **Gen1 relay-PM devices** (1PM, Plug S, 2.5): counters are stored in RAM and **reset on every device restart**.
+  Use openHAB persistence to track long-term consumption.
+- **Gen1 EM/3EM and all Gen2+ devices**: counters are stored in device NVM and **preserved across restarts**.
+
+See [Power Meter Devices](doc/PowerMeterDevices.md) for a full device-by-device reference including per-device channel availability and known restrictions.
 
 ## Channels
 
