@@ -148,6 +148,12 @@ public class GeminiHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        ScheduledFuture<?> future = initFuture;
+        if (future != null) {
+            future.cancel(true);
+            this.initFuture = null;
+        }
+
         final GeminiConfiguration c = getConfigAs(GeminiConfiguration.class);
         this.config = c;
 
