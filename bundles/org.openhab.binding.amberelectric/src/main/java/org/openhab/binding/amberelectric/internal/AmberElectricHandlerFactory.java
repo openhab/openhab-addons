@@ -40,7 +40,7 @@ public class AmberElectricHandlerFactory extends BaseThingHandlerFactory {
 
     @Activate
     public AmberElectricHandlerFactory(@Reference CronScheduler cronScheduler,
-            @Reference CronScheduler cronResetEstimatesScheduler, @Reference HttpClientFactory httpClientFactory) {
+            @Reference HttpClientFactory httpClientFactory) {
         this.cronScheduler = cronScheduler;
         this.httpClient = httpClientFactory.getCommonHttpClient();
     }

@@ -164,6 +164,7 @@ public class AmberElectricHandler extends BaseThingHandler {
                         continue;
 
                     if (nmi.equals(site.nmi)) {
+                        sites = site;
                         siteID = site.id;
                         break;
                     }

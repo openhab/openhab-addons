@@ -17,8 +17,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,19 +61,36 @@ public class AmberElectricWebTargets {
 
     private String invoke(String uri, String accessToken) throws AmberElectricCommunicationException {
         try {
-            Request request = httpClient.newRequest(uri).method(HttpMethod.GET)
-                    .header("Authorization", "Bearer " + accessToken).header("Content-Type", "application/json")
-                    .timeout(TIMEOUT_MS, TimeUnit.MILLISECONDS);
+            var request = httpClient.newRequest(uri).method(HttpMethod.GET).timeout(TIMEOUT_MS, TimeUnit.MILLISECONDS);
 
-            ContentResponse response = request.send();
-
-            if (response.getStatus() == 401) {
-                throw new AmberElectricCommunicationException("Unauthorized: Check API Key");
+            // Dynamically apply headers to avoid duplication
+            Properties headers = getHttpHeaders(accessToken);
+            for (String key : headers.stringPropertyNames()) {
+                request.header(key, headers.getProperty(key));
             }
 
-            return response.getContentAsString();
+            var response = request.send();
+            int status = response.getStatus();
+
+            // Handle successful 2xx responses
+            if (status >= 200 && status < 300) {
+                return response.getContentAsString();
+            }
+
+            // Handle specific 401 Unauthorized for better user feedback
+            if (status == 401) {
+                throw new AmberElectricCommunicationException(
+                        "Unauthorized (401): Please verify your Amber Electric API Key.");
+            }
+
+            // Catch-all for other non-2xx errors
+            throw new AmberElectricCommunicationException(String.format(
+                    "HTTP Error %d communicating with Amber API. Response: %s", status, response.getContentAsString()));
+        } catch (AmberElectricCommunicationException e) {
+            // Rethrow our custom exception so it doesn't get wrapped again
+            throw e;
         } catch (Exception ex) {
-            throw new AmberElectricCommunicationException("Error communicating with Amber API", ex);
+            throw new AmberElectricCommunicationException("Unexpected error communicating with Amber API", ex);
         }
     }
 }
