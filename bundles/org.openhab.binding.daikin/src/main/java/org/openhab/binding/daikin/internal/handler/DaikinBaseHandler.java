@@ -153,8 +153,8 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
                     return;
                 }
             }
-            logger.debug("Received command ({}) of wrong type for thing '{}' on channel {}", command,
-                    thing.getUID().getAsString(), channelUID.getId());
+             logger.debug("Received command ({}) for unsupported channel {} on thing '{}'", command, channelUID.getId(),
+                     thing.getUID().getAsString());
         } catch (DaikinCommunicationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
@@ -164,12 +164,6 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
     public void initialize() {
         logger.debug("Initializing Daikin AC Unit");
         config = getConfigAs(DaikinConfiguration.class);
-
-        if (httpClient == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                    "HTTP Client is not available. Check core services.");
-            return;
-        }
 
         if (config.host == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Host address must be set");
