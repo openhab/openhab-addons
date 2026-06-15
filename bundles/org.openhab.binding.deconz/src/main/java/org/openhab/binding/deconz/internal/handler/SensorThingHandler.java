@@ -55,6 +55,8 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class SensorThingHandler extends SensorBaseThingHandler {
+    private static final double DECIMAL_CORRECTION_FACTOR = 0.01;
+
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_PRESENCE_SENSOR,
             THING_TYPE_DAYLIGHT_SENSOR, THING_TYPE_POWER_SENSOR, THING_TYPE_CONSUMPTION_SENSOR, THING_TYPE_LIGHT_SENSOR,
             THING_TYPE_TEMPERATURE_SENSOR, THING_TYPE_HUMIDITY_SENSOR, THING_TYPE_PRESSURE_SENSOR, THING_TYPE_SWITCH,
@@ -127,11 +129,13 @@ public class SensorThingHandler extends SensorBaseThingHandler {
             case CHANNEL_FIRE -> updateSwitchChannel(channelUID, newState.fire);
             case CHANNEL_GESTURE -> updateDecimalTypeChannel(channelUID, newState.gesture);
             case CHANNEL_GESTUREEVENT -> triggerChannel(channelUID, newState.gesture, initializing);
-            case CHANNEL_HUMIDITY -> updateQuantityTypeChannel(channelUID, newState.humidity, PERCENT, 1.0 / 100);
+            case CHANNEL_HUMIDITY ->
+                updateQuantityTypeChannel(channelUID, newState.humidity, PERCENT, DECIMAL_CORRECTION_FACTOR);
             case CHANNEL_LIGHT -> updateStringChannel(channelUID, getLightState(newState));
             case CHANNEL_LIGHT_LEVEL -> updateDecimalTypeChannel(channelUID, newState.lightlevel);
             case CHANNEL_LIGHT_LUX -> updateQuantityTypeChannel(channelUID, newState.lux, LUX);
-            case CHANNEL_MOISTURE -> updateQuantityTypeChannel(channelUID, newState.moisture, PERCENT);
+            case CHANNEL_MOISTURE ->
+                updateQuantityTypeChannel(channelUID, newState.moisture, PERCENT, DECIMAL_CORRECTION_FACTOR);
             case CHANNEL_OPENCLOSE -> {
                 Boolean open = newState.open;
                 if (open != null) {
@@ -148,7 +152,8 @@ public class SensorThingHandler extends SensorBaseThingHandler {
             case CHANNEL_PRESENCE -> updateSwitchChannel(channelUID, newState.presence);
             case CHANNEL_PRESSURE -> updateQuantityTypeChannel(channelUID, newState.pressure, HECTO(PASCAL));
             case CHANNEL_TAMPERED -> updateSwitchChannel(channelUID, newState.tampered);
-            case CHANNEL_TEMPERATURE -> updateQuantityTypeChannel(channelUID, newState.temperature, CELSIUS, 1.0 / 100);
+            case CHANNEL_TEMPERATURE ->
+                updateQuantityTypeChannel(channelUID, newState.temperature, CELSIUS, DECIMAL_CORRECTION_FACTOR);
             case CHANNEL_TILTANGLE -> updateQuantityTypeChannel(channelUID, newState.tiltangle, DEGREE_ANGLE);
             case CHANNEL_VALUE -> updateDecimalTypeChannel(channelUID, newState.status);
             case CHANNEL_VIBRATION -> updateSwitchChannel(channelUID, newState.vibration);
