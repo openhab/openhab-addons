@@ -28,8 +28,6 @@ Reference for all Shelly devices with power measurement capability.
 | ΣkWh←   | `returnedKWH` (devstatus) | Device-level returned energy                                              |
 | ΣVA     | `accuApparent`            | Total apparent power; device-reported (`total_aprt_power`) when available |
 
----
-
 ## Gen1 — Simple Relay PM
 
 Energy counters stored in **RAM** → **lost on device restart**. Use openHAB persistence for long-term tracking.
@@ -41,8 +39,6 @@ Energy counters stored in **RAM** → **lost on device restart**. Use openHAB pe
 | Shelly Plug US (Gen1) | `shellyplugu1`                       | 1        | W, kWh             | —                     | **Lost**           | No V/A/PF/Hz                            |
 | Shelly 2.5            | `shelly25-relay` / `shelly25-roller` | 2        | W, kWh             | ΣW, ΣkWh              | **Lost**           | 2 relay+PM; roller mode shares channels |
 
----
-
 ## Gen1 — Energy Meters (EM)
 
 Energy counters stored in device **NVM** → **preserved on restart**.
@@ -51,8 +47,6 @@ Energy counters stored in device **NVM** → **preserved on restart**.
 | ---------- | ----------- | -------- | --------------------------- | -------------------------- | ------------------ | ---------------------------------------------------------------------- |
 | Shelly EM  | `shellyem`  | 2        | W, kWh, kWh←, VAR, PF, V, A | ΣW, ΣkWh, ΣkWh←            | Preserved          | 2 CT clamps + 1 relay output; relay not separately metered             |
 | Shelly 3EM | `shellyem3` | 3        | W, kWh, kWh←, VAR, PF, V, A | ΣW, ΣkWh, ΣkWh←, neutral-I | Preserved          | 3-phase; neutral-current channel (group `nmeter`); no controlled relay |
-
----
 
 ## Gen2 / Gen3 / Gen4 — Relay with PM (switch:x)
 
@@ -74,8 +68,6 @@ No reactive power and no apparent power on switch:x interface.
 | Pro 2PM (roller)       | `shellypro2pm-roller`  | 2     | 2        | W, kWh, V, A, PF     | ΣW, ΣkWh              | Preserved          | Roller: single virtual channel  |
 | Pro 4PM                | `shellypro4pm`         | 2     | 4        | W, kWh, V, A, PF     | ΣW, ΣkWh              | Preserved          | 4 independent relay+PM channels |
 
----
-
 ## Gen2 / Gen3 / Gen4 — Single-Clamp EM (em1:x)
 
 Energy counters in device **NVM** → **preserved on restart**.
@@ -85,8 +77,6 @@ Energy counters in device **NVM** → **preserved on restart**.
 | --------------- | -------------- | --- | -------- | ------------------------------- | ----------------------- | ------------------ | ----------------------------------------------------------------------------- |
 | EM Mini / G4    | `shellyemmini` | 2/4 | 1        | W, kWh, kWh←¹, VA, PF, V, A, Hz | —                       | Preserved          | ¹`returnedKWH` data-driven; single CT clamp                                   |
 | Plus EM / EM G3 | `shellyplusem` | 3   | 2        | W, kWh, kWh←, VA, PF, V, A, Hz  | ΣW, ΣkWh-hw, ΣkWh←, ΣVA | Preserved          | 2 CT clamps; has 1 relay (switch:0) — relay **not yet exposed** in thing type |
-
----
 
 ## Gen2 / Gen3 — 3-Phase EM (em:x)
 
@@ -103,8 +93,6 @@ Neutral-current channel (group `nmeter`) where hardware supports it.
 | Pro 3EM-63           | `shellypro3em63`  | 2   | 3        | W, kWh, kWh←, VA, PF, V, A, Hz | ΣW, ΣkWh-hw, ΣkWh←, ΣVA, neutral-I | Preserved          | 3-phase 63A CT clamps                                                                               |
 | Pro 3EM-400          | `shellypro3em400` | 2   | 3        | W, kWh, kWh←, VA, PF, V, A, Hz | ΣW, ΣkWh-hw, ΣkWh←, ΣVA, neutral-I | Preserved          | 3-phase 400A CT clamps                                                                              |
 
----
-
 ## Channel Creation Rules
 
 | Channel                    | Created when                                                                       |
@@ -118,8 +106,6 @@ Neutral-current channel (group `nmeter`) where hardware supports it.
 | `totalKWH` (devstatus)     | Gen2+ EM with `emdata:0`/`em1data:x` in HTTP poll payload                          |
 | `returnedKWH` (devstatus)  | `status.totalReturned != null` OR `accumulatedReturned != 0`                       |
 | `accuApparent` (devstatus) | `status.totalApparent != null` OR `accumulatedApparent != 0`                       |
-
----
 
 ## Known Restrictions and Issues
 
