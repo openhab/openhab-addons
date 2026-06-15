@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.shelly.internal.api2;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DevConfigBle.Shelly2DevConfigBleObserver;
@@ -21,7 +23,16 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceS
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcBaseMessage.Shelly2RpcMessageError;
 import org.openhab.binding.shelly.internal.api2.ShellyBluJsonDTO.Shelly2NotifyBluEventData;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.TypeAdapter;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 
 /**
  * {@link Shelly2ApiJsonDTO} wraps the Shelly REST API and provides various low level function to access the device api
@@ -75,6 +86,7 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLYRPC_METHOD_EM1DATARESET = "EM1Data.DeleteAllData";
     public static final String SHELLYRPC_METHOD_SMOKE_SETCONFIG = "Smoke.SetConfig";
     public static final String SHELLYRPC_METHOD_SMOKE_MUTE = "Smoke.Mute";
+    public static final String SHELLYRPC_METHOD_PRESENCE_SETSENSOR = "Presence.SetSensor";
     public static final String SHELLYRPC_METHOD_SCRIPT_LIST = "Script.List";
     public static final String SHELLYRPC_METHOD_SCRIPT_SETCONFIG = "Script.SetConfig";
     public static final String SHELLYRPC_METHOD_SCRIPT_GETSTATUS = "Script.GetStatus";
@@ -454,6 +466,57 @@ public class Shelly2ApiJsonDTO {
             public String powerLed;
         }
 
+        public static class Shelly2DevConfigPresence {
+            public @Nullable Boolean enable;
+            @SerializedName("main_zone")
+            public @Nullable String mainZone;
+        }
+
+        public static class Shelly2SettingsPresence {
+            public @Nullable Integer id;
+            public @Nullable String name;
+            public @Nullable Boolean enable;
+        }
+
+        @SuppressWarnings("null")
+        public static class PresenceZoneConfigFactory implements TypeAdapterFactory {
+            @Override
+            public <T> @Nullable TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+                if (!Shelly2GetConfigResult.class.equals(type.getRawType())) {
+                    return null;
+                }
+                TypeAdapter<T> delegate = gson.getDelegateAdapter(this, type);
+                TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+                TypeAdapter<Shelly2SettingsPresence> zoneAdapter = gson.getAdapter(Shelly2SettingsPresence.class);
+                return new TypeAdapter<T>() {
+                    @Override
+                    public void write(JsonWriter out, T value) throws IOException {
+                        delegate.write(out, value);
+                    }
+
+                    @Override
+                    public T read(JsonReader in) throws IOException {
+                        @Nullable
+                        JsonElement je = elementAdapter.read(in);
+                        T result = delegate.fromJsonTree(je != null ? je : new JsonObject());
+                        if (je != null && je.isJsonObject() && result instanceof Shelly2GetConfigResult configResult) {
+                            ArrayList<Shelly2SettingsPresence> zones = new ArrayList<>();
+                            for (Map.Entry<String, JsonElement> entry : je.getAsJsonObject().entrySet()) {
+                                if (entry.getKey().startsWith("presencezone:")) {
+                                    zones.add(zoneAdapter.fromJsonTree(entry.getValue()));
+                                }
+                            }
+                            if (!zones.isEmpty()) {
+                                configResult.presence = zones;
+                            }
+                        }
+                        return result;
+                    }
+                };
+            }
+        }
+
+        @JsonAdapter(PresenceZoneConfigFactory.class)
         public static class Shelly2GetConfigResult {
 
             public class Shelly2DevConfigCloud {
@@ -534,6 +597,10 @@ public class Shelly2ApiJsonDTO {
 
             @SerializedName("smoke:0")
             public Shelly2ConfigSmoke smoke0;
+
+            @SerializedName("presence:0")
+            public @Nullable Shelly2DevConfigPresence presence0;
+            public @Nullable ArrayList<Shelly2SettingsPresence> presence;
         }
 
         public class Shelly2DeviceConfigSta {
@@ -616,6 +683,64 @@ public class Shelly2ApiJsonDTO {
             public Double timerDuration;
         }
 
+        public static class Shelly2StatusPresence {
+            public @Nullable Integer id;
+            public @Nullable Boolean value;
+            @SerializedName("num_objects")
+            public @Nullable Integer numObjects;
+        }
+
+        @SuppressWarnings("null")
+        public static class PresenceZoneStatusFactory implements TypeAdapterFactory {
+            @Override
+            public <T> @Nullable TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+                if (!Shelly2DeviceStatusResult.class.equals(type.getRawType())) {
+                    return null;
+                }
+                TypeAdapter<T> delegate = gson.getDelegateAdapter(this, type);
+                TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+                TypeAdapter<Shelly2StatusPresence> zoneAdapter = gson.getAdapter(Shelly2StatusPresence.class);
+                return new TypeAdapter<T>() {
+                    @Override
+                    public void write(JsonWriter out, T value) throws IOException {
+                        delegate.write(out, value);
+                    }
+
+                    @Override
+                    public T read(JsonReader in) throws IOException {
+                        @Nullable
+                        JsonElement je = elementAdapter.read(in);
+                        T result = delegate.fromJsonTree(je != null ? je : new JsonObject());
+                        if (je != null && je.isJsonObject()
+                                && result instanceof Shelly2DeviceStatusResult statusResult) {
+                            ArrayList<Shelly2StatusPresence> zones = new ArrayList<>();
+                            for (Map.Entry<String, JsonElement> entry : je.getAsJsonObject().entrySet()) {
+                                String key = entry.getKey();
+                                if (key.startsWith("presencezone:")) {
+                                    Shelly2StatusPresence zone = zoneAdapter.fromJsonTree(entry.getValue());
+                                    if (zone.id == null) {
+                                        int colon = key.indexOf(':');
+                                        if (colon >= 0) {
+                                            try {
+                                                zone.id = Integer.parseInt(key.substring(colon + 1));
+                                            } catch (NumberFormatException ignored) {
+                                            }
+                                        }
+                                    }
+                                    zones.add(zone);
+                                }
+                            }
+                            if (!zones.isEmpty()) {
+                                statusResult.presence = zones;
+                            }
+                        }
+                        return result;
+                    }
+                };
+            }
+        }
+
+        @JsonAdapter(PresenceZoneStatusFactory.class)
         public static class Shelly2DeviceStatusResult {
             public class Shelly2DeviceStatusBle {
 
@@ -870,6 +995,8 @@ public class Shelly2ApiJsonDTO {
 
             @SerializedName("devicepower:0")
             public Shelly2DeviceStatusPower devicepower0;
+
+            public @Nullable ArrayList<Shelly2StatusPresence> presence;
         }
 
         public class Shelly2DeviceStatusSys {
@@ -1051,6 +1178,9 @@ public class Shelly2ApiJsonDTO {
             public Integer white;
             public Integer[] rgb;
 
+            // Presence.SetSensor / generic enable
+            public Boolean enable;
+
             // Shelly.SetAuth
             public String user;
             public String realm;
@@ -1208,6 +1338,9 @@ public class Shelly2ApiJsonDTO {
         public Integer reason;
         @SerializedName("cfg_rev")
         public Integer cfgRev;
+        public @Nullable Boolean value;
+        @SerializedName("num_objects")
+        public @Nullable Integer numObjects;
     }
 
     public class Shelly2NotifyEventData {
