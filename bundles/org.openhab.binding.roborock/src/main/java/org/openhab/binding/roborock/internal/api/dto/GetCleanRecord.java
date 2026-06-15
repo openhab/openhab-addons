@@ -26,7 +26,7 @@ public class GetCleanRecord {
 
     public Result[] result;
 
-    public class Result {
+    public static class Result {
         public long begin;
         public long end;
         public long duration;
