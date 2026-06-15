@@ -283,6 +283,8 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
             if (accepted) {
                 autoModeValue = info.autoModeValue;
                 logger.debug("AUTO uses mode={}", info.autoModeValue);
+            } else {
+                logger.warn("AUTO mode not accepted with mode=0 or mode=1");
             }
         }
         return accepted;

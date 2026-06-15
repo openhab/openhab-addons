@@ -102,7 +102,7 @@ public class DemandControl {
                                 .filter(entry -> entry.enabled).sorted((s1, s2) -> Integer.compare(s1.time, s2.time))
                                 .toList();
                         if (!prevDaySchedules.isEmpty()) {
-                            return Optional.of(prevDaySchedules.getLast().power);
+                            return Optional.of(prevDaySchedules.get(prevDaySchedules.size() - 1).power);
                         }
                         currentIndex = currentIndex > 0 ? (currentIndex - 1) : (DAYS.size() - 1);
                     }

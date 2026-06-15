@@ -83,7 +83,6 @@ public class AirbaseControlInfo {
         params.put("f_dir", Integer.toString(fanMovement.getValue()));
         params.put("stemp", temp != null ? temp.toString() : "20.0");
         params.put("shum", targetHumidity != null ? targetHumidity.toString() : "");
-
         return params;
     }
 }
