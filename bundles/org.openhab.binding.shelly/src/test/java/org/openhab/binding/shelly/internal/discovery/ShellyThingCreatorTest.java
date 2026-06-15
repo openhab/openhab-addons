@@ -306,6 +306,24 @@ public class ShellyThingCreatorTest {
                 Arguments.of("notfound-" + DEVICE_ID, SHELLYDT_PLUSSMOKE, THING_TYPE_SHELLYPLUSSMOKE));
     }
 
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForGetThingUIDReturnsThingUidByServiceNameDeviceTypeAndMode")
+    void getThingUIDReturnsThingUidByServiceNameDeviceTypeAndMode(String serviceName, String deviceType, String mode,
+            ThingTypeUID expectedThingTypeUid) {
+        ThingUID actual = ShellyThingCreator.getThingUID(serviceName, deviceType, mode);
+        ThingUID expected = new ThingUID(expectedThingTypeUid, DEVICE_ID);
+
+        assertThat("serviceName: " + serviceName + "; deviceType: " + deviceType + "; mode: " + mode, actual,
+                is(equalTo(expected)));
+    }
+
+    private static Stream<Arguments> provideTestCasesForGetThingUIDReturnsThingUidByServiceNameDeviceTypeAndMode() {
+        return Stream.of( //
+                Arguments.of("shelly2pmg4-" + DEVICE_ID, SHELLYDT_PLUS2PMG4, "relay", THING_TYPE_SHELLYPLUS2PM_RELAY), //
+                Arguments.of("shelly2pmg4-" + DEVICE_ID, SHELLYDT_PLUS2PMG4, "roller",
+                        THING_TYPE_SHELLYPLUS2PM_ROLLER)); //
+    }
+
     @Test
     void getThingUIDReturnsThingTypeMatchingServiceName() {
         Set<ThingTypeUID> excludedThingTypeUids = new HashSet<>();
