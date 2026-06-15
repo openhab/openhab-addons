@@ -54,6 +54,9 @@ public class DDWRTBindingConstants {
     public static final String CHANNEL_WIRED_CLIENTS = "wired-clients";
     public static final String CHANNEL_DHCP_LEASES = "dhcp-leases";
     public static final String CHANNEL_DHCP_REMAINING = "dhcp-remaining";
+    public static final String CHANNEL_WAN_IP = "wan-ip";
+    public static final String CHANNEL_WAN_IN = "wan-in";
+    public static final String CHANNEL_WAN_OUT = "wan-out";
 
     // List of common channel ids
     public static final String CHANNEL_ONLINE = "online";
@@ -63,9 +66,6 @@ public class DDWRTBindingConstants {
     public static final String CHANNEL_DEVICE_WIRELESS_CLIENTS = "device-wireless-clients";
     public static final String CHANNEL_CPU_LOAD = "cpu-load";
     public static final String CHANNEL_CPU_TEMP = "cpu-temp";
-    public static final String CHANNEL_WAN_IP = "wan-ip";
-    public static final String CHANNEL_WAN_IN = "wan-in";
-    public static final String CHANNEL_WAN_OUT = "wan-out";
     public static final String CHANNEL_IF_IN = "if-in";
     public static final String CHANNEL_IF_OUT = "if-out";
     public static final String CHANNEL_REBOOT = "reboot";

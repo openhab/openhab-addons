@@ -17,6 +17,9 @@
 			<channel id="total-clients" typeId="total-clients"/>
 			<channel id="wireless-clients" typeId="wireless-clients"/>
 			<channel id="wired-clients" typeId="wired-clients"/>
+			<channel id="wan-ip" typeId="wan-ip"/>
+			<channel id="wan-in" typeId="wan-in"/>
+			<channel id="wan-out" typeId="wan-out"/>
 			<channel id="dhcp-leases" typeId="dhcp-leases"/>
 			<channel id="dhcp-remaining" typeId="dhcp-remaining"/>
 			<channel id="last-dhcp-event" typeId="last-dhcp-event"/>
@@ -106,9 +109,6 @@
 			<channel id="uptime" typeId="uptime"/>
 			<channel id="cpu-load" typeId="cpu-load"/>
 			<channel id="cpu-temp" typeId="cpu-temp"/>
-			<channel id="wan-ip" typeId="wan-ip"/>
-			<channel id="wan-in" typeId="wan-in"/>
-			<channel id="wan-out" typeId="wan-out"/>
 			<channel id="if-in" typeId="if-in"/>
 			<channel id="if-out" typeId="if-out"/>
 			<channel id="reboot" typeId="reboot"/>
@@ -393,7 +393,7 @@
 	<channel-type id="wan-ip">
 		<item-type>String</item-type>
 		<label>WAN IP</label>
-		<description>External WAN IP address (only available on gateway devices)</description>
+		<description>External WAN IP address from the gateway device</description>
 		<category>Network</category>
 		<state readOnly="true"/>
 	</channel-type>
@@ -401,7 +401,7 @@
 	<channel-type id="wan-in">
 		<item-type>Number:DataAmount</item-type>
 		<label>WAN In</label>
-		<description>Total bytes received on the WAN interface (only available on gateway devices)</description>
+		<description>Total bytes received on the WAN interface of the gateway device</description>
 		<category>Network</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -412,7 +412,7 @@
 	<channel-type id="wan-out">
 		<item-type>Number:DataAmount</item-type>
 		<label>WAN Out</label>
-		<description>Total bytes sent on the WAN interface (only available on gateway devices)</description>
+		<description>Total bytes sent on the WAN interface of the gateway device</description>
 		<category>Network</category>
 		<tags>
 			<tag>Measurement</tag>

@@ -21,9 +21,6 @@ import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_O
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_REBOOT;
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_SYSLOG_CONNECTED;
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_UPTIME;
-import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_WAN_IN;
-import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_WAN_IP;
-import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_WAN_OUT;
 
 import javax.measure.quantity.Temperature;
 
@@ -36,7 +33,6 @@ import org.openhab.binding.ddwrt.internal.api.DDWRTNetworkCache;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -133,9 +129,6 @@ public class DDWRTDeviceThingHandler extends DDWRTBaseHandler<DDWRTBaseDevice, D
             case CHANNEL_UPTIME -> device.getUptimeSince();
             case CHANNEL_CPU_LOAD -> new DecimalType(device.getCpuLoad());
             case CHANNEL_CPU_TEMP -> new QuantityType<Temperature>(device.getCpuTemp(), SIUnits.CELSIUS);
-            case CHANNEL_WAN_IP -> device.isGateway() ? StringType.valueOf(device.getWanIp()) : UnDefType.UNDEF;
-            case CHANNEL_WAN_IN -> device.isGateway() ? new DecimalType(device.getWanIn()) : UnDefType.UNDEF;
-            case CHANNEL_WAN_OUT -> device.isGateway() ? new DecimalType(device.getWanOut()) : UnDefType.UNDEF;
             case CHANNEL_IF_IN -> new DecimalType(device.getIfIn());
             case CHANNEL_IF_OUT -> new DecimalType(device.getIfOut());
             case CHANNEL_DEVICE_WIRELESS_CLIENTS -> new DecimalType(device.getDeviceWirelessClients());

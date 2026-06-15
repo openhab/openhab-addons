@@ -1336,11 +1336,6 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
         u.updateChannel("online", online ? OnOffType.ON : OnOffType.OFF);
         u.updateChannel("cpu-load", new DecimalType(cpuLoad));
         u.updateChannel("cpu-temp", new QuantityType<>(cpuTemp, SIUnits.CELSIUS));
-        if (isGateway()) {
-            u.updateChannel("wan-ip", new StringType(wanIp));
-            u.updateChannel("wan-in", new DecimalType(wanIn));
-            u.updateChannel("wan-out", new DecimalType(wanOut));
-        }
         u.updateChannel("if-in", new DecimalType(ifIn));
         u.updateChannel("if-out", new DecimalType(ifOut));
         u.updateChannel("syslog-connected", isSyslogConnected() ? OnOffType.ON : OnOffType.OFF);

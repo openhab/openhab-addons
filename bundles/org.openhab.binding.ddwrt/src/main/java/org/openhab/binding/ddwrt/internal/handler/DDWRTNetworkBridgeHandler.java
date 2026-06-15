@@ -17,6 +17,9 @@ import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_D
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_DHCP_REMAINING;
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_LAST_DHCP_EVENT;
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_TOTAL_CLIENTS;
+import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_WAN_IN;
+import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_WAN_IP;
+import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_WAN_OUT;
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_WIRED_CLIENTS;
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_WIRELESS_CLIENTS;
 
@@ -47,6 +50,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -169,17 +173,27 @@ public class DDWRTNetworkBridgeHandler extends BaseBridgeHandler implements Dhcp
         // DHCP metrics from cache (network-wide)
         int dhcpLeases = cache.getDhcpLeases().size();
         updateState(new ChannelUID(getThing().getUID(), CHANNEL_DHCP_LEASES), new DecimalType(dhcpLeases));
-        // DHCP remaining requires pool size from gateway device
-        int dhcpPoolSize = 0;
+        // Gateway-specific metrics (WAN IP, WAN traffic, DHCP pool)
+        DDWRTBaseDevice gateway = null;
         for (DDWRTBaseDevice device : cache.getDevices()) {
             if (device.isGateway()) {
-                dhcpPoolSize = device.getDhcpPoolSize();
+                gateway = device;
                 break;
             }
         }
-        if (dhcpPoolSize > 0) {
-            updateState(new ChannelUID(getThing().getUID(), CHANNEL_DHCP_REMAINING),
-                    new DecimalType(Math.max(0, dhcpPoolSize - dhcpLeases)));
+        if (gateway != null) {
+            updateState(new ChannelUID(getThing().getUID(), CHANNEL_WAN_IP), StringType.valueOf(gateway.getWanIp()));
+            updateState(new ChannelUID(getThing().getUID(), CHANNEL_WAN_IN), new DecimalType(gateway.getWanIn()));
+            updateState(new ChannelUID(getThing().getUID(), CHANNEL_WAN_OUT), new DecimalType(gateway.getWanOut()));
+            int dhcpPoolSize = gateway.getDhcpPoolSize();
+            if (dhcpPoolSize > 0) {
+                updateState(new ChannelUID(getThing().getUID(), CHANNEL_DHCP_REMAINING),
+                        new DecimalType(Math.max(0, dhcpPoolSize - dhcpLeases)));
+            }
+        } else {
+            updateState(new ChannelUID(getThing().getUID(), CHANNEL_WAN_IP), UnDefType.UNDEF);
+            updateState(new ChannelUID(getThing().getUID(), CHANNEL_WAN_IN), UnDefType.UNDEF);
+            updateState(new ChannelUID(getThing().getUID(), CHANNEL_WAN_OUT), UnDefType.UNDEF);
         }
         // DHCP event channel is now event-driven via DhcpEventListener, not polled
     }
