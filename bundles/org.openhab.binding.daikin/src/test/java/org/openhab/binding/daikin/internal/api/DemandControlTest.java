@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -380,8 +381,8 @@ public class DemandControlTest {
     public void scheduledMaxPowerTest(String input, DayOfWeek dow, String time, int expectedMaxPower) {
         DemandControl info = DemandControl.parse(input);
 
-        LocalDateTime dateTime = LocalDateTime.now().with(java.time.temporal.TemporalAdjusters.next(dow))
-                .with(java.time.LocalTime.parse(time));
+        LocalDateTime dateTime = LocalDateTime.now(ZoneId.systemDefault())
+                .with(java.time.temporal.TemporalAdjusters.next(dow)).with(java.time.LocalTime.parse(time));
 
         assertEquals(expectedMaxPower, info.getScheduledMaxPower(dateTime));
     }

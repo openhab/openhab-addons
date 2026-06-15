@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.daikin.internal.handler;
 
+import java.util.Locale;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -237,7 +238,7 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
 
     private boolean changeHomekitMode(String homekitmode) throws DaikinCommunicationException {
         try {
-            HomekitMode mode = HomekitMode.valueOf(homekitmode.toUpperCase());
+            HomekitMode mode = HomekitMode.valueOf(homekitmode.toUpperCase(Locale.ROOT));
             boolean power = mode != HomekitMode.OFF;
             if (!changePower(power)) {
                 return false;

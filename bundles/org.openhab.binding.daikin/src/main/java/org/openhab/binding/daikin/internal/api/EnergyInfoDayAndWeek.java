@@ -35,13 +35,12 @@ public class EnergyInfoDayAndWeek {
     public @Nullable Double energyCoolingThisWeek;
     public @Nullable Double energyCoolingLastWeek;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(EnergyInfoDayAndWeek.class);
-
     private EnergyInfoDayAndWeek() {
     }
 
     public static EnergyInfoDayAndWeek parse(String response) {
-        LOGGER.trace("Parsing string: \"{}\"", response);
+        Logger logger = LoggerFactory.getLogger(EnergyInfoDayAndWeek.class);
+        logger.trace("Parsing string: \"{}\"", response);
 
         // /aircon/get_week_power_ex
         // ret=OK,s_dayw=0,week_heat=1/1/1/1/1/5/2/1/1/1/1/2/1/1,week_cool=0/0/0/0/0/0/0/0/0/0/0/0/0/0
@@ -85,7 +84,7 @@ public class EnergyInfoDayAndWeek {
                 info.energyCoolingLastWeek = previousWeekEnergy / 10;
             }
         } else {
-            LOGGER.debug("EnergyInfoDayAndWeek::parse() did not receive 'ret=OK' from adapter");
+            logger.debug("EnergyInfoDayAndWeek::parse() did not receive 'ret=OK' from adapter");
         }
         return info;
     }

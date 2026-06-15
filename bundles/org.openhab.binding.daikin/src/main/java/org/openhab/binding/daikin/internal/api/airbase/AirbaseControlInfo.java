@@ -35,8 +35,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class AirbaseControlInfo {
-    private static final Logger LOGGER = LoggerFactory.getLogger(AirbaseControlInfo.class);
-
     public String ret = "";
     public boolean power = false;
     public AirbaseMode mode = AirbaseMode.AUTO;
@@ -51,7 +49,8 @@ public class AirbaseControlInfo {
     }
 
     public static AirbaseControlInfo parse(String response) {
-        LOGGER.trace("Parsing string: \"{}\"", response);
+        Logger logger = LoggerFactory.getLogger(AirbaseControlInfo.class);
+        logger.trace("Parsing string: \"{}\"", response);
 
         Map<String, String> responseMap = InfoParser.parse(response);
 

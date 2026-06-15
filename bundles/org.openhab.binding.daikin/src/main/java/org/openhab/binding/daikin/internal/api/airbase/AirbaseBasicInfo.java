@@ -27,8 +27,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class AirbaseBasicInfo {
-    private static final Logger LOGGER = LoggerFactory.getLogger(AirbaseBasicInfo.class);
-
     public String mac = "";
     public String ret = "";
     public String ssid = "";
@@ -37,7 +35,8 @@ public class AirbaseBasicInfo {
     }
 
     public static AirbaseBasicInfo parse(String response) {
-        LOGGER.trace("Parsing string: \"{}\"", response);
+        Logger logger = LoggerFactory.getLogger(AirbaseBasicInfo.class);
+        logger.trace("Parsing string: \"{}\"", response);
 
         Map<String, String> responseMap = InfoParser.parse(response);
 

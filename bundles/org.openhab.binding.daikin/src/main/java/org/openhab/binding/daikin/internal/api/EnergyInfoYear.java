@@ -28,7 +28,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class EnergyInfoYear {
-    private static final Logger LOGGER = LoggerFactory.getLogger(EnergyInfoYear.class);
 
     public Integer @Nullable [] energyHeatingThisYear;
     public Integer @Nullable [] energyCoolingThisYear;
@@ -37,7 +36,8 @@ public class EnergyInfoYear {
     }
 
     public static EnergyInfoYear parse(String response) {
-        LOGGER.trace("Parsing string: \"{}\"", response);
+        Logger logger = LoggerFactory.getLogger(EnergyInfoYear.class);
+        logger.trace("Parsing string: \"{}\"", response);
 
         Map<String, String> responseMap = InfoParser.parse(response);
 
