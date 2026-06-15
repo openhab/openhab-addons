@@ -28,7 +28,7 @@ API keys can be created and managed under Google AI Studio: <https://aistudio.go
 | apiKey          | text    | The API key to authenticate against the Gemini API.                                                                                      | N/A              | yes      | no       |
 | requestTimeout  | integer | Timeout in seconds for chat API requests.                                                                                                | 30               | no       | yes      |
 | model           | text    | The model to be used ([Models](https://ai.google.dev/gemini-api/docs/models), [Pricing](https://ai.google.dev/gemini-api/docs/pricing)). | gemini-2.5-flash | no       | no       |
-| temperature     | decimal | A value between 0.0 and 2.0, where higher values make the output more random and lower values make it more focused and deterministic.    | 1.0              | no       | yes      |
+| temperature     | decimal | A value between 0.0 and 1.0, where higher values make the output more random and lower values make it more focused and deterministic.    | 1.0              | no       | yes      |
 | topP            | decimal | A value between 0.0 and 1.0 for nucleus sampling, where the model considers the results of the tokens with topP probability mass.        | 1.0              | no       | yes      |
 | maxOutputTokens | integer | The maximum number of tokens to include in a candidate.                                                                                  | 2048             | no       | yes      |
 

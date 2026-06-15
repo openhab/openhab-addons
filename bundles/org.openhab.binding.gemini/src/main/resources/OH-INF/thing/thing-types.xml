@@ -47,7 +47,7 @@
 				</description>
 				<default>gemini-2.5-flash</default>
 			</parameter>
-			<parameter name="temperature" type="decimal" groupName="hli" min="0.0" max="2.0">
+			<parameter name="temperature" type="decimal" groupName="hli" min="0.0" max="1.0">
 				<label>Temperature</label>
 				<description>Controls randomness. Higher values mean more random responses.</description>
 				<default>1.0</default>
