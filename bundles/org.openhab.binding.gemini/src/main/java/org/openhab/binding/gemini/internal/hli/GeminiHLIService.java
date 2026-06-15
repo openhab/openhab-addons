@@ -155,10 +155,13 @@ public class GeminiHLIService implements ThingHandlerService, HumanLanguageInter
             systemMessage = systemMessage.trim() + "\n\n" + "Your location (item name): " + locationItem;
         }
         if (!tools.isEmpty()) {
-            String toolGuidance = "You have tools available to interact with the environment. Use them when appropriate. "
-                    + "However, if the user's request cannot be fulfilled by any tool, or if they ask a general question, "
-                    + "answer them directly using your general knowledge. Do not try to force a tool call or state that "
-                    + "you can only perform actions supported by the tools.";
+            String toolGuidance = """
+                    You have tools available to interact with the environment. Use them when appropriate.
+                    However, if the user's request cannot be fulfilled by any tool, or if they ask a general question,
+                    answer them directly using your general knowledge.
+                    Do not try to force a tool call. Do not state that you can only perform actions supported by the tools.
+                    When using a tool, always provide a clear and concise natural language response.
+                    """;
             systemMessage = systemMessage.trim() + "\n\n" + toolGuidance;
         }
 
