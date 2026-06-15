@@ -24,7 +24,7 @@ public class Login {
     public String message = "";
     public LoginData data;
 
-    public class LoginData {
+    public static class LoginData {
         public String uid = "";
         public String tokentype = "";
         public String token = "";
@@ -36,7 +36,7 @@ public class Login {
         public String avatarurl = "";
     }
 
-    public class Rriot {
+    public static class Rriot {
         public String u = "";
         public String s = "";
         public String h = "";
@@ -44,7 +44,7 @@ public class Login {
         public R r;
     }
 
-    public class R {
+    public static class R {
         public String r = "";
         public String a = "";
         public String m = "";
