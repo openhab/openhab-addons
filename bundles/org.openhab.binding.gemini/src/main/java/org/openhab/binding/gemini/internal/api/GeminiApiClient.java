@@ -215,6 +215,9 @@ public class GeminiApiClient {
     /**
      * Executes an HTTP POST request to the <code>generateContent</code> endpoint of a Gemini model.
      *
+     * <p>
+     * If the request fails with 503 Service Unavailable, up to two retries are performed with with an increasing delay.
+     *
      * @param model the Gemini model to use
      * @param requestPayload the payload to send
      * @param timeoutSeconds request timeout in seconds
@@ -232,48 +235,62 @@ public class GeminiApiClient {
             throw new GeminiApiException("Failed to serialize Gemini request: " + e.getMessage(), e);
         }
 
-        Request request = httpClient.newRequest(url).method(HttpMethod.POST)
-                .timeout((Objects.requireNonNullElse(timeoutSeconds, DEFAULT_REQUEST_TIMEOUT)), TimeUnit.SECONDS)
-                .header(HttpHeader.CONTENT_TYPE, MimeTypes.Type.APPLICATION_JSON.asString())
-                .header(HEADER_API_KEY, apiKey).content(new StringContentProvider(queryJson, StandardCharsets.UTF_8));
-        if (logger.isDebugEnabled()) {
-            try {
-                String prettyJson = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(requestPayload);
-                logger.debug("Request to {}:\n{}", url, prettyJson);
-            } catch (JsonProcessingException e) {
-                logger.debug("Request to {}: {}", url, queryJson);
-            }
-        }
-
-        try {
-            ContentResponse response = request.send();
-            if (response.getStatus() == HttpStatus.OK_200) {
-                String responseBody = response.getContentAsString();
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Response from {}: {}", url, responseBody);
-                }
+        int attemptCount = 1;
+        while (true) {
+            Request request = httpClient.newRequest(url).method(HttpMethod.POST)
+                    .timeout((Objects.requireNonNullElse(timeoutSeconds, DEFAULT_REQUEST_TIMEOUT)), TimeUnit.SECONDS)
+                    .header(HttpHeader.CONTENT_TYPE, MimeTypes.Type.APPLICATION_JSON.asString())
+                    .header(HEADER_API_KEY, apiKey)
+                    .content(new StringContentProvider(queryJson, StandardCharsets.UTF_8));
+            if (logger.isDebugEnabled()) {
                 try {
-                    @Nullable
-                    GeminiResponse geminiResponse = readNullableValue(responseBody, GeminiResponse.class);
-                    if (geminiResponse == null) {
-                        throw new GeminiApiException("Failed to parse Gemini response: response was null");
-                    }
-                    return geminiResponse;
+                    String prettyJson = objectMapper.writerWithDefaultPrettyPrinter()
+                            .writeValueAsString(requestPayload);
+                    logger.debug("Request to {} (attempt {}): \n{}", url, attemptCount, prettyJson);
                 } catch (JsonProcessingException e) {
-                    throw new GeminiApiException("Failed to parse Gemini response: " + e.getMessage(), e);
+                    logger.debug("Request to {} (attempt {}): {}", url, attemptCount, queryJson);
                 }
-            } else {
-                logger.warn("Gemini request resulted in HTTP {} with message: {}", response.getStatus(),
-                        response.getReason());
-                logger.debug("Gemini error response: {}", response.getContentAsString());
-                throw new GeminiApiException("Gemini request resulted in HTTP status " + response.getStatus()
-                        + " with message: " + response.getReason());
             }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new GeminiApiException("Could not connect to Gemini API: " + e.getMessage(), e);
-        } catch (TimeoutException | ExecutionException e) {
-            throw new GeminiApiException("Could not connect to Gemini API: " + e.getMessage(), e);
+
+            try {
+                ContentResponse response = request.send();
+                if (response.getStatus() == HttpStatus.OK_200) {
+                    String responseBody = response.getContentAsString();
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Response from {}: {}", url, responseBody);
+                    }
+                    try {
+                        @Nullable
+                        GeminiResponse geminiResponse = readNullableValue(responseBody, GeminiResponse.class);
+                        if (geminiResponse == null) {
+                            throw new GeminiApiException("Failed to parse Gemini response: response was null");
+                        }
+                        return geminiResponse;
+                    } catch (JsonProcessingException e) {
+                        throw new GeminiApiException("Failed to parse Gemini response: " + e.getMessage(), e);
+                    }
+                } else if (response.getStatus() == HttpStatus.SERVICE_UNAVAILABLE_503 && attemptCount <= 3) {
+                    logger.debug("Gemini request failed with 503 Service Unavailable on attempt #{}/3", attemptCount);
+                    try {
+                        Thread.sleep(1000 * attemptCount);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        throw new GeminiApiException(
+                                "Interrupted while waiting to retry Gemini API request: " + e.getMessage(), e);
+                    }
+                    attemptCount++;
+                } else {
+                    logger.debug("Gemini request failed on the final attempt with HTTP {} {}: {}", response.getStatus(),
+                            response.getReason(), response.getContentAsString());
+                    throw new GeminiApiException("Gemini generateContent request resulted failed with  HTTP "
+                            + response.getStatus() + " " + response.getReason());
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new GeminiApiException("Could not connect to Gemini API: " + e.getMessage(), e);
+            } catch (TimeoutException | ExecutionException e) {
+                throw new GeminiApiException("Could not connect to Gemini API: " + e.getMessage(), e);
+            }
         }
     }
 
