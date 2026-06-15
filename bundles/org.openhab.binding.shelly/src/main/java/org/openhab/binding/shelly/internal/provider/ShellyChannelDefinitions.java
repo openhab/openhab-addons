@@ -614,8 +614,10 @@ public class ShellyChannelDefinitions {
                 CHANNEL_SENSOR_ILLUM);
         addChannel(thing, newChannels, sdata.flood != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_FLOOD);
         addChannel(thing, newChannels, sdata.smoke != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_SMOKE);
-        addChannel(thing, newChannels, sdata.mute != null && profile.isSmoke, CHANNEL_GROUP_SENSOR, CHANNEL_CONTROL_MUTE);
-        addChannel(thing, newChannels, sdata.mute != null && !profile.isSmoke, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_MUTE);
+        addChannel(thing, newChannels, sdata.mute != null && profile.isSmoke, CHANNEL_GROUP_SENSOR,
+                CHANNEL_CONTROL_MUTE);
+        addChannel(thing, newChannels, sdata.mute != null && !profile.isSmoke, CHANNEL_GROUP_CONTROL,
+                CHANNEL_CONTROL_MUTE);
         addChannel(thing, newChannels, profile.settings.externalPower != null || sdata.charger != null, CHGR_DEVST,
                 CHANNEL_DEVST_CHARGER);
         addChannel(thing, newChannels, sdata.motion != null || (sdata.sensor != null && sdata.sensor.motion != null),
