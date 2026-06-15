@@ -497,7 +497,7 @@
 	</channel-type>
 
 	<channel-type id="meterWatts">
-		<item-type>Number:Power</item-type>
+		<item-type unitHint="W">Number:Power</item-type>
 		<label>Power Consumption</label>
 		<description>Current Power Consumption in Watts</description>
 		<category>Energy</category>
@@ -510,7 +510,7 @@
 	</channel-type>
 
 	<channel-type id="meterAccuWatts" advanced="true">
-		<item-type>Number:Power</item-type>
+		<item-type unitHint="W">Number:Power</item-type>
 		<label>Accumulated Power Consumption</label>
 		<description>Accumulated Power Consumption in Watts of the device (including all meters)</description>
 		<category>Energy</category>
@@ -523,7 +523,7 @@
 	</channel-type>
 
 	<channel-type id="meterAccuTotal" advanced="true">
-		<item-type>Number:Energy</item-type>
+		<item-type unitHint="kWh">Number:Energy</item-type>
 		<label>Accumulated Total Energy</label>
 		<description>Accumulated total energy in kWh of the device (including all meters)</description>
 		<category>Energy</category>
@@ -536,7 +536,7 @@
 	</channel-type>
 
 	<channel-type id="meterAccuReturned" advanced="true">
-		<item-type>Number:Energy</item-type>
+		<item-type unitHint="kWh">Number:Energy</item-type>
 		<label>Accumulated Returned Energy</label>
 		<description>Accumulated returned energy in kWh of the device (including all meters)</description>
 		<category>Energy</category>
@@ -549,7 +549,7 @@
 	</channel-type>
 
 	<channel-type id="totalKWH">
-		<item-type>Number:Energy</item-type>
+		<item-type unitHint="kWh">Number:Energy</item-type>
 		<label>Total Energy Consumption Device</label>
 		<description>Total energy consumption of the device in kWh since the device powered up (resets on restart)</description>
 		<category>Energy</category>
@@ -562,7 +562,7 @@
 	</channel-type>
 
 	<channel-type id="meterReactive">
-		<item-type>Number:Power</item-type>
+		<item-type unitHint="W">Number:Power</item-type>
 		<label>Reactive Power</label>
 		<description>Instantaneous reactive power in Watts</description>
 		<tags>
@@ -574,7 +574,7 @@
 	</channel-type>
 
 	<channel-type id="lastPower1" advanced="true">
-		<item-type>Number:Power</item-type>
+		<item-type unitHint="W">Number:Power</item-type>
 		<label>Last Minute Power</label>
 		<description>Average power consumption during the previous minute</description>
 		<category>Energy</category>
@@ -587,7 +587,7 @@
 	</channel-type>
 
 	<channel-type id="meterTotal">
-		<item-type>Number:Energy</item-type>
+		<item-type unitHint="kWh">Number:Energy</item-type>
 		<label>Total Energy Consumption</label>
 		<description>Total energy consumption in kWh since the device powered up (resets on restart)</description>
 		<tags>
@@ -599,7 +599,7 @@
 	</channel-type>
 
 	<channel-type id="meterReturned">
-		<item-type>Number:Energy</item-type>
+		<item-type unitHint="kWh">Number:Energy</item-type>
 		<label>Total Returned Energy</label>
 		<description>Total returned energy in kWh</description>
 		<category>Energy</category>
@@ -612,7 +612,7 @@
 	</channel-type>
 
 	<channel-type id="meterVoltage">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unitHint="V">Number:ElectricPotential</item-type>
 		<label>Voltage</label>
 		<description>RMS voltage in Volt</description>
 		<category>Energy</category>
@@ -625,7 +625,7 @@
 	</channel-type>
 
 	<channel-type id="meterCurrent">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unitHint="A">Number:ElectricCurrent</item-type>
 		<label>Current</label>
 		<description>Current in A</description>
 		<category>Energy</category>
@@ -638,7 +638,7 @@
 	</channel-type>
 
 	<channel-type id="meterFrequency" advanced="true">
-		<item-type>Number:Frequency</item-type>
+		<item-type unitHint="Hz">Number:Frequency</item-type>
 		<label>Frequency</label>
 		<description>Grid frequency in Hertz (Hz)</description>
 		<state readOnly="true" pattern="%.3f %unit%">
@@ -660,7 +660,7 @@
 	</channel-type>
 
 	<channel-type id="ncurrent">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unitHint="A">Number:ElectricCurrent</item-type>
 		<label>Neutral Current</label>
 		<description>Measured neutral current</description>
 		<category>Energy</category>
@@ -673,7 +673,7 @@
 	</channel-type>
 
 	<channel-type id="ixsum">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unitHint="A">Number:ElectricCurrent</item-type>
 		<label>Accumulated Current</label>
 		<description>Sum of measured current on all phases</description>
 		<category>Energy</category>
@@ -686,7 +686,7 @@
 	</channel-type>
 
 	<channel-type id="nmTreshhold">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unitHint="A">Number:ElectricCurrent</item-type>
 		<label>Mismatch Treshhold</label>
 		<description>Mismatch becomes ON when treshhold is exceeded</description>
 		<category>Energy</category>

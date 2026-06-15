@@ -374,7 +374,7 @@
 	</channel-type>
 
 	<channel-type id="sensorLux">
-		<item-type>Number:Illuminance</item-type>
+		<item-type unitHint="lx">Number:Illuminance</item-type>
 		<label>Lux</label>
 		<description>Brightness from the sensor (Lux)</description>
 		<tags>
@@ -474,7 +474,7 @@
 	</channel-type>
 
 	<channel-type id="sensorADC">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unitHint="V">Number:ElectricPotential</item-type>
 		<label>Voltage (ADC)</label>
 		<description>ADC voltage in V</description>
 		<tags>
@@ -543,7 +543,7 @@
 	</channel-type>
 
 	<channel-type id="sensorExtVolt">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unitHint="V">Number:ElectricPotential</item-type>
 		<label>Voltage</label>
 		<description>Voltage from external sensor</description>
 		<tags>
