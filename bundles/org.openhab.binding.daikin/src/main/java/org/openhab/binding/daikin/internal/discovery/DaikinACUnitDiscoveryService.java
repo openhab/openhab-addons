@@ -110,7 +110,9 @@ public class DaikinACUnitDiscoveryService extends AbstractDiscoveryService {
                 socket.send(packet);
 
                 // receivePacketAndDiscover will return false if no packet is received after 1 second
-                while (receivePacketAndDiscover(socket)) {
+                boolean keepReading = true;
+                while (keepReading) {
+                    keepReading = receivePacketAndDiscover(socket);
                 }
             } catch (Exception e) {
                 // Nothing to do here - the host couldn't be found, likely because it doesn't exist
@@ -136,7 +138,7 @@ public class DaikinACUnitDiscoveryService extends AbstractDiscoveryService {
             String thingId = parsedData.getOrDefault("ssid", host.replace(".", "_"));
             String mac = parsedData.getOrDefault("mac", "");
             String uuid = mac.isEmpty() ? UUID.randomUUID().toString()
-                    : UUID.nameUUIDFromBytes(mac.getBytes()).toString();
+                    : UUID.nameUUIDFromBytes(mac.getBytes(StandardCharsets.UTF_8)).toString();
 
             DaikinWebTargets webTargets = new DaikinWebTargets(httpClient, host, secure, null);
             boolean found = false;
