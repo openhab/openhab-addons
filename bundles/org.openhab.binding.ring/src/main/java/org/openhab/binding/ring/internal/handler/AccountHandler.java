@@ -16,15 +16,12 @@ import static org.openhab.binding.ring.RingBindingConstants.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -46,7 +43,6 @@ import org.openhab.binding.ring.internal.discovery.RingDiscoveryService;
 import org.openhab.binding.ring.internal.errors.AuthenticationException;
 import org.openhab.binding.ring.internal.utils.RingUtils;
 import org.openhab.core.OpenHAB;
-import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
@@ -90,7 +86,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     /**
      * The user profile retrieved when authenticating.
      */
-    private Tokens tokens = new Tokens("", "");
+    private volatile Tokens tokens = new Tokens("", "");
     /**
      * The registry.
      */
@@ -102,13 +98,11 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     /**
      * The list with events.
      */
-    private List<RingEventTO> lastEvents = List.of();
+    private volatile List<RingEventTO> lastEvents = List.of();
     /**
      * The index to the current event.
      */
     private int eventIndex = 0;
-
-    private @Nullable ScheduledExecutorService videoExecutorService;
 
     /*
      * The number of video files to keep when auto-downloading
@@ -135,74 +129,61 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         this.registry = new RingDeviceRegistry();
         this.restClient = new RestClient(httpClient);
         this.servlet = ringVideoServlet;
-        this.videoExecutorService = ThreadPoolManager.getScheduledPool("ring");
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof RefreshType) {
-            boolean eventListOk = lastEvents.size() > eventIndex;
-            switch (channelUID.getId()) {
-                case CHANNEL_EVENT_URL:
-                    if (eventListOk) {
-                        String videoFile = restClient.downloadEventVideo(lastEvents.get(eventIndex), tokens,
-                                videoStoragePath, videoRetentionCount);
-                        String localIP = networkAddressService.getPrimaryIpv4HostAddress();
+        switch (command) {
+            case RefreshType ignored -> handleRefresh(channelUID);
+            case OnOffType onOffCommand -> handleOnOff(channelUID, onOffCommand);
+            default -> logger.debug("Command {} is not supported for channel: {}", command, channelUID.getId());
+        }
+    }
 
-                        if (videoFile.endsWith(".mp4")) {
-                            updateState(channelUID,
-                                    new StringType("http://" + localIP + ":" + httpPort + "/ring/video/" + videoFile));
-                        } else {
-                            updateState(channelUID, new StringType(videoFile));
-                        }
-                    }
-                    break;
-                case CHANNEL_EVENT_CREATED_AT:
-                    if (eventListOk) {
-                        updateState(channelUID, lastEvents.get(eventIndex).getCreatedAt());
-                    }
-                    break;
-                case CHANNEL_EVENT_KIND:
-                    if (eventListOk) {
-                        updateState(channelUID, new StringType(lastEvents.get(eventIndex).kind));
-                    }
-                    break;
-                case CHANNEL_EVENT_DOORBOT_ID:
-                    if (eventListOk) {
-                        updateState(channelUID, new StringType(lastEvents.get(eventIndex).doorbot.id));
-                    }
-                    break;
-                case CHANNEL_EVENT_DOORBOT_DESCRIPTION:
-                    if (eventListOk) {
-                        updateState(channelUID, new StringType(lastEvents.get(eventIndex).doorbot.description));
-                    }
-                    break;
-                case CHANNEL_CONTROL_ENABLED:
+    private void handleRefresh(ChannelUID channelUID) {
+        boolean eventListOk = lastEvents.size() > eventIndex;
+        if (!eventListOk && !channelUID.getId().equals(CHANNEL_CONTROL_ENABLED)) {
+            return;
+        }
+
+        switch (channelUID.getId()) {
+            case CHANNEL_EVENT_URL -> {
+                String videoFile = restClient.downloadEventVideo(lastEvents.get(eventIndex), tokens, videoStoragePath,
+                        videoRetentionCount);
+                String localIP = networkAddressService.getPrimaryIpv4HostAddress();
+
+                if (videoFile.endsWith(".mp4")) {
+                    updateState(channelUID,
+                            new StringType("http://" + localIP + ":" + httpPort + "/ring/video/" + videoFile));
+                } else {
+                    updateState(channelUID, new StringType(videoFile));
+                }
+            }
+            case CHANNEL_EVENT_CREATED_AT -> updateState(channelUID, lastEvents.get(eventIndex).getCreatedAt());
+            case CHANNEL_EVENT_KIND -> updateState(channelUID, new StringType(lastEvents.get(eventIndex).kind));
+            case CHANNEL_EVENT_DOORBOT_ID ->
+                updateState(channelUID, new StringType(lastEvents.get(eventIndex).doorbot.id));
+            case CHANNEL_EVENT_DOORBOT_DESCRIPTION ->
+                updateState(channelUID, new StringType(lastEvents.get(eventIndex).doorbot.description));
+            case CHANNEL_CONTROL_ENABLED -> updateState(channelUID, enabled);
+            default -> logger.debug("Refresh command received for an unknown channel: {}", channelUID.getId());
+        }
+    }
+
+    private void handleOnOff(ChannelUID channelUID, OnOffType xcommand) {
+        switch (channelUID.getId()) {
+            case CHANNEL_CONTROL_ENABLED -> {
+                if (!enabled.equals(xcommand)) {
+                    enabled = xcommand;
                     updateState(channelUID, enabled);
-                    break;
-                default:
-                    logger.debug("Command received for an unknown channel: {}", channelUID.getId());
-                    break;
-            }
-        } else if (command instanceof OnOffType xcommand) {
-            switch (channelUID.getId()) {
-                case CHANNEL_CONTROL_ENABLED:
-                    if (!enabled.equals(xcommand)) {
-                        enabled = xcommand;
-                        updateState(channelUID, enabled);
-                        if (enabled.equals(OnOffType.ON)) {
-                            startAutomaticRefresh(config.refreshInterval);
-                        } else {
-                            stopAutomaticRefresh();
-                        }
+                    if (enabled.equals(OnOffType.ON)) {
+                        startAutomaticRefresh(config.refreshInterval);
+                    } else {
+                        stopAutomaticRefresh();
                     }
-                    break;
-                default:
-                    logger.debug("Command received for an unknown channel: {}", channelUID.getId());
-                    break;
+                }
             }
-        } else {
-            logger.debug("Command {} is not supported for channel: {}", command, channelUID.getId());
+            default -> logger.debug("OnOff command received for an unknown channel: {}", channelUID.getId());
         }
     }
 
@@ -238,7 +219,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
             folder.mkdirs();
         }
         try {
-            Files.write(Paths.get(fileName), refreshToken.getBytes());
+            Files.writeString(Paths.get(fileName), refreshToken);
         } catch (IOException ex) {
             logger.debug("IOException when writing refreshToken to file {}", ex.getMessage());
         }
@@ -255,8 +236,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
             return refreshToken;
         }
         try {
-            final byte[] contents = Files.readAllBytes(Paths.get(fileName));
-            refreshToken = new String(contents);
+            refreshToken = Files.readString(Paths.get(fileName));
         } catch (IOException ex) {
             logger.debug("IOException when reading refreshToken from file {}", ex.getMessage());
         }
@@ -302,24 +282,11 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         String hardwareId = config.hardwareId;
         logger.debug("getHardwareId H:{}", hardwareId);
         Configuration updatedConfiguration = getThing().getConfiguration();
-        try {
-            if (hardwareId.isBlank()) {
-                hardwareId = getLocalMAC();
-                if (hardwareId.isBlank()) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Hardware ID missing, check thing config");
-                    return hardwareId;
-                }
-                logger.debug("getHardwareId getLocalMac H:{}", hardwareId);
-                // write hardwareId to thing config
-                config.hardwareId = hardwareId;
-                updatedConfiguration.put("hardwareId", config.hardwareId);
-                updateConfiguration(updatedConfiguration);
-            }
-        } catch (IOException e) {
-            logger.debug("getHardwareId failed to get local mac address {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Initialization failed: " + e.getMessage());
+        if (hardwareId.isBlank()) {
+            hardwareId = java.util.UUID.randomUUID().toString();
+            config.hardwareId = hardwareId;
+            updatedConfiguration.put("hardwareId", config.hardwareId);
+            updateConfiguration(updatedConfiguration);
         }
         return hardwareId;
     }
@@ -445,30 +412,26 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                     updateState(CHANNEL_EVENT_DOORBOT_ID, new StringType(lastEvents.getFirst().doorbot.id));
                     updateState(CHANNEL_EVENT_DOORBOT_DESCRIPTION,
                             new StringType(lastEvents.getFirst().doorbot.description));
-                    String detectionType = lastEvents.getFirst().cvProperties.detectionType;
+                    String detectionType = null;
+                    if (lastEvents.getFirst().cvProperties != null) {
+                        detectionType = lastEvents.getFirst().cvProperties.detectionType;
+                    }
                     if (detectionType == null) {
                         detectionType = "";
                     }
-                    if (lastEvents.getFirst().kind.equals("motion")) {
-                        switch (detectionType) {
-                            case "human":
-                                updateState(CHANNEL_EVENT_EXTENDED_DESCRIPTION, new StringType(
-                                        "There is a Person at your " + lastEvents.getFirst().doorbot.description));
-                                break;
-                            case "vehicle":
-                                updateState(CHANNEL_EVENT_EXTENDED_DESCRIPTION, new StringType(
-                                        "There is a Vehicle at your " + lastEvents.getFirst().doorbot.description));
-                                break;
-                            default:
-                                updateState(CHANNEL_EVENT_EXTENDED_DESCRIPTION, new StringType(
-                                        "There is motion at your " + lastEvents.getFirst().doorbot.description));
-                                break;
-                        }
+                    if ("motion".equals(lastEvents.getFirst().kind)) {
+                        String desc = lastEvents.getFirst().doorbot.description;
+
+                        String message = switch (detectionType) {
+                            case "human" -> "There is a Person at your " + desc;
+                            case "vehicle" -> "There is a Vehicle at your " + desc;
+                            default -> "There is motion at your " + desc;
+                        };
+
+                        updateState(CHANNEL_EVENT_EXTENDED_DESCRIPTION, new StringType(message));
                     }
-                    ScheduledExecutorService service = videoExecutorService;
-                    if (service != null) {
-                        service.submit(() -> getVideo(lastEvents.getFirst()));
-                    }
+                    RingEventTO latestEvent = lastEvents.getFirst();
+                    scheduler.execute(() -> getVideo(latestEvent));
                 }
             } else {
                 logger.debug("AccountHandler - eventTick - lastEvents null");
@@ -530,31 +493,6 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
             job.cancel(true);
         }
         eventRefresh = null;
-    }
-
-    private String getLocalMAC() throws IOException {
-        // get local ip from OH system settings
-        String localIP = networkAddressService.getPrimaryIpv4HostAddress();
-        if ((localIP == null) || (localIP.isBlank())) {
-            logger.debug("No local IP selected in openHAB system configuration");
-            return "";
-        }
-
-        // get MAC address
-        InetAddress ip = InetAddress.getByName(localIP);
-        NetworkInterface network = NetworkInterface.getByInetAddress(ip);
-        if (network != null) {
-            byte[] mac = network.getHardwareAddress();
-
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < mac.length; i++) {
-                sb.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? "-" : ""));
-            }
-            String localMAC = sb.toString();
-            logger.debug("Local IP address='{}', local MAC address = '{}'", localIP, localMAC);
-            return localMAC;
-        }
-        return "";
     }
 
     /**
