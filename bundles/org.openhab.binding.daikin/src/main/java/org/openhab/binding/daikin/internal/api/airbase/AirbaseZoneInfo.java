@@ -31,8 +31,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class AirbaseZoneInfo {
-    private static final Logger LOGGER = LoggerFactory.getLogger(AirbaseZoneInfo.class);
-
     public String zonenames = "";
     public boolean[] zone = new boolean[8];
 
@@ -40,7 +38,8 @@ public class AirbaseZoneInfo {
     }
 
     public static AirbaseZoneInfo parse(String response) {
-        LOGGER.trace("Parsing string: \"{}\"", response);
+        Logger logger = LoggerFactory.getLogger(AirbaseZoneInfo.class);
+        logger.trace("Parsing string: \"{}\"", response);
 
         Map<String, String> responseMap = InfoParser.parse(response);
 

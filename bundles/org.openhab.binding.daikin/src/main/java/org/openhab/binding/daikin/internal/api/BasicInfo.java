@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.daikin.internal.api;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -27,8 +26,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class BasicInfo {
-    private static final Logger LOGGER = LoggerFactory.getLogger(BasicInfo.class);
-
     public String mac = "";
     public String ret = "";
     public String ssid = "";
@@ -37,7 +34,8 @@ public class BasicInfo {
     }
 
     public static BasicInfo parse(String response) {
-        LOGGER.trace("Parsing string: \"{}\"", response);
+        Logger logger = LoggerFactory.getLogger(BasicInfo.class);
+        logger.trace("Parsing string: \"{}\"", response);
 
         Map<String, String> responseMap = InfoParser.parse(response);
 
@@ -49,8 +47,6 @@ public class BasicInfo {
     }
 
     public Map<String, String> getParamString() {
-        Map<String, String> params = new HashMap<>();
-        params.put("ssid", ssid);
-        return params;
+        return Map.of("ssid", ssid);
     }
 }

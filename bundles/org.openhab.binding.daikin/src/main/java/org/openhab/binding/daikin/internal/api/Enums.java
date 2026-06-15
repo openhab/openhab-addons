@@ -35,7 +35,6 @@ public class Enums {
         HEAT(4),
         FAN(6);
 
-        private static final Logger LOGGER = LoggerFactory.getLogger(Mode.class);
         private final int value;
 
         Mode(int value) {
@@ -47,12 +46,13 @@ public class Enums {
         }
 
         public static Mode fromValue(int value) {
+            Logger logger = LoggerFactory.getLogger(Mode.class);
             for (Mode m : Mode.values()) {
                 if (m.getValue() == value) {
                     return m;
                 }
             }
-            LOGGER.debug("Unexpected Mode value of \"{}\"", value);
+            logger.debug("Unexpected Mode value of \"{}\"", value);
 
             // Default to auto
             return AUTO;
@@ -68,7 +68,6 @@ public class Enums {
         LEVEL_4("6"),
         LEVEL_5("7");
 
-        private static final Logger LOGGER = LoggerFactory.getLogger(FanSpeed.class);
         private final String value;
 
         FanSpeed(String value) {
@@ -80,12 +79,13 @@ public class Enums {
         }
 
         public static FanSpeed fromValue(String value) {
+            Logger logger = LoggerFactory.getLogger(FanSpeed.class);
             for (FanSpeed m : FanSpeed.values()) {
                 if (m.getValue().equals(value)) {
                     return m;
                 }
             }
-            LOGGER.debug("Unexpected FanSpeed value of \"{}\"", value);
+            logger.debug("Unexpected FanSpeed value of \"{}\"", value);
 
             // Default to auto
             return AUTO;
@@ -99,7 +99,6 @@ public class Enums {
         HORIZONTAL(2),
         VERTICAL_AND_HORIZONTAL(3);
 
-        private static final Logger LOGGER = LoggerFactory.getLogger(FanMovement.class);
         private final int value;
 
         FanMovement(int value) {
@@ -111,12 +110,13 @@ public class Enums {
         }
 
         public static FanMovement fromValue(int value) {
+            Logger logger = LoggerFactory.getLogger(FanMovement.class);
             for (FanMovement m : FanMovement.values()) {
                 if (m.getValue() == value) {
                     return m;
                 }
             }
-            LOGGER.debug("Unexpected FanMovement value of \"{}\"", value);
+            logger.debug("Unexpected FanMovement value of \"{}\"", value);
 
             // Default to stopped
             return STOPPED;
@@ -149,7 +149,6 @@ public class Enums {
         OFF(""),
         UNKNOWN("??");
 
-        private static final Logger LOGGER = LoggerFactory.getLogger(AdvancedMode.class);
         private final String value;
 
         AdvancedMode(String value) {
@@ -169,12 +168,13 @@ public class Enums {
         }
 
         public static AdvancedMode fromValue(String value) {
+            Logger logger = LoggerFactory.getLogger(AdvancedMode.class);
             for (AdvancedMode m : AdvancedMode.values()) {
                 if (m.getValue().equals(value)) {
                     return m;
                 }
             }
-            LOGGER.debug("Unexpected AdvancedMode value of \"{}\"", value);
+            logger.debug("Unexpected AdvancedMode value of \"{}\"", value);
 
             // Default to UNKNOWN
             return UNKNOWN;
@@ -216,7 +216,6 @@ public class Enums {
         AUTO("2");
 
         private final String value;
-        private static final Logger LOGGER = LoggerFactory.getLogger(DemandControlMode.class);
 
         DemandControlMode(String value) {
             this.value = value;
@@ -236,12 +235,13 @@ public class Enums {
         }
 
         public static DemandControlMode fromValue(String value) {
+            Logger logger = LoggerFactory.getLogger(DemandControlMode.class);
             for (DemandControlMode m : DemandControlMode.values()) {
                 if (m.getValue().equals(value)) {
                     return m;
                 }
             }
-            LOGGER.debug("Unexpected DemandControlMode value of \"{}\"", value);
+            logger.debug("Unexpected DemandControlMode value of \"{}\"", value);
 
             // Default to off
             return OFF;
