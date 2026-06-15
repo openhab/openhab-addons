@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,20 +28,19 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class EnergyInfoDayAndWeek {
-    public Optional<Double> energyHeatingToday = Optional.empty();
-    public Optional<Double> energyHeatingThisWeek = Optional.empty();
-    public Optional<Double> energyHeatingLastWeek = Optional.empty();
-    public Optional<Double> energyCoolingToday = Optional.empty();
-    public Optional<Double> energyCoolingThisWeek = Optional.empty();
-    public Optional<Double> energyCoolingLastWeek = Optional.empty();
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(EnergyInfoDayAndWeek.class);
+    public @Nullable Double energyHeatingToday;
+    public @Nullable Double energyHeatingThisWeek;
+    public @Nullable Double energyHeatingLastWeek;
+    public @Nullable Double energyCoolingToday;
+    public @Nullable Double energyCoolingThisWeek;
+    public @Nullable Double energyCoolingLastWeek;
 
     private EnergyInfoDayAndWeek() {
     }
 
     public static EnergyInfoDayAndWeek parse(String response) {
-        LOGGER.trace("Parsing string: \"{}\"", response);
+        Logger logger = LoggerFactory.getLogger(EnergyInfoDayAndWeek.class);
+        logger.trace("Parsing string: \"{}\"", response);
 
         // /aircon/get_week_power_ex
         // ret=OK,s_dayw=0,week_heat=1/1/1/1/1/5/2/1/1/1/1/2/1/1,week_cool=0/0/0/0/0/0/0/0/0/0/0/0/0/0
@@ -57,7 +57,7 @@ public class EnergyInfoDayAndWeek {
 
                 // get the heating info
                 String[] heatingValues = responseMap.get("week_heat").split("/");
-                info.energyHeatingToday = Optional.of(Double.parseDouble(heatingValues[0]) / 10);
+                info.energyHeatingToday = Double.parseDouble(heatingValues[0]) / 10;
                 double thisWeekEnergy = 0;
                 for (int i = 0; i < thisWeekLastDayIndex; i += 1) {
                     thisWeekEnergy += Integer.parseInt(heatingValues[i]);
@@ -66,12 +66,12 @@ public class EnergyInfoDayAndWeek {
                 for (int i = thisWeekLastDayIndex; i < thisWeekLastDayIndex + 7; i += 1) {
                     previousWeekEnergy += Integer.parseInt(heatingValues[i]);
                 }
-                info.energyHeatingThisWeek = Optional.of(thisWeekEnergy / 10);
-                info.energyHeatingLastWeek = Optional.of(previousWeekEnergy / 10);
+                info.energyHeatingThisWeek = thisWeekEnergy / 10;
+                info.energyHeatingLastWeek = previousWeekEnergy / 10;
 
                 // get the cooling info
                 String[] coolingValues = responseMap.get("week_cool").split("/");
-                info.energyCoolingToday = Optional.of(Double.parseDouble(coolingValues[0]) / 10);
+                info.energyCoolingToday = Double.parseDouble(coolingValues[0]) / 10;
                 thisWeekEnergy = 0;
                 for (int i = 0; i < thisWeekLastDayIndex; i += 1) {
                     thisWeekEnergy += Integer.parseInt(coolingValues[i]);
@@ -80,11 +80,11 @@ public class EnergyInfoDayAndWeek {
                 for (int i = thisWeekLastDayIndex; i < thisWeekLastDayIndex + 7; i += 1) {
                     previousWeekEnergy += Integer.parseInt(coolingValues[i]);
                 }
-                info.energyCoolingThisWeek = Optional.of(thisWeekEnergy / 10);
-                info.energyCoolingLastWeek = Optional.of(previousWeekEnergy / 10);
+                info.energyCoolingThisWeek = thisWeekEnergy / 10;
+                info.energyCoolingLastWeek = previousWeekEnergy / 10;
             }
         } else {
-            LOGGER.debug("EnergyInfoDayAndWeek::parse() did not receive 'ret=OK' from adapter");
+            logger.debug("EnergyInfoDayAndWeek::parse() did not receive 'ret=OK' from adapter");
         }
         return info;
     }
