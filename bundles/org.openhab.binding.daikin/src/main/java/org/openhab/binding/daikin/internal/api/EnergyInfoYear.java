@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,9 +30,8 @@ import org.slf4j.LoggerFactory;
 public class EnergyInfoYear {
     private static final Logger LOGGER = LoggerFactory.getLogger(EnergyInfoYear.class);
 
-    public Optional<Integer[]> energyHeatingThisYear = Optional.empty();
-
-    public Optional<Integer[]> energyCoolingThisYear = Optional.empty();
+    public Integer @Nullable [] energyHeatingThisYear;
+    public Integer @Nullable [] energyCoolingThisYear;
 
     private EnergyInfoYear() {
     }
@@ -43,11 +43,9 @@ public class EnergyInfoYear {
 
         EnergyInfoYear info = new EnergyInfoYear();
         info.energyHeatingThisYear = Optional.ofNullable(responseMap.get("curr_year_heat"))
-                .flatMap(value -> InfoParser.parseArrayOfInt(value, 12));
-
+                .flatMap(value -> InfoParser.parseArrayOfInt(value, 12)).orElse(null);
         info.energyCoolingThisYear = Optional.ofNullable(responseMap.get("curr_year_cool"))
-                .flatMap(value -> InfoParser.parseArrayOfInt(value, 12));
-
+                .flatMap(value -> InfoParser.parseArrayOfInt(value, 12)).orElse(null);
         return info;
     }
 }

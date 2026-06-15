@@ -18,6 +18,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.daikin.internal.api.InfoParser;
 import org.openhab.binding.daikin.internal.api.airbase.AirbaseEnums.AirbaseFanMovement;
 import org.openhab.binding.daikin.internal.api.airbase.AirbaseEnums.AirbaseFanSpeed;
@@ -40,11 +41,11 @@ public class AirbaseControlInfo {
     public boolean power = false;
     public AirbaseMode mode = AirbaseMode.AUTO;
     /** Degrees in Celsius. */
-    public Optional<Double> temp = Optional.empty();
+    public @Nullable Double temp;
     public AirbaseFanSpeed fanSpeed = AirbaseFanSpeed.LEVEL_1;
     public AirbaseFanMovement fanMovement = AirbaseFanMovement.STOPPED;
     /* Not supported by all units. Sets the target humidity for dehumidifying. */
-    public Optional<Integer> targetHumidity = Optional.empty();
+    public @Nullable Integer targetHumidity;
 
     private AirbaseControlInfo() {
     }
@@ -60,7 +61,7 @@ public class AirbaseControlInfo {
         info.mode = Objects.requireNonNull(
                 Optional.ofNullable(responseMap.get("mode")).flatMap(value -> InfoParser.parseInt(value))
                         .map(value -> AirbaseMode.fromValue(value)).orElse(AirbaseMode.AUTO));
-        info.temp = Optional.ofNullable(responseMap.get("stemp")).flatMap(value -> InfoParser.parseDouble(value));
+        info.temp = Optional.ofNullable(responseMap.get("stemp")).flatMap(InfoParser::parseDouble).orElse(null);
         int fRate = Optional.ofNullable(responseMap.get("f_rate")).flatMap(value -> InfoParser.parseInt(value))
                 .orElse(1);
         boolean fAuto = "1".equals(responseMap.getOrDefault("f_auto", "0"));
@@ -69,7 +70,7 @@ public class AirbaseControlInfo {
         info.fanMovement = Objects.requireNonNull(
                 Optional.ofNullable(responseMap.get("f_dir")).flatMap(value -> InfoParser.parseInt(value))
                         .map(value -> AirbaseFanMovement.fromValue(value)).orElse(AirbaseFanMovement.STOPPED));
-        info.targetHumidity = Optional.ofNullable(responseMap.get("shum")).flatMap(value -> InfoParser.parseInt(value));
+        info.targetHumidity = Optional.ofNullable(responseMap.get("shum")).flatMap(InfoParser::parseInt).orElse(null);
         return info;
     }
 
@@ -81,8 +82,8 @@ public class AirbaseControlInfo {
         params.put("f_auto", fanSpeed.getAuto() ? "1" : "0");
         params.put("f_airside", fanSpeed.getAirside() ? "1" : "0");
         params.put("f_dir", Integer.toString(fanMovement.getValue()));
-        params.put("stemp", temp.orElse(20.0).toString());
-        params.put("shum", Objects.requireNonNull(targetHumidity.map(value -> value.toString()).orElse("")));
+        params.put("stemp", temp != null ? temp.toString() : "20.0");
+        params.put("shum", targetHumidity != null ? targetHumidity.toString() : "");
 
         return params;
     }

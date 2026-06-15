@@ -13,8 +13,6 @@
 package org.openhab.binding.daikin.internal.handler;
 
 import java.math.BigDecimal;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.IntStream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -34,7 +32,6 @@ import org.openhab.binding.daikin.internal.api.Enums.HomekitMode;
 import org.openhab.binding.daikin.internal.api.Enums.Mode;
 import org.openhab.binding.daikin.internal.api.Enums.SpecialMode;
 import org.openhab.binding.daikin.internal.api.SensorInfo;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
@@ -43,7 +40,6 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,10 +59,10 @@ import com.google.gson.JsonSyntaxException;
 public class DaikinAcUnitHandler extends DaikinBaseHandler {
     private final Logger logger = LoggerFactory.getLogger(DaikinAcUnitHandler.class);
 
-    private Optional<Integer> autoModeValue = Optional.empty();
+    private @Nullable Integer autoModeValue;
     private boolean pollDemandControl = true;
-    private Optional<String> savedDemandControlSchedule = Optional.empty();
-    private Optional<Integer> savedDemandControlMaxPower = Optional.empty();
+    private @Nullable String savedDemandControlSchedule;
+    private @Nullable Integer savedDemandControlMaxPower;
 
     public DaikinAcUnitHandler(Thing thing, DaikinDynamicStateDescriptionProvider stateDescriptionProvider,
             HttpClient httpClient) {
@@ -112,16 +108,16 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
 
         updateTemperatureChannel(DaikinBindingConstants.CHANNEL_OUTDOOR_TEMP, sensorInfo.outdoortemp);
 
-        if (sensorInfo.indoorhumidity.isPresent()) {
-            updateState(DaikinBindingConstants.CHANNEL_HUMIDITY,
-                    new QuantityType<>(sensorInfo.indoorhumidity.get(), Units.PERCENT));
+        Double indoorHumidity = sensorInfo.indoorhumidity;
+        if (indoorHumidity != null) {
+            updateState(DaikinBindingConstants.CHANNEL_HUMIDITY, new QuantityType<>(indoorHumidity, Units.PERCENT));
         } else {
             updateState(DaikinBindingConstants.CHANNEL_HUMIDITY, UnDefType.UNDEF);
         }
 
-        if (sensorInfo.compressorfrequency.isPresent()) {
-            updateState(DaikinBindingConstants.CHANNEL_CMP_FREQ,
-                    new QuantityType<>(sensorInfo.compressorfrequency.get(), Units.PERCENT));
+        Double compressorFreq = sensorInfo.compressorfrequency;
+        if (compressorFreq != null) {
+            updateState(DaikinBindingConstants.CHANNEL_CMP_FREQ, new QuantityType<>(compressorFreq, Units.PERCENT));
         } else {
             updateState(DaikinBindingConstants.CHANNEL_CMP_FREQ, UnDefType.UNDEF);
         }
@@ -129,11 +125,11 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
         try {
             EnergyInfoYear energyInfoYear = webTargets.getEnergyInfoYear();
 
-            if (energyInfoYear.energyHeatingThisYear.isPresent()) {
+            if (energyInfoYear.energyHeatingThisYear != null) {
                 updateEnergyYearChannel(DaikinBindingConstants.CHANNEL_ENERGY_HEATING_CURRENTYEAR,
                         energyInfoYear.energyHeatingThisYear);
             }
-            if (energyInfoYear.energyCoolingThisYear.isPresent()) {
+            if (energyInfoYear.energyCoolingThisYear != null) {
                 updateEnergyYearChannel(DaikinBindingConstants.CHANNEL_ENERGY_COOLING_CURRENTYEAR,
                         energyInfoYear.energyCoolingThisYear);
             }
@@ -169,10 +165,10 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
                 int maxPower = demandInfo.maxPower;
 
                 if (demandInfo.mode == DemandControlMode.SCHEDULED) {
-                    savedDemandControlSchedule = Optional.of(schedule);
+                    savedDemandControlSchedule = schedule;
                     maxPower = demandInfo.getScheduledMaxPower();
                 } else if (demandInfo.mode == DemandControlMode.MANUAL) {
-                    savedDemandControlMaxPower = Optional.of(demandInfo.maxPower);
+                    savedDemandControlMaxPower = demandInfo.maxPower;
                 }
 
                 updateState(DaikinBindingConstants.CHANNEL_AC_DEMAND_MODE, new StringType(demandInfo.mode.name()));
@@ -260,7 +256,7 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
     @Override
     protected boolean changeSetPoint(double newTemperature) throws DaikinCommunicationException {
         ControlInfo info = webTargets.getControlInfo();
-        info.temp = Optional.of(newTemperature);
+        info.temp = newTemperature; // Removed Optional.of()
         return webTargets.setControlInfo(info);
     }
 
@@ -275,23 +271,20 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
         }
         ControlInfo info = webTargets.getControlInfo();
         info.mode = newMode;
-        if (autoModeValue.isPresent()) {
-            info.autoModeValue = autoModeValue.get();
+        if (autoModeValue != null) {
+            info.autoModeValue = autoModeValue;
         }
         boolean accepted = webTargets.setControlInfo(info);
 
         // If mode=0 is not accepted try AUTO1 (mode=1)
-        if (!accepted && newMode == Mode.AUTO && autoModeValue.isEmpty()) {
+        if (!accepted && newMode == Mode.AUTO && autoModeValue == null) {
             info.autoModeValue = Mode.AUTO1.getValue();
             accepted = webTargets.setControlInfo(info);
             if (accepted) {
-                autoModeValue = Optional.of(info.autoModeValue);
+                autoModeValue = info.autoModeValue;
                 logger.debug("AUTO uses mode={}", info.autoModeValue);
-            } else {
-                logger.warn("AUTO mode not accepted with mode=0 or mode=1");
             }
         }
-
         return accepted;
     }
 
@@ -348,29 +341,35 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
         DemandControl demandInfo = webTargets.getDemandControl();
         boolean scheduleChanged = false;
         boolean maxPowerChanged = false;
+
+        // 1. Assign fields to local variables to satisfy JDT compiler's null analysis
+        String scheduleToRestore = savedDemandControlSchedule;
+        Integer maxPowerToRestore = savedDemandControlMaxPower;
+
         if (demandInfo.mode != newMode) {
-            if (newMode == DemandControlMode.SCHEDULED && savedDemandControlSchedule.isPresent()) {
+            if (newMode == DemandControlMode.SCHEDULED && scheduleToRestore != null) {
                 // restore previously saved schedule
-                demandInfo.setSchedule(savedDemandControlSchedule.get());
+                demandInfo.setSchedule(scheduleToRestore);
                 scheduleChanged = true;
             }
 
-            if (newMode == DemandControlMode.MANUAL && savedDemandControlMaxPower.isPresent()) {
+            if (newMode == DemandControlMode.MANUAL && maxPowerToRestore != null) {
                 // restore previously saved maxPower
-                demandInfo.maxPower = savedDemandControlMaxPower.get();
+                demandInfo.maxPower = maxPowerToRestore;
                 maxPowerChanged = true;
             }
         }
         demandInfo.mode = newMode;
+
         if (webTargets.setDemandControl(demandInfo)) {
             updateState(DaikinBindingConstants.CHANNEL_AC_DEMAND_MODE, new StringType(newMode.name()));
-            if (scheduleChanged) {
-                updateState(DaikinBindingConstants.CHANNEL_AC_DEMAND_SCHEDULE,
-                        new StringType(savedDemandControlSchedule.get()));
+
+            // 2. Use the local variables for the StringType and PercentType constructors
+            if (scheduleChanged && scheduleToRestore != null) {
+                updateState(DaikinBindingConstants.CHANNEL_AC_DEMAND_SCHEDULE, new StringType(scheduleToRestore));
             }
-            if (maxPowerChanged) {
-                updateState(DaikinBindingConstants.CHANNEL_AC_DEMAND_MAX_POWER,
-                        new PercentType(savedDemandControlMaxPower.get()));
+            if (maxPowerChanged && maxPowerToRestore != null) {
+                updateState(DaikinBindingConstants.CHANNEL_AC_DEMAND_MAX_POWER, new PercentType(maxPowerToRestore));
             }
         }
     }
@@ -379,7 +378,7 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
         DemandControl demandInfo = webTargets.getDemandControl();
         demandInfo.mode = DemandControlMode.MANUAL;
         demandInfo.maxPower = maxPower;
-        savedDemandControlMaxPower = Optional.of(maxPower);
+        savedDemandControlMaxPower = maxPower;
         return webTargets.setDemandControl(demandInfo);
     }
 
@@ -392,7 +391,7 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
             return false;
         }
         demandInfo.mode = DemandControlMode.SCHEDULED;
-        savedDemandControlSchedule = Optional.of(demandInfo.getSchedule());
+        savedDemandControlSchedule = demandInfo.getSchedule();
         return webTargets.setDemandControl(demandInfo);
     }
 
@@ -402,14 +401,17 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
      * @param channel
      * @param maybePower
      */
-    protected void updateEnergyYearChannel(String channel, Optional<Integer[]> maybePower) {
-        IntStream.range(1, 13).forEach(i -> updateState(
-                String.format(DaikinBindingConstants.CHANNEL_ENERGY_STRING_FORMAT, channel, i),
-                Objects.requireNonNull(maybePower.<State> map(
-                        t -> new QuantityType<>(BigDecimal.valueOf(t[i - 1].longValue(), 1), Units.KILOWATT_HOUR))
-                        .orElse(UnDefType.UNDEF)))
-
-        );
+    protected void updateEnergyYearChannel(String channel, Integer @Nullable [] maybePower) {
+        if (maybePower != null) {
+            IntStream.range(1, 13).forEach(i -> updateState(
+                    String.format(DaikinBindingConstants.CHANNEL_ENERGY_STRING_FORMAT, channel, i),
+                    new QuantityType<>(BigDecimal.valueOf(maybePower[i - 1].longValue(), 1), Units.KILOWATT_HOUR)));
+        } else {
+            IntStream.range(1, 13)
+                    .forEach(i -> updateState(
+                            String.format(DaikinBindingConstants.CHANNEL_ENERGY_STRING_FORMAT, channel, i),
+                            UnDefType.UNDEF));
+        }
     }
 
     /**
@@ -417,12 +419,11 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
      * @param channel
      * @param maybePower
      */
-    protected void updateEnergyDayAndWeekChannel(String channel, Optional<Double> maybePower) {
-        if (maybePower.isPresent()) {
-            updateState(channel,
-                    Objects.requireNonNull(
-                            maybePower.<State> map(t -> new QuantityType<>(new DecimalType(t), Units.KILOWATT_HOUR))
-                                    .orElse(UnDefType.UNDEF)));
+    protected void updateEnergyDayAndWeekChannel(String channel, @Nullable Double maybePower) {
+        if (maybePower != null) {
+            updateState(channel, new QuantityType<>(maybePower, Units.KILOWATT_HOUR));
+        } else {
+            updateState(channel, UnDefType.UNDEF);
         }
     }
 
