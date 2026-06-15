@@ -70,7 +70,8 @@ import com.google.gson.reflect.TypeToken;
  */
 @NonNullByDefault
 public class TuyaSmartLifeAPI extends TuyaOpenAPI {
-    private static final String TUYA_CLIENT_ID = "HA_3y9q4ak7g4ephrvke";
+    protected static final String TUYA_CLIENT_ID = "HA_3y9q4ak7g4ephrvke";
+
     private static final String TUYA_SCHEMA = "haauthorize";
 
     private static final int QR_LOGIN_TRIES = (QR_LOGIN_DURATION + QR_LOGIN_INTERVAL - 1) / QR_LOGIN_INTERVAL;
@@ -311,7 +312,7 @@ public class TuyaSmartLifeAPI extends TuyaOpenAPI {
         return CompletableFuture.completedFuture(Objects.requireNonNull(gson.fromJson(contentString, responseType)));
     }
 
-    private String secret_generating(String rid, String sid, String hash_key) {
+    protected String secret_generating(String rid, String sid, String hash_key) {
         var message = hash_key;
         var mod = 16;
 
@@ -329,7 +330,7 @@ public class TuyaSmartLifeAPI extends TuyaOpenAPI {
         return CryptoUtil.hmacSha256(message, rid).substring(0, 16).toLowerCase(Locale.ENGLISH);
     }
 
-    private String restful_sign(String hash_key, String query_encdata, String body_encdata,
+    protected String restful_sign(String hash_key, String query_encdata, String body_encdata,
             Map<String, String> headers) {
         var sign_str = headers.entrySet().stream().sorted(Map.Entry.comparingByKey()) //
                 .filter(e -> !e.getValue().isEmpty()) //
