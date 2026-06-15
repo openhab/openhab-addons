@@ -326,7 +326,8 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_BTIMER, "boostTimer", ITEMT_TIME))
                 .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_SCHEDULE, "controlSchedule", ITEMT_SWITCH))
 
-                // Flood Gen4
+                // Smoke (read-only mute state) + Flood Gen4 (writable mute)
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_CONTROL_MUTE, "smokeMute", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_ALARM_MODE, "floodAlarmMode", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_MUTE, "sensorMute", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_REPORT_HOLDOFF, "floodReportHoldoff",
@@ -613,7 +614,8 @@ public class ShellyChannelDefinitions {
                 CHANNEL_SENSOR_ILLUM);
         addChannel(thing, newChannels, sdata.flood != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_FLOOD);
         addChannel(thing, newChannels, sdata.smoke != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_SMOKE);
-        addChannel(thing, newChannels, sdata.mute != null, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_MUTE);
+        addChannel(thing, newChannels, sdata.mute != null && profile.isSmoke, CHANNEL_GROUP_SENSOR, CHANNEL_CONTROL_MUTE);
+        addChannel(thing, newChannels, sdata.mute != null && !profile.isSmoke, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_MUTE);
         addChannel(thing, newChannels, profile.settings.externalPower != null || sdata.charger != null, CHGR_DEVST,
                 CHANNEL_DEVST_CHARGER);
         addChannel(thing, newChannels, sdata.motion != null || (sdata.sensor != null && sdata.sensor.motion != null),

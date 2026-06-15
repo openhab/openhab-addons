@@ -12,9 +12,10 @@
  */
 package org.openhab.binding.shelly.internal.api2;
 
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
-import static org.openhab.binding.shelly.internal.ShellyDevices.*;
+import static org.openhab.binding.shelly.internal.ShellyDevices.THING_TYPE_SHELLYPLUSFLOOD;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
 
 import java.util.Map;
@@ -48,7 +49,7 @@ public class Shelly2FloodNotifyEventTest {
     // ── flood.alarm ──────────────────────────────────────────────────────────
 
     @Test
-    void floodAlarm_postsFloodAlarm() throws ShellyApiException {
+    void floodAlarmPostsFloodAlarm() throws ShellyApiException {
         Fixture f = build();
         f.rpc.onNotifyEvent(eventJson(SHELLY2_EVENT_FLOOD_ALARM));
         verify(f.thing).postEvent(ALARM_TYPE_FLOOD, true);
@@ -57,7 +58,7 @@ public class Shelly2FloodNotifyEventTest {
     // ── flood.alarm_off ──────────────────────────────────────────────────────
 
     @Test
-    void floodAlarmOff_postsNone() throws ShellyApiException {
+    void floodAlarmOffPostsNone() throws ShellyApiException {
         Fixture f = build();
         f.rpc.onNotifyEvent(eventJson(SHELLY2_EVENT_FLOOD_ALARM_OFF));
         verify(f.thing).postEvent(ALARM_TYPE_NONE, true);
@@ -66,7 +67,7 @@ public class Shelly2FloodNotifyEventTest {
     // ── flood.cable_unplugged ────────────────────────────────────────────────
 
     @Test
-    void floodCableUnplugged_postsSensorError() throws ShellyApiException {
+    void floodCableUnpluggedPostsSensorError() throws ShellyApiException {
         Fixture f = build();
         f.rpc.onNotifyEvent(eventJson(SHELLY2_EVENT_FLOOD_CABLE_UNPLUGGED));
         verify(f.thing).postEvent(ALARM_TYPE_SENSOR_ERROR, true);
@@ -75,7 +76,7 @@ public class Shelly2FloodNotifyEventTest {
     // ── unknown event ────────────────────────────────────────────────────────
 
     @Test
-    void unknownEvent_doesNotPostEvent() throws ShellyApiException {
+    void unknownEventDoesNotPostAlarm() throws ShellyApiException {
         Fixture f = build();
         f.rpc.onNotifyEvent(eventJson("some.unknown.event"));
         verify(f.thing, never()).postEvent(any(), anyBoolean());
@@ -84,8 +85,9 @@ public class Shelly2FloodNotifyEventTest {
     // ── helpers ──────────────────────────────────────────────────────────────
 
     private static String eventJson(String event) {
-        return "{\"src\":\"shellyfloodg4-test\",\"params\":{\"ts\":1.0,\"events\":[{\"id\":0,\"event\":\"" + event
-                + "\"}]}}";
+        return """
+                {"src":"shellyfloodg4-test","params":{"ts":1.0,"events":[{"id":0,"event":"%s"}]}}
+                """.formatted(event);
     }
 
     private static final class Fixture {

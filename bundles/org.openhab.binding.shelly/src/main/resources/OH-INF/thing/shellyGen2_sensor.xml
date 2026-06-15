@@ -68,8 +68,7 @@
 	<channel-type id="floodAlarmMode">
 		<item-type>String</item-type>
 		<label>Alarm Mode</label>
-		<description>Flood sensor alarm mode. Rain mode: rain detection only, no flood alarm. Flood mode options: intense
-			(loud alarm, mutable), normal (alarm, mutable), disabled (silent, no acoustic alarm).</description>
+		<description>Flood sensor alarm mode.</description>
 		<state readOnly="false">
 			<options>
 				<option value="rain">Rain — rain detection only, no flood alarm</option>
@@ -85,7 +84,7 @@
 		<label>Report Holdoff</label>
 		<description>Minimum time in seconds between consecutive flood alarm reports (0-60s)</description>
 		<category>Time</category>
-		<state min="0" max="60" step="5" pattern="%.0f %unit%" readOnly="false"/>
+		<state min="0" max="60" step="5" pattern="%.0f %unit%"/>
 	</channel-type>
 
 </thing:thing-descriptions>

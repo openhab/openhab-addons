@@ -566,7 +566,9 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         updateTemperatureStatus(sensorData, result.temperature0);
         updateIlluminanceStatus(sensorData, result.illuminance0);
         updateSmokeStatus(sensorData, result.smoke0);
-        updateFloodStatus(sensorData, result.flood0);
+        if (result.flood0 != null) {
+            updateFloodStatus(sensorData, result.flood0);
+        }
         updateBatteryStatus(sensorData, result.devicepower0);
         updateAddonStatus(status, result);
         updated |= ShellyComponents.updateSensors(getThing(), status);
@@ -1279,10 +1281,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         sdata.mute = getBool(value.mute);
     }
 
-    protected void updateFloodStatus(ShellyStatusSensor sdata, @Nullable Shelly2DeviceStatusFlood value) {
-        if (value == null) {
-            return;
-        }
+    protected void updateFloodStatus(ShellyStatusSensor sdata, Shelly2DeviceStatusFlood value) {
         sdata.flood = getBool(value.alarm);
         sdata.mute = getBool(value.mute);
         sdata.sensorError = (value.errors != null && value.errors.length > 0) ? String.join(",", value.errors) : null;
