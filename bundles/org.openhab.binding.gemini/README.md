@@ -50,7 +50,7 @@ Channels of type `chat` take the following configuration parameters:
 | topP            | decimal | A value between 0.0 and 1.0, which overrides the thing-level topP.                             | no       | yes      |
 | maxOutputTokens | integer | The maximum number of tokens to include in a candidate, overriding the thing-level max tokens. | no       | yes      |
 
-Channel configuration defaults to the [Thing configuration](#thing-configuration), except for `systemMessage`, which defaults to _You are a helpful assistants_.
+Channel configuration defaults to the [Thing configuration](#thing-configuration), except for `systemMessage`, which defaults to _You are a helpful assistant_.
 
 ## Thing Actions
 

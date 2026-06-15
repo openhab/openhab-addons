@@ -92,8 +92,8 @@ public class GeminiActions implements ThingActions {
 
         GeminiConfiguration config = geminiHandler.getGeminiConfiguration();
 
-        String resolvedModel = model != null && !model.isBlank() ? model
-                : (config != null ? config.model : DEFAULT_MODEL);
+        String resolvedModel = (model != null && !model.isBlank()) ? model
+                : ((config != null && !config.model.isBlank()) ? config.model : DEFAULT_MODEL);
         String resolvedSystemMessage = Objects.requireNonNullElse(systemMessage, DEFAULT_SYSTEM_MESSAGE);
         double resolvedTemperature = Objects.requireNonNullElse(temperature,
                 config != null ? config.temperature : DEFAULT_TEMPERATURE);

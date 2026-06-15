@@ -89,7 +89,7 @@ public class GeminiHandler extends BaseThingHandler {
             GeminiApiClient client = apiClient;
             if (client != null) {
                 int timeout = config != null ? config.requestTimeout : DEFAULT_REQUEST_TIMEOUT;
-                String model = config != null ? config.model : DEFAULT_MODEL;
+                String model = (config != null && !config.model.isBlank()) ? config.model : DEFAULT_MODEL;
                 double temp = config != null ? config.temperature : DEFAULT_TEMPERATURE;
                 double topP = config != null ? config.topP : DEFAULT_TOP_P;
                 int maxTokens = config != null ? config.maxOutputTokens : DEFAULT_MAX_OUTPUT_TOKENS;
