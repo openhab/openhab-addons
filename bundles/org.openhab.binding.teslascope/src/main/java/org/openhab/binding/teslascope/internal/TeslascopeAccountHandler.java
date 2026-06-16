@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link TeslascopeAccountHandler} is responsible for handling commands, which are
@@ -80,49 +81,28 @@ public class TeslascopeAccountHandler extends BaseBridgeHandler {
         return "";
     }
 
-    public String getDetailedInformation(String publicID) {
+    public String getDetailedInformation(String publicID)
+            throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
         TeslascopeAccountConfiguration config = this.config;
         if (config != null) {
-            try {
-                return webTargets.getDetailedInformation(publicID, config.apiKey, config.personalAccessToken);
-            } catch (TeslascopeAuthenticationException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Authentication problem: " + e.getMessage());
-            } catch (TeslascopeCommunicationException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Communication problem: " + e.getMessage());
-            }
+            return webTargets.getDetailedInformation(publicID, config.apiKey, config.personalAccessToken);
         }
         return "";
     }
 
-    public void sendCommand(String publicID, String command) {
+    public void sendCommand(String publicID, String command)
+            throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
         TeslascopeAccountConfiguration config = this.config;
         if (config != null) {
-            try {
-                webTargets.sendCommand(publicID, config.apiKey, config.personalAccessToken, command);
-            } catch (TeslascopeAuthenticationException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Authentication problem: " + e.getMessage());
-            } catch (TeslascopeCommunicationException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Communication problem: " + e.getMessage());
-            }
+            webTargets.sendCommand(publicID, config.apiKey, config.personalAccessToken, command);
         }
     }
 
-    public void sendCommand(String publicID, String command, String params) {
+    public void sendCommand(String publicID, String command, String params)
+            throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
         TeslascopeAccountConfiguration config = this.config;
         if (config != null) {
-            try {
-                webTargets.sendCommand(publicID, config.apiKey, config.personalAccessToken, command, params);
-            } catch (TeslascopeAuthenticationException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Authentication problem: " + e.getMessage());
-            } catch (TeslascopeCommunicationException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Communication problem: " + e.getMessage());
-            }
+            webTargets.sendCommand(publicID, config.apiKey, config.personalAccessToken, command, params);
         }
     }
 
@@ -145,7 +125,8 @@ public class TeslascopeAccountHandler extends BaseBridgeHandler {
         }
         updateStatus(ThingStatus.UNKNOWN);
 
-        this.pollFuture = scheduler.scheduleWithFixedDelay(this::pollStatus, 0, 300, TimeUnit.SECONDS);
+        this.pollFuture = scheduler.scheduleWithFixedDelay(this::pollStatus, 0, localConfig.refreshInterval,
+                TimeUnit.SECONDS);
 
         updateStatus(ThingStatus.ONLINE);
     }
@@ -158,16 +139,29 @@ public class TeslascopeAccountHandler extends BaseBridgeHandler {
 
     private void pollStatus() {
         String responseVehicleList = getVehicleList();
-        JsonArray jsonArrayVehicleList = JsonParser.parseString(responseVehicleList).getAsJsonArray();
-        if (jsonArrayVehicleList.size() > 0) {
-            VehicleList vehicleList = gson.fromJson(jsonArrayVehicleList.get(0), VehicleList.class);
-            if (vehicleList == null) {
+
+        if (responseVehicleList == null || responseVehicleList.isBlank()) {
+            return; // Status is already updated to OFFLINE in getVehicleList()
+        }
+
+        try {
+            JsonArray jsonArrayVehicleList = JsonParser.parseString(responseVehicleList).getAsJsonArray();
+            if (jsonArrayVehicleList.size() > 0) {
+                VehicleList vehicleList = gson.fromJson(jsonArrayVehicleList.get(0), VehicleList.class);
+                if (vehicleList == null) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "@text/offline.comm-error.no-vehicles");
+                    return;
+                }
+                updateStatus(ThingStatus.ONLINE);
+            } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/offline.comm-error.no-vehicles");
             }
-        } else {
+        } catch (JsonSyntaxException e) {
+            logger.debug("Failed to parse vehicle list JSON: {}", e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.comm-error.no-vehicles");
+                    "@text/offline.comm-error.no-json");
         }
     }
 
