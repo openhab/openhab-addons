@@ -66,9 +66,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(immediate = true, service = { ChannelTypeProvider.class, TuyaChannelTypeProvider.class })
 public class TuyaChannelTypeProvider implements ChannelTypeProvider {
-    private static final String DEFAULT_CONTROL_CATEGORY = "settings";
-    private static final String DEFAULT_STATUS_CATEGORY = "line";
-
     private static final Map<String, String> dimensionToCategory = Collections
             .unmodifiableMap(new HashMap<String, String>() {
                 private static final long serialVersionUID = 1L;
@@ -250,15 +247,20 @@ public class TuyaChannelTypeProvider implements ChannelTypeProvider {
         }
 
         String acceptedItemType = STRING;
-        String category = "";
+        String category = categoryForChannelType(channelTypeId, schemaDp);
         String configurationRef = null;
         Collection<String> tags = new ArrayList<>(2);
         StateDescriptionFragmentBuilder stateDescriptionFragmentBuilder = null;
         boolean advanced = false;
 
+        if (channelTypeId.endsWith("_coe")) {
+            // Coefficients are present on power switches with monitoring capabilities. They are
+            // readonly and their meaning is unknown.
+            advanced = true;
+        }
+
         if ("bitmap".equals(schemaDp.type)) {
             acceptedItemType = NUMBER;
-            category = "";
             configurationRef = "channel-type:tuya:bitmap";
             tags.add(schemaDp.readOnly ? "Status" : "Control");
 
@@ -267,7 +269,6 @@ public class TuyaChannelTypeProvider implements ChannelTypeProvider {
                     .withPattern("%x");
         } else if ("bool".equals(schemaDp.type)) {
             acceptedItemType = SWITCH;
-            category = "switch";
             configurationRef = "channel-type:tuya:switch";
             tags.add(schemaDp.readOnly ? "Status" : "Switch");
         } else if ("enum".equals(schemaDp.type)) {
@@ -296,11 +297,10 @@ public class TuyaChannelTypeProvider implements ChannelTypeProvider {
             }
         } else if ("value".equals(schemaDp.type)) {
             acceptedItemType = NUMBER;
-            category = "";
             configurationRef = "channel-type:tuya:number";
 
-            if ((schemaDp.unit.isEmpty() && DIMMER_CHANNEL_CODES.contains(channelTypeId)) //
-                    || (!schemaDp.readOnly && "%".equals(schemaDp.unit))) {
+            if (DIMMER_CHANNEL_CODES.contains(channelTypeId) //
+                    && (schemaDp.unit.isEmpty() || (!schemaDp.readOnly && "%".equals(schemaDp.unit)))) {
                 acceptedItemType = DIMMER;
                 category = "slider";
                 configurationRef = "channel-type:tuya:dimmer";
@@ -317,8 +317,7 @@ public class TuyaChannelTypeProvider implements ChannelTypeProvider {
                     String dimension = UnitUtils.getDimensionName(unit);
                     if (dimension != null) {
                         acceptedItemType = NUMBER + ":" + dimension;
-                        category = dimensionToCategory.getOrDefault(dimension,
-                                (schemaDp.readOnly ? DEFAULT_STATUS_CATEGORY : DEFAULT_CONTROL_CATEGORY));
+                        category = dimensionToCategory.getOrDefault(dimension, category);
                         tags.add(schemaDp.readOnly ? "Measurement"
                                 : ("Time".equals(dimension) ? "Control" : "Setpoint"));
                         String tag = dimensionToSemanticProperty.get(dimension);
@@ -385,5 +384,58 @@ public class TuyaChannelTypeProvider implements ChannelTypeProvider {
         }
 
         return channelTypeBuilder.build();
+    }
+
+    private String categoryForChannelType(String channelTypeId, SchemaDp schemaDp) {
+        switch (channelTypeId) {
+            case "alarm_message":
+                return "if:line-md:chat-alert";
+
+            case "battery_state":
+                return "batterylevel";
+
+            case "doorcontact_state":
+                return "door";
+
+            case "initiative_message":
+                return "if:material-symbols:chat-info-outline";
+
+            case "pir_state":
+                return "motion";
+
+            default:
+                if (channelTypeId.startsWith("alarm") || channelTypeId.endsWith("_alarm") //
+                        || channelTypeId.startsWith("fault") || channelTypeId.endsWith("_fault")) {
+                    return "error";
+                } else if (channelTypeId.endsWith("_pic")) {
+                    return "if:fluent-color:scan-person-48";
+                } else if (channelTypeId.contains("time")) {
+                    return "time";
+                }
+                break;
+        }
+
+        switch (schemaDp.type) {
+            case "bool":
+                return "switch";
+
+            case "enum":
+                return (schemaDp.readOnly ? "if:pepicons-pencil:text-bubble" : "if:picon:selectbox");
+
+            case "value":
+                if (!schemaDp.unit.isEmpty()) {
+                    if (channelTypeId.startsWith("maxhum_") || channelTypeId.startsWith("minihum_")
+                            || channelTypeId.contains("humid")) {
+                        return "humidity";
+                    } else {
+                        return (schemaDp.readOnly ? "line" : "settings");
+                    }
+                } else {
+                    return "if:fluent-color:number-symbol-square-32";
+                }
+
+            default:
+                return (schemaDp.readOnly ? "if:pepicons-pencil:text-bubble" : "input");
+        }
     }
 }
