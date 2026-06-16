@@ -308,6 +308,7 @@ public enum MeasureType {
             case "mm" -> MILLI(METRE);
             case "in" -> ImperialUnits.INCH;
             case "km" -> KILO(METRE);
+            case "mi" -> ImperialUnits.MILE;
             case "mm/Hr" -> MILLIMETRE_PER_HOUR;
             case "in/Hr" -> Units.INCHES_PER_HOUR;
             case "W/m2" -> Units.IRRADIANCE;
