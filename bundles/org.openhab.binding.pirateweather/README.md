@@ -73,27 +73,27 @@ Once one of the parameters `forecastHours`, `forecastDays` or `numberOfAlerts` w
 
 ### Hourly Forecast
 
-| Channel Group ID                                            | Channel ID           | Item Type            | Description                                          |
-|-------------------------------------------------------------|----------------------|----------------------|------------------------------------------------------|
-| forecast-hours-01, forecast-hours-02, ... forecast-hours-24 | time-stamp           | DateTime             | Time of data forecasted.                             |
-| forecast-hours-01, forecast-hours-02, ... forecast-hours-24 | condition            | String               | Forecast weather condition.                          |
-| forecast-hours-01, forecast-hours-02, ... forecast-hours-24 | icon-id              | String               | Id of the forecasted weather condition. **Advanced** |
-| forecast-hours-01, forecast-hours-02, ... forecast-hours-24 | temperature          | Number:Temperature   | Forecasted temperature.                              |
-| forecast-hours-01, forecast-hours-02, ... forecast-hours-24 | apparent-temperature | Number:Temperature   | Forecasted apparent temperature.                     |
-| forecast-hours-01, forecast-hours-02, ... forecast-hours-24 | pressure             | Number:Pressure      | Forecasted barometric pressure.                      |
-| forecast-hours-01, forecast-hours-02, ... forecast-hours-24 | humidity             | Number:Dimensionless | Forecasted atmospheric humidity.                     |
-| forecast-hours-01, forecast-hours-02, ... forecast-hours-24 | wind-speed           | Number:Speed         | Forecasted wind speed.                               |
-| forecast-hours-01, forecast-hours-02, ... forecast-hours-24 | wind-direction       | Number:Angle         | Forecasted wind direction.                           |
-| forecast-hours-01, forecast-hours-02, ... forecast-hours-24 | gust-speed           | Number:Speed         | Forecasted gust speed. **Advanced**                  |
-| forecast-hours-01, forecast-hours-02, ... forecast-hours-24 | cloudiness           | Number:Dimensionless | Forecasted cloudiness.                               |
-| forecast-hours-01, forecast-hours-02, ... forecast-hours-24 | visibility           | Number:Length        | Forecasted visibility.                               |
-| forecast-hours-01, forecast-hours-02, ... forecast-hours-24 | rain                 | Number:Speed         | Forecasted rain intensity.                           |
-| forecast-hours-01, forecast-hours-02, ... forecast-hours-24 | snow                 | Number:Speed         | Forecasted snow intensity.                           |
-| forecast-hours-01, forecast-hours-02, ... forecast-hours-24 | precip-intensity     | Number:Speed         | Forecasted precipitation intensity.                  |
-| forecast-hours-01, forecast-hours-02, ... forecast-hours-24 | precip-probability   | Number:Dimensionless | Forecasted precipitation probability.                |
-| forecast-hours-01, forecast-hours-02, ... forecast-hours-24 | precip-type          | String               | Forecasted precipitation type (Rain, Snow or Sleet). |
-| forecast-hours-01, forecast-hours-02, ... forecast-hours-24 | uvindex              | Number               | Forecasted UV index.                                 |
-| forecast-hours-01, forecast-hours-02, ... forecast-hours-24 | ozone                | Number:ArealDensity  | Forecasted ozone.                                    |
+| Channel Group ID                        | Channel ID           | Item Type            | Description                                          |
+|-----------------------------------------|----------------------|----------------------|------------------------------------------------------|
+| forecast-hours-01 ... forecast-hours-48 | time-stamp           | DateTime             | Time of data forecasted.                             |
+| forecast-hours-01 ... forecast-hours-48 | condition            | String               | Forecast weather condition.                          |
+| forecast-hours-01 ... forecast-hours-48 | icon-id              | String               | Id of the forecasted weather condition. **Advanced** |
+| forecast-hours-01 ... forecast-hours-48 | temperature          | Number:Temperature   | Forecasted temperature.                              |
+| forecast-hours-01 ... forecast-hours-48 | apparent-temperature | Number:Temperature   | Forecasted apparent temperature.                     |
+| forecast-hours-01 ... forecast-hours-48 | pressure             | Number:Pressure      | Forecasted barometric pressure.                      |
+| forecast-hours-01 ... forecast-hours-48 | humidity             | Number:Dimensionless | Forecasted atmospheric humidity.                     |
+| forecast-hours-01 ... forecast-hours-48 | wind-speed           | Number:Speed         | Forecasted wind speed.                               |
+| forecast-hours-01 ... forecast-hours-48 | wind-direction       | Number:Angle         | Forecasted wind direction.                           |
+| forecast-hours-01 ... forecast-hours-48 | gust-speed           | Number:Speed         | Forecasted gust speed. **Advanced**                  |
+| forecast-hours-01 ... forecast-hours-48 | cloudiness           | Number:Dimensionless | Forecasted cloudiness.                               |
+| forecast-hours-01 ... forecast-hours-48 | visibility           | Number:Length        | Forecasted visibility.                               |
+| forecast-hours-01 ... forecast-hours-48 | rain                 | Number:Speed         | Forecasted rain intensity.                           |
+| forecast-hours-01 ... forecast-hours-48 | snow                 | Number:Speed         | Forecasted snow intensity.                           |
+| forecast-hours-01 ... forecast-hours-48 | precip-intensity     | Number:Speed         | Forecasted precipitation intensity.                  |
+| forecast-hours-01 ... forecast-hours-48 | precip-probability   | Number:Dimensionless | Forecasted precipitation probability.                |
+| forecast-hours-01 ... forecast-hours-48 | precip-type          | String               | Forecasted precipitation type (Rain, Snow or Sleet). |
+| forecast-hours-01 ... forecast-hours-48 | uvindex              | Number               | Forecasted UV index.                                 |
+| forecast-hours-01 ... forecast-hours-48 | ozone                | Number:ArealDensity  | Forecasted ozone.                                    |
 
 ### Daily Forecast
 
@@ -251,11 +251,6 @@ demo.sitemap
 
 ```perl
 sitemap demo label="Pirate Weather" {
-    Frame label="Local Weather Station" {
-        Text item=localStationId
-        Text item=localStationName
-        Mapview item=localStationLocation
-    }
     Frame label="Current local weather" {
         Text item=localLastMeasurement
         Text item=localCurrentCondition

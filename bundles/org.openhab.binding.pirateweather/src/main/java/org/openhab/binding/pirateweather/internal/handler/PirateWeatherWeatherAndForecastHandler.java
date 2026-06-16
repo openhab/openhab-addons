@@ -313,6 +313,7 @@ public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {
 
         try {
             if (requestData(apiHandler)) {
+                scheduleSunriseSunsetEvents();
                 updateChannels();
                 updateStatus(ThingStatus.ONLINE);
             }
@@ -348,6 +349,27 @@ public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {
     }
 
     /**
+     * Schedules sunrise and sunset trigger jobs from the current daily forecast, independent of linked state
+     * channels.
+     */
+    private void scheduleSunriseSunsetEvents() {
+        PirateWeatherJsonWeatherData weatherData = this.weatherData;
+        if (weatherData == null || !(weatherData.getDaily() instanceof PirateWeatherDailyData dailyData)
+                || !(dailyData.getData() instanceof List<DailyData> dailyDataList) || dailyDataList.isEmpty()) {
+            logger.debug("No weather data available to schedule sunrise/sunset trigger channels.");
+            return;
+        }
+
+        DailyData forecastData = Objects.requireNonNull(dailyDataList.get(0));
+        scheduleJob(TRIGGER_SUNRISE, applyChannelConfig(
+                ZonedDateTime.ofInstant(Instant.ofEpochSecond(forecastData.getSunriseTime()), getLocationZoneId()),
+                sunriseTriggerChannelConfig));
+        scheduleJob(TRIGGER_SUNSET, applyChannelConfig(
+                ZonedDateTime.ofInstant(Instant.ofEpochSecond(forecastData.getSunsetTime()), getLocationZoneId()),
+                sunsetTriggerChannelConfig));
+    }
+
+    /**
      * Updates the channel with the given UID from the latest Pirate Weather data retrieved.
      *
      * @param channelUID UID of the channel
@@ -373,7 +395,7 @@ public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {
                 Matcher hourlyForecastMatcher = CHANNEL_GROUP_HOURLY_FORECAST_PREFIX_PATTERN.matcher(channelGroupId);
                 if (hourlyForecastMatcher.find() && (i = Integer.parseInt(hourlyForecastMatcher.group(1))) >= 1
                         && i <= 48) {
-                    updateHourlyForecastChannel(channelUID, i);
+                    updateHourlyForecastChannel(channelUID, i - 1);
                     break;
                 }
                 Matcher dailyForecastMatcher = CHANNEL_GROUP_DAILY_FORECAST_PREFIX_PATTERN.matcher(channelGroupId);
@@ -482,20 +504,20 @@ public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {
      * Update the channel from the last Pirate Weather data retrieved.
      *
      * @param channelUID the id identifying the channel to be updated
-     * @param count
+     * @param index zero-based hourly forecast index
      */
-    private void updateHourlyForecastChannel(ChannelUID channelUID, int count) {
+    private void updateHourlyForecastChannel(ChannelUID channelUID, int index) {
         String channelId = channelUID.getIdWithoutGroup();
         String channelGroupId = channelUID.getGroupId();
         PirateWeatherJsonWeatherData weatherData = this.weatherData;
         if (weatherData == null || !(weatherData.getHourly() instanceof PirateWeatherHourlyData hourlyData)
                 || !(hourlyData.getData() instanceof List<HourlyData> hourlyDataList)
-                || hourlyDataList.size() <= count) {
+                || hourlyDataList.size() <= index) {
             logger.debug("No weather data available to update channel '{}' of group '{}'.", channelId, channelGroupId);
             return;
         }
 
-        HourlyData forecastData = Objects.requireNonNull(hourlyDataList.get(count));
+        HourlyData forecastData = Objects.requireNonNull(hourlyDataList.get(index));
         State state = UnDefType.UNDEF;
         switch (channelId) {
             case CHANNEL_TIME_STAMP:
@@ -652,17 +674,9 @@ public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {
                 break;
             case CHANNEL_SUNRISE:
                 state = getDateTimeTypeState(forecastData.getSunriseTime());
-                if (count == 0 && state instanceof DateTimeType) {
-                    scheduleJob(TRIGGER_SUNRISE, applyChannelConfig(
-                            ((DateTimeType) state).getZonedDateTime(getLocationZoneId()), sunriseTriggerChannelConfig));
-                }
                 break;
             case CHANNEL_SUNSET:
                 state = getDateTimeTypeState(forecastData.getSunsetTime());
-                if (count == 0 && state instanceof DateTimeType) {
-                    scheduleJob(TRIGGER_SUNSET, applyChannelConfig(
-                            ((DateTimeType) state).getZonedDateTime(getLocationZoneId()), sunsetTriggerChannelConfig));
-                }
                 break;
         }
         logger.debug("Update channel '{}' of group '{}' with new state '{}'.", channelId, channelGroupId, state);

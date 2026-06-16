@@ -137,18 +137,18 @@ public class PirateWeatherAPIHandler extends BaseBridgeHandler {
     @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
         scheduler.schedule(() -> {
-            if (thing.getHandler() instanceof PirateWeatherWeatherAndForecastHandler pirateChildHandler) {
+            if (childThing.getHandler() instanceof PirateWeatherWeatherAndForecastHandler pirateChildHandler) {
                 pirateChildHandler.updateData();
             }
         }, INITIAL_DELAY_IN_SECONDS, TimeUnit.SECONDS);
     }
 
     private void updateThings() {
-        for (Thing thing : getThing().getThings()) {
-            if (!thing.isEnabled()) {
+        for (Thing childThing : getThing().getThings()) {
+            if (!childThing.isEnabled()) {
                 continue;
             }
-            if (thing.getHandler() instanceof PirateWeatherWeatherAndForecastHandler childHandler) {
+            if (childThing.getHandler() instanceof PirateWeatherWeatherAndForecastHandler childHandler) {
                 childHandler.updateData();
             }
         }
@@ -170,7 +170,9 @@ public class PirateWeatherAPIHandler extends BaseBridgeHandler {
         }
 
         try {
-            return connection.getWeatherData(location);
+            var data = connection.getWeatherData(location);
+            updateStatus(ThingStatus.ONLINE);
+            return data;
         } catch (PirateWeatherConfigurationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             throw e;
