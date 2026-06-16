@@ -240,6 +240,13 @@ public enum Measurand {
 
     RST_RAIN_TIME(0x88, new Skip(3)),
 
+    // the WN38 black globe sensor reports a black globe temperature (BGT) and a wet bulb globe temperature (WBGT)
+    BLACK_GLOBE_TEMPERATURE("temperature-black-globe", 0xA1, "Black Globe Temperature", MeasureType.TEMPERATURE,
+            http(HttpGroup.COMMON_LIST)),
+
+    WET_BULB_GLOBE_TEMPERATURE("temperature-wet-bulb-globe", 0xA2, "Wet Bulb Globe Temperature",
+            MeasureType.TEMPERATURE, http(HttpGroup.COMMON_LIST)),
+
     // measurands only available via the Ecowitt HTTP API (no TCP item code)
     FEELS_LIKE("temperature-feels-like", "Feels like temperature", MeasureType.TEMPERATURE,
             http(HttpGroup.COMMON_LIST, "3")),
