@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The TeslascopeVehicleDiscoveryService is responsible for auto detecting a Tesla
@@ -82,7 +83,7 @@ public class TeslascopeVehicleDiscoveryService extends AbstractThingHandlerDisco
                         .withRepresentationProperty(CONFIG_PUBLICID).withLabel("Teslascope - " + vehicleList.name)
                         .build());
             }
-        } catch (Exception e) {
+        } catch (JsonSyntaxException e) {
             logger.debug("Failed to parse vehicle list during discovery: {}", e.getMessage(), e);
         }
     }

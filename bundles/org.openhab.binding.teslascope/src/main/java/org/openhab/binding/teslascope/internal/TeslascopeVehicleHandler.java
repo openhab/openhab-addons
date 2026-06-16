@@ -45,6 +45,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link TeslascopeHandler} is responsible for handling commands, which are
@@ -200,6 +201,8 @@ public class TeslascopeVehicleHandler extends BaseThingHandler {
         try {
             String response = getDetailedInformation(config.publicID);
             if (response == null || response.isBlank()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/offline.comm-error.empty-response");
                 return;
             }
             DetailedInformation detailedInformation = gson.fromJson(response, DetailedInformation.class);
@@ -396,9 +399,10 @@ public class TeslascopeVehicleHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (IllegalStateException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
-        } catch (Exception e) {
+        } catch (JsonSyntaxException e) {
             logger.debug("Failed to parse vehicle details: {}", e.getMessage(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Invalid JSON response");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.comm-error.no-json");
         }
     }
 

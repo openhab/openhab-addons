@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link TeslascopeAccountHandler} is responsible for handling commands, which are
@@ -157,9 +158,10 @@ public class TeslascopeAccountHandler extends BaseBridgeHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/offline.comm-error.no-vehicles");
             }
-        } catch (Exception e) {
+        } catch (JsonSyntaxException e) {
             logger.debug("Failed to parse vehicle list JSON: {}", e.getMessage(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Invalid JSON response");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.comm-error.no-json");
         }
     }
 

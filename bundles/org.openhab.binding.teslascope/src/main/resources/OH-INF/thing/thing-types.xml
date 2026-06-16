@@ -609,7 +609,7 @@
 		<item-type>Dimmer</item-type>
 		<label>Sunroof</label>
 		<description>Indicates the opening state of the sunroof (0% closed, 100% fully open)</description>
-		<state readOnly="true"></state>
+		<state pattern="%d %%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="time-to-full-charge" advanced="true">
 		<item-type>Number</item-type>
