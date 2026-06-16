@@ -12,11 +12,16 @@
  */
 package org.openhab.binding.opengarage.internal;
 
-import java.io.IOException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.opengarage.internal.api.Enums.OpenGarageCommand;
-import org.openhab.core.io.net.http.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,8 +39,10 @@ public class OpenGarageWebTargets {
     private String changeControllerVariablesUri;
     private final Logger logger = LoggerFactory.getLogger(OpenGarageWebTargets.class);
     private int timeoutMs;
+    private final HttpClient httpClient;
 
-    public OpenGarageWebTargets(String ipAddress, long port, String password, int timeoutMs) {
+    public OpenGarageWebTargets(HttpClient httpClient, String ipAddress, long port, String password, int timeoutMs) {
+        this.httpClient = httpClient;
         String baseUri = "http://" + ipAddress + ":" + port + "/";
         this.timeoutMs = timeoutMs;
         this.getControllerVariablesUri = baseUri + "jc";
@@ -48,21 +55,14 @@ public class OpenGarageWebTargets {
 
     public void setControllerVariables(OpenGarageCommand request) throws OpenGarageCommunicationException {
         logger.debug("Received request: {}", request);
-        String queryParams = null;
-        switch (request) {
-            case OPEN:
-                queryParams = "&open=1";
-                break;
-            case CLOSE:
-                queryParams = "&close=1";
-                break;
-            case CLICK:
-                queryParams = "&click=1";
-                break;
-        }
-        if (queryParams != null) {
-            invoke(changeControllerVariablesUri, queryParams);
-        }
+
+        String queryParams = switch (request) {
+            case OPEN -> "&open=1";
+            case CLOSE -> "&close=1";
+            case CLICK -> "&click=1";
+        };
+
+        invoke(changeControllerVariablesUri, queryParams);
     }
 
     private String invoke(String uri) throws OpenGarageCommunicationException {
@@ -73,21 +73,30 @@ public class OpenGarageWebTargets {
         String uriWithParams = uri + params;
         logger.debug("Calling url: {}", uriWithParams);
         String response;
+
         synchronized (this) {
             try {
-                response = HttpUtil.executeUrl("GET", uriWithParams, this.timeoutMs);
-            } catch (IOException ex) {
+                ContentResponse contentResponse = httpClient.newRequest(uriWithParams).method(HttpMethod.GET)
+                        .timeout(this.timeoutMs, TimeUnit.MILLISECONDS).send();
+
+                if (contentResponse.getStatus() != HttpStatus.OK_200) {
+                    throw new OpenGarageCommunicationException(
+                            String.format("OpenGarage controller returned HTTP %d while invoking %s",
+                                    contentResponse.getStatus(), uriWithParams));
+                }
+
+                response = contentResponse.getContentAsString();
+
+            } catch (InterruptedException | ExecutionException | TimeoutException ex) {
                 logger.debug("{}", ex.getLocalizedMessage(), ex);
-                // Response will also be set to null if parsing in executeUrl fails so we use null here to make the
-                // error check below consistent.
-                response = null;
+                if (ex instanceof InterruptedException) {
+                    Thread.currentThread().interrupt();
+                }
+                throw new OpenGarageCommunicationException(
+                        String.format("OpenGarage controller returned error while invoking %s", uriWithParams), ex);
             }
         }
 
-        if (response == null) {
-            throw new OpenGarageCommunicationException(
-                    String.format("OpenGaragecontroller returned error while invoking %s", uriWithParams));
-        }
         return response;
     }
 }
