@@ -28,7 +28,6 @@ import org.openhab.binding.meross.internal.config.MerossBridgeConfiguration;
 import org.openhab.binding.meross.internal.discovery.MerossDiscoveryService;
 import org.openhab.binding.meross.internal.dto.CloudCredentials;
 import org.openhab.binding.meross.internal.dto.Device;
-import org.openhab.binding.meross.internal.dto.MqttMessageBuilder;
 import org.openhab.binding.meross.internal.exception.MerossApiException;
 import org.openhab.core.io.transport.mqtt.MqttException;
 import org.openhab.core.thing.Bridge;
@@ -63,8 +62,6 @@ public class MerossBridgeHandler extends BaseBridgeHandler {
     private @Nullable CloudCredentials credentials;
     private List<Device> devices = List.of();
 
-    private @Nullable String clientId;
-
     private final Logger logger = LoggerFactory.getLogger(MerossBridgeHandler.class);
 
     public MerossBridgeHandler(Thing thing, HttpClient httpClient) {
@@ -91,6 +88,7 @@ public class MerossBridgeHandler extends BaseBridgeHandler {
     public void dispose() {
         if (merossMqttConnector != null) {
             merossMqttConnector.stopConnection();
+            merossMqttConnector = null;
         }
         super.dispose();
     }
@@ -132,11 +130,8 @@ public class MerossBridgeHandler extends BaseBridgeHandler {
     }
 
     public synchronized List<Device> discoverDevices() throws ConnectException {
-        if (ThingStatus.ONLINE.equals(thing.getStatus())) {
-            devices = merossHttpConnector.getDevices();
-            return devices;
-        }
-        return List.of();
+        devices = merossHttpConnector.getDevices();
+        return devices;
     }
 
     public List<Device> getDevices() {
@@ -155,28 +150,12 @@ public class MerossBridgeHandler extends BaseBridgeHandler {
      *
      */
     private void initializeMerossMqttConnector() throws MqttException, InterruptedException {
-        // Make sure to keep the clientId when restarting the connection
-        String clientId = this.clientId;
-        if (clientId == null) {
-            clientId = MqttMessageBuilder.buildClientId();
-            this.clientId = clientId;
-        } else {
-            MqttMessageBuilder.setClientId(clientId);
-        }
-        MqttMessageBuilder.setClientId(clientId);
         CloudCredentials credentials = this.credentials;
         if (credentials == null) {
             logger.debug("No credentials found");
         } else {
-            String userId = credentials.userId();
-            MqttMessageBuilder.setUserId(userId);
-            String key = credentials.key();
-            MqttMessageBuilder.setKey(key);
-            String brokerAddress = credentials.mqttDomain();
-            MqttMessageBuilder.setBrokerAddress(brokerAddress);
-
             if (merossMqttConnector == null) {
-                merossMqttConnector = new MerossMqttConnector(this, scheduler);
+                merossMqttConnector = new MerossMqttConnector(this, credentials, scheduler);
             } else {
                 merossMqttConnector.stopConnection();
             }

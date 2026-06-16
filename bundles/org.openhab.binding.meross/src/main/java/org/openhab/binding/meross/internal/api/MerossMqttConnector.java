@@ -21,6 +21,7 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.meross.internal.dto.CloudCredentials;
 import org.openhab.binding.meross.internal.dto.MqttMessageBuilder;
 import org.openhab.binding.meross.internal.handler.MerossBridgeHandler;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
@@ -44,8 +45,9 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class MerossMqttConnector implements MqttConnectionObserver {
 
-    private static final int SECURE_WEB_SOCKET_PORT = 443;
+    private static final int SECURE_TCP_PORT = 443;
     private static final int RECEPTION_TIMEOUT_SECONDS = 5;
+    private static final int CONNECTION_TIMEOUT_SECONDS = 5;
     private static final int MQTT_DISCONNECT_DELAY_SECONDS = 60;
     private static final int KEEP_ALIVE_SECONDS = 30;
     private static final int QOS_AT_MOST_ONCE = 0;
@@ -56,31 +58,49 @@ public class MerossMqttConnector implements MqttConnectionObserver {
     private MerossBridgeHandler callback;
     private ScheduledExecutorService scheduler;
 
+    private MqttMessageBuilder mqttMessageBuilder = new MqttMessageBuilder();
     private @Nullable MqttBrokerConnection mqttConnection;
     private @Nullable CompletableFuture<Boolean> stoppedFuture;
     private @Nullable ScheduledFuture<?> disconnectFuture;
     private CompletableFuture<Boolean> connected = new CompletableFuture<>();
 
-    public MerossMqttConnector(MerossBridgeHandler callback, ScheduledExecutorService scheduler) {
+    public MerossMqttConnector(MerossBridgeHandler callback, CloudCredentials credentials,
+            ScheduledExecutorService scheduler) {
         this.callback = callback;
         this.scheduler = scheduler;
 
-        String brokerAddress = MqttMessageBuilder.brokerAddress;
-        String clientId = MqttMessageBuilder.clientId;
-        String userId = MqttMessageBuilder.userId;
-        if (brokerAddress == null || clientId == null || userId == null) {
+        String userId = credentials.userId();
+        String key = credentials.key();
+        String brokerAddress = credentials.mqttDomain();
+
+        if (brokerAddress == null || key == null || userId == null) {
             logger.debug("MQTT broker not configured");
             return;
         }
-        String clearPassword = "%s%s".formatted(MqttMessageBuilder.userId, MqttMessageBuilder.key);
-        String hashedPassword = MD5Util.getMD5String(clearPassword);
+        mqttMessageBuilder.setUserId(userId);
+        mqttMessageBuilder.setKey(key);
 
-        MqttBrokerConnection connection = mqttConnection = new MqttBrokerConnection(Protocol.TCP, MqttVersion.V5,
-                brokerAddress, SECURE_WEB_SOCKET_PORT, true, clientId);
+        String clearPassword = "%s%s".formatted(userId, key);
+        String hashedPassword = MD5Util.getMD5String(clearPassword);
+        String clientId = mqttMessageBuilder.getClientId();
+
+        MqttBrokerConnection connection = mqttConnection = new MqttBrokerConnection(Protocol.TCP, MqttVersion.V3,
+                brokerAddress, SECURE_TCP_PORT, true, clientId);
+        connection.setTimeoutExecutor(scheduler, CONNECTION_TIMEOUT_SECONDS * 1000);
         connection.setCredentials(userId, hashedPassword);
         connection.setQos(QOS_AT_LEAST_ONCE);
         connection.setKeepAliveInterval(KEEP_ALIVE_SECONDS);
+        connection.setCleanSessionStart(false);
         connection.addConnectionObserver(this);
+    }
+
+    /**
+     * Get the mqtt message builder for this connection.
+     *
+     * @return the mqtt message builder
+     */
+    public MqttMessageBuilder getMqttMessageBuilder() {
+        return mqttMessageBuilder;
     }
 
     /**
@@ -113,13 +133,13 @@ public class MerossMqttConnector implements MqttConnectionObserver {
         }
 
         logger.debug("Starting connection...");
+        logger.trace("Connecting with clientId: {}", mqttMessageBuilder.getClientId());
         try {
-            connected = new CompletableFuture<>();
-            if (!mqttConnection.start().get(RECEPTION_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
+            connected = mqttConnection.start();
+            if (!connected.get(RECEPTION_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
                 logger.debug("error connecting");
                 throw new MqttException("Connection execution exception");
             }
-            connected.get(RECEPTION_TIMEOUT_SECONDS, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             logger.debug("connection interrupted exception");
             if (Thread.interrupted()) {
@@ -190,15 +210,15 @@ public class MerossMqttConnector implements MqttConnectionObserver {
     }
 
     public void addClientUserTopicSubscriber(MqttMessageSubscriber subscriber) {
-        addTopicSubscriber(MqttMessageBuilder.buildClientUserTopic(), subscriber);
+        addTopicSubscriber(mqttMessageBuilder.buildClientUserTopic(), subscriber);
     }
 
     public void addClientResponseTopicSubscriber(MqttMessageSubscriber subscriber) {
-        addTopicSubscriber(MqttMessageBuilder.buildClientResponseTopic(), subscriber);
+        addTopicSubscriber(mqttMessageBuilder.buildClientResponseTopic(), subscriber);
     }
 
     public void addDeviceRequestTopicSubscriber(MqttMessageSubscriber subscriber, String deviceUUID) {
-        addTopicSubscriber(MqttMessageBuilder.buildDeviceRequestTopic(deviceUUID), subscriber);
+        addTopicSubscriber(mqttMessageBuilder.buildDeviceRequestTopic(deviceUUID), subscriber);
     }
 
     private void addTopicSubscriber(String topic, MqttMessageSubscriber subscriber) {
@@ -212,15 +232,15 @@ public class MerossMqttConnector implements MqttConnectionObserver {
     }
 
     public void removeClientUserTopicSubscriber(MqttMessageSubscriber subscriber) {
-        removeTopicSubscriber(MqttMessageBuilder.buildClientUserTopic(), subscriber);
+        removeTopicSubscriber(mqttMessageBuilder.buildClientUserTopic(), subscriber);
     }
 
     public void removeClientResponseTopicSubscriber(MqttMessageSubscriber subscriber) {
-        removeTopicSubscriber(MqttMessageBuilder.buildClientResponseTopic(), subscriber);
+        removeTopicSubscriber(mqttMessageBuilder.buildClientResponseTopic(), subscriber);
     }
 
     public void removeDeviceRequestTopicSubscriber(MqttMessageSubscriber subscriber, String deviceUUID) {
-        removeTopicSubscriber(MqttMessageBuilder.buildDeviceRequestTopic(deviceUUID), subscriber);
+        removeTopicSubscriber(mqttMessageBuilder.buildDeviceRequestTopic(deviceUUID), subscriber);
     }
 
     private void removeTopicSubscriber(String topic, MqttMessageSubscriber subscriber) {
@@ -237,9 +257,9 @@ public class MerossMqttConnector implements MqttConnectionObserver {
     public void connectionStateChanged(MqttConnectionState state, @Nullable Throwable error) {
         logger.trace("Connection state changed: {}", state);
         switch (state) {
-            case MqttConnectionState.CONNECTING:
+            case CONNECTING:
                 break;
-            case MqttConnectionState.CONNECTED:
+            case CONNECTED:
                 ScheduledFuture<?> disconnectFuture = this.disconnectFuture;
                 if (disconnectFuture != null) {
                     disconnectFuture.cancel(true);
@@ -248,15 +268,15 @@ public class MerossMqttConnector implements MqttConnectionObserver {
                 callback.updateBridgeStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
                 connected.complete(true);
                 break;
-            case MqttConnectionState.DISCONNECTED:
-                connected = new CompletableFuture<Boolean>();
+            case DISCONNECTED:
+                connected = new CompletableFuture<>();
                 // The transport tries to reconnect anyway. If we put the bridge offline immediately, it will trigger a
                 // re-initialization of all devices creating a lot of traffic. Devices can still be commanded through
                 // local http connections even if the connection to the Meross MQTT broker is disrupted. So don't put
                 // the bridge offline immediately.
+                logger.debug("Disconnected", error);
                 if (this.disconnectFuture == null) {
                     this.disconnectFuture = scheduler.schedule(() -> {
-                        logger.trace("Disconnecting", error);
                         callback.updateBridgeStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                     }, MQTT_DISCONNECT_DELAY_SECONDS, TimeUnit.SECONDS);
                 }

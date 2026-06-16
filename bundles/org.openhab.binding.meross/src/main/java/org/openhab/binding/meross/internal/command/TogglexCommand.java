@@ -38,9 +38,9 @@ public class TogglexCommand {
         }
 
         @Override
-        public byte[] command(String deviceUUID) {
+        public byte[] command(MqttMessageBuilder mqttMessageBuilder, String deviceUUID) {
             Map<String, Object> payload = Map.of("togglex", Map.of("onoff", onOffValue, "channel", deviceChannel));
-            return MqttMessageBuilder.buildMqttMessage("SET", MerossEnum.Namespace.CONTROL_TOGGLEX.value(), deviceUUID,
+            return mqttMessageBuilder.buildMqttMessage("SET", MerossEnum.Namespace.CONTROL_TOGGLEX.value(), deviceUUID,
                     payload);
         }
     }
