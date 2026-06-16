@@ -572,10 +572,8 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
             configuration.pollingInterval = 0;
         }
 
-        // check if we have channels and add them if available
-        if (thing.getChannels().isEmpty()) {
-            addChannels();
-        }
+        // Update the channel list.
+        addChannels();
 
         thing.getChannels().forEach(this::configureChannel);
 
@@ -696,7 +694,18 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
             }
         }));
 
+        var existingChannels = thing.getChannels();
+
+        // Starting from scratch...
+        thingBuilder.withChannels(List.of());
+
+        // Add the channels from the schema.
         channels.values().forEach(thingBuilder::withChannel);
+
+        // Add pre-existing channels that weren't in the schema (user-added channels).
+        existingChannels.stream() //
+                .filter(channel -> !channels.containsKey(channel.getUID().getId())) //
+                .forEach(thingBuilder::withChannel);
 
         updateThing(thingBuilder.build());
     }
