@@ -35,6 +35,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,7 +62,12 @@ public class TeslaPowerwallHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.warn("This binding is read only");
+        if (command instanceof RefreshType) {
+            pollStatus();
+        } else {
+            logger.debug("The Tesla Powerwall binding is read-only. Command {} on channel {} is ignored.", command,
+                    channelUID);
+        }
     }
 
     @Override
@@ -163,8 +169,8 @@ public class TeslaPowerwallHandler extends BaseThingHandler {
                     properties.put("Battery" + (i + 1) + "-serial", systemStatus.batteryBlocks[i].packageSerialNumber);
                     properties.put("Battery" + (i + 1) + "-fullPackEnergy",
                             String.valueOf(systemStatus.batteryBlocks[i].nominalFullPackEnergy) + "kWh");
-                    updateProperties(properties);
                 }
+                updateProperties(properties);
             }
         }
         if (meterAggregates != null) {
