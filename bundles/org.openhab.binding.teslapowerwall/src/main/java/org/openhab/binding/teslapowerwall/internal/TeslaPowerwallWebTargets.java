@@ -158,7 +158,12 @@ public class TeslaPowerwallWebTargets {
             if (ex instanceof InterruptedException) {
                 Thread.currentThread().interrupt();
             }
-            throw new TeslaPowerwallCommunicationException(String.format("{}", ex.getLocalizedMessage(), ex));
+            String errorMessage = ex.getMessage();
+            if (errorMessage == null) {
+                errorMessage = "Unknown communication error occurred (" + ex.getClass().getSimpleName() + ")";
+            }
+
+            throw new TeslaPowerwallCommunicationException(errorMessage, ex);
         }
 
         return jsonResponse;
