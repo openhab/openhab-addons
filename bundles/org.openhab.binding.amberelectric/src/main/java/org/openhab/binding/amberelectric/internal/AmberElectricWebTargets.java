@@ -18,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,13 +73,12 @@ public class AmberElectricWebTargets {
             var response = request.send();
             int status = response.getStatus();
 
-            // Handle successful 2xx responses
-            if (status >= 200 && status < 300) {
+            if (HttpStatus.isSuccess(status)) {
                 return response.getContentAsString();
             }
 
             // Handle specific 401 Unauthorized for better user feedback
-            if (status == 401) {
+            if (status == HttpStatus.UNAUTHORIZED_401) {
                 throw new AmberElectricCommunicationException(
                         "Unauthorized (401): Please verify your Amber Electric API Key.");
             }
@@ -89,6 +89,10 @@ public class AmberElectricWebTargets {
         } catch (AmberElectricCommunicationException e) {
             // Rethrow our custom exception so it doesn't get wrapped again
             throw e;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new AmberElectricCommunicationException(
+                    "Thread was interrupted while communicating with the Amber API", e);
         } catch (Exception ex) {
             throw new AmberElectricCommunicationException("Unexpected error communicating with Amber API", ex);
         }

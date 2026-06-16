@@ -176,7 +176,7 @@ public class AmberElectricHandler extends BaseThingHandler {
                         logger.warn(
                                 "Amber API returned an empty sites list. Check API key permissions or active accounts.");
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "No sites found for account.");
+                                "@text/offline.comm-error.no-sites");
                         return;
                     }
                     sites = gson.fromJson(jsonArraySites.get(0), Sites.class);
