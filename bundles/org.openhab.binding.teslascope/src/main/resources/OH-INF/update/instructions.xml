@@ -38,8 +38,8 @@
 			<add-channel id="located-at-favorite">
 				<type>teslascope:located-at-favorite</type>
 			</add-channel>
-			<update-channel id="charge-limit-soc-std">
-				<type>teslascope:charge-limit-soc-std</type>
+			<update-channel id="charge-limit-soc-standard">
+				<type>teslascope:charge-limit-soc-standard</type>
 			</update-channel>
 		</instruction-set>
 

@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The TeslascopeVehicleDiscoveryService is responsible for auto detecting a Tesla
@@ -62,18 +63,28 @@ public class TeslascopeVehicleDiscoveryService extends AbstractThingHandlerDisco
     private void discover() {
         ThingUID bridgeUID = thingHandler.getThing().getUID();
         String responseVehicleList = getVehicleList();
-        HashMap<String, Object> properties = new HashMap<>();
-        JsonArray jsonArrayVehicleList = JsonParser.parseString(responseVehicleList).getAsJsonArray();
-        VehicleList vehicleList = new VehicleList();
-        for (int i = 0; i < jsonArrayVehicleList.size(); i++) {
-            vehicleList = gson.fromJson(jsonArrayVehicleList.get(i), VehicleList.class);
-            if (vehicleList == null) {
-                return;
+
+        if (responseVehicleList == null || responseVehicleList.isBlank()) {
+            return;
+        }
+
+        try {
+            JsonArray jsonArrayVehicleList = JsonParser.parseString(responseVehicleList).getAsJsonArray();
+            VehicleList vehicleList = new VehicleList();
+            for (int i = 0; i < jsonArrayVehicleList.size(); i++) {
+                vehicleList = gson.fromJson(jsonArrayVehicleList.get(i), VehicleList.class);
+                if (vehicleList == null) {
+                    continue; // Skip invalid entries instead of aborting the whole method
+                }
+                HashMap<String, Object> properties = new HashMap<>();
+                properties.put(CONFIG_PUBLICID, vehicleList.publicId);
+                ThingUID uid = new ThingUID(TESLASCOPE_VEHICLE, bridgeUID, vehicleList.publicId);
+                thingDiscovered(DiscoveryResultBuilder.create(uid).withBridge(bridgeUID).withProperties(properties)
+                        .withRepresentationProperty(CONFIG_PUBLICID).withLabel("Teslascope - " + vehicleList.name)
+                        .build());
             }
-            properties.put(CONFIG_PUBLICID, vehicleList.publicId);
-            ThingUID uid = new ThingUID(TESLASCOPE_VEHICLE, bridgeUID, vehicleList.publicId);
-            thingDiscovered(DiscoveryResultBuilder.create(uid).withBridge(bridgeUID).withProperties(properties)
-                    .withRepresentationProperty(CONFIG_PUBLICID).withLabel("Teslascope - " + vehicleList.name).build());
+        } catch (JsonSyntaxException e) {
+            logger.debug("Failed to parse vehicle list during discovery: {}", e.getMessage(), e);
         }
     }
 
