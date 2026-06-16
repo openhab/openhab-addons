@@ -1482,7 +1482,6 @@ channels are updated on the regular poll cycle.
 |         | illumination | String   | yes       | Ambient light class (dark / twilight / bright)                            |
 |         | lastUpdate   | DateTime | yes       | Timestamp of the last update                                              |
 | control | sensorEnable | Switch   | r/w       | Enable or disable the mmWave radar sensor (calls Presence.SetSensor)      |
-| device  | (standard device channels)                                                               |
 
 ### Shelly Plus Wall Dimmer US (thing-type: shellypluswdus)
 
