@@ -200,6 +200,8 @@ Valid sensors:
 | temperature-dew-point                 | Number:Temperature   | R          | Dew Point                                      |
 | temperature-wind-chill                | Number:Temperature   | R          | Perceived Temperature                          |
 | temperature-heat-index                | Number:Temperature   | R          | Heat Index                                     |
+| temperature-black-globe               | Number:Temperature   | R          | Black Globe Temperature                        |
+| temperature-wet-bulb-globe            | Number:Temperature   | R          | Wet Bulb Globe Temperature                     |
 | humidity-indoor                       | Number:Dimensionless | R          | Humidity Inside                                |
 | humidity-outdoor                      | Number:Dimensionless | R          | Humidity Outside                               |
 | pressure-absolute                     | Number:Pressure      | R          | Absolute Pressure                              |
