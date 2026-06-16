@@ -62,9 +62,7 @@ public class OpenGarageWebTargets {
             case CLICK -> "&click=1";
         };
 
-        if (queryParams != null) {
-            invoke(changeControllerVariablesUri, queryParams);
-        }
+        invoke(changeControllerVariablesUri, queryParams);
     }
 
     private String invoke(String uri) throws OpenGarageCommunicationException {
@@ -91,6 +89,9 @@ public class OpenGarageWebTargets {
 
             } catch (InterruptedException | ExecutionException | TimeoutException ex) {
                 logger.debug("{}", ex.getLocalizedMessage(), ex);
+                if (ex instanceof InterruptedException) {
+                    Thread.currentThread().interrupt();
+                }
                 throw new OpenGarageCommunicationException(
                         String.format("OpenGarage controller returned error while invoking %s", uriWithParams), ex);
             }

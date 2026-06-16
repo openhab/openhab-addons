@@ -20,6 +20,7 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -33,15 +34,11 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 public class OpenGarageHandlerFactory extends BaseThingHandlerFactory {
 
-    private @Nullable HttpClientFactory httpClientFactory;
+    private final HttpClientFactory httpClientFactory;
 
-    @Reference
-    protected void setHttpClientFactory(HttpClientFactory httpClientFactory) {
+    @Activate
+    public OpenGarageHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
         this.httpClientFactory = httpClientFactory;
-    }
-
-    protected void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
-        this.httpClientFactory = null;
     }
 
     @Override
@@ -52,10 +49,9 @@ public class OpenGarageHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        HttpClientFactory factory = httpClientFactory;
 
-        if (factory != null && thingTypeUID.equals(OpenGarageBindingConstants.OPENGARAGE_THING)) {
-            return new OpenGarageHandler(thing, factory.getCommonHttpClient());
+        if (thingTypeUID.equals(OpenGarageBindingConstants.OPENGARAGE_THING)) {
+            return new OpenGarageHandler(thing, httpClientFactory.getCommonHttpClient());
         }
 
         return null;
