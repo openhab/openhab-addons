@@ -37,6 +37,9 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class DynamicChannelHelper {
     private static final String NUMBER_DIMENSIONLESS = NUMBER + ":Dimensionless";
+    private static final String NUMBER_DENSITY = NUMBER + ":Density";
+    private static final String NUMBER_TEMPERATURE = NUMBER + ":Temperature";
+    private static final String NUMBER_HUMIDITY = NUMBER + ":Humidity";
 
     private record ConfigurationChannel(String id, String typeId, String itemType) {
     }
@@ -54,7 +57,22 @@ public class DynamicChannelHelper {
             new ConfigurationChannel(CHANNEL_LED_BAR_BRIGHTNESS, CHANNEL_LED_BAR_BRIGHTNESS, NUMBER_DIMENSIONLESS),
             new ConfigurationChannel(CHANNEL_DISPLAY_BRIGHTNESS, CHANNEL_DISPLAY_BRIGHTNESS, NUMBER_DIMENSIONLESS),
             new ConfigurationChannel(CHANNEL_MODEL, CHANNEL_MODEL, STRING),
-            new ConfigurationChannel(CHANNEL_LED_BAR_TEST, CHANNEL_LED_BAR_TEST, STRING));
+            new ConfigurationChannel(CHANNEL_LED_BAR_TEST, CHANNEL_LED_BAR_TEST, STRING),
+            new ConfigurationChannel(CHANNEL_PM01_STANDARD, CHANNEL_PM01_STANDARD, NUMBER_DENSITY),
+            new ConfigurationChannel(CHANNEL_PM02_STANDARD, CHANNEL_PM02_STANDARD, NUMBER_DENSITY),
+            new ConfigurationChannel(CHANNEL_PM10_STANDARD, CHANNEL_PM10_STANDARD, NUMBER_DENSITY),
+            new ConfigurationChannel(CHANNEL_PM005_COUNT, CHANNEL_PM005_COUNT, NUMBER_DIMENSIONLESS),
+            new ConfigurationChannel(CHANNEL_PM01_COUNT, CHANNEL_PM01_COUNT, NUMBER_DIMENSIONLESS),
+            new ConfigurationChannel(CHANNEL_PM02_COUNT, CHANNEL_PM02_COUNT, NUMBER_DIMENSIONLESS),
+            new ConfigurationChannel(CHANNEL_PM50_COUNT, CHANNEL_PM50_COUNT, NUMBER_DIMENSIONLESS),
+            new ConfigurationChannel(CHANNEL_PM10_COUNT, CHANNEL_PM10_COUNT, NUMBER_DIMENSIONLESS),
+            new ConfigurationChannel(CHANNEL_PM02_COMPENSATED, CHANNEL_PM02_COMPENSATED, NUMBER_DENSITY),
+            new ConfigurationChannel(CHANNEL_ATMP_COMPENSATED, CHANNEL_ATMP_COMPENSATED, NUMBER_TEMPERATURE),
+            new ConfigurationChannel(CHANNEL_RHUM_COMPENSATED, CHANNEL_RHUM_COMPENSATED, NUMBER_HUMIDITY),
+            new ConfigurationChannel(CHANNEL_TVOC_INDEX, CHANNEL_TVOC_INDEX, NUMBER_DIMENSIONLESS),
+            new ConfigurationChannel(CHANNEL_TVOC_RAW, CHANNEL_TVOC_RAW, NUMBER_DIMENSIONLESS),
+            new ConfigurationChannel(CHANNEL_NOX_INDEX, CHANNEL_NOX_INDEX, NUMBER_DIMENSIONLESS),
+            new ConfigurationChannel(CHANNEL_NOX_RAW, CHANNEL_NOX_RAW, NUMBER_DIMENSIONLESS));
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DynamicChannelHelper.class);
 
