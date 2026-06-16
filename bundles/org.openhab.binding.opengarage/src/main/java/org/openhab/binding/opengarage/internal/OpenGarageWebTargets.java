@@ -55,18 +55,13 @@ public class OpenGarageWebTargets {
 
     public void setControllerVariables(OpenGarageCommand request) throws OpenGarageCommunicationException {
         logger.debug("Received request: {}", request);
-        String queryParams = null;
-        switch (request) {
-            case OPEN:
-                queryParams = "&open=1";
-                break;
-            case CLOSE:
-                queryParams = "&close=1";
-                break;
-            case CLICK:
-                queryParams = "&click=1";
-                break;
-        }
+
+        String queryParams = switch (request) {
+            case OPEN -> "&open=1";
+            case CLOSE -> "&close=1";
+            case CLICK -> "&click=1";
+        };
+
         if (queryParams != null) {
             invoke(changeControllerVariablesUri, queryParams);
         }

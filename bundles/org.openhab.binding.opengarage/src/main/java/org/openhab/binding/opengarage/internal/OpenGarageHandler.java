@@ -65,8 +65,8 @@ public class OpenGarageHandler extends BaseThingHandler {
 
     // reference to one-shot poll task which gets scheduled after a garage state change command
     private Future<?> pollScheduledFutureTransition = CompletableFuture.completedFuture(null);
-    private Instant lastTransition;
-    private String lastTransitionText;
+    private volatile Instant lastTransition;
+    private volatile String lastTransitionText;
 
     private OpenGarageConfiguration config = new OpenGarageConfiguration();
     private Gson gson = new Gson();
@@ -84,10 +84,10 @@ public class OpenGarageHandler extends BaseThingHandler {
             logger.debug("Received command {} for thing '{}' on channel {}", command, thing.getUID().getAsString(),
                     channelUID.getId());
             Function<Boolean, Boolean> maybeInvert = getInverter(channelUID.getId());
+
             switch (channelUID.getId()) {
-                case OpenGarageBindingConstants.CHANNEL_OG_STATUS:
-                case OpenGarageBindingConstants.CHANNEL_OG_STATUS_SWITCH:
-                case OpenGarageBindingConstants.CHANNEL_OG_STATUS_ROLLERSHUTTER:
+                case OpenGarageBindingConstants.CHANNEL_OG_STATUS, OpenGarageBindingConstants.CHANNEL_OG_STATUS_SWITCH,
+                        OpenGarageBindingConstants.CHANNEL_OG_STATUS_ROLLERSHUTTER -> {
                     if (command.equals(StopMoveType.STOP) || command.equals(StopMoveType.MOVE)) {
                         changeStatus(OpenGarageCommand.CLICK);
                     } else {
@@ -102,8 +102,9 @@ public class OpenGarageHandler extends BaseThingHandler {
                         this.pollScheduledFutureTransition = this.scheduler.schedule(this::poll,
                                 this.config.doorTransitionTimeSeconds, TimeUnit.SECONDS);
                     }
-                    break;
-                default:
+                }
+                default -> {
+                }
             }
         } catch (OpenGarageCommunicationException ex) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
@@ -176,24 +177,15 @@ public class OpenGarageHandler extends BaseThingHandler {
                 }
 
                 switch (controllerVariables.vehicle) {
-                    case 0:
-                        updateState(OpenGarageBindingConstants.CHANNEL_OG_VEHICLE,
-                                new StringType("No vehicle detected"));
-                        break;
-                    case 1:
+                    case 0 -> updateState(OpenGarageBindingConstants.CHANNEL_OG_VEHICLE,
+                            new StringType("No vehicle detected"));
+                    case 1 ->
                         updateState(OpenGarageBindingConstants.CHANNEL_OG_VEHICLE, new StringType("Vehicle detected"));
-                        break;
-                    case 2:
-                        updateState(OpenGarageBindingConstants.CHANNEL_OG_VEHICLE,
-                                new StringType("Vehicle status unknown"));
-                        break;
-                    case 3:
-                        updateState(OpenGarageBindingConstants.CHANNEL_OG_VEHICLE,
-                                new StringType("Vehicle status not available"));
-                        break;
-
-                    default:
-                        logger.debug("Received unknown vehicle value: {}", controllerVariables.vehicle);
+                    case 2 -> updateState(OpenGarageBindingConstants.CHANNEL_OG_VEHICLE,
+                            new StringType("Vehicle status unknown"));
+                    case 3 -> updateState(OpenGarageBindingConstants.CHANNEL_OG_VEHICLE,
+                            new StringType("Vehicle status not available"));
+                    default -> logger.debug("Received unknown vehicle value: {}", controllerVariables.vehicle);
                 }
                 updateState(OpenGarageBindingConstants.CHANNEL_OG_VEHICLE_STATUS,
                         new DecimalType(controllerVariables.vehicle));
