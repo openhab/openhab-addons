@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.opengarage.internal.api.ControllerVariables;
 import org.openhab.binding.opengarage.internal.api.Enums.OpenGarageCommand;
 import org.openhab.core.library.types.DecimalType;
@@ -57,6 +58,7 @@ public class OpenGarageHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(OpenGarageHandler.class);
 
     private @NonNullByDefault({}) OpenGarageWebTargets webTargets;
+    private final HttpClient httpClient;
 
     // reference to periodically scheduled poll task
     private Future<?> pollScheduledFuture = CompletableFuture.completedFuture(null);
@@ -69,8 +71,9 @@ public class OpenGarageHandler extends BaseThingHandler {
     private OpenGarageConfiguration config = new OpenGarageConfiguration();
     private Gson gson = new Gson();
 
-    public OpenGarageHandler(Thing thing) {
+    public OpenGarageHandler(Thing thing, HttpClient httpClient) {
         super(thing);
+        this.httpClient = httpClient;
         this.lastTransition = Instant.MIN;
         this.lastTransitionText = "";
     }
@@ -116,7 +119,8 @@ public class OpenGarageHandler extends BaseThingHandler {
         } else {
             updateStatus(ThingStatus.UNKNOWN);
             int requestTimeout = Math.max(OpenGarageWebTargets.DEFAULT_TIMEOUT_MS, config.refresh * 1000);
-            webTargets = new OpenGarageWebTargets(config.hostname, config.port, config.password, requestTimeout);
+            webTargets = new OpenGarageWebTargets(httpClient, config.hostname, config.port, config.password,
+                    requestTimeout);
             this.pollScheduledFuture = this.scheduler.scheduleWithFixedDelay(this::poll, 1, config.refresh,
                     TimeUnit.SECONDS);
         }
