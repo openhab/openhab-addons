@@ -68,6 +68,9 @@ class SmartThingsHandlerFactoryTest {
         assertTrue(factory.supportsThingType(SmartThingsBindingConstants.THING_TYPE_ACCOUNT));
         assertTrue(factory
                 .supportsThingType(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "generic-television")));
+        assertTrue(factory.supportsThingType(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Samsung_Oven")));
+        assertTrue(factory
+                .supportsThingType(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Samsung_Soundbar")));
         assertTrue(factory
                 .supportsThingType(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Samsung_The_Frame")));
         assertFalse(factory.supportsThingType(dynamicThingTypeUID));

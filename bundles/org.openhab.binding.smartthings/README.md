@@ -23,7 +23,10 @@ The following static Thing types are included:
 | `smartthings:generic-scene` | SmartThings scene trigger |
 | `smartthings:generic-television` | Samsung TV connected through SmartThings |
 | `smartthings:generic-washer` | Samsung washing machine connected through SmartThings |
+| `smartthings:Samsung_Oven` | Samsung oven connected through SmartThings |
 | `smartthings:Samsung_Room_A_C` | Samsung room air conditioner |
+| `smartthings:Samsung_Soundbar` | Samsung soundbar connected through SmartThings |
+| `smartthings:Samsung_The_Frame` | Samsung The Frame TV connected through SmartThings |
 
 The binding can also create dynamic Thing types from device capabilities.
 Dynamic discovery is an advanced option and is mainly useful for unsupported devices or while improving the binding.
@@ -145,6 +148,16 @@ Item links therefore use the channel format `smartthings:<thingTypeId>:<bridgeId
 | Thing Type UID | Channel | Type | Read/Write | Description |
 |----------------|---------|------|------------|-------------|
 | `Samsung_Room_A_C` | `control#switch` | Switch | RW | Switches the air conditioner on or off |
+| `Samsung_Oven` | `status#completion-time` | DateTime | R | Current completion time |
+| `Samsung_Oven` | `status#operating-state` | String | R | Current operating state |
+| `Samsung_Oven` | `status#progress` | Number:Dimensionless | R | Current cooking progress |
+| `Samsung_Oven` | `status#oven-job-state` | String | R | Current oven job state |
+| `Samsung_Oven` | `status#operation-time` | String | R | Current operation time |
+| `Samsung_Soundbar` | `control#switch` | Switch | RW | Switches the soundbar on or off |
+| `Samsung_Soundbar` | `control#volume` | Number | RW | Soundbar volume |
+| `Samsung_Soundbar` | `control#mute` | Switch | RW | Soundbar mute state |
+| `Samsung_Soundbar` | `control#input-source` | String | RW | Active soundbar input source |
+| `Samsung_Soundbar` | `control#playback` | Player | RW | Media playback control |
 | `generic-television`, `Samsung_The_Frame` | `control#switch` | Switch | RW | Switches the TV on or off |
 | `generic-television`, `Samsung_The_Frame` | `control#volume` | Number | RW | TV volume |
 | `generic-television`, `Samsung_The_Frame` | `control#mute` | Switch | RW | TV mute state |

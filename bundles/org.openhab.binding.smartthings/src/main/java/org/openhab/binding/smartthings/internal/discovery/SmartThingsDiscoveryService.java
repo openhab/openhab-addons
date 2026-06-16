@@ -196,10 +196,15 @@ public class SmartThingsDiscoveryService extends AbstractDiscoveryService
                 return hasCapability(device, SmartThingsBindingConstants.CAPA_COLOR_CONTROL)
                         ? SmartThingsBindingConstants.THING_TYPE_GENERIC_COLOR_LIGHT_BULB.getId()
                         : SmartThingsBindingConstants.THING_TYPE_GENERIC_LIGHT_BULB.getId();
+            case "oven":
+                return SmartThingsBindingConstants.THING_TYPE_SAMSUNG_OVEN.getId();
             case "presence":
             case "presence_sensor":
             case "presencesensor":
                 return SmartThingsBindingConstants.THING_TYPE_GENERIC_PRESENCE_SENSOR.getId();
+            case "sound_bar":
+            case "soundbar":
+                return SmartThingsBindingConstants.THING_TYPE_SAMSUNG_SOUNDBAR.getId();
             case "television":
             case "tv":
                 return isSamsungTheFrame(device) ? SmartThingsBindingConstants.THING_TYPE_SAMSUNG_THE_FRAME.getId()

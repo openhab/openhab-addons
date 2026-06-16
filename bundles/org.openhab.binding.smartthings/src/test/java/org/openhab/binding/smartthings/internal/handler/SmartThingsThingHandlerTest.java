@@ -50,6 +50,7 @@ import org.openhab.binding.smartthings.internal.type.SmartThingsException;
 import org.openhab.binding.smartthings.internal.type.SmartThingsTypeRegistry;
 import org.openhab.binding.smartthings.internal.type.SmartThingsTypeRegistryImpl;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.NextPreviousType;
 import org.openhab.core.library.types.OnOffType;
@@ -210,6 +211,45 @@ class SmartThingsThingHandlerTest {
         assertEquals(1, handler.updatedStates);
         assertEquals(new ChannelUID(handler.getThing().getUID(), "control", "art-mode"), handler.lastUpdatedChannel);
         assertEquals(OnOffType.ON, handler.lastUpdatedState);
+    }
+
+    @Test
+    void refreshDeviceUpdatesStaticOvenOperatingStateChannel() {
+        ThingUID thingUID = new ThingUID("smartthings:Samsung_Oven:account:oven");
+        Thing thing = ThingBuilder
+                .create(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Samsung_Oven"), thingUID)
+                .withChannel(createChannel(thingUID, "status", "operating-state",
+                        SmartThingsBindingConstants.TYPE_STRING, "samsungce.ovenOperatingState", "operatingState"))
+                .build();
+        TestSmartThingsThingHandler handler = new TestSmartThingsThingHandler(thing);
+        SmartThingsConverterFactory.registerConverters(new SmartThingsTypeRegistryImpl());
+
+        handler.refreshDevice("Samsung_Oven", "main", "samsungce.ovenOperatingState", "operatingState", "ready");
+
+        assertEquals(1, handler.updatedStates);
+        assertEquals(new ChannelUID(handler.getThing().getUID(), "status", "operating-state"),
+                handler.lastUpdatedChannel);
+        assertEquals(new StringType("ready"), handler.lastUpdatedState);
+    }
+
+    @Test
+    void refreshDeviceUpdatesStaticOvenCompletionTimeAsDateTime() {
+        ThingUID thingUID = new ThingUID("smartthings:Samsung_Oven:account:oven");
+        Thing thing = ThingBuilder
+                .create(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Samsung_Oven"), thingUID)
+                .withChannel(createChannel(thingUID, "status", "completion-time",
+                        SmartThingsBindingConstants.TYPE_DATETIME, "samsungce.ovenOperatingState", "completionTime"))
+                .build();
+        TestSmartThingsThingHandler handler = new TestSmartThingsThingHandler(thing);
+        SmartThingsConverterFactory.registerConverters(new SmartThingsTypeRegistryImpl());
+
+        handler.refreshDevice("Samsung_Oven", "main", "samsungce.ovenOperatingState", "completionTime",
+                "2026-06-17T19:30:00+02:00");
+
+        assertEquals(1, handler.updatedStates);
+        assertEquals(new ChannelUID(handler.getThing().getUID(), "status", "completion-time"),
+                handler.lastUpdatedChannel);
+        assertEquals(DateTimeType.valueOf("2026-06-17T19:30:00+02:00"), handler.lastUpdatedState);
     }
 
     @Test
@@ -600,6 +640,32 @@ class SmartThingsThingHandlerTest {
         verify(api).sendCommand(eq(""), body.capture());
         assertEquals(
                 "{\"commands\":[{\"component\":\"main\",\"capability\":\"custom.fanMode\",\"command\":\"setFanMode\",\"arguments\":[\"sleep\"]}]}",
+                body.getValue());
+    }
+
+    @Test
+    void handleCommandSendsSoundbarInputSourceCommand() throws SmartThingsException {
+        ThingUID thingUID = new ThingUID("smartthings:Samsung_Soundbar:account:soundbar");
+        ChannelUID channelUID = new ChannelUID(thingUID, "control", "input-source");
+        Thing thing = ThingBuilder
+                .create(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Samsung_Soundbar"), thingUID)
+                .withChannel(ChannelBuilder.create(channelUID, SmartThingsBindingConstants.TYPE_STRING)
+                        .withProperties(Map.of(SmartThingsBindingConstants.COMPONENT, "main",
+                                SmartThingsBindingConstants.CAPABILITY, "samsungvd.audioInputSource",
+                                SmartThingsBindingConstants.ATTRIBUTE, "inputSource",
+                                SmartThingsBindingConstants.COMMAND, "setInputSource"))
+                        .build())
+                .build();
+        TestSmartThingsThingHandler handler = new TestSmartThingsThingHandler(thing);
+        SmartThingsApi api = mock(SmartThingsApi.class);
+        SmartThingsConverterFactory.registerConverters(new SmartThingsTypeRegistryImpl());
+
+        handler.handleCommand(api, channelUID, new StringType("wifi"));
+
+        ArgumentCaptor<String> body = ArgumentCaptor.forClass(String.class);
+        verify(api).sendCommand(eq(""), body.capture());
+        assertEquals(
+                "{\"commands\":[{\"component\":\"main\",\"capability\":\"samsungvd.audioInputSource\",\"command\":\"setInputSource\",\"arguments\":[\"wifi\"]}]}",
                 body.getValue());
     }
 

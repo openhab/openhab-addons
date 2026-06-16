@@ -44,6 +44,8 @@ public class SmartThingsBindingConstants {
     public static final ThingTypeUID THING_TYPE_GENERIC_SCENE = new ThingTypeUID(BINDING_ID, "generic-scene");
     public static final ThingTypeUID THING_TYPE_GENERIC_TELEVISION = new ThingTypeUID(BINDING_ID, "generic-television");
     public static final ThingTypeUID THING_TYPE_GENERIC_WASHER = new ThingTypeUID(BINDING_ID, "generic-washer");
+    public static final ThingTypeUID THING_TYPE_SAMSUNG_OVEN = new ThingTypeUID(BINDING_ID, "Samsung_Oven");
+    public static final ThingTypeUID THING_TYPE_SAMSUNG_SOUNDBAR = new ThingTypeUID(BINDING_ID, "Samsung_Soundbar");
     public static final ThingTypeUID THING_TYPE_SAMSUNG_THE_FRAME = new ThingTypeUID(BINDING_ID, "Samsung_The_Frame");
     public static final ThingTypeUID THING_TYPE_SAMSUNG_ROOM_A_C = new ThingTypeUID(BINDING_ID, "Samsung_Room_A_C");
 
@@ -83,6 +85,8 @@ public class SmartThingsBindingConstants {
                     SmartThingsBindingConstants.THING_TYPE_GENERIC_SCENE,
                     SmartThingsBindingConstants.THING_TYPE_GENERIC_TELEVISION,
                     SmartThingsBindingConstants.THING_TYPE_GENERIC_WASHER,
+                    SmartThingsBindingConstants.THING_TYPE_SAMSUNG_OVEN,
+                    SmartThingsBindingConstants.THING_TYPE_SAMSUNG_SOUNDBAR,
                     SmartThingsBindingConstants.THING_TYPE_SAMSUNG_THE_FRAME,
                     SmartThingsBindingConstants.THING_TYPE_SAMSUNG_ROOM_A_C).collect(Collectors.toSet()));
 

@@ -27,6 +27,7 @@ import org.openhab.binding.smartthings.internal.dto.SmartThingsCapability;
 import org.openhab.binding.smartthings.internal.dto.SmartThingsProperty;
 import org.openhab.binding.smartthings.internal.type.SmartThingsException;
 import org.openhab.binding.smartthings.internal.type.SmartThingsTypeRegistry;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
@@ -267,6 +268,17 @@ public abstract class SmartThingsConverter {
                         : OpenClosedType.CLOSED;
 
             case SmartThingsBindingConstants.TYPE_DATETIME:
+                if (dataFromSmartThings instanceof String dateTime) {
+                    try {
+                        return DateTimeType.valueOf(dateTime);
+                    } catch (IllegalArgumentException ex) {
+                        logger.warn("Failed to convert DateTime with a value of {} to an appropriate type.",
+                                dataFromSmartThings);
+                        return UnDefType.UNDEF;
+                    }
+                }
+                logger.warn("Failed to convert DateTime with a value of {} from class {} to an appropriate type.",
+                        dataFromSmartThings, dataFromSmartThings.getClass().getName());
                 return UnDefType.UNDEF;
 
             case SmartThingsBindingConstants.TYPE_DIMMER:

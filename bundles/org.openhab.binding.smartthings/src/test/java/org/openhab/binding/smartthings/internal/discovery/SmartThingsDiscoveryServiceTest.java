@@ -97,6 +97,34 @@ class SmartThingsDiscoveryServiceTest {
     }
 
     @Test
+    void registerDeviceUsesStaticThingTypeForOven() {
+        SmartThingsTypeRegistry typeRegistry = mock(SmartThingsTypeRegistry.class);
+        TestDiscoveryService discoveryService = createDiscoveryService(typeRegistry, false);
+        SmartThingsDevice device = createDevice("Oven", "Samsung Oven", "Kitchen Oven");
+
+        discoveryService.registerDevice(device, true);
+
+        DiscoveryResult result = discoveryService.discoveryResult;
+        assertNotNull(result);
+        assertEquals("smartthings:Samsung_Oven:account:Kitchen_Oven", result.getThingUID().getAsString());
+        verifyNoInteractions(typeRegistry);
+    }
+
+    @Test
+    void registerDeviceUsesStaticThingTypeForSoundbar() {
+        SmartThingsTypeRegistry typeRegistry = mock(SmartThingsTypeRegistry.class);
+        TestDiscoveryService discoveryService = createDiscoveryService(typeRegistry, false);
+        SmartThingsDevice device = createDevice("Soundbar", "Samsung Soundbar", "Living Room Soundbar");
+
+        discoveryService.registerDevice(device, true);
+
+        DiscoveryResult result = discoveryService.discoveryResult;
+        assertNotNull(result);
+        assertEquals("smartthings:Samsung_Soundbar:account:Living_Room_Soundbar", result.getThingUID().getAsString());
+        verifyNoInteractions(typeRegistry);
+    }
+
+    @Test
     void registerDeviceUsesDynamicThingTypeForUnknownDeviceWhenDynamicThingsAreEnabled() {
         SmartThingsTypeRegistry typeRegistry = mock(SmartThingsTypeRegistry.class);
         TestDiscoveryService discoveryService = createDiscoveryService(typeRegistry, true);

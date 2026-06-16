@@ -366,6 +366,69 @@ class SmartThingsThingDescriptionTest {
         assertEquals("veto", findChannelTypeAutoUpdatePolicy(document, "frame-art-mode"));
     }
 
+    @Test
+    void ovenThingExposesStatusChannels() throws Exception {
+        Document document = parseThingDescription("OH-INF/thing/oven.xml");
+
+        assertEquals("Samsung Oven", findThingTypeLabel(document, "Samsung_Oven"));
+        assertEquals("A Samsung oven connected via SmartThings Cloud.",
+                findThingTypeDescription(document, "Samsung_Oven"));
+        assertEquals(Set.of("status"), findThingTypeChannelGroupIds(document, "Samsung_Oven"));
+        assertEquals("oven-status-group", findThingTypeChannelGroupTypeId(document, "Samsung_Oven", "status"));
+
+        assertExpectedChannels(document,
+                Map.ofEntries(
+                        Map.entry("completion-time",
+                                new ExpectedChannel("oven-status-group", "oven-completion-time",
+                                        "samsungce.ovenOperatingState", "completionTime")),
+                        Map.entry("operating-state",
+                                new ExpectedChannel("oven-status-group", "oven-operating-state",
+                                        "samsungce.ovenOperatingState", "operatingState")),
+                        Map.entry("progress",
+                                new ExpectedChannel("oven-status-group", "oven-progress",
+                                        "samsungce.ovenOperatingState", "progress")),
+                        Map.entry("oven-job-state",
+                                new ExpectedChannel("oven-status-group", "oven-job-state",
+                                        "samsungce.ovenOperatingState", "ovenJobState")),
+                        Map.entry("operation-time", new ExpectedChannel("oven-status-group", "oven-operation-time",
+                                "samsungce.ovenOperatingState", "operationTime"))));
+
+        for (String channelTypeId : Set.of("oven-operating-state", "oven-job-state", "oven-operation-time")) {
+            assertEquals("String", findChannelTypeItemType(document, channelTypeId), channelTypeId);
+        }
+        assertEquals("DateTime", findChannelTypeItemType(document, "oven-completion-time"));
+        assertEquals("Number:Dimensionless", findChannelTypeItemType(document, "oven-progress"));
+        assertEquals("%.0f %%", findChannelTypeStatePattern(document, "oven-progress"));
+    }
+
+    @Test
+    void soundbarThingExposesControlChannels() throws Exception {
+        Document document = parseThingDescription("OH-INF/thing/soundbar.xml");
+
+        assertEquals("Samsung Soundbar", findThingTypeLabel(document, "Samsung_Soundbar"));
+        assertEquals("A Samsung soundbar connected via SmartThings Cloud.",
+                findThingTypeDescription(document, "Samsung_Soundbar"));
+        assertEquals(Set.of("control"), findThingTypeChannelGroupIds(document, "Samsung_Soundbar"));
+        assertEquals("soundbar-control-group",
+                findThingTypeChannelGroupTypeId(document, "Samsung_Soundbar", "control"));
+
+        assertExpectedChannels(document, Map.ofEntries(
+                Map.entry("switch", new ExpectedChannel("soundbar-control-group", "system.power", "switch", "switch")),
+                Map.entry("volume",
+                        new ExpectedChannel("soundbar-control-group", "system.volume", "audioVolume", "volume")),
+                Map.entry("mute", new ExpectedChannel("soundbar-control-group", "system.mute", "audioMute", "mute")),
+                Map.entry("input-source",
+                        new ExpectedChannel("soundbar-control-group", "soundbar-input-source",
+                                "samsungvd.audioInputSource", "inputSource")),
+                Map.entry("playback", new ExpectedChannel("soundbar-control-group", "system.media-control",
+                        "mediaPlayback", "playbackStatus"))));
+
+        assertEquals("String", findChannelTypeItemType(document, "soundbar-input-source"));
+        assertEquals("setInputSource",
+                findPropertyValue(findChannel(document, "soundbar-control-group", "input-source"), "command"));
+        assertEquals("veto", findChannelTypeAutoUpdatePolicy(document, "soundbar-input-source"));
+    }
+
     private Document parseThingDescription(String resourceName) throws Exception {
         InputStream stream = SmartThingsThingDescriptionTest.class.getResourceAsStream("/" + resourceName);
         assertNotNull(stream);
