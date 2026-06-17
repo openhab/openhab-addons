@@ -31,6 +31,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -104,9 +105,9 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
     private @Nullable ScheduledFuture<?> reinitializationFuture1;
     private @Nullable ScheduledFuture<?> reinitializationFuture2;
     private @Nullable ScheduledFuture<?> reinitializationFuture3;
-    private @Nullable Future<?> initializationFuture;
+    private final AtomicReference<@Nullable Future<?>> initializationFuture = new AtomicReference<>();
+    private volatile long initializationGeneration;
     private boolean ignoreEventSourceClosedEvent;
-    private volatile boolean disposed;
     private @Nullable String programOptionsDelayedUpdate;
 
     private final ConcurrentHashMap<String, EventHandler> eventHandlers;
@@ -138,7 +139,8 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
 
     @Override
     public void initialize() {
-        disposed = false;
+        // Mark a new initialization generation; any previously scheduled or running init task becomes stale.
+        final long generation = ++initializationGeneration;
         if (getBridgeHandler().isEmpty()) {
             updateStatus(OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
             accessible.set(false);
@@ -147,18 +149,39 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
             accessible.set(false);
         } else {
             updateStatus(UNKNOWN);
-            initializationFuture = scheduler.submit(() -> {
-                if (disposed) {
+            initializationFuture.set(scheduler.submit(() -> {
+                if (isStaleInitialization(generation)) {
                     return;
                 }
                 refreshThingStatus(); // set ONLINE / OFFLINE
+                if (isStaleInitialization(generation)) {
+                    return;
+                }
                 updateSelectedProgramStateDescription();
+                if (isStaleInitialization(generation)) {
+                    return;
+                }
                 updateChannels();
+                if (isStaleInitialization(generation)) {
+                    return;
+                }
                 registerEventListener();
+                if (isStaleInitialization(generation)) {
+                    return;
+                }
                 scheduleOfflineMonitor1();
                 scheduleOfflineMonitor2();
-            });
+            }));
         }
+    }
+
+    /**
+     * Returns {@code true} if the init task that captured {@code generation} has been superseded by a later
+     * {@link #initialize()} or stopped by {@link #teardown(boolean)}. Used to skip work and rescheduling after
+     * the handler was disposed or reinitialized.
+     */
+    private boolean isStaleInitialization(long generation) {
+        return generation != initializationGeneration;
     }
 
     @Override
@@ -186,7 +209,8 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
      *            during {@link #reinitialize()}).
      */
     private void teardown(boolean immediate) {
-        disposed = true;
+        // Invalidate the current init generation so a running/queued init task stops at its next checkpoint.
+        initializationGeneration++;
         cancelInitialization();
         stopRetryRegistering();
         stopOfflineMonitor1();
@@ -195,11 +219,10 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
     }
 
     private void cancelInitialization() {
-        Future<?> future = initializationFuture;
+        Future<?> future = initializationFuture.getAndSet(null);
         if (future != null) {
             // graceful cancel: do not interrupt a running task, only prevent a queued one from starting
             future.cancel(false);
-            initializationFuture = null;
         }
     }
 
