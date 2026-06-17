@@ -218,24 +218,31 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
 
         logger.debug("Connect({})", dev);
 
-        if (connectionStartRunning.get()) {
-            return true;
-        }
-
         if (Boolean.FALSE.equals(dev.isConnected())) {
-            clearServices();
-            connectionStartRunning.set(true);
-            CompletableFuture<@Nullable Void> result = CompletableFuture.runAsync(() -> {
-                setConnectionState(ConnectionState.CONNECTING);
-                boolean ret = device.connect();
-                logger.debug("Connect result: {}", ret);
-            }).handle((voidResult, th) -> {
-                if (th != null) {
-                    logger.warn("Failed to connect", th);
-                }
-                connectionStartRunning.set(false);
-                return null;
-            });
+            if (connectionStartRunning.compareAndSet(false, true)) {
+                CompletableFuture<@Nullable Void> result = CompletableFuture.runAsync(() -> {
+                    setConnectionState(ConnectionState.CONNECTING);
+                    // BlueZ Device.Connect() is unreliable while the adapter is actively discovering
+                    // (the call blocks / does not complete). Pause discovery first; the bridge's periodic
+                    // refresh job resumes it shortly after.
+                    bridgeHandler.stopDiscovery();
+                    clearServices();
+                    // This method does not block at most until the dbus-java
+                    // method timeout is reached.
+                    boolean ret = dev.connect();
+                    logger.debug("Connect result: {}", ret);
+                    setConnectionState(ret ? ConnectionState.CONNECTED : ConnectionState.DISCONNECTED);
+                }, scheduler).handle((voidResult, th) -> {
+                    if (th != null) {
+                        logger.warn("Failed to connect", th);
+                        setConnectionState(ConnectionState.DISCONNECTED);
+                    }
+                    connectionStartRunning.set(false);
+                    return null;
+                });
+            } else {
+                logger.debug("Connection already in progress for {}", address);
+            }
             return true;
         }
 
@@ -383,6 +390,9 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
     public void onServicesResolved(ServicesResolvedEvent event) {
         logger.debug("onServicesResolved: {}", event.isResolved());
         if (event.isResolved()) {
+            // Ensure that the view of "bluez-dbus" is up to date and we don't see
+            // stale data.
+            device.refreshGattServices();
             if (device.getGattServices().size() > getServices().size()) {
                 for (BluetoothGattService dBusBlueZService : device.getGattServices()) {
                     BluetoothService service = new BluetoothService(UUID.fromString(dBusBlueZService.getUuid()),
