@@ -112,7 +112,7 @@ This action only occurs once after binding startup.
 
 Output Channel Disconnect Connect Action determines what happens when the binding disconnects from pigpiod.
 
-- **Do Nothing:** The default, do nothing. Input channels will retain their current value.
+- **Do Nothing:** The default, do nothing. Output channels will retain their current value.
 - **Set Undef:** Sets the output channel states to UNDEF to indicate that pigpiod has disconnected.
 
 ### Output Channel Reconnect Connect Action
