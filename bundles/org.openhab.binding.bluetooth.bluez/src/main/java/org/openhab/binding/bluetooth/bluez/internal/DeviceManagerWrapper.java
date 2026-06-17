@@ -40,8 +40,8 @@ public class DeviceManagerWrapper {
         this.deviceManager = deviceManager;
     }
 
-    @SuppressWarnings("null")
     public synchronized Collection<BluetoothAdapter> scanForBluetoothAdapters() {
+        DeviceManager deviceManager = this.deviceManager;
         if (deviceManager != null) {
             return deviceManager.scanForBluetoothAdapters();
         } else {
@@ -50,11 +50,11 @@ public class DeviceManagerWrapper {
     }
 
     public synchronized @Nullable BluetoothAdapter getAdapter(BluetoothAddress address) {
-        DeviceManager devMgr = deviceManager;
-        if (devMgr != null) {
+        DeviceManager deviceManager = this.deviceManager;
+        if (deviceManager != null) {
             // we don't use `deviceManager.getAdapter` here since it might perform a scan if the adapter is missing.
             String addr = address.toString();
-            List<BluetoothAdapter> adapters = devMgr.getAdapters();
+            List<BluetoothAdapter> adapters = deviceManager.getAdapters();
             if (adapters != null) {
                 for (BluetoothAdapter btAdapter : adapters) {
                     String btAddr = btAdapter.getAddress();
@@ -67,8 +67,8 @@ public class DeviceManagerWrapper {
         return null;
     }
 
-    @SuppressWarnings("null")
     public synchronized List<BluetoothDevice> getDevices(BluetoothAdapter adapter) {
+        DeviceManager deviceManager = this.deviceManager;
         if (deviceManager != null) {
             return deviceManager.getDevices(adapter.getAddress(), true);
         } else {
@@ -77,6 +77,7 @@ public class DeviceManagerWrapper {
     }
 
     void setLazyScan(boolean lazyScan) {
+        DeviceManager deviceManager = this.deviceManager;
         if (deviceManager != null) {
             deviceManager.setLazyScan(lazyScan);
         }
@@ -88,9 +89,9 @@ public class DeviceManagerWrapper {
      * a device when the underlying BlueZ object disappears.
      */
     public synchronized void registerDeviceRemovedListener(Consumer<String> listener) {
-        DeviceManager devMgr = deviceManager;
-        if (devMgr != null) {
-            devMgr.registerDeviceRemovedListener(listener);
+        DeviceManager deviceManager = this.deviceManager;
+        if (deviceManager != null) {
+            deviceManager.registerDeviceRemovedListener(listener);
         }
     }
 
@@ -100,23 +101,23 @@ public class DeviceManagerWrapper {
      * invalidate its cached adapter proxy and the devices found through it.
      */
     public synchronized void registerAdapterRemovedListener(Consumer<String> listener) {
-        DeviceManager devMgr = deviceManager;
-        if (devMgr != null) {
-            devMgr.registerAdapterRemovedListener(listener);
+        DeviceManager deviceManager = this.deviceManager;
+        if (deviceManager != null) {
+            deviceManager.registerAdapterRemovedListener(listener);
         }
     }
 
     public synchronized void unregisterDeviceRemovedListener(Consumer<String> listener) {
-        DeviceManager devMgr = deviceManager;
-        if (devMgr != null) {
-            devMgr.unregisterDeviceRemovedListener(listener);
+        DeviceManager deviceManager = this.deviceManager;
+        if (deviceManager != null) {
+            deviceManager.unregisterDeviceRemovedListener(listener);
         }
     }
 
     public synchronized void unregisterAdapterRemovedListener(Consumer<String> listener) {
-        DeviceManager devMgr = deviceManager;
-        if (devMgr != null) {
-            devMgr.unregisterAdapterRemovedListener(listener);
+        DeviceManager deviceManager = this.deviceManager;
+        if (deviceManager != null) {
+            deviceManager.unregisterAdapterRemovedListener(listener);
         }
     }
 }
