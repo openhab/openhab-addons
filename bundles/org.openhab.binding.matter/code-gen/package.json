@@ -18,7 +18,7 @@
         "prettier-plugin-organize-imports": "^4.1.0"
     },
     "dependencies": {
-        "@matter/main": "0.17.2",
+        "@matter/main": "0.17.3",
         "handlebars": "^4.7.8"
     },
     "files": [
