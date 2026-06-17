@@ -40,19 +40,20 @@ import org.openhab.core.config.core.Configuration;
 @NonNullByDefault
 class ThreadsafeSimpleRuleDelegate implements Rule, SimpleRuleActionHandler {
 
-    private static final long LOCK_TIMEOUT_MS = 5000L;
-
     private final Lock lock;
+    private final long lockAcquisitionTimeoutMS;
     private final SimpleRule delegate;
 
     /**
      * Constructor requires a lock object and delegate to forward invocations to.
      *
      * @param lock rule executions will synchronize on this object
+     * @param lockAcquisitionTimeoutMS the lock acquisition timeout in milliseconds.
      * @param delegate the delegate to forward invocations to
      */
-    ThreadsafeSimpleRuleDelegate(Lock lock, SimpleRule delegate) {
+    ThreadsafeSimpleRuleDelegate(Lock lock, long lockAcquisitionTimeoutMS, SimpleRule delegate) {
         this.lock = lock;
+        this.lockAcquisitionTimeoutMS = lockAcquisitionTimeoutMS;
         this.delegate = delegate;
     }
 
@@ -61,11 +62,11 @@ class ThreadsafeSimpleRuleDelegate implements Rule, SimpleRuleActionHandler {
     public Object execute(Action module, Map<String, ?> inputs) {
         boolean locked;
         try {
-            locked = lock.tryLock(LOCK_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+            locked = lock.tryLock(lockAcquisitionTimeoutMS, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new RuntimeException(
-                    "Interrupted while waiting to acquire the lock for action '" + module.getId() + '\'', e);
+            throw new RuntimeException("Interrupted while waiting to acquire the lock for action '" + module.getId()
+                    + "' of rule '" + delegate.getUID() + '\'', e);
         }
         if (locked) {
             try {
@@ -75,8 +76,9 @@ class ThreadsafeSimpleRuleDelegate implements Rule, SimpleRuleActionHandler {
                 lock.unlock();
             }
         } else {
-            throw new RuntimeException("Failed to acquire the lock for action '" + module.getId() + "' within "
-                    + LOCK_TIMEOUT_MS + " ms.");
+            throw new RuntimeException(
+                    "Failed to acquire the lock for action '" + module.getId() + "' of rule '" + delegate.getUID()
+                            + "' within " + TimeUnit.MILLISECONDS.toSeconds(lockAcquisitionTimeoutMS) + " seconds.");
         }
     }
 
