@@ -73,6 +73,7 @@ public class RachioDiscoveryService extends AbstractDiscoveryService implements 
     @Override
     @Deactivate
     public void deactivate() {
+        cancelDiscoveryJobs();
         RachioBridgeHandler handler = cloudHandler;
         if (handler != null) {
             handler.unregisterDiscoveryService(this);
@@ -117,6 +118,12 @@ public class RachioDiscoveryService extends AbstractDiscoveryService implements 
                     TimeUnit.SECONDS);
             this.discoveryJob = discoveryJob;
         }
+    }
+
+    @Override
+    protected void stopBackgroundDiscovery() {
+        cancelDiscoveryJobs();
+        super.stopBackgroundDiscovery();
     }
 
     @Override
@@ -230,6 +237,20 @@ public class RachioDiscoveryService extends AbstractDiscoveryService implements 
     @Override
     protected synchronized void stopScan() {
         super.stopScan();
+    }
+
+    private synchronized void cancelDiscoveryJobs() {
+        ScheduledFuture<?> discoveryJob = this.discoveryJob;
+        if (discoveryJob != null) {
+            discoveryJob.cancel(true);
+            this.discoveryJob = null;
+        }
+
+        Future<?> scanTask = this.scanTask;
+        if (scanTask != null) {
+            scanTask.cancel(true);
+            this.scanTask = null;
+        }
     }
 
     private int discoverScheduleRules(ThingUID bridgeUID, RachioDevice dev) {

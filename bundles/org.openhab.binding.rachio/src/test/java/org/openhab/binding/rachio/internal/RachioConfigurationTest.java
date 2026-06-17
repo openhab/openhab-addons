@@ -45,6 +45,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -52,6 +53,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author openHAB Contributors - Initial contribution
  */
+@NonNullByDefault
 class RachioConfigurationTest {
     private static final List<String> CLOUD_THING_PARAMETERS = List.of(PARAM_APIKEY, PARAM_POLLING_INTERVAL,
             PARAM_DEFAULT_RUNTIME, PARAM_EVENT_HISTORY_LOOKBACK_HOURS, PARAM_FORECAST_UNITS,

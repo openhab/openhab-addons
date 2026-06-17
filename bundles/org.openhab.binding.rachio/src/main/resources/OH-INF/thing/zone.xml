@@ -58,7 +58,7 @@
 	<channel-type id="zone-name">
 		<item-type>String</item-type>
 		<label>Name</label>
-		<description>Name of the zone as configured in the Rachip App</description>
+		<description>Name of the zone as configured in the Rachio App.</description>
 		<tags>
 			<tag>Status</tag>
 		</tags>

@@ -30,6 +30,7 @@ public class RachioEventStringDTO {
     private @Nullable ZoneEvent zEvent;
     private Gson gson = new Gson();
 
+    @SuppressWarnings("unused")
     private class GenericEvent {
         private final String timestamp;
         private final String summary;
@@ -46,6 +47,7 @@ public class RachioEventStringDTO {
         }
     }
 
+    @SuppressWarnings("unused")
     private class ZoneEvent {
         private final String timestamp;
         private final String summary;
@@ -78,7 +80,7 @@ public class RachioEventStringDTO {
     }
 
     public RachioEventStringDTO(RachioEventGsonDTO event) {
-        if (event.type.equals("ZONE_STATUS")) {
+        if ("ZONE_STATUS".equals(event.type)) {
             zEvent = new ZoneEvent(event);
         } else {
             gEvent = new GenericEvent(event);

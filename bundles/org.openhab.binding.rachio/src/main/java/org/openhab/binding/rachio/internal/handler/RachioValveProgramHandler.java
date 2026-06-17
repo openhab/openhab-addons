@@ -154,6 +154,7 @@ public class RachioValveProgramHandler extends AbstractRachioThingHandler {
             thingId = currentProgram.getThingName();
             registerStatusListener();
             if (initialLoad || getThing().getStatus() != ThingStatus.ONLINE) {
+                // Smart Hose Timer program webhooks remain disabled; polling keeps schedule-like state current.
                 handler.registerValveProgramWebHook(currentProgram.id,
                         initialLoad ? RequestPurpose.INITIALIZATION : RequestPurpose.BACKGROUND_REFRESH);
             }
@@ -254,6 +255,11 @@ public class RachioValveProgramHandler extends AbstractRachioThingHandler {
         if (run == null) {
             throw new RachioApiException("No upcoming Smart Hose Timer program run is available to skip.");
         }
+        if (!RachioValveHandler.hasSkipOverrideIdentifier(run)) {
+            logger.debug("{}: Unable to skip Smart Hose Timer program run because summary identifiers are missing",
+                    thingId);
+            return;
+        }
         RachioValveHandler.applySkipOverride(handler, run, true);
         refreshProgramSummary(currentProgram);
         postChannelData();
@@ -265,6 +271,12 @@ public class RachioValveProgramHandler extends AbstractRachioThingHandler {
         RachioValveDayRun run = nextSkippedProgramRun;
         if (run == null) {
             throw new RachioApiException("No upcoming skipped Smart Hose Timer program run is available to cancel.");
+        }
+        if (!RachioValveHandler.hasSkipOverrideIdentifier(run)) {
+            logger.debug(
+                    "{}: Unable to cancel Smart Hose Timer program run skip because summary identifiers are missing",
+                    thingId);
+            return;
         }
         RachioValveHandler.applySkipOverride(handler, run, false);
         refreshProgramSummary(currentProgram);
@@ -373,9 +385,11 @@ public class RachioValveProgramHandler extends AbstractRachioThingHandler {
         RachioValveProgram currentProgram = program;
         if (handler != null && currentProgram != null) {
             try {
+                // The bridge currently treats this as disabled/no-op unless program WebhookService support is added.
                 handler.registerValveProgramWebHook(currentProgram.id, RequestPurpose.USER_COMMAND);
             } catch (RachioApiException e) {
-                logger.debug("{}: Unable to renew Program webhook registration: {}", thingId, e.toString());
+                logger.debug("{}: Unable to renew Program webhook registration, cause={}", thingId,
+                        e.getClass().getSimpleName());
             }
         }
     }

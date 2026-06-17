@@ -19,6 +19,7 @@ import static org.hamcrest.Matchers.not;
 
 import java.util.Objects;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.rachio.internal.api.json.RachioDeviceGsonDTO.RachioCloudDevice;
 import org.openhab.binding.rachio.internal.api.json.RachioZoneGsonDTO.RachioCloudZone;
@@ -28,6 +29,7 @@ import org.openhab.binding.rachio.internal.api.json.RachioZoneGsonDTO.RachioClou
  *
  * @author openHAB Contributors - Initial contribution
  */
+@NonNullByDefault
 class RachioDeviceRunZonesTest {
     @Test
     void multiZonePayloadUsesControllerRunTimeForEverySelectedZone() {
@@ -114,6 +116,20 @@ class RachioDeviceRunZonesTest {
         assertThat(device.activeZoneNumber, is(-1));
         assertThat(device.activeZoneName, is(""));
         assertThat(device.activeZoneId, is(""));
+    }
+
+    @Test
+    void completedOlderZoneDoesNotClearNewerActiveZone() {
+        RachioDevice device = deviceWithZones(zone("zone-6-id", 6), zone("zone-7-id", 7));
+        RachioZone oldZone = Objects.requireNonNull(device.getZoneByNumber(6));
+        RachioZone activeZone = Objects.requireNonNull(device.getZoneByNumber(7));
+        device.applyActiveZoneEvent("ZONE_STARTED", 7, activeZone);
+
+        assertThat(device.applyActiveZoneEvent("ZONE_COMPLETED", 6, oldZone), is(false));
+
+        assertThat(device.activeZoneNumber, is(7));
+        assertThat(device.activeZoneName, is("Zone 7"));
+        assertThat(device.activeZoneId, is("zone-7-id"));
     }
 
     @Test

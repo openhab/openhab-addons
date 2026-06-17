@@ -18,6 +18,7 @@ import static org.openhab.binding.rachio.internal.RachioUtils.getString;
 import java.net.UnknownHostException;
 import java.text.MessageFormat;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -332,7 +333,7 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
                         "RachioCloud: Core scheduled status poll completed for controller '{}'; refreshing essential running state before optional enrichments",
                         checkDev.id);
             }
-            deviceHandler.refreshSmartIrrigationReadExtensions(false, getRequestPurpose(refreshReason));
+            deviceHandler.refreshSmartIrrigationReadExtensions(false, getRequestPurpose(refreshReason), refreshReason);
         }
     }
 
@@ -593,8 +594,9 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
     }
 
     public RachioValveDayViewsResponse getValveDayViews(String valveId) throws RachioApiException {
-        LocalDate end = LocalDate.now().plusDays(getHoseSummaryLookaheadDays());
-        LocalDate start = LocalDate.now().minusDays(getHoseSummaryLookbackDays());
+        LocalDate today = LocalDate.now(ZoneId.systemDefault());
+        LocalDate end = today.plusDays(getHoseSummaryLookaheadDays());
+        LocalDate start = today.minusDays(getHoseSummaryLookbackDays());
         return rachioApi.getValveDayViews(valveId, start, end);
     }
 
@@ -751,6 +753,27 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
         return null;
     }
 
+    @Nullable
+    RachioDevice findIrrigationController(String controllerId) {
+        if (controllerId.isBlank()) {
+            return null;
+        }
+        HashMap<String, RachioDevice> devices = getDevices();
+        if (devices == null) {
+            return null;
+        }
+        RachioDevice controller = devices.get(controllerId);
+        if (controller != null) {
+            return controller;
+        }
+        for (RachioDevice candidate : devices.values()) {
+            if (candidate.id.equalsIgnoreCase(controllerId)) {
+                return candidate;
+            }
+        }
+        return null;
+    }
+
     /**
      * return RachioDevice by device Thing UID
      *
@@ -880,8 +903,7 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
     }
 
     public boolean legacyWebHookEvent(RachioEventGsonDTO event) {
-        HashMap<String, RachioDevice> devices = getDevices();
-        if (devices == null || !devices.containsKey(event.deviceId)) {
+        if (findIrrigationController(event.deviceId) == null) {
             logger.warn("RachioCloud: Rejecting legacy NotificationService event for unknown controller '{}'",
                     event.deviceId);
             return false;

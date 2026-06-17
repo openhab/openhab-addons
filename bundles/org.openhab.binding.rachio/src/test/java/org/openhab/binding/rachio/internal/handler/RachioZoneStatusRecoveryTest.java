@@ -78,7 +78,8 @@ class RachioZoneStatusRecoveryTest {
         verify(zoneHandler).refreshThingStatusAfterSuccessfulCommunication();
         verify(zoneHandler, never()).onThingStateChanged(any(), any());
         verify(deviceHandler).retryDeferredWebhookRegistrationIfDue();
-        verify(deviceHandler).refreshSmartIrrigationReadExtensions(false, RequestPurpose.CORE_STATUS_POLL);
+        verify(deviceHandler).refreshSmartIrrigationReadExtensions(false, RequestPurpose.CORE_STATUS_POLL,
+                RefreshReason.SCHEDULED_POLL);
     }
 
     @Test
@@ -117,9 +118,9 @@ class RachioZoneStatusRecoveryTest {
     }
 
     @Test
-    void changedZoneStillUpdatesChannelsAndControllerStatus() {
+    void changedZoneStillUpdatesChannelsAndKeepsThingOnlineWhenControllerTelemetryIsOffline() {
         Thing thing = zoneThing();
-        RachioDevice device = device("ONLINE", 60);
+        RachioDevice device = device("OFFLINE", 60);
         TestZoneHandler handler = initializedHandler(thing, device, device.getZones().get(ZONE_ID), ThingStatus.ONLINE);
         ThingHandlerCallback callback = Mockito.mock(ThingHandlerCallback.class);
         handler.setCallback(callback);
@@ -130,6 +131,8 @@ class RachioZoneStatusRecoveryTest {
 
         assertThat(handled, is(true));
         verify(callback).statusUpdated(eq(thing), argThat(status -> status.getStatus() == ThingStatus.ONLINE));
+        verify(callback, never()).statusUpdated(eq(thing),
+                argThat(status -> status.getStatus() == ThingStatus.OFFLINE));
         verify(callback, atLeastOnce()).stateUpdated(eq(new ChannelUID(thing.getUID(), CHANNEL_ZONE_RUN_TOTAL)),
                 any(State.class));
     }
@@ -177,6 +180,8 @@ class RachioZoneStatusRecoveryTest {
         ThingHandlerCallback callback = Mockito.mock(ThingHandlerCallback.class);
         handler.setCallback(callback);
         handler.initialize();
+        verify(callback).statusUpdated(eq(thing), argThat(status -> status.getStatus() == ThingStatus.OFFLINE
+                && status.getStatusDetail() == ThingStatusDetail.BRIDGE_OFFLINE));
         clearInvocations(callback);
 
         handler.refreshThingStatusAfterSuccessfulCommunication();
@@ -185,7 +190,7 @@ class RachioZoneStatusRecoveryTest {
     }
 
     @Test
-    void offlineControllerKeepsZoneOfflineAfterSuccessfulPoll() {
+    void offlineControllerTelemetryDoesNotMarkResolvedZoneOfflineAfterSuccessfulPoll() {
         Thing thing = zoneThing();
         RachioDevice device = device("OFFLINE", 60);
         TestZoneHandler handler = initializedHandler(thing, device, device.getZones().get(ZONE_ID), ThingStatus.ONLINE);
@@ -196,8 +201,9 @@ class RachioZoneStatusRecoveryTest {
 
         handler.refreshThingStatusAfterSuccessfulCommunication();
 
-        verify(callback).statusUpdated(eq(thing), argThat(status -> status.getStatus() == ThingStatus.OFFLINE));
-        verify(callback, never()).statusUpdated(eq(thing), argThat(status -> status.getStatus() == ThingStatus.ONLINE));
+        verify(callback).statusUpdated(eq(thing), argThat(status -> status.getStatus() == ThingStatus.ONLINE));
+        verify(callback, never()).statusUpdated(eq(thing),
+                argThat(status -> status.getStatus() == ThingStatus.OFFLINE));
     }
 
     private RachioBridgeHandler bridgeHandler() {

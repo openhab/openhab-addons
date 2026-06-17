@@ -131,7 +131,6 @@ public class RachioHttp {
      */
     protected RachioApiResult httpRequest(String method, String url, @Nullable String urlParameters,
             @Nullable String reqDatas) throws RachioApiException {
-
         RachioApiResult result = new RachioApiResult();
         try {
             apiCalls++;
@@ -151,7 +150,7 @@ public class RachioHttp {
                 request.setRequestProperty("Authorization", "Bearer " + apikey);
             }
             request.setRequestMethod(method);
-            request.setConnectTimeout(15000); // set timeout to 15 seconds
+            request.setConnectTimeout(HTTP_TIMEOUT_MS);
             request.setRequestProperty("User-Agent", SERVLET_WEBHOOK_USER_AGENT);
             request.setRequestProperty("Content-Type", SERVLET_WEBHOOK_APPLICATION_JSON);
             logger.trace("RachioHttp[Call #{}]: Call Rachio cloud service: {} '{}'", apiCalls,

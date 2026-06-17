@@ -18,6 +18,7 @@ import static org.hamcrest.Matchers.is;
 import java.time.Instant;
 import java.time.LocalDate;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.rachio.internal.api.json.RachioSmartHoseTimerGsonDTO;
 import org.openhab.binding.rachio.internal.api.json.RachioSmartHoseTimerGsonDTO.RachioBaseStationListResponse;
@@ -35,6 +36,7 @@ import com.google.gson.JsonParser;
  *
  * @author openHAB Contributors - Initial contribution
  */
+@NonNullByDefault
 class RachioSmartHoseTimerApiTest {
     @Test
     void baseStationListResponseParsesWrappedList() {

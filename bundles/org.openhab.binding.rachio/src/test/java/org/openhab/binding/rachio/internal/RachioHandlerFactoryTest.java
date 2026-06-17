@@ -31,8 +31,12 @@ import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_T
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_TYPE_ZONE;
 
 import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Objects;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -53,6 +57,8 @@ import org.openhab.core.thing.binding.ThingHandler;
 @NonNullByDefault
 @SuppressWarnings({ "null" })
 class RachioHandlerFactoryTest {
+    private static final String HMAC_SHA256_ALGORITHM = "HmacSHA256";
+
     @Test
     void legacyWebhookRoutesOnlyToBridgeWithMatchingExternalId() throws Exception {
         RachioHandlerFactory factory = new RachioHandlerFactory();
@@ -74,6 +80,31 @@ class RachioHandlerFactoryTest {
         assertThat(factory.legacyWebHookEvent("127.0.0.1", event), is(false));
         verify(bridgeHandler, never()).legacyWebHookEvent(event);
         verify(bridgeHandler, never()).webHookEvent(event);
+    }
+
+    @Test
+    void webhookSignatureValidationUsesBridgeMatchedByExternalId() throws Exception {
+        RachioHandlerFactory factory = new RachioHandlerFactory();
+        RachioBridgeHandler firstBridgeHandler = Mockito.mock(RachioBridgeHandler.class);
+        when(firstBridgeHandler.getExternalId()).thenReturn("first-external-id");
+        when(firstBridgeHandler.getApiKey()).thenReturn("first-api-key");
+        RachioBridgeHandler secondBridgeHandler = Mockito.mock(RachioBridgeHandler.class);
+        when(secondBridgeHandler.getExternalId()).thenReturn("second-external-id");
+        when(secondBridgeHandler.getApiKey()).thenReturn("second-api-key");
+
+        RachioHandlerFactory.RachioBridge firstBridge = factory.new RachioBridge();
+        firstBridge.cloudHandler = firstBridgeHandler;
+        RachioHandlerFactory.RachioBridge secondBridge = factory.new RachioBridge();
+        secondBridge.cloudHandler = secondBridgeHandler;
+        bridgeList(factory).put("first", firstBridge);
+        bridgeList(factory).put("second", secondBridge);
+
+        RachioEventGsonDTO event = new RachioEventGsonDTO();
+        event.externalId = "second-external-id";
+        byte[] body = "{}".getBytes(StandardCharsets.UTF_8);
+
+        assertThat(factory.isValidWebHookSignature(signature(body, "first-api-key"), body, event), is(false));
+        assertThat(factory.isValidWebHookSignature(signature(body, "second-api-key"), body, event), is(true));
     }
 
     @Test
@@ -140,5 +171,15 @@ class RachioHandlerFactoryTest {
         Field field = RachioHandlerFactory.class.getDeclaredField("bridgeList");
         field.setAccessible(true);
         return Objects.requireNonNull((Map<String, RachioHandlerFactory.RachioBridge>) field.get(factory));
+    }
+
+    private static String signature(byte[] body, String apiKey) throws Exception {
+        Mac mac = Mac.getInstance(HMAC_SHA256_ALGORITHM);
+        mac.init(new SecretKeySpec(apiKey.getBytes(StandardCharsets.UTF_8), HMAC_SHA256_ALGORITHM));
+        StringBuilder signature = new StringBuilder("sha256=");
+        for (byte b : mac.doFinal(body)) {
+            signature.append(String.format("%02x", b & 0xff));
+        }
+        return signature.toString();
     }
 }

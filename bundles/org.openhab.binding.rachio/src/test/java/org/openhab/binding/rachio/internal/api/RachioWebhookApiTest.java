@@ -358,9 +358,36 @@ class RachioWebhookApiTest {
         assertThat(payloadUrl, is("https://rachio-test:test-secret-123@webhook.site/57b-example"));
         assertThat(new URI(payloadUrl).getRawUserInfo(), is("rachio-test:test-secret-123"));
         assertThat(RachioApi.webhookUrlContainsUserInfo(payloadUrl), is(true));
-        assertThat(sanitizedUrl, is("https://<user>:***@webhook.site/57b-example"));
+        assertThat(sanitizedUrl.startsWith("callbackUrlHash="), is(true));
         assertThat(sanitizedUrl.contains("rachio-test"), is(false));
         assertThat(sanitizedUrl.contains("test-secret-123"), is(false));
+        assertThat(sanitizedUrl.contains("webhook.site"), is(false));
+    }
+
+    @Test
+    void createWebhookFailureSanitizesCredentialUrlFromExceptionDiagnostics() throws Exception {
+        RachioApi api = new RachioApi("person-id");
+        RecordingRachioHttp http = new RecordingRachioHttp();
+        String registrationUrl = "https://rachio-test:test-secret-123@webhook.site/57b-example";
+        RachioApiResult result = new RachioApiResult();
+        result.resultString = "Failed to register " + registrationUrl;
+        http.postException = new RachioApiException("Failed to register " + registrationUrl, result);
+        setField(api, "httpApi", http);
+        setField(api, "rateLimitManager", new RecordingRateLimitManager(0));
+
+        RachioApiException exception = assertThrows(RachioApiException.class,
+                () -> api.registerWebHook("device-id", "https://webhook.site/57b-example", "rachio-test",
+                        "test-secret-123", "external-id", false, RequestPurpose.INITIALIZATION));
+
+        String message = String.valueOf(exception.getMessage());
+        assertThat(message, containsString("cause=RachioApiException"));
+        assertThat(message, containsString("callbackUrlHash="));
+        assertThat(message.contains("rachio-test"), is(false));
+        assertThat(message.contains("test-secret-123"), is(false));
+        assertThat(message.contains("webhook.site"), is(false));
+        assertThat(exception.getApiResult().resultString.contains("rachio-test"), is(false));
+        assertThat(exception.getApiResult().resultString.contains("test-secret-123"), is(false));
+        assertThat(exception.getApiResult().resultString.contains("webhook.site"), is(false));
     }
 
     @Test
@@ -377,8 +404,7 @@ class RachioWebhookApiTest {
         String payloadUrl = payload.get("url").getAsString();
 
         assertThat(payloadUrl, is("https://rachio%20test:test-secret-123%3A%2F%3F%40@webhook.site/57b-example"));
-        assertThat(RachioApi.sanitizeWebhookUrlForDiagnostic(payloadUrl),
-                is("https://<user>:***@webhook.site/57b-example"));
+        assertThat(RachioApi.sanitizeWebhookUrlForDiagnostic(payloadUrl).startsWith("callbackUrlHash="), is(true));
     }
 
     @Test
@@ -398,8 +424,9 @@ class RachioWebhookApiTest {
         assertThat(http.getUrls.getFirst(), containsString(APIURL_DEV_QUERY_WEBHOOK + "/device-id/webhook"));
         assertThat(http.postUrls.getFirst(), containsString(APIURL_DEV_POST_WEBHOOK));
         assertThat(payloadUrl, is("https://rachio%20test:test-secret-123%3A%2F%3F%40@webhook.site/57b-example"));
-        assertThat(sanitizedUrl, is("https://<user>:***@webhook.site/57b-example"));
+        assertThat(sanitizedUrl.startsWith("callbackUrlHash="), is(true));
         assertThat(sanitizedUrl.contains("test-secret-123"), is(false));
+        assertThat(sanitizedUrl.contains("webhook.site"), is(false));
         assertThat(payload.getAsJsonObject("device").get("id").getAsString(), is("device-id"));
         assertThat(payload.getAsJsonArray("eventTypes").size(), is(9));
     }
@@ -517,6 +544,7 @@ class RachioWebhookApiTest {
         private final List<String> postUrls = new ArrayList<>();
         private final List<String> postBodies = new ArrayList<>();
         private final List<String> deleteUrls = new ArrayList<>();
+        private @Nullable RachioApiException postException;
         private int eventTypeLookupResponseCode = HttpStatus.OK_200;
         private String legacyWebhookListJson = "[]";
 
@@ -556,7 +584,11 @@ class RachioWebhookApiTest {
         }
 
         @Override
-        public RachioApiResult httpPost(String url, String postData) {
+        public RachioApiResult httpPost(String url, String postData) throws RachioApiException {
+            RachioApiException exception = postException;
+            if (exception != null) {
+                throw exception;
+            }
             postUrls.add(url);
             postBodies.add(postData);
             RachioApiResult result = new RachioApiResult();

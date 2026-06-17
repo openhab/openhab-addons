@@ -18,11 +18,15 @@ import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.SERVLET_IMAGE_PATH;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.SERVLET_WEBHOOK_PATH;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -38,6 +42,40 @@ import org.osgi.service.http.HttpService;
 @NonNullByDefault
 @SuppressWarnings({ "null" })
 class RachioServletLifecycleTest {
+    @Test
+    void imageServletRejectsTooShortPathBeforeSubstring() throws Exception {
+        RachioImageServlet servlet = new RachioImageServlet();
+        HttpServletResponse response = mock(HttpServletResponse.class);
+
+        servlet.service(imageRequest("/rachio", "GET"), response);
+
+        verify(response).sendError(HttpServletResponse.SC_NOT_FOUND);
+        verify(response, never()).getOutputStream();
+    }
+
+    @Test
+    void imageServletRejectsEmptyImagePath() throws Exception {
+        RachioImageServlet servlet = new RachioImageServlet();
+        HttpServletResponse response = mock(HttpServletResponse.class);
+
+        servlet.service(imageRequest(SERVLET_IMAGE_PATH + "/", "GET"), response);
+
+        verify(response).sendError(HttpServletResponse.SC_BAD_REQUEST);
+        verify(response, never()).getOutputStream();
+    }
+
+    @Test
+    void imageServletRejectsUnsupportedMethodWithAllowHeader() throws Exception {
+        RachioImageServlet servlet = new RachioImageServlet();
+        HttpServletResponse response = mock(HttpServletResponse.class);
+
+        servlet.service(imageRequest(SERVLET_IMAGE_PATH + "/front-yard.png", "POST"), response);
+
+        verify(response).setHeader("Allow", "GET");
+        verify(response).sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+        verify(response, never()).getOutputStream();
+    }
+
     @Test
     void imageServletDuplicateBindRegistersOnce() throws Exception {
         HttpService httpService = httpService();
@@ -176,6 +214,18 @@ class RachioServletLifecycleTest {
         HttpService httpService = mock(HttpService.class);
         when(httpService.createDefaultHttpContext()).thenReturn(mock(HttpContext.class));
         return httpService;
+    }
+
+    private HttpServletRequest imageRequest(String requestUri, String method) {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        when(request.getRequestURI()).thenReturn(requestUri);
+        when(request.getMethod()).thenReturn(method);
+        when(request.getRemoteAddr()).thenReturn("127.0.0.1");
+        when(request.getRemotePort()).thenReturn(443);
+        when(request.getRemoteHost()).thenReturn("localhost");
+        when(request.getServerPort()).thenReturn(8443);
+        when(request.getProtocol()).thenReturn("HTTP/1.1");
+        return request;
     }
 
     private RachioWebHookServlet webhookServlet() {

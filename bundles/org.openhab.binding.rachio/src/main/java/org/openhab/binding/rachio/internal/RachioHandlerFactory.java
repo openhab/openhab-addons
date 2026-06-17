@@ -135,47 +135,52 @@ public class RachioHandlerFactory extends BaseThingHandlerFactory {
         try {
             logger.debug("RachioCloud: Event for device {} received", event.deviceName);
 
-            // process event parameters
-            for (Map.Entry<String, RachioBridge> be : bridgeList.entrySet()) {
-                RachioBridge bridge = be.getValue();
-                RachioBridgeHandler cloudHandler = bridge.cloudHandler;
-                if (cloudHandler == null) {
-                    continue;
-                }
-                String externalId = cloudHandler.getExternalId();
-                if (externalId != null && externalId.equals(event.externalId)) {
-                    return cloudHandler.webHookEvent(event);
-                }
+            RachioBridgeHandler cloudHandler = getBridgeHandlerForExternalId(event.externalId);
+            if (cloudHandler != null) {
+                return cloudHandler.webHookEvent(event);
             }
 
             // invalid externalId, could be an indicator for unauthorized access
-            logger.warn("RachioCloud: Unauthorized webhook event (wrong externalId: {}, source ip: {})",
-                    event.externalId, ipAddress);
+            logger.warn("RachioCloud: Unauthorized webhook event (externalId mismatch, source ip: {})", ipAddress);
             return false;
         } catch (RuntimeException e) {
             logger.debug("RachioCloud: Unable to process event", e);
         }
 
-        logger.debug("RachioCloud: Unable to route event to bridge, externalId={}, deviceId={}", event.externalId,
-                event.deviceId);
+        logger.debug("RachioCloud: Unable to route event to bridge, externalIdPresent={}, deviceIdPresent={}",
+                !isBlank(event.externalId), !isBlank(event.deviceId));
         return false;
     }
 
     public boolean legacyWebHookEvent(String ipAddress, RachioEventGsonDTO event) {
-        for (Map.Entry<String, RachioBridge> be : bridgeList.entrySet()) {
-            RachioBridgeHandler cloudHandler = be.getValue().cloudHandler;
-            if (cloudHandler == null) {
-                continue;
-            }
-            String externalId = cloudHandler.getExternalId();
-            if (externalId != null && externalId.equals(event.externalId)) {
-                return cloudHandler.legacyWebHookEvent(event);
-            }
+        RachioBridgeHandler cloudHandler = getBridgeHandlerForExternalId(event.externalId);
+        if (cloudHandler != null) {
+            return cloudHandler.legacyWebHookEvent(event);
         }
 
-        logger.warn("RachioCloud: Unauthorized legacy webhook event (wrong externalId: {}, source ip: {})",
-                event.externalId, ipAddress);
+        logger.warn("RachioCloud: Unauthorized legacy webhook event (externalId mismatch, source ip: {})", ipAddress);
         return false;
+    }
+
+    public boolean isValidWebHookSignature(@Nullable String signature, byte[] requestBody, RachioEventGsonDTO event) {
+        if (isBlank(event.externalId)) {
+            logger.warn("RachioCloud: Unable to validate webhook signature because the event externalId is missing");
+            return false;
+        }
+
+        RachioBridgeHandler cloudHandler = getBridgeHandlerForExternalId(event.externalId);
+        if (cloudHandler == null) {
+            logger.warn(
+                    "RachioCloud: Unable to validate webhook signature because no bridge matches the event externalId");
+            return false;
+        }
+
+        String apikey = cloudHandler.getApiKey();
+        if (apikey.isEmpty()) {
+            logger.warn("RachioCloud: Unable to validate webhook signature because the matching bridge has no API key");
+            return false;
+        }
+        return RachioApi.isValidWebHookSignature(signature, requestBody, apikey);
     }
 
     public boolean isValidWebHookSignature(@Nullable String signature, byte[] requestBody) {
@@ -201,6 +206,29 @@ public class RachioHandlerFactory extends BaseThingHandlerFactory {
             logger.warn("RachioCloud: Unable to validate webhook signature because no API key is configured");
         }
         return false;
+    }
+
+    private @Nullable RachioBridgeHandler getBridgeHandlerForExternalId(@Nullable String eventExternalId) {
+        String expectedExternalId = eventExternalId;
+        if (expectedExternalId == null || expectedExternalId.isBlank()) {
+            return null;
+        }
+
+        for (Map.Entry<String, RachioBridge> be : bridgeList.entrySet()) {
+            RachioBridgeHandler cloudHandler = be.getValue().cloudHandler;
+            if (cloudHandler == null) {
+                continue;
+            }
+            String externalId = cloudHandler.getExternalId();
+            if (externalId != null && !externalId.isBlank() && externalId.equals(expectedExternalId)) {
+                return cloudHandler;
+            }
+        }
+        return null;
+    }
+
+    private static boolean isBlank(@Nullable String value) {
+        return value == null || value.isBlank();
     }
 
     private @Nullable RachioBridgeHandler createBridge(Bridge bridgeThing) {

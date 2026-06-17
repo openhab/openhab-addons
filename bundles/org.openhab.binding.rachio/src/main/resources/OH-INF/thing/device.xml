@@ -10,7 +10,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Rachio Sprinkler Controller</label>
-		<description>The things controls one sprinkler controller, which might have multiple zones.</description>
+		<description>Controls one sprinkler controller, which might have multiple zones.</description>
 		<semantic-equipment-tag>Irrigation</semantic-equipment-tag>
 
 		<channels>

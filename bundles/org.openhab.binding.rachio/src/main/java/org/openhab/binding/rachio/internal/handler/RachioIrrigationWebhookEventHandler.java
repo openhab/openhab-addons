@@ -12,9 +12,8 @@
  */
 package org.openhab.binding.rachio.internal.handler;
 
-import java.util.HashMap;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.rachio.internal.api.RachioDevice;
 import org.openhab.binding.rachio.internal.api.json.RachioEventGsonDTO;
 import org.openhab.binding.rachio.internal.api.webhook.RachioWebhookResourceType;
@@ -43,19 +42,17 @@ class RachioIrrigationWebhookEventHandler implements RachioWebhookEventHandler {
     @Override
     public boolean handle(RachioEventGsonDTO event) {
         try {
-            HashMap<String, RachioDevice> deviceList = bridgeHandler.getDevices();
-            if (deviceList == null) {
+            RachioDevice controller = bridgeHandler.findIrrigationController(event.deviceId);
+            if (controller == null) {
+                logger.debug("RachioCloud: Event {}.{} for unknown irrigation controller {}", event.type, event.subType,
+                        event.deviceId);
                 return false;
             }
+
             boolean handled = false;
-            for (HashMap.Entry<String, RachioDevice> de : deviceList.entrySet()) {
-                RachioDevice dev = de.getValue();
-                if (dev.id.equalsIgnoreCase(event.deviceId) && (dev.getThingHandler() != null)) {
-                    RachioDeviceHandler th = dev.getThingHandler();
-                    if (th != null) {
-                        handled |= th.webhookEvent(event);
-                    }
-                }
+            RachioDeviceHandler deviceHandler = resolveDeviceHandler(controller, event.deviceId);
+            if (deviceHandler != null) {
+                handled |= deviceHandler.webhookEvent(event);
             }
             for (RachioStatusListener listener : bridgeHandler.rachioStatusListeners) {
                 if (listener instanceof RachioScheduleHandler scheduleHandler) {
@@ -65,12 +62,26 @@ class RachioIrrigationWebhookEventHandler implements RachioWebhookEventHandler {
             if (handled) {
                 return true;
             }
-            logger.debug("RachioCloud: Event {}.{} for unknown irrigation controller {}: {}", event.category,
-                    event.type, event.deviceId, event.summary);
+            logger.debug(
+                    "RachioCloud: Event {}.{} matched irrigation controller {} but was not directly handled; reconciliation remains available",
+                    event.type, event.subType, event.deviceId);
         } catch (RuntimeException e) {
             logger.debug("RachioCloud: Unable to process irrigation event {}.{} for device {}", event.category,
                     event.type, event.deviceId, e);
         }
         return false;
+    }
+
+    private @Nullable RachioDeviceHandler resolveDeviceHandler(RachioDevice controller, String controllerId) {
+        RachioDeviceHandler deviceHandler = controller.getThingHandler();
+        if (deviceHandler != null) {
+            return deviceHandler;
+        }
+        for (RachioStatusListener listener : bridgeHandler.rachioStatusListeners) {
+            if (listener instanceof RachioDeviceHandler candidate && candidate.handlesController(controllerId)) {
+                return candidate;
+            }
+        }
+        return null;
     }
 }

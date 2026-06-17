@@ -132,7 +132,8 @@ class RachioWebHookServletTest {
     @Test
     void invalidSignatureDoesNotPoisonDuplicateCache() throws Exception {
         RachioHandlerFactory handlerFactory = mockHandlerFactory(false);
-        when(handlerFactory.isValidWebHookSignature(anyString(), any(byte[].class))).thenReturn(false, true);
+        when(handlerFactory.isValidWebHookSignature(anyString(), any(byte[].class), any(RachioEventGsonDTO.class)))
+                .thenReturn(false, true);
         RachioWebHookServlet servlet = servlet(handlerFactory);
         String body = eventJson("event-1");
 
@@ -191,6 +192,33 @@ class RachioWebHookServletTest {
     }
 
     @Test
+    void stringifiedLegacyZoneRunStatusDoesNotMaskTopLevelZoneData() throws Exception {
+        RachioHandlerFactory handlerFactory = mockHandlerFactory(false);
+        RachioWebHookServlet servlet = servlet(handlerFactory);
+        ArgumentCaptor<RachioEventGsonDTO> eventCaptor = ArgumentCaptor.forClass(RachioEventGsonDTO.class);
+        String body = """
+                {
+                  "type": "ZONE_STATUS",
+                  "subType": "ZONE_STARTED",
+                  "eventType": "DEVICE_ZONE_RUN_STARTED_EVENT",
+                  "category": "ZONE",
+                  "deviceId": "controller-id",
+                  "externalId": "external-id",
+                  "zoneNumber": 7,
+                  "zoneRunStatus": "{\\"duration\\":120,\\"zoneNumber\\":0,\\"state\\":\\"\\"}"
+                }
+                """;
+
+        servlet.service(request(body, null), response());
+
+        verify(handlerFactory).legacyWebHookEvent(eq("127.0.0.1"), eventCaptor.capture());
+        RachioEventGsonDTO event = eventCaptor.getValue();
+        assertThat(event.getZoneNumberForWebhookHandling(), is(7));
+        assertThat(event.getZoneRunStateForWebhookHandling(), is("ZONE_STARTED"));
+        verify(handlerFactory, never()).isValidWebHookSignature(anyString(), any(byte[].class));
+    }
+
+    @Test
     void dualShapedLegacyScheduleStatusIsAcceptedWithoutSignature() throws Exception {
         RachioHandlerFactory handlerFactory = mockHandlerFactory(false);
         RachioWebHookServlet servlet = servlet(handlerFactory);
@@ -231,6 +259,20 @@ class RachioWebHookServletTest {
 
         verify(handlerFactory).legacyWebHookEvent(eq("127.0.0.1"), eventCaptor.capture());
         assertThat(eventCaptor.getValue().type, is("SCHEDULE_STATUS"));
+    }
+
+    @Test
+    void numericLegacyRainSensorTypeIsNormalizedAndAcceptedWithoutSignature() throws Exception {
+        RachioHandlerFactory handlerFactory = mockHandlerFactory(false);
+        RachioWebHookServlet servlet = servlet(handlerFactory);
+        ArgumentCaptor<RachioEventGsonDTO> eventCaptor = ArgumentCaptor.forClass(RachioEventGsonDTO.class);
+
+        servlet.service(request(legacyEventJson("11", "\"subType\": \"RAIN_SENSOR_DETECTION_ON\","), null), response());
+
+        verify(handlerFactory).legacyWebHookEvent(eq("127.0.0.1"), eventCaptor.capture());
+        assertThat(eventCaptor.getValue().type, is("RAIN_SENSOR_DETECTION"));
+        assertThat(eventCaptor.getValue().subType, is("RAIN_SENSOR_DETECTION_ON"));
+        verify(handlerFactory, never()).isValidWebHookSignature(anyString(), any(byte[].class));
     }
 
     @Test
@@ -409,6 +451,22 @@ class RachioWebHookServletTest {
         assertThat(summary, not(containsString("resource-type-secret")));
     }
 
+    @Test
+    void webhookEventDescriptionDoesNotExposeExternalId() {
+        RachioEventGsonDTO event = new RachioEventGsonDTO();
+        event.eventId = "event-id";
+        event.eventType = "DEVICE_ZONE_RUN_STARTED_EVENT";
+        event.resourceType = "IRRIGATION_CONTROLLER";
+        event.resourceId = "controller-id";
+        event.deviceId = "controller-id";
+        event.externalId = "external-id-secret";
+
+        String summary = RachioWebHookServlet.describeEvent(event);
+
+        assertThat(summary, containsString("externalIdPresent=true"));
+        assertThat(summary, not(containsString("external-id-secret")));
+    }
+
     private RachioWebHookServlet servlet(RachioHandlerFactory handlerFactory) throws Exception {
         return new RachioWebHookServlet(handlerFactory);
     }
@@ -416,6 +474,8 @@ class RachioWebHookServletTest {
     private RachioHandlerFactory mockHandlerFactory(boolean validSignature) {
         RachioHandlerFactory handlerFactory = Mockito.mock(RachioHandlerFactory.class);
         when(handlerFactory.isValidWebHookSignature(anyString(), any(byte[].class))).thenReturn(validSignature);
+        when(handlerFactory.isValidWebHookSignature(anyString(), any(byte[].class), any(RachioEventGsonDTO.class)))
+                .thenReturn(validSignature);
         when(handlerFactory.webHookEvent(anyString(), any(RachioEventGsonDTO.class))).thenReturn(true);
         when(handlerFactory.legacyWebHookEvent(anyString(), any(RachioEventGsonDTO.class))).thenReturn(true);
         return handlerFactory;

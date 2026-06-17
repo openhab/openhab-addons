@@ -212,6 +212,7 @@ public class RachioValveHandler extends AbstractRachioThingHandler {
             thingId = currentValve.getThingName();
             registerStatusListener();
             if (initialLoad || getThing().getStatus() != ThingStatus.ONLINE) {
+                // Smart Hose Timer webhooks remain disabled for this release; polling keeps valve state current.
                 handler.registerValveWebHook(currentValve.id,
                         initialLoad ? RequestPurpose.INITIALIZATION : RequestPurpose.BACKGROUND_REFRESH);
             }
@@ -290,6 +291,11 @@ public class RachioValveHandler extends AbstractRachioThingHandler {
         if (run == null) {
             throw new RachioApiException("No upcoming Smart Hose Timer planned run is available to skip.");
         }
+        if (!hasSkipOverrideIdentifier(run)) {
+            logger.debug("{}: Unable to skip Smart Hose Timer planned run because summary identifiers are missing",
+                    thingId);
+            return;
+        }
         applySkipOverride(handler, run, true);
         refreshSummary(currentValve.id);
         postChannelData();
@@ -302,9 +308,27 @@ public class RachioValveHandler extends AbstractRachioThingHandler {
         if (run == null) {
             throw new RachioApiException("No upcoming skipped Smart Hose Timer planned run is available to cancel.");
         }
+        if (!hasSkipOverrideIdentifier(run)) {
+            logger.debug(
+                    "{}: Unable to cancel Smart Hose Timer planned run skip because summary identifiers are missing",
+                    thingId);
+            return;
+        }
         applySkipOverride(handler, run, false);
         refreshSummary(currentValve.id);
         postChannelData();
+    }
+
+    static boolean hasSkipOverrideIdentifier(RachioValveDayRun run) {
+        String plannedRunId = run.getPlannedRunId();
+        String date = run.getSkipOverrideDate();
+        if (!plannedRunId.isBlank() && !date.isBlank()) {
+            return true;
+        }
+
+        String programId = run.getProgramId();
+        String timestamp = run.getStartTime();
+        return !programId.isBlank() && !timestamp.isBlank();
     }
 
     static void applySkipOverride(RachioBridgeHandler handler, RachioValveDayRun run, boolean create)
@@ -455,9 +479,11 @@ public class RachioValveHandler extends AbstractRachioThingHandler {
         RachioValve currentValve = valve;
         if (handler != null && currentValve != null) {
             try {
+                // The bridge currently treats this as disabled/no-op unless valve WebhookService support is added.
                 handler.registerValveWebHook(currentValve.id, RequestPurpose.USER_COMMAND);
             } catch (RachioApiException e) {
-                logger.debug("{}: Unable to renew valve webhook registration: {}", thingId, e.toString());
+                logger.debug("{}: Unable to renew valve webhook registration, cause={}", thingId,
+                        e.getClass().getSimpleName());
             }
         }
     }

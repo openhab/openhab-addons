@@ -137,50 +137,53 @@ public class RachioImageServlet extends HttpServlet {
             return;
         }
 
-        InputStream reader = null;
-        OutputStream writer = null;
-        try {
-            String ipAddress = request.getHeader("HTTP_X_FORWARDED_FOR");
-            if (ipAddress == null) {
-                ipAddress = request.getRemoteAddr();
-            }
-            String path = request.getRequestURI().substring(0, SERVLET_IMAGE_PATH.length());
-            logger.trace("RachioImage: Request from {}:{}{} ({}:{}, {})", ipAddress, request.getRemotePort(), path,
-                    request.getRemoteHost(), request.getServerPort(), request.getProtocol());
-            if (!request.getMethod().equalsIgnoreCase(HTTP_METHOD_GET)) {
-                logger.warn("RachioImage: Unexpected method='{}'", request.getMethod());
-            }
-            if (!path.equalsIgnoreCase(SERVLET_IMAGE_PATH)) {
-                logger.warn("RachioImage: Invalid request received - path = {}", path);
-                return;
-            }
+        setHeaders(resp);
+        String ipAddress = request.getHeader("HTTP_X_FORWARDED_FOR");
+        if (ipAddress == null) {
+            ipAddress = request.getRemoteAddr();
+        }
+        String requestUri = request.getRequestURI();
+        logger.trace("RachioImage: Request from {}:{}{} ({}:{}, {})", ipAddress, request.getRemotePort(), requestUri,
+                request.getRemoteHost(), request.getServerPort(), request.getProtocol());
 
-            String uri = request.getRequestURI().substring(request.getRequestURI().lastIndexOf("/") + 1);
-            String imageUrl = SERVLET_IMAGE_URL_BASE + uri;
-            logger.debug("RachioImage: {} image '{}'", request.getMethod(), uri);
-            setHeaders(resp);
-            URL url = new URL(imageUrl);
-            URLConnection conn = url.openConnection();
-            conn.setDoInput(true);
-            conn.setDoOutput(true);
-            reader = conn.getInputStream();
-            writer = resp.getOutputStream();
+        if (requestUri == null || requestUri.length() <= SERVLET_IMAGE_PATH.length()
+                || !requestUri.regionMatches(true, 0, SERVLET_IMAGE_PATH, 0, SERVLET_IMAGE_PATH.length())) {
+            logger.debug("RachioImage: Invalid request received - path = {}", requestUri);
+            resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+        if (requestUri.charAt(SERVLET_IMAGE_PATH.length()) != '/') {
+            logger.debug("RachioImage: Invalid request received - path = {}", requestUri);
+            resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+        if (!HTTP_METHOD_GET.equalsIgnoreCase(request.getMethod())) {
+            logger.debug("RachioImage: Unexpected method='{}'", request.getMethod());
+            resp.setHeader("Allow", HTTP_METHOD_GET);
+            resp.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+            return;
+        }
 
-            // read data in 4k chunks
-            byte[] data = new byte[4096];
-            int n;
-            while ((n = reader.read(data)) != -1) {
-                writer.write(data, 0, n);
-            }
-        } catch (RuntimeException e) {
-            logger.debug("RachioImage: Unable to process request: {}", e.getMessage());
-        } finally {
-            if (writer != null) {
-                writer.flush();
-                writer.close();
-            }
-            if (reader != null) {
-                reader.close();
+        String uri = requestUri.substring(requestUri.lastIndexOf("/") + 1);
+        if (uri.isBlank()) {
+            logger.debug("RachioImage: Invalid image request path = {}", requestUri);
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
+
+        String imageUrl = SERVLET_IMAGE_URL_BASE + uri;
+        logger.debug("RachioImage: {} image '{}'", request.getMethod(), uri);
+        URL url = new URL(imageUrl);
+        URLConnection conn = url.openConnection();
+        conn.setDoInput(true);
+        try (InputStream reader = conn.getInputStream()) {
+            OutputStream writer = resp.getOutputStream();
+            reader.transferTo(writer);
+            writer.flush();
+        } catch (IOException e) {
+            logger.debug("RachioImage: Unable to fetch image '{}': {}", uri, e.getMessage());
+            if (!resp.isCommitted()) {
+                resp.sendError(HttpServletResponse.SC_BAD_GATEWAY);
             }
         }
     }

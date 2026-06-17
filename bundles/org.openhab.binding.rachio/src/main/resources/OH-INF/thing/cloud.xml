@@ -61,23 +61,24 @@
 			</parameter>
 			<parameter name="callbackUrl" type="text">
 				<label>Callback URL</label>
-				<description>Public HTTPS URL for Rachio webhook events. In the recommended Basic Auth configuration,
-					do not include
-					credentials here; configure callbackUsername and callbackPassword separately. For direct reverse
-					proxies, use
-					https://yourhost.example.org/rachio/webhook.</description>
+				<description>Public HTTPS URL that accepts legacy Rachio NotificationService POST requests at
+					/rachio/webhook. Legacy
+					callbacks are validated by externalId and controller identity.</description>
 				<context>url</context>
 				<required>false</required>
 			</parameter>
 			<parameter name="callbackUsername" type="text">
 				<label>Callback Username</label>
-				<description>HTTP Basic Auth username for the webhook endpoint, for example the myopenHAB.org account email address.</description>
+				<description>Optional legacy callback URL username. Leave empty unless the public endpoint explicitly
+					supports URL
+					userinfo for callbacks.</description>
 				<required>false</required>
 			</parameter>
 			<parameter name="callbackPassword" type="text">
 				<label>Callback Password</label>
-				<description>HTTP Basic Auth password for the webhook endpoint. Enter the raw password; the binding encodes it when
-					registering the webhook.</description>
+				<description>Optional legacy callback URL password. Leave empty unless the public endpoint explicitly
+					supports URL
+					userinfo for callbacks.</description>
 				<context>password</context>
 				<required>false</required>
 			</parameter>

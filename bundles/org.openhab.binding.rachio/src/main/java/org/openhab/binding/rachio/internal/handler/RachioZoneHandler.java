@@ -28,7 +28,6 @@ import org.openhab.binding.rachio.internal.RachioBindingConstants;
 import org.openhab.binding.rachio.internal.api.RachioApiException;
 import org.openhab.binding.rachio.internal.api.RachioDevice;
 import org.openhab.binding.rachio.internal.api.RachioZone;
-import org.openhab.binding.rachio.internal.api.json.RachioApiGsonDTO.RachioZoneStatus;
 import org.openhab.binding.rachio.internal.api.json.RachioEventGsonDTO;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.DateTimeType;
@@ -243,15 +242,12 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
     @Override
     public boolean onThingStateChanged(@Nullable RachioDevice updatedDev, @Nullable RachioZone updatedZone) {
         RachioZone z = zone;
-        RachioDevice d = dev;
         if (updatedZone != null && z != null && z.id.equals(updatedZone.id)) {
             logger.debug("{}: Update for zone {} received.", thingId, z.name);
             z.update(updatedZone);
             updateChannel(CHANNEL_LAST_UPDATE, getTimestamp());
             postChannelData();
-            if (d != null) {
-                updateStatus(d.getStatus());
-            }
+            updateResolvedZoneThingStatusAfterSuccessfulCommunication();
             return true;
         }
         return false;
@@ -259,12 +255,13 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
 
     void refreshThingStatusAfterSuccessfulCommunication() {
         RachioDevice d = dev;
-        if (!isBridgeOnline() || d == null || zone == null) {
+        RachioZone z = zone;
+        if (!isBridgeOnline() || d == null || z == null) {
             return;
         }
-        logger.debug("{}: Refreshing zone Thing status after successful cloud poll, controllerStatus={}", thingId,
-                d.getStatus());
-        updateStatus(d.getStatus());
+        logger.debug("{}: Refreshing resolved zone Thing status after successful cloud poll, zoneId='{}'", thingId,
+                z.id);
+        updateStatus(ThingStatus.ONLINE);
     }
 
     @Override
@@ -278,20 +275,18 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
             return false;
         }
         try {
-
             String zoneName = event.zoneName;
             String evt = event.subType.isEmpty() ? event.type : event.subType;
             z.setEvent(evt, getTimestamp()); // and funnel all zone events to the device
-            if (event.type.equals("ZONE_STATUS")) {
-                RachioZoneStatus runStatus = event.zoneRunStatus;
-                String state = runStatus != null ? runStatus.state : event.subType;
-                if (state.equals("ZONE_STARTED")) {
+            if ("ZONE_STATUS".equals(event.type)) {
+                String state = event.getZoneRunStateForWebhookHandling();
+                if ("ZONE_STARTED".equals(state)) {
                     logger.info("{}: Zone {} STARTED watering ({}).", thingId, zoneName, event.timestamp);
                     zoneRunState = OnOffType.ON;
                     updateChannel(CHANNEL_ZONE_RUN, zoneRunState);
-                } else if (state.equals("ZONE_STOPPED") || state.equals("ZONE_COMPLETED")) {
+                } else if ("ZONE_STOPPED".equals(state) || "ZONE_COMPLETED".equals(state)) {
                     logger.info(
-                            "{}: Zoned {} STOPPED watering (timestamp={}, current={}, duration={}sec/{}min, flowVolume={}).",
+                            "{}: Zone {} STOPPED watering (timestamp={}, current={}, duration={}sec/{}min, flowVolume={}).",
                             thingId, zoneName, event.timestamp, event.zoneCurrent, event.duration,
                             event.durationInMinutes, event.flowVolume);
                     zoneRunState = OnOffType.OFF;
@@ -301,7 +296,7 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
                             event.summary, state, event.duration);
                 }
                 update = true;
-            } else if (event.subType.equals("ZONE_DELTA")) {
+            } else if ("ZONE_DELTA".equals(event.subType)) {
                 logger.info("{}: DELTA Event for zone {}: {}.{}", thingId, z.name, event.category, event.action);
                 update = true;
             } else {
@@ -416,11 +411,16 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
     @Override
     protected void goOnline() {
         updateProperties();
-        RachioDevice d = dev;
-        if (d != null) {
-            updateStatus(d.getStatus());
-        }
+        updateResolvedZoneThingStatusAfterSuccessfulCommunication();
         postChannelData();
+    }
+
+    private void updateResolvedZoneThingStatusAfterSuccessfulCommunication() {
+        RachioDevice d = dev;
+        RachioZone z = zone;
+        if (isBridgeOnline() && d != null && z != null) {
+            updateStatus(ThingStatus.ONLINE);
+        }
     }
 
     @Override

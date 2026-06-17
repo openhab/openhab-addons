@@ -275,6 +275,28 @@ public class RachioEventGsonDTO {
         return normalizedType != null ? normalizedType : "unrecognized";
     }
 
+    public int getZoneNumberForWebhookHandling() {
+        RachioZoneStatus runStatus = zoneRunStatus;
+        if (runStatus != null && runStatus.zoneNumber != null && runStatus.zoneNumber > 0) {
+            return runStatus.zoneNumber;
+        }
+        if (zoneNumber != null && zoneNumber > 0) {
+            return zoneNumber;
+        }
+        return 0;
+    }
+
+    public String getZoneRunStateForWebhookHandling() {
+        RachioZoneStatus runStatus = zoneRunStatus;
+        if (runStatus != null && !isBlank(runStatus.state)) {
+            return runStatus.state;
+        }
+        if (!isBlank(zoneRunState)) {
+            return zoneRunState;
+        }
+        return subType;
+    }
+
     /**
      * @return rain delay seconds remaining from webhook timing data, or -1 when the event payload does not carry enough
      *         information to calculate it

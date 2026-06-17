@@ -211,7 +211,7 @@ public class RachioWebHookServlet extends HttpServlet {
                 return;
             }
 
-            if (!rachioHandlerFactory.isValidWebHookSignature(signature, rawBody)) {
+            if (!rachioHandlerFactory.isValidWebHookSignature(signature, rawBody, event)) {
                 logger.warn("RachioWebHook: Rejecting webhook request from {} because signature validation failed",
                         ipAddress);
                 resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
@@ -382,10 +382,10 @@ public class RachioWebHookServlet extends HttpServlet {
         logger.trace("RachioWebHook: Marked webhook event as processed ({})", describeEvent(event));
     }
 
-    private String describeEvent(RachioEventGsonDTO event) {
+    static String describeEvent(RachioEventGsonDTO event) {
         return "eventId=" + printable(event.eventId) + ", eventType=" + printable(event.eventType) + ", resourceType="
                 + printable(event.resourceType) + ", resourceId=" + printable(event.resourceId) + ", deviceId="
-                + printable(event.deviceId) + ", externalId=" + printable(event.externalId);
+                + printable(event.deviceId) + ", externalIdPresent=" + !isBlank(event.externalId);
     }
 
     static String describeLegacyClassification(RachioEventGsonDTO event) {
@@ -399,7 +399,7 @@ public class RachioWebHookServlet extends HttpServlet {
         return value == null || value.isBlank();
     }
 
-    private String printable(@Nullable String value) {
+    private static String printable(@Nullable String value) {
         if (value == null || value.isBlank()) {
             return "n/a";
         }

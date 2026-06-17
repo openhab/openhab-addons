@@ -456,6 +456,13 @@ public class RachioDevice extends RachioCloudDevice {
         }
 
         if ("ZONE_STOPPED".equals(state) || "ZONE_COMPLETED".equals(state)) {
+            boolean activeZoneKnown = activeZoneNumber > 0 || !activeZoneId.isBlank();
+            boolean matchesActiveZone = zone != null
+                    && (zone.zoneNumber == activeZoneNumber || zone.id.equalsIgnoreCase(activeZoneId));
+            matchesActiveZone |= zoneNumber > 0 && zoneNumber == activeZoneNumber;
+            if (activeZoneKnown && !matchesActiveZone) {
+                return false;
+            }
             clearActiveZone();
             return true;
         }
@@ -470,7 +477,7 @@ public class RachioDevice extends RachioCloudDevice {
     }
 
     public String getAllRunZonesJson(int defaultRuntime) {
-        boolean flAll = runList.isEmpty() || runList.equalsIgnoreCase("ALL");
+        boolean flAll = runList.isEmpty() || "ALL".equalsIgnoreCase(runList);
         int runtime = getMultiZoneRunTime(defaultRuntime);
         StringBuilder resolvedDurations = new StringBuilder();
 

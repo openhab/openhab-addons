@@ -13,9 +13,11 @@
 package org.openhab.binding.rachio.internal.api;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.startsWith;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -23,6 +25,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author openHAB Contributors - Initial contribution
  */
+@NonNullByDefault
 class RachioHttpSanitizerTest {
 
     @Test
@@ -78,5 +81,20 @@ class RachioHttpSanitizerTest {
         assertThat(reference.contains("secret-password"), is(false));
         assertThat(reference.contains("home.myopenhab.org"), is(false));
         assertThat(reference.contains("callback-token"), is(false));
+    }
+
+    @Test
+    void webhookRegistrationExceptionDiagnosticUsesHashAndExceptionClassOnly() {
+        String callbackUrl = "https://user@example.com:secret-password@home.myopenhab.org/rachio/webhook?token=secret";
+        String diagnostic = RachioApi.webhookRegistrationExceptionDiagnostic(
+                new RachioApiException("Failed to register " + callbackUrl), callbackUrl);
+
+        assertThat(diagnostic, containsString("cause=RachioApiException"));
+        assertThat(diagnostic, containsString("callbackUrlHash="));
+        assertThat(diagnostic.contains("user@example.com"), is(false));
+        assertThat(diagnostic.contains("secret-password"), is(false));
+        assertThat(diagnostic.contains("home.myopenhab.org"), is(false));
+        assertThat(diagnostic.contains("token=secret"), is(false));
+        assertThat(diagnostic.contains("Failed to register"), is(false));
     }
 }

@@ -28,24 +28,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link RachioDevice} provides zone level functions.
+ * {@link RachioZone} stores zone state and Thing linkage for one Rachio irrigation zone.
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
 public class RachioZone extends RachioCloudZone {
     private final Logger logger = LoggerFactory.getLogger(RachioZone.class);
-    protected @Nullable ThingUID devUID;
-    protected @Nullable ThingUID zoneUID;
-    protected @Nullable RachioZoneHandler thingHandler;
-    protected String uniqueId = "";
+    private @Nullable ThingUID devUID;
+    private @Nullable ThingUID zoneUID;
+    private @Nullable RachioZoneHandler thingHandler;
+    private String uniqueId = "";
 
-    protected int startRunTime = 0;
-    protected String lastEvent = "";
-    protected @Nullable DateTimeType lastEventTime;
-    protected double moistureLevel = Double.NaN;
-    protected double moisturePercent = Double.NaN;
-    protected String imageDownloadUrl = "";
+    private int startRunTime = 0;
+    private String lastEvent = "";
+    private @Nullable DateTimeType lastEventTime;
+    private double moistureLevel = Double.NaN;
+    private double moisturePercent = Double.NaN;
+    private String imageDownloadUrl = "";
 
     /**
      * Use reflection to shallow copy simple type fields with matching names from one object to another
@@ -73,7 +73,7 @@ public class RachioZone extends RachioCloudZone {
             logger.trace("Zone '{}' (number={}, id={}, enable={}) initialized.", zone.name, zone.zoneNumber, zone.id,
                     zone.enabled);
         } catch (RuntimeException e) {
-            logger.warn("Unable to initialized: {}", e.getMessage());
+            logger.warn("Unable to initialize: {}", e.getMessage());
         }
     }
 
@@ -101,8 +101,8 @@ public class RachioZone extends RachioCloudZone {
         return true;
     }
 
-    public void update(@Nullable RachioZone updatedZone) {
-        if (updatedZone == null || !id.equalsIgnoreCase(updatedZone.id)) {
+    public void update(RachioZone updatedZone) {
+        if (!id.equalsIgnoreCase(updatedZone.id)) {
             return;
         }
         zoneNumber = updatedZone.zoneNumber;

@@ -118,7 +118,7 @@ public class RachioApi {
     protected @Nullable ThingUID bridgeUID = null;
 
     protected RachioApiResult lastApiResult = new RachioApiResult();
-    private static final Map<String, ClientRateLimitManager> rateLimitManagers = new ConcurrentHashMap<>();
+    private static final Map<String, ClientRateLimitManager> RATE_LIMIT_MANAGERS = new ConcurrentHashMap<>();
     private ClientRateLimitManager rateLimitManager = new ClientRateLimitManager(10, Duration.ofSeconds(30));
 
     private HashMap<String, RachioDevice> deviceList = new HashMap<String, RachioDevice>();
@@ -262,7 +262,7 @@ public class RachioApi {
             throws RachioApiException {
         this.apikey = apikey;
         this.bridgeUID = bridgeUID;
-        this.rateLimitManager = Objects.requireNonNull(rateLimitManagers.computeIfAbsent(apikey,
+        this.rateLimitManager = Objects.requireNonNull(RATE_LIMIT_MANAGERS.computeIfAbsent(apikey,
                 key -> new ClientRateLimitManager(10, Duration.ofSeconds(30))));
         httpApi = new RachioHttp(this.apikey);
         if (!initializePersonId(priority, requestPurpose) || !initializeDevices(bridgeUID, priority, requestPurpose)
@@ -681,7 +681,7 @@ public class RachioApi {
     }
 
     public RachioForecastResponse getDeviceForecast(String deviceId, String units) throws RachioApiException {
-        String normalizedUnits = units.equalsIgnoreCase("US") ? "US" : "METRIC";
+        String normalizedUnits = "US".equalsIgnoreCase(units) ? "US" : "METRIC";
         logger.debug("Load forecast for device '{}' using {} units.", deviceId, normalizedUnits);
         String json = httpGet(APIURL_BASE + APIURL_GET_DEVICE + "/" + deviceId + "/" + APIURL_GET_DEVICE_FORECAST,
                 "units=" + urlEncode(normalizedUnits), PRIORITY.LOW).resultString;
@@ -1093,7 +1093,7 @@ public class RachioApi {
         String expectedExternalId = externalId != null ? externalId : "";
         logger.debug(
                 "Register legacy NotificationService webhook for controller '{}', callbackUrl={}, userInfoPresent={}, clearAllCallbacks={}",
-                deviceId, sanitizeWebhookUrlForDiagnostic(registrationUrl), webhookUrlContainsUserInfo(registrationUrl),
+                deviceId, callbackUrlLogReference(registrationUrl), webhookUrlContainsUserInfo(registrationUrl),
                 clearAllCallbacks);
 
         boolean matchingWebhookExists = reconcileLegacyNotificationWebHooks(
@@ -1139,7 +1139,7 @@ public class RachioApi {
                     deleteLegacyNotificationWebHook(webhook.id, requestPurpose);
                 } catch (RachioApiException e) {
                     logger.debug("Deleting legacy NotificationService webhook '{}' failed: {}", webhook.id,
-                            e.getMessage());
+                            webhookRegistrationExceptionDiagnostic(e, webhook.url));
                 }
             } else {
                 logger.debug("Retain unrelated legacy NotificationService webhook '{}'", webhook.id);
@@ -1157,8 +1157,8 @@ public class RachioApi {
     public void registerWebHook(String deviceId, String callbackUrl, String callbackUsername, String callbackPassword,
             @Nullable String externalId, Boolean clearAllCallbacks, RequestPurpose requestPurpose)
             throws RachioApiException {
-        logger.debug("Register webhook for device '{}', externalId={}, clearAllCallbacks={}", deviceId, externalId,
-                clearAllCallbacks);
+        logger.debug("Register webhook for device '{}', externalIdPresent={}, clearAllCallbacks={}", deviceId,
+                externalId != null && !externalId.isBlank(), clearAllCallbacks);
         Map<RachioWebhookResourceType, Set<String>> supportedEventTypes = getSupportedWebhookEventTypeMap(
                 requestPurpose);
         RachioWebhookTarget target = RachioWebhookTarget.irrigationController(deviceId,
@@ -1192,11 +1192,10 @@ public class RachioApi {
         try {
             registrationUrl = buildWebhookRegistrationUrl(callbackUrl, callbackUsername, callbackPassword);
         } catch (RachioApiException e) {
-            logger.warn("Failed to build callback URL for webhook target '{}': {}", target.describe(), e.getMessage());
+            logger.warn("Failed to build callback URL for webhook target '{}': {}", target.describe(),
+                    webhookRegistrationExceptionDiagnostic(e, callbackUrl));
             throw e;
         }
-        // TEMPORARY UNSAFE DIAGNOSTIC: logs callback credentials. Remove before PR.
-        logger.debug("WEBHOOK_UNSAFE_DIAG finalCallbackUrl={}", registrationUrl);
         logWebhookRegistrationUrlDiagnostic(target, callbackUrl, callbackUsername, callbackPassword, registrationUrl);
 
         String expectedExternalId = externalId != null ? externalId : "";
@@ -1212,20 +1211,18 @@ public class RachioApi {
                 return;
             }
         } catch (RuntimeException e) {
-            logger.debug("Deleting WebHook(s) failed: {}", e.getMessage());
+            logger.debug("Deleting WebHook(s) failed: {}", webhookRegistrationExceptionDiagnostic(e, registrationUrl));
         }
 
         try {
             Map<String, Object> createPayload = target.buildCreatePayload(registrationUrl, expectedExternalId);
             Object payloadUrlValue = createPayload.get("url");
             String payloadUrl = payloadUrlValue instanceof String url ? url : "";
-            // TEMPORARY UNSAFE DIAGNOSTIC: logs callback credentials. Remove before PR.
-            logger.debug("WEBHOOK_UNSAFE_DIAG createWebhookPayloadUrl={}", payloadUrl);
             logger.debug(
-                    "WEBHOOK_DIAG createWebhook target={} eventTypes={} resourceId={} externalId={} payloadUrlUserInfo={} payloadUrlSanitized={}",
+                    "WEBHOOK_DIAG createWebhook target={} eventTypes={} resourceId={} externalIdPresent={} payloadUrlUserInfo={} callbackUrl={}",
                     target.getResourceType().getApiValue(), target.getEventTypes(), target.getResourceId(),
-                    expectedExternalId, webhookUrlContainsUserInfo(payloadUrl),
-                    sanitizeWebhookUrlForDiagnostic(payloadUrl));
+                    !expectedExternalId.isBlank(), webhookUrlContainsUserInfo(payloadUrl),
+                    callbackUrlLogReference(payloadUrl));
             httpPost(APIURL_CLOUD_REST_BASE + WEBHOOK_CREATE, new Gson().toJson(createPayload), PRIORITY.HI,
                     requestPurpose);
         } catch (RachioApiException e) {
@@ -1234,8 +1231,8 @@ public class RachioApi {
     }
 
     /**
-     * Build the URL sent to Rachio when creating a webhook. Rachio enables webhook Basic Authentication by accepting a
-     * URL with an encoded userinfo section and then sending those credentials as an Authorization header.
+     * Build the URL sent to Rachio when creating a webhook. If legacy callback credentials are configured, encode them
+     * as URL userinfo while keeping diagnostics redacted.
      */
     private String buildWebhookRegistrationUrl(String callbackUrl, String callbackUsername, String callbackPassword)
             throws RachioApiException {
@@ -1247,7 +1244,7 @@ public class RachioApi {
         boolean passwordConfigured = !callbackPassword.isEmpty();
         if (usernameConfigured != passwordConfigured) {
             throw new RachioApiException(
-                    "Webhook Basic Auth configuration is incomplete: both callbackUsername and callbackPassword must be provided together.");
+                    "Webhook callback credential configuration is incomplete: both callbackUsername and callbackPassword must be provided together.");
         }
 
         String trimmedCallbackUrl = callbackUrl.trim();
@@ -1293,26 +1290,11 @@ public class RachioApi {
 
     private void logWebhookRegistrationUrlDiagnostic(RachioWebhookTarget target, String callbackUrl,
             String callbackUsername, String callbackPassword, String registrationUrl) {
-        String scheme = "<invalid>";
-        String host = "<invalid>";
-        String path = "<invalid>";
-        String userInfo = "<invalid>";
-        try {
-            URI uri = new URI(registrationUrl);
-            scheme = Objects.requireNonNullElse(uri.getScheme(), "");
-            host = Objects.requireNonNullElse(uri.getHost(), "");
-            path = Objects.requireNonNullElse(uri.getRawPath(), "");
-            userInfo = Objects.requireNonNullElse(uri.getRawUserInfo(), "");
-        } catch (URISyntaxException e) {
-            // The validated registration URL should always parse; retain safe placeholders if it does not.
-        }
-        // TEMPORARY UNSAFE DIAGNOSTIC: logs callback credentials. Remove before PR.
-        logger.debug("WEBHOOK_UNSAFE_DIAG scheme={} host={} path={} userInfo={}", scheme, host, path, userInfo);
         logger.debug(
-                "WEBHOOK_DIAG target={} resourceId={} scheme={} host={} path={} explicitUser={} explicitPassword={} originalUserInfo={} finalUserInfo={} sanitizedUrl={}",
-                target.getResourceType().getApiValue(), target.getResourceId(), scheme, host, path,
-                !callbackUsername.isEmpty(), !callbackPassword.isEmpty(), webhookUrlContainsUserInfo(callbackUrl),
-                webhookUrlContainsUserInfo(registrationUrl), sanitizeWebhookUrlForDiagnostic(registrationUrl));
+                "WEBHOOK_DIAG target={} resourceId={} explicitUser={} explicitPassword={} originalUserInfo={} finalUserInfo={} callbackUrl={}",
+                target.getResourceType().getApiValue(), target.getResourceId(), !callbackUsername.isEmpty(),
+                !callbackPassword.isEmpty(), webhookUrlContainsUserInfo(callbackUrl),
+                webhookUrlContainsUserInfo(registrationUrl), callbackUrlLogReference(registrationUrl));
     }
 
     static boolean webhookUrlContainsUserInfo(@Nullable String url) {
@@ -1329,36 +1311,7 @@ public class RachioApi {
     }
 
     static String sanitizeWebhookUrlForDiagnostic(@Nullable String url) {
-        if (url == null || url.isBlank()) {
-            return "<none>";
-        }
-        try {
-            URI uri = new URI(url.trim());
-            String rawAuthority = uri.getRawAuthority();
-            if (!uri.isAbsolute() || rawAuthority == null) {
-                return callbackUrlLogReference(url);
-            }
-
-            int userInfoSeparator = rawAuthority.lastIndexOf('@');
-            String sanitizedAuthority = userInfoSeparator >= 0
-                    ? "<user>:***@" + rawAuthority.substring(userInfoSeparator + 1)
-                    : rawAuthority;
-            StringBuilder sanitizedUrl = new StringBuilder();
-            sanitizedUrl.append(uri.getScheme()).append("://").append(sanitizedAuthority);
-            String path = uri.getRawPath();
-            if (path != null) {
-                sanitizedUrl.append(path);
-            }
-            if (uri.getRawQuery() != null) {
-                sanitizedUrl.append("?<redacted>");
-            }
-            if (uri.getRawFragment() != null) {
-                sanitizedUrl.append("#<redacted>");
-            }
-            return sanitizedUrl.toString();
-        } catch (URISyntaxException e) {
-            return callbackUrlLogReference(url);
-        }
+        return callbackUrlLogReference(url);
     }
 
     private URI parseWebhookCallbackUri(String callbackUrl, boolean requireValidHost) throws RachioApiException {
@@ -1420,21 +1373,18 @@ public class RachioApi {
         return "callbackUrlHash=" + (hash.isBlank() ? "unavailable" : hash.substring(0, Math.min(12, hash.length())));
     }
 
+    static String webhookRegistrationExceptionDiagnostic(Throwable e, @Nullable String registrationUrl) {
+        return "cause=" + e.getClass().getSimpleName() + ", " + callbackUrlLogReference(registrationUrl);
+    }
+
     private RachioApiException sanitizeWebhookRegistrationException(RachioApiException e, String registrationUrl) {
         if (e instanceof RachioApiThrottledException) {
             return e;
         }
-        String callbackUrlReference = callbackUrlLogReference(registrationUrl);
+        String diagnostic = webhookRegistrationExceptionDiagnostic(e, registrationUrl);
         RachioApiResult result = e.getApiResult();
-        result.resultString = result.resultString.replace(registrationUrl, callbackUrlReference);
-
-        String message = e.getMessage();
-        if (message == null || message.isBlank()) {
-            message = "Rachio webhook registration failed";
-        } else {
-            message = message.replace(registrationUrl, callbackUrlReference);
-        }
-        return new RachioApiException(message, result);
+        result.resultString = "Rachio webhook registration failed; " + diagnostic;
+        return new RachioApiException("Rachio webhook registration failed; " + diagnostic, result);
     }
 
     /**
@@ -1603,8 +1553,8 @@ public class RachioApi {
         List<RachioApiWebHookEntry> webhooks = parseWebHookList(json);
         logger.debug("Registered webhook count for target '{}': {}", target.describe(), webhooks.size());
         for (RachioApiWebHookEntry whe : webhooks) {
-            logger.debug("WebHook: id='{}', callbackUrl={}, externalId='{}', resourceId='{}'", whe.id,
-                    callbackUrlLogReference(whe.url), whe.externalId,
+            logger.debug("WebHook: id='{}', callbackUrl={}, externalIdPresent={}, resourceId='{}'", whe.id,
+                    callbackUrlLogReference(whe.url), whe.externalId != null && !whe.externalId.isBlank(),
                     whe.resourceId == null ? null : whe.resourceId.getResourceId(target.getResourceType()));
             boolean matchesExternalId = externalIds.stream().anyMatch(id -> Objects.equals(whe.externalId, id));
             boolean matchesExpectedWebhook = target.matches(whe, callbackUrl, expectedExternalId);
@@ -1614,7 +1564,8 @@ public class RachioApi {
                             target.describe());
                     httpDelete(APIURL_CLOUD_REST_BASE + WEBHOOK_DELETE + whe.id, null, PRIORITY.MED, requestPurpose);
                 } catch (RachioApiException e) {
-                    logger.debug("Deleting WebHook '{}' failed: {}", whe.id, e.getMessage());
+                    logger.debug("Deleting WebHook '{}' failed: {}", whe.id,
+                            webhookRegistrationExceptionDiagnostic(e, whe.url));
                 }
             } else if (matchesExpectedWebhook && !matchingWebhookRetained) {
                 matchingWebhookRetained = true;
@@ -1626,7 +1577,8 @@ public class RachioApi {
                             whe.id, target.describe());
                     httpDelete(APIURL_CLOUD_REST_BASE + WEBHOOK_DELETE + whe.id, null, PRIORITY.MED, requestPurpose);
                 } catch (RachioApiException e) {
-                    logger.debug("Deleting WebHook '{}' failed: {}", whe.id, e.getMessage());
+                    logger.debug("Deleting WebHook '{}' failed: {}", whe.id,
+                            webhookRegistrationExceptionDiagnostic(e, whe.url));
                 }
             } else {
                 logger.debug("Retain existing webhook '{}' for target '{}'; not owned by this binding instance", whe.id,
@@ -1892,9 +1844,6 @@ public class RachioApi {
                         f.setAccessible(true);
                         t.setAccessible(true);
                         t.set(toObj, a != null ? a.clone() : null);
-                    } else {
-                        // logger.debug("RachioApiInternal: Unable to update field '{}', '{}'", t.getName(),
-                        // t.getType());
                     }
                 }
             } catch (NoSuchFieldException ex) {

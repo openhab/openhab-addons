@@ -107,7 +107,7 @@ public class RachioBindingConstants {
     public static final String CHANNEL_DEVICE_RUNTIME = "runtime";
     public static final String CHANNEL_DEVICE_STOP = "stop";
     public static final String CHANNEL_DEVICE_RAIN_DELAY = "rain-delay";
-    public static final String CHANNEL_DEVICE_RAIN_STRIPPED = "rain-sensor-tripped";
+    public static final String CHANNEL_DEVICE_RAIN_SENSOR_TRIPPED = "rain-sensor-tripped";
     public static final String CHANNEL_DEVICE_ACTIVE_ZONE_NUMBER = "active-zone-number";
     public static final String CHANNEL_DEVICE_ACTIVE_ZONE_NAME = "active-zone-name";
     public static final String CHANNEL_DEVICE_ACTIVE_ZONE_ID = "active-zone-id";
@@ -234,16 +234,16 @@ public class RachioBindingConstants {
     public static final String CHANNEL_VALVE_PROGRAM_LAST_RAIN_SKIP_CANCELED_START = "last-rain-skip-canceled-planned-run-start-time";
 
     // Default for config options / thing settings
-    public static int DEFAULT_POLLING_INTERVAL_SEC = 120;
-    public static int DEFAULT_ZONE_RUNTIME_SEC = 300;
-    public static int DEFAULT_EVENT_HISTORY_LOOKBACK_HOURS = 24;
-    public static int MAX_EVENT_HISTORY_LOOKBACK_HOURS = 168;
-    public static int DEFAULT_HOSE_SUMMARY_LOOKBACK_DAYS = 2;
-    public static int DEFAULT_HOSE_SUMMARY_LOOKAHEAD_DAYS = 7;
-    public static int MAX_HOSE_SUMMARY_WINDOW_DAYS = 31;
+    public static final int DEFAULT_POLLING_INTERVAL_SEC = 120;
+    public static final int DEFAULT_ZONE_RUNTIME_SEC = 300;
+    public static final int DEFAULT_EVENT_HISTORY_LOOKBACK_HOURS = 24;
+    public static final int MAX_EVENT_HISTORY_LOOKBACK_HOURS = 168;
+    public static final int DEFAULT_HOSE_SUMMARY_LOOKBACK_DAYS = 2;
+    public static final int DEFAULT_HOSE_SUMMARY_LOOKAHEAD_DAYS = 7;
+    public static final int MAX_HOSE_SUMMARY_WINDOW_DAYS = 31;
     public static final String DEFAULT_FORECAST_UNITS = "METRIC";
-    public static final int HTTP_TIMOUT_MS = 15000;
-    public static int BINDING_DISCOVERY_TIMEOUT_SEC = 60;
+    public static final int HTTP_TIMEOUT_MS = 15000;
+    public static final int BINDING_DISCOVERY_TIMEOUT_SEC = 60;
 
     // --------------- Rachio Cloud API
     public static final String APIURL_BASE = "https://api.rach.io/1/public/";
@@ -337,7 +337,7 @@ public class RachioBindingConstants {
     public static final String WHE_WATER_BUDGET = "8"; // A water budget event has occurred
     public static final String WHE_SCHEDULE_STATUS = "9";
     public static final String WHE_ZONE_STATUS = "10";
-    public static final String WHE_RAIN_SENSOR_DETECTION = "11"; // physical rain sensor event has coccurred
+    public static final String WHE_RAIN_SENSOR_DETECTION = "11"; // physical rain sensor event has occurred
     public static final String WHE_ZONE_DELTA = "12"; // A physical rain sensor event has occurred
     public static final String WHE_DELTA = "14"; // "An entity has been inserted, updated, or deleted"
 
