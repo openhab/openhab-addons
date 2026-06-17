@@ -62,12 +62,7 @@ public class TeslaPowerwallHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof RefreshType) {
-            scheduler.execute(this::pollStatus);
-        } else {
-            logger.debug("The Tesla Powerwall binding is read-only. Command {} on channel {} is ignored.", command,
-                    channelUID);
-        }
+        logger.debug("This binding is read only");
     }
 
     @Override
