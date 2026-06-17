@@ -597,17 +597,20 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         if (rs.timerStartetAt != null && rs.timerStartetAt > 0) {
             sr.timerRemaining = (int) (now() - rs.timerStartetAt);
         }
-        if (rs.temperature != null && rs.temperature.tC != null) {
-            if (status.tmp == null) {
-                status.tmp = new ShellySensorTmp();
-            }
-            status.tmp.isValid = true;
-            status.tmp.tC = rs.temperature.tC;
-            status.tmp.tF = rs.temperature.tF;
-            status.tmp.units = "C";
-            sr.temperature = rs.temperature.tC;
-            if (status.temperature == null || rs.temperature.tC > status.temperature) {
-                status.temperature = sr.temperature;
+        if (rs.temperature != null) {
+            Double tC = rs.temperature.tC;
+            if (tC != null) {
+                if (status.tmp == null) {
+                    status.tmp = new ShellySensorTmp();
+                }
+                status.tmp.isValid = true;
+                status.tmp.tC = tC;
+                status.tmp.tF = rs.temperature.tF;
+                status.tmp.units = "C";
+                sr.temperature = tC;
+                if (status.temperature == null || tC > status.temperature) {
+                    status.temperature = sr.temperature;
+                }
             }
         }
 
@@ -686,17 +689,20 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         if (bs.output != null) {
             sr.ison = rstatus.ison = getBool(bs.output);
         }
-        if (bs.temperature != null && bs.temperature.tC != null) {
-            if (status.tmp == null) {
-                status.tmp = new ShellySensorTmp();
-            }
-            status.tmp.isValid = true;
-            status.tmp.tC = bs.temperature.tC;
-            status.tmp.tF = bs.temperature.tF;
-            status.tmp.units = "C";
-            sr.temperature = getDouble(bs.temperature.tC);
-            if (status.temperature == null || getDouble(bs.temperature.tC) > status.temperature) {
-                status.temperature = sr.temperature;
+        if (bs.temperature != null) {
+            Double tC = bs.temperature.tC;
+            if (tC != null) {
+                if (status.tmp == null) {
+                    status.tmp = new ShellySensorTmp();
+                }
+                status.tmp.isValid = true;
+                status.tmp.tC = tC;
+                status.tmp.tF = bs.temperature.tF;
+                status.tmp.units = "C";
+                sr.temperature = getDouble(tC);
+                if (status.temperature == null || getDouble(tC) > status.temperature) {
+                    status.temperature = sr.temperature;
+                }
             }
         }
 
