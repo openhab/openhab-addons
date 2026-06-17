@@ -45,9 +45,9 @@ import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
 import org.jivesoftware.smack.util.PacketParserUtils;
 import org.jivesoftware.smack.xml.XmlPullParser;
-import org.jivesoftware.smack.xml.XmlPullParser.Event;
 import org.jivesoftware.smack.xml.XmlPullParserException;
 import org.jivesoftware.smackx.ping.PingManager;
+import org.jxmpp.JxmppContext;
 import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.openhab.binding.ecovacs.internal.api.EcovacsApiConfiguration;
@@ -442,8 +442,9 @@ public class EcovacsXmppDevice implements EcovacsDevice {
 
     private static class CommandIQProvider extends IqProvider<@Nullable DeviceCommandIQ> {
 
+        @Override
         public @Nullable DeviceCommandIQ parse(@Nullable XmlPullParser parser, int initialDepth, @Nullable IqData data,
-                @Nullable XmlEnvironment xmlEnvironment)
+                @Nullable XmlEnvironment xmlEnvironment, @Nullable JxmppContext jxmppContext)
                 throws XmlPullParserException, IOException, SmackParsingException, ParseException {
             @Nullable
             DeviceCommandIQ packet = null;
@@ -454,17 +455,28 @@ public class EcovacsXmppDevice implements EcovacsDevice {
 
             outerloop: while (true) {
                 switch (parser.next()) {
-                    case Event.START_ELEMENT:
+                    case START_ELEMENT:
                         if (parser.getDepth() == initialDepth + 1) {
                             String id = parser.getAttributeValue("", "id");
                             String payload = PacketParserUtils.parseElement(parser).toString();
                             packet = new DeviceCommandIQ(id, payload);
                         }
                         break;
-                    case Event.END_ELEMENT:
+                    case END_ELEMENT:
                         if (parser.getDepth() == initialDepth) {
                             break outerloop;
                         }
+                        break;
+                    case COMMENT:
+                    case END_DOCUMENT:
+                    case ENTITY_REFERENCE:
+                    case IGNORABLE_WHITESPACE:
+                    case OTHER:
+                    case PROCESSING_INSTRUCTION:
+                    case START_DOCUMENT:
+                    case TEXT_CHARACTERS:
+                        break;
+                    default:
                         break;
                 }
             }
