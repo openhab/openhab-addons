@@ -658,6 +658,7 @@
 		<item-type>Switch</item-type>
 		<label>Presence Detected</label>
 		<description>Occupancy state of the default detection zone (ON = presence detected)</description>
+		<category>Motion</category>
 		<tags>
 			<tag>Status</tag>
 			<tag>Presence</tag>
