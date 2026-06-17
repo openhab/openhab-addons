@@ -15,7 +15,7 @@ This thing represents a remote pigpiod instance running as daemon on a raspberry
 
 ### Pigpio Remote (`pigpio-remote`)
 
-On a raspberry (or a compatible device) you have to install pigpiod.
+On a Raspberry Pi (or compatible device) you have to install pigpiod.
 
 **Beginning with Raspberry Pi OS Trixie, manually downloading and compiling the pigpio package is required as it has been removed from the distribution. Instructions here:** <https://github.com/joan2937/pigpio/issues/632#issuecomment-3379034242>
 
