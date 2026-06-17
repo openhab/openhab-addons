@@ -598,7 +598,7 @@ public class Shelly2ApiJsonDTO {
             public Integer id;
             public Boolean state;
             public Double percent; // analog input only
-            public ArrayList<String> errors;// shown only if at least one error is present.
+            public @Nullable ArrayList<String> errors;
             public Double xpercent;
             public Shelly2InputCounts counts;
             public Double freq;
@@ -655,6 +655,7 @@ public class Shelly2ApiJsonDTO {
             public class Shelly2DeviceStatusHumidity {
                 public @Nullable Integer id;
                 public @Nullable Double rh;
+                public @Nullable ArrayList<String> errors;
             }
 
             public class Shelly2DeviceStatusIlluminance {
@@ -666,6 +667,7 @@ public class Shelly2ApiJsonDTO {
             public class Shelly2DeviceStatusVoltage {
                 public @Nullable Integer id;
                 public @Nullable Double voltage;
+                public @Nullable ArrayList<String> errors;
             }
 
             public class Shelly2DeviceStatusTempId extends Shelly2DeviceStatusTemp {
@@ -988,8 +990,9 @@ public class Shelly2ApiJsonDTO {
     }
 
     public static class Shelly2DeviceStatusTemp {
-        public Double tC;
-        public Double tF;
+        public @Nullable Double tC;
+        public @Nullable Double tF;
+        public @Nullable ArrayList<String> errors;
     }
 
     public static class Shelly2Energy {

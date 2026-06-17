@@ -1140,31 +1140,56 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         }
 
         if (ds.temperature100 != null) {
-            ShellyExtTemperature extTemp = status.extTemperature;
-            if (extTemp == null) {
-                extTemp = new ShellyExtTemperature();
-                status.extTemperature = extTemp;
+            ShellyShortTemp s1 = updateExtTempSensor(ds.temperature100);
+            ShellyShortTemp s2 = updateExtTempSensor(ds.temperature101);
+            ShellyShortTemp s3 = updateExtTempSensor(ds.temperature102);
+            ShellyShortTemp s4 = updateExtTempSensor(ds.temperature103);
+            ShellyShortTemp s5 = updateExtTempSensor(ds.temperature104);
+            if (s1 != null || s2 != null || s3 != null || s4 != null || s5 != null) {
+                ShellyExtTemperature extTemp = status.extTemperature;
+                if (extTemp == null) {
+                    extTemp = new ShellyExtTemperature();
+                    status.extTemperature = extTemp;
+                }
+                extTemp.sensor1 = s1;
+                extTemp.sensor2 = s2;
+                extTemp.sensor3 = s3;
+                extTemp.sensor4 = s4;
+                extTemp.sensor5 = s5;
+            } else {
+                // all sensors in this notification reported read errors — clear so
+                // hasAddon() returns false and sensors#lastUpdate is not written
+                status.extTemperature = null;
             }
-            extTemp.sensor1 = updateExtTempSensor(ds.temperature100);
-            extTemp.sensor2 = updateExtTempSensor(ds.temperature101);
-            extTemp.sensor3 = updateExtTempSensor(ds.temperature102);
-            extTemp.sensor4 = updateExtTempSensor(ds.temperature103);
-            extTemp.sensor5 = updateExtTempSensor(ds.temperature104);
         }
         if (ds.humidity100 != null) {
-            Double rh = ds.humidity100.rh;
-            if (rh != null) {
-                status.extHumidity = new ShellyExtHumidity(rh);
+            if (hasReadError(ds.humidity100.errors)) {
+                logger.debug("{}: Addon humidity:100 sensor read error, skipping update", thingName);
+                status.extHumidity = null;
+            } else {
+                Double rh = ds.humidity100.rh;
+                if (rh != null) {
+                    status.extHumidity = new ShellyExtHumidity(rh);
+                }
             }
         }
         if (ds.voltmeter100 != null) {
-            Double voltage = ds.voltmeter100.voltage;
-            if (voltage != null) {
-                status.extVoltage = new ShellyExtVoltage(voltage);
+            if (hasReadError(ds.voltmeter100.errors)) {
+                logger.debug("{}: Addon voltmeter:100 sensor read error, skipping update", thingName);
+                status.extVoltage = null;
+            } else {
+                Double voltage = ds.voltmeter100.voltage;
+                if (voltage != null) {
+                    status.extVoltage = new ShellyExtVoltage(voltage);
+                }
             }
         }
         if (ds.input100 != null) {
-            if (ds.input100.state != null) {
+            if (hasReadError(ds.input100.errors)) {
+                logger.debug("{}: Addon input:100 sensor read error, skipping update", thingName);
+                status.extDigitalInput = null;
+                status.extAnalogInput = null;
+            } else if (ds.input100.state != null) {
                 status.extDigitalInput = new ShellyExtDigitalInput(getBool(ds.input100.state));
             } else if (ds.input100.percent != null) {
                 status.extAnalogInput = new ShellyExtAnalogInput(getDouble(ds.input100.percent));
@@ -1173,15 +1198,25 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
     }
 
     private @Nullable ShellyShortTemp updateExtTempSensor(@Nullable Shelly2DeviceStatusTempId value) {
-        if (value != null) {
-            ShellyShortTemp temp = new ShellyShortTemp();
-            Integer idBox = value.id;
-            temp.hwID = idBox != null ? idBox.toString() : "999";
-            temp.tC = getDouble(value.tC);
-            temp.tF = getDouble(value.tF);
-            return temp;
+        if (value == null) {
+            return null;
         }
-        return null;
+        if (hasReadError(value.errors)) {
+            Integer idBox = value.id;
+            logger.debug("{}: Addon temperature:{} sensor read error, skipping update", thingName,
+                    idBox != null ? idBox : "?");
+            return null;
+        }
+        ShellyShortTemp temp = new ShellyShortTemp();
+        Integer idBox = value.id;
+        temp.hwID = idBox != null ? idBox.toString() : "999";
+        temp.tC = getDouble(value.tC);
+        temp.tF = getDouble(value.tF);
+        return temp;
+    }
+
+    private static boolean hasReadError(@Nullable ArrayList<String> errors) {
+        return errors != null && errors.contains("read");
     }
 
     protected void updateHumidityStatus(ShellyStatusSensor sdata, @Nullable Shelly2DeviceStatusHumidity value) {
