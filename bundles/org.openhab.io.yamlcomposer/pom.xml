@@ -57,7 +57,7 @@
     <dependency>
       <groupId>org.jsoup</groupId>
       <artifactId>jsoup</artifactId>
-      <version>1.15.3</version>
+      <version>1.22.2</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
