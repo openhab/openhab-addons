@@ -836,22 +836,22 @@ public class Shelly2ApiJsonDTO {
             public Shelly2DeviceStatusLight light1;
 
             @SerializedName("temperature:0")
-            public Shelly2DeviceStatusTempId temperature0;
+            public @Nullable Shelly2DeviceStatusTempId temperature0;
             @SerializedName("temperature:100")
-            public Shelly2DeviceStatusTempId temperature100;
+            public @Nullable Shelly2DeviceStatusTempId temperature100;
             @SerializedName("temperature:101")
-            public Shelly2DeviceStatusTempId temperature101;
+            public @Nullable Shelly2DeviceStatusTempId temperature101;
             @SerializedName("temperature:102")
-            public Shelly2DeviceStatusTempId temperature102;
+            public @Nullable Shelly2DeviceStatusTempId temperature102;
             @SerializedName("temperature:103")
-            public Shelly2DeviceStatusTempId temperature103;
+            public @Nullable Shelly2DeviceStatusTempId temperature103;
             @SerializedName("temperature:104")
-            public Shelly2DeviceStatusTempId temperature104;
+            public @Nullable Shelly2DeviceStatusTempId temperature104;
 
             @SerializedName("humidity:0")
-            public Shelly2DeviceStatusHumidity humidity0;
+            public @Nullable Shelly2DeviceStatusHumidity humidity0;
             @SerializedName("humidity:100")
-            public Shelly2DeviceStatusHumidity humidity100;
+            public @Nullable Shelly2DeviceStatusHumidity humidity100;
 
             @SerializedName("illuminance:0")
             Shelly2DeviceStatusIlluminance illuminance0;
@@ -860,15 +860,15 @@ public class Shelly2ApiJsonDTO {
             public Shelly2DeviceStatusSmoke smoke0;
 
             @SerializedName("voltmeter:0")
-            public Shelly2DeviceStatusVoltage voltmeter0;
+            public @Nullable Shelly2DeviceStatusVoltage voltmeter0;
             @SerializedName("voltmeter:1")
-            public Shelly2DeviceStatusVoltage voltmeter1;
+            public @Nullable Shelly2DeviceStatusVoltage voltmeter1;
             @SerializedName("voltmeter:2")
-            public Shelly2DeviceStatusVoltage voltmeter2;
+            public @Nullable Shelly2DeviceStatusVoltage voltmeter2;
             @SerializedName("voltmeter:3")
-            public Shelly2DeviceStatusVoltage voltmeter3;
+            public @Nullable Shelly2DeviceStatusVoltage voltmeter3;
             @SerializedName("voltmeter:100")
-            public Shelly2DeviceStatusVoltage voltmeter100;
+            public @Nullable Shelly2DeviceStatusVoltage voltmeter100;
 
             @SerializedName("devicepower:0")
             public Shelly2DeviceStatusPower devicepower0;

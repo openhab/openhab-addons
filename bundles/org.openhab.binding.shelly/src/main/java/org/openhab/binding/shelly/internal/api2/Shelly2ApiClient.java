@@ -525,11 +525,12 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             boolean channelUpdate) throws ShellyApiException {
         boolean updated = false;
 
-        if (result.temperature0 != null && result.temperature0.tC != null && !getProfile().isSensor) {
+        Shelly2DeviceStatusTempId temperature0 = result.temperature0;
+        if (temperature0 != null && temperature0.tC != null && !getProfile().isSensor) {
             if (status.tmp == null) {
                 status.tmp = new ShellySensorTmp();
             }
-            status.temperature = status.tmp.tC = result.temperature0.tC;
+            status.temperature = status.tmp.tC = temperature0.tC;
         }
 
         updated |= updateInputStatus(status, result, channelUpdate);
@@ -1168,23 +1169,25 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
                 status.extTemperature = null;
             }
         }
-        if (ds.humidity100 != null) {
-            if (hasReadError(ds.humidity100.errors)) {
+        Shelly2DeviceStatusHumidity humidity100 = ds.humidity100;
+        if (humidity100 != null) {
+            if (hasReadError(humidity100.errors)) {
                 logger.debug("{}: Addon humidity:100 sensor read error, skipping update", thingName);
                 status.extHumidity = null;
             } else {
-                Double rh = ds.humidity100.rh;
+                Double rh = humidity100.rh;
                 if (rh != null) {
                     status.extHumidity = new ShellyExtHumidity(rh);
                 }
             }
         }
-        if (ds.voltmeter100 != null) {
-            if (hasReadError(ds.voltmeter100.errors)) {
+        Shelly2DeviceStatusVoltage voltmeter100 = ds.voltmeter100;
+        if (voltmeter100 != null) {
+            if (hasReadError(voltmeter100.errors)) {
                 logger.debug("{}: Addon voltmeter:100 sensor read error, skipping update", thingName);
                 status.extVoltage = null;
             } else {
-                Double voltage = ds.voltmeter100.voltage;
+                Double voltage = voltmeter100.voltage;
                 if (voltage != null) {
                     status.extVoltage = new ShellyExtVoltage(voltage);
                 }
