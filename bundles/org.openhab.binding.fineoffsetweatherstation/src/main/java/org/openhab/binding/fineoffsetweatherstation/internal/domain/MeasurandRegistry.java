@@ -38,7 +38,14 @@ public class MeasurandRegistry {
 
     private static @Nullable MeasurandRegistry standard;
 
+    /**
+     * TCP index: a binary live-data item {@code code} (one byte) to what it parses into - see {@link #tcpByCode}.
+     */
     private final Map<Byte, CodeBinding> byCode;
+    /**
+     * Ecowitt HTTP API index: an {@link HttpGroup} to a map of normalized id/field to its {@link HttpBinding} - see
+     * {@link #http}.
+     */
     private final Map<HttpGroup, Map<String, HttpBinding>> byHttp;
 
     private MeasurandRegistry(Map<Byte, CodeBinding> byCode, Map<HttpGroup, Map<String, HttpBinding>> byHttp) {
@@ -55,14 +62,23 @@ public class MeasurandRegistry {
         return result;
     }
 
-    public static Builder builder() {
+    static Builder builder() {
         return new Builder();
     }
 
+    /**
+     * Resolves a TCP live-data item code (as sent over the binary protocol and parsed by {@code FineOffsetDataParser})
+     * to its {@link CodeBinding}, or {@code null} if the code is unknown.
+     */
     public @Nullable CodeBinding tcpByCode(byte code) {
         return byCode.get(code);
     }
 
+    /**
+     * Resolves an entry of the Ecowitt {@code get_livedata_info} HTTP response (as parsed by {@code EcowittDataParser})
+     * - identified by its {@link HttpGroup} and id/field - to its {@link HttpBinding}, or {@code null} if unknown. The
+     * {@code id} is matched after passing through {@link #normalizeId}.
+     */
     public @Nullable HttpBinding http(HttpGroup group, String id) {
         Map<String, HttpBinding> map = byHttp.get(group);
         return map == null ? null : map.get(normalizeId(id));
@@ -268,47 +284,75 @@ public class MeasurandRegistry {
         return b;
     }
 
-    public static final class Builder {
+    /**
+     * Collects measurand definitions one at a time and incrementally fills the TCP ({@code byCode}) and HTTP
+     * ({@code byHttp}) indexes. Each {@code add*}/{@code skip} call registers a single definition (the relative call
+     * order matters for HTTP alternates - see {@link #registerHttp}); {@link #build()} freezes the result.
+     */
+    @SuppressWarnings("UnusedReturnValue")
+    static final class Builder {
         private final Map<Byte, CodeBinding> byCode = new HashMap<>();
         private final Map<HttpGroup, Map<String, HttpBinding>> byHttp = new HashMap<>();
 
-        public Builder add(int code, Measurand m) {
-            byCode.put((byte) code, new CodeBinding(m, null, m.getChannelPrefix()));
-            registerHttp(m, code);
-            return this;
-        }
-
-        public Builder addChannels(int[] codes, Measurand m) {
-            for (int i = 0; i < codes.length; i++) {
-                byCode.put((byte) codes[i], new CodeBinding(m, i + 1, m.getChannelPrefix()));
-            }
-            registerHttp(m, codes[0]);
+        /**
+         * Registers a single-channel measurand: the TCP item {@code code} resolves to {@code measurand} (no channel
+         * index),
+         * and - if {@code measurand} declares an HTTP source - it is indexed for the Ecowitt API under that code's key.
+         */
+        Builder add(int code, Measurand measurand) {
+            byCode.put((byte) code, new CodeBinding(measurand, null, measurand.getChannelPrefix()));
+            registerHttp(measurand, code);
             return this;
         }
 
         /**
-         * Multi-channel measurand whose per-code payload is the {@code m} parser followed by fixed
+         * Registers one measurand spread across several TCP item codes, one per sensor channel: {@code codes[i]}
+         * resolves to {@code measurand} with channel {@code i+1}. The HTTP binding (if any) is registered once, keyed
+         * via the
+         * first code.
+         */
+        Builder addChannels(int[] codes, Measurand measurand) {
+            for (int i = 0; i < codes.length; i++) {
+                byCode.put((byte) codes[i], new CodeBinding(measurand, i + 1, measurand.getChannelPrefix()));
+            }
+            registerHttp(measurand, codes[0]);
+            return this;
+        }
+
+        /**
+         * Multi-channel measurand whose per-code payload is the {@code measurand} parser followed by fixed
          * {@code trailingSlots}
          * (e.g. a trailing {@link Skip}). For each code {@code i} the channel {@code i+1} is bound; the slots after
-         * {@code m} ignore the channel. HTTP for {@code m} is registered once under the first code.
+         * {@code measurand} ignore the channel. HTTP for {@code measurand} is registered once under the first code.
          */
-        public Builder addChannels(int[] codes, Measurand m, Parser... trailingSlots) {
+        Builder addChannels(int[] codes, Measurand measurand, Parser... trailingSlots) {
             Parser[] slots = new Parser[trailingSlots.length + 1];
-            slots[0] = m;
+            slots[0] = measurand;
             System.arraycopy(trailingSlots, 0, slots, 1, trailingSlots.length);
             for (int i = 0; i < codes.length; i++) {
-                byCode.put((byte) codes[i], new CodeBinding(new MeasurandGroup(slots), i + 1, m.getChannelPrefix()));
+                byCode.put((byte) codes[i],
+                        new CodeBinding(new MeasurandGroup(slots), i + 1, measurand.getChannelPrefix()));
             }
-            registerHttp(m, codes[0]);
+            registerHttp(measurand, codes[0]);
             return this;
         }
 
-        public Builder addHttpOnly(Measurand m) {
-            registerHttp(m, null);
+        /**
+         * Registers a measurand that exists only in the Ecowitt HTTP API and has no TCP item code. {@code measurand}
+         * must
+         * therefore declare an explicit HTTP key or http-code (the TCP-code fallback is never available here).
+         */
+        Builder addHttpOnly(Measurand measurand) {
+            registerHttp(measurand, null);
             return this;
         }
 
-        public Builder addGroup(int code, Parser... slots) {
+        /**
+         * Registers a compound TCP item {@code code} whose payload is the ordered {@code slots} ({@link Measurand}s and
+         * {@link Skip}s) parsed sequentially as one block. Each {@link Measurand} slot that declares an HTTP source is
+         * indexed for the Ecowitt API individually.
+         */
+        Builder addGroup(int code, Parser... slots) {
             byCode.put((byte) code,
                     new CodeBinding(new MeasurandGroup(slots), null, "group 0x" + Integer.toHexString(code & 0xFF)));
             for (Parser slot : slots) {
@@ -319,13 +363,25 @@ public class MeasurandRegistry {
             return this;
         }
 
-        public Builder skip(int code, int bytes) {
+        /**
+         * Registers a TCP item {@code code} whose {@code bytes}-long payload is consumed and discarded - it produces no
+         * channel and has no Ecowitt HTTP API representation (e.g. battery levels read elsewhere, gauge-type markers).
+         */
+        Builder skip(int code, int bytes) {
             byCode.put((byte) code, new CodeBinding(new Skip(bytes), null, "skipped"));
             return this;
         }
 
-        private void registerHttp(Measurand m, @Nullable Integer tcpCode) {
-            HttpSource source = m.getHttpSource();
+        /**
+         * Indexes {@code measurand}'s HTTP source (if it has one) under its {@link HttpGroup} and {@link #normalizeId
+         * normalized} key. An {@link HttpSource#isAlternate() alternate} source attaches to the primary already
+         * registered for that key instead of replacing it (e.g. solar radiation in W/measurand² sharing item code
+         * {@code 0x15}
+         * with lux illumination), so the primary must be registered first. {@code tcpCode} supplies the key only when
+         * the source declares neither an explicit key nor an explicit http-code.
+         */
+        void registerHttp(Measurand measurand, @Nullable Integer tcpCode) {
+            HttpSource source = measurand.getHttpSource();
             if (source == null) {
                 return;
             }
@@ -335,13 +391,16 @@ public class MeasurandRegistry {
             if (source.isAlternate()) {
                 HttpBinding existing = bindings.get(key);
                 if (existing != null) {
-                    existing.setAlternate(m);
+                    existing.setAlternate(measurand);
                     return;
                 }
             }
-            bindings.put(key, new HttpBinding(m, (@Nullable Measurand) null));
+            bindings.put(key, new HttpBinding(measurand, null));
         }
 
+        /**
+         * Freezes the collected TCP and HTTP indexes into an immutable {@link MeasurandRegistry}.
+         */
         public MeasurandRegistry build() {
             return new MeasurandRegistry(byCode, byHttp);
         }

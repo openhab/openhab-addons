@@ -30,7 +30,7 @@ public class CodeBinding {
     private final @Nullable Integer channel;
     private final String debugName;
 
-    public CodeBinding(Parser parser, @Nullable Integer channel, String debugName) {
+    CodeBinding(Parser parser, @Nullable Integer channel, String debugName) {
         this.parser = parser;
         this.channel = channel;
         this.debugName = debugName;

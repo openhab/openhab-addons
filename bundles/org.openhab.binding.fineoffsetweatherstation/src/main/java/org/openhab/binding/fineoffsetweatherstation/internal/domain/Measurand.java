@@ -12,14 +12,11 @@
  */
 package org.openhab.binding.fineoffsetweatherstation.internal.domain;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -43,8 +40,10 @@ public class Measurand implements Parser {
 
     private @Nullable HttpSource httpSource;
 
-    Measurand(String channelPrefix, String name, MeasureType measureType, ParserCustomization... customizations) {
-        this(channelPrefix, name, measureType, null, customizations);
+    Measurand(String channelPrefix, String name, MeasureType measureType) {
+        this.channelPrefix = channelPrefix;
+        this.name = name;
+        this.measureType = measureType;
     }
 
     /**
@@ -90,20 +89,6 @@ public class Measurand implements Parser {
 
     String getChannelPrefix() {
         return channelPrefix;
-    }
-
-    Measurand(String channelPrefix, String name, MeasureType measureType, @Nullable ChannelTypeUID channelTypeUID,
-            ParserCustomization... customizations) {
-        this.channelPrefix = channelPrefix;
-        this.name = name;
-        this.measureType = measureType;
-        this.channelTypeUID = channelTypeUID;
-        if (customizations.length == 0) {
-            this.customizations = null;
-        } else {
-            this.customizations = Collections.unmodifiableMap(Arrays.stream(customizations).collect(Collectors
-                    .toMap(ParserCustomization::getType, customization -> customization, (a, b) -> b, HashMap::new)));
-        }
     }
 
     @Override

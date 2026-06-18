@@ -28,7 +28,7 @@ import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.Mea
 public class MeasurandGroup implements Parser {
     private final Parser[] slots;
 
-    public MeasurandGroup(Parser... slots) {
+    MeasurandGroup(Parser... slots) {
         this.slots = slots;
     }
 
