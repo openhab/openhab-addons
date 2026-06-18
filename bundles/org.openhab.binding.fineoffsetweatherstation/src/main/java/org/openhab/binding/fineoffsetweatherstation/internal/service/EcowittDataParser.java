@@ -24,6 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.HttpBinding;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.HttpGroup;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.Measurand;
+import org.openhab.binding.fineoffsetweatherstation.internal.domain.MeasurandRegistry;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.SensorGatewayBinding;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.BatteryStatus;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.MeasuredValue;
@@ -100,7 +101,7 @@ public class EcowittDataParser {
         @Nullable
         String unit = entry.has("unit") ? entry.get("unit").getAsString() : null;
         @Nullable
-        HttpBinding binding = Measurand.getHttpBinding(group, id);
+        HttpBinding binding = MeasurandRegistry.standard().http(group, id);
         if (binding == null) {
             logger.debug("no measurand for id '{}' in group '{}'", id, group.getJsonKey());
             return;
@@ -113,7 +114,7 @@ public class EcowittDataParser {
         String unit = obj.has("unit") ? obj.get("unit").getAsString() : null;
         for (Map.Entry<String, JsonElement> field : obj.entrySet()) {
             @Nullable
-            HttpBinding binding = Measurand.getHttpBinding(group, field.getKey());
+            HttpBinding binding = MeasurandRegistry.standard().http(group, field.getKey());
             if (binding == null) {
                 // structural fields like "channel", "name", "unit", "battery" simply have no measurand
                 continue;

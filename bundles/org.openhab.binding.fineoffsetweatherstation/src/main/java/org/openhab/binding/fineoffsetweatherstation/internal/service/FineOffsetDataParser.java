@@ -26,8 +26,9 @@ import java.util.function.Supplier;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.fineoffsetweatherstation.internal.Utils;
+import org.openhab.binding.fineoffsetweatherstation.internal.domain.CodeBinding;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.DebugDetails;
-import org.openhab.binding.fineoffsetweatherstation.internal.domain.Measurand;
+import org.openhab.binding.fineoffsetweatherstation.internal.domain.MeasurandRegistry;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.ParserCustomizationType;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.Protocol;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.SensorGatewayBinding;
@@ -181,7 +182,7 @@ public class FineOffsetDataParser {
         List<MeasuredValue> result = new ArrayList<>();
         while (idx < size) {
             byte code = data[idx++];
-            Measurand.SingleChannelMeasurand measurand = Measurand.getByCode(code);
+            CodeBinding measurand = MeasurandRegistry.standard().tcpByCode(code);
             if (measurand == null) {
                 logger.warn("failed to get measurand 0x{}", Integer.toHexString(code));
                 debugDetails.addDebugDetails(idx - 1, 1, "unknown measurand");
