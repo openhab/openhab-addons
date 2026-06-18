@@ -302,7 +302,8 @@ public enum Measurand {
                 }
                 Map<String, HttpBinding> bindings = Objects
                         .requireNonNull(HTTP_LOOKUP.computeIfAbsent(source.group, g -> new HashMap<>()));
-                String normalizedKey = normalizeId(source.resolveKey(measurand));
+                String normalizedKey = normalizeId(
+                        source.resolveKey(measurand.codes.length > 0 ? measurand.codes[0] : null));
                 if (source.alternate) {
                     HttpBinding existing = bindings.get(normalizedKey);
                     if (existing != null) {
@@ -333,6 +334,14 @@ public enum Measurand {
 
     static HttpSource httpAlt(HttpGroup group, int httpCode) {
         return new HttpSource(group, httpCode, null, true);
+    }
+
+    static MeasurandParser measurand(String channelPrefix, String name, MeasureType measureType) {
+        return new MeasurandParser(channelPrefix, name, measureType);
+    }
+
+    static Skip skip(int bytes) {
+        return new Skip(bytes);
     }
 
     /**
@@ -460,8 +469,8 @@ public enum Measurand {
         private final String channelPrefix;
         private final MeasureType measureType;
 
-        private final @Nullable Map<ParserCustomizationType, ParserCustomization> customizations;
-        private final @Nullable ChannelTypeUID channelTypeUID;
+        private @Nullable Map<ParserCustomizationType, ParserCustomization> customizations;
+        private @Nullable ChannelTypeUID channelTypeUID;
 
         private @Nullable HttpSource httpSource;
 
@@ -481,6 +490,38 @@ public enum Measurand {
 
         MeasurandParser http(HttpGroup group, String key) {
             return http(Measurand.http(group, key));
+        }
+
+        MeasurandParser http(HttpGroup group, int httpCode) {
+            return http(Measurand.http(group, httpCode));
+        }
+
+        MeasurandParser httpAlt(HttpGroup group, int httpCode) {
+            return http(Measurand.httpAlt(group, httpCode));
+        }
+
+        MeasurandParser channelType(ChannelTypeUID channelTypeUID) {
+            this.channelTypeUID = channelTypeUID;
+            return this;
+        }
+
+        MeasurandParser customization(ParserCustomizationType type, MeasureType measureType) {
+            Map<ParserCustomizationType, ParserCustomization> map = customizations;
+            if (map == null) {
+                map = new HashMap<>();
+                customizations = map;
+            }
+            map.put(type, new ParserCustomization(type, measureType));
+            return this;
+        }
+
+        @Nullable
+        HttpSource getHttpSource() {
+            return httpSource;
+        }
+
+        String getChannelPrefix() {
+            return channelPrefix;
         }
 
         MeasurandParser(String channelPrefix, String name, MeasureType measureType,

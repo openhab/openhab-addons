@@ -42,7 +42,7 @@ final class HttpSource {
      * @return the lookup key: the explicit string id/field, the explicit HTTP item code, or - as a fallback for a
      *         measurand declaring {@code http(group)} - its single TCP item code
      */
-    String resolveKey(Measurand measurand) {
+    String resolveKey(@Nullable Integer tcpCode) {
         String explicitKey = key;
         if (explicitKey != null) {
             return explicitKey;
@@ -51,7 +51,15 @@ final class HttpSource {
         if (explicitCode != null) {
             return codeKey(explicitCode);
         }
-        return codeKey(measurand.codes[0]);
+        return codeKey(java.util.Objects.requireNonNull(tcpCode));
+    }
+
+    HttpGroup getGroup() {
+        return group;
+    }
+
+    boolean isAlternate() {
+        return alternate;
     }
 
     private static String codeKey(int code) {
