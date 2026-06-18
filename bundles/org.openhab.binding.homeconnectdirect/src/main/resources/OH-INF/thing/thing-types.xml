@@ -358,7 +358,7 @@
 
 	<thing-type id="generic"
 		extensible="switch, string, number, trigger, enum-switch, device-description-switch, device-description-string, device-description-number">
-		<label>Generic appliance</label>
+		<label>Generic Appliance</label>
 		<description>Appliance which supports Home Connect.</description>
 		<semantic-equipment-tag>WhiteGood</semantic-equipment-tag>
 		<channels>
