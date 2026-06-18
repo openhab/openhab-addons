@@ -59,4 +59,17 @@ public enum Sensor {
     public BatteryStatus getBatteryStatus(byte data) {
         return new BatteryStatus(batteryStatusTpe, data);
     }
+
+    /**
+     * Interprets the battery field as reported by the Ecowitt HTTP API. Unlike the binary protocol, the HTTP API
+     * reports the battery of voltage-based sensors already as a 0-5 level (5 = full) rather than a raw voltage, so
+     * those are read as {@link BatteryStatus.Type#LEVEL}; all other sensor types share the binary encoding.
+     */
+    public BatteryStatus getHttpBatteryStatus(byte data) {
+        BatteryStatus.Type type = switch (batteryStatusTpe) {
+            case VOLTAGE_BROAD_STEPS, VOLTAGE_FINE_STEPS -> LEVEL;
+            default -> batteryStatusTpe;
+        };
+        return new BatteryStatus(type, data);
+    }
 }
