@@ -93,7 +93,7 @@ handlebars.registerHelper("asTitleCase", function (str) {
         .replace(/[_\s]+/g, " ") // Replace underscores or multiple spaces with a single space
         .trim()
         .split(" ")
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
         .join(" ");
 });
 
