@@ -332,7 +332,7 @@ For more details see [Thing Concept](https://www.openhab.org/docs/concepts/thing
 If the device is in sleep mode and can't be reached by the binding, the Thing will change into CONFIG_PENDING.
 Once the device wakes up, the Thing will perform initialization and the state will change to ONLINE.
 
-The first time a device is discovered and initialized successfully, the binding will be able to perform auto-initialization when OH is restarted. Waking up the device triggers the a status report (CoIoT packet for event url for Gen1 and WebSocket call for Gen2), which is processed by the binding and triggers initialization. Once a device is initialized, it is no longer necessary to manually wake it up after an openHAB restart unless you change the battery. In this case press the button and run the discovery again.
+The first time a device is discovered and initialized successfully, the binding will be able to perform auto-initialization when OH is restarted. Waking up the device triggers a status report (CoIoT packet for event url for Gen1 and WebSocket call for Gen2), which is processed by the binding and triggers initialization. Once a device is initialized, it is no longer necessary to manually wake it up after an openHAB restart unless you change the battery. In this case press the button and run the discovery again.
 
 ### Device Watchdog
 
@@ -514,7 +514,7 @@ Refer to section [Full Example](#full-example) for examples how to catch alarm t
 ### Power Meter
 
 Many Shelly devices include one or more power meters.
-The binding exposes meter data through channel groups named `meter` (single-meter devices) or `meter1` / `meter2` / `meter3` (multi-meter devices).
+The binding exposes meter data through channel groups named `meter` (single-meter devices) or `meter1`, `meter2`, … `meter4` (multi-meter devices).
 Dedicated energy-meter devices (EM, 3EM, Pro EM-50, Plus EM, …) use the same group naming.
 
 **Common per-meter channels:**
@@ -524,8 +524,7 @@ Dedicated energy-meter devices (EM, 3EM, Pro EM-50, Plus EM, …) use the same g
 | `currentWatts`  | W    | Active power                                            |
 | `totalKWH`      | kWh  | Consumed energy (see note on persistence below)         |
 | `returnedKWH`   | kWh  | Returned / feed-in energy (EM devices only)             |
-| `reactivePower` | VAR  | Reactive power (Gen1 EM/3EM only)                       |
-| `apparentPower` | VA   | Apparent power (Gen2+ EM devices)                       |
+| `reactiveWatts` | VAR  | Reactive power (Gen1 EM/3EM only)                       |
 | `powerFactor`   | −    | Power factor, range −1.0 … +1.0                         |
 | `voltage`       | V    | RMS voltage                                             |
 | `current`       | A    | RMS current                                             |
@@ -536,7 +535,7 @@ Dedicated energy-meter devices (EM, 3EM, Pro EM-50, Plus EM, …) use the same g
 | Channel               | Description                                     |
 | --------------------- | ----------------------------------------------- |
 | `accumulatedWatts`    | Sum of active power across all meters           |
-| `accumulatedTotal`    | Sum of consumed energy in kWh                   |
+| `accumulatedWTotal`   | Sum of consumed energy in kWh                   |
 | `accumulatedReturned` | Sum of returned energy in kWh (EM devices only) |
 
 **Energy counter persistence:**
@@ -612,7 +611,6 @@ In this case the is no real measurement based on power consumption, but the Shel
 |         | lastPower1   | Number   | yes       | Average power consumption during the previous minute                            |
 |         | totalKWH     | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart) |
 |         | frequency    | Number   | yes       | Grid frequency (Hz) - Gen4 only                                                 |
-| ------- | ------------ | -------- | --------- | ------------------------------------------------------------------------------- |
 |         | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                               |
 | sensors | temperature1 | Number   | yes       | Temperature value of external sensor #1 (if connected to temp/hum addon)        |
 |         | temperature2 | Number   | yes       | Temperature value of external sensor #2 (if connected to temp/hum addon)        |
@@ -1358,9 +1356,9 @@ Refer to [Smartify Roller Shutters with openHAB and Shelly](doc/UseCaseSmartRoll
 | relay3 |         |      | r/w       | Relay #3 with control options and status values |
 | relay4 |         |      | r/w       | Relay #4 with control options and status values |
 | meter1 |         |      | r/w       | Power Meter #1 with measurement values          |
-| meter2 |         |      | r/w       | Power Meter #1 with measurement values          |
-| meter3 |         |      | r/w       | Power Meter #1 with measurement values          |
-| meter4 |         |      | r/w       | Power Meter #1 with measurement values          |
+| meter2 |         |      | r/w       | Power Meter #2 with measurement values          |
+| meter3 |         |      | r/w       | Power Meter #3 with measurement values          |
+| meter4 |         |      | r/w       | Power Meter #4 with measurement values          |
 
 ### Shelly Plus EM (thing-type: shellyplusem)
 
