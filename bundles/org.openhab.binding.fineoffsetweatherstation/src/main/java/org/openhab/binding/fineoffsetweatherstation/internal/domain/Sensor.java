@@ -50,14 +50,14 @@ public enum Sensor {
     WN20(LOW_HIGH),
     WN38(VOLTAGE_FINE_STEPS);
 
-    private final BatteryStatus.Type batteryStatusTpe;
+    private final BatteryStatus.Type batteryStatusType;
 
-    Sensor(BatteryStatus.Type batteryStatusTpe) {
-        this.batteryStatusTpe = batteryStatusTpe;
+    Sensor(BatteryStatus.Type batteryStatusType) {
+        this.batteryStatusType = batteryStatusType;
     }
 
     public BatteryStatus getBatteryStatus(byte data) {
-        return new BatteryStatus(batteryStatusTpe, data);
+        return new BatteryStatus(batteryStatusType, data);
     }
 
     /**
@@ -66,9 +66,9 @@ public enum Sensor {
      * those are read as {@link BatteryStatus.Type#LEVEL}; all other sensor types share the binary encoding.
      */
     public BatteryStatus getHttpBatteryStatus(byte data) {
-        BatteryStatus.Type type = switch (batteryStatusTpe) {
+        BatteryStatus.Type type = switch (batteryStatusType) {
             case VOLTAGE_BROAD_STEPS, VOLTAGE_FINE_STEPS -> LEVEL;
-            default -> batteryStatusTpe;
+            default -> batteryStatusType;
         };
         return new BatteryStatus(type, data);
     }
