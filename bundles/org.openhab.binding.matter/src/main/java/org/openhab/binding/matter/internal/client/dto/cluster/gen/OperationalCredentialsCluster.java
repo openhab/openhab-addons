@@ -355,16 +355,13 @@ public class OperationalCredentialsCluster extends BaseCluster {
      * response.
      * A Commissioner or Administrator SHOULD issue this command after performing the Attestation Procedure.
      */
-    public static ClusterCommand updateNoc(OctetString nocValue, OctetString icacValue, Integer fabricIndex) {
+    public static ClusterCommand updateNoc(OctetString nocValue, OctetString icacValue) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (nocValue != null) {
             map.put("nocValue", nocValue);
         }
         if (icacValue != null) {
             map.put("icacValue", icacValue);
-        }
-        if (fabricIndex != null) {
-            map.put("fabricIndex", fabricIndex);
         }
         return new ClusterCommand("updateNoc", map);
     }
@@ -380,13 +377,10 @@ public class OperationalCredentialsCluster extends BaseCluster {
      * Administrators to provide additional per-fabric context when operations such as RemoveFabric are considered or
      * used.
      */
-    public static ClusterCommand updateFabricLabel(String label, Integer fabricIndex) {
+    public static ClusterCommand updateFabricLabel(String label) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (label != null) {
             map.put("label", label);
-        }
-        if (fabricIndex != null) {
-            map.put("fabricIndex", fabricIndex);
         }
         return new ClusterCommand("updateFabricLabel", map);
     }
