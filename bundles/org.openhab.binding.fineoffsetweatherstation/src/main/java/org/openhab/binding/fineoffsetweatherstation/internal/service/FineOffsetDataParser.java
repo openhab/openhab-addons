@@ -28,6 +28,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.fineoffsetweatherstation.internal.Utils;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.DebugDetails;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.Measurand;
+import org.openhab.binding.fineoffsetweatherstation.internal.domain.ParserCustomizationType;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.Protocol;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.SensorGatewayBinding;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.BatteryStatus;
@@ -170,11 +171,11 @@ public class FineOffsetDataParser {
     }
 
     List<MeasuredValue> getRainData(byte[] data, DebugDetails debugDetails) {
-        return readMeasuredValues(data, 5, Measurand.ParserCustomizationType.RAIN_READING, debugDetails);
+        return readMeasuredValues(data, 5, ParserCustomizationType.RAIN_READING, debugDetails);
     }
 
-    private List<MeasuredValue> readMeasuredValues(byte[] data, int idx,
-            Measurand.@Nullable ParserCustomizationType protocol, DebugDetails debugDetails) {
+    private List<MeasuredValue> readMeasuredValues(byte[] data, int idx, @Nullable ParserCustomizationType protocol,
+            DebugDetails debugDetails) {
         var size = toUInt16(data, 3);
 
         List<MeasuredValue> result = new ArrayList<>();

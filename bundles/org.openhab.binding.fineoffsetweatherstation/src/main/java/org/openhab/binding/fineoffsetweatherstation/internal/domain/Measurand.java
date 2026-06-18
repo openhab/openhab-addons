@@ -458,30 +458,6 @@ public enum Measurand {
         }
     }
 
-    public enum ParserCustomizationType {
-        ELV,
-        RAIN_READING
-    }
-
-    private static class ParserCustomization {
-
-        private final ParserCustomizationType type;
-        private final MeasureType measureType;
-
-        public ParserCustomization(ParserCustomizationType type, MeasureType measureType) {
-            this.type = type;
-            this.measureType = measureType;
-        }
-
-        public ParserCustomizationType getType() {
-            return type;
-        }
-
-        public MeasureType getMeasureType() {
-            return measureType;
-        }
-    }
-
     public static class SingleChannelMeasurand {
         private final Measurand measurand;
         private final @Nullable Integer channel;
