@@ -604,8 +604,9 @@ public class Shelly2ApiJsonDTO {
             @SerializedName("smoke:0")
             public Shelly2ConfigSmoke smoke0;
 
-            @SerializedName("presence:0")
+            @SerializedName("presence")
             public @Nullable Shelly2DevConfigPresence presence0;
+            @SerializedName("_presenceZoneList")
             public @Nullable ArrayList<Shelly2SettingsPresence> presence;
         }
 
@@ -1007,6 +1008,7 @@ public class Shelly2ApiJsonDTO {
             @SerializedName("devicepower:0")
             public Shelly2DeviceStatusPower devicepower0;
 
+            @SerializedName("_presenceZoneList")
             public @Nullable ArrayList<Shelly2StatusPresence> presence;
         }
 

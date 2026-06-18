@@ -109,7 +109,7 @@ See section [Discovery](#discovery) for details.
 | shellyplusuni        | Shelly Plus UNI                                          | SNSN-0043X                                                                |
 | shellyplusht         | Shelly Plus HT with temperature + humidity sensor        | SNSN-0013A, S3SN-0U12A                                                    |
 | shellyplussmoke      | Shelly Plus Smoke sensor                                 | SNSN-0031Z                                                                |
-| shellyplusspresence  | Shelly Presence Gen4 mmWave radar sensor                 | S4SN-0U61X                                                                |
+| shellypluspresence   | Shelly Presence Gen4 mmWave radar sensor                 | S4SN-0U61X                                                                |
 | shellypluswdus       | Shelly Plus Wall Dimmer US                               | SNDM-0013US                                                               |
 | shellyplusdimmer     | Shelly Plus Dimmer Gen 3                                 | S3DM-0A101WWL                                                             |
 | shellyprodm2pm       | Shelly Pro Dimmer 2PM                                    | SPDM-002PE01EU                                                            |
@@ -1468,7 +1468,7 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 | battery | batteryLevel | Number   | yes       | Battery Level in %                                      |
 |         | lowBattery   | Switch   | yes       | Low battery alert (< 20%)                               |
 
-### Shelly Presence Gen4 (thing-type: shellyplusspresence)
+### Shelly Presence Gen4 (thing-type: shellypluspresence)
 
 Mains-powered (USB-C) mmWave radar occupancy sensor. Real-time updates arrive via
 NotifyEvent (no polling for presence/objectCount). The `lux` and `illumination`

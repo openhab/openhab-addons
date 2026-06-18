@@ -89,7 +89,7 @@ public class ShellyPresenceTest {
     @Test
     void configAdapterPreservesSiblingFields() {
         String json = "{\"sys\":{\"device\":{\"name\":\"mydevice\"},\"location\":{}},\"wifi\":{},"
-                + "\"presence:0\":{\"enable\":true,\"main_zone\":\"presencezone:200\"},"
+                + "\"presence\":{\"enable\":true,\"main_zone\":\"presencezone:200\"},"
                 + "\"presencezone:200\":{\"id\":200,\"name\":\"Main\",\"enable\":true}}";
         Shelly2GetConfigResult dc = Objects.requireNonNull(gson.fromJson(json, Shelly2GetConfigResult.class));
 
@@ -211,9 +211,9 @@ public class ShellyPresenceTest {
 
     @Test
     void presenceProfileSetsIsSensorAndIsPresence() {
-        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSSPRESENCE);
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSPRESENCE);
 
-        assertTrue(profile.isPresence, "isPresence must be true for shellyplusspresence");
+        assertTrue(profile.isPresence, "isPresence must be true for shellypluspresence");
         assertTrue(profile.isSensor, "isSensor must be true so updateSensors() runs");
         assertFalse(profile.hasBattery, "Presence is mains-powered — hasBattery must be false");
         assertTrue(profile.alwaysOn, "mains-powered device must be alwaysOn");
