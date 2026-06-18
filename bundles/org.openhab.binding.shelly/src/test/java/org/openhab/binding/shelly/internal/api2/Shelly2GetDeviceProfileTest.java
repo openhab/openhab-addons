@@ -58,8 +58,6 @@ public class Shelly2GetDeviceProfileTest {
     private static final String LOCAL_IP = "192.168.1.50";
     private static final String DEVICE_IP = "192.168.1.100";
 
-    // ── helpers ─────────────────────────────────────────────────────────────────
-
     private ShellyApiConfiguration discoveryConfig() {
         ShellyBindingConfiguration raw = ShellyBindingConfiguration
                 .fromProperties(Map.of(ShellyBindingConfiguration.CONFIG_LOCAL_IP, LOCAL_IP));
@@ -180,8 +178,6 @@ public class Shelly2GetDeviceProfileTest {
             throw new ShellyApiException("Unexpected apiRequest in test: " + method);
         }
     }
-
-    // ── discovery path ──────────────────────────────────────────────────────────
 
     @Test
     void discovery_profileMarkedInitialized() throws ShellyApiException {

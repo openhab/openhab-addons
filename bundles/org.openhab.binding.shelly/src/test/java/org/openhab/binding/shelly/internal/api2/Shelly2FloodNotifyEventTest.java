@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.shelly.internal.api2;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
@@ -19,6 +22,7 @@ import static org.openhab.binding.shelly.internal.ShellyDevices.THING_TYPE_SHELL
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -26,8 +30,12 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusFlood;
 import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyBindingRuntimeConfig;
@@ -38,6 +46,8 @@ import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 
+import com.google.gson.Gson;
+
 /**
  * Tests for flood {@code NotifyEvent} handling in {@link Shelly2ApiRpc#onNotifyEvent}.
  *
@@ -46,16 +56,12 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class Shelly2FloodNotifyEventTest {
 
-    // ── flood.alarm ──────────────────────────────────────────────────────────
-
     @Test
     void floodAlarmPostsFloodAlarm() throws ShellyApiException {
         Fixture f = build();
         f.rpc.onNotifyEvent(eventJson(SHELLY2_EVENT_FLOOD_ALARM));
         verify(f.thing).postEvent(ALARM_TYPE_FLOOD, true);
     }
-
-    // ── flood.alarm_off ──────────────────────────────────────────────────────
 
     @Test
     void floodAlarmOffPostsNone() throws ShellyApiException {
@@ -64,8 +70,6 @@ public class Shelly2FloodNotifyEventTest {
         verify(f.thing).postEvent(ALARM_TYPE_NONE, true);
     }
 
-    // ── flood.cable_unplugged ────────────────────────────────────────────────
-
     @Test
     void floodCableUnpluggedPostsSensorError() throws ShellyApiException {
         Fixture f = build();
@@ -73,16 +77,12 @@ public class Shelly2FloodNotifyEventTest {
         verify(f.thing).postEvent(ALARM_TYPE_SENSOR_ERROR, true);
     }
 
-    // ── unknown event ────────────────────────────────────────────────────────
-
     @Test
     void unknownEventDoesNotPostAlarm() throws ShellyApiException {
         Fixture f = build();
         f.rpc.onNotifyEvent(eventJson("some.unknown.event"));
         verify(f.thing, never()).postEvent(any(), anyBoolean());
     }
-
-    // ── helpers ──────────────────────────────────────────────────────────────
 
     private static String eventJson(String event) {
         return """
@@ -122,6 +122,53 @@ public class Shelly2FloodNotifyEventTest {
                 mock(WebSocketClient.class), mock(ScheduledExecutorService.class));
 
         return new Fixture(rpc, thing);
+    }
+
+    @Test
+    void updateFloodStatusMapsAlarmMuteAndErrors() throws ShellyApiException {
+        Shelly2DeviceStatusResult result = new Gson().fromJson(
+                "{\"flood:0\":{\"alarm\":true,\"mute\":true,\"errors\":[\"cable_unplugged\"]}}",
+                Shelly2DeviceStatusResult.class);
+        assertNotNull(result);
+        ShellyStatusSensor sdata = new ShellyStatusSensor();
+        new FloodApiStub(apiConfig()).callUpdateFloodStatus(sdata, Objects.requireNonNull(result.flood0));
+        assertThat(sdata.flood, is(true));
+        assertThat(sdata.mute, is(true));
+        assertThat(sdata.sensorError, is("cable_unplugged"));
+    }
+
+    @Test
+    void updateFloodStatusNoErrorsLeavesErrorNull() throws ShellyApiException {
+        Shelly2DeviceStatusResult result = new Gson().fromJson("{\"flood:0\":{\"alarm\":false,\"mute\":false}}",
+                Shelly2DeviceStatusResult.class);
+        assertNotNull(result);
+        ShellyStatusSensor sdata = new ShellyStatusSensor();
+        new FloodApiStub(apiConfig()).callUpdateFloodStatus(sdata, Objects.requireNonNull(result.flood0));
+        assertThat(sdata.flood, is(false));
+        assertThat(sdata.mute, is(false));
+        assertThat(sdata.sensorError, is(nullValue()));
+    }
+
+    private ShellyApiConfiguration apiConfig() {
+        ShellyBindingConfiguration raw = ShellyBindingConfiguration
+                .fromProperties(Map.of(ShellyBindingConfiguration.CONFIG_LOCAL_IP, "192.168.1.1"));
+        ShellyBindingRuntimeConfig bindingConfig = new ShellyBindingRuntimeConfig(raw, 8080, nullNas());
+        return new ShellyApiConfiguration(bindingConfig, "test-flood", "");
+    }
+
+    private static class FloodApiStub extends Shelly2ApiClient {
+        FloodApiStub(ShellyApiConfiguration config) {
+            super("test", config, Mockito.mock(HttpClient.class));
+        }
+
+        void callUpdateFloodStatus(ShellyStatusSensor sdata, Shelly2DeviceStatusFlood flood) {
+            updateFloodStatus(sdata, flood);
+        }
+
+        @Override
+        public <T> T apiRequest(String method, @Nullable Object params, Class<T> classOfT) throws ShellyApiException {
+            throw new ShellyApiException("Unexpected apiRequest in test: " + method);
+        }
     }
 
     private static NetworkAddressService nullNas() {

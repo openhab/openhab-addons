@@ -367,17 +367,11 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="smokeMute">
-		<item-type>Switch</item-type>
-		<label>Mute Alarm</label>
-		<description>Smoke alarm mute state — ON reflects alarm muted via physical button (read-only)</description>
-		<state readOnly="true"/>
-	</channel-type>
-
 	<channel-type id="sensorMute">
 		<item-type>Switch</item-type>
 		<label>Mute Alarm</label>
-		<description>Flood alarm mute — send ON to mute via API (resets to OFF automatically)</description>
+		<description>Send ON to mute the active alarm (smoke only; flood alarm mute requires physical button)</description>
+		<state readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="sensorLux">
