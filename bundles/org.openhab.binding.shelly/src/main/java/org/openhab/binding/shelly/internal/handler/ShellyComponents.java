@@ -553,13 +553,15 @@ public class ShellyComponents {
                         getOnOff(charger));
             }
             if (sdata.bat != null) { // no update for Sense
-                updated |= thingHandler.updateChannel(CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LEVEL,
-                        toQuantityType(getDouble(sdata.bat.value), 0, Units.PERCENT));
+                if (sdata.bat.value != null) {
+                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LEVEL,
+                            toQuantityType(getDouble(sdata.bat.value), 0, Units.PERCENT));
+                }
 
                 int lowBattery = thingHandler.getThingConfig().getLowBattery();
                 Boolean batteryLowFlag = sdata.bat.batteryLow;
                 boolean isLow = batteryLowFlag != null ? batteryLowFlag.booleanValue()
-                        : (!charger && getDouble(sdata.bat.value) < lowBattery);
+                        : (sdata.bat.value != null && !charger && getDouble(sdata.bat.value) < lowBattery);
                 boolean changed = thingHandler.updateChannel(CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LOW,
                         getOnOff(isLow));
                 updated |= changed;
