@@ -22,5 +22,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @FunctionalInterface
 @NonNullByDefault
 public interface RequestHandler {
+    /**
+     * Handle an incoming request.
+     *
+     * @param ctx the request handler context
+     * @throws RequestHandlerException if the request could not be handled
+     */
     void handle(RequestHandlerContext ctx) throws RequestHandlerException;
 }

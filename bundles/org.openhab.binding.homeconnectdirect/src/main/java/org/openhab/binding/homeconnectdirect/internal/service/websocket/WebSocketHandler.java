@@ -21,11 +21,28 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public interface WebSocketHandler {
+    /**
+     * Called when the WebSocket connection has been established.
+     */
     void onWebSocketConnect();
 
+    /**
+     * Called when a message has been received from the appliance.
+     *
+     * @param rawMessage the raw message received
+     * @param websocketClientService the client service the message was received on
+     */
     void onWebSocketMessage(String rawMessage, WebSocketClientService websocketClientService);
 
+    /**
+     * Called when the WebSocket connection has been closed.
+     */
     void onWebSocketClose();
 
+    /**
+     * Called when an error occurred on the WebSocket connection.
+     *
+     * @param throwable the error that occurred
+     */
     void onWebSocketError(Throwable throwable);
 }

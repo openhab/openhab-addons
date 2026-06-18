@@ -23,5 +23,10 @@ import org.openhab.binding.homeconnectdirect.internal.service.description.model.
  */
 @NonNullByDefault(value = { DefaultLocation.TYPE_BOUND })
 public interface AccessProvider {
+    /**
+     * Get the access information.
+     *
+     * @return the access information
+     */
     Access access();
 }

@@ -22,12 +22,27 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public interface RangeProvider {
+    /**
+     * Get the minimum value.
+     *
+     * @return the minimum value, or {@code null} if not set
+     */
     @Nullable
     Number min();
 
+    /**
+     * Get the maximum value.
+     *
+     * @return the maximum value, or {@code null} if not set
+     */
     @Nullable
     Number max();
 
+    /**
+     * Get the step size.
+     *
+     * @return the step size, or {@code null} if not set
+     */
     @Nullable
     Number stepSize();
 }

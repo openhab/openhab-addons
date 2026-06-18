@@ -23,6 +23,11 @@ import org.openhab.binding.homeconnectdirect.internal.service.description.model.
  */
 @NonNullByDefault
 public interface DataTypeProvider {
+    /**
+     * Get the data type.
+     *
+     * @return the data type, or {@code null} if not set
+     */
     @Nullable
     DataType dataType();
 }

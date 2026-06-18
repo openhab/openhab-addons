@@ -22,9 +22,19 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public interface EnumerationTypeProvider {
+    /**
+     * Get the enumeration type.
+     *
+     * @return the enumeration type, or {@code null} if not set
+     */
     @Nullable
     Integer enumerationType();
 
+    /**
+     * Get the enumeration type key.
+     *
+     * @return the enumeration type key, or {@code null} if not set
+     */
     @Nullable
     String enumerationTypeKey();
 }

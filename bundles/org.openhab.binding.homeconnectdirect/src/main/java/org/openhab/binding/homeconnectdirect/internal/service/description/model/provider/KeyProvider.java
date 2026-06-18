@@ -22,5 +22,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault(value = { DefaultLocation.TYPE_BOUND })
 public interface KeyProvider {
+    /**
+     * Get the key.
+     *
+     * @return the key
+     */
     String key();
 }

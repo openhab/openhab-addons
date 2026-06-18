@@ -22,9 +22,22 @@ import org.openhab.binding.homeconnectdirect.internal.service.websocket.exceptio
  */
 @NonNullByDefault
 public interface WebSocketClientService {
+    /**
+     * Establish the WebSocket connection to the appliance.
+     *
+     * @throws WebSocketClientServiceException if the connection could not be established
+     */
     void connect() throws WebSocketClientServiceException;
 
+    /**
+     * Close the connection and release all associated resources.
+     */
     void dispose();
 
+    /**
+     * Send a message to the appliance.
+     *
+     * @param message the raw message to send
+     */
     void send(String message);
 }

@@ -22,5 +22,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault(value = { DefaultLocation.TYPE_BOUND })
 public interface AvailableProvider {
+    /**
+     * Get the availability information.
+     *
+     * @return {@code true} if available, {@code false} otherwise
+     */
     boolean available();
 }
