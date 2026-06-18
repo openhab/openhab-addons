@@ -215,7 +215,6 @@ public class BaseHomeConnectDirectHandler extends BaseThingHandler implements We
             } catch (ParseException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Could not parse profile XML: " + e.getMessage());
-                logger.error("Could not parse profile XML! error={}", e.getMessage(), e);
                 scheduleReconnect();
                 return;
             }
@@ -318,7 +317,7 @@ public class BaseHomeConnectDirectHandler extends BaseThingHandler implements We
                             mapProgramKey(selectedProgram).ifPresent(programUid -> send(Action.POST, RO_ACTIVE_PROGRAM,
                                     List.of(new ProgramData(programUid, null)), null, 1));
                         } else {
-                            logger.info("The '{}' control is either unavailable or in read-only mode. Cannot start program.", ACTIVE_PROGRAM_KEY);
+                            logger.warn("The '{}' control is either unavailable or in read-only mode. Cannot start program.", ACTIVE_PROGRAM_KEY);
                         }
                     });
 
@@ -334,7 +333,7 @@ public class BaseHomeConnectDirectHandler extends BaseThingHandler implements We
                     mapProgramKey(command.toFullString()).ifPresent(selectedProgramUid -> send(Action.POST,
                             RO_SELECTED_PROGRAM, List.of(new ProgramData(selectedProgramUid, null)), null, 1));
                 } else {
-                    logger.info("The '{}' control is either unavailable or in read-only mode. Cannot change selected program.", SELECTED_PROGRAM_KEY);
+                    logger.warn("The '{}' control is either unavailable or in read-only mode. Cannot change selected program.", SELECTED_PROGRAM_KEY);
                 }
             });
         } else {
@@ -354,7 +353,7 @@ public class BaseHomeConnectDirectHandler extends BaseThingHandler implements We
                                     || deviceDescriptionService.isCommandAvailableAndWritable(valueKey);
 
                             if (!isWritable) {
-                                logger.info("The custom channel '{}' with key '{}' is either unavailable or in read-only mode. Command '{}' cannot be processed.",
+                                logger.warn("The custom channel '{}' with key '{}' is either unavailable or in read-only mode. Command '{}' cannot be processed.",
                                         channelUID.getId(), valueKey, command.toFullString());
                                 return;
                             }

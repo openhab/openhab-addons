@@ -28,25 +28,23 @@ public record Value(int uid, String key, Object value, Object rawValue, DeviceDe
         @Nullable ContentType contentType, @Nullable DataType dataType, @Nullable Integer enumerationType) {
 
     public int getValueAsInt() {
+        if (value instanceof Number number) {
+            return number.intValue();
+        }
         try {
-            if (value instanceof Number number) {
-                return number.intValue();
-            } else {
-                return Double.valueOf(value.toString()).intValue();
-            }
-        } catch (NumberFormatException | NullPointerException e) {
+            return Double.valueOf(String.valueOf(value)).intValue();
+        } catch (NumberFormatException e) {
             return 0;
         }
     }
 
     public double getValueAsDouble() {
+        if (value instanceof Number number) {
+            return number.doubleValue();
+        }
         try {
-            if (value instanceof Number number) {
-                return number.doubleValue();
-            } else {
-                return Double.parseDouble(value.toString());
-            }
-        } catch (NumberFormatException | NullPointerException e) {
+            return Double.parseDouble(String.valueOf(value));
+        } catch (NumberFormatException e) {
             return 0;
         }
     }

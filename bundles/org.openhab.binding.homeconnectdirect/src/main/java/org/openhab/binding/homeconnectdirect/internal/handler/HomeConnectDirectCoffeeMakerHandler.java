@@ -80,7 +80,7 @@ public class HomeConnectDirectCoffeeMakerHandler extends BaseHomeConnectDirectHa
                             mapProgramKey(selectedProgram).ifPresent(programUid -> send(Action.POST, RO_ACTIVE_PROGRAM,
                                     List.of(new ProgramData(programUid, null)), null, 1));
                         } else {
-                            logger.info(
+                            logger.warn(
                                     "The '{}' control is either unavailable or in read-only mode. Cannot start program.",
                                     ACTIVE_PROGRAM_KEY);
                         }
