@@ -12,16 +12,7 @@
  */
 package org.openhab.binding.homeconnectdirect.internal.common.utils;
 
-import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.LOCALE;
-import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.STATE_FAN_OFF;
-import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.STATE_FAN_STAGE_1;
-import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.STATE_FAN_STAGE_2;
-import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.STATE_FAN_STAGE_3;
-import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.STATE_FAN_STAGE_4;
-import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.STATE_FAN_STAGE_5;
-import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.STATE_INTENSIVE_STAGE_1;
-import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.STATE_INTENSIVE_STAGE_2;
-import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.STATE_INTENSIVE_STAGE_OFF;
+import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.*;
 
 import java.util.Map;
 import java.util.regex.Matcher;

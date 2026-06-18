@@ -16,10 +16,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.SERVLET_ASSETS_PATH;
 import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.SERVLET_BASE_PATH;
 import static org.openhab.binding.homeconnectdirect.internal.common.utils.ConfigurationUtils.getDeviceId;
-import static org.openhab.binding.homeconnectdirect.internal.servlet.ServletConstants.PATH_API_APPLIANCES;
-import static org.openhab.binding.homeconnectdirect.internal.servlet.ServletConstants.PATH_API_LOGS;
-import static org.openhab.binding.homeconnectdirect.internal.servlet.ServletConstants.PATH_API_MESSAGES;
-import static org.openhab.binding.homeconnectdirect.internal.servlet.ServletConstants.PATH_API_PROFILES;
+import static org.openhab.binding.homeconnectdirect.internal.servlet.ServletConstants.*;
 
 import java.io.IOException;
 import java.io.InputStream;

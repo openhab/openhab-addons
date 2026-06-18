@@ -12,9 +12,7 @@
  */
 package org.openhab.binding.homeconnectdirect.internal.servlet;
 
-import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.SERVLET_WEB_SOCKET_PATH;
-import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.SERVLET_WEB_SOCKET_PATTERN;
-import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.SUPPORTED_THING_TYPES;
+import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.*;
 import static org.openhab.binding.homeconnectdirect.internal.common.utils.StringUtils.SLASH;
 import static org.openhab.binding.homeconnectdirect.internal.servlet.ServletUtils.filterOutMessage;
 

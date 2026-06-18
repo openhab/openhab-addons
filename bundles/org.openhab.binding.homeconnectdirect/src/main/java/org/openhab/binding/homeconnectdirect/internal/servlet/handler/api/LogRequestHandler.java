@@ -15,16 +15,8 @@ package org.openhab.binding.homeconnectdirect.internal.servlet.handler.api;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.BINDING_LOGS_PATH;
 import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.ZONE_ID;
-import static org.openhab.binding.homeconnectdirect.internal.service.websocket.model.Resource.RO_ALL_DESCRIPTION_CHANGES;
-import static org.openhab.binding.homeconnectdirect.internal.service.websocket.model.Resource.RO_ALL_MANDATORY_VALUES;
-import static org.openhab.binding.homeconnectdirect.internal.service.websocket.model.Resource.RO_DESCRIPTION_CHANGE;
-import static org.openhab.binding.homeconnectdirect.internal.service.websocket.model.Resource.RO_VALUES;
-import static org.openhab.binding.homeconnectdirect.internal.servlet.ServletConstants.CONTENT_DISPOSITION_VALUE_TEMPLATE;
-import static org.openhab.binding.homeconnectdirect.internal.servlet.ServletConstants.CONTENT_TYPE_ZIP;
-import static org.openhab.binding.homeconnectdirect.internal.servlet.ServletConstants.HEADER_CONTENT_DISPOSITION;
-import static org.openhab.binding.homeconnectdirect.internal.servlet.ServletConstants.LOG_FILE_ID;
-import static org.openhab.binding.homeconnectdirect.internal.servlet.ServletConstants.PROXY_FILES_PART;
-import static org.openhab.binding.homeconnectdirect.internal.servlet.ServletConstants.ZIP_FILE_PART;
+import static org.openhab.binding.homeconnectdirect.internal.service.websocket.model.Resource.*;
+import static org.openhab.binding.homeconnectdirect.internal.servlet.ServletConstants.*;
 import static org.openhab.binding.homeconnectdirect.internal.servlet.ServletUtils.filterOutMessage;
 import static org.openhab.binding.homeconnectdirect.internal.servlet.ServletUtils.mapInteger;
 

@@ -14,10 +14,7 @@ package org.openhab.binding.homeconnectdirect.internal.servlet.routing;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.SUPPORTED_THING_TYPES;
-import static org.openhab.binding.homeconnectdirect.internal.servlet.ServletConstants.CONTENT_TYPE_HTML_UTF8;
-import static org.openhab.binding.homeconnectdirect.internal.servlet.ServletConstants.CONTENT_TYPE_JSON;
-import static org.openhab.binding.homeconnectdirect.internal.servlet.ServletConstants.HEADER_X_FRAME_OPTIONS;
-import static org.openhab.binding.homeconnectdirect.internal.servlet.ServletConstants.SAME_ORIGIN;
+import static org.openhab.binding.homeconnectdirect.internal.servlet.ServletConstants.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;

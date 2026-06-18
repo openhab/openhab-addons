@@ -12,24 +12,7 @@
  */
 package org.openhab.binding.homeconnectdirect.internal.handler;
 
-import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.CHANNEL_BUTTON_TONES;
-import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.CHANNEL_COOKING_LIGHT;
-import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.CHANNEL_COOKING_LIGHT_BRIGHTNESS;
-import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.CHANNEL_HOOD_INTENSIVE_LEVEL;
-import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.CHANNEL_HOOD_VENTING_LEVEL;
-import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.COOKING_BUTTON_TONES_KEY;
-import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.COOKING_LIGHTING_BRIGHTNESS_KEY;
-import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.COOKING_LIGHTING_KEY;
-import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.HOOD_INTENSIVE_LEVEL_ENUM_KEY;
-import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.HOOD_INTENSIVE_LEVEL_KEY;
-import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.HOOD_VENTING_LEVEL_ENUM_KEY;
-import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.HOOD_VENTING_LEVEL_KEY;
-import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.POWER_STATE_KEY;
-import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.ROOT_OPTION_LIST_KEY;
-import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.STATE_FAN_OFF;
-import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.STATE_HOOD_VENTING;
-import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.STATE_INTENSIVE_STAGE_OFF;
-import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.STATE_OFF;
+import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.*;
 import static org.openhab.binding.homeconnectdirect.internal.service.websocket.model.Resource.RO_ACTIVE_PROGRAM;
 import static org.openhab.binding.homeconnectdirect.internal.service.websocket.model.Resource.RO_VALUES;
 import static org.openhab.core.library.unit.Units.PERCENT;

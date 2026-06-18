@@ -14,11 +14,7 @@ package org.openhab.binding.homeconnectdirect.internal.service.websocket;
 
 import static org.eclipse.jetty.websocket.api.extensions.Frame.Type.PING;
 import static org.eclipse.jetty.websocket.api.extensions.Frame.Type.PONG;
-import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.WS_INACTIVITY_CHECK_INITIAL_DELAY;
-import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.WS_INACTIVITY_CHECK_INTERVAL;
-import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.WS_INACTIVITY_TIMEOUT;
-import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.WS_PING_INITIAL_DELAY;
-import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.WS_PING_INTERVAL;
+import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.*;
 
 import java.io.IOException;
 import java.net.URI;

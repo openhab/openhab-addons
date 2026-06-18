@@ -13,18 +13,10 @@
 package org.openhab.binding.homeconnectdirect.internal.servlet.handler.api;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.BINDING_LOGS_PATH;
-import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.BINDING_PROFILES_PATH;
-import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.ZONE_ID;
+import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.*;
 import static org.openhab.binding.homeconnectdirect.internal.common.utils.StringUtils.convertToKebabCase;
 import static org.openhab.binding.homeconnectdirect.internal.common.utils.StringUtils.toLowercase;
-import static org.openhab.binding.homeconnectdirect.internal.servlet.ServletConstants.CONTENT_DISPOSITION_VALUE_TEMPLATE;
-import static org.openhab.binding.homeconnectdirect.internal.servlet.ServletConstants.CONTENT_TYPE_ZIP;
-import static org.openhab.binding.homeconnectdirect.internal.servlet.ServletConstants.HEADER_CONTENT_DISPOSITION;
-import static org.openhab.binding.homeconnectdirect.internal.servlet.ServletConstants.HEADER_PREFER;
-import static org.openhab.binding.homeconnectdirect.internal.servlet.ServletConstants.LOG_DOWNLOAD_FILENAME_TEMPLATE;
-import static org.openhab.binding.homeconnectdirect.internal.servlet.ServletConstants.PREFER_PERSIST;
-import static org.openhab.binding.homeconnectdirect.internal.servlet.ServletConstants.UID;
+import static org.openhab.binding.homeconnectdirect.internal.servlet.ServletConstants.*;
 
 import java.io.File;
 import java.io.IOException;
