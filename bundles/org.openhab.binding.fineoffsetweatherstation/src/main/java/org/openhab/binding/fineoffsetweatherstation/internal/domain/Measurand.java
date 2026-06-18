@@ -46,25 +46,24 @@ public class Measurand implements Parser {
         this.measureType = measureType;
     }
 
-    /**
-     * Declares where this value is found in the Ecowitt HTTP {@code get_livedata_info} response. Returns
-     * {@code this} so it can be chained when constructing the parser inline.
-     */
-    Measurand http(HttpSource httpSource) {
-        this.httpSource = httpSource;
+    Measurand http(HttpGroup group) {
+        this.httpSource = new HttpSource(group, null, null, false);
         return this;
     }
 
     Measurand http(HttpGroup group, String key) {
-        return http(httpSource(group, key));
+        this.httpSource = new HttpSource(group, null, key, false);
+        return this;
     }
 
     Measurand http(HttpGroup group, int httpCode) {
-        return http(httpSource(group, httpCode));
+        this.httpSource = new HttpSource(group, httpCode, null, false);
+        return this;
     }
 
     Measurand httpAlt(HttpGroup group, int httpCode) {
-        return http(httpSourceAlt(group, httpCode));
+        this.httpSource = new HttpSource(group, httpCode, null, true);
+        return this;
     }
 
     Measurand channelType(ChannelTypeUID channelTypeUID) {
@@ -126,22 +125,6 @@ public class Measurand implements Parser {
         }
         ChannelTypeUID channelType = channelTypeUID == null ? measureType.getChannelTypeId() : channelTypeUID;
         return new MeasuredValue(measureType, channelPrefix, channel, channelType, state, name);
-    }
-
-    static HttpSource httpSource(HttpGroup group) {
-        return new HttpSource(group, null, null, false);
-    }
-
-    static HttpSource httpSource(HttpGroup group, int httpCode) {
-        return new HttpSource(group, httpCode, null, false);
-    }
-
-    static HttpSource httpSource(HttpGroup group, String key) {
-        return new HttpSource(group, null, key, false);
-    }
-
-    static HttpSource httpSourceAlt(HttpGroup group, int httpCode) {
-        return new HttpSource(group, httpCode, null, true);
     }
 
     static Measurand measurand(String channelPrefix, String name, MeasureType measureType) {

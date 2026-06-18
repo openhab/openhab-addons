@@ -12,24 +12,26 @@
  */
 package org.openhab.binding.fineoffsetweatherstation.internal.domain;
 
+import java.util.Objects;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Declares where a measurand's value is found in the Ecowitt HTTP {@code get_livedata_info} response, created via
- * the {@link Measurand#http} / {@link Measurand#httpAlt} fluent methods on a {@link Measurand}.
+ * Declares where a measurand's value is found in the Ecowitt HTTP {@code get_livedata_info} response,
+ * attached to a measurand through its {@code http} / {@code httpAlt} fluent methods.
  *
  * @author Andreas Berger - Initial contribution
  */
 @NonNullByDefault
 final class HttpSource {
-    final HttpGroup group;
+    private final HttpGroup group;
     // explicit HTTP item code (used when it differs from the TCP code, e.g. the piezo rain channels)
     private final @Nullable Integer httpCode;
     // string id (e.g. "srain_piezo") or named field (e.g. "intemp"); null means "reuse the TCP item code"
     private final @Nullable String key;
     // whether this measurand is the dimension alternate for an already-registered code (see SOLAR_RADIATION)
-    final boolean alternate;
+    private final boolean alternate;
 
     HttpSource(HttpGroup group, @Nullable Integer httpCode, @Nullable String key, boolean alternate) {
         this.group = group;
@@ -51,7 +53,7 @@ final class HttpSource {
         if (explicitCode != null) {
             return codeKey(explicitCode);
         }
-        return codeKey(java.util.Objects.requireNonNull(tcpCode));
+        return codeKey(Objects.requireNonNull(tcpCode));
     }
 
     HttpGroup getGroup() {

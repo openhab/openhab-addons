@@ -12,8 +12,11 @@
  */
 package org.openhab.binding.fineoffsetweatherstation.internal.domain;
 
+import java.util.Objects;
+
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.MeasuredValue;
 
 /**
  * Tests for {@link MeasurandRegistry}.
@@ -43,7 +46,13 @@ class MeasurandRegistryTest {
     @Test
     void httpAlternateSharesCodeWithPrimary() {
         // 0x15 is illumination (lux) with solar-radiation (W/m²) as the dimension alternate
-        Assertions.assertThat(registry.http(HttpGroup.COMMON_LIST, "0x15")).isNotNull();
+        HttpBinding binding = Objects.requireNonNull(registry.http(HttpGroup.COMMON_LIST, "0x15"));
+        // a lux reading resolves to the primary illumination channel...
+        MeasuredValue lux = Objects.requireNonNull(binding.parse("12.3 Klux", null, null, null));
+        Assertions.assertThat(lux.getChannelId()).isEqualTo("illumination");
+        // ...while a W/m² reading the primary can't represent falls through to the solar-radiation alternate
+        MeasuredValue solar = Objects.requireNonNull(binding.parse("365.66 W/m2", null, null, null));
+        Assertions.assertThat(solar.getChannelId()).isEqualTo("irradiation-solar");
     }
 
     @Test
