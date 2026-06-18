@@ -31,7 +31,7 @@
       an outdated version on Maven Central (latest stable 2.5.2) and does not bundle the native
       libraries for all platforms this binding needs. The dependency below is therefore a custom
       build (https://github.com/bruestel/conscrypt) that ships the native libraries for the supported
-      platforms: Linux (X64, ARM64), Windows (X64), Mac OS (X64, ARM64) - see CONSCRYPT_SUPPORTED_SYSTEMS.
+      platforms: Linux (X64, ARM64), Windows (X64), Mac OS (X64, ARM64).
     -->
     <dependency>
       <groupId>net.bruestel</groupId>

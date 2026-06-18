@@ -189,8 +189,7 @@ public class BaseHomeConnectDirectHandler extends BaseThingHandler implements We
 
         // check thing configuration
         if (StringUtils.isBlank(configuration.address) || StringUtils.isBlank(configuration.haId)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "The configuration contains an error. Please fill in all mandatory fields.");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error");
             return;
         }
 
@@ -198,7 +197,7 @@ public class BaseHomeConnectDirectHandler extends BaseThingHandler implements We
         var profile = applianceProfileService.getProfile(configuration.haId);
         if (profile == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                    "Please fetch the appliance profiles from your Home Connect account at http(s)://[YOUROPENHAB]:[YOURPORT]/homeconnectdirect (e.g. http://192.168.178.100:8080/homeconnectdirect).");
+                    "@text/offline.profile-pending");
             return;
         }
 
@@ -214,7 +213,7 @@ public class BaseHomeConnectDirectHandler extends BaseThingHandler implements We
                 this.featureMappingService = featureMappingService;
             } catch (ParseException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Could not parse profile XML: " + e.getMessage());
+                        "@text/offline.profile-parse-error [\"" + e.getMessage() + "\"]");
                 scheduleReconnect();
                 return;
             }
@@ -237,17 +236,13 @@ public class BaseHomeConnectDirectHandler extends BaseThingHandler implements We
                         this.webSocketClientService = webSocketClientService;
                         webSocketClientService.connect();
                     } catch (Error e) {
-                        if (isUnsatisfiedLinkError(e)) {
-                            if (isLinux()) {
-                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DISABLED,
-                                        "The running system (%s %s) does not support secure Web Socket connections. A GNU C library (glibc) of %s or higher is required. Please verify this by running 'ldd --version'. Supported supported operating systems: %s Error: %s".formatted(getOSName(), getOSArch(), CONSCRYPT_REQUIRED_GLIBC_MIN_VERSION, CONSCRYPT_SUPPORTED_SYSTEMS, e.getMessage()));
-                            } else {
-                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DISABLED,
-                                        "The running system (%s %s) does not support secure Web Socket connections. Supported supported operating systems: %s Error: %s".formatted(getOSName(), getOSArch(), CONSCRYPT_SUPPORTED_SYSTEMS, e.getMessage()));
-                            }
+                        if (isUnsatisfiedLinkError(e) && isLinux()) {
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DISABLED,
+                                    "@text/offline.tls-unsupported-glibc [\"" + getOSName() + "\", \"" + getOSArch()
+                                            + "\", \"" + CONSCRYPT_REQUIRED_GLIBC_MIN_VERSION + "\"]");
                         } else {
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DISABLED,
-                                    "The running system (%s %s) does not support secure Web Socket connections. Supported supported operating systems: %sError: %s".formatted(getOSName(), getOSArch(), CONSCRYPT_SUPPORTED_SYSTEMS, e.getMessage()));
+                                    "@text/offline.tls-unsupported [\"" + getOSName() + "\", \"" + getOSArch() + "\"]");
                         }
                         logger.error("Could not initialize {}!", WebSocketTlsConscryptClientService.class.getName(), e);
                     }

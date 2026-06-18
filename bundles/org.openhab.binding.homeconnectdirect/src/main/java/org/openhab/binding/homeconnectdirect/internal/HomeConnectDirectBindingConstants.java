@@ -119,7 +119,6 @@ public class HomeConnectDirectBindingConstants {
             + "logs";
     public static final String CONSCRYPT_PROVIDER = "Conscrypt";
     public static final String CONSCRYPT_REQUIRED_GLIBC_MIN_VERSION = "2.35";
-    public static final String CONSCRYPT_SUPPORTED_SYSTEMS = "Linux (X64, ARM64), Windows (X64), Mac OS (X64, ARM64)";
     public static final String CONFIGURATION_VALUE_KEY = "valueKey";
     public static final String CONFIGURATION_UNIT_KEY = "unit";
     public static final String CONFIGURATION_ON_VALUE_KEY = "onValue";
