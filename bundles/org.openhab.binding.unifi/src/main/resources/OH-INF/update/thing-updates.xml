@@ -45,4 +45,360 @@
 		</instruction-set>
 	</thing-type>
 
+	<thing-type uid="unifi:nvr">
+		<instruction-set targetVersion="1">
+			<add-channel id="storage-total">
+				<type>unifi:nvr-storage-total</type>
+			</add-channel>
+			<add-channel id="storage-used">
+				<type>unifi:nvr-storage-used</type>
+			</add-channel>
+			<add-channel id="storage-available">
+				<type>unifi:nvr-storage-available</type>
+			</add-channel>
+			<add-channel id="storage-utilization">
+				<type>unifi:nvr-storage-utilization</type>
+			</add-channel>
+			<add-channel id="storage-device-healthy">
+				<type>unifi:nvr-storage-device-healthy</type>
+			</add-channel>
+			<add-channel id="camera-utilization">
+				<type>unifi:nvr-camera-utilization</type>
+			</add-channel>
+			<add-channel id="recording-mode">
+				<type>unifi:nvr-recording-mode</type>
+			</add-channel>
+			<add-channel id="recording-disabled">
+				<type>unifi:nvr-recording-disabled</type>
+			</add-channel>
+			<add-channel id="recording-motion-only">
+				<type>unifi:nvr-recording-motion-only</type>
+			</add-channel>
+			<add-channel id="recording-retention">
+				<type>unifi:nvr-recording-retention</type>
+			</add-channel>
+			<add-channel id="is-away">
+				<type>unifi:nvr-is-away</type>
+			</add-channel>
+			<add-channel id="geofencing-enabled">
+				<type>unifi:nvr-geofencing-enabled</type>
+			</add-channel>
+			<add-channel id="smart-detection-available">
+				<type>unifi:nvr-smart-detection-available</type>
+			</add-channel>
+			<add-channel id="insights-enabled">
+				<type>unifi:nvr-insights-enabled</type>
+			</add-channel>
+			<add-channel id="vault-registered">
+				<type>unifi:nvr-vault-registered</type>
+			</add-channel>
+			<add-channel id="can-auto-update">
+				<type>unifi:nvr-can-auto-update</type>
+			</add-channel>
+			<add-channel id="last-update-at">
+				<type>unifi:nvr-last-update-at</type>
+			</add-channel>
+			<add-channel id="protect-updatable">
+				<type>unifi:nvr-protect-updatable</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="unifi:light">
+		<instruction-set targetVersion="1">
+			<add-channel id="light">
+				<type>unifi:light-switch</type>
+			</add-channel>
+			<add-channel id="is-dark">
+				<type>unifi:is-dark</type>
+			</add-channel>
+			<add-channel id="pir-motion">
+				<type>unifi:motion</type>
+			</add-channel>
+			<add-channel id="last-motion">
+				<type>unifi:last-motion</type>
+			</add-channel>
+			<add-channel id="light-mode">
+				<type>unifi:light-mode</type>
+			</add-channel>
+			<add-channel id="enable-at">
+				<type>unifi:enable-at</type>
+			</add-channel>
+			<add-channel id="indicator-enabled">
+				<type>unifi:indicator-enabled</type>
+			</add-channel>
+			<add-channel id="pir-duration">
+				<type>unifi:pir-duration</type>
+			</add-channel>
+			<add-channel id="pir-sensitivity">
+				<type>unifi:pir-sensitivity</type>
+			</add-channel>
+			<add-channel id="led-level">
+				<type>unifi:led-level</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="unifi:sensor">
+		<instruction-set targetVersion="1">
+			<add-channel id="battery">
+				<type>unifi:battery</type>
+			</add-channel>
+			<add-channel id="contact">
+				<type>unifi:contact</type>
+			</add-channel>
+			<add-channel id="temperature">
+				<type>unifi:temperature</type>
+			</add-channel>
+			<add-channel id="humidity">
+				<type>unifi:humidity</type>
+			</add-channel>
+			<add-channel id="illuminance">
+				<type>unifi:illuminance</type>
+			</add-channel>
+			<add-channel id="motion">
+				<type>unifi:motion</type>
+			</add-channel>
+			<add-channel id="alarm-contact">
+				<type>unifi:alarm-contact</type>
+			</add-channel>
+			<add-channel id="alarm">
+				<type>unifi:alarm</type>
+			</add-channel>
+			<add-channel id="water-leak-contact">
+				<type>unifi:water-leak-contact</type>
+			</add-channel>
+			<add-channel id="water-leak">
+				<type>unifi:water-leak</type>
+			</add-channel>
+			<add-channel id="tamper-contact">
+				<type>unifi:tamper-contact</type>
+			</add-channel>
+			<add-channel id="tamper">
+				<type>unifi:tamper</type>
+			</add-channel>
+			<add-channel id="opened">
+				<type>unifi:opened</type>
+			</add-channel>
+			<add-channel id="closed">
+				<type>unifi:closed</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="unifi:doorlock">
+		<instruction-set targetVersion="1">
+			<add-channel id="lock">
+				<type>unifi:doorlock-lock</type>
+			</add-channel>
+			<add-channel id="lock-status">
+				<type>unifi:lock-status</type>
+			</add-channel>
+			<add-channel id="battery">
+				<type>unifi:battery</type>
+			</add-channel>
+			<add-channel id="calibrate">
+				<type>unifi:calibrate-doorlock</type>
+			</add-channel>
+			<add-channel id="auto-close-time">
+				<type>unifi:auto-close-time</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="unifi:chime">
+		<instruction-set targetVersion="1">
+			<add-channel id="play-chime">
+				<type>unifi:play-chime</type>
+			</add-channel>
+			<add-channel id="play-buzzer">
+				<type>unifi:play-buzzer</type>
+			</add-channel>
+			<add-channel id="volume">
+				<type>unifi:chime-volume</type>
+			</add-channel>
+			<add-channel id="repeat-times">
+				<type>unifi:chime-repeat-times</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="unifiprotect:nvr">
+		<instruction-set targetVersion="1">
+			<add-channel id="storage-total">
+				<type>unifiprotect:nvr-storage-total</type>
+			</add-channel>
+			<add-channel id="storage-used">
+				<type>unifiprotect:nvr-storage-used</type>
+			</add-channel>
+			<add-channel id="storage-available">
+				<type>unifiprotect:nvr-storage-available</type>
+			</add-channel>
+			<add-channel id="storage-utilization">
+				<type>unifiprotect:nvr-storage-utilization</type>
+			</add-channel>
+			<add-channel id="storage-device-healthy">
+				<type>unifiprotect:nvr-storage-device-healthy</type>
+			</add-channel>
+			<add-channel id="camera-utilization">
+				<type>unifiprotect:nvr-camera-utilization</type>
+			</add-channel>
+			<add-channel id="recording-mode">
+				<type>unifiprotect:nvr-recording-mode</type>
+			</add-channel>
+			<add-channel id="recording-disabled">
+				<type>unifiprotect:nvr-recording-disabled</type>
+			</add-channel>
+			<add-channel id="recording-motion-only">
+				<type>unifiprotect:nvr-recording-motion-only</type>
+			</add-channel>
+			<add-channel id="recording-retention">
+				<type>unifiprotect:nvr-recording-retention</type>
+			</add-channel>
+			<add-channel id="is-away">
+				<type>unifiprotect:nvr-is-away</type>
+			</add-channel>
+			<add-channel id="geofencing-enabled">
+				<type>unifiprotect:nvr-geofencing-enabled</type>
+			</add-channel>
+			<add-channel id="smart-detection-available">
+				<type>unifiprotect:nvr-smart-detection-available</type>
+			</add-channel>
+			<add-channel id="insights-enabled">
+				<type>unifiprotect:nvr-insights-enabled</type>
+			</add-channel>
+			<add-channel id="vault-registered">
+				<type>unifiprotect:nvr-vault-registered</type>
+			</add-channel>
+			<add-channel id="can-auto-update">
+				<type>unifiprotect:nvr-can-auto-update</type>
+			</add-channel>
+			<add-channel id="last-update-at">
+				<type>unifiprotect:nvr-last-update-at</type>
+			</add-channel>
+			<add-channel id="protect-updatable">
+				<type>unifiprotect:nvr-protect-updatable</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="unifiprotect:light">
+		<instruction-set targetVersion="1">
+			<add-channel id="light">
+				<type>unifiprotect:light-switch</type>
+			</add-channel>
+			<add-channel id="is-dark">
+				<type>unifiprotect:is-dark</type>
+			</add-channel>
+			<add-channel id="pir-motion">
+				<type>unifiprotect:motion</type>
+			</add-channel>
+			<add-channel id="last-motion">
+				<type>unifiprotect:last-motion</type>
+			</add-channel>
+			<add-channel id="light-mode">
+				<type>unifiprotect:light-mode</type>
+			</add-channel>
+			<add-channel id="enable-at">
+				<type>unifiprotect:enable-at</type>
+			</add-channel>
+			<add-channel id="indicator-enabled">
+				<type>unifiprotect:indicator-enabled</type>
+			</add-channel>
+			<add-channel id="pir-duration">
+				<type>unifiprotect:pir-duration</type>
+			</add-channel>
+			<add-channel id="pir-sensitivity">
+				<type>unifiprotect:pir-sensitivity</type>
+			</add-channel>
+			<add-channel id="led-level">
+				<type>unifiprotect:led-level</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="unifiprotect:sensor">
+		<instruction-set targetVersion="1">
+			<add-channel id="battery">
+				<type>unifiprotect:battery</type>
+			</add-channel>
+			<add-channel id="contact">
+				<type>unifiprotect:contact</type>
+			</add-channel>
+			<add-channel id="temperature">
+				<type>unifiprotect:temperature</type>
+			</add-channel>
+			<add-channel id="humidity">
+				<type>unifiprotect:humidity</type>
+			</add-channel>
+			<add-channel id="illuminance">
+				<type>unifiprotect:illuminance</type>
+			</add-channel>
+			<add-channel id="motion">
+				<type>unifiprotect:motion</type>
+			</add-channel>
+			<add-channel id="alarm-contact">
+				<type>unifiprotect:alarm-contact</type>
+			</add-channel>
+			<add-channel id="alarm">
+				<type>unifiprotect:alarm</type>
+			</add-channel>
+			<add-channel id="water-leak-contact">
+				<type>unifiprotect:water-leak-contact</type>
+			</add-channel>
+			<add-channel id="water-leak">
+				<type>unifiprotect:water-leak</type>
+			</add-channel>
+			<add-channel id="tamper-contact">
+				<type>unifiprotect:tamper-contact</type>
+			</add-channel>
+			<add-channel id="tamper">
+				<type>unifiprotect:tamper</type>
+			</add-channel>
+			<add-channel id="opened">
+				<type>unifiprotect:opened</type>
+			</add-channel>
+			<add-channel id="closed">
+				<type>unifiprotect:closed</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="unifiprotect:doorlock">
+		<instruction-set targetVersion="1">
+			<add-channel id="lock">
+				<type>unifiprotect:doorlock-lock</type>
+			</add-channel>
+			<add-channel id="lock-status">
+				<type>unifiprotect:lock-status</type>
+			</add-channel>
+			<add-channel id="battery">
+				<type>unifiprotect:battery</type>
+			</add-channel>
+			<add-channel id="calibrate">
+				<type>unifiprotect:calibrate-doorlock</type>
+			</add-channel>
+			<add-channel id="auto-close-time">
+				<type>unifiprotect:auto-close-time</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="unifiprotect:chime">
+		<instruction-set targetVersion="1">
+			<add-channel id="play-chime">
+				<type>unifiprotect:play-chime</type>
+			</add-channel>
+			<add-channel id="play-buzzer">
+				<type>unifiprotect:play-buzzer</type>
+			</add-channel>
+			<add-channel id="volume">
+				<type>unifiprotect:chime-volume</type>
+			</add-channel>
+			<add-channel id="repeat-times">
+				<type>unifiprotect:chime-repeat-times</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
 </update:update-descriptions>
