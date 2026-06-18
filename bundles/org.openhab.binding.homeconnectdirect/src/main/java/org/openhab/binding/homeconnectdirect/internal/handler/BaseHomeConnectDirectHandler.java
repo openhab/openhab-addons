@@ -201,9 +201,7 @@ public class BaseHomeConnectDirectHandler extends BaseThingHandler implements We
             return;
         }
 
-        if (!ThingStatus.OFFLINE.equals(thing.getStatus())) {
-            updateStatus(ThingStatus.UNKNOWN);
-        }
+        updateStatus(ThingStatus.UNKNOWN);
 
         scheduler.execute(() -> {
             // initialize deviceDescription and featureMapping service
