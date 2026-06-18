@@ -52,7 +52,7 @@
 	<thing-type id="shellyplusspresence">
 		<label>Shelly Presence</label>
 		<description>Shelly Presence Gen4 — mmWave occupancy and motion sensor with ambient light</description>
-		<category>Sensor</category>
+		<category>MotionDetector</category>
 		<semantic-equipment-tag>MotionDetector</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="sensors" typeId="sensorData"/>

@@ -76,6 +76,17 @@ public class ShellyPresenceTest {
     }
 
     @Test
+    void configAdapterSkipsNullPresenceZoneEntry() {
+        String json = "{\"sys\":{\"device\":{},\"location\":{}},\"wifi\":{}," + "\"presencezone:200\":null,"
+                + "\"presencezone:201\":{\"id\":201,\"name\":\"Side\",\"enable\":true}}";
+        Shelly2GetConfigResult dc = Objects.requireNonNull(gson.fromJson(json, Shelly2GetConfigResult.class));
+
+        assertThat("null zone entry must be skipped", dc.presence, is(notNullValue()));
+        assertThat(dc.presence.size(), is(1));
+        assertThat(dc.presence.get(0).id, is(201));
+    }
+
+    @Test
     void configAdapterPreservesSiblingFields() {
         String json = "{\"sys\":{\"device\":{\"name\":\"mydevice\"},\"location\":{}},\"wifi\":{},"
                 + "\"presence:0\":{\"enable\":true,\"main_zone\":\"presencezone:200\"},"
@@ -125,6 +136,18 @@ public class ShellyPresenceTest {
     }
 
     @Test
+    void statusAdapterSkipsNullPresenceZoneEntry() {
+        String json = "{\"sys\":{\"available_updates\":{}}," + "\"presencezone:200\":null,"
+                + "\"presencezone:201\":{\"value\":true,\"num_objects\":1}}";
+        Shelly2DeviceStatusResult result = Objects.requireNonNull(gson.fromJson(json, Shelly2DeviceStatusResult.class));
+
+        assertThat("null zone entry must be skipped", result.presence, is(notNullValue()));
+        assertThat(result.presence.size(), is(1));
+        assertThat(result.presence.get(0).id, is(201));
+        assertThat(result.presence.get(0).value, is(true));
+    }
+
+    @Test
     void statusAdapterCollectsMultipleZones() {
         String json = "{\"sys\":{\"available_updates\":{}},"
                 + "\"presencezone:200\":{\"value\":true,\"num_objects\":1},"
@@ -170,6 +193,18 @@ public class ShellyPresenceTest {
         assertThat(e.event, is("counter"));
         assertThat(e.numObjects, is(2));
         assertThat(e.value, is(nullValue()));
+    }
+
+    @Test
+    void notifyEventPresenceWithAbsentValueFieldDeserializesToNull() {
+        String json = "{\"src\":\"shellypresence-aabb\",\"ts\":1731931521.19,"
+                + "\"params\":{\"ts\":1731931521.19,\"events\":["
+                + "{\"component\":\"presencezone:200\",\"id\":200,\"event\":\"presence\"," + "\"ts\":1731931521.19}]}}";
+        Shelly2RpcNotifyEvent msg = Objects.requireNonNull(gson.fromJson(json, Shelly2RpcNotifyEvent.class));
+
+        var e = msg.params.events.get(0);
+        assertThat("absent value field must deserialize to null — handler must not write spurious OFF", e.value,
+                is(nullValue()));
     }
 
     // ── ShellyDeviceProfile flags ─────────────────────────────────────────────────────────────

@@ -503,7 +503,13 @@ public class Shelly2ApiJsonDTO {
                             ArrayList<Shelly2SettingsPresence> zones = new ArrayList<>();
                             for (Map.Entry<String, JsonElement> entry : je.getAsJsonObject().entrySet()) {
                                 if (entry.getKey().startsWith("presencezone:")) {
-                                    zones.add(zoneAdapter.fromJsonTree(entry.getValue()));
+                                    JsonElement value = entry.getValue();
+                                    if (!value.isJsonNull()) {
+                                        Shelly2SettingsPresence zone = zoneAdapter.fromJsonTree(value);
+                                        if (zone != null) {
+                                            zones.add(zone);
+                                        }
+                                    }
                                 }
                             }
                             if (!zones.isEmpty()) {
@@ -717,17 +723,22 @@ public class Shelly2ApiJsonDTO {
                             for (Map.Entry<String, JsonElement> entry : je.getAsJsonObject().entrySet()) {
                                 String key = entry.getKey();
                                 if (key.startsWith("presencezone:")) {
-                                    Shelly2StatusPresence zone = zoneAdapter.fromJsonTree(entry.getValue());
-                                    if (zone.id == null) {
-                                        int colon = key.indexOf(':');
-                                        if (colon >= 0) {
-                                            try {
-                                                zone.id = Integer.parseInt(key.substring(colon + 1));
-                                            } catch (NumberFormatException ignored) {
+                                    JsonElement value = entry.getValue();
+                                    if (!value.isJsonNull()) {
+                                        Shelly2StatusPresence zone = zoneAdapter.fromJsonTree(value);
+                                        if (zone != null) {
+                                            if (zone.id == null) {
+                                                int colon = key.indexOf(':');
+                                                if (colon >= 0) {
+                                                    try {
+                                                        zone.id = Integer.parseInt(key.substring(colon + 1));
+                                                    } catch (NumberFormatException ignored) {
+                                                    }
+                                                }
                                             }
+                                            zones.add(zone);
                                         }
                                     }
-                                    zones.add(zone);
                                 }
                             }
                             if (!zones.isEmpty()) {

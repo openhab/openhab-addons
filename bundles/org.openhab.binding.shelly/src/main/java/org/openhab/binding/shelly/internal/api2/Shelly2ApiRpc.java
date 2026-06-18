@@ -583,8 +583,9 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                     getThing().postEvent(e.event, false);
                     break;
                 case "presence":
-                    if (profile.isPresence && e.component != null && e.component.startsWith("presencezone")) {
-                        updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_PRESENCE, getOnOff(getBool(e.value)));
+                    if (profile.isPresence && e.component != null && e.component.startsWith("presencezone")
+                            && e.value != null) {
+                        updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_PRESENCE, getOnOff(e.value));
                     }
                     break;
                 case "counter":
