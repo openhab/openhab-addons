@@ -40,8 +40,6 @@ public class ShellyPresenceTest {
 
     private final Gson gson = new Gson();
 
-    // ── Config TypeAdapter (presencezone:2xx → ArrayList<Shelly2SettingsPresence>) ─────────────
-
     @Test
     void configAdapterCollectsSinglePresenceZone() {
         String json = "{\"sys\":{\"device\":{},\"location\":{}},\"wifi\":{},"
@@ -100,8 +98,6 @@ public class ShellyPresenceTest {
         assertThat(dc.presence, is(notNullValue()));
         assertThat(dc.presence.size(), is(1));
     }
-
-    // ── Status TypeAdapter (presencezone:2xx → ArrayList<Shelly2StatusPresence>) ──────────────
 
     @Test
     void statusAdapterCollectsZoneAndInjectsId() {
@@ -162,8 +158,6 @@ public class ShellyPresenceTest {
         assertThat("zone 201 present", hasZone201, is(true));
     }
 
-    // ── NotifyEvent JSON parsing ──────────────────────────────────────────────────────────────
-
     @Test
     void notifyEventPresenceDeserializes() {
         String json = "{\"src\":\"shellypresence-aabb\",\"ts\":1731931521.19,"
@@ -206,8 +200,6 @@ public class ShellyPresenceTest {
         assertThat("absent value field must deserialize to null — handler must not write spurious OFF", e.value,
                 is(nullValue()));
     }
-
-    // ── ShellyDeviceProfile flags ─────────────────────────────────────────────────────────────
 
     @Test
     void presenceProfileSetsIsSensorAndIsPresence() {
