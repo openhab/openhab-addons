@@ -142,6 +142,11 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                 api.resetMeterTotal(mIdx); // currently there is only 1 emdata component
                 updateChannel(groupName, CHANNEL_EMETER_RESETTOTAL, OnOffType.OFF);
                 break;
+            case CHANNEL_CTRL_SENSOR_ENABLE:
+                if (profile.isPresence && command instanceof OnOffType onOffCommand) {
+                    api.setPresenceSensor(onOffCommand == OnOffType.ON);
+                }
+                break;
         }
         return true;
     }

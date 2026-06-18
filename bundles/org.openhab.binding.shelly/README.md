@@ -1477,11 +1477,11 @@ channels are updated on the regular poll cycle.
 | Group   | Channel      | Type     | read-only | Description                                                               |
 | ------- | ------------ | -------- | --------- | ------------------------------------------------------------------------- |
 | sensors | presence     | Switch   | yes       | ON: Occupancy detected in the default detection zone                      |
-|         | objectCount  | Number   | yes       | Number of persons/objects currently in the zone (instantaneous, not cumulative) |
-|         | lux          | Number   | yes       | Ambient light level in lux                                                |
+|         | objectCount  | Number   | yes       | Number of persons/objects currently detected in the zone                  |
+|         | lux          | Number   | yes       | Brightness in Lux                                                         |
 |         | illumination | String   | yes       | Ambient light class (dark / twilight / bright)                            |
 |         | lastUpdate   | DateTime | yes       | Timestamp of the last update                                              |
-| control | sensorEnable | Switch   | r/w       | Enable or disable the mmWave radar sensor (calls Presence.SetSensor)      |
+| control | sensorEnable | Switch   | r/w       | Enable or disable the mmWave radar sensor                                 |
 
 ### Shelly Plus Wall Dimmer US (thing-type: shellypluswdus)
 
