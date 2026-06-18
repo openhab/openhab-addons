@@ -25,7 +25,6 @@ import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.fineoffsetweatherstation.internal.domain.Measurand.MeasurandParser;
 import org.openhab.core.thing.DefaultSystemChannelTypeProvider;
 
 /**
@@ -95,19 +94,19 @@ public class MeasurandRegistry {
         b.add(0x02,
                 measurand("temperature-outdoor", "Outdoor Temperature", MeasureType.TEMPERATURE)
                         .channelType(DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_TYPE_UID_OUTDOOR_TEMPERATURE)
-                        .http(Measurand.http(HttpGroup.COMMON_LIST)));
+                        .http(Measurand.httpSource(HttpGroup.COMMON_LIST)));
         b.add(0x03, measurand("temperature-dew-point", "Dew point", MeasureType.TEMPERATURE)
-                .http(Measurand.http(HttpGroup.COMMON_LIST)));
+                .http(Measurand.httpSource(HttpGroup.COMMON_LIST)));
         b.add(0x04, measurand("temperature-wind-chill", "Wind chill", MeasureType.TEMPERATURE)
-                .http(Measurand.http(HttpGroup.COMMON_LIST)));
+                .http(Measurand.httpSource(HttpGroup.COMMON_LIST)));
         b.add(0x05, measurand("temperature-heat-index", "Heat index", MeasureType.TEMPERATURE)
-                .http(Measurand.http(HttpGroup.COMMON_LIST)));
+                .http(Measurand.httpSource(HttpGroup.COMMON_LIST)));
         b.add(0x06,
                 measurand("humidity-indoor", "Indoor Humidity", MeasureType.PERCENTAGE).http(HttpGroup.WH25, "inhumi"));
         b.add(0x07,
                 measurand("humidity-outdoor", "Outdoor Humidity", MeasureType.PERCENTAGE)
                         .channelType(DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_TYPE_UID_ATMOSPHERIC_HUMIDITY)
-                        .http(Measurand.http(HttpGroup.COMMON_LIST)));
+                        .http(Measurand.httpSource(HttpGroup.COMMON_LIST)));
         b.add(0x08, measurand("pressure-absolute", "Absolutely pressure", MeasureType.PRESSURE).http(HttpGroup.WH25,
                 "abs"));
         b.add(0x09,
@@ -117,42 +116,46 @@ public class MeasurandRegistry {
         b.add(0x0A,
                 measurand("direction-wind", "Wind Direction", MeasureType.DEGREE)
                         .channelType(DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_TYPE_UID_WIND_DIRECTION)
-                        .http(Measurand.http(HttpGroup.COMMON_LIST)));
+                        .http(Measurand.httpSource(HttpGroup.COMMON_LIST)));
         b.add(0x0B,
                 measurand("speed-wind", "Wind Speed", MeasureType.SPEED)
                         .channelType(DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_TYPE_UID_WIND_SPEED)
-                        .http(Measurand.http(HttpGroup.COMMON_LIST)));
+                        .http(Measurand.httpSource(HttpGroup.COMMON_LIST)));
         b.add(0x0C,
                 measurand("speed-gust", "Gust Speed", MeasureType.SPEED)
                         .channelType(DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_TYPE_UID_WIND_SPEED)
-                        .http(Measurand.http(HttpGroup.COMMON_LIST)));
-        b.add(0x0D, measurand("rain-event", "Rain Event", MeasureType.HEIGHT).http(Measurand.http(HttpGroup.RAIN))
+                        .http(Measurand.httpSource(HttpGroup.COMMON_LIST)));
+        b.add(0x0D, measurand("rain-event", "Rain Event", MeasureType.HEIGHT).http(Measurand.httpSource(HttpGroup.RAIN))
                 .customization(ParserCustomizationType.ELV, MeasureType.HEIGHT_BIG));
         b.add(0x0E,
-                measurand("rain-rate", "Rain Rate", MeasureType.HEIGHT_PER_HOUR).http(Measurand.http(HttpGroup.RAIN))
+                measurand("rain-rate", "Rain Rate", MeasureType.HEIGHT_PER_HOUR)
+                        .http(Measurand.httpSource(HttpGroup.RAIN))
                         .customization(ParserCustomizationType.ELV, MeasureType.HEIGHT_PER_HOUR_BIG));
-        b.add(0x0F, measurand("rain-hour", "Rain hour", MeasureType.HEIGHT).http(Measurand.http(HttpGroup.RAIN))
+        b.add(0x0F, measurand("rain-hour", "Rain hour", MeasureType.HEIGHT).http(Measurand.httpSource(HttpGroup.RAIN))
                 .customization(ParserCustomizationType.ELV, MeasureType.HEIGHT_BIG));
         b.add(0x10,
-                measurand("rain-day", "Rain Day", MeasureType.HEIGHT).http(Measurand.http(HttpGroup.RAIN))
+                measurand("rain-day", "Rain Day", MeasureType.HEIGHT).http(Measurand.httpSource(HttpGroup.RAIN))
                         .customization(ParserCustomizationType.ELV, MeasureType.HEIGHT_BIG)
                         .customization(ParserCustomizationType.RAIN_READING, MeasureType.HEIGHT_BIG));
         b.add(0x11,
-                measurand("rain-week", "Rain Week", MeasureType.HEIGHT).http(Measurand.http(HttpGroup.RAIN))
+                measurand("rain-week", "Rain Week", MeasureType.HEIGHT).http(Measurand.httpSource(HttpGroup.RAIN))
                         .customization(ParserCustomizationType.ELV, MeasureType.HEIGHT_BIG)
                         .customization(ParserCustomizationType.RAIN_READING, MeasureType.HEIGHT_BIG));
-        b.add(0x12, measurand("rain-month", "Rain Month", MeasureType.HEIGHT_BIG).http(Measurand.http(HttpGroup.RAIN)));
-        b.add(0x13, measurand("rain-year", "Rain Year", MeasureType.HEIGHT_BIG).http(Measurand.http(HttpGroup.RAIN)));
-        b.add(0x14,
-                measurand("rain-total", "Rain Totals", MeasureType.HEIGHT_BIG).http(Measurand.http(HttpGroup.RAIN)));
-        b.add(0x15, measurand("illumination", "Light", MeasureType.LUX).http(Measurand.http(HttpGroup.COMMON_LIST)));
+        b.add(0x12, measurand("rain-month", "Rain Month", MeasureType.HEIGHT_BIG)
+                .http(Measurand.httpSource(HttpGroup.RAIN)));
+        b.add(0x13,
+                measurand("rain-year", "Rain Year", MeasureType.HEIGHT_BIG).http(Measurand.httpSource(HttpGroup.RAIN)));
+        b.add(0x14, measurand("rain-total", "Rain Totals", MeasureType.HEIGHT_BIG)
+                .http(Measurand.httpSource(HttpGroup.RAIN)));
+        b.add(0x15,
+                measurand("illumination", "Light", MeasureType.LUX).http(Measurand.httpSource(HttpGroup.COMMON_LIST)));
         b.add(0x16, measurand("irradiation-uv", "UV", MeasureType.MILLIWATT_PER_SQUARE_METRE)
-                .http(Measurand.http(HttpGroup.COMMON_LIST)));
+                .http(Measurand.httpSource(HttpGroup.COMMON_LIST)));
         b.add(0x17, measurand("uv-index", "UV index", MeasureType.BYTE).channelType(CHANNEL_TYPE_UV_INDEX)
-                .http(Measurand.http(HttpGroup.COMMON_LIST)));
+                .http(Measurand.httpSource(HttpGroup.COMMON_LIST)));
         b.add(0x18, measurand("time", "Date and time", MeasureType.DATE_TIME2));
         b.add(0X19, measurand("wind-max-day", "Day max wind", MeasureType.SPEED)
-                .channelType(CHANNEL_TYPE_MAX_WIND_SPEED).http(Measurand.http(HttpGroup.COMMON_LIST)));
+                .channelType(CHANNEL_TYPE_MAX_WIND_SPEED).http(Measurand.httpSource(HttpGroup.COMMON_LIST)));
         b.addChannels(new int[] { 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F, 0x20, 0x21 },
                 measurand("temperature-channel", "Temperature", MeasureType.TEMPERATURE).http(HttpGroup.CH_AISLE,
                         "temp"));
@@ -215,7 +218,7 @@ public class MeasurandRegistry {
         b.add(0x6D,
                 measurand("direction-wind-avg-10min", "Wind Direction (10-minute average)", MeasureType.DEGREE)
                         .channelType(DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_TYPE_UID_WIND_DIRECTION)
-                        .http(Measurand.http(HttpGroup.COMMON_LIST)));
+                        .http(Measurand.httpSource(HttpGroup.COMMON_LIST)));
         b.addGroup(0x70, measurand("sensor-co2-temperature", "Temperature (CO₂-Sensor)", MeasureType.TEMPERATURE),
                 measurand("sensor-co2-humidity", "Humidity (CO₂-Sensor)", MeasureType.PERCENTAGE),
                 measurand("sensor-co2-pm10", "PM10 Air Quality (CO₂-Sensor)", MeasureType.PM10),
@@ -245,9 +248,9 @@ public class MeasurandRegistry {
         b.skip(0x87, 2 * 10);
         b.skip(0x88, 3);
         b.add(0xA1, measurand("temperature-black-globe", "Black Globe Temperature", MeasureType.TEMPERATURE)
-                .http(Measurand.http(HttpGroup.COMMON_LIST)));
+                .http(Measurand.httpSource(HttpGroup.COMMON_LIST)));
         b.add(0xA2, measurand("temperature-wet-bulb-globe", "Wet Bulb Globe Temperature", MeasureType.TEMPERATURE)
-                .http(Measurand.http(HttpGroup.COMMON_LIST)));
+                .http(Measurand.httpSource(HttpGroup.COMMON_LIST)));
         b.addHttpOnly(measurand("temperature-feels-like", "Feels like temperature", MeasureType.TEMPERATURE)
                 .http(HttpGroup.COMMON_LIST, "3"));
         b.addHttpOnly(measurand("vapor-pressure-deficit", "Vapor Pressure Deficit", MeasureType.VAPOR_PRESSURE_DEFICIT)
@@ -269,13 +272,13 @@ public class MeasurandRegistry {
         private final Map<Byte, CodeBinding> byCode = new HashMap<>();
         private final Map<HttpGroup, Map<String, HttpBinding>> byHttp = new HashMap<>();
 
-        public Builder add(int code, MeasurandParser m) {
+        public Builder add(int code, Measurand m) {
             byCode.put((byte) code, new CodeBinding(m, null, m.getChannelPrefix()));
             registerHttp(m, code);
             return this;
         }
 
-        public Builder addChannels(int[] codes, MeasurandParser m) {
+        public Builder addChannels(int[] codes, Measurand m) {
             for (int i = 0; i < codes.length; i++) {
                 byCode.put((byte) codes[i], new CodeBinding(m, i + 1, m.getChannelPrefix()));
             }
@@ -289,7 +292,7 @@ public class MeasurandRegistry {
          * (e.g. a trailing {@link Skip}). For each code {@code i} the channel {@code i+1} is bound; the slots after
          * {@code m} ignore the channel. HTTP for {@code m} is registered once under the first code.
          */
-        public Builder addChannels(int[] codes, MeasurandParser m, Parser... trailingSlots) {
+        public Builder addChannels(int[] codes, Measurand m, Parser... trailingSlots) {
             Parser[] slots = new Parser[trailingSlots.length + 1];
             slots[0] = m;
             System.arraycopy(trailingSlots, 0, slots, 1, trailingSlots.length);
@@ -300,7 +303,7 @@ public class MeasurandRegistry {
             return this;
         }
 
-        public Builder addHttpOnly(MeasurandParser m) {
+        public Builder addHttpOnly(Measurand m) {
             registerHttp(m, null);
             return this;
         }
@@ -309,7 +312,7 @@ public class MeasurandRegistry {
             byCode.put((byte) code,
                     new CodeBinding(new MeasurandGroup(slots), null, "group 0x" + Integer.toHexString(code & 0xFF)));
             for (Parser slot : slots) {
-                if (slot instanceof MeasurandParser m) {
+                if (slot instanceof Measurand m) {
                     registerHttp(m, code);
                 }
             }
@@ -321,7 +324,7 @@ public class MeasurandRegistry {
             return this;
         }
 
-        private void registerHttp(MeasurandParser m, @Nullable Integer tcpCode) {
+        private void registerHttp(Measurand m, @Nullable Integer tcpCode) {
             HttpSource source = m.getHttpSource();
             if (source == null) {
                 return;
@@ -336,7 +339,7 @@ public class MeasurandRegistry {
                     return;
                 }
             }
-            bindings.put(key, new HttpBinding(m, (@Nullable MeasurandParser) null));
+            bindings.put(key, new HttpBinding(m, (@Nullable Measurand) null));
         }
 
         public MeasurandRegistry build() {

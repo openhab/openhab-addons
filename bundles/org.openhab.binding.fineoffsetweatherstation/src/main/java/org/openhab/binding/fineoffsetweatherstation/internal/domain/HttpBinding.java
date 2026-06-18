@@ -14,7 +14,6 @@ package org.openhab.binding.fineoffsetweatherstation.internal.domain;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.fineoffsetweatherstation.internal.domain.Measurand.MeasurandParser;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.MeasuredValue;
 
 /**
@@ -26,15 +25,15 @@ import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.Mea
  */
 @NonNullByDefault
 public final class HttpBinding {
-    private final MeasurandParser parser;
-    private @Nullable MeasurandParser alternate;
+    private final Measurand parser;
+    private @Nullable Measurand alternate;
 
-    HttpBinding(MeasurandParser parser, @Nullable MeasurandParser alternate) {
+    HttpBinding(Measurand parser, @Nullable Measurand alternate) {
         this.parser = parser;
         this.alternate = alternate;
     }
 
-    void setAlternate(MeasurandParser alternate) {
+    void setAlternate(Measurand alternate) {
         this.alternate = alternate;
     }
 
@@ -42,7 +41,7 @@ public final class HttpBinding {
             @Nullable ParserCustomizationType customizationType) {
         MeasuredValue value = parser.parseHttp(val, unit, channel, customizationType);
         @Nullable
-        MeasurandParser alternate = this.alternate;
+        Measurand alternate = this.alternate;
         if (value == null && alternate != null) {
             value = alternate.parseHttp(val, unit, channel, customizationType);
         }

@@ -17,7 +17,7 @@ import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Declares where a measurand's value is found in the Ecowitt HTTP {@code get_livedata_info} response, created via
- * the {@link Measurand#http} / {@link Measurand#httpAlt} factory methods on the enum constants.
+ * the {@link Measurand#http} / {@link Measurand#httpAlt} fluent methods on a {@link Measurand}.
  *
  * @author Andreas Berger - Initial contribution
  */
