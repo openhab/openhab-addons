@@ -35,13 +35,13 @@ import org.openhab.core.thing.profiles.ProfileContext;
 import org.openhab.core.thing.profiles.StateProfile;
 
 /**
- * Unit test for {@link StateDelayStateProfile}.
+ * Unit test for {@link DebounceStateProfile}.
  *
  * @author Andreas Berger - Initial contribution
  */
 @ExtendWith(MockitoExtension.class)
 @NonNullByDefault
-class StateDelayStateProfileTest {
+class DebounceStateProfileTest {
 
     private @Mock @NonNullByDefault({}) ProfileCallback mockCallback;
     private @Mock @NonNullByDefault({}) ProfileContext mockContext;
@@ -55,7 +55,7 @@ class StateDelayStateProfileTest {
                 .thenReturn(new Configuration(Map.of("onDelay", onDelay, "offDelay", offDelay)));
         lenient().doReturn(mockFuture).when(mockScheduler).schedule(any(Runnable.class), anyLong(),
                 eq(TimeUnit.MILLISECONDS));
-        return new StateDelayStateProfile(mockCallback, mockContext);
+        return new DebounceStateProfile(mockCallback, mockContext);
     }
 
     private Runnable captureScheduled(int expectedDelay) {

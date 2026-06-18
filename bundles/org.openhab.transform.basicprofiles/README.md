@@ -8,13 +8,13 @@ This bundle provides a list of useful profiles:
 | [Generic Toggle Switch Profile](#generic-toggle-switch-profile) | Toggles a Switch Item when an event is triggered                                              |
 | [Debounce (Counting) Profile](#debounce-counting-profile)       | Counts and skips a number of state changes                                                    |
 | [Debounce (Time) Profile](#debounce-time-profile)               | Reduces the frequency of commands or state updates                                            |
+| [Debounce (State) Profile](#debounce-state-profile)             | Delays ON/OFF (or OPEN/CLOSED) state changes per direction with an independent cooldown       |
 | [Invert / Negate Profile](#invert-negate-profile)               | Inverts or negates a command or state                                                         |
 | [Round Profile](#round-profile)                                 | Rounds numeric and DateTime input data                                                        |
 | [Threshold Profile](#threshold-profile)                         | Translates numeric input data to `ON` or `OFF` based on a threshold value                     |
 | [Time Range Command Profile](#time-range-command-profile)       | An enhanced implementation of a follow profile which converts `OnOffType` to a `PercentType`  |
 | [State Filter Profile](#state-filter-profile)                   | Filters input data using arithmetic comparison conditions                                     |
 | [Inactivity Profile](#inactivity-profile)                       | Sets the linked Item to ON or OFF depending on whether the channel has recently produced data |
-| [State Delay Profile](#state-delay-profile)                     | Delays ON/OFF (or OPEN/CLOSED) state changes per direction with an independent cooldown       |
 | [Time-weighted Average Profile](#time-weighted-average-profile) | Collects updates for given duration to calculate time-weighted average value                  |
 
 ## Generic Command Profile
@@ -93,6 +93,36 @@ It can be used to debounce Item states/commands or prevent excessive load on net
 
 ```java
 Number:Temperature debouncedSetpoint { channel="xxx" [profile="basic-profiles:debounce-time", toHandlerDelay=1000] }
+```
+
+## Debounce (State) Profile
+
+Delays `ON`/`OFF` (Switch) or `OPEN`/`CLOSED` (Contact) state updates coming from the handler, with an independent delay per direction.
+An `ON`/`OPEN` value is held for `onDelay` milliseconds, an `OFF`/`CLOSED` value for `offDelay` milliseconds.
+A pending value is cancelled if the opposite value arrives before the delay elapses, and repeated identical values do not restart the timer.
+
+A typical use is a "cooldown" for a flapping binary sensor: forward `ON` immediately (`onDelay=0`) but keep it `ON` for a while after the device reports `OFF` (`offDelay` set to the cooldown), so it does not rapidly switch on and off.
+
+### Debounce (Time) vs. Debounce (State)
+
+Both profiles smooth out noisy inputs, but they target different cases:
+
+- Use **Debounce (Time)** for a single, type-agnostic delay that applies to every value regardless of its content (numbers, strings, switches, …). It is the right choice when you simply want to throttle the update/command frequency of a channel.
+- Use **Debounce (State)** for binary `Switch`/`Contact` channels when you need a _different_ delay depending on the direction of the change. Only the active→inactive transition (or vice versa) is delayed, the opposite transition can be forwarded immediately, and an opposing value cancels a still-pending one. This makes it ideal for an asymmetric "cooldown" (e.g. react to `ON` at once but linger on `OFF`) that `debounce-time` cannot express.
+
+### Debounce (State) Profile Configuration
+
+| Configuration Parameter | Type    | Description                                                                                   |
+|-------------------------|---------|-----------------------------------------------------------------------------------------------|
+| `onDelay`               | integer | Delay in ms before an `ON` (Switch) / `OPEN` (Contact) value is forwarded. `0` = immediate.   |
+| `offDelay`              | integer | Delay in ms before an `OFF` (Switch) / `CLOSED` (Contact) value is forwarded. `0` = immediate. |
+
+### Debounce (State) Profile Example
+
+Hold the "is it raining" status `ON` for 2 minutes after the device reports dry:
+
+```java
+Switch Raining { channel="fineoffsetweatherstation:gateway:xxx:rain-state" [profile="basic-profiles:debounce-state", onDelay=0, offDelay=120000] }
 ```
 
 ## Invert / Negate Profile<a id="invert-negate-profile"></a>
@@ -415,27 +445,4 @@ This will break the steady time frame but reports rapid changes e.g. for power c
 Number:Power SmartmeterPower {
   channel="mybinding:mything:mychannel" [ profile="basic-profiles:time-weighted-average", duration="1m" ]
 }
-```
-
-## State Delay Profile
-
-Delays `ON`/`OFF` (Switch) or `OPEN`/`CLOSED` (Contact) state updates coming from the handler, with an independent delay per direction.
-An `ON`/`OPEN` value is held for `onDelay` milliseconds, an `OFF`/`CLOSED` value for `offDelay` milliseconds.
-A pending value is cancelled if the opposite value arrives before the delay elapses, and repeated identical values do not restart the timer.
-
-A typical use is a "cooldown" for a flapping binary sensor: forward `ON` immediately (`onDelay=0`) but keep it `ON` for a while after the device reports `OFF` (`offDelay` set to the cooldown), so it does not rapidly switch on and off.
-
-### State Delay Profile Configuration
-
-| Configuration Parameter | Type    | Description                                                                                   |
-|-------------------------|---------|-----------------------------------------------------------------------------------------------|
-| `onDelay`               | integer | Delay in ms before an `ON` (Switch) / `OPEN` (Contact) value is forwarded. `0` = immediate.   |
-| `offDelay`              | integer | Delay in ms before an `OFF` (Switch) / `CLOSED` (Contact) value is forwarded. `0` = immediate. |
-
-### State Delay Profile Example
-
-Hold the "is it raining" status `ON` for 2 minutes after the device reports dry:
-
-```java
-Switch Raining { channel="fineoffsetweatherstation:gateway:xxx:rain-state" [profile="basic-profiles:state-delay", onDelay=0, offDelay=120000] }
 ```

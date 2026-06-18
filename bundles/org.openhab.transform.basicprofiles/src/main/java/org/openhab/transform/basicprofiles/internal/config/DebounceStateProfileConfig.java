@@ -15,17 +15,17 @@ package org.openhab.transform.basicprofiles.internal.config;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Configuration for {@link org.openhab.transform.basicprofiles.internal.profiles.StateDelayStateProfile}.
+ * Configuration for {@link org.openhab.transform.basicprofiles.internal.profiles.DebounceStateProfile}.
  *
  * @author Andreas Berger - Initial contribution
  */
 @NonNullByDefault
-public class StateDelayStateProfileConfig {
+public class DebounceStateProfileConfig {
     public int onDelay = 0;
     public int offDelay = 0;
 
     @Override
     public String toString() {
-        return "StateDelayStateProfileConfig{onDelay=" + onDelay + ", offDelay=" + offDelay + "}";
+        return "DebounceStateProfileConfig{onDelay=" + onDelay + ", offDelay=" + offDelay + "}";
     }
 }

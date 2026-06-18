@@ -12,7 +12,7 @@
  */
 package org.openhab.transform.basicprofiles.internal.profiles;
 
-import static org.openhab.transform.basicprofiles.internal.factory.BasicProfilesFactory.STATE_DELAY_UID;
+import static org.openhab.transform.basicprofiles.internal.factory.BasicProfilesFactory.DEBOUNCE_STATE_UID;
 
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -28,7 +28,7 @@ import org.openhab.core.thing.profiles.ProfileTypeUID;
 import org.openhab.core.thing.profiles.StateProfile;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
-import org.openhab.transform.basicprofiles.internal.config.StateDelayStateProfileConfig;
+import org.openhab.transform.basicprofiles.internal.config.DebounceStateProfileConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,11 +40,11 @@ import org.slf4j.LoggerFactory;
  * @author Andreas Berger - Initial contribution
  */
 @NonNullByDefault
-public class StateDelayStateProfile implements StateProfile {
-    private final Logger logger = LoggerFactory.getLogger(StateDelayStateProfile.class);
+public class DebounceStateProfile implements StateProfile {
+    private final Logger logger = LoggerFactory.getLogger(DebounceStateProfile.class);
 
     private final ProfileCallback callback;
-    private final StateDelayStateProfileConfig config;
+    private final DebounceStateProfileConfig config;
     private final ScheduledExecutorService scheduler;
 
     private @Nullable State lastForwarded;
@@ -52,10 +52,10 @@ public class StateDelayStateProfile implements StateProfile {
     private @Nullable ScheduledFuture<?> pendingJob;
     private long pendingGeneration;
 
-    public StateDelayStateProfile(ProfileCallback callback, ProfileContext context) {
+    public DebounceStateProfile(ProfileCallback callback, ProfileContext context) {
         this.callback = callback;
         this.scheduler = context.getExecutorService();
-        this.config = context.getConfiguration().as(StateDelayStateProfileConfig.class);
+        this.config = context.getConfiguration().as(DebounceStateProfileConfig.class);
         logger.debug("Configuring profile with parameters: {}", config);
 
         if (config.onDelay < 0) {
@@ -70,7 +70,7 @@ public class StateDelayStateProfile implements StateProfile {
 
     @Override
     public ProfileTypeUID getProfileTypeUID() {
-        return STATE_DELAY_UID;
+        return DEBOUNCE_STATE_UID;
     }
 
     @Override
@@ -120,7 +120,7 @@ public class StateDelayStateProfile implements StateProfile {
             pendingActive = active;
             long generation = ++pendingGeneration;
             pendingJob = scheduler.schedule(() -> {
-                synchronized (StateDelayStateProfile.this) {
+                synchronized (DebounceStateProfile.this) {
                     if (generation != pendingGeneration) {
                         // superseded or cancelled while we waited for the lock
                         return;
