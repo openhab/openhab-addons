@@ -1,7 +1,7 @@
 # Modbus Sungrow Binding
 
 This binding integrates the Sungrow inverters and iHomeManager into openHAB.
-It is based on the Sungrow specification [Communication Protocol of Residential Hybrid Inverter V1.1.15](https://github.com/Gnarfoz/Sungrow-Inverter/blob/main/Modbus%20Information/TI_20240924_Communication%20Protocol%20of%20Residential%20Hybrid%20Inverter-V1.1.5.pdf)
+It is based on the Sungrow specification [Communication Protocol of Residential Hybrid Inverter V1.1.5](https://github.com/Gnarfoz/Sungrow-Inverter/blob/main/Modbus%20Information/TI_20240924_Communication%20Protocol%20of%20Residential%20Hybrid%20Inverter-V1.1.5.pdf)
 and the [iHM Communication Protocol](https://github.com/Jam3s97/sungrow_ihomemanager/blob/main/Modbus%20Information/iHM.Communication.Protocol-20260121-test.pdf).
 
 ## Supported Inverters
