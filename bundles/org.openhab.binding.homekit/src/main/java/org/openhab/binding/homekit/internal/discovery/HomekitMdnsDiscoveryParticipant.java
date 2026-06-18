@@ -333,7 +333,8 @@ public class HomekitMdnsDiscoveryParticipant extends AbstractDiscoveryService im
      * the mDNS RFC. Spaces are escaped as '\032'. Any '.' suffix after the 'local' is trimmed. And if the port is
      * neither '0' nor the default 80 then a port suffix is added. For example: my\032accessory-2.local:12345
      *
-     * @param service the ServiceInfo object.
+     * @param server the mDNS server name of the accessory.
+     * @param port the TCP port of the accessory.
      * @return the HomeKit HTTP HAP Host header name.
      */
     private String getHostName(String server, int port) {

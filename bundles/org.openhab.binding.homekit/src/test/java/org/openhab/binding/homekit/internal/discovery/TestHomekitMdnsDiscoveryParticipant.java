@@ -18,6 +18,7 @@ import static org.mockito.Mockito.*;
 
 import java.net.Inet4Address;
 import java.net.InetAddress;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -68,6 +69,7 @@ class TestHomekitMdnsDiscoveryParticipant {
     @BeforeEach
     void setup() {
         macResolver = mock(MacResolver.class);
+        when(macResolver.resolveMac(any())).thenReturn(CompletableFuture.completedFuture(null));
         storageService = mock(StorageService.class);
         storage = mock(Storage.class);
         when(storageService.<String> getStorage(any(), any())).thenReturn(storage);
@@ -106,7 +108,7 @@ class TestHomekitMdnsDiscoveryParticipant {
     private byte[] buildTxtRecord(Map<String, String> props) {
         var baos = new java.io.ByteArrayOutputStream();
         props.forEach((k, v) -> {
-            byte[] bytes = (k + "=" + v).getBytes();
+            byte[] bytes = (k + "=" + v).getBytes(StandardCharsets.UTF_8);
             baos.write(bytes.length);
             baos.writeBytes(bytes);
         });

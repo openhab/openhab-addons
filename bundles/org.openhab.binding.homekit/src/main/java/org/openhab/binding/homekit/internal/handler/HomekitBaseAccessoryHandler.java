@@ -1033,5 +1033,9 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         }
         thing.setProperty(Thing.PROPERTY_MAC_ADDRESS, mac);
         logger.trace("{} set mac property {}", thing.getUID(), mac);
+        if (thing.getProperties().get(PROPERTY_CONVERTED_FROM_ACCESSORY) != null
+                && thing.getConfiguration().getProperties().get(CONFIG_UNIQUE_ID) instanceof String uniqueId) {
+            discoveryParticipant.setTypeMapping(true, uniqueId, mac);
+        }
     }
 }
