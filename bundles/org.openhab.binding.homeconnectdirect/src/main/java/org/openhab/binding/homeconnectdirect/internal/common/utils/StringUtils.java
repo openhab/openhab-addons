@@ -60,14 +60,23 @@ public class StringUtils {
         // Utility class
     }
 
+    /**
+     * Check whether the given string is {@code null}, empty or contains only whitespace.
+     *
+     * @param str the string to check (may be {@code null})
+     * @return {@code true} if the string is {@code null}, empty or blank
+     */
     public static boolean isBlank(@Nullable String str) {
         return str == null || str.isBlank();
     }
 
-    public static boolean isNotBlank(@Nullable String str) {
-        return !isBlank(str);
-    }
-
+    /**
+     * Null-safe check whether the given string ends with the given suffix.
+     *
+     * @param str the string to check (may be {@code null})
+     * @param suffix the suffix to look for (may be {@code null})
+     * @return {@code true} if the string ends with the suffix, {@code false} if either argument is {@code null}
+     */
     public static boolean endsWith(@Nullable String str, @Nullable String suffix) {
         if (str == null || suffix == null) {
             return false;
@@ -75,6 +84,13 @@ public class StringUtils {
         return str.endsWith(suffix);
     }
 
+    /**
+     * Null-safe check whether the given string starts with the given prefix.
+     *
+     * @param str the string to check (may be {@code null})
+     * @param prefix the prefix to look for (may be {@code null})
+     * @return {@code true} if the string starts with the prefix, {@code false} if either argument is {@code null}
+     */
     public static boolean startsWith(@Nullable String str, @Nullable String prefix) {
         if (str == null || prefix == null) {
             return false;
@@ -82,6 +98,14 @@ public class StringUtils {
         return str.startsWith(prefix);
     }
 
+    /**
+     * Return the substring after the first occurrence of the given separator.
+     *
+     * @param str the string to extract from (may be {@code null})
+     * @param separator the separator whose first occurrence marks the start of the result (may be {@code null})
+     * @return the substring after the first occurrence of the separator, or an empty string if the string is
+     *         {@code null}/empty, the separator is {@code null} or the separator is not found
+     */
     public static String substringAfter(@Nullable String str, @Nullable String separator) {
         if (str == null || str.isEmpty() || separator == null) {
             return EMPTY_STRING;
@@ -95,6 +119,13 @@ public class StringUtils {
         return str.substring(index + separator.length());
     }
 
+    /**
+     * Null-safe, case-insensitive comparison of two strings.
+     *
+     * @param str1 the first string (may be {@code null})
+     * @param str2 the second string (may be {@code null})
+     * @return {@code true} if both are {@code null} or equal ignoring case, {@code false} otherwise
+     */
     public static boolean equalsIgnoreCase(@Nullable String str1, @Nullable String str2) {
         if (str1 == null && str2 == null) {
             return true;
@@ -105,13 +136,13 @@ public class StringUtils {
         return str1.equalsIgnoreCase(str2);
     }
 
-    public static String capitalize(@Nullable String str) {
-        if (str == null || str.isEmpty()) {
-            return EMPTY_STRING;
-        }
-        return Character.toUpperCase(str.charAt(0)) + str.substring(1);
-    }
-
+    /**
+     * Null-safe check whether the given string contains the given search sequence.
+     *
+     * @param str the string to search in (may be {@code null})
+     * @param search the sequence to look for (may be {@code null})
+     * @return {@code true} if the string contains the search sequence, {@code false} if either argument is {@code null}
+     */
     public static boolean contains(@Nullable String str, @Nullable String search) {
         if (str == null || search == null) {
             return false;
@@ -119,6 +150,12 @@ public class StringUtils {
         return str.contains(search);
     }
 
+    /**
+     * Convert a camelCase string to kebab-case (e.g. {@code fooBar} becomes {@code foo-bar}).
+     *
+     * @param input the string to convert (may be {@code null})
+     * @return the kebab-case representation, or an empty string if the input is {@code null} or blank
+     */
     public static String convertToKebabCase(@Nullable String input) {
         if (input == null || input.isBlank()) {
             return EMPTY_STRING;
@@ -129,6 +166,12 @@ public class StringUtils {
         return matcher.replaceAll("$1-$2").toLowerCase(LOCALE);
     }
 
+    /**
+     * Convert the given string to lower case.
+     *
+     * @param input the string to convert (may be {@code null})
+     * @return the lower-case representation, or an empty string if the input is {@code null} or blank
+     */
     public static String toLowercase(@Nullable String input) {
         if (input == null || input.isBlank()) {
             return EMPTY_STRING;
@@ -136,6 +179,15 @@ public class StringUtils {
         return input.toLowerCase(LOCALE);
     }
 
+    /**
+     * Null-safe, case-insensitive check whether the given string contains the given search sequence.
+     *
+     * @param str the string to search in (may be {@code null})
+     * @param search the sequence to look for (may be {@code null})
+     * @return {@code true} if the string contains the search sequence ignoring case, {@code false} if either argument
+     *         is
+     *         {@code null}
+     */
     public static boolean containsIgnoreCase(@Nullable String str, @Nullable String search) {
         if (str == null || search == null) {
             return false;
@@ -173,16 +225,36 @@ public class StringUtils {
         return label;
     }
 
+    /**
+     * Heuristically check whether the given payload is likely a JSON object (starts with <code>{</code> and ends with
+     * <code>}</code>).
+     *
+     * @param payload the payload to check
+     * @return {@code true} if the trimmed payload looks like a JSON object
+     */
     public static boolean isMostLikelyAJsonObject(String payload) {
         var json = payload.trim();
         return (json.startsWith("{") && json.endsWith("}"));
     }
 
+    /**
+     * Heuristically check whether the given payload is likely a JSON array (starts with <code>[</code> and ends with
+     * <code>]</code>).
+     *
+     * @param payload the payload to check
+     * @return {@code true} if the trimmed payload looks like a JSON array
+     */
     public static boolean isMostLikelyAJsonArray(String payload) {
         var json = payload.trim();
         return (json.startsWith("[") && json.endsWith("]"));
     }
 
+    /**
+     * Remove all characters that are not alphanumeric or one of {@code . _ -} from the given string.
+     *
+     * @param input the string to sanitize (may be {@code null})
+     * @return the sanitized string, or an empty string if the input is {@code null} or blank
+     */
     public static String sanitize(@Nullable String input) {
         if (input == null || input.isBlank()) {
             return EMPTY_STRING;

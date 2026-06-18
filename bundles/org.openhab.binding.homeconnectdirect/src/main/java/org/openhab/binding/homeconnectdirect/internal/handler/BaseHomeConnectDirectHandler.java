@@ -701,7 +701,7 @@ public class BaseHomeConnectDirectHandler extends BaseThingHandler implements We
             var favoriteNumber = Integer.parseInt(matcher.group(1));
             var favoriteKey = String.format(PROGRAM_FAVORITE_KEY_TEMPLATE, favoriteNumber);
             var favoriteName = value.getValueAsString();
-            if (StringUtils.isNotBlank(favoriteName)) {
+            if (!StringUtils.isBlank(favoriteName)) {
                 favoriteNames.put(favoriteKey, favoriteName);
             } else {
                 favoriteNames.remove(favoriteKey);
@@ -743,7 +743,7 @@ public class BaseHomeConnectDirectHandler extends BaseThingHandler implements We
                         var onValueConfig = channel.getConfiguration().get(CONFIGURATION_ON_VALUE_KEY);
                         if (onValueConfig != null) {
                             var onValues = Arrays.stream(onValueConfig.toString().split(",")).map(String::trim)
-                                    .filter(StringUtils::isNotBlank).collect(Collectors.toSet());
+                                    .filter(v -> !StringUtils.isBlank(v)).collect(Collectors.toSet());
                             updateState(channel.getUID(), OnOffType.from(
                                     onValues.stream().anyMatch(v -> v.equalsIgnoreCase(value.getValueAsString()))));
                         }

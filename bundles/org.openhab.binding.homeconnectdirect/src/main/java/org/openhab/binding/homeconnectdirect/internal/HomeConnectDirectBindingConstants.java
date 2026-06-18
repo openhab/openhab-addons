@@ -45,6 +45,11 @@ public class HomeConnectDirectBindingConstants {
     public static final ZoneId ZONE_ID = ZoneId.systemDefault();
     public static final Locale LOCALE = Locale.ENGLISH;
 
+    // Binding configuration parameters
+    public static final String CONFIGURATION_LOGIN_ENABLED = "loginEnabled";
+    public static final String CONFIGURATION_LOGIN_PASSWORD = "loginPassword";
+    public static final String CONFIGURATION_MESSAGE_QUEUE_SIZE = "messageQueueSize";
+
     // List of all appliances
     public static final String APPLIANCE_TYPE_GENERIC = "generic";
     public static final String APPLIANCE_TYPE_WASHER = "washer";

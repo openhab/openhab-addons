@@ -102,7 +102,7 @@ public class ProfileRequestHandler {
         var type = sanitize(convertToKebabCase(toLowercase(applianceProfile.type())));
         var brand = sanitize(toLowercase(applianceProfile.brand()));
         var vib = sanitize(toLowercase(applianceProfile.vib()));
-        var mac = isNotBlank(applianceProfile.mac())
+        var mac = !isBlank(applianceProfile.mac())
                 ? sanitize(toLowercase(applianceProfile.mac().replace(HYPHEN, EMPTY_STRING)))
                 : EMPTY_STRING;
         var filename = String.format(PROFILE_DOWNLOAD_FILENAME_TEMPLATE, type, brand, vib, mac,

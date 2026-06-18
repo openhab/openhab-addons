@@ -12,9 +12,7 @@
  */
 package org.openhab.binding.homeconnectdirect.internal.common.utils;
 
-import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.BINDING_ID;
-import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.CONFIGURATION_PID;
-import static org.openhab.binding.homeconnectdirect.internal.common.utils.StringUtils.isNotBlank;
+import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,7 +24,6 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.HexFormat;
@@ -39,6 +36,7 @@ import org.openhab.binding.homeconnectdirect.internal.configuration.HomeConnectD
 import org.openhab.binding.homeconnectdirect.internal.service.websocket.model.Resource;
 import org.openhab.binding.homeconnectdirect.internal.service.websocket.serializer.ResourceAdapter;
 import org.openhab.core.OpenHAB;
+import org.openhab.core.util.StringUtils;
 import org.osgi.service.cm.ConfigurationAdmin;
 
 import com.google.gson.Gson;
@@ -58,8 +56,9 @@ public class ConfigurationUtils {
     public static final String WS_DEVICE_ID_PATH = OpenHAB.getUserDataFolder() + File.separator + BINDING_ID
             + File.separator + "device.id";
 
+    private static final String DEVICE_ID_HASH_ALGORITHM = "SHA-256";
+    private static final int DEVICE_ID_HASH_LENGTH = 12;
     private static final HexFormat HEX_FORMATTER = HexFormat.of();
-    private static final SecureRandom RANDOM = new SecureRandom();
 
     private ConfigurationUtils() {
         // Utility class
@@ -78,12 +77,13 @@ public class ConfigurationUtils {
             var properties = config.getProperties();
 
             if (properties != null) {
-                configuration.loginEnabled = Boolean.parseBoolean(String.valueOf(properties.get("loginEnabled")));
-                var passwordObject = properties.get("loginPassword");
-                if (passwordObject instanceof String password && isNotBlank(password)) {
+                configuration.loginEnabled = Boolean
+                        .parseBoolean(String.valueOf(properties.get(CONFIGURATION_LOGIN_ENABLED)));
+                var passwordObject = properties.get(CONFIGURATION_LOGIN_PASSWORD);
+                if (passwordObject instanceof String password && !password.isBlank()) {
                     configuration.loginPassword = password;
                 }
-                var queueSizeObject = properties.get("messageQueueSize");
+                var queueSizeObject = properties.get(CONFIGURATION_MESSAGE_QUEUE_SIZE);
                 if (queueSizeObject != null) {
                     int queueSize = Integer.parseInt(String.valueOf(queueSizeObject));
                     configuration.messageQueueSize = Math.min(86400, Math.max(10, queueSize));
@@ -128,21 +128,15 @@ public class ConfigurationUtils {
     private static String generateDeviceId() {
         try {
             var hostname = InetAddress.getLocalHost().getHostName().trim();
-            var digest = MessageDigest.getInstance("SHA-256");
+            var digest = MessageDigest.getInstance(DEVICE_ID_HASH_ALGORITHM);
             byte[] fullHash = digest.digest(hostname.getBytes(StandardCharsets.UTF_8));
 
-            byte[] truncatedHash = Arrays.copyOf(fullHash, 12);
+            byte[] truncatedHash = Arrays.copyOf(fullHash, DEVICE_ID_HASH_LENGTH);
 
             return HEX_FORMATTER.formatHex(truncatedHash);
         } catch (SecurityException | UnknownHostException | NoSuchAlgorithmException e) {
-            return WS_DEVICE_ID_PREFIX + generateHexString();
+            return WS_DEVICE_ID_PREFIX + StringUtils
+                    .getRandomHex(2 * DEVICE_ID_HASH_LENGTH - WS_DEVICE_ID_PREFIX.length()).toLowerCase(LOCALE);
         }
-    }
-
-    private static String generateHexString() {
-        byte[] bytes = new byte[6];
-        RANDOM.nextBytes(bytes);
-
-        return HEX_FORMATTER.formatHex(bytes);
     }
 }

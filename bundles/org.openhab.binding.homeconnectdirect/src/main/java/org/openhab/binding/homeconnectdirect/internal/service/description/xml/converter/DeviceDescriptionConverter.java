@@ -366,7 +366,7 @@ public class DeviceDescriptionConverter extends AbstractConverter<DeviceDescript
         while (reader.hasMoreChildren()) {
             reader.moveDown();
             String nodeName = reader.getNodeName();
-            if ("option".equals(nodeName) && StringUtils.isNotBlank(reader.getAttribute("uid"))) {
+            if ("option".equals(nodeName) && !StringUtils.isBlank(reader.getAttribute("uid"))) {
                 var option = readOption(reader, featureMapping);
                 options.put(option.uid(), option.key(), option);
             } else if ("optionList".equals(nodeName)) {

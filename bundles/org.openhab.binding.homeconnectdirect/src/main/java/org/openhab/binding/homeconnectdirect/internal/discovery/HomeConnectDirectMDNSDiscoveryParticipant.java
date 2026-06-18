@@ -17,6 +17,7 @@ import static org.openhab.binding.homeconnectdirect.internal.common.utils.String
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.jmdns.ServiceInfo;
@@ -29,6 +30,7 @@ import org.openhab.core.config.discovery.mdns.MDNSDiscoveryParticipant;
 import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.util.StringUtils;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -82,11 +84,12 @@ public class HomeConnectDirectMDNSDiscoveryParticipant implements MDNSDiscoveryP
         var thingUID = mapThingUID(serviceInfo);
 
         logger.trace("Found appliance. haId={}, addresses={}, port={}", haId, ipv4List, port);
-        if (!ipv4List.isEmpty() && isNotBlank(haId)
-                && (port == CONNECTION_TYPE_AES_PORT || port == CONNECTION_TYPE_TLS_PORT) && isNotBlank(type)
-                && isNotBlank(brand) && thingUID != null && !isAlreadyRegisteredThing(haId)) {
+        if (!ipv4List.isEmpty() && !isBlank(haId)
+                && (port == CONNECTION_TYPE_AES_PORT || port == CONNECTION_TYPE_TLS_PORT) && !isBlank(type)
+                && !isBlank(brand) && thingUID != null && !isAlreadyRegisteredThing(haId)) {
             var thingTypeUID = mapType(type);
-            var friendlyName = getLabel(thingTypeUID, capitalize(brand.toLowerCase(LOCALE)));
+            var friendlyName = getLabel(thingTypeUID,
+                    Objects.requireNonNull(StringUtils.capitalize(brand.toLowerCase(LOCALE))));
 
             Map<String, Object> properties = Map.of(PROPERTY_HOME_APPLIANCE_ID, haId, PROPERTY_ADDRESS,
                     ipv4List.getFirst().getHostAddress());
@@ -113,7 +116,7 @@ public class HomeConnectDirectMDNSDiscoveryParticipant implements MDNSDiscoveryP
         var vib = serviceInfo.getPropertyString(PROPERTY_VIB);
         var brand = serviceInfo.getPropertyString(PROPERTY_BRAND);
 
-        if (isNotBlank(haId) && isNotBlank(brand) && isNotBlank(type) && isNotBlank(mac) && isNotBlank(vib)) {
+        if (!isBlank(haId) && !isBlank(brand) && !isBlank(type) && !isBlank(mac) && !isBlank(vib)) {
             var idProposal = brand.toLowerCase(LOCALE) + "-" + vib.toLowerCase(LOCALE) + "-" + mac.toLowerCase(LOCALE);
             return new ThingUID(mapType(type), idProposal);
         } else {
