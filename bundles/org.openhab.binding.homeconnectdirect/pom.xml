@@ -19,7 +19,20 @@
   </properties>
 
   <dependencies>
-    <!-- Conscrypt Java Security Provider -->
+    <!--
+      Conscrypt Java Security Provider.
+
+      Home Connect appliances secure the local connection with a TLS-PSK handshake using the cipher
+      suite TLS_ECDHE_PSK_WITH_CHACHA20_POLY1305_SHA256. The JDK default provider (SunJSSE) does not
+      implement TLS-PSK cipher suites, so a JSSE provider that supports them is required. Conscrypt
+      (Google's BoringSSL based provider) supports this cipher suite and is therefore used here.
+
+      Conscrypt primarily targets Android; the official "openjdk-uber" artifact is only published as
+      an outdated version on Maven Central (latest stable 2.5.2) and does not bundle the native
+      libraries for all platforms this binding needs. The dependency below is therefore a custom
+      build (https://github.com/bruestel/conscrypt) that ships the native libraries for the supported
+      platforms: Linux (X64, ARM64), Windows (X64), Mac OS (X64, ARM64) - see CONSCRYPT_SUPPORTED_SYSTEMS.
+    -->
     <dependency>
       <groupId>net.bruestel</groupId>
       <artifactId>conscrypt-openjdk-uber</artifactId>

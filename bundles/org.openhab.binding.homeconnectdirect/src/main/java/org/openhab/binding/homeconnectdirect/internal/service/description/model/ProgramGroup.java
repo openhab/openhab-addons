@@ -26,5 +26,4 @@ import org.openhab.binding.homeconnectdirect.internal.service.description.model.
 public record ProgramGroup(int uid, String key, boolean available,
         DoubleKeyMap<Integer, String, ProgramGroup> programGroups,
         DoubleKeyMap<Integer, String, Program> programs) implements AvailableProvider, KeyProvider {
-
 }
