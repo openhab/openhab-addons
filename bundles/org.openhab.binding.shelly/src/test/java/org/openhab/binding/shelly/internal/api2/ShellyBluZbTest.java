@@ -35,8 +35,6 @@ public class ShellyBluZbTest {
 
     private final Gson gson = new Gson();
 
-    // ── Device type registration ─────────────────────────────────────────────
-
     @Test
     void bluRcButton4ZbMapsToRcButton4ThingType() {
         ThingTypeUID uid = THING_TYPE_BY_DEVICE_TYPE.get(SHELLYDT_BLURCBUTTON4ZB);
@@ -65,8 +63,6 @@ public class ShellyBluZbTest {
         assertThat(uid, is(THING_TYPE_SHELLYBLUHT));
     }
 
-    // ── LightLevel (0x64) field deserialization ──────────────────────────────
-
     @Test
     void lightLevelBrightDeserializes() {
         Shelly2NotifyBluEventData data = gson.fromJson("{\"LightLevel\":2,\"Battery\":85}",
@@ -82,8 +78,6 @@ public class ShellyBluZbTest {
         assertNotNull(data);
         assertThat(data.lightLevel, is(0));
     }
-
-    // ── BatteryLow (0x15) field deserialization ──────────────────────────────
 
     @Test
     void batteryLowSetDeserializes() {
@@ -101,8 +95,6 @@ public class ShellyBluZbTest {
         assertNotNull(data);
         assertThat(data.batteryLow, is(0));
     }
-
-    // ── IntegerArrayAdapter: Button scalar and array ─────────────────────────
 
     @Test
     void scalarButtonDeserializesToSingleElementArray() {
@@ -124,8 +116,6 @@ public class ShellyBluZbTest {
         assertThat(buttons[0], is(1));
         assertThat(buttons[2], is(1));
     }
-
-    // ── DoubleArrayAdapter: Temperature scalar and array ─────────────────────
 
     @Test
     void scalarTemperatureDeserializesToSingleElementArray() {
