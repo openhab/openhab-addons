@@ -25,6 +25,7 @@ import org.openhab.binding.homekit.internal.persistence.HomekitKeyStore;
 import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
 import org.openhab.core.config.discovery.mdns.MDNSDiscoveryParticipant;
 import org.openhab.core.i18n.TranslationProvider;
+import org.openhab.core.io.net.mac.MacResolver;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ManagedThingProvider;
 import org.openhab.core.thing.Thing;
@@ -60,6 +61,7 @@ public class HomekitHandlerFactory extends BaseThingHandlerFactory {
     private final Bundle bundle;
     private final ManagedThingProvider managedThingProvider;
     private final HomekitMdnsDiscoveryParticipant discoveryParticipant;
+    private final MacResolver macResolver;
 
     /**
      * Constructor.
@@ -73,7 +75,8 @@ public class HomekitHandlerFactory extends BaseThingHandlerFactory {
             @Reference ChannelTypeRegistry channelTypeRegistry,
             @Reference ChannelGroupTypeRegistry channelGroupTypeRegistry, @Reference HomekitKeyStore keyStore,
             @Reference TranslationProvider translationProvider, @Reference ManagedThingProvider managedThingProvider,
-            @Reference(target = "(class.id=homekit)") MDNSDiscoveryParticipant mdnsDiscoveryParticipant) {
+            @Reference(target = "(class.id=homekit)") MDNSDiscoveryParticipant mdnsDiscoveryParticipant,
+            @Reference MacResolver macResolver) {
         this.typeProvider = typeProvider;
         this.channelTypeRegistry = channelTypeRegistry;
         this.channelGroupTypeRegistry = channelGroupTypeRegistry;
@@ -82,6 +85,7 @@ public class HomekitHandlerFactory extends BaseThingHandlerFactory {
         this.bundle = FrameworkUtil.getBundle(getClass());
         this.managedThingProvider = managedThingProvider;
         this.discoveryParticipant = (HomekitMdnsDiscoveryParticipant) mdnsDiscoveryParticipant;
+        this.macResolver = macResolver;
     }
 
     @Override
@@ -93,10 +97,11 @@ public class HomekitHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (THING_TYPE_BRIDGE.equals(thingTypeUID) && thing instanceof Bridge bridge) {
-            return new HomekitBridgeHandler(bridge, typeProvider, keyStore, i18nProvider, bundle, discoveryParticipant);
+            return new HomekitBridgeHandler(bridge, typeProvider, keyStore, i18nProvider, bundle, discoveryParticipant,
+                    macResolver);
         } else if (THING_TYPE_BRIDGED_ACCESSORY.equals(thingTypeUID) || THING_TYPE_ACCESSORY.equals(thingTypeUID)) {
             return new HomekitAccessoryHandler(thing, typeProvider, channelTypeRegistry, channelGroupTypeRegistry,
-                    keyStore, i18nProvider, bundle, managedThingProvider, discoveryParticipant);
+                    keyStore, i18nProvider, bundle, managedThingProvider, discoveryParticipant, macResolver);
         }
         return null;
     }

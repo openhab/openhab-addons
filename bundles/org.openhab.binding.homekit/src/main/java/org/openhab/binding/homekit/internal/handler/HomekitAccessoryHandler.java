@@ -47,6 +47,7 @@ import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
 import org.openhab.binding.homekit.internal.transport.IpTransport;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.TranslationProvider;
+import org.openhab.core.io.net.mac.MacResolver;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -156,8 +157,9 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     public HomekitAccessoryHandler(Thing thing, HomekitTypeProvider typeProvider,
             ChannelTypeRegistry channelTypeRegistry, ChannelGroupTypeRegistry channelGroupTypeRegistry,
             HomekitKeyStore keyStore, TranslationProvider i18nProvider, Bundle bundle,
-            ManagedThingProvider managedThingProvider, HomekitMdnsDiscoveryParticipant discoveryParticipant) {
-        super(thing, typeProvider, keyStore, i18nProvider, bundle, discoveryParticipant);
+            ManagedThingProvider managedThingProvider, HomekitMdnsDiscoveryParticipant discoveryParticipant,
+            MacResolver macResolver) {
+        super(thing, typeProvider, keyStore, i18nProvider, bundle, discoveryParticipant, macResolver);
         this.channelTypeRegistry = channelTypeRegistry;
         this.channelGroupTypeRegistry = channelGroupTypeRegistry;
         this.managedThingProvider = managedThingProvider;
@@ -1335,7 +1337,8 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                     "@text/status.migrating-accessory-to-bridge-failed");
             return;
         }
-        discoveryParticipant.suppressId(uniqueId, true); // suppress re-discovery of existing (now old) thing
+        String mac = thing.getProperties().get(Thing.PROPERTY_MAC_ADDRESS);
+        discoveryParticipant.setTypeMapping(true, uniqueId, mac); // enable mDNS thing type mapping
         logger.info("Successfully auto-migrated {} to {} with {}", oldThing.getUID(), newBridge.getUID(),
                 newThing.getUID());
     }
