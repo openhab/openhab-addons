@@ -21,9 +21,9 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.fineoffsetweatherstation.internal.domain.HttpBinding;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.HttpGroup;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.Measurand;
-import org.openhab.binding.fineoffsetweatherstation.internal.domain.Measurand.HttpBinding;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.SensorGatewayBinding;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.BatteryStatus;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.MeasuredValue;

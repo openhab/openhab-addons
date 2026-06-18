@@ -310,7 +310,7 @@ public enum Measurand {
                         continue;
                     }
                 }
-                bindings.put(normalizedKey, new HttpBinding(measurandParser, null));
+                bindings.put(normalizedKey, new HttpBinding(measurandParser, (@Nullable MeasurandParser) null));
             }
         }
     }
@@ -361,7 +361,7 @@ public enum Measurand {
         return map.get(normalizeId(id));
     }
 
-    private final int[] codes;
+    final int[] codes;
     private final Parser[] parsers;
 
     /**
@@ -436,28 +436,6 @@ public enum Measurand {
         return subOffset;
     }
 
-    private interface Parser {
-        int extractMeasuredValues(byte[] data, int offset, @Nullable Integer channel,
-                @Nullable ParserCustomizationType customizationType, List<MeasuredValue> result,
-                DebugDetails debugDetails);
-    }
-
-    private static class Skip implements Parser {
-        private final int skip;
-
-        public Skip(int skip) {
-            this.skip = skip;
-        }
-
-        @Override
-        public int extractMeasuredValues(byte[] data, int offset, @Nullable Integer channel,
-                @Nullable ParserCustomizationType customizationType, List<MeasuredValue> result,
-                DebugDetails debugDetails) {
-            debugDetails.addDebugDetails(offset, skip, "skipped");
-            return skip;
-        }
-    }
-
     public static class SingleChannelMeasurand {
         private final Measurand measurand;
         private final @Nullable Integer channel;
@@ -477,7 +455,7 @@ public enum Measurand {
         }
     }
 
-    private static class MeasurandParser implements Parser {
+    static class MeasurandParser implements Parser {
         private final String name;
         private final String channelPrefix;
         private final MeasureType measureType;
@@ -555,73 +533,6 @@ public enum Measurand {
             }
             ChannelTypeUID channelType = channelTypeUID == null ? measureType.getChannelTypeId() : channelTypeUID;
             return new MeasuredValue(measureType, channelPrefix, channel, channelType, state, name);
-        }
-    }
-
-    /**
-     * Binds an HTTP {@code get_livedata_info} entry to a measurand's parser. The optional {@code alternate} is used
-     * when the reported unit does not fit the primary parser's canonical dimension - this lets the lux illumination
-     * and the W/m² solar-radiation channel share the item code {@code 0x15}.
-     */
-    public static final class HttpBinding {
-        private final MeasurandParser parser;
-        private @Nullable MeasurandParser alternate;
-
-        HttpBinding(MeasurandParser parser, @Nullable MeasurandParser alternate) {
-            this.parser = parser;
-            this.alternate = alternate;
-        }
-
-        void setAlternate(MeasurandParser alternate) {
-            this.alternate = alternate;
-        }
-
-        public @Nullable MeasuredValue parse(String val, @Nullable String unit, @Nullable Integer channel,
-                @Nullable ParserCustomizationType customizationType) {
-            MeasuredValue value = parser.parseHttp(val, unit, channel, customizationType);
-            @Nullable
-            MeasurandParser alternate = this.alternate;
-            if (value == null && alternate != null) {
-                value = alternate.parseHttp(val, unit, channel, customizationType);
-            }
-            return value;
-        }
-    }
-
-    /**
-     * Declares where a measurand's value is found in the Ecowitt HTTP {@code get_livedata_info} response, created via
-     * the {@link Measurand#http} / {@link Measurand#httpAlt} factory methods on the enum constants.
-     */
-    static final class HttpSource {
-        private final HttpGroup group;
-        // explicit HTTP item code (used when it differs from the TCP code, e.g. the piezo rain channels)
-        private final @Nullable Integer httpCode;
-        // string id (e.g. "srain_piezo") or named field (e.g. "intemp"); null means "reuse the TCP item code"
-        private final @Nullable String key;
-        // whether this measurand is the dimension alternate for an already-registered code (see SOLAR_RADIATION)
-        private final boolean alternate;
-
-        private HttpSource(HttpGroup group, @Nullable Integer httpCode, @Nullable String key, boolean alternate) {
-            this.group = group;
-            this.httpCode = httpCode;
-            this.key = key;
-            this.alternate = alternate;
-        }
-
-        /**
-         * @return the lookup key: the explicit string id/field, the explicit HTTP item code, or - as a fallback for a
-         *         measurand declaring {@code http(group)} - its single TCP item code
-         */
-        private String resolveKey(Measurand measurand) {
-            String explicitKey = key;
-            if (explicitKey != null) {
-                return explicitKey;
-            }
-            Integer explicitCode = httpCode;
-            if (explicitCode != null) {
-                return codeKey(explicitCode);
-            }
-            return codeKey(measurand.codes[0]);
         }
     }
 }
