@@ -34,6 +34,7 @@ import java.nio.file.StandardCopyOption;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.DateTimeException;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeParseException;
@@ -81,6 +82,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
@@ -93,6 +95,11 @@ import com.google.gson.reflect.TypeToken;
 public class LogRequestHandler {
 
     private static final int DEFAULT_CACHE_TTL_IN_MIN = 10;
+
+    private static final String MESSAGE_FIELD_DATE_TIME = "dateTime";
+    private static final String MESSAGE_FIELD_TYPE = "type";
+    private static final String MESSAGE_FIELD_RESOURCE = "resource";
+    private static final String MESSAGE_FIELD_ACTION = "action";
 
     private final Logger logger;
     private final ExpiringCacheMap<String, List<ApplianceMessage>> logMessagesCache;
@@ -341,31 +348,65 @@ public class LogRequestHandler {
 
     private void processMessagesJson(InputStream inputStream, ZipOutputStream zos, Gson gson) throws IOException {
         var json = new String(inputStream.readAllBytes(), UTF_8);
-        var isValid = true;
 
-        try {
-            ApplianceMessage[] messages = gson.fromJson(json, ApplianceMessage[].class);
-            if (messages == null) {
-                isValid = false;
-            } else {
-                for (ApplianceMessage message : messages) {
-                    if (message.type() == null || message.dateTime() == null || message.resource() == null
-                            || message.action() == null) {
-                        isValid = false;
-                    }
-                }
-            }
-        } catch (JsonSyntaxException e) {
-            isValid = false;
-        }
-
-        if (isValid) {
-            OutputStreamWriter writer = new OutputStreamWriter(zos, UTF_8);
-            writer.write(json);
-            writer.flush();
-        } else {
+        if (!isValidMessagesJson(json, gson)) {
             throw new IOException("Invalid json log file");
         }
+
+        OutputStreamWriter writer = new OutputStreamWriter(zos, UTF_8);
+        writer.write(json);
+        writer.flush();
+    }
+
+    /**
+     * Validates that the given json represents a well formed array of appliance messages.
+     * <p>
+     * The payload is first parsed with the typed adapters (which validate e.g. dates and resources). Because gson
+     * ignores the {@code @NonNullByDefault} annotations of the {@link ApplianceMessage} record, the mandatory fields
+     * are
+     * additionally verified to be present and non-null on the raw json.
+     *
+     * @param json the messages json to validate
+     * @param gson the gson instance (with the appliance message adapters registered) used for parsing
+     * @return {@code true} if the json is a (possibly empty) array of objects that all contain the mandatory fields,
+     *         {@code false} if the json cannot be parsed or a mandatory field is missing or null
+     */
+    static boolean isValidMessagesJson(String json, Gson gson) {
+        try {
+            // parse with the typed adapters to ensure dates, resources, ... are well formed
+            ApplianceMessage[] messages = gson.fromJson(json, ApplianceMessage[].class);
+            var array = gson.fromJson(json, JsonArray.class);
+            if (messages == null || array == null) {
+                return false;
+            }
+
+            // gson ignores the record's null annotations, so verify the mandatory fields on the raw json
+            for (JsonElement element : array) {
+                if (!element.isJsonObject()) {
+                    return false;
+                }
+                var object = element.getAsJsonObject();
+                if (!hasNonNullMember(object, MESSAGE_FIELD_DATE_TIME) || !hasNonNullMember(object, MESSAGE_FIELD_TYPE)
+                        || !hasNonNullMember(object, MESSAGE_FIELD_RESOURCE)
+                        || !hasNonNullMember(object, MESSAGE_FIELD_ACTION)) {
+                    return false;
+                }
+            }
+            return true;
+        } catch (JsonParseException | DateTimeException | NumberFormatException e) {
+            return false;
+        }
+    }
+
+    /**
+     * Checks whether the given json object contains a member with the given name that is not json null.
+     *
+     * @param object the json object to inspect
+     * @param memberName the name of the member to check
+     * @return {@code true} if the member is present and not json null, {@code false} otherwise
+     */
+    private static boolean hasNonNullMember(JsonObject object, String memberName) {
+        return object.has(memberName) && !object.get(memberName).isJsonNull();
     }
 
     private void processProxyMessagesJson(InputStream is, OutputStream os, Gson gson,
