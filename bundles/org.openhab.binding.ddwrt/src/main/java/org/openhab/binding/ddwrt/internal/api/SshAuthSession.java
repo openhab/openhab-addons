@@ -90,31 +90,32 @@ public class SshAuthSession implements AutoCloseable {
      */
     public String captureMotd() {
         try {
-            ClientChannel channel = session.createShellChannel();
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            ByteArrayOutputStream err = new ByteArrayOutputStream();
+            try (ClientChannel channel = session.createShellChannel()) {
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                ByteArrayOutputStream err = new ByteArrayOutputStream();
 
-            channel.setOut(out);
-            channel.setErr(err);
-            channel.open().verify(defaultTimeout.toMillis());
+                channel.setOut(out);
+                channel.setErr(err);
+                channel.open().verify(defaultTimeout.toMillis());
 
-            // Wait a moment for MOTD to appear
-            channel.waitFor(EnumSet.of(ClientChannelEvent.CLOSED, ClientChannelEvent.EOF),
-                    defaultTimeout.toMillis() / 2);
+                // Wait a moment for MOTD to appear
+                channel.waitFor(EnumSet.of(ClientChannelEvent.CLOSED, ClientChannelEvent.EOF),
+                        defaultTimeout.toMillis() / 2);
 
-            // Send exit to close the shell
-            OutputStream shellIn = channel.getInvertedIn();
-            if (shellIn != null) {
-                shellIn.write("exit\n".getBytes(StandardCharsets.UTF_8));
-                shellIn.flush();
+                // Send exit to close the shell
+                OutputStream shellIn = channel.getInvertedIn();
+                if (shellIn != null) {
+                    shellIn.write("exit\n".getBytes(StandardCharsets.UTF_8));
+                    shellIn.flush();
+                }
+
+                // Wait for channel to close
+                channel.waitFor(EnumSet.of(ClientChannelEvent.CLOSED), defaultTimeout.toMillis());
+
+                String motd = Objects.requireNonNull(out.toString(StandardCharsets.UTF_8).trim());
+                logger.debug("Captured MOTD: {}", motd);
+                return motd;
             }
-
-            // Wait for channel to close
-            channel.waitFor(EnumSet.of(ClientChannelEvent.CLOSED), defaultTimeout.toMillis());
-
-            String motd = Objects.requireNonNull(out.toString(StandardCharsets.UTF_8).trim());
-            logger.debug("Captured MOTD: {}", motd);
-            return motd;
 
         } catch (Exception e) {
             logger.debug("Failed to capture MOTD: {}", e.getMessage());

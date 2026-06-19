@@ -2022,7 +2022,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
 
             boolean enabled = "1".equals(status);
 
-            DDWRTFirewallRule rule = new DDWRTFirewallRule(ruleKey.replace("filter_", ""), ruleKey, mac);
+            DDWRTFirewallRule rule = new DDWRTFirewallRule(ruleKey, ruleKey, mac);
             rule.setEnabled(enabled);
             rule.setRawValue(ruleValue);
             rule.setDescription(description);
