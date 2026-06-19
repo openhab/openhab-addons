@@ -234,8 +234,14 @@ public class ApiTools {
                 "Map of path parameter name to value (URL-encoded automatically)."));
         props.put("queryParams", Map.of("type", "object", "description",
                 "Map of query parameter name to value. Values are URL-encoded."));
-        props.put("body",
-                Map.of("description", "Optional JSON body. Pass as an object/array/primitive; it will be serialized."));
+        props.put("body", Map.of("description",
+                "Optional request body. Pass a JSON object/array for JSON endpoints, or a string/number/boolean "
+                        + "for text endpoints (e.g. \"ON\" for an item command, true for a rule enable). Serialized "
+                        + "automatically."));
+        props.put("contentType", Map.of("type", "string", "description",
+                "Optional override for the request Content-Type. When omitted it is inferred from the endpoint's "
+                        + "OpenAPI spec — application/json for most endpoints, text/plain for commands, states, and "
+                        + "enable/runnow/regenerate flags."));
         return McpSchema.Tool.builder().name("call_api").description("""
                 Invoke an arbitrary openHAB REST endpoint. The call uses your own bearer token, \
                 so permissions match a direct REST call. Supports all HTTP methods. Returns \
@@ -290,8 +296,11 @@ public class ApiTools {
                     .header("Authorization", "Bearer " + token).header("Accept", "application/json");
             Object body = args.get("body");
             if (body != null && httpMethod != HttpMethod.GET && httpMethod != HttpMethod.DELETE) {
-                String bodyJson = body instanceof String s ? s : jackson.writeValueAsString(body);
-                req.content(new StringContentProvider(bodyJson, StandardCharsets.UTF_8), "application/json");
+                String serialized = body instanceof String s ? s : jackson.writeValueAsString(body);
+                String override = getStringArg(args, "contentType");
+                String contentType = override != null ? override
+                        : resolveRequestContentType(exchange, path, resolvedPath, method, body);
+                req.content(new StringContentProvider(serialized, StandardCharsets.UTF_8), contentType);
             }
             ContentResponse resp = req.send();
             return textResult(jsonMapper, buildResponse(resp));
@@ -332,6 +341,104 @@ public class ApiTools {
             logger.debug("Failed to fetch OpenAPI spec: {}", e.getMessage(), e);
             return new SpecResult(null, e.getClass().getSimpleName() + ": " + e.getMessage());
         }
+    }
+
+    private static final String JSON_CONTENT_TYPE = "application/json";
+    private static final String TEXT_CONTENT_TYPE = "text/plain";
+
+    /**
+     * Picks the request Content-Type from the endpoint's spec, since openHAB mixes JSON and text/plain consumers.
+     */
+    private String resolveRequestContentType(McpSyncServerExchange exchange, String templatePath, String resolvedPath,
+            String method, Object body) {
+        JsonNode op = findOperation(exchange, templatePath, resolvedPath, method);
+        JsonNode content = op == null ? null : op.path("requestBody").path("content");
+        if (content != null && content.isObject() && !content.isEmpty()) {
+            String json = null;
+            String text = null;
+            String first = null;
+            for (Map.Entry<String, JsonNode> entry : content.properties()) {
+                String mediaType = entry.getKey();
+                if (first == null) {
+                    first = mediaType;
+                }
+                String lower = mediaType.toLowerCase(Locale.ROOT);
+                if (json == null && lower.contains("json")) {
+                    json = mediaType;
+                } else if (text == null && lower.startsWith("text/")) {
+                    text = mediaType;
+                }
+            }
+            // Scalar bodies (string/number/boolean) prefer text, structured bodies JSON, else take what's declared.
+            if (isScalarBody(body)) {
+                return text != null ? text : (json != null ? json : first);
+            }
+            return json != null ? json : (text != null ? text : first);
+        }
+        return isScalarBody(body) ? TEXT_CONTENT_TYPE : JSON_CONTENT_TYPE;
+    }
+
+    private static boolean isScalarBody(Object body) {
+        return body instanceof String || body instanceof Number || body instanceof Boolean;
+    }
+
+    /**
+     * Finds the spec operation for a path, matching templates against inlined param values segment by segment.
+     */
+    private @Nullable JsonNode findOperation(McpSyncServerExchange exchange, String templatePath, String resolvedPath,
+            String method) {
+        JsonNode spec = loadSpec(exchange).spec;
+        if (spec == null) {
+            return null;
+        }
+        String verb = method.toLowerCase(Locale.ROOT);
+        JsonNode paths = spec.path("paths");
+        JsonNode exact = paths.path(normalizePath(templatePath)).path(verb);
+        if (exact.isObject()) {
+            return exact;
+        }
+        String[] want = splitPath(resolvedPath);
+        for (Map.Entry<String, JsonNode> entry : paths.properties()) {
+            String[] candidate = splitPath(entry.getKey());
+            if (candidate.length != want.length) {
+                continue;
+            }
+            boolean matches = true;
+            for (int i = 0; i < candidate.length; i++) {
+                String seg = candidate[i];
+                boolean isVar = seg.startsWith("{") && seg.endsWith("}");
+                if (!isVar && !seg.equals(want[i])) {
+                    matches = false;
+                    break;
+                }
+            }
+            if (matches) {
+                JsonNode op = entry.getValue().path(verb);
+                if (op.isObject()) {
+                    return op;
+                }
+            }
+        }
+        return null;
+    }
+
+    private static String normalizePath(String path) {
+        return path.startsWith("/") ? path : "/" + path;
+    }
+
+    private static String[] splitPath(String path) {
+        String p = path;
+        int query = p.indexOf('?');
+        if (query >= 0) {
+            p = p.substring(0, query);
+        }
+        if (p.startsWith("/")) {
+            p = p.substring(1);
+        }
+        if (p.endsWith("/")) {
+            p = p.substring(0, p.length() - 1);
+        }
+        return p.isEmpty() ? new String[0] : p.split("/");
     }
 
     private static String substitutePathParams(String path, @Nullable Map<String, Object> pathParams) {
