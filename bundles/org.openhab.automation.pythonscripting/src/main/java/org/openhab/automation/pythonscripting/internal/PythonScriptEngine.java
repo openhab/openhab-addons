@@ -30,8 +30,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.BiFunction;
@@ -41,6 +39,7 @@ import java.util.stream.Collectors;
 import javax.script.ScriptContext;
 import javax.script.ScriptException;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Engine;
@@ -57,6 +56,7 @@ import org.openhab.automation.pythonscripting.internal.provider.LifecycleTracker
 import org.openhab.automation.pythonscripting.internal.provider.ScriptExtensionModuleProvider;
 import org.openhab.automation.pythonscripting.internal.scriptengine.InvocationInterceptingPythonScriptEngine;
 import org.openhab.automation.pythonscripting.internal.scriptengine.graal.GraalPythonScriptEngine;
+import org.openhab.core.automation.module.script.LockableScriptEngine;
 import org.openhab.core.automation.module.script.ScriptExtensionAccessor;
 import org.openhab.core.automation.module.script.internal.handler.AbstractScriptModuleHandler;
 import org.openhab.core.library.types.DateTimeType;
@@ -75,7 +75,7 @@ import org.slf4j.event.Level;
  * @author Holger Hees - Initial contribution
  * @author Jeff James - Initial contribution
  */
-public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine implements Lock {
+public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine implements LockableScriptEngine {
     private final Logger logger = LoggerFactory.getLogger(PythonScriptEngine.class);
 
     public static final String CONTEXT_KEY_ENGINE_LOGGER_OUTPUT = "ctx.engine-logger-output";
@@ -411,34 +411,13 @@ public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine
     }
 
     @Override
-    public void lock() {
-        lock.lock();
-        logger.debug("Lock acquired for engine '{}'.", this.engineIdentifier);
+    public @NonNull Lock getLock() {
+        return lock;
     }
 
     @Override
-    public void lockInterruptibly() throws InterruptedException {
-        lock.lockInterruptibly();
-    }
-
-    @Override
-    public boolean tryLock() {
-        boolean acquired = lock.tryLock();
-        logger.debug("{} for engine '{}'", acquired ? "Lock acquired." : "Lock not acquired.", this.engineIdentifier);
-        return acquired;
-    }
-
-    @Override
-    public boolean tryLock(long l, @Nullable TimeUnit timeUnit) throws InterruptedException {
-        boolean acquired = lock.tryLock(l, timeUnit);
-        logger.debug("{} for engine '{}'", acquired ? "Lock acquired." : "Lock not acquired.", this.engineIdentifier);
-        return acquired;
-    }
-
-    @Override
-    public void unlock() {
-        lock.unlock();
-        logger.debug("Lock released for engine '{}'.", this.engineIdentifier);
+    public long getLockAcquisitionTimeoutMs() {
+        return pythonScriptEngineConfiguration.getLockAcquisitionTimeout();
     }
 
     @Override
@@ -464,11 +443,6 @@ public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine
         }
 
         lock.unlock();
-    }
-
-    @Override
-    public Condition newCondition() {
-        return lock.newCondition();
     }
 
     /**

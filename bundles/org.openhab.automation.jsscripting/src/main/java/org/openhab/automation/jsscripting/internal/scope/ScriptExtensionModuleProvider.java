@@ -41,14 +41,16 @@ public class ScriptExtensionModuleProvider {
     private static final String RUNTIME_MODULE_PREFIX = "@runtime";
     private static final String DEFAULT_MODULE_NAME = "Defaults";
     private final Lock lock;
+    private final long lockAcquisitionTimeoutMS;
     private final LifecycleTracker lifecycleTracker;
 
     private final ScriptExtensionAccessor scriptExtensionAccessor;
 
     public ScriptExtensionModuleProvider(ScriptExtensionAccessor scriptExtensionAccessor, Lock lock,
-            LifecycleTracker lifecycleTracker) {
+            long lockAcquisitionTimeoutMS, LifecycleTracker lifecycleTracker) {
         this.scriptExtensionAccessor = scriptExtensionAccessor;
         this.lock = lock;
+        this.lockAcquisitionTimeoutMS = lockAcquisitionTimeoutMS;
         this.lifecycleTracker = lifecycleTracker;
     }
 
@@ -108,8 +110,8 @@ public class ScriptExtensionModuleProvider {
 
         for (Map.Entry<String, Object> entry : rv.entrySet()) {
             if (entry.getValue() instanceof ScriptedAutomationManager scriptedAutomationManager) {
-                entry.setValue(
-                        new ThreadsafeWrappingScriptedAutomationManagerDelegate(scriptedAutomationManager, lock));
+                entry.setValue(new ThreadsafeWrappingScriptedAutomationManagerDelegate(scriptedAutomationManager, lock,
+                        lockAcquisitionTimeoutMS));
             }
         }
 
