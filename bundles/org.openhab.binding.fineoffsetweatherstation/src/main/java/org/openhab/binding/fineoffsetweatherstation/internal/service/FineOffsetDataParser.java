@@ -26,8 +26,10 @@ import java.util.function.Supplier;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.fineoffsetweatherstation.internal.Utils;
+import org.openhab.binding.fineoffsetweatherstation.internal.domain.CodeBinding;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.DebugDetails;
-import org.openhab.binding.fineoffsetweatherstation.internal.domain.Measurand;
+import org.openhab.binding.fineoffsetweatherstation.internal.domain.MeasurandRegistry;
+import org.openhab.binding.fineoffsetweatherstation.internal.domain.ParserCustomizationType;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.Protocol;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.SensorGatewayBinding;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.BatteryStatus;
@@ -46,6 +48,7 @@ import org.slf4j.LoggerFactory;
 public class FineOffsetDataParser {
     private final Logger logger = LoggerFactory.getLogger(FineOffsetDataParser.class);
     private final Protocol protocol;
+    private final MeasurandRegistry registry = MeasurandRegistry.standard();
 
     public FineOffsetDataParser(Protocol protocol) {
         this.protocol = protocol;
@@ -170,17 +173,17 @@ public class FineOffsetDataParser {
     }
 
     List<MeasuredValue> getRainData(byte[] data, DebugDetails debugDetails) {
-        return readMeasuredValues(data, 5, Measurand.ParserCustomizationType.RAIN_READING, debugDetails);
+        return readMeasuredValues(data, 5, ParserCustomizationType.RAIN_READING, debugDetails);
     }
 
-    private List<MeasuredValue> readMeasuredValues(byte[] data, int idx,
-            Measurand.@Nullable ParserCustomizationType protocol, DebugDetails debugDetails) {
+    private List<MeasuredValue> readMeasuredValues(byte[] data, int idx, @Nullable ParserCustomizationType protocol,
+            DebugDetails debugDetails) {
         var size = toUInt16(data, 3);
 
         List<MeasuredValue> result = new ArrayList<>();
         while (idx < size) {
             byte code = data[idx++];
-            Measurand.SingleChannelMeasurand measurand = Measurand.getByCode(code);
+            CodeBinding measurand = registry.tcpByCode(code);
             if (measurand == null) {
                 logger.warn("failed to get measurand 0x{}", Integer.toHexString(code));
                 debugDetails.addDebugDetails(idx - 1, 1, "unknown measurand");
