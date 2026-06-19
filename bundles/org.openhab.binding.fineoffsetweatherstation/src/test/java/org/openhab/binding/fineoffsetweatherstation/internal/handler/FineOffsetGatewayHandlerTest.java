@@ -119,7 +119,7 @@ public class FineOffsetGatewayHandlerTest {
 
     private MeasuredValue measuredValue(String channelPrefix, ChannelTypeUID channelTypeUID) {
         return new MeasuredValue(MeasureType.TEMPERATURE, channelPrefix, null, channelTypeUID, new DecimalType(1),
-                channelPrefix);
+                channelPrefix, null);
     }
 
     @Test
