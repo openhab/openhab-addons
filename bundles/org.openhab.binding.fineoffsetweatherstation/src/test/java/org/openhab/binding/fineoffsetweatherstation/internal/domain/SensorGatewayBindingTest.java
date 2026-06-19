@@ -14,7 +14,6 @@ package org.openhab.binding.fineoffsetweatherstation.internal.domain;
 
 import org.assertj.core.api.Assertions;
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -45,14 +44,14 @@ class SensorGatewayBindingTest {
     }
 
     @Test
-    void soilMoistureAndTemperatureConvergeOnTheSameBinding() {
-        // WH51 soil moisture and soil temperature of channel 1 are the same physical sensor: both must resolve
-        // to the single WH51_CH1 binding so they land on one sensor Thing.
-        @Nullable
-        SensorGatewayBinding fromMoisture = SensorGatewayBinding.forSensorAndChannel(Sensor.WH51, 1);
-        @Nullable
-        SensorGatewayBinding fromTemperature = SensorGatewayBinding.forSensorAndChannel(Sensor.WH51, 1);
-        Assertions.assertThat(fromMoisture).isEqualTo(fromTemperature).isEqualTo(SensorGatewayBinding.WH51_CH1);
+    void soilMoistureAndTemperatureShareOneBinding() {
+        // The soil-moisture and soil-temperature measurands are two distinct measurands, but both are tagged
+        // Sensor.WH51 with the same channel (see MeasurandRegistry / the parser tests). forSensorAndChannel keys
+        // only on (Sensor, channel), so both collapse onto the single WH51_CH1 binding and thus onto one sensor
+        // Thing. Here we verify that shared key resolves to that one binding; the measurands' distinctness is
+        // verified upstream in the parser tests.
+        Assertions.assertThat(SensorGatewayBinding.forSensorAndChannel(Sensor.WH51, 1))
+                .isEqualTo(SensorGatewayBinding.WH51_CH1);
     }
 
     @Test
