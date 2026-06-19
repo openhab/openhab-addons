@@ -30,6 +30,7 @@ import org.openhab.core.automation.module.script.ScriptDependencyTracker;
 import org.openhab.core.automation.module.script.ScriptEngineFactory;
 import org.openhab.core.config.core.ConfigurableService;
 import org.osgi.framework.Constants;
+import org.osgi.service.component.ComponentConstants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -43,7 +44,7 @@ import org.slf4j.event.Level;
  * An implementation of {@link ScriptEngineFactory} with customizations for GraalJS ScriptEngines.
  *
  * @author Jonathan Gilbert - Initial contribution
- * @author Dan Cunningham - Script injections
+ * @author Dan Cunningham - Script injections; Scope the shared Engine to the bundle lifetime
  * @author Florian Hotze - Debugger support
  */
 @Component(service = ScriptEngineFactory.class, configurationPid = "org.openhab.jsscripting", property = Constants.SERVICE_PID
@@ -66,10 +67,16 @@ public class GraalJSScriptEngineFactory implements ScriptEngineFactory {
 
     private final Logger logger = LoggerFactory.getLogger(GraalJSScriptEngineFactory.class);
     private final GraalJSScriptEngineConfiguration configuration;
+
     /**
-     * Shared Polyglot {@link Engine} instance to be used by all instances of {@link OpenhabGraalJSScriptEngine}.
+     * Shared Polyglot {@link Engine} used by all {@link OpenhabGraalJSScriptEngine} instances.
+     * <p>
+     * Kept static and never closed on deactivation. Script contexts created from it can outlive a component restart
+     * (e.g. when an OSGi reference is rebound), and closing the engine would break every loaded rule with
+     * "The Context is already closed". So we create it once and reuse it for the life of the bundle.
      */
-    private final Engine engine;
+    private static volatile @Nullable Engine engine;
+    private static final Object ENGINE_LOCK = new Object();
 
     private final JSScriptServiceUtil jsScriptServiceUtil;
     private final JSDependencyTracker jsDependencyTracker;
@@ -83,35 +90,53 @@ public class GraalJSScriptEngineFactory implements ScriptEngineFactory {
         this.jsScriptServiceUtil = jsScriptServiceUtil;
         this.configuration = new GraalJSScriptEngineConfiguration(config);
 
-        if (configuration.isDebuggerEnabled()) {
-            Engine.Builder engineBuilder = createEngineBuilder();
-            engineBuilder //
-                    .option("inspect", "0.0.0.0:" + configuration.getDebuggerPort()) //
-                    .option("inspect.Suspend", "false") // Don't pause at startup waiting for debugger to attach
-                    .option("inspect.WaitAttached", "false") // Don't block code execution waiting for debugger to
-                                                             // attach
-                    .option("inspect.Secure", "false"); // Disable TLS
-            Engine engine;
-            try {
-                engine = engineBuilder.build();
-            } catch (RuntimeException e) {
-                logger.error(
-                        "Failed to initialize Graal JavaScript engine with debugger support. Continuing without debugger support.",
-                        e);
-                engine = createEngineBuilder().build();
-            }
-            logger.info("Debugger support is enabled for JavaScript Scripting.");
-            this.engine = engine;
-        } else {
-            this.engine = createEngineBuilder().build();
-        }
-
-        if (getLanguage() == null) {
+        if (getEngine(configuration, logger) == null || getLanguage() == null) {
             logger.error(LANG_NOT_INITIALIZED_MSG);
         }
     }
 
-    private Engine.Builder createEngineBuilder() {
+    /**
+     * Creates the shared {@link Engine} on first use and reuses it afterwards. Debugger settings are read once here,
+     * so changing them only takes effect after an openHAB restart.
+     *
+     * @return the shared {@link Engine}, or {@code null} if it could not be created
+     */
+    private static @Nullable Engine getEngine(GraalJSScriptEngineConfiguration configuration, Logger logger) {
+        synchronized (ENGINE_LOCK) {
+            Engine localEngine = engine;
+            if (localEngine != null) {
+                return localEngine;
+            }
+            try {
+                if (configuration.isDebuggerEnabled()) {
+                    Engine.Builder engineBuilder = createEngineBuilder() //
+                            .option("inspect", "0.0.0.0:" + configuration.getDebuggerPort()) //
+                            .option("inspect.Suspend", "false") // Don't pause at startup waiting for debugger to attach
+                            .option("inspect.WaitAttached", "false") // Don't block code execution waiting for debugger
+                                                                     // to attach
+                            .option("inspect.Secure", "false"); // Disable TLS
+                    try {
+                        localEngine = engineBuilder.build();
+                    } catch (RuntimeException e) {
+                        logger.error(
+                                "Failed to initialize Graal JavaScript engine with debugger support. Continuing without debugger support.",
+                                e);
+                        localEngine = createEngineBuilder().build();
+                    }
+                    logger.info("Debugger support is enabled for JavaScript Scripting.");
+                } else {
+                    localEngine = createEngineBuilder().build();
+                }
+            } catch (RuntimeException e) {
+                logger.error("Failed to initialize Graal JavaScript engine.", e);
+                return null;
+            }
+            engine = localEngine;
+            return localEngine;
+        }
+    }
+
+    private static Engine.Builder createEngineBuilder() {
         Logger engineLogger = LoggerFactory
                 .getLogger(GraalJSScriptEngineFactory.class.getPackageName() + ".org.graalvm.polyglot.Engine");
         return Engine.newBuilder().allowExperimentalOptions(true) //
@@ -123,9 +148,30 @@ public class GraalJSScriptEngineFactory implements ScriptEngineFactory {
                 .err(new ThreadLocalSlf4jOutputStream(engineLogger, Level.DEBUG));
     }
 
+    /**
+     * Releases the shared {@link Engine}, but only when the bundle is actually stopping. The reason is checked so that
+     * ordinary component restarts (e.g. an OSGi reference rebind) do not close the engine and break running scripts -
+     * that is exactly what this fix prevents. Only a real bundle stop releases the engine.
+     */
     @Deactivate
+    protected void deactivate(int reason) {
+        if (reason == ComponentConstants.DEACTIVATION_REASON_BUNDLE_STOPPED) {
+            dispose();
+        }
+    }
+
+    /**
+     * Closes the shared {@link Engine} and clears it so it is re-created on next use. Called on bundle stop and from
+     * tests.
+     */
     public void dispose() {
-        this.engine.close();
+        synchronized (ENGINE_LOCK) {
+            Engine localEngine = engine;
+            if (localEngine != null) {
+                localEngine.close();
+                engine = null;
+            }
+        }
     }
 
     @Modified
@@ -148,12 +194,13 @@ public class GraalJSScriptEngineFactory implements ScriptEngineFactory {
         if (!SCRIPT_TYPES.contains(scriptType)) {
             return null;
         }
-        if (getLanguage() == null) {
+        Engine localEngine = getEngine(configuration, logger);
+        if (localEngine == null || getLanguage() == null) {
             logger.error(LANG_NOT_INITIALIZED_MSG);
             return null;
         }
         return new DebuggingGraalScriptEngine<>(
-                new OpenhabGraalJSScriptEngine(configuration, engine, jsScriptServiceUtil, jsDependencyTracker));
+                new OpenhabGraalJSScriptEngine(configuration, localEngine, jsScriptServiceUtil, jsDependencyTracker));
     }
 
     @Override
@@ -167,6 +214,7 @@ public class GraalJSScriptEngineFactory implements ScriptEngineFactory {
      * @return the Graal language of {@link OpenhabGraalJSScriptEngine} or {@code null} if not available
      */
     private @Nullable Language getLanguage() {
-        return engine.getLanguages().get(OpenhabGraalJSScriptEngine.LANGUAGE_ID);
+        Engine localEngine = engine;
+        return localEngine == null ? null : localEngine.getLanguages().get(OpenhabGraalJSScriptEngine.LANGUAGE_ID);
     }
 }
