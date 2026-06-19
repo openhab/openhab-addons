@@ -191,4 +191,21 @@ class ApiToolsTest {
         assertSuccess(result);
         assertEquals("application/json", capturedContentType());
     }
+
+    @Test
+    void textPlainEndpointSendsTextPlainForBooleanBody() {
+        stubSpecAvailable();
+        CallToolResult result = callApi(Map.of("method", "POST", "path", "/rules/{ruleUID}/enable", "pathParams",
+                Map.of("ruleUID", "myRule"), "body", true));
+        assertSuccess(result);
+        assertEquals("text/plain", capturedContentType());
+    }
+
+    @Test
+    void fallbackUsesTextPlainForScalarBodyWhenSpecUnavailable() {
+        stubSpecUnavailable();
+        CallToolResult result = callApi(Map.of("method", "POST", "path", "/some/unknown/path", "body", true));
+        assertSuccess(result);
+        assertEquals("text/plain", capturedContentType());
+    }
 }

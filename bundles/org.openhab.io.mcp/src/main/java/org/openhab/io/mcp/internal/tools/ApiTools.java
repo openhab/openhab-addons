@@ -369,13 +369,17 @@ public class ApiTools {
                     text = mediaType;
                 }
             }
-            // String bodies prefer text, structured bodies JSON, otherwise take whatever is declared.
-            if (body instanceof String) {
+            // Scalar bodies (string/number/boolean) prefer text, structured bodies JSON, else take what's declared.
+            if (isScalarBody(body)) {
                 return text != null ? text : (json != null ? json : first);
             }
             return json != null ? json : (text != null ? text : first);
         }
-        return body instanceof String ? TEXT_CONTENT_TYPE : JSON_CONTENT_TYPE;
+        return isScalarBody(body) ? TEXT_CONTENT_TYPE : JSON_CONTENT_TYPE;
+    }
+
+    private static boolean isScalarBody(Object body) {
+        return body instanceof String || body instanceof Number || body instanceof Boolean;
     }
 
     /**
