@@ -14,6 +14,7 @@ package org.openhab.binding.fineoffsetweatherstation.internal.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.assertj.core.api.Assertions;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -53,8 +54,7 @@ class MeasurandTest {
     void httpPathCarriesSensorTag() {
         Measurand tagged = Measurand.measurand("moisture-soil-channel", "Soil Moisture", MeasureType.PERCENTAGE)
                 .sensor(Sensor.WH51);
-        MeasuredValue value = tagged.parseHttp("42", "%", 1, null);
-        Assertions.assertThat(value).isNotNull();
+        MeasuredValue value = Objects.requireNonNull(tagged.parseHttp("42", "%", 1, null));
         Assertions.assertThat(value.getSensor()).isEqualTo(Sensor.WH51);
     }
 
