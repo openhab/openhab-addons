@@ -1,0 +1,498 @@
+<?xml version="1.0" encoding="utf-8"?>
+<featureMappingFile 
+xsi:schemaLocation="http://www.home-connect.com/schemas/FeatureMapping/20140417 https://www.home-connect.com/schemas/FeatureMapping/20140417/HC_INT_BSH_FeatureMapping.xsd" xmlns="http://www.home-connect.com/schemas/FeatureMapping/20140417" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <xi:include href="HC_INT_PLC_WM16XE91_2-0_DeviceDescription.xml" parse="xml">
+    <xi:fallback>
+      <error>xinclude error: file &quot;HC_INT_PLC_WM16XE91_2-0_DeviceDescription.xml&quot; not found</error>
+    </xi:fallback>
+  </xi:include>
+  <featureDescription>
+    <feature refUID="0200">BSH.Common.Command.AbortProgram</feature>
+    <feature refUID="0006">BSH.Common.Command.AcknowledgeEvent</feature>
+    <feature refUID="0240">BSH.Common.Command.AllowCustomerServiceConnectionLocalWiFi</feature>
+    <feature refUID="0229">BSH.Common.Command.ApplyFactoryReset</feature>
+    <feature refUID="022A">BSH.Common.Command.ApplyNetworkReset</feature>
+    <feature refUID="022B">BSH.Common.Command.DeactivateRemoteControlStart</feature>
+    <feature refUID="0001">BSH.Common.Command.DeactivateWiFi</feature>
+    <feature refUID="0212">BSH.Common.Command.DepairCustomerEnergyManager</feature>
+    <feature refUID="0230">BSH.Common.Command.DisallowCustomerServiceConnection</feature>
+    <feature refUID="0218">BSH.Common.Command.MainsPowerOff</feature>
+    <feature refUID="0219">BSH.Common.Command.PauseProgram</feature>
+    <feature refUID="0010">BSH.Common.Command.RejectEvent</feature>
+    <feature refUID="0222">BSH.Common.Command.ResumeProgram</feature>
+    <feature refUID="020D">BSH.Common.Event.AquaStopOccured</feature>
+    <feature refUID="022F">BSH.Common.Event.CustomerServiceRequest</feature>
+    <feature refUID="0256">BSH.Common.Event.HomeConnectApplianceDataMissing</feature>
+    <feature refUID="021F">BSH.Common.Event.LowWaterPressure</feature>
+    <feature refUID="0221">BSH.Common.Event.ProgramAborted</feature>
+    <feature refUID="021C">BSH.Common.Event.ProgramFinished</feature>
+    <feature refUID="0015">BSH.Common.Event.SoftwareUpdateAvailable</feature>
+    <feature refUID="0224">BSH.Common.Option.Duration</feature>
+    <feature refUID="0231">BSH.Common.Option.EnergyForecast</feature>
+    <feature refUID="0213">BSH.Common.Option.EstimatedTotalProgramTime</feature>
+    <feature refUID="0227">BSH.Common.Option.FinishInRelative</feature>
+    <feature refUID="024A">BSH.Common.Option.FlexFinishInRelative</feature>
+    <feature refUID="021E">BSH.Common.Option.ProgramProgress</feature>
+    <feature refUID="0220">BSH.Common.Option.RemainingProgramTime</feature>
+    <feature refUID="0225">BSH.Common.Option.RemainingProgramTimeIsEstimated</feature>
+    <feature refUID="0232">BSH.Common.Option.WaterForecast</feature>
+    <feature refUID="0100">BSH.Common.Root.ActiveProgram</feature>
+    <feature refUID="0105">BSH.Common.Root.CommandList</feature>
+    <feature refUID="0104">BSH.Common.Root.EventList</feature>
+    <feature refUID="0106">BSH.Common.Root.OptionList</feature>
+    <feature refUID="0107">BSH.Common.Root.ProgramGroup</feature>
+    <feature refUID="0101">BSH.Common.Root.SelectedProgram</feature>
+    <feature refUID="0103">BSH.Common.Root.SettingList</feature>
+    <feature refUID="0102">BSH.Common.Root.StatusList</feature>
+    <feature refUID="0003">BSH.Common.Setting.AllowBackendConnection</feature>
+    <feature refUID="0203">BSH.Common.Setting.AllowEnergyManagement</feature>
+    <feature refUID="0206">BSH.Common.Setting.AllowFlexStart</feature>
+    <feature refUID="0209">BSH.Common.Setting.ApplianceTime</feature>
+    <feature refUID="020C">BSH.Common.Setting.ChildLock</feature>
+    <feature refUID="0215">BSH.Common.Setting.Language</feature>
+    <feature refUID="021B">BSH.Common.Setting.PowerState</feature>
+    <feature refUID="0223">BSH.Common.Setting.SynchronizeWithTimeServer</feature>
+    <feature refUID="0029">BSH.Common.Setting.Time.DisplayMode</feature>
+    <feature refUID="0244">BSH.Common.Setting.TimeFormat</feature>
+    <feature refUID="0005">BSH.Common.Status.BackendConnected</feature>
+    <feature refUID="0211">BSH.Common.Status.CustomerEnergyManagerPaired</feature>
+    <feature refUID="022D">BSH.Common.Status.CustomerServiceConnectionAllowed</feature>
+    <feature refUID="020F">BSH.Common.Status.DoorState</feature>
+    <feature refUID="0238">BSH.Common.Status.FlexStart</feature>
+    <feature refUID="0217">BSH.Common.Status.LocalControlActive</feature>
+    <feature refUID="0228">BSH.Common.Status.OperationState</feature>
+    <feature refUID="020B">BSH.Common.Status.RemoteControlActive</feature>
+    <feature refUID="0205">BSH.Common.Status.RemoteControlStartAllowed</feature>
+    <feature refUID="024F">BSH.Common.Status.RemoteControlStartAllowedSince</feature>
+    <feature refUID="001B">BSH.Common.Status.WiFiSignalStrength</feature>
+    <feature refUID="5A01">LaundryCare.Common.Command.SelectProgramGroup</feature>
+    <feature refUID="151A">LaundryCare.Common.CommandList.RemoteStart</feature>
+    <feature refUID="4A0A">LaundryCare.Common.Event.DelayedShutdown</feature>
+    <feature refUID="4A0B">LaundryCare.Common.Event.DelayedShutdownCanceled</feature>
+    <feature refUID="4A09">LaundryCare.Common.Event.DoorLock.WaterLevelTooHigh</feature>
+    <feature refUID="4A06">LaundryCare.Common.Event.DoorNotLockable</feature>
+    <feature refUID="4A05">LaundryCare.Common.Event.DoorNotUnlockable</feature>
+    <feature refUID="4A07">LaundryCare.Common.Event.DoorOpen</feature>
+    <feature refUID="4A02">LaundryCare.Common.Event.FatalErrorOccured</feature>
+    <feature refUID="4A08">LaundryCare.Common.Event.FoamDetection</feature>
+    <feature refUID="4A0C">LaundryCare.Common.Event.SupplyPower.SupplyVoltageTooLow</feature>
+    <feature refUID="6A02">LaundryCare.Common.Option.LoadRecommendation</feature>
+    <feature refUID="6A04">LaundryCare.Common.Option.LowTemperatureHygiene</feature>
+    <feature refUID="6A06">LaundryCare.Common.Option.ProcessPhase</feature>
+    <feature refUID="6A05">LaundryCare.Common.Option.ReferToProgram</feature>
+    <feature refUID="6A01">LaundryCare.Common.Option.VarioPerfect</feature>
+    <feature refUID="161B">LaundryCare.Common.OptionList.ActiveStatus</feature>
+    <feature refUID="161D">LaundryCare.Common.OptionList.Options</feature>
+    <feature refUID="161C">LaundryCare.Common.OptionList.RemoteStart</feature>
+    <feature refUID="161A">LaundryCare.Common.OptionList.SelectedStatus</feature>
+    <feature refUID="7A01">LaundryCare.Common.Program.Memory1</feature>
+    <feature refUID="7A02">LaundryCare.Common.Program.Memory2</feature>
+    <feature refUID="7A03">LaundryCare.Common.Program.Memory3</feature>
+    <feature refUID="7A04">LaundryCare.Common.Program.Memory4</feature>
+    <feature refUID="7A05">LaundryCare.Common.Program.Memory5</feature>
+    <feature refUID="7A06">LaundryCare.Common.Program.Memory6</feature>
+    <feature refUID="7A07">LaundryCare.Common.Program.Memory7</feature>
+    <feature refUID="7A08">LaundryCare.Common.Program.Memory8</feature>
+    <feature refUID="1710">LaundryCare.Common.ProgramGroup.Favorites</feature>
+    <feature refUID="1712">LaundryCare.Common.ProgramGroup.Regular</feature>
+    <feature refUID="1713">LaundryCare.Common.ProgramGroup.Washer</feature>
+    <feature refUID="3A03">LaundryCare.Common.Setting.AutoPowerOff</feature>
+    <feature refUID="3A0E">LaundryCare.Common.Setting.Brightness</feature>
+    <feature refUID="3A06">LaundryCare.Common.Setting.BrightnessLevel</feature>
+    <feature refUID="3A09">LaundryCare.Common.Setting.DoorLightRing.Active</feature>
+    <feature refUID="3A04">LaundryCare.Common.Setting.DoorLightRing.ActiveMode</feature>
+    <feature refUID="3A0F">LaundryCare.Common.Setting.DoorLightRing.Brightness</feature>
+    <feature refUID="3A0A">LaundryCare.Common.Setting.DoorLightRing.BrightnessLevel</feature>
+    <feature refUID="3A05">LaundryCare.Common.Setting.EndSignal</feature>
+    <feature refUID="3A01">LaundryCare.Common.Setting.EndSignalVolume</feature>
+    <feature refUID="3A02">LaundryCare.Common.Setting.KeySignalVolume</feature>
+    <feature refUID="3A0C">LaundryCare.Common.Setting.Sound.Mute</feature>
+    <feature refUID="3A0D">LaundryCare.Common.Setting.TimeLight.Active</feature>
+    <feature refUID="2A02">LaundryCare.Common.Status.LoadInformation</feature>
+    <feature refUID="2A03">LaundryCare.Common.Status.SelectedProgramGroup</feature>
+    <feature refUID="0400">LaundryCare.Common.StatusList.ProcessingData</feature>
+    <feature refUID="0401">LaundryCare.Common.StatusList.WasherData</feature>
+    <feature refUID="4005">LaundryCare.Washer.Event.DrumCleanReminder</feature>
+    <feature refUID="400A">LaundryCare.Washer.Event.IDos.IDosOpenTray</feature>
+    <feature refUID="4001">LaundryCare.Washer.Event.IDos1FillLevelPoor</feature>
+    <feature refUID="4002">LaundryCare.Washer.Event.IDos2FillLevelPoor</feature>
+    <feature refUID="4006">LaundryCare.Washer.Event.IDosUnitDefect</feature>
+    <feature refUID="4007">LaundryCare.Washer.Event.PumpError</feature>
+    <feature refUID="4003">LaundryCare.Washer.Event.ReleaseRinseHoldPending</feature>
+    <feature refUID="4009">LaundryCare.Washer.Event.Spin.SpinAbort</feature>
+    <feature refUID="6011">LaundryCare.Washer.Option.Disinfectant</feature>
+    <feature refUID="6012">LaundryCare.Washer.Option.HygienicSteam</feature>
+    <feature refUID="6015">LaundryCare.Washer.Option.HygienicSteamIntensity</feature>
+    <feature refUID="6101">LaundryCare.Washer.Option.IDos1.Active</feature>
+    <feature refUID="600B">LaundryCare.Washer.Option.IDos1DosingLevel</feature>
+    <feature refUID="6102">LaundryCare.Washer.Option.IDos2.Active</feature>
+    <feature refUID="600C">LaundryCare.Washer.Option.IDos2DosingLevel</feature>
+    <feature refUID="6104">LaundryCare.Washer.Option.IntensivePlus</feature>
+    <feature refUID="6009">LaundryCare.Washer.Option.LessIroning</feature>
+    <feature refUID="6013">LaundryCare.Washer.Option.MultipleSoak</feature>
+    <feature refUID="6006">LaundryCare.Washer.Option.Prewash</feature>
+    <feature refUID="6008">LaundryCare.Washer.Option.RinseHold</feature>
+    <feature refUID="6007">LaundryCare.Washer.Option.RinsePlus</feature>
+    <feature refUID="600D">LaundryCare.Washer.Option.RinsePlus1</feature>
+    <feature refUID="600E">LaundryCare.Washer.Option.RinsePlus3</feature>
+    <feature refUID="600A">LaundryCare.Washer.Option.SilentWash</feature>
+    <feature refUID="6010">LaundryCare.Washer.Option.Soak</feature>
+    <feature refUID="6103">LaundryCare.Washer.Option.SpeedPerfect</feature>
+    <feature refUID="6002">LaundryCare.Washer.Option.SpinSpeed</feature>
+    <feature refUID="6005">LaundryCare.Washer.Option.Stains</feature>
+    <feature refUID="6001">LaundryCare.Washer.Option.Temperature</feature>
+    <feature refUID="600F">LaundryCare.Washer.Option.WaterAndRinsePlus</feature>
+    <feature refUID="6014">LaundryCare.Washer.Option.WaterAndRinsePlus1</feature>
+    <feature refUID="6003">LaundryCare.Washer.Option.WaterPlus</feature>
+    <feature refUID="7009">LaundryCare.Washer.Program.Auto30</feature>
+    <feature refUID="7008">LaundryCare.Washer.Program.Auto40</feature>
+    <feature refUID="7001">LaundryCare.Washer.Program.Cotton</feature>
+    <feature refUID="702F">LaundryCare.Washer.Program.Cotton.Colour</feature>
+    <feature refUID="702E">LaundryCare.Washer.Program.Cotton.Eco4060</feature>
+    <feature refUID="7006">LaundryCare.Washer.Program.DarkWash</feature>
+    <feature refUID="7004">LaundryCare.Washer.Program.DelicatesSilk</feature>
+    <feature refUID="7016">LaundryCare.Washer.Program.Drain</feature>
+    <feature refUID="7012">LaundryCare.Washer.Program.DrumClean</feature>
+    <feature refUID="7002">LaundryCare.Washer.Program.EasyCare</feature>
+    <feature refUID="7003">LaundryCare.Washer.Program.Mix</feature>
+    <feature refUID="7054">LaundryCare.Washer.Program.PowerSpeed59</feature>
+    <feature refUID="7014">LaundryCare.Washer.Program.Rinse</feature>
+    <feature refUID="7007">LaundryCare.Washer.Program.ShirtsBlouses</feature>
+    <feature refUID="7015">LaundryCare.Washer.Program.Spin</feature>
+    <feature refUID="7018">LaundryCare.Washer.Program.Super153045.Super1530</feature>
+    <feature refUID="700C">LaundryCare.Washer.Program.WaterProof</feature>
+    <feature refUID="7005">LaundryCare.Washer.Program.Wool</feature>
+    <feature refUID="3004">LaundryCare.Washer.Setting.EnableDrumCleanReminder</feature>
+    <feature refUID="3005">LaundryCare.Washer.Setting.IDos1.ContentName</feature>
+    <feature refUID="3002">LaundryCare.Washer.Setting.IDos1BaseLevel</feature>
+    <feature refUID="3006">LaundryCare.Washer.Setting.IDos2.ContentName</feature>
+    <feature refUID="3003">LaundryCare.Washer.Setting.IDos2BaseLevel</feature>
+    <feature refUID="3001">LaundryCare.Washer.Setting.IDos2Content</feature>
+    <feature refUID="2001">LaundryCare.Washer.Status.IDos1FillLevel</feature>
+    <feature refUID="2002">LaundryCare.Washer.Status.IDos2FillLevel</feature>
+    <feature refUID="0411">LaundryCare.Washer.Status.ProcessingData.LaundryLoad</feature>
+    <feature refUID="0412">LaundryCare.Washer.Status.ProcessingData.PeakFinalSpinSpeed</feature>
+    <feature refUID="0413">LaundryCare.Washer.Status.ProcessingData.PeakFinalSpinSpeedDuration</feature>
+    <feature refUID="0414">LaundryCare.Washer.Status.ProcessingData.TextileType</feature>
+  </featureDescription>
+  <errorDescription>
+    <error refEID="00C8">BSH.Common.Error.200.OK</error>
+    <error refEID="00CA">BSH.Common.Error.202.Accepted</error>
+    <error refEID="0190">BSH.Common.Error.400.BadRequest</error>
+    <error refEID="0193">BSH.Common.Error.403.Forbidden</error>
+    <error refEID="0194">BSH.Common.Error.404.NotFound</error>
+    <error refEID="0195">BSH.Common.Error.405.MethodNotAllowed</error>
+    <error refEID="019D">BSH.Common.Error.413.RequestEntityTooLong</error>
+    <error refEID="019C">BSH.Common.Error.414.RequestUriTooLong</error>
+    <error refEID="01AD">BSH.Common.Error.429.TooManyRequests</error>
+    <error refEID="01F4">BSH.Common.Error.500.InternalServerError</error>
+    <error refEID="01F5">BSH.Common.Error.501.NotImplemented</error>
+    <error refEID="01F6">BSH.Common.Error.502.BadGateway</error>
+    <error refEID="01F7">BSH.Common.Error.503.ServiceUnavailable</error>
+    <error refEID="01F8">BSH.Common.Error.504.GatewayTimeout</error>
+    <error refEID="01FB">BSH.Common.Error.507.InsufficientMemory</error>
+    <error refEID="021E">BSH.Common.Error.BackendNotConnected</error>
+    <error refEID="0203">BSH.Common.Error.Busy</error>
+    <error refEID="0217">BSH.Common.Error.CmdViolation</error>
+    <error refEID="021C">BSH.Common.Error.DeviceStateNotCompliant</error>
+    <error refEID="021F">BSH.Common.Error.EnergyManagementNotConnected</error>
+    <error refEID="0215">BSH.Common.Error.Incomplete</error>
+    <error refEID="0216">BSH.Common.Error.Inconsistent</error>
+    <error refEID="0218">BSH.Common.Error.InvalidFormat</error>
+    <error refEID="0214">BSH.Common.Error.InvalidUIDValue</error>
+    <error refEID="021B">BSH.Common.Error.LockedByLocalControl</error>
+    <error refEID="0206">BSH.Common.Error.NoAccess</error>
+    <error refEID="0209">BSH.Common.Error.NoAccessByList</error>
+    <error refEID="0212">BSH.Common.Error.NoExecution</error>
+    <error refEID="020C">BSH.Common.Error.NotAvailable</error>
+    <error refEID="020F">BSH.Common.Error.NotAvailableByList</error>
+    <error refEID="0220">BSH.Common.Error.NotInLocalWiFi</error>
+    <error refEID="021D">BSH.Common.Error.ProcessStateNotCompliant</error>
+    <error refEID="0205">BSH.Common.Error.ReadRequest.Busy</error>
+    <error refEID="0208">BSH.Common.Error.ReadRequest.NoAccess</error>
+    <error refEID="020B">BSH.Common.Error.ReadRequest.NoAccessByList</error>
+    <error refEID="020E">BSH.Common.Error.ReadRequest.NotAvailable</error>
+    <error refEID="0211">BSH.Common.Error.ReadRequest.NotAvailableByList</error>
+    <error refEID="0202">BSH.Common.Error.ReadRequest.UnknownUID</error>
+    <error refEID="0219">BSH.Common.Error.RemoteControlNotActive</error>
+    <error refEID="021A">BSH.Common.Error.RemoteStartNotActive</error>
+    <error refEID="0200">BSH.Common.Error.UnknownUID</error>
+    <error refEID="0213">BSH.Common.Error.ValueOutOfRange</error>
+    <error refEID="0204">BSH.Common.Error.WriteRequest.Busy</error>
+    <error refEID="0207">BSH.Common.Error.WriteRequest.NoAccess</error>
+    <error refEID="020A">BSH.Common.Error.WriteRequest.NoAccessByList</error>
+    <error refEID="020D">BSH.Common.Error.WriteRequest.NotAvailable</error>
+    <error refEID="0210">BSH.Common.Error.WriteRequest.NotAvailableByList</error>
+    <error refEID="0201">BSH.Common.Error.WriteRequest.UnknownUID</error>
+  </errorDescription>
+  <enumDescriptionList>
+    <enumDescription refENID="0201" enumKey="BSH.Common.EnumType.DoorState">
+      <enumMember refValue="0">Open</enumMember>
+      <enumMember refValue="1">Closed</enumMember>
+      <enumMember refValue="2">Locked</enumMember>
+      <enumMember refValue="3">Ajar</enumMember>
+    </enumDescription>
+    <enumDescription refENID="0001" enumKey="BSH.Common.EnumType.EventPresentState">
+      <enumMember refValue="0">Off</enumMember>
+      <enumMember refValue="1">Present</enumMember>
+      <enumMember refValue="2">Confirmed</enumMember>
+    </enumDescription>
+    <enumDescription refENID="0205" enumKey="BSH.Common.EnumType.FlexStart">
+      <enumMember refValue="0">Disabled</enumMember>
+      <enumMember refValue="1">Enabled</enumMember>
+      <enumMember refValue="2">Pending</enumMember>
+      <enumMember refValue="3">Scheduled</enumMember>
+      <enumMember refValue="4">Started</enumMember>
+      <enumMember refValue="5">Finished</enumMember>
+    </enumDescription>
+    <enumDescription refENID="0202" enumKey="BSH.Common.EnumType.Language">
+      <enumMember refValue="1">Ar</enumMember>
+      <enumMember refValue="2">Az</enumMember>
+      <enumMember refValue="3">Bg</enumMember>
+      <enumMember refValue="4">Bs</enumMember>
+      <enumMember refValue="5">Cs</enumMember>
+      <enumMember refValue="6">Da</enumMember>
+      <enumMember refValue="7">De</enumMember>
+      <enumMember refValue="8">El</enumMember>
+      <enumMember refValue="9">En</enumMember>
+      <enumMember refValue="10">EnUs</enumMember>
+      <enumMember refValue="11">Es</enumMember>
+      <enumMember refValue="12">EsMx</enumMember>
+      <enumMember refValue="13">Et</enumMember>
+      <enumMember refValue="14">Fi</enumMember>
+      <enumMember refValue="15">Fr</enumMember>
+      <enumMember refValue="16">FrCa</enumMember>
+      <enumMember refValue="17">He</enumMember>
+      <enumMember refValue="18">Hi</enumMember>
+      <enumMember refValue="19">Hr</enumMember>
+      <enumMember refValue="20">Hu</enumMember>
+      <enumMember refValue="21">Id</enumMember>
+      <enumMember refValue="22">Is</enumMember>
+      <enumMember refValue="23">It</enumMember>
+      <enumMember refValue="24">Ja</enumMember>
+      <enumMember refValue="25">Kk</enumMember>
+      <enumMember refValue="26">Ko</enumMember>
+      <enumMember refValue="27">Lt</enumMember>
+      <enumMember refValue="28">Lv</enumMember>
+      <enumMember refValue="29">Mk</enumMember>
+      <enumMember refValue="30">Mo</enumMember>
+      <enumMember refValue="31">Ms</enumMember>
+      <enumMember refValue="32">Nl</enumMember>
+      <enumMember refValue="33">No</enumMember>
+      <enumMember refValue="34">Pl</enumMember>
+      <enumMember refValue="35">Pt</enumMember>
+      <enumMember refValue="36">PtBr</enumMember>
+      <enumMember refValue="37">Ro</enumMember>
+      <enumMember refValue="38">Ru</enumMember>
+      <enumMember refValue="39">Sk</enumMember>
+      <enumMember refValue="40">Sl</enumMember>
+      <enumMember refValue="41">Sq</enumMember>
+      <enumMember refValue="42">Sr</enumMember>
+      <enumMember refValue="43">Sv</enumMember>
+      <enumMember refValue="44">Th</enumMember>
+      <enumMember refValue="45">Tr</enumMember>
+      <enumMember refValue="46">Uk</enumMember>
+      <enumMember refValue="47">Vi</enumMember>
+      <enumMember refValue="48">Zh</enumMember>
+      <enumMember refValue="49">ZhHk</enumMember>
+      <enumMember refValue="50">ZhTw</enumMember>
+      <enumMember refValue="51">Fa</enumMember>
+    </enumDescription>
+    <enumDescription refENID="0203" enumKey="BSH.Common.EnumType.OperationState">
+      <enumMember refValue="0">Inactive</enumMember>
+      <enumMember refValue="1">Ready</enumMember>
+      <enumMember refValue="2">DelayedStart</enumMember>
+      <enumMember refValue="3">Run</enumMember>
+      <enumMember refValue="4">Pause</enumMember>
+      <enumMember refValue="5">ActionRequired</enumMember>
+      <enumMember refValue="6">Finished</enumMember>
+      <enumMember refValue="7">Error</enumMember>
+      <enumMember refValue="8">Aborting</enumMember>
+    </enumDescription>
+    <enumDescription refENID="0204" enumKey="BSH.Common.EnumType.PowerState">
+      <enumMember refValue="0">MainsOff</enumMember>
+      <enumMember refValue="2">On</enumMember>
+      <enumMember refValue="3">Standby</enumMember>
+    </enumDescription>
+    <enumDescription refENID="0224" enumKey="BSH.Common.EnumType.Time.DisplayMode">
+      <enumMember refValue="0">Relative</enumMember>
+      <enumMember refValue="1">Absolute</enumMember>
+    </enumDescription>
+    <enumDescription refENID="0209" enumKey="BSH.Common.EnumType.TimeFormat">
+      <enumMember refValue="0">24Hours</enumMember>
+      <enumMember refValue="1">12Hours</enumMember>
+    </enumDescription>
+    <enumDescription refENID="3A04" enumKey="LaundryCare.Common.EnumType.ActiveMode">
+      <enumMember refValue="0">Off</enumMember>
+      <enumMember refValue="1">On</enumMember>
+      <enumMember refValue="2">Auto</enumMember>
+    </enumDescription>
+    <enumDescription refENID="3A02" enumKey="LaundryCare.Common.EnumType.AutoPowerOff">
+      <enumMember refValue="0">Off</enumMember>
+      <enumMember refValue="15">15min</enumMember>
+      <enumMember refValue="30">30min</enumMember>
+      <enumMember refValue="60">60min</enumMember>
+    </enumDescription>
+    <enumDescription refENID="3A06" enumKey="LaundryCare.Common.EnumType.BrightnessLevel">
+      <enumMember refValue="0">Low</enumMember>
+      <enumMember refValue="1">Medium</enumMember>
+      <enumMember refValue="2">High</enumMember>
+      <enumMember refValue="3">VeryHigh</enumMember>
+    </enumDescription>
+    <enumDescription refENID="6A06" enumKey="LaundryCare.Common.EnumType.ProcessPhase">
+      <enumMember refValue="0">NoPhase</enumMember>
+      <enumMember refValue="1">Prewash</enumMember>
+      <enumMember refValue="2">IntermediateSpin</enumMember>
+      <enumMember refValue="3">FillingDetergent</enumMember>
+      <enumMember refValue="4">DetectingLoad</enumMember>
+      <enumMember refValue="5">Heating</enumMember>
+      <enumMember refValue="6">Washing</enumMember>
+      <enumMember refValue="7">Cooldown</enumMember>
+      <enumMember refValue="8">RinsingFoam</enumMember>
+      <enumMember refValue="9">Rinsing</enumMember>
+      <enumMember refValue="10">RinsingAquaSensor</enumMember>
+      <enumMember refValue="11">RinseOnly</enumMember>
+      <enumMember refValue="12">WaterProofing</enumMember>
+      <enumMember refValue="13">RinsingSoftener</enumMember>
+      <enumMember refValue="14">HoldAfterRinse</enumMember>
+      <enumMember refValue="15">Pumping</enumMember>
+      <enumMember refValue="16">SpinningFinal</enumMember>
+      <enumMember refValue="17">LessIroning</enumMember>
+      <enumMember refValue="18">Fluffing</enumMember>
+      <enumMember refValue="19">Soaking</enumMember>
+      <enumMember refValue="20">HygienicSteamFogging</enumMember>
+      <enumMember refValue="21">GuardingOxy</enumMember>
+      <enumMember refValue="22">GeneratingOzone</enumMember>
+      <enumMember refValue="23">DegradingOzone</enumMember>
+      <enumMember refValue="24">Drying</enumMember>
+      <enumMember refValue="25">CoolingDown</enumMember>
+      <enumMember refValue="26">AdditionalCoolingDown</enumMember>
+      <enumMember refValue="27">GuardingWrinkle</enumMember>
+      <enumMember refValue="28">DetectingTextile</enumMember>
+      <enumMember refValue="29">DetectingSoil</enumMember>
+      <enumMember refValue="30">Disinfecting</enumMember>
+      <enumMember refValue="31">LowTemperatureHygiene</enumMember>
+      <enumMember refValue="32">SteamingActive</enumMember>
+      <enumMember refValue="33">IronDryReached</enumMember>
+      <enumMember refValue="34">CupboardDryReached</enumMember>
+      <enumMember refValue="35">CupboardDryPlusReached</enumMember>
+      <enumMember refValue="36">CleaningHeatExchanger</enumMember>
+      <enumMember refValue="37">SlightlyDampReached</enumMember>
+      <enumMember refValue="38">ExtraDryReached</enumMember>
+      <enumMember refValue="39">GentlyDryReached</enumMember>
+      <enumMember refValue="40">QuickCare</enumMember>
+      <enumMember refValue="41">DepthCarePhase1</enumMember>
+      <enumMember refValue="42">DepthCarePhase2</enumMember>
+      <enumMember refValue="43">ColdRefreshing</enumMember>
+      <enumMember refValue="128">AnyPhase</enumMember>
+    </enumDescription>
+    <enumDescription refENID="2A00" enumKey="LaundryCare.Common.EnumType.ProcessingData.TextileType">
+      <enumMember refValue="0">Mixed</enumMember>
+      <enumMember refValue="1">Cotton</enumMember>
+      <enumMember refValue="2">Synthetic</enumMember>
+    </enumDescription>
+    <enumDescription refENID="3A01" enumKey="LaundryCare.Common.EnumType.SignalVolume">
+      <enumMember refValue="0">Off</enumMember>
+      <enumMember refValue="1">Low</enumMember>
+      <enumMember refValue="2">Medium</enumMember>
+      <enumMember refValue="3">Loud</enumMember>
+      <enumMember refValue="4">VeryLoud</enumMember>
+    </enumDescription>
+    <enumDescription refENID="6A01" enumKey="LaundryCare.Common.EnumType.VarioPerfect">
+      <enumMember refValue="0">Off</enumMember>
+      <enumMember refValue="1">EcoPerfect</enumMember>
+      <enumMember refValue="2">SpeedPerfect</enumMember>
+    </enumDescription>
+    <enumDescription refENID="6015" enumKey="LaundryCare.Washer.EnumType.HygienicSteam.HygienicSteamIntensity">
+      <enumMember refValue="0">Middle</enumMember>
+      <enumMember refValue="1">High</enumMember>
+    </enumDescription>
+    <enumDescription refENID="3001" enumKey="LaundryCare.Washer.EnumType.IDos2Content">
+      <enumMember refValue="1">Softener</enumMember>
+      <enumMember refValue="2">Detergent</enumMember>
+    </enumDescription>
+    <enumDescription refENID="2001" enumKey="LaundryCare.Washer.EnumType.IDosFillLevel">
+      <enumMember refValue="0">Poor</enumMember>
+      <enumMember refValue="1">Filled</enumMember>
+    </enumDescription>
+    <enumDescription refENID="600B" enumKey="LaundryCare.Washer.EnumType.IDosingLevel">
+      <enumMember refValue="0">Off</enumMember>
+      <enumMember refValue="1">Light</enumMember>
+      <enumMember refValue="2">Normal</enumMember>
+      <enumMember refValue="3">Strong</enumMember>
+    </enumDescription>
+    <enumDescription refENID="6013" enumKey="LaundryCare.Washer.EnumType.MultipleSoak">
+      <enumMember refValue="0">Off</enumMember>
+      <enumMember refValue="1">Plus1</enumMember>
+      <enumMember refValue="2">Plus2</enumMember>
+      <enumMember refValue="3">Plus3</enumMember>
+    </enumDescription>
+    <enumDescription refENID="6007" enumKey="LaundryCare.Washer.EnumType.RinsePlus">
+      <enumMember refValue="0">Off</enumMember>
+      <enumMember refValue="1">Plus1</enumMember>
+      <enumMember refValue="2">Plus2</enumMember>
+      <enumMember refValue="3">Plus3</enumMember>
+    </enumDescription>
+    <enumDescription refENID="6002" enumKey="LaundryCare.Washer.EnumType.SpinSpeed">
+      <enumMember refValue="0">Off</enumMember>
+      <enumMember refValue="1">UlOff</enumMember>
+      <enumMember refValue="39">UlLow</enumMember>
+      <enumMember refValue="40">RPM400</enumMember>
+      <enumMember refValue="60">RPM600</enumMember>
+      <enumMember refValue="70">RPM700</enumMember>
+      <enumMember refValue="79">UlMedium</enumMember>
+      <enumMember refValue="80">RPM800</enumMember>
+      <enumMember refValue="90">RPM900</enumMember>
+      <enumMember refValue="100">RPM1000</enumMember>
+      <enumMember refValue="119">UlHigh</enumMember>
+      <enumMember refValue="120">RPM1200</enumMember>
+      <enumMember refValue="140">RPM1400</enumMember>
+      <enumMember refValue="150">RPM1500</enumMember>
+      <enumMember refValue="160">RPM1600</enumMember>
+      <enumMember refValue="254">Auto</enumMember>
+      <enumMember refValue="255">Max</enumMember>
+    </enumDescription>
+    <enumDescription refENID="6005" enumKey="LaundryCare.Washer.EnumType.Stains">
+      <enumMember refValue="0">Off</enumMember>
+      <enumMember refValue="1">BabyFood</enumMember>
+      <enumMember refValue="2">Blood</enumMember>
+      <enumMember refValue="3">Egg</enumMember>
+      <enumMember refValue="4">Mud</enumMember>
+      <enumMember refValue="5">Grass</enumMember>
+      <enumMember refValue="6">Coffee</enumMember>
+      <enumMember refValue="7">Cosmetics</enumMember>
+      <enumMember refValue="8">RedWine</enumMember>
+      <enumMember refValue="9">Chocolate</enumMember>
+      <enumMember refValue="10">Perspiration</enumMember>
+      <enumMember refValue="11">Socks</enumMember>
+      <enumMember refValue="12">ButterOil</enumMember>
+      <enumMember refValue="13">Tea</enumMember>
+      <enumMember refValue="14">TomatoSauce</enumMember>
+      <enumMember refValue="15">Strawberry</enumMember>
+      <enumMember refValue="16">Orange</enumMember>
+    </enumDescription>
+    <enumDescription refENID="6001" enumKey="LaundryCare.Washer.EnumType.Temperature">
+      <enumMember refValue="0">Cold</enumMember>
+      <enumMember refValue="1">GC20</enumMember>
+      <enumMember refValue="2">GC30</enumMember>
+      <enumMember refValue="3">GC40</enumMember>
+      <enumMember refValue="4">GC50</enumMember>
+      <enumMember refValue="5">GC60</enumMember>
+      <enumMember refValue="6">GC70</enumMember>
+      <enumMember refValue="7">GC80</enumMember>
+      <enumMember refValue="8">GC90</enumMember>
+      <enumMember refValue="10">UlCold</enumMember>
+      <enumMember refValue="13">UlWarm</enumMember>
+      <enumMember refValue="15">UlHot</enumMember>
+      <enumMember refValue="18">UlExtraHot</enumMember>
+      <enumMember refValue="254">Auto</enumMember>
+      <enumMember refValue="255">Max</enumMember>
+    </enumDescription>
+    <enumDescription refENID="600F" enumKey="LaundryCare.Washer.EnumType.WaterAndRinsePlus">
+      <enumMember refValue="0">Off</enumMember>
+      <enumMember refValue="1">Plus1</enumMember>
+      <enumMember refValue="2">Plus2</enumMember>
+      <enumMember refValue="3">Plus3</enumMember>
+    </enumDescription>
+  </enumDescriptionList>
+</featureMappingFile>

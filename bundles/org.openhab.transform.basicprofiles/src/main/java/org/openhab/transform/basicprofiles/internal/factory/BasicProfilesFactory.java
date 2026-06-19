@@ -42,6 +42,7 @@ import org.openhab.core.thing.profiles.i18n.ProfileTypeI18nLocalizationService;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.util.BundleResolver;
 import org.openhab.transform.basicprofiles.internal.profiles.DebounceCountingStateProfile;
+import org.openhab.transform.basicprofiles.internal.profiles.DebounceStateProfile;
 import org.openhab.transform.basicprofiles.internal.profiles.DebounceTimeStateProfile;
 import org.openhab.transform.basicprofiles.internal.profiles.GenericCommandTriggerProfile;
 import org.openhab.transform.basicprofiles.internal.profiles.GenericToggleSwitchTriggerProfile;
@@ -70,6 +71,7 @@ public class BasicProfilesFactory implements ProfileFactory, ProfileTypeProvider
     public static final ProfileTypeUID GENERIC_TOGGLE_SWITCH_UID = new ProfileTypeUID(SCOPE, "toggle-switch");
     public static final ProfileTypeUID DEBOUNCE_COUNTING_UID = new ProfileTypeUID(SCOPE, "debounce-counting");
     public static final ProfileTypeUID DEBOUNCE_TIME_UID = new ProfileTypeUID(SCOPE, "debounce-time");
+    public static final ProfileTypeUID DEBOUNCE_STATE_UID = new ProfileTypeUID(SCOPE, "debounce-state");
     public static final ProfileTypeUID INVERT_UID = new ProfileTypeUID(SCOPE, "invert");
     public static final ProfileTypeUID ROUND_UID = new ProfileTypeUID(SCOPE, "round");
     public static final ProfileTypeUID THRESHOLD_UID = new ProfileTypeUID(SCOPE, "threshold");
@@ -91,6 +93,11 @@ public class BasicProfilesFactory implements ProfileFactory, ProfileTypeProvider
             .newState(DEBOUNCE_COUNTING_UID, "Debounce (Counting)").build();
     private static final ProfileType PROFILE_TYPE_DEBOUNCE_TIME = ProfileTypeBuilder
             .newState(DEBOUNCE_TIME_UID, "Debounce (Time)").build();
+    private static final ProfileType PROFILE_TYPE_DEBOUNCE_STATE = ProfileTypeBuilder
+            .newState(DEBOUNCE_STATE_UID, "Debounce (State)") //
+            .withSupportedItemTypes(CoreItemFactory.SWITCH, CoreItemFactory.CONTACT) //
+            .withSupportedItemTypesOfChannel(CoreItemFactory.SWITCH, CoreItemFactory.CONTACT) //
+            .build();
     private static final ProfileType PROFILE_TYPE_INVERT = ProfileTypeBuilder.newState(INVERT_UID, "Invert / Negate")
             .withSupportedItemTypes(CoreItemFactory.CONTACT, CoreItemFactory.DIMMER, CoreItemFactory.NUMBER,
                     CoreItemFactory.PLAYER, CoreItemFactory.ROLLERSHUTTER, CoreItemFactory.SWITCH) //
@@ -120,12 +127,14 @@ public class BasicProfilesFactory implements ProfileFactory, ProfileTypeProvider
             .build();
 
     private static final Set<ProfileTypeUID> SUPPORTED_PROFILE_TYPE_UIDS = Set.of(GENERIC_COMMAND_UID,
-            GENERIC_TOGGLE_SWITCH_UID, DEBOUNCE_COUNTING_UID, DEBOUNCE_TIME_UID, INVERT_UID, ROUND_UID, THRESHOLD_UID,
-            TIME_RANGE_COMMAND_UID, STATE_FILTER_UID, INACTIVITY_UID, TIME_WEIGHTED_AVERAGE_UID);
+            GENERIC_TOGGLE_SWITCH_UID, DEBOUNCE_COUNTING_UID, DEBOUNCE_TIME_UID, DEBOUNCE_STATE_UID, INVERT_UID,
+            ROUND_UID, THRESHOLD_UID, TIME_RANGE_COMMAND_UID, STATE_FILTER_UID, INACTIVITY_UID,
+            TIME_WEIGHTED_AVERAGE_UID);
     private static final Set<ProfileType> SUPPORTED_PROFILE_TYPES = Set.of(PROFILE_TYPE_GENERIC_COMMAND,
             PROFILE_TYPE_GENERIC_TOGGLE_SWITCH, PROFILE_TYPE_DEBOUNCE_COUNTING, PROFILE_TYPE_DEBOUNCE_TIME,
-            PROFILE_TYPE_INVERT, PROFILE_TYPE_ROUND, PROFILE_TYPE_THRESHOLD, PROFILE_TYPE_TIME_RANGE_COMMAND,
-            PROFILE_STATE_FILTER, PROFILE_TYPE_INACTIVITY, PROFILE_TIME_WEIGHTED_AVERAGE);
+            PROFILE_TYPE_DEBOUNCE_STATE, PROFILE_TYPE_INVERT, PROFILE_TYPE_ROUND, PROFILE_TYPE_THRESHOLD,
+            PROFILE_TYPE_TIME_RANGE_COMMAND, PROFILE_STATE_FILTER, PROFILE_TYPE_INACTIVITY,
+            PROFILE_TIME_WEIGHTED_AVERAGE);
 
     private final Map<LocalizedKey, ProfileType> localizedProfileTypeCache = new ConcurrentHashMap<>();
 
@@ -158,6 +167,8 @@ public class BasicProfilesFactory implements ProfileFactory, ProfileTypeProvider
             return new DebounceCountingStateProfile(callback, context);
         } else if (DEBOUNCE_TIME_UID.equals(profileTypeUID)) {
             return new DebounceTimeStateProfile(callback, context);
+        } else if (DEBOUNCE_STATE_UID.equals(profileTypeUID)) {
+            return new DebounceStateProfile(callback, context);
         } else if (INVERT_UID.equals(profileTypeUID)) {
             return new InvertStateProfile(callback);
         } else if (ROUND_UID.equals(profileTypeUID)) {

@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,27 +28,24 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class EnergyInfoYear {
-    private static final Logger LOGGER = LoggerFactory.getLogger(EnergyInfoYear.class);
 
-    public Optional<Integer[]> energyHeatingThisYear = Optional.empty();
-
-    public Optional<Integer[]> energyCoolingThisYear = Optional.empty();
+    public Integer @Nullable [] energyHeatingThisYear;
+    public Integer @Nullable [] energyCoolingThisYear;
 
     private EnergyInfoYear() {
     }
 
     public static EnergyInfoYear parse(String response) {
-        LOGGER.trace("Parsing string: \"{}\"", response);
+        Logger logger = LoggerFactory.getLogger(EnergyInfoYear.class);
+        logger.trace("Parsing string: \"{}\"", response);
 
         Map<String, String> responseMap = InfoParser.parse(response);
 
         EnergyInfoYear info = new EnergyInfoYear();
         info.energyHeatingThisYear = Optional.ofNullable(responseMap.get("curr_year_heat"))
-                .flatMap(value -> InfoParser.parseArrayOfInt(value, 12));
-
+                .flatMap(value -> InfoParser.parseArrayOfInt(value, 12)).orElse(null);
         info.energyCoolingThisYear = Optional.ofNullable(responseMap.get("curr_year_cool"))
-                .flatMap(value -> InfoParser.parseArrayOfInt(value, 12));
-
+                .flatMap(value -> InfoParser.parseArrayOfInt(value, 12)).orElse(null);
         return info;
     }
 }

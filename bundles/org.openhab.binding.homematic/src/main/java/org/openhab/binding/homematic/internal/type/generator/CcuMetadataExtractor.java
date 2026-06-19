@@ -19,11 +19,16 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.PrintStream;
 import java.net.URI;
 import java.util.Date;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.TreeMap;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The CcuMetadataExtractor loads some JavaScript files from the CCU and generates the device and datapoint
@@ -33,6 +38,7 @@ import java.util.TreeMap;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class CcuMetadataExtractor {
     private static final String CCU_URL = "http://ccu";
 
@@ -54,7 +60,7 @@ public class CcuMetadataExtractor {
             dg.generate();
 
         } catch (IOException ex) {
-            System.err.println(ex.getMessage());
+            Objects.requireNonNull(System.err).println(ex.getMessage());
         }
     }
 
@@ -77,7 +83,8 @@ public class CcuMetadataExtractor {
 
             String langIdent = ("en".equals(lang) ? "" : "_" + lang);
             File file = new File("./src/main/resources/homematic/generated-descriptions" + langIdent + ".properties");
-            System.out.println("Writing file " + file.getAbsolutePath());
+            PrintStream out = Objects.requireNonNull(System.out);
+            out.println("Writing file " + file.getAbsolutePath());
             if (file.exists()) {
                 file.delete();
             }
@@ -100,7 +107,7 @@ public class CcuMetadataExtractor {
             for (Entry<String, String> entry : deviceKeys.entrySet()) {
                 String description = langDescriptions.get(entry.getValue());
                 if (description == null) {
-                    System.out.println("WARNING: Can't find a translation for " + entry.getValue());
+                    out.println("WARNING: Can't find a translation for " + entry.getValue());
                 } else {
                     bw.write(entry.getKey().toUpperCase());
                     bw.write("=");
@@ -174,7 +181,7 @@ public class CcuMetadataExtractor {
     /**
      * Splits a JSON JavaScript entry.
      */
-    private String[] handleStringTable(String line) {
+    private String @Nullable [] handleStringTable(String line) {
         line = line.replace("    \"", "");
         line = line.replace("\",", "");
         line = line.replace("\"", "");
@@ -213,8 +220,8 @@ public class CcuMetadataExtractor {
             this(url, null, null);
         }
 
-        public UrlLoader(String url, String startLine, String endLine) throws IOException {
-            System.out.println("Loading file " + url);
+        public UrlLoader(String url, @Nullable String startLine, @Nullable String endLine) throws IOException {
+            Objects.requireNonNull(System.out).println("Loading file " + url);
             Boolean includeLine = null;
             BufferedReader br = new BufferedReader(
                     new InputStreamReader(URI.create(url).toURL().openStream(), "UTF-8"));

@@ -26,7 +26,7 @@ public class GetStatus {
 
     public Result[] result;
 
-    public class Result {
+    public static class Result {
         @SerializedName("msg_ver")
         public int msgVer;
 

@@ -17,7 +17,7 @@
 			<channel id="opened" typeId="openedState"/>
 			<channel id="tampered" typeId="tamperedState"/>
 			<channel id="lowBattery" typeId="system.low-battery"/>
-			<channel id="command" typeId="command"/>
+			<channel id="command" typeId="zoneCommand"/>
 
 			<channel id="supervisionTrouble" typeId="supervisionTrouble"/>
 			<channel id="inTxDelay" typeId="inTxDelay"/>
@@ -28,6 +28,10 @@
 			<channel id="presentlyInAlarm" typeId="presentlyInAlarm"/>
 			<channel id="generatedAlarm" typeId="generatedAlarm"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description>
 			<parameter name="id" type="integer" min="1" max="192" required="true">
@@ -63,7 +67,7 @@
 		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
-	<channel-type id="command">
+	<channel-type id="zoneCommand">
 		<item-type>String</item-type>
 		<label>Zone Command</label>
 		<description>Send command for a zone</description>

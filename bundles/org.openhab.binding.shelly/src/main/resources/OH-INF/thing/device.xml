@@ -131,7 +131,7 @@
 		</state>
 	</channel-type>
 	<channel-type id="supplyVoltage" advanced="true">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unitHint="V">Number:ElectricPotential</item-type>
 		<label>Supply Voltage</label>
 		<description>External voltage supplied to the device</description>
 		<category>Energy</category>

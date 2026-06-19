@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.daikin.internal.api.airbase;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -28,8 +27,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class AirbaseBasicInfo {
-    private static final Logger LOGGER = LoggerFactory.getLogger(AirbaseBasicInfo.class);
-
     public String mac = "";
     public String ret = "";
     public String ssid = "";
@@ -38,7 +35,8 @@ public class AirbaseBasicInfo {
     }
 
     public static AirbaseBasicInfo parse(String response) {
-        LOGGER.trace("Parsing string: \"{}\"", response);
+        Logger logger = LoggerFactory.getLogger(AirbaseBasicInfo.class);
+        logger.trace("Parsing string: \"{}\"", response);
 
         Map<String, String> responseMap = InfoParser.parse(response);
 
@@ -50,10 +48,6 @@ public class AirbaseBasicInfo {
     }
 
     public Map<String, String> getParamString() {
-        Map<String, String> params = new HashMap<>();
-        if (!"".equals(ssid)) {
-            params.put("ssid", ssid);
-        }
-        return params;
+        return ssid.isEmpty() ? Map.of() : Map.of("ssid", ssid);
     }
 }

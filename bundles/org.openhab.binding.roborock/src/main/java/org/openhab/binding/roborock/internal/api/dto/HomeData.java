@@ -27,7 +27,7 @@ public class HomeData {
     public String status = "";
     public boolean success;
 
-    public class Result {
+    public static class Result {
         public int id;
         public String name = "";
         public Products[] products;
@@ -38,7 +38,7 @@ public class HomeData {
         public boolean success;
     }
 
-    public class Products {
+    public static class Products {
         public String id = "";
         public String name = "";
         public String model = "";
@@ -46,7 +46,7 @@ public class HomeData {
         public Schema[] schema;
     }
 
-    public class Schema {
+    public static class Schema {
         public int id;
         public String name = "";
         public String code = "";
@@ -55,7 +55,7 @@ public class HomeData {
         public String property = "";
     }
 
-    public class Devices {
+    public static class Devices {
         public String duid = "";
         public String name = "";
         public String localKey = "";
@@ -68,7 +68,7 @@ public class HomeData {
         public boolean f;
     }
 
-    public class DeviceStatus {
+    public static class DeviceStatus {
         @SerializedName("120")
         public int errorCode;
         @SerializedName("121")
@@ -93,7 +93,7 @@ public class HomeData {
         public int dryingStatus;
     }
 
-    public class Rooms {
+    public static class Rooms {
         public int id;
         public String name = "";
     }

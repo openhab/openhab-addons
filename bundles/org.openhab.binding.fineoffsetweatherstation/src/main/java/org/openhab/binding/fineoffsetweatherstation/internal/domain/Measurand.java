@@ -158,6 +158,9 @@ public enum Measurand {
     // This is for heap : the available stack top. If it is reducing, it means the stack is using up.
     ITEM_HEAP_FREE("free-heap-size", 0x6c, "Free Heap Size", MeasureType.MEMORY, CHANNEL_TYPE_FREE_HEAP_SIZE),
 
+    WIND_DIRECTION_AVG_10M("direction-wind-avg-10min", 0x6D, "Wind Direction (10-minute average)", MeasureType.DEGREE,
+            DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_TYPE_UID_WIND_DIRECTION, http(HttpGroup.COMMON_LIST)),
+
     ITEM_SENSOR_CO2_WH46(0x6B,
             new MeasurandParser("sensor-co2-temperature", "Temperature (CO₂-Sensor)", MeasureType.TEMPERATURE)
                     .http(HttpGroup.CO2, "temp"),
@@ -237,6 +240,13 @@ public enum Measurand {
 
     RST_RAIN_TIME(0x88, new Skip(3)),
 
+    // the WN38 black globe sensor reports a black globe temperature (BGT) and a wet bulb globe temperature (WBGT)
+    BLACK_GLOBE_TEMPERATURE("temperature-black-globe", 0xA1, "Black Globe Temperature", MeasureType.TEMPERATURE,
+            http(HttpGroup.COMMON_LIST)),
+
+    WET_BULB_GLOBE_TEMPERATURE("temperature-wet-bulb-globe", 0xA2, "Wet Bulb Globe Temperature",
+            MeasureType.TEMPERATURE, http(HttpGroup.COMMON_LIST)),
+
     // measurands only available via the Ecowitt HTTP API (no TCP item code)
     FEELS_LIKE("temperature-feels-like", "Feels like temperature", MeasureType.TEMPERATURE,
             http(HttpGroup.COMMON_LIST, "3")),
@@ -248,7 +258,12 @@ public enum Measurand {
     SOLAR_RADIATION("irradiation-solar", "Solar irradiation", MeasureType.SOLAR_RADIATION,
             httpAlt(HttpGroup.COMMON_LIST, 0x15)),
 
-    RAIN_STATE("rain-state", "Raining", MeasureType.RAIN_STATE, http(HttpGroup.RAIN, "srain")),
+    // rainfall over the last 24 hours; only reported via the HTTP API (no dedicated TCP item code), in the rain group
+    // for the traditional gauge and in the piezoRain group for the haptic gauge - both keyed by id 0x7C
+    RAIN_24HOURS("rain-24-hours", "Rainfall last 24 hours", MeasureType.HEIGHT_BIG, http(HttpGroup.RAIN, "0x7C")),
+
+    PIEZO_RAIN_24HOURS("piezo-rain-24-hours", "Rainfall last 24 hours", MeasureType.HEIGHT_BIG,
+            http(HttpGroup.PIEZO_RAIN, "0x7C")),
 
     PIEZO_RAIN_STATE("piezo-rain-state", "Raining (piezo)", MeasureType.RAIN_STATE,
             http(HttpGroup.PIEZO_RAIN, "srain_piezo")),

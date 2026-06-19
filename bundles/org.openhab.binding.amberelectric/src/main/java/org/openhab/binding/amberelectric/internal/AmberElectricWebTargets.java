@@ -12,13 +12,13 @@
  */
 package org.openhab.binding.amberelectric.internal;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.io.net.http.HttpUtil;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,20 +33,22 @@ public class AmberElectricWebTargets {
     private static final int TIMEOUT_MS = 30000;
     private static final String BASE_URI = "https://api.amber.com.au/v1/";
     private final Logger logger = LoggerFactory.getLogger(AmberElectricWebTargets.class);
+    private final HttpClient httpClient;
 
-    public AmberElectricWebTargets() {
+    public AmberElectricWebTargets(HttpClient httpClient) {
+        this.httpClient = httpClient;
     }
 
     public String getSites(String apiKey) throws AmberElectricCommunicationException {
         String getSitesUri = BASE_URI + "sites";
-        String response = invoke("GET", getSitesUri, apiKey);
+        String response = invoke(getSitesUri, apiKey);
         logger.trace("Received response: \"{}\"", response);
         return response;
     }
 
     public String getCurrentPrices(String siteid, String apiKey) throws AmberElectricCommunicationException {
         String getCurrentPricesUri = BASE_URI + "sites/" + siteid + "/prices/current?next=288";
-        String response = invoke("GET", getCurrentPricesUri, apiKey);
+        String response = invoke(getCurrentPricesUri, apiKey);
         logger.trace("Received response: \"{}\"", response);
         return response;
     }
@@ -58,29 +60,41 @@ public class AmberElectricWebTargets {
         return httpHeaders;
     }
 
-    private String invoke(String httpMethod, String uri, String accessToken)
-            throws AmberElectricCommunicationException {
-        return invoke(httpMethod, uri, accessToken, null, null);
-    }
-
-    private String invoke(String httpMethod, String uri, String apiKey, @Nullable InputStream content,
-            @Nullable String contentType) throws AmberElectricCommunicationException {
-        logger.debug("Calling url: {}", uri);
-        @Nullable
-        String response;
+    private String invoke(String uri, String accessToken) throws AmberElectricCommunicationException {
         try {
-            response = HttpUtil.executeUrl(httpMethod, uri, getHttpHeaders(apiKey), content, contentType, TIMEOUT_MS);
-        } catch (IOException ex) {
-            logger.debug("{}", ex.getLocalizedMessage(), ex);
-            // Response will also be set to null if parsing in executeUrl fails so we use null here to make the
-            // error check below consistent.
-            response = null;
-        }
+            var request = httpClient.newRequest(uri).method(HttpMethod.GET).timeout(TIMEOUT_MS, TimeUnit.MILLISECONDS);
 
-        if (response == null) {
+            // Dynamically apply headers to avoid duplication
+            Properties headers = getHttpHeaders(accessToken);
+            for (String key : headers.stringPropertyNames()) {
+                request.header(key, headers.getProperty(key));
+            }
+
+            var response = request.send();
+            int status = response.getStatus();
+
+            if (HttpStatus.isSuccess(status)) {
+                return response.getContentAsString();
+            }
+
+            // Handle specific 401 Unauthorized for better user feedback
+            if (status == HttpStatus.UNAUTHORIZED_401) {
+                throw new AmberElectricCommunicationException(
+                        "Unauthorized (401): Please verify your Amber Electric API Key.");
+            }
+
+            // Catch-all for other non-2xx errors
+            throw new AmberElectricCommunicationException(String.format(
+                    "HTTP Error %d communicating with Amber API. Response: %s", status, response.getContentAsString()));
+        } catch (AmberElectricCommunicationException e) {
+            // Rethrow our custom exception so it doesn't get wrapped again
+            throw e;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             throw new AmberElectricCommunicationException(
-                    String.format("AmberElectric returned no response while invoking %s", uri));
+                    "Thread was interrupted while communicating with the Amber API", e);
+        } catch (Exception ex) {
+            throw new AmberElectricCommunicationException("Unexpected error communicating with Amber API", ex);
         }
-        return response;
     }
 }

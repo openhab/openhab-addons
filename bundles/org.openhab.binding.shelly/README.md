@@ -151,10 +151,14 @@ See section [Discovery](#discovery) for details.
 | shellyblubutton      | Shelly BLU Tough ZB                                    | SBBT-102C               |
 | shellybluwallswitch4 | Shelly BLU Wallswitch 4                                | SBBT-EU5027             |
 | shellyblurcbutton4   | Shelly BLU RC Button 4                                 | SBBT-004CUS             |
+| shellyblurcbutton4   | Shelly BLU RC Button 4 ZB                              | SBBT-104CUS             |
 | shellybluht          | Shelly BLU H&T                                         | SBHT-003C               |
 | shellybluht          | Shelly BLU H&T ZB                                      | SBHT-203C               |
+| shellybluht          | Shelly BLU H&T Display ZB                              | SBHT-103C               |
 | shellybludw          | Shelly BLU Door/Windows                                | SBDW-002C               |
+| shellybludw          | Shelly BLU Door/Window ZB                              | SBDW-103C               |
 | shellyblumotion      | Shelly BLU Motion                                      | SBMO-003Z               |
+| shellyblumotion      | Shelly BLU Motion ZB                                   | SBMO-103Z               |
 | shellybludistance    | Shelly BLU Distance                                    | SBDI-003E               |
 | shellybluremote      | Shelly BLU Remote Control                              | SBRC-005B               |
 
@@ -530,6 +534,7 @@ Depending on the device type and firmware release channels might be not availabl
 |         | temperature2 | Number  | yes       | Temperature value of external sensor #2 (if connected to temp/hum addon)          |
 |         | temperature3 | Number  | yes       | Temperature value of external sensor #3 (if connected to temp/hum addon)          |
 |         | humidity     | Number  | yes       | Humidity in percent (if connected to temp/hum addon)                              |
+|         | lastUpdate   | DateTime | yes      | Timestamp of the last sensor update (heartbeat)                                   |
 |         | input1       | Contact | yes       | Status of the reed contact (OPEN/CLOSE), only with external switch add-on         |
 
 ### Shelly 1L (thing-type: shelly1l)
@@ -555,6 +560,7 @@ Depending on the device type and firmware release channels might be not availabl
 |         | temperature2 | Number   | yes       | Temperature value of external sensor #2 (if connected to temp/hum addon)          |
 |         | temperature3 | Number   | yes       | Temperature value of external sensor #3 (if connected to temp/hum addon)          |
 |         | humidity     | Number   | yes       | Humidity in percent (if connected to temp/hum addon)                              |
+|         | lastUpdate   | DateTime | yes       | Timestamp of the last sensor update (heartbeat)                                   |
 |         | input1       | Contact  | yes       | Status of the reed contact (OPEN/CLOSE), only with external switch add-on         |
 
 `Note:`
@@ -580,6 +586,7 @@ In this case the is no real measurement based on power consumption, but the Shel
 |         | temperature2 | Number   | yes       | Temperature value of external sensor #2 (if connected to temp/hum addon)        |
 |         | temperature3 | Number   | yes       | Temperature value of external sensor #3 (if connected to temp/hum addon)        |
 |         | humidity     | Number   | yes       | Humidity in percent (if connected to temp/hum addon)                            |
+|         | lastUpdate   | DateTime | yes       | Timestamp of the last sensor update (heartbeat)                                 |
 |         | input1       | Contact  | yes       | Status of the reed contact (OPEN/CLOSE), only with external switch add-on       |
 
 ### Shelly EM (thing-type: shellyem)
@@ -815,6 +822,7 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 |         | temperature2 | Number  | yes       | Temperature value of external sensor #2 (if connected to temp/hum addon) |
 |         | temperature3 | Number  | yes       | Temperature value of external sensor #3 (if connected to temp/hum addon) |
 |         | humidity     | Number  | yes       | Humidity in percent (if connected to temp/hum addon)                     |
+|         | lastUpdate   | DateTime | yes      | Timestamp of the last sensor update (heartbeat)                          |
 |         | voltage      | Number  | yes       | ADCS voltage                                                             |
 | status  | input1       | Switch  | yes       | State of Input 1                                                         |
 |         | input2       | Switch  | yes       | State of Input 2                                                         |
@@ -1186,6 +1194,7 @@ If the Shelly Add-On is installed:
 |         | voltage      | Number | yes       | Measured voltage                                          |
 |         | analogInput  | Number | yes       | Percentage of reference voltage (VREF) at analogous input |
 |         | digitalInput | Switch | yes       | State of digital input (ON/OFF)                           |
+|         | lastUpdate   | DateTime | yes     | Timestamp of the last sensor update (heartbeat)           |
 
 ### Shelly Plus 1PM (thing-type: shellyplus1pm)
 
@@ -1216,6 +1225,7 @@ If the Shelly Add-On is installed:
 |         | voltage      | Number | yes       | Measured voltage                                          |
 |         | analogInput  | Number | yes       | Percentage of reference voltage (VREF) at analogous input |
 |         | digitalInput | Switch | yes       | State of digital input (ON/OFF)                           |
+|         | lastUpdate   | DateTime | yes     | Timestamp of the last sensor update (heartbeat)           |
 
 ### Shelly Plus 2PM - relay mode (thing-type: shellyplus2pm-relay)
 

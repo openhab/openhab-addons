@@ -14,6 +14,7 @@ package org.openhab.binding.homematic.internal.communicator.virtual;
 
 import static org.openhab.binding.homematic.internal.misc.HomematicConstants.VIRTUAL_DATAPOINT_NAME_FIRMWARE;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homematic.internal.model.HmDevice;
 import org.openhab.binding.homematic.internal.model.HmValueType;
 
@@ -22,6 +23,7 @@ import org.openhab.binding.homematic.internal.model.HmValueType;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class FirmwareVirtualDatapointHandler extends AbstractVirtualDatapointHandler {
     @Override
     public String getName() {

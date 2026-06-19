@@ -98,7 +98,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
     private String countryCode = "";
     private String token = "";
     private String baseUri = "";
-    private Rriot rriot = new Login().new Rriot();
+    private Rriot rriot = new Rriot();
     private final SecureRandom secureRandom = new SecureRandom();
     private String mqttUser = "";
     protected final Map<String, RoborockVacuumHandler> childDevices = new ConcurrentHashMap<>();
@@ -316,10 +316,16 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
                     updateConfiguration(configuration);
                     int code = 0;
                     String message = "";
-                    if (response != null && !response.isEmpty()
-                            && JsonParser.parseString(response).getAsJsonObject().has("code")) {
-                        code = JsonParser.parseString(response).getAsJsonObject().get("code").getAsInt();
-                        message = JsonParser.parseString(response).getAsJsonObject().get("msg").getAsString();
+                    if (response != null && !response.isEmpty()) {
+                        try {
+                            JsonObject responseObj = JsonParser.parseString(response).getAsJsonObject();
+                            if (responseObj.has("code")) {
+                                code = responseObj.get("code").getAsInt();
+                                message = responseObj.get("msg").getAsString();
+                            }
+                        } catch (RuntimeException e) {
+                            logger.debug("Failed to parse login response JSON: {}", e.getMessage());
+                        }
                     }
                     if (code == 200) {
                         Login loginResponse = gson.fromJson(response, Login.class);
@@ -360,8 +366,8 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
             logger.debug("Handler disposed, aborting MQTT connection");
             return;
         }
-        if (token.isEmpty() || rriot.r == null || rriot.r.m.isEmpty() || rriot.k.isEmpty() || rriot.s.isEmpty()
-                || rriot.u.isEmpty()) {
+        if (token.isBlank() || rriot.r == null || rriot.r.m.isBlank() || rriot.k.isBlank() || rriot.s.isBlank()
+                || rriot.u.isBlank()) {
             logger.debug("token and/or rriot are empty, delay connection to MQTT server");
             return;
         }
@@ -672,24 +678,23 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
 
         // Translate V1 method names → B01 equivalents.
         switch (method) {
-            case COMMAND_APP_START:
+            case COMMAND_APP_START -> {
                 b01Method = "service.set_room_clean";
-                b01Params = buildJsonObject("clean_type", 0, "ctrl_value", 1, "room_ids", new JsonArray());
-                break;
-            case COMMAND_APP_SPOT:
+                b01Params = Map.of("clean_type", 0, "ctrl_value", 1, "room_ids", new JsonArray());
+            }
+            case COMMAND_APP_SPOT -> {
                 b01Method = "service.set_room_clean";
-                b01Params = buildJsonObject("clean_type", 0, "ctrl_value", 0, "room_ids", new JsonArray());
-                break;
-            case COMMAND_APP_PAUSE:
+                b01Params = Map.of("clean_type", 0, "ctrl_value", 0, "room_ids", new JsonArray());
+            }
+            case COMMAND_APP_PAUSE -> {
                 b01Method = "service.set_room_clean";
-                b01Params = buildJsonObject("clean_type", 0, "ctrl_value", 2, "room_ids", new JsonArray());
-                break;
-            case COMMAND_APP_CHARGE:
+                b01Params = Map.of("clean_type", 0, "ctrl_value", 2, "room_ids", new JsonArray());
+            }
+            case COMMAND_APP_CHARGE -> {
                 b01Method = "service.start_recharge";
                 b01Params = Map.of();
-                break;
-            case COMMAND_GET_STATUS: {
-                // Request all status properties the Q7 exposes via prop.get
+            }
+            case COMMAND_GET_STATUS -> {
                 b01Method = "prop.get";
                 JsonArray statusProps = new JsonArray();
                 for (String p : new String[] { "status", "fault", "wind", "water", "mode", "quantity", "tank_state",
@@ -699,12 +704,10 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
                         "map_save", "green_laser", "dust_bag_used", "back_to_wash", "repeat_state" }) {
                     statusProps.add(p);
                 }
-                b01Params = buildJsonObject("property", statusProps);
-                break;
+                b01Params = Map.of("property", statusProps);
             }
-            case "get_prop":
+            case "get_prop" -> {
                 b01Method = "prop.get";
-                // params is a JSON array of property names, e.g. ["status","wind"]
                 try {
                     JsonElement properties = JsonParser.parseString(params);
                     if (!properties.isJsonArray()) {
@@ -716,73 +719,63 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
                     logger.debug("Failed to parse B01 params for get_prop: {}", e.getMessage());
                     return -1;
                 }
-                break;
-            case "set_custom_mode": {
-                // fan power: params is [<int>]
-                final int wind;
+            }
+            case "set_custom_mode" -> {
                 try {
-                    wind = JsonParser.parseString(params).getAsJsonArray().get(0).getAsInt();
+                    int wind = JsonParser.parseString(params).getAsJsonArray().get(0).getAsInt();
+                    b01Method = "prop.set";
+                    b01Params = Map.of("wind", wind);
                 } catch (RuntimeException e) {
                     logger.debug("Failed to parse B01 params for set_custom_mode: {}", e.getMessage());
                     return -1;
                 }
-                b01Method = "prop.set";
-                b01Params = Map.of("wind", wind);
-                break;
             }
-            case "set_water_box_custom_mode": {
-                final int water;
+            case "set_water_box_custom_mode" -> {
                 try {
-                    water = JsonParser.parseString(params).getAsJsonArray().get(0).getAsInt();
+                    int water = JsonParser.parseString(params).getAsJsonArray().get(0).getAsInt();
+                    b01Method = "prop.set";
+                    b01Params = Map.of("water", water);
                 } catch (RuntimeException e) {
                     logger.debug("Failed to parse B01 params for set_water_box_custom_mode: {}", e.getMessage());
                     return -1;
                 }
-                b01Method = "prop.set";
-                b01Params = Map.of("water", water);
-                break;
             }
-            case "get_map_v1":
+            case "get_map_v1" -> {
                 b01Method = "service.upload_by_maptype";
                 b01Params = Map.of("force", 1, "map_type", 0);
-                break;
-            case "get_room_mapping":
+            }
+            case "get_room_mapping" -> {
                 b01Method = "service.get_map_list";
                 b01Params = Map.of();
-                break;
-            case COMMAND_GET_NETWORK_INFO:
+            }
+            case COMMAND_GET_NETWORK_INFO -> {
                 b01Method = "service.get_net_info";
                 b01Params = Map.of();
-                break;
-            case COMMAND_GET_CONSUMABLE:
-                // B01 consumables are fetched via prop.get with specific property names.
-                // Response is a positional array matching the requested property list.
+            }
+            case COMMAND_GET_CONSUMABLE -> {
                 b01Method = "prop.get";
                 JsonArray consumableProps = new JsonArray();
                 for (String p : new String[] { "main_brush", "side_brush", "hypa", "main_sensor" }) {
                     consumableProps.add(p);
                 }
-                b01Params = buildJsonObject("property", consumableProps);
-                break;
-            case COMMAND_GET_DND_TIMER:
-                // B01 quiet time parameters are fetched via prop.get with specific property names.
-                // Response is a positional array matching the requested property list.
+                b01Params = Map.of("property", consumableProps);
+            }
+            case COMMAND_GET_DND_TIMER -> {
                 b01Method = "prop.get";
                 JsonArray quietTimeProps = new JsonArray();
                 for (String p : new String[] { "quiet_begin_time", "quiet_end_time" }) {
                     quietTimeProps.add(p);
                 }
-                b01Params = buildJsonObject("property", quietTimeProps);
-                break;
-            case COMMAND_GET_CLEAN_SUMMARY:
+                b01Params = Map.of("property", quietTimeProps);
+            }
+            case COMMAND_GET_CLEAN_SUMMARY -> {
                 b01Method = "service.get_record_list";
                 b01Params = Map.of();
-                break;
-            default:
-                // Unknown command — log and bail out rather than sending garbage to the device.
-                // Add an explicit case above when support for this command is implemented.
+            }
+            default -> {
                 logger.debug("B01 sendB01RPCCommand: unhandled method '{}', ignoring", method);
                 return -1;
+            }
         }
 
         // Build the inner payload: { method, msgId, params }
@@ -924,27 +917,5 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
             logger.debug("Exception building B01 frame: {}", e.getMessage());
             return new byte[0];
         }
-    }
-
-    /**
-     * Builds a JsonObject from alternating key/value pairs.
-     * Values may be Integer, String, Boolean, or JsonElement.
-     */
-    private JsonObject buildJsonObject(Object... keyValues) {
-        JsonObject obj = new JsonObject();
-        for (int i = 0; i + 1 < keyValues.length; i += 2) {
-            String key = keyValues[i].toString();
-            Object val = keyValues[i + 1];
-            if (val instanceof Integer v) {
-                obj.addProperty(key, v);
-            } else if (val instanceof String v) {
-                obj.addProperty(key, v);
-            } else if (val instanceof Boolean v) {
-                obj.addProperty(key, v);
-            } else if (val instanceof JsonElement v) {
-                obj.add(key, v);
-            }
-        }
-        return obj;
     }
 }

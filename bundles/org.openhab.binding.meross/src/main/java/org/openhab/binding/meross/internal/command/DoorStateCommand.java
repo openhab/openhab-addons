@@ -37,9 +37,9 @@ public class DoorStateCommand {
         }
 
         @Override
-        public byte[] command(String deviceUUID) {
+        public byte[] command(MqttMessageBuilder mqttMessageBuilder, String deviceUUID) {
             Map<String, Object> payload = Map.of("state", Map.of("open", openValue, "channel", deviceChannel));
-            return MqttMessageBuilder.buildMqttMessage("SET", MerossEnum.Namespace.GARAGE_DOOR_STATE.value(),
+            return mqttMessageBuilder.buildMqttMessage("SET", MerossEnum.Namespace.GARAGE_DOOR_STATE.value(),
                     deviceUUID, payload);
         }
     }

@@ -30,8 +30,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class AirbaseModelInfo {
-    private static final Logger LOGGER = LoggerFactory.getLogger(AirbaseModelInfo.class);
-
     public String ret = "";
     public int zonespresent;
     public int commonzone;
@@ -43,7 +41,8 @@ public class AirbaseModelInfo {
     }
 
     public static AirbaseModelInfo parse(String response) {
-        LOGGER.trace("Parsing string: \"{}\"", response);
+        Logger logger = LoggerFactory.getLogger(AirbaseModelInfo.class);
+        logger.trace("Parsing string: \"{}\"", response);
 
         Map<String, String> responseMap = InfoParser.parse(response);
 

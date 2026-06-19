@@ -32,7 +32,6 @@ public class AirbaseEnums {
         DRY(7, "Dehumidifier"),
         AUTO(3, "Auto");
 
-        private static final Logger LOGGER = LoggerFactory.getLogger(AirbaseMode.class);
         private final int value;
         private final String label;
 
@@ -50,12 +49,13 @@ public class AirbaseEnums {
         }
 
         public static AirbaseMode fromValue(int value) {
+            Logger logger = LoggerFactory.getLogger(AirbaseMode.class);
             for (AirbaseMode m : AirbaseMode.values()) {
                 if (m.getValue() == value) {
                     return m;
                 }
             }
-            LOGGER.debug("Unexpected Mode value of \"{}\"", value);
+            logger.debug("Unexpected Mode value of \"{}\"", value);
             return AUTO;
         }
     }
@@ -75,7 +75,6 @@ public class AirbaseEnums {
         AUTO_LEVEL_5(5, true, false),
         AIRSIDE(1, false, true);
 
-        private static final Logger LOGGER = LoggerFactory.getLogger(AirbaseFanSpeed.class);
         private final int level;
         private final boolean auto;
         private final boolean airside;
@@ -114,6 +113,7 @@ public class AirbaseEnums {
 
         public static AirbaseFanSpeed fromValue(int rate, boolean auto, boolean airside) { // convert from f_rate,
                                                                                            // f_auto, f_airside
+            Logger logger = LoggerFactory.getLogger(AirbaseFanSpeed.class);
             if (airside) {
                 return AIRSIDE;
             }
@@ -125,7 +125,7 @@ public class AirbaseEnums {
                     return m;
                 }
             }
-            LOGGER.debug("Unexpected FanSpeed value from rate={}, auto={}, airside={}", rate, auto ? 1 : 0,
+            logger.debug("Unexpected FanSpeed value from rate={}, auto={}, airside={}", rate, auto ? 1 : 0,
                     airside ? 1 : 0);
             return LEVEL_1;
         }
@@ -138,7 +138,6 @@ public class AirbaseEnums {
         HORIZONTAL(2),
         VERTICAL_AND_HORIZONTAL(3);
 
-        private static final Logger LOGGER = LoggerFactory.getLogger(AirbaseFanMovement.class);
         private final int value;
 
         AirbaseFanMovement(int value) {
@@ -150,12 +149,13 @@ public class AirbaseEnums {
         }
 
         public static AirbaseFanMovement fromValue(int value) {
+            Logger logger = LoggerFactory.getLogger(AirbaseFanMovement.class);
             for (AirbaseFanMovement m : AirbaseFanMovement.values()) {
                 if (m.getValue() == value) {
                     return m;
                 }
             }
-            LOGGER.debug("Unexpected FanMovement value of \"{}\"", value);
+            logger.debug("Unexpected FanMovement value of \"{}\"", value);
             return STOPPED;
         }
     }
@@ -176,7 +176,6 @@ public class AirbaseEnums {
         DRY("en_dry"),
         FRATE_AUTO("en_frate_auto");
 
-        private static final Logger LOGGER = LoggerFactory.getLogger(AirbaseFeature.class);
         private final String value;
 
         AirbaseFeature(String value) {

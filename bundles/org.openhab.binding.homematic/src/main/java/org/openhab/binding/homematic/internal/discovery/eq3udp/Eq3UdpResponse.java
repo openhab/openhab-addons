@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.homematic.internal.discovery.eq3udp;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Extracts a UDP response from a Homematic CCU gateway.
  *
  * @author Gerhard Riegler - Initial contribution
  */
 
+@NonNullByDefault
 public class Eq3UdpResponse {
     private int senderId;
     private String deviceTypeId;

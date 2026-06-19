@@ -519,14 +519,10 @@ public class TimeSynchronizationCluster extends BaseCluster {
      * matching those in the TrustedTimeSource field and has its FabricIndex field set to the command's accessing fabric
      * index.
      */
-    public static ClusterCommand setTrustedTimeSource(FabricScopedTrustedTimeSourceStruct trustedTimeSource,
-            Integer fabricIndex) {
+    public static ClusterCommand setTrustedTimeSource(FabricScopedTrustedTimeSourceStruct trustedTimeSource) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (trustedTimeSource != null) {
             map.put("trustedTimeSource", trustedTimeSource);
-        }
-        if (fabricIndex != null) {
-            map.put("fabricIndex", fabricIndex);
         }
         return new ClusterCommand("setTrustedTimeSource", map);
     }

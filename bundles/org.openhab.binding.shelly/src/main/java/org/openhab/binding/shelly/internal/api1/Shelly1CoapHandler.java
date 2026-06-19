@@ -471,8 +471,12 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
 
         if (!updates.isEmpty()) {
             int updated = 0;
+            boolean sensorGroupUpdated = false;
             for (Map.Entry<String, State> u : updates.entrySet()) {
                 String key = u.getKey();
+                if (key.startsWith(CHANNEL_GROUP_SENSOR + "#")) {
+                    sensorGroupUpdated = true;
+                }
                 updated += thingHandler.updateChannel(key, u.getValue(), false) ? 1 : 0;
             }
             if (updated > 0) {
@@ -481,6 +485,11 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
                     // CoAP is currently lacking the lastUpdate info, so we use host timestamp
                     thingHandler.updateChannel(profile.getControlGroup(0), CHANNEL_LAST_UPDATE, getTimestamp());
                 }
+            }
+            if (sensorGroupUpdated && !profile.isSensor && !profile.isRoller) {
+                // Relay device with addon sensors: always refresh sensors#lastUpdate so the channel acts
+                // as a heartbeat even when temperature values are unchanged (and thus cache-deduplicated)
+                thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_LAST_UPDATE, getTimestamp());
             }
 
             if (profile.isLight && profile.inColor && col.isRgbValid()) {
