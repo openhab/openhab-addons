@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -43,6 +44,7 @@ import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -150,6 +152,7 @@ public class FineOffsetSensorHandler extends BaseThingHandler {
         }
         Set<String> reportedChannelIds = new HashSet<>();
         List<Channel> newChannels = new ArrayList<>();
+        Map<ChannelUID, State> newChannelStates = new LinkedHashMap<>();
         for (MeasuredValue value : values) {
             String channelId = value.getChannelPrefix();
             reportedChannelIds.add(channelId);
@@ -160,6 +163,7 @@ public class FineOffsetSensorHandler extends BaseThingHandler {
                 if (channel != null) {
                     newChannels.add(channel);
                     managedChannelIds.add(channelId);
+                    newChannelStates.put(channel.getUID(), value.getState());
                 }
             } else {
                 updateState(channel.getUID(), value.getState());
@@ -188,6 +192,7 @@ public class FineOffsetSensorHandler extends BaseThingHandler {
             channels.removeAll(staleChannels);
             updateThing(editThing().withChannels(channels).build());
         }
+        newChannelStates.forEach(this::updateState);
     }
 
     private @Nullable Channel createChannel(MeasuredValue value) {

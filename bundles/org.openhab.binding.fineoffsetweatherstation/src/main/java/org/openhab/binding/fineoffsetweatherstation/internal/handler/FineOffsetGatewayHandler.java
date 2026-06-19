@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -171,6 +172,7 @@ public class FineOffsetGatewayHandler extends BaseBridgeHandler {
 
         Set<String> reportedChannelIds = new HashSet<>();
         List<Channel> newChannels = new ArrayList<>();
+        Map<ChannelUID, State> newChannelStates = new LinkedHashMap<>();
         for (MeasuredValue measuredValue : data) {
             String channelId = measuredValue.getChannelId();
             reportedChannelIds.add(channelId);
@@ -180,6 +182,7 @@ public class FineOffsetGatewayHandler extends BaseBridgeHandler {
                 channel = createChannel(measuredValue);
                 if (channel != null) {
                     newChannels.add(channel);
+                    newChannelStates.put(channel.getUID(), measuredValue.getState());
                 }
             } else {
                 State state = measuredValue.getState();
@@ -208,6 +211,7 @@ public class FineOffsetGatewayHandler extends BaseBridgeHandler {
             channels.removeAll(staleChannels);
             updateBridgeThing(bridgeBuilder -> bridgeBuilder.withChannels(channels));
         }
+        newChannelStates.forEach(this::updateState);
     }
 
     private @Nullable Channel createChannel(MeasuredValue measuredValue) {
