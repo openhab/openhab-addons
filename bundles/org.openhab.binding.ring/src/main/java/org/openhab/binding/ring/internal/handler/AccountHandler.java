@@ -44,6 +44,8 @@ import org.openhab.binding.ring.internal.data.Tokens;
 import org.openhab.binding.ring.internal.device.RingDevice;
 import org.openhab.binding.ring.internal.discovery.RingDiscoveryService;
 import org.openhab.binding.ring.internal.errors.AuthenticationException;
+import org.openhab.binding.ring.internal.fcm.FcmClient;
+import org.openhab.binding.ring.internal.fcm.FcmRegistrar;
 import org.openhab.binding.ring.internal.utils.RingUtils;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.common.ThreadPoolManager;
@@ -78,6 +80,9 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     private final RingVideoServlet servlet;
     private @Nullable ScheduledFuture<?> jobTokenRefresh = null;
     private @Nullable ScheduledFuture<?> eventRefresh = null;
+    private @Nullable FcmClient fcmClient;
+    private final HttpClient httpClient;
+    private boolean isPolling = false; // Tracks current fallback state
 
     // Current status
     protected OnOffType status = OnOffType.OFF;
@@ -136,6 +141,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         this.restClient = new RestClient(httpClient);
         this.servlet = ringVideoServlet;
         this.videoExecutorService = ThreadPoolManager.getScheduledPool("ring");
+        this.httpClient = httpClient;
     }
 
     @Override
@@ -368,8 +374,11 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
 
                 refreshRegistry();
 
-                startAutomaticRefresh(refreshInterval);
+                // Always start the token/session refresh loop
                 startSessionRefresh(refreshInterval);
+
+                // Attempt to connect via FCM by default
+                setupPushNotifications();
             } catch (AuthenticationException ex) {
                 logger.debug("AuthenticationException when initializing Ring Account handler {}", ex.getMessage());
                 String message = ex.getMessage();
@@ -388,6 +397,48 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                     "Please login via CLI or by updating the Thing properties");
         }
+    }
+
+    private void setupPushNotifications() {
+        try {
+            // Use the class field httpClient directly
+            FcmRegistrar registrar = new FcmRegistrar(httpClient);
+            FcmRegistrar.FcmCredentials creds = registrar.register();
+            restClient.subscribeToPushNotifications(creds.fcmToken(), tokens);
+
+            fcmClient = new FcmClient((String payload) -> handlePushEvent(payload),
+                    (Boolean status) -> onFcmStateChanged(status));
+            fcmClient.connect(creds.androidId(), creds.securityToken());
+
+        } catch (Exception e) {
+            logger.warn("FCM Registration failed. Network restricted? Falling back to HTTP polling.", e);
+            onFcmStateChanged(false);
+        }
+    }
+
+    /**
+     * Handles the automatic transition between FCM Push and HTTP Polling
+     */
+    private void onFcmStateChanged(Boolean isConnected) {
+        if (isConnected && isPolling) {
+            logger.info("Ring FCM Socket connected. Disabling HTTP polling.");
+            stopAutomaticRefresh();
+            isPolling = false;
+        } else if (!isConnected && !isPolling) {
+            logger.warn("Ring FCM Socket disconnected. Falling back to HTTP polling.");
+            startAutomaticRefresh(config.refreshInterval);
+            isPolling = true;
+        }
+    }
+
+    private void handlePushEvent(String payloadJson) {
+        // The payloadJson contains the event details (ding, motion, etc.)
+        // Parse it using Gson just like you do in eventTick()
+        logger.debug("Received INSTANT Push Event: {}", payloadJson);
+
+        // Example: if JSON indicates a Ding on Doorbell ID 12345
+        // updateState(CHANNEL_EVENT_KIND, new StringType("ding"));
+        // Thread.ofVirtual().start(() -> getVideo(event));
     }
 
     private void refreshRegistry() throws JsonParseException, AuthenticationException {
@@ -564,6 +615,9 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     public void dispose() {
         servlet.removeVideoStoragePath(thing.getUID());
 
+        if (fcmClient != null) {
+            fcmClient.disconnect();
+        }
         stopSessionRefresh();
         stopAutomaticRefresh();
         super.dispose();

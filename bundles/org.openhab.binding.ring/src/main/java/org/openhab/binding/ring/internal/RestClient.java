@@ -85,6 +85,10 @@ public class RestClient {
         this.httpClient = httpClient;
     }
 
+    public HttpClient getHttpClient() {
+        return this.httpClient;
+    }
+
     /**
      * Post data to given url
      *
@@ -428,5 +432,18 @@ public class RestClient {
         } catch (TimeoutException e) {
             logger.warn("RestApi error in sendCommand!", e);
         }
+    }
+
+    /**
+     * Subscribes the provided FCM token to Ring's push notification events.
+     */
+    public void subscribeToPushNotifications(String fcmToken, Tokens tokens) throws AuthenticationException {
+        // Adjust endpoint based on Ring API requirements
+        String payload = "{\"device_token\":\"" + fcmToken + "\"}";
+        Map<String, String> additionalHeaders = new HashMap<>();
+        additionalHeaders.put("Content-Type", "application/json");
+
+        // The specific Ring API endpoint for registering a client for push notifications
+        postRequest(ApiConstants.API_BASE + "/clients", payload, additionalHeaders, tokens);
     }
 }
