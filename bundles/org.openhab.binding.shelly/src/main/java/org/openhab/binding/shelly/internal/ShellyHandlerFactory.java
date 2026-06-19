@@ -67,7 +67,6 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
     private final Shelly1CoapServer coapServer;
     private final ShellyThingTable thingTable;
     private final WebSocketClient webSocketClient;
-    private final NetworkAddressService networkAddressService;
     private final ShellyBindingRuntimeConfig bindingConfig;
 
     /**
@@ -83,7 +82,6 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
             @Reference HttpClientFactory httpClientFactory, @Reference WebSocketFactory webSocketFactory,
             ComponentContext componentContext, Map<String, Object> configProperties) {
         super.activate(componentContext);
-        this.networkAddressService = networkAddressService;
         this.messages = translationProvider;
         this.thingTable = thingTable;
         WebSocketClient client = Shelly2RpcSocket.createWebSocketClient(webSocketFactory, "shelly2api");
