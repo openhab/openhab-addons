@@ -191,7 +191,7 @@ public class EcowittDataParser {
         } catch (NumberFormatException e) {
             return;
         }
-        BatteryStatus batteryStatus = sensorGatewayBinding.getBatteryStatus((byte) parseInt(asString(obj, "batt")));
+        BatteryStatus batteryStatus = sensorGatewayBinding.getHttpBatteryStatus((byte) parseInt(asString(obj, "batt")));
         int signal = parseInt(asString(obj, "signal"));
         result.put(sensorGatewayBinding, new SensorDevice(id, sensorGatewayBinding, batteryStatus, signal));
     }
