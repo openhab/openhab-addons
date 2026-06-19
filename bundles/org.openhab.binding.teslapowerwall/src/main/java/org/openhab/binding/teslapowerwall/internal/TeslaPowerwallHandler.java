@@ -61,7 +61,7 @@ public class TeslaPowerwallHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.warn("This binding is read only");
+        logger.debug("This binding is read only");
     }
 
     @Override
@@ -163,8 +163,8 @@ public class TeslaPowerwallHandler extends BaseThingHandler {
                     properties.put("Battery" + (i + 1) + "-serial", systemStatus.batteryBlocks[i].packageSerialNumber);
                     properties.put("Battery" + (i + 1) + "-fullPackEnergy",
                             String.valueOf(systemStatus.batteryBlocks[i].nominalFullPackEnergy) + "kWh");
-                    updateProperties(properties);
                 }
+                updateProperties(properties);
             }
         }
         if (meterAggregates != null) {

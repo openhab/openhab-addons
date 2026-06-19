@@ -48,42 +48,53 @@ public class TeslascopeWebTargets {
     public String getVehicleList(String apiKey, String personalAccessToken)
             throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
         if (personalAccessToken.isBlank()) {
-            return invoke(BASE_URI + "vehicles?api_key=" + apiKey, "");
+            return invoke(BASE_URI + "vehicles?api_key=" + apiKey, HttpMethod.GET, "");
         } else {
-            return invoke(BASE_URI + "vehicles", personalAccessToken);
+            return invoke(BASE_URI + "vehicles", HttpMethod.GET, personalAccessToken);
         }
     }
 
     public String getDetailedInformation(String publicID, String apiKey, String personalAccessToken)
             throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
         if (personalAccessToken.isBlank()) {
-            return invoke(BASE_VEHICLE_URI + publicID + "/detailed?api_key=" + apiKey, "");
+            return invoke(BASE_VEHICLE_URI + publicID + "/detailed?api_key=" + apiKey, HttpMethod.GET, "");
         } else {
-            return invoke(BASE_VEHICLE_URI + publicID + "/detailed", personalAccessToken);
+            return invoke(BASE_VEHICLE_URI + publicID + "/detailed", HttpMethod.GET, personalAccessToken);
         }
     }
 
     public void sendCommand(String publicID, String apiKey, String personalAccessToken, String command)
             throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
         if (personalAccessToken.isBlank()) {
-            invoke(BASE_VEHICLE_URI + publicID + "/command/" + command + "?api_key=" + apiKey, "");
+            invoke(BASE_VEHICLE_URI + publicID + "/command/" + command + "?api_key=" + apiKey, HttpMethod.POST, "");
         } else {
-            invoke(BASE_VEHICLE_URI + publicID + "/command/" + command, personalAccessToken);
+            invoke(BASE_VEHICLE_URI + publicID + "/command/" + command, HttpMethod.POST, personalAccessToken);
         }
         return;
     }
 
     public void sendCommand(String publicID, String apiKey, String personalAccessToken, String command, String params)
             throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
+        String cleanParams = (params == null) ? "" : params.replaceFirst("^[?&]", "");
+
         if (personalAccessToken.isBlank()) {
-            invoke(BASE_VEHICLE_URI + publicID + "/command/" + command + "?api_key=" + apiKey + params, "");
+            // Legacy API Key method (needs & separator because ? is already used)
+            String url = BASE_VEHICLE_URI + publicID + "/command/" + command + "?api_key=" + apiKey;
+            if (!cleanParams.isEmpty()) {
+                url += "&" + cleanParams;
+            }
+            invoke(url, HttpMethod.POST, "");
         } else {
-            invoke(BASE_VEHICLE_URI + publicID + "/command/" + command + "?" + params, personalAccessToken);
+            // Personal Access Token method (needs ? separator)
+            String url = BASE_VEHICLE_URI + publicID + "/command/" + command;
+            if (!cleanParams.isEmpty()) {
+                url += "?" + cleanParams;
+            }
+            invoke(url, HttpMethod.POST, personalAccessToken);
         }
-        return;
     }
 
-    private String invoke(String uri, String personalAccessToken)
+    private String invoke(String uri, HttpMethod method, String personalAccessToken)
             throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
         logger.debug("Calling url: {}", uri);
         String jsonResponse = "";
@@ -91,36 +102,41 @@ public class TeslascopeWebTargets {
 
         for (int retryCounter = 1; retryCounter <= MAX_RETRIES; retryCounter++) {
             try {
-                Request request = httpClient.newRequest(uri).method(HttpMethod.GET).timeout(TIMEOUT_MS,
-                        TimeUnit.MILLISECONDS);
+                Request request = httpClient.newRequest(uri).method(method).timeout(TIMEOUT_MS, TimeUnit.MILLISECONDS);
                 if (!personalAccessToken.isBlank()) {
                     request.header(HttpHeader.AUTHORIZATION.asString(), "Bearer " + personalAccessToken);
                 }
                 if (logger.isTraceEnabled()) {
-                    logger.trace("{} request for {}", HttpMethod.GET, uri);
+                    logger.trace("{} request for {}", method, uri);
                 }
                 ContentResponse response = request.send();
                 status = response.getStatus();
+
                 if (HttpStatus.isSuccess(status)) {
-                    jsonResponse = response.getContentAsString();
-                    logger.trace("JSON response: '{}'", jsonResponse);
+                    return response.getContentAsString();
                 } else {
                     switch (status) {
-                        case HttpStatus.UNAUTHORIZED_401:
-                            throw new TeslascopeAuthenticationException("Unauthorized");
-                        case HttpStatus.INTERNAL_SERVER_ERROR_500:
-                        case HttpStatus.BAD_GATEWAY_502:
+                        case HttpStatus.UNAUTHORIZED_401 -> throw new TeslascopeAuthenticationException("Unauthorized");
+
+                        case HttpStatus.INTERNAL_SERVER_ERROR_500, HttpStatus.BAD_GATEWAY_502,
+                                HttpStatus.SERVICE_UNAVAILABLE_503, HttpStatus.GATEWAY_TIMEOUT_504 -> {
+
+                            if (retryCounter == MAX_RETRIES) {
+                                throw new TeslascopeCommunicationException("Teslascope API unavailable after "
+                                        + MAX_RETRIES + " attempts (HTTP " + status + ")");
+                            }
                             logger.debug("Teslascope returned {}, retrying", status);
                             Thread.sleep(2000);
-                            break;
-                        default:
-                            throw new TeslascopeCommunicationException(
-                                    String.format("Teslascope returned error <%d> while invoking %s", status, uri));
+                        }
+
+                        default -> throw new TeslascopeCommunicationException(
+                                String.format("Teslascope returned error <%d> while invoking %s", status, uri));
                     }
                 }
+
             } catch (InterruptedException ex) {
                 Thread.currentThread().interrupt();
-                throw new TeslascopeCommunicationException(ex.getLocalizedMessage(), ex);
+                throw new TeslascopeCommunicationException("Thread was interrupted during API call.", ex);
             } catch (TimeoutException | ExecutionException ex) {
                 throw new TeslascopeCommunicationException(ex.getLocalizedMessage(), ex);
             }

@@ -27,9 +27,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -103,6 +105,8 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
     private @Nullable ScheduledFuture<?> reinitializationFuture1;
     private @Nullable ScheduledFuture<?> reinitializationFuture2;
     private @Nullable ScheduledFuture<?> reinitializationFuture3;
+    private final AtomicReference<@Nullable Future<?>> initializationFuture = new AtomicReference<>();
+    private volatile long initializationGeneration;
     private boolean ignoreEventSourceClosedEvent;
     private @Nullable String programOptionsDelayedUpdate;
 
@@ -135,6 +139,8 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
 
     @Override
     public void initialize() {
+        // Mark a new initialization generation; any previously scheduled or running init task becomes stale.
+        final long generation = ++initializationGeneration;
         if (getBridgeHandler().isEmpty()) {
             updateStatus(OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
             accessible.set(false);
@@ -143,23 +149,44 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
             accessible.set(false);
         } else {
             updateStatus(UNKNOWN);
-            scheduler.submit(() -> {
+            initializationFuture.set(scheduler.submit(() -> {
+                if (isStaleInitialization(generation)) {
+                    return;
+                }
                 refreshThingStatus(); // set ONLINE / OFFLINE
+                if (isStaleInitialization(generation)) {
+                    return;
+                }
                 updateSelectedProgramStateDescription();
+                if (isStaleInitialization(generation)) {
+                    return;
+                }
                 updateChannels();
+                if (isStaleInitialization(generation)) {
+                    return;
+                }
                 registerEventListener();
+                if (isStaleInitialization(generation)) {
+                    return;
+                }
                 scheduleOfflineMonitor1();
                 scheduleOfflineMonitor2();
-            });
+            }));
         }
+    }
+
+    /**
+     * Returns {@code true} if the init task that captured {@code generation} has been superseded by a later
+     * {@link #initialize()} or stopped by {@link #teardown(boolean)}. Used to skip work and rescheduling after
+     * the handler was disposed or reinitialized.
+     */
+    private boolean isStaleInitialization(long generation) {
+        return generation != initializationGeneration;
     }
 
     @Override
     public void dispose() {
-        stopRetryRegistering();
-        stopOfflineMonitor1();
-        stopOfflineMonitor2();
-        unregisterEventListener(true);
+        teardown(true);
     }
 
     @Override
@@ -170,11 +197,33 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
 
     private void reinitialize() {
         logger.debug("Reinitialize thing handler ({}). haId={}", getThingLabel(), getThingHaId());
+        teardown(false);
+        initialize();
+    }
+
+    /**
+     * Stop all asynchronous work performed by this handler.
+     *
+     * @param immediate if {@code true} the event listener is unregistered immediately (used during
+     *            {@link #dispose()}); if {@code false} a graceful unregistration is performed (used
+     *            during {@link #reinitialize()}).
+     */
+    private void teardown(boolean immediate) {
+        // Invalidate the current init generation so a running/queued init task stops at its next checkpoint.
+        initializationGeneration++;
+        cancelInitialization();
         stopRetryRegistering();
         stopOfflineMonitor1();
         stopOfflineMonitor2();
-        unregisterEventListener();
-        initialize();
+        unregisterEventListener(immediate);
+    }
+
+    private void cancelInitialization() {
+        Future<?> future = initializationFuture.getAndSet(null);
+        if (future != null) {
+            // graceful cancel: do not interrupt a running task, only prevent a queued one from starting
+            future.cancel(false);
+        }
     }
 
     /**

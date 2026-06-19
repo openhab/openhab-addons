@@ -138,6 +138,10 @@ public enum SensorGatewayBinding {
         return sensor.getBatteryStatus(data);
     }
 
+    public BatteryStatus getHttpBatteryStatus(byte data) {
+        return sensor.getHttpBatteryStatus(data);
+    }
+
     public Sensor getSensor() {
         return sensor;
     }

@@ -131,6 +131,19 @@ class EcowittDataParserTest {
     }
 
     @Test
+    void testVoltageSensorBatteryReportedAsLevel() {
+        // unlike the binary protocol, where the WH51 battery field is a raw voltage (val * 0.1 V), the Ecowitt HTTP
+        // API reports it already as a 0-5 level (5 = full). It must therefore not be misread as 0.5 V and flagged low.
+        Map<SensorGatewayBinding, SensorDevice> sensors = parser.parseSensors(List.of("[{\"img\":\"wh51\","
+                + "\"type\":\"14\",\"name\":\"Soil moisture CH1\",\"id\":\"FBF08\",\"batt\":\"5\",\"rssi\":\"-85\","
+                + "\"signal\":\"4\",\"idst\":\"1\"}]"), false);
+        Assertions.assertThat(sensors.values())
+                .extracting(device -> device.getSensorGatewayBinding().getSensor().name(),
+                        device -> device.getBatteryStatus().isLow(), device -> device.getBatteryStatus().getLevel())
+                .containsExactly(new Tuple("WH51", false, 5));
+    }
+
+    @Test
     void testSystemInfo() {
         @Nullable
         SystemInfo systemInfo = parser.parseSystemInfo(resource("device_info.json"));

@@ -1004,6 +1004,7 @@ public class Shelly1ApiJsonDTO {
         public static class ShellySensorBat {
             public Double value; // estimated remaining battery capacity in %
             public Double voltage; // battery voltage
+            public @Nullable Boolean batteryLow; // device-reported low-battery flag (BLU ZB devices)
         }
 
         // Door/Window sensor

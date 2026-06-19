@@ -12,10 +12,18 @@
  */
 package org.openhab.binding.shelly.internal.api2;
 
+import java.lang.reflect.Type;
+
+import org.eclipse.jdt.annotation.Nullable;
+
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * {@link ShellyBluJsonDTO} includes contans and structures used for BluApi's JSON mapping and processing.
+ * {@link ShellyBluJsonDTO} includes constants and structures used for BluApi's JSON mapping and processing.
  *
  * @author Markus Michels - Initial contribution
  */
@@ -42,6 +50,28 @@ public class ShellyBluJsonDTO {
     // "data":{"encryption":false,"BTHome_version":2,"pid":38,"Battery":100,"Illuminance":0,"Window":1,"Rotation":0,"addr":"bc:02:6e:c3:a6:c7","rssi":-62},
     // "ts":1682877414.25}
 
+    // Handles BTHome fields that a single-button device sends as a scalar but a multi-button device sends as an array.
+    // Without this adapter, a plain Gson instance would throw JsonSyntaxException on scalar payloads for T[] fields.
+    static class IntegerArrayAdapter implements JsonDeserializer<Integer[]> {
+        @Override
+        public Integer[] deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext ctx) {
+            if (json.isJsonArray()) {
+                return ctx.deserialize(json, Integer[].class);
+            }
+            return new Integer[] { json.getAsInt() };
+        }
+    }
+
+    static class DoubleArrayAdapter implements JsonDeserializer<Double[]> {
+        @Override
+        public Double[] deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext ctx) {
+            if (json.isJsonArray()) {
+                return ctx.deserialize(json, Double[].class);
+            }
+            return new Double[] { json.getAsDouble() };
+        }
+    }
+
     public static class Shelly2NotifyBluEventData {
         public static class Shelly2NotifyBluEventDimmer {
             public Integer direction;
@@ -57,6 +87,7 @@ public class ShellyBluJsonDTO {
         public Integer pid;
         @SerializedName("Battery")
         public Integer battery;
+        @JsonAdapter(IntegerArrayAdapter.class)
         @SerializedName("Button")
         public Integer[] buttons;
         @SerializedName("Illuminance")
@@ -65,6 +96,7 @@ public class ShellyBluJsonDTO {
         public Integer windowState;
         @SerializedName("Motion")
         public Integer motionState;
+        @JsonAdapter(DoubleArrayAdapter.class)
         @SerializedName("Temperature")
         public Double[] temperatures;
         @SerializedName("Humidity")
@@ -75,12 +107,17 @@ public class ShellyBluJsonDTO {
         public Double distance;
         @SerializedName("Channel") // BLU Remote
         public Integer channel;
+        @JsonAdapter(DoubleArrayAdapter.class)
         @SerializedName("Rotation") // BLU Remote
         public Double[] rotations;
         @SerializedName("Dimmer") // BLU Remote
         public Shelly2NotifyBluEventDimmer dimmer;
         @SerializedName("Firmware32")
         public Long firmware32;
+        @SerializedName("LightLevel") // BLU ZB: 0=dark, 1=twilight, 2=bright
+        public @Nullable Integer lightLevel;
+        @SerializedName("BatteryLow") // BLU H&T Display ZB: 1=battery below 15%
+        public @Nullable Integer batteryLow;
 
         public Integer rssi;
         @SerializedName("tx_power")

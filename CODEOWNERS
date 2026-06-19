@@ -168,6 +168,7 @@
 /bundles/org.openhab.binding.herzborg/ @Sonic-Amiga
 /bundles/org.openhab.binding.homeassistant/ @ccutrer
 /bundles/org.openhab.binding.homeconnect/ @bruestel
+/bundles/org.openhab.binding.homeconnectdirect/ @bruestel
 /bundles/org.openhab.binding.homekit/ @andrewfg
 /bundles/org.openhab.binding.homie/ @ccutrer
 /bundles/org.openhab.binding.homematic/ @FStolte @gerrieg @mdicke2s
@@ -315,6 +316,7 @@
 /bundles/org.openhab.binding.pihole/ @magx2
 /bundles/org.openhab.binding.pilight/ @stefanroellin @niklasdoerfler
 /bundles/org.openhab.binding.pioneeravr/ @Stratehm
+/bundles/org.openhab.binding.pirateweather/ @computergeek1507
 /bundles/org.openhab.binding.pixometer/ @Confectrician
 /bundles/org.openhab.binding.pjlinkdevice/ @nils
 /bundles/org.openhab.binding.playstation/ @FluBBaOfWard
@@ -420,10 +422,8 @@
 /bundles/org.openhab.binding.tradfri/ @cweitkamp @kaikreuzer
 /bundles/org.openhab.binding.tuya/ @J-N-K
 /bundles/org.openhab.binding.twilio/ @digitaldan
-/bundles/org.openhab.binding.unifi/ @mgbowman @Hilbrand
-/bundles/org.openhab.binding.unifiaccess/ @digitaldan
+/bundles/org.openhab.binding.unifi/ @digitaldan @mgbowman @Hilbrand
 /bundles/org.openhab.binding.unifiedremote/ @GiviMAD
-/bundles/org.openhab.binding.unifiprotect/ @digitaldan
 /bundles/org.openhab.binding.upb/ @marcusb
 /bundles/org.openhab.binding.upnpcontrol/ @mherwege
 /bundles/org.openhab.binding.urtsi/ @openhab/add-ons-maintainers

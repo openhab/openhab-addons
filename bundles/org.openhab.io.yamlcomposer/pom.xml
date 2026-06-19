@@ -15,7 +15,7 @@
   <name>openHAB Add-ons :: Bundles :: IO :: YAML Composer</name>
 
   <properties>
-    <bnd.importpackage>com.sun.jdi;resolution:=optional,com.sun.jdi.connect;resolution:=optional,com.sun.jdi.event;resolution:=optional,com.sun.jdi.request;resolution:=optional,com.sun.tools.attach;resolution:=optional,jdk.internal.module;resolution:=optional,sun.misc;resolution:=optional,*</bnd.importpackage>
+    <bnd.importpackage>com.sun.jdi;resolution:=optional,com.sun.jdi.connect;resolution:=optional,com.sun.jdi.event;resolution:=optional,com.sun.jdi.request;resolution:=optional,com.sun.tools.attach;resolution:=optional,jdk.internal.module;resolution:=optional,org.jspecify.annotations;resolution:=optional,sun.misc;resolution:=optional,*</bnd.importpackage>
   </properties>
 
   <dependencies>
@@ -57,7 +57,7 @@
     <dependency>
       <groupId>org.jsoup</groupId>
       <artifactId>jsoup</artifactId>
-      <version>1.15.3</version>
+      <version>1.22.2</version>
       <scope>compile</scope>
     </dependency>
     <dependency>

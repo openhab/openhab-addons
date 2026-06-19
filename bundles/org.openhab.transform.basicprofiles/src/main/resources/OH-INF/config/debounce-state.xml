@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="profile:basic-profiles:debounce-state">
+		<parameter name="onDelay" type="integer" min="0" step="1" unit="ms">
+			<label>On Delay</label>
+			<description>Delay before an ON (Switch) / OPEN (Contact) value is forwarded to the Item. 0 forwards immediately.</description>
+			<default>0</default>
+		</parameter>
+		<parameter name="offDelay" type="integer" min="0" step="1" unit="ms">
+			<label>Off Delay</label>
+			<description>Delay before an OFF (Switch) / CLOSED (Contact) value is forwarded to the Item. 0 forwards immediately.</description>
+			<default>0</default>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

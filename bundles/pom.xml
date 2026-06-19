@@ -205,6 +205,7 @@
     <module>org.openhab.binding.herzborg</module>
     <module>org.openhab.binding.homeassistant</module>
     <module>org.openhab.binding.homeconnect</module>
+    <module>org.openhab.binding.homeconnectdirect</module>
     <module>org.openhab.binding.homekit</module>
     <module>org.openhab.binding.homie</module>
     <module>org.openhab.binding.homematic</module>
@@ -352,6 +353,7 @@
     <module>org.openhab.binding.pihole</module>
     <module>org.openhab.binding.pilight</module>
     <module>org.openhab.binding.pioneeravr</module>
+    <module>org.openhab.binding.pirateweather</module>
     <module>org.openhab.binding.pixometer</module>
     <module>org.openhab.binding.pjlinkdevice</module>
     <module>org.openhab.binding.playstation</module>
@@ -458,9 +460,7 @@
     <module>org.openhab.binding.tuya</module>
     <module>org.openhab.binding.twilio</module>
     <module>org.openhab.binding.unifi</module>
-    <module>org.openhab.binding.unifiaccess</module>
     <module>org.openhab.binding.unifiedremote</module>
-    <module>org.openhab.binding.unifiprotect</module>
     <module>org.openhab.binding.upnpcontrol</module>
     <module>org.openhab.binding.upb</module>
     <module>org.openhab.binding.urtsi</module>
@@ -798,7 +798,7 @@
       <plugin>
         <groupId>com.github.eirslett</groupId>
         <artifactId>frontend-maven-plugin</artifactId>
-        <version>2.0.0</version>
+        <version>2.0.1</version>
 
         <configuration>
           <!-- Central toolchain for markdownlint (Node 24) -->

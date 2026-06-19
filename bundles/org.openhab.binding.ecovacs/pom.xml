@@ -14,7 +14,7 @@
 
   <name>openHAB Add-ons :: Bundles :: Ecovacs Binding</name>
   <properties>
-    <smack.version>4.5.0-beta6</smack.version>
+    <smack.version>4.5.0-rc1</smack.version>
   </properties>
 
   <dependencyManagement>
@@ -65,6 +65,18 @@
     <dependency>
       <groupId>org.igniterealtime.smack</groupId>
       <artifactId>smack-experimental</artifactId>
+      <version>${smack.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.igniterealtime.smack</groupId>
+      <artifactId>smack-xmlparser</artifactId>
+      <version>${smack.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.igniterealtime.smack</groupId>
+      <artifactId>smack-xmlparser-xpp3</artifactId>
       <version>${smack.version}</version>
       <scope>provided</scope>
     </dependency>
