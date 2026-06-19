@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="gemini"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="account" extensible="chat">
+		<label>Gemini Account</label>
+		<description>Integrates the Google Gemini API with openHAB.</description>
+
+		<channels>
+			<channel id="chat" typeId="chat"/>
+		</channels>
+
+		<config-description>
+			<parameter-group name="authentication">
+				<context>network-security</context>
+				<label>Authentication</label>
+			</parameter-group>
+			<parameter-group name="hli">
+				<label>Model Configuration</label>
+				<description>Configures the used model and its behavior. Applies to the Human Language Interpreter and as a default
+					for all channels and Thing actions.</description>
+			</parameter-group>
+			<parameter-group name="connection">
+				<context>network</context>
+				<label>Connection</label>
+			</parameter-group>
+
+			<!-- Authentication Settings -->
+			<parameter name="apiKey" type="text" required="true" groupName="authentication">
+				<context>password</context>
+				<label>API Key</label>
+				<description>
+					<![CDATA[
+					The Google Gemini API key (Create & Manage API keys in <a href="https://aistudio.google.com/api-keys">Google AI Studio</a>).
+					]]>
+				</description>
+			</parameter>
+			<!-- HLI Settings -->
+			<parameter name="model" type="text" groupName="hli">
+				<label>Model</label>
+				<description>
+					<![CDATA[
+					The Google Gemini model to use (<a href="https://ai.google.dev/gemini-api/docs/models">Models</a>, <a href="https://ai.google.dev/gemini-api/docs/pricing">Pricing</a>).
+					]]>
+				</description>
+				<default>gemini-2.5-flash</default>
+			</parameter>
+			<parameter name="temperature" type="decimal" groupName="hli" min="0.0" max="1.0">
+				<label>Temperature</label>
+				<description>Controls randomness. Higher values mean more random responses.</description>
+				<default>1.0</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="topP" type="decimal" groupName="hli" min="0.0" max="1.0">
+				<label>Top-P</label>
+				<description>Controls the cumulative probability threshold for token selection.</description>
+				<default>1.0</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="maxOutputTokens" type="integer" groupName="hli" min="1">
+				<label>Max Output Tokens</label>
+				<description>The maximum number of tokens to generate in the response.</description>
+				<default>2048</default>
+				<advanced>true</advanced>
+			</parameter>
+			<!-- Connection Settings -->
+			<parameter name="requestTimeout" type="integer" min="1" unit="s" groupName="connection">
+				<label>Request Timeout</label>
+				<description>The timeout in seconds for API requests.</description>
+				<default>30</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="chat">
+		<item-type>String</item-type>
+		<label>Chat</label>
+		<description>Send a prompt to a model and receive a response.</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+		<config-description>
+			<parameter name="model" type="text">
+				<label>Model</label>
+				<description>The Gemini model to use.</description>
+			</parameter>
+			<parameter name="temperature" type="decimal" min="0.0" max="2.0">
+				<label>Temperature</label>
+				<description>Controls randomness. Higher values mean more random responses.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="topP" type="decimal" min="0.0" max="1.0">
+				<label>Top-P</label>
+				<description>Controls the cumulative probability threshold for token selection.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="maxOutputTokens" type="integer" min="1">
+				<label>Max Output Tokens</label>
+				<description>The maximum number of tokens to generate in the response.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="systemMessage" type="text">
+				<label>System Message</label>
+				<description>The system instruction provided to the model.</description>
+				<default>You are a helpful assistant.</default>
+				<advanced>false</advanced>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+</thing:thing-descriptions>
