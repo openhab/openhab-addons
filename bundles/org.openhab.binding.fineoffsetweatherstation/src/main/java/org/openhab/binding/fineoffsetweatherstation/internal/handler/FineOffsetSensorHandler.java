@@ -15,12 +15,7 @@ package org.openhab.binding.fineoffsetweatherstation.internal.handler;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -44,7 +39,6 @@ import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,19 +52,9 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class FineOffsetSensorHandler extends BaseThingHandler {
 
-    /**
-     * Number of consecutive live data dispatches a measured value may be missing before its (dynamically created)
-     * channel is removed. Mirrors {@code FineOffsetGatewayHandler.MISSING_MEASURAND_REMOVAL_THRESHOLD} so that
-     * transient gaps do not cause channels to flip-flop.
-     */
-    private static final int MISSING_MEASURAND_REMOVAL_THRESHOLD = 10;
-
     private final Logger logger = LoggerFactory.getLogger(FineOffsetSensorHandler.class);
     private final ChannelTypeRegistry channelTypeRegistry;
-
-    /** Channel ids this handler created from measured values - only these are subject to the debounce/removal. */
-    private final Set<String> managedChannelIds = new HashSet<>();
-    private final Map<String, Integer> missingMeasurandCounts = new HashMap<>();
+    private final DynamicChannelReconciler reconciler = new DynamicChannelReconciler(true);
 
     private boolean disposed;
 
@@ -143,56 +127,23 @@ public class FineOffsetSensorHandler extends BaseThingHandler {
     /**
      * Mirrors the sensor's measured values onto dynamic channels: creates channels that do not exist yet, updates the
      * state of existing ones, and removes a managed channel once its value has been absent for
-     * {@link #MISSING_MEASURAND_REMOVAL_THRESHOLD} consecutive dispatches. Static signal/battery channels are never
-     * affected. Called every poll by the gateway, with an empty collection when this sensor reported nothing.
+     * {@link DynamicChannelReconciler#MISSING_VALUE_REMOVAL_THRESHOLD} consecutive dispatches. Static signal/battery
+     * channels are never affected. Called every poll by the gateway, with an empty collection when this sensor
+     * reported nothing.
      */
     public void updateMeasuredValues(Collection<MeasuredValue> values) {
         if (disposed) {
             return;
         }
-        Set<String> reportedChannelIds = new HashSet<>();
-        List<Channel> newChannels = new ArrayList<>();
-        Map<ChannelUID, State> newChannelStates = new LinkedHashMap<>();
-        for (MeasuredValue value : values) {
-            String channelId = value.getChannelPrefix();
-            reportedChannelIds.add(channelId);
-            @Nullable
-            Channel channel = thing.getChannel(channelId);
-            if (channel == null) {
-                channel = createChannel(value);
-                if (channel != null) {
-                    newChannels.add(channel);
-                    managedChannelIds.add(channelId);
-                    newChannelStates.put(channel.getUID(), value.getState());
-                }
-            } else {
-                updateState(channel.getUID(), value.getState());
-            }
-        }
-
-        List<Channel> staleChannels = new ArrayList<>();
-        for (String channelId : new HashSet<>(managedChannelIds)) {
-            if (reportedChannelIds.contains(channelId)) {
-                missingMeasurandCounts.remove(channelId);
-            } else if (missingMeasurandCounts.merge(channelId, 1,
-                    Integer::sum) >= MISSING_MEASURAND_REMOVAL_THRESHOLD) {
-                @Nullable
-                Channel channel = thing.getChannel(channelId);
-                if (channel != null) {
-                    staleChannels.add(channel);
-                }
-                missingMeasurandCounts.remove(channelId);
-                managedChannelIds.remove(channelId);
-            }
-        }
-
-        if (!newChannels.isEmpty() || !staleChannels.isEmpty()) {
+        DynamicChannelReconciler.Plan plan = reconciler.reconcile(values, thing.getChannels(),
+                MeasuredValue::getChannelPrefix, this::createChannel);
+        if (plan.hasChannelChanges()) {
             List<Channel> channels = new ArrayList<>(thing.getChannels());
-            channels.addAll(newChannels);
-            channels.removeAll(staleChannels);
+            channels.addAll(plan.channelsToAdd);
+            channels.removeAll(plan.channelsToRemove);
             updateThing(editThing().withChannels(channels).build());
         }
-        newChannelStates.forEach(this::updateState);
+        plan.statesToPost.forEach(this::updateState);
     }
 
     private @Nullable Channel createChannel(MeasuredValue value) {

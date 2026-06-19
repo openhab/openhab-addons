@@ -19,12 +19,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -57,7 +54,6 @@ import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
@@ -75,13 +71,6 @@ public class FineOffsetGatewayHandler extends BaseBridgeHandler {
 
     private static final String PROPERTY_FREQUENCY = "frequency";
 
-    /**
-     * Number of consecutive live data responses a measurand may be missing from before its channel is removed. This
-     * debounces dynamically created channels so that a measurand that is only intermittently reported (or a delay in
-     * the gateway adjusting its live data after a sensor change) does not cause channels to flip-flop.
-     */
-    private static final int MISSING_MEASURAND_REMOVAL_THRESHOLD = 10;
-
     private final Logger logger = LoggerFactory.getLogger(FineOffsetGatewayHandler.class);
     private final Bundle bundle;
 
@@ -95,7 +84,7 @@ public class FineOffsetGatewayHandler extends BaseBridgeHandler {
     private final ThingUID bridgeUID;
 
     private @Nullable Map<SensorGatewayBinding, SensorDevice> sensorDeviceMap;
-    private final Map<String, Integer> missingMeasurandCounts = new HashMap<>();
+    private final DynamicChannelReconciler reconciler = new DynamicChannelReconciler(false);
     private @Nullable ScheduledFuture<?> pollingJob;
     private @Nullable ScheduledFuture<?> discoverJob;
     private boolean disposed;
@@ -122,7 +111,6 @@ public class FineOffsetGatewayHandler extends BaseBridgeHandler {
         gatewayQueryService = config.protocol.getGatewayQueryService(config, this::updateStatus);
 
         updateStatus(ThingStatus.UNKNOWN);
-        missingMeasurandCounts.clear();
         fetchAndUpdateSensors();
         disposed = false;
         updateBridgeInfo();
@@ -170,48 +158,15 @@ public class FineOffsetGatewayHandler extends BaseBridgeHandler {
             return;
         }
 
-        Set<String> reportedChannelIds = new HashSet<>();
-        List<Channel> newChannels = new ArrayList<>();
-        Map<ChannelUID, State> newChannelStates = new LinkedHashMap<>();
-        for (MeasuredValue measuredValue : data) {
-            String channelId = measuredValue.getChannelId();
-            reportedChannelIds.add(channelId);
-            @Nullable
-            Channel channel = thing.getChannel(channelId);
-            if (channel == null) {
-                channel = createChannel(measuredValue);
-                if (channel != null) {
-                    newChannels.add(channel);
-                    newChannelStates.put(channel.getUID(), measuredValue.getState());
-                }
-            } else {
-                State state = measuredValue.getState();
-                updateState(channel.getUID(), state);
-            }
-        }
-
-        // Only remove a channel once its measurand has been missing from a number of consecutive live data
-        // responses. This debounces transient gaps (and delays in the gateway adjusting its live data) so that
-        // channels do not flip-flop, while channels of permanently removed sensors are eventually dropped.
-        List<Channel> staleChannels = new ArrayList<>();
-        for (Channel channel : thing.getChannels()) {
-            String channelId = channel.getUID().getId();
-            if (reportedChannelIds.contains(channelId)) {
-                missingMeasurandCounts.remove(channelId);
-            } else if (missingMeasurandCounts.merge(channelId, 1,
-                    Integer::sum) >= MISSING_MEASURAND_REMOVAL_THRESHOLD) {
-                staleChannels.add(channel);
-                missingMeasurandCounts.remove(channelId);
-            }
-        }
-
-        if (!newChannels.isEmpty() || !staleChannels.isEmpty()) {
+        DynamicChannelReconciler.Plan plan = reconciler.reconcile(data, thing.getChannels(),
+                MeasuredValue::getChannelId, this::createChannel);
+        if (plan.hasChannelChanges()) {
             List<Channel> channels = new ArrayList<>(thing.getChannels());
-            channels.addAll(newChannels);
-            channels.removeAll(staleChannels);
+            channels.addAll(plan.channelsToAdd);
+            channels.removeAll(plan.channelsToRemove);
             updateBridgeThing(bridgeBuilder -> bridgeBuilder.withChannels(channels));
         }
-        newChannelStates.forEach(this::updateState);
+        plan.statesToPost.forEach(this::updateState);
     }
 
     private @Nullable Channel createChannel(MeasuredValue measuredValue) {
