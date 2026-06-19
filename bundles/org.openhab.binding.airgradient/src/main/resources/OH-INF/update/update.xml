@@ -9,13 +9,137 @@
 				<type>airgradient:wifi</type>
 			</update-channel>
 		</instruction-set>
+		<instruction-set targetVersion="2">
+			<add-channel id="pm01-standard">
+				<type>airgradient:pm1</type>
+				<label>PM1 Standard</label>
+			</add-channel>
+			<add-channel id="pm02-standard">
+				<type>airgradient:pm2</type>
+				<label>PM2 Standard</label>
+			</add-channel>
+			<add-channel id="pm10-standard">
+				<type>airgradient:pm10</type>
+				<label>PM10 Standard</label>
+			</add-channel>
+			<add-channel id="pm005-count">
+				<type>airgradient:particle-count</type>
+				<label>Particle Count >= 0.5um</label>
+			</add-channel>
+			<add-channel id="pm01-count">
+				<type>airgradient:particle-count</type>
+				<label>Particle Count >= 1um</label>
+			</add-channel>
+			<add-channel id="pm02-count">
+				<type>airgradient:particle-count</type>
+				<label>Particle Count >= 2.5um</label>
+			</add-channel>
+			<add-channel id="pm50-count">
+				<type>airgradient:particle-count</type>
+				<label>Particle Count >= 5um</label>
+			</add-channel>
+			<add-channel id="pm10-count">
+				<type>airgradient:particle-count</type>
+				<label>Particle Count >= 10um</label>
+			</add-channel>
+			<add-channel id="pm02-compensated">
+				<type>airgradient:pm2</type>
+				<label>PM2 Compensated</label>
+			</add-channel>
+			<add-channel id="atmp-compensated">
+				<type>system.outdoor-temperature</type>
+				<label>Ambient Temperature Compensated</label>
+			</add-channel>
+			<add-channel id="rhum-compensated">
+				<type>system.atmospheric-humidity</type>
+				<label>Relative Humidity Compensated</label>
+			</add-channel>
+			<add-channel id="tvoc-index">
+				<type>airgradient:tvoc</type>
+				<label>TVOC Index</label>
+			</add-channel>
+			<add-channel id="tvoc-raw">
+				<type>airgradient:tvoc</type>
+				<label>TVOC Raw</label>
+			</add-channel>
+			<add-channel id="nox-index">
+				<type>airgradient:nox</type>
+				<label>NOx Index</label>
+			</add-channel>
+			<add-channel id="nox-raw">
+				<type>airgradient:nox</type>
+				<label>NOx Raw</label>
+			</add-channel>
+		</instruction-set>
 	</thing-type>
 
-	<thing-type uid="airgradient:airgradient-location">
+	<thing-type uid="airgradient:location">
 		<instruction-set targetVersion="1">
 			<update-channel id="wifi">
 				<type>airgradient:wifi</type>
 			</update-channel>
+		</instruction-set>
+		<instruction-set targetVersion="2">
+			<add-channel id="pm01-standard">
+				<type>airgradient:pm1</type>
+				<label>PM1 Standard</label>
+			</add-channel>
+			<add-channel id="pm02-standard">
+				<type>airgradient:pm2</type>
+				<label>PM2 Standard</label>
+			</add-channel>
+			<add-channel id="pm10-standard">
+				<type>airgradient:pm10</type>
+				<label>PM10 Standard</label>
+			</add-channel>
+			<add-channel id="pm005-count">
+				<type>airgradient:particle-count</type>
+				<label>Particle Count >= 0.5um</label>
+			</add-channel>
+			<add-channel id="pm01-count">
+				<type>airgradient:particle-count</type>
+				<label>Particle Count >= 1um</label>
+			</add-channel>
+			<add-channel id="pm02-count">
+				<type>airgradient:particle-count</type>
+				<label>Particle Count >= 2.5um</label>
+			</add-channel>
+			<add-channel id="pm50-count">
+				<type>airgradient:particle-count</type>
+				<label>Particle Count >= 5um</label>
+			</add-channel>
+			<add-channel id="pm10-count">
+				<type>airgradient:particle-count</type>
+				<label>Particle Count >= 10um</label>
+			</add-channel>
+			<add-channel id="pm02-compensated">
+				<type>airgradient:pm2</type>
+				<label>PM2 Compensated</label>
+			</add-channel>
+			<add-channel id="atmp-compensated">
+				<type>system.outdoor-temperature</type>
+				<label>Ambient Temperature Compensated</label>
+			</add-channel>
+			<add-channel id="rhum-compensated">
+				<type>system.atmospheric-humidity</type>
+				<label>Relative Humidity Compensated</label>
+			</add-channel>
+			<add-channel id="tvoc-index">
+				<type>airgradient:tvoc</type>
+				<label>TVOC Index</label>
+			</add-channel>
+			<add-channel id="tvoc-raw">
+				<type>airgradient:tvoc</type>
+				<label>TVOC Raw</label>
+			</add-channel>
+			<add-channel id="nox-index">
+				<type>airgradient:nox</type>
+				<label>NOx Index</label>
+			</add-channel>
+			<add-channel id="nox-raw">
+				<type>airgradient:nox</type>
+				<label>NOx Raw</label>
+			</add-channel>
 		</instruction-set>
 	</thing-type>
 
