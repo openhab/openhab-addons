@@ -43,8 +43,6 @@ class SyslogParserTest {
         parser = new SyslogParser(LoggerFactory.getLogger(SyslogParserTest.class));
     }
 
-    // ---- Standard syslog format ----
-
     @Test
     void testParseStandardDhcpAck() {
         String line = "Feb 21 16:21:46 gateway daemon.info dnsmasq-dhcp[25563]: DHCPACK(br0) 192.168.1.100 aa:bb:cc:dd:ee:ff MyPhone";

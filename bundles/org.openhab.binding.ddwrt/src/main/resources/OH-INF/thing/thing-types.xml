@@ -4,8 +4,6 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- ==================== Bridge ==================== -->
-
 	<bridge-type id="network">
 
 		<label>DD-WRT Network</label>
@@ -92,8 +90,6 @@
 
 	</bridge-type>
 
-	<!-- ==================== Device ==================== -->
-
 	<thing-type id="device">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="network"/>
@@ -124,12 +120,6 @@
 			<channel id="wireless-event" typeId="wireless-event"/>
 		</channels>
 
-		<properties>
-			<property name="macAddress">unknown</property>
-			<property name="modelId">unknown</property>
-			<property name="chipset">unknown</property>
-		</properties>
-
 		<representation-property>hostname</representation-property>
 
 		<config-description>
@@ -144,7 +134,7 @@
 			</parameter-group>
 
 			<parameter name="hostname" type="text" required="true" groupName="connection">
-				<context>network-addresses</context>
+				<context>network-address</context>
 				<label>Hostname</label>
 				<description>Hostname or IP address of the device</description>
 			</parameter>
@@ -304,10 +294,6 @@
 		</config-description>
 
 	</thing-type>
-
-	<!-- ==================== Channel Types ==================== -->
-
-	<!-- Common -->
 
 	<channel-type id="online">
 		<item-type>Switch</item-type>
@@ -491,6 +477,7 @@
 		<category>Switch</category>
 		<tags>
 			<tag>Switch</tag>
+			<tag>Enabled</tag>
 		</tags>
 	</channel-type>
 
@@ -508,7 +495,7 @@
 		<description>Wireless channel number</description>
 		<category>Number</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -590,7 +577,7 @@
 	</channel-type>
 
 	<channel-type id="signal">
-		<item-type>Number</item-type>
+		<item-type unitHint="dBm">Number:Power</item-type>
 		<label>Signal</label>
 		<description>Signal strength in dBm</description>
 		<category>QualityOfService</category>
@@ -614,7 +601,7 @@
 	</channel-type>
 
 	<channel-type id="rx-rate">
-		<item-type>Number</item-type>
+		<item-type>Number:DataTransferRate</item-type>
 		<label>RX Rate</label>
 		<description>Receive rate in Mbit/s</description>
 		<tags>
@@ -625,7 +612,7 @@
 	</channel-type>
 
 	<channel-type id="tx-rate">
-		<item-type>Number</item-type>
+		<item-type>Number:DataTransferRate</item-type>
 		<label>TX Rate</label>
 		<description>Transmit rate in Mbit/s</description>
 		<tags>
