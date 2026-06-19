@@ -22,6 +22,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -69,6 +70,9 @@ public class PythonScriptEngineConfiguration {
 
     private static final int DEBUGGER_PORT_DEFAULT = 9230;
 
+    /** The default lock acquisition timeout in seconds */
+    private static final long LOCK_ACQUISITION_TIMEOUT_DEFAULT = 5L;
+
     // The variable names must match the configuration keys in config.xml
     public static class PythonScriptingConfiguration {
         public int injectionEnabled = INJECTION_ENABLED_FOR_SCRIPT_MODULES_ONLY;
@@ -78,6 +82,7 @@ public class PythonScriptEngineConfiguration {
         public boolean debuggerEnabled = false;
         public int debuggerPort = DEBUGGER_PORT_DEFAULT;
         public String pipModules = "";
+        public long lockAcquisitionTimeout = LOCK_ACQUISITION_TIMEOUT_DEFAULT;
     }
 
     private PythonScriptingConfiguration configuration = new PythonScriptingConfiguration();
@@ -166,6 +171,7 @@ public class PythonScriptEngineConfiguration {
         String oldPipModules = configuration.pipModules;
         boolean oldDebuggerEnabled = configuration.debuggerEnabled;
         int oldDebuggerPort = configuration.debuggerPort;
+        long oldLockAcquisitionTimeout = configuration.lockAcquisitionTimeout;
 
         configuration = new Configuration(config).as(PythonScriptingConfiguration.class);
 
@@ -187,6 +193,11 @@ public class PythonScriptEngineConfiguration {
                     configuration.debuggerEnabled ? "Enabled" : "Disabled");
         } else if (oldDebuggerPort != configuration.debuggerPort) {
             logger.warn("Reconfigured debugger for Python Scripting. Restart openHAB to apply this change.");
+        }
+        if (oldLockAcquisitionTimeout != configuration.lockAcquisitionTimeout) {
+            logger.warn(
+                    "Python Scripting lock acquisition timeout changed from {} to {} seconds. Rules created with JavaScript scripts might need to be reloaded for the changes to apply.",
+                    oldLockAcquisitionTimeout, configuration.lockAcquisitionTimeout);
         }
     }
 
@@ -268,6 +279,13 @@ public class PythonScriptEngineConfiguration {
 
     public @Nullable Version getInstalledHelperLibVersion() {
         return installedHelperLibVersion;
+    }
+
+    /**
+     * @return The log acquisition timeout in milliseconds.
+     */
+    public long getLockAcquisitionTimeout() {
+        return TimeUnit.SECONDS.toMillis(configuration.lockAcquisitionTimeout);
     }
 
     /**

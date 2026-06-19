@@ -15,6 +15,7 @@ package org.openhab.automation.jsscripting.internal.threading;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -40,27 +41,44 @@ import org.openhab.core.config.core.Configuration;
 class ThreadsafeSimpleRuleDelegate implements Rule, SimpleRuleActionHandler {
 
     private final Lock lock;
+    private final long lockAcquisitionTimeoutMS;
     private final SimpleRule delegate;
 
     /**
      * Constructor requires a lock object and delegate to forward invocations to.
      *
      * @param lock rule executions will synchronize on this object
+     * @param lockAcquisitionTimeoutMS the lock acquisition timeout in milliseconds.
      * @param delegate the delegate to forward invocations to
      */
-    ThreadsafeSimpleRuleDelegate(Lock lock, SimpleRule delegate) {
+    ThreadsafeSimpleRuleDelegate(Lock lock, long lockAcquisitionTimeoutMS, SimpleRule delegate) {
         this.lock = lock;
+        this.lockAcquisitionTimeoutMS = lockAcquisitionTimeoutMS;
         this.delegate = delegate;
     }
 
     @Override
     @NonNullByDefault({})
     public Object execute(Action module, Map<String, ?> inputs) {
-        lock.lock();
+        boolean locked;
         try {
-            return delegate.execute(module, inputs);
-        } finally { // Make sure that Lock is unlocked regardless of an exception is thrown or not to avoid deadlocks
-            lock.unlock();
+            locked = lock.tryLock(lockAcquisitionTimeoutMS, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Interrupted while waiting to acquire the lock for action '" + module.getId()
+                    + "' of rule '" + delegate.getUID() + '\'', e);
+        }
+        if (locked) {
+            try {
+                return delegate.execute(module, inputs);
+            } finally {
+                // Make sure that Lock is unlocked regardless of an exception is thrown or not to avoid deadlocks
+                lock.unlock();
+            }
+        } else {
+            throw new RuntimeException(
+                    "Failed to acquire the lock for action '" + module.getId() + "' of rule '" + delegate.getUID()
+                            + "' within " + TimeUnit.MILLISECONDS.toSeconds(lockAcquisitionTimeoutMS) + " seconds.");
         }
     }
 

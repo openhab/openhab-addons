@@ -16,19 +16,18 @@ import static org.openhab.core.automation.module.script.ScriptEngineFactory.CONT
 import static org.openhab.core.automation.module.script.ScriptTransformationService.OPENHAB_TRANSFORMATION_SCRIPT;
 
 import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.stream.Collectors;
 
 import javax.script.Compilable;
 import javax.script.Invocable;
 import javax.script.ScriptContext;
-import javax.script.ScriptEngine;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.graalvm.polyglot.PolyglotException;
 import org.openhab.automation.jsscripting.internal.scriptengine.InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable;
+import org.openhab.core.automation.module.script.LockableScriptEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,8 +37,9 @@ import org.slf4j.LoggerFactory;
  * @author Jonathan Gilbert - Initial contribution
  * @author Florian Hotze - Improve logger name, Fix memory leak caused by exception logging
  */
-public class DebuggingGraalScriptEngine<T extends ScriptEngine & Invocable & AutoCloseable & Compilable & Lock>
-        extends InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable<T> implements Lock {
+public class DebuggingGraalScriptEngine<T extends LockableScriptEngine & Invocable & AutoCloseable & Compilable>
+        extends InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable<T>
+        implements LockableScriptEngine {
 
     private static final int STACK_TRACE_LENGTH = 5;
 
@@ -57,13 +57,14 @@ public class DebuggingGraalScriptEngine<T extends ScriptEngine & Invocable & Aut
         // a DebuggingGraalScriptEngine instance.
         // We therefore need to synchronize logger setup here and cannot rely on the synchronization in
         // OpenhabGraalJSScriptEngine.
-        delegate.lock();
+        Lock lock = delegate.getLock();
+        lock.lock();
         try {
             if (logger == null) {
                 initializeLogger();
             }
         } finally { // Make sure that Lock is unlocked regardless of an exception being thrown or not to avoid deadlocks
-            delegate.unlock();
+            lock.unlock();
         }
     }
 
@@ -123,32 +124,12 @@ public class DebuggingGraalScriptEngine<T extends ScriptEngine & Invocable & Aut
     }
 
     @Override
-    public void lock() {
-        delegate.lock();
+    public @NonNull Lock getLock() {
+        return delegate.getLock();
     }
 
     @Override
-    public void lockInterruptibly() throws InterruptedException {
-        delegate.lockInterruptibly();
-    }
-
-    @Override
-    public boolean tryLock() {
-        return delegate.tryLock();
-    }
-
-    @Override
-    public boolean tryLock(long l, TimeUnit timeUnit) throws InterruptedException {
-        return delegate.tryLock(l, timeUnit);
-    }
-
-    @Override
-    public void unlock() {
-        delegate.unlock();
-    }
-
-    @Override
-    public Condition newCondition() {
-        return delegate.newCondition();
+    public long getLockAcquisitionTimeoutMs() {
+        return delegate.getLockAcquisitionTimeoutMs();
     }
 }
