@@ -83,6 +83,12 @@ class DynamicChannelReconciler {
         this.removeOnlyCreatedChannels = removeOnlyCreatedChannels;
     }
 
+    /** Clears all accumulated debounce/creation state, e.g. when the owning handler re-initializes. */
+    void reset() {
+        missingCounts.clear();
+        createdChannelIds.clear();
+    }
+
     Plan reconcile(Collection<MeasuredValue> values, Collection<Channel> currentChannels,
             Function<MeasuredValue, String> channelIdResolver, ChannelFactory channelFactory) {
         Map<String, Channel> currentById = new HashMap<>();

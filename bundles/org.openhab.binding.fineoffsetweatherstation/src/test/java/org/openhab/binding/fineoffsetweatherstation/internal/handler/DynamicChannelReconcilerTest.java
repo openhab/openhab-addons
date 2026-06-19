@@ -78,8 +78,9 @@ class DynamicChannelReconcilerTest {
                 MeasuredValue::getChannelId, v -> channel(v.getChannelId()));
 
         assertThat(plan.channelsToAdd).hasSize(1);
-        assertThat(plan.channelsToAdd.get(0).getUID().getId()).isEqualTo("temperature");
-        assertThat(plan.statesToPost).containsKey(plan.channelsToAdd.get(0).getUID());
+        ChannelUID createdUID = plan.channelsToAdd.get(0).getUID();
+        assertThat(createdUID.getId()).isEqualTo("temperature");
+        assertThat(plan.statesToPost).containsEntry(createdUID, new DecimalType(42));
         assertThat(plan.channelsToRemove).isEmpty();
     }
 
@@ -218,5 +219,45 @@ class DynamicChannelReconcilerTest {
         // humidity channel must still exist
         List<String> ids = currentChannels.stream().map(c -> c.getUID().getId()).toList();
         assertThat(ids).contains("humidity");
+    }
+
+    // -----------------------------------------------------------------------
+    // Case 7: reset() clears debounce and creation state
+    // -----------------------------------------------------------------------
+
+    @Test
+    void resetClearsAccumulatedState() {
+        DynamicChannelReconciler reconciler = new DynamicChannelReconciler(true);
+        MeasuredValue value = measuredValue("pressure");
+
+        // First pass: create the channel via the reconciler
+        DynamicChannelReconciler.Plan firstPlan = reconciler.reconcile(List.of(value), List.of(),
+                MeasuredValue::getChannelId, v -> channel(v.getChannelId()));
+        assertThat(firstPlan.channelsToAdd).hasSize(1);
+        List<Channel> currentChannels = new ArrayList<>(List.of(firstPlan.channelsToAdd.get(0)));
+
+        // Advance miss counter a few passes (below threshold) without reporting "pressure"
+        for (int i = 0; i < MISSING_VALUE_REMOVAL_THRESHOLD - 1; i++) {
+            DynamicChannelReconciler.Plan plan = reconciler.reconcile(List.of(), currentChannels,
+                    MeasuredValue::getChannelId, v -> channel(v.getChannelId()));
+            assertThat(plan.channelsToRemove).isEmpty();
+        }
+
+        // Reset clears both missingCounts and createdChannelIds
+        reconciler.reset();
+
+        // After reset, the channel is no longer tracked as reconciler-created, so with
+        // removeOnlyCreatedChannels=true the still-present channel is NOT a removal candidate
+        DynamicChannelReconciler.Plan afterResetMissing = reconciler.reconcile(List.of(), currentChannels,
+                MeasuredValue::getChannelId, v -> channel(v.getChannelId()));
+        assertThat(afterResetMissing.channelsToRemove).isEmpty();
+
+        // And the value, when re-supplied, is treated as brand-new: channel is added again
+        DynamicChannelReconciler.Plan afterResetPresent = reconciler.reconcile(List.of(value), List.of(),
+                MeasuredValue::getChannelId, v -> channel(v.getChannelId()));
+        ChannelUID recreatedUID = afterResetPresent.channelsToAdd.get(0).getUID();
+        assertThat(afterResetPresent.channelsToAdd).hasSize(1);
+        assertThat(recreatedUID.getId()).isEqualTo("pressure");
+        assertThat(afterResetPresent.statesToPost).containsEntry(recreatedUID, new DecimalType(42));
     }
 }

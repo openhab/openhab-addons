@@ -111,6 +111,7 @@ public class FineOffsetGatewayHandler extends BaseBridgeHandler {
         gatewayQueryService = config.protocol.getGatewayQueryService(config, this::updateStatus);
 
         updateStatus(ThingStatus.UNKNOWN);
+        reconciler.reset();
         fetchAndUpdateSensors();
         disposed = false;
         updateBridgeInfo();
