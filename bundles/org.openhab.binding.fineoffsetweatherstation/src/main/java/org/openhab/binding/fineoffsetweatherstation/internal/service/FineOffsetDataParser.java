@@ -48,6 +48,7 @@ import org.slf4j.LoggerFactory;
 public class FineOffsetDataParser {
     private final Logger logger = LoggerFactory.getLogger(FineOffsetDataParser.class);
     private final Protocol protocol;
+    private final MeasurandRegistry registry = MeasurandRegistry.standard();
 
     public FineOffsetDataParser(Protocol protocol) {
         this.protocol = protocol;
@@ -182,7 +183,7 @@ public class FineOffsetDataParser {
         List<MeasuredValue> result = new ArrayList<>();
         while (idx < size) {
             byte code = data[idx++];
-            CodeBinding measurand = MeasurandRegistry.standard().tcpByCode(code);
+            CodeBinding measurand = registry.tcpByCode(code);
             if (measurand == null) {
                 logger.warn("failed to get measurand 0x{}", Integer.toHexString(code));
                 debugDetails.addDebugDetails(idx - 1, 1, "unknown measurand");

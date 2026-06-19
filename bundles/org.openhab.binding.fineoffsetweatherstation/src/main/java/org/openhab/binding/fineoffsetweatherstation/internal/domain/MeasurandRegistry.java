@@ -396,7 +396,9 @@ public class MeasurandRegistry {
          * Freezes the collected TCP and HTTP indexes into an immutable {@link MeasurandRegistry}.
          */
         public MeasurandRegistry build() {
-            return new MeasurandRegistry(byCode, byHttp);
+            Map<HttpGroup, Map<String, HttpBinding>> frozenHttp = new HashMap<>();
+            byHttp.forEach((group, bindings) -> frozenHttp.put(group, Map.copyOf(bindings)));
+            return new MeasurandRegistry(Map.copyOf(byCode), Map.copyOf(frozenHttp));
         }
     }
 }
