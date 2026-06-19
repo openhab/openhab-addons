@@ -162,7 +162,8 @@ public class GeminiApiClient {
                 case TOOL_RETURN: {
                     String name = pendingToolCallNames.poll();
                     if (name == null) {
-                        name = "";
+                        logger.trace("skipping orphaned TOOL_RETURN");
+                        break; // TOOL_RETURN without preceding TOOL_CALL - ignore
                     }
                     GeminiFunctionResponse fr = new GeminiFunctionResponse(name, Map.of("result", msg.content()));
                     GeminiPart part = new GeminiPart(null, null, fr, null);
@@ -172,6 +173,18 @@ public class GeminiApiClient {
                 case THINKING:
                     break;
             }
+        }
+
+        while (!contents.isEmpty()) {
+            GeminiContent first = contents.getFirst();
+            List<GeminiPart> firstParts = first.parts();
+            boolean isValidFirst = ROLE_USER.equals(first.role()) && firstParts != null
+                    && firstParts.stream().anyMatch(p -> p.text() != null);
+            if (isValidFirst) {
+                break;
+            }
+            logger.trace("removing leading invalid content entry with role '{}'", first.role());
+            contents.removeFirst();
         }
 
         List<GeminiTool> geminiTools = null;
