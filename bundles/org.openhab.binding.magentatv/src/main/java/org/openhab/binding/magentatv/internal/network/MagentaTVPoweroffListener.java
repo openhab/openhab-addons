@@ -18,6 +18,7 @@ import static org.openhab.binding.magentatv.internal.MagentaTVUtil.*;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
 import java.net.NetworkInterface;
 
@@ -83,7 +84,7 @@ public class MagentaTVPoweroffListener extends Thread {
             // Join the Multicast group on the selected network interface
             socket.setNetworkInterface(networkInterface);
             InetAddress group = InetAddress.getByName(UPNP_MULTICAST_ADDRESS);
-            socket.joinGroup(group);
+            socket.joinGroup(new InetSocketAddress(group, UPNP_PORT), networkInterface);
 
             // read the SSDP messages
             while (!socket.isClosed()) {
