@@ -14,6 +14,7 @@ package org.openhab.binding.fineoffsetweatherstation.internal.handler;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_TYPE_HUMIDITY;
 import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_TYPE_MAX_WIND_SPEED;
@@ -44,6 +45,7 @@ import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
@@ -190,5 +192,16 @@ public class FineOffsetGatewayHandlerTest {
         pollTimes(REMOVAL_THRESHOLD - 1);
 
         assertThat(currentChannelIds(), containsInAnyOrder("temperature", "humidity"));
+    }
+
+    @Test
+    void firstPollStateIsPostedImmediately() throws Exception {
+        // When a channel is created for the first time, its initial state must be posted right away —
+        // not deferred until the next poll.
+        liveDataReturns(temperature);
+        updateLiveData();
+
+        ChannelUID expectedUID = new ChannelUID(BRIDGE_UID, "temperature");
+        verify(callbackMock).stateUpdated(expectedUID, new DecimalType(1));
     }
 }

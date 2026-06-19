@@ -14,8 +14,10 @@ package org.openhab.binding.fineoffsetweatherstation.internal.handler;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.not;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_TYPE_MOISTURE;
 import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.THING_TYPE_SENSOR;
@@ -37,9 +39,11 @@ import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.Mea
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.thing.type.ChannelTypeUID;
 
@@ -115,10 +119,39 @@ public class FineOffsetSensorHandlerTest {
     }
 
     @Test
-    void emptyUpdateNeverRemovesStaticChannels() {
-        // a sensor that produces no measurements this poll must not have its static signal/battery channels touched
+    void emptyUpdateOnFreshHandlerIsSafe() {
+        // a sensor that produces no measurements must not throw and must leave the channel list empty
         handler.updateMeasuredValues(List.of());
-        // no dynamic channels were ever created, so nothing changes and no exception is thrown
-        assertThat(currentChannelIds(), containsInAnyOrder());
+        assertThat(currentChannelIds(), empty());
+    }
+
+    @Test
+    void managedChannelRemovalPreservesStaticChannels() {
+        // Seed the mock thing with a static "signal" channel so that editThing() picks it up from the start.
+        Channel staticSignal = ChannelBuilder.create(new ChannelUID(SENSOR_UID, "signal")).build();
+        when(thingMock.getChannels()).thenReturn(List.of(staticSignal));
+
+        // Create a managed channel via the first measurement update.
+        handler.updateMeasuredValues(List.of(moisture));
+        assertThat(currentChannelIds(), containsInAnyOrder("signal", "moisture-soil-channel"));
+
+        // Drive the managed channel past the removal threshold without reporting it.
+        for (int i = 0; i < REMOVAL_THRESHOLD; i++) {
+            handler.updateMeasuredValues(List.of());
+        }
+
+        // The managed channel is gone; the static signal channel is untouched.
+        assertThat(currentChannelIds(), not(hasItem("moisture-soil-channel")));
+        assertThat(currentChannelIds(), hasItem("signal"));
+    }
+
+    @Test
+    void firstMeasurementStateIsPostedImmediately() {
+        // When a channel is created for the first time, its initial state must be posted right away —
+        // not deferred until the next poll.
+        handler.updateMeasuredValues(List.of(moisture));
+
+        ChannelUID expectedUID = new ChannelUID(SENSOR_UID, "moisture-soil-channel");
+        verify(callbackMock).stateUpdated(expectedUID, new DecimalType(1));
     }
 }
