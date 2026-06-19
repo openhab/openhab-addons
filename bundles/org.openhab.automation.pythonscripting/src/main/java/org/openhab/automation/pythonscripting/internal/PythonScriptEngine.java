@@ -416,7 +416,7 @@ public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine
     }
 
     @Override
-    public long getLockAcquisitionTimeoutMS() {
+    public long getLockAcquisitionTimeoutMs() {
         return pythonScriptEngineConfiguration.getLockAcquisitionTimeout();
     }
 

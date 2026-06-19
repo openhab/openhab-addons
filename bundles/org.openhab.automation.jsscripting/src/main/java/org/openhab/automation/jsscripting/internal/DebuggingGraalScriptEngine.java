@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 import javax.script.Compilable;
 import javax.script.Invocable;
 import javax.script.ScriptContext;
-import javax.script.ScriptEngine;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
@@ -38,7 +37,7 @@ import org.slf4j.LoggerFactory;
  * @author Jonathan Gilbert - Initial contribution
  * @author Florian Hotze - Improve logger name, Fix memory leak caused by exception logging
  */
-public class DebuggingGraalScriptEngine<T extends ScriptEngine & Invocable & AutoCloseable & Compilable & LockableScriptEngine>
+public class DebuggingGraalScriptEngine<T extends LockableScriptEngine & Invocable & AutoCloseable & Compilable>
         extends InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable<T>
         implements LockableScriptEngine {
 
@@ -130,7 +129,7 @@ public class DebuggingGraalScriptEngine<T extends ScriptEngine & Invocable & Aut
     }
 
     @Override
-    public long getLockAcquisitionTimeoutMS() {
-        return delegate.getLockAcquisitionTimeoutMS();
+    public long getLockAcquisitionTimeoutMs() {
+        return delegate.getLockAcquisitionTimeoutMs();
     }
 }

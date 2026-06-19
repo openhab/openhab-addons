@@ -312,7 +312,7 @@ public class OpenhabGraalJSScriptEngine
         scriptDependencyListener = localScriptDependencyListener;
 
         ScriptExtensionModuleProvider scriptExtensionModuleProvider = new ScriptExtensionModuleProvider(
-                scriptExtensionAccessor, lock, getLockAcquisitionTimeoutMS(), lifecycleTracker);
+                scriptExtensionAccessor, lock, getLockAcquisitionTimeoutMs(), lifecycleTracker);
 
         // Wrap the "require" function to also allow loading modules from the ScriptExtensionModuleProvider
         Function<Function<Object[], Object>, Function<String, Object>> wrapRequireFn = originalRequireFn -> moduleName -> scriptExtensionModuleProvider
@@ -581,7 +581,7 @@ public class OpenhabGraalJSScriptEngine
     }
 
     @Override
-    public long getLockAcquisitionTimeoutMS() {
+    public long getLockAcquisitionTimeoutMs() {
         return configuration.getLockAcquisitionTimeout();
     }
 }
