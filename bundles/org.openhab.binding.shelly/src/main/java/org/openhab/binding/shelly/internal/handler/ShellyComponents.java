@@ -475,8 +475,10 @@ public class ShellyComponents {
             }
             if ((sdata.lux != null) && getBool(sdata.lux.isValid)) {
                 // “lux”:{“value”:30, “illumination”: “dark”, “is_valid”:true},
-                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_LUX,
-                        toQuantityType(getDouble(sdata.lux.value), DIGITS_LUX, Units.LUX));
+                if (sdata.lux.value != null) {
+                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_LUX,
+                            toQuantityType(getDouble(sdata.lux.value), DIGITS_LUX, Units.LUX));
+                }
                 if (sdata.lux.illumination != null) {
                     updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ILLUM,
                             getStringType(sdata.lux.illumination));
@@ -551,14 +553,19 @@ public class ShellyComponents {
                         getOnOff(charger));
             }
             if (sdata.bat != null) { // no update for Sense
-                updated |= thingHandler.updateChannel(CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LEVEL,
-                        toQuantityType(getDouble(sdata.bat.value), 0, Units.PERCENT));
+                if (sdata.bat.value != null) {
+                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LEVEL,
+                            toQuantityType(getDouble(sdata.bat.value), 0, Units.PERCENT));
+                }
 
                 int lowBattery = thingHandler.getThingConfig().getLowBattery();
+                Boolean batteryLowFlag = sdata.bat.batteryLow;
+                boolean isLow = batteryLowFlag != null ? batteryLowFlag.booleanValue()
+                        : (sdata.bat.value != null && !charger && getDouble(sdata.bat.value) < lowBattery);
                 boolean changed = thingHandler.updateChannel(CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LOW,
-                        getOnOff(!charger && getDouble(sdata.bat.value) < lowBattery));
+                        getOnOff(isLow));
                 updated |= changed;
-                if (!charger && changed && getDouble(sdata.bat.value) < lowBattery) {
+                if (changed && isLow) {
                     thingHandler.postEvent(ALARM_TYPE_LOW_BATTERY, false);
                 }
             }

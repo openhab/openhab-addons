@@ -151,10 +151,14 @@ See section [Discovery](#discovery) for details.
 | shellyblubutton      | Shelly BLU Tough ZB                                    | SBBT-102C               |
 | shellybluwallswitch4 | Shelly BLU Wallswitch 4                                | SBBT-EU5027             |
 | shellyblurcbutton4   | Shelly BLU RC Button 4                                 | SBBT-004CUS             |
+| shellyblurcbutton4   | Shelly BLU RC Button 4 ZB                              | SBBT-104CUS             |
 | shellybluht          | Shelly BLU H&T                                         | SBHT-003C               |
 | shellybluht          | Shelly BLU H&T ZB                                      | SBHT-203C               |
+| shellybluht          | Shelly BLU H&T Display ZB                              | SBHT-103C               |
 | shellybludw          | Shelly BLU Door/Windows                                | SBDW-002C               |
+| shellybludw          | Shelly BLU Door/Window ZB                              | SBDW-103C               |
 | shellyblumotion      | Shelly BLU Motion                                      | SBMO-003Z               |
+| shellyblumotion      | Shelly BLU Motion ZB                                   | SBMO-103Z               |
 | shellybludistance    | Shelly BLU Distance                                    | SBDI-003E               |
 | shellybluremote      | Shelly BLU Remote Control                              | SBRC-005B               |
 
