@@ -80,8 +80,7 @@
 			<parameter name="strictHostKeyChecking" type="boolean">
 				<label>Strict Host Key Checking</label>
 				<description>When enabled, reject SSH connections to hosts not already in known_hosts. When disabled (default),
-					unknown host keys are automatically accepted on first connection (TOFU) and saved to known_hosts. Changed keys
-					are
+					unknown host keys are automatically accepted on first connection (TOFU) and saved to known_hosts. Changed keys are
 					always rejected regardless of this setting.</description>
 				<default>false</default>
 				<advanced>true</advanced>
