@@ -13,11 +13,19 @@
 package org.openhab.binding.fineoffsetweatherstation.internal.handler;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.BatteryStatus;
+import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.MeasuredValue;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.SensorDevice;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -29,20 +37,44 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.type.ChannelKind;
+import org.openhab.core.thing.type.ChannelType;
+import org.openhab.core.thing.type.ChannelTypeRegistry;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.UnDefType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * The {@link FineOffsetSensorHandler} keeps track of the signal and battery of the sensor attached to the gateway.
+ * The {@link FineOffsetSensorHandler} keeps track of the signal and battery of the sensor attached to the gateway,
+ * and mirrors the sensor's measured values onto dynamically created channels.
  *
  * @author Andreas Berger - Initial contribution
  */
 @NonNullByDefault
 public class FineOffsetSensorHandler extends BaseThingHandler {
+
+    /**
+     * Number of consecutive live data dispatches a measured value may be missing before its (dynamically created)
+     * channel is removed. Mirrors {@code FineOffsetGatewayHandler.MISSING_MEASURAND_REMOVAL_THRESHOLD} so that
+     * transient gaps do not cause channels to flip-flop.
+     */
+    private static final int MISSING_MEASURAND_REMOVAL_THRESHOLD = 10;
+
+    private final Logger logger = LoggerFactory.getLogger(FineOffsetSensorHandler.class);
+    private final ChannelTypeRegistry channelTypeRegistry;
+
+    /** Channel ids this handler created from measured values - only these are subject to the debounce/removal. */
+    private final Set<String> managedChannelIds = new HashSet<>();
+    private final Map<String, Integer> missingMeasurandCounts = new HashMap<>();
+
     private boolean disposed;
 
-    public FineOffsetSensorHandler(Thing thing) {
+    public FineOffsetSensorHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
         super(thing);
+        this.channelTypeRegistry = channelTypeRegistry;
     }
 
     @Override
@@ -104,5 +136,73 @@ public class FineOffsetSensorHandler extends BaseThingHandler {
                 updateThing(editThing().withoutChannels(channel).build());
             }
         }
+    }
+
+    /**
+     * Mirrors the sensor's measured values onto dynamic channels: creates channels that do not exist yet, updates the
+     * state of existing ones, and removes a managed channel once its value has been absent for
+     * {@link #MISSING_MEASURAND_REMOVAL_THRESHOLD} consecutive dispatches. Static signal/battery channels are never
+     * affected. Called every poll by the gateway, with an empty collection when this sensor reported nothing.
+     */
+    public void updateMeasuredValues(Collection<MeasuredValue> values) {
+        if (disposed) {
+            return;
+        }
+        Set<String> reportedChannelIds = new HashSet<>();
+        List<Channel> newChannels = new ArrayList<>();
+        for (MeasuredValue value : values) {
+            String channelId = value.getChannelPrefix();
+            reportedChannelIds.add(channelId);
+            @Nullable
+            Channel channel = thing.getChannel(channelId);
+            if (channel == null) {
+                channel = createChannel(value);
+                if (channel != null) {
+                    newChannels.add(channel);
+                    managedChannelIds.add(channelId);
+                }
+            } else {
+                updateState(channel.getUID(), value.getState());
+            }
+        }
+
+        List<Channel> staleChannels = new ArrayList<>();
+        for (String channelId : new HashSet<>(managedChannelIds)) {
+            if (reportedChannelIds.contains(channelId)) {
+                missingMeasurandCounts.remove(channelId);
+            } else if (missingMeasurandCounts.merge(channelId, 1,
+                    Integer::sum) >= MISSING_MEASURAND_REMOVAL_THRESHOLD) {
+                @Nullable
+                Channel channel = thing.getChannel(channelId);
+                if (channel != null) {
+                    staleChannels.add(channel);
+                }
+                missingMeasurandCounts.remove(channelId);
+                managedChannelIds.remove(channelId);
+            }
+        }
+
+        if (!newChannels.isEmpty() || !staleChannels.isEmpty()) {
+            List<Channel> channels = new ArrayList<>(thing.getChannels());
+            channels.addAll(newChannels);
+            channels.removeAll(staleChannels);
+            updateThing(editThing().withChannels(channels).build());
+        }
+    }
+
+    private @Nullable Channel createChannel(MeasuredValue value) {
+        ChannelTypeUID channelTypeId = value.getChannelTypeUID();
+        if (channelTypeId == null) {
+            logger.debug("cannot create channel for {}", value.getDebugName());
+            return null;
+        }
+        ChannelBuilder builder = ChannelBuilder.create(new ChannelUID(thing.getUID(), value.getChannelPrefix()))
+                .withKind(ChannelKind.STATE).withType(channelTypeId).withLabel(value.getDebugName());
+        @Nullable
+        ChannelType type = channelTypeRegistry.getChannelType(channelTypeId);
+        if (type != null) {
+            builder.withAcceptedItemType(type.getItemType());
+        }
+        return builder.build();
     }
 }
