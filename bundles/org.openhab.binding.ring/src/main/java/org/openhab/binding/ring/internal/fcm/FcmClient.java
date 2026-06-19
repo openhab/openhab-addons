@@ -1,3 +1,16 @@
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.openhab.binding.ring.internal.fcm;
 
 import java.io.InputStream;
@@ -10,6 +23,12 @@ import javax.net.ssl.SSLSocketFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Provides a Firebase Cloud Messaging (FCM) Client
+ *
+ * @author Paul Smedley - Initial contribution
+ *
+ */
 public class FcmClient {
     private static final Logger logger = LoggerFactory.getLogger(FcmClient.class);
     private static final String HOST = "mtalk.google.com";

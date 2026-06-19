@@ -88,7 +88,6 @@ public class RestClient {
         return this.httpClient;
     }
 
-
     private void validateResponse(ContentResponse response) throws AuthenticationException {
         int responseCode = response.getStatus();
         switch (responseCode) {
