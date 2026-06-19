@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2026 Contributors to the openHAB project
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,18 +15,15 @@ package org.openhab.binding.linky.internal.dto;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link Calendrier} holds informations about the available energy calendar
+ * The {@link TemporalClassTotalizer} holds informations about the available energy calendar
  *
  * @author Laurent Arnal - Initial contribution
  */
 
-public class Calendrier {
-    @SerializedName("id_calendar")
-    public String idCalendrier;
+public class TemporalClassTotalizer {
+    @SerializedName("id_quadrant")
+    public String idQuadrant;
 
-    @SerializedName("label_calendar")
-    public String libelleCalendrier;
-
-    @SerializedName("temporal_class")
-    public TemporalClass[] temporalClass;
+    @SerializedName("values")
+    public Value[] values;
 }
