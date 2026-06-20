@@ -69,8 +69,6 @@ public class LinkPlayUpnpClient implements UpnpIOParticipant, LinkPlayUpnpComman
     private @Nullable RemoteDevice remoteDevice;
     private String udn = "";
     private volatile boolean disposed;
-    // Monotonic timestamp of the last UPnP value (GENA event) received, used by the handler's event watchdog to detect
-    // silently dead subscriptions.
     private volatile long lastValueNanos = System.nanoTime();
 
     public LinkPlayUpnpClient(LinkPlayUpnpClientHandler handler, UpnpIOService upnpIOService, UpnpService upnpService,
@@ -106,9 +104,7 @@ public class LinkPlayUpnpClient implements UpnpIOParticipant, LinkPlayUpnpComman
     }
 
     /**
-     * Looks up the current {@link RemoteDevice} for this UDN directly from the jUPnP registry. This returns a fresh
-     * device reference (for example after the device re-advertised at a new IP) rather than the possibly stale one
-     * cached via {@link #setRemoteDevice(RemoteDevice)}.
+     * Looks up the current {@link RemoteDevice} for this UDN directly from the jUPnP registry.
      *
      * @return the registered device, or {@code null} if the device is not currently in the registry
      */
@@ -135,8 +131,6 @@ public class LinkPlayUpnpClient implements UpnpIOParticipant, LinkPlayUpnpComman
 
     @Override
     public void onValueReceived(@Nullable String variable, @Nullable String value, @Nullable String service) {
-        // Stamp the time on every received value (including high-frequency position updates): any value proves the GENA
-        // subscription is still delivering, which is what the event watchdog checks for.
         lastValueNanos = System.nanoTime();
         if (!handler.shouldProcessUpnpEvents()) {
             logger.debug("{}: onValueReceived: handler is not ready to process UPnP events", udn);
@@ -280,10 +274,8 @@ public class LinkPlayUpnpClient implements UpnpIOParticipant, LinkPlayUpnpComman
     }
 
     /**
-     * Forces a clean GENA resubscription cycle by tearing down the current subscriptions and creating fresh ones. This
-     * sidesteps jUPnP's in-place renewal (which LinkPlay devices frequently fail to honor) by obtaining a brand new
-     * subscription id, and is used by the handler's event watchdog to recover a silently dead subscription.
-     * ({@link #removeSubscriptions()} already clears the subscription state.)
+     * Forces a resubscription by removing the current subscriptions and creating fresh ones. This
+     * works around jUPnP's renewal issues which LinkPlay devices frequently fail to honor
      */
     public void resubscribe() {
         removeSubscriptions();
@@ -291,7 +283,7 @@ public class LinkPlayUpnpClient implements UpnpIOParticipant, LinkPlayUpnpComman
     }
 
     /**
-     * @return the number of seconds since the last UPnP value (GENA event) was received, based on a monotonic clock
+     * @return the number of seconds since the last UPnP value (GENA event) was received
      */
     public long secondsSinceLastValue() {
         return TimeUnit.NANOSECONDS.toSeconds(System.nanoTime() - lastValueNanos);

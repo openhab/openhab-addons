@@ -102,13 +102,6 @@ public class LinkPlayHandler extends BaseThingHandler
     private final Logger logger = LoggerFactory.getLogger(LinkPlayHandler.class);
 
     private static final int RECONNECT_DELAY = 30;
-    // UPnP event watchdog. jUPnP renews GENA subscriptions in-place at half of the 1800s duration (~15 min), but
-    // LinkPlay devices frequently fail to honor that renewal and openHAB core does not reliably tell us when it is
-    // dropped, leaving us unable to control playback. Rather than wait for that, we proactively tear down and recreate
-    // the subscriptions on a much faster cadence (defeating the flaky in-place renewal), and because a successful
-    // (re)subscribe always yields an initial event dump we treat "no event shortly after a refresh" as a dead
-    // subscription and fully reconnect. Lower UPNP_RESUBSCRIBE_INTERVAL_SECONDS for even more aggressive recovery at
-    // the cost of more subscribe traffic. See upnpEventWatchdog.
     private static final int UPNP_WATCHDOG_INTERVAL_SECONDS = 30;
     private static final int UPNP_RESUBSCRIBE_INTERVAL_SECONDS = 180;
     private static final int UPNP_EVENT_GRACE_SECONDS = 60;
@@ -117,8 +110,6 @@ public class LinkPlayHandler extends BaseThingHandler
     private @Nullable ScheduledFuture<?> upnpWatchdogJob;
     private @Nullable ScheduledFuture<?> reconnectJob;
     private @Nullable ScheduledFuture<?> positionJob;
-    // Monotonic timestamp of the last (re)subscribe, used to time the watchdog's grace/refresh windows. Written from
-    // both the scheduler thread (watchdog) and the jUPnP callback thread (onUpnpSubscriptionStateChanged), so volatile.
     private volatile long lastResubscribeNanos = System.nanoTime();
     // Are we currently initializing the device?
     private final AtomicBoolean isInitializing = new AtomicBoolean(false);
@@ -182,7 +173,7 @@ public class LinkPlayHandler extends BaseThingHandler
         cancelUpnpServiceCheckJob();
         upnpServiceCheck = scheduler.scheduleWithFixedDelay(this::initializationCheck, 0, 15, TimeUnit.SECONDS);
 
-        // Watchdog that detects and recovers silently dead UPnP subscriptions (it self-guards on thing status).
+        // Watchdog that detects and recovers dead UPnP subscriptions.
         cancelUpnpWatchdogJob();
         upnpWatchdogJob = scheduler.scheduleWithFixedDelay(this::upnpEventWatchdog, UPNP_WATCHDOG_INTERVAL_SECONDS,
                 UPNP_WATCHDOG_INTERVAL_SECONDS, TimeUnit.SECONDS);
@@ -601,9 +592,6 @@ public class LinkPlayHandler extends BaseThingHandler
             return;
         }
         if (!allSubscriptionsSuccessful) {
-            // Only report "waiting" before we are ONLINE. While ONLINE this is normally just the transient gap during a
-            // proactive resubscribe (one service confirmed before the other), so don't flap the thing status; the
-            // watchdog handles genuinely dead subscriptions.
             if (getThing().getStatus() != ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Waiting for UPnP subscriptions");
             }
@@ -612,10 +600,6 @@ public class LinkPlayHandler extends BaseThingHandler
         if (getThing().getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.ONLINE);
         }
-        // fully subscribed: stop any active reconnect loop and start a fresh refresh window. Note we deliberately do
-        // NOT touch the last-event clock here: this fires on the SUBSCRIBE acknowledgement, not on an actual GENA
-        // event, so resetting it would mask a device that ACKs the subscribe but never delivers events. The grace
-        // window measured from lastResubscribeNanos gives the initial event dump time to arrive.
         cancelReconnectJob();
         lastResubscribeNanos = System.nanoTime();
     }
@@ -850,11 +834,6 @@ public class LinkPlayHandler extends BaseThingHandler
         scheduleReconnect();
     }
 
-    /**
-     * Ensures a repeating reconnect job is running while the device is offline. The job keeps retrying until the device
-     * is back ONLINE, at which point it cancels itself. Calling this while a reconnect job is already running is a
-     * no-op so the retry cadence is not reset on every offline notification.
-     */
     private void scheduleReconnect() {
         if (disposed) {
             return;
@@ -867,12 +846,6 @@ public class LinkPlayHandler extends BaseThingHandler
                 TimeUnit.SECONDS);
     }
 
-    /**
-     * Actively attempts to bring an offline device back ONLINE. This mirrors what the initialize/dispose
-     * (pause/unpause) cycle does: it re-issues a UPnP search, looks up a fresh device reference from the registry (the
-     * device may have re-advertised at a new IP) and drives initialization itself rather than waiting for a push
-     * callback from the registry that may never arrive. Once the device is ONLINE the reconnect job cancels itself.
-     */
     private void reconnect() {
         if (disposed || getThing().getStatus() == ThingStatus.ONLINE) {
             cancelReconnectJob();
@@ -1481,12 +1454,6 @@ public class LinkPlayHandler extends BaseThingHandler
         }
     }
 
-    /**
-     * Keeps UPnP event delivery alive. LinkPlay devices frequently drop GENA subscriptions silently, so instead of
-     * relying on jUPnP's flaky in-place renewal this proactively recreates the subscriptions on a fast cadence (each
-     * refresh gets a fresh subscription id and an initial event dump). If a refresh produces no event within the grace
-     * period the subscription is dead, so the thing is dropped OFFLINE to run the full reconnect cycle.
-     */
     private void upnpEventWatchdog() {
         if (disposed || getThing().getStatus() != ThingStatus.ONLINE) {
             return;
@@ -1502,15 +1469,12 @@ public class LinkPlayHandler extends BaseThingHandler
         long staleSeconds = upnpClient.secondsSinceLastValue();
         long sinceResubscribe = TimeUnit.NANOSECONDS.toSeconds(System.nanoTime() - lastResubscribeNanos);
 
-        // A successful (re)subscribe always yields an initial event dump, so if our most recent refresh produced no
-        // event within the grace period the subscription is dead -> fully reconnect.
         if (staleSeconds > sinceResubscribe && sinceResubscribe >= UPNP_EVENT_GRACE_SECONDS) {
             logger.debug("{}: No UPnP events {}s after resubscribe; reconnecting", udn, sinceResubscribe);
             setOffline("No UPnP events received for " + staleSeconds + "s");
             return;
         }
 
-        // Proactively refresh well ahead of jUPnP's ~15 min in-place renewal so we keep control of playback.
         if (sinceResubscribe >= UPNP_RESUBSCRIBE_INTERVAL_SECONDS) {
             logger.debug("{}: Proactively refreshing UPnP subscription ({}s since last event)", udn, staleSeconds);
             upnpClient.resubscribe();
