@@ -16,6 +16,8 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.Objects;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -53,9 +55,9 @@ public class ShellyBluWS90Test {
 
     @Test
     void ws90DtoDeserializesAllWeatherFields() {
-        Shelly2NotifyBluEventData data = GSON.fromJson(WS90_JSON, Shelly2NotifyBluEventData.class);
+        Shelly2NotifyBluEventData data = Objects
+                .requireNonNull(GSON.fromJson(WS90_JSON, Shelly2NotifyBluEventData.class));
 
-        assertThat(data, is(not(nullValue())));
         assertThat("Rain", data.rain, is(equalTo(1.0)));
         assertThat("speeds", data.speeds, is(not(nullValue())));
         assertThat("speeds length", data.speeds.length, is(equalTo(2)));
@@ -138,9 +140,8 @@ public class ShellyBluWS90Test {
         String json = """
                 {"Speed": [2.0, 4.0], "Direction": 180.0, "UVIndex": 1.2, "addr": "aa:bb:cc:dd:ee:ff"}
                 """;
-        Shelly2NotifyBluEventData data = GSON.fromJson(json, Shelly2NotifyBluEventData.class);
+        Shelly2NotifyBluEventData data = Objects.requireNonNull(GSON.fromJson(json, Shelly2NotifyBluEventData.class));
 
-        assertThat(data, is(not(nullValue())));
         assertThat("rain should be null when not present in JSON", data.rain, is(nullValue()));
         assertThat("speeds", data.speeds, is(not(nullValue())));
         assertThat("windSpeed", data.speeds[0], is(equalTo(2.0)));
