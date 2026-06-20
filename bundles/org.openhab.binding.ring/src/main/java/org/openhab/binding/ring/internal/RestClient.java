@@ -476,7 +476,7 @@ public class RestClient {
         headers.put("hardware_id", hardwareId);
 
         // Ring strictly requires this Accept header to route the PATCH request to the correct controller
-        headers.put("Accept", "application/json; api_version=11");
+        headers.put("Accept", "application.vnd.api.v11+json");
 
         sendCommand(ApiConstants.API_BASE + "/clients_api/device", HttpMethod.PATCH, payload, headers, tokens);
     }

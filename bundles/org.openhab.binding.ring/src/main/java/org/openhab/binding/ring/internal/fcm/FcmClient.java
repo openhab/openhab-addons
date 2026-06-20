@@ -16,8 +16,19 @@ package org.openhab.binding.ring.internal.fcm;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.security.KeyFactory;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
+import java.util.Base64;
 import java.util.function.Consumer;
 
+import javax.crypto.Cipher;
+import javax.crypto.KeyAgreement;
+import javax.crypto.Mac;
+import javax.crypto.spec.GCMParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
@@ -52,10 +63,14 @@ public class FcmClient {
 
     private final Consumer<String> eventCallback;
     private final Consumer<Boolean> stateCallback;
+    private final FcmRegistrar.FcmCredentials credentials;
 
-    public FcmClient(Consumer<String> eventCallback, Consumer<Boolean> stateCallback) {
+    // Update constructor to require credentials
+    public FcmClient(Consumer<String> eventCallback, Consumer<Boolean> stateCallback,
+            FcmRegistrar.FcmCredentials credentials) {
         this.eventCallback = eventCallback;
         this.stateCallback = stateCallback;
+        this.credentials = credentials;
     }
 
     public void connect(String androidId, String securityToken) {
@@ -71,10 +86,9 @@ public class FcmClient {
             out.write(41);
             out.flush();
 
-            LoginRequest loginRequest = LoginRequest.newBuilder().setId("chrome-" + androidId) // <-- Ensure this is
-                                                                                               // unique!
+            LoginRequest loginRequest = LoginRequest.newBuilder().setId("chrome-" + androidId)
                     .setDomain("mcs.android.com").setUser(androidId).setResource(androidId).setAuthToken(securityToken)
-                    .setDeviceId("android-" + Long.toHexString(Long.parseLong(androidId))).build();
+                    .setDeviceId("android-" + Long.toHexString(Long.parseUnsignedLong(androidId))).build();
 
             send(TAG_LOGIN_REQUEST, loginRequest.toByteArray());
             isRunning = true;
@@ -178,20 +192,34 @@ public class FcmClient {
     }
 
     private void handlePushMessage(DataMessageStanza msg) {
-        // Log the entire raw protobuf structure so we can see exactly what Ring sends
-        logger.debug("FCM Raw Stanza Received: \n{}", msg.toString());
+        String cryptoKey = null;
+        String salt = null;
 
+        // Extract the ephemeral public key and cryptographic salt from the headers
         for (AppData data : msg.getAppDataList()) {
-            String key = data.getKey();
-            String value = data.getValue();
-
-            // Log every individual key-value pair for deep inspection
-            logger.debug("FCM AppData - Key: [{}] | Value: [{}]", key, value);
-
-            // Ring typically puts the actual event JSON inside a key named "ding"
-            if ("ding".equals(key) || "payload".equals(key) || "data".equals(key)) {
-                eventCallback.accept(value);
+            if ("crypto-key".equals(data.getKey())) {
+                cryptoKey = data.getValue().substring(3); // Strip "dh="
+            } else if ("encryption".equals(data.getKey())) {
+                salt = data.getValue().substring(5); // Strip "salt="
             }
+        }
+
+        // Use the newly compiled getRawData() method directly
+        if (cryptoKey != null && salt != null && msg.hasRawData()) {
+            byte[] rawDataBytes = msg.getRawData().toByteArray();
+
+            byte[] decrypted = decryptRawData(cryptoKey, salt, rawDataBytes, credentials.privateKey(),
+                    credentials.authSecret());
+
+            if (decrypted.length > 0) {
+                String jsonEvent = new String(decrypted, java.nio.charset.StandardCharsets.UTF_8);
+                logger.debug("Successfully decrypted Ring Event: {}", jsonEvent);
+                eventCallback.accept(jsonEvent);
+            } else {
+                logger.warn("Ring Event decryption failed or returned empty payload.");
+            }
+        } else {
+            logger.debug("Push message received but is missing required Web Push encryption headers or raw_data.");
         }
     }
 
@@ -221,6 +249,67 @@ public class FcmClient {
             // Ignored on disconnect
         }
         stateCallback.accept(false);
+    }
+
+    private byte[] decryptRawData(String cryptoKeyStr, String saltStr, byte[] rawData, String privateKeyStr,
+            String authSecretStr) {
+        try {
+            Base64.Decoder decoder = Base64.getUrlDecoder();
+            byte[] senderPubKeyBytes = decoder.decode(cryptoKeyStr);
+            byte[] salt = decoder.decode(saltStr);
+            byte[] receiverPrivKeyBytes = decoder.decode(privateKeyStr);
+            byte[] authSecret = decoder.decode(authSecretStr);
+
+            // 1. Rebuild Keys from Bytes
+            KeyFactory kf = KeyFactory.getInstance("EC");
+            PrivateKey privateKey = kf.generatePrivate(new PKCS8EncodedKeySpec(receiverPrivKeyBytes));
+
+            // Note: RFC 8291 sends uncompressed EC points (starts with 0x04).
+            // A full implementation requires converting this 65-byte uncompressed point into an X509EncodedKeySpec.
+            PublicKey senderPublicKey = kf.generatePublic(new X509EncodedKeySpec(senderPubKeyBytes));
+
+            // 2. ECDH Key Agreement -> Shared Secret
+            KeyAgreement ka = KeyAgreement.getInstance("ECDH");
+            ka.init(privateKey);
+            ka.doPhase(senderPublicKey, true);
+            byte[] sharedSecret = ka.generateSecret();
+
+            // 3. HKDF (HMAC-based Key Derivation Function)
+            // Web Push requires deriving a Content Encryption Key (CEK) and a Nonce
+            // using the shared secret, auth secret, and salt via HKDF-SHA256.
+            byte[] pseudoRandomKey = hkdfExtract(authSecret, sharedSecret);
+            byte[] cek = hkdfExpand(pseudoRandomKey, "Content-Encoding: aesgcm\0".getBytes(), 16);
+            byte[] nonce = hkdfExpand(pseudoRandomKey, "Content-Encoding: nonce\0".getBytes(), 12);
+
+            // 4. AES-GCM Decryption
+            Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+            cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(cek, "AES"), new GCMParameterSpec(128, nonce));
+
+            return cipher.doFinal(rawData);
+
+        } catch (Exception e) {
+            logger.error("Failed to decrypt FCM Web Push payload", e);
+            return new byte[0];
+        }
+    }
+
+    // --- HKDF Helpers (RFC 5869) ---
+    private byte[] hkdfExtract(byte[] salt, byte[] ikm) throws Exception {
+        Mac mac = Mac.getInstance("HmacSHA256");
+        mac.init(new SecretKeySpec(salt, "HmacSHA256"));
+        return mac.doFinal(ikm);
+    }
+
+    private byte[] hkdfExpand(byte[] prk, byte[] info, int length) throws Exception {
+        Mac mac = Mac.getInstance("HmacSHA256");
+        mac.init(new SecretKeySpec(prk, "HmacSHA256"));
+        mac.update(info);
+        mac.update((byte) 1); // Append counter
+        byte[] result = mac.doFinal();
+
+        byte[] truncated = new byte[length];
+        System.arraycopy(result, 0, truncated, 0, length);
+        return truncated;
     }
 
     // --- VarInt Helpers (Google's Base 128 Varints) ---

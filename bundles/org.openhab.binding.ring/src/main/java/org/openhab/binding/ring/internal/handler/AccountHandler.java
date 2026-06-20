@@ -262,20 +262,20 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         return refreshToken;
     }
 
-    private java.io.File getFcmCredentialsFile() {
+    private File getFcmCredentialsFile() {
         // Points to /var/lib/openhab/ring/fcm_credentials.properties (or Windows equivalent)
         String userData = System.getProperty("openhab.userdata");
-        java.io.File ringDir = new java.io.File(userData, "ring");
+        File ringDir = new java.io.File(userData, "ring");
         if (!ringDir.exists()) {
             ringDir.mkdirs();
         }
-        return new java.io.File(ringDir, "fcm_credentials_" + getThing().getUID().getId() + ".properties");
+        return new File(ringDir, "fcm_credentials_" + getThing().getUID().getId() + ".properties");
     }
 
     private Optional<FcmRegistrar.FcmCredentials> loadFcmCredentials() {
         File file = getFcmCredentialsFile();
         if (!file.exists()) {
-            return java.util.Optional.empty();
+            return Optional.empty();
         }
         try (FileInputStream fis = new FileInputStream(file)) {
             Properties props = new Properties();
@@ -284,9 +284,20 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
             String securityToken = props.getProperty("securityToken");
             String fcmToken = props.getProperty("fcmToken");
 
-            if (androidId != null && securityToken != null && fcmToken != null) {
-                // Record signature matched perfectly: (String, String, String)
-                return Optional.of(new FcmRegistrar.FcmCredentials(androidId, securityToken, fcmToken));
+            // NEW: Load the cryptographic keys
+            String privateKey = props.getProperty("privateKey");
+            String publicKey = props.getProperty("publicKey");
+            String authSecret = props.getProperty("authSecret");
+
+            // If ANY of these are null, the cache is invalid/outdated.
+            // Returning empty forces a fresh registration and key generation.
+            if (androidId != null && securityToken != null && fcmToken != null && privateKey != null
+                    && publicKey != null && authSecret != null) {
+
+                return Optional.of(new FcmRegistrar.FcmCredentials(androidId, securityToken, fcmToken, privateKey,
+                        publicKey, authSecret));
+            } else {
+                logger.warn("FCM credentials file is missing crypto keys. Forcing re-registration.");
             }
         } catch (Exception e) {
             logger.warn("Failed to load saved FCM credentials, will generate new ones.", e);
@@ -298,12 +309,18 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         File file = getFcmCredentialsFile();
         try (FileOutputStream fos = new FileOutputStream(file)) {
             Properties props = new Properties();
-            // Passing the Strings directly from the Record
+
             props.setProperty("androidId", creds.androidId());
             props.setProperty("securityToken", creds.securityToken());
             props.setProperty("fcmToken", creds.fcmToken());
-            props.store(fos, "Ring Binding FCM Credentials");
-            logger.debug("Successfully saved persistent FCM credentials to disk.");
+
+            // NEW: Save the cryptographic keys
+            props.setProperty("privateKey", creds.privateKey());
+            props.setProperty("publicKey", creds.publicKey());
+            props.setProperty("authSecret", creds.authSecret());
+
+            props.store(fos, "Ring Binding FCM Credentials with Web Push Keys");
+            logger.debug("Successfully saved persistent FCM credentials and crypto keys to disk.");
         } catch (Exception e) {
             logger.error("Failed to save FCM credentials to disk!", e);
         }
@@ -405,7 +422,6 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
 
                 // Attempt to connect via FCM by default
                 setupPushNotifications();
-                logger.debug("AccountHandler successfully survived FCM setup. Declaring ONLINE status next.");
                 updateStatus(ThingStatus.ONLINE);
             } catch (AuthenticationException ex) {
                 logger.debug("AuthenticationException when initializing Ring Account handler {}", ex.getMessage());
@@ -431,7 +447,6 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         try {
             // 1. Try to load persistent credentials from disk
             FcmRegistrar.FcmCredentials creds = loadFcmCredentials().orElse(null);
-            ;
 
             // 2. If missing, register with Google and save to disk
             if (creds == null) {
@@ -449,8 +464,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
 
             // 4. Connect the socket
             fcmClient = new FcmClient((String payload) -> handlePushEvent(payload),
-                    (Boolean status) -> onFcmStateChanged(status));
-
+                    (Boolean status) -> onFcmStateChanged(status), creds);
             fcmClient.connect(creds.androidId(), creds.securityToken());
 
         } catch (Exception e) {
@@ -475,13 +489,14 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     }
 
     private void handlePushEvent(String payloadJson) {
-        // The payloadJson contains the event details (ding, motion, etc.)
-        // Parse it using Gson just like you do in eventTick()
         logger.debug("Received INSTANT Push Event: {}", payloadJson);
 
-        // Example: if JSON indicates a Ding on Doorbell ID 12345
-        // updateState(CHANNEL_EVENT_KIND, new StringType("ding"));
-        // Thread.ofVirtual().start(() -> getVideo(event));
+        // We received a verified push notification from Ring.
+        // Instead of waiting for the next scheduled poll, instantly trigger
+        // the history fetch to update channels and download the video.
+        if (scheduler != null && !scheduler.isShutdown()) {
+            scheduler.execute(this::refreshEvent);
+        }
     }
 
     private void refreshRegistry() throws JsonParseException, AuthenticationException {

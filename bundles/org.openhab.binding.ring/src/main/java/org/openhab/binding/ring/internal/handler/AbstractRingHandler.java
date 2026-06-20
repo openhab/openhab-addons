@@ -17,7 +17,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.ring.internal.data.Tokens;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -101,22 +100,6 @@ public abstract class AbstractRingHandler extends BaseThingHandler {
         if (currentDeviceId == null || !currentDeviceId.matches("\\d+")) {
             logger.warn("FCM Subscription aborted: Extracted ID '{}' is missing or not numeric!", currentDeviceId);
             return;
-        }
-
-        if (accountBridge != null) {
-            Tokens currentTokens = accountBridge.getTokens();
-            if (currentTokens != null) {
-                try {
-                    // WE DO NOT NEED THIS! The AccountHandler already registered the socket.
-                    // accountBridge.getRestClient().subscribeDeviceToPush(currentDeviceId, currentTokens);
-
-                    fcmSubscribed = true;
-                    logger.debug("Bypassed per-device subscription for {}. Relying on Account-level FCM socket.",
-                            currentDeviceId);
-                } catch (Exception e) {
-                    logger.warn("Failed to subscribe device {} to FCM push events.", currentDeviceId, e);
-                }
-            }
         }
     }
 

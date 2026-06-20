@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.ring.internal.fcm;
 
+import java.security.KeyPairGenerator;
+import java.security.SecureRandom;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -42,16 +44,20 @@ import com.google.gson.JsonSyntaxException;
 public class FcmRegistrar {
 
     private static final Logger logger = LoggerFactory.getLogger(FcmRegistrar.class);
-
-    private static final String URL_CHECKIN = "https://android.clients.google.com/checkin";
-    private static final String URL_REGISTER = "https://android.clients.google.com/c2dm/register3";
-    private static final int CONNECTION_TIMEOUT = 12000;
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
     // Official Ring App Firebase Constants
     private static final String RING_SENDER_ID = "876313859327";
     private static final String RING_APP_ID = "1:876313859327:android:e10ec6ddb3c81f39";
     private static final String RING_PROJECT_ID = "ring-17770";
     private static final String RING_PACKAGE_NAME = "com.ringapp";
+    private static final String FCM_API_KEY = "AIzaSyCv-hdFBmmdBBJadNy-TFwB-xN_H5m3Bk8";
+
+    private static final String URL_CHECKIN = "https://android.clients.google.com/checkin";
+    private static final String URL_REGISTER = "https://android.clients.google.com/c2dm/register3";
+    private static final String URL_FIS = "https://firebaseinstallations.googleapis.com/v1/projects/" + RING_PROJECT_ID
+            + "/installations";
+    private static final int CONNECTION_TIMEOUT = 12000;
 
     private final HttpClient httpClient;
 
@@ -59,12 +65,6 @@ public class FcmRegistrar {
         this.httpClient = httpClient;
     }
 
-    /**
-     * Performs the full 2-step registration process to obtain an FCM token.
-     *
-     * @return FcmCredentials containing the androidId, securityToken, and fcmToken.
-     * @throws AuthenticationException if network communication or parsing fails.
-     */
     public FcmCredentials register() throws AuthenticationException {
         logger.debug("Starting FCM device registration flow");
 
@@ -72,11 +72,47 @@ public class FcmRegistrar {
         CheckinResult checkin = performAndroidCheckin();
         logger.debug("Android check-in successful. Android ID: {}", checkin.androidId());
 
-        // Step 2: Register the device specifically for the Ring application's FCM scope
-        String fcmToken = performC2dmRegistration(checkin.androidId(), checkin.securityToken());
+        // Step 2: Register with Firebase Installations (FIS)
+        String fisToken = performFirebaseInstallation();
+        logger.debug("Firebase Installation successful. FIS Token acquired.");
+
+        // Step 3: Register the device specifically for the Ring application's FCM scope
+        String fcmToken = performC2dmRegistration(checkin.androidId(), checkin.securityToken(), fisToken);
         logger.debug("FCM token generation successful.");
 
-        return new FcmCredentials(checkin.androidId(), checkin.securityToken(), fcmToken);
+        // Step 4: Generate the ECDH Web Push Keys
+        WebPushKeys keys;
+        try {
+            keys = generateWebPushKeys();
+        } catch (Exception e) {
+            throw new AuthenticationException("Failed to generate Web Push crypto keys: " + e.getMessage());
+        }
+
+        // Return all 6 strings cleanly in the constructor
+        return new FcmCredentials(checkin.androidId(), checkin.securityToken(), fcmToken, keys.privateKey(),
+                keys.publicKey(), keys.authSecret());
+    }
+
+    // Temporary record to hold the generated keys before we build the final credentials
+    private record WebPushKeys(String privateKey, String publicKey, String authSecret) {
+    }
+
+    private WebPushKeys generateWebPushKeys() throws Exception {
+        // Generate the Elliptic Curve Key Pair (P-256)
+        KeyPairGenerator keyGen = KeyPairGenerator.getInstance("EC");
+        keyGen.initialize(new java.security.spec.ECGenParameterSpec("secp256r1"));
+        java.security.KeyPair keyPair = keyGen.generateKeyPair();
+
+        // Generate a 16-byte cryptographically secure Auth Secret
+        byte[] authSecretBytes = new byte[16];
+        SECURE_RANDOM.nextBytes(authSecretBytes);
+
+        // Encode everything to Base64URL
+        java.util.Base64.Encoder encoder = java.util.Base64.getUrlEncoder().withoutPadding();
+
+        // Return the keys directly
+        return new WebPushKeys(encoder.encodeToString(keyPair.getPrivate().getEncoded()),
+                encoder.encodeToString(keyPair.getPublic().getEncoded()), encoder.encodeToString(authSecretBytes));
     }
 
     private CheckinResult performAndroidCheckin() throws AuthenticationException {
@@ -117,8 +153,41 @@ public class FcmRegistrar {
         }
     }
 
-    private String performC2dmRegistration(String androidId, String securityToken) throws AuthenticationException {
-        // Build the URL-encoded payload matching Ring's exact Firebase project setup
+    private String performFirebaseInstallation() throws AuthenticationException {
+        logger.debug("Performing Firebase Installation (FIS) registration...");
+
+        // The exact payload Claude identified for the FIS endpoint
+        String fisPayload = "{" + "\"appId\": \"" + RING_APP_ID + "\"," + "\"authVersion\": \"FIS_v2\","
+                + "\"sdkVersion\": \"a:16.3.3\"" + "}";
+
+        try {
+            Request request = httpClient.newRequest(URL_FIS).method(HttpMethod.POST)
+                    .timeout(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS).header("Content-Type", "application/json")
+                    // This is where the API Key actually belongs
+                    .header("x-goog-api-key", FCM_API_KEY).content(new StringContentProvider(fisPayload));
+
+            ContentResponse response = request.send();
+
+            if (response.getStatus() != HttpStatus.OK_200) {
+                throw new AuthenticationException("Firebase Installation failed with status: " + response.getStatus()
+                        + " " + response.getContentAsString());
+            }
+
+            // Parse the JSON to extract the nested authToken.token
+            JsonObject json = JsonParser.parseString(response.getContentAsString()).getAsJsonObject();
+            if (!json.has("authToken") || !json.getAsJsonObject("authToken").has("token")) {
+                throw new AuthenticationException("FIS response missing authToken");
+            }
+
+            return json.getAsJsonObject("authToken").get("token").getAsString();
+
+        } catch (Exception e) {
+            throw new AuthenticationException("Communication error during Firebase Installation: " + e.getMessage());
+        }
+    }
+
+    private String performC2dmRegistration(String androidId, String securityToken, String fisToken)
+            throws AuthenticationException {
         StringBuilder payloadBuilder = new StringBuilder();
         payloadBuilder.append("sender=").append(RING_SENDER_ID).append("&X-subtype=").append(RING_SENDER_ID)
                 .append("&device=").append(androidId).append("&app=").append(RING_PACKAGE_NAME).append("&X-app_id=")
@@ -129,6 +198,8 @@ public class FcmRegistrar {
                     .timeout(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS)
                     .header("Authorization", "AidLogin " + androidId + ":" + securityToken)
                     .header("Content-Type", "application/x-www-form-urlencoded")
+                    // NEW: Inject the FIS token to validate the registration
+                    .header("X-Goog-Firebase-Installations-Auth", fisToken)
                     .content(new StringContentProvider(payloadBuilder.toString()));
 
             ContentResponse response = request.send();
@@ -164,9 +235,10 @@ public class FcmRegistrar {
     }
 
     /**
-     * Holds the complete set of credentials required to open the MCS socket
-     * and subscribe the Ring account to push notifications.
+     * Holds the complete set of credentials required to open the MCS socket,
+     * subscribe to Ring push notifications, and decrypt Web Push payloads.
      */
-    public record FcmCredentials(String androidId, String securityToken, String fcmToken) {
+    public record FcmCredentials(String androidId, String securityToken, String fcmToken, String privateKey,
+            String publicKey, String authSecret) {
     }
 }
