@@ -23,6 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -68,6 +69,9 @@ public class LinkPlayUpnpClient implements UpnpIOParticipant, LinkPlayUpnpComman
     private @Nullable RemoteDevice remoteDevice;
     private String udn = "";
     private volatile boolean disposed;
+    // Monotonic timestamp of the last UPnP value (GENA event) received, used by the handler's event watchdog to detect
+    // silently dead subscriptions.
+    private volatile long lastValueNanos = System.nanoTime();
 
     public LinkPlayUpnpClient(LinkPlayUpnpClientHandler handler, UpnpIOService upnpIOService, UpnpService upnpService,
             ScheduledExecutorService scheduler) {
@@ -131,6 +135,9 @@ public class LinkPlayUpnpClient implements UpnpIOParticipant, LinkPlayUpnpComman
 
     @Override
     public void onValueReceived(@Nullable String variable, @Nullable String value, @Nullable String service) {
+        // Stamp the time on every received value (including high-frequency position updates): any value proves the GENA
+        // subscription is still delivering, which is what the event watchdog checks for.
+        lastValueNanos = System.nanoTime();
         if (!handler.shouldProcessUpnpEvents()) {
             logger.debug("{}: onValueReceived: handler is not ready to process UPnP events", udn);
             return;
@@ -270,6 +277,24 @@ public class LinkPlayUpnpClient implements UpnpIOParticipant, LinkPlayUpnpComman
 
     public void clearSubscriptionState() {
         subscriptionState.clear();
+    }
+
+    /**
+     * Forces a clean GENA resubscription cycle by tearing down the current subscriptions and creating fresh ones. This
+     * sidesteps jUPnP's in-place renewal (which LinkPlay devices frequently fail to honor) by obtaining a brand new
+     * subscription id, and is used by the handler's event watchdog to recover a silently dead subscription.
+     * ({@link #removeSubscriptions()} already clears the subscription state.)
+     */
+    public void resubscribe() {
+        removeSubscriptions();
+        addSubscriptions();
+    }
+
+    /**
+     * @return the number of seconds since the last UPnP value (GENA event) was received, based on a monotonic clock
+     */
+    public long secondsSinceLastValue() {
+        return TimeUnit.NANOSECONDS.toSeconds(System.nanoTime() - lastValueNanos);
     }
 
     public boolean isFullySubscribed() {
