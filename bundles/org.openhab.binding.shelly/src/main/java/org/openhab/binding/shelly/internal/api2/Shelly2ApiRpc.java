@@ -835,9 +835,11 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     @Override
     public ShellyShortLightStatus getLightStatus(int index) throws ShellyApiException {
+        ShellyDeviceProfile profile = getProfile();
+        String method = SHELLY2_PROFILE_CCTX2.equals(getString(profile.device.profile)) ? SHELLYRPC_METHOD_CCT_STATUS
+                : SHELLYRPC_METHOD_LIGHT_STATUS;
         ShellyShortLightStatus status = new ShellyShortLightStatus();
-        Shelly2DeviceStatusLight ls = apiRequest(
-                new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_LIGHT_STATUS).withId(index),
+        Shelly2DeviceStatusLight ls = apiRequest(new Shelly2RpcRequest().withMethod(method).withId(index),
                 Shelly2DeviceStatusLight.class);
         status.ison = ls.output;
         status.hasTimer = ls.timerStartedAt != null;
@@ -851,19 +853,27 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     @Override
     public void setBrightness(int id, int brightness, boolean autoOn) throws ShellyApiException {
+        ShellyDeviceProfile profile = getProfile();
         Shelly2RpcRequestParams params = new Shelly2RpcRequestParams();
         params.id = id;
-        params.brightness = brightness;
+        if (brightness > 0) {
+            params.brightness = brightness;
+        }
         params.on = brightness > 0;
-        apiRequest(SHELLYRPC_METHOD_LIGHT_SET, params, String.class);
+        String method = SHELLY2_PROFILE_CCTX2.equals(getString(profile.device.profile)) ? SHELLYRPC_METHOD_CCT_SET
+                : SHELLYRPC_METHOD_LIGHT_SET;
+        apiRequest(method, params, String.class);
     }
 
     @Override
     public ShellyShortLightStatus setLightTurn(int id, String turnMode) throws ShellyApiException {
+        ShellyDeviceProfile profile = getProfile();
         Shelly2RpcRequestParams params = new Shelly2RpcRequestParams();
         params.id = id;
         params.on = turnMode.equals(SHELLY_API_ON);
-        apiRequest(SHELLYRPC_METHOD_LIGHT_SET, params, String.class);
+        String method = SHELLY2_PROFILE_CCTX2.equals(getString(profile.device.profile)) ? SHELLYRPC_METHOD_CCT_SET
+                : SHELLYRPC_METHOD_LIGHT_SET;
+        apiRequest(method, params, String.class);
         return getLightStatus(id);
     }
 
