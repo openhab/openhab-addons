@@ -122,7 +122,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
             Archetype.HUE_LIGHTSTRIP_TV, Archetype.HUE_TUBE, Archetype.STRING_LIGHT, Archetype.CHRISTMAS_TREE);
 
     private static final Duration DYNAMICS_ACTIVE_WINDOW = Duration.ofSeconds(10);
-
     private static final String LK_WISER_DIMMER_MODEL_ID = "LK Dimmer";
 
     private final Logger logger = LoggerFactory.getLogger(Clip2ThingHandler.class);
@@ -215,6 +214,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private boolean updatePropertiesDone;
     private boolean updateDependenciesDone;
     private boolean applyOffTransitionWorkaround;
+    private @Nullable Long pendingColorTemperatureMirek;
 
     private @Nullable Future<?> alertResetTask;
     private @Nullable Future<?> dynamicsResetTask;
@@ -315,6 +315,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
         serviceContributorsCache.clear();
         controlIds.clear();
         extendedResourceTypes.clear();
+        pendingColorTemperatureMirek = null;
     }
 
     /**
@@ -606,13 +607,19 @@ public class Clip2ThingHandler extends BaseThingHandler {
         }
 
         putResource.setId(putResourceId);
+        rememberPendingColorTemperature(lightResourceType, channelId, cache, putResource, putResourceId);
+        applyPendingColorTemperatureForSwitchOn(channelId, putResource);
         logger.debug("{} -> handleCommand() put resource {}", resourceId, putResource);
 
         try {
             Resources resources = getBridgeHandler().putResource(putResource);
             if (resources.hasErrors()) {
-                logger.info("Command '{}' for thing '{}', channel '{}' succeeded with errors: {}", command,
+                logger.debug("Command '{}' for thing '{}', channel '{}' succeeded with errors: {}", command,
                         thing.getUID(), channelUID, String.join("; ", resources.getErrors()));
+            } else if (OnOffType.ON.equals(putResource.getOnOffState())
+                    || CHANNEL_2_COLOR_TEMP_PERCENT.equals(channelId)
+                    || CHANNEL_2_COLOR_TEMP_ABSOLUTE.equals(channelId)) {
+                pendingColorTemperatureMirek = null;
             }
         } catch (ApiException | AssetNotLoadedException e) {
             if (logger.isDebugEnabled()) {
@@ -653,6 +660,42 @@ public class Clip2ThingHandler extends BaseThingHandler {
         }
 
         return command;
+    }
+
+    private void applyPendingColorTemperatureForSwitchOn(String channelId, Resource putResource) {
+        Long pendingMirek = pendingColorTemperatureMirek;
+        if (Objects.isNull(pendingMirek) || !OnOffType.ON.equals(putResource.getOnOffState())
+                || Objects.nonNull(putResource.getColorTemperature()) || CHANNEL_2_COLOR.equals(channelId)
+                || CHANNEL_2_COLOR_XY_ONLY.equals(channelId) || CHANNEL_2_EFFECT.equals(channelId)) {
+            return;
+        }
+        putResource.setColorTemperature(new ColorTemperature().setMirek(pendingMirek));
+    }
+
+    private void rememberPendingColorTemperature(ResourceType lightResourceType, String channelId,
+            @Nullable Resource cache, Resource putResource, String putResourceId) {
+        if (!CHANNEL_2_COLOR_TEMP_PERCENT.equals(channelId) && !CHANNEL_2_COLOR_TEMP_ABSOLUTE.equals(channelId)) {
+            return;
+        }
+        ColorTemperature colorTemperature = putResource.getColorTemperature();
+        Long mirek = Objects.nonNull(colorTemperature) ? colorTemperature.getMirek() : null;
+        if (Objects.nonNull(mirek)) {
+            pendingColorTemperatureMirek = mirek;
+            updateColorTemperatureCache(lightResourceType, cache, putResourceId, mirek);
+        }
+    }
+
+    private void updateColorTemperatureCache(ResourceType lightResourceType, @Nullable Resource cache,
+            String putResourceId, long mirek) {
+        Resource cachedResource = Objects.nonNull(cache) ? cache : serviceContributorsCache.get(putResourceId);
+        if (Objects.isNull(cachedResource)) {
+            cachedResource = new Resource(lightResourceType).setId(putResourceId);
+            serviceContributorsCache.put(putResourceId, cachedResource);
+        }
+        MirekSchema mirekSchema = cachedResource.getMirekSchema();
+        cachedResource.setColorTemperature(new ColorTemperature().setMirek(mirek).setMirekSchema(mirekSchema));
+        updateState(CHANNEL_2_COLOR_TEMP_PERCENT, cachedResource.getColorTemperaturePercentState(), false);
+        updateState(CHANNEL_2_COLOR_TEMP_ABSOLUTE, cachedResource.getColorTemperatureAbsoluteState(), false);
     }
 
     private void refreshAllChannels() {
@@ -732,6 +775,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
         updateDependenciesDone = false;
         updateLightPropertiesDone = false;
         updateSceneContributorsDone = false;
+        pendingColorTemperatureMirek = null;
 
         Bridge bridge = getBridge();
         if (Objects.nonNull(bridge)) {
