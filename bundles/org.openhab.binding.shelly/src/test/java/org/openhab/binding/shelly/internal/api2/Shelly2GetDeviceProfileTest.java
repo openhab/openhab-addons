@@ -24,6 +24,7 @@ import java.util.Objects;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -450,7 +451,9 @@ public class Shelly2GetDeviceProfileTest {
         ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYPLUSRGBWPM, deviceInfo());
         assertThat(profile.isRGBW2, is(true));
         assertThat(profile.inColor, is(true));
-        assertThat(profile.settings.lights != null && profile.settings.lights.size() == 1, is(true));
+        var lights1 = profile.settings.lights;
+        Assertions.assertNotNull(lights1);
+        assertThat(lights1.size(), is(1));
     }
 
     @Test
@@ -462,7 +465,9 @@ public class Shelly2GetDeviceProfileTest {
         ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYPLUSRGBWPM, deviceInfo());
         assertThat(profile.isRGBW2, is(true));
         assertThat(profile.inColor, is(true));
-        assertThat(profile.settings.lights != null && profile.settings.lights.size() == 1, is(true));
+        var lights2 = profile.settings.lights;
+        Assertions.assertNotNull(lights2);
+        assertThat(lights2.size(), is(1));
     }
 
     @Test
@@ -474,7 +479,9 @@ public class Shelly2GetDeviceProfileTest {
         ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYPLUSRGBWPM, deviceInfo());
         assertThat(profile.isRGBW2, is(true));
         assertThat(profile.inColor, is(false));
-        assertThat(profile.settings.lights != null && profile.settings.lights.size() == 4, is(true));
+        var lights4 = profile.settings.lights;
+        Assertions.assertNotNull(lights4);
+        assertThat(lights4.size(), is(4));
     }
 
     @Test
@@ -498,6 +505,8 @@ public class Shelly2GetDeviceProfileTest {
         ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYPRORGBWWPM, deviceInfo());
         assertThat(profile.isRGBW2, is(true));
         assertThat(profile.inColor, is(false));
-        assertThat(profile.settings.lights != null && profile.settings.lights.size() == 5, is(true));
+        var lights5 = profile.settings.lights;
+        Assertions.assertNotNull(lights5);
+        assertThat(lights5.size(), is(5));
     }
 }

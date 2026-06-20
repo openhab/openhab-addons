@@ -584,6 +584,8 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         updated |= updateLightModeStatus(2, status, result.light2, channelUpdate);
         updated |= updateLightModeStatus(3, status, result.light3, channelUpdate);
         updated |= updateLightModeStatus(4, status, result.light4, channelUpdate);
+        updated |= updateLightModeStatus(0, status, result.cct0, channelUpdate);
+        updated |= updateLightModeStatus(1, status, result.cct1, channelUpdate);
         if (channelUpdate) {
             updated |= ShellyComponents.updateMeters(getThing(), status);
         }
@@ -1143,16 +1145,21 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         }
 
         ArrayList<@Nullable ShellySettingsRgbwLight> lights = new ArrayList<>();
-        if (dc.rgbw0 != null) {
+        Shelly2GetConfigLight rgbw0 = dc.rgbw0;
+        Shelly2GetConfigLight rgb0 = dc.rgb0;
+        if (rgbw0 != null) {
             profile.inColor = true;
-            lights.add(createRgbwLightSetting(dc.rgbw0));
-        } else if (dc.rgb0 != null) {
+            lights.add(createRgbwLightSetting(rgbw0));
+        } else if (rgb0 != null) {
             profile.inColor = true;
-            lights.add(createRgbwLightSetting(dc.rgb0));
+            lights.add(createRgbwLightSetting(rgb0));
         } else {
             profile.inColor = false;
-            Shelly2GetConfigLight[] lightConfigs = { dc.light0, dc.light1, dc.light2, dc.light3, dc.light4 };
-            for (Shelly2GetConfigLight lc : lightConfigs) {
+            @Nullable
+            Shelly2GetConfigLight[] lightConfigs = { dc.light0, dc.light1, dc.light2, dc.light3, dc.light4, dc.cct0,
+                    dc.cct1 };
+            for (@Nullable
+            Shelly2GetConfigLight lc : lightConfigs) {
                 if (lc != null) {
                     lights.add(createRgbwLightSetting(lc));
                 }
@@ -1181,8 +1188,9 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         if (value.id == null) { // fw 1.6.1
             value.id = id;
         }
+        int dimmerId = getInteger(value.id);
 
-        ShellyShortLightStatus ds = status.dimmers.get(value.id);
+        ShellyShortLightStatus ds = status.dimmers.get(dimmerId);
         Double brightness = value.brightness;
         if (brightness != null) {
             ds.brightness = brightness.intValue();
@@ -1190,7 +1198,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         ds.ison = value.output;
         ds.hasTimer = value.timerStartedAt != null;
         ds.timerDuration = getDuration(value.timerStartedAt, value.timerDuration);
-        status.dimmers.set(value.id, ds);
+        status.dimmers.set(dimmerId, ds);
         return channelUpdate ? ShellyComponents.updateDimmers(getThing(), status) : false;
     }
 
@@ -1203,8 +1211,9 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         if (value.id == null) {
             value.id = id;
         }
+        int rgbwId = getInteger(value.id);
 
-        ShellySettingsLight ds = status.lights.get(value.id);
+        ShellySettingsLight ds = status.lights.get(rgbwId);
         ds.brightness = Objects.requireNonNullElse(value.brightness, ds.brightness).intValue();
         if (value.rgb != null) {
             ds.red = value.rgb[0];
@@ -1214,7 +1223,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         ds.white = Objects.requireNonNullElse(value.white, ds.white);
         ds.ison = value.output;
 
-        status.lights.set(value.id, ds);
+        status.lights.set(rgbwId, ds);
         return channelUpdate ? ShellyComponents.updateRGBW(getThing(), status) : false;
     }
 
@@ -1227,11 +1236,12 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         if (value.id == null) {
             value.id = id;
         }
+        int lightId = getInteger(value.id);
         List<@Nullable ShellySettingsLight> lights = status.lights;
-        if (lights == null || value.id >= lights.size()) {
+        if (lights == null || lightId >= lights.size()) {
             return false;
         }
-        ShellySettingsLight ds = lights.get(value.id);
+        ShellySettingsLight ds = lights.get(lightId);
         if (ds == null) {
             return false;
         }
@@ -1240,7 +1250,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             ds.brightness = brightness.intValue();
         }
         ds.ison = value.output;
-        lights.set(value.id, ds);
+        lights.set(lightId, ds);
         return false; // channel updates deferred to getLightStatus() polling cycle
     }
 

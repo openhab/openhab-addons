@@ -799,18 +799,21 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                     lightChannel.blue = ls.rgb[2];
                 }
                 lightChannel.white = ls.white;
-                if (ls.brightness != null) {
-                    lightChannel.brightness = ls.brightness.intValue();
+                Double rgbBrightness = ls.brightness;
+                if (rgbBrightness != null) {
+                    lightChannel.brightness = rgbBrightness.intValue();
                 }
                 lightChannel.ison = ls.output;
                 status.lights.add(lightChannel);
                 status.ison = ls.output;
             } else {
+                String rawProfile = getString(profile.device.profile);
+                String lightMethod = SHELLY2_PROFILE_CCTX2.equals(rawProfile) ? SHELLYRPC_METHOD_CCT_STATUS
+                        : SHELLYRPC_METHOD_LIGHT_STATUS;
                 List<@Nullable ShellySettingsRgbwLight> settingLights = profile.settings.lights;
                 int numLights = settingLights != null ? settingLights.size() : 1;
                 for (int i = 0; i < numLights; i++) {
-                    Shelly2DeviceStatusLight ls = apiRequest(
-                            new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_LIGHT_STATUS).withId(i),
+                    Shelly2DeviceStatusLight ls = apiRequest(new Shelly2RpcRequest().withMethod(lightMethod).withId(i),
                             Shelly2DeviceStatusLight.class);
                     ShellyStatusLightChannel lightChannel = new ShellyStatusLightChannel();
                     lightChannel.ison = ls.output;
