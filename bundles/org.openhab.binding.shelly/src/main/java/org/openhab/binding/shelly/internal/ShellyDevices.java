@@ -638,7 +638,7 @@ public class ShellyDevices {
             Map.entry("shellydimmerg3", THING_TYPE_SHELLYPLUSDIMMER),
             Map.entry("shellyprodm2pm", THING_TYPE_SHELLYPRODM2PM),
             Map.entry("shellyplusrgbwpm", THING_TYPE_SHELLYPLUSRGBWPM),
-            Map.entry("shellyprorgbwwpm", THING_TYPE_SHELLYPRORGBWWPM), // TODO: verify firmware id field
+            Map.entry("shellyprorgbwwpm", THING_TYPE_SHELLYPRORGBWWPM),
             Map.entry("shellyplusstrip", THING_TYPE_SHELLYPLUSSTRIP),
             Map.entry("shellyblugw", THING_TYPE_SHELLYPLUSBLUGW), //
             Map.entry("shellyblugwg3", THING_TYPE_SHELLYPLUSBLUGW), //
