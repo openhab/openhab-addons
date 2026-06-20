@@ -19,8 +19,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +41,6 @@ public abstract class AbstractRingHandler extends BaseThingHandler {
 
     // Scheduler
     protected @Nullable ScheduledFuture<?> refreshJob;
-    private boolean fcmSubscribed = false; // NEW: Tracks successful FCM subscription
 
     protected AbstractRingHandler(Thing thing) {
         super(thing);
@@ -52,55 +49,6 @@ public abstract class AbstractRingHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.debug("Initializing AbstractRingHandler for {}", getThing().getUID());
-
-        // Attempt subscription immediately in case the bridge is ALREADY online
-        checkAndSubscribeFCM();
-    }
-
-    @Override
-    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        super.bridgeStatusChanged(bridgeStatusInfo);
-
-        // Attempt subscription if the bridge JUST came online
-        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
-            logger.debug("Account Bridge went ONLINE. Triggering FCM check.");
-            checkAndSubscribeFCM();
-        }
-    }
-
-    private void checkAndSubscribeFCM() {
-        logger.debug("FCM Check: Evaluating push subscription for {}", getThing().getUID());
-
-        if (fcmSubscribed) {
-            return;
-        }
-
-        if (getBridge() == null || getBridge().getStatus() != ThingStatus.ONLINE) {
-            return;
-        }
-
-        AccountHandler accountBridge = (AccountHandler) getBridge().getHandler();
-        String currentDeviceId = null;
-
-        // 1. Target the Configuration map for config.id
-        Object configId = getThing().getConfiguration().get("id");
-        if (configId != null) {
-            currentDeviceId = String.valueOf(configId);
-        }
-
-        // 2. Fallbacks just in case older cameras use properties
-        if (currentDeviceId == null) {
-            currentDeviceId = getThing().getProperties().get("doorbotId");
-        }
-        if (currentDeviceId == null) {
-            currentDeviceId = getThing().getProperties().get("id");
-        }
-
-        // Validate that we have a purely numeric ID before sending it to the Ring API
-        if (currentDeviceId == null || !currentDeviceId.matches("\\d+")) {
-            logger.warn("FCM Subscription aborted: Extracted ID '{}' is missing or not numeric!", currentDeviceId);
-            return;
-        }
     }
 
     /**
@@ -115,11 +63,6 @@ public abstract class AbstractRingHandler extends BaseThingHandler {
 
     private void refresh() {
         try {
-            // Self-healing FCM check: Ensures the device subscribes even if initialize() is overridden
-            if (!fcmSubscribed) {
-                checkAndSubscribeFCM();
-            }
-
             minuteTick();
         } catch (final Exception e) {
             logger.debug("AbstractHandler - Exception occurred during execution of startAutomaticRefresh(): {}",
