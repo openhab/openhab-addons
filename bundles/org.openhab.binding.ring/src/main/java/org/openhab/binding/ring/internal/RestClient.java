@@ -91,7 +91,7 @@ public class RestClient {
     private void validateResponse(ContentResponse response) throws AuthenticationException {
         int responseCode = response.getStatus();
         switch (responseCode) {
-            case HttpStatus.OK_200, HttpStatus.CREATED_201:
+            case HttpStatus.OK_200, HttpStatus.CREATED_201, HttpStatus.NO_CONTENT_204:
                 return; // Success
             case HttpStatus.BAD_REQUEST_400:
                 throw new AuthenticationException("Bad request");
@@ -421,12 +421,19 @@ public class RestClient {
         }
     }
 
-    public void sendCommand(String endpoint, Tokens tokens) throws AuthenticationException {
-        sendCommand(endpoint, HttpMethod.PUT, null, tokens);
-    }
-
     public void sendCommand(String endpoint, HttpMethod httpMethod, @Nullable String payload, Tokens tokens)
             throws AuthenticationException {
+        // Delegate to the new main method with an empty header map
+        sendCommand(endpoint, httpMethod, payload, Map.of(), tokens);
+    }
+
+    public void sendCommand(String endpoint, Tokens tokens) throws AuthenticationException {
+        // Delegate to the main method with an empty header map
+        sendCommand(endpoint, HttpMethod.PUT, null, Map.of(), tokens);
+    }
+
+    public void sendCommand(String endpoint, HttpMethod httpMethod, @Nullable String payload,
+            Map<String, String> additionalHeaders, Tokens tokens) throws AuthenticationException {
         try {
             Request request = httpClient.newRequest(endpoint);
             request.method(httpMethod);
@@ -434,11 +441,16 @@ public class RestClient {
             request.agent(ApiConstants.API_USER_AGENT);
             request.header(HttpHeader.AUTHORIZATION.asString(), "Bearer " + tokens.accessToken());
 
+            // Add any custom headers (like hardware_id)
+            additionalHeaders.forEach(request::header);
+
             if (payload != null) {
                 request.content(new StringContentProvider(payload), "application/json");
             }
+
             ContentResponse response = request.send();
             validateResponse(response);
+
         } catch (InterruptedException e) {
             logger.warn("RestApi error in sendCommand!", e);
             Thread.currentThread().interrupt();
@@ -450,13 +462,28 @@ public class RestClient {
     /**
      * Subscribes the provided FCM token to Ring's push notification events.
      */
-    public void subscribeToPushNotifications(String fcmToken, Tokens tokens) throws AuthenticationException {
-        // Adjust endpoint based on Ring API requirements
-        String payload = "{\"device_token\":\"" + fcmToken + "\"}";
-        Map<String, String> additionalHeaders = new HashMap<>();
-        additionalHeaders.put("Content-Type", "application/json");
+    public void subscribeToPushNotifications(String fcmToken, String hardwareId, Tokens tokens)
+            throws AuthenticationException {
+        String userAgent = "android:com.ringapp";
+        String deviceModel = "ring-doorbell:" + userAgent;
 
-        // The specific Ring API endpoint for registering a client for push notifications
-        postRequest(ApiConstants.API_BASE + "/clients", payload, additionalHeaders, tokens);
+        String payload = "{" + "\"device\": {" + "\"metadata\": {" + "\"api_version\": \"11\"," + "\"device_model\": \""
+                + deviceModel + "\"," + "\"pn_dict_version\": \"2.0.0\"," + "\"pn_service\": \"fcm\"" + "},"
+                + "\"os\": \"android\"," + "\"push_notification_token\": \"" + fcmToken + "\"" + "}" + "}";
+        Map<String, String> headers = new HashMap<>();
+
+        // The hardware_id must be sent as a header (this fixes the 500 Internal Server Error)
+        headers.put("hardware_id", hardwareId);
+
+        // Ring strictly requires this Accept header to route the PATCH request to the correct controller
+        headers.put("Accept", "application/json; api_version=11");
+
+        sendCommand(ApiConstants.API_BASE + "/clients_api/device", HttpMethod.PATCH, payload, headers, tokens);
+    }
+
+    public void subscribeDeviceToPush(String deviceId, Tokens tokens) throws AuthenticationException {
+        // Send a valid empty JSON object "{}" so the Ring server doesn't crash during parsing
+        sendCommand(ApiConstants.API_BASE + "/clients_api/doorbots/" + deviceId + "/subscribe", HttpMethod.POST, "{}",
+                tokens);
     }
 }

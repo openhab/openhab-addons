@@ -15,12 +15,16 @@ package org.openhab.binding.ring.internal.handler;
 import static org.openhab.binding.ring.RingBindingConstants.*;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -146,6 +150,14 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         }
     }
 
+    public RestClient getRestClient() {
+        return this.restClient;
+    }
+
+    public @Nullable Tokens getTokens() {
+        return this.tokens;
+    }
+
     private void handleRefresh(ChannelUID channelUID) {
         boolean eventListOk = lastEvents.size() > eventIndex;
         if (!eventListOk && !channelUID.getId().equals(CHANNEL_CONTROL_ENABLED)) {
@@ -250,6 +262,53 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         return refreshToken;
     }
 
+    private java.io.File getFcmCredentialsFile() {
+        // Points to /var/lib/openhab/ring/fcm_credentials.properties (or Windows equivalent)
+        String userData = System.getProperty("openhab.userdata");
+        java.io.File ringDir = new java.io.File(userData, "ring");
+        if (!ringDir.exists()) {
+            ringDir.mkdirs();
+        }
+        return new java.io.File(ringDir, "fcm_credentials_" + getThing().getUID().getId() + ".properties");
+    }
+
+    private Optional<FcmRegistrar.FcmCredentials> loadFcmCredentials() {
+        File file = getFcmCredentialsFile();
+        if (!file.exists()) {
+            return java.util.Optional.empty();
+        }
+        try (FileInputStream fis = new FileInputStream(file)) {
+            Properties props = new Properties();
+            props.load(fis);
+            String androidId = props.getProperty("androidId");
+            String securityToken = props.getProperty("securityToken");
+            String fcmToken = props.getProperty("fcmToken");
+
+            if (androidId != null && securityToken != null && fcmToken != null) {
+                // Record signature matched perfectly: (String, String, String)
+                return Optional.of(new FcmRegistrar.FcmCredentials(androidId, securityToken, fcmToken));
+            }
+        } catch (Exception e) {
+            logger.warn("Failed to load saved FCM credentials, will generate new ones.", e);
+        }
+        return Optional.empty();
+    }
+
+    private void saveFcmCredentials(FcmRegistrar.FcmCredentials creds) {
+        File file = getFcmCredentialsFile();
+        try (FileOutputStream fos = new FileOutputStream(file)) {
+            Properties props = new Properties();
+            // Passing the Strings directly from the Record
+            props.setProperty("androidId", creds.androidId());
+            props.setProperty("securityToken", creds.securityToken());
+            props.setProperty("fcmToken", creds.fcmToken());
+            props.store(fos, "Ring Binding FCM Credentials");
+            logger.debug("Successfully saved persistent FCM credentials to disk.");
+        } catch (Exception e) {
+            logger.error("Failed to save FCM credentials to disk!", e);
+        }
+    }
+
     public void doLogin(String username, String password, String twofactorCode) {
         logger.debug("doLogin U:{} P:{} 2:{}", RingUtils.sanitizeData(username), RingUtils.sanitizeData(password),
                 RingUtils.sanitizeData(twofactorCode));
@@ -346,6 +405,8 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
 
                 // Attempt to connect via FCM by default
                 setupPushNotifications();
+                logger.debug("AccountHandler successfully survived FCM setup. Declaring ONLINE status next.");
+                updateStatus(ThingStatus.ONLINE);
             } catch (AuthenticationException ex) {
                 logger.debug("AuthenticationException when initializing Ring Account handler {}", ex.getMessage());
                 String message = ex.getMessage();
@@ -368,17 +429,32 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
 
     private void setupPushNotifications() {
         try {
-            // Use the class field httpClient directly
-            FcmRegistrar registrar = new FcmRegistrar(httpClient);
-            FcmRegistrar.FcmCredentials creds = registrar.register();
-            restClient.subscribeToPushNotifications(creds.fcmToken(), tokens);
+            // 1. Try to load persistent credentials from disk
+            FcmRegistrar.FcmCredentials creds = loadFcmCredentials().orElse(null);
+            ;
 
+            // 2. If missing, register with Google and save to disk
+            if (creds == null) {
+                logger.info("No persistent FCM credentials found. Registering as a new Android device...");
+                FcmRegistrar registrar = new FcmRegistrar(httpClient);
+                creds = registrar.register();
+                saveFcmCredentials(creds);
+            } else {
+                logger.debug("Loaded persistent FCM credentials from disk. Reusing Android session.");
+            }
+
+            // 3. Always bind the token to the Ring account session on startup
+            logger.debug("Binding FCM Token with Ring backend...");
+            restClient.subscribeToPushNotifications(creds.fcmToken(), config.hardwareId, tokens);
+
+            // 4. Connect the socket
             fcmClient = new FcmClient((String payload) -> handlePushEvent(payload),
                     (Boolean status) -> onFcmStateChanged(status));
+
             fcmClient.connect(creds.androidId(), creds.securityToken());
 
         } catch (Exception e) {
-            logger.warn("FCM Registration failed. Network restricted? Falling back to HTTP polling.", e);
+            logger.warn("FCM Setup failed. Network restricted? Falling back to HTTP polling.", e);
             onFcmStateChanged(false);
         }
     }

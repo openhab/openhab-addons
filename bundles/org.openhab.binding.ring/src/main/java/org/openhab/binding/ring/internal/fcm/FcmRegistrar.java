@@ -107,10 +107,10 @@ public class FcmRegistrar {
 
             return new CheckinResult(androidId, securityToken);
 
-        } catch (ExecutionException | TimeoutException | InterruptedException e) {
-            if (e instanceof InterruptedException) {
-                Thread.currentThread().interrupt();
-            }
+        } catch (ExecutionException | TimeoutException e) {
+            throw new AuthenticationException("Communication error during Android check-in: " + e.getMessage());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             throw new AuthenticationException("Communication error during Android check-in: " + e.getMessage());
         } catch (JsonSyntaxException e) {
             throw new AuthenticationException("Failed to parse Google check-in response: " + e.getMessage());
@@ -148,11 +148,13 @@ public class FcmRegistrar {
                 throw new AuthenticationException("Unexpected FCM registration response format");
             }
 
-        } catch (ExecutionException | TimeoutException | InterruptedException e) {
-            if (e instanceof InterruptedException) {
-                Thread.currentThread().interrupt();
-            }
-            throw new AuthenticationException("Communication error during FCM registration: " + e.getMessage());
+        } catch (ExecutionException | TimeoutException e) {
+            throw new AuthenticationException("Communication error during Android check-in: " + e.getMessage());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new AuthenticationException("Communication error during Android check-in: " + e.getMessage());
+        } catch (JsonSyntaxException e) {
+            throw new AuthenticationException("Failed to parse Google check-in response: " + e.getMessage());
         }
     }
 

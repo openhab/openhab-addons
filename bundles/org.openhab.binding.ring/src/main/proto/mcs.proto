@@ -18,7 +18,14 @@ message LoginRequest {
 
 message LoginResponse {
   required string id = 1;
-  optional ErrorInfo error = 2;
+  optional string jid = 2;
+  optional ErrorInfo error = 3;
+  repeated Setting setting = 4;
+  optional int32 stream_id = 5;
+  optional int32 last_stream_id_received = 6;
+  optional string server_version = 7;
+  optional int64 server_timestamp = 8;
+  optional ErrorInfo error_info = 9;
 }
 
 message HeartbeatPing { }
