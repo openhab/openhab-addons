@@ -614,7 +614,7 @@ public class ShellyChannelDefinitions {
         addChannel(thing, newChannels, ws90 || sdata.tmp != null || sdata.thermostats != null, CHANNEL_GROUP_SENSOR,
                 CHANNEL_SENSOR_TEMP);
         addChannel(thing, newChannels, ws90 || sdata.hum != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_HUM);
-        addChannel(thing, newChannels, ws90 || (sdata.lux != null && sdata.lux.value != null), CHANNEL_GROUP_SENSOR,
+        addChannel(thing, newChannels, sdata.lux != null && sdata.lux.value != null, CHANNEL_GROUP_SENSOR,
                 CHANNEL_SENSOR_LUX);
         addChannel(thing, newChannels, sdata.lux != null && sdata.lux.illumination != null, CHANNEL_GROUP_SENSOR,
                 CHANNEL_SENSOR_ILLUM);

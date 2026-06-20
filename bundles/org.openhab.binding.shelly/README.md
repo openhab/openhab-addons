@@ -1918,22 +1918,21 @@ See notes on discovery of Shelly BLU devices above.
 
 | Group   | Channel       | Type                 | read-only | Description                                                                         |
 | ------- | ------------- | -------------------- | --------- | ----------------------------------------------------------------------------------- |
-| sensors | lux           | Number:Illuminance   | yes       | Brightness in Lux                                                                   |
+| sensors | temperature   | Number:Temperature   | yes       | Temperature in degrees Celsius                                                      |
+|         | humidity      | Number:Dimensionless | yes       | Relative humidity in %                                                              |
 |         | uvIndex       | Number               | yes       | UV Index (dimensionless, 0-11+)                                                     |
 |         | windSpeed     | Number:Speed         | yes       | Wind speed in m/s                                                                   |
 |         | windDirection | Number:Angle         | yes       | Wind direction in degrees (0-360)                                                   |
 |         | gustSpeed     | Number:Speed         | yes       | Wind gust speed in m/s                                                              |
 |         | pressure      | Number:Pressure      | yes       | Atmospheric pressure in hPa                                                         |
-|         | humidity      | Number:Dimensionless | yes       | Relative humidity in %                                                              |
-|         | temperature   | Number:Temperature   | yes       | Temperature in degrees Celsius                                                      |
 |         | dewPoint      | Number:Temperature   | yes       | Dew point in degrees Celsius                                                        |
 |         | rainStatus    | Switch               | yes       | ON: It's raining, OFF: It's not raining                                             |
-|         | precipitation | Number:Length        | yes       | Accumulated rainfall in mm                                                          |
+|         | precipitation | Number:Length        | yes       | Accumulated rainfall in mm (monotonic total since sensor reset)                     |
 |         | lastUpdate    | DateTime             | yes       | Timestamp of the last update (any sensor value changed)                             |
 | battery | batteryLevel  | Number               | yes       | Battery Level in %                                                                  |
 |         | lowBattery    | Switch               | yes       | Low battery alert (< 20%)                                                           |
 | device  | gatewayDevice | String               | yes       | Shelly forwarded last status update (BLU gateway), could vary from packet to packet |
-|         | firmware      | String               | yes       | Firmware version of the WS90 (advanced); populated when the device reports it — may be empty until the first firmware report arrives, as firmware reporting is not yet implemented by all firmware versions. |
+|         | firmware      | String               | yes       | Firmware version (may be empty — not all firmware versions report it)               |
 
 ## Shelly Wall Displays
 

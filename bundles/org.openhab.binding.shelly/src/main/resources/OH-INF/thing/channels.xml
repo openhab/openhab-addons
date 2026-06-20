@@ -8,7 +8,7 @@
 		<item-type>Switch</item-type>
 		<label>Rain Status</label>
 		<description>ON when it is raining, OFF when dry</description>
-		<category>rain</category>
+		<category>Rain</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Rain</tag>
@@ -32,7 +32,7 @@
 		<item-type>Number:Angle</item-type>
 		<label>Wind Direction</label>
 		<description>Wind direction in degrees (0-360)</description>
-		<category>wind</category>
+		<category>Wind</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Wind</tag>
@@ -80,7 +80,7 @@
 	<channel-type id="sensorDewPoint">
 		<item-type>Number:Temperature</item-type>
 		<label>Dew Point</label>
-		<description>Measure Dew Point in Celsius</description>
+		<description>Dew point temperature</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Temperature</tag>
@@ -92,7 +92,7 @@
 	<channel-type id="sensorPrecipitation">
 		<item-type>Number:Length</item-type>
 		<label>Precipitation</label>
-		<description>Measure Precipitation in mm</description>
+		<description>Accumulated precipitation in mm (monotonic total since sensor reset)</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Rain</tag>

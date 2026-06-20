@@ -252,7 +252,7 @@ public class ShellyApiConfigurationTest {
             setField(thing, "deviceIp", deviceIp);
             setField(thing, "eventsCoIoT", eventsCoIoT);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new AssertionError(e);
         }
         return thing;
     }

@@ -55,9 +55,9 @@ public class ShellyBluWS90Test {
     void ws90DtoDeserializesAllWeatherFields() {
         Shelly2NotifyBluEventData data = GSON.fromJson(WS90_JSON, Shelly2NotifyBluEventData.class);
 
-        assertNotNull(data);
+        assertThat(data, is(not(nullValue())));
         assertThat("Rain", data.rain, is(equalTo(1.0)));
-        assertNotNull(data.speeds);
+        assertThat("speeds", data.speeds, is(not(nullValue())));
         assertThat("speeds length", data.speeds.length, is(equalTo(2)));
         assertThat("windSpeed (speeds[0])", data.speeds[0], is(equalTo(3.5)));
         assertThat("gustSpeed (speeds[1])", data.speeds[1], is(equalTo(7.2)));
@@ -112,7 +112,7 @@ public class ShellyBluWS90Test {
         }
 
         assertThat("windSpeed", windSpeed, is(equalTo(3.5)));
-        assertNull(gustSpeed, "gustSpeed should be null when only one speed element present");
+        assertThat("gustSpeed should be null when only one speed element present", gustSpeed, is(nullValue()));
     }
 
     @Test
@@ -129,8 +129,8 @@ public class ShellyBluWS90Test {
             }
         });
 
-        assertNull(windSpeed, "windSpeed should be null for empty speeds array");
-        assertNull(gustSpeed, "gustSpeed should be null for empty speeds array");
+        assertThat("windSpeed should be null for empty speeds array", windSpeed, is(nullValue()));
+        assertThat("gustSpeed should be null for empty speeds array", gustSpeed, is(nullValue()));
     }
 
     @Test
@@ -140,9 +140,9 @@ public class ShellyBluWS90Test {
                 """;
         Shelly2NotifyBluEventData data = GSON.fromJson(json, Shelly2NotifyBluEventData.class);
 
-        assertNotNull(data);
-        assertNull(data.rain, "rain should be null when not present in JSON");
-        assertNotNull(data.speeds);
+        assertThat(data, is(not(nullValue())));
+        assertThat("rain should be null when not present in JSON", data.rain, is(nullValue()));
+        assertThat("speeds", data.speeds, is(not(nullValue())));
         assertThat("windSpeed", data.speeds[0], is(equalTo(2.0)));
     }
 }
