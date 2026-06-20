@@ -613,13 +613,13 @@ public class ShellyDevices {
             Map.entry("shelly1pmg3", THING_TYPE_SHELLYPLUS1PM), //
             Map.entry("shelly1pmg4", THING_TYPE_SHELLYPLUS1PM), //
             Map.entry("shellyplus1l", THING_TYPE_SHELLYPLUS1L), //
-            Map.entry("shellyplus1lg4", THING_TYPE_SHELLYPLUS1L), //
+            Map.entry("shelly1lg4", THING_TYPE_SHELLYPLUS1L), //
             Map.entry("shellyplus2pm-relay", THING_TYPE_SHELLYPLUS2PM_RELAY),
             Map.entry("shellyplus2pm-roller", THING_TYPE_SHELLYPLUS2PM_ROLLER),
             Map.entry("shelly2pmg4", THING_TYPE_SHELLYPLUS2PM_RELAY),
             Map.entry("shellyplusshutter", THING_TYPE_SHELLYPLUSSHUTTER),
             Map.entry("shellyplus2l", THING_TYPE_SHELLYPLUS2L), //
-            Map.entry("shellyplus2lg4", THING_TYPE_SHELLYPLUS2L), //
+            Map.entry("shelly2lg4", THING_TYPE_SHELLYPLUS2L), //
             Map.entry("shellyplugu1", THING_TYPE_SHELLYPLUGU1), //
             Map.entry("shellyplugus", THING_TYPE_SHELLYPLUSPLUGUS),
             Map.entry("shellyplusplug", THING_TYPE_SHELLYPLUSPLUGS), //
