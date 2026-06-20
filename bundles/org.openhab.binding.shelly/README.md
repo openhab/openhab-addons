@@ -115,6 +115,7 @@ See section [Discovery](#discovery) for details.
 | shellyplusdimmer     | Shelly Plus Dimmer Gen 3                                 | S3DM-0A101WWL                                                             |
 | shellyprodm2pm       | Shelly Pro Dimmer 2PM                                    | SPDM-002PE01EU                                                            |
 | shellyplusrgbwpm     | Shelly Plus RGBW PM                                      | SNDC-0D4P10WW                                                             |
+| shellyprorgbwwpm     | Shelly Pro RGBWW PM                                      | SPDC-0D5PE16EU                                                            |
 | shellywalldisplay    | Shelly Plus Wall Display                                 | SAWD-0A1XX10EU1                                                           |
 | shellyblugw          | Shelly BLU Gateway                                       | SNGW-BT01                                                                 |
 | shellyblugw3         | Shelly BLU Gateway 3                                     | S3GW-1DBT001                                                              |
