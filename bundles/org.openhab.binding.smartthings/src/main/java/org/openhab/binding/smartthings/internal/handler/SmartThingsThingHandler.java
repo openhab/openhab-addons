@@ -58,8 +58,10 @@ public class SmartThingsThingHandler extends BaseThingHandler {
     private static final String CAPABILITY_AIR_CONDITIONER_MODE = "airConditionerMode";
     private static final String CAPABILITY_AIR_CONDITIONER_OPTIONAL_MODE = "custom.airConditionerOptionalMode";
     private static final String CAPABILITY_FRAME_AMBIENT = "samsungvd.ambient";
+    private static final String CAPABILITY_OVEN_OPERATING_STATE = "samsungce.ovenOperatingState";
     private static final String CAPABILITY_THERMOSTAT_COOLING_SETPOINT = "thermostatCoolingSetpoint";
     private static final String CAPABILITY_TV_CHANNEL = "tvChannel";
+    private static final String ATTRIBUTE_OPERATION_TIME = "operationTime";
     private static final String CHANNEL_AIR_CONDITIONER_MODE = "air-conditioner-mode";
     private static final String CHANNEL_AMBIENT = "ambient";
     private static final String CHANNEL_AMBIENT_MODE = "ambient-mode";
@@ -427,7 +429,7 @@ public class SmartThingsThingHandler extends BaseThingHandler {
             SmartThingsStatusProperties props = capa.get(propertyKey);
 
             if (props != null) {
-                Object value = props.value;
+                Object value = getStatusPropertyValue(capaKey, propertyKey, props);
 
                 if (value != null) {
                     logger.trace("Refresh device for deviceId: value : {}", value);
@@ -440,6 +442,16 @@ public class SmartThingsThingHandler extends BaseThingHandler {
                 }
             }
         }
+    }
+
+    private @Nullable Object getStatusPropertyValue(String capaKey, String propertyKey,
+            SmartThingsStatusProperties props) {
+        String timestamp = props.timestamp;
+        if (CAPABILITY_OVEN_OPERATING_STATE.equals(capaKey) && ATTRIBUTE_OPERATION_TIME.equals(propertyKey)
+                && timestamp != null && !timestamp.isBlank()) {
+            return timestamp;
+        }
+        return props.value;
     }
 
     public void refreshDeviceProps(SmartThingsStatusCapabilities capa, String componentKey, String capaKey) {

@@ -393,12 +393,20 @@ class SmartThingsThingDescriptionTest {
                         Map.entry("operation-time", new ExpectedChannel("oven-status-group", "oven-operation-time",
                                 "samsungce.ovenOperatingState", "operationTime"))));
 
-        for (String channelTypeId : Set.of("oven-operating-state", "oven-job-state", "oven-operation-time")) {
+        for (String channelTypeId : Set.of("oven-operating-state", "oven-job-state")) {
             assertEquals("String", findChannelTypeItemType(document, channelTypeId), channelTypeId);
         }
         assertEquals("DateTime", findChannelTypeItemType(document, "oven-completion-time"));
+        assertEquals("DateTime", findChannelTypeItemType(document, "oven-operation-time"));
         assertEquals("Number:Dimensionless", findChannelTypeItemType(document, "oven-progress"));
         assertEquals("%.0f %%", findChannelTypeStatePattern(document, "oven-progress"));
+
+        for (String channelTypeId : Set.of("oven-completion-time", "oven-operating-state", "oven-progress",
+                "oven-job-state", "oven-operation-time")) {
+            assertTrue(isChannelTypeReadOnly(document, channelTypeId), channelTypeId);
+        }
+        assertTrue(isAdvancedChannelType(document, "oven-operating-state"));
+        assertFalse(isAdvancedChannelType(document, "oven-operation-time"));
     }
 
     @Test

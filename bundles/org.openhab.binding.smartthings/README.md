@@ -152,7 +152,7 @@ Item links therefore use the channel format `smartthings:<thingTypeId>:<bridgeId
 | `Samsung_Oven` | `status#operating-state` | String | R | Current operating state |
 | `Samsung_Oven` | `status#progress` | Number:Dimensionless | R | Current cooking progress |
 | `Samsung_Oven` | `status#oven-job-state` | String | R | Current oven job state |
-| `Samsung_Oven` | `status#operation-time` | String | R | Current operation time |
+| `Samsung_Oven` | `status#operation-time` | DateTime | R | Current operation time |
 | `Samsung_Soundbar` | `control#switch` | Switch | RW | Switches the soundbar on or off |
 | `Samsung_Soundbar` | `control#volume` | Number | RW | Soundbar volume |
 | `Samsung_Soundbar` | `control#mute` | Switch | RW | Soundbar mute state |

@@ -71,7 +71,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="oven-operating-state">
+	<channel-type id="oven-operating-state" advanced="true">
 		<item-type>String</item-type>
 		<label>Operating State</label>
 		<description>Current operating state of the oven.</description>
@@ -93,7 +93,7 @@
 	</channel-type>
 
 	<channel-type id="oven-operation-time">
-		<item-type>String</item-type>
+		<item-type>DateTime</item-type>
 		<label>Operation Time</label>
 		<description>Current operation time of the oven.</description>
 		<state readOnly="true"/>

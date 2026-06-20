@@ -253,6 +253,30 @@ class SmartThingsThingHandlerTest {
     }
 
     @Test
+    void refreshDeviceUpdatesStaticOvenOperationTimeFromTimestamp() {
+        ThingUID thingUID = new ThingUID("smartthings:Samsung_Oven:account:oven");
+        Thing thing = ThingBuilder
+                .create(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Samsung_Oven"), thingUID)
+                .withChannel(createChannel(thingUID, "status", "operation-time",
+                        SmartThingsBindingConstants.TYPE_DATETIME, "samsungce.ovenOperatingState", "operationTime"))
+                .build();
+        TestSmartThingsThingHandler handler = new TestSmartThingsThingHandler(thing);
+        SmartThingsConverterFactory.registerConverters(new SmartThingsTypeRegistryImpl());
+        SmartThingsStatusCapabilities capa = new SmartThingsStatusCapabilities();
+        SmartThingsStatusProperties property = new SmartThingsStatusProperties();
+        property.value = "00:00:00";
+        property.timestamp = "2026-06-08T23:03:09.980Z";
+        capa.put("operationTime", property);
+
+        handler.refreshDeviceFromCapa(capa, "main", "samsungce.ovenOperatingState");
+
+        assertEquals(1, handler.updatedStates);
+        assertEquals(new ChannelUID(handler.getThing().getUID(), "status", "operation-time"),
+                handler.lastUpdatedChannel);
+        assertEquals(DateTimeType.valueOf("2026-06-08T23:03:09.980Z"), handler.lastUpdatedState);
+    }
+
+    @Test
     void refreshDeviceMergesActiveAirConditionerOptionalModeIntoFanMode() {
         ThingUID thingUID = new ThingUID("smartthings:Samsung_Room_A_C:account:air-conditioner");
         Thing thing = ThingBuilder
