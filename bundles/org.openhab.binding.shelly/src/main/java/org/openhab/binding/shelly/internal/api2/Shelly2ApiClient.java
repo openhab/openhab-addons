@@ -213,8 +213,30 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
      * Does NOT set {@code profile.initialized} — callers must do that after any additional
      * post-init steps (e.g. WebSocket callback setup, initial status fetch).
      *
+     * <p>
+     * <b>Ordering invariant:</b> {@code profile.isCB} must be set <em>before</em> calling
+     * {@code fillRelaySettings()} / {@code fillBreakerSettings()} — the fill methods branch on
+     * it. Reversing the order means the circuit-breaker is never detected.
+     *
+     * <p>
+     * <b>{@code numMeters} resolution order:</b>
+     * <ol>
+     * <li>{@link ShellyDevices#THING_TYPE_CAP_NUM_METERS} explicit override (highest priority)</li>
+     * <li>{@code dc.pm10 != null} → 1 (standalone PM Mini)</li>
+     * <li>{@code dc.em0 != null} → 3 (3-phase EM)</li>
+     * <li>{@code dc.em10 != null} → 2 (dual EM clamp, e.g. EM Mini)</li>
+     * <li>Relay-count fallback: {@code numRelays} (or {@code numRollers} in roller mode)</li>
+     * </ol>
+     * No-PM multi-relay devices must have an explicit {@code 0} entry in
+     * {@code THING_TYPE_CAP_NUM_METERS} to prevent the relay-count fallback from producing
+     * spurious accumulated-meter channels.
+     *
+     * @param profile device profile to populate; mutated in place
+     * @param thingTypeUID used for {@code THING_TYPE_CAP_NUM_METERS} lookup and CB detection
+     * @param devInfo optional device-info DTO from {@code Shelly.GetDeviceInfo}; when
+     *            non-null its fields overwrite {@code profile.device}
      * @return the raw GetConfig result, made available to subclasses for further processing
-     *         (e.g. BLU gateway setup that needs {@code dc.ble}).
+     *         (e.g. BLU gateway setup that needs {@code dc.ble})
      */
     protected Shelly2GetConfigResult initProfile(ShellyDeviceProfile profile, ThingTypeUID thingTypeUID,
             @Nullable ShellySettingsDevice devInfo) throws ShellyApiException {

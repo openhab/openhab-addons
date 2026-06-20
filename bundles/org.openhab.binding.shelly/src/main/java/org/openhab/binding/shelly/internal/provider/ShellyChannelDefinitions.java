@@ -357,9 +357,16 @@ public class ShellyChannelDefinitions {
     }
 
     /**
-     * Auto-create relay channels depending on relay type/mode
+     * Creates device-level status channels shared across all device types (firmware version, uptime,
+     * heartbeat, LED controls, inner temperature). Also conditionally creates accumulated-meter
+     * channels ({@code device#accumulatedWatts}, {@code device#totalKWH}, etc.) when
+     * {@code profile.numMeters > 1} — so no-PM multi-relay devices must have
+     * {@code numMeters = 0} in {@link ShellyDevices#THING_TYPE_CAP_NUM_METERS} to suppress them.
      *
-     * @return {@code ArrayList<Channel>} of channels to be added to the thing
+     * @param thing the Thing whose channel list is being extended
+     * @param profile device profile
+     * @param status current device status DTO; used to gate optional channels by field presence
+     * @return map of channel-id to {@link Channel} for newly created channels
      */
     public static Map<String, Channel> createDeviceChannels(final Thing thing, final ShellyDeviceProfile profile,
             final ShellySettingsStatus status) {

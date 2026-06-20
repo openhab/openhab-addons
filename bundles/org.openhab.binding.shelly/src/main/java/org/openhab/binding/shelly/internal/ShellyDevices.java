@@ -696,7 +696,22 @@ public class ShellyDevices {
      * Capabilities for specific thing types
      */
 
-    // Number of meters, if they can't be auto-detected
+    /**
+     * Explicit meter count overrides for thing types where {@code initProfile()} cannot
+     * auto-detect the correct value from device components alone.
+     *
+     * <p>
+     * Entries with value {@code 0} suppress the relay-count fallback in
+     * {@code Shelly2ApiClient.initProfile()}: without an entry, a no-PM multi-relay device
+     * (e.g. Plus 2L with 2 relays, no {@code pm1:x}) would fall through to
+     * {@code numMeters = numRelays = 2}, causing {@code accuChannel = true} and four spurious
+     * {@code device#accumulated*} channels at runtime.
+     *
+     * <p>
+     * Every no-PM thing type that has more than one relay MUST be listed here with value 0.
+     * EM/3EM types with a fixed meter count that differs from what component detection produces
+     * are also listed here.
+     */
     public static final Map<ThingTypeUID, Integer> THING_TYPE_CAP_NUM_METERS = Map.ofEntries( //
             Map.entry(THING_TYPE_SHELLYPLUS1L, 0), // no power metering
             Map.entry(THING_TYPE_SHELLYPLUS2L, 0), // no power metering
