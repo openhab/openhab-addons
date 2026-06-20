@@ -223,6 +223,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
      */
     protected Shelly2GetConfigResult initProfile(ShellyDeviceProfile profile, ThingTypeUID thingTypeUID,
             @Nullable ShellySettingsDevice devInfo) throws ShellyApiException {
+        profile.initFromThingType(thingTypeUID);
         if (devInfo != null) {
             profile.device = devInfo;
         }
