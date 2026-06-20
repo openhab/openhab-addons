@@ -1165,6 +1165,7 @@ public class Shelly2ApiJsonDTO {
 
             // Dimmer / Light
             public Integer brightness;
+            public Integer ct; // color temperature in Kelvin (CCT.Set)
             @SerializedName("toggle_after")
             public Integer toggleAfter;
             public Integer white;

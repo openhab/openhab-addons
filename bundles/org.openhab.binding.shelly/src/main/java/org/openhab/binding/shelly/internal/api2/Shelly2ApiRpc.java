@@ -1033,12 +1033,24 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     @Override
     public void setLightParms(int lightIndex, Map<String, String> parameters) throws ShellyApiException {
+        ShellyDeviceProfile profile = getProfile();
         Shelly2RpcRequestParams params = new Shelly2RpcRequestParams();
-        if (getProfile().isRGBW2) {
-            String brightness = parameters.get(SHELLY_COLOR_BRIGHTNESS);
-            if (brightness != null) {
-                params.brightness = Integer.parseInt(brightness);
+        params.id = lightIndex;
+
+        if (parameters.containsKey(SHELLY_LIGHT_TURN)) {
+            params.on = SHELLY_API_ON.equals(parameters.get(SHELLY_LIGHT_TURN));
+        }
+        // Gen2 firmware rejects brightness=0; on=false handles turn-off
+        String brightnessStr = parameters.get(SHELLY_COLOR_BRIGHTNESS);
+        if (brightnessStr != null) {
+            int b = Integer.parseInt(brightnessStr);
+            if (b > 0) {
+                params.brightness = b;
             }
+        }
+
+        String rawProfile = getString(profile.device.profile);
+        if (SHELLY2_PROFILE_RGBW.equals(rawProfile)) {
             String red = parameters.get(SHELLY_COLOR_RED);
             String green = parameters.get(SHELLY_COLOR_GREEN);
             String blue = parameters.get(SHELLY_COLOR_BLUE);
@@ -1049,14 +1061,24 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             if (white != null) {
                 params.white = Integer.parseInt(white);
             }
-            if (parameters.containsKey(SHELLY_LIGHT_TURN)) {
-                params.on = SHELLY_API_ON.equals(parameters.get(SHELLY_LIGHT_TURN));
-            }
-            params.id = lightIndex;
-
             apiRequest(SHELLYRPC_METHOD_RGBW_SET, params, String.class);
+        } else if (profile.inColor) {
+            String red = parameters.get(SHELLY_COLOR_RED);
+            String green = parameters.get(SHELLY_COLOR_GREEN);
+            String blue = parameters.get(SHELLY_COLOR_BLUE);
+            if (red != null && green != null && blue != null) {
+                params.rgb = new Integer[] { Integer.parseInt(red), Integer.parseInt(green), Integer.parseInt(blue) };
+            }
+            apiRequest(SHELLYRPC_METHOD_RGB_SET, params, String.class);
+        } else if (SHELLY2_PROFILE_CCTX2.equals(rawProfile)) {
+            String ct = parameters.get(SHELLY_COLOR_TEMP);
+            if (ct != null) {
+                params.ct = Integer.parseInt(ct);
+            }
+            apiRequest(SHELLYRPC_METHOD_CCT_SET, params, String.class);
+        } else {
+            apiRequest(SHELLYRPC_METHOD_LIGHT_SET, params, String.class);
         }
-        throw new ShellyApiException("API call not implemented");
     }
 
     @Override
