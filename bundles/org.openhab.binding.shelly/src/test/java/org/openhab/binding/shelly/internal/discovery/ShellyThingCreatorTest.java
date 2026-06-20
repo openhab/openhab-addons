@@ -218,6 +218,7 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_PLUSEM, "", THING_TYPE_SHELLYPLUSEM), //
                 Arguments.of(SHELLYDT_PLUS3EM63, "", THING_TYPE_SHELLYPLUS3EM63), //
                 Arguments.of(SHELLYDT_PLUSRGBWPM, "", THING_TYPE_SHELLYPLUSRGBWPM),
+                Arguments.of(SHELLYDT_PRORGBWWPM, "", THING_TYPE_SHELLYPRORGBWWPM),
                 Arguments.of(SHELLYDT_PLUSBLUGW, "", THING_TYPE_SHELLYPLUSBLUGW), //
 
                 // Plus Mini Series
