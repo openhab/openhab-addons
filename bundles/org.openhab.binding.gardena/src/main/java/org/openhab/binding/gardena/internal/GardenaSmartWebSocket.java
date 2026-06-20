@@ -108,6 +108,10 @@ public class GardenaSmartWebSocket {
         return this.locationID;
     }
 
+    public synchronized void updateToken(@Nullable PostOAuth2Response token) {
+        this.token = token;
+    }
+
     public void restart(String newUrl) throws Exception {
         logger.debug("Reconnecting to Gardena Webservice ({})", socketId);
         session = (WebSocketSession) webSocketClient.connect(this, new URI(newUrl)).get();
