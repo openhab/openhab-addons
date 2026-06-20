@@ -587,6 +587,8 @@ public class LinkPlayHandler extends BaseThingHandler
         if (getThing().getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.ONLINE);
         }
+        // we are fully subscribed and online, stop any active reconnect loop
+        cancelReconnectJob();
     }
 
     @Override
@@ -814,15 +816,58 @@ public class LinkPlayHandler extends BaseThingHandler
 
     public void setOffline(String reason) {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
-        RemoteDevice device = upnpClient.getRemoteDevice();
         upnpClient.clearSubscriptionState();
-        if (device != null) {
-            cancelReconnectJob();
-            if (!disposed) {
-                reconnectJob = scheduler.schedule(() -> initFromUpnp(device), RECONNECT_DELAY, TimeUnit.SECONDS);
-            }
-        }
         upnpClient.sendDeviceSearchRequest();
+        scheduleReconnect();
+    }
+
+    /**
+     * Ensures a repeating reconnect job is running while the device is offline. The job keeps retrying until the device
+     * is back ONLINE, at which point it cancels itself. Calling this while a reconnect job is already running is a
+     * no-op so the retry cadence is not reset on every offline notification.
+     */
+    private void scheduleReconnect() {
+        if (disposed) {
+            return;
+        }
+        ScheduledFuture<?> job = reconnectJob;
+        if (job != null && !job.isDone()) {
+            return;
+        }
+        reconnectJob = scheduler.scheduleWithFixedDelay(this::reconnect, RECONNECT_DELAY, RECONNECT_DELAY,
+                TimeUnit.SECONDS);
+    }
+
+    /**
+     * Actively attempts to bring an offline device back ONLINE. This mirrors what the initialize/dispose
+     * (pause/unpause) cycle does: it re-issues a UPnP search, looks up a fresh device reference from the registry (the
+     * device may have re-advertised at a new IP) and drives initialization itself rather than waiting for a push
+     * callback from the registry that may never arrive. Once the device is ONLINE the reconnect job cancels itself.
+     */
+    private void reconnect() {
+        if (disposed || getThing().getStatus() == ThingStatus.ONLINE) {
+            cancelReconnectJob();
+            return;
+        }
+        if (isInitializing.get()) {
+            return;
+        }
+        logger.debug("{}: Attempting to reconnect", udn);
+        upnpClient.sendDeviceSearchRequest();
+        Slave slave = linkPlayGroupService.findSlaveByUDN(udn);
+        if (slave != null) {
+            initFromGroup(slave);
+            return;
+        }
+        RemoteDevice device = upnpClient.findRegisteredDevice();
+        if (device == null) {
+            device = upnpClient.getRemoteDevice();
+        }
+        if (device != null) {
+            upnpClient.setRemoteDevice(device);
+            upnpClient.setNeedsUpnpInitialization(true);
+            initFromUpnp(device);
+        }
     }
 
     // Derives the host and port from the Upnp device and attempts to connect to the api

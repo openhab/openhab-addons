@@ -101,6 +101,17 @@ public class LinkPlayUpnpClient implements UpnpIOParticipant, LinkPlayUpnpComman
         return remoteDevice;
     }
 
+    /**
+     * Looks up the current {@link RemoteDevice} for this UDN directly from the jUPnP registry. This returns a fresh
+     * device reference (for example after the device re-advertised at a new IP) rather than the possibly stale one
+     * cached via {@link #setRemoteDevice(RemoteDevice)}.
+     *
+     * @return the registered device, or {@code null} if the device is not currently in the registry
+     */
+    public @Nullable RemoteDevice findRegisteredDevice() {
+        return upnpService.getRegistry().getRemoteDevice(new UDN(udn), false);
+    }
+
     public boolean needsUpnpInitialization() {
         return needsUpnpInitialization.get();
     }
