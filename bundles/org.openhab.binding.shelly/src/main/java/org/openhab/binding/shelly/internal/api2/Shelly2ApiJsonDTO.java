@@ -99,6 +99,9 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLY2_PROFILE_RGBW = "rgbw";
     public static final String SHELLY2_PROFILE_MONOPHASE = "monophase";
     public static final String SHELLY2_PROFILE_TRIPHASE = "triphase";
+    public static final String SHELLY2_PROFILE_RGBCCT = "rgbcct"; // Pro RGBWW PM: RGB:0 + CCT:0
+    public static final String SHELLY2_PROFILE_CCTX2 = "cctx2"; // Pro RGBWW PM: CCT:0 + CCT:1 (CCT deferred)
+    public static final String SHELLY2_PROFILE_RGBX2LIGHT = "rgbx2light"; // Pro RGBWW PM: RGB:0 + Light:0/1
 
     // Button types/modes
     public static final String SHELLY2_BTNT_MOMENTARY = "momentary";

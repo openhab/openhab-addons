@@ -183,7 +183,10 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             SHELLY2_PROFILE_RGB, SHELLY_MODE_COLOR, //
             SHELLY2_PROFILE_RGBW, SHELLY_MODE_COLOR, //
             SHELLY2_PROFILE_MONOPHASE, SHELLY_CLASS_EMETER, //
-            SHELLY2_PROFILE_TRIPHASE, SHELLY_CLASS_EMETER);
+            SHELLY2_PROFILE_TRIPHASE, SHELLY_CLASS_EMETER, //
+            SHELLY2_PROFILE_RGBCCT, SHELLY_MODE_COLOR, // Pro RGBWW PM: RGB+CCT, color mode (CCT deferred)
+            SHELLY2_PROFILE_CCTX2, SHELLY_MODE_WHITE, // Pro RGBWW PM: dual-CCT, white mode (CCT deferred)
+            SHELLY2_PROFILE_RGBX2LIGHT, SHELLY_MODE_COLOR); // Pro RGBWW PM: RGB+2xLight, color mode
 
     @Override
     public ShellySettingsDevice getDeviceInfo() throws ShellyApiException {
