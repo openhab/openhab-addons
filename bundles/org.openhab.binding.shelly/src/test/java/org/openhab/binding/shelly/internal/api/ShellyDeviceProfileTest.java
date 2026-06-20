@@ -281,4 +281,16 @@ public class ShellyDeviceProfileTest {
         deviceProfile.updateFromStatus(status);
         assertThat(deviceProfile.numInputs, is(equalTo(-1)));
     }
+
+    @Test
+    void ws90ProfileFlagsSetCorrectly() throws ShellyApiException {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYBLUWS90);
+        profile.initialize(THING_TYPE_SHELLYBLUWS90, "{}", new ShellySettingsDevice());
+
+        assertThat("isWS90", profile.isWS90, is(true));
+        assertThat("isSensor (WS90 contributes to isSensor)", profile.isSensor, is(true));
+        assertThat("hasBattery (all BLU devices)", profile.hasBattery, is(true));
+        assertThat("alwaysOn false for battery-powered BLU", profile.alwaysOn, is(false));
+        assertThat("isBlu", profile.isBlu, is(true));
+    }
 }
