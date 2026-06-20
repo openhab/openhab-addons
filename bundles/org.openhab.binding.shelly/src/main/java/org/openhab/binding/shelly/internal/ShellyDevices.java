@@ -698,6 +698,8 @@ public class ShellyDevices {
 
     // Number of meters, if they can't be auto-detected
     public static final Map<ThingTypeUID, Integer> THING_TYPE_CAP_NUM_METERS = Map.ofEntries( //
+            Map.entry(THING_TYPE_SHELLYPLUS1L, 0), // no power metering
+            Map.entry(THING_TYPE_SHELLYPLUS2L, 0), // no power metering
             Map.entry(THING_TYPE_SHELLYPRO2, 0), //
             Map.entry(THING_TYPE_SHELLYPRO3, 0), //
             Map.entry(THING_TYPE_SHELLYPROEM50, 2), //
