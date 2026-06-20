@@ -48,6 +48,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyRollerSt
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDevice;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsLogin;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRelay;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRgbwLight;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsUpdate;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortLightStatus;
@@ -783,21 +784,46 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     public ShellyStatusLight getLightStatus() throws ShellyApiException {
         ShellyDeviceProfile profile = getProfile();
         if (profile.isRGBW2) {
-            Shelly2RGBWStatus ls = apiRequest(
-                    new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_RGBW_STATUS).withId(0),
-                    Shelly2RGBWStatus.class);
-            ShellyStatusLightChannel lightChannel = new ShellyStatusLightChannel();
-            lightChannel.red = ls.rgb[0];
-            lightChannel.green = ls.rgb[1];
-            lightChannel.blue = ls.rgb[2];
-            lightChannel.white = ls.white;
-            lightChannel.brightness = ls.brightness.intValue();
-
             ShellyStatusLight status = new ShellyStatusLight();
             status.lights = new ArrayList<>();
-            status.lights.add(lightChannel);
-            status.ison = ls.output;
-
+            if (profile.inColor) {
+                String method = SHELLY2_PROFILE_RGB.equals(getString(profile.device.profile))
+                        ? SHELLYRPC_METHOD_RGB_STATUS
+                        : SHELLYRPC_METHOD_RGBW_STATUS;
+                Shelly2RGBWStatus ls = apiRequest(new Shelly2RpcRequest().withMethod(method).withId(0),
+                        Shelly2RGBWStatus.class);
+                ShellyStatusLightChannel lightChannel = new ShellyStatusLightChannel();
+                if (ls.rgb != null && ls.rgb.length >= 3) {
+                    lightChannel.red = ls.rgb[0];
+                    lightChannel.green = ls.rgb[1];
+                    lightChannel.blue = ls.rgb[2];
+                }
+                lightChannel.white = ls.white;
+                if (ls.brightness != null) {
+                    lightChannel.brightness = ls.brightness.intValue();
+                }
+                lightChannel.ison = ls.output;
+                status.lights.add(lightChannel);
+                status.ison = ls.output;
+            } else {
+                List<@Nullable ShellySettingsRgbwLight> settingLights = profile.settings.lights;
+                int numLights = settingLights != null ? settingLights.size() : 1;
+                for (int i = 0; i < numLights; i++) {
+                    Shelly2DeviceStatusLight ls = apiRequest(
+                            new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_LIGHT_STATUS).withId(i),
+                            Shelly2DeviceStatusLight.class);
+                    ShellyStatusLightChannel lightChannel = new ShellyStatusLightChannel();
+                    lightChannel.ison = ls.output;
+                    lightChannel.hasTimer = ls.timerStartedAt != null;
+                    lightChannel.timerDuration = getDuration(ls.timerStartedAt, ls.timerDuration);
+                    Double b = ls.brightness;
+                    if (b != null) {
+                        lightChannel.brightness = b.intValue();
+                    }
+                    status.lights.add(lightChannel);
+                }
+                status.ison = !status.lights.isEmpty() ? status.lights.get(0).ison : null;
+            }
             return status;
         }
 
@@ -813,8 +839,9 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         status.ison = ls.output;
         status.hasTimer = ls.timerStartedAt != null;
         status.timerDuration = getDuration(ls.timerStartedAt, ls.timerDuration);
-        if (ls.brightness != null) {
-            status.brightness = ls.brightness.intValue();
+        Double b = ls.brightness;
+        if (b != null) {
+            status.brightness = b.intValue();
         }
         return status;
     }
