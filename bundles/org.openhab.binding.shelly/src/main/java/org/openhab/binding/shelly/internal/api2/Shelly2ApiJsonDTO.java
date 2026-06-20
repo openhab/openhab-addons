@@ -566,6 +566,8 @@ public class Shelly2ApiJsonDTO {
             public Shelly2GetConfigLight light2;
             @SerializedName("light:3")
             public Shelly2GetConfigLight light3;
+            @SerializedName("light:4")
+            public Shelly2GetConfigLight light4;
             @SerializedName("rgb:0")
             public Shelly2GetConfigLight rgb0;
             @SerializedName("rgbw:0")
@@ -929,6 +931,8 @@ public class Shelly2ApiJsonDTO {
             public Shelly2DeviceStatusLight light2;
             @SerializedName("light:3")
             public Shelly2DeviceStatusLight light3;
+            @SerializedName("light:4")
+            public Shelly2DeviceStatusLight light4;
             @SerializedName("rgb:0")
             public Shelly2RGBWStatus rgb0;
 

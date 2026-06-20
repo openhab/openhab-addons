@@ -579,6 +579,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         updated |= updateLightModeStatus(1, status, result.light1, channelUpdate);
         updated |= updateLightModeStatus(2, status, result.light2, channelUpdate);
         updated |= updateLightModeStatus(3, status, result.light3, channelUpdate);
+        updated |= updateLightModeStatus(4, status, result.light4, channelUpdate);
         if (channelUpdate) {
             updated |= ShellyComponents.updateMeters(getThing(), status);
         }
@@ -1146,7 +1147,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             lights.add(createRgbwLightSetting(dc.rgb0));
         } else {
             profile.inColor = false;
-            Shelly2GetConfigLight[] lightConfigs = { dc.light0, dc.light1, dc.light2, dc.light3 };
+            Shelly2GetConfigLight[] lightConfigs = { dc.light0, dc.light1, dc.light2, dc.light3, dc.light4 };
             for (Shelly2GetConfigLight lc : lightConfigs) {
                 if (lc != null) {
                     lights.add(createRgbwLightSetting(lc));
