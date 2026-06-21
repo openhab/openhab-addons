@@ -84,10 +84,6 @@ public class RestClient {
         this.httpClient = httpClient;
     }
 
-    public HttpClient getHttpClient() {
-        return this.httpClient;
-    }
-
     private void validateResponse(ContentResponse response) throws AuthenticationException {
         int responseCode = response.getStatus();
         switch (responseCode) {
@@ -142,6 +138,10 @@ public class RestClient {
             validateResponse(response);
             result = response.getContentAsString();
         } catch (ExecutionException | TimeoutException e) {
+            if (e.getCause() instanceof java.util.concurrent.RejectedExecutionException) {
+                logger.debug("HttpClient is stopped (OSGi lifecycle restart). Aborting POST request quietly.");
+                throw new AuthenticationException("HttpClient is stopped.");
+            }
             logger.warn("RestApi error in postRequest!", e);
             throw new AuthenticationException("Communication error during POST request: " + e.getMessage());
         } catch (InterruptedException e) {
@@ -169,6 +169,10 @@ public class RestClient {
             validateResponse(response);
             result = response.getContentAsString();
         } catch (ExecutionException | TimeoutException e) {
+            if (e.getCause() instanceof java.util.concurrent.RejectedExecutionException) {
+                logger.debug("HttpClient is stopped (OSGi lifecycle restart). Aborting GET request quietly.");
+                throw new AuthenticationException("HttpClient is stopped.");
+            }
             logger.warn("RestApi error in getRequest!", e);
             throw new AuthenticationException("Communication error during GET request: " + e.getMessage());
         } catch (InterruptedException e) {
@@ -453,10 +457,10 @@ public class RestClient {
             validateResponse(response);
 
         } catch (InterruptedException e) {
-            logger.warn("RestApi error in sendCommand!", e);
             Thread.currentThread().interrupt();
+            throw new AuthenticationException("Communication error during sendCommand: " + e.getMessage());
         } catch (ExecutionException | TimeoutException e) {
-            logger.warn("RestApi error in sendCommand!", e);
+            throw new AuthenticationException("Communication error during sendCommand: " + e.getMessage());
         }
     }
 

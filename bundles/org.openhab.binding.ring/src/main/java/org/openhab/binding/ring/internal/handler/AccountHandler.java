@@ -84,7 +84,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     private @Nullable ScheduledFuture<?> eventRefresh = null;
     private @Nullable FcmClient fcmClient;
     private final HttpClient httpClient;
-    private boolean isPolling = false; // Tracks current fallback state
+    private boolean isPolling = false;
 
     // Current status
     protected OnOffType status = OnOffType.OFF;
@@ -116,7 +116,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     private int eventIndex = 0;
 
     private long lastRegistryRefresh = 0;
-    private static final long REGISTRY_CACHE_MS = 15 * 60 * 1000;
+    private static final long REGISTRY_CACHE_MS = 5 * 60 * 1000;
 
     /*
      * The number of video files to keep when auto-downloading
@@ -153,14 +153,6 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
             case OnOffType onOffCommand -> handleOnOff(channelUID, onOffCommand);
             default -> logger.debug("Command {} is not supported for channel: {}", command, channelUID.getId());
         }
-    }
-
-    public RestClient getRestClient() {
-        return this.restClient;
-    }
-
-    public Tokens getTokens() {
-        return this.tokens;
     }
 
     private void handleRefresh(ChannelUID channelUID) {
@@ -473,13 +465,13 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
             // 3. Always bind the token to the Ring account session on startup
             logger.debug("Binding FCM Token with Ring backend...");
             restClient.subscribeToPushNotifications(creds.fcmToken(), config.hardwareId, tokens);
-            // 4. Connect the socket
+
             // 4. Connect the socket
             fcmClient = new FcmClient((String payload, String configStr) -> handlePushEvent(payload, configStr),
                     (Boolean status) -> onFcmStateChanged(status), creds);
             fcmClient.connect(creds.androidId(), creds.securityToken());
 
-            // 5. RESTORED: Explicitly subscribe all cameras to the FCM session
+            // 5. Explicitly subscribe all cameras to the FCM session
             if (registry != null && !registry.getRingDevices().isEmpty()) {
                 logger.debug("Subscribing all discovered devices to the active push notification session...");
                 for (org.openhab.binding.ring.internal.device.RingDevice device : registry.getRingDevices()) {
@@ -501,6 +493,14 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
             logger.debug("Ignoring FCM state change (connected={}) because scheduler is not available", isConnected);
             return;
         }
+
+        // NEW: If fcmClient is null, dispose() has been called. Do not spawn any new timers!
+        if (fcmClient == null) {
+            logger.debug("Ignoring FCM state change (connected={}) because the handler is being disposed.",
+                    isConnected);
+            return;
+        }
+
         if (isConnected) {
             logger.debug("Ring FCM Socket connected. Disabling HTTP event polling.");
 
@@ -564,7 +564,8 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                 return;
             }
 
-            logger.info("Parsed Instant FCM Event -> Device: {}, Kind: {}", deviceName, kind.toUpperCase());
+            logger.info("Parsed Instant FCM Event -> Device: {}, Kind: {}", deviceName,
+                    kind.toUpperCase(java.util.Locale.ROOT));
 
             RingEventTO instantEvent = new RingEventTO();
             instantEvent.id = eventId;
@@ -794,17 +795,17 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         logger.debug("Disposing AccountHandler and shutting down connections...");
         servlet.removeVideoStoragePath(thing.getUID());
 
-        // 1. Kill the active FCM Socket and its Virtual Threads
-        if (fcmClient != null) {
-            fcmClient.disconnect();
-            fcmClient = null;
+        // 1. Immediately null out the client so callbacks know we are shutting down
+        FcmClient clientToClose = fcmClient;
+        fcmClient = null;
+
+        // 2. Kill the active FCM Socket and its Virtual Threads
+        if (clientToClose != null) {
+            clientToClose.disconnect();
         }
 
-        // 2. Cancel the HTTP polling and Token refresh timers
         stopSessionRefresh();
         stopAutomaticRefresh();
-
-        // 3. Clean up the base class
         super.dispose();
     }
 

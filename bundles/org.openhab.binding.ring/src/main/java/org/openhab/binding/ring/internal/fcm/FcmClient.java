@@ -19,6 +19,7 @@ import java.io.OutputStream;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import javax.net.ssl.SSLParameters;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
@@ -67,12 +68,16 @@ public class FcmClient {
         try {
             socket = (SSLSocket) SSLSocketFactory.getDefault().createSocket(HOST, PORT);
             socket.setKeepAlive(true);
+
+            SSLParameters sslParameters = socket.getSSLParameters();
+            sslParameters.setEndpointIdentificationAlgorithm("HTTPS");
+            socket.setSSLParameters(sslParameters);
+            socket.startHandshake();
+
             in = socket.getInputStream();
             out = socket.getOutputStream();
 
             // Send Protocol Version (41)
-            // Inside FcmClient.connect()...
-
             out.write(41);
             out.flush();
 
@@ -260,15 +265,20 @@ public class FcmClient {
     }
 
     public void disconnect() {
+        boolean wasRunning = isRunning;
         isRunning = false;
         try {
-            if (socket != null) {
+            if (socket != null && !socket.isClosed()) {
                 socket.close();
             }
         } catch (IOException ignored) {
             // Ignored on disconnect
         }
-        stateCallback.accept(false);
+
+        // Only trigger the state callback if we were actually running
+        if (wasRunning) {
+            stateCallback.accept(false);
+        }
     }
 
     // --- VarInt Helpers (Google's Base 128 Varints) ---

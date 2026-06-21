@@ -92,5 +92,6 @@ public abstract class AbstractRingHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         stopAutomaticRefresh();
+        super.dispose();
     }
 }
