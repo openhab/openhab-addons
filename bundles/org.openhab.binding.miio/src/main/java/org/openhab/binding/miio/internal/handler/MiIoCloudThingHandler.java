@@ -166,7 +166,7 @@ public class MiIoCloudThingHandler extends BaseThingHandler implements CloudLogo
                 if (!(command instanceof StringType)) {
                     return;
                 }
-                logger.debug("Submit captcha response {}", command);
+                logger.debug("Submit captcha response {}", Utils.obfuscateToken(command.toString()));
                 cloudConnector.submitCaptcha(command.toString());
                 break;
             case CHANNEL_TWOFA:

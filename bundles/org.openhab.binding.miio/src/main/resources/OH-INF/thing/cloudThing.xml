@@ -41,7 +41,7 @@
 				<default>disabled</default>
 				<label>Cloud Discovery Mode</label>
 				<description>Allow for discovery via the cloud. This may be used for devices that are not on the same network as
-					OpenHAB server</description>
+					openHAB server</description>
 				<options>
 					<option value="disabled">Local discovery only (Default)</option>
 					<option value="supportedOnly">Discover online supported devices from Xiaomi cloud</option>

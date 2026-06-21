@@ -193,7 +193,7 @@ public class MiCloudUserIdLogonConnector extends MiCloudConnector {
         }
         if (!captchaResponse.isEmpty()) {
             fields.put("captCode", captchaResponse);
-            logger.debug("Logon with captcha response {}", captchaResponse);
+            logger.debug("Logon with captcha response {}", Utils.obfuscateToken(captchaResponse));
         } else {
             logger.debug("Logon step 2 without captcha response");
         }

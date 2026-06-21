@@ -445,7 +445,7 @@ public class MiCloudConnector {
                 Path path = saveBytesToTempFile(content, tempPrefix, ".jpg");
                 logger.trace("Saved logon image to {} -> {} bytes", path.toAbsolutePath(), content.length);
             } catch (MiCloudException e) {
-                logger.trace("Could not save image to temp file: {}", e.getMessage());
+                logger.debug("Could not save image to temp file: {}", e.getMessage());
             }
         }
         informImageListeners(content);

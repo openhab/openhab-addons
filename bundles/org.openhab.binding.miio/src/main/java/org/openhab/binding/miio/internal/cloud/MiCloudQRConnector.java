@@ -97,7 +97,7 @@ public class MiCloudQRConnector extends MiCloudConnector {
             }
 
             getQRImage(sessionData.imageUrl);
-            logger.info("Xiaomi QR code login: {}", sessionData.loginUrl);
+            logger.info("Xiaomi QR code login session started; waiting for QR code scan: {}", sessionData.loginUrl);
             updateLoginState(CloudLoginState.AWAITING_QRLOGIN);
 
             String location = checkSession(sessionData, (sessionData.timeout + REQUEST_TIMEOUT_SECONDS) * 1000L);
