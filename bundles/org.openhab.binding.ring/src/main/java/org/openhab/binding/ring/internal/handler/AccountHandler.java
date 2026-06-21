@@ -393,54 +393,63 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                 OpenHAB.getConfigFolder());
 
         if ((!refreshToken.isEmpty()) || !(config.username.isEmpty() && config.password.isEmpty())) {
-            try {
-                Configuration updatedConfiguration = getThing().getConfiguration();
 
-                logger.debug("Logging in with refresh token: {}", RingUtils.sanitizeData(refreshToken));
-                tokens = restClient.getTokens(config.username, config.password, refreshToken, twofactorCode,
-                        hardwareId);
-                saveRefreshTokenToFile(tokens.refreshToken());
-                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING, "Retrieving device list");
-                config.twofactorCode = "";
-                updatedConfiguration.put("twofactorCode", config.twofactorCode);
-                updateConfiguration(updatedConfiguration);
+            // Set status to pending while we do the heavy lifting in the background
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING,
+                    "Authenticating in background...");
 
-                String ownerIdString = thing.getProperties().get(THING_PROPERTY_OWNER_ID);
-                if (ownerIdString != null && !ownerIdString.isEmpty()) {
-                    ownerId = Long.parseLong(ownerIdString);
-                } else {
-                    ProfileTO profile = restClient.getProfile(hardwareId, tokens);
-                    ownerId = profile.id;
-                    Map<String, String> properties = editProperties();
-                    properties.put(THING_PROPERTY_OWNER_ID, Long.toString(ownerId));
-                    updateProperties(properties);
+            // Push all the heavy network calls to a background thread to prevent openHAB from blocking!
+            scheduler.execute(() -> {
+                try {
+                    Configuration updatedConfiguration = getThing().getConfiguration();
+
+                    logger.debug("Logging in with refresh token: {}", RingUtils.sanitizeData(refreshToken));
+                    tokens = restClient.getTokens(config.username, config.password, refreshToken, twofactorCode,
+                            hardwareId);
+                    saveRefreshTokenToFile(tokens.refreshToken());
+                    updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING,
+                            "Retrieving device list");
+                    config.twofactorCode = "";
+                    updatedConfiguration.put("twofactorCode", config.twofactorCode);
+                    updateConfiguration(updatedConfiguration);
+
+                    String ownerIdString = thing.getProperties().get(THING_PROPERTY_OWNER_ID);
+                    if (ownerIdString != null && !ownerIdString.isEmpty()) {
+                        ownerId = Long.parseLong(ownerIdString);
+                    } else {
+                        ProfileTO profile = restClient.getProfile(hardwareId, tokens);
+                        ownerId = profile.id;
+                        Map<String, String> properties = editProperties();
+                        properties.put(THING_PROPERTY_OWNER_ID, Long.toString(ownerId));
+                        updateProperties(properties);
+                    }
+
+                    refreshRegistry(true);
+
+                    // Always start the token/session refresh loop
+                    startSessionRefresh(refreshInterval);
+
+                    // Start the periodic minute/device refresh loop (event polling will be disabled once FCM connects)
+                    startAutomaticRefresh(refreshInterval);
+
+                    // Attempt to connect via FCM by default
+                    setupPushNotifications();
+                    updateStatus(ThingStatus.ONLINE);
+                } catch (AuthenticationException ex) {
+                    logger.debug("AuthenticationException when initializing Ring Account handler {}", ex.getMessage());
+                    String message = ex.getMessage();
+                    if ((message != null) && message.startsWith("Two factor")) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, ex.getMessage());
+                    } else {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
+                    }
+                } catch (JsonParseException e) {
+                    logger.debug("Invalid response from api.ring.com when initializing Ring Account handler {}",
+                            e.getMessage());
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "Invalid response from api.ring.com");
                 }
-
-                refreshRegistry(true);
-
-                // Always start the token/session refresh loop
-                startSessionRefresh(refreshInterval);
-
-                // Start the periodic minute/device refresh loop (event polling will be disabled once FCM connects)
-                startAutomaticRefresh(refreshInterval);
-
-                // Attempt to connect via FCM by default
-                setupPushNotifications();
-                updateStatus(ThingStatus.ONLINE);
-            } catch (AuthenticationException ex) {
-                logger.debug("AuthenticationException when initializing Ring Account handler {}", ex.getMessage());
-                String message = ex.getMessage();
-                if ((message != null) && message.startsWith("Two factor")) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, ex.getMessage());
-                } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
-                }
-            } catch (JsonParseException e) {
-                logger.debug("Invalid response from api.ring.com when initializing Ring Account handler {}",
-                        e.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Invalid response from api.ring.com");
-            }
+            });
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                     "Please login via CLI or by updating the Thing properties");
