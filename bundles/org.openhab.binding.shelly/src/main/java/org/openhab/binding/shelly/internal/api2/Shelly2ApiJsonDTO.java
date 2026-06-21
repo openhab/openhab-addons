@@ -461,6 +461,8 @@ public class Shelly2ApiJsonDTO {
 
         public class Shelly2DeviceConfigLora {
             public @Nullable Integer id;
+            @SerializedName("band_plan")
+            public @Nullable String bandPlan;
             public @Nullable Long freq;
             public @Nullable Integer bw;
             public @Nullable Integer dr;
@@ -1203,6 +1205,8 @@ public class Shelly2ApiJsonDTO {
         public @Nullable String fw;
         @SerializedName("available_updates")
         public @Nullable Shelly2DeviceStatusSysAvlUpdate availableUpdates;
+        public @Nullable ArrayList<String> errors;
+        public @Nullable ArrayList<String> flags;
     }
 
     public static class Shelly2RpcNotifyStatus {

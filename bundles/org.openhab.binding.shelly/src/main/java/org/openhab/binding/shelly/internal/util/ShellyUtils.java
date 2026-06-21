@@ -387,4 +387,21 @@ public class ShellyUtils {
         }
         return hexString.toString();
     }
+
+    /**
+     * Adds missing '=' padding to a Base64 string that may have been stripped by Shelly firmware.
+     * Java's Base64.getDecoder() is strict and requires canonical padding.
+     *
+     * @param b64 raw Base64 string, possibly unpadded
+     * @return Base64 string with correct padding appended
+     */
+    public static String fixBase64Padding(String b64) {
+        int rem = b64.length() % 4;
+        if (rem == 2) {
+            return b64 + "==";
+        } else if (rem == 3) {
+            return b64 + "=";
+        }
+        return b64;
+    }
 }
