@@ -14,6 +14,8 @@ package org.openhab.binding.tado.swagger.codegen.api.model;
 
 import java.util.Objects;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -69,7 +71,7 @@ public class MobileDevice {
         return this;
     }
 
-    public MobileDeviceLocation getLocation() {
+    public @Nullable MobileDeviceLocation getLocation() {
         return location;
     }
 
