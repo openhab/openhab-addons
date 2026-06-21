@@ -491,15 +491,16 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
      * Handles the automatic transition between FCM Push and HTTP Polling
      */
     private void onFcmStateChanged(Boolean isConnected) {
-        if (isConnected && isPolling) {
+        if (isConnected) {
             logger.info("Ring FCM Socket connected. Disabling HTTP event polling.");
 
-            if (eventRefresh != null) {
-                eventRefresh.cancel(true);
-                eventRefresh = null;
+            ScheduledFuture<?> job = eventRefresh;
+            if (job != null) {
+                job.cancel(true);
             }
+            eventRefresh = null;
             isPolling = false;
-        } else if (!isConnected && !isPolling) {
+        } else {
             logger.warn("Ring FCM Socket disconnected. Falling back to HTTP event polling.");
             if (eventRefresh == null || eventRefresh.isCancelled()) {
                 eventRefresh = scheduler.scheduleWithFixedDelay(this::refreshEvent, config.refreshInterval,
