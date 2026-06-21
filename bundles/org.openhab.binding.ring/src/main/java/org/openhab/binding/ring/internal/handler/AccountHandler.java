@@ -226,12 +226,17 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         }
         refreshJob = scheduler.scheduleWithFixedDelay(this::refresh, 0, refreshInterval, TimeUnit.SECONDS);
 
-        if (eventRefresh != null && !eventRefresh.isCancelled()) {
-            eventRefresh.cancel(true);
+        ScheduledFuture<?> job = eventRefresh;
+        if (job != null && !job.isCancelled()) {
+            job.cancel(true);
         }
-        // Restart event polling when falling back from FCM
-        eventRefresh = scheduler.scheduleWithFixedDelay(this::refreshEvent, refreshInterval, refreshInterval,
-                TimeUnit.SECONDS);
+        eventRefresh = null;
+        // Only run HTTP event polling when FCM is not connected (or not in use)
+        if (fcmClient == null || isPolling) {
+            isPolling = true;
+            eventRefresh = scheduler.scheduleWithFixedDelay(this::refreshEvent, refreshInterval, refreshInterval,
+                    TimeUnit.SECONDS);
+        }
     }
 
     protected void stopAutomaticRefresh() {
@@ -492,8 +497,12 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
      * Handles the automatic transition between FCM Push and HTTP Polling
      */
     private void onFcmStateChanged(Boolean isConnected) {
+        if (scheduler == null || scheduler.isShutdown()) {
+            logger.debug("Ignoring FCM state change (connected={}) because scheduler is not available", isConnected);
+            return;
+        }
         if (isConnected) {
-            logger.info("Ring FCM Socket connected. Disabling HTTP event polling.");
+            logger.debug("Ring FCM Socket connected. Disabling HTTP event polling.");
 
             ScheduledFuture<?> job = eventRefresh;
             if (job != null) {

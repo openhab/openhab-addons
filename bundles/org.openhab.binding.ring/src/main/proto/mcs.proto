@@ -111,7 +111,7 @@ message DataMessageStanza {
   optional string cb_path = 10;
   optional string reg_id = 11;
   optional string persistent_id = 12;
-  optional bytes raw_data = 13; 
+  optional bytes raw_data = 13;
 }
 
 message SelectiveAck {

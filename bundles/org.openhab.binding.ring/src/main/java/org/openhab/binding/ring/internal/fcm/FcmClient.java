@@ -93,7 +93,7 @@ public class FcmClient {
             Thread.ofVirtual().name("ring-fcm-listener-" + androidId).start(this::listenLoop);
         } catch (IOException | NumberFormatException e) {
             logger.error("Failed to connect to FCM Socket", e);
-            stateCallback.accept(false);
+            disconnect();
         }
     }
 
@@ -145,7 +145,9 @@ public class FcmClient {
             while (isRunning && !localSocket.isClosed()) {
                 int tag = localIn.read();
                 if (tag == -1) {
-                    break;
+                    logger.debug("FCM socket closed by remote host");
+                    disconnect();
+                    return;
                 }
 
                 int size = readVarInt(localIn);
@@ -276,8 +278,9 @@ public class FcmClient {
         int b;
         do {
             b = is.read();
-            if (b == -1)
+            if (b == -1) {
                 throw new IOException("EOF reading VarInt");
+            }
             result |= (b & 0x7f) << shift;
             shift += 7;
         } while ((b & 0x80) != 0);

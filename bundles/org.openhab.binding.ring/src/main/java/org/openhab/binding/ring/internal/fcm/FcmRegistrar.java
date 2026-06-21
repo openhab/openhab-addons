@@ -144,7 +144,10 @@ public class FcmRegistrar {
 
             return json.getAsJsonObject("authToken").get("token").getAsString();
 
-        } catch (Exception e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new AuthenticationException("Communication error during Firebase Installation: " + e.getMessage());
+        } catch (AuthenticationException | TimeoutException | ExecutionException e) {
             throw new AuthenticationException("Communication error during Firebase Installation: " + e.getMessage());
         }
     }

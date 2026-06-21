@@ -466,8 +466,9 @@ public class RestClient {
     public void subscribeToPushNotifications(String fcmToken, String hardwareId, Tokens tokens)
             throws AuthenticationException {
 
+        String apiVersion = String.valueOf(ApiConstants.API_VERSION);
         JsonObject metadata = new JsonObject();
-        metadata.addProperty("api_version", "11");
+        metadata.addProperty("api_version", apiVersion);
         metadata.addProperty("device_model", "Pixel 6");
         metadata.addProperty("pn_dict_version", "2.0.0");
         metadata.addProperty("pn_service", "fcm");
@@ -479,10 +480,8 @@ public class RestClient {
         root.add("device", device);
         String payload = gson.toJson(root);
 
-        Map<String, String> headers = new HashMap<>();
-        headers.put("hardware_id", hardwareId);
-        headers.put("Accept", "application.vnd.api.v11+json");
-
+        Map<String, String> headers = Map.of("hardware_id", hardwareId, "Accept",
+                "application.vnd.api.v" + apiVersion + "+json");
         sendCommand(ApiConstants.API_BASE + "/clients_api/device", HttpMethod.PATCH, payload, headers, tokens);
     }
 
