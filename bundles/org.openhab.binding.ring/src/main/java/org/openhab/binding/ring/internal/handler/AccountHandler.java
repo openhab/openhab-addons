@@ -529,7 +529,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         }
     }
 
-    private void handlePushEvent(String payloadJson, String androidConfigJson) {
+    protected void handlePushEvent(String payloadJson, String androidConfigJson) {
         logger.debug("Parsing Instant Push Event Payload: {}", payloadJson);
         try {
             JsonObject json = JsonParser.parseString(payloadJson).getAsJsonObject();
