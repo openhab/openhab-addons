@@ -1471,7 +1471,7 @@ public class LinkPlayHandler extends BaseThingHandler
 
         if (staleSeconds > sinceResubscribe && sinceResubscribe >= UPNP_EVENT_GRACE_SECONDS) {
             logger.debug("{}: No UPnP events {}s after resubscribe; reconnecting", udn, sinceResubscribe);
-            setOffline("No UPnP events received for " + staleSeconds + "s");
+            setOffline("No UPnP events received " + sinceResubscribe + "s after resubscribing");
             return;
         }
 
