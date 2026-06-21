@@ -222,16 +222,18 @@ public class RestClient {
         pb.add("device[os]", "android");
         pb.add("device[hardware_id]", hardwareId);
         pb.add("device[app_brand]", "ring");
-        pb.add("device[metadata][device_model]", "VirtualBox");
-        pb.add("device[metadata][resolution]", "600x800");
-        pb.add("device[metadata][app_version]", "1.7.29");
+        // NEW: Make openHAB appear as a modern smartphone so Ring enables push routing
+        pb.add("device[metadata][device_model]", "Pixel 6");
+        pb.add("device[metadata][resolution]", "1080x2400");
+        pb.add("device[metadata][app_version]", "3.67.0");
         pb.add("device[metadata][app_installation_date]", "");
-        pb.add("device[metadata][os_version]", "4.4.4");
-        pb.add("device[metadata][manufacturer]", "innotek GmbH");
-        pb.add("device[metadata][is_tablet]", "true");
+        pb.add("device[metadata][os_version]", "13");
+        pb.add("device[metadata][manufacturer]", "Google");
+        pb.add("device[metadata][is_tablet]", "false");
         pb.add("device[metadata][linphone_initialized]", "true");
         pb.add("device[metadata][language]", "en");
         pb.add("api_version", "" + ApiConstants.API_VERSION);
+
         String jsonResult = postRequest(ApiConstants.URL_SESSION, pb.toString(), Map.of(), tokens);
         SessionTO session = Objects.requireNonNull(gson.fromJson(jsonResult, SessionTO.class));
         return session.profile;
@@ -464,26 +466,43 @@ public class RestClient {
      */
     public void subscribeToPushNotifications(String fcmToken, String hardwareId, Tokens tokens)
             throws AuthenticationException {
-        String userAgent = "android:com.ringapp";
-        String deviceModel = "ring-doorbell:" + userAgent;
 
-        String payload = "{" + "\"device\": {" + "\"metadata\": {" + "\"api_version\": \"11\"," + "\"device_model\": \""
-                + deviceModel + "\"," + "\"pn_dict_version\": \"2.0.0\"," + "\"pn_service\": \"fcm\"" + "},"
-                + "\"os\": \"android\"," + "\"push_notification_token\": \"" + fcmToken + "\"" + "}" + "}";
+        // Build the modern JSON payload (Removed the invalid hardware_id from the body)
+        String payload = "{" + "\"device\": {" + "\"os\": \"android\"," + "\"push_notification_token\": \"" + fcmToken
+                + "\"," + "\"metadata\": {" + "\"api_version\": \"11\"," + "\"device_model\": \"Pixel 6\","
+                + "\"pn_dict_version\": \"2.0.0\"," + "\"pn_service\": \"fcm\"" + "}" + "}" + "}";
+
         Map<String, String> headers = new HashMap<>();
-
-        // The hardware_id must be sent as a header (this fixes the 500 Internal Server Error)
         headers.put("hardware_id", hardwareId);
-
-        // Ring strictly requires this Accept header to route the PATCH request to the correct controller
         headers.put("Accept", "application.vnd.api.v11+json");
 
         sendCommand(ApiConstants.API_BASE + "/clients_api/device", HttpMethod.PATCH, payload, headers, tokens);
     }
 
-    public void subscribeDeviceToPush(String deviceId, Tokens tokens) throws AuthenticationException {
-        // Send a valid empty JSON object "{}" so the Ring server doesn't crash during parsing
-        sendCommand(ApiConstants.API_BASE + "/clients_api/doorbots/" + deviceId + "/subscribe", HttpMethod.POST, "{}",
-                tokens);
+    /**
+     * Subscribes an individual camera to doorbell rings and motion events.
+     */
+    public void subscribeDeviceToPush(String deviceId, String hardwareId, Tokens tokens) {
+        Map<String, String> headers = new HashMap<>();
+        // CRITICAL: Ring uses this header to link the camera to your FCM socket
+        headers.put("hardware_id", hardwareId);
+
+        // 1. Subscribe to Doorbell Rings
+        try {
+            sendCommand(ApiConstants.API_BASE + "/clients_api/doorbots/" + deviceId + "/subscribe", HttpMethod.POST,
+                    null, headers, tokens);
+            logger.debug("Successfully subscribed device {} to doorbell rings.", deviceId);
+        } catch (AuthenticationException e) {
+            logger.warn("Failed to subscribe device {} to rings: {}", deviceId, e.getMessage());
+        }
+
+        // 2. Subscribe to Motion Events
+        try {
+            sendCommand(ApiConstants.API_BASE + "/clients_api/doorbots/" + deviceId + "/motions_subscribe",
+                    HttpMethod.POST, null, headers, tokens);
+            logger.debug("Successfully subscribed device {} to motion events.", deviceId);
+        } catch (AuthenticationException e) {
+            logger.warn("Failed to subscribe device {} to motions: {}", deviceId, e.getMessage());
+        }
     }
 }

@@ -228,19 +228,35 @@ public class FcmClient {
     }
 
     private void handlePushMessage(DataMessageStanza msg) {
+        logger.debug("--- INCOMING PUSH MESSAGE DEBUG ---");
+        if (msg.getAppDataList().isEmpty()) {
+            logger.debug("Payload contains no AppData keys.");
+        } else {
+            for (AppData data : msg.getAppDataList()) {
+                // Print the key and the raw value so we can see exactly what Ring sent
+                logger.debug("Key: [{}] | Value: {}", data.getKey(), data.getValue());
+            }
+        }
+        logger.debug("--- END PUSH MESSAGE DEBUG ---");
+
         String cryptoKey = null;
         String salt = null;
 
-        // Extract the ephemeral public key and cryptographic salt from the headers
+        // 1. Check for standard Android FCM plaintext payloads
         for (AppData data : msg.getAppDataList()) {
-            if ("crypto-key".equals(data.getKey())) {
+            if ("ding".equals(data.getKey())) {
+                String jsonEvent = data.getValue();
+                logger.debug("Successfully received plain-text Ring Event: {}", jsonEvent);
+                eventCallback.accept(jsonEvent);
+                return; // We found the event! Exit the method.
+            } else if ("crypto-key".equals(data.getKey())) {
                 cryptoKey = data.getValue().substring(3); // Strip "dh="
             } else if ("encryption".equals(data.getKey())) {
                 salt = data.getValue().substring(5); // Strip "salt="
             }
         }
 
-        // Use the newly compiled getRawData() method directly
+        // 2. Fallback to RFC 8291 Web Push Decryption
         if (cryptoKey != null && salt != null && msg.hasRawData()) {
             byte[] rawDataBytes = msg.getRawData().toByteArray();
 
@@ -249,21 +265,21 @@ public class FcmClient {
 
             if (decrypted.length > 0) {
                 String jsonEvent = new String(decrypted, java.nio.charset.StandardCharsets.UTF_8);
-                logger.debug("Successfully decrypted Ring Event: {}", jsonEvent);
+                logger.debug("Successfully decrypted Web Push Ring Event: {}", jsonEvent);
                 eventCallback.accept(jsonEvent);
             } else {
                 logger.warn("Ring Event decryption failed or returned empty payload.");
             }
         } else {
-            logger.debug("Push message received but is missing required Web Push encryption headers or raw_data.");
+            logger.debug("Push message received but contained no 'ding' key and no encryption headers.");
         }
     }
 
     private void heartbeatLoop() {
         while (isRunning) {
             try {
-                // 2 minutes ensures the home router NAT table never drops the TCP connection
-                Thread.sleep(120000);
+                // 60 seconds is bulletproof against all aggressive home router NATs
+                Thread.sleep(60000);
                 HeartbeatPing ping = HeartbeatPing.newBuilder().build();
                 send(TAG_HEARTBEAT_PING, ping.toByteArray());
             } catch (InterruptedException e) {

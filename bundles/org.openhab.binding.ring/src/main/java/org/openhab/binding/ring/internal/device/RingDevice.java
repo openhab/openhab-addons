@@ -26,4 +26,8 @@ public interface RingDevice {
     void setDeviceStatus(RingDeviceTO ringDeviceTO);
 
     RingDeviceTO getDeviceStatus();
+
+    default String getId() {
+        return getDeviceStatus().id;
+    }
 }

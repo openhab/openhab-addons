@@ -64,7 +64,9 @@ import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
 
 /**
  * The {@link AccountHandler} is responsible for handling commands, which are
@@ -216,6 +218,9 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
 
     protected void startAutomaticRefresh(final int refreshInterval) {
         refreshJob = scheduler.scheduleWithFixedDelay(this::refresh, 0, refreshInterval, TimeUnit.SECONDS);
+        // Restart event polling when falling back from FCM
+        eventRefresh = scheduler.scheduleWithFixedDelay(this::refreshEvent, refreshInterval, refreshInterval,
+                TimeUnit.SECONDS);
     }
 
     protected void stopAutomaticRefresh() {
@@ -224,6 +229,13 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
             job.cancel(true);
         }
         refreshJob = null;
+
+        // Also stop event polling when FCM takes over
+        job = eventRefresh;
+        if (job != null) {
+            job.cancel(true);
+        }
+        eventRefresh = null;
     }
 
     private void saveRefreshTokenToFile(String refreshToken) {
@@ -461,12 +473,19 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
             // 3. Always bind the token to the Ring account session on startup
             logger.debug("Binding FCM Token with Ring backend...");
             restClient.subscribeToPushNotifications(creds.fcmToken(), config.hardwareId, tokens);
-
             // 4. Connect the socket
             fcmClient = new FcmClient((String payload) -> handlePushEvent(payload),
                     (Boolean status) -> onFcmStateChanged(status), creds);
             fcmClient.connect(creds.androidId(), creds.securityToken());
 
+            // 5. RESTORED: Explicitly subscribe all cameras to the FCM session
+            if (registry != null && !registry.getRingDevices().isEmpty()) {
+                logger.debug("Subscribing all discovered devices to the active push notification session...");
+                for (org.openhab.binding.ring.internal.device.RingDevice device : registry.getRingDevices()) {
+                    // Pass the hardwareId into the RestClient
+                    restClient.subscribeDeviceToPush(device.getId(), config.hardwareId, tokens);
+                }
+            }
         } catch (Exception e) {
             logger.warn("FCM Setup failed. Network restricted? Falling back to HTTP polling.", e);
             onFcmStateChanged(false);
@@ -489,13 +508,93 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     }
 
     private void handlePushEvent(String payloadJson) {
-        logger.debug("Received INSTANT Push Event: {}", payloadJson);
+        logger.debug("Parsing Instant Push Event Payload: {}", payloadJson);
+        try {
+            JsonObject json = JsonParser.parseString(payloadJson).getAsJsonObject();
 
-        // We received a verified push notification from Ring.
-        // Instead of waiting for the next scheduled poll, instantly trigger
-        // the history fetch to update channels and download the video.
-        if (scheduler != null && !scheduler.isShutdown()) {
-            scheduler.execute(this::refreshEvent);
+            if (!json.has("device") || !json.has("event")) {
+                logger.warn("Push event payload missing 'device' or 'event' objects");
+                return;
+            }
+
+            JsonObject deviceObj = json.getAsJsonObject("device");
+            JsonObject eventObj = json.getAsJsonObject("event");
+            JsonObject dingObj = eventObj.has("ding") ? eventObj.getAsJsonObject("ding") : null;
+
+            String deviceId = deviceObj.get("id").getAsString();
+            String deviceName = deviceObj.has("name") ? deviceObj.get("name").getAsString() : "Ring Device";
+            String eventIdStr = dingObj != null && dingObj.has("id") ? dingObj.get("id").getAsString()
+                    : String.valueOf(System.currentTimeMillis());
+
+            String kind = "motion";
+            String detectionType = "";
+            String createdAtStr = java.time.Instant.now().toString();
+
+            if (dingObj != null) {
+                if (dingObj.has("subtype")) {
+                    String subtype = dingObj.get("subtype").getAsString().toLowerCase();
+                    if (subtype.contains("ding") || subtype.contains("ring")) {
+                        kind = "ding";
+                    }
+                }
+                if (dingObj.has("detection_type")) {
+                    detectionType = dingObj.get("detection_type").getAsString();
+                }
+                if (dingObj.has("created_at")) {
+                    createdAtStr = dingObj.get("created_at").getAsString();
+                }
+            }
+
+            long eventId = Long.parseLong(eventIdStr);
+
+            // Prevent duplicate processing if we already parsed this specific event ID
+            if (!lastEvents.isEmpty() && lastEvents.getFirst().id == eventId) {
+                return;
+            }
+
+            logger.info("Parsed Instant FCM Event -> Device: {}, Kind: {}", deviceName, kind.toUpperCase());
+
+            // 1. Construct a native openHAB RingEventTO
+            RingEventTO instantEvent = new RingEventTO();
+            instantEvent.id = eventId;
+            instantEvent.kind = kind;
+
+            instantEvent.doorbot = new org.openhab.binding.ring.internal.api.DoorbotTO();
+            instantEvent.doorbot.id = deviceId;
+            instantEvent.doorbot.description = deviceName;
+
+            if (!detectionType.isEmpty()) {
+                instantEvent.cvProperties = new org.openhab.binding.ring.internal.api.CVPropertiesTO();
+                instantEvent.cvProperties.detectionType = detectionType;
+            }
+
+            // 2. Override the memory cache so the video downloader grabs the correct event
+            lastEvents = java.util.List.of(instantEvent);
+
+            // 3. Update the Account-level channels natively
+            // (Note: Depending on how your RingEventTO is serialized, it may require setting created_at via a specific
+            // setter if accessible)
+            updateState(CHANNEL_EVENT_KIND, new StringType(instantEvent.kind));
+            updateState(CHANNEL_EVENT_DOORBOT_ID, new StringType(instantEvent.doorbot.id));
+            updateState(CHANNEL_EVENT_DOORBOT_DESCRIPTION, new StringType(instantEvent.doorbot.description));
+
+            String message = "There is motion at your " + deviceName;
+            if ("human".equals(detectionType)) {
+                message = "There is a Person at your " + deviceName;
+            } else if ("vehicle".equals(detectionType)) {
+                message = "There is a Vehicle at your " + deviceName;
+            } else if ("ding".equals(kind)) {
+                message = "Someone is at your " + deviceName;
+            }
+            updateState(CHANNEL_EVENT_EXTENDED_DESCRIPTION, new StringType(message));
+
+            // 4. Instantly trigger the video download in the background
+            if (scheduler != null && !scheduler.isShutdown()) {
+                scheduler.execute(() -> getVideo(instantEvent));
+            }
+
+        } catch (Exception e) {
+            logger.error("Failed to parse instant push event json: {}", e.getMessage(), e);
         }
     }
 
@@ -638,17 +737,24 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     }
 
     /**
-     * Dispose of the refreshJob nicely.
+     * Dispose of the refreshJob nicely and shut down the FCM socket.
      */
     @Override
     public void dispose() {
+        logger.debug("Disposing AccountHandler and shutting down connections...");
         servlet.removeVideoStoragePath(thing.getUID());
 
+        // 1. Kill the active FCM Socket and its Virtual Threads
         if (fcmClient != null) {
             fcmClient.disconnect();
+            fcmClient = null;
         }
+
+        // 2. Cancel the HTTP polling and Token refresh timers
         stopSessionRefresh();
         stopAutomaticRefresh();
+
+        // 3. Clean up the base class
         super.dispose();
     }
 
