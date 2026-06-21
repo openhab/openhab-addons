@@ -1462,7 +1462,7 @@ public class LinkPlayHandler extends BaseThingHandler
         if (inGroup && !isLeader) {
             return;
         }
-        // don't tear down the subscription mid-notification; notifications are short-lived
+        // don't tear down the subscription mid-notification as notifications are short-lived
         if (notificationHandler.isInNotification()) {
             return;
         }
