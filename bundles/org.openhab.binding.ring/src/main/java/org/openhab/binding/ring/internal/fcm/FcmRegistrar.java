@@ -157,16 +157,14 @@ public class FcmRegistrar {
         StringBuilder payloadBuilder = new StringBuilder();
         payloadBuilder.append("sender=").append(RING_SENDER_ID).append("&X-subtype=").append(RING_SENDER_ID)
                 .append("&device=").append(androidId).append("&app=").append(RING_PACKAGE_NAME).append("&X-app_id=")
-                .append(RING_APP_ID).append("&X-project_id=").append(RING_PROJECT_ID);
-
+                .append(RING_APP_ID).append("&X-project_id=").append(RING_PROJECT_ID).append("&X-scope=*");
         try {
             Request request = httpClient.newRequest(URL_REGISTER).method(HttpMethod.POST)
                     .timeout(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS)
                     .header("Authorization", "AidLogin " + androidId + ":" + securityToken)
                     .header("Content-Type", "application/x-www-form-urlencoded")
-                    .header("X-Goog-Firebase-Installations-Auth", fisToken)
-                    .content(new StringContentProvider(payloadBuilder.toString()));
-
+                    .header("X-Goog-Firebase-Installations-Auth", fisToken).header("app", RING_PACKAGE_NAME)
+                    .header("gcm_ver", "221440039").content(new StringContentProvider(payloadBuilder.toString()));
             ContentResponse response = request.send();
 
             if (response.getStatus() != HttpStatus.OK_200) {
