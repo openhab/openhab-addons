@@ -24,12 +24,11 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Gerhard Riegler - Initial contribution
  */
 @NonNullByDefault
-public class Sun extends RiseSet implements Planet {
+public class Sun extends Planet {
 
     private Map<SunPhase, Range> ranges = new HashMap<>();
 
     private Position position = Position.NONE;
-    private Zodiac zodiac = Zodiac.NONE;
     private EclipseSet eclipseSet = EclipseSet.NONE;
     private Radiation radiation = Radiation.NONE;
 
@@ -95,20 +94,6 @@ public class Sun extends RiseSet implements Planet {
      */
     public void setPosition(Position position) {
         this.position = position;
-    }
-
-    /**
-     * Returns the zodiac.
-     */
-    public Zodiac getZodiac() {
-        return zodiac;
-    }
-
-    /**
-     * Sets the zodiac.
-     */
-    public void setZodiac(Zodiac zodiac) {
-        this.zodiac = zodiac;
     }
 
     /**
