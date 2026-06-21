@@ -117,17 +117,12 @@ public class GoveeDiscoveryService extends AbstractDiscoveryService implements G
 
     public @Nullable DiscoveryResult responseToResult(DiscoveryResponse response) {
         final DiscoveryMsg msg = response.msg();
-        // The discovery socket receives data on the same port that is used for device status updates
-        // (see class documentation). Ignore anything that is not a scan response so that status packets,
-        // which do not carry the device information expected below, do not reach the parsing code.
         if (!"scan".equals(msg.cmd())) {
             logger.trace("Ignoring non-scan message received during discovery - {}", response);
             return null;
         }
 
         final DiscoveryData data = msg.data();
-        // Although the model is annotated @NonNullByDefault, the fields are populated by Gson from network
-        // input and may be null when the corresponding JSON field is absent or the packet is malformed.
         final String macAddress = data.device();
         if (macAddress == null || macAddress.isEmpty()) {
             logger.warn("Missing Mac address received during discovery - ignoring {}", response);

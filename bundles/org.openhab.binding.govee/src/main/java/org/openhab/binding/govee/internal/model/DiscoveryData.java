@@ -18,10 +18,6 @@ import org.eclipse.jdt.annotation.Nullable;
 /**
  * Govee Message - Device information
  *
- * The fields are populated from JSON received over the network using Gson, which does not honor
- * {@link NonNullByDefault} and leaves absent fields {@code null}. They are therefore marked
- * {@link Nullable} and must be null-checked by consumers.
- *
  * @param ip IP address of the device
  * @param device mac Address
  * @param sku article number
