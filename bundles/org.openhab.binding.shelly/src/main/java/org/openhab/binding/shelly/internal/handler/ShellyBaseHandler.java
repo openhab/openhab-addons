@@ -230,6 +230,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         ThingStatusDetail errorCode = ThingStatusDetail.COMMUNICATION_ERROR;
         String status = "";
         boolean retry = true;
+        boolean calibrationError = false;
         if (e.isJsonError()) { // invalid JSON format
             logger.debug("{}: Unable to parse API response: {}; json={}", thingName, res.getUrl(), res.response, e);
             status = "offline.status-error-unexpected-error";
@@ -241,6 +242,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             retry = false;
         } else if (isWatchdogExpired()) {
             status = profile.isBlu ? "offline.status-error-blu-timeout" : "offline.status-error-watchdog";
+        } else if (res.isNotCalibrated()) {
+            calibrationError = true; // device needs calibration; don't go offline, keep retrying
         } else if (res.httpCode >= 400) {
             logger.debug("{}: Unexpected API result: {}/{}", thingName, res.httpCode, res.httpReason, e);
             status = "offline.status-error-unexpected-api-result";
@@ -251,6 +254,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
         if (!status.isEmpty()) {
             setThingOfflineAndDisconnect(errorCode, status, e.toString());
+        } else if (calibrationError) {
+            logger.debug("{}: Device output not yet calibrated, will retry", thingName);
         } else {
             logger.debug("{}: Unable to initialize: {}, retrying later", thingName, e.toString());
         }
@@ -550,8 +555,9 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             }
 
             ShellyApiResult res = e.getApiResult();
-            if (res.isNotCalibrtated()) {
-                logger.warn("{}: {}", thingName, messages.get("roller.calibrating"));
+            if (res.isNotCalibrated()) {
+                String key = profile.isDimmer ? "dimmer.not-calibrated" : "roller.calibrating";
+                logger.warn("{}: {}", thingName, messages.get(key));
             } else {
                 logger.warn("{}: {} - {}", thingName, messages.get("command.failed", command, channelUID),
                         e.toString());
