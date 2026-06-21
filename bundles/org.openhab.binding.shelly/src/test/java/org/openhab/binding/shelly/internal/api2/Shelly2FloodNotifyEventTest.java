@@ -12,14 +12,23 @@
  */
 package org.openhab.binding.shelly.internal.api2;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.openhab.binding.shelly.internal.ShellyBindingConstants.ALARM_TYPE_FLOOD;
+import static org.openhab.binding.shelly.internal.ShellyBindingConstants.ALARM_TYPE_NONE;
+import static org.openhab.binding.shelly.internal.ShellyBindingConstants.ALARM_TYPE_SENSOR_ERROR;
 import static org.openhab.binding.shelly.internal.ShellyDevices.THING_TYPE_SHELLYPLUSFLOOD;
-import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
+import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.SHELLY2_EVENT_FLOOD_ALARM;
+import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.SHELLY2_EVENT_FLOOD_ALARM_OFF;
+import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.SHELLY2_EVENT_FLOOD_CABLE_UNPLUGGED;
 
 import java.util.Map;
 import java.util.Objects;
@@ -41,7 +50,6 @@ import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyBindingRuntimeConfig;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
-import org.openhab.core.net.NetworkAddressChangeListener;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -115,7 +123,8 @@ public class Shelly2FloodNotifyEventTest {
 
         ShellyBindingConfiguration raw = ShellyBindingConfiguration
                 .fromProperties(Map.of(ShellyBindingConfiguration.CONFIG_LOCAL_IP, "192.168.1.1"));
-        ShellyBindingRuntimeConfig bindingConfig = new ShellyBindingRuntimeConfig(raw, 8080, nullNas());
+        ShellyBindingRuntimeConfig bindingConfig = new ShellyBindingRuntimeConfig(raw, 8080,
+                mock(NetworkAddressService.class));
         ShellyApiConfiguration config = new ShellyApiConfiguration(bindingConfig, "test-flood", "");
 
         Shelly2ApiRpc rpc = new Shelly2ApiRpc("test-flood", mock(ShellyThingTable.class), thing, config,
@@ -152,11 +161,12 @@ public class Shelly2FloodNotifyEventTest {
     private ShellyApiConfiguration apiConfig() {
         ShellyBindingConfiguration raw = ShellyBindingConfiguration
                 .fromProperties(Map.of(ShellyBindingConfiguration.CONFIG_LOCAL_IP, "192.168.1.1"));
-        ShellyBindingRuntimeConfig bindingConfig = new ShellyBindingRuntimeConfig(raw, 8080, nullNas());
+        ShellyBindingRuntimeConfig bindingConfig = new ShellyBindingRuntimeConfig(raw, 8080,
+                mock(NetworkAddressService.class));
         return new ShellyApiConfiguration(bindingConfig, "test-flood", "");
     }
 
-    private static class FloodApiStub extends Shelly2ApiClient {
+    private static final class FloodApiStub extends Shelly2ApiClient {
         FloodApiStub(ShellyApiConfiguration config) {
             super("test", config, Mockito.mock(HttpClient.class));
         }
@@ -169,37 +179,5 @@ public class Shelly2FloodNotifyEventTest {
         public <T> T apiRequest(String method, @Nullable Object params, Class<T> classOfT) throws ShellyApiException {
             throw new ShellyApiException("Unexpected apiRequest in test: " + method);
         }
-    }
-
-    private static NetworkAddressService nullNas() {
-        return new NetworkAddressService() {
-            @Override
-            public @Nullable String getPrimaryIpv4HostAddress() {
-                return null;
-            }
-
-            @Override
-            public @Nullable String getConfiguredBroadcastAddress() {
-                return null;
-            }
-
-            @Override
-            public boolean isUseOnlyOneAddress() {
-                return false;
-            }
-
-            @Override
-            public boolean isUseIPv6() {
-                return false;
-            }
-
-            @Override
-            public void addNetworkAddressChangeListener(NetworkAddressChangeListener listener) {
-            }
-
-            @Override
-            public void removeNetworkAddressChangeListener(NetworkAddressChangeListener listener) {
-            }
-        };
     }
 }

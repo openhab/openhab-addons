@@ -612,7 +612,9 @@ public class ShellyChannelDefinitions {
                 CHANNEL_SENSOR_ILLUM);
         addChannel(thing, newChannels, sdata.flood != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_FLOOD);
         addChannel(thing, newChannels, sdata.smoke != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_SMOKE);
-        addChannel(thing, newChannels, sdata.mute != null, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_MUTE);
+        // Flood mute is read-only (physical button only); smoke mute is writable via API
+        addChannel(thing, newChannels, sdata.mute != null, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_MUTE,
+                profile.isFlood ? "sensorMuteFlood" : "sensorMute");
         addChannel(thing, newChannels, profile.settings.externalPower != null || sdata.charger != null, CHGR_DEVST,
                 CHANNEL_DEVST_CHARGER);
         addChannel(thing, newChannels, sdata.motion != null || (sdata.sensor != null && sdata.sensor.motion != null),
@@ -711,16 +713,21 @@ public class ShellyChannelDefinitions {
 
     private static void addChannel(Thing thing, Map<String, Channel> newChannels, boolean supported, String group,
             String channelName) throws IllegalArgumentException {
+        addChannel(thing, newChannels, supported, group, channelName, null);
+    }
+
+    private static void addChannel(Thing thing, Map<String, Channel> newChannels, boolean supported, String group,
+            String channelName, @Nullable String typeIdOverride) throws IllegalArgumentException {
         if (supported) {
             String channelId = group + ChannelUID.CHANNEL_GROUP_SEPARATOR + channelName;
             ChannelUID channelUID = new ChannelUID(thing.getUID(), channelId);
             ShellyChannel channelDef = getDefinition(channelId);
             if (channelDef != null) {
-                ChannelTypeUID channelTypeUID = channelDef.typeId.contains("system:")
-                        ? new ChannelTypeUID(channelDef.typeId)
-                        : new ChannelTypeUID(BINDING_ID, channelDef.typeId);
+                String typeId = typeIdOverride != null ? typeIdOverride : channelDef.typeId;
+                ChannelTypeUID channelTypeUID = typeId.contains("system:") ? new ChannelTypeUID(typeId)
+                        : new ChannelTypeUID(BINDING_ID, typeId);
                 ChannelBuilder builder;
-                if ("system:button".equalsIgnoreCase(channelDef.typeId)) {
+                if ("system:button".equalsIgnoreCase(typeId)) {
                     builder = ChannelBuilder.create(channelUID, null).withKind(ChannelKind.TRIGGER);
                 } else {
                     builder = ChannelBuilder.create(channelUID, channelDef.itemType);
