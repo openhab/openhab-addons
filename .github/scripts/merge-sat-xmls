@@ -1,0 +1,51 @@
+#!/usr/bin/env python3
+"""Merges SAT merge.xml files from multiple shards into a single merge.xml.
+
+Usage: merge-sat-xmls <input-dir> <output-file>
+
+Each subdirectory of <input-dir> must contain a merge.xml file produced by the
+openHAB Static Analysis Tool (SAT) plugin.  The merged file has the same <sca>
+root structure and is placed where the SAT extension expects it so that a
+subsequent Maven invocation can generate summary_report.html via the existing
+XSLT without duplicating any report-generation logic here.
+"""
+
+import re
+import sys
+from pathlib import Path
+from xml.etree import ElementTree as ET
+
+
+def natural_sort_key(path: Path) -> list:
+    """Sort paths with embedded numbers in natural order (shard-1 < shard-2 < shard-10)."""
+    return [int(p) if p.isdigit() else p.lower() for p in re.split(r'(\d+)', path.name)]
+
+
+def main() -> None:
+    if len(sys.argv) < 3:
+        print(f'Usage: {sys.argv[0]} <input-dir> <output-file>', file=sys.stderr)
+        sys.exit(1)
+
+    input_dir = Path(sys.argv[1])
+    output_file = Path(sys.argv[2])
+
+    xml_dirs = sorted(
+        [d for d in input_dir.iterdir() if d.is_dir()],
+        key=natural_sort_key,
+    )
+
+    root = ET.Element('sca')
+    for xml_dir in xml_dirs:
+        merge_xml = xml_dir / 'merge.xml'
+        if not merge_xml.exists():
+            continue
+        for file_elem in ET.parse(merge_xml).getroot().findall('file'):
+            root.append(file_elem)
+
+    output_file.parent.mkdir(parents=True, exist_ok=True)
+    ET.ElementTree(root).write(str(output_file), encoding='utf-8', xml_declaration=True)
+    print(f'Merged {len(root)} file entries into {output_file}')
+
+
+if __name__ == '__main__':
+    main()
