@@ -105,7 +105,8 @@ public class ShellyComponents {
         thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_SLEEPTIME,
                 toQuantityType(getInteger(status.sleepTime), Units.SECOND));
 
-        thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_UPDATE, getOnOff(status.hasUpdate));
+        // Use nested update.hasUpdate (stable-only signal) rather than top-level hasUpdate which can include betas
+        thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_UPDATE, getOnOff(status.update.hasUpdate));
 
         if (profile.settings.calibrated != null) {
             thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_CALIBRATED,

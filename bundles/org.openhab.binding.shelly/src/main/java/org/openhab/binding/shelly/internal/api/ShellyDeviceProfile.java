@@ -55,7 +55,7 @@ import com.google.gson.Gson;
 public class ShellyDeviceProfile {
     private final Logger logger = LoggerFactory.getLogger(ShellyDeviceProfile.class);
     private static final Pattern GEN1_VERSION_PATTERN = Pattern.compile("v\\d+\\.\\d+\\.\\d+(-[a-z0-9]*)?");
-    private static final Pattern GEN2_VERSION_PATTERN = Pattern.compile("\\d+\\.\\d+\\.\\d+(-[a-fh-z0-9]*)?");
+    private static final Pattern GEN2_VERSION_PATTERN = Pattern.compile("\\d+\\.\\d+\\.\\d+(-[a-fh-z0-9]+)?");
 
     public boolean initialized; // true when initialized
 
