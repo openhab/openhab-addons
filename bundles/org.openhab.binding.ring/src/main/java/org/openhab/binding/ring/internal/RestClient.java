@@ -340,7 +340,6 @@ public class RestClient {
                 }
 
                 String fullfilepath = targetPath.toString();
-                logger.debug("fullfilepath = {}", fullfilepath);
 
                 // Reassign 'path' to the secure target for the rest of the method
                 path = targetPath;

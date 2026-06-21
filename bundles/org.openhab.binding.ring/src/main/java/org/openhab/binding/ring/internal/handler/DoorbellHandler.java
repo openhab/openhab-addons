@@ -131,6 +131,23 @@ public class DoorbellHandler extends RingDeviceHandler {
         }
     }
 
+    public void forceSnapshotUpdate() {
+        logger.debug("Forcing snapshot update for Doorbell {}", getThing().getUID().getId());
+        long timestamp = getSnapshotTimestamp();
+        byte[] snapshot = getSnapshot();
+
+        if (snapshot.length > 0) {
+            lastSnapshotTimestamp = timestamp > 0 ? timestamp : System.currentTimeMillis();
+
+            ChannelUID channelUID = new ChannelUID(thing.getUID(), CHANNEL_STATUS_SNAPSHOT);
+            updateState(channelUID, new RawType(snapshot, "image/jpeg"));
+
+            channelUID = new ChannelUID(thing.getUID(), CHANNEL_STATUS_SNAPSHOT_TIMESTAMP);
+            updateState(channelUID, new DateTimeType(ZonedDateTime
+                    .ofInstant(java.time.Instant.ofEpochMilli(lastSnapshotTimestamp), timeZoneProvider.getTimeZone())));
+        }
+    }
+
     protected void motionDetectionCommand(boolean b) {
         String command = URL_SETTINGS;
         String payload = "{\"motion_settings\": {\"motion_detection_enabled\": " + b + "}}";

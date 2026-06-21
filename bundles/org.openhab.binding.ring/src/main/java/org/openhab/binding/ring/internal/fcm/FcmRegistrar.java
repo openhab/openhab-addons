@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.ring.internal.fcm;
 
-import java.security.KeyPairGenerator;
-import java.security.SecureRandom;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -44,7 +42,6 @@ import com.google.gson.JsonSyntaxException;
 public class FcmRegistrar {
 
     private static final Logger logger = LoggerFactory.getLogger(FcmRegistrar.class);
-    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
     // Official Ring App Firebase Constants
     private static final String RING_SENDER_ID = "876313859327";
@@ -80,39 +77,7 @@ public class FcmRegistrar {
         String fcmToken = performC2dmRegistration(checkin.androidId(), checkin.securityToken(), fisToken);
         logger.debug("FCM token generation successful.");
 
-        // Step 4: Generate the ECDH Web Push Keys
-        WebPushKeys keys;
-        try {
-            keys = generateWebPushKeys();
-        } catch (Exception e) {
-            throw new AuthenticationException("Failed to generate Web Push crypto keys: " + e.getMessage());
-        }
-
-        // Return all 6 strings cleanly in the constructor
-        return new FcmCredentials(checkin.androidId(), checkin.securityToken(), fcmToken, keys.privateKey(),
-                keys.publicKey(), keys.authSecret());
-    }
-
-    // Temporary record to hold the generated keys before we build the final credentials
-    private record WebPushKeys(String privateKey, String publicKey, String authSecret) {
-    }
-
-    private WebPushKeys generateWebPushKeys() throws Exception {
-        // Generate the Elliptic Curve Key Pair (P-256)
-        KeyPairGenerator keyGen = KeyPairGenerator.getInstance("EC");
-        keyGen.initialize(new java.security.spec.ECGenParameterSpec("secp256r1"));
-        java.security.KeyPair keyPair = keyGen.generateKeyPair();
-
-        // Generate a 16-byte cryptographically secure Auth Secret
-        byte[] authSecretBytes = new byte[16];
-        SECURE_RANDOM.nextBytes(authSecretBytes);
-
-        // Encode everything to Base64URL
-        java.util.Base64.Encoder encoder = java.util.Base64.getUrlEncoder().withoutPadding();
-
-        // Return the keys directly
-        return new WebPushKeys(encoder.encodeToString(keyPair.getPrivate().getEncoded()),
-                encoder.encodeToString(keyPair.getPublic().getEncoded()), encoder.encodeToString(authSecretBytes));
+        return new FcmCredentials(checkin.androidId(), checkin.securityToken(), fcmToken);
     }
 
     private CheckinResult performAndroidCheckin() throws AuthenticationException {
@@ -235,10 +200,9 @@ public class FcmRegistrar {
     }
 
     /**
-     * Holds the complete set of credentials required to open the MCS socket,
-     * subscribe to Ring push notifications, and decrypt Web Push payloads.
+     * Holds the complete set of credentials required to open the MCS socket
+     * and subscribe to Ring push notifications.
      */
-    public record FcmCredentials(String androidId, String securityToken, String fcmToken, String privateKey,
-            String publicKey, String authSecret) {
+    public record FcmCredentials(String androidId, String securityToken, String fcmToken) {
     }
 }

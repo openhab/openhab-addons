@@ -115,6 +115,9 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
      */
     private int eventIndex = 0;
 
+    private long lastRegistryRefresh = 0;
+    private static final long REGISTRY_CACHE_MS = 15 * 60 * 1000;
+
     /*
      * The number of video files to keep when auto-downloading
      */
@@ -217,7 +220,15 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     }
 
     protected void startAutomaticRefresh(final int refreshInterval) {
+        // Prevent zombie threads! Cancel existing timer before overwriting the variable.
+        if (refreshJob != null && !refreshJob.isCancelled()) {
+            refreshJob.cancel(true);
+        }
         refreshJob = scheduler.scheduleWithFixedDelay(this::refresh, 0, refreshInterval, TimeUnit.SECONDS);
+
+        if (eventRefresh != null && !eventRefresh.isCancelled()) {
+            eventRefresh.cancel(true);
+        }
         // Restart event polling when falling back from FCM
         eventRefresh = scheduler.scheduleWithFixedDelay(this::refreshEvent, refreshInterval, refreshInterval,
                 TimeUnit.SECONDS);
@@ -296,20 +307,10 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
             String securityToken = props.getProperty("securityToken");
             String fcmToken = props.getProperty("fcmToken");
 
-            // NEW: Load the cryptographic keys
-            String privateKey = props.getProperty("privateKey");
-            String publicKey = props.getProperty("publicKey");
-            String authSecret = props.getProperty("authSecret");
-
-            // If ANY of these are null, the cache is invalid/outdated.
-            // Returning empty forces a fresh registration and key generation.
-            if (androidId != null && securityToken != null && fcmToken != null && privateKey != null
-                    && publicKey != null && authSecret != null) {
-
-                return Optional.of(new FcmRegistrar.FcmCredentials(androidId, securityToken, fcmToken, privateKey,
-                        publicKey, authSecret));
+            if (androidId != null && securityToken != null && fcmToken != null) {
+                return Optional.of(new FcmRegistrar.FcmCredentials(androidId, securityToken, fcmToken));
             } else {
-                logger.warn("FCM credentials file is missing crypto keys. Forcing re-registration.");
+                logger.warn("FCM credentials file is incomplete. Forcing re-registration.");
             }
         } catch (Exception e) {
             logger.warn("Failed to load saved FCM credentials, will generate new ones.", e);
@@ -321,18 +322,11 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         File file = getFcmCredentialsFile();
         try (FileOutputStream fos = new FileOutputStream(file)) {
             Properties props = new Properties();
-
             props.setProperty("androidId", creds.androidId());
             props.setProperty("securityToken", creds.securityToken());
             props.setProperty("fcmToken", creds.fcmToken());
-
-            // NEW: Save the cryptographic keys
-            props.setProperty("privateKey", creds.privateKey());
-            props.setProperty("publicKey", creds.publicKey());
-            props.setProperty("authSecret", creds.authSecret());
-
-            props.store(fos, "Ring Binding FCM Credentials with Web Push Keys");
-            logger.debug("Successfully saved persistent FCM credentials and crypto keys to disk.");
+            props.store(fos, "Ring Binding FCM Credentials");
+            logger.debug("Successfully saved persistent FCM credentials to disk.");
         } catch (Exception e) {
             logger.error("Failed to save FCM credentials to disk!", e);
         }
@@ -361,7 +355,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         }
         logger.debug("doLogin RT: {}", getRefreshTokenFromFile());
         try {
-            refreshRegistry();
+            refreshRegistry(true);
             updateStatus(ThingStatus.ONLINE);
         } catch (AuthenticationException ae) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -427,7 +421,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                     updateProperties(properties);
                 }
 
-                refreshRegistry();
+                refreshRegistry(true);
 
                 // Always start the token/session refresh loop
                 startSessionRefresh(refreshInterval);
@@ -474,7 +468,8 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
             logger.debug("Binding FCM Token with Ring backend...");
             restClient.subscribeToPushNotifications(creds.fcmToken(), config.hardwareId, tokens);
             // 4. Connect the socket
-            fcmClient = new FcmClient((String payload) -> handlePushEvent(payload),
+            // 4. Connect the socket
+            fcmClient = new FcmClient((String payload, String configStr) -> handlePushEvent(payload, configStr),
                     (Boolean status) -> onFcmStateChanged(status), creds);
             fcmClient.connect(creds.androidId(), creds.securityToken());
 
@@ -497,17 +492,24 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
      */
     private void onFcmStateChanged(Boolean isConnected) {
         if (isConnected && isPolling) {
-            logger.info("Ring FCM Socket connected. Disabling HTTP polling.");
-            stopAutomaticRefresh();
+            logger.info("Ring FCM Socket connected. Disabling HTTP event polling.");
+
+            if (eventRefresh != null) {
+                eventRefresh.cancel(true);
+                eventRefresh = null;
+            }
             isPolling = false;
         } else if (!isConnected && !isPolling) {
-            logger.warn("Ring FCM Socket disconnected. Falling back to HTTP polling.");
-            startAutomaticRefresh(config.refreshInterval);
+            logger.warn("Ring FCM Socket disconnected. Falling back to HTTP event polling.");
+            if (eventRefresh == null || eventRefresh.isCancelled()) {
+                eventRefresh = scheduler.scheduleWithFixedDelay(this::refreshEvent, config.refreshInterval,
+                        config.refreshInterval, TimeUnit.SECONDS);
+            }
             isPolling = true;
         }
     }
 
-    private void handlePushEvent(String payloadJson) {
+    private void handlePushEvent(String payloadJson, String androidConfigJson) {
         logger.debug("Parsing Instant Push Event Payload: {}", payloadJson);
         try {
             JsonObject json = JsonParser.parseString(payloadJson).getAsJsonObject();
@@ -547,17 +549,16 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
 
             long eventId = Long.parseLong(eventIdStr);
 
-            // Prevent duplicate processing if we already parsed this specific event ID
             if (!lastEvents.isEmpty() && lastEvents.getFirst().id == eventId) {
                 return;
             }
 
             logger.info("Parsed Instant FCM Event -> Device: {}, Kind: {}", deviceName, kind.toUpperCase());
 
-            // 1. Construct a native openHAB RingEventTO
             RingEventTO instantEvent = new RingEventTO();
             instantEvent.id = eventId;
             instantEvent.kind = kind;
+            instantEvent.createdAt = createdAtStr;
 
             instantEvent.doorbot = new org.openhab.binding.ring.internal.api.DoorbotTO();
             instantEvent.doorbot.id = deviceId;
@@ -568,45 +569,77 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                 instantEvent.cvProperties.detectionType = detectionType;
             }
 
-            // 2. Override the memory cache so the video downloader grabs the correct event
             lastEvents = java.util.List.of(instantEvent);
 
-            // 3. Update the Account-level channels natively
-            // (Note: Depending on how your RingEventTO is serialized, it may require setting created_at via a specific
-            // setter if accessible)
             updateState(CHANNEL_EVENT_KIND, new StringType(instantEvent.kind));
             updateState(CHANNEL_EVENT_DOORBOT_ID, new StringType(instantEvent.doorbot.id));
             updateState(CHANNEL_EVENT_DOORBOT_DESCRIPTION, new StringType(instantEvent.doorbot.description));
 
+            // NEW: Use the native push notification body if provided!
             String message = "There is motion at your " + deviceName;
-            if ("human".equals(detectionType)) {
-                message = "There is a Person at your " + deviceName;
-            } else if ("vehicle".equals(detectionType)) {
-                message = "There is a Vehicle at your " + deviceName;
-            } else if ("ding".equals(kind)) {
-                message = "Someone is at your " + deviceName;
+
+            if (!androidConfigJson.isEmpty()) { // FIX: Simplified check for empty string
+                try {
+                    JsonObject configObj = JsonParser.parseString(androidConfigJson).getAsJsonObject();
+                    if (configObj.has("body")) {
+                        message = configObj.get("body").getAsString();
+                    }
+                } catch (Exception e) {
+                    logger.debug("Failed to extract body from android_config", e);
+                }
+            } else {
+                if ("human".equals(detectionType)) {
+                    message = "There is a Person at your " + deviceName;
+                } else if ("vehicle".equals(detectionType)) {
+                    message = "There is a Vehicle at your " + deviceName;
+                } else if ("ding".equals(kind)) {
+                    message = "Someone is at your " + deviceName;
+                }
             }
+
             updateState(CHANNEL_EVENT_EXTENDED_DESCRIPTION, new StringType(message));
 
-            // 4. Instantly trigger the video download in the background
             if (scheduler != null && !scheduler.isShutdown()) {
                 scheduler.execute(() -> getVideo(instantEvent));
             }
 
+            // 5. Instantly trigger a snapshot update on the specific child device
+            if (scheduler != null && !scheduler.isShutdown()) {
+                // We delay by 3 seconds to give Ring's backend time to generate the new image frame
+                scheduler.schedule(() -> {
+                    for (org.openhab.core.thing.Thing child : getThing().getThings()) {
+                        String childId = (String) child.getConfiguration().get("id");
+                        if (deviceId.equals(childId)) {
+                            org.openhab.core.thing.binding.ThingHandler handler = child.getHandler();
+                            if (handler instanceof DoorbellHandler doorbellHandler) {
+                                doorbellHandler.forceSnapshotUpdate();
+                            } else if (handler instanceof StickupcamHandler stickupcamHandler) {
+                                stickupcamHandler.forceSnapshotUpdate();
+                            }
+                        }
+                    }
+                }, 3, TimeUnit.SECONDS);
+            }
         } catch (Exception e) {
             logger.error("Failed to parse instant push event json: {}", e.getMessage(), e);
         }
     }
 
-    private void refreshRegistry() throws JsonParseException, AuthenticationException {
-        logger.debug("AccountHandler - refreshRegistry");
+    private void refreshRegistry(boolean force) throws JsonParseException, AuthenticationException {
+        // If not forced, and the cache hasn't expired, skip the API call
+        if (!force && (System.currentTimeMillis() - lastRegistryRefresh < REGISTRY_CACHE_MS)) {
+            return;
+        }
+
+        logger.debug("AccountHandler - refreshRegistry - Fetching fresh device data from API");
         RingDevicesTO ringDevices = restClient.getRingDevices(tokens);
         registry.addOrUpdateRingDevices(ringDevices);
+        lastRegistryRefresh = System.currentTimeMillis();
     }
 
     protected void minuteTick() {
         try {
-            refreshRegistry();
+            refreshRegistry(false);
             updateStatus(ThingStatus.ONLINE);
         } catch (AuthenticationException | JsonParseException e) {
             String refreshToken = getRefreshTokenFromFile();
@@ -614,7 +647,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                 try {
                     tokens = restClient.getTokens(config.username, config.password, refreshToken, "",
                             config.hardwareId);
-                    refreshRegistry();
+                    refreshRegistry(false);
                     updateStatus(ThingStatus.ONLINE);
                 } catch (AuthenticationException ex) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Invalid credentials");
@@ -693,7 +726,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
 
     private void refreshToken() {
         try {
-            refreshRegistry();
+            refreshRegistry(false);
             tokens = restClient.getTokens("", "", tokens.refreshToken(), "", config.hardwareId);
         } catch (AuthenticationException e) {
             logger.debug(
@@ -717,9 +750,14 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
      */
     protected void startSessionRefresh(int refreshInterval) {
         logger.debug("startSessionRefresh {}", refreshInterval);
+
+        if (jobTokenRefresh != null && !jobTokenRefresh.isCancelled()) {
+            jobTokenRefresh.cancel(true);
+        }
         jobTokenRefresh = scheduler.scheduleWithFixedDelay(this::refreshToken, 90, 600, TimeUnit.SECONDS);
-        eventRefresh = scheduler.scheduleWithFixedDelay(this::refreshEvent, refreshInterval, refreshInterval,
-                TimeUnit.SECONDS);
+
+        // DO NOT start eventRefresh here! It causes a duplicate timer leak.
+        // Event polling is strictly handled by startAutomaticRefresh and the FCM fallback logic.
     }
 
     protected void stopSessionRefresh() {

@@ -209,6 +209,23 @@ public class StickupcamHandler extends RingDeviceHandler {
         }
     }
 
+    public void forceSnapshotUpdate() {
+        logger.debug("Forcing snapshot update for Stickupcam {}", getThing().getUID().getId());
+        long timestamp = getSnapshotTimestamp();
+        byte[] snapshot = getSnapshot();
+
+        if (snapshot.length > 0) {
+            lastSnapshotTimestamp = timestamp > 0 ? timestamp : System.currentTimeMillis();
+
+            ChannelUID channelUID = new ChannelUID(thing.getUID(), CHANNEL_STATUS_SNAPSHOT);
+            updateState(channelUID, new RawType(snapshot, "image/jpeg"));
+
+            channelUID = new ChannelUID(thing.getUID(), CHANNEL_STATUS_SNAPSHOT_TIMESTAMP);
+            updateState(channelUID, new DateTimeType(ZonedDateTime
+                    .ofInstant(java.time.Instant.ofEpochMilli(lastSnapshotTimestamp), timeZoneProvider.getTimeZone())));
+        }
+    }
+
     protected void lightCommand(boolean b) {
         String command = URL_LIGHT + (b ? "on" : "off");
         sendCommand(URL_DOORBELLS, command);
