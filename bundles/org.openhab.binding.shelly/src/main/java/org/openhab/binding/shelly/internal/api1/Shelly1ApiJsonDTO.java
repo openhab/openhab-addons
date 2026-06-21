@@ -590,15 +590,15 @@ public class Shelly1ApiJsonDTO {
     }
 
     public static class ShellySettingsUpdate {
-        public String status;
+        public @Nullable String status;
         @SerializedName("has_update")
-        public Boolean hasUpdate;
+        public @Nullable Boolean hasUpdate;
         @SerializedName("new_version")
-        public String newVersion;
+        public @Nullable String newVersion;
         @SerializedName("old_version")
-        public String oldVersion;
+        public @Nullable String oldVersion;
         @SerializedName("beta_version")
-        public String betaVersion;
+        public @Nullable String betaVersion;
     }
 
     public static class ShellySettingsGlobal {
