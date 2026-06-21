@@ -466,10 +466,18 @@ public class RestClient {
     public void subscribeToPushNotifications(String fcmToken, String hardwareId, Tokens tokens)
             throws AuthenticationException {
 
-        // Build the modern JSON payload (Removed the invalid hardware_id from the body)
-        String payload = "{" + "\"device\": {" + "\"os\": \"android\"," + "\"push_notification_token\": \"" + fcmToken
-                + "\"," + "\"metadata\": {" + "\"api_version\": \"11\"," + "\"device_model\": \"Pixel 6\","
-                + "\"pn_dict_version\": \"2.0.0\"," + "\"pn_service\": \"fcm\"" + "}" + "}" + "}";
+        JsonObject metadata = new JsonObject();
+        metadata.addProperty("api_version", "11");
+        metadata.addProperty("device_model", "Pixel 6");
+        metadata.addProperty("pn_dict_version", "2.0.0");
+        metadata.addProperty("pn_service", "fcm");
+        JsonObject device = new JsonObject();
+        device.addProperty("os", "android");
+        device.addProperty("push_notification_token", fcmToken);
+        device.add("metadata", metadata);
+        JsonObject root = new JsonObject();
+        root.add("device", device);
+        String payload = gson.toJson(root);
 
         Map<String, String> headers = new HashMap<>();
         headers.put("hardware_id", hardwareId);

@@ -159,7 +159,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         return this.restClient;
     }
 
-    public @Nullable Tokens getTokens() {
+    public Tokens getTokens() {
         return this.tokens;
     }
 
@@ -286,9 +286,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     }
 
     private File getFcmCredentialsFile() {
-        // Points to /var/lib/openhab/ring/fcm_credentials.properties (or Windows equivalent)
-        String userData = System.getProperty("openhab.userdata");
-        File ringDir = new java.io.File(userData, "ring");
+        File ringDir = new File(OpenHAB.getUserDataFolder(), "ring");
         if (!ringDir.exists()) {
             ringDir.mkdirs();
         }
@@ -426,6 +424,9 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                 // Always start the token/session refresh loop
                 startSessionRefresh(refreshInterval);
 
+                // Start the periodic minute/device refresh loop (event polling will be disabled once FCM connects)
+                startAutomaticRefresh(refreshInterval);
+
                 // Attempt to connect via FCM by default
                 setupPushNotifications();
                 updateStatus(ThingStatus.ONLINE);
@@ -531,8 +532,8 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
 
             String kind = "motion";
             String detectionType = "";
-            String createdAtStr = java.time.Instant.now().toString();
-
+            String createdAtStr = java.time.ZonedDateTime.now(java.time.ZoneOffset.UTC)
+                    .format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX"));
             if (dingObj != null) {
                 if (dingObj.has("subtype")) {
                     String subtype = dingObj.get("subtype").getAsString().toLowerCase();
@@ -572,6 +573,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
 
             lastEvents = java.util.List.of(instantEvent);
 
+            updateState(CHANNEL_EVENT_CREATED_AT, instantEvent.getCreatedAt());
             updateState(CHANNEL_EVENT_KIND, new StringType(instantEvent.kind));
             updateState(CHANNEL_EVENT_DOORBOT_ID, new StringType(instantEvent.doorbot.id));
             updateState(CHANNEL_EVENT_DOORBOT_DESCRIPTION, new StringType(instantEvent.doorbot.description));

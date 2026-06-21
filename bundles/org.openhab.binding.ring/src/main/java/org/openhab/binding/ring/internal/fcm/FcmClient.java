@@ -111,8 +111,9 @@ public class FcmClient {
 
     private void sendSelectiveAck(String persistentId) {
         try {
-            if (persistentId == null || persistentId.isEmpty())
+            if (persistentId.isEmpty()) {
                 return;
+            }
 
             SelectiveAck sa = SelectiveAck.newBuilder().addId(persistentId).build();
             Extension ext = Extension.newBuilder().setId(12) // MCS_SELECTIVE_ACK_ID

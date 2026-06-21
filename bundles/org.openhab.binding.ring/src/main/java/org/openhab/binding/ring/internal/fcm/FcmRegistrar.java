@@ -121,14 +121,13 @@ public class FcmRegistrar {
     private String performFirebaseInstallation() throws AuthenticationException {
         logger.debug("Performing Firebase Installation (FIS) registration...");
 
-        // The exact payload Claude identified for the FIS endpoint
+        // Payload required by the Firebase Installations (FIS) endpoint
         String fisPayload = "{" + "\"appId\": \"" + RING_APP_ID + "\"," + "\"authVersion\": \"FIS_v2\","
                 + "\"sdkVersion\": \"a:16.3.3\"" + "}";
 
         try {
             Request request = httpClient.newRequest(URL_FIS).method(HttpMethod.POST)
                     .timeout(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS).header("Content-Type", "application/json")
-                    // This is where the API Key actually belongs
                     .header("x-goog-api-key", FCM_API_KEY).content(new StringContentProvider(fisPayload));
 
             ContentResponse response = request.send();
@@ -138,7 +137,6 @@ public class FcmRegistrar {
                         + " " + response.getContentAsString());
             }
 
-            // Parse the JSON to extract the nested authToken.token
             JsonObject json = JsonParser.parseString(response.getContentAsString()).getAsJsonObject();
             if (!json.has("authToken") || !json.getAsJsonObject("authToken").has("token")) {
                 throw new AuthenticationException("FIS response missing authToken");
@@ -163,7 +161,6 @@ public class FcmRegistrar {
                     .timeout(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS)
                     .header("Authorization", "AidLogin " + androidId + ":" + securityToken)
                     .header("Content-Type", "application/x-www-form-urlencoded")
-                    // NEW: Inject the FIS token to validate the registration
                     .header("X-Goog-Firebase-Installations-Auth", fisToken)
                     .content(new StringContentProvider(payloadBuilder.toString()));
 
@@ -175,7 +172,6 @@ public class FcmRegistrar {
 
             String responseString = response.getContentAsString();
 
-            // The response format is typically plain text: "token=APA91bHPR...[token_string]"
             if (responseString.startsWith("token=")) {
                 return responseString.substring(6).trim();
             } else if (responseString.contains("Error=")) {
@@ -185,12 +181,10 @@ public class FcmRegistrar {
             }
 
         } catch (ExecutionException | TimeoutException e) {
-            throw new AuthenticationException("Communication error during Android check-in: " + e.getMessage());
+            throw new AuthenticationException("Communication error during FCM registration: " + e.getMessage());
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new AuthenticationException("Communication error during Android check-in: " + e.getMessage());
-        } catch (JsonSyntaxException e) {
-            throw new AuthenticationException("Failed to parse Google check-in response: " + e.getMessage());
+            throw new AuthenticationException("Communication error during FCM registration: " + e.getMessage());
         }
     }
 
