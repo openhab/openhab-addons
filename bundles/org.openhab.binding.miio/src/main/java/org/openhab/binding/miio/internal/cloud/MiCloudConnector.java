@@ -440,11 +440,13 @@ public class MiCloudConnector {
 
     protected byte[] fetchAndInformImage(String url, int timeoutSeconds, String tempPrefix) throws MiCloudException {
         byte[] content = fetchImageBytes(url, timeoutSeconds);
-        try {
-            Path path = saveBytesToTempFile(content, tempPrefix, ".jpg");
-            logger.debug("Saved logon image to {} -> {} bytes", path.toAbsolutePath(), content.length);
-        } catch (MiCloudException e) {
-            logger.debug("Could not save image to temp file: {}", e.getMessage());
+        if (logger.isDebugEnabled()) {
+            try {
+                Path path = saveBytesToTempFile(content, tempPrefix, ".jpg");
+                logger.trace("Saved logon image to {} -> {} bytes", path.toAbsolutePath(), content.length);
+            } catch (MiCloudException e) {
+                logger.trace("Could not save image to temp file: {}", e.getMessage());
+            }
         }
         informImageListeners(content);
         return content;

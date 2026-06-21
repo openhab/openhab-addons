@@ -339,7 +339,12 @@ public class CloudConnector {
             }
 
             this.cloudConnector = cl;
-            connected = cl.login();
+            if (loginMode != CloudLoginMode.TOKEN && cl.getListeners().isEmpty()) {
+                logger.debug("No listeners registered. Skipping {} login flow.", loginMode);
+                connected = false;
+            } else {
+                connected = cl.login();
+            }
             if (connected) {
                 // Sync back the potentially refreshed token fields
                 this.serviceToken = cl.getServiceToken();
