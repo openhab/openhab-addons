@@ -84,6 +84,15 @@ public class ShellyThingCreatorTest {
                 Arguments.of("shellyplugus-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUSPLUGUS), //
                 Arguments.of("shellyplugusg4-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUGUSG4), //
                 Arguments.of("shellyplusplugcpm-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUSPLUGCPM), //
+                // Gen 1 relay devices — service name alone must identify type (important for auth-protected discovery)
+                Arguments.of("shelly1-" + DEVICE_ID, "", THING_TYPE_SHELLY1), //
+                Arguments.of("shelly1pm-" + DEVICE_ID, "", THING_TYPE_SHELLY1PM), //
+                Arguments.of("shelly1l-" + DEVICE_ID, "", THING_TYPE_SHELLY1L), //
+                Arguments.of("shelly2-" + DEVICE_ID, "", THING_TYPE_SHELLY2_RELAY), // relay default; probe corrects to
+                                                                                    // roller
+                Arguments.of("shelly25-" + DEVICE_ID, "", THING_TYPE_SHELLY25_RELAY), // relay default; probe corrects
+                                                                                      // to roller
+                Arguments.of("shelly4pro-" + DEVICE_ID, "", THING_TYPE_SHELLY4PRO), //
                 Arguments.of("shellydimmer-" + DEVICE_ID, "", THING_TYPE_SHELLYDIMMER), //
                 Arguments.of("shellydimmer2-" + DEVICE_ID, "", THING_TYPE_SHELLYDIMMER2), //
                 Arguments.of("shellyprodm2pm-" + DEVICE_ID, "", THING_TYPE_SHELLYPRODM2PM), //
@@ -95,17 +104,24 @@ public class ShellyThingCreatorTest {
                 Arguments.of("shellyvintage-" + DEVICE_ID, "", THING_TYPE_SHELLYVINTAGE), //
                 Arguments.of("shellybulb-" + DEVICE_ID, "", THING_TYPE_SHELLYBULB), //
                 Arguments.of("shellybulbduo-" + DEVICE_ID, "", THING_TYPE_SHELLYDUO), //
+                Arguments.of("shellyix3-" + DEVICE_ID, "", THING_TYPE_SHELLYIX3), //
                 Arguments.of("shellymotion-" + DEVICE_ID, "", THING_TYPE_SHELLYMOTION), //
                 Arguments.of("shellymotion2-" + DEVICE_ID, "", THING_TYPE_SHELLYMOTION), //
-                Arguments.of("shellymotionsensor-" + DEVICE_ID, "", THING_TYPE_SHELLYMOTION),
-                Arguments.of("shellyflood-" + DEVICE_ID, "", THING_TYPE_SHELLYFLOOD),
-                Arguments.of("shellyht-" + DEVICE_ID, "", THING_TYPE_SHELLYHT),
-                Arguments.of("shellydw-" + DEVICE_ID, "", THING_TYPE_SHELLYDOORWIN),
-                Arguments.of("shellydw2-" + DEVICE_ID, "", THING_TYPE_SHELLYDOORWIN2),
-                Arguments.of("shellygas-" + DEVICE_ID, "", THING_TYPE_SHELLYGAS),
-                Arguments.of("shellyuni-" + DEVICE_ID, "", THING_TYPE_SHELLYUNI),
-                Arguments.of("shellyem-" + DEVICE_ID, "", THING_TYPE_SHELLYEM),
-                Arguments.of("shellyem3-" + DEVICE_ID, "", THING_TYPE_SHELLY3EM),
+                Arguments.of("shellymotionsensor-" + DEVICE_ID, "", THING_TYPE_SHELLYMOTION), //
+                Arguments.of("shellyflood-" + DEVICE_ID, "", THING_TYPE_SHELLYFLOOD), //
+                Arguments.of("shellyht-" + DEVICE_ID, "", THING_TYPE_SHELLYHT), //
+                Arguments.of("shellysmoke-" + DEVICE_ID, "", THING_TYPE_SHELLYSMOKE), //
+                Arguments.of("shellytrv-" + DEVICE_ID, "", THING_TYPE_SHELLYTRV), //
+                Arguments.of("shellydw-" + DEVICE_ID, "", THING_TYPE_SHELLYDOORWIN), //
+                Arguments.of("shellydw2-" + DEVICE_ID, "", THING_TYPE_SHELLYDOORWIN2), //
+                Arguments.of("shellygas-" + DEVICE_ID, "", THING_TYPE_SHELLYGAS), //
+                Arguments.of("shellyuni-" + DEVICE_ID, "", THING_TYPE_SHELLYUNI), //
+                Arguments.of("shellybutton1-" + DEVICE_ID, "", THING_TYPE_SHELLYBUTTON1), //
+                Arguments.of("shellybutton2-" + DEVICE_ID, "", THING_TYPE_SHELLYBUTTON2), //
+                Arguments.of("shellyseye-" + DEVICE_ID, "", THING_TYPE_SHELLYEYE), // service name differs from thing
+                                                                                   // type id
+                Arguments.of("shellyem-" + DEVICE_ID, "", THING_TYPE_SHELLYEM), //
+                Arguments.of("shellyem3-" + DEVICE_ID, "", THING_TYPE_SHELLY3EM), //
 
                 // Shelly Plus
                 Arguments.of("shelly3em63g3-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUS3EM63),
@@ -146,7 +162,10 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_SHELLY25, "roller", THING_TYPE_SHELLY25_ROLLER), //
                 Arguments.of(SHELLYDT_SHPRO, "", THING_TYPE_SHELLY4PRO), //
                 Arguments.of(SHELLYDT_PLUG, "", THING_TYPE_SHELLYPLUG), //
+                Arguments.of(SHELLYDT_PLUG2, "", THING_TYPE_SHELLYPLUG), //
                 Arguments.of(SHELLYDT_PLUGU1, "", THING_TYPE_SHELLYPLUGU1), //
+                Arguments.of(SHELLYDT_PLUGU1_2, "", THING_TYPE_SHELLYPLUGU1), //
+                Arguments.of(SHELLYDT_SENSE, "", THING_TYPE_SHELLYSENSE), //
                 Arguments.of(SHELLYDT_3EM, "", THING_TYPE_SHELLY3EM), //
                 Arguments.of(SHELLYDT_EM, "", THING_TYPE_SHELLYEM), //
                 Arguments.of(SHELLYDT_PLUG, "", THING_TYPE_SHELLYPLUG), //
@@ -169,6 +188,7 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_FLOOD, "", THING_TYPE_SHELLYFLOOD), //
                 Arguments.of(SHELLYDT_SMOKE, "", THING_TYPE_SHELLYSMOKE), //
                 Arguments.of(SHELLYDT_MOTION, "", THING_TYPE_SHELLYMOTION), //
+                Arguments.of(SHELLYDT_MOTION2, "", THING_TYPE_SHELLYMOTION), //
                 Arguments.of(SHELLYDT_EYE, "", THING_TYPE_SHELLYEYE), //
                 Arguments.of(SHELLYDT_TRV, "", THING_TYPE_SHELLYTRV), //
 
@@ -298,7 +318,45 @@ public class ShellyThingCreatorTest {
     private static Stream<Arguments> provideTestCasesForgetThingUIDDeviceTypeTakesPrecedence() {
         return Stream.of( //
                 Arguments.of("shellyplusshutter-" + DEVICE_ID, SHELLYDT_PLUSSMOKE, THING_TYPE_SHELLYPLUSSMOKE), //
-                Arguments.of("notfound-" + DEVICE_ID, SHELLYDT_PLUSSMOKE, THING_TYPE_SHELLYPLUSSMOKE));
+                Arguments.of("notfound-" + DEVICE_ID, SHELLYDT_PLUSSMOKE, THING_TYPE_SHELLYPLUSSMOKE), //
+                // Auth-protected Gen1 discovery: model from /shelly beats service name.
+                // These simulate createResult() receiving 401 from /settings after /shelly already returned devInfo.
+                Arguments.of("shelly1-" + DEVICE_ID, SHELLYDT_1, THING_TYPE_SHELLY1), //
+                Arguments.of("shelly1pm-" + DEVICE_ID, SHELLYDT_1PM, THING_TYPE_SHELLY1PM), //
+                Arguments.of("shelly1l-" + DEVICE_ID, SHELLYDT_1L, THING_TYPE_SHELLY1L), //
+                Arguments.of("shellydevice-" + DEVICE_ID, SHELLYDT_DIMMER2, THING_TYPE_SHELLYDIMMER2), // custom
+                                                                                                       // hostname,
+                                                                                                       // model resolves
+                Arguments.of("shellydevice-" + DEVICE_ID, SHELLYDT_EM, THING_TYPE_SHELLYEM), //
+                Arguments.of("shellydevice-" + DEVICE_ID, SHELLYDT_FLOOD, THING_TYPE_SHELLYFLOOD), //
+                // SHSW-21 is only in relay/roller maps; with unknown mode it falls back to service name → relay default
+                Arguments.of("shelly2-" + DEVICE_ID, SHELLYDT_SHELLY2, THING_TYPE_SHELLY2_RELAY), //
+                Arguments.of("shelly25-" + DEVICE_ID, SHELLYDT_SHELLY25, THING_TYPE_SHELLY25_RELAY), //
+                // SHRGBW2 with custom hostname: device-type map resolves to white (default when mode unknown)
+                Arguments.of("shellydevice-" + DEVICE_ID, SHELLYDT_RGBW2, THING_TYPE_SHELLYRGBW2_WHITE));
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForMultiModeGen1Devices")
+    void multiModeGen1DevicesResolveByMode(String serviceName, String deviceType, String mode,
+            ThingTypeUID expectedThingTypeUid) {
+        ThingUID actual = ShellyThingCreator.getThingUID(serviceName, deviceType, mode);
+        ThingUID expected = new ThingUID(expectedThingTypeUid, DEVICE_ID);
+        assertThat("serviceName: " + serviceName + "; deviceType: " + deviceType + "; mode: " + mode, actual,
+                is(equalTo(expected)));
+        assertThat(SUPPORTED_THING_TYPES, hasItem(expectedThingTypeUid));
+    }
+
+    private static Stream<Arguments> provideTestCasesForMultiModeGen1Devices() {
+        return Stream.of( //
+                Arguments.of("shelly2-" + DEVICE_ID, SHELLYDT_SHELLY2, "relay", THING_TYPE_SHELLY2_RELAY), //
+                Arguments.of("shelly2-" + DEVICE_ID, SHELLYDT_SHELLY2, "roller", THING_TYPE_SHELLY2_ROLLER), //
+                Arguments.of("shelly25-" + DEVICE_ID, SHELLYDT_SHELLY25, "relay", THING_TYPE_SHELLY25_RELAY), //
+                Arguments.of("shelly25-" + DEVICE_ID, SHELLYDT_SHELLY25, "roller", THING_TYPE_SHELLY25_ROLLER), //
+                Arguments.of("shellybulb-" + DEVICE_ID, SHELLYDT_BULB, "color", THING_TYPE_SHELLYBULB), //
+                Arguments.of("shellybulb-" + DEVICE_ID, SHELLYDT_BULB, "white", THING_TYPE_SHELLYBULB), //
+                Arguments.of("shellyrgbw2-" + DEVICE_ID, SHELLYDT_RGBW2, "color", THING_TYPE_SHELLYRGBW2_COLOR), //
+                Arguments.of("shellyrgbw2-" + DEVICE_ID, SHELLYDT_RGBW2, "white", THING_TYPE_SHELLYRGBW2_WHITE)); //
     }
 
     @Test
