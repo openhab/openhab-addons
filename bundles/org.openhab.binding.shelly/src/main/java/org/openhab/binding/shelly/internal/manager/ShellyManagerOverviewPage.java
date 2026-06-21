@@ -247,7 +247,7 @@ public class ShellyManagerOverviewPage extends ShellyManagerPage {
                 return false;
             case FILTER_UPDATE:
                 // return handler.getChannelValue(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_UPDATE) == OnOffType.ON;
-                return getBool(profile.status.hasUpdate);
+                return getBool(profile.status.update.hasUpdate);
             case FILTER_UNPROTECTED:
                 if (profile.device.auth != null) {
                     return !profile.device.auth;

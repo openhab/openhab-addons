@@ -664,17 +664,29 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             profile.settings.sleepMode.period = ds.sys.wakeupPeriod / 60;
         }
 
-        if (ds.sys.availableUpdates != null) {
-            status.update.hasUpdate = ds.sys.availableUpdates.stable != null;
-            if (ds.sys.availableUpdates.stable != null) {
-                status.update.newVersion = ShellyDeviceProfile
-                        .extractFwVersion(getString(ds.sys.availableUpdates.stable.version));
-                status.hasUpdate = new ShellyVersionDTO().compare(profile.fwVersion, status.update.newVersion) < 0;
+        Shelly2DeviceStatusSysAvlUpdate avlUpdate = ds.sys.availableUpdates;
+        status.update.oldVersion = profile.fwVersion;
+        status.update.newVersion = "";
+        status.update.betaVersion = "";
+        status.update.hasUpdate = false;
+        status.hasUpdate = false;
+        if (avlUpdate != null) {
+            ShellyVersionDTO versionDTO = new ShellyVersionDTO();
+            Shelly2DeviceStatusSysAvlUpdate.Shelly2DeviceStatusSysUpdate stableUpdate = avlUpdate.stable;
+            if (stableUpdate != null) {
+                String stableVer = ShellyDeviceProfile.extractFwVersion(getString(stableUpdate.version));
+                status.update.newVersion = stableVer;
+                // Compare base versions only — strip build hash so "2.6.2-abc" == "2.6.2"
+                boolean newerStable = !stableVer.isEmpty()
+                        && versionDTO.compare(versionDTO.stripBuildHash(profile.fwVersion),
+                                versionDTO.stripBuildHash(stableVer)) < 0;
+                status.update.hasUpdate = newerStable;
+                status.hasUpdate = newerStable;
             }
-            if (ds.sys.availableUpdates.beta != null) {
-                status.update.betaVersion = ShellyDeviceProfile
-                        .extractFwVersion(getString(ds.sys.availableUpdates.beta.version));
-                status.hasUpdate = new ShellyVersionDTO().compare(profile.fwVersion, status.update.betaVersion) < 0;
+            Shelly2DeviceStatusSysAvlUpdate.Shelly2DeviceStatusSysUpdate betaUpdate = avlUpdate.beta;
+            if (betaUpdate != null) {
+                status.update.betaVersion = ShellyDeviceProfile.extractFwVersion(getString(betaUpdate.version));
+                // beta availability is recorded but never sets the main update channel
             }
         }
 

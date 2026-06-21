@@ -169,4 +169,24 @@ public class ShellyVersionDTO {
                 || (lowVersion = version.toLowerCase(Locale.ROOT)).contains("master")
                 || (lowVersion.contains("-rc") || lowVersion.contains("beta"));
     }
+
+    /**
+     * Strip trailing build hash from a firmware version string.
+     *
+     * Gen1 hashes start with 'g' (e.g. g9979d16); Gen2 hashes are pure lowercase hex (e.g. 06f6da23).
+     * Both appear after the last '-'. Stripping them enables numeric-only version comparison.
+     * Example: "2.6.2-06f6da23" → "2.6.2", "2.6.2-beta1-06f6da23" → "2.6.2-beta1".
+     */
+    public String stripBuildHash(String version) {
+        int idx = version.lastIndexOf('-');
+        if (idx > 0 && idx < version.length() - 1) {
+            String tail = version.substring(idx + 1);
+            // pure hex (Gen2) or g-prefixed hex (Gen1)
+            String hex = tail.startsWith("g") ? tail.substring(1) : tail;
+            if (!hex.isEmpty() && hex.chars().allMatch(c -> (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f'))) {
+                return version.substring(0, idx);
+            }
+        }
+        return version;
+    }
 }

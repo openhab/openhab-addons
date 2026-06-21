@@ -933,11 +933,11 @@ public class Shelly2ApiJsonDTO {
         public class Shelly2DeviceStatusSys {
             public class Shelly2DeviceStatusSysAvlUpdate {
                 public class Shelly2DeviceStatusSysUpdate {
-                    public String version;
+                    public @Nullable String version;
                 }
 
-                public Shelly2DeviceStatusSysUpdate stable;
-                public Shelly2DeviceStatusSysUpdate beta;
+                public @Nullable Shelly2DeviceStatusSysUpdate stable;
+                public @Nullable Shelly2DeviceStatusSysUpdate beta;
             }
 
             public class Shelly2DeviceStatusWakeup {
@@ -962,7 +962,7 @@ public class Shelly2ApiJsonDTO {
             @SerializedName("cfg_rev")
             public Integer cfgRev;
             @SerializedName("available_updates")
-            public Shelly2DeviceStatusSysAvlUpdate availableUpdates;
+            public @Nullable Shelly2DeviceStatusSysAvlUpdate availableUpdates;
             @SerializedName("webhook_rev")
             public Integer webHookRev;
             @SerializedName("wakeup_reason")
