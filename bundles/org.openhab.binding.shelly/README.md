@@ -185,7 +185,7 @@ See section [Discovery](#discovery) for details.
 
 The binding has the following configuration options:
 
-### Gen 1 Configuration
+### Generation 1
 
 | Parameter       | Description                                                         | Mandatory | Default |
 | --------------- | ------------------------------------------------------------------- | --------- | ------- |
@@ -568,7 +568,7 @@ If you want to use those events triggering a rule:
 - If a physical switch is connected to the Shelly use the input channel(`input` or `input1`/`input2`) to trigger a rule
 - For a momentary button use the `button` trigger channel as trigger, channels `lastEvent` and `eventCount` will provide details on the event
 
-### Alarms / Events
+### Alarms
 
 The binding provides health monitoring functions for the device.
 When an alarm condition is detected the channel alarm gets triggered and provides one of the following alarm types:
@@ -638,7 +638,7 @@ This is an in-place type change on the same channel ID, not a rename, so there i
 Two LoRa add-on variants are supported:
 
 - **Shelly LoRa Add-On** (standard form factor): attaches to Gen3 and Gen4 Plus devices — Plus 1, Plus 1PM, Plus 2PM, Plus Shutter, Plus EM, and Dimmer 0/1-10V PM Gen3/Gen4. Gen2 Plus devices and the Shelly Wall Dimmer Gen3 do not support this add-on.
-- **Shelly Pro LoRa Add-On** (DIN-rail): attaches to Pro series devices — Pro 1, Pro 1PM, Pro 2, Pro 2PM, Pro 3EM, Pro EM-50, and Pro Dimmer 2PM.
+- **Shelly Pro LoRa Add-On** (DIN-rail): attaches to Pro series devices — Pro 1, Pro 1PM, Pro 2, Pro 2PM, Pro 3EM, Pro EM-50, Pro Dimmer 1PM, Pro Dimmer 2PM, and Pro Dimmer 0/1-10V PM. EU868 band only. Requires firmware 2.0 or later.
 
 Note: To enable LoRa support set thing configuration option `enableLoRa = true`.
 
@@ -653,7 +653,7 @@ Note: To enable LoRa support set thing configuration option `enableLoRa = true`.
 |         | errorsTx     | Number  | yes       | Number of failed transmissions to the LoRa network.                               |
 |         | snr          | Number  | yes       | SNR (signal-to-noise ratio in dB) of the last received packet.                    |
 |         | rssi         | Number  | yes       | RSSI (received signal strength in dBm) of the last received packet.               |
-|         | airtime      | Number  | yes       | Cumulative transmission air time in milliseconds over the last hour.              |
+|         | airtime      | Number  | yes       | Cumulative transmission air time in milliseconds.                                 |
 
 ### Shelly 1 (thing-type: shelly1)
 
@@ -2449,7 +2449,7 @@ pre-requisites:
 
 - Install Send Mail Action
 - Define a group called gBatteries
-  `Group   gBattery        "Batterien"         <battery>       (All)`
+'Group   gBattery        "Batterien"         <battery>       (All)'
 - Link battery channel for all your Shelly battery powered devices
 - Add battery items to group gBattery
 
