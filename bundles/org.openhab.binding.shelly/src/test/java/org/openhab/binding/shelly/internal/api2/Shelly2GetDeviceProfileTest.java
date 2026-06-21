@@ -391,4 +391,15 @@ public class Shelly2GetDeviceProfileTest {
         ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYUNKNOWN, deviceInfo());
         assertThat(profile.settings.loraRxEnabled, is(false));
     }
+
+    @Test
+    void discovery_loraBandPlan_parsedFromConfig() {
+        Gson gson = new Gson();
+        Shelly2GetConfigResult config = parseConfig(gson, "{\"sys\":{\"device\":{},\"location\":{}},\"wifi\":{},"
+                + "\"lora:100\":{\"id\":100,\"band_plan\":\"US915\",\"rx_enable\":false}}");
+        assertThat(config.lora100 != null, is(true));
+        if (config.lora100 != null) {
+            assertThat(config.lora100.bandPlan, is("US915"));
+        }
+    }
 }
