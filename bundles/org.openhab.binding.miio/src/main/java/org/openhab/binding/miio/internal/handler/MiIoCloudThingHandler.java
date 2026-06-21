@@ -12,18 +12,7 @@
  */
 package org.openhab.binding.miio.internal.handler;
 
-import static org.openhab.binding.miio.internal.MiIoBindingConstants.CHANNEL_CAPTCHA_RESPONSE;
-import static org.openhab.binding.miio.internal.MiIoBindingConstants.CHANNEL_LOGON_IMAGE;
-import static org.openhab.binding.miio.internal.MiIoBindingConstants.CHANNEL_TRIGGER_LOGIN;
-import static org.openhab.binding.miio.internal.MiIoBindingConstants.CHANNEL_TWOFA;
-import static org.openhab.binding.miio.internal.MiIoBindingConstants.CONFIG_CLIENT_ID;
-import static org.openhab.binding.miio.internal.MiIoBindingConstants.CONFIG_COUNTRY;
-import static org.openhab.binding.miio.internal.MiIoBindingConstants.CONFIG_LOGIN_METHOD;
-import static org.openhab.binding.miio.internal.MiIoBindingConstants.CONFIG_PASSWORD;
-import static org.openhab.binding.miio.internal.MiIoBindingConstants.CONFIG_SERVICE_TOKEN;
-import static org.openhab.binding.miio.internal.MiIoBindingConstants.CONFIG_SSECURITY;
-import static org.openhab.binding.miio.internal.MiIoBindingConstants.CONFIG_USERNAME;
-import static org.openhab.binding.miio.internal.MiIoBindingConstants.CONFIG_USER_ID;
+import static org.openhab.binding.miio.internal.MiIoBindingConstants.*;
 
 import java.io.InputStream;
 import java.security.SecureRandom;
@@ -33,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.miio.internal.Utils;
 import org.openhab.binding.miio.internal.cloud.CloudConnector;
 import org.openhab.binding.miio.internal.cloud.CloudLogonListener;
 import org.openhab.binding.miio.internal.cloud.MiCloudConnector.CloudLoginMode;
@@ -180,7 +170,7 @@ public class MiIoCloudThingHandler extends BaseThingHandler implements CloudLogo
                 if (!(command instanceof StringType)) {
                     return;
                 }
-                logger.debug("Received 2-factor authentication response {}", command);
+                logger.debug("Received 2-factor authentication response {}", Utils.obfuscateToken(command.toString()));
                 cloudConnector.submit2FA(command.toString());
                 break;
             case CHANNEL_TRIGGER_LOGIN:
@@ -226,7 +216,8 @@ public class MiIoCloudThingHandler extends BaseThingHandler implements CloudLogo
                 String newUserId = cloudConnector.getUserId();
                 String newServiceToken = cloudConnector.getServiceToken();
                 String newSsecurity = cloudConnector.getSsecurity();
-                if (!newServiceToken.equals(this.serviceToken) || !newUserId.equals(this.userId)) {
+                if (!newServiceToken.equals(this.serviceToken) || !newUserId.equals(this.userId)
+                        || !newSsecurity.equals(this.ssecurity)) {
                     this.userId = newUserId;
                     this.serviceToken = newServiceToken;
                     this.ssecurity = newSsecurity;

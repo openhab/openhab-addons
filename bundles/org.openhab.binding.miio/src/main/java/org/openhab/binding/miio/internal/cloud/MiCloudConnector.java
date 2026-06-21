@@ -140,11 +140,12 @@ public class MiCloudConnector {
         }
     }
 
-    public MiCloudConnector(String username, String password, HttpClient httpClient) throws MiCloudException {
-        this.username = username;
-        this.password = password;
+    public MiCloudConnector(@Nullable String username, @Nullable String password, HttpClient httpClient)
+            throws MiCloudException {
+        this.username = username != null ? username : "";
+        this.password = password != null ? password : "";
         this.httpClient = httpClient;
-        if (!checkCredentials()) {
+        if (!hasTokenCredentials() && !checkCredentials()) {
             throw new MiCloudException("username or password can't be empty");
         }
         clientId = generateClientId();

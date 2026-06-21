@@ -5,8 +5,8 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="cloud">
-		<label>Cloud Logon Helper Thing</label>
-		<description>Cloud Logon Helper Thing supporting captcha and 2FA authentication</description>
+		<label>Cloud Connector Thing</label>
+		<description>Cloud Connector Thing supporting captcha and 2FA authentication</description>
 
 		<channels>
 			<channel id="logonimage" typeId="logonimage"/>
@@ -107,8 +107,4 @@
 		<category>settings</category>
 	</channel-type>
 
-
-	<!-- <channel-groups> <channel-group id="logon" typeId="logon" /> </channel-groups> </thing-type> <channel-group-type id="logon">
-		<label>Logon</label> <channels> <channel id="captcha" typeId="captcha" /> <channel id="captcharesponse" typeId="captcharesponse"
-		/> <channel id="twofa" typeId="twofa" /> </channels> </channel-group-type> -->
 </thing:thing-descriptions>

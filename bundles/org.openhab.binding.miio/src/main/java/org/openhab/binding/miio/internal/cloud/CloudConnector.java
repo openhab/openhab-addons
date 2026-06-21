@@ -233,7 +233,7 @@ public class CloudConnector {
 
     public @Nullable RawType getMap(String mapId, String country) throws MiCloudException {
         logger.debug("Getting vacuum map {} from Xiaomi cloud server: '{}'", mapId, country);
-        String mapCountry;
+        String mapCountry = "";
         Optional<String> mapUrl = Optional.empty();
         final @Nullable MiCloudConnector cl = this.cloudConnector;
         if (cl == null || !isConnected()) {
@@ -242,9 +242,14 @@ public class CloudConnector {
         if (country.isEmpty()) {
             logger.debug("Server not defined in thing. Trying servers: {}", this.country);
             for (String mapCountryServer : this.country.split(",")) {
-                mapCountry = mapCountryServer.trim().toLowerCase();
-                mapUrl = cl.getMapUrl(mapId, mapCountry);
-                logger.debug("Map download from server {} returned {}", mapCountry, mapUrl);
+                try {
+                    mapCountry = mapCountryServer.trim().toLowerCase();
+                    mapUrl = cl.getMapUrl(mapId, mapCountry);
+                    logger.debug("Map download from server {} returned {}", mapCountry, mapUrl);
+                } catch (MiCloudException e) {
+                    logger.debug("Failed to get map from server '{}': {}", mapCountry, e.getMessage());
+                    continue;
+                }
                 if (!mapUrl.isEmpty()) {
                     break;
                 }
