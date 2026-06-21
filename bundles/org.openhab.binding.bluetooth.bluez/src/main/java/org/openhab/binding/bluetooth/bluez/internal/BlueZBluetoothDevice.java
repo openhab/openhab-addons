@@ -17,9 +17,11 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -172,7 +174,7 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
     }
 
     private void setConnectionState(ConnectionState state) {
-        logger.debug("Update connection state: {}", state);
+        logger.debug("Update connection state for {} to {}", address, state);
         if (this.connectionState != state) {
             this.connectionState = state;
             notifyListeners(BluetoothEventType.CONNECTION_STATE, new BluetoothConnectionStatusNotification(state));
@@ -226,12 +228,13 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
                     // (the call blocks / does not complete). Pause discovery first; the bridge's periodic
                     // refresh job resumes it shortly after.
                     bridgeHandler.stopDiscovery();
-                    clearServices();
                     // This method does not block at most until the dbus-java
                     // method timeout is reached.
                     boolean ret = dev.connect();
                     logger.debug("Connect result: {}", ret);
-                    setConnectionState(ret ? ConnectionState.CONNECTED : ConnectionState.DISCONNECTED);
+                    ConnectionState cs1 = ret ? ConnectionState.CONNECTED : ConnectionState.DISCONNECTED;
+                    logger.debug("Updating connection state after connect: {}", cs1);
+                    setConnectionState(cs1);
                 }, scheduler).handle((voidResult, th) -> {
                     if (th != null) {
                         logger.debug("Failed to connect", th);
@@ -290,19 +293,29 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
         return services;
     }
 
-    private @Nullable BluetoothGattCharacteristic getDBusBlueZCharacteristicByUUID(String uuid) {
+    private @Nullable CompletableFuture<BluetoothGattCharacteristic> getDBusBlueZCharacteristicByUUID(String uuid) {
         BluetoothDevice dev = device;
         if (dev == null) {
             return null;
         }
-        for (BluetoothGattService service : getGattServicesRefreshed(dev)) {
-            for (BluetoothGattCharacteristic characteristic : service.getGattCharacteristics()) {
-                if (characteristic != null && uuid.equalsIgnoreCase(characteristic.getUuid())) {
-                    return characteristic;
+        AtomicInteger atomicInteger = new AtomicInteger();
+        return RetryFuture.callWithRetry(() -> {
+            if (Boolean.TRUE.equals(dev.isServicesResolved())) {
+                for (BluetoothGattService service : getGattServicesRefreshed(dev)) {
+                    for (BluetoothGattCharacteristic characteristic : service.getGattCharacteristics()) {
+                        if (characteristic != null && uuid.equalsIgnoreCase(characteristic.getUuid())) {
+                            return characteristic;
+                        }
+                    }
                 }
             }
-        }
-        return null;
+
+            if (atomicInteger.incrementAndGet() < 100) { // 100 iterations 50ms each => 5s
+                throw new RetryException(50, TimeUnit.MILLISECONDS);
+            }
+
+            throw new IllegalStateException("Characteristic " + uuid + " is missing on device");
+        }, scheduler);
     }
 
     private @Nullable BluetoothGattCharacteristic getDBusBlueZCharacteristicByDBusPath(String dBusPath) {
@@ -330,30 +343,25 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
                     .failedFuture(new IllegalStateException("DBusBlueZ device is not set or not connected"));
         }
 
-        BluetoothGattCharacteristic c = getDBusBlueZCharacteristicByUUID(characteristic.getUuid().toString());
-        if (c == null) {
-            logger.warn("Characteristic '{}' is missing on device '{}'.", characteristic.getUuid(), address);
-            return CompletableFuture.failedFuture(
-                    new IllegalStateException("Characteristic " + characteristic.getUuid() + " is missing on device"));
-        }
-
-        return RetryFuture.callWithRetry(() -> {
-            try {
-                c.startNotify();
-            } catch (DBusException e) {
-                String exceptionMessage = e.getMessage();
-                if (exceptionMessage != null && exceptionMessage.contains("Already notifying")) {
+        return getDBusBlueZCharacteristicByUUID(characteristic.getUuid().toString())
+                .thenCompose(c -> RetryFuture.callWithRetry(() -> {
+                    try {
+                        c.startNotify();
+                    } catch (DBusExecutionException e) {
+                        String exceptionMessage = e.getMessage();
+                        if (exceptionMessage != null && exceptionMessage.contains("Already notifying")) {
+                            return null;
+                        } else if (exceptionMessage != null && exceptionMessage.contains("In Progress")) {
+                            // let's retry in half a second
+                            throw new RetryException(500, TimeUnit.MILLISECONDS);
+                        } else {
+                            logger.warn("Exception occurred while activating notifications on '{}'", address, e);
+                            throw e;
+                        }
+                    }
+                    ;
                     return null;
-                } else if (exceptionMessage != null && exceptionMessage.contains("In Progress")) {
-                    // let's retry in half a second
-                    throw new RetryException(500, TimeUnit.MILLISECONDS);
-                } else {
-                    logger.warn("Exception occurred while activating notifications on '{}'", address, e);
-                    throw e;
-                }
-            }
-            return null;
-        }, scheduler);
+                }, scheduler));
     }
 
     @Override
@@ -366,23 +374,17 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
                     .failedFuture(new IllegalStateException("DBusBlueZ device is not set or not connected"));
         }
 
-        BluetoothGattCharacteristic c = getDBusBlueZCharacteristicByUUID(characteristic.getUuid().toString());
-        if (c == null) {
-            logger.warn("Characteristic '{}' is missing on device '{}'.", characteristic.getUuid(), address);
-            return CompletableFuture.failedFuture(
-                    new IllegalStateException("Characteristic " + characteristic.getUuid() + " is missing on device"));
-        }
-
-        return RetryFuture.callWithRetry(() -> {
-            try {
-                c.writeValue(value, null);
-                return null;
-            } catch (DBusException e) {
-                logger.debug("Exception occurred when trying to write characteristic '{}': {}",
-                        characteristic.getUuid(), e.getMessage());
-                throw e;
-            }
-        }, scheduler);
+        return getDBusBlueZCharacteristicByUUID(characteristic.getUuid().toString())
+                .thenCompose(c -> RetryFuture.callWithRetry(() -> {
+                    try {
+                        c.writeValue(value, null);
+                        return null;
+                    } catch (DBusException e) {
+                        logger.debug("Exception occurred when trying to write characteristic '{}': {}",
+                                characteristic.getUuid(), e.getMessage());
+                        throw e;
+                    }
+                }, scheduler));
     }
 
     @Override
@@ -568,33 +570,32 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
                     .failedFuture(new IllegalStateException("DBusBlueZ device is not set or not connected"));
         }
 
-        BluetoothGattCharacteristic c = getDBusBlueZCharacteristicByUUID(characteristic.getUuid().toString());
-        if (c == null) {
-            logger.warn("Characteristic '{}' is missing on device '{}'.", characteristic.getUuid(), address);
-            return CompletableFuture.failedFuture(
-                    new IllegalStateException("Characteristic " + characteristic.getUuid() + " is missing on device"));
-        }
-
-        return RetryFuture.callWithRetry(() -> {
-            try {
-                return c.readValue(null);
-            } catch (DBusException | DBusExecutionException e) {
-                // DBusExecutionException is thrown if the value cannot be read
-                logger.debug("Exception occurred when trying to read characteristic '{}': {}", characteristic.getUuid(),
-                        e.getMessage());
-                throw e;
-            }
-        }, scheduler);
+        return getDBusBlueZCharacteristicByUUID(characteristic.getUuid().toString())
+                .thenCompose(c -> RetryFuture.callWithRetry(() -> {
+                    try {
+                        return c.readValue(null);
+                    } catch (DBusException | DBusExecutionException e) {
+                        // DBusExecutionException is thrown if the value cannot be read
+                        logger.debug("Exception occurred when trying to read characteristic '{}': {}",
+                                characteristic.getUuid(), e.getMessage());
+                        throw e;
+                    }
+                }, scheduler));
     }
 
     @Override
     public boolean isNotifying(BluetoothCharacteristic characteristic) {
-        BluetoothGattCharacteristic c = getDBusBlueZCharacteristicByUUID(characteristic.getUuid().toString());
-        if (c != null) {
-            Boolean isNotifying = c.isNotifying();
-            return Objects.requireNonNullElse(isNotifying, false);
-        } else {
-            logger.warn("Characteristic '{}' is missing on device '{}'.", characteristic.getUuid(), address);
+        try {
+            BluetoothGattCharacteristic c = getDBusBlueZCharacteristicByUUID(characteristic.getUuid().toString()).get();
+            if (c != null) {
+                Boolean isNotifying = c.isNotifying();
+                return Objects.requireNonNullElse(isNotifying, false);
+            } else {
+                logger.warn("Characteristic '{}' is missing on device '{}'.", characteristic.getUuid(), address);
+                return false;
+            }
+        } catch (InterruptedException | ExecutionException ex) {
+            logger.warn("Fetchig characteristic '{}' for device '{}'.", characteristic.getUuid(), address, ex);
             return false;
         }
     }
@@ -611,30 +612,24 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
             }
             return CompletableFuture.failedFuture(new IllegalStateException(message));
         }
-        BluetoothGattCharacteristic c = getDBusBlueZCharacteristicByUUID(characteristic.getUuid().toString());
-        if (c == null) {
-            logger.warn("Characteristic '{}' is missing on device '{}'.", characteristic.getUuid(), address);
-            return CompletableFuture.failedFuture(
-                    new IllegalStateException("Characteristic " + characteristic.getUuid() + " is missing on device"));
-        }
-
-        return RetryFuture.callWithRetry(() -> {
-            try {
-                c.stopNotify();
-            } catch (DBusException e) {
-                String exceptionMessage = e.getMessage();
-                if (exceptionMessage != null && exceptionMessage.contains("Already notifying")) {
+        return getDBusBlueZCharacteristicByUUID(characteristic.getUuid().toString())
+                .thenCompose(c -> RetryFuture.callWithRetry(() -> {
+                    try {
+                        c.stopNotify();
+                    } catch (DBusExecutionException e) {
+                        String exceptionMessage = e.getMessage();
+                        if (exceptionMessage != null && exceptionMessage.contains("Already notifying")) {
+                            return null;
+                        } else if (exceptionMessage != null && exceptionMessage.contains("In Progress")) {
+                            // let's retry in half a second
+                            throw new RetryException(500, TimeUnit.MILLISECONDS);
+                        } else {
+                            logger.warn("Exception occurred while deactivating notifications on '{}'", address, e);
+                            throw e;
+                        }
+                    }
                     return null;
-                } else if (exceptionMessage != null && exceptionMessage.contains("In Progress")) {
-                    // let's retry in half a second
-                    throw new RetryException(500, TimeUnit.MILLISECONDS);
-                } else {
-                    logger.warn("Exception occurred while deactivating notifications on '{}'", address, e);
-                    throw e;
-                }
-            }
-            return null;
-        }, scheduler);
+                }, scheduler));
     }
 
     @Override
