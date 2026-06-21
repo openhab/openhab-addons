@@ -714,10 +714,10 @@
 	</channel-type>
 
 	<channel-type id="loraRxBytes">
-		<item-type>Number</item-type>
+		<item-type>Number:DataAmount</item-type>
 		<label>Bytes received</label>
 		<description>Number of bytes received from the LoRa network so far</description>
-		<state readOnly="true">
+		<state pattern="%.0f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 
@@ -734,10 +734,10 @@
 	</channel-type>
 
 	<channel-type id="loraTxBytes">
-		<item-type>Number</item-type>
+		<item-type>Number:DataAmount</item-type>
 		<label>Bytes sent</label>
 		<description>Number of bytes sent to the LoRa network so far</description>
-		<state readOnly="true">
+		<state pattern="%.0f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 
@@ -750,11 +750,11 @@
 	</channel-type>
 
 	<channel-type id="loraAirtime" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Airtime</label>
-		<description>Number of ms the LoRa Add-On is on air</description>
+		<description>Cumulative on-air time of the LoRa Add-On</description>
 		<category>Time</category>
-		<state readOnly="true">
+		<state pattern="%.0f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 

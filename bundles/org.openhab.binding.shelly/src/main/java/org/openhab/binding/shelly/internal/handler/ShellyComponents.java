@@ -741,11 +741,14 @@ public class ShellyComponents {
         boolean updated = false;
         ShellyDeviceProfile profile = thingHandler.getProfile();
         if (profile.settings.loraDetected) {
-            updated |= thingHandler.updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_RXBYTES, getDecimal(status.rxBytes));
-            updated |= thingHandler.updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_TXBYTES, getDecimal(status.txBytes));
+            updated |= thingHandler.updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_RXBYTES,
+                    toQuantityType(status.rxBytes, Units.BYTE));
+            updated |= thingHandler.updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_TXBYTES,
+                    toQuantityType(status.txBytes, Units.BYTE));
             updated |= thingHandler.updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_TXERRORS,
                     getDecimal(status.txErrors));
-            updated |= thingHandler.updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_AIRTIME, getDecimal(status.airtime));
+            updated |= thingHandler.updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_AIRTIME,
+                    toQuantityType(status.airtime, MetricPrefix.MILLI(Units.SECOND)));
             profile.addOnFw = getString(status.fw);
         }
 

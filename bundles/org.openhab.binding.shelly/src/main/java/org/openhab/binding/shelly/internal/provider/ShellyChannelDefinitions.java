@@ -83,6 +83,7 @@ public class ShellyChannelDefinitions {
     public static final String ITEMT_SPEED = "Number:Speed";
     public static final String ITEMT_VOLUME = "Number:Volume";
     public static final String ITEMT_TIME = "Number:Time"; // Seconds
+    public static final String ITEMT_DATA = "Number:DataAmount"; // Bytes
     public static final String ITEMT_PERCENT = "Number:Dimensionless"; // 0–100% (battery, humidity)
 
     // shortcuts to avoid line breaks (make code more readable)
@@ -332,13 +333,13 @@ public class ShellyChannelDefinitions {
                 // LoRa Add-On
                 .add(new ShellyChannel(m, CHGR_LORA, CHANNEL_LORA_RXDATA, "loraRxData", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_LORA, CHANNEL_LORA_RXDATARAW, "loraRxDataRaw", ITEMT_STRING))
-                .add(new ShellyChannel(m, CHGR_LORA, CHANNEL_LORA_RXBYTES, "loraRxBytes", ITEMT_NUMBER))
+                .add(new ShellyChannel(m, CHGR_LORA, CHANNEL_LORA_RXBYTES, "loraRxBytes", ITEMT_DATA))
                 .add(new ShellyChannel(m, CHGR_LORA, CHANNEL_LORA_TXDATA, "loraTxData", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_LORA, CHANNEL_LORA_TXDATARAW, "loraTxDataRaw", ITEMT_STRING))
-                .add(new ShellyChannel(m, CHGR_LORA, CHANNEL_LORA_TXBYTES, "loraTxBytes", ITEMT_NUMBER))
+                .add(new ShellyChannel(m, CHGR_LORA, CHANNEL_LORA_TXBYTES, "loraTxBytes", ITEMT_DATA))
                 .add(new ShellyChannel(m, CHGR_LORA, CHANNEL_LORA_TXERRORS, "loraTxErrors", ITEMT_NUMBER))
                 .add(new ShellyChannel(m, CHGR_LORA, CHANNEL_LORA_SNR, "loraSNR", ITEMT_NUMBER))
-                .add(new ShellyChannel(m, CHGR_LORA, CHANNEL_LORA_AIRTIME, "loraAirtime", ITEMT_NUMBER))
+                .add(new ShellyChannel(m, CHGR_LORA, CHANNEL_LORA_AIRTIME, "loraAirtime", ITEMT_TIME))
                 .add(new ShellyChannel(m, CHGR_LORA, CHANNEL_LORA_RSSI, "loraSignal", ITEMT_NUMBER));
     }
 
