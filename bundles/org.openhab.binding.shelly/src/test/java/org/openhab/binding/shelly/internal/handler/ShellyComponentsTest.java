@@ -48,6 +48,7 @@ import org.openhab.core.types.UnDefType;
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
+@SuppressWarnings({ "null" })
 public class ShellyComponentsTest {
 
     // ── hasAddon ─────────────────────────────────────────────────────────────

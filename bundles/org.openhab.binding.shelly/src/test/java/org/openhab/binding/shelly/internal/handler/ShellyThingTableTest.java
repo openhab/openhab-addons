@@ -35,6 +35,7 @@ import org.junit.jupiter.api.Test;
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
+@SuppressWarnings({ "null" })
 public class ShellyThingTableTest {
 
     private static final String GATEWAY_IP = "192.168.1.100";

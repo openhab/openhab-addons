@@ -45,6 +45,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
+@SuppressWarnings({ "null" })
 public class ShellyBluApiTest {
 
     // ── getStatus() connection guard ─────────────────────────────────────────
