@@ -14,11 +14,13 @@ package org.openhab.binding.shelly.internal.handler;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.openhab.binding.shelly.internal.util.ShellyUtils.fixBase64Padding;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -43,12 +45,34 @@ class ShellyLoraBase64Test {
 
     /**
      * Mirrors the pad-then-decode pattern in ShellyRelayHandler (CHANNEL_LORA_TXDATARAW)
-     * and Shelly2ApiRpc (lora_received event).
+     * and Shelly2ApiRpc (lora_received event), now delegating padding to ShellyUtils.
      */
     private static String decode(String b64) {
-        int rem = b64.length() % 4;
-        String padded = rem == 2 ? b64 + "==" : rem == 3 ? b64 + "=" : b64;
-        return new String(Base64.getDecoder().decode(padded), StandardCharsets.UTF_8);
+        return new String(Base64.getDecoder().decode(fixBase64Padding(b64)), StandardCharsets.UTF_8);
+    }
+
+    // ── fixBase64Padding ──────────────────────────────────────────────────────
+
+    @ParameterizedTest(name = "fixBase64Padding(''{0}'') = ''{1}''")
+    @CsvSource({
+            // len%4==0 — no padding needed
+            "QUJD,          QUJD",
+            // len%4==2 — needs "=="
+            "QQ,            QQ==",
+            // len%4==3 — needs "="
+            "QUI,           QUI=",
+            // already padded — unchanged
+            "QQ==,          QQ==", "QUI=,          QUI=", })
+    void fixBase64Padding_addsCorrectPadding(String input, String expected) {
+        assertThat(fixBase64Padding(input.strip()), is(expected.strip()));
+    }
+
+    @Test
+    void fixBase64Padding_rem1_leavesStringUnchanged() {
+        // len%4==1 is structurally invalid Base64; fixBase64Padding must not crash —
+        // the caller's try/catch handles the downstream decode failure.
+        String invalid = "Q"; // length 1, rem==1
+        assertThat(fixBase64Padding(invalid), is(invalid));
     }
 
     // ── Encode ────────────────────────────────────────────────────────────────
