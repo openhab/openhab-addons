@@ -157,8 +157,9 @@
 	</channel-type>
 	<channel-type id="deviceAddonFirmware" advanced="true">
 		<item-type>String</item-type>
-		<label>@text/channel-type.shelly.deviceAddonFirmware.label</label>
-		<description>@text/channel-type.shelly.deviceAddonFirmware.description</description>
+		<label>Add-On Firmware</label>
+		<description>Firmware version of the installed Add-On</description>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="deviceFirmware" advanced="true">

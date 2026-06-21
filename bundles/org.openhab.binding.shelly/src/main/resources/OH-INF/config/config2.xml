@@ -32,8 +32,8 @@
 			<default>false</default>
 		</parameter>
 		<parameter name="enableLoRa" type="boolean" required="false">
-			<label>@text/thing-type.config.shelly.enableLoRa.label</label>
-			<description>@text/thing-type.config.shelly.enableLoRa.description</description>
+			<label>Enable LoRa Support</label>
+			<description>Activates LoRa Support if the LoRa Add-On is installed (Gen3/Gen4 devices only)</description>
 			<default>false</default>
 		</parameter>
 	</config-description>
@@ -74,8 +74,8 @@
 			<default>false</default>
 		</parameter>
 		<parameter name="enableLoRa" type="boolean" required="false">
-			<label>@text/thing-type.config.shelly.enableLoRa.label</label>
-			<description>@text/thing-type.config.shelly.enableLoRa.description</description>
+			<label>Enable LoRa Support</label>
+			<description>Activates LoRa Support if the LoRa Add-On is installed (Gen3/Gen4 devices only)</description>
 			<default>false</default>
 		</parameter>
 	</config-description>
