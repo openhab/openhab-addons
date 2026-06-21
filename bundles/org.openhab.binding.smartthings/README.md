@@ -157,7 +157,7 @@ Item links therefore use the channel format `smartthings:<thingTypeId>:<bridgeId
 | `Samsung_Soundbar` | `control#volume` | Number | RW | Soundbar volume |
 | `Samsung_Soundbar` | `control#mute` | Switch | RW | Soundbar mute state |
 | `Samsung_Soundbar` | `control#input-source` | String | RW | Active soundbar input source |
-| `Samsung_Soundbar` | `control#playback` | Player | RW | Media playback control |
+| `Samsung_Soundbar` | `control#playback` | Player | W | Media playback control for play, pause, and stop |
 | `generic-television`, `Samsung_The_Frame` | `control#switch` | Switch | RW | Switches the TV on or off |
 | `generic-television`, `Samsung_The_Frame` | `control#volume` | Number | RW | TV volume |
 | `generic-television`, `Samsung_The_Frame` | `control#mute` | Switch | RW | TV mute state |

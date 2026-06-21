@@ -70,6 +70,7 @@ import com.google.gson.JsonElement;
 public class SmartThingsDefaultConverter extends SmartThingsConverter {
     private static final String CAPABILITY_MEDIA_PLAYBACK = "mediaPlayback";
     private static final String ATTRIBUTE_PLAYBACK_STATUS = "playbackStatus";
+    private static final String ATTRIBUTE_SUPPORTED_PLAYBACK_COMMANDS = "supportedPlaybackCommands";
     private static final String PLAYBACK_STATUS_FAST_FORWARDING = "fast forwarding";
     private static final String PLAYBACK_STATUS_PAUSED = "paused";
     private static final String PLAYBACK_STATUS_PLAYING = "playing";
@@ -159,7 +160,7 @@ public class SmartThingsDefaultConverter extends SmartThingsConverter {
         Object[] arguments = null;
 
         Object value = getValue(command, thing.getThingTypeUID(), channelUid.getId(), targetType);
-        value = convertMediaPlaybackStatusCommand(capaKey, attrKey, command, value);
+        value = convertMediaPlaybackCommand(capaKey, attrKey, command, value);
 
         if (SmartThingsBindingConstants.CHANNEL_NAME_COLOR.equals(attrKey)) {
             attr.setter = SmartThingsBindingConstants.CMD_SET_COLOR;
@@ -185,9 +186,19 @@ public class SmartThingsDefaultConverter extends SmartThingsConverter {
         pushCommand(componentKey, capaKey, cmdName, arguments);
     }
 
-    private Object convertMediaPlaybackStatusCommand(String capaKey, String attrKey, Command command, Object value)
+    private Object convertMediaPlaybackCommand(String capaKey, String attrKey, Command command, Object value)
             throws SmartThingsException {
-        if (!CAPABILITY_MEDIA_PLAYBACK.equals(capaKey) || !ATTRIBUTE_PLAYBACK_STATUS.equals(attrKey)) {
+        if (!CAPABILITY_MEDIA_PLAYBACK.equals(capaKey)) {
+            return value;
+        }
+        if (ATTRIBUTE_SUPPORTED_PLAYBACK_COMMANDS.equals(attrKey)) {
+            if (PlayPauseType.PLAY.equals(command) || PlayPauseType.PAUSE.equals(command)
+                    || StopMoveType.STOP.equals(command)) {
+                return value;
+            }
+            throw new SmartThingsException("mediaPlayback does not support playback command: " + command);
+        }
+        if (!ATTRIBUTE_PLAYBACK_STATUS.equals(attrKey)) {
             return value;
         }
         if (PlayPauseType.PLAY.equals(command)) {

@@ -63,7 +63,7 @@
 				<properties>
 					<property name="component">main</property>
 					<property name="capability">mediaPlayback</property>
-					<property name="attribute">playbackStatus</property>
+					<property name="attribute">supportedPlaybackCommands</property>
 				</properties>
 				<autoUpdatePolicy>veto</autoUpdatePolicy>
 			</channel>

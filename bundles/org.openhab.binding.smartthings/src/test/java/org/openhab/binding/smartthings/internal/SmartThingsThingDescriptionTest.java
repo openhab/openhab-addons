@@ -429,7 +429,7 @@ class SmartThingsThingDescriptionTest {
                         new ExpectedChannel("soundbar-control-group", "soundbar-input-source",
                                 "samsungvd.audioInputSource", "inputSource")),
                 Map.entry("playback", new ExpectedChannel("soundbar-control-group", "system.media-control",
-                        "mediaPlayback", "playbackStatus"))));
+                        "mediaPlayback", "supportedPlaybackCommands"))));
 
         assertEquals("String", findChannelTypeItemType(document, "soundbar-input-source"));
         assertEquals("setInputSource",
