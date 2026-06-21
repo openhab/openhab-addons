@@ -12,11 +12,7 @@
  */
 package org.openhab.binding.ddwrt.internal;
 
-import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.SUPPORTED_THING_TYPES_UIDS;
-import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.THING_TYPE_CLIENT;
-import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.THING_TYPE_DEVICE;
-import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.THING_TYPE_FIREWALL_RULE;
-import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.THING_TYPE_RADIO;
+import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -151,8 +147,8 @@ public class DDWRTDiscoveryService extends AbstractThingHandlerDiscoveryService<
 
             logger.debug("Discovered device: '{}'", thingUID);
 
-            final Map<String, Object> props = Map.of("hostname", devCfg.hostname, "port", devCfg.port, "user",
-                    devCfg.user, "refreshInterval", devCfg.refreshInterval);
+            final Map<String, Object> props = Map.of(HOSTNAME, devCfg.hostname, PORT, devCfg.port, USER,
+                    devCfg.user, REFRESH_INTERVAL, devCfg.refreshInterval);
 
             final DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
                     .withLabel(label).withProperties(props).withRepresentationProperty("hostname").build();

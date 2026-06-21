@@ -12,20 +12,7 @@
  */
 package org.openhab.binding.ddwrt.internal.handler;
 
-import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_AP;
-import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_AP_MAC;
-import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_CHANNEL;
-import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_CONNECTION_TYPE;
-import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_HOSTNAME;
-import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_IP_ADDRESS;
-import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_LAST_SEEN;
-import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_MAC_ADDRESS;
-import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_ONLINE;
-import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_RX_RATE;
-import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_SIGNAL;
-import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_SNR;
-import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_SSID;
-import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_TX_RATE;
+import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.*;
 
 import java.time.Instant;
 import java.time.ZoneId;
@@ -74,7 +61,7 @@ public class DDWRTClientHandler extends DDWRTBaseHandler<DDWRTClient, DDWRTClien
     @Override
     protected boolean initialize(DDWRTClientConfiguration config) {
         this.config = config;
-        if (config.hostname.isEmpty()) {
+        if (config.hostname.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-no-hostname");
             return false;

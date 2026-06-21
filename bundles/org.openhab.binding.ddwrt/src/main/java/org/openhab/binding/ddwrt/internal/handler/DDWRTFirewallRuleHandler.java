@@ -52,7 +52,7 @@ public class DDWRTFirewallRuleHandler extends DDWRTBaseHandler<DDWRTFirewallRule
     @Override
     protected boolean initialize(DDWRTFirewallRuleConfiguration config) {
         this.config = config;
-        if (config.ruleId.isEmpty()) {
+        if (config.ruleId.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-no-ruleid");
             return false;

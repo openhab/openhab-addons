@@ -12,16 +12,7 @@
  */
 package org.openhab.binding.ddwrt.internal.handler;
 
-import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_DHCP_EVENT;
-import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_DHCP_LEASES;
-import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_DHCP_REMAINING;
-import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_LAST_DHCP_EVENT;
-import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_TOTAL_CLIENTS;
-import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_WAN_IN;
-import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_WAN_IP;
-import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_WAN_OUT;
-import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_WIRED_CLIENTS;
-import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_WIRELESS_CLIENTS;
+import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.*;
 
 import java.time.Instant;
 import java.util.Collection;

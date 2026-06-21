@@ -51,8 +51,6 @@ public class DDWRTClient {
         this.mac = Objects.requireNonNull(mac.toLowerCase(Locale.ROOT).trim());
     }
 
-    // ---- Getters ----
-
     public String getMac() {
         return mac;
     }

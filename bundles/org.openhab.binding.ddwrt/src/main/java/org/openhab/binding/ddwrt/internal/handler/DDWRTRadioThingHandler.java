@@ -12,12 +12,7 @@
  */
 package org.openhab.binding.ddwrt.internal.handler;
 
-import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_ASSOCLIST;
-import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_CHANNEL;
-import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_CLIENT_COUNT;
-import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_ENABLED;
-import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_MODE;
-import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_SSID;
+import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.*;
 
 import java.util.List;
 import java.util.Locale;

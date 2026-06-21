@@ -183,8 +183,6 @@
 
 	</thing-type>
 
-	<!-- ==================== Radio ==================== -->
-
 	<thing-type id="radio">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="network"/>
@@ -220,8 +218,6 @@
 		</config-description>
 
 	</thing-type>
-
-	<!-- ==================== Client ==================== -->
 
 	<thing-type id="client">
 		<supported-bridge-type-refs>
