@@ -220,7 +220,7 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
 
         if (Boolean.FALSE.equals(dev.isConnected())) {
             if (connectionStartRunning.compareAndSet(false, true)) {
-                CompletableFuture<@Nullable Void> result = CompletableFuture.runAsync(() -> {
+                CompletableFuture.runAsync(() -> {
                     setConnectionState(ConnectionState.CONNECTING);
                     // BlueZ Device.Connect() is unreliable while the adapter is actively discovering
                     // (the call blocks / does not complete). Pause discovery first; the bridge's periodic
@@ -234,7 +234,7 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
                     setConnectionState(ret ? ConnectionState.CONNECTED : ConnectionState.DISCONNECTED);
                 }, scheduler).handle((voidResult, th) -> {
                     if (th != null) {
-                        logger.warn("Failed to connect", th);
+                        logger.debug("Failed to connect", th);
                         setConnectionState(ConnectionState.DISCONNECTED);
                     }
                     connectionStartRunning.set(false);
