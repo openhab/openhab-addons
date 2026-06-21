@@ -528,18 +528,6 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                     logger.debug("{}: Set boost timer to {}", thingName, command);
                     api.setValveBoostTime(0, getNumber(command).intValue());
                     break;
-                case CHANNEL_CONTROL_MUTE:
-                    if (((OnOffType) command) == OnOffType.ON) {
-                        if (profile.isSmoke) {
-                            logger.debug("{}: Mute Smoke Alarm", thingName);
-                            api.muteSmokeAlarm(0);
-                            updateChannel(getString(channelUID.getGroupId()), CHANNEL_CONTROL_MUTE, OnOffType.OFF);
-                        } else if (profile.isFlood) {
-                            logger.debug("{}: Mute Flood Alarm - not supported via API, use physical button",
-                                    thingName);
-                        }
-                    }
-                    break;
                 case CHANNEL_CONTROL_ALARM_MODE:
                     if (profile.isFlood) {
                         logger.debug("{}: Set Flood alarm mode to {}", thingName, command);

@@ -497,8 +497,7 @@ public class ShellyComponents {
                         getOnOff(sdata.smoke));
             }
             if (sdata.mute != null) {
-                updated |= thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_MUTE,
-                        getOnOff(sdata.mute));
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_CONTROL_MUTE, getOnOff(sdata.mute));
             }
             if (sdata.sensor == null && (sdata.sensorError != null || (profile.isFlood && profile.isGen2))) {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ERROR,

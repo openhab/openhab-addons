@@ -369,16 +369,8 @@
 
 	<channel-type id="sensorMute">
 		<item-type>Switch</item-type>
-		<label>Mute Alarm</label>
-		<description>Send ON to mute the active smoke alarm. Resets automatically after the alarm clears.</description>
-		<state readOnly="false"/>
-	</channel-type>
-
-	<channel-type id="sensorMuteFlood">
-		<item-type>Switch</item-type>
 		<label>Mute State</label>
-		<description>ON: flood alarm is currently muted. Muting requires the physical button on the device; no API mute for
-			flood.</description>
+		<description>ON: alarm is currently muted.</description>
 		<state readOnly="true"/>
 	</channel-type>
 

@@ -566,8 +566,9 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         updateTemperatureStatus(sensorData, result.temperature0);
         updateIlluminanceStatus(sensorData, result.illuminance0);
         updateSmokeStatus(sensorData, result.smoke0);
-        if (result.flood0 != null) {
-            updateFloodStatus(sensorData, result.flood0);
+        Shelly2DeviceStatusFlood flood0 = result.flood0;
+        if (flood0 != null) {
+            updateFloodStatus(sensorData, flood0);
         }
         updateBatteryStatus(sensorData, result.devicepower0);
         updateAddonStatus(status, result);

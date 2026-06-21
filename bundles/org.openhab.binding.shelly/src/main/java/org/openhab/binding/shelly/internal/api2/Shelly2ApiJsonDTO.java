@@ -424,12 +424,12 @@ public class Shelly2ApiJsonDTO {
         }
 
         public static class Shelly2ConfigFlood {
-            public Integer id;
-            public String name;
+            public @Nullable Integer id;
+            public @Nullable String name;
             @SerializedName("alarm_mode")
-            public String alarmMode;
+            public @Nullable String alarmMode;
             @SerializedName("report_holdoff")
-            public Integer reportHoldoff;
+            public @Nullable Integer reportHoldoff;
         }
 
         public static class Shelly2GetConfigLight {
@@ -549,7 +549,7 @@ public class Shelly2ApiJsonDTO {
             public Shelly2ConfigSmoke smoke0;
 
             @SerializedName("flood:0")
-            public Shelly2ConfigFlood flood0;
+            public @Nullable Shelly2ConfigFlood flood0;
         }
 
         public class Shelly2DeviceConfigSta {
@@ -775,10 +775,10 @@ public class Shelly2ApiJsonDTO {
             }
 
             public class Shelly2DeviceStatusFlood {
-                public Integer id;
-                public Boolean alarm;
-                public Boolean mute;
-                public String[] errors;
+                public @Nullable Integer id;
+                public @Nullable Boolean alarm;
+                public @Nullable Boolean mute;
+                public @Nullable String[] errors;
             }
 
             public static class Shelly2RGBWStatus {
@@ -883,7 +883,7 @@ public class Shelly2ApiJsonDTO {
             public Shelly2DeviceStatusSmoke smoke0;
 
             @SerializedName("flood:0")
-            public Shelly2DeviceStatusFlood flood0;
+            public @Nullable Shelly2DeviceStatusFlood flood0;
 
             @SerializedName("voltmeter:0")
             public @Nullable Shelly2DeviceStatusVoltage voltmeter0;
