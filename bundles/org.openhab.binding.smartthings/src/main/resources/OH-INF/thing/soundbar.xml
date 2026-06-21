@@ -32,7 +32,6 @@
 					<property name="capability">switch</property>
 					<property name="attribute">switch</property>
 				</properties>
-				<autoUpdatePolicy>veto</autoUpdatePolicy>
 			</channel>
 			<channel id="volume" typeId="system.volume">
 				<properties>
@@ -41,7 +40,6 @@
 					<property name="attribute">volume</property>
 					<property name="command">setVolume</property>
 				</properties>
-				<autoUpdatePolicy>veto</autoUpdatePolicy>
 			</channel>
 			<channel id="mute" typeId="system.mute">
 				<properties>
@@ -49,7 +47,6 @@
 					<property name="capability">audioMute</property>
 					<property name="attribute">mute</property>
 				</properties>
-				<autoUpdatePolicy>veto</autoUpdatePolicy>
 			</channel>
 			<channel id="input-source" typeId="soundbar-input-source">
 				<properties>
@@ -74,7 +71,6 @@
 		<item-type>String</item-type>
 		<label>Input Source</label>
 		<description>Active soundbar input source.</description>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 </thing:thing-descriptions>

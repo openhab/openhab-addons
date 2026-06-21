@@ -339,15 +339,21 @@ class SmartThingsThingDescriptionTest {
     }
 
     @Test
-    void frameTvCommandChannelsDoNotPredictStateUpdates() throws Exception {
+    void tvOnlyCommandOnlyChannelsDoNotPredictStateUpdates() throws Exception {
         Document document = parseThingDescription("OH-INF/thing/tv.xml");
 
-        for (String channelId : Set.of("switch", "volume", "mute", "playback")) {
-            assertEquals("veto", findChannelAutoUpdatePolicy(document, "frame-control-group", channelId), channelId);
+        for (String groupId : Set.of("tv-control-group", "frame-control-group")) {
+            for (String channelId : Set.of("switch", "volume", "mute", "playback")) {
+                assertFalse(hasChannelAutoUpdatePolicy(document, groupId, channelId), groupId + "#" + channelId);
+            }
         }
 
         for (String channelTypeId : Set.of("tv-input-source", "tv-channel", "frame-art-mode", "tv-picture-mode",
-                "tv-sound-mode", "tv-channel-up", "tv-channel-down")) {
+                "tv-sound-mode")) {
+            assertFalse(hasChannelTypeAutoUpdatePolicy(document, channelTypeId), channelTypeId);
+        }
+
+        for (String channelTypeId : Set.of("tv-channel-up", "tv-channel-down")) {
             assertEquals("veto", findChannelTypeAutoUpdatePolicy(document, channelTypeId), channelTypeId);
         }
     }
@@ -363,7 +369,7 @@ class SmartThingsThingDescriptionTest {
             assertEquals(entry.getValue(), findChannelTypeItemType(document, entry.getKey()), entry.getKey());
         }
         assertFalse(isChannelTypeReadOnly(document, "frame-art-mode"));
-        assertEquals("veto", findChannelTypeAutoUpdatePolicy(document, "frame-art-mode"));
+        assertFalse(hasChannelTypeAutoUpdatePolicy(document, "frame-art-mode"));
     }
 
     @Test
@@ -434,7 +440,17 @@ class SmartThingsThingDescriptionTest {
         assertEquals("String", findChannelTypeItemType(document, "soundbar-input-source"));
         assertEquals("setInputSource",
                 findPropertyValue(findChannel(document, "soundbar-control-group", "input-source"), "command"));
-        assertEquals("veto", findChannelTypeAutoUpdatePolicy(document, "soundbar-input-source"));
+        assertFalse(hasChannelTypeAutoUpdatePolicy(document, "soundbar-input-source"));
+    }
+
+    @Test
+    void soundbarOnlyMetadataBackedPlaybackChannelDoesNotPredictStateUpdates() throws Exception {
+        Document document = parseThingDescription("OH-INF/thing/soundbar.xml");
+
+        for (String channelId : Set.of("switch", "volume", "mute")) {
+            assertFalse(hasChannelAutoUpdatePolicy(document, "soundbar-control-group", channelId), channelId);
+        }
+        assertEquals("veto", findChannelAutoUpdatePolicy(document, "soundbar-control-group", "playback"));
     }
 
     private Document parseThingDescription(String resourceName) throws Exception {
@@ -660,11 +676,21 @@ class SmartThingsThingDescriptionTest {
         return autoUpdatePolicy.getTextContent();
     }
 
+    private boolean hasChannelTypeAutoUpdatePolicy(Document document, String channelTypeId) {
+        Element channelType = findChannelType(document, channelTypeId);
+        return channelType.getElementsByTagName("autoUpdatePolicy").getLength() > 0;
+    }
+
     private String findChannelAutoUpdatePolicy(Document document, String groupId, String channelId) {
         Element channel = findChannel(document, groupId, channelId);
         Node autoUpdatePolicy = channel.getElementsByTagName("autoUpdatePolicy").item(0);
         assertNotNull(autoUpdatePolicy);
         return autoUpdatePolicy.getTextContent();
+    }
+
+    private boolean hasChannelAutoUpdatePolicy(Document document, String groupId, String channelId) {
+        Element channel = findChannel(document, groupId, channelId);
+        return channel.getElementsByTagName("autoUpdatePolicy").getLength() > 0;
     }
 
     private String findChannelTypeLabel(Document document, String channelTypeId) {

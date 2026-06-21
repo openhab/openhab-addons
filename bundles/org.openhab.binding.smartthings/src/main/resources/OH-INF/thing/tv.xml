@@ -61,7 +61,6 @@
 					<property name="capability">switch</property>
 					<property name="attribute">switch</property>
 				</properties>
-				<autoUpdatePolicy>veto</autoUpdatePolicy>
 			</channel>
 			<channel id="volume" typeId="system.volume">
 				<properties>
@@ -70,7 +69,6 @@
 					<property name="attribute">volume</property>
 					<property name="command">setVolume</property>
 				</properties>
-				<autoUpdatePolicy>veto</autoUpdatePolicy>
 			</channel>
 			<channel id="mute" typeId="system.mute">
 				<properties>
@@ -78,7 +76,6 @@
 					<property name="capability">audioMute</property>
 					<property name="attribute">mute</property>
 				</properties>
-				<autoUpdatePolicy>veto</autoUpdatePolicy>
 			</channel>
 			<channel id="input-source" typeId="tv-input-source">
 				<properties>
@@ -102,7 +99,6 @@
 					<property name="capability">mediaPlayback</property>
 					<property name="attribute">playbackStatus</property>
 				</properties>
-				<autoUpdatePolicy>veto</autoUpdatePolicy>
 			</channel>
 		</channels>
 	</channel-group-type>
@@ -116,7 +112,6 @@
 					<property name="capability">switch</property>
 					<property name="attribute">switch</property>
 				</properties>
-				<autoUpdatePolicy>veto</autoUpdatePolicy>
 			</channel>
 			<channel id="volume" typeId="system.volume">
 				<properties>
@@ -125,7 +120,6 @@
 					<property name="attribute">volume</property>
 					<property name="command">setVolume</property>
 				</properties>
-				<autoUpdatePolicy>veto</autoUpdatePolicy>
 			</channel>
 			<channel id="mute" typeId="system.mute">
 				<properties>
@@ -133,7 +127,6 @@
 					<property name="capability">audioMute</property>
 					<property name="attribute">mute</property>
 				</properties>
-				<autoUpdatePolicy>veto</autoUpdatePolicy>
 			</channel>
 			<channel id="input-source" typeId="tv-input-source">
 				<properties>
@@ -157,7 +150,6 @@
 					<property name="capability">mediaPlayback</property>
 					<property name="attribute">playbackStatus</property>
 				</properties>
-				<autoUpdatePolicy>veto</autoUpdatePolicy>
 			</channel>
 			<channel id="art-mode" typeId="frame-art-mode">
 				<properties>
@@ -221,35 +213,30 @@
 		<item-type>String</item-type>
 		<label>Input Source</label>
 		<description>Active TV input source.</description>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="tv-channel">
 		<item-type>String</item-type>
 		<label>TV Channel</label>
 		<description>Current TV channel number.</description>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="frame-art-mode">
 		<item-type>Switch</item-type>
 		<label>Art Mode</label>
 		<description>Frame art or ambient mode. Send ON to activate it.</description>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="tv-picture-mode">
 		<item-type>String</item-type>
 		<label>Picture Mode</label>
 		<description>TV picture mode.</description>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="tv-sound-mode">
 		<item-type>String</item-type>
 		<label>Sound Mode</label>
 		<description>TV sound mode.</description>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="tv-channel-up" advanced="true">
