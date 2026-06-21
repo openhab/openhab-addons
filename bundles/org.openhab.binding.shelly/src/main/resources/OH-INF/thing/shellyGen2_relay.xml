@@ -761,7 +761,7 @@
 	<channel-type id="loraSignal">
 		<item-type>Number</item-type>
 		<label>LoRa Signal Strength</label>
-		<description>Represents LoRa signal strength (0-4, 0 being worst and 4 being best strength)</description>
+		<description>Received Signal Strength (RSSI) of the last received LoRa packet, in dBm</description>
 		<category>QualityOfService</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -775,7 +775,7 @@
 		<item-type>Number</item-type>
 		<label>SNR</label>
 		<description>LoRa Signal/Noise Ratio of the received packet</description>
-		<category>Flow</category>
+		<category>QualityOfService</category>
 		<state readOnly="true">
 		</state>
 	</channel-type>
