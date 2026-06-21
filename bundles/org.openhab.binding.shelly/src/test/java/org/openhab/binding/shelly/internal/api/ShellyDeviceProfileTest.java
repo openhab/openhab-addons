@@ -280,8 +280,6 @@ public class ShellyDeviceProfileTest {
         assertThat(deviceProfile.numInputs, is(equalTo(-1)));
     }
 
-    // resolveNumMeters(thingTypeUID, fromDevice, fromDeviceConfig, isLight, inColor, numOutputs,
-    // hasRelays, numRelays, numRollers, isRoller) -> expected
     @ParameterizedTest
     @MethodSource("provideTestCasesForResolveNumMeters")
     void resolveNumMeters(ThingTypeUID thingTypeUID, int fromDevice, int fromDeviceConfig, boolean isLight,
@@ -350,5 +348,30 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYHT, -1, -1, false, false, 0, false, 0, 0, false, 0), //
                 Arguments.of(THING_TYPE_SHELLYBLUBUTTON1, -1, -1, false, false, 0, false, 0, 0, false, 0), //
                 Arguments.of(THING_TYPE_SHELLYBLUHT, -1, -1, false, false, 0, false, 0, 0, false, 0)); //
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForExtractFwVersion")
+    void extractFwVersion(String rawFwId, String expectedVersion) {
+        assertThat(ShellyDeviceProfile.extractFwVersion(rawFwId), is(equalTo(expectedVersion)));
+    }
+
+    private static Stream<Arguments> provideTestCasesForExtractFwVersion() {
+        return Stream.of( //
+                Arguments.of("20210319-122304/v1.7.5-g9979d16", "1.7.5"), //
+                Arguments.of("20210319-122304/v1.10.0-rc2-89-g623b41ec0-master", "1.10.0-rc2"), //
+                Arguments.of("20200911-133751/v1.8.5-beta1-g7e7e3b24", "1.8.5-beta1"), //
+                Arguments.of("20210226-091047/v1.9.0", "1.9.0"), //
+                Arguments.of("20210226-091047/v.1.10-g623b41ec0", "1.10.0"), //
+                Arguments.of("20220809-125346/v1.12-g99f7e0b", "1.12.0"), //
+                Arguments.of("20260520-144343/2.6.2-06f6da23", "2.6.2-06f6da23"), //
+                Arguments.of("20260520-144343/2.6.2-beta1-06f6da23", "2.6.2-beta1"), //
+                Arguments.of("20260520-144343/2.6.2-rc1-06f6da23", "2.6.2-rc1"), //
+                Arguments.of("20240101-101010/1.4.4", "1.4.4"), //
+                Arguments.of("20240315-093012/1.5.1-cabf215a", "1.5.1-cabf215a"), //
+                Arguments.of("2.6.3", "2.6.3"), //
+                Arguments.of("", ""), //
+                Arguments.of("garbage", ""), //
+                Arguments.of((Object) null, "")); //
     }
 }
