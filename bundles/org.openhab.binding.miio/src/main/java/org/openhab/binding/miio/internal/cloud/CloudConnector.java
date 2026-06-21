@@ -73,6 +73,7 @@ public class CloudConnector {
     private @Nullable String ssecurity;
     private @Nullable String serviceToken;
     private CloudLoginMode loginMode = CloudLoginMode.QRCODE;
+    private String cloudDiscoveryMode = "disabled";
 
     private List<CloudDeviceDTO> deviceList = new ArrayList<>();
     private boolean connected;
@@ -489,6 +490,14 @@ public class CloudConnector {
 
     public void setLoginMode(CloudLoginMode loginMode) {
         this.loginMode = loginMode;
+    }
+
+    public void setCloudDiscoveryMode(String cloudDiscoveryMode) {
+        this.cloudDiscoveryMode = cloudDiscoveryMode;
+    }
+
+    public String getCloudDiscoveryMode() {
+        return cloudDiscoveryMode;
     }
 
     /**

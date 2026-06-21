@@ -73,6 +73,7 @@ public class MiIoCloudThingHandler extends BaseThingHandler implements CloudLogo
     private volatile String ssecurity = "";
     private volatile String serviceToken = "";
     private CloudLoginMode loginMethod = CloudLoginMode.QRCODE;
+    private String cloudDiscoveryMode = "disabled";
     private volatile long lastLoginTriggerTime = 0;
 
     public MiIoCloudThingHandler(Thing thing, CloudConnector cloudConnector) {
@@ -96,6 +97,7 @@ public class MiIoCloudThingHandler extends BaseThingHandler implements CloudLogo
         String loginMethodvalue = getConfigString(properties, CONFIG_LOGIN_METHOD);
         this.loginMethod = "PASSWORD".equalsIgnoreCase(loginMethodvalue) ? CloudLoginMode.PASSWORD
                 : CloudLoginMode.QRCODE;
+        this.cloudDiscoveryMode = getConfigString(properties, CONFIG_CLOUD_DISCOVERY_MODE);
 
         validateAndGenerateClientId();
         setupCloudConnector();
@@ -137,6 +139,7 @@ public class MiIoCloudThingHandler extends BaseThingHandler implements CloudLogo
     private void setupCloudConnector() {
         cloudConnector.setCredentials(username, password, country, clientId, userId, serviceToken, ssecurity);
         cloudConnector.setLoginMode(hasValidCredentials() ? CloudLoginMode.TOKEN : loginMethod);
+        cloudConnector.setCloudDiscoveryMode(cloudDiscoveryMode);
         cloudConnector.registerListener(this);
     }
 
@@ -240,6 +243,7 @@ public class MiIoCloudThingHandler extends BaseThingHandler implements CloudLogo
                 updateThingProperties(Map.of(CONFIG_USER_ID, "", CONFIG_SERVICE_TOKEN, "", CONFIG_SSECURITY, ""));
                 cloudConnector.setCredentials(username, password, country, clientId, "", "", "");
                 cloudConnector.setLoginMode(loginMethod);
+                cloudConnector.setCloudDiscoveryMode(cloudDiscoveryMode);
                 connectorLogin();
             }, 2, TimeUnit.SECONDS);
         } else if (loginState == CloudLoginState.AWAITING_2FA) {
@@ -323,6 +327,7 @@ public class MiIoCloudThingHandler extends BaseThingHandler implements CloudLogo
             updateThingProperties(Map.of(CONFIG_USER_ID, "", CONFIG_SERVICE_TOKEN, "", CONFIG_SSECURITY, ""));
             cloudConnector.setCredentials(username, password, country, clientId, "", "", "");
             cloudConnector.setLoginMode(loginMethod);
+            cloudConnector.setCloudDiscoveryMode(cloudDiscoveryMode);
             connectorLogin();
         }, 1, TimeUnit.SECONDS);
     }

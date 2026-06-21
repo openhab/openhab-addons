@@ -33,7 +33,6 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.Arrays;
-import java.util.Dictionary;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -56,8 +55,6 @@ import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.net.NetUtil;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.osgi.service.cm.Configuration;
-import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -91,42 +88,16 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(MiIoDiscovery.class);
     private final CloudConnector cloudConnector;
     private Map<String, String> cloudDevices = new ConcurrentHashMap<>();
-    private @Nullable Configuration miioConfig;
 
     @Activate
-    public MiIoDiscovery(@Reference CloudConnector cloudConnector, @Reference ConfigurationAdmin configAdmin)
-            throws IllegalArgumentException {
+    public MiIoDiscovery(@Reference CloudConnector cloudConnector) throws IllegalArgumentException {
         super(DISCOVERY_TIME);
         this.cloudConnector = cloudConnector;
-        try {
-            miioConfig = configAdmin.getConfiguration("binding.miio");
-        } catch (IOException | SecurityException e) {
-            logger.debug("Error getting configuration: {}", e.getMessage());
-        }
     }
 
     private String getCloudDiscoveryMode() {
-        final Configuration miioConfig = this.miioConfig;
-        if (miioConfig != null) {
-            try {
-                Dictionary<String, @Nullable Object> properties = miioConfig.getProperties();
-                String cloudDiscoveryModeConfig;
-                if (properties == null) {
-                    cloudDiscoveryModeConfig = DISABLED;
-                } else {
-                    cloudDiscoveryModeConfig = (String) properties.get("cloudDiscoveryMode");
-                    if (cloudDiscoveryModeConfig == null) {
-                        cloudDiscoveryModeConfig = DISABLED;
-                    } else {
-                        cloudDiscoveryModeConfig = cloudDiscoveryModeConfig.toLowerCase();
-                    }
-                }
-                return Set.of(SUPPORTED, ALL).contains(cloudDiscoveryModeConfig) ? cloudDiscoveryModeConfig : DISABLED;
-            } catch (ClassCastException | SecurityException e) {
-                logger.debug("Error getting cloud discovery configuration: {}", e.getMessage());
-            }
-        }
-        return DISABLED;
+        String cloudDiscoveryModeConfig = cloudConnector.getCloudDiscoveryMode().toLowerCase();
+        return Set.of(SUPPORTED, ALL).contains(cloudDiscoveryModeConfig) ? cloudDiscoveryModeConfig : DISABLED;
     }
 
     @Override

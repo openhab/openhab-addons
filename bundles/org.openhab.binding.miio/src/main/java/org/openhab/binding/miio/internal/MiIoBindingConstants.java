@@ -131,6 +131,7 @@ public final class MiIoBindingConstants {
     public static final String CONFIG_SERVICE_TOKEN = "serviceToken";
     public static final String CONFIG_SSECURITY = "ssecurity";
     public static final String CONFIG_LOGIN_METHOD = "loginMethod";
+    public static final String CONFIG_CLOUD_DISCOVERY_MODE = "cloudDiscoveryMode";
 
     public static final Set<String> PERSISTENT_CHANNELS = Collections.unmodifiableSet(
             Stream.of(CHANNEL_COMMAND, CHANNEL_RPC, CHANNEL_SSID, CHANNEL_BSSID, CHANNEL_RSSI, CHANNEL_LIFE)
