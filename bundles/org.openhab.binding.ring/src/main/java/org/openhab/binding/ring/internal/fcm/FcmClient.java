@@ -54,6 +54,7 @@ public class FcmClient {
     private static final int TAG_HEARTBEAT_ACK = 1;
     private static final int TAG_LOGIN_REQUEST = 2;
     private static final int TAG_LOGIN_RESPONSE = 3;
+    private static final int TAG_IQ_STANZA = 7;
     private static final int TAG_DATA_MESSAGE_STANZA = 8;
 
     private @Nullable SSLSocket socket;
@@ -88,7 +89,10 @@ public class FcmClient {
 
             LoginRequest loginRequest = LoginRequest.newBuilder().setId("chrome-" + androidId)
                     .setDomain("mcs.android.com").setUser(androidId).setResource(androidId).setAuthToken(securityToken)
-                    .setDeviceId("android-" + Long.toHexString(Long.parseUnsignedLong(androidId))).build();
+                    .setDeviceId("android-" + Long.toHexString(Long.parseUnsignedLong(androidId)))
+                    .setAuthService(LoginRequest.AuthService.ANDROID_ID).setNetworkType(1).setUseRmq2(true)
+                    .setAdaptiveHeartbeat(false)
+                    .addSetting(Setting.newBuilder().setName("new_vc").setValue("1").build()).build();
 
             send(TAG_LOGIN_REQUEST, loginRequest.toByteArray());
             isRunning = true;
@@ -114,6 +118,23 @@ public class FcmClient {
         writeVarInt(localOut, protobufData.length);
         localOut.write(protobufData);
         localOut.flush();
+    }
+
+    private void sendSelectiveAck(String persistentId) {
+        try {
+            if (persistentId == null || persistentId.isEmpty())
+                return;
+
+            SelectiveAck sa = SelectiveAck.newBuilder().addId(persistentId).build();
+            Extension ext = Extension.newBuilder().setId(12) // MCS_SELECTIVE_ACK_ID
+                    .setData(sa.toByteString()).build();
+            IqStanza iq = IqStanza.newBuilder().setType(IqStanza.IqType.SET).setId("").setExtension(ext).build();
+
+            send(TAG_IQ_STANZA, iq.toByteArray());
+            logger.debug("Sent Selective ACK receipt to Google for message: {}", persistentId);
+        } catch (Exception e) {
+            logger.warn("Failed to send Selective ACK", e);
+        }
     }
 
     private void listenLoop() {
@@ -167,10 +188,25 @@ public class FcmClient {
                     case TAG_DATA_MESSAGE_STANZA -> {
                         logger.debug("FCM Listener: Dispatching push event to handler.");
                         DataMessageStanza msg = DataMessageStanza.parseFrom(data);
+
+                        // Send the payload to the decryptor
                         handlePushMessage(msg);
+
+                        // NEW: Send the receipt back to Google so they know we got it
+                        if (msg.hasPersistentId()) {
+                            sendSelectiveAck(msg.getPersistentId());
+                        }
                     }
-                    case TAG_HEARTBEAT_PING -> send(TAG_HEARTBEAT_ACK, new byte[0]);
+                    case TAG_HEARTBEAT_PING -> {
+                        HeartbeatAck ack = HeartbeatAck.newBuilder().build();
+                        send(TAG_HEARTBEAT_ACK, ack.toByteArray());
+                    }
                     case TAG_HEARTBEAT_ACK -> logger.trace("FCM Heartbeat ACK received");
+                    case TAG_IQ_STANZA -> {
+                        logger.debug("FCM IQ Stanza received (Ignored)");
+                        // Google occasionally sends IQ stanzas for state sync.
+                        // The official python client safely ignores these.
+                    }
                     default -> {
                         logger.warn("FCM Unknown Tag Received: {} | Data length: {} | Raw Hex: {}", tag, data.length,
                                 bytesToHex(data));
@@ -226,8 +262,10 @@ public class FcmClient {
     private void heartbeatLoop() {
         while (isRunning) {
             try {
-                Thread.sleep(300000); // 5 minutes
-                send(TAG_HEARTBEAT_PING, new byte[0]);
+                // 2 minutes ensures the home router NAT table never drops the TCP connection
+                Thread.sleep(120000);
+                HeartbeatPing ping = HeartbeatPing.newBuilder().build();
+                send(TAG_HEARTBEAT_PING, ping.toByteArray());
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 disconnect();
