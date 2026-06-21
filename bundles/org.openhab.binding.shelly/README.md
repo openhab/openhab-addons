@@ -1466,9 +1466,9 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 | Group   | Channel      | Type     | read-only | Description                                             |
 | ------- | ------------ | -------- | --------- | ------------------------------------------------------- |
 | sensors | smoke        | Switch   | yes       | ON: Smoke detected                                      |
+|         | mute         | Switch   | yes       | ON: alarm is currently muted                            |
 |         | lastUpdate   | DateTime | yes       | Timestamp of the last update (any sensor value changed) |
 |         | lastError    | String   | yes       | Last device error.                                      |
-| control | mute         | Switch   | no        | Send ON to mute the active alarm; auto-resets to OFF.   |
 | battery | batteryLevel | Number   | yes       | Battery Level in %                                      |
 |         | lowBattery   | Switch   | yes       | Low battery alert (< 20%)                               |
 
@@ -1479,7 +1479,7 @@ The sensor probe connects via a cable; if the cable is unplugged, the `lastError
 
 `Note:`
 The `alarmMode` and `reportHoldoff` channels are writable but only take effect while the sensor is online (awake and connected).
-The `mute` channel reflects the mute state reported by the device; flood alarm mute is not available via API (use the physical button).
+The `sensors#mute` channel reflects the mute state reported by the device; mute is activated via the physical button only — there is no API mute for flood.
 
 The `alarmMode` channel reflects the Shelly app's Alarm Mode screen:
 
@@ -1491,14 +1491,14 @@ The `alarmMode` channel reflects the Shelly app's Alarm Mode screen:
 | Group   | Channel       | Type            | read-only | Description                                                               |
 | ------- | ------------- | --------------- | --------- | ------------------------------------------------------------------------- |
 | sensors | flood         | Switch          | yes       | ON: Water/flooding detected, OFF: dry                                     |
+|         | mute          | Switch          | yes       | ON: alarm is currently muted (physical button; no API mute for flood)     |
 |         | lastUpdate    | DateTime        | yes       | Timestamp of the last update (any sensor value changed)                   |
 |         | lastError     | String          | yes       | Last device error (e.g. `cable_unplugged`)                                |
 | control | alarmMode     | String          | no        | Alarm mode: `rain`, `intense`, `normal`, `disabled` (see note above)      |
 |         | reportHoldoff | Number:Time     | no        | Minimum time (s) between consecutive flood reports                        |
-|         | mute          | Switch          | yes       | ON: alarm is currently muted (physical button; no API mute for flood)     |
 | battery | batteryLevel  | Number          | yes       | Battery level in %                                                        |
 |         | lowBattery    | Switch          | yes       | ON: Low battery alert (< 20%)                                             |
-| device  | alarm         | Trigger         | yes       | Trigger: `FLOOD` on flood alarm, `SENSOR_ERROR` on cable fault             |
+| device  | alarm         | Trigger         | yes       | Trigger: `FLOOD` on flood alarm, `SENSOR_ERROR` on cable fault            |
 
 ### Shelly Plus Wall Dimmer US (thing-type: shellypluswdus)
 
