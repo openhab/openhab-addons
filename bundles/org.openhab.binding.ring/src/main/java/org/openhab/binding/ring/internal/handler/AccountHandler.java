@@ -82,6 +82,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     private final RingVideoServlet servlet;
     private @Nullable ScheduledFuture<?> jobTokenRefresh = null;
     private @Nullable ScheduledFuture<?> eventRefresh = null;
+    private @Nullable ScheduledFuture<?> fcmRetryJob = null;;
     private @Nullable FcmClient fcmClient;
     private final HttpClient httpClient;
     private boolean isPolling = false;
@@ -90,6 +91,11 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     protected OnOffType status = OnOffType.OFF;
     protected OnOffType enabled = OnOffType.ON;
     protected final Logger logger = LoggerFactory.getLogger(AccountHandler.class);
+
+    // FCM Retry Tracking
+    private int fcmRetryCount = 0;
+    private static final int MAX_FCM_RETRIES = 3;
+    private static final long FCM_RETRY_DELAY_SECONDS = 30;
 
     // Scheduler
     protected @Nullable ScheduledFuture<?> refreshJob;
@@ -282,6 +288,20 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         return refreshToken;
     }
 
+    private void deleteRefreshTokenFile() {
+        String folderName = OpenHAB.getUserDataFolder() + "/ring";
+        String thingId = getThing().getUID().getId();
+        String fileName = folderName + "/ring." + thingId + ".refreshToken";
+        File file = new File(fileName);
+        if (file.exists()) {
+            if (file.delete()) {
+                logger.info("Successfully deleted invalid/expired Ring refresh token file.");
+            } else {
+                logger.warn("Failed to delete expired Ring refresh token file.");
+            }
+        }
+    }
+
     private File getFcmCredentialsFile() {
         File ringDir = new File(OpenHAB.getUserDataFolder(), "ring");
         if (!ringDir.exists()) {
@@ -456,6 +476,10 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
 
     private void setupPushNotifications() {
         try {
+            if (fcmClient != null) {
+                fcmClient.disconnect();
+            }
+
             FcmRegistrar.FcmCredentials creds = loadFcmCredentials().orElse(null);
 
             if (creds == null) {
@@ -491,33 +515,45 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
      */
     private void onFcmStateChanged(Boolean isConnected) {
         if (scheduler == null || scheduler.isShutdown()) {
-            logger.debug("Ignoring FCM state change (connected={}) because scheduler is not available", isConnected);
             return;
         }
 
-        // NEW: If fcmClient is null, dispose() has been called. Do not spawn any new timers!
         if (fcmClient == null) {
-            logger.debug("Ignoring FCM state change (connected={}) because the handler is being disposed.",
-                    isConnected);
+            logger.debug("Ignoring FCM state change because the handler is being disposed.");
             return;
         }
 
         if (isConnected) {
-            logger.debug("Ring FCM Socket connected. Disabling HTTP event polling.");
+            logger.warn("Ring FCM Socket connected. Disabling HTTP event polling.");
+            fcmRetryCount = 0;
 
-            ScheduledFuture<?> job = eventRefresh;
-            if (job != null) {
-                job.cancel(true);
+            if (fcmRetryJob != null && !fcmRetryJob.isCancelled()) {
+                fcmRetryJob.cancel(true);
             }
-            eventRefresh = null;
+
+            if (eventRefresh != null && !eventRefresh.isCancelled()) {
+                eventRefresh.cancel(true);
+                eventRefresh = null;
+            }
             isPolling = false;
         } else {
-            logger.warn("Ring FCM Socket disconnected. Falling back to HTTP event polling.");
-            if (eventRefresh == null || eventRefresh.isCancelled()) {
-                eventRefresh = scheduler.scheduleWithFixedDelay(this::refreshEvent, config.refreshInterval,
-                        config.refreshInterval, TimeUnit.SECONDS);
+            if (fcmRetryCount < MAX_FCM_RETRIES) {
+                fcmRetryCount++;
+                logger.warn("Ring FCM Socket disconnected. Attempt {} of {} to reconnect in {} seconds...",
+                        fcmRetryCount, MAX_FCM_RETRIES, FCM_RETRY_DELAY_SECONDS);
+
+                if (fcmRetryJob == null || fcmRetryJob.isDone()) {
+                    fcmRetryJob = scheduler.schedule(this::setupPushNotifications, FCM_RETRY_DELAY_SECONDS,
+                            TimeUnit.SECONDS);
+                }
+            } else if (!isPolling) {
+                logger.warn("Ring FCM Socket disconnected. Max retries reached. Falling back to HTTP event polling.");
+                if (eventRefresh == null || eventRefresh.isCancelled()) {
+                    eventRefresh = scheduler.scheduleWithFixedDelay(this::refreshEvent, config.refreshInterval,
+                            config.refreshInterval, TimeUnit.SECONDS);
+                }
+                isPolling = true;
             }
-            isPolling = true;
         }
     }
 
@@ -664,7 +700,12 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                     refreshRegistry(false);
                     updateStatus(ThingStatus.ONLINE);
                 } catch (AuthenticationException ex) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Invalid credentials");
+                    logger.warn(
+                            "Ring token rejected during minuteTick. Deleting saved token to force re-authentication.");
+                    deleteRefreshTokenFile();
+                    tokens = new Tokens("", "");
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "Invalid credentials - Please re-authenticate");
                 } catch (JsonParseException e1) {
                     logger.debug("RestClient reported JsonParseException trying to get tokens: {}", e1.getMessage());
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -743,9 +784,13 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
             refreshRegistry(false);
             tokens = restClient.getTokens("", "", tokens.refreshToken(), "", config.hardwareId);
         } catch (AuthenticationException e) {
-            logger.debug(
-                    "AccountHandler - startSessionRefresh - Exception occurred during execution of refreshRegistry(): {}",
-                    e.getMessage(), e);
+            logger.warn("Failed to refresh Ring token. Token may have been revoked: {}", e.getMessage());
+            if (e.getMessage() != null && e.getMessage().contains("Invalid username or password")) {
+                deleteRefreshTokenFile();
+                tokens = new Tokens("", ""); // Clear token from memory
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Invalid credentials - Please re-authenticate");
+            }
         }
     }
 
