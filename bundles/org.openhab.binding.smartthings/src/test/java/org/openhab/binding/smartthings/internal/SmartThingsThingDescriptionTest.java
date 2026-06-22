@@ -325,6 +325,8 @@ class SmartThingsThingDescriptionTest {
                 findPropertyValue(findChannel(document, "frame-control-group", "art-mode"), "command"));
         assertEquals("no-argument-command", findPropertyValue(findChannel(document, "frame-control-group", "art-mode"),
                 SmartThingsBindingConstants.CONVERTER));
+        assertEquals("media-control", findPropertyValue(findChannel(document, "frame-control-group", "playback"),
+                SmartThingsBindingConstants.CONVERTER));
         assertEquals("setPictureMode",
                 findPropertyValue(findChannel(document, "tv-picture-group", "picture-mode"), "command"));
         assertEquals("setSoundMode",

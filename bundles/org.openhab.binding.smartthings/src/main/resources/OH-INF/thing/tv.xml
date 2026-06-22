@@ -149,6 +149,7 @@
 					<property name="component">main</property>
 					<property name="capability">mediaPlayback</property>
 					<property name="attribute">playbackStatus</property>
+					<property name="smartthings-converter">media-control</property>
 				</properties>
 			</channel>
 			<channel id="art-mode" typeId="frame-art-mode">

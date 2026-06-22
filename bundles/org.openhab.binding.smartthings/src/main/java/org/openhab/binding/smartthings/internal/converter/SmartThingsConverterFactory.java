@@ -44,6 +44,7 @@ public class SmartThingsConverterFactory {
                     new SmartThingsDefaultConverter(typeRegistry));
         }
         registerConverter("fan-mode", new SmartThingsAirConditionerFanModeConverter(typeRegistry));
+        registerConverter("media-control", new SmartThingsMediaControlConverter(typeRegistry));
         registerConverter("no-argument-command", new SmartThingsNoArgumentCommandConverter(typeRegistry));
     }
 

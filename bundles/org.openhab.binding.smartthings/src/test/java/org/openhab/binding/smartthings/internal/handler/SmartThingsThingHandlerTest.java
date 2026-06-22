@@ -36,6 +36,7 @@ import org.openhab.binding.smartthings.internal.api.SmartThingsApi;
 import org.openhab.binding.smartthings.internal.converter.SmartThingsAirConditionerFanModeConverter;
 import org.openhab.binding.smartthings.internal.converter.SmartThingsConverterFactory;
 import org.openhab.binding.smartthings.internal.converter.SmartThingsDefaultConverter;
+import org.openhab.binding.smartthings.internal.converter.SmartThingsMediaControlConverter;
 import org.openhab.binding.smartthings.internal.dto.SmartThingsArgument;
 import org.openhab.binding.smartthings.internal.dto.SmartThingsAttribute;
 import org.openhab.binding.smartthings.internal.dto.SmartThingsCapability;
@@ -1054,6 +1055,28 @@ class SmartThingsThingHandlerTest {
     }
 
     @Test
+    void mediaControlConverterMapsNavigationCommandsToTrackControlCommands() throws SmartThingsException {
+        SmartThingsTypeRegistry registry = mock(SmartThingsTypeRegistry.class);
+        when(registry.getCapability("mediaPlayback")).thenReturn(createSetterCapability("mediaPlayback",
+                "playbackStatus", SmartThingsBindingConstants.SM_TYPE_STRING, "setPlaybackStatus"));
+        SmartThingsMediaControlConverter converter = new SmartThingsMediaControlConverter(registry);
+        ThingUID thingUID = new ThingUID("smartthings:Samsung_The_Frame:account:frame-tv");
+        ChannelUID channelUID = new ChannelUID(thingUID, "control", "playback");
+        Thing thing = ThingBuilder
+                .create(new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "Samsung_The_Frame"), thingUID)
+                .withChannel(createChannel(thingUID, "control", "playback", SmartThingsBindingConstants.TYPE_PLAYER,
+                        "mediaPlayback", "playbackStatus"))
+                .build();
+
+        assertEquals(mediaTrackControlCommandJson("nextTrack"),
+                converter.convertToSmartThings(thing, channelUID, NextPreviousType.NEXT));
+        assertEquals(mediaTrackControlCommandJson("previousTrack"),
+                converter.convertToSmartThings(thing, channelUID, NextPreviousType.PREVIOUS));
+        assertEquals(playbackCommandJson("playing"),
+                converter.convertToSmartThings(thing, channelUID, PlayPauseType.PLAY));
+    }
+
+    @Test
     void defaultConverterMapsSupportedPlaybackCommandsToDirectMediaPlaybackCommands() throws SmartThingsException {
         SmartThingsTypeRegistry registry = mock(SmartThingsTypeRegistry.class);
         when(registry.getCapability("mediaPlayback")).thenReturn(createAttributeOnlyCapability("mediaPlayback",
@@ -1126,6 +1149,11 @@ class SmartThingsThingHandlerTest {
 
     private String directMediaPlaybackCommandJson(String command) {
         return "{\"commands\":[{\"component\":\"main\",\"capability\":\"mediaPlayback\",\"command\":\"" + command
+                + "\"}]}";
+    }
+
+    private String mediaTrackControlCommandJson(String command) {
+        return "{\"commands\":[{\"component\":\"main\",\"capability\":\"mediaTrackControl\",\"command\":\"" + command
                 + "\"}]}";
     }
 
