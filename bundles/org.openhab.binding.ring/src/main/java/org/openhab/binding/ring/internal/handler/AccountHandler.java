@@ -55,9 +55,11 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -82,7 +84,8 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     private final RingVideoServlet servlet;
     private @Nullable ScheduledFuture<?> jobTokenRefresh = null;
     private @Nullable ScheduledFuture<?> eventRefresh = null;
-    private @Nullable ScheduledFuture<?> fcmRetryJob = null;;
+    private @Nullable ScheduledFuture<?> fcmRetryJob = null;
+    private @Nullable ScheduledFuture<?> fallbackSnapshotJob = null;
     private @Nullable FcmClient fcmClient;
     private final HttpClient httpClient;
     private boolean isPolling = false;
@@ -128,6 +131,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
      * The number of video files to keep when auto-downloading
      */
     private int videoRetentionCount;
+    private String lastEventId = "";
 
     /*
      * The path of where to save video files
@@ -557,121 +561,113 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         }
     }
 
-    protected void handlePushEvent(String payloadJson, String androidConfigJson) {
+    void handlePushEvent(String payloadJson, String androidConfigJson) {
         logger.debug("Parsing Instant Push Event Payload: {}", payloadJson);
+
         try {
-            JsonObject json = JsonParser.parseString(payloadJson).getAsJsonObject();
+            JsonObject payloadObj = JsonParser.parseString(payloadJson).getAsJsonObject();
 
-            if (!json.has("device") || !json.has("event")) {
-                logger.warn("Push event payload missing 'device' or 'event' objects");
-                return;
+            // Extract Device Info
+            if (!payloadObj.has("device") || !payloadObj.has("event")) {
+                return; // Not a standard motion/ding event
             }
-
-            JsonObject deviceObj = json.getAsJsonObject("device");
-            JsonObject eventObj = json.getAsJsonObject("event");
+            JsonObject deviceObj = payloadObj.getAsJsonObject("device");
+            JsonObject eventObj = payloadObj.getAsJsonObject("event");
             JsonObject dingObj = eventObj.has("ding") ? eventObj.getAsJsonObject("ding") : null;
 
-            String deviceId = deviceObj.get("id").getAsString();
-            String deviceName = deviceObj.has("name") ? deviceObj.get("name").getAsString() : "Ring Device";
-            String eventIdStr = dingObj != null && dingObj.has("id") ? dingObj.get("id").getAsString()
-                    : String.valueOf(System.currentTimeMillis());
+            String deviceId = deviceObj.has("id") ? deviceObj.get("id").getAsString() : "";
+            String deviceName = deviceObj.has("name") ? deviceObj.get("name").getAsString() : "Unknown Device";
 
-            String kind = "motion";
-            String detectionType = "";
-            String createdAtStr = java.time.ZonedDateTime.now(java.time.ZoneOffset.UTC)
-                    .format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX"));
-            if (dingObj != null) {
-                if (dingObj.has("subtype")) {
-                    String subtype = dingObj.get("subtype").getAsString().toLowerCase();
-                    if (subtype.contains("ding") || subtype.contains("ring")) {
-                        kind = "ding";
-                    }
-                }
-                if (dingObj.has("detection_type")) {
-                    detectionType = dingObj.get("detection_type").getAsString();
-                }
-                if (dingObj.has("created_at")) {
-                    createdAtStr = dingObj.get("created_at").getAsString();
-                }
-            }
-
-            long eventId = Long.parseLong(eventIdStr);
-
-            if (!lastEvents.isEmpty() && lastEvents.getFirst().id == eventId) {
+            if (dingObj == null || !dingObj.has("id")) {
                 return;
             }
 
-            logger.info("Parsed Instant FCM Event -> Device: {}, Kind: {}", deviceName,
-                    kind.toUpperCase(java.util.Locale.ROOT));
+            String eventId = dingObj.get("id").getAsString();
+            String kind = "motion";
+            String pushSnapshotUrl = null;
+            String createdAtStr = java.time.ZonedDateTime.now(java.time.ZoneOffset.UTC)
+                    .format(java.time.format.DateTimeFormatter.ISO_DATE_TIME);
 
-            RingEventTO instantEvent = new RingEventTO();
-            instantEvent.id = eventId;
-            instantEvent.kind = kind;
-            instantEvent.createdAt = createdAtStr;
-
-            instantEvent.doorbot = new org.openhab.binding.ring.internal.api.DoorbotTO();
-            instantEvent.doorbot.id = deviceId;
-            instantEvent.doorbot.description = deviceName;
-
-            if (!detectionType.isEmpty()) {
-                instantEvent.cvProperties = new org.openhab.binding.ring.internal.api.CVPropertiesTO();
-                instantEvent.cvProperties.detectionType = detectionType;
+            if (dingObj.has("subtype")) {
+                String subtype = dingObj.get("subtype").getAsString().toLowerCase();
+                if (subtype.contains("ding") || subtype.contains("ring")) {
+                    kind = "ding";
+                }
+            }
+            if (dingObj.has("created_at")) {
+                createdAtStr = dingObj.get("created_at").getAsString();
             }
 
-            lastEvents = java.util.List.of(instantEvent);
+            // Extract the direct AWS S3 URL from the Rich Notification payload
+            if (dingObj.has("snapshot_url") && !dingObj.get("snapshot_url").isJsonNull()) {
+                pushSnapshotUrl = dingObj.get("snapshot_url").getAsString();
+            }
 
-            updateState(CHANNEL_EVENT_CREATED_AT, instantEvent.getCreatedAt());
-            updateState(CHANNEL_EVENT_KIND, new StringType(instantEvent.kind));
-            updateState(CHANNEL_EVENT_DOORBOT_ID, new StringType(instantEvent.doorbot.id));
-            updateState(CHANNEL_EVENT_DOORBOT_DESCRIPTION, new StringType(instantEvent.doorbot.description));
-
-            // NEW: Use the native push notification body if provided!
-            String message = "There is motion at your " + deviceName;
-
-            if (!androidConfigJson.isEmpty()) { // FIX: Simplified check for empty string
-                try {
-                    JsonObject configObj = JsonParser.parseString(androidConfigJson).getAsJsonObject();
-                    if (configObj.has("body")) {
-                        message = configObj.get("body").getAsString();
-                    }
-                } catch (JsonParseException e) {
-                    logger.debug("Failed to extract body from android_config", e);
-                }
-            } else {
-                if ("human".equals(detectionType)) {
-                    message = "There is a Person at your " + deviceName;
-                } else if ("vehicle".equals(detectionType)) {
-                    message = "There is a Vehicle at your " + deviceName;
-                } else if ("ding".equals(kind)) {
-                    message = "Someone is at your " + deviceName;
+            // Extract the human-readable description from the Android Config payload
+            String extendedDescription = "Motion Detected";
+            if (androidConfigJson != null && !androidConfigJson.isEmpty()) {
+                com.google.gson.JsonObject configObj = com.google.gson.JsonParser.parseString(androidConfigJson)
+                        .getAsJsonObject();
+                if (configObj.has("body")) {
+                    extendedDescription = configObj.get("body").getAsString();
                 }
             }
 
-            updateState(CHANNEL_EVENT_EXTENDED_DESCRIPTION, new StringType(message));
+            boolean isDuplicateEvent = eventId.equals(lastEventId);
 
-            if (scheduler != null && !scheduler.isShutdown()) {
-                scheduler.execute(() -> getVideo(instantEvent));
+            if (pushSnapshotUrl != null && !pushSnapshotUrl.isEmpty()) {
+                logger.debug("Received Rich Notification URL! Downloading instantly...");
+
+                // Cancel the camera API fallback if it's still waiting
+                if (fallbackSnapshotJob != null && !fallbackSnapshotJob.isCancelled()) {
+                    fallbackSnapshotJob.cancel(true);
+                    logger.debug("Cancelled 3-second camera API fallback because S3 URL arrived.");
+                }
+
+                // Fire the snapshot update instantly
+                if (scheduler != null && !scheduler.isShutdown()) {
+                    final String finalUrl = pushSnapshotUrl;
+                    scheduler.execute(() -> updateChildSnapshots(deviceId, finalUrl));
+                }
+            } else if (!isDuplicateEvent) {
+                // First time seeing this motion, but no URL yet. Schedule the 3-second fallback.
+                logger.debug("No snapshot URL in first push. Scheduling 3-second fallback to camera API...");
+                if (scheduler != null && !scheduler.isShutdown()) {
+                    fallbackSnapshotJob = scheduler.schedule(() -> {
+                        logger.debug("Fallback timer reached. Requesting snapshot via camera API...");
+                        updateChildSnapshots(deviceId, null);
+                    }, 3, java.util.concurrent.TimeUnit.SECONDS);
+                }
             }
 
-            // 5. Instantly trigger a snapshot update on the specific child device
-            if (scheduler != null && !scheduler.isShutdown()) {
-                // We delay by 3 seconds to give Ring's backend time to generate the new image frame
-                scheduler.schedule(() -> {
-                    for (org.openhab.core.thing.Thing child : getThing().getThings()) {
-                        String childId = (String) child.getConfiguration().get("id");
-                        if (deviceId.equals(childId)) {
-                            org.openhab.core.thing.binding.ThingHandler handler = child.getHandler();
-                            if (handler instanceof DoorbellHandler doorbellHandler) {
-                                doorbellHandler.forceSnapshotUpdate();
-                            } else if (handler instanceof StickupcamHandler stickupcamHandler) {
-                                stickupcamHandler.forceSnapshotUpdate();
-                            }
-                        }
-                    }
-                }, 3, TimeUnit.SECONDS);
+            if (isDuplicateEvent) {
+                return;
             }
-        } catch (JsonParseException e) {
+
+            lastEventId = eventId;
+            logger.debug("Ring Push Event Received: {} at {}", kind, deviceName);
+
+            updateState(CHANNEL_EVENT_KIND, new org.openhab.core.library.types.StringType(kind));
+            updateState(CHANNEL_EVENT_DOORBOT_ID, new org.openhab.core.library.types.StringType(deviceId));
+            updateState(CHANNEL_EVENT_DOORBOT_DESCRIPTION, new org.openhab.core.library.types.StringType(deviceName));
+            updateState(CHANNEL_EVENT_EXTENDED_DESCRIPTION,
+                    new org.openhab.core.library.types.StringType(extendedDescription));
+        } catch (Exception e) {
             logger.error("Failed to parse instant push event json: {}", e.getMessage(), e);
+        }
+    }
+
+    private void updateChildSnapshots(String deviceId, @Nullable String snapshotUrl) {
+        for (Thing child : getThing().getThings()) {
+            String childId = (String) child.getConfiguration().get("id");
+            if (deviceId.equals(childId)) {
+                ThingHandler handler = child.getHandler();
+                if (handler instanceof DoorbellHandler doorbellHandler) {
+                    doorbellHandler.forceSnapshotUpdate(snapshotUrl);
+                } else if (handler instanceof StickupcamHandler stickupcamHandler) {
+                    stickupcamHandler.forceSnapshotUpdate(snapshotUrl);
+                }
+            }
         }
     }
 
@@ -881,6 +877,16 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                     "@text/offline.comm-error.auth-exception");
         }
         return new byte[0];
+    }
+
+    @Override
+    public byte[] downloadDirectSnapshot(String url) {
+        try {
+            return restClient.downloadDirectSnapshot(url, tokens);
+        } catch (AuthenticationException ae) {
+            logger.debug("Failed to fetch direct snapshot from push URL.");
+            return new byte[0];
+        }
     }
 
     @Override

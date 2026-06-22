@@ -141,7 +141,7 @@ public class FcmClient {
                 return;
             }
 
-            // NEW: Consume the server's Version byte (41) before parsing Protobuf tags
+            // Consume the server's Version byte (41) before parsing Protobuf tags
             int versionByte = localIn.read();
             if (versionByte != 41) {
                 logger.debug("FCM Server reported unexpected version byte: {}", versionByte);
@@ -189,7 +189,6 @@ public class FcmClient {
                         // Send the payload to the decryptor
                         handlePushMessage(msg);
 
-                        // NEW: Send the receipt back to Google so they know we got it
                         if (msg.hasPersistentId()) {
                             sendSelectiveAck(msg.getPersistentId());
                         }
@@ -200,7 +199,7 @@ public class FcmClient {
                     }
                     case TAG_HEARTBEAT_ACK -> logger.trace("FCM Heartbeat ACK received");
                     case TAG_IQ_STANZA -> {
-                        logger.debug("FCM IQ Stanza received (Ignored)");
+                        logger.trace("FCM IQ Stanza received (Ignored)");
                         // Google occasionally sends IQ stanzas for state sync.
                         // The official python client safely ignores these.
                     }
@@ -228,7 +227,6 @@ public class FcmClient {
         String jsonEvent = null;
         String androidConfig = "";
 
-        // 1. Extract the raw Android push strings
         for (AppData data : msg.getAppDataList()) {
             if ("data".equals(data.getKey())) {
                 jsonEvent = data.getValue();
@@ -237,9 +235,8 @@ public class FcmClient {
             }
         }
 
-        // 2. Pass them to the handler
         if (jsonEvent != null) {
-            logger.debug("Successfully received plain-text Ring Event payload.");
+            logger.debug("Successfully received Ring Event payload.");
             eventCallback.accept(jsonEvent, androidConfig);
         } else {
             logger.debug("Push message received but contained no 'data' key.");

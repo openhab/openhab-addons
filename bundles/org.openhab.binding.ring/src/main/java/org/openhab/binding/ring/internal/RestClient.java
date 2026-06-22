@@ -515,4 +515,24 @@ public class RestClient {
             logger.warn("Failed to subscribe device {} to motions: {}", deviceId, e.getMessage());
         }
     }
+
+    /**
+     * Downloads an image directly from a push notification UUID via the Ring API
+     */
+    public byte[] downloadDirectSnapshot(String uuidUrl, Tokens tokens) throws AuthenticationException {
+        logger.debug("Downloading notification snapshot via UUID: {}", uuidUrl);
+        try {
+            ContentResponse response = httpClient.newRequest(uuidUrl).timeout(10000, TimeUnit.MILLISECONDS)
+                    .agent(ApiConstants.API_USER_AGENT)
+                    .header(HttpHeader.AUTHORIZATION.asString(), "Bearer " + tokens.accessToken()).send();
+
+            if (response.getStatus() == 200) {
+                return response.getContent();
+            } else {
+                throw new AuthenticationException("Failed to download UUID snapshot. HTTP " + response.getStatus());
+            }
+        } catch (ExecutionException | InterruptedException | TimeoutException e) {
+            throw new AuthenticationException("Failed to download UUID snapshot due to network error.");
+        }
+    }
 }

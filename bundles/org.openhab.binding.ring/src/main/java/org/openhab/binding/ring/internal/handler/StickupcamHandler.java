@@ -18,7 +18,9 @@ import static org.openhab.binding.ring.internal.ApiConstants.*;
 import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpMethod;
+import org.openhab.binding.ring.internal.RingAccount;
 import org.openhab.binding.ring.internal.api.RingDeviceTO;
 import org.openhab.binding.ring.internal.device.Stickupcam;
 import org.openhab.core.i18n.TimeZoneProvider;
@@ -209,12 +211,28 @@ public class StickupcamHandler extends RingDeviceHandler {
         }
     }
 
-    public void forceSnapshotUpdate() {
-        logger.debug("Forcing snapshot update for Stickupcam {}", getThing().getUID().getId());
-        long timestamp = getSnapshotTimestamp();
-        byte[] snapshot = getSnapshot();
+    public void forceSnapshotUpdate(@Nullable String snapshotUrl) {
+        logger.debug("Forcing snapshot update for Device {}", getThing().getUID().getId());
+        byte[] snapshot = new byte[0];
+
+        // 1. Try to grab the instant pre-processed image from the push URL
+        if (snapshotUrl != null && !snapshotUrl.isEmpty()) {
+            logger.debug("Attempting to download instant snapshot from FCM payload URL");
+            // FIX: Grab the RingAccount interface from the Bridge Handler!
+            RingAccount account = (RingAccount) getBridge().getHandler();
+            if (account != null) {
+                snapshot = account.downloadDirectSnapshot(snapshotUrl);
+            }
+        }
+
+        // 2. Fallback to requesting a new snapshot from the camera API if the URL failed or was missing
+        if (snapshot.length == 0) {
+            logger.debug("Instant snapshot unavailable, falling back to camera API request");
+            snapshot = getSnapshot();
+        }
 
         if (snapshot.length > 0) {
+            long timestamp = getSnapshotTimestamp();
             lastSnapshotTimestamp = timestamp > 0 ? timestamp : System.currentTimeMillis();
 
             ChannelUID channelUID = new ChannelUID(thing.getUID(), CHANNEL_STATUS_SNAPSHOT);
