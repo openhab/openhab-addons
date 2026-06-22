@@ -71,7 +71,8 @@ import org.slf4j.LoggerFactory;
 public class FineOffsetGatewayHandler extends BaseBridgeHandler {
 
     private static final String PROPERTY_FREQUENCY = "frequency";
-    private static final String DEPRECATION_NOTE = " (deprecated — this value is now also available on the sensor Thing)";
+    private static final String DEPRECATION_NOTE_PREFIX = " (deprecated — this value is now also available on the sensor Thing as channel '";
+    private static final String DEPRECATION_NOTE_SUFFIX = "')";
 
     private final Logger logger = LoggerFactory.getLogger(FineOffsetGatewayHandler.class);
     private final Bundle bundle;
@@ -229,7 +230,8 @@ public class FineOffsetGatewayHandler extends BaseBridgeHandler {
         String description = translationProvider.getText(bundle, channelKey + ".description", null,
                 localeProvider.getLocale(), measuredValue.getChannelNumber());
         if (measuredValue.getSensor() != null) {
-            description = (description == null ? "" : description) + DEPRECATION_NOTE;
+            description = (description == null ? "" : description) + DEPRECATION_NOTE_PREFIX
+                    + measuredValue.getChannelPrefix() + DEPRECATION_NOTE_SUFFIX;
         }
         if (description != null) {
             builder.withDescription(description);
