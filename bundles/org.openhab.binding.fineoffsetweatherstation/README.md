@@ -345,14 +345,14 @@ the gateway (bridge) Thing are still created and updated for backwards compatibi
 description carries a translatable note naming the full `ChannelUID` of the equivalent channel on the sensor Thing.
 For example, when a WH51 soil-moisture sensor is configured as `WH51_CH1` under a gateway with id `3906700515`:
 
-```
-deprecated — this value is now also available on the sensor Thing as channel: fineoffsetweatherstation:sensor:3906700515:WH51_CH1:moisture-soil-channel
+```text
+(deprecated — this value is now also available on the sensor Thing as channel: fineoffsetweatherstation:sensor:3906700515:WH51_CH1:moisture-soil-channel)
 ```
 
 When no matching sensor Thing is yet configured in openHAB, the note reads:
 
-```
-deprecated — this value is now also available on the sensor Thing
+```text
+(deprecated — this value is now also available on the sensor Thing)
 ```
 
 Prefer linking your items to the channels on the sensor Thing; the gateway-side duplicates may be removed in a future release.

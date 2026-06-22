@@ -18,6 +18,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_TYPE_HUMIDITY;
@@ -281,7 +282,7 @@ public class FineOffsetGatewayHandlerTest {
         updateLiveData();
 
         // The description of the created gateway channel must reference the full ChannelUID
-        String expectedUid = sensorThingUID + ":moisture-soil-channel";
+        String expectedUid = new ChannelUID(sensorThingUID, "moisture-soil-channel").getAsString();
         List<Channel> channels = ((Bridge) handler.getThing()).getChannels();
         Channel soilChannel = channels.stream().filter(c -> "moisture-soil-channel-1".equals(c.getUID().getId()))
                 .findFirst().orElseThrow();
@@ -304,5 +305,8 @@ public class FineOffsetGatewayHandlerTest {
         // Verify the no-target i18n key was used (no UID argument)
         verify(translationProviderMock).getText(any(), eq("gateway.dynamic-channel.deprecation-note-no-target"), any(),
                 any());
+        // Verify the with-target key was NOT used (double-call regression guard)
+        verify(translationProviderMock, never()).getText(any(), eq("gateway.dynamic-channel.deprecation-note"), any(),
+                any(), any());
     }
 }

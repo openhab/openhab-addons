@@ -71,6 +71,7 @@ import org.slf4j.LoggerFactory;
 public class FineOffsetGatewayHandler extends BaseBridgeHandler {
 
     private static final String PROPERTY_FREQUENCY = "frequency";
+    // {0} = the full ChannelUID of the equivalent channel on the sensor Thing
     private static final String DEFAULT_DEPRECATION_NOTE_WITH_TARGET = "(deprecated — this value is now also available on the sensor Thing as channel: {0})";
     private static final String DEFAULT_DEPRECATION_NOTE = "(deprecated — this value is now also available on the sensor Thing)";
 
