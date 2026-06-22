@@ -127,7 +127,7 @@ public class FcmClient {
 
             send(TAG_IQ_STANZA, iq.toByteArray());
             logger.debug("Sent Selective ACK receipt to Google for message: {}", persistentId);
-        } catch (Exception e) {
+        } catch (IOException e) {
             logger.warn("Failed to send Selective ACK", e);
         }
     }
@@ -175,7 +175,7 @@ public class FcmClient {
                                 send(TAG_HEARTBEAT_PING, new byte[0]);
                                 stateCallback.accept(true);
                             }
-                        } catch (Exception e) {
+                        } catch (IOException e) {
                             logger.error(
                                     "FCM LoginResponse Parse Error! Declared Size: {}, Actual Bytes Read: {}, Raw Hex: {}",
                                     size, data.length, bytesToHex(data), e);

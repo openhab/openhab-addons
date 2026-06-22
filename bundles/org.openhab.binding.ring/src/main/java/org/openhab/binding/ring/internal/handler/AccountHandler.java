@@ -307,7 +307,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
             } else {
                 logger.warn("FCM credentials file is incomplete. Forcing re-registration.");
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             logger.warn("Failed to load saved FCM credentials, will generate new ones.", e);
         }
         return Optional.empty();
@@ -322,7 +322,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
             props.setProperty("fcmToken", creds.fcmToken());
             props.store(fos, "Ring Binding FCM Credentials");
             logger.debug("Successfully saved persistent FCM credentials to disk.");
-        } catch (Exception e) {
+        } catch (IOException e) {
             logger.error("Failed to save FCM credentials to disk!", e);
         }
     }
@@ -394,7 +394,6 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
 
         if ((!refreshToken.isEmpty()) || !(config.username.isEmpty() && config.password.isEmpty())) {
 
-            // Set status to pending while we do the heavy lifting in the background
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING,
                     "Authenticating in background...");
 
@@ -426,7 +425,6 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
 
                     refreshRegistry(true);
 
-                    // Always start the token/session refresh loop
                     startSessionRefresh(refreshInterval);
 
                     // Start the periodic minute/device refresh loop (event polling will be disabled once FCM connects)
@@ -458,10 +456,8 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
 
     private void setupPushNotifications() {
         try {
-            // 1. Try to load persistent credentials from disk
             FcmRegistrar.FcmCredentials creds = loadFcmCredentials().orElse(null);
 
-            // 2. If missing, register with Google and save to disk
             if (creds == null) {
                 logger.info("No persistent FCM credentials found. Registering as a new Android device...");
                 FcmRegistrar registrar = new FcmRegistrar(httpClient);
@@ -471,24 +467,20 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                 logger.debug("Loaded persistent FCM credentials from disk. Reusing Android session.");
             }
 
-            // 3. Always bind the token to the Ring account session on startup
             logger.debug("Binding FCM Token with Ring backend...");
             restClient.subscribeToPushNotifications(creds.fcmToken(), config.hardwareId, tokens);
 
-            // 4. Connect the socket
             fcmClient = new FcmClient((String payload, String configStr) -> handlePushEvent(payload, configStr),
                     (Boolean status) -> onFcmStateChanged(status), creds);
             fcmClient.connect(creds.androidId(), creds.securityToken());
 
-            // 5. Explicitly subscribe all cameras to the FCM session
             if (registry != null && !registry.getRingDevices().isEmpty()) {
                 logger.debug("Subscribing all discovered devices to the active push notification session...");
                 for (org.openhab.binding.ring.internal.device.RingDevice device : registry.getRingDevices()) {
-                    // Pass the hardwareId into the RestClient
                     restClient.subscribeDeviceToPush(device.getId(), config.hardwareId, tokens);
                 }
             }
-        } catch (Exception e) {
+        } catch (AuthenticationException e) {
             logger.warn("FCM Setup failed. Network restricted? Falling back to HTTP polling.", e);
             onFcmStateChanged(false);
         }
@@ -606,7 +598,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                     if (configObj.has("body")) {
                         message = configObj.get("body").getAsString();
                     }
-                } catch (Exception e) {
+                } catch (JsonParseException e) {
                     logger.debug("Failed to extract body from android_config", e);
                 }
             } else {
@@ -642,7 +634,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                     }
                 }, 3, TimeUnit.SECONDS);
             }
-        } catch (Exception e) {
+        } catch (JsonParseException e) {
             logger.error("Failed to parse instant push event json: {}", e.getMessage(), e);
         }
     }
@@ -768,7 +760,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     }
 
     /**
-     * Refresh the tokens every 20 minutes
+     * Refresh the tokens every 45 minutes
      */
     protected void startSessionRefresh(int refreshInterval) {
         logger.debug("startSessionRefresh {}", refreshInterval);
@@ -776,10 +768,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         if (jobTokenRefresh != null && !jobTokenRefresh.isCancelled()) {
             jobTokenRefresh.cancel(true);
         }
-        jobTokenRefresh = scheduler.scheduleWithFixedDelay(this::refreshToken, 90, 600, TimeUnit.SECONDS);
-
-        // DO NOT start eventRefresh here! It causes a duplicate timer leak.
-        // Event polling is strictly handled by startAutomaticRefresh and the FCM fallback logic.
+        jobTokenRefresh = scheduler.scheduleWithFixedDelay(this::refreshToken, 90, 2700, TimeUnit.SECONDS);
     }
 
     protected void stopSessionRefresh() {
@@ -804,11 +793,9 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         logger.debug("Disposing AccountHandler and shutting down connections...");
         servlet.removeVideoStoragePath(thing.getUID());
 
-        // 1. Immediately null out the client so callbacks know we are shutting down
         FcmClient clientToClose = fcmClient;
         fcmClient = null;
 
-        // 2. Kill the active FCM Socket and its Virtual Threads
         if (clientToClose != null) {
             clientToClose.disconnect();
         }

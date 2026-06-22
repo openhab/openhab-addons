@@ -164,7 +164,9 @@ public class FcmRegistrar {
                     .header("Authorization", "AidLogin " + androidId + ":" + securityToken)
                     .header("Content-Type", "application/x-www-form-urlencoded")
                     .header("X-Goog-Firebase-Installations-Auth", fisToken).header("app", RING_PACKAGE_NAME)
-                    .header("gcm_ver", "221440039").content(new StringContentProvider(payloadBuilder.toString()));
+                    .header("gcm_ver", "221440039").header("X-Android-Package", "com.google.android.apps.adm")
+                    .header("X-Android-Cert", "38918a453d07199354f8b19af05ec6562ced5788")
+                    .content(new StringContentProvider(payloadBuilder.toString()));
             ContentResponse response = request.send();
 
             if (response.getStatus() != HttpStatus.OK_200) {

@@ -24,7 +24,7 @@ public class ApiConstants {
     public static final int API_VERSION = 11;
 
     // API resources
-    public static final String API_USER_AGENT = "OpenHAB Ring Binding";
+    public static final String API_USER_AGENT = "Dalvik/2.1.0 (Linux; U; Android 13; Pixel 6 Build/TQ3A.230901.001) Ring/3.67.0";
     public static final String API_OAUTH_ENDPOINT = "https://oauth.ring.com/oauth/token";
     public static final String API_BASE = "https://api.ring.com";
     public static final String URL_SESSION = API_BASE + "/clients_api/session";
