@@ -20,6 +20,7 @@ import static org.hamcrest.Matchers.not;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_TYPE_MOISTURE;
+import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_TYPE_TEMPERATURE;
 import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.THING_TYPE_SENSOR;
 
 import java.util.List;
@@ -59,8 +60,7 @@ public class FineOffsetSensorHandlerTest {
 
     private static final ThingUID SENSOR_UID = new ThingUID(THING_TYPE_SENSOR, "testSensor");
 
-    // must match FineOffsetSensorHandler.MISSING_MEASURAND_REMOVAL_THRESHOLD
-    private static final int REMOVAL_THRESHOLD = 10;
+    private static final int REMOVAL_THRESHOLD = DynamicChannelReconciler.MISSING_VALUE_REMOVAL_THRESHOLD;
 
     private @Mock @NonNullByDefault({}) Thing thingMock;
     private @Mock @NonNullByDefault({}) ThingHandlerCallback callbackMock;
@@ -69,7 +69,7 @@ public class FineOffsetSensorHandlerTest {
     private @NonNullByDefault({}) FineOffsetSensorHandler handler;
 
     private final MeasuredValue moisture = measuredValue("moisture-soil-channel", CHANNEL_TYPE_MOISTURE);
-    private final MeasuredValue soilTemp = measuredValue("temperature-soil-channel", CHANNEL_TYPE_MOISTURE);
+    private final MeasuredValue soilTemp = measuredValue("temperature-soil-channel", CHANNEL_TYPE_TEMPERATURE);
 
     @BeforeEach
     public void setUp() {
