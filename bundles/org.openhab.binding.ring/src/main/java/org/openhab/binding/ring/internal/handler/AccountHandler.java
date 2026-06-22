@@ -85,7 +85,6 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     private @Nullable ScheduledFuture<?> jobTokenRefresh = null;
     private @Nullable ScheduledFuture<?> eventRefresh = null;
     private @Nullable ScheduledFuture<?> fcmRetryJob = null;
-    private @Nullable ScheduledFuture<?> fallbackSnapshotJob = null;
     private @Nullable FcmClient fcmClient;
     private final HttpClient httpClient;
     private boolean isPolling = false;
@@ -566,9 +565,8 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         try {
             JsonObject payloadObj = JsonParser.parseString(payloadJson).getAsJsonObject();
 
-            // Extract Device Info
             if (!payloadObj.has("device") || !payloadObj.has("event")) {
-                return; // Not a standard motion/ding event
+                return;
             }
             JsonObject deviceObj = payloadObj.getAsJsonObject("device");
             JsonObject eventObj = payloadObj.getAsJsonObject("event");
@@ -582,6 +580,12 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
             }
 
             String eventId = dingObj.get("id").getAsString();
+
+            if (eventId.equals(lastEventId)) {
+                return;
+            }
+            lastEventId = eventId;
+
             String kind = "motion";
             String pushSnapshotUrl = null;
             String createdAtStr = java.time.ZonedDateTime.now(java.time.ZoneOffset.UTC)
@@ -597,7 +601,6 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                 createdAtStr = dingObj.get("created_at").getAsString();
             }
 
-            // Extract the direct snapshot URL from the Rich Notification payload
             if (imgJson != null && !imgJson.isEmpty()) {
                 try {
                     JsonObject imgObj = JsonParser.parseString(imgJson).getAsJsonObject();
@@ -609,55 +612,40 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                 }
             }
 
-            // Extract the human-readable description from the Android Config payload
             String extendedDescription = "Motion Detected";
             if (androidConfigJson != null && !androidConfigJson.isEmpty()) {
-                com.google.gson.JsonObject configObj = com.google.gson.JsonParser.parseString(androidConfigJson)
-                        .getAsJsonObject();
-                if (configObj.has("body")) {
-                    extendedDescription = configObj.get("body").getAsString();
+                try {
+                    JsonObject configObj = JsonParser.parseString(androidConfigJson).getAsJsonObject();
+                    if (configObj.has("body")) {
+                        extendedDescription = configObj.get("body").getAsString();
+                    }
+                } catch (Exception e) {
+                    logger.debug("Failed to parse android_config payload: {}", e.getMessage());
                 }
             }
 
-            boolean isDuplicateEvent = eventId.equals(lastEventId);
-
-            if (pushSnapshotUrl != null && !pushSnapshotUrl.isEmpty()) {
-                logger.debug("Received Rich Notification URL! Downloading instantly...");
-
-                // Cancel the camera API fallback if it's still waiting
-                if (fallbackSnapshotJob != null && !fallbackSnapshotJob.isCancelled()) {
-                    fallbackSnapshotJob.cancel(true);
-                    logger.debug("Cancelled 3-second camera API fallback because S3 URL arrived.");
-                }
-
-                // Fire the snapshot update instantly
-                if (scheduler != null && !scheduler.isShutdown()) {
-                    final String finalUrl = pushSnapshotUrl;
-                    scheduler.execute(() -> updateChildSnapshots(deviceId, finalUrl));
-                }
-            } else if (!isDuplicateEvent) {
-                // First time seeing this motion, but no URL yet. Schedule the 3-second fallback.
-                logger.debug("No snapshot URL in first push. Scheduling 3-second fallback to camera API...");
-                if (scheduler != null && !scheduler.isShutdown()) {
-                    fallbackSnapshotJob = scheduler.schedule(() -> {
-                        logger.debug("Fallback timer reached. Requesting snapshot via camera API...");
-                        updateChildSnapshots(deviceId, null);
-                    }, 3, java.util.concurrent.TimeUnit.SECONDS);
-                }
-            }
-
-            if (isDuplicateEvent) {
-                return;
-            }
-
-            lastEventId = eventId;
-            logger.debug("Ring Push Event Received: {} at {}", kind, deviceName);
+            logger.info("Ring Push Event Received: {} at {}", kind, deviceName);
 
             updateState(CHANNEL_EVENT_KIND, new org.openhab.core.library.types.StringType(kind));
             updateState(CHANNEL_EVENT_DOORBOT_ID, new org.openhab.core.library.types.StringType(deviceId));
             updateState(CHANNEL_EVENT_DOORBOT_DESCRIPTION, new org.openhab.core.library.types.StringType(deviceName));
             updateState(CHANNEL_EVENT_EXTENDED_DESCRIPTION,
                     new org.openhab.core.library.types.StringType(extendedDescription));
+
+            if (pushSnapshotUrl != null && !pushSnapshotUrl.isEmpty()) {
+                logger.debug("Received Rich Notification URL! Downloading instantly...");
+                if (scheduler != null && !scheduler.isShutdown()) {
+                    final String finalUrl = pushSnapshotUrl;
+                    scheduler.execute(() -> updateChildSnapshots(deviceId, finalUrl));
+                }
+            } else {
+                logger.debug("No snapshot URL in push. Scheduling 3-second fallback to camera API...");
+                if (scheduler != null && !scheduler.isShutdown()) {
+                    scheduler.schedule(() -> {
+                        updateChildSnapshots(deviceId, null);
+                    }, 3, java.util.concurrent.TimeUnit.SECONDS);
+                }
+            }
         } catch (Exception e) {
             logger.error("Failed to parse instant push event json: {}", e.getMessage(), e);
         }
