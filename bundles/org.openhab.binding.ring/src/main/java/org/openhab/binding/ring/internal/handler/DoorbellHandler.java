@@ -137,17 +137,16 @@ public class DoorbellHandler extends RingDeviceHandler {
         logger.debug("Forcing snapshot update for Device {}", getThing().getUID().getId());
         byte[] snapshot = new byte[0];
 
-        // 1. Try to grab the instant pre-processed image from the push URL
         if (snapshotUrl != null && !snapshotUrl.isEmpty()) {
             logger.debug("Attempting to download instant snapshot from FCM payload URL");
-            // Grab the RingAccount interface from the Bridge Handler!
-            RingAccount account = (RingAccount) getBridge().getHandler();
-            if (account != null) {
-                snapshot = account.downloadDirectSnapshot(snapshotUrl);
+            if (getBridge() instanceof org.openhab.core.thing.Bridge bridge
+                    && bridge.getHandler() instanceof RingAccount account) {
+                if (account != null) {
+                    snapshot = account.downloadDirectSnapshot(snapshotUrl);
+                }
             }
         }
 
-        // 2. Fallback to requesting a new snapshot from the camera API if the URL failed or was missing
         if (snapshot.length == 0) {
             logger.debug("Instant snapshot unavailable, falling back to camera API request");
             snapshot = getSnapshot();

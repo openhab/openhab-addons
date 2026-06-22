@@ -106,7 +106,7 @@ public class FcmClient {
         }
     }
 
-    private void send(int tag, byte[] protobufData) throws IOException {
+    private synchronized void send(int tag, byte[] protobufData) throws IOException {
         OutputStream localOut = out;
         if (localOut == null) {
             throw new IOException("Cannot send data: OutputStream is null");

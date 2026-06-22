@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -137,11 +138,10 @@ public class RestClient {
             ContentResponse response = request.send();
             validateResponse(response);
             result = response.getContentAsString();
-        } catch (ExecutionException | TimeoutException e) {
-            if (e.getCause() instanceof java.util.concurrent.RejectedExecutionException) {
-                logger.debug("HttpClient is stopped (OSGi lifecycle restart). Aborting POST request quietly.");
-                throw new AuthenticationException("HttpClient is stopped.");
-            }
+        } catch (ExecutionException | RejectedExecutionException e) {
+            logger.debug("HttpClient is stopped (OSGi lifecycle restart). Aborting POST request quietly.");
+            throw new AuthenticationException("HttpClient is stopped.");
+        } catch (TimeoutException e) {
             logger.warn("RestApi error in postRequest!", e);
             throw new AuthenticationException("Communication error during POST request: " + e.getMessage());
         } catch (InterruptedException e) {
@@ -168,13 +168,12 @@ public class RestClient {
             ContentResponse response = request.send();
             validateResponse(response);
             result = response.getContentAsString();
-        } catch (ExecutionException | TimeoutException e) {
-            if (e.getCause() instanceof java.util.concurrent.RejectedExecutionException) {
-                logger.debug("HttpClient is stopped (OSGi lifecycle restart). Aborting GET request quietly.");
-                throw new AuthenticationException("HttpClient is stopped.");
-            }
-            logger.warn("RestApi error in getRequest!", e);
-            throw new AuthenticationException("Communication error during GET request: " + e.getMessage());
+        } catch (ExecutionException | RejectedExecutionException e) {
+            logger.debug("HttpClient is stopped (OSGi lifecycle restart). Aborting POST request quietly.");
+            throw new AuthenticationException("HttpClient is stopped.");
+        } catch (TimeoutException e) {
+            logger.warn("RestApi error in postRequest!", e);
+            throw new AuthenticationException("Communication error during POST request: " + e.getMessage());
         } catch (InterruptedException e) {
             logger.warn("RestApi error in getRequest!", e);
             Thread.currentThread().interrupt();
@@ -459,7 +458,7 @@ public class RestClient {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new AuthenticationException("Communication error during sendCommand: " + e.getMessage());
-        } catch (ExecutionException | TimeoutException e) {
+        } catch (ExecutionException | TimeoutException | RejectedExecutionException e) {
             throw new AuthenticationException("Communication error during sendCommand: " + e.getMessage());
         }
     }
@@ -531,8 +530,12 @@ public class RestClient {
             } else {
                 throw new AuthenticationException("Failed to download UUID snapshot. HTTP " + response.getStatus());
             }
-        } catch (ExecutionException | InterruptedException | TimeoutException e) {
-            throw new AuthenticationException("Failed to download UUID snapshot due to network error.");
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new AuthenticationException("Failed to download UUID snapshot: request interrupted.");
+        } catch (ExecutionException | TimeoutException e) {
+            throw new AuthenticationException(
+                    "Failed to download UUID snapshot due to network error: " + e.getMessage());
         }
     }
 }

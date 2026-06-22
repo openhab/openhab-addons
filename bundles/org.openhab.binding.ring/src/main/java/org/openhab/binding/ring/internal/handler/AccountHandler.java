@@ -20,6 +20,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +53,7 @@ import org.openhab.binding.ring.internal.fcm.FcmRegistrar;
 import org.openhab.binding.ring.internal.utils.RingUtils;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.net.NetworkAddressService;
@@ -338,6 +342,11 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
 
     private void saveFcmCredentials(FcmRegistrar.FcmCredentials creds) {
         File file = getFcmCredentialsFile();
+        // Best-effort: restrict credentials file permissions to the current user only
+        file.setReadable(false, false);
+        file.setWritable(false, false);
+        file.setReadable(true, true);
+        file.setWritable(true, true);
         try (FileOutputStream fos = new FileOutputStream(file)) {
             Properties props = new Properties();
             props.setProperty("androidId", creds.androidId());
@@ -624,13 +633,14 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                 }
             }
 
-            logger.info("Ring Push Event Received: {} at {}", kind, deviceName);
+            logger.debug("Ring Push Event Received: {} at {}", kind, deviceName);
 
-            updateState(CHANNEL_EVENT_KIND, new org.openhab.core.library.types.StringType(kind));
-            updateState(CHANNEL_EVENT_DOORBOT_ID, new org.openhab.core.library.types.StringType(deviceId));
-            updateState(CHANNEL_EVENT_DOORBOT_DESCRIPTION, new org.openhab.core.library.types.StringType(deviceName));
-            updateState(CHANNEL_EVENT_EXTENDED_DESCRIPTION,
-                    new org.openhab.core.library.types.StringType(extendedDescription));
+            updateState(CHANNEL_EVENT_CREATED_AT, new DateTimeType(ZonedDateTime
+                    .parse(createdAtStr, DateTimeFormatter.ISO_DATE_TIME).withZoneSameInstant(ZoneId.systemDefault())));
+            updateState(CHANNEL_EVENT_KIND, new StringType(kind));
+            updateState(CHANNEL_EVENT_DOORBOT_ID, new StringType(deviceId));
+            updateState(CHANNEL_EVENT_DOORBOT_DESCRIPTION, new StringType(deviceName));
+            updateState(CHANNEL_EVENT_EXTENDED_DESCRIPTION, new StringType(extendedDescription));
 
             if (pushSnapshotUrl != null && !pushSnapshotUrl.isEmpty()) {
                 logger.debug("Received Rich Notification URL! Downloading instantly...");
