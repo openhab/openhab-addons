@@ -14,6 +14,7 @@ package org.openhab.binding.fineoffsetweatherstation.internal.handler;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_TYPE_HUMIDITY;
@@ -35,8 +36,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetSensorConfiguration;
+import org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants;
 import org.openhab.binding.fineoffsetweatherstation.internal.discovery.FineOffsetGatewayDiscoveryService;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.MeasureType;
+import org.openhab.binding.fineoffsetweatherstation.internal.domain.Sensor;
+import org.openhab.binding.fineoffsetweatherstation.internal.domain.SensorGatewayBinding;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.MeasuredValue;
 import org.openhab.binding.fineoffsetweatherstation.internal.service.GatewayQueryService;
 import org.openhab.core.config.core.Configuration;
@@ -46,6 +51,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
@@ -87,6 +93,7 @@ public class FineOffsetGatewayHandlerTest {
         when(bridgeMock.getConfiguration()).thenReturn(new Configuration());
         when(bridgeMock.getProperties()).thenReturn(Map.of());
         when(bridgeMock.getChannels()).thenReturn(List.of());
+        when(bridgeMock.getThings()).thenReturn(List.of());
 
         handler = new FineOffsetGatewayHandler(bridgeMock, discoveryServiceMock, channelTypeRegistryMock,
                 translationProviderMock, localeProviderMock);
@@ -122,6 +129,12 @@ public class FineOffsetGatewayHandlerTest {
     private MeasuredValue measuredValue(String channelPrefix, ChannelTypeUID channelTypeUID) {
         return new MeasuredValue(MeasureType.TEMPERATURE, channelPrefix, null, channelTypeUID, new DecimalType(1),
                 channelPrefix, null);
+    }
+
+    private MeasuredValue taggedValue(String channelPrefix, ChannelTypeUID channelTypeUID, Sensor sensor,
+            Integer channelNumber) {
+        return new MeasuredValue(MeasureType.TEMPERATURE, channelPrefix, channelNumber, channelTypeUID,
+                new DecimalType(1), channelPrefix, sensor);
     }
 
     @Test
@@ -203,5 +216,29 @@ public class FineOffsetGatewayHandlerTest {
 
         ChannelUID expectedUID = new ChannelUID(BRIDGE_UID, "temperature");
         verify(callbackMock).stateUpdated(expectedUID, new DecimalType(1));
+    }
+
+    @Test
+    void taggedValuesAreDispatchedToTheMatchingSensorHandler() throws Exception {
+        // a child WH51 channel-1 sensor Thing with a mocked handler
+        Thing sensorThing = org.mockito.Mockito.mock(Thing.class);
+        FineOffsetSensorHandler sensorHandler = org.mockito.Mockito.mock(FineOffsetSensorHandler.class);
+        Configuration sensorConfig = new Configuration(
+                Map.of(FineOffsetSensorConfiguration.SENSOR, SensorGatewayBinding.WH51_CH1.name()));
+        when(sensorThing.getThingTypeUID()).thenReturn(FineOffsetWeatherStationBindingConstants.THING_TYPE_SENSOR);
+        when(sensorThing.getConfiguration()).thenReturn(sensorConfig);
+        when(sensorThing.getHandler()).thenReturn(sensorHandler);
+        when(bridgeMock.getThings()).thenReturn(List.of(sensorThing));
+
+        MeasuredValue soilMoisture = taggedValue("moisture-soil-channel", CHANNEL_TYPE_HUMIDITY, Sensor.WH51, 1);
+        liveDataReturns(temperature, soilMoisture);
+        updateLiveData();
+
+        // the gateway still creates a channel for EVERY value (incl. the tagged one)
+        assertThat(currentChannelIds(), containsInAnyOrder("temperature", "moisture-soil-channel-1"));
+
+        // and the WH51-CH1 sensor handler received exactly its one tagged value
+        verify(sensorHandler).updateMeasuredValues(argThat(values -> values.size() == 1
+                && "moisture-soil-channel-1".equals(values.iterator().next().getChannelId())));
     }
 }

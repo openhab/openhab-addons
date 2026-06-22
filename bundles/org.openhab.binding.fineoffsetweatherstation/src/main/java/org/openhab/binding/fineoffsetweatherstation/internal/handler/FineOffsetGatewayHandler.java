@@ -32,6 +32,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetGatewayConfiguration;
 import org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetSensorConfiguration;
 import org.openhab.binding.fineoffsetweatherstation.internal.discovery.FineOffsetGatewayDiscoveryService;
+import org.openhab.binding.fineoffsetweatherstation.internal.domain.Sensor;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.SensorGatewayBinding;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.MeasuredValue;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.SensorDevice;
@@ -70,6 +71,7 @@ import org.slf4j.LoggerFactory;
 public class FineOffsetGatewayHandler extends BaseBridgeHandler {
 
     private static final String PROPERTY_FREQUENCY = "frequency";
+    private static final String DEPRECATION_NOTE = " (deprecated — this value is now also available on the sensor Thing)";
 
     private final Logger logger = LoggerFactory.getLogger(FineOffsetGatewayHandler.class);
     private final Bundle bundle;
@@ -159,6 +161,8 @@ public class FineOffsetGatewayHandler extends BaseBridgeHandler {
             return;
         }
 
+        // Capture the bridge reference before reconcile may replace thing via updateBridgeThing.
+        Bridge bridge = (Bridge) thing;
         DynamicChannelReconciler.Plan plan = reconciler.reconcile(data, thing.getChannels(),
                 MeasuredValue::getChannelId, this::createChannel);
         if (plan.hasChannelChanges()) {
@@ -168,6 +172,44 @@ public class FineOffsetGatewayHandler extends BaseBridgeHandler {
             updateBridgeThing(bridgeBuilder -> bridgeBuilder.withChannels(channels));
         }
         plan.statesToPost.forEach(this::updateState);
+        dispatchToSensors(bridge, data);
+    }
+
+    /**
+     * Routes each value carrying a {@link Sensor} tag to the child sensor Thing that owns its
+     * {@code (sensor, channel)}. Every child sensor handler is called once per poll - with an empty collection when it
+     * produced nothing - so its missing-measurand debounce advances. Gateway channels are unaffected: they already
+     * received all values above.
+     *
+     * @param bridge the bridge captured before any channel reconcile may replace the {@code thing} reference
+     */
+    private void dispatchToSensors(Bridge bridge, Collection<MeasuredValue> data) {
+        Map<SensorGatewayBinding, List<MeasuredValue>> bySensor = new HashMap<>();
+        for (MeasuredValue value : data) {
+            Sensor sensor = value.getSensor();
+            if (sensor == null) {
+                continue;
+            }
+            SensorGatewayBinding binding = SensorGatewayBinding.forSensorAndChannel(sensor, value.getChannelNumber());
+            if (binding == null) {
+                continue;
+            }
+            bySensor.computeIfAbsent(binding, b -> new ArrayList<>()).add(value);
+        }
+
+        for (Thing child : bridge.getThings()) {
+            if (!THING_TYPE_SENSOR.equals(child.getThingTypeUID())) {
+                continue;
+            }
+            SensorGatewayBinding binding = child.getConfiguration().as(FineOffsetSensorConfiguration.class).sensor;
+            if (binding == null) {
+                continue;
+            }
+            ThingHandler handler = child.getHandler();
+            if (handler instanceof FineOffsetSensorHandler sensorHandler) {
+                sensorHandler.updateMeasuredValues(bySensor.getOrDefault(binding, List.of()));
+            }
+        }
     }
 
     private @Nullable Channel createChannel(MeasuredValue measuredValue) {
@@ -186,6 +228,9 @@ public class FineOffsetGatewayHandler extends BaseBridgeHandler {
         }
         String description = translationProvider.getText(bundle, channelKey + ".description", null,
                 localeProvider.getLocale(), measuredValue.getChannelNumber());
+        if (measuredValue.getSensor() != null) {
+            description = (description == null ? "" : description) + DEPRECATION_NOTE;
+        }
         if (description != null) {
             builder.withDescription(description);
         }
