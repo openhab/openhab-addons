@@ -71,8 +71,8 @@ import org.slf4j.LoggerFactory;
 public class FineOffsetGatewayHandler extends BaseBridgeHandler {
 
     private static final String PROPERTY_FREQUENCY = "frequency";
-    private static final String DEPRECATION_NOTE_PREFIX = " (deprecated — this value is now also available on the sensor Thing as channel '";
-    private static final String DEPRECATION_NOTE_SUFFIX = "')";
+    private static final String DEFAULT_DEPRECATION_NOTE_WITH_TARGET = "(deprecated — this value is now also available on the sensor Thing as channel: {0})";
+    private static final String DEFAULT_DEPRECATION_NOTE = "(deprecated — this value is now also available on the sensor Thing)";
 
     private final Logger logger = LoggerFactory.getLogger(FineOffsetGatewayHandler.class);
     private final Bundle bundle;
@@ -230,8 +230,18 @@ public class FineOffsetGatewayHandler extends BaseBridgeHandler {
         String description = translationProvider.getText(bundle, channelKey + ".description", null,
                 localeProvider.getLocale(), measuredValue.getChannelNumber());
         if (measuredValue.getSensor() != null) {
-            description = (description == null ? "" : description) + DEPRECATION_NOTE_PREFIX
-                    + measuredValue.getChannelPrefix() + DEPRECATION_NOTE_SUFFIX;
+            String sensorChannelUid = sensorChannelUid(measuredValue);
+            String note;
+            if (sensorChannelUid != null) {
+                note = translationProvider.getText(bundle, "gateway.dynamic-channel.deprecation-note",
+                        DEFAULT_DEPRECATION_NOTE_WITH_TARGET, localeProvider.getLocale(), sensorChannelUid);
+            } else {
+                note = translationProvider.getText(bundle, "gateway.dynamic-channel.deprecation-note-no-target",
+                        DEFAULT_DEPRECATION_NOTE, localeProvider.getLocale());
+            }
+            if (note != null) {
+                description = (description == null ? "" : description) + " " + note;
+            }
         }
         if (description != null) {
             builder.withDescription(description);
@@ -242,6 +252,35 @@ public class FineOffsetGatewayHandler extends BaseBridgeHandler {
             builder.withAcceptedItemType(type.getItemType());
         }
         return builder.build();
+    }
+
+    private @Nullable String sensorChannelUid(MeasuredValue measuredValue) {
+        Sensor sensor = measuredValue.getSensor();
+        if (sensor == null) {
+            return null;
+        }
+        SensorGatewayBinding binding = SensorGatewayBinding.forSensorAndChannel(sensor,
+                measuredValue.getChannelNumber());
+        if (binding == null) {
+            return null;
+        }
+        for (Thing child : ((Bridge) thing).getThings()) {
+            if (!THING_TYPE_SENSOR.equals(child.getThingTypeUID())) {
+                continue;
+            }
+            SensorGatewayBinding childBinding = child.getConfiguration().as(FineOffsetSensorConfiguration.class).sensor;
+            if (childBinding == null) {
+                continue;
+            }
+            if (childBinding.equals(binding)) {
+                ThingUID childUid = child.getUID();
+                if (childUid == null) {
+                    continue;
+                }
+                return new ChannelUID(childUid, measuredValue.getChannelPrefix()).getAsString();
+            }
+        }
+        return null;
     }
 
     private void updateBridgeInfo() {
