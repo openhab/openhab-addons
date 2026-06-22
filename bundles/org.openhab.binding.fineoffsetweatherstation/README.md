@@ -337,6 +337,17 @@ Especially the channels `temperature-dew-point` or `temperature-wind-chill` are 
 | batteryVoltage | Number:ElectricPotential | R          | The sensors battery voltage |
 | lowBattery     | Switch                   | R          | The sensors battery status  |
 
+## Deprecated channels
+
+Discrete add-on sensors (WH31, WH51, WH41, WH55, WH57, WH34, WH35, WH45, WH25) now expose their measured values
+directly on their own sensor Thing, alongside the signal and battery channels. The corresponding dynamic channels on
+the gateway (bridge) Thing are still created and updated for backwards compatibility, but are **deprecated**: their
+description carries a "(deprecated — this value is now also available on the sensor Thing)" note. Prefer linking your
+items to the channels on the sensor Thing; the gateway-side duplicates may be removed in a future release.
+
+This does not affect the main outdoor array (WH24/WH65/WH69/WH68/WH80/WH90/WS85), the rain group, or the aggregate
+`common_list` values — those remain gateway-only.
+
 ## Full Example
 
 This is an example configuration for the WH2650 gateway
