@@ -56,11 +56,6 @@ import org.openhab.core.thing.ThingTypeUID;
 
 import com.google.gson.Gson;
 
-/**
- * Tests for flood {@code NotifyEvent} handling in {@link Shelly2ApiRpc#onNotifyEvent}.
- *
- * @author Markus Michels - Initial contribution
- */
 @NonNullByDefault
 public class Shelly2FloodNotifyEventTest {
 

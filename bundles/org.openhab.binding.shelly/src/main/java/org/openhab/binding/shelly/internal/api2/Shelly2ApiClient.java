@@ -64,6 +64,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSe
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellySensorLux;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2AuthChallenge;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2CBStatus;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2ConfigFlood;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2DevConfigCover;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2DevConfigInput;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2DevConfigPm1;
@@ -387,9 +388,13 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             profile.settings.sleepMode.period = dc.sys.sleep != null ? dc.sys.sleep.wakeupPeriod / 60 : 720;
         }
 
-        if (profile.isFlood && dc.flood0 != null) {
-            profile.floodAlarmMode = getString(dc.flood0.alarmMode);
-            profile.reportHoldoff = dc.flood0.reportHoldoff != null ? dc.flood0.reportHoldoff : 0;
+        if (profile.isFlood) {
+            Shelly2ConfigFlood flood0 = dc.flood0;
+            if (flood0 != null) {
+                profile.floodAlarmMode = getString(flood0.alarmMode);
+                Integer holdoff = flood0.reportHoldoff;
+                profile.reportHoldoff = holdoff != null ? holdoff : 0;
+            }
         }
 
         if (dc.led != null) {
