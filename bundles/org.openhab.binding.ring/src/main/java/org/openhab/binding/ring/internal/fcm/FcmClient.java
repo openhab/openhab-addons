@@ -16,7 +16,6 @@ package org.openhab.binding.ring.internal.fcm;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import javax.net.ssl.SSLParameters;
@@ -48,16 +47,21 @@ public class FcmClient {
     private static final int TAG_IQ_STANZA = 7;
     private static final int TAG_DATA_MESSAGE_STANZA = 8;
 
+    @FunctionalInterface
+    public interface PushEventCallback {
+        void onPushEvent(String payloadJson, String androidConfigJson, @Nullable String imgJson);
+    }
+
     private @Nullable SSLSocket socket;
     private @Nullable InputStream in;
     private @Nullable OutputStream out;
     private volatile boolean isRunning = false;
 
-    private final BiConsumer<String, String> eventCallback;
+    private final PushEventCallback eventCallback;
     private final Consumer<Boolean> stateCallback;
     private final FcmRegistrar.FcmCredentials credentials;
 
-    public FcmClient(BiConsumer<String, String> eventCallback, Consumer<Boolean> stateCallback,
+    public FcmClient(PushEventCallback eventCallback, Consumer<Boolean> stateCallback,
             FcmRegistrar.FcmCredentials credentials) {
         this.eventCallback = eventCallback;
         this.stateCallback = stateCallback;
@@ -223,20 +227,33 @@ public class FcmClient {
     }
 
     private void handlePushMessage(DataMessageStanza msg) {
+        logger.trace("--- INCOMING PUSH MESSAGE DEBUG ---");
+        if (msg.getAppDataList().isEmpty()) {
+            logger.trace("Payload contains no AppData keys.");
+        } else {
+            for (AppData data : msg.getAppDataList()) {
+                // Print the key and the raw value so we can see exactly what Ring sent
+                logger.trace("Key: [{}] | Value: {}", data.getKey(), data.getValue());
+            }
+        }
+        logger.trace("--- END PUSH MESSAGE DEBUG ---");
         String jsonEvent = null;
         String androidConfig = "";
+        String imgJson = null;
 
         for (AppData data : msg.getAppDataList()) {
             if ("data".equals(data.getKey())) {
                 jsonEvent = data.getValue();
             } else if ("android_config".equals(data.getKey())) {
                 androidConfig = data.getValue();
+            } else if ("img".equals(data.getKey())) {
+                imgJson = data.getValue();
             }
         }
 
         if (jsonEvent != null) {
             logger.debug("Successfully received Ring Event payload.");
-            eventCallback.accept(jsonEvent, androidConfig);
+            eventCallback.onPushEvent(jsonEvent, androidConfig, imgJson);
         } else {
             logger.debug("Push message received but contained no 'data' key.");
         }

@@ -498,8 +498,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
             logger.debug("Binding FCM Token with Ring backend...");
             restClient.subscribeToPushNotifications(creds.fcmToken(), config.hardwareId, tokens);
 
-            fcmClient = new FcmClient((String payload, String configStr) -> handlePushEvent(payload, configStr),
-                    (Boolean status) -> onFcmStateChanged(status), creds);
+            fcmClient = new FcmClient(this::handlePushEvent, this::onFcmStateChanged, creds);
             fcmClient.connect(creds.androidId(), creds.securityToken());
 
             if (registry != null && !registry.getRingDevices().isEmpty()) {
@@ -561,7 +560,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         }
     }
 
-    void handlePushEvent(String payloadJson, String androidConfigJson) {
+    void handlePushEvent(String payloadJson, String androidConfigJson, @Nullable String imgJson) {
         logger.debug("Parsing Instant Push Event Payload: {}", payloadJson);
 
         try {
@@ -598,9 +597,16 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                 createdAtStr = dingObj.get("created_at").getAsString();
             }
 
-            // Extract the direct AWS S3 URL from the Rich Notification payload
-            if (dingObj.has("snapshot_url") && !dingObj.get("snapshot_url").isJsonNull()) {
-                pushSnapshotUrl = dingObj.get("snapshot_url").getAsString();
+            // Extract the direct snapshot URL from the Rich Notification payload
+            if (imgJson != null && !imgJson.isEmpty()) {
+                try {
+                    JsonObject imgObj = JsonParser.parseString(imgJson).getAsJsonObject();
+                    if (imgObj.has("snapshot_url") && !imgObj.get("snapshot_url").isJsonNull()) {
+                        pushSnapshotUrl = imgObj.get("snapshot_url").getAsString();
+                    }
+                } catch (Exception e) {
+                    logger.debug("Failed to parse img payload: {}", e.getMessage());
+                }
             }
 
             // Extract the human-readable description from the Android Config payload

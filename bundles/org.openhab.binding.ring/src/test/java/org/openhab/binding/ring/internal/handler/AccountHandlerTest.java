@@ -98,7 +98,7 @@ public class AccountHandlerTest {
                 }
                 """;
 
-        accountHandler.handlePushEvent(fcmDataPayload, fcmAndroidConfig);
+        accountHandler.handlePushEvent(fcmDataPayload, fcmAndroidConfig, null);
 
         // Verify the callback received the correct channel and state updates (2 arguments only)
         verify(callback).stateUpdated(eq(new ChannelUID(bridge.getUID(), CHANNEL_EVENT_KIND)),
@@ -115,8 +115,8 @@ public class AccountHandlerTest {
     public void testHandlePushEvent_IgnoresDuplicates() {
         String fcmDataPayload = "{\"device\":{\"id\":123},\"event\":{\"ding\":{\"id\":\"999\"}}}";
 
-        accountHandler.handlePushEvent(fcmDataPayload, "");
-        accountHandler.handlePushEvent(fcmDataPayload, "");
+        accountHandler.handlePushEvent(fcmDataPayload, "", null);
+        accountHandler.handlePushEvent(fcmDataPayload, "", null);
 
         // Ensure the callback was only triggered once for the KIND channel
         verify(callback, org.mockito.Mockito.times(1))
