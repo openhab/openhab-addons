@@ -218,7 +218,7 @@ public class StickupcamHandler extends RingDeviceHandler {
         // 1. Try to grab the instant pre-processed image from the push URL
         if (snapshotUrl != null && !snapshotUrl.isEmpty()) {
             logger.debug("Attempting to download instant snapshot from FCM payload URL");
-            // FIX: Grab the RingAccount interface from the Bridge Handler!
+
             RingAccount account = (RingAccount) getBridge().getHandler();
             if (account != null) {
                 snapshot = account.downloadDirectSnapshot(snapshotUrl);

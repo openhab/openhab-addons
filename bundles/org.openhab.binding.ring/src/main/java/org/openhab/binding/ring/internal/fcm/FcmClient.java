@@ -91,7 +91,7 @@ public class FcmClient {
             send(TAG_LOGIN_REQUEST, loginRequest.toByteArray());
             isRunning = true;
 
-            // RESTORED: The critical heartbeat loop to keep the Google socket alive
+            // heartbeat loop to keep the Google socket alive
             Thread.ofVirtual().name("ring-fcm-heartbeat").start(this::heartbeatLoop);
 
             // Start Virtual Thread for listening
@@ -121,8 +121,7 @@ public class FcmClient {
             }
 
             SelectiveAck sa = SelectiveAck.newBuilder().addId(persistentId).build();
-            Extension ext = Extension.newBuilder().setId(12) // MCS_SELECTIVE_ACK_ID
-                    .setData(sa.toByteString()).build();
+            Extension ext = Extension.newBuilder().setId(12).setData(sa.toByteString()).build();
             IqStanza iq = IqStanza.newBuilder().setType(IqStanza.IqType.SET).setId("").setExtension(ext).build();
 
             send(TAG_IQ_STANZA, iq.toByteArray());
