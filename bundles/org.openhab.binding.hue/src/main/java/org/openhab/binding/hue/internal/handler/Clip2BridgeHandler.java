@@ -93,6 +93,9 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BRIDGE_API2);
 
+    // quick hack to disable the update command until we can confirm if it is safe to use
+    private static final boolean INSTALL_UPDATE_FEATURE_DISABLED = false;
+
     private static final int FAST_SCHEDULE_MILLI_SECONDS = 500;
     private static final int APPLICATION_KEY_MAX_TRIES = 600; // i.e. 300 seconds, 5 minutes
     private static final int RECONNECT_DELAY_SECONDS = 10;
@@ -1131,6 +1134,10 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      * @return a either an error message or a message of successful start of the update process.
      */
     public String installUpdate() {
+        if (INSTALL_UPDATE_FEATURE_DISABLED) {
+            logger.warn("installUpdate() feature is (temporarily) disabled");
+            return getText("install.update.error.not-ready");
+        }
         if (thing.getStatus() != ThingStatus.ONLINE) {
             logger.warn("installUpdate() cannot be executed: offline");
             return getText("install.update.error.offline");
