@@ -16,9 +16,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -38,6 +35,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.api.Response;
+import org.eclipse.jetty.client.util.InputStreamResponseListener;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
@@ -359,26 +358,26 @@ public class RestClient {
                             String jsonResult = getRequest(vidUrl.toString(), Map.of(), tokens);
                             JsonObject obj = JsonParser.parseString(jsonResult).getAsJsonObject();
 
-                            if (obj.get("url").getAsString().startsWith("http")) {
-                                URL url = new URI(obj.get("url").getAsString()).toURL();
+                            String videoUrl = obj.get("url").getAsString();
+                            if (videoUrl.startsWith("http")) {
+                                InputStreamResponseListener listener = new InputStreamResponseListener();
+                                httpClient.newRequest(videoUrl).timeout(30, TimeUnit.SECONDS).send(listener);
 
-                                // Explicit connection with timeouts to prevent thread starvation
-                                java.net.URLConnection connection = url.openConnection();
-                                connection.setConnectTimeout(10000); // 10 seconds
-                                connection.setReadTimeout(30000); // 30 seconds
+                                Response response = listener.get(10, TimeUnit.SECONDS);
+                                if (response.getStatus() == HttpStatus.OK_200) {
+                                    try (InputStream in = listener.getInputStream()) {
+                                        Files.copy(in, path, StandardCopyOption.REPLACE_EXISTING);
+                                    }
 
-                                try (InputStream in = connection.getInputStream()) {
-                                    Files.copy(in, path, StandardCopyOption.REPLACE_EXISTING);
-                                }
-
-                                if (Files.exists(path)) {
-                                    urlFound = true;
-                                    break; // Success: instantly exit the loop
+                                    if (Files.exists(path)) {
+                                        urlFound = true;
+                                        break; // Success: instantly exit the loop
+                                    }
                                 }
                             }
-                        } catch (AuthenticationException | URISyntaxException | IOException e) {
-                            // Catching IOException here ensures timeouts trigger a retry, not a total abort
-                            logger.debug("RingVideo: Error downloading file on attempt {}: {}", i + 1, e.getMessage());
+                        } catch (AuthenticationException | ExecutionException | TimeoutException | IOException e) {
+                            logger.debug("RingVideo: Error downloading file on attempt {}: {}", i + 1, e.getMessage(),
+                                    e);
                         }
 
                         // Sleep only if the download failed and we are going to retry

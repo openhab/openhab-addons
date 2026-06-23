@@ -134,7 +134,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
      * The number of video files to keep when auto-downloading
      */
     private int videoRetentionCount;
-    private String lastEventId = "";
+    private volatile String lastEventId = "";
 
     /*
      * The path of where to save video files
@@ -656,6 +656,23 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                     }, 3, java.util.concurrent.TimeUnit.SECONDS);
                 }
             }
+
+            scheduler.schedule(() -> {
+                try {
+                    logger.debug("Recording finished. Fetching completed video for event {}", eventId);
+                    // Fetch the last 5 events from the API to guarantee we find the completed RingEventTO
+                    List<RingEventTO> recentEvents = restClient.getHistory(tokens, 5);
+                    for (RingEventTO histEvent : recentEvents) {
+                        if (eventId.equals(String.valueOf(histEvent.id))) {
+                            logger.debug("Found matching completed event in history. Downloading MP4...");
+                            getVideo(histEvent);
+                            break;
+                        }
+                    }
+                } catch (Exception e) {
+                    logger.warn("Failed to download delayed video for event {}: {}", eventId, e.getMessage());
+                }
+            }, 65, TimeUnit.SECONDS);
         } catch (Exception e) {
             logger.debug("Failed to parse instant push event json: {}", e.getMessage(), e);
         }

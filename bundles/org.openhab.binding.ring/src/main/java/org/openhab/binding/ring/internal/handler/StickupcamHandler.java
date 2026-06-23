@@ -29,6 +29,7 @@ import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.RawType;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -218,11 +219,8 @@ public class StickupcamHandler extends RingDeviceHandler {
         if (snapshotUrl != null && !snapshotUrl.isEmpty()) {
             logger.debug("Attempting to download instant snapshot from FCM payload URL");
 
-            if (getBridge() instanceof org.openhab.core.thing.Bridge bridge
-                    && bridge.getHandler() instanceof RingAccount account) {
-                if (account != null) {
-                    snapshot = account.downloadDirectSnapshot(snapshotUrl);
-                }
+            if (getBridge() instanceof Bridge bridge && bridge.getHandler() instanceof RingAccount account) {
+                snapshot = account.downloadDirectSnapshot(snapshotUrl);
             }
         }
 
