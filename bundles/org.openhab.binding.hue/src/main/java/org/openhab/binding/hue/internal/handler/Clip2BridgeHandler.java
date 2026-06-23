@@ -94,7 +94,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BRIDGE_API2);
 
     // quick hack to disable the update command until we can confirm if it is safe to use
-    private static final boolean INSTALL_UPDATE_FEATURE_DISABLED = false;
+    private static final boolean INSTALL_UPDATE_FEATURE_DISABLED = true;
 
     private static final int FAST_SCHEDULE_MILLI_SECONDS = 500;
     private static final int APPLICATION_KEY_MAX_TRIES = 600; // i.e. 300 seconds, 5 minutes
