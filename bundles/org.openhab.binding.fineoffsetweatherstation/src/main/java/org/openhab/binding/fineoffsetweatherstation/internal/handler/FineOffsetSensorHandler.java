@@ -16,6 +16,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -52,9 +53,16 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class FineOffsetSensorHandler extends BaseThingHandler {
 
+    /** Static channels declared by the sensor thing-type; protected so the reconciler never removes them. */
+    private static final Set<String> STATIC_CHANNEL_IDS = Set.of(
+            FineOffsetWeatherStationBindingConstants.SENSOR_CHANNEL_SIGNAL,
+            FineOffsetWeatherStationBindingConstants.SENSOR_CHANNEL_LOW_BATTERY,
+            FineOffsetWeatherStationBindingConstants.SENSOR_CHANNEL_BATTERY_LEVEL,
+            FineOffsetWeatherStationBindingConstants.SENSOR_CHANNEL_BATTERY_VOLTAGE);
+
     private final Logger logger = LoggerFactory.getLogger(FineOffsetSensorHandler.class);
     private final ChannelTypeRegistry channelTypeRegistry;
-    private final DynamicChannelReconciler reconciler = new DynamicChannelReconciler(true);
+    private final DynamicChannelReconciler reconciler = new DynamicChannelReconciler(STATIC_CHANNEL_IDS);
 
     private boolean disposed;
 
@@ -70,6 +78,7 @@ public class FineOffsetSensorHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         updateStatus(ThingStatus.ONLINE);
+        reconciler.reset();
         disposed = false;
     }
 
@@ -146,14 +155,32 @@ public class FineOffsetSensorHandler extends BaseThingHandler {
         plan.statesToPost.forEach(this::updateState);
     }
 
+    /**
+     * Sets the mirrored measurement channels to {@link UnDefType#UNDEF} when the gateway poll fails, so they do not
+     * keep stale state. The static signal/battery channels are left untouched (they are polled separately), and the
+     * reconciler is deliberately not run, so a poll failure does not advance the missing-value removal debounce.
+     */
+    public void markMeasuredValuesUndefined() {
+        if (disposed) {
+            return;
+        }
+        for (Channel channel : thing.getChannels()) {
+            if (!STATIC_CHANNEL_IDS.contains(channel.getUID().getId())) {
+                updateState(channel.getUID(), UnDefType.UNDEF);
+            }
+        }
+    }
+
     private @Nullable Channel createChannel(MeasuredValue value) {
         ChannelTypeUID channelTypeId = value.getChannelTypeUID();
         if (channelTypeId == null) {
             logger.debug("cannot create channel for {}", value.getDebugName());
             return null;
         }
+        // No explicit label: let the (translatable) ChannelType label apply. On a per-sensor Thing the value needs no
+        // channel-number disambiguation, unlike the aggregated gateway channels.
         ChannelBuilder builder = ChannelBuilder.create(new ChannelUID(thing.getUID(), value.getChannelPrefix()))
-                .withKind(ChannelKind.STATE).withType(channelTypeId).withLabel(value.getDebugName());
+                .withKind(ChannelKind.STATE).withType(channelTypeId);
         @Nullable
         ChannelType type = channelTypeRegistry.getChannelType(channelTypeId);
         if (type != null) {

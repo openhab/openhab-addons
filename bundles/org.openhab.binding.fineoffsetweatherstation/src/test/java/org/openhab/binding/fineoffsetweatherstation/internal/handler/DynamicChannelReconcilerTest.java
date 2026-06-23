@@ -19,6 +19,7 @@ import static org.openhab.binding.fineoffsetweatherstation.internal.handler.Dyna
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -71,7 +72,7 @@ class DynamicChannelReconcilerTest {
 
     @Test
     void newValueYieldsCreatedChannelAndPostedState() {
-        DynamicChannelReconciler reconciler = new DynamicChannelReconciler(false);
+        DynamicChannelReconciler reconciler = new DynamicChannelReconciler(Set.of());
         MeasuredValue value = measuredValue("temperature");
 
         DynamicChannelReconciler.Plan plan = reconciler.reconcile(List.of(value), List.of(),
@@ -90,7 +91,7 @@ class DynamicChannelReconcilerTest {
 
     @Test
     void existingChannelYieldsNoAddButPostedState() {
-        DynamicChannelReconciler reconciler = new DynamicChannelReconciler(false);
+        DynamicChannelReconciler reconciler = new DynamicChannelReconciler(Set.of());
         MeasuredValue value = measuredValue("temperature");
         Channel existing = channel("temperature");
 
@@ -103,12 +104,12 @@ class DynamicChannelReconcilerTest {
     }
 
     // -----------------------------------------------------------------------
-    // Case 3: removeOnlyCreatedChannels=true never removes a non-created channel
+    // Case 3: a protected (static) channel is never removed
     // -----------------------------------------------------------------------
 
     @Test
-    void removeOnlyCreatedDoesNotRemoveNonCreatedChannel() {
-        DynamicChannelReconciler reconciler = new DynamicChannelReconciler(true);
+    void staticChannelIsNeverRemoved() {
+        DynamicChannelReconciler reconciler = new DynamicChannelReconciler(Set.of("signal"));
         Channel staticSignal = channel("signal");
         List<Channel> currentChannels = List.of(staticSignal);
 
@@ -121,13 +122,12 @@ class DynamicChannelReconcilerTest {
     }
 
     // -----------------------------------------------------------------------
-    // Case 4: removeOnlyCreatedChannels=true removes a reconciler-created channel
-    // after threshold, keeps it below threshold
+    // Case 4: a reconciler-created channel is removed after threshold, kept below it
     // -----------------------------------------------------------------------
 
     @Test
-    void removeOnlyCreatedRemovesCreatedChannelAfterThreshold() {
-        DynamicChannelReconciler reconciler = new DynamicChannelReconciler(true);
+    void removesCreatedChannelAfterThreshold() {
+        DynamicChannelReconciler reconciler = new DynamicChannelReconciler(Set.of("signal"));
         MeasuredValue value = measuredValue("moisture");
 
         // First pass creates the channel
@@ -154,13 +154,13 @@ class DynamicChannelReconcilerTest {
     }
 
     // -----------------------------------------------------------------------
-    // Case 5: removeOnlyCreatedChannels=false removes ANY channel after threshold
-    // (gateway semantics)
+    // Case 5: with an empty protected set every channel is removable
+    // after threshold (gateway semantics)
     // -----------------------------------------------------------------------
 
     @Test
     void removeAnyChannelAfterThresholdInGatewayMode() {
-        DynamicChannelReconciler reconciler = new DynamicChannelReconciler(false);
+        DynamicChannelReconciler reconciler = new DynamicChannelReconciler(Set.of());
         // A channel the reconciler did NOT create (pre-existing)
         Channel existing = channel("wind-speed");
         List<Channel> currentChannels = new ArrayList<>(List.of(existing));
@@ -186,7 +186,7 @@ class DynamicChannelReconcilerTest {
 
     @Test
     void reappearingValueResetsMissCounter() {
-        DynamicChannelReconciler reconciler = new DynamicChannelReconciler(false);
+        DynamicChannelReconciler reconciler = new DynamicChannelReconciler(Set.of());
         MeasuredValue temperature = measuredValue("temperature");
         MeasuredValue humidity = measuredValue("humidity");
 
@@ -222,12 +222,12 @@ class DynamicChannelReconcilerTest {
     }
 
     // -----------------------------------------------------------------------
-    // Case 7: reset() clears debounce and creation state
+    // Case 7: reset() clears the debounce counters so removal debounce restarts
     // -----------------------------------------------------------------------
 
     @Test
-    void resetClearsAccumulatedState() {
-        DynamicChannelReconciler reconciler = new DynamicChannelReconciler(true);
+    void resetRestartsRemovalDebounce() {
+        DynamicChannelReconciler reconciler = new DynamicChannelReconciler(Set.of());
         MeasuredValue value = measuredValue("pressure");
 
         // First pass: create the channel via the reconciler
@@ -236,28 +236,52 @@ class DynamicChannelReconcilerTest {
         assertThat(firstPlan.channelsToAdd).hasSize(1);
         List<Channel> currentChannels = new ArrayList<>(List.of(firstPlan.channelsToAdd.get(0)));
 
-        // Advance miss counter a few passes (below threshold) without reporting "pressure"
+        // Advance miss counter to one below threshold without reporting "pressure"
         for (int i = 0; i < MISSING_VALUE_REMOVAL_THRESHOLD - 1; i++) {
             DynamicChannelReconciler.Plan plan = reconciler.reconcile(List.of(), currentChannels,
                     MeasuredValue::getChannelId, v -> channel(v.getChannelId()));
             assertThat(plan.channelsToRemove).isEmpty();
         }
 
-        // Reset clears both missingCounts and createdChannelIds
+        // Reset clears the accumulated miss counts
         reconciler.reset();
 
-        // After reset, the channel is no longer tracked as reconciler-created, so with
-        // removeOnlyCreatedChannels=true the still-present channel is NOT a removal candidate
-        DynamicChannelReconciler.Plan afterResetMissing = reconciler.reconcile(List.of(), currentChannels,
+        // The debounce restarts: it again takes a full THRESHOLD of misses before "pressure" is removed
+        for (int i = 0; i < MISSING_VALUE_REMOVAL_THRESHOLD - 1; i++) {
+            DynamicChannelReconciler.Plan plan = reconciler.reconcile(List.of(), currentChannels,
+                    MeasuredValue::getChannelId, v -> channel(v.getChannelId()));
+            assertThat(plan.channelsToRemove).isEmpty();
+        }
+        DynamicChannelReconciler.Plan removalPlan = reconciler.reconcile(List.of(), currentChannels,
                 MeasuredValue::getChannelId, v -> channel(v.getChannelId()));
-        assertThat(afterResetMissing.channelsToRemove).isEmpty();
+        assertThat(removalPlan.channelsToRemove).hasSize(1);
+        assertThat(removalPlan.channelsToRemove.get(0).getUID().getId()).isEqualTo("pressure");
+    }
 
-        // And the value, when re-supplied, is treated as brand-new: channel is added again
-        DynamicChannelReconciler.Plan afterResetPresent = reconciler.reconcile(List.of(value), List.of(),
-                MeasuredValue::getChannelId, v -> channel(v.getChannelId()));
-        ChannelUID recreatedUID = afterResetPresent.channelsToAdd.get(0).getUID();
-        assertThat(afterResetPresent.channelsToAdd).hasSize(1);
-        assertThat(recreatedUID.getId()).isEqualTo("pressure");
-        assertThat(afterResetPresent.statesToPost).containsEntry(recreatedUID, new DecimalType(42));
+    // -----------------------------------------------------------------------
+    // Case 8: a dynamic channel persisted across a restart (never created by this
+    // instance) is still removable because it is not protected, while a protected
+    // (static) channel stays untouched
+    // -----------------------------------------------------------------------
+
+    @Test
+    void persistedDynamicChannelIsRemovableAfterRestart() {
+        DynamicChannelReconciler reconciler = new DynamicChannelReconciler(Set.of("signal"));
+        Channel staticSignal = channel("signal");
+        Channel persistedMoisture = channel("moisture");
+        List<Channel> currentChannels = new ArrayList<>(List.of(staticSignal, persistedMoisture));
+
+        // THRESHOLD - 1 passes with neither value reported → nothing removed yet
+        for (int i = 0; i < MISSING_VALUE_REMOVAL_THRESHOLD - 1; i++) {
+            DynamicChannelReconciler.Plan plan = reconciler.reconcile(List.of(), currentChannels,
+                    MeasuredValue::getChannelPrefix, v -> channel(v.getChannelPrefix()));
+            assertThat(plan.channelsToRemove).isEmpty();
+            currentChannels = applyPlan(currentChannels, plan);
+        }
+
+        // THRESHOLD → only the adopted dynamic channel is removed; the static one is never touched
+        DynamicChannelReconciler.Plan lastPlan = reconciler.reconcile(List.of(), currentChannels,
+                MeasuredValue::getChannelPrefix, v -> channel(v.getChannelPrefix()));
+        assertThat(lastPlan.channelsToRemove).extracting(c -> c.getUID().getId()).containsExactly("moisture");
     }
 }

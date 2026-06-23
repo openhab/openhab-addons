@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -88,7 +89,7 @@ public class FineOffsetGatewayHandler extends BaseBridgeHandler {
     private final ThingUID bridgeUID;
 
     private @Nullable Map<SensorGatewayBinding, SensorDevice> sensorDeviceMap;
-    private final DynamicChannelReconciler reconciler = new DynamicChannelReconciler(false);
+    private final DynamicChannelReconciler reconciler = new DynamicChannelReconciler(Set.of());
     private @Nullable ScheduledFuture<?> pollingJob;
     private @Nullable ScheduledFuture<?> discoverJob;
     private boolean disposed;
@@ -160,6 +161,13 @@ public class FineOffsetGatewayHandler extends BaseBridgeHandler {
         Collection<MeasuredValue> data = query(GatewayQueryService::getMeasuredValues);
         if (data == null) {
             getThing().getChannels().forEach(c -> updateState(c.getUID(), UnDefType.UNDEF));
+            // Mirror the failure onto the sensor Things so their measurement channels do not keep stale state. Do not
+            // run the reconciler here: a poll failure must not advance the missing-value removal debounce.
+            for (Thing child : ((Bridge) thing).getThings()) {
+                if (child.getHandler() instanceof FineOffsetSensorHandler sensorHandler) {
+                    sensorHandler.markMeasuredValuesUndefined();
+                }
+            }
             return;
         }
 
@@ -241,7 +249,7 @@ public class FineOffsetGatewayHandler extends BaseBridgeHandler {
                         DEFAULT_DEPRECATION_NOTE, localeProvider.getLocale());
             }
             if (note != null) {
-                description = (description == null ? "" : description) + " " + note;
+                description = description == null ? note : description + " " + note;
             }
         }
         if (description != null) {

@@ -36,9 +36,14 @@ import org.openhab.core.types.State;
  * Thing or posts state itself; the calling handler applies the returned {@link Plan} with its own builder.
  *
  * <p>
- * Used by both {@code FineOffsetGatewayHandler} (gateway channels - every channel is removal-eligible) and
- * {@code FineOffsetSensorHandler} (sensor Thing - only reconciler-created channels are removal-eligible, so the
- * static signal/battery channels are never touched).
+ * Removal-eligibility is derived from a fixed set of protected channel IDs: every channel except those is removable.
+ * Basing it on a static set rather than on which channels this instance created keeps it correct across restarts,
+ * where dynamic channels persisted on the Thing were never seen being created.
+ *
+ * <p>
+ * Used by both {@code FineOffsetGatewayHandler} (gateway channels - an empty protected set, so every channel is
+ * removal-eligible) and {@code FineOffsetSensorHandler} (sensor Thing - the static signal/battery channels are
+ * protected and never removed, while every other - dynamic measurement - channel is removal-eligible).
  *
  * @author Andreas Berger - Initial contribution
  */
@@ -75,18 +80,21 @@ class DynamicChannelReconciler {
         }
     }
 
-    private final boolean removeOnlyCreatedChannels;
+    private final Set<String> protectedChannelIds;
     private final Map<String, Integer> missingCounts = new HashMap<>();
-    private final Set<String> createdChannelIds = new HashSet<>();
 
-    DynamicChannelReconciler(boolean removeOnlyCreatedChannels) {
-        this.removeOnlyCreatedChannels = removeOnlyCreatedChannels;
+    /**
+     * @param protectedChannelIds channel IDs (by {@link ChannelUID#getId()}) that must never be removed - e.g. a
+     *            sensor Thing's static signal/battery channels. Pass an empty set to make every channel
+     *            removal-eligible (gateway semantics).
+     */
+    DynamicChannelReconciler(Set<String> protectedChannelIds) {
+        this.protectedChannelIds = protectedChannelIds;
     }
 
-    /** Clears all accumulated debounce/creation state, e.g. when the owning handler re-initializes. */
+    /** Clears the accumulated missing-value debounce state, e.g. when the owning handler re-initializes. */
     void reset() {
         missingCounts.clear();
-        createdChannelIds.clear();
     }
 
     Plan reconcile(Collection<MeasuredValue> values, Collection<Channel> currentChannels,
@@ -118,7 +126,6 @@ class DynamicChannelReconciler {
                         continue;
                     }
                     toAdd.add(created);
-                    createdChannelIds.add(id);
                     uid = created.getUID();
                     addedThisPass.put(id, uid);
                 }
@@ -129,7 +136,7 @@ class DynamicChannelReconciler {
         List<Channel> toRemove = new ArrayList<>();
         for (Channel channel : currentChannels) {
             String id = channel.getUID().getId();
-            if (removeOnlyCreatedChannels && !createdChannelIds.contains(id)) {
+            if (protectedChannelIds.contains(id)) {
                 continue;
             }
             if (reported.contains(id)) {
@@ -139,7 +146,6 @@ class DynamicChannelReconciler {
                 if (count != null && count >= MISSING_VALUE_REMOVAL_THRESHOLD) {
                     toRemove.add(channel);
                     missingCounts.remove(id);
-                    createdChannelIds.remove(id);
                 }
             }
         }
