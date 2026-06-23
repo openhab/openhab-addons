@@ -117,7 +117,7 @@ public class SshRunner {
                         }
                         continue;
                     } else {
-                        logger.error(
+                        logger.warn(
                                 "{} rc=null after {} attempts - giving up. stdout='{}' stderr='{}' - SSH session may be corrupted or concurrent channels are interfering",
                                 command, maxAttempts, stdout, stderr);
                     }

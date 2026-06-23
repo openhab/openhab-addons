@@ -116,4 +116,9 @@ public class DDWRTBindingConstants {
     public static final String USER = "user";
     public static final String PASSWORD = "password";
     public static final String REFRESH_INTERVAL = "refreshInterval";
+    public static final String INTERFACE_ID = "interfaceId";
+    public static final String PARENT_DEVICE_MAC = "parentDeviceMac";
+    public static final String MAC = "mac";
+    public static final String RULE_ID = "ruleId";
+    public static final String CHIPSET = "chipset";
 }

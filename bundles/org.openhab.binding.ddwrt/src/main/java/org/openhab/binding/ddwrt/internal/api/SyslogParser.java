@@ -14,6 +14,7 @@ package org.openhab.binding.ddwrt.internal.api;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.Year;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
@@ -40,6 +41,7 @@ import com.google.gson.JsonObject;
 public class SyslogParser {
 
     private final Logger logger;
+    private final ZoneId zoneId;
 
     private static final Gson GSON = new Gson();
 
@@ -68,8 +70,13 @@ public class SyslogParser {
 
     private final DateTimeFormatter isoDateFormatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
 
-    public SyslogParser(Logger logger) {
+    public SyslogParser(Logger logger, ZoneId zoneId) {
         this.logger = logger;
+        this.zoneId = zoneId;
+    }
+
+    public SyslogParser(Logger logger) {
+        this(logger, ZoneId.systemDefault());
     }
 
     /**
@@ -124,11 +131,10 @@ public class SyslogParser {
      * Parse a syslog line into a structured event.
      * 
      * @param line raw syslog line
-     * @param currentYear current year for timestamp parsing (syslog doesn't include year)
      * @param devicePattern device-specific pattern provided by DDWRTBaseDevice subclass
      * @return parsed event, or null if line couldn't be parsed
      */
-    public @Nullable SyslogEvent parseLine(String line, int currentYear, @Nullable Pattern devicePattern) {
+    public @Nullable SyslogEvent parseLine(String line, @Nullable Pattern devicePattern) {
         String sanitized = stripControlCodes(line);
         if (sanitized.isEmpty()) {
             return null;
@@ -150,14 +156,14 @@ public class SyslogParser {
                         return event;
                     }
                 }
-                return parseFromMatcher(deviceMatcher, sanitized, currentYear, false);
+                return parseFromMatcher(deviceMatcher, sanitized, false);
             }
         }
 
         // Try general syslog format (with optional facility.severity)
         Matcher stdMatcher = STANDARD_SYSLOG.matcher(sanitized);
         if (stdMatcher.matches()) {
-            return parseStandard(stdMatcher, currentYear);
+            return parseStandard(stdMatcher);
         }
 
         // Try kernel format as fallback
@@ -167,7 +173,7 @@ public class SyslogParser {
             String hostname = kernelMatcher.group(2);
             String message = kernelMatcher.group(3);
 
-            Instant timestamp = parseTimestamp(timestampStr, currentYear, false);
+            Instant timestamp = parseTimestamp(timestampStr, false);
             if (timestamp != null) {
                 FirewallInfo firewall = parseFirewallInfo(message);
                 boolean isWireless = WIRELESS_ASSOC.matcher(message).find();
@@ -189,14 +195,14 @@ public class SyslogParser {
         return ANSI_ESCAPE.matcher(withoutOsc).replaceAll("").trim();
     }
 
-    private @Nullable SyslogEvent parseFromMatcher(Matcher matcher, String line, int currentYear, boolean isIso) {
+    private @Nullable SyslogEvent parseFromMatcher(Matcher matcher, String line, boolean isIso) {
         String timestampStr = matcher.group(1);
         String hostname = matcher.group(2);
         String process = matcher.group(3);
         String pidStr = matcher.groupCount() > 3 ? matcher.group(4) : null;
         String message = matcher.group(matcher.groupCount());
 
-        Instant timestamp = parseTimestamp(timestampStr, currentYear, isIso);
+        Instant timestamp = parseTimestamp(timestampStr, isIso);
         if (timestamp == null) {
             return null;
         }
@@ -231,7 +237,7 @@ public class SyslogParser {
         String pidStr = m.group(6);
         String message = Objects.requireNonNull(m.group(7));
 
-        Instant timestamp = parseTimestamp(timestampStr, year, false);
+        Instant timestamp = parseTimestampWithYear(timestampStr, year);
         if (timestamp == null) {
             return null;
         }
@@ -252,7 +258,7 @@ public class SyslogParser {
         return new SyslogEvent(timestamp, "", process, pid, message, facility, severity, firewall, isWireless);
     }
 
-    private @Nullable SyslogEvent parseStandard(Matcher m, int currentYear) {
+    private @Nullable SyslogEvent parseStandard(Matcher m) {
         String timestampStr = m.group(1);
         String hostname = Objects.requireNonNull(m.group(2));
         String facility = m.group(3);
@@ -261,7 +267,7 @@ public class SyslogParser {
         String pidStr = m.group(6);
         String message = Objects.requireNonNull(m.group(7));
 
-        Instant timestamp = parseTimestamp(timestampStr, currentYear, false);
+        Instant timestamp = parseTimestamp(timestampStr, false);
         if (timestamp == null) {
             return null;
         }
@@ -282,20 +288,33 @@ public class SyslogParser {
         return new SyslogEvent(timestamp, hostname, process, pid, message, facility, severity, firewall, isWireless);
     }
 
-    private @Nullable Instant parseTimestamp(String timestampStr, int currentYear, boolean isIso) {
+    private @Nullable Instant parseTimestampWithYear(String timestampStr, int year) {
+        try {
+            String normalizedTimestamp = timestampStr.replaceFirst("^(\\w{3})  (\\d{1,2})", "$1 $2");
+            LocalDateTime dt = LocalDateTime.parse(year + " " + normalizedTimestamp,
+                    DateTimeFormatter.ofPattern("yyyy MMM d HH:mm:ss", Locale.ENGLISH));
+            return dt.atZone(zoneId).toInstant();
+        } catch (RuntimeException e) {
+            logger.trace("Failed to parse timestamp '{}': {}", timestampStr, e.getMessage());
+            return null;
+        }
+    }
+
+    private @Nullable Instant parseTimestamp(String timestampStr, boolean isIso) {
         try {
             if (isIso) {
                 LocalDateTime dt = LocalDateTime.parse(timestampStr, isoDateFormatter);
-                return dt.atZone(ZoneId.systemDefault()).toInstant();
+                return dt.atZone(zoneId).toInstant();
             } else {
                 // Standard format doesn't include year, so we add it
                 // Normalize single-digit days (e.g., "Mar 4" -> "Mar 4") by removing extra space
                 String normalizedTimestamp = timestampStr.replaceFirst("^(\\w{3})  (\\d{1,2})", "$1 $2");
+                int currentYear = Year.now(zoneId).getValue();
                 LocalDateTime dt = LocalDateTime.parse(currentYear + " " + normalizedTimestamp,
                         DateTimeFormatter.ofPattern("yyyy MMM d HH:mm:ss", Locale.ENGLISH));
-                return dt.atZone(ZoneId.systemDefault()).toInstant();
+                return dt.atZone(zoneId).toInstant();
             }
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             logger.trace("Failed to parse timestamp '{}': {}", timestampStr, e.getMessage());
             return null;
         }

@@ -123,8 +123,6 @@ public class DDWRTClient {
         return lastSeen;
     }
 
-    // ---- Setters ----
-
     public void setMac(String mac) {
         this.mac = Objects.requireNonNull(mac.toLowerCase(Locale.ROOT).trim());
     }

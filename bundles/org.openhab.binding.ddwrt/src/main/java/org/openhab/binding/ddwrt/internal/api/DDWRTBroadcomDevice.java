@@ -88,7 +88,7 @@ public class DDWRTBroadcomDevice extends DDWRTBaseDevice {
                 try {
                     return Integer.parseInt(noiseStr);
                 } catch (NumberFormatException e) {
-                    // fall through
+                    logger.debug("Failed to parse noise value '{}' for {}, falling back to 0", noiseStr, i);
                 }
             }
             return 0;
@@ -131,7 +131,7 @@ public class DDWRTBroadcomDevice extends DDWRTBaseDevice {
                     try {
                         radio.setChannel(Integer.parseInt(chStr));
                     } catch (NumberFormatException e) {
-                        // ignore
+                        logger.debug("Failed to parse channel '{}' for {}", chStr, iface);
                     }
                 }
 
@@ -221,7 +221,7 @@ public class DDWRTBroadcomDevice extends DDWRTBaseDevice {
                         wl1Temp = temp;
                     }
                 } catch (NumberFormatException e) {
-                    // Keep default 0.0
+                    logger.debug("Failed to parse temperature '{}' for {}", tempStr, iface);
                 }
             }
         }

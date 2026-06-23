@@ -14,7 +14,6 @@ package org.openhab.binding.ddwrt.internal.api;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.time.Year;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.function.Supplier;
@@ -222,8 +221,7 @@ public class SshLogFollower implements Runnable, AutoCloseable {
         }
 
         try {
-            SyslogEvent event = parser.parseLine(line, Year.now(java.time.ZoneId.systemDefault()).getValue(),
-                    devicePattern);
+            SyslogEvent event = parser.parseLine(line, devicePattern);
             if (event == null) {
                 return;
             }

@@ -351,7 +351,7 @@ public class DDWRTNetwork {
                         device.startRefresh(interval);
                         logger.debug("Successfully reconnected to device: {}", hostname);
                     }
-                } catch (Exception e) {
+                } catch (IOException | RuntimeException e) {
                     if (isAuthFailure(e)) {
                         int count = Objects.requireNonNull(hostAuthFailureCount.merge(hostname, 1, Integer::sum));
                         hostAuthFailureTimes.put(hostname, System.currentTimeMillis());

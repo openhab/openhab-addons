@@ -47,7 +47,7 @@ Discovery results appear in the openHAB inbox after each device refresh cycle.
 Bridge ddwrt:network:home "Home Network" [ hostnames="router,office-ap,garage-ap" ]
 ```
 
-1. **Wait for discovery** — devices, radios, wireless clients, and firewall rules appear in the inbox
+1. **Wait for discovery** — devices, radios, clients, and firewall rules appear in the inbox
 
 The `hostnames` parameter is a comma-separated list of hostnames or IP addresses.
 Each hostname is connected via SSH and auto-detected during the first refresh cycle.
@@ -210,9 +210,10 @@ Each firmware has its own way to enable SSH and install public keys:
 
 ### `client` Thing Configuration
 
-| Name | Type | Description                                                       | Default | Required | Advanced |
-|------|------|-------------------------------------------------------------------|---------|----------|----------|
-| mac  | text | MAC address of the client (optional due to MAC randomization)     | N/A     | no       | no       |
+| Name     | Type | Description                                                        | Default | Required | Advanced |
+|----------|------|--------------------------------------------------------------------|---------|----------|----------|
+| hostname | text | Hostname of the client (stable identifier with MAC randomization)  | N/A     | yes      | no       |
+| mac      | text | MAC address of the client (may change due to MAC randomization)    | N/A     | no       | yes      |
 
 The thing ID is derived from the client's sanitized hostname (e.g. `Joes-Phone` → `joesphone`).
 If the client uses MAC randomization, the binding tracks it by hostname rather than MAC address.
@@ -228,41 +229,50 @@ When a new randomized MAC appears with the same DHCP hostname, the binding merge
 
 ### Network Bridge Channels
 
-| Channel          | Type   | Read/Write | Description                                   |
-|------------------|--------|------------|-----------------------------------------------|
-| total-clients    | Number | RO         | Total clients connected across all devices    |
-| wireless-clients | Number | RO         | Wireless clients connected across all devices |
-| wired-clients    | Number | RO         | Wired clients connected across all devices    |
+| Channel          | Type              | Read/Write | Description                                                   |
+|------------------|-------------------|------------|---------------------------------------------------------------|
+| total-clients    | Number            | RO         | Total clients connected across all devices                    |
+| wireless-clients | Number            | RO         | Wireless clients connected across all devices                 |
+| wired-clients    | Number            | RO         | Wired clients connected across all devices                    |
+| wan-ip           | String            | RO         | External WAN IP address (gateway devices only)                |
+| wan-in           | Number:DataAmount | RO         | Total bytes received on WAN (gateway devices only)            |
+| wan-out          | Number:DataAmount | RO         | Total bytes sent on WAN (gateway devices only)                |
+| dhcp-leases      | Number            | RO         | Number of active DHCP leases (gateway devices only)           |
+| dhcp-remaining   | Number            | RO         | Available IP addresses in the DHCP pool (gateway devices only)|
+| last-dhcp-event  | String            | RO         | Last DHCP lease/renewal/release event                         |
 
 ### Device Channels
 
-| Channel             | Type               | Read/Write | Description                                               |
-|---------------------|--------------------|------------|-----------------------------------------------------------|
-| online              | Switch             | RO         | Whether the device is reachable via SSH                   |
-| uptime              | DateTime           | RO         | System boot time (updates only on reboot)                 |
-| cpu-load            | Number             | RO         | 1-minute load average                                     |
-| cpu-temp            | Number:Temperature | RO         | CPU temperature                                           |
-| wan-ip              | String             | RO         | External WAN IP address (gateway devices only)            |
-| wan-in              | Number:DataAmount  | RO         | Total bytes received on WAN (gateway devices only)        |
-| wan-out             | Number:DataAmount  | RO         | Total bytes sent on WAN (gateway devices only)            |
-| if-in               | Number:DataAmount  | RO         | Total bytes received on LAN bridge (br0)                  |
-| if-out              | Number:DataAmount  | RO         | Total bytes sent on LAN bridge (br0)                      |
-| reboot              | Switch             | RW         | Turn ON to reboot the device; automatically resets to OFF |
-| last-warning-event  | String             | RO         | Last warning-level syslog line                            |
-| last-error-event    | String             | RO         | Last error-level syslog line                              |
-| warning-events      | Number             | RO         | Warning event count since startup                         |
-| error-events        | Number             | RO         | Error event count since startup                           |
-| last-dhcp-event     | String             | RO         | Last DHCP lease/renewal/release event                     |
-| last-wireless-event | String             | RO         | Last wireless association/deassociation event             |
+| Channel                 | Type               | Read/Write | Description                                                      |
+|-------------------------|--------------------|------------|------------------------------------------------------------------|
+| online                  | Switch             | RO         | Whether the device is reachable via SSH                          |
+| uptime                  | DateTime           | RO         | System boot time (updates only on reboot)                        |
+| cpu-load                | Number             | RO         | 1-minute load average                                            |
+| cpu-temp                | Number:Temperature | RO         | CPU temperature                                                  |
+| if-in                   | Number:DataAmount  | RO         | Total bytes received on LAN bridge (br0)                         |
+| if-out                  | Number:DataAmount  | RO         | Total bytes sent on LAN bridge (br0)                             |
+| reboot                  | Switch             | RW         | Turn ON to reboot the device; automatically resets to OFF        |
+| device-wireless-clients | Number             | RO         | Wireless clients associated with radios on this device           |
+| syslog-connected        | Switch             | RO         | Whether the syslog follower has an active SSH channel            |
+| last-warning-event      | String             | RO         | Last warning-level syslog line                                   |
+| last-error-event        | String             | RO         | Last error-level syslog line                                     |
+| warning-events          | Number             | RO         | Warning event count since startup                                |
+| error-events            | Number             | RO         | Error event count since startup                                  |
+| last-wireless-event     | String             | RO         | Last wireless association/deassociation event                    |
+
+### Network Bridge Trigger Channels
+
+| Channel    | Kind    | Description                                         |
+|------------|---------|-----------------------------------------------------|
+| dhcp-event | Trigger | Fires when a DHCP lease/renewal/release is detected |
 
 ### Device Trigger Channels
 
-| Channel        | Kind    | Description                                         |
-|----------------|---------|-----------------------------------------------------|
-| warning-event  | Trigger | Fires when a warning-level syslog event arrives     |
-| error-event    | Trigger | Fires when an error-level syslog event arrives      |
-| dhcp-event     | Trigger | Fires when a DHCP lease/renewal/release is detected |
-| wireless-event | Trigger | Fires when a wireless assoc/deassoc is detected     |
+| Channel        | Kind    | Description                                      |
+|----------------|---------|--------------------------------------------------|
+| warning-event  | Trigger | Fires when a warning-level syslog event arrives  |
+| error-event    | Trigger | Fires when an error-level syslog event arrives   |
+| wireless-event | Trigger | Fires when a wireless assoc/deassoc is detected  |
 
 ### Radio Channels
 
@@ -277,20 +287,22 @@ When a new randomized MAC appears with the same DHCP hostname, the binding merge
 
 ### Client Channels
 
-| Channel         | Type     | Read/Write | Description                                          |
-|-----------------|----------|------------|------------------------------------------------------|
-| online          | Switch   | RO         | Whether the client is currently connected            |
-| mac-address     | String   | RO         | Current MAC address of the client                    |
-| hostname        | String   | RO         | Hostname from DHCP lease                             |
-| ip-address      | String   | RO         | IP address from DHCP lease                           |
-| connection-type | String   | RO         | How the client is connected: wireless, wired, or vpn |
-| ap              | String   | RO         | Name of the radio the client is associated with      |
-| ap-mac          | String   | RO         | MAC address of the access point                      |
-| ssid            | String   | RO         | SSID the client is connected to                      |
-| snr             | Number   | RO         | Signal-to-noise ratio in dB                          |
-| rx-rate         | Number   | RO         | Receive rate in Mbit/s                               |
-| tx-rate         | Number   | RO         | Transmit rate in Mbit/s                              |
-| last-seen       | DateTime | RO         | Timestamp when the client was last seen online       |
+| Channel         | Type                    | Read/Write | Description                                          |
+|-----------------|-------------------------|------------|------------------------------------------------------|
+| online          | Switch                  | RO         | Whether the client is currently connected            |
+| mac-address     | String                  | RO         | Current MAC address of the client                    |
+| hostname        | String                  | RO         | Hostname from DHCP lease                             |
+| ip-address      | String                  | RO         | IP address from DHCP lease                           |
+| connection-type | String                  | RO         | How the client is connected: wireless, wired, or vpn |
+| ap              | String                  | RO         | Name of the radio the client is associated with      |
+| ap-mac          | String                  | RO         | MAC address of the access point                      |
+| ssid            | String                  | RO         | SSID the client is connected to                      |
+| channel         | Number                  | RO         | Wireless channel number                              |
+| signal          | Number:Power            | RO         | Signal strength in dBm                               |
+| snr             | Number                  | RO         | Signal-to-noise ratio in dB                          |
+| rx-rate         | Number:DataTransferRate | RO         | Receive rate                                         |
+| tx-rate         | Number:DataTransferRate | RO         | Transmit rate                                        |
+| last-seen       | DateTime                | RO         | Timestamp when the client was last seen online       |
 
 ### Firewall Rule Channels
 
@@ -325,8 +337,8 @@ Bridge ddwrt:network:home "Home Network"  [ hostnames="router,office-ap,garage-a
     Thing radio officeap_wlan0 "Office 2.4GHz"  [ interfaceId="wlan0" ]
     Thing radio officeap_wlan1 "Office 5GHz"    [ interfaceId="wlan1" ]
 
-    Thing client joesphone     "Joe's Phone"      [ mac="c2:af:b0:aa:9c:ef" ]
-    Thing client livingroomtv  "Living Room TV"   [ mac="b0:8b:a8:7f:99:2c" ]
+    Thing client joesphone     "Joe's Phone"      [ hostname="Joes-Phone", mac="c2:af:b0:aa:9c:ef" ]
+    Thing client livingroomtv  "Living Room TV"   [ hostname="LivingRoomTV", mac="b0:8b:a8:7f:99:2c" ]
 
     Thing firewall-rule bedtime10 "Bedtime 10-12" [ ruleId="filter_rule3" ]
     Thing firewall-rule bedtime12 "Bedtime 12-6"  [ ruleId="filter_rule4" ]
@@ -336,16 +348,18 @@ Bridge ddwrt:network:home "Home Network"  [ hostnames="router,office-ap,garage-a
 ### Example Item Configuration
 
 ```java
+// Network bridge
+String             WanIp          "WAN IP [%s]"                   { channel="ddwrt:network:home:wan-ip" }
+String             LastDhcp       "Last DHCP [%s]"                { channel="ddwrt:network:home:last-dhcp-event" }
+
 // Device telemetry
 Switch             RouterOnline   "Router Online [%s]"            { channel="ddwrt:device:home:router:online" }
 DateTime           RouterUptime   "Router Uptime [%1$tF %1$tR]"   { channel="ddwrt:device:home:router:uptime" }
 Number             RouterCpuLoad  "Router CPU [%.2f]"             { channel="ddwrt:device:home:router:cpu-load" }
 Number:Temperature RouterCpuTemp  "Router Temp [%.1f %unit%]"     { channel="ddwrt:device:home:router:cpu-temp" }
-String             RouterWanIp    "WAN IP [%s]"                   { channel="ddwrt:device:home:router:wan-ip" }
 Switch             RouterReboot   "Reboot Router"                 { channel="ddwrt:device:home:router:reboot" }
 
 // Syslog events
-String             RouterLastDhcp "Last DHCP [%s]"                { channel="ddwrt:device:home:router:last-dhcp-event" }
 String             RouterLastWifi "Last Wireless [%s]"            { channel="ddwrt:device:home:router:last-wireless-event" }
 
 // Radio
@@ -370,12 +384,15 @@ Switch             Bedtime12      "Bedtime 12-6 [%s]"             { channel="ddw
 
 ```perl
 sitemap home label="Home Network" {
+    Frame label="Network" {
+        Text   item=WanIp
+        Text   item=LastDhcp
+    }
     Frame label="Router" {
         Switch item=RouterOnline
         Text   item=RouterUptime
         Text   item=RouterCpuLoad
         Text   item=RouterCpuTemp
-        Text   item=RouterWanIp
         Switch item=RouterReboot
     }
     Frame label="Radios" {

@@ -148,7 +148,7 @@ public class DDWRTDeviceThingHandler extends DDWRTBaseHandler<DDWRTBaseDevice, D
         if (device != null) {
             updateProperty(Thing.PROPERTY_MAC_ADDRESS, device.getMac());
             updateProperty(Thing.PROPERTY_MODEL_ID, device.getModel());
-            updateProperty("chipset", device.getChipset());
+            updateProperty(CHIPSET, device.getChipset());
             updateProperty(Thing.PROPERTY_FIRMWARE_VERSION, device.getFirmware());
         }
     }

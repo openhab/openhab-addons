@@ -334,16 +334,12 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
         } catch (IOException e) {
             log.warn("Failed to initialize device at {}: {}", cfg.hostname, e.getMessage());
             throw e;
-        } catch (Exception e) {
-            log.warn("Failed to initialize device at {}: {}", cfg.hostname, e.getMessage());
+        } catch (RuntimeException e) {
+            log.warn("Unexpected error initializing device at {}: {}", cfg.hostname, e.getMessage(), e);
             throw new IOException(e.getMessage(), e);
         } finally {
             if (ssh != null) {
-                try {
-                    ssh.close();
-                } catch (Exception ignore) {
-                    // no-op
-                }
+                ssh.close();
             }
         }
     }
@@ -409,8 +405,8 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
                             }
                         }
                     }
-                } catch (Exception e) {
-                    // continue to generic
+                } catch (RuntimeException e) {
+                    // OpenWrt target detection failed, fall back to generic
                 }
                 return new DetectionResult("openwrt", "generic", "");
             }
@@ -437,7 +433,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
                             return new DetectionResult("dd-wrt", "marvell", hwName);
                         }
                     }
-                } catch (Exception e) {
+                } catch (IOException | RuntimeException e) {
                     // continue
                 }
 
@@ -446,7 +442,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
                     if (result.isSuccess() && !result.getStdout().trim().isEmpty()) {
                         return new DetectionResult("dd-wrt", "atheros", "");
                     }
-                } catch (Exception e) {
+                } catch (IOException | RuntimeException e) {
                     // continue
                 }
 
@@ -455,7 +451,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
                     if (result.isSuccess() && !result.getStdout().trim().isEmpty()) {
                         return new DetectionResult("dd-wrt", "broadcom", "");
                     }
-                } catch (Exception e) {
+                } catch (IOException | RuntimeException e) {
                     // continue
                 }
 
@@ -464,7 +460,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
                     if (result.isSuccess() && !result.getStdout().trim().isEmpty()) {
                         return new DetectionResult("dd-wrt", "marvell", "");
                     }
-                } catch (Exception e) {
+                } catch (IOException | RuntimeException e) {
                     // continue
                 }
             }
@@ -485,7 +481,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
                     return new DetectionResult("dd-wrt", "marvell", hwName);
                 }
             }
-        } catch (Exception e) {
+        } catch (IOException | RuntimeException e) {
             // continue
         }
 
@@ -495,7 +491,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
             if (result.isSuccess() && !result.getStdout().trim().isEmpty()) {
                 return new DetectionResult("openwrt", "generic", "");
             }
-        } catch (Exception e) {
+        } catch (IOException | RuntimeException e) {
             // continue
         }
 
@@ -505,7 +501,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
             if (result.isSuccess() && !result.getStdout().trim().isEmpty()) {
                 return new DetectionResult("dd-wrt", "atheros", "");
             }
-        } catch (Exception e) {
+        } catch (IOException | RuntimeException e) {
             // continue
         }
 
@@ -515,7 +511,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
             if (result.isSuccess() && !result.getStdout().trim().isEmpty()) {
                 return new DetectionResult("dd-wrt", "broadcom", "");
             }
-        } catch (Exception e) {
+        } catch (IOException | RuntimeException e) {
             // continue
         }
 
@@ -525,7 +521,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
             if (result.isSuccess() && !result.getStdout().trim().isEmpty()) {
                 return new DetectionResult("generic", "generic", "");
             }
-        } catch (Exception e) {
+        } catch (IOException | RuntimeException e) {
             // continue
         }
 
@@ -535,7 +531,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
             if (result.isSuccess() && result.getStdout().toLowerCase(Locale.ROOT).contains("tomato")) {
                 return new DetectionResult("tomato", "generic", "");
             }
-        } catch (Exception e) {
+        } catch (IOException | RuntimeException e) {
             // continue
         }
 
@@ -696,7 +692,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
             logFollower = follower;
 
             logger.info("Started syslog follower for {}: {}", hostname, command);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             logger.warn("Failed to start syslog follower: {}", e.getMessage());
         }
     }
@@ -743,7 +739,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     break;
-                } catch (Exception e) {
+                } catch (RuntimeException e) {
                     // Catch-all: prevent unchecked exceptions (e.g. from dead SSH session)
                     // from killing the refresh thread. Log and continue so the device can
                     // recover on the next refresh cycle via ensureSession().
@@ -1069,7 +1065,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
             try {
                 follower.close();
                 logger.debug("Stopped syslog follower for {}", hostname);
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 logger.debug("Error stopping syslog follower: {}", e.getMessage());
             }
             logFollower = null;
@@ -2064,7 +2060,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
             }
 
             return rule;
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
             logger.debug("Failed to parse nvram rule {}='{}': {}", ruleKey, ruleValue, e.getMessage());
             return null;
         }
@@ -2188,7 +2184,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
             SshRunner runner = s.createRunner();
             setRadioEnabled(runner, iface, enabled);
             return true;
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             logger.debug("Failed to {} radio {}: {}", enabled ? "enable" : "disable", iface, e.getMessage());
             return false;
         }
@@ -2205,7 +2201,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
                 String sessionUser = s.getClientSession().getUsername();
                 String cmd = "root".equals(sessionUser) ? "reboot" : "sudo reboot";
                 s.createRunner().execStdout(cmd);
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 logger.warn("Reboot command failed: {}", e.getMessage());
             }
         }
@@ -2220,7 +2216,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
                 if (s.getClientSession().isOpen()) {
                     return s;
                 }
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 logger.debug("Session check failed: {}", e.getMessage());
             }
         }
@@ -2291,7 +2287,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
                 lastRecoveryNetAttemptMs = now;
                 return null;
             }
-        } catch (Exception e) {
+        } catch (IOException | RuntimeException e) {
             if (DDWRTNetwork.isAuthFailure(e)) {
                 recoveryAuthFailures++;
                 lastRecoveryAuthAttemptMs = now;
@@ -2314,11 +2310,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
         SshAuthSession s = authSession;
         authSession = null;
         if (s != null) {
-            try {
-                s.close();
-            } catch (Exception ignore) {
-                // no-op
-            }
+            s.close();
         }
     }
 

@@ -51,6 +51,7 @@ public class DDWRTDiscoveryService extends AbstractThingHandlerDiscoveryService<
 
     private static final int DISCOVERY_TIMEOUT_SECONDS = 120;
     private static final int BACKGROUND_DISCOVERY_INITIAL_DELAY_SECONDS = 10;
+    private static final int REFRESH_DEBOUNCE_SECONDS = 2;
 
     private final Logger logger = LoggerFactory.getLogger(DDWRTDiscoveryService.class);
 
@@ -77,7 +78,7 @@ public class DDWRTDiscoveryService extends AbstractThingHandlerDiscoveryService<
             discoverRadios(net);
             discoverClients(net);
             discoverFirewallRules(net);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             logger.warn("Error during DD-WRT discovery scan: {}", e.getMessage(), e);
         }
     }
@@ -126,7 +127,8 @@ public class DDWRTDiscoveryService extends AbstractThingHandlerDiscoveryService<
         if (pending != null) {
             pending.cancel(false);
         }
-        refreshTriggeredScan = scheduler.schedule((Runnable) this::startScan, 2, TimeUnit.SECONDS);
+        refreshTriggeredScan = scheduler.schedule((Runnable) this::startScan, REFRESH_DEBOUNCE_SECONDS,
+                TimeUnit.SECONDS);
     }
 
     private void discoverDevices(DDWRTNetwork net) {
@@ -147,8 +149,8 @@ public class DDWRTDiscoveryService extends AbstractThingHandlerDiscoveryService<
 
             logger.debug("Discovered device: '{}'", thingUID);
 
-            final Map<String, Object> props = Map.of(HOSTNAME, devCfg.hostname, PORT, devCfg.port, USER,
-                    devCfg.user, REFRESH_INTERVAL, devCfg.refreshInterval);
+            final Map<String, Object> props = Map.of(HOSTNAME, devCfg.hostname, PORT, devCfg.port, USER, devCfg.user,
+                    REFRESH_INTERVAL, devCfg.refreshInterval);
 
             final DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
                     .withLabel(label).withProperties(props).withRepresentationProperty("hostname").build();
@@ -176,11 +178,11 @@ public class DDWRTDiscoveryService extends AbstractThingHandlerDiscoveryService<
 
             logger.debug("Discovered radio: '{}'", thingUID);
 
-            final Map<String, Object> props = Map.of("interfaceId", radio.getInterfaceId(), "parentDeviceMac",
+            final Map<String, Object> props = Map.of(INTERFACE_ID, radio.getInterfaceId(), PARENT_DEVICE_MAC,
                     radio.getParentDeviceMac(), "ifaceName", radio.getIfaceName());
 
             final DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
-                    .withLabel(label).withProperties(props).withRepresentationProperty("interfaceId").build();
+                    .withLabel(label).withProperties(props).withRepresentationProperty(INTERFACE_ID).build();
 
             thingDiscovered(result);
         });
@@ -202,15 +204,14 @@ public class DDWRTDiscoveryService extends AbstractThingHandlerDiscoveryService<
             logger.debug("Discovered client: '{}'", thingUID);
 
             final Map<String, Object> props = new java.util.HashMap<>();
-            props.put("hostname", client.getHostname());
-            props.put("mac", client.getMac());
+            props.put(HOSTNAME, client.getHostname());
 
             final DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
                     .withLabel(client.getHostname()).withProperties(props)
                     // Keep hostname as the representation property. Some clients use
                     // MAC randomization, so the MAC is not stable enough to be the primary
                     // representation key in the inbox/UI.
-                    .withRepresentationProperty("hostname").build();
+                    .withRepresentationProperty(HOSTNAME).build();
 
             logger.debug(
                     "Submitting discovery result for client: {} ({}) - AP: {}, SSID: {}, Channel: {}, Signal: {}dBm, SNR: {}",
@@ -264,8 +265,8 @@ public class DDWRTDiscoveryService extends AbstractThingHandlerDiscoveryService<
                 continue;
             }
 
-            String existingHostname = normalizeHostname(String.valueOf(entry.getProperties().get("hostname")));
-            String existingMac = normalizeMac(String.valueOf(entry.getProperties().get("mac")));
+            String existingHostname = normalizeHostname(String.valueOf(entry.getProperties().get(HOSTNAME)));
+            String existingMac = normalizeMac(String.valueOf(entry.getProperties().get(MAC)));
 
             boolean sameHostname = !normalizedHostname.isEmpty() && normalizedHostname.equals(existingHostname);
             boolean sameMac = !normalizedMac.isEmpty() && normalizedMac.equals(existingMac);
@@ -307,10 +308,10 @@ public class DDWRTDiscoveryService extends AbstractThingHandlerDiscoveryService<
 
             logger.debug("Discovered firewall rule: '{}'", thingUID);
 
-            final Map<String, Object> props = Map.of("ruleId", rule.getRuleId());
+            final Map<String, Object> props = Map.of(RULE_ID, rule.getRuleId());
 
             final DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
-                    .withLabel(label).withProperties(props).withRepresentationProperty("ruleId").build();
+                    .withLabel(label).withProperties(props).withRepresentationProperty(RULE_ID).build();
 
             thingDiscovered(result);
         });

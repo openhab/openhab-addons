@@ -88,6 +88,12 @@ public class DDWRTNetworkBridgeHandler extends BaseBridgeHandler implements Dhcp
 
         logger.debug("Initializing DDWRT Network Bridge handler '{}' with config = {}.", getThing().getUID(), config);
 
+        if (config.hostnames.isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error-no-hostnames");
+            return;
+        }
+
         updateStatus(ThingStatus.UNKNOWN);
         network.setBridgeUID(getThing().getUID());
         network.addDhcpEventListener(this);
