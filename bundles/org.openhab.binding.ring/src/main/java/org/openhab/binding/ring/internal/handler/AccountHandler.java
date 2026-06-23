@@ -511,7 +511,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
 
             if (registry != null && !getAllDevices().isEmpty()) {
                 logger.debug("Subscribing all discovered devices to the active push notification session...");
-                for (org.openhab.binding.ring.internal.device.RingDevice device : getAllDevices()) {
+                for (RingDevice device : getAllDevices()) {
                     restClient.subscribeDeviceToPush(device.getId(), config.hardwareId, tokens);
                 }
             }
