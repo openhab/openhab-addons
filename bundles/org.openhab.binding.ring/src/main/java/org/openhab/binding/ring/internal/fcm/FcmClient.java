@@ -101,7 +101,7 @@ public class FcmClient {
             // Start Virtual Thread for listening
             Thread.ofVirtual().name("ring-fcm-listener-" + androidId).start(this::listenLoop);
         } catch (IOException | NumberFormatException e) {
-            logger.error("Failed to connect to FCM Socket", e);
+            logger.debug("Failed to connect to FCM Socket", e);
             disconnect();
         }
     }
@@ -131,7 +131,7 @@ public class FcmClient {
             send(TAG_IQ_STANZA, iq.toByteArray());
             logger.debug("Sent Selective ACK receipt to Google for message: {}", persistentId);
         } catch (IOException e) {
-            logger.warn("Failed to send Selective ACK", e);
+            logger.debug("Failed to send Selective ACK", e);
         }
     }
 
@@ -171,7 +171,7 @@ public class FcmClient {
                         try {
                             LoginResponse response = LoginResponse.parseFrom(data);
                             if (response.hasError()) {
-                                logger.error("FCM Login failed: {}", response.getError().getMessage());
+                                logger.debug("FCM Login failed: {}", response.getError().getMessage());
                                 disconnect();
                             } else {
                                 logger.debug("FCM Login Successful!");
@@ -179,7 +179,7 @@ public class FcmClient {
                                 stateCallback.accept(true);
                             }
                         } catch (IOException e) {
-                            logger.error(
+                            logger.debug(
                                     "FCM LoginResponse Parse Error! Declared Size: {}, Actual Bytes Read: {}, Raw Hex: {}",
                                     size, data.length, bytesToHex(data), e);
                             disconnect();

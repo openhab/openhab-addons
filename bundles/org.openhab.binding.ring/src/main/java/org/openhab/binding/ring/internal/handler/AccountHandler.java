@@ -355,7 +355,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
             props.store(fos, "Ring Binding FCM Credentials");
             logger.debug("Successfully saved persistent FCM credentials to disk.");
         } catch (IOException e) {
-            logger.error("Failed to save FCM credentials to disk!", e);
+            logger.debug("Failed to save FCM credentials to disk!", e);
         }
     }
 
@@ -509,9 +509,9 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
             fcmClient = new FcmClient(this::handlePushEvent, this::onFcmStateChanged, creds);
             fcmClient.connect(creds.androidId(), creds.securityToken());
 
-            if (registry != null && !registry.getRingDevices().isEmpty()) {
+            if (registry != null && !getAllDevices().isEmpty()) {
                 logger.debug("Subscribing all discovered devices to the active push notification session...");
-                for (org.openhab.binding.ring.internal.device.RingDevice device : registry.getRingDevices()) {
+                for (org.openhab.binding.ring.internal.device.RingDevice device : getAllDevices()) {
                     restClient.subscribeDeviceToPush(device.getId(), config.hardwareId, tokens);
                 }
             }
@@ -535,7 +535,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         }
 
         if (isConnected) {
-            logger.warn("Ring FCM Socket connected. Disabling HTTP event polling.");
+            logger.debug("Ring FCM Socket connected. Disabling HTTP event polling.");
             fcmRetryCount = 0;
 
             if (fcmRetryJob != null && !fcmRetryJob.isCancelled()) {
@@ -550,7 +550,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         } else {
             if (fcmRetryCount < MAX_FCM_RETRIES) {
                 fcmRetryCount++;
-                logger.warn("Ring FCM Socket disconnected. Attempt {} of {} to reconnect in {} seconds...",
+                logger.debug("Ring FCM Socket disconnected. Attempt {} of {} to reconnect in {} seconds...",
                         fcmRetryCount, MAX_FCM_RETRIES, FCM_RETRY_DELAY_SECONDS);
 
                 if (fcmRetryJob == null || fcmRetryJob.isDone()) {
@@ -558,7 +558,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                             TimeUnit.SECONDS);
                 }
             } else if (!isPolling) {
-                logger.warn("Ring FCM Socket disconnected. Max retries reached. Falling back to HTTP event polling.");
+                logger.debug("Ring FCM Socket disconnected. Max retries reached. Falling back to HTTP event polling.");
                 if (eventRefresh == null || eventRefresh.isCancelled()) {
                     eventRefresh = scheduler.scheduleWithFixedDelay(this::refreshEvent, config.refreshInterval,
                             config.refreshInterval, TimeUnit.SECONDS);
@@ -657,7 +657,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                 }
             }
         } catch (Exception e) {
-            logger.error("Failed to parse instant push event json: {}", e.getMessage(), e);
+            logger.debug("Failed to parse instant push event json: {}", e.getMessage(), e);
         }
     }
 
