@@ -1171,6 +1171,9 @@ public class Shelly1ApiJsonDTO {
         public ShellySensorState sensor;
         public Boolean smoke; // SHelly Smoke
         public Boolean flood; // Shelly Flood: true = flood condition detected
+        public @Nullable Boolean presence; // Shelly Presence: true = presence detected in zone
+        public @Nullable Integer objectCount; // Shelly Presence: number of objects currently in zone
+        public @Nullable Boolean sensorEnable; // Shelly Presence: radar sensor enabled
         public Boolean mute; // mute enabled/disabled
         @SerializedName("rain_sensor")
         public Boolean rainSensor; // Shelly Flood: true=in rain mode

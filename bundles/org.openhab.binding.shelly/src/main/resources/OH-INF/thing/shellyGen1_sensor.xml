@@ -649,4 +649,38 @@
 		<description>Send a defined key code</description>
 	</channel-type>
 
+	<channel-group-type id="presenceControl">
+		<label>Presence Control</label>
+		<description>Control the mmWave radar sensor</description>
+	</channel-group-type>
+
+	<channel-type id="sensorPresence">
+		<item-type>Switch</item-type>
+		<label>Presence Detected</label>
+		<description>Occupancy state of the default detection zone (ON = presence detected)</description>
+		<category>Motion</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Presence</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="sensorObjectCount">
+		<item-type>Number</item-type>
+		<label>Object Count</label>
+		<description>Number of objects/persons currently detected in the zone</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="presenceSensorEnable">
+		<item-type>Switch</item-type>
+		<label>Sensor Enable</label>
+		<description>Enable or disable the mmWave radar sensor</description>
+		<state readOnly="false"/>
+	</channel-type>
+
 </thing:thing-descriptions>

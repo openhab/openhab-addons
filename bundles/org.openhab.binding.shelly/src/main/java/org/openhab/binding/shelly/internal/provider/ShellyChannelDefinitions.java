@@ -292,6 +292,12 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_STEPS, "sensorSteps", ITEMT_NUMBER))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_DISTANCE, "sensorDistance", ITEMT_DISTANCE))
 
+                // Presence sensor (mmWave)
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_PRESENCE, "sensorPresence", ITEMT_SWITCH))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_OBJECT_COUNT, "sensorObjectCount", ITEMT_NUMBER))
+                .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CTRL_SENSOR_ENABLE, "presenceSensorEnable",
+                        ITEMT_SWITCH))
+
                 // Button/ix3
                 .add(new ShellyChannel(m, CHGR_STATUS, CHANNEL_INPUT, "inputState", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_STATUS, CHANNEL_STATUS_EVENTTYPE, "lastEvent", ITEMT_STRING))
@@ -608,6 +614,9 @@ public class ShellyChannelDefinitions {
                 CHANNEL_SENSOR_ILLUM);
         addChannel(thing, newChannels, sdata.flood != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_FLOOD);
         addChannel(thing, newChannels, sdata.smoke != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_SMOKE);
+        addChannel(thing, newChannels, sdata.presence != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_PRESENCE);
+        addChannel(thing, newChannels, sdata.objectCount != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_OBJECT_COUNT);
+        addChannel(thing, newChannels, profile.isPresence, CHANNEL_GROUP_CONTROL, CHANNEL_CTRL_SENSOR_ENABLE);
         addChannel(thing, newChannels, sdata.mute != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MUTE);
         addChannel(thing, newChannels, profile.settings.externalPower != null || sdata.charger != null, CHGR_DEVST,
                 CHANNEL_DEVST_CHARGER);

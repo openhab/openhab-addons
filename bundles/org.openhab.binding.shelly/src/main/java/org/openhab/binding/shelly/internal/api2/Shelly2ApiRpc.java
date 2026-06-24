@@ -582,6 +582,19 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                     logger.debug("{}: WiFi disconnected, reason {}", thingName, getInteger(e.reason));
                     getThing().postEvent(e.event, false);
                     break;
+                case "presence":
+                    if (profile.isPresence && e.component != null && e.component.startsWith("presencezone")
+                            && e.value != null) {
+                        updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_PRESENCE, getOnOff(e.value));
+                    }
+                    break;
+                case "counter":
+                    if (profile.isPresence && e.component != null && e.component.startsWith("presencezone")) {
+                        if (e.numObjects != null) {
+                            updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_OBJECT_COUNT, getDecimal(e.numObjects));
+                        }
+                    }
+                    break;
                 default:
                     logger.debug("{}: Event {} was not handled", thingName, e.event);
             }
@@ -883,6 +896,13 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     @Override
     public void muteSmokeAlarm(int index) throws ShellyApiException {
         apiRequest(new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_SMOKE_MUTE).withId(index));
+    }
+
+    @Override
+    public void setPresenceSensor(boolean enable) throws ShellyApiException {
+        Shelly2RpcRequestParams params = new Shelly2RpcRequestParams();
+        params.enable = enable;
+        apiRequest(SHELLYRPC_METHOD_PRESENCE_SETSENSOR, params, String.class);
     }
 
     @Override

@@ -109,6 +109,7 @@ See section [Discovery](#discovery) for details.
 | shellyplusuni        | Shelly Plus UNI                                          | SNSN-0043X                                                                |
 | shellyplusht         | Shelly Plus HT with temperature + humidity sensor        | SNSN-0013A, S3SN-0U12A                                                    |
 | shellyplussmoke      | Shelly Plus Smoke sensor                                 | SNSN-0031Z                                                                |
+| shellypluspresence   | Shelly Presence Gen4 mmWave radar sensor                 | S4SN-0U61X                                                                |
 | shellypluswdus       | Shelly Plus Wall Dimmer US                               | SNDM-0013US                                                               |
 | shellyplusdimmer     | Shelly Plus Dimmer Gen 3                                 | S3DM-0A101WWL                                                             |
 | shellyprodm2pm       | Shelly Pro Dimmer 2PM                                    | SPDM-002PE01EU                                                            |
@@ -1470,6 +1471,21 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 |         | lastError    | String   | yes       | Last device error.                                      |
 | battery | batteryLevel | Number   | yes       | Battery Level in %                                      |
 |         | lowBattery   | Switch   | yes       | Low battery alert (< 20%)                               |
+
+### Shelly Presence Gen4 (thing-type: shellypluspresence)
+
+Mains-powered (USB-C) mmWave radar occupancy sensor. Real-time updates arrive via
+NotifyEvent (no polling for presence/objectCount). The `lux` and `illumination`
+channels are updated on the regular poll cycle.
+
+| Group   | Channel      | Type     | read-only | Description                                                               |
+| ------- | ------------ | -------- | --------- | ------------------------------------------------------------------------- |
+| sensors | presence     | Switch   | yes       | ON: Occupancy detected in the default detection zone                      |
+|         | objectCount  | Number   | yes       | Number of persons/objects currently detected in the zone                  |
+|         | lux          | Number   | yes       | Brightness in Lux                                                         |
+|         | illumination | String   | yes       | Ambient light class (dark / twilight / bright)                            |
+|         | lastUpdate   | DateTime | yes       | Timestamp of the last update                                              |
+| control | sensorEnable | Switch   | r/w       | Enable or disable the mmWave radar sensor                                 |
 
 ### Shelly Plus Wall Dimmer US (thing-type: shellypluswdus)
 
