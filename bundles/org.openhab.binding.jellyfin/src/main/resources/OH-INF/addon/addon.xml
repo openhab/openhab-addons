@@ -60,6 +60,10 @@
 					<name>requestPlain</name>
 					<value>who is JellyfinServer?</value>
 				</discovery-parameter>
+				<discovery-parameter>
+					<name>timeoutMs</name>
+					<value>2000</value>
+				</discovery-parameter>
 			</discovery-parameters>
 			<match-properties>
 				<match-property>
