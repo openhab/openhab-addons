@@ -48,8 +48,8 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.Part;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Part;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -381,7 +381,7 @@ public class LogRequestHandler {
             }
 
             // gson ignores the record's null annotations, so verify the mandatory fields on the raw json
-            for (JsonElement element : array) {
+            for (JsonElement element : array.asList()) {
                 if (!element.isJsonObject()) {
                     return false;
                 }
@@ -429,7 +429,7 @@ public class LogRequestHandler {
             JsonArray newArray = new JsonArray();
             List<ProxyLogEntry> entries = new ArrayList<>();
 
-            for (JsonElement element : array) {
+            for (JsonElement element : array.asList()) {
                 if (element.isJsonObject()) {
                     try {
                         var proxyLogEntry = gson.fromJson(element, ProxyLogEntry.class);

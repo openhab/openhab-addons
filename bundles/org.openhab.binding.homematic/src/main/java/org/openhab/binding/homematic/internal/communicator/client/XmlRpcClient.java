@@ -126,10 +126,10 @@ public class XmlRpcClient extends RpcClient<String> {
             CompletableFuture<Result> futureResult = new CompletableFuture<>();
             BufferingResponseListener bufListener = new BufferingResponseListener(config.getBufferSize() * 1024) {
                 @Override
-                public void onComplete(Result result) {
-                    if (result.isSucceeded()) {
+                public void onComplete(@Nullable Result result) {
+                    if (result != null && result.isSucceeded()) {
                         futureResult.complete(result);
-                    } else {
+                    } else if (result != null) {
                         futureResult.completeExceptionally(result.getFailure());
                     }
                 }
