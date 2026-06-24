@@ -86,7 +86,7 @@ public class ShellyThingCreatorTest {
                 Arguments.of("shellyplusplugcpm-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUSPLUGCPM), //
                 Arguments.of("shellydimmer-" + DEVICE_ID, "", THING_TYPE_SHELLYDIMMER), //
                 Arguments.of("shellydimmer2-" + DEVICE_ID, "", THING_TYPE_SHELLYDIMMER2), //
-                Arguments.of("shellyprodm2pm-" + DEVICE_ID, "", THING_TYPE_SHELLYPRODM2PM), //
+                Arguments.of("shellyprodm2pm-" + DEVICE_ID, "", THING_TYPE_SHELLYPRODIMMER2PM), //
                 Arguments.of("shellyem-" + DEVICE_ID, "", THING_TYPE_SHELLYEM), //
                 Arguments.of("shellyem3-" + DEVICE_ID, "", THING_TYPE_SHELLY3EM), //
                 Arguments.of("shellyrgbw2-" + DEVICE_ID, "color", THING_TYPE_SHELLYRGBW2_COLOR), //
@@ -108,12 +108,29 @@ public class ShellyThingCreatorTest {
                 Arguments.of("shellyem3-" + DEVICE_ID, "", THING_TYPE_SHELLY3EM),
 
                 // Shelly Plus
+                Arguments.of("shellyemg3-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUSEM),
                 Arguments.of("shelly3em63g3-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUS3EM63),
+                Arguments.of("shellyplusdimmer-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUSDIMMER),
+                Arguments.of("shellydimmerg3-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUSDIMMER),
+                Arguments.of("shellydimmerg4-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUSDIMMER),
+                Arguments.of("shellyplus10v-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUSDIMMER10V),
+                Arguments.of("shellyplus010v-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUSDIMMER10V), // alt service name
+                Arguments.of("shelly0110dimg3-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUSDIMMER10V),
+                Arguments.of("shelly0110dimg4-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUSDIMMER10V),
+                Arguments.of("shellyddimmerg3-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUSDALIDIMMER),
+                Arguments.of("shellyddimmerg4-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUSDALIDIMMER),
+                Arguments.of("shellypluswdus-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUSDIMMERUS),
 
                 // Shelly Pro
                 Arguments.of("shellypro3em-" + DEVICE_ID, "", THING_TYPE_SHELLYPRO3EM),
                 Arguments.of("shellypro3em3ct63-" + DEVICE_ID, "", THING_TYPE_SHELLYPRO3EM63),
                 Arguments.of("shellypro3em400-" + DEVICE_ID, "", THING_TYPE_SHELLYPRO3EM400), //
+                Arguments.of("shellyprodimmer1pm-" + DEVICE_ID, "", THING_TYPE_SHELLYPRODIMMER1PM), //
+                Arguments.of("shellyprodm1pm-" + DEVICE_ID, "", THING_TYPE_SHELLYPRODIMMER1PM), //
+                Arguments.of("shellyprodimmer2pm-" + DEVICE_ID, "", THING_TYPE_SHELLYPRODIMMER2PM), //
+                Arguments.of("shellyprodm2pm-" + DEVICE_ID, "", THING_TYPE_SHELLYPRODIMMER2PM), //
+                Arguments.of("shellyprodimmer10v-" + DEVICE_ID, "", THING_TYPE_SHELLYPRODIMMER10V), //
+                Arguments.of("shellypro0110pm-" + DEVICE_ID, "", THING_TYPE_SHELLYPRODIMMER10V), //
 
                 // Shelly BLU
                 Arguments.of("shellyblubutton-" + DEVICE_ID, "", THING_TYPE_SHELLYBLUBUTTON1), //
@@ -210,11 +227,16 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_PLUSHTG3, "", THING_TYPE_SHELLYPLUSHT), //
                 Arguments.of(SHELLYDT_PLUSSMOKE, "", THING_TYPE_SHELLYPLUSSMOKE), //
                 Arguments.of(SHELLYDT_PLUSUNI, "", THING_TYPE_SHELLYPLUSUNI), //
+                Arguments.of(SHELLYDT_PLUSDIMMEREU, "", THING_TYPE_SHELLYPLUSDIMMER), //
+                Arguments.of(SHELLYDT_PLUSDIMMERG3, "", THING_TYPE_SHELLYPLUSDIMMER), //
+                Arguments.of(SHELLYDT_PLUSDIMMERG4, "", THING_TYPE_SHELLYPLUSDIMMER), //
+                Arguments.of(SHELLYDT_PLUSDIMMERDALIG3, "", THING_TYPE_SHELLYPLUSDALIDIMMER), //
+                Arguments.of(SHELLYDT_PLUSDIMMERDALIG4, "", THING_TYPE_SHELLYPLUSDALIDIMMER), //
                 Arguments.of(SHELLYDT_PLUSDIMMERUS, "", THING_TYPE_SHELLYPLUSDIMMERUS), //
                 Arguments.of(SHELLYDT_PLUSDIMMER10V, "", THING_TYPE_SHELLYPLUSDIMMER10V), //
+                Arguments.of(SHELLYDT_PLUSDIMMER10V_2, "", THING_TYPE_SHELLYPLUSDIMMER10V), //
                 Arguments.of(SHELLYDT_PLUSDIMMER0110VG3, "", THING_TYPE_SHELLYPLUSDIMMER10V), //
-                Arguments.of(SHELLYDT_PLUSDIMMERG3, "", THING_TYPE_SHELLYPLUSDIMMER), //
-                Arguments.of(SHELLYDT_PRODM2PM, "", THING_TYPE_SHELLYPRODM2PM), //
+                Arguments.of(SHELLYDT_PLUSDIMMER0110VG4, "", THING_TYPE_SHELLYPLUSDIMMER10V), //
                 Arguments.of(SHELLYDT_PLUSEM, "", THING_TYPE_SHELLYPLUSEM), //
                 Arguments.of(SHELLYDT_PLUS3EM63, "", THING_TYPE_SHELLYPLUS3EM63), //
                 Arguments.of(SHELLYDT_PLUSRGBWPM, "", THING_TYPE_SHELLYPLUSRGBWPM),
@@ -258,6 +280,9 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_PRO3EM, "", THING_TYPE_SHELLYPRO3EM), //
                 Arguments.of(SHELLYDT_PRO3EM3CT63, "", THING_TYPE_SHELLYPRO3EM63), //
                 Arguments.of(SHELLYDT_PRO3EM400, "", THING_TYPE_SHELLYPRO3EM400), //
+                Arguments.of(SHELLYDT_PRODIMMER1PM, "", THING_TYPE_SHELLYPRODIMMER1PM), //
+                Arguments.of(SHELLYDT_PRODIMMER2PM, "", THING_TYPE_SHELLYPRODIMMER2PM), //
+                Arguments.of(SHELLYDT_PRODIMMER10V, "", THING_TYPE_SHELLYPRODIMMER10V), //
 
                 // BLU Series
                 Arguments.of(SHELLYDT_BLUBUTTON1, "", THING_TYPE_SHELLYBLUBUTTON1), //
@@ -307,6 +332,8 @@ public class ShellyThingCreatorTest {
         excludedThingTypeUids.addAll(RELAY_THING_TYPE_BY_DEVICE_TYPE.values());
         excludedThingTypeUids.addAll(ROLLER_THING_TYPE_BY_DEVICE_TYPE.values());
         excludedThingTypeUids.addAll(GROUP_RGBW2_THING_TYPES);
+        // DALI dimmer firmware reports "shellyddimmerg3"/"shellyddimmerg4", not the thingTypeId
+        excludedThingTypeUids.add(THING_TYPE_SHELLYPLUSDALIDIMMER);
 
         for (ThingTypeUID supportedThingTypeUid : SUPPORTED_THING_TYPES.stream()
                 .filter(uid -> !excludedThingTypeUids.contains(uid)).toList()) {

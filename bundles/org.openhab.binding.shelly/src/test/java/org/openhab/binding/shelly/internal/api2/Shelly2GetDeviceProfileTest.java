@@ -17,6 +17,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.SHELLYRPC_METHOD_GETCONFIG;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -30,6 +31,7 @@ import org.mockito.Mockito;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDevice;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDimmer;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2GetConfigResult;
 import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
@@ -150,6 +152,18 @@ public class Shelly2GetDeviceProfileTest {
         return parseConfig(gson, "{\"sys\":{\"device\":{},\"location\":{}},\"wifi\":{}," + "\"cb:0\":{\"id\":0}}");
     }
 
+    /** GetConfig with light:0 (single-channel dimmer, e.g. Plus Dimmer) */
+    private static Shelly2GetConfigResult withLight0(Gson gson) {
+        return parseConfig(gson,
+                "{\"sys\":{\"device\":{},\"location\":{}},\"wifi\":{}," + "\"light:0\":{\"id\":0,\"name\":null}}");
+    }
+
+    /** GetConfig with light:0 + light:1 (dual-channel dimmer, e.g. Pro Dimmer 2PM) */
+    private static Shelly2GetConfigResult withLight01(Gson gson) {
+        return parseConfig(gson, "{\"sys\":{\"device\":{},\"location\":{}},\"wifi\":{},"
+                + "\"light:0\":{\"id\":0,\"name\":null}," + "\"light:1\":{\"id\":1,\"name\":null}}");
+    }
+
     private ShellySettingsDevice deviceInfo() {
         ShellySettingsDevice dev = new ShellySettingsDevice();
         dev.type = "SNSW-001P16EU";
@@ -242,11 +256,66 @@ public class Shelly2GetDeviceProfileTest {
         assertThat(profile.numMeters, is(2));
     }
 
+    @Test
+    void discovery_singleDimmer_isDimmerTrue() throws ShellyApiException {
+        Gson gson = new Gson();
+        StubApiClient client = new StubApiClient(discoveryConfig(), withLight0(gson));
+        ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYPLUSDIMMER, deviceInfo());
+        assertThat(profile.isDimmer, is(true));
+        assertThat(Objects.requireNonNull(profile.settings.dimmers).size(), is(1));
+        assertThat(Objects.requireNonNull(profile.status.dimmers).size(), is(1));
+    }
+
+    @Test
+    void discovery_dualDimmer_twoChannels() throws ShellyApiException {
+        Gson gson = new Gson();
+        StubApiClient client = new StubApiClient(discoveryConfig(), withLight01(gson));
+        ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYPRODIMMER2PM, deviceInfo());
+        assertThat(profile.isDimmer, is(true));
+        assertThat(Objects.requireNonNull(profile.settings.dimmers).size(), is(2));
+        assertThat(Objects.requireNonNull(profile.status.dimmers).size(), is(2));
+    }
+
+    @Test
+    void discovery_dimmer_hasRelaysTrue() throws ShellyApiException {
+        Gson gson = new Gson();
+        StubApiClient client = new StubApiClient(discoveryConfig(), withLight0(gson));
+        ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYPLUSDIMMER, deviceInfo());
+        assertThat(profile.isDimmer, is(true));
+        assertThat(profile.hasRelays, is(true));
+    }
+
+    @Test
+    void discovery_dimmerSettings_populatedFromLightConfig() throws ShellyApiException {
+        Gson gson = new Gson();
+        Shelly2GetConfigResult dc = parseConfig(gson, "{\"sys\":{\"device\":{},\"location\":{}},\"wifi\":{},"
+                + "\"light:0\":{\"id\":0,\"name\":\"Ceiling\",\"auto_on_delay\":30.0,\"auto_off_delay\":60.0}}");
+        StubApiClient client = new StubApiClient(discoveryConfig(), dc);
+        ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYPLUSDIMMER, deviceInfo());
+        List<ShellySettingsDimmer> dimmers = Objects.requireNonNull(profile.settings.dimmers);
+        assertThat(dimmers.size(), is(1));
+        assertThat(dimmers.get(0).name, is("Ceiling"));
+        assertThat(dimmers.get(0).autoOn, is(30.0));
+        assertThat(dimmers.get(0).autoOff, is(60.0));
+    }
+
+    @Test
+    void discovery_proDimmer1pm_emetersInitializedFromCapMap() throws ShellyApiException {
+        Gson gson = new Gson();
+        // No pm1:x in config — numMeters must come from the THING_TYPE_CAP_NUM_METERS entry
+        StubApiClient client = new StubApiClient(discoveryConfig(), withLight0(gson));
+        ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYPRODIMMER1PM, deviceInfo());
+        assertThat(profile.numMeters, is(1));
+        assertThat(Objects.requireNonNull(profile.status.emeters).size(), is(1));
+    }
+
     @ParameterizedTest(name = "{0} → numMeters={1}")
     @CsvSource({
             // Only types present in THING_TYPE_CAP_NUM_METERS — IDs from ShellyDevices ThingTypeUID definitions
-            "shellypro3em,    3", "shellyplus3em63, 3", "shellyproem50,   2", "shellyem3,       3",
-            "shellypro2,      0", "shellypro3,      0" })
+            "shellypro3em,       3", "shellyplus3em63,    3", "shellyproem50,      2", "shellyem3,          3",
+            "shellypro2,         0", "shellypro3,         0",
+            // Pro Dimmer PM: power readings embedded in light:x, no pm1:x component
+            "shellyprodimmer1pm, 1", "shellyprodimmer2pm, 2", "shellyprodimmer10v, 1" })
     void discovery_numMetersFromCapabilityMap(String thingTypeId, int expectedNumMeters) throws ShellyApiException {
         ThingTypeUID uid = new ThingTypeUID("shelly", thingTypeId);
         Gson gson = new Gson();
@@ -325,5 +394,20 @@ public class Shelly2GetDeviceProfileTest {
         StubApiClient client = new StubApiClient(discoveryConfig(), minimalConfig(gson));
         ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYPLUS1PM, deviceInfo());
         assertThat(profile.initialized, is(true));
+    }
+
+    @ParameterizedTest(name = "{0} → isDimmer+hasRelays=true")
+    @CsvSource({
+            // Plus dimmers (single-channel) — reuse shellyplus* thing type → isGen2=true
+            "shellyplusdimmer", "shellypluswdus", "shellyplus10v", "shellyplusdalidimmer",
+            // Pro dimmers
+            "shellyprodimmer1pm", "shellyprodimmer2pm", "shellyprodimmer10v" })
+    void discovery_allGen2PlusDimmerTypes_isDimmerAndHasRelays(String thingTypeId) throws ShellyApiException {
+        ThingTypeUID uid = new ThingTypeUID("shelly", thingTypeId);
+        Gson gson = new Gson();
+        StubApiClient client = new StubApiClient(discoveryConfig(), withLight0(gson));
+        ShellyDeviceProfile profile = client.getDeviceProfile(uid, deviceInfo());
+        assertThat("isDimmer for " + thingTypeId, profile.isDimmer, is(true));
+        assertThat("hasRelays for " + thingTypeId, profile.hasRelays, is(true));
     }
 }
