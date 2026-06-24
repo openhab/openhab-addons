@@ -170,13 +170,15 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
             // re-measure on a function change.
             TuyaDevice tuyaDevice = this.tuyaDevice;
             if (tuyaDevice != null) {
-                ScheduledFuture<?> pollingJob = this.pollingJob;
-                if (pollingJob != null) {
-                    pollingJob.cancel(true);
-                }
+                synchronized (this) {
+                    ScheduledFuture<?> pollingJob = this.pollingJob;
+                    if (pollingJob != null) {
+                        pollingJob.cancel(true);
+                    }
 
-                pollBurst = 3;
-                this.pollingJob = scheduler.scheduleWithFixedDelay(this::burstPoller, 0, 1, TimeUnit.SECONDS);
+                    pollBurst = 3;
+                    this.pollingJob = scheduler.scheduleWithFixedDelay(this::burstPoller, 0, 1, TimeUnit.SECONDS);
+                }
             }
         } else if (!missingStatus) {
             // If we have updates for everything we can stand down the burst polling.
@@ -193,17 +195,21 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
                 tuyaDevice.refreshStatus();
                 pollBurst = pollBurst - 1;
             } else {
-                ScheduledFuture<?> pollingJob = this.pollingJob;
-                if (pollingJob != null) {
-                    this.pollingJob = null;
-                    pollingJob.cancel(false);
-                }
+                synchronized (this) {
+                    if (!Thread.interrupted()) {
+                        ScheduledFuture<?> pollingJob = this.pollingJob;
+                        if (pollingJob != null) {
+                            this.pollingJob = null;
+                            pollingJob.cancel(false);
+                        }
 
-                int pollingInterval = configuration.pollingInterval;
-                if (pollingInterval > 0) {
-                    this.pollingJob = scheduler.scheduleWithFixedDelay(() -> {
-                        tuyaDevice.refreshStatus();
-                    }, pollingInterval, pollingInterval, TimeUnit.SECONDS);
+                        int pollingInterval = configuration.pollingInterval;
+                        if (pollingInterval > 0) {
+                            this.pollingJob = scheduler.scheduleWithFixedDelay(() -> {
+                                tuyaDevice.refreshStatus();
+                            }, pollingInterval, pollingInterval, TimeUnit.SECONDS);
+                        }
+                    }
                 }
             }
         }
@@ -325,27 +331,31 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
 
             TuyaDevice tuyaDevice = this.tuyaDevice;
             if (tuyaDevice != null) {
-                if (pollingJob == null) {
-                    // When we first connect the device state is unknown so we want to query for everything.
-                    // Some devices seem to initialize their stacks in the wrong order and
-                    // requests that come too soon can be either ignored completely or responded
-                    // to with a, "not supported". The lower level protocol handler suggests an
-                    // initial delay where it might be advisable.
-                    this.pollingJob = scheduler.schedule(() -> {
-                        tuyaDevice.requestStatus();
+                synchronized (this) {
+                    if (pollingJob == null) {
+                        // When we first connect the device state is unknown so we want to query for everything.
+                        // Some devices seem to initialize their stacks in the wrong order and
+                        // requests that come too soon can be either ignored completely or responded
+                        // to with a, "not supported". The lower level protocol handler suggests an
+                        // initial delay where it might be advisable.
+                        pollingJob = scheduler.schedule(() -> {
+                            tuyaDevice.requestStatus();
 
-                        // After that we poll for the measurable DPs.
-                        int pollingInterval = configuration.pollingInterval;
-                        if (pollingInterval > 0) {
-                            // The first refresh request is immediate because we do not know how old
-                            // the current status might be.
-                            pollingJob = scheduler.scheduleWithFixedDelay(() -> {
-                                tuyaDevice.refreshStatus();
-                            }, 0, pollingInterval, TimeUnit.SECONDS);
-                        }
-                    }, initialDelay, TimeUnit.MILLISECONDS);
-                } else {
-                    logger.debug("{}: polling job already exists?!?", thing.getUID().getId());
+                            // After that we poll for the measurable DPs.
+                            int pollingInterval = configuration.pollingInterval;
+                            if (pollingInterval > 0) {
+                                synchronized (this) {
+                                    // The first refresh request is immediate because we do not know how old
+                                    // the current status might be.
+                                    pollingJob = scheduler.scheduleWithFixedDelay(() -> {
+                                        tuyaDevice.refreshStatus();
+                                    }, 0, pollingInterval, TimeUnit.SECONDS);
+                                }
+                            }
+                        }, initialDelay, TimeUnit.MILLISECONDS);
+                    } else {
+                        logger.debug("{}: polling job already exists?!?", thing.getUID().getId());
+                    }
                 }
             }
 
@@ -358,10 +368,12 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
 
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "@text/online.wait-for-device");
 
-            ScheduledFuture<?> pollingJob = this.pollingJob;
-            if (pollingJob != null) {
-                pollingJob.cancel(true);
-                this.pollingJob = null;
+            synchronized (this) {
+                ScheduledFuture<?> pollingJob = this.pollingJob;
+                if (pollingJob != null) {
+                    this.pollingJob = null;
+                    pollingJob.cancel(true);
+                }
             }
 
             if (channelIdToChannelTypeUID.containsValue(CHANNEL_TYPE_UID_IR_CODE)) {
@@ -534,10 +546,12 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
     public void dispose() {
         logger.debug("{}: dispose", thing.getUID().getId());
 
-        ScheduledFuture<?> future = this.pollingJob;
-        if (future != null) {
-            this.pollingJob = null;
-            future.cancel(true);
+        synchronized (this) {
+            ScheduledFuture<?> pollingJob = this.pollingJob;
+            if (pollingJob != null) {
+                this.pollingJob = null;
+                pollingJob.cancel(true);
+            }
         }
 
         udpDiscoveryListener.unregisterListener(this);
