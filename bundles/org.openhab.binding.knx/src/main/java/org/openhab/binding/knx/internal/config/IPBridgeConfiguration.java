@@ -29,6 +29,7 @@ public class IPBridgeConfiguration extends BridgeConfiguration {
     private int portNumber = 0;
     private String localIp = "";
     private String localSourceAddr = "";
+    private String multicastAddress = "";
     private String routerBackboneKey = "";
     private String tunnelUserId = "";
     private String tunnelUserPassword = "";
@@ -57,6 +58,10 @@ public class IPBridgeConfiguration extends BridgeConfiguration {
 
     public String getLocalSourceAddr() {
         return localSourceAddr;
+    }
+
+    public String getMulticastAddress() {
+        return multicastAddress;
     }
 
     public String getRouterBackboneKey() {
