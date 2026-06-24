@@ -25,7 +25,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.jupnp.UpnpService;
@@ -100,11 +100,11 @@ public class LinkPlayHandlerFactory extends BaseThingHandlerFactory implements R
         // is frequently already dead when reused and the next request fails with an EOFException before it reaches the
         // device. HTTP requests are infrequent (user commands plus periodic polling), so disable connection reuse
         // entirely.
-        httpClient.getRequestListeners().add(new Request.Listener.Adapter() {
+        httpClient.getRequestListeners().addListener(new Request.Listener() {
             @Override
             public void onBegin(@Nullable Request request) {
                 if (request != null) {
-                    request.header(HttpHeader.CONNECTION, "close");
+                    request.headers(h -> h.add(HttpHeader.CONNECTION, "close"));
                 }
             }
         });
