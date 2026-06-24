@@ -57,10 +57,14 @@ public class LGThinQBridgeConfiguration {
     }
 
     public String getCountry() {
-        if ("--".equals(country)) {
-            return manualCountry.toUpperCase(Locale.ROOT);
+        String selectedCountry = "--".equals(country) ? manualCountry.toUpperCase(Locale.ROOT) : country;
+        // LG's API expects an ISO 3166-1 alpha-2 country code. "UK" is a common mistake for the United Kingdom,
+        // whose correct code is "GB". A mismatched country is accepted during gateway discovery and pre-login but
+        // rejected with an HTTP 412 (Precondition Failed) at the EMP session login endpoint, so normalize it here.
+        if ("UK".equalsIgnoreCase(selectedCountry)) {
+            return "GB";
         }
-        return country;
+        return selectedCountry;
     }
 
     public String getLanguage() {
