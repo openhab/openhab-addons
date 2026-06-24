@@ -25,10 +25,10 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.unifi.internal.api.UniFiException.AuthState;
@@ -125,7 +125,8 @@ public class UniFiAuthenticator {
 
             String url = baseUrl + (unifios ? UNIFIOS_AUTH_PATH : LEGACY_AUTH_PATH);
             Request request = httpClient.newRequest(url).method(HttpMethod.POST)
-                    .header("Content-Type", "application/json").content(new StringContentProvider(loginBody.toString()))
+                    .headers(h -> h.add("Content-Type", "application/json"))
+                    .body(new StringRequestContent(loginBody.toString()))
                     .timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
             ContentResponse response = request.send();
@@ -203,11 +204,11 @@ public class UniFiAuthenticator {
     public void addAuthHeaders(Request request) {
         String cookie = authCookie;
         if (cookie != null) {
-            request.header("Cookie", cookie);
+            request.headers(h -> h.add("Cookie", cookie));
         }
         String csrf = csrfToken;
         if (csrf != null) {
-            request.header("x-csrf-token", csrf);
+            request.headers(h -> h.add("x-csrf-token", csrf));
         }
     }
 
