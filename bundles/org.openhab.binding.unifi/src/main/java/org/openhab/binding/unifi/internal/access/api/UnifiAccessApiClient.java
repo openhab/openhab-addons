@@ -1038,11 +1038,10 @@ public final class UnifiAccessApiClient implements Closeable {
         try {
             URI uri = baseUri(path);
             Request req = httpClient.newRequest(uri).method(HttpMethod.POST)
-                    .header(HttpHeader.ACCEPT, "application/json").header("X-API-KEY", token)
+                    .headers(h -> { h.add(HttpHeader.ACCEPT, "application/json"); h.add("X-API-KEY", token); })
                     .timeout(HTTP_TIMEOUT_MS, TimeUnit.MILLISECONDS);
             if (body != null) {
-                req.header(HttpHeader.CONTENT_TYPE, "application/json");
-                req.content(new StringContentProvider(body, StandardCharsets.UTF_8));
+                req.body(new StringRequestContent("application/json", body, StandardCharsets.UTF_8));
             }
             logger.debug("Developer POST {}", uri);
             ContentResponse resp = req.send();
