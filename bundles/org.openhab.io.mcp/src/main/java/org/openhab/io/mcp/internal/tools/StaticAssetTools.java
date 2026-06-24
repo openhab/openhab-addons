@@ -558,7 +558,7 @@ public class StaticAssetTools {
     private boolean tokenHasAdminScope(String token) {
         try {
             ContentResponse resp = httpClient.newRequest(URI.create(baseUrl + ADMIN_PROBE_PATH)).method(HttpMethod.GET)
-                .headers(h -> h.put("Authorization", "Bearer " + token)).accept("application/json")
+                    .headers(h -> h.put("Authorization", "Bearer " + token)).accept("application/json")
                     .timeout(ADMIN_PROBE_TIMEOUT_SECONDS, TimeUnit.SECONDS).send();
             return resp.getStatus() == 200;
         } catch (Exception e) {
