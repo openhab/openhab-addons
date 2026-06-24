@@ -19,10 +19,6 @@ import static org.openhab.binding.homeconnectdirect.internal.servlet.ServletUtil
 import java.io.Serial;
 import java.util.function.Consumer;
 
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.ee10.websocket.server.JettyWebSocketServlet;
@@ -51,6 +47,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  *
@@ -182,8 +182,8 @@ public class HomeConnectDirectWebSocketServlet extends JettyWebSocketServlet {
         public void sendMessage(ApplianceMessage message) {
             var currentSession = this.session;
             if (currentSession != null && !filterOutMessage(message, filter)) {
-                currentSession.sendText(gson.toJson(message),
-                        Callback.from(() -> {}, failure -> logger.debug("Could not send web socket message! error={}", failure.getMessage())));
+                currentSession.sendText(gson.toJson(message), Callback.from(() -> {
+                }, failure -> logger.debug("Could not send web socket message! error={}", failure.getMessage())));
             }
         }
     }

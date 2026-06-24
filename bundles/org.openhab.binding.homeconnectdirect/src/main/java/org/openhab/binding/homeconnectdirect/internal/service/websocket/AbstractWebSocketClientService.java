@@ -175,19 +175,17 @@ public abstract class AbstractWebSocketClientService implements WebSocketClientS
 
     protected void sendPong(@Nullable Session session) {
         if (session != null && session.isOpen()) {
-            session.sendPong(ByteBuffer.allocate(0), Callback.from(
-                    () -> logger.trace(">> PONG ({})", thing.getUID()),
-                    failure -> logger.warn("Could not send PONG! error={} thingUID={}", failure.getMessage(),
-                            thing.getUID())));
+            session.sendPong(ByteBuffer.allocate(0),
+                    Callback.from(() -> logger.trace(">> PONG ({})", thing.getUID()), failure -> logger
+                            .warn("Could not send PONG! error={} thingUID={}", failure.getMessage(), thing.getUID())));
         }
     }
 
     protected void sendPing(@Nullable Session session) {
         if (session != null && session.isOpen()) {
-            session.sendPing(ByteBuffer.allocate(0), Callback.from(
-                    () -> logger.trace(">> PING ({})", thing.getUID()),
-                    failure -> logger.warn("Could not send PING! error={} thingUID={}", failure.getMessage(),
-                            thing.getUID())));
+            session.sendPing(ByteBuffer.allocate(0),
+                    Callback.from(() -> logger.trace(">> PING ({})", thing.getUID()), failure -> logger
+                            .warn("Could not send PING! error={} thingUID={}", failure.getMessage(), thing.getUID())));
         }
     }
 

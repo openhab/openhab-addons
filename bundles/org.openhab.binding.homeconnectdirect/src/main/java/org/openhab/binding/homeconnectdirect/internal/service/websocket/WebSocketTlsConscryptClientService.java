@@ -14,7 +14,6 @@ package org.openhab.binding.homeconnectdirect.internal.service.websocket;
 
 import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.CONSCRYPT_PROVIDER;
 
-import java.io.IOException;
 import java.net.URI;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -30,8 +29,8 @@ import javax.net.ssl.TrustManager;
 import org.conscrypt.Conscrypt;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.websocket.api.Callback;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.eclipse.jetty.websocket.api.Callback;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
@@ -91,8 +90,9 @@ public class WebSocketTlsConscryptClientService extends AbstractWebSocketClientS
         var session = getSession();
         if (session != null && session.isOpen()) {
             logger.debug(">> {} ({})", message, getThingUID());
-            session.sendText(message, Callback.from(() -> {}, failure -> logger.error(
-                    "Failed to send message! error={} thingUID={}", failure.getMessage(), getThingUID())));
+            session.sendText(message, Callback.from(() -> {
+            }, failure -> logger.error("Failed to send message! error={} thingUID={}", failure.getMessage(),
+                    getThingUID())));
         }
     }
 

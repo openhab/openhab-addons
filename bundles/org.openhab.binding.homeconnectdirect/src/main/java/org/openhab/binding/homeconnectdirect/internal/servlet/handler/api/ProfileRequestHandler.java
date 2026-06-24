@@ -22,8 +22,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
-import jakarta.servlet.ServletException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpStatus;
@@ -35,6 +33,8 @@ import org.openhab.binding.homeconnectdirect.internal.servlet.model.Error;
 import org.openhab.binding.homeconnectdirect.internal.servlet.model.Profile;
 import org.openhab.binding.homeconnectdirect.internal.servlet.routing.RequestHandlerContext;
 import org.openhab.binding.homeconnectdirect.internal.servlet.routing.RequestHandlerException;
+
+import jakarta.servlet.ServletException;
 
 /**
  * Request handler for profile API endpoints.

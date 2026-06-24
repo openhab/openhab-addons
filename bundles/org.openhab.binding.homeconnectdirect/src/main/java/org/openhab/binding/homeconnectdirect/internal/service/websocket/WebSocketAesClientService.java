@@ -123,8 +123,9 @@ public class WebSocketAesClientService extends AbstractWebSocketClientService {
                 logger.debug(">> {} ({})", message, getThingUID());
                 logger.trace(">> {} ({})", HexUtils.bytesToHex(encryptedMessage), getWebSocketHandler());
                 ByteBuffer buffer = ByteBuffer.wrap(encryptedMessage);
-                session.sendBinary(buffer, Callback.from(() -> {}, failure -> logger.error(
-                            "Failed to send message! error={} thingUID={}", failure.getMessage(), getThingUID())));
+                session.sendBinary(buffer, Callback.from(() -> {
+                }, failure -> logger.error("Failed to send message! error={} thingUID={}", failure.getMessage(),
+                        getThingUID())));
             }
         } catch (Exception e) {
             logger.error("Failed to send message! error={} thingUID={}", e.getMessage(), getThingUID());
