@@ -300,7 +300,7 @@ public class ApiTools {
                 String override = getStringArg(args, "contentType");
                 String contentType = override != null ? override
                         : resolveRequestContentType(exchange, path, resolvedPath, method, body);
-                req.body(new StringRequestContent("application/json", serialized, StandardCharsets.UTF_8), contentType);
+                req.body(new StringRequestContent(contentType, serialized, StandardCharsets.UTF_8));
             }
             ContentResponse resp = req.send();
             return textResult(jsonMapper, buildResponse(resp));

@@ -66,9 +66,7 @@ public class AmberElectricWebTargets {
 
             // Dynamically apply headers to avoid duplication
             Properties headers = getHttpHeaders(accessToken);
-            for (String key : headers.stringPropertyNames()) {
-                request.header(key, headers.getProperty(key));
-            }
+            request.headers(f -> headers.stringPropertyNames().forEach(key -> f.add(key, headers.getProperty(key))));
 
             var response = request.send();
             int status = response.getStatus();

@@ -134,7 +134,7 @@ public class TeslaPowerwallWebTargets {
         int status = 0;
         String jsonResponse = "";
         try {
-            Request request = httpClient.newRequest(uri).method(method)..headers(h -> h.add(headerKey, headerValue))
+            Request request = httpClient.newRequest(uri).method(method).headers(h -> h.add(headerKey, headerValue))
                     .timeout(TIMEOUT_MS, TimeUnit.MILLISECONDS)
                     .body(new StringRequestContent("application/json", params));
             if (logger.isTraceEnabled()) {
