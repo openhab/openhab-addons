@@ -4,6 +4,22 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
+	<thing-type id="shellyplusflood">
+		<label>Shelly Plus Flood</label>
+		<description>Shelly Flood Gen4 - Water Leak Detector (battery powered)</description>
+		<category>Sensor</category>
+		<semantic-equipment-tag>LeakSensor</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="sensors" typeId="sensorData"/>
+			<channel-group id="control" typeId="control"/>
+			<channel-group id="battery" typeId="batteryStatus"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:battery-gen2"/>
+	</thing-type>
+
 	<thing-type id="shellyplusht">
 		<label>ShellyPlus H&amp;T</label>
 		<description>Shelly Plus HT - Humidity and Temperature sensor with display</description>
@@ -26,6 +42,7 @@
 		<semantic-equipment-tag>SmokeDetector</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="sensors" typeId="sensorData"/>
+			<channel-group id="control" typeId="control"/>
 			<channel-group id="battery" typeId="batteryStatus"/>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
@@ -48,4 +65,27 @@
 		<representation-property>serviceName</representation-property>
 		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
 	</thing-type>
+
+	<channel-type id="floodAlarmMode">
+		<item-type>String</item-type>
+		<label>Alarm Mode</label>
+		<description>Flood sensor alarm mode.</description>
+		<state readOnly="false">
+			<options>
+				<option value="rain">Rain — rain detection only, no flood alarm</option>
+				<option value="intense">Flood, Intense — loud acoustic alarm, can be muted</option>
+				<option value="normal">Flood, Normal — acoustic alarm enabled, can be muted</option>
+				<option value="disabled">Flood, Silent — flood detection only, no acoustic alarm</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="floodReportHoldoff">
+		<item-type>Number:Time</item-type>
+		<label>Report Holdoff</label>
+		<description>Minimum time in seconds between consecutive flood alarm reports (0-60s)</description>
+		<category>Time</category>
+		<state min="0" max="60" step="5" pattern="%.0f %unit%"/>
+	</channel-type>
+
 </thing:thing-descriptions>
