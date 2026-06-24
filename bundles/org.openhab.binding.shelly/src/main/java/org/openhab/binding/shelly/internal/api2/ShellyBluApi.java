@@ -17,6 +17,7 @@ import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.ShellyBluJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
+import java.time.Instant;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -73,7 +74,9 @@ public class ShellyBluApi extends Shelly2ApiRpc {
     private boolean connected; // true = BLU devices has connected
     private ShellySettingsStatus deviceStatus = new ShellySettingsStatus();
     private int lastPid = -1;
-    private static final int PID_CYCLE_TRESHHOLD = 50;
+    private static final int PID_CYCLE_TRESHOLD = 50;
+    private long lastTimeStampPacket = 0;
+    private static final int PACKET_TIMESTAMP_TRESHOLD = 10;
 
     /**
      * Regular constructor - called by Thing handler
@@ -192,16 +195,22 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                     logger.debug("{}: BLU event {} received from address {}, pid={} (JSON={})", thingName, event,
                             getString(e.blu.addr), getInteger(e.blu.pid), eventJSON);
                     if (e.blu.pid != null) {
+                        long epochNow = Instant.now().getEpochSecond();
                         int pid = e.blu.pid;
-                        if (lastPid != -1 && pid < (lastPid - PID_CYCLE_TRESHHOLD)) {
+                        if (lastPid != -1 && pid < (lastPid - PID_CYCLE_TRESHOLD)) {
                             logger.debug(
                                     "{}: Received pid {} is so low that a new cycle has probably begun since lastPID={}",
                                     thingName, pid, lastPid);
+                        } else if (pid <= lastPid && epochNow - lastTimeStampPacket > PACKET_TIMESTAMP_TRESHOLD) {
+                            logger.debug(
+                                    "{}: Received pid {} is too low, but received more than {} sec. after lastPID={}. A new cycle has thus probably begun",
+                                    thingName, pid, PACKET_TIMESTAMP_TRESHOLD, lastPid);
                         } else if (pid <= lastPid) {
                             logger.debug("{}: Duplicate packet for pid {} received, ignore", thingName, pid);
                             break;
                         }
                         lastPid = pid;
+                        lastTimeStampPacket = epochNow;
                     }
                     getThing().getProfile().gateway = message.src;
                 }
