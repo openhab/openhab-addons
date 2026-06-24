@@ -470,14 +470,15 @@ public class TelegramActions implements ThingActions {
                         sendPhoto = new SendPhoto(chatId, fileContent);
                     } else {
                         String wwwAuth = jettyResult.getResponse().getHeaders().get(HttpHeader.WWW_AUTHENTICATE);
-                        if (jettyResult.getResponse().getStatus() == 401
-                                && wwwAuth != null && wwwAuth.contains("igest")) {
+                        if (jettyResult.getResponse().getStatus() == 401 && wwwAuth != null
+                                && wwwAuth.contains("igest")) {
                             logger.warn("Download from {} failed due to no BASIC http auth support.", photoURL);
                         } else {
                             logger.warn("Download from {} failed with status: {}", photoURL,
                                     jettyResult.getResponse().getStatus());
                         }
-                        sendTelegram(chatId, caption + ":Download failed with status " + jettyResult.getResponse().getStatus());
+                        sendTelegram(chatId,
+                                caption + ":Download failed with status " + jettyResult.getResponse().getStatus());
                         return false;
                     }
                 } catch (InterruptedException | ExecutionException e) {
@@ -713,7 +714,8 @@ public class TelegramActions implements ThingActions {
                     } else {
                         logger.warn("Download from {} failed with status: {}", animationURL,
                                 jettyResult.getResponse().getStatus());
-                        sendTelegram(chatId, caption + ":Download failed with status " + jettyResult.getResponse().getStatus());
+                        sendTelegram(chatId,
+                                caption + ":Download failed with status " + jettyResult.getResponse().getStatus());
                         return false;
                     }
                 } catch (InterruptedException | ExecutionException e) {
@@ -803,14 +805,15 @@ public class TelegramActions implements ThingActions {
                         sendVideo = new SendVideo(chatId, fileContent);
                     } else {
                         String wwwAuth = jettyResult.getResponse().getHeaders().get(HttpHeader.WWW_AUTHENTICATE);
-                        if (jettyResult.getResponse().getStatus() == 401
-                                && wwwAuth != null && wwwAuth.contains("igest")) {
+                        if (jettyResult.getResponse().getStatus() == 401 && wwwAuth != null
+                                && wwwAuth.contains("igest")) {
                             logger.warn("Download from {} failed due to no BASIC http auth support.", videoURL);
                         } else {
                             logger.warn("Download from {} failed with status: {}", videoURL,
                                     jettyResult.getResponse().getStatus());
                         }
-                        sendTelegram(chatId, caption + ":Download failed with status " + jettyResult.getResponse().getStatus());
+                        sendTelegram(chatId,
+                                caption + ":Download failed with status " + jettyResult.getResponse().getStatus());
                         return false;
                     }
                 } catch (InterruptedException | ExecutionException e) {

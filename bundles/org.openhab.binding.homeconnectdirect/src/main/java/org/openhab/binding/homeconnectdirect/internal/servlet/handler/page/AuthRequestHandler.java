@@ -20,8 +20,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.UUID;
 
-import jakarta.servlet.http.HttpSession;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.homeconnectdirect.internal.servlet.ServletSecurityContext;
@@ -29,6 +27,8 @@ import org.openhab.binding.homeconnectdirect.internal.servlet.ServletUtils;
 import org.openhab.binding.homeconnectdirect.internal.servlet.model.LoginForm;
 import org.openhab.binding.homeconnectdirect.internal.servlet.routing.RequestHandlerContext;
 import org.openhab.binding.homeconnectdirect.internal.servlet.routing.RequestHandlerException;
+
+import jakarta.servlet.http.HttpSession;
 
 /**
  * Request handler for authentication page.
