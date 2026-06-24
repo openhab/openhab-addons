@@ -18,13 +18,13 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import jakarta.servlet.http.HttpServletRequest;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homeconnectdirect.internal.common.utils.ConfigurationUtils;
 import org.openhab.core.util.StringUtils;
 import org.osgi.service.cm.ConfigurationAdmin;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  *

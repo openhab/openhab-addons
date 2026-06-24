@@ -34,8 +34,6 @@ import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.ThingUID;
-import org.ops4j.pax.web.service.http.HttpService;
-import org.ops4j.pax.web.service.http.NamespaceException;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -44,8 +42,6 @@ import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import jakarta.servlet.ServletException;
 
 /**
  * Implementation of the WebRtcMediaService interface.

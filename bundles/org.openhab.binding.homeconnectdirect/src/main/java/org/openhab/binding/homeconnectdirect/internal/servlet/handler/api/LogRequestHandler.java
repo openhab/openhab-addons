@@ -48,9 +48,6 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Part;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpStatus;
@@ -85,6 +82,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Part;
 
 /**
  * Request handler for log API endpoints.

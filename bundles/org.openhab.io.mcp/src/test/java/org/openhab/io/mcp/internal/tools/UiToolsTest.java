@@ -271,7 +271,7 @@ class UiToolsTest {
         verify(request).method(HttpMethod.GET);
         @SuppressWarnings("unchecked")
         org.mockito.ArgumentCaptor<Consumer<HttpFields.Mutable>> headersCaptor = org.mockito.ArgumentCaptor
-            .forClass(Consumer.class);
+                .forClass(Consumer.class);
         verify(request).headers(headersCaptor.capture());
         HttpFields.Mutable headers = HttpFields.build();
         headersCaptor.getValue().accept(headers);

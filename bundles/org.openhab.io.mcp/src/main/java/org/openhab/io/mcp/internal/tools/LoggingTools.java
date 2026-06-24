@@ -430,9 +430,8 @@ public class LoggingTools {
     private String fetchLoggerLevel(String loggerName, String token) throws Exception {
         ContentResponse resp = httpClient
                 .newRequest(URI.create(baseUrl + "/rest/logging/" + encodeLoggerName(loggerName)))
-            .method(HttpMethod.GET).headers(h -> h.put("Authorization", "Bearer " + token))
-            .accept("application/json")
-                .send();
+                .method(HttpMethod.GET).headers(h -> h.put("Authorization", "Bearer " + token))
+                .accept("application/json").send();
         if (resp.getStatus() == 401 || resp.getStatus() == 403) {
             throw new AdminRequiredException(resp.getStatus());
         }
@@ -464,14 +463,14 @@ public class LoggingTools {
         String url = baseUrl + "/rest/logging/" + encodeLoggerName(loggerName);
         if ("DEFAULT".equals(level)) {
             Request req = httpClient.newRequest(URI.create(url)).method(HttpMethod.DELETE)
-                .headers(h -> h.put("Authorization", "Bearer " + token));
+                    .headers(h -> h.put("Authorization", "Bearer " + token));
             return req.send().getStatus();
         }
         ObjectNode body = jackson.createObjectNode();
         body.put("loggerName", loggerName);
         body.put("level", level);
         Request req = httpClient.newRequest(URI.create(url)).method(HttpMethod.PUT)
-            .headers(h -> h.put("Authorization", "Bearer " + token)).accept("application/json")
+                .headers(h -> h.put("Authorization", "Bearer " + token)).accept("application/json")
                 .body(new StringRequestContent("application/json", body.toString(), StandardCharsets.UTF_8));
         return req.send().getStatus();
     }
