@@ -54,6 +54,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
@@ -358,20 +359,24 @@ public class RestClient {
                             String jsonResult = getRequest(vidUrl.toString(), Map.of(), tokens);
                             JsonObject obj = JsonParser.parseString(jsonResult).getAsJsonObject();
 
-                            String videoUrl = obj.get("url").getAsString();
-                            if (videoUrl.startsWith("http")) {
-                                InputStreamResponseListener listener = new InputStreamResponseListener();
-                                httpClient.newRequest(videoUrl).timeout(30, TimeUnit.SECONDS).send(listener);
+                            JsonElement urlElement = obj.get("url");
+                            if (urlElement != null && urlElement.isJsonPrimitive()
+                                    && urlElement.getAsJsonPrimitive().isString()) {
+                                String videoUrl = urlElement.getAsString();
+                                if (videoUrl.startsWith("http")) {
+                                    InputStreamResponseListener listener = new InputStreamResponseListener();
+                                    httpClient.newRequest(videoUrl).timeout(30, TimeUnit.SECONDS).send(listener);
 
-                                Response response = listener.get(10, TimeUnit.SECONDS);
-                                if (response.getStatus() == HttpStatus.OK_200) {
-                                    try (InputStream in = listener.getInputStream()) {
-                                        Files.copy(in, path, StandardCopyOption.REPLACE_EXISTING);
-                                    }
+                                    Response response = listener.get(10, TimeUnit.SECONDS);
+                                    if (response.getStatus() == HttpStatus.OK_200) {
+                                        try (InputStream in = listener.getInputStream()) {
+                                            Files.copy(in, path, StandardCopyOption.REPLACE_EXISTING);
+                                        }
 
-                                    if (Files.exists(path)) {
-                                        urlFound = true;
-                                        break; // Success: instantly exit the loop
+                                        if (Files.exists(path)) {
+                                            urlFound = true;
+                                            break; // Success: instantly exit the loop
+                                        }
                                     }
                                 }
                             }
