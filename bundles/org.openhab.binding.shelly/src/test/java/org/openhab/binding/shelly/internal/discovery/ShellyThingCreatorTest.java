@@ -109,6 +109,9 @@ public class ShellyThingCreatorTest {
 
                 // Shelly Plus
                 Arguments.of("shelly3em63g3-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUS3EM63),
+                Arguments.of("shelly2pmg4-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUS2PM_RELAY),
+                Arguments.of("shelly1lg4-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUS1L),
+                Arguments.of("shelly2lg4-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUS2L),
 
                 // Shelly Pro
                 Arguments.of("shellypro3em-" + DEVICE_ID, "", THING_TYPE_SHELLYPRO3EM),
@@ -182,6 +185,7 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_PLUS1UL, "", THING_TYPE_SHELLYPLUS1), //
                 Arguments.of(SHELLYDT_PLUS1PMUL, "", THING_TYPE_SHELLYPLUS1PM), //
                 Arguments.of(SHELLYDT_PLUS1L, "", THING_TYPE_SHELLYPLUS1L), //
+                Arguments.of(SHELLYDT_PLUS1LG4, "", THING_TYPE_SHELLYPLUS1L), //
                 Arguments.of(SHELLYDT_PLUS2PM, "relay", THING_TYPE_SHELLYPLUS2PM_RELAY), //
                 Arguments.of(SHELLYDT_PLUS2PM, "roller", THING_TYPE_SHELLYPLUS2PM_ROLLER), //
                 Arguments.of(SHELLYDT_PLUS2PM_2, "relay", THING_TYPE_SHELLYPLUS2PM_RELAY), //
@@ -191,6 +195,7 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_PLUS2PMG4, "relay", THING_TYPE_SHELLYPLUS2PM_RELAY), //
                 Arguments.of(SHELLYDT_PLUS2PMG4, "roller", THING_TYPE_SHELLYPLUS2PM_ROLLER), //
                 Arguments.of(SHELLYDT_PLUS2L, "", THING_TYPE_SHELLYPLUS2L), //
+                Arguments.of(SHELLYDT_PLUS2LG4, "", THING_TYPE_SHELLYPLUS2L), //
                 Arguments.of(SHELLYDT_PLUSSHUTTER, "", THING_TYPE_SHELLYPLUSSHUTTER), //
                 Arguments.of(SHELLYDT_PLUSPLUGS, "", THING_TYPE_SHELLYPLUSPLUGS), //
                 Arguments.of(SHELLYDT_PLUSPLUGSG3, "", THING_TYPE_SHELLYPLUSPLUGS), //
@@ -299,6 +304,24 @@ public class ShellyThingCreatorTest {
         return Stream.of( //
                 Arguments.of("shellyplusshutter-" + DEVICE_ID, SHELLYDT_PLUSSMOKE, THING_TYPE_SHELLYPLUSSMOKE), //
                 Arguments.of("notfound-" + DEVICE_ID, SHELLYDT_PLUSSMOKE, THING_TYPE_SHELLYPLUSSMOKE));
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForGetThingUIDReturnsThingUidByServiceNameDeviceTypeAndMode")
+    void getThingUIDReturnsThingUidByServiceNameDeviceTypeAndMode(String serviceName, String deviceType, String mode,
+            ThingTypeUID expectedThingTypeUid) {
+        ThingUID actual = ShellyThingCreator.getThingUID(serviceName, deviceType, mode);
+        ThingUID expected = new ThingUID(expectedThingTypeUid, DEVICE_ID);
+
+        assertThat("serviceName: " + serviceName + "; deviceType: " + deviceType + "; mode: " + mode, actual,
+                is(equalTo(expected)));
+    }
+
+    private static Stream<Arguments> provideTestCasesForGetThingUIDReturnsThingUidByServiceNameDeviceTypeAndMode() {
+        return Stream.of( //
+                Arguments.of("shelly2pmg4-" + DEVICE_ID, SHELLYDT_PLUS2PMG4, "relay", THING_TYPE_SHELLYPLUS2PM_RELAY), //
+                Arguments.of("shelly2pmg4-" + DEVICE_ID, SHELLYDT_PLUS2PMG4, "roller",
+                        THING_TYPE_SHELLYPLUS2PM_ROLLER)); //
     }
 
     @Test

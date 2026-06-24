@@ -357,9 +357,16 @@ public class ShellyChannelDefinitions {
     }
 
     /**
-     * Auto-create relay channels depending on relay type/mode
+     * Creates device-level status channels shared across all device types (firmware version, uptime,
+     * heartbeat, LED controls, inner temperature). Also conditionally creates accumulated-meter
+     * channels ({@code device#accumulatedWatts}, {@code device#totalKWH}, etc.) when
+     * {@code profile.numMeters > 1} — so no-PM multi-relay devices must have
+     * {@code numMeters = 0} in {@link ShellyDevices#THING_TYPE_CAP_NUM_METERS} to suppress them.
      *
-     * @return {@code ArrayList<Channel>} of channels to be added to the thing
+     * @param thing the Thing whose channel list is being extended
+     * @param profile device profile
+     * @param status current device status DTO; used to gate optional channels by field presence
+     * @return map of channel-id to {@link Channel} for newly created channels
      */
     public static Map<String, Channel> createDeviceChannels(final Thing thing, final ShellyDeviceProfile profile,
             final ShellySettingsStatus status) {
@@ -554,6 +561,17 @@ public class ShellyChannelDefinitions {
         return add;
     }
 
+    /**
+     * Creates Gen1 meter channels for a single meter group. Each channel is added only when the
+     * corresponding field in {@link ShellySettingsMeter} is non-null (data-driven). Called on the
+     * first HTTP poll cycle; the returned map is passed to
+     * {@code ShellyBaseHandler.updateChannelDefinitions()}.
+     *
+     * @param thing the Thing whose channel list is being extended
+     * @param meter Gen1 meter status DTO ({@code /status} → {@code meters[n]})
+     * @param group channel group name, e.g. {@code "meter1"}, {@code "meter2"}
+     * @return map of channel-id to {@link Channel} for newly created channels
+     */
     public static Map<String, Channel> createMeterChannels(Thing thing, final ShellySettingsMeter meter, String group) {
         Map<String, Channel> newChannels = new LinkedHashMap<>();
         addChannel(thing, newChannels, meter.power != null, group, CHANNEL_METER_CURRENTWATTS);
@@ -564,6 +582,23 @@ public class ShellyChannelDefinitions {
         return newChannels;
     }
 
+    /**
+     * Creates Gen1 EMeter channels for a single EMeter group. Each channel is added only when the
+     * corresponding field in {@link ShellySettingsEMeter} is non-null (data-driven). The
+     * {@code resetTotals} channel is included only for EM50 devices (checked via
+     * {@link ShellyThingInterface#getProfile()}).
+     *
+     * <p>
+     * The power-factor gate ({@code emeter.pf != null}) is intentionally present even though
+     * the 3-phase EM device does not expose power factor — the null check prevents spurious
+     * channel creation when the field is absent.
+     *
+     * @param thing the Thing whose channel list is being extended
+     * @param profile device profile; used to gate the {@code resetTotals} channel for EM50
+     * @param emeter Gen1 EMeter status DTO ({@code /status} → {@code emeters[n]})
+     * @param group channel group name, e.g. {@code "meter1"}, {@code "meter2"}
+     * @return map of channel-id to {@link Channel} for newly created channels
+     */
     public static Map<String, Channel> createEMeterChannels(final Thing thing, final ShellyDeviceProfile profile,
             final ShellySettingsEMeter emeter, String group) {
         Map<String, Channel> newChannels = new LinkedHashMap<>();

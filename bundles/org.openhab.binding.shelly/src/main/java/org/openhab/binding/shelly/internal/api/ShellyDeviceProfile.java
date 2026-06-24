@@ -86,6 +86,12 @@ public class ShellyDeviceProfile {
     public boolean isDimmer; // true for a Shelly Dimmer
     public int numInputs = 0; // number of inputs
 
+    /**
+     * Number of metering channels. Set by {@code initProfile()} via component detection or
+     * {@code THING_TYPE_CAP_NUM_METERS} override. Zero means no power metering; values &gt; 1
+     * trigger device-level accumulated channels in
+     * {@code ShellyChannelDefinitions.createDeviceChannels()}.
+     */
     public int numMeters = 0;
     public boolean isEMeter; // true for ShellyEM/3EM
     public boolean isCB; // true for Shelly Pro CB

@@ -78,7 +78,9 @@ public class ShellyDevices {
     public static final String SHELLYDT_PLUS1UL = "SNSW-001X15UL";
     public static final String SHELLYDT_PLUS1PMUL = "SNSW-001P15UL";
     public static final String SHELLYDT_PLUS1L = "S3SW-0A1X1EUL";
+    public static final String SHELLYDT_PLUS1LG4 = "S4SW-0A1X1EUL";
     public static final String SHELLYDT_PLUS2L = "S3SW-0A2X4EUL";
+    public static final String SHELLYDT_PLUS2LG4 = "S4SW-0A2X4EUL";
     public static final String SHELLYDT_PLUS2PM = "SNSW-002P16EU";
     public static final String SHELLYDT_PLUS2PM_2 = "SNSW-102P16EU";
     public static final String SHELLYDT_PLUS2PMG3 = "S3SW-002P16EU";
@@ -425,7 +427,9 @@ public class ShellyDevices {
             Map.entry(SHELLYDT_PLUS1PMG4, THING_TYPE_SHELLYPLUS1PM),
             Map.entry(SHELLYDT_PLUS1PMUL, THING_TYPE_SHELLYPLUS1PM),
             Map.entry(SHELLYDT_PLUS1L, THING_TYPE_SHELLYPLUS1L), //
-            Map.entry(SHELLYDT_PLUS2L, THING_TYPE_SHELLYPLUS2L),
+            Map.entry(SHELLYDT_PLUS1LG4, THING_TYPE_SHELLYPLUS1L), //
+            Map.entry(SHELLYDT_PLUS2L, THING_TYPE_SHELLYPLUS2L), //
+            Map.entry(SHELLYDT_PLUS2LG4, THING_TYPE_SHELLYPLUS2L),
             Map.entry(SHELLYDT_PLUSSHUTTER, THING_TYPE_SHELLYPLUSSHUTTER),
             Map.entry(SHELLYDT_PLUSPLUGS, THING_TYPE_SHELLYPLUSPLUGS),
             Map.entry(SHELLYDT_PLUSPLUGS_2, THING_TYPE_SHELLYPLUSPLUGS),
@@ -609,10 +613,13 @@ public class ShellyDevices {
             Map.entry("shelly1pmg3", THING_TYPE_SHELLYPLUS1PM), //
             Map.entry("shelly1pmg4", THING_TYPE_SHELLYPLUS1PM), //
             Map.entry("shellyplus1l", THING_TYPE_SHELLYPLUS1L), //
+            Map.entry("shelly1lg4", THING_TYPE_SHELLYPLUS1L), //
             Map.entry("shellyplus2pm-relay", THING_TYPE_SHELLYPLUS2PM_RELAY),
             Map.entry("shellyplus2pm-roller", THING_TYPE_SHELLYPLUS2PM_ROLLER),
+            Map.entry("shelly2pmg4", THING_TYPE_SHELLYPLUS2PM_RELAY),
             Map.entry("shellyplusshutter", THING_TYPE_SHELLYPLUSSHUTTER),
             Map.entry("shellyplus2l", THING_TYPE_SHELLYPLUS2L), //
+            Map.entry("shelly2lg4", THING_TYPE_SHELLYPLUS2L), //
             Map.entry("shellyplugu1", THING_TYPE_SHELLYPLUGU1), //
             Map.entry("shellyplugus", THING_TYPE_SHELLYPLUSPLUGUS),
             Map.entry("shellyplusplug", THING_TYPE_SHELLYPLUSPLUGS), //
@@ -689,8 +696,25 @@ public class ShellyDevices {
      * Capabilities for specific thing types
      */
 
-    // Number of meters, if they can't be auto-detected
+    /**
+     * Explicit meter count overrides for thing types where {@code initProfile()} cannot
+     * auto-detect the correct value from device components alone.
+     *
+     * <p>
+     * Entries with value {@code 0} suppress the relay-count fallback in
+     * {@code Shelly2ApiClient.initProfile()}: without an entry, a no-PM multi-relay device
+     * (e.g. Plus 2L with 2 relays, no {@code pm1:x}) would fall through to
+     * {@code numMeters = numRelays = 2}, causing {@code accuChannel = true} and four spurious
+     * {@code device#accumulated*} channels at runtime.
+     *
+     * <p>
+     * Every no-PM thing type that has more than one relay MUST be listed here with value 0.
+     * EM/3EM types with a fixed meter count that differs from what component detection produces
+     * are also listed here.
+     */
     public static final Map<ThingTypeUID, Integer> THING_TYPE_CAP_NUM_METERS = Map.ofEntries( //
+            Map.entry(THING_TYPE_SHELLYPLUS1L, 0), // no power metering
+            Map.entry(THING_TYPE_SHELLYPLUS2L, 0), // no power metering
             Map.entry(THING_TYPE_SHELLYPRO2, 0), //
             Map.entry(THING_TYPE_SHELLYPRO3, 0), //
             Map.entry(THING_TYPE_SHELLYPROEM50, 2), //
