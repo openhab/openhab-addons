@@ -40,6 +40,8 @@ public class Measurand implements Parser {
 
     private @Nullable HttpSource httpSource;
 
+    private @Nullable Sensor sensor;
+
     Measurand(String channelPrefix, String name, MeasureType measureType) {
         this.channelPrefix = channelPrefix;
         this.name = name;
@@ -81,6 +83,16 @@ public class Measurand implements Parser {
         return this;
     }
 
+    Measurand sensor(Sensor sensor) {
+        this.sensor = sensor;
+        return this;
+    }
+
+    @Nullable
+    Sensor getSensor() {
+        return sensor;
+    }
+
     @Nullable
     HttpSource getHttpSource() {
         return httpSource;
@@ -100,7 +112,7 @@ public class Measurand implements Parser {
             debugDetails.addDebugDetails(offset, measureType.getByteSize(),
                     measureType.name() + ": " + state.toFullString());
             ChannelTypeUID channelType = channelTypeUID == null ? measureType.getChannelTypeId() : channelTypeUID;
-            result.add(new MeasuredValue(measureType, channelPrefix, channel, channelType, state, name));
+            result.add(new MeasuredValue(measureType, channelPrefix, channel, channelType, state, name, sensor));
         } else {
             debugDetails.addDebugDetails(offset, measureType.getByteSize(), measureType.name() + ": null");
         }
@@ -124,7 +136,7 @@ public class Measurand implements Parser {
             return null;
         }
         ChannelTypeUID channelType = channelTypeUID == null ? measureType.getChannelTypeId() : channelTypeUID;
-        return new MeasuredValue(measureType, channelPrefix, channel, channelType, state, name);
+        return new MeasuredValue(measureType, channelPrefix, channel, channelType, state, name, sensor);
     }
 
     static Measurand measurand(String channelPrefix, String name, MeasureType measureType) {
