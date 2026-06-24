@@ -88,3 +88,7 @@ sitemap shadeauto label="ShadeAuto" {
     }
 }
 ```
+
+## Acknowledgments
+
+API protocol knowledge informed by Kevin Lester's [ShadeAuto-HomeAssistant](https://github.com/kevinlester/ShadeAuto-HomeAssistant) integration.
