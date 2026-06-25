@@ -24,6 +24,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -142,10 +144,10 @@ public class CloudUtil {
         signatureParams.add(signedNonce);
         String signatureString = String.join("&", signatureParams);
         try {
-            java.security.MessageDigest md = java.security.MessageDigest.getInstance("SHA-1");
+            MessageDigest md = MessageDigest.getInstance("SHA-1");
             byte[] digest = md.digest(signatureString.getBytes(StandardCharsets.UTF_8));
             return Base64.getEncoder().encodeToString(digest);
-        } catch (java.security.NoSuchAlgorithmException e) {
+        } catch (NoSuchAlgorithmException e) {
             throw new MiIoCryptoException("SHA-1 algorithm not found", e);
         }
     }
@@ -277,7 +279,7 @@ public class CloudUtil {
         }
         try {
             return element.getAsString();
-        } catch (Exception e) {
+        } catch (IllegalStateException e) {
             return defaultValue;
         }
     }
@@ -300,7 +302,7 @@ public class CloudUtil {
         }
         try {
             return element.getAsInt();
-        } catch (Exception e) {
+        } catch (IllegalStateException | NumberFormatException e) {
             return defaultValue;
         }
     }

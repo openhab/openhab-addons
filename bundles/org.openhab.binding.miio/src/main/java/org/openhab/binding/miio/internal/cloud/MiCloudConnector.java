@@ -75,7 +75,7 @@ public class MiCloudConnector {
     protected static final TimeZone TZ = TimeZone.getDefault();
     protected static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("OOOO");
     protected static final Gson GSON = new GsonBuilder().serializeNulls().create();
-    protected List<CloudLogonListener> listeners = new CopyOnWriteArrayList<>();
+    protected List<CloudLoginListener> listeners = new CopyOnWriteArrayList<>();
 
     protected String username;
     protected String password;
@@ -443,7 +443,7 @@ public class MiCloudConnector {
         if (logger.isDebugEnabled()) {
             try {
                 Path path = saveBytesToTempFile(content, tempPrefix, ".jpg");
-                logger.trace("Saved logon image to {} -> {} bytes", path.toAbsolutePath(), content.length);
+                logger.trace("Saved login image to {} -> {} bytes", path.toAbsolutePath(), content.length);
             } catch (MiCloudException e) {
                 logger.debug("Could not save image to temp file: {}", e.getMessage());
             }
@@ -484,7 +484,7 @@ public class MiCloudConnector {
 
     protected void updateLoginState(CloudLoginState state) {
         loginState = state;
-        for (CloudLogonListener listener : listeners) {
+        for (CloudLoginListener listener : listeners) {
             logger.trace("inform listener {}, state {}", listener, state);
             try {
                 listener.onStatusUpdated(state, state.getDescription());
@@ -514,10 +514,10 @@ public class MiCloudConnector {
     }
 
     protected void informImageListeners(byte[] image) {
-        for (CloudLogonListener listener : listeners) {
+        for (CloudLoginListener listener : listeners) {
             logger.trace("Inform listener {}, with image", listener);
             try {
-                listener.onLogonImage(image);
+                listener.onLoginImage(image);
             } catch (Exception e) {
                 logger.debug("Could not inform listener {}: {}: ", listener, e.getMessage(), e);
             }
@@ -578,7 +578,7 @@ public class MiCloudConnector {
             logger.trace("Cookie :{} --> {}", cookie.getName(), cookie.getValue());
             if (cookie.getName().contentEquals("serviceToken")) {
                 serviceToken = cookie.getValue();
-                logger.debug("Xiaomi cloud logon successful.");
+                logger.debug("Xiaomi cloud login successful.");
                 logger.trace("Xiaomi cloud servicetoken: {}", serviceToken);
             }
         }
@@ -613,17 +613,17 @@ public class MiCloudConnector {
         this.ssecurity = ssecurity;
     }
 
-    protected List<CloudLogonListener> getListeners() {
+    protected List<CloudLoginListener> getListeners() {
         return listeners;
     }
 
     /**
-     * Registers a {@link CloudLogonListener} to be called back, when data is received.
+     * Registers a {@link CloudLoginListener} to be called back, when data is received.
      * If no {@link MessageSenderThread} exists, when the method is called, it is being set up.
      *
-     * @param listener {@link CloudLogonListener} to be called back
+     * @param listener {@link CloudLoginListener} to be called back
      */
-    public void registerListener(CloudLogonListener listener) {
+    public void registerListener(CloudLoginListener listener) {
         if (!getListeners().contains(listener)) {
             logger.trace("Adding cloud listener {}", listener);
             getListeners().add(listener);
@@ -631,12 +631,12 @@ public class MiCloudConnector {
     }
 
     /**
-     * Unregisters a {@link CloudLogonListener}. If there are no listeners left,
+     * Unregisters a {@link CloudLoginListener}. If there are no listeners left,
      * the {@link MessageSenderThread} is being closed.
      *
-     * @param listener {@link CloudLogonListener} to be unregistered
+     * @param listener {@link CloudLoginListener} to be unregistered
      */
-    public void unregisterListener(CloudLogonListener listener) {
+    public void unregisterListener(CloudLoginListener listener) {
         getListeners().remove(listener);
     }
 

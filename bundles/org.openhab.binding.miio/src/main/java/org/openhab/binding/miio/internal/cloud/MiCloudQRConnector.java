@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.miio.internal.cloud;
 
+import java.net.MalformedURLException;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -26,7 +28,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonObject;
 
 /**
- * The {@link MiCloudQRConnector} class is logon to the Xiaomi cloud using QR code authentication.
+ * The {@link MiCloudQRConnector} class is login to the Xiaomi cloud using QR code authentication.
  *
  * @author Marcel Verpaalen - Initial contribution
  */
@@ -97,7 +99,7 @@ public class MiCloudQRConnector extends MiCloudConnector {
             }
 
             getQRImage(sessionData.imageUrl);
-            logger.info("Xiaomi QR code login session started; waiting for QR code scan: {}", sessionData.loginUrl);
+            logger.debug("Xiaomi QR code login session started; waiting for QR code scan: {}", sessionData.loginUrl);
             updateLoginState(CloudLoginState.AWAITING_QRLOGIN);
 
             String location = checkSession(sessionData, (sessionData.timeout + REQUEST_TIMEOUT_SECONDS) * 1000L);
@@ -111,7 +113,6 @@ public class MiCloudQRConnector extends MiCloudConnector {
             logger.debug("login step 3 response: {}: {}", res, res.getContentAsString());
 
             if (res.getStatus() == 200) {
-                logger.info("Xiaomi QR code login successful");
                 return true;
             } else {
                 logger.warn("Failed to login to Xiaomi cloud, status code: {}", res.getStatus());
@@ -119,7 +120,7 @@ public class MiCloudQRConnector extends MiCloudConnector {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             logger.debug("Xiaomi QR code login interrupted");
-        } catch (Exception e) {
+        } catch (MiCloudException | TimeoutException | ExecutionException | MalformedURLException e) {
             logger.warn("Error during Xiaomi QR code login", e);
         }
         return false;
@@ -188,7 +189,7 @@ public class MiCloudQRConnector extends MiCloudConnector {
             Thread.currentThread().interrupt();
             logger.debug("QR login session start interrupted");
             return null;
-        } catch (Exception e) {
+        } catch (TimeoutException | ExecutionException e) {
             logger.warn("Failed to start Xiaomi QR code login session", e);
             return null;
         }
@@ -232,16 +233,16 @@ public class MiCloudQRConnector extends MiCloudConnector {
             String passToken = CloudUtil.getJsonString(responseJson, "passToken", "");
             String location = CloudUtil.getJsonString(responseJson, "location", "");
             String code = CloudUtil.getJsonString(responseJson, "code", "");
-
-            logger.trace("Xiaomi login ssecurity: {}", this.ssecurity);
-            logger.trace("Xiaomi login userId: {}", this.userId);
-            logger.trace("Xiaomi login cUserId: {}", cuserId);
-            logger.trace("Xiaomi login passToken: {}", passToken);
-            logger.trace("Xiaomi login location: {}", location);
-            logger.trace("Xiaomi login code: {}", code);
-
+            if (logger.isTraceEnabled()) {
+                logger.trace("Xiaomi login ssecurity: {}", this.ssecurity);
+                logger.trace("Xiaomi login userId: {}", this.userId);
+                logger.trace("Xiaomi login cUserId: {}", cuserId);
+                logger.trace("Xiaomi login passToken: {}", passToken);
+                logger.trace("Xiaomi login location: {}", location);
+                logger.trace("Xiaomi login code: {}", code);
+            }
             if (location.isEmpty()) {
-                throw new MiCloudException("Error getting logon location URL. Return code: " + code);
+                throw new MiCloudException("Error getting login location URL. Return code: " + code);
             }
             return location;
         } catch (TimeoutException e) {
@@ -253,7 +254,7 @@ public class MiCloudQRConnector extends MiCloudConnector {
             Thread.currentThread().interrupt();
             logger.debug("Xiaomi login step 2 interrupted");
             return null;
-        } catch (Exception e) {
+        } catch (ExecutionException e) {
             logger.debug("Xiaomi login step 2 Long polling requests failed: {}", e.getMessage());
             return null;
         }

@@ -22,16 +22,16 @@ import org.openhab.binding.miio.internal.cloud.MiCloudConnector.CloudLoginState;
  * @author Marcel Verpaalen - Initial contribution
  */
 @NonNullByDefault
-public interface CloudLogonListener {
+public interface CloudLoginListener {
     /**
-     * Callback method for the {@link CloudLogonListener}
+     * Callback method for the {@link CloudLoginListener}
      *
      * @param image the captcha image as jpg byte array
      */
-    void onLogonImage(byte[] image);
+    void onLoginImage(byte[] image);
 
     /**
-     * Callback method for the {@link CloudLogonListener}
+     * Callback method for the {@link CloudLoginListener}
      *
      * @param loginState the current login state
      * @param status Status text

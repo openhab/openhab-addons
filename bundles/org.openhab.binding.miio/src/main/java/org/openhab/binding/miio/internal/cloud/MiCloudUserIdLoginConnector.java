@@ -45,23 +45,23 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * The {@link MiCloudUserIdLogonConnector} class is used for connecting to the Xiaomi cloud access
+ * The {@link MiCloudUserIdLoginConnector} class is used for connecting to the Xiaomi cloud access
  *
  * @author Marcel Verpaalen - Initial contribution
  */
 @NonNullByDefault
-public class MiCloudUserIdLogonConnector extends MiCloudConnector {
+public class MiCloudUserIdLoginConnector extends MiCloudConnector {
     private static final String BROWSER_USERAGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:140.0) Gecko/20100101 Firefox/140.0";
 
-    private final Logger logger = LoggerFactory.getLogger(MiCloudUserIdLogonConnector.class);
+    private final Logger logger = LoggerFactory.getLogger(MiCloudUserIdLoginConnector.class);
     private @Nullable Request fa;
 
-    public MiCloudUserIdLogonConnector(String username, String password, HttpClient httpClient)
+    public MiCloudUserIdLoginConnector(String username, String password, HttpClient httpClient)
             throws MiCloudException {
         super(username, password, httpClient);
     }
 
-    public MiCloudUserIdLogonConnector(@Nullable String username, @Nullable String password, HttpClient httpClient,
+    public MiCloudUserIdLoginConnector(@Nullable String username, @Nullable String password, HttpClient httpClient,
             @Nullable String clientId, @Nullable String userId, @Nullable String serviceToken,
             @Nullable String ssecurity) throws MiCloudException {
         super(username, password, httpClient, clientId, userId, serviceToken, ssecurity);
@@ -131,11 +131,11 @@ public class MiCloudUserIdLogonConnector extends MiCloudConnector {
             Thread.currentThread().interrupt();
             throw new MiCloudException("Xiaomi cloud login interrupted", e);
         } catch (TimeoutException | ExecutionException e) {
-            throw new MiCloudException("Cannot logon to Xiaomi cloud: " + e.getMessage(), e);
+            throw new MiCloudException("Cannot login to Xiaomi cloud: " + e.getMessage(), e);
         } catch (MiIoCryptoException e) {
-            throw new MiCloudException("Error decrypting. Cannot logon to Xiaomi cloud: " + e.getMessage(), e);
+            throw new MiCloudException("Error decrypting. Cannot login to Xiaomi cloud: " + e.getMessage(), e);
         } catch (MalformedURLException | JsonParseException e) {
-            throw new MiCloudException("Error getting logon URL. Cannot logon to Xiaomi cloud: " + e.getMessage(), e);
+            throw new MiCloudException("Error getting login URL. Cannot login to Xiaomi cloud: " + e.getMessage(), e);
         }
     }
 
@@ -169,7 +169,7 @@ public class MiCloudUserIdLogonConnector extends MiCloudConnector {
                 throw new MiCloudException("Xiaomi Login _sign missing. Maybe still has login cookie.");
             }
         } catch (JsonParseException | IllegalStateException | ClassCastException e) {
-            throw new MiCloudException("Error getting logon sign. Cannot parse response: " + e.getMessage(), e);
+            throw new MiCloudException("Error getting login sign. Cannot parse response: " + e.getMessage(), e);
         }
     }
 
@@ -193,9 +193,9 @@ public class MiCloudUserIdLogonConnector extends MiCloudConnector {
         }
         if (!captchaResponse.isEmpty()) {
             fields.put("captCode", captchaResponse);
-            logger.debug("Logon with captcha response {}", Utils.obfuscateToken(captchaResponse));
+            logger.debug("login with captcha response {}", Utils.obfuscateToken(captchaResponse));
         } else {
-            logger.debug("Logon step 2 without captcha response");
+            logger.debug("login step 2 without captcha response");
         }
         fields.put("_json", "true");
 
@@ -210,7 +210,7 @@ public class MiCloudUserIdLogonConnector extends MiCloudConnector {
         CloudLoginDTO jsonResp = GSON.fromJson(resp2, CloudLoginDTO.class);
 
         if (jsonResp == null) {
-            throw new MiCloudException("Error getting logon details from step 2: " + content2);
+            throw new MiCloudException("Error getting login details from step 2: " + content2);
         }
 
         ssecurity = jsonResp.getSsecurity();
@@ -246,9 +246,9 @@ public class MiCloudUserIdLogonConnector extends MiCloudConnector {
                             Xiaomi Login code: {}
                             SecurityStatus: {}
                             Pwd code: {}
-                            Location logon URL: {}
+                            Location login URL: {}
                             In case of login issues check userId/password details are correct.
-                            If login details are correct, try to logon using browser from the openHAB ip using the browser. Alternatively try to complete logon with above URL.\
+                            If login details are correct, try to login using browser from the openHAB ip using the browser. Alternatively try to complete login with above URL.\
                             """,
                     code, securityStatus, pwd, location);
 
@@ -275,7 +275,7 @@ public class MiCloudUserIdLogonConnector extends MiCloudConnector {
                     || loginState.equals(CloudLoginState.CAPTCHA_FAILED)) {
                 logger.debug("Retry with new captcha/2fa");
             }
-            throw new MiCloudException("Error getting logon location URL. Return code: " + code);
+            throw new MiCloudException("Error getting login location URL. Return code: " + code);
         }
     }
 

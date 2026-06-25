@@ -80,13 +80,13 @@ public class CloudConnector {
     private final HttpClient httpClient;
     private @Nullable MiCloudConnector cloudConnector;
     private final Logger logger = LoggerFactory.getLogger(CloudConnector.class);
-    private final List<CloudLogonListener> pendingListeners = new CopyOnWriteArrayList<>();
+    private final List<CloudLoginListener> pendingListeners = new CopyOnWriteArrayList<>();
 
     private ConcurrentHashMap<String, HomeListDTO> homeLists = new ConcurrentHashMap<>();
     private static final Gson GSON = new GsonBuilder().serializeNulls().create();
 
-    private ExpiringCache<Boolean> logonCache = new ExpiringCache<>(CACHE_EXPIRY, () -> {
-        return logon();
+    private ExpiringCache<Boolean> loginCache = new ExpiringCache<>(CACHE_EXPIRY, () -> {
+        return login();
     });
 
     private ExpiringCache<String> refreshDeviceList = new ExpiringCache<>(CACHE_EXPIRY, () -> {
@@ -166,22 +166,22 @@ public class CloudConnector {
         return isConnected(false);
     }
 
-    public void registerListener(CloudLogonListener cloudLogonListener) {
+    public void registerListener(CloudLoginListener cloudLoginListener) {
         final MiCloudConnector cl = cloudConnector;
         if (cl != null) {
-            cl.registerListener(cloudLogonListener);
+            cl.registerListener(cloudLoginListener);
         } else {
-            if (!pendingListeners.contains(cloudLogonListener)) {
-                pendingListeners.add(cloudLogonListener);
+            if (!pendingListeners.contains(cloudLoginListener)) {
+                pendingListeners.add(cloudLoginListener);
             }
         }
     }
 
-    public void unregisterListener(CloudLogonListener cloudLogonListener) {
-        pendingListeners.remove(cloudLogonListener);
+    public void unregisterListener(CloudLoginListener cloudLoginListener) {
+        pendingListeners.remove(cloudLoginListener);
         final MiCloudConnector cl = cloudConnector;
         if (cl != null) {
-            cl.unregisterListener(cloudLogonListener);
+            cl.unregisterListener(cloudLoginListener);
         }
     }
 
@@ -191,9 +191,9 @@ public class CloudConnector {
             return true;
         }
         if (force) {
-            logonCache.invalidateValue();
+            loginCache.invalidateValue();
         }
-        final @Nullable Boolean c = logonCache.getValue();
+        final @Nullable Boolean c = loginCache.getValue();
         if (c != null && c.booleanValue()) {
             return true;
         }
@@ -297,15 +297,15 @@ public class CloudConnector {
         this.ssecurity = ssecurity;
     }
 
-    private boolean logon() {
+    private boolean login() {
         if (loginMode == CloudLoginMode.PASSWORD && (username.isEmpty() || password.isEmpty())) {
             logger.debug("No Xiaomi cloud credentials. Cloud connectivity disabled for PASSWORD mode");
-            logger.debug("Logon details: username: '{}', pass: '{}', country: '{}'", username,
+            logger.debug("Login details: username: '{}', pass: '{}', country: '{}'", username,
                     password.replaceAll(".", "*"), country);
             return connected;
         }
         try {
-            logger.info("Xiaomi cloud login mode is {}", this.loginMode);
+            logger.debug("Xiaomi cloud login mode is {}", this.loginMode);
 
             final MiCloudConnector cl;
             switch (this.loginMode) {
@@ -314,7 +314,7 @@ public class CloudConnector {
                             this.serviceToken, this.ssecurity);
                     break;
                 case PASSWORD:
-                    cl = new MiCloudUserIdLogonConnector(username, password, httpClient, this.clientId, this.userId,
+                    cl = new MiCloudUserIdLoginConnector(username, password, httpClient, this.clientId, this.userId,
                             this.serviceToken, this.ssecurity);
                     break;
                 case QRCODE:
@@ -325,7 +325,7 @@ public class CloudConnector {
             }
 
             // Transfer any listeners registered before the connector was created
-            for (CloudLogonListener listener : pendingListeners) {
+            for (CloudLoginListener listener : pendingListeners) {
                 cl.registerListener(listener);
             }
             pendingListeners.clear();
@@ -333,7 +333,7 @@ public class CloudConnector {
             // Also re-register listeners from any previous connector instance
             final MiCloudConnector prev = this.cloudConnector;
             if (prev != null) {
-                for (CloudLogonListener listener : prev.getListeners()) {
+                for (CloudLoginListener listener : prev.getListeners()) {
                     cl.registerListener(listener);
                 }
             }
@@ -353,7 +353,7 @@ public class CloudConnector {
                 getDevicesList();
             } else {
                 deviceListState = CloudListState.FAILED;
-                // Clear stale token so next logon() attempt doesn't reuse it
+                // Clear stale token so next login() attempt doesn't reuse it
                 this.serviceToken = "";
             }
         } catch (MiCloudException e) {
@@ -512,8 +512,8 @@ public class CloudConnector {
     public void resetLogin() {
         final MiCloudConnector cl = cloudConnector;
         if (cl != null) {
-            // Preserve listeners so they are re-registered when the new connector is created in logon()
-            for (CloudLogonListener listener : cl.getListeners()) {
+            // Preserve listeners so they are re-registered when the new connector is created in login()
+            for (CloudLoginListener listener : cl.getListeners()) {
                 if (!pendingListeners.contains(listener)) {
                     pendingListeners.add(listener);
                 }
@@ -522,7 +522,7 @@ public class CloudConnector {
         }
         cloudConnector = null;
         connected = false;
-        logonCache.invalidateValue();
+        loginCache.invalidateValue();
     }
 
     /**

@@ -110,10 +110,10 @@ public final class MiIoBindingConstants {
     public static final String CHANNEL_HISTORY_RECORD = "cleaning#last_clean_record";
     public static final String CHANNEL_VACUUM_MAP = "cleaning#map";
 
-    public static final String CHANNEL_LOGON_IMAGE = "logonimage";
-    public static final String CHANNEL_CAPTCHA_RESPONSE = "captcharesponse";
-    public static final String CHANNEL_TWOFA = "twofa";
-    public static final String CHANNEL_TRIGGER_LOGIN = "triggerlogin";
+    public static final String CHANNEL_LOGIN_IMAGE = "login-image";
+    public static final String CHANNEL_CAPTCHA_RESPONSE = "captcha-response";
+    public static final String CHANNEL_TWOFA = "two-fa";
+    public static final String CHANNEL_TRIGGER_LOGIN = "trigger-login";
 
     public static final String PROPERTY_HOST_IP = "host";
     public static final String PROPERTY_DID = "deviceId";
@@ -126,12 +126,12 @@ public final class MiIoBindingConstants {
     public static final String CONFIG_USERNAME = "username";
     public static final String CONFIG_PASSWORD = "password";
     public static final String CONFIG_COUNTRY = "country";
-    public static final String CONFIG_CLIENT_ID = "clientId";
-    public static final String CONFIG_USER_ID = "userId";
-    public static final String CONFIG_SERVICE_TOKEN = "serviceToken";
+    public static final String CONFIG_CLIENT_ID = "client-id";
+    public static final String CONFIG_USER_ID = "user-id";
+    public static final String CONFIG_SERVICE_TOKEN = "service-token";
     public static final String CONFIG_SSECURITY = "ssecurity";
-    public static final String CONFIG_LOGIN_METHOD = "loginMethod";
-    public static final String CONFIG_CLOUD_DISCOVERY_MODE = "cloudDiscoveryMode";
+    public static final String CONFIG_LOGIN_METHOD = "login-method";
+    public static final String CONFIG_CLOUD_DISCOVERY_MODE = "cloud-discovery-mode";
 
     public static final Set<String> PERSISTENT_CHANNELS = Collections.unmodifiableSet(
             Stream.of(CHANNEL_COMMAND, CHANNEL_RPC, CHANNEL_SSID, CHANNEL_BSSID, CHANNEL_RSSI, CHANNEL_LIFE)
