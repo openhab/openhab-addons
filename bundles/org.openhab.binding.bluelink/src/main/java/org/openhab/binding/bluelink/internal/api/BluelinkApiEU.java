@@ -13,7 +13,6 @@
 package org.openhab.binding.bluelink.internal.api;
 
 import static org.openhab.core.library.unit.MetricPrefix.KILO;
-import static org.openhab.core.library.unit.SIUnits.CELSIUS;
 import static org.openhab.core.library.unit.SIUnits.METRE;
 
 import java.nio.charset.StandardCharsets;
@@ -59,7 +58,6 @@ import org.openhab.binding.bluelink.internal.dto.eu.VehiclesResponse;
 import org.openhab.binding.bluelink.internal.dto.eu.ccs2.Ccs2ControlRequest;
 import org.openhab.binding.bluelink.internal.dto.eu.ccs2.Ccs2ControlTokenRequest;
 import org.openhab.binding.bluelink.internal.dto.eu.ccs2.Ccs2ControlTokenResponse;
-import org.openhab.binding.bluelink.internal.dto.eu.ccs2.Ccs2StartClimateRequest;
 import org.openhab.binding.bluelink.internal.dto.eu.ccs2.Ccs2VehicleStatusResponse;
 import org.openhab.binding.bluelink.internal.model.Brand;
 import org.openhab.binding.bluelink.internal.model.IVehicle;
@@ -449,20 +447,12 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
 
     @Override
     public boolean lockVehicle(final IVehicle vehicle) throws BluelinkApiException {
-        if (isCcsProtocol(vehicle)) {
-            return sendCcs2ControlCommand(vehicle, "door", "close");
-        } else {
-            return sendControlAction(vehicle, "door", "close");
-        }
+        return sendControlAction(vehicle, "door", "close");
     }
 
     @Override
     public boolean unlockVehicle(final IVehicle vehicle) throws BluelinkApiException {
-        if (isCcsProtocol(vehicle)) {
-            return sendCcs2ControlCommand(vehicle, "door", "open");
-        } else {
-            return sendControlAction(vehicle, "door", "open");
-        }
+        return sendControlAction(vehicle, "door", "open");
     }
 
     @Override
@@ -473,50 +463,26 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
             throw new BluelinkApiException("Vehicle ID is missing");
         }
 
-        if (isCcsProtocol(vehicle)) {
-            final var tempC = temperature.toUnit(CELSIUS);
-            if (tempC == null) {
-                throw new IllegalArgumentException("cannot convert temperature");
-            }
-
-            final Ccs2StartClimateRequest payload = new Ccs2StartClimateRequest(tempC.doubleValue(), heat, defrost,
-                    igniOnDuration != null ? igniOnDuration : 5);
-            return sendCcs2ControlCommand(vehicle, "temperature", payload);
-        } else {
-            final String url = brandConfig.apiBaseUrl + SPA_API_URL_V1 + "vehicles/" + vehicleId
-                    + "/control/temperature";
-            final AirTemperature airTemperature = AirTemperature.of(vehicle, temperature);
-            final ControlRequest payload = new ControlRequest(deviceId, "start", 0,
-                    new ControlRequest.Options(defrost, heat ? 1 : 0), airTemperature.value(), "C");
-            return sendControlAction(url, payload);
-        }
+        final String url = brandConfig.apiBaseUrl + SPA_API_URL_V1 + "vehicles/" + vehicleId + "/control/temperature";
+        final AirTemperature airTemperature = AirTemperature.of(vehicle, temperature);
+        final ControlRequest payload = new ControlRequest(deviceId, "start", 0,
+                new ControlRequest.Options(defrost, heat ? 1 : 0), airTemperature.value(), "C");
+        return sendControlAction(url, payload);
     }
 
     @Override
     public boolean climateStop(final IVehicle vehicle) throws BluelinkApiException {
-        if (isCcsProtocol(vehicle)) {
-            return sendCcs2ControlCommand(vehicle, "temperature", "stop");
-        } else {
-            return sendControlAction(vehicle, "temperature", "stop");
-        }
+        return sendControlAction(vehicle, "temperature", "stop");
     }
 
     @Override
     public boolean startCharging(final IVehicle vehicle) throws BluelinkApiException {
-        if (isCcsProtocol(vehicle)) {
-            return sendCcs2ControlCommand(vehicle, "charge", "start");
-        } else {
-            return sendControlAction(vehicle, "charge", "start");
-        }
+        return sendControlAction(vehicle, "charge", "start");
     }
 
     @Override
     public boolean stopCharging(final IVehicle vehicle) throws BluelinkApiException {
-        if (isCcsProtocol(vehicle)) {
-            return sendCcs2ControlCommand(vehicle, "charge", "stop");
-        } else {
-            return sendControlAction(vehicle, "charge", "stop");
-        }
+        return sendControlAction(vehicle, "charge", "stop");
     }
 
     /**
