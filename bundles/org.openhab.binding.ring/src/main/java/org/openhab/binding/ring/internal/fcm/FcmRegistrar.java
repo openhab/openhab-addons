@@ -155,26 +155,27 @@ public class FcmRegistrar {
     private String performC2dmRegistration(String androidId, String securityToken, String fisToken)
             throws AuthenticationException {
         StringBuilder payloadBuilder = new StringBuilder();
+
+        // Use com.chrome.linux to bypass Android App Certificate restrictions
+        // while still generating a token that natively links to our ANDROID_ID socket.
         payloadBuilder.append("sender=").append(RING_SENDER_ID).append("&X-subtype=").append(RING_SENDER_ID)
-                .append("&device=").append(androidId).append("&app=").append(RING_PACKAGE_NAME).append("&X-app_id=")
+                .append("&device=").append(androidId).append("&app=com.chrome.linux").append("&X-app_id=")
                 .append(RING_APP_ID).append("&X-project_id=").append(RING_PROJECT_ID).append("&X-scope=*");
+
         try {
             Request request = httpClient.newRequest(URL_REGISTER).method(HttpMethod.POST)
                     .timeout(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS)
                     .header("Authorization", "AidLogin " + androidId + ":" + securityToken)
                     .header("Content-Type", "application/x-www-form-urlencoded")
-                    .header("X-Goog-Firebase-Installations-Auth", fisToken).header("app", RING_PACKAGE_NAME)
-                    .header("gcm_ver", "221440039").header("X-Android-Package", "com.google.android.apps.adm")
-                    .header("X-Android-Cert", "38918a453d07199354f8b19af05ec6562ced5788")
-                    .content(new StringContentProvider(payloadBuilder.toString()));
-            ContentResponse response = request.send();
+                    .header("X-Goog-Firebase-Installations-Auth", fisToken).header("app", "com.chrome.linux")
+                    .header("gcm_ver", "221440039").content(new StringContentProvider(payloadBuilder.toString()));
 
+            ContentResponse response = request.send();
             if (response.getStatus() != HttpStatus.OK_200) {
                 throw new AuthenticationException("FCM C2DM registration failed with status: " + response.getStatus());
             }
 
             String responseString = response.getContentAsString();
-
             if (responseString.startsWith("token=")) {
                 return responseString.substring(6).trim();
             } else if (responseString.contains("Error=")) {
@@ -182,7 +183,6 @@ public class FcmRegistrar {
             } else {
                 throw new AuthenticationException("Unexpected FCM registration response format");
             }
-
         } catch (ExecutionException | TimeoutException e) {
             throw new AuthenticationException("Communication error during FCM registration: " + e.getMessage());
         } catch (InterruptedException e) {
