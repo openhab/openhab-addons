@@ -13,7 +13,6 @@
 package org.openhab.binding.bluelink.internal.api;
 
 import static org.openhab.core.library.unit.MetricPrefix.KILO;
-import static org.openhab.core.library.unit.SIUnits.CELSIUS;
 import static org.openhab.core.library.unit.SIUnits.METRE;
 
 import java.nio.charset.StandardCharsets;
@@ -56,10 +55,6 @@ import org.openhab.binding.bluelink.internal.dto.eu.VehicleStatusResponse;
 import org.openhab.binding.bluelink.internal.dto.eu.VehicleStatusResponse.VehicleStatusData;
 import org.openhab.binding.bluelink.internal.dto.eu.VehicleStatusResponse.VehicleStatusInfo;
 import org.openhab.binding.bluelink.internal.dto.eu.VehiclesResponse;
-import org.openhab.binding.bluelink.internal.dto.eu.ccs2.Ccs2ControlRequest;
-import org.openhab.binding.bluelink.internal.dto.eu.ccs2.Ccs2ControlTokenRequest;
-import org.openhab.binding.bluelink.internal.dto.eu.ccs2.Ccs2ControlTokenResponse;
-import org.openhab.binding.bluelink.internal.dto.eu.ccs2.Ccs2StartClimateRequest;
 import org.openhab.binding.bluelink.internal.dto.eu.ccs2.Ccs2VehicleStatusResponse;
 import org.openhab.binding.bluelink.internal.model.Brand;
 import org.openhab.binding.bluelink.internal.model.IVehicle;
@@ -84,21 +79,15 @@ import com.google.gson.reflect.TypeToken;
 public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
     private static final String HTTP_USER_AGENT = "okhttp/3.12.0";
     private static final DateTimeFormatter EU_DATETIME_FORMAT = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
-    private static final String USER_API_URL = "/api/v1/user/";
     private static final String SPA_API_URL_V1 = "/api/v1/spa/";
-    private static final String SPA_API_URL_V2 = "/api/v2/spa/";
 
     private final BrandConfig brandConfig;
     private final String refreshToken;
     private @Nullable UUID deviceId;
 
-    private @Nullable String ccs2ControlToken;
-    private @Nullable Instant ccs2ControlTokenExpiry;
-
     public BluelinkApiEU(final HttpClient httpClient, final Brand brand, final Map<String, String> properties,
-            final @Nullable String baseUrl, final TimeZoneProvider timeZoneProvider, final String refreshToken,
-            final @Nullable String pin) {
-        super(httpClient, timeZoneProvider, "", refreshToken, pin);
+            final @Nullable String baseUrl, final TimeZoneProvider timeZoneProvider, final String refreshToken) {
+        super(httpClient, timeZoneProvider, "", refreshToken, null);
         this.refreshToken = refreshToken;
         final BrandConfig baseBrandConfig = BrandConfig.forBrand(brand);
         if (baseUrl == null) {
@@ -171,53 +160,6 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
             this.deviceId = result.deviceId();
         }
         logger.debug("Device registration successful, deviceId '{}'", deviceId);
-    }
-
-    /**
-     * Authenticate to the Bluelink EU API using the access_token and PIN to get a control_token.
-     * Only required for CCU/CCS2 protocol.
-     *
-     * @throws BluelinkApiException
-     */
-    private void authenticateCcs2Control() throws BluelinkApiException {
-        ensureAuthenticated();
-        final String pin = this.pin;
-        if (pin == null || pin.isBlank()) {
-            throw new BluelinkApiException("PIN is required to authenticate for control actions");
-        }
-        final UUID deviceId = this.deviceId;
-        if (deviceId == null) {
-            throw new IllegalStateException("deviceId is null but should be set");
-        }
-
-        final String pinUrl = brandConfig.apiBaseUrl + USER_API_URL + "pin";
-        final Ccs2ControlTokenRequest payload = new Ccs2ControlTokenRequest(this.deviceId, pin);
-        final Request request = httpClient.newRequest(pinUrl).method(HttpMethod.PUT)
-                .header(HttpHeader.USER_AGENT, HTTP_USER_AGENT)
-                .content(new StringContentProvider(gson.toJson(payload)), APPLICATION_JSON);
-        addStandardHeaders(request);
-        addAuthHeaders(request);
-
-        final Ccs2ControlTokenResponse response = sendRequest(request, new TypeToken<>() {
-        }, "get control token");
-        if (response.controlToken() == null || response.expiresTime() == null) {
-            throw new BluelinkApiException("Invalid control token response");
-        }
-        this.ccs2ControlToken = response.controlToken();
-        this.ccs2ControlTokenExpiry = Instant.now().plusSeconds(response.expiresTime() - 60);
-        logger.debug("Authenticating for control actions successful, token valid until {}", ccs2ControlTokenExpiry);
-    }
-
-    private boolean isCcs2ControlAuthenticated() {
-        final String token = ccs2ControlToken;
-        final Instant expiry = ccs2ControlTokenExpiry;
-        return token != null && expiry != null && Instant.now().isBefore(expiry);
-    }
-
-    private void ensureCcs2ControlAuthenticated() throws BluelinkApiException {
-        if (!isCcs2ControlAuthenticated()) {
-            authenticateCcs2Control();
-        }
     }
 
     @Override
@@ -412,57 +354,14 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
         return sendControlAction(url, payload);
     }
 
-    private boolean sendCcs2ControlCommand(final IVehicle vehicle, final String endpoint, final Object payload)
-            throws BluelinkApiException {
-        ensureCcs2ControlAuthenticated();
-
-        final String vehicleId = vehicle.id();
-        if (vehicleId == null) {
-            throw new BluelinkApiException("Vehicle ID is missing");
-        }
-
-        final String url = brandConfig.apiBaseUrl + SPA_API_URL_V2 + "vehicles/" + vehicleId + "/ccs2/control/"
-                + endpoint;
-        final String payloadJson = gson.toJson(payload);
-        logger.debug("send CC2 control action request: {}", payloadJson);
-        final Request request = httpClient.newRequest(url).method(HttpMethod.POST)
-                .header(HttpHeader.USER_AGENT, HTTP_USER_AGENT)
-                .content(new StringContentProvider(payloadJson), APPLICATION_JSON);
-        addStandardHeaders(request);
-        addAuthHeaders(request);
-        addCcs2AuthHeaders(request);
-
-        final BaseResponse<?> response = sendRequest(request, new TypeToken<>() {
-        }, "send CCS2 control action");
-        if (!response.retCode().equals("S")) {
-            throw new BluelinkApiException("Failed to send CCS2 control action: " + response);
-        }
-        return true;
-    }
-
-    private boolean sendCcs2ControlCommand(final IVehicle vehicle, final String endpoint, final String command)
-            throws BluelinkApiException {
-
-        final Ccs2ControlRequest payload = new Ccs2ControlRequest(command);
-        return sendCcs2ControlCommand(vehicle, endpoint, payload);
-    }
-
     @Override
     public boolean lockVehicle(final IVehicle vehicle) throws BluelinkApiException {
-        if (isCcsProtocol(vehicle)) {
-            return sendCcs2ControlCommand(vehicle, "door", "close");
-        } else {
-            return sendControlAction(vehicle, "door", "close");
-        }
+        return sendControlAction(vehicle, "door", "close");
     }
 
     @Override
     public boolean unlockVehicle(final IVehicle vehicle) throws BluelinkApiException {
-        if (isCcsProtocol(vehicle)) {
-            return sendCcs2ControlCommand(vehicle, "door", "open");
-        } else {
-            return sendControlAction(vehicle, "door", "open");
-        }
+        return sendControlAction(vehicle, "door", "open");
     }
 
     @Override
@@ -473,50 +372,26 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
             throw new BluelinkApiException("Vehicle ID is missing");
         }
 
-        if (isCcsProtocol(vehicle)) {
-            final var tempC = temperature.toUnit(CELSIUS);
-            if (tempC == null) {
-                throw new IllegalArgumentException("cannot convert temperature");
-            }
-
-            final Ccs2StartClimateRequest payload = new Ccs2StartClimateRequest(tempC.doubleValue(), heat, defrost,
-                    igniOnDuration != null ? igniOnDuration : 5);
-            return sendCcs2ControlCommand(vehicle, "temperature", payload);
-        } else {
-            final String url = brandConfig.apiBaseUrl + SPA_API_URL_V1 + "vehicles/" + vehicleId
-                    + "/control/temperature";
-            final AirTemperature airTemperature = AirTemperature.of(vehicle, temperature);
-            final ControlRequest payload = new ControlRequest(deviceId, "start", 0,
-                    new ControlRequest.Options(defrost, heat ? 1 : 0), airTemperature.value(), "C");
-            return sendControlAction(url, payload);
-        }
+        final String url = brandConfig.apiBaseUrl + SPA_API_URL_V1 + "vehicles/" + vehicleId + "/control/temperature";
+        final AirTemperature airTemperature = AirTemperature.of(vehicle, temperature);
+        final ControlRequest payload = new ControlRequest(deviceId, "start", 0,
+                new ControlRequest.Options(defrost, heat ? 1 : 0), airTemperature.value(), "C");
+        return sendControlAction(url, payload);
     }
 
     @Override
     public boolean climateStop(final IVehicle vehicle) throws BluelinkApiException {
-        if (isCcsProtocol(vehicle)) {
-            return sendCcs2ControlCommand(vehicle, "temperature", "stop");
-        } else {
-            return sendControlAction(vehicle, "temperature", "stop");
-        }
+        return sendControlAction(vehicle, "temperature", "stop");
     }
 
     @Override
     public boolean startCharging(final IVehicle vehicle) throws BluelinkApiException {
-        if (isCcsProtocol(vehicle)) {
-            return sendCcs2ControlCommand(vehicle, "charge", "start");
-        } else {
-            return sendControlAction(vehicle, "charge", "start");
-        }
+        return sendControlAction(vehicle, "charge", "start");
     }
 
     @Override
     public boolean stopCharging(final IVehicle vehicle) throws BluelinkApiException {
-        if (isCcsProtocol(vehicle)) {
-            return sendCcs2ControlCommand(vehicle, "charge", "stop");
-        } else {
-            return sendControlAction(vehicle, "charge", "stop");
-        }
+        return sendControlAction(vehicle, "charge", "stop");
     }
 
     /**
@@ -588,14 +463,6 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
         final UUID id = this.deviceId;
         if (id != null) {
             request.header("ccsp-device-id", id.toString());
-        }
-    }
-
-    private void addCcs2AuthHeaders(final Request request) {
-        final String token = ccs2ControlToken;
-        if (token != null) {
-            request.header(HttpHeader.AUTHORIZATION, "Bearer " + token);
-            request.header("AuthorizationCCSP", "Bearer " + token);
         }
     }
 
