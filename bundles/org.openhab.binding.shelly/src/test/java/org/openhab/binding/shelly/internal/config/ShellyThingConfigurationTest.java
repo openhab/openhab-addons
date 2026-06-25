@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.shelly.internal.config;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.lang.reflect.Field;
@@ -112,8 +112,6 @@ public class ShellyThingConfigurationTest {
         assertThat(config.getEnableBluGateway(), is(true));
         assertThat(config.getEnableRangeExtender(), is(false));
     }
-
-    // ── Helper ────────────────────────────────────────────────────────────────
 
     private static void setField(Object obj, String fieldName, Object value) throws Exception {
         Field field = obj.getClass().getDeclaredField(fieldName);
