@@ -17,6 +17,7 @@ import org.openhab.binding.bluelink.internal.dto.CommonVehicleStatus;
 import org.openhab.binding.bluelink.internal.dto.DoorStatus;
 import org.openhab.binding.bluelink.internal.dto.DrivingRange;
 import org.openhab.binding.bluelink.internal.dto.EvStatus;
+import org.openhab.binding.bluelink.internal.dto.IVehicleLocation;
 import org.openhab.binding.bluelink.internal.dto.SeatHeaterState;
 import org.openhab.binding.bluelink.internal.dto.TirePressureWarning;
 
@@ -33,10 +34,11 @@ public record VehicleStatusResponse(VehicleStatusInfo vehicleStatusInfo) {
             DrivingRange odometer) {
     }
 
-    public record VehicleLocation(Coordinates coord, int head, ValueUnit speed, String time) {
+    public record VehicleLocation(Coordinates coord, int head, ValueUnit speed,
+            String time) implements IVehicleLocation {
     }
 
-    public record Coordinates(double lat, double lon, double alt) {
+    public record Coordinates(double lat, double lon, double alt) implements IVehicleLocation.GeoCoordinates {
     }
 
     public record VehicleStatusData(String time, @Override boolean engine, @Override boolean doorLock,
