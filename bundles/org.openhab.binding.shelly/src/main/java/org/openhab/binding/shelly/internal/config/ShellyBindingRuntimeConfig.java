@@ -16,8 +16,6 @@ import static org.openhab.binding.shelly.internal.ShellyBindingConstants.DEFAULT
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.shelly.internal.ShellyHandlerFactory;
-import org.openhab.binding.shelly.internal.handler.ShellyBaseHandler;
 import org.openhab.core.net.NetworkAddressService;
 
 /**
@@ -100,8 +98,6 @@ public class ShellyBindingRuntimeConfig {
         return result;
     }
 
-    // ── Getters ──────────────────────────────────────────────────────────────
-
     public synchronized String getDefaultUserId() {
         return defaultUserId;
     }
@@ -128,8 +124,6 @@ public class ShellyBindingRuntimeConfig {
         return autoCoIoT;
     }
 
-    // ── Setters ──────────────────────────────────────────────────────────────
-
     /**
      * Sets the HTTP port to use. {@code -1} means "use default".
      *
@@ -138,8 +132,6 @@ public class ShellyBindingRuntimeConfig {
     public synchronized void setHttpPort(int httpPort) {
         this.httpPort = httpPort;
     }
-
-    // ── Private helpers ───────────────────────────────────────────────────────
 
     private static String resolveLocalIP(NetworkAddressService nas) {
         @Nullable

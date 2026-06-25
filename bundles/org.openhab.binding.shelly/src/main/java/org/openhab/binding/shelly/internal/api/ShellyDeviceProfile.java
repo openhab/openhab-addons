@@ -87,7 +87,7 @@ public class ShellyDeviceProfile {
     public int numInputs = 0; // number of inputs
 
     public int numMeters = 0;
-    public boolean isEMeter; // true for ShellyEM/3EM
+    public boolean isEMeter; // true for Gen 1 ShellyEM/3EM or Gen 2+ devices (extended values are measured)
     public boolean isCB; // true for Shelly Pro CB
 
     public boolean isLight; // true if it is a Shelly Bulb/RGBW2
@@ -178,11 +178,9 @@ public class ShellyDeviceProfile {
         numInputs = inputs != null ? inputs.size() : hasRelays ? isRoller ? 2 : 1 : 0;
 
         isEMeter = settings.emeters != null;
-        numMeters = !isEMeter ? getInteger(device.numMeters) : getInteger(device.numEMeters);
-        if ((numMeters == 0) && isLight) {
-            // RGBW2 doesn't report, but has one
-            numMeters = inColor ? 1 : getInteger(device.numOutputs);
-        }
+        int numMetersFromDevice = getInteger(isEMeter ? device.numEMeters : device.numMeters);
+        numMeters = resolveNumMeters(thingTypeUID, numMetersFromDevice, -1, isLight, inColor,
+                getInteger(device.numOutputs), hasRelays, numRelays, numRollers, isRoller);
 
         initialized = true;
         return this;
@@ -256,6 +254,39 @@ public class ShellyDeviceProfile {
             }
             settings.inputs = inputs;
         }
+    }
+
+    /**
+     * Resolve meter count using a fixed priority chain so Gen1 and Gen2 paths produce consistent results.
+     *
+     * Priority: (1) device-reported from /shelly (Gen1, > 0 means trusted); (2) capability-map override
+     * (developer-defined, e.g. Pro2=0, 3EM=3); (3) device-config detection (Gen2 pm10/em0/em10);
+     * (4) light special case (RGBW2 reports 0 but has meters); (5) relay-count fallback.
+     *
+     * Pass fromDevice=-1 for Gen2 (device info does not carry meter count).
+     * Pass fromDeviceConfig=-1 for Gen1 (no GetConfig response available).
+     */
+    public static int resolveNumMeters(ThingTypeUID thingTypeUID, int numMetersFromDevice, int fromDeviceConfig,
+            boolean isLight, boolean inColor, int numOutputs, boolean hasRelays, int numRelays, int numRollers,
+            boolean isRoller) {
+        if (numMetersFromDevice > 0) {
+            return numMetersFromDevice;
+        }
+        Integer capNum = THING_TYPE_CAP_NUM_METERS.get(thingTypeUID);
+        if (capNum != null) {
+            return capNum;
+        }
+        if (fromDeviceConfig >= 0) {
+            return fromDeviceConfig;
+        }
+        if (isLight) {
+            return inColor ? 1 : numOutputs;
+        }
+        if (hasRelays) {
+            // Gen2 relay-PM: no numMeters in device response — fall back to relay/roller count
+            return isRoller ? numRollers : numRelays;
+        }
+        return 0;
     }
 
     public void updateFromStatus(ShellySettingsStatus status) {
