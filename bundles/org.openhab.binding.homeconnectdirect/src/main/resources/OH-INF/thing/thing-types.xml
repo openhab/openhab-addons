@@ -26,11 +26,11 @@
 			<channel id="rinse-aid-nearly-empty" typeId="dishwasher-rinse-aid-nearly-empty-channel"/>
 			<channel id="machine-care-reminder" typeId="dishwasher-machine-care-reminder-channel"/>
 			<channel id="program-phase" typeId="dishwasher-program-phase-channel"/>
+			<channel id="program-command" typeId="dishwasher-program-command-channel"/>
 
 			<!-- program -->
 			<channel id="active-program" typeId="active-program-channel"/>
 			<channel id="selected-program" typeId="selected-program-channel"/>
-			<channel id="program-command" typeId="program-command-channel"/>
 			<channel id="program-progress" typeId="program-progress-channel"/>
 			<channel id="remaining-program-time" typeId="remaining-program-time-channel"/>
 
@@ -39,6 +39,9 @@
 			<channel id="dishwasher-intensiv-zone" typeId="dishwasher-intensiv-zone-channel"/>
 			<channel id="dishwasher-brilliance-dry" typeId="dishwasher-brilliance-dry-channel"/>
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<representation-property>haId</representation-property>
 		<config-description-ref uri="thing-type:homeconnectdirect:appliance"/>
 	</thing-type>
@@ -481,6 +484,24 @@
 				<option value="start">Start Program</option>
 				<option value="pause">Pause Program</option>
 				<option value="resume">Resume Program</option>
+			</options>
+		</command>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="dishwasher-program-command-channel">
+		<item-type>String</item-type>
+		<label>Program Command</label>
+		<description>Controls the program execution.</description>
+		<tags>
+			<tag>Control</tag>
+		</tags>
+		<command>
+			<options>
+				<option value="start">Start Program</option>
+				<option value="pause">Pause Program</option>
+				<option value="resume">Resume Program</option>
+				<option value="stop">Stop Program</option>
 			</options>
 		</command>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>

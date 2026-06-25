@@ -64,6 +64,9 @@ public class HomeConnectDirectDishwasherHandler extends BaseHomeConnectDirectHan
             sendBooleanOptionIfAllowed(command, DISHWASHER_INTENSIV_ZONE_KEY);
         } else if (CHANNEL_DISHWASHER_BRILLIANCE_DRY.equals(channelUID.getId()) && command instanceof OnOffType) {
             sendBooleanOptionIfAllowed(command, DISHWASHER_BRILLIANCE_DRY_KEY);
+        } else if (CHANNEL_PROGRAM_COMMAND.equals(channelUID.getId())
+                && COMMAND_STOP.equalsIgnoreCase(command.toFullString())) {
+            sendBooleanCommandIfAllowed(ABORT_PROGRAM_KEY);
         }
     }
 
