@@ -173,6 +173,158 @@ class RachioSmartIrrigationApiTest {
         assertThat(todayForecast.getWind(), is(10.5));
     }
 
+    @Test
+    void forecastDtoReadsNestedWeatherDailyForecast() {
+        String json = """
+                {
+                  "updatedAt": "2026-05-17T03:00:00Z",
+                  "weather": {
+                    "daily": [
+                      {
+                        "conditions": "Partly cloudy",
+                        "temperatureHigh": 26.0,
+                        "temperatureLow": 14.0,
+                        "precip": 2.5,
+                        "precipProbability": 0.4,
+                        "windSpeed": 7.5
+                      }
+                    ]
+                  }
+                }
+                """;
+
+        RachioForecastResponse response = RachioForecastResponse.fromJson(json);
+        RachioForecastEntry todayForecast = Objects.requireNonNull(response.getTodayForecast());
+
+        assertThat(response.hasUsefulData(), is(true));
+        assertThat(response.getSummary(), is("Partly cloudy"));
+        assertThat(response.getUpdated(), is("2026-05-17T03:00:00Z"));
+        assertThat(todayForecast.getHighTemperature(), is(26.0));
+        assertThat(todayForecast.getLowTemperature(), is(14.0));
+        assertThat(todayForecast.precipitation, is(2.5));
+        assertThat(todayForecast.precipitationProbability, is(0.4));
+        assertThat(todayForecast.getWind(), is(7.5));
+        assertThat(response.shapeSummary().contains("topLevelKeys=updatedAt,weather"), is(true));
+        assertThat(response.shapeSummary().contains("selectedEntryKeys=conditions,temperatureHigh"), is(true));
+        assertThat(response.shapeSummary().contains("matchedAliases=updatedAt,conditions"), is(true));
+    }
+
+    @Test
+    void forecastDtoMapsRuntimeDailyAliases() {
+        RachioForecastResponse response = RachioForecastResponse.fromJson("""
+                {
+                  "weather": {
+                    "daily": [
+                      {
+                        "localizedTimeStamp": "2026-06-20T08:00:00Z",
+                        "calculatedPrecip": 3.4,
+                        "precipIntensity": 0.2,
+                        "precipProbability": 0.6,
+                        "temperatureMin": 15.0,
+                        "temperatureMax": 27.0,
+                        "weatherSummary": "Scattered showers"
+                      }
+                    ]
+                  }
+                }
+                """);
+        RachioForecastEntry todayForecast = Objects.requireNonNull(response.getTodayForecast());
+
+        assertThat(response.getSummary(), is("Scattered showers"));
+        assertThat(response.getUpdated(), is("2026-06-20T08:00:00Z"));
+        assertThat(todayForecast.precipitation, is(3.4));
+        assertThat(response.parsedFieldSummary().contains("summary=true"), is(true));
+        assertThat(response.parsedFieldSummary().contains("precipitation=true"), is(true));
+        assertThat(response.parsedFieldSummary().contains("updated=true"), is(true));
+        assertThat(response.shapeSummary().contains(
+                "matchedAliases=weatherSummary,localizedTimeStamp,temperatureMax,temperatureMin,calculatedPrecip,precipIntensity,precipProbability"),
+                is(true));
+    }
+
+    @Test
+    void forecastDtoPreservesAliasPrecedenceAndUsesTimeAsTimestampFallback() {
+        RachioForecastResponse response = RachioForecastResponse.fromJson("""
+                {
+                  "today": {
+                    "summary": "Preferred summary",
+                    "weatherSummary": "Secondary summary",
+                    "time": 1781942400,
+                    "precipitationAmount": 1.2,
+                    "calculatedPrecip": 3.4
+                  }
+                }
+                """);
+        RachioForecastEntry todayForecast = Objects.requireNonNull(response.getTodayForecast());
+
+        assertThat(response.getSummary(), is("Preferred summary"));
+        assertThat(response.getUpdated(), is("1781942400"));
+        assertThat(todayForecast.precipitation, is(1.2));
+        assertThat(response.shapeSummary().contains("matchedAliases=summary,time,precipitationAmount"), is(true));
+    }
+
+    @Test
+    void forecastDtoKeepsPrecipitationIntensityDiagnosticOnly() {
+        RachioForecastResponse response = RachioForecastResponse.fromJson("""
+                {
+                  "today": {
+                    "temperatureMax": 27.0,
+                    "precipIntensity": 0.2
+                  }
+                }
+                """);
+        RachioForecastEntry todayForecast = Objects.requireNonNull(response.getTodayForecast());
+
+        assertThat(Double.isNaN(todayForecast.precipitation), is(true));
+        assertThat(response.parsedFieldSummary().contains("precipitation=false"), is(true));
+        assertThat(response.shapeSummary().contains("matchedAliases=temperatureMax,precipIntensity"), is(true));
+    }
+
+    @Test
+    void forecastDtoTreatsTimestampOnlyResponseAsNoUsefulData() {
+        RachioForecastResponse response = RachioForecastResponse.fromJson("""
+                {
+                  "updatedAt": "2026-06-20T08:05:00Z",
+                  "weather": {
+                    "daily": [
+                      {"localizedTimeStamp": "2026-06-20T08:00:00Z"}
+                    ]
+                  }
+                }
+                """);
+
+        assertThat(response.getUpdated(), is("2026-06-20T08:05:00Z"));
+        assertThat(response.hasUsefulData(), is(false));
+        assertThat(response.getTodayForecast() == null, is(true));
+    }
+
+    @Test
+    void forecastDtoDoesNotTreatPrecipitationIntensityAloneAsUseful() {
+        RachioForecastResponse response = RachioForecastResponse.fromJson("""
+                {
+                  "today": {
+                    "precipIntensity": 0.2
+                  }
+                }
+                """);
+
+        assertThat(response.hasUsefulData(), is(false));
+        assertThat(response.getTodayForecast() == null, is(true));
+        assertThat(response.parsedFieldSummary().contains("precipitation=false"), is(true));
+    }
+
+    @Test
+    void forecastDtoTreatsEmptyObjectAsNoUsefulData() {
+        RachioForecastResponse response = RachioForecastResponse.fromJson("""
+                {
+                  "forecast": {
+                    "daily": []
+                  }
+                }
+                """);
+
+        assertThat(response.hasUsefulData(), is(false));
+    }
+
     private static void setField(Object target, String fieldName, Object value) throws ReflectiveOperationException {
         Field field = target.getClass().getDeclaredField(fieldName);
         field.setAccessible(true);

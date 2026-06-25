@@ -23,6 +23,8 @@ import static org.openhab.binding.rachio.internal.RachioBindingConstants.DEFAULT
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.MAX_EVENT_HISTORY_LOOKBACK_HOURS;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.MAX_HOSE_SUMMARY_WINDOW_DAYS;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.PARAM_APIKEY;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.PARAM_AUTO_CONFIGURE_HOSE_TIMER_WEBHOOKS;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.PARAM_AUTO_CONFIGURE_WEBHOOKS;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.PARAM_CALLBACK_PASSWORD;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.PARAM_CALLBACK_URL;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.PARAM_CALLBACK_USERNAME;
@@ -33,6 +35,8 @@ import static org.openhab.binding.rachio.internal.RachioBindingConstants.PARAM_F
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.PARAM_HOSE_SUMMARY_LOOKAHEAD_DAYS;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.PARAM_HOSE_SUMMARY_LOOKBACK_DAYS;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.PARAM_POLLING_INTERVAL;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.PARAM_PUBLIC_WEBHOOK_URL;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.PARAM_USE_CLOUD_WEBHOOK;
 import static org.openhab.binding.rachio.internal.RachioConfiguration.ConfigurationSource.CLOUD_THING;
 import static org.openhab.binding.rachio.internal.RachioConfiguration.ConfigurationSource.DEFAULT;
 
@@ -58,7 +62,8 @@ class RachioConfigurationTest {
     private static final List<String> CLOUD_THING_PARAMETERS = List.of(PARAM_APIKEY, PARAM_POLLING_INTERVAL,
             PARAM_DEFAULT_RUNTIME, PARAM_EVENT_HISTORY_LOOKBACK_HOURS, PARAM_FORECAST_UNITS,
             PARAM_HOSE_SUMMARY_LOOKBACK_DAYS, PARAM_HOSE_SUMMARY_LOOKAHEAD_DAYS, PARAM_CALLBACK_URL,
-            PARAM_CALLBACK_USERNAME, PARAM_CALLBACK_PASSWORD, PARAM_CLEAR_CALLBACK);
+            PARAM_CALLBACK_USERNAME, PARAM_CALLBACK_PASSWORD, PARAM_CLEAR_CALLBACK, PARAM_AUTO_CONFIGURE_WEBHOOKS,
+            PARAM_AUTO_CONFIGURE_HOSE_TIMER_WEBHOOKS, PARAM_USE_CLOUD_WEBHOOK, PARAM_PUBLIC_WEBHOOK_URL);
 
     @Test
     void invalidEventHistoryLookbackUsesDefault() {
@@ -134,19 +139,51 @@ class RachioConfigurationTest {
     }
 
     @Test
+    void modernWebhookConfigurationDefaultsToDisabled() {
+        RachioConfiguration configuration = new RachioConfiguration();
+
+        assertThat(configuration.autoConfigureWebhooks, is(false));
+        assertThat(configuration.autoConfigureHoseTimerWebhooks, is(false));
+        assertThat(configuration.useCloudWebhook, is(false));
+        assertThat(configuration.publicWebhookUrl, is(""));
+    }
+
+    @Test
+    void modernWebhookConfigurationUsesCloudThingValues() {
+        RachioConfiguration configuration = new RachioConfiguration();
+
+        configuration.updateConfig(Map.of(PARAM_AUTO_CONFIGURE_WEBHOOKS, "true", PARAM_USE_CLOUD_WEBHOOK, "true",
+                PARAM_AUTO_CONFIGURE_HOSE_TIMER_WEBHOOKS, "true", PARAM_PUBLIC_WEBHOOK_URL,
+                "https://example.org/rachio/webhook"));
+
+        assertThat(configuration.autoConfigureWebhooks, is(true));
+        assertThat(configuration.autoConfigureHoseTimerWebhooks, is(true));
+        assertThat(configuration.useCloudWebhook, is(true));
+        assertThat(configuration.publicWebhookUrl, is("https://example.org/rachio/webhook"));
+    }
+
+    @Test
     void effectiveConfigurationUsesCloudThingValues() {
         RachioConfiguration.ResolvedConfiguration resolvedConfiguration = RachioConfiguration
                 .resolveEffectiveConfig(Map.of(PARAM_FORECAST_UNITS, "US", PARAM_HOSE_SUMMARY_LOOKAHEAD_DAYS, "9",
                         PARAM_EVENT_HISTORY_LOOKBACK_HOURS, "6", PARAM_CALLBACK_URL,
-                        "https://cloud.example.org/rachio/webhook"));
+                        "https://cloud.example.org/rachio/webhook", PARAM_AUTO_CONFIGURE_WEBHOOKS, "true",
+                        PARAM_AUTO_CONFIGURE_HOSE_TIMER_WEBHOOKS, "true", PARAM_PUBLIC_WEBHOOK_URL,
+                        "https://public.example.org/rachio/webhook"));
         RachioConfiguration configuration = resolvedConfiguration.configuration();
 
         assertThat(configuration.forecastUnits, is("US"));
         assertThat(configuration.hoseSummaryLookaheadDays, is(9));
         assertThat(configuration.eventHistoryLookbackHours, is(6));
         assertThat(configuration.callbackUrl, is("https://cloud.example.org/rachio/webhook"));
+        assertThat(configuration.autoConfigureWebhooks, is(true));
+        assertThat(configuration.autoConfigureHoseTimerWebhooks, is(true));
+        assertThat(configuration.publicWebhookUrl, is("https://public.example.org/rachio/webhook"));
         assertThat(resolvedConfiguration.source(PARAM_FORECAST_UNITS), is(CLOUD_THING));
         assertThat(resolvedConfiguration.source(PARAM_HOSE_SUMMARY_LOOKAHEAD_DAYS), is(CLOUD_THING));
+        assertThat(resolvedConfiguration.source(PARAM_AUTO_CONFIGURE_WEBHOOKS), is(CLOUD_THING));
+        assertThat(resolvedConfiguration.source(PARAM_AUTO_CONFIGURE_HOSE_TIMER_WEBHOOKS), is(CLOUD_THING));
+        assertThat(resolvedConfiguration.source(PARAM_PUBLIC_WEBHOOK_URL), is(CLOUD_THING));
     }
 
     @Test
@@ -160,8 +197,14 @@ class RachioConfigurationTest {
         assertThat(configuration.hoseSummaryLookaheadDays, is(DEFAULT_HOSE_SUMMARY_LOOKAHEAD_DAYS));
         assertThat(configuration.eventHistoryLookbackHours, is(DEFAULT_EVENT_HISTORY_LOOKBACK_HOURS));
         assertThat(configuration.callbackUrl, is(""));
+        assertThat(configuration.autoConfigureWebhooks, is(false));
+        assertThat(configuration.autoConfigureHoseTimerWebhooks, is(false));
+        assertThat(configuration.useCloudWebhook, is(false));
+        assertThat(configuration.publicWebhookUrl, is(""));
         assertThat(resolvedConfiguration.source(PARAM_FORECAST_UNITS), is(DEFAULT));
         assertThat(resolvedConfiguration.source(PARAM_HOSE_SUMMARY_LOOKAHEAD_DAYS), is(DEFAULT));
+        assertThat(resolvedConfiguration.source(PARAM_AUTO_CONFIGURE_WEBHOOKS), is(DEFAULT));
+        assertThat(resolvedConfiguration.source(PARAM_AUTO_CONFIGURE_HOSE_TIMER_WEBHOOKS), is(DEFAULT));
     }
 
     @Test

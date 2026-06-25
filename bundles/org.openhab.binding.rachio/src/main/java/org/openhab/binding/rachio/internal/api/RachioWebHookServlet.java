@@ -184,7 +184,9 @@ public class RachioWebHookServlet extends HttpServlet {
         try {
             logger.trace("RachioWebHook: Received {} byte webhook payload", rawBody.length);
             event = parseEvent(data);
-            if (event.isLegacyNotificationEvent()) {
+            String signature = request.getHeader(WEBHOOK_SIGNATURE_HEADER);
+            boolean modernWebhookShape = signature != null || event.hasStrongModernWebhookMarkers();
+            if (!modernWebhookShape && event.isLegacyNotificationEvent()) {
                 event.normalizeLegacyNotificationEvent();
                 logger.trace("RachioWebHook: Processing legacy NotificationService event ({})", describeEvent(event));
                 if (isBlank(event.subType)) {
@@ -201,7 +203,6 @@ public class RachioWebHookServlet extends HttpServlet {
                 return;
             }
 
-            String signature = request.getHeader(WEBHOOK_SIGNATURE_HEADER);
             if (signature == null || signature.isBlank()) {
                 logger.warn("RachioWebHook: Payload classification summary: {}", describeLegacyClassification(event));
                 logger.warn(
@@ -389,7 +390,9 @@ public class RachioWebHookServlet extends HttpServlet {
     }
 
     static String describeLegacyClassification(RachioEventGsonDTO event) {
-        return "legacyTypeRecognized=" + event.isLegacyNotificationTypeRecognized() + ", eventTypePresent="
+        return "legacyTypeRecognized=" + event.isLegacyNotificationTypeRecognized() + ", eventIdPresent="
+                + !isBlank(event.eventId) + ", resourceIdPresent=" + !isBlank(event.resourceId) + ", timestampPresent="
+                + !isBlank(event.timestamp) + ", payloadPresent=" + (event.payload != null) + ", eventTypePresent="
                 + !isBlank(event.eventType) + ", resourceTypePresent=" + !isBlank(event.resourceType) + ", type='"
                 + event.getLegacyNotificationTypeForLogging() + "', subTypePresent=" + !isBlank(event.subType)
                 + ", deviceIdPresent=" + !isBlank(event.deviceId) + ", externalIdPresent=" + !isBlank(event.externalId);

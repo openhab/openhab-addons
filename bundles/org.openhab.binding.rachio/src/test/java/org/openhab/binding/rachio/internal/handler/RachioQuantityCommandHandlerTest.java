@@ -27,10 +27,15 @@ import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_VALVE_DEFAULT_RUNTIME;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_VALVE_RUN;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_VALVE_RUNTIME;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_ZONE_AVAILABLE_WATER;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_ZONE_DEPTH_OF_WATER;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_ZONE_MOISTURE_LEVEL;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_ZONE_MOISTURE_PERCENT;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_ZONE_ROOT_ZONE_DEPTH;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_ZONE_RUN;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_ZONE_RUNTIME;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_ZONE_SATURATED_DEPTH_OF_WATER;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_ZONE_YARD_AREA_SQUARE_FEET;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_TYPE_DEVICE;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_TYPE_VALVE;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_TYPE_ZONE;
@@ -201,6 +206,39 @@ class RachioQuantityCommandHandlerTest {
 
         handler.publicPostChannelData();
 
+        verify(callback, never()).stateUpdated(eq(new ChannelUID(thingUID, CHANNEL_ZONE_MOISTURE_LEVEL)), any());
+        verify(callback, never()).stateUpdated(eq(new ChannelUID(thingUID, CHANNEL_ZONE_MOISTURE_PERCENT)), any());
+    }
+
+    @Test
+    void zoneWaterDepthTelemetryRemainsLengthQuantitiesAndDoesNotPopulateMoisture() throws Exception {
+        ThingUID thingUID = new ThingUID(THING_TYPE_ZONE, "bridge", "zone");
+        TestZoneHandler handler = new TestZoneHandler(thing(thingUID));
+        ThingHandlerCallback callback = Mockito.mock(ThingHandlerCallback.class);
+        RachioCloudZone cloudZone = zone("zone-id", 1);
+        cloudZone.availableWater = 0.07;
+        cloudZone.depthOfWater = 1.07;
+        cloudZone.saturatedDepthOfWater = 1.18;
+        cloudZone.rootZoneDepth = 30.48;
+        cloudZone.yardAreaSquareFeet = 46;
+        RachioDevice device = deviceWithZones(cloudZone);
+        handler.setCallback(callback);
+        handler.cloudHandler = Mockito.mock(RachioBridgeHandler.class);
+        setField(handler, "dev", device);
+        setField(handler, "zone", Objects.requireNonNull(device.getZoneByNumber(1)));
+
+        handler.publicPostChannelData();
+
+        verify(callback).stateUpdated(new ChannelUID(thingUID, CHANNEL_ZONE_AVAILABLE_WATER),
+                RachioQuantityTypes.inchesOrNull(0.07));
+        verify(callback).stateUpdated(new ChannelUID(thingUID, CHANNEL_ZONE_DEPTH_OF_WATER),
+                RachioQuantityTypes.inchesOrNull(1.07));
+        verify(callback).stateUpdated(new ChannelUID(thingUID, CHANNEL_ZONE_SATURATED_DEPTH_OF_WATER),
+                RachioQuantityTypes.inchesOrNull(1.18));
+        verify(callback).stateUpdated(new ChannelUID(thingUID, CHANNEL_ZONE_ROOT_ZONE_DEPTH),
+                RachioQuantityTypes.inchesOrNull(30.48));
+        verify(callback).stateUpdated(new ChannelUID(thingUID, CHANNEL_ZONE_YARD_AREA_SQUARE_FEET),
+                RachioQuantityTypes.squareFeet(46));
         verify(callback, never()).stateUpdated(eq(new ChannelUID(thingUID, CHANNEL_ZONE_MOISTURE_LEVEL)), any());
         verify(callback, never()).stateUpdated(eq(new ChannelUID(thingUID, CHANNEL_ZONE_MOISTURE_PERCENT)), any());
     }

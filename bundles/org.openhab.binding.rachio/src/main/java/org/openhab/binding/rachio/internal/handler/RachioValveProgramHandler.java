@@ -154,7 +154,7 @@ public class RachioValveProgramHandler extends AbstractRachioThingHandler {
             thingId = currentProgram.getThingName();
             registerStatusListener();
             if (initialLoad || getThing().getStatus() != ThingStatus.ONLINE) {
-                // Smart Hose Timer program webhooks remain disabled; polling keeps schedule-like state current.
+                // Smart Hose Timer program webhooks are optional; polling keeps schedule-like state current otherwise.
                 handler.registerValveProgramWebHook(currentProgram.id,
                         initialLoad ? RequestPurpose.INITIALIZATION : RequestPurpose.BACKGROUND_REFRESH);
             }
@@ -381,12 +381,15 @@ public class RachioValveProgramHandler extends AbstractRachioThingHandler {
 
     @Override
     public void onConfigurationUpdated() {
+        renewWebhookRegistration(RequestPurpose.USER_COMMAND);
+    }
+
+    void renewWebhookRegistration(RequestPurpose requestPurpose) {
         RachioBridgeHandler handler = cloudHandler;
         RachioValveProgram currentProgram = program;
         if (handler != null && currentProgram != null) {
             try {
-                // The bridge currently treats this as disabled/no-op unless program WebhookService support is added.
-                handler.registerValveProgramWebHook(currentProgram.id, RequestPurpose.USER_COMMAND);
+                handler.registerValveProgramWebHook(currentProgram.id, requestPurpose);
             } catch (RachioApiException e) {
                 logger.debug("{}: Unable to renew Program webhook registration, cause={}", thingId,
                         e.getClass().getSimpleName());

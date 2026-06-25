@@ -25,6 +25,8 @@ import static org.openhab.binding.rachio.internal.RachioBindingConstants.APIURL_
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.APIURL_DEV_QUERY_WEBHOOK;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.APIURL_DEV_WEBHOOK_EVENT_TYPES;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.EVENT_DEVICE_ZONE_RUN_STARTED;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.EVENT_PROGRAM_RAIN_SKIP_CANCELED;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.EVENT_PROGRAM_RAIN_SKIP_CREATED;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.EVENT_SCHEDULE_STARTED;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.EVENT_VALVE_RUN_END;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.EVENT_VALVE_RUN_START;
@@ -36,6 +38,7 @@ import static org.openhab.binding.rachio.internal.RachioBindingConstants.WEBHOOK
 
 import java.lang.reflect.Field;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,6 +58,7 @@ import org.openhab.binding.rachio.internal.api.webhook.RachioWebhookTarget;
 import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager;
 import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager.RequestPurpose;
 
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -66,6 +70,52 @@ import com.google.gson.JsonParser;
 @NonNullByDefault
 @SuppressWarnings({ "null" })
 class RachioWebhookApiTest {
+    private static final OfficialSignatureSample FREEZE_SKIP_SAMPLE = new OfficialSignatureSample(
+            "FREEZE_SKIP_NOTIFICATION_EVENT", "8f68fb5e-02e8-4b2d-adb0-d2fd1e59db6c",
+            "{\"eventId\":\"6776d89e-b4e7-3f5a-864f-ba39e6bafa05\",\"eventType\":\"FREEZE_SKIP_NOTIFICATION_EVENT\",\"externalId\":\"schedule freeze webhook\",\"payload\":{\"scheduleId\":\"0114b3b9-31fb-4fe8-aa0e-b4f60aac5f91\",\"startTime\":\"2024-12-19T20:33:47.487367Z\",\"tempC\":\"2.0\",\"thresholdC\":\"7.0\"},\"resourceId\":\"85c309c6-ba69-4f90-8f3c-60e5ea3640fb\",\"resourceType\":\"IRRIGATION_CONTROLLER\",\"timestamp\":\"2024-12-19T19:33:47.487355Z\"}",
+            "1056e2029f904e981ab76a2425853d90e7663b1bb8329a7c764f63f015be3092");
+    private static final OfficialSignatureSample PROGRAM_RAIN_SKIP_SAMPLE = new OfficialSignatureSample(
+            "PROGRAM_RAIN_SKIP_CREATED_EVENT", "10061589-b3e1-418e-a27d-d1bb4763a9ea",
+            "{\"eventId\":\"6ace3fde-7f3d-316c-9a02-67f7d36ba6a3\",\"eventType\":\"PROGRAM_RAIN_SKIP_CREATED_EVENT\",\"payload\":{\"plannedRunStartTime\":\"2024-12-11T23:08:09Z\"},\"resourceId\":\"34e81383-6116-4604-be1c-b6e2dedebaef\",\"resourceType\":\"PROGRAM\",\"timestamp\":\"2024-12-11T22:18:00.445250Z\"}",
+            "5daa5f6a301fce1d6f251096dd89c5c20809a80312b8d95ddf9c47da2ec5552f");
+    private static final OfficialSignatureSample VALVE_RUN_START_SAMPLE = new OfficialSignatureSample(
+            "VALVE_RUN_START_EVENT", "0b6de780-6f47-410b-8c2a-c6e9c506f3f4",
+            "{\"eventId\":\"e040e09b-3d09-3dca-a688-3b24401d53b0\",\"eventType\":\"VALVE_RUN_START_EVENT\",\"externalId\":\"123-123-123\",\"payload\":{\"durationSeconds\":\"181\",\"flowDetected\":false,\"programId\":\"48a7181c-e06e-4a4f-bd65-92567fce0b81\",\"runType\":\"PROGRAM\",\"startTime\":\"2024-12-11T20:20:48Z\"},\"resourceId\":\"205aa289-8fe0-4f8e-8fc2-032f5f1e1c24\",\"resourceType\":\"VALVE\",\"timestamp\":\"2024-12-11T20:20:52Z\"}",
+            "b8b1a1ee62542e3910c41f405371d5e419f30055f6ce07d776e8cbee84d7b14d");
+
+    @Test
+    void officialRachioWebhookSignatureSamplesValidateAgainstRawMinifiedBody() {
+        for (OfficialSignatureSample sample : officialSignatureSamples()) {
+            assertThat(sample.eventType(),
+                    RachioApi.isValidWebHookSignature(sample.signature(), bytes(sample.body()), sample.apiToken()),
+                    is(true));
+            assertThat(sample.eventType(), RachioApi.isValidWebHookSignature("sha256=" + sample.signature(),
+                    bytes(sample.body()), sample.apiToken()), is(true));
+        }
+    }
+
+    @Test
+    void officialRachioWebhookSignatureSamplesRejectWrongTokenAndAlteredPayload() {
+        for (OfficialSignatureSample sample : officialSignatureSamples()) {
+            assertThat(sample.eventType(),
+                    RachioApi.isValidWebHookSignature(sample.signature(), bytes(sample.body()), "wrong-token"),
+                    is(false));
+            assertThat(sample.eventType(), RachioApi.isValidWebHookSignature(sample.signature(),
+                    bytes(alterEventId(sample.body())), sample.apiToken()), is(false));
+            assertThat(sample.eventType(), RachioApi.isValidWebHookSignature(sample.signature(),
+                    bytes(alterResourceId(sample.body())), sample.apiToken()), is(false));
+        }
+    }
+
+    @Test
+    void prettyPrintedOfficialRachioWebhookBodyDoesNotValidateAgainstMinifiedBodySignature() {
+        String prettyBody = new GsonBuilder().setPrettyPrinting().create()
+                .toJson(JsonParser.parseString(FREEZE_SKIP_SAMPLE.body()));
+
+        assertThat(RachioApi.isValidWebHookSignature(FREEZE_SKIP_SAMPLE.signature(), bytes(prettyBody),
+                FREEZE_SKIP_SAMPLE.apiToken()), is(false));
+    }
+
     @Test
     void webhookListParsesStringEventTypes() {
         List<RachioApiWebHookEntry> webhooks = RachioApi.parseWebHookList("""
@@ -261,6 +311,21 @@ class RachioWebhookApiTest {
         @SuppressWarnings("unchecked")
         Map<String, Object> resourceId = (Map<String, Object>) payload.get("resourceId");
         assertThat(resourceId, hasEntry("valveId", "valve id"));
+        assertThat(payload.get("url"), is("https://host/rachio/webhook"));
+        assertThat(payload.get("eventTypes"), is(List.of(EVENT_VALVE_RUN_START, EVENT_VALVE_RUN_END)));
+    }
+
+    @Test
+    void programTargetBuildsResourceAwarePayload() {
+        RachioWebhookTarget target = new RachioWebhookTarget("program id", RachioWebhookResourceType.PROGRAM,
+                List.of(EVENT_PROGRAM_RAIN_SKIP_CREATED, EVENT_PROGRAM_RAIN_SKIP_CANCELED));
+        Map<String, Object> payload = target.buildCreatePayload("https://host/rachio/webhook", "external-id");
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object> resourceId = (Map<String, Object>) payload.get("resourceId");
+        assertThat(resourceId, hasEntry("programId", "program id"));
+        assertThat(payload.get("eventTypes"),
+                is(List.of(EVENT_PROGRAM_RAIN_SKIP_CREATED, EVENT_PROGRAM_RAIN_SKIP_CANCELED)));
     }
 
     @Test
@@ -516,6 +581,29 @@ class RachioWebhookApiTest {
         Field field = target.getClass().getDeclaredField(fieldName);
         field.setAccessible(true);
         field.set(target, value);
+    }
+
+    private List<OfficialSignatureSample> officialSignatureSamples() {
+        return List.of(FREEZE_SKIP_SAMPLE, PROGRAM_RAIN_SKIP_SAMPLE, VALVE_RUN_START_SAMPLE);
+    }
+
+    private byte[] bytes(String value) {
+        return value.getBytes(StandardCharsets.UTF_8);
+    }
+
+    private String alterEventId(String body) {
+        JsonObject object = JsonParser.parseString(body).getAsJsonObject();
+        object.addProperty("eventId", "00000000-0000-0000-0000-000000000000");
+        return object.toString();
+    }
+
+    private String alterResourceId(String body) {
+        JsonObject object = JsonParser.parseString(body).getAsJsonObject();
+        object.addProperty("resourceId", "00000000-0000-0000-0000-000000000000");
+        return object.toString();
+    }
+
+    private record OfficialSignatureSample(String eventType, String apiToken, String body, String signature) {
     }
 
     private static class RecordingRateLimitManager extends ClientRateLimitManager {

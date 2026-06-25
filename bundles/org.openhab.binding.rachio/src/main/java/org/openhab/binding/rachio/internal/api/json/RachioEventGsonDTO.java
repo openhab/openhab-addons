@@ -134,7 +134,7 @@ public class RachioEventGsonDTO {
     public String iconUrl = "";
 
     // ZONE_STATUS
-    public Integer zoneNumber = 0;
+    public @Nullable Integer zoneNumber = 0;
     public String zoneName = "";
     public Integer zoneCurrent = 0;
     public String zoneRunState = "";
@@ -186,15 +186,18 @@ public class RachioEventGsonDTO {
             timestamp = createDate > 0 ? Long.toString(createDate) : "";
         }
 
-        if (eventPayload == null) {
-            return;
+        if (summary.isBlank()) {
+            summary = eventType;
         }
-
-        summary = eventType;
-        startTime = eventPayload.startTime;
-        endTime = eventPayload.endTime;
-        duration = eventPayload.getDurationSeconds();
-        durationInMinutes = duration / 60;
+        if (eventPayload != null) {
+            startTime = firstNonBlank(eventPayload.startTime, startTime);
+            endTime = firstNonBlank(eventPayload.endTime, endTime);
+            int payloadDuration = eventPayload.getDurationSeconds();
+            if (payloadDuration > 0) {
+                duration = payloadDuration;
+            }
+            durationInMinutes = duration / 60;
+        }
 
         switch (eventType) {
             case EVENT_DEVICE_ZONE_RUN_STARTED:
@@ -259,6 +262,18 @@ public class RachioEventGsonDTO {
         return !isBlank(externalId) && !isBlank(deviceId) && isLegacyNotificationTypeRecognized();
     }
 
+    public boolean hasStrongModernWebhookMarkers() {
+        return !isBlank(eventId) || payload != null;
+    }
+
+    public boolean hasWeakModernWebhookHints() {
+        return !isBlank(resourceId) || !isBlank(timestamp) || !isBlank(eventType) || !isBlank(resourceType);
+    }
+
+    public boolean hasModernWebhookMarkers() {
+        return hasStrongModernWebhookMarkers() || hasWeakModernWebhookHints();
+    }
+
     public void normalizeLegacyNotificationEvent() {
         String normalizedType = getLegacyNotificationType(type);
         if (normalizedType != null) {
@@ -277,11 +292,13 @@ public class RachioEventGsonDTO {
 
     public int getZoneNumberForWebhookHandling() {
         RachioZoneStatus runStatus = zoneRunStatus;
-        if (runStatus != null && runStatus.zoneNumber != null && runStatus.zoneNumber > 0) {
-            return runStatus.zoneNumber;
+        Integer runZoneNumber = runStatus != null ? runStatus.zoneNumber : null;
+        if (runZoneNumber != null && runZoneNumber > 0) {
+            return runZoneNumber;
         }
-        if (zoneNumber != null && zoneNumber > 0) {
-            return zoneNumber;
+        Integer eventZoneNumber = zoneNumber;
+        if (eventZoneNumber != null && eventZoneNumber > 0) {
+            return eventZoneNumber;
         }
         return 0;
     }
@@ -289,12 +306,24 @@ public class RachioEventGsonDTO {
     public String getZoneRunStateForWebhookHandling() {
         RachioZoneStatus runStatus = zoneRunStatus;
         if (runStatus != null && !isBlank(runStatus.state)) {
-            return runStatus.state;
+            return normalizeZoneRunState(runStatus.state);
         }
         if (!isBlank(zoneRunState)) {
-            return zoneRunState;
+            return normalizeZoneRunState(zoneRunState);
         }
-        return subType;
+        return normalizeZoneRunState(subType);
+    }
+
+    private String normalizeZoneRunState(String candidate) {
+        String normalizedCandidate = candidate.trim().toUpperCase(Locale.ROOT);
+        return switch (normalizedCandidate) {
+            case "STARTED" -> "ZONE_STARTED";
+            case "STOPPED" -> "ZONE_STOPPED";
+            case "COMPLETED" -> "ZONE_COMPLETED";
+            case "PAUSED", "CYCLING" -> "ZONE_CYCLING";
+            case "RESUMED", "CYCLING_COMPLETED" -> "ZONE_CYCLING_COMPLETED";
+            default -> normalizedCandidate;
+        };
     }
 
     /**
@@ -331,7 +360,7 @@ public class RachioEventGsonDTO {
     }
 
     private static @Nullable String getLegacyNotificationType(@Nullable String candidate) {
-        if (isBlank(candidate)) {
+        if (candidate == null || candidate.isBlank()) {
             return null;
         }
         String normalizedCandidate = candidate.trim().toUpperCase(Locale.ROOT);
@@ -346,35 +375,52 @@ public class RachioEventGsonDTO {
         return value == null || value.isBlank();
     }
 
-    private void normalizeZoneStatus(RachioWebhookPayload eventPayload, String state) {
+    private void normalizeZoneStatus(@Nullable RachioWebhookPayload eventPayload, String state) {
         type = "ZONE_STATUS";
         subType = state;
         category = "ZONE";
-        zoneNumber = eventPayload.getZoneNumber();
-        zoneName = eventPayload.zoneName;
+        if (eventPayload != null) {
+            int payloadZoneNumber = eventPayload.getZoneNumber();
+            if (payloadZoneNumber > 0) {
+                zoneNumber = payloadZoneNumber;
+            }
+            zoneId = firstNonBlank(eventPayload.zoneId, zoneId);
+            zoneName = firstNonBlank(eventPayload.zoneName, zoneName);
+            flowVolume = eventPayload.getFlowVolumeGallons();
+        }
         zoneRunState = state;
-        flowVolume = eventPayload.getFlowVolumeGallons();
 
         RachioZoneStatus status = new RachioZoneStatus();
         status.duration = duration;
         status.zoneNumber = zoneNumber;
         status.state = state;
-        status.scheduleType = eventPayload.runType;
+        status.scheduleType = eventPayload != null ? eventPayload.runType : "";
         status.startTime = startTime;
         status.endTime = endTime;
         zoneRunStatus = status;
     }
 
-    private void normalizeScheduleStatus(RachioWebhookPayload eventPayload, String status) {
+    private void normalizeScheduleStatus(@Nullable RachioWebhookPayload eventPayload, String status) {
         type = "SCHEDULE_STATUS";
         subType = status;
         category = "SCHEDULE";
-        scheduleId = eventPayload.scheduleId;
-        scheduleName = eventPayload.scheduleName;
-        scheduleType = eventPayload.runType;
-        if (!eventPayload.plannedRunStartTime.isEmpty()) {
-            startTime = eventPayload.plannedRunStartTime;
+        if (eventPayload != null) {
+            scheduleId = firstNonBlank(eventPayload.scheduleId, scheduleId);
+            scheduleName = firstNonBlank(eventPayload.scheduleName, scheduleName);
+            scheduleType = firstNonBlank(eventPayload.runType, scheduleType);
+            if (!eventPayload.plannedRunStartTime.isEmpty()) {
+                startTime = eventPayload.plannedRunStartTime;
+            }
         }
+    }
+
+    private String firstNonBlank(String... values) {
+        for (String value : values) {
+            if (!isBlank(value)) {
+                return value;
+            }
+        }
+        return "";
     }
 
     public static class RachioWebhookPayload {
@@ -386,6 +432,8 @@ public class RachioEventGsonDTO {
         public String scheduleId = "";
         public String scheduleName = "";
         public String startTime = "";
+        @SerializedName(value = "zoneId", alternate = { "zone_id" })
+        public String zoneId = "";
         public String zoneName = "";
         public String zoneNumber = "";
         public String endReason = "";

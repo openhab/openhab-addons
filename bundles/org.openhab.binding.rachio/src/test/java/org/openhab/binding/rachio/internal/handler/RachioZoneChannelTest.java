@@ -196,6 +196,24 @@ class RachioZoneChannelTest {
     }
 
     @Test
+    void zoneWaterDepthAndAreaChannelsDefaultToApiUnits() throws IOException, URISyntaxException {
+        String xml = readThingXml("zone.xml");
+
+        for (String channelType : List.of("zone-available-water", "zone-depth-of-water",
+                "zone-saturated-depth-of-water")) {
+            String declaration = channelTypeDeclaration(xml, channelType);
+            assertThat(declaration, containsString("<item-type unitHint=\"in\">Number:Length</item-type>"));
+            assertThat(declaration, containsString("<state readOnly=\"true\" pattern=\"%.2f %unit%\"/>"));
+        }
+        String rootZoneDepth = channelTypeDeclaration(xml, "zone-root-zone-depth");
+        assertThat(rootZoneDepth, containsString("<item-type unitHint=\"in\">Number:Length</item-type>"));
+        assertThat(rootZoneDepth, containsString("<state readOnly=\"true\" pattern=\"%.1f %unit%\"/>"));
+        String yardArea = channelTypeDeclaration(xml, "zone-yard-area-square-feet");
+        assertThat(yardArea, containsString("<item-type unitHint=\"ft²\">Number:Area</item-type>"));
+        assertThat(yardArea, containsString("<state readOnly=\"true\" pattern=\"%.1f %unit%\"/>"));
+    }
+
+    @Test
     void zoneMoistureChannelsAreDocumentedAsCommandOnlyAdjustments() throws IOException, URISyntaxException {
         String xml = readThingXml("zone.xml");
 
@@ -212,6 +230,14 @@ class RachioZoneChannelTest {
         assertThat(xml, containsString("id=\"active-zone-number\""));
         assertThat(xml, containsString("id=\"active-zone-name\""));
         assertThat(xml, containsString("id=\"active-zone-id\""));
+    }
+
+    @Test
+    void forecastPrecipitationDeclaresMillimeterDisplayMetadata() throws IOException, URISyntaxException {
+        String xml = readThingXml("device.xml");
+
+        assertThat(xml, containsString("<item-type unitHint=\"mm\">Number:Length</item-type>"));
+        assertThat(xml, containsString("<state readOnly=\"true\" pattern=\"%.1f %unit%\"/>"));
     }
 
     @Test
@@ -254,7 +280,7 @@ class RachioZoneChannelTest {
         assertThat(zoneXml, containsString("<item-type unitHint=\"ft²\">Number:Area</item-type>"));
         assertThat(zoneXml, containsString("<item-type unitHint=\"mm\">Number:Length</item-type>"));
         assertThat(deviceXml, containsString("<item-type>Number:Temperature</item-type>"));
-        assertThat(deviceXml, containsString("<item-type>Number:Length</item-type>"));
+        assertThat(deviceXml, containsString("<item-type unitHint=\"mm\">Number:Length</item-type>"));
         assertThat(deviceXml, containsString("<item-type unitHint=\"one\">Number:Dimensionless</item-type>"));
         assertThat(deviceXml, containsString("<item-type>Number:Speed</item-type>"));
         assertThat(valveXml, containsString("<item-type unitHint=\"%\">Number:Dimensionless</item-type>"));
@@ -272,7 +298,6 @@ class RachioZoneChannelTest {
 
         String deviceXml = readThingXml("device.xml");
         assertAllQuantityChannelsHaveUnitHint(deviceXml.replace("<item-type>Number:Temperature</item-type>", "")
-                .replace("<item-type>Number:Length</item-type>", "")
                 .replace("<item-type>Number:Speed</item-type>", ""));
     }
 
@@ -316,6 +341,13 @@ class RachioZoneChannelTest {
     private void assertAllQuantityChannelsHaveUnitHint(String xml) {
         Matcher matcher = Pattern.compile("<item-type(?![^>]*unitHint)[^>]*>Number:[^<]+</item-type>").matcher(xml);
         assertThat(matcher.find(), is(false));
+    }
+
+    private String channelTypeDeclaration(String xml, String channelType) {
+        int start = xml.indexOf("<channel-type id=\"" + channelType + "\">");
+        int end = xml.indexOf("</channel-type>", start);
+        assertThat(channelType + " declaration exists", start >= 0 && end > start, is(true));
+        return xml.substring(start, end);
     }
 
     private void assertThingTypeVersion(String fileName) throws IOException, URISyntaxException {

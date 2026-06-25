@@ -22,6 +22,8 @@ import org.junit.jupiter.api.Test;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.ImperialUnits;
+import org.openhab.core.library.unit.MetricPrefix;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 
@@ -64,6 +66,8 @@ class RachioQuantityTypesTest {
         assertQuantityUnit(RachioQuantityTypes.fractionOrUndef(0.7), Units.ONE);
         assertQuantityUnit(RachioQuantityTypes.temperatureOrUndef(72, "US"), ImperialUnits.FAHRENHEIT);
         assertQuantityUnit(RachioQuantityTypes.windSpeedOrUndef(5, "US"), ImperialUnits.MILES_PER_HOUR);
+        assertQuantityUnit(RachioQuantityTypes.precipitationOrUndef(5, "METRIC"), MetricPrefix.MILLI(SIUnits.METRE));
+        assertQuantityUnit(RachioQuantityTypes.precipitationOrUndef(0.25, "US"), ImperialUnits.INCH);
     }
 
     private void assertQuantityUnit(State state, Object unit) {

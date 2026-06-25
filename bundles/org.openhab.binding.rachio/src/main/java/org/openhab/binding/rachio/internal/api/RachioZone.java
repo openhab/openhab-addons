@@ -86,7 +86,7 @@ public class RachioZone extends RachioCloudZone {
     }
 
     public boolean compare(@Nullable RachioZone czone) {
-        if (czone == null || zoneNumber != czone.zoneNumber || enabled != czone.enabled
+        if (czone == null || !name.equals(czone.name) || zoneNumber != czone.zoneNumber || enabled != czone.enabled
                 || availableWater != czone.availableWater || efficiency != czone.efficiency
                 || lastWateredDate != czone.lastWateredDate || depthOfWater != czone.depthOfWater
                 || saturatedDepthOfWater != czone.saturatedDepthOfWater
@@ -105,6 +105,7 @@ public class RachioZone extends RachioCloudZone {
         if (!id.equalsIgnoreCase(updatedZone.id)) {
             return;
         }
+        name = updatedZone.name;
         zoneNumber = updatedZone.zoneNumber;
         enabled = updatedZone.enabled;
         availableWater = updatedZone.availableWater;

@@ -25,12 +25,14 @@ import org.openhab.binding.rachio.internal.handler.AbstractRachioBridgeHandler;
 import org.openhab.binding.rachio.internal.handler.AbstractRachioThingHandler;
 import org.openhab.binding.rachio.internal.handler.RachioBaseStationHandler;
 import org.openhab.binding.rachio.internal.handler.RachioBridgeHandler;
+import org.openhab.binding.rachio.internal.handler.RachioCloudWebhookRegistry;
 import org.openhab.binding.rachio.internal.handler.RachioDeviceHandler;
 import org.openhab.binding.rachio.internal.handler.RachioFlexScheduleHandler;
 import org.openhab.binding.rachio.internal.handler.RachioScheduleHandler;
 import org.openhab.binding.rachio.internal.handler.RachioValveHandler;
 import org.openhab.binding.rachio.internal.handler.RachioValveProgramHandler;
 import org.openhab.binding.rachio.internal.handler.RachioZoneHandler;
+import org.openhab.core.io.rest.WebhookService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -41,13 +43,16 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * The {@link RachioHandlerFactory} is responsible for creating things and thing
  * handlers.
- *
+ * 
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
@@ -61,6 +66,9 @@ public class RachioHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(RachioHandlerFactory.class);
     private final Map<String, RachioBridge> bridgeList = new ConcurrentHashMap<>();
+    private volatile @Nullable WebhookService webhookService;
+    private final RachioCloudWebhookRegistry cloudWebhookRegistry = new RachioCloudWebhookRegistry(
+            this::getWebhookService);
 
     RachioHandlerFactory() {
         logger.debug("RachioHandlerFactory: Initialized Rachio Thing handler.");
@@ -133,7 +141,7 @@ public class RachioHandlerFactory extends BaseThingHandlerFactory {
      */
     public boolean webHookEvent(String ipAddress, RachioEventGsonDTO event) {
         try {
-            logger.debug("RachioCloud: Event for device {} received", event.deviceName);
+            logger.debug("RachioCloud: Event for device {} received", getEventDeviceLabel(event));
 
             RachioBridgeHandler cloudHandler = getBridgeHandlerForExternalId(event.externalId);
             if (cloudHandler != null) {
@@ -150,6 +158,19 @@ public class RachioHandlerFactory extends BaseThingHandlerFactory {
         logger.debug("RachioCloud: Unable to route event to bridge, externalIdPresent={}, deviceIdPresent={}",
                 !isBlank(event.externalId), !isBlank(event.deviceId));
         return false;
+    }
+
+    private String getEventDeviceLabel(RachioEventGsonDTO event) {
+        if (!event.deviceName.isBlank()) {
+            return event.deviceName;
+        }
+        if (!event.deviceId.isBlank()) {
+            return event.deviceId;
+        }
+        if (!event.resourceId.isBlank()) {
+            return event.resourceId;
+        }
+        return "unknown";
     }
 
     public boolean legacyWebHookEvent(String ipAddress, RachioEventGsonDTO event) {
@@ -231,11 +252,43 @@ public class RachioHandlerFactory extends BaseThingHandlerFactory {
         return value == null || value.isBlank();
     }
 
+    @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
+    protected void setWebhookService(WebhookService webhookService) {
+        this.webhookService = webhookService;
+        cloudWebhookRegistry.clearCachedWebhook();
+        logger.debug("RachioHandlerFactory: openHAB core WebhookService is available");
+        for (RachioBridge bridge : bridgeList.values()) {
+            RachioBridgeHandler cloudHandler = bridge.cloudHandler;
+            if (cloudHandler != null) {
+                cloudHandler.onWebhookServiceChanged();
+            }
+        }
+    }
+
+    protected void unsetWebhookService(WebhookService webhookService) {
+        if (!webhookService.equals(this.webhookService)) {
+            return;
+        }
+        this.webhookService = null;
+        cloudWebhookRegistry.clearCachedWebhook();
+        logger.debug("RachioHandlerFactory: openHAB core WebhookService is unavailable");
+        for (RachioBridge bridge : bridgeList.values()) {
+            RachioBridgeHandler cloudHandler = bridge.cloudHandler;
+            if (cloudHandler != null) {
+                cloudHandler.onWebhookServiceChanged();
+            }
+        }
+    }
+
+    private @Nullable WebhookService getWebhookService() {
+        return webhookService;
+    }
+
     private @Nullable RachioBridgeHandler createBridge(Bridge bridgeThing) {
         try {
             RachioBridge bridge = new RachioBridge();
             ThingUID bridgeUID = bridgeThing.getUID();
-            RachioBridgeHandler cloudHandler = new RachioBridgeHandler(bridgeThing);
+            RachioBridgeHandler cloudHandler = new RachioBridgeHandler(bridgeThing, cloudWebhookRegistry);
             bridge.uid = bridgeUID;
             bridge.cloudHandler = cloudHandler;
             bridgeList.put(bridgeUID.toString(), bridge);

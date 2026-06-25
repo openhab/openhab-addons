@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.rachio.internal.api.json;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -199,6 +200,23 @@ public class RachioSmartIrrigationGsonDTO {
         public ArrayList<RachioForecastEntry> forecasts = new ArrayList<>();
         public ArrayList<RachioForecastEntry> dailyForecasts = new ArrayList<>();
         public @Nullable RachioForecastEntry today;
+        public ArrayList<String> topLevelFieldNames = new ArrayList<>();
+        public ArrayList<String> matchedAliases = new ArrayList<>();
+
+        public static RachioForecastResponse fromJson(String json) {
+            RachioForecastResponse response = new RachioForecastResponse();
+            try {
+                JsonElement root = JsonParser.parseString(json);
+                if (root.isJsonArray()) {
+                    addForecastEntries(response.dailyForecasts, root);
+                } else if (root.isJsonObject()) {
+                    parseForecastObject(response, root.getAsJsonObject());
+                }
+            } catch (RuntimeException e) {
+                return response;
+            }
+            return response;
+        }
 
         public String getSummary() {
             RachioForecastEntry todayForecast = getTodayForecast();
@@ -206,7 +224,42 @@ public class RachioSmartIrrigationGsonDTO {
         }
 
         public String getUpdated() {
-            return firstNonBlank(updated, updatedAt);
+            RachioForecastEntry todayForecast = getTodayForecast();
+            return firstNonBlank(updated, updatedAt, todayForecast != null ? todayForecast.time : "");
+        }
+
+        public String buildSummary(String forecastUnits) {
+            RachioForecastEntry todayForecast = getTodayForecast();
+            if (todayForecast == null) {
+                return "";
+            }
+            List<String> parts = new ArrayList<>();
+            boolean usUnits = "US".equalsIgnoreCase(forecastUnits);
+            String temperatureUnit = usUnits ? "\u00B0F" : "\u00B0C";
+            double low = todayForecast.getLowTemperature();
+            double high = todayForecast.getHighTemperature();
+            if (!Double.isNaN(low) && !Double.isNaN(high)) {
+                parts.add(formatForecastNumber(low) + "-" + formatForecastNumber(high) + " " + temperatureUnit);
+            } else if (!Double.isNaN(high)) {
+                parts.add("high " + formatForecastNumber(high) + " " + temperatureUnit);
+            } else if (!Double.isNaN(low)) {
+                parts.add("low " + formatForecastNumber(low) + " " + temperatureUnit);
+            }
+            if (!Double.isNaN(todayForecast.precipitationProbability)) {
+                parts.add("precipitation chance " + formatProbability(todayForecast.precipitationProbability) + "%");
+            }
+            if (!Double.isNaN(todayForecast.precipitation)) {
+                String precipitationUnit = usUnits ? "in" : "mm";
+                parts.add(
+                        "precipitation " + formatForecastNumber(todayForecast.precipitation) + " " + precipitationUnit);
+            }
+            double wind = todayForecast.getWind();
+            if (!Double.isNaN(wind)) {
+                double displayWind = usUnits ? wind : Math.round(wind * 36) / 10.0;
+                String windUnit = usUnits ? "mph" : "km/h";
+                parts.add("wind " + formatForecastNumber(displayWind) + " " + windUnit);
+            }
+            return String.join(", ", parts);
         }
 
         public @Nullable RachioForecastEntry getTodayForecast() {
@@ -224,6 +277,143 @@ public class RachioSmartIrrigationGsonDTO {
             }
             return null;
         }
+
+        public boolean hasUsefulData() {
+            RachioForecastEntry todayForecast = getTodayForecast();
+            return !getSummary().isBlank() || (todayForecast != null && todayForecast.hasUsefulData());
+        }
+
+        public String parsedFieldSummary() {
+            RachioForecastEntry todayForecast = getTodayForecast();
+            return "todayFound=" + (todayForecast != null) + ", summary=" + !getSummary().isBlank() + ", high="
+                    + (todayForecast != null && !Double.isNaN(todayForecast.getHighTemperature())) + ", low="
+                    + (todayForecast != null && !Double.isNaN(todayForecast.getLowTemperature())) + ", precipitation="
+                    + (todayForecast != null && !Double.isNaN(todayForecast.precipitation)) + ", probability="
+                    + (todayForecast != null && !Double.isNaN(todayForecast.precipitationProbability)) + ", wind="
+                    + (todayForecast != null && !Double.isNaN(todayForecast.getWind())) + ", updated="
+                    + !getUpdated().isBlank();
+        }
+
+        public String shapeSummary() {
+            RachioForecastEntry todayForecast = getTodayForecast();
+            List<String> aliases = new ArrayList<>(matchedAliases);
+            if (todayForecast != null) {
+                aliases.addAll(todayForecast.matchedAliases);
+            }
+            return "topLevelKeys=" + String.join(",", topLevelFieldNames) + ", selectedEntryKeys="
+                    + (todayForecast != null ? String.join(",", todayForecast.sourceFieldNames) : "")
+                    + ", matchedAliases=" + String.join(",", aliases);
+        }
+
+        private static void parseForecastObject(RachioForecastResponse response, JsonObject object) {
+            response.topLevelFieldNames.clear();
+            response.topLevelFieldNames.addAll(object.keySet());
+            response.summary = firstNonBlank(readStringWithAlias(object, response.matchedAliases, "summary",
+                    "weatherSummary", "forecastSummary", "description"), response.summary);
+            response.updated = firstNonBlank(readStringWithAlias(object, response.matchedAliases, "updated",
+                    "updatedAt", "forecastUpdated", "lastUpdated"), response.updated);
+            response.updatedAt = firstNonBlank(readStringWithAlias(object, response.matchedAliases, "updatedAt"),
+                    response.updatedAt);
+
+            RachioForecastEntry todayEntry = readForecastEntry(object.get("today"));
+            if (todayEntry != null) {
+                response.today = todayEntry;
+            }
+            addForecastEntries(response.forecast, object.get("forecast"));
+            addForecastEntries(response.forecasts, object.get("forecasts"));
+            addForecastEntries(response.dailyForecasts, object.get("dailyForecasts"));
+            addForecastEntries(response.dailyForecasts, object.get("daily"));
+            addNestedForecastEntries(response, object.get("weather"));
+
+            if (response.today == null) {
+                RachioForecastEntry topLevelEntry = parseForecastEntry(object);
+                if (topLevelEntry.hasUsefulData()) {
+                    response.today = topLevelEntry;
+                }
+            }
+        }
+
+        private static void addNestedForecastEntries(RachioForecastResponse response, @Nullable JsonElement element) {
+            if (element == null || !element.isJsonObject()) {
+                return;
+            }
+            JsonObject object = element.getAsJsonObject();
+            addForecastEntries(response.dailyForecasts, object.get("daily"));
+            addForecastEntries(response.dailyForecasts, object.get("forecast"));
+            addForecastEntries(response.dailyForecasts, object.get("forecasts"));
+            addForecastEntries(response.dailyForecasts, object.get("dailyForecasts"));
+        }
+
+        private static void addForecastEntries(List<RachioForecastEntry> entries, @Nullable JsonElement element) {
+            if (element == null || element.isJsonNull()) {
+                return;
+            }
+            if (element.isJsonArray()) {
+                for (JsonElement child : element.getAsJsonArray()) {
+                    addForecastEntries(entries, child);
+                }
+                return;
+            }
+            if (!element.isJsonObject()) {
+                return;
+            }
+            JsonObject object = element.getAsJsonObject();
+            int before = entries.size();
+            for (String nestedName : List.of("daily", "forecast", "forecasts", "dailyForecasts", "data", "items",
+                    "results")) {
+                addForecastEntries(entries, object.get(nestedName));
+            }
+            if (entries.size() == before) {
+                RachioForecastEntry entry = parseForecastEntry(object);
+                if (entry.hasUsefulData()) {
+                    entries.add(entry);
+                }
+            }
+        }
+
+        private static @Nullable RachioForecastEntry readForecastEntry(@Nullable JsonElement element) {
+            if (element == null || !element.isJsonObject()) {
+                return null;
+            }
+            RachioForecastEntry entry = parseForecastEntry(element.getAsJsonObject());
+            return entry.hasUsefulData() ? entry : null;
+        }
+
+        private static RachioForecastEntry parseForecastEntry(JsonObject object) {
+            RachioForecastEntry entry = new RachioForecastEntry();
+            entry.sourceFieldNames.addAll(object.keySet());
+            entry.summary = readStringWithAlias(object, entry.matchedAliases, "summary", "weatherSummary", "condition",
+                    "conditions", "description", "shortForecast");
+            entry.date = firstNonBlank(readString(object, "date"), entry.date);
+            // These identify the selected forecast entry, not when the API response was retrieved.
+            entry.time = firstNonBlank(readStringWithAlias(object, entry.matchedAliases, "localizedTimeStamp", "time"),
+                    entry.time);
+            entry.highTemperature = firstDouble(object, entry.matchedAliases, "highTemperature", "temperatureHigh",
+                    "high", "maxTemperature", "temperatureMax");
+            entry.lowTemperature = firstDouble(object, entry.matchedAliases, "lowTemperature", "temperatureLow", "low",
+                    "minTemperature", "temperatureMin");
+            entry.precipitation = firstDouble(object, entry.matchedAliases, "precipitation", "precip",
+                    "precipitationAmount", "calculatedPrecip");
+            // precipIntensity is a rate, not the selected period's accumulated amount.
+            recordNumericAlias(object, entry.matchedAliases, "precipIntensity");
+            entry.precipitationProbability = firstDouble(object, entry.matchedAliases, "precipitationProbability",
+                    "precipProbability", "probabilityOfPrecipitation", "pop");
+            entry.wind = firstDouble(object, entry.matchedAliases, "wind", "windSpeed");
+            entry.windSpeed = firstDouble(object, entry.matchedAliases, "windSpeed");
+            return entry;
+        }
+
+        private static String formatForecastNumber(double value) {
+            if (Math.rint(value) == value) {
+                return Long.toString(Math.round(value));
+            }
+            return BigDecimal.valueOf(value).stripTrailingZeros().toPlainString();
+        }
+
+        private static String formatProbability(double value) {
+            double percentage = value <= 1 ? value * 100 : value;
+            return formatForecastNumber(percentage);
+        }
     }
 
     public static class RachioForecastEntry {
@@ -238,6 +428,8 @@ public class RachioSmartIrrigationGsonDTO {
         public double precipitationProbability = Double.NaN;
         public double wind = Double.NaN;
         public double windSpeed = Double.NaN;
+        public ArrayList<String> sourceFieldNames = new ArrayList<>();
+        public ArrayList<String> matchedAliases = new ArrayList<>();
 
         public double getHighTemperature() {
             return Double.isNaN(highTemperature) ? high : highTemperature;
@@ -250,11 +442,18 @@ public class RachioSmartIrrigationGsonDTO {
         public double getWind() {
             return Double.isNaN(wind) ? windSpeed : wind;
         }
+
+        public boolean hasUsefulData() {
+            return !summary.isBlank() || !Double.isNaN(getHighTemperature()) || !Double.isNaN(getLowTemperature())
+                    || !Double.isNaN(precipitation) || !Double.isNaN(precipitationProbability)
+                    || !Double.isNaN(getWind());
+        }
     }
 
     public static class RachioScheduleRuleResponse {
         public String id = "";
         public String name = "";
+        public String externalName = "";
         public boolean enabled = false;
         public String type = "";
         public String startDate = "";
@@ -354,6 +553,17 @@ public class RachioSmartIrrigationGsonDTO {
         return element != null && element.isJsonPrimitive() ? element.getAsString() : "";
     }
 
+    private static String readStringWithAlias(JsonObject object, List<String> matchedAliases, String... memberNames) {
+        for (String memberName : memberNames) {
+            String value = readString(object, memberName);
+            if (!value.isBlank()) {
+                addMatchedAlias(matchedAliases, memberName);
+                return value;
+            }
+        }
+        return "";
+    }
+
     private static int readInt(@Nullable JsonObject object, String memberName) {
         if (object == null) {
             return 0;
@@ -363,6 +573,39 @@ public class RachioSmartIrrigationGsonDTO {
             return element != null && element.isJsonPrimitive() ? element.getAsInt() : 0;
         } catch (RuntimeException e) {
             return 0;
+        }
+    }
+
+    private static double firstDouble(JsonObject object, List<String> matchedAliases, String... memberNames) {
+        for (String memberName : memberNames) {
+            JsonElement element = object.get(memberName);
+            if (element != null && element.isJsonPrimitive()) {
+                try {
+                    addMatchedAlias(matchedAliases, memberName);
+                    return element.getAsDouble();
+                } catch (RuntimeException e) {
+                    // Try the next documented alias.
+                }
+            }
+        }
+        return Double.NaN;
+    }
+
+    private static void recordNumericAlias(JsonObject object, List<String> matchedAliases, String memberName) {
+        JsonElement element = object.get(memberName);
+        if (element != null && element.isJsonPrimitive()) {
+            try {
+                element.getAsDouble();
+                addMatchedAlias(matchedAliases, memberName);
+            } catch (RuntimeException e) {
+                // Ignore malformed diagnostic-only fields.
+            }
+        }
+    }
+
+    private static void addMatchedAlias(List<String> matchedAliases, String memberName) {
+        if (!matchedAliases.contains(memberName)) {
+            matchedAliases.add(memberName);
         }
     }
 }

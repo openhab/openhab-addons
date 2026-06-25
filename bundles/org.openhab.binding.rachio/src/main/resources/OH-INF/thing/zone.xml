@@ -109,6 +109,7 @@
 			<tag>Measurement</tag>
 			<tag>Water</tag>
 		</tags>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="zone-run-total">
 		<item-type unitHint="s">Number:Time</item-type>
@@ -140,7 +141,7 @@
 			<tag>Measurement</tag>
 			<tag>Water</tag>
 		</tags>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="zone-saturated-depth-of-water">
 		<item-type unitHint="in">Number:Length</item-type>
@@ -150,7 +151,7 @@
 			<tag>Measurement</tag>
 			<tag>Water</tag>
 		</tags>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="zone-management-allowed-depletion">
 		<item-type unitHint="one">Number:Dimensionless</item-type>
@@ -169,7 +170,7 @@
 			<tag>Measurement</tag>
 			<tag>Water</tag>
 		</tags>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="zone-efficiency">
 		<item-type unitHint="one">Number:Dimensionless</item-type>
@@ -187,7 +188,7 @@
 		<tags>
 			<tag>Measurement</tag>
 		</tags>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="zone-last-watered-date">
 		<item-type>DateTime</item-type>

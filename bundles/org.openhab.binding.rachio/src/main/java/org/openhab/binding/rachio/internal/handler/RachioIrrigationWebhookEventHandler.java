@@ -79,6 +79,7 @@ class RachioIrrigationWebhookEventHandler implements RachioWebhookEventHandler {
         }
         for (RachioStatusListener listener : bridgeHandler.rachioStatusListeners) {
             if (listener instanceof RachioDeviceHandler candidate && candidate.handlesController(controllerId)) {
+                candidate.rebindToCurrentModel(controller, "webhook dispatch");
                 return candidate;
             }
         }

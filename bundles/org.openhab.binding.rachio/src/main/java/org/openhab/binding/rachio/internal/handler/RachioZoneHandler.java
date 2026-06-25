@@ -19,7 +19,9 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.OptionalDouble;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -218,10 +220,8 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
         } catch (RachioApiException e) {
             errorMessage = e.toString();
         } catch (RuntimeException e) {
-            errorMessage = e.getMessage();
-            if (errorMessage == null) {
-                errorMessage = e.toString();
-            }
+            String message = e.getMessage();
+            errorMessage = message != null ? message : e.toString();
         } finally {
             if (!errorMessage.isEmpty()) {
                 logger.warn("{}: Zone command failed: {}", thingId, errorMessage);
@@ -239,9 +239,71 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
                 + configuredZoneId + "'.";
     }
 
+    private boolean rebindToCurrentBridgeModel(String reason) {
+        RachioBridgeHandler handler = cloudHandler;
+        if (handler == null && !initializeCloudHandler()) {
+            return false;
+        }
+        handler = cloudHandler;
+        if (handler == null) {
+            return false;
+        }
+        RachioZone currentZone = handler.getZoneByThing(getThing());
+        if (currentZone == null) {
+            return false;
+        }
+        RachioDevice currentDev = handler.getDevForZone(currentZone);
+        if (currentDev == null) {
+            return false;
+        }
+        return bindResolvedModel(currentDev, currentZone, reason);
+    }
+
+    boolean rebindToCurrentModel(RachioDevice currentDev, RachioZone currentZone, String reason) {
+        if (!handlesZone(currentZone)) {
+            return false;
+        }
+        return bindResolvedModel(currentDev, currentZone, reason);
+    }
+
+    boolean handlesZone(RachioZone candidateZone) {
+        RachioZone currentZone = zone;
+        if (currentZone != null && currentZone.id.equalsIgnoreCase(candidateZone.id)) {
+            return true;
+        }
+        try {
+            String configuredZoneId = getThingConfigurationOrPropertyString(PROPERTY_ZONE_ID);
+            return !configuredZoneId.isBlank() && configuredZoneId.equalsIgnoreCase(candidateZone.id);
+        } catch (RuntimeException e) {
+            return false;
+        }
+    }
+
+    private boolean bindResolvedModel(RachioDevice currentDev, RachioZone currentZone, String reason) {
+        RachioDevice previousDev = dev;
+        RachioZone previousZone = zone;
+        boolean changed = !Objects.equals(previousDev, currentDev) || !Objects.equals(previousZone, currentZone)
+                || !Objects.equals(currentZone.getThingHandler(), this);
+
+        currentZone.setThingHandler(this);
+        dev = currentDev;
+        zone = currentZone;
+        thingId = currentDev.name + "[" + currentZone.zoneNumber + "]";
+        if (changed) {
+            logger.debug(
+                    "{}: Rebound zone Thing '{}' to current bridge model for zoneId='{}' after {}; direct webhook handling can use this handler",
+                    thingId, getThing().getUID(), currentZone.id, reason);
+        }
+        return true;
+    }
+
     @Override
     public boolean onThingStateChanged(@Nullable RachioDevice updatedDev, @Nullable RachioZone updatedZone) {
         RachioZone z = zone;
+        if (updatedZone != null && (z == null || !z.id.equals(updatedZone.id)) && handlesZone(updatedZone)) {
+            rebindToCurrentBridgeModel("zone state update");
+            z = zone;
+        }
         if (updatedZone != null && z != null && z.id.equals(updatedZone.id)) {
             logger.debug("{}: Update for zone {} received.", thingId, z.name);
             z.update(updatedZone);
@@ -254,6 +316,7 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
     }
 
     void refreshThingStatusAfterSuccessfulCommunication() {
+        rebindToCurrentBridgeModel("successful cloud poll");
         RachioDevice d = dev;
         RachioZone z = zone;
         if (!isBridgeOnline() || d == null || z == null) {
@@ -266,6 +329,9 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
 
     @Override
     public void onConfigurationUpdated() {
+        if (rebindToCurrentBridgeModel("bridge configuration update") && isBridgeOnline()) {
+            goOnline();
+        }
     }
 
     public boolean webhookEvent(RachioEventGsonDTO event) {
@@ -275,24 +341,29 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
             return false;
         }
         try {
-            String zoneName = event.zoneName;
+            String zoneName = getZoneDisplayName(event, z);
+            String zoneLogSubject = getZoneLogSubject(zoneName);
             String evt = event.subType.isEmpty() ? event.type : event.subType;
             z.setEvent(evt, getTimestamp()); // and funnel all zone events to the device
             if ("ZONE_STATUS".equals(event.type)) {
                 String state = event.getZoneRunStateForWebhookHandling();
                 if ("ZONE_STARTED".equals(state)) {
-                    logger.info("{}: Zone {} STARTED watering ({}).", thingId, zoneName, event.timestamp);
+                    logger.info("{}: {} STARTED watering ({}).", thingId, zoneLogSubject, event.timestamp);
                     zoneRunState = OnOffType.ON;
                     updateChannel(CHANNEL_ZONE_RUN, zoneRunState);
                 } else if ("ZONE_STOPPED".equals(state) || "ZONE_COMPLETED".equals(state)) {
                     logger.info(
-                            "{}: Zone {} STOPPED watering (timestamp={}, current={}, duration={}sec/{}min, flowVolume={}).",
-                            thingId, zoneName, event.timestamp, event.zoneCurrent, event.duration,
+                            "{}: {} STOPPED watering (timestamp={}, current={}, duration={}sec/{}min, flowVolume={}).",
+                            thingId, zoneLogSubject, event.timestamp, event.zoneCurrent, event.duration,
                             event.durationInMinutes, event.flowVolume);
                     zoneRunState = OnOffType.OFF;
+                    long lastWateredDate = firstTimestampMillis(event.endTime, event.timestamp);
+                    if (lastWateredDate >= 0) {
+                        z.lastWateredDate = lastWateredDate;
+                    }
                     updateChannel(CHANNEL_ZONE_RUN, zoneRunState);
                 } else {
-                    logger.info("{}: Event for zone {}: {} (status={}, duration = {}sec)", thingId, event.zoneName,
+                    logger.info("{}: Event for zone {}: {} (status={}, duration = {}sec)", thingId, zoneName,
                             event.summary, state, event.duration);
                 }
                 update = true;
@@ -313,6 +384,40 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
         }
 
         return update;
+    }
+
+    private String getZoneDisplayName(RachioEventGsonDTO event, RachioZone zone) {
+        if (!event.zoneName.isBlank()) {
+            return event.zoneName;
+        }
+        if (!zone.name.isBlank()) {
+            return zone.name;
+        }
+        int zoneNumber = event.getZoneNumberForWebhookHandling();
+        if (zoneNumber <= 0) {
+            zoneNumber = zone.zoneNumber;
+        }
+        return zoneNumber > 0 ? Integer.toString(zoneNumber) : "unknown";
+    }
+
+    private String getZoneLogSubject(String zoneName) {
+        if (zoneName.toLowerCase(Locale.ROOT).startsWith("zone ")) {
+            return zoneName;
+        }
+        return "Zone " + zoneName;
+    }
+
+    private long firstTimestampMillis(String... values) {
+        for (String value : values) {
+            if (!value.isBlank()) {
+                try {
+                    return Instant.parse(value).toEpochMilli();
+                } catch (RuntimeException e) {
+                    logger.trace("{}: Ignoring unparsable zone webhook timestamp '{}'", thingId, value);
+                }
+            }
+        }
+        return -1;
     }
 
     @Override
@@ -425,7 +530,7 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
 
     @Override
     protected void onBridgeOnline() {
-        if (dev == null || zone == null) {
+        if (!rebindToCurrentBridgeModel("bridge online")) {
             logger.debug("Bridge is ONLINE; retrying zone initialization for '{}'", getThing().getUID());
             initialize();
         } else {
@@ -434,15 +539,11 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
     }
 
     private void updateProperties() {
-        if (cloudHandler != null && zone != null) {
+        RachioZone z = zone;
+        if (cloudHandler != null && z != null) {
             logger.trace("Updating Rachio zone properties");
-            Map<String, String> prop = zone.fillProperties();
-            if (prop != null) {
-                updateProperties(prop);
-            } else {
-                logger.debug("{}: Unable to update properties for Thing!", thingId);
-                return;
-            }
+            Map<String, String> properties = z.fillProperties();
+            updateProperties(properties);
         }
     }
 }

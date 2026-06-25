@@ -22,6 +22,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.rachio.internal.RachioBindingConstants;
 import org.openhab.binding.rachio.internal.api.json.RachioDeviceGsonDTO.RachioCloudDevice;
 import org.openhab.binding.rachio.internal.api.json.RachioDeviceGsonDTO.RachioCloudNetworkSettings;
+import org.openhab.binding.rachio.internal.api.json.RachioDeviceGsonDTO.RachioCloudScheduleRule;
+import org.openhab.binding.rachio.internal.api.json.RachioEventGsonDTO;
 import org.openhab.binding.rachio.internal.api.json.RachioSmartIrrigationGsonDTO.RachioCurrentScheduleResponse;
 import org.openhab.binding.rachio.internal.api.json.RachioSmartIrrigationGsonDTO.RachioDeviceEvent;
 import org.openhab.binding.rachio.internal.api.json.RachioSmartIrrigationGsonDTO.RachioForecastEntry;
@@ -377,12 +379,6 @@ public class RachioDevice extends RachioCloudDevice {
     }
 
     public void applyCurrentSchedule(RachioCurrentScheduleResponse currentSchedule) {
-        currentScheduleId = currentSchedule.getScheduleId();
-        currentScheduleName = currentSchedule.getScheduleName();
-        currentScheduleType = currentSchedule.getScheduleType();
-        currentScheduleStartTime = currentSchedule.getStartTime();
-        currentScheduleEndTime = currentSchedule.getEndTime();
-        currentScheduleDuration = currentSchedule.getDurationSeconds();
         currentScheduleRunning = currentSchedule.isRunning();
         if (!currentScheduleRunning) {
             currentScheduleId = "";
@@ -391,6 +387,20 @@ public class RachioDevice extends RachioCloudDevice {
             currentScheduleStartTime = "";
             currentScheduleEndTime = "";
             currentScheduleDuration = 0;
+            return;
+        }
+
+        String scheduleId = currentSchedule.getScheduleId();
+        currentScheduleId = firstNonBlank(scheduleId, currentScheduleId);
+        currentScheduleName = firstNonBlank(currentSchedule.getScheduleName(), getScheduleRuleName(currentScheduleId),
+                currentScheduleName);
+        currentScheduleType = firstNonBlank(currentSchedule.getScheduleType(), getScheduleRuleType(currentScheduleId),
+                currentScheduleType);
+        currentScheduleStartTime = firstNonBlank(currentSchedule.getStartTime(), currentScheduleStartTime);
+        currentScheduleEndTime = firstNonBlank(currentSchedule.getEndTime(), currentScheduleEndTime);
+        int duration = currentSchedule.getDurationSeconds();
+        if (duration > 0) {
+            currentScheduleDuration = duration;
         }
     }
 
@@ -416,23 +426,60 @@ public class RachioDevice extends RachioCloudDevice {
         lastApiEventSummary = event.getSummary();
     }
 
-    public void applyForecast(RachioForecastResponse forecast) {
-        forecastSummary = forecast.getSummary();
-        forecastUpdated = forecast.getUpdated();
+    public void applyWebhookEvent(RachioEventGsonDTO event) {
+        lastApiEventType = firstNonBlank(event.eventType, event.subType, event.type);
+        lastApiEventTime = firstNonBlank(event.timestamp, event.timeForSummary, event.endTime, event.startTime);
+        lastApiEventSummary = firstNonBlank(event.summary, event.description, event.title, event.pushTitle,
+                lastApiEventType);
+    }
+
+    public boolean applyForecast(RachioForecastResponse forecast) {
+        return applyForecast(forecast, DEFAULT_FORECAST_UNITS, "");
+    }
+
+    public boolean applyForecast(RachioForecastResponse forecast, String forecastUnits, String retrievedAt) {
+        if (!forecast.hasUsefulData()) {
+            return false;
+        }
+        String summary = forecast.getSummary();
+        if (summary.isBlank()) {
+            summary = forecast.buildSummary(forecastUnits);
+        }
+        if (!summary.isBlank()) {
+            forecastSummary = summary;
+        }
+        String updated = forecast.getUpdated();
+        if (updated.isBlank()) {
+            updated = retrievedAt;
+        }
+        if (!updated.isBlank()) {
+            forecastUpdated = updated;
+        }
         RachioForecastEntry today = forecast.getTodayForecast();
         if (today == null) {
-            forecastTodayHigh = Double.NaN;
-            forecastTodayLow = Double.NaN;
-            forecastPrecipitation = Double.NaN;
-            forecastPrecipitationProbability = Double.NaN;
-            forecastWind = Double.NaN;
-            return;
+            return true;
         }
-        forecastTodayHigh = today.getHighTemperature();
-        forecastTodayLow = today.getLowTemperature();
-        forecastPrecipitation = today.precipitation;
-        forecastPrecipitationProbability = today.precipitationProbability;
-        forecastWind = today.getWind();
+        double high = today.getHighTemperature();
+        if (!Double.isNaN(high)) {
+            forecastTodayHigh = high;
+        }
+        double low = today.getLowTemperature();
+        if (!Double.isNaN(low)) {
+            forecastTodayLow = low;
+        }
+        if (!Double.isNaN(today.precipitation)) {
+            forecastPrecipitation = today.precipitation;
+        } else if (Double.compare(today.precipitationProbability, 0.0) == 0) {
+            forecastPrecipitation = 0;
+        }
+        if (!Double.isNaN(today.precipitationProbability)) {
+            forecastPrecipitationProbability = today.precipitationProbability;
+        }
+        double wind = today.getWind();
+        if (!Double.isNaN(wind)) {
+            forecastWind = wind;
+        }
+        return true;
     }
 
     public void applySkipEvent(String skipType, String scheduleId, String startTime, String reason) {
@@ -440,6 +487,48 @@ public class RachioDevice extends RachioCloudDevice {
         lastSkipScheduleId = scheduleId;
         lastSkipStartTime = startTime;
         lastSkipReason = reason;
+    }
+
+    private String firstNonBlank(String... values) {
+        for (String value : values) {
+            if (!value.isBlank()) {
+                return value;
+            }
+        }
+        return "";
+    }
+
+    public String getScheduleRuleName(String scheduleId) {
+        RachioCloudScheduleRule scheduleRule = getScheduleRuleById(scheduleId);
+        return scheduleRule != null ? firstNonBlank(scheduleRule.name, scheduleRule.externalName) : "";
+    }
+
+    public String getScheduleRuleType(String scheduleId) {
+        RachioCloudScheduleRule scheduleRule = getScheduleRuleById(scheduleId);
+        if (scheduleRule == null) {
+            return "";
+        }
+        if (scheduleRules.contains(scheduleRule)) {
+            return firstNonBlank(scheduleRule.type, "FIXED");
+        }
+        return firstNonBlank(scheduleRule.type, "FLEX");
+    }
+
+    private @Nullable RachioCloudScheduleRule getScheduleRuleById(String scheduleId) {
+        if (scheduleId.isBlank()) {
+            return null;
+        }
+        for (RachioCloudScheduleRule scheduleRule : scheduleRules) {
+            if (scheduleId.equalsIgnoreCase(scheduleRule.id)) {
+                return scheduleRule;
+            }
+        }
+        for (RachioCloudScheduleRule scheduleRule : flexScheduleRules) {
+            if (scheduleId.equalsIgnoreCase(scheduleRule.id)) {
+                return scheduleRule;
+            }
+        }
+        return null;
     }
 
     public boolean applyActiveZoneEvent(String state, int zoneNumber, @Nullable RachioZone zone) {

@@ -212,7 +212,7 @@ public class RachioValveHandler extends AbstractRachioThingHandler {
             thingId = currentValve.getThingName();
             registerStatusListener();
             if (initialLoad || getThing().getStatus() != ThingStatus.ONLINE) {
-                // Smart Hose Timer webhooks remain disabled for this release; polling keeps valve state current.
+                // Smart Hose Timer webhooks are optional; polling keeps valve state current when they are disabled.
                 handler.registerValveWebHook(currentValve.id,
                         initialLoad ? RequestPurpose.INITIALIZATION : RequestPurpose.BACKGROUND_REFRESH);
             }
@@ -380,15 +380,18 @@ public class RachioValveHandler extends AbstractRachioThingHandler {
         if (payload.hasFlowDetected()) {
             lastFlowDetected = payload.getFlowDetected();
         }
+        int durationSeconds = payload.getDurationSeconds();
+        if (durationSeconds > 0) {
+            runTime = durationSeconds;
+        }
 
         if (EVENT_VALVE_RUN_START.equals(event.eventType)) {
             logger.info("{}: Smart Hose Timer valve '{}' STARTED watering (duration={} sec, runType={})", thingId,
-                    currentValve.getThingName(), payload.getDurationSeconds(), payload.runType);
+                    currentValve.getThingName(), durationSeconds, payload.runType);
             runState = OnOffType.ON;
         } else if (EVENT_VALVE_RUN_END.equals(event.eventType)) {
             logger.info("{}: Smart Hose Timer valve '{}' STOPPED watering (duration={} sec, endReason={}, runType={})",
-                    thingId, currentValve.getThingName(), payload.getDurationSeconds(), payload.endReason,
-                    payload.runType);
+                    thingId, currentValve.getThingName(), durationSeconds, payload.endReason, payload.runType);
             runState = OnOffType.OFF;
         } else {
             logger.debug("{}: Unhandled Smart Hose Timer valve event '{}' for valve '{}'", thingId, event.eventType,
@@ -396,6 +399,7 @@ public class RachioValveHandler extends AbstractRachioThingHandler {
             return false;
         }
 
+        refreshSummary(currentValve.id);
         postChannelData();
         updateChannel(CHANNEL_LAST_UPDATE, getTimestamp());
         return true;
@@ -475,12 +479,15 @@ public class RachioValveHandler extends AbstractRachioThingHandler {
 
     @Override
     public void onConfigurationUpdated() {
+        renewWebhookRegistration(RequestPurpose.USER_COMMAND);
+    }
+
+    void renewWebhookRegistration(RequestPurpose requestPurpose) {
         RachioBridgeHandler handler = cloudHandler;
         RachioValve currentValve = valve;
         if (handler != null && currentValve != null) {
             try {
-                // The bridge currently treats this as disabled/no-op unless valve WebhookService support is added.
-                handler.registerValveWebHook(currentValve.id, RequestPurpose.USER_COMMAND);
+                handler.registerValveWebHook(currentValve.id, requestPurpose);
             } catch (RachioApiException e) {
                 logger.debug("{}: Unable to renew valve webhook registration, cause={}", thingId,
                         e.getClass().getSimpleName());

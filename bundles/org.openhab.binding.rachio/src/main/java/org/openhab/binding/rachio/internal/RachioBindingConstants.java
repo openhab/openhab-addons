@@ -22,7 +22,7 @@ import org.openhab.core.thing.ThingTypeUID;
 /**
  * The {@link RachioBindingConstants} class defines common constants, which are
  * used across the whole binding.
- *
+ * 
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
@@ -65,6 +65,10 @@ public class RachioBindingConstants {
     public static final String PARAM_CALLBACK_USERNAME = "callbackUsername";
     public static final String PARAM_CALLBACK_PASSWORD = "callbackPassword";
     public static final String PARAM_CLEAR_CALLBACK = "clearAllCallbacks";
+    public static final String PARAM_USE_CLOUD_WEBHOOK = "useCloudWebhook";
+    public static final String PARAM_AUTO_CONFIGURE_WEBHOOKS = "autoConfigureWebhooks";
+    public static final String PARAM_AUTO_CONFIGURE_HOSE_TIMER_WEBHOOKS = "autoConfigureHoseTimerWebhooks";
+    public static final String PARAM_PUBLIC_WEBHOOK_URL = "publicWebhookUrl";
     public static final String PARAM_EVENT_HISTORY_LOOKBACK_HOURS = "eventHistoryLookbackHours";
     public static final String PARAM_FORECAST_UNITS = "forecastUnits";
     public static final String PARAM_HOSE_SUMMARY_LOOKBACK_DAYS = "hoseSummaryLookbackDays";
@@ -94,6 +98,11 @@ public class RachioBindingConstants {
     public static final String PROPERTY_PERSON_USER = "accounUserName";
     public static final String PROPERTY_PERSON_NAME = "accountFullName";
     public static final String PROPERTY_PERSON_EMAIL = "accountEMail";
+    public static final String PROPERTY_WEBHOOK_MODE = "webhookMode";
+    public static final String PROPERTY_WEBHOOK_REGISTRATION_STATE = "webhookRegistrationState";
+    public static final String PROPERTY_LAST_WEBHOOK_REGISTRATION_ATTEMPT = "lastWebhookRegistrationAttempt";
+    public static final String PROPERTY_LAST_WEBHOOK_EVENT_TIMESTAMP = "lastWebhookEventTimestamp";
+    public static final String PROPERTY_LAST_WEBHOOK_EVENT_TYPE = "lastWebhookEventType";
 
     // List of all Device Channel ids
     public static final String CHANNEL_DEVICE_NAME = "name";

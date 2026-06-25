@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link RachioConfiguration} contains the Rachio Cloud Connector Thing configuration and default values. The field
  * names represent the configuration names, do not rename them if you don't intend to break the configuration interface.
- *
+ * 
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
@@ -37,7 +37,8 @@ public class RachioConfiguration {
     private static final String REDACTED = "[redacted]";
     private static final List<String> CONFIGURATION_PARAMETERS = List.of(PARAM_APIKEY, PARAM_POLLING_INTERVAL,
             PARAM_DEFAULT_RUNTIME, PARAM_CALLBACK_URL, PARAM_CALLBACK_USERNAME, PARAM_CALLBACK_PASSWORD,
-            PARAM_CLEAR_CALLBACK, PARAM_EVENT_HISTORY_LOOKBACK_HOURS, PARAM_FORECAST_UNITS,
+            PARAM_CLEAR_CALLBACK, PARAM_USE_CLOUD_WEBHOOK, PARAM_AUTO_CONFIGURE_WEBHOOKS, PARAM_PUBLIC_WEBHOOK_URL,
+            PARAM_AUTO_CONFIGURE_HOSE_TIMER_WEBHOOKS, PARAM_EVENT_HISTORY_LOOKBACK_HOURS, PARAM_FORECAST_UNITS,
             PARAM_HOSE_SUMMARY_LOOKBACK_DAYS, PARAM_HOSE_SUMMARY_LOOKAHEAD_DAYS);
 
     private final Logger logger = LoggerFactory.getLogger(RachioConfiguration.class);
@@ -50,6 +51,10 @@ public class RachioConfiguration {
     public String callbackUsername = "";
     public String callbackPassword = "";
     public Boolean clearAllCallbacks = false;
+    public boolean useCloudWebhook = false;
+    public boolean autoConfigureWebhooks = false;
+    public boolean autoConfigureHoseTimerWebhooks = false;
+    public String publicWebhookUrl = "";
     public int eventHistoryLookbackHours = DEFAULT_EVENT_HISTORY_LOOKBACK_HOURS;
     public String forecastUnits = DEFAULT_FORECAST_UNITS;
     public int hoseSummaryLookbackDays = DEFAULT_HOSE_SUMMARY_LOOKBACK_DAYS;
@@ -160,6 +165,14 @@ public class RachioConfiguration {
                 this.callbackPassword = value;
             } else if (parameterName.equals(PARAM_CLEAR_CALLBACK)) {
                 this.clearAllCallbacks = Boolean.parseBoolean(value);
+            } else if (parameterName.equals(PARAM_USE_CLOUD_WEBHOOK)) {
+                this.useCloudWebhook = Boolean.parseBoolean(value);
+            } else if (parameterName.equals(PARAM_AUTO_CONFIGURE_WEBHOOKS)) {
+                this.autoConfigureWebhooks = Boolean.parseBoolean(value);
+            } else if (parameterName.equals(PARAM_AUTO_CONFIGURE_HOSE_TIMER_WEBHOOKS)) {
+                this.autoConfigureHoseTimerWebhooks = Boolean.parseBoolean(value);
+            } else if (parameterName.equals(PARAM_PUBLIC_WEBHOOK_URL)) {
+                this.publicWebhookUrl = value;
             } else if (parameterName.equals(PARAM_EVENT_HISTORY_LOOKBACK_HOURS)) {
                 this.eventHistoryLookbackHours = parseEventHistoryLookbackHours(value);
             } else if (parameterName.equals(PARAM_FORECAST_UNITS)) {
@@ -248,6 +261,9 @@ public class RachioConfiguration {
             return REDACTED;
         }
         if (key.equalsIgnoreCase(PARAM_CALLBACK_URL)) {
+            return sanitizeCallbackUrlForLogging(value);
+        }
+        if (key.equalsIgnoreCase(PARAM_PUBLIC_WEBHOOK_URL)) {
             return sanitizeCallbackUrlForLogging(value);
         }
         return value;

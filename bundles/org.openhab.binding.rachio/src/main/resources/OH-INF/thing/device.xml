@@ -305,14 +305,15 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="device-forecast-precipitation">
-		<item-type>Number:Length</item-type>
+		<!-- Defaults precipitation display to mm; US-mode Items may override their unit metadata to in. -->
+		<item-type unitHint="mm">Number:Length</item-type>
 		<label>Forecast Precipitation</label>
 		<description>Today's forecast precipitation amount.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Rain</tag>
 		</tags>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="device-forecast-precipitation-probability">
 		<item-type unitHint="one">Number:Dimensionless</item-type>

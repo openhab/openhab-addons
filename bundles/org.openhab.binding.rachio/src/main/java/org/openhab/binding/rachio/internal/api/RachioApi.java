@@ -229,11 +229,12 @@ public class RachioApi {
     }
 
     public String getExternalId() {
-        if (apikey.isEmpty() || bridgeUID == null) {
+        ThingUID uid = bridgeUID;
+        if (apikey.isEmpty() || uid == null) {
             return "";
         }
         String apikeyHash = getMD5Hash(apikey);
-        String rawValue = "OH_RACHIO_EXTERNALID_" + bridgeUID.toString() + "_" + apikeyHash;
+        String rawValue = "OH_RACHIO_EXTERNALID_" + uid + "_" + apikeyHash;
         return getMD5Hash(rawValue);
     }
 
@@ -566,7 +567,8 @@ public class RachioApi {
 
         lastApiResult = httpGet(APIURL_BASE + APIURL_GET_PERSON, null, priority, requestPurpose);
         Gson gson = new Gson();
-        RachioCloudPersonId pid = gson.fromJson(lastApiResult.resultString, RachioCloudPersonId.class);
+        RachioCloudPersonId pid = Objects
+                .requireNonNull(gson.fromJson(lastApiResult.resultString, RachioCloudPersonId.class));
         personId = pid.id;
         logger.debug("Using Rachio person ID from API response.");
         if (lastApiResult.isRateLimitCritical()) {
@@ -685,8 +687,7 @@ public class RachioApi {
         logger.debug("Load forecast for device '{}' using {} units.", deviceId, normalizedUnits);
         String json = httpGet(APIURL_BASE + APIURL_GET_DEVICE + "/" + deviceId + "/" + APIURL_GET_DEVICE_FORECAST,
                 "units=" + urlEncode(normalizedUnits), PRIORITY.LOW).resultString;
-        RachioForecastResponse response = new Gson().fromJson(json, RachioForecastResponse.class);
-        return response != null ? response : new RachioForecastResponse();
+        return RachioForecastResponse.fromJson(json);
     }
 
     public List<RachioProperty> listProperties(String userId) throws RachioApiException {
@@ -1219,7 +1220,7 @@ public class RachioApi {
             Object payloadUrlValue = createPayload.get("url");
             String payloadUrl = payloadUrlValue instanceof String url ? url : "";
             logger.debug(
-                    "WEBHOOK_DIAG createWebhook target={} eventTypes={} resourceId={} externalIdPresent={} payloadUrlUserInfo={} callbackUrl={}",
+                    "Creating webhook target={} eventTypes={} resourceId={} externalIdPresent={} payloadUrlUserInfo={} callbackUrl={}",
                     target.getResourceType().getApiValue(), target.getEventTypes(), target.getResourceId(),
                     !expectedExternalId.isBlank(), webhookUrlContainsUserInfo(payloadUrl),
                     callbackUrlLogReference(payloadUrl));
@@ -1291,7 +1292,7 @@ public class RachioApi {
     private void logWebhookRegistrationUrlDiagnostic(RachioWebhookTarget target, String callbackUrl,
             String callbackUsername, String callbackPassword, String registrationUrl) {
         logger.debug(
-                "WEBHOOK_DIAG target={} resourceId={} explicitUser={} explicitPassword={} originalUserInfo={} finalUserInfo={} callbackUrl={}",
+                "Webhook registration URL prepared for target={} resourceId={} explicitUser={} explicitPassword={} originalUserInfo={} finalUserInfo={} callbackUrl={}",
                 target.getResourceType().getApiValue(), target.getResourceId(), !callbackUsername.isEmpty(),
                 !callbackPassword.isEmpty(), webhookUrlContainsUserInfo(callbackUrl),
                 webhookUrlContainsUserInfo(registrationUrl), callbackUrlLogReference(registrationUrl));
@@ -1705,15 +1706,11 @@ public class RachioApi {
 
     private Boolean initializeDevices(ThingUID BridgeUID, PRIORITY priority, RequestPurpose requestPurpose)
             throws RachioApiException {
-        String json = "";
-        if (httpApi == null) {
-            logger.debug("RachioApi.initializeDevices: httpAPI not initialized");
-            return false;
-        }
-        json = httpGet(APIURL_BASE + APIURL_GET_PERSONID + "/" + personId, null, priority, requestPurpose).resultString;
+        String json = httpGet(APIURL_BASE + APIURL_GET_PERSONID + "/" + personId, null, priority,
+                requestPurpose).resultString;
 
         Gson gson = new Gson();
-        RachioCloudStatus cloudStatus = gson.fromJson(json, RachioCloudStatus.class);
+        RachioCloudStatus cloudStatus = Objects.requireNonNull(gson.fromJson(json, RachioCloudStatus.class));
         userName = cloudStatus.username;
         fullName = cloudStatus.fullName;
         email = cloudStatus.email;
@@ -1777,6 +1774,8 @@ public class RachioApi {
             return false;
         }
 
+        // Rachio's published examples validate against the exact minified, sorted JSON request bytes. The servlet
+        // therefore verifies the received raw request body instead of rewriting JSON before HMAC validation.
         byte[] signatureBytes = decodeWebHookSignature(signature);
         if (signatureBytes.length == 0) {
             return false;
@@ -1816,12 +1815,13 @@ public class RachioApi {
     public static void copyMatchingFields(Object fromObj, Object toObj) {
         Class fromClass = fromObj.getClass();
         Class toClass = toObj.getClass();
+        Class superclass = Objects.requireNonNull(toClass.getSuperclass());
 
         Field[] fields = fromClass.getFields(); // .getDeclaredFields();
         for (Field f : fields) {
             try {
                 String fname = f.getName();
-                Field t = toClass.getSuperclass().getDeclaredField(fname);
+                Field t = superclass.getDeclaredField(fname);
 
                 if (t.getType() == f.getType()) {
                     // extend this if to copy more immutable types if interested

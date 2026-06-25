@@ -213,23 +213,52 @@ public class RachioScheduleHandler extends AbstractRachioThingHandler {
     }
 
     public boolean webhookEvent(RachioEventGsonDTO event) {
-        if (!event.type.equals("SCHEDULE_STATUS") || scheduleRuleId.isBlank()
+        if (!"SCHEDULE_STATUS".equals(event.type) || scheduleRuleId.isBlank()
                 || !scheduleRuleId.equalsIgnoreCase(event.scheduleId)) {
             return false;
         }
 
         scheduleRule.id = scheduleRuleId;
-        scheduleRule.name = event.scheduleName;
-        scheduleRule.type = event.scheduleType;
-        if (event.subType.equals("SCHEDULE_STARTED")) {
+        if (!event.scheduleName.isBlank()) {
+            scheduleRule.name = event.scheduleName;
+        }
+        if (!event.scheduleType.isBlank()) {
+            scheduleRule.type = event.scheduleType;
+        }
+        if ("SCHEDULE_STARTED".equals(event.subType)) {
             scheduleRule.startTime = event.startTime;
-        } else if (event.subType.equals("SCHEDULE_STOPPED") || event.subType.equals("SCHEDULE_COMPLETED")) {
+        } else if ("SCHEDULE_STOPPED".equals(event.subType) || "SCHEDULE_COMPLETED".equals(event.subType)) {
             scheduleRule.lastRun = event.endTime.isBlank() ? event.timestamp : event.endTime;
         }
         logger.debug("{}: Schedule webhook event received: {}.{}", thingId, event.type, event.subType);
         postChannelData();
         updateChannel(CHANNEL_LAST_UPDATE, getTimestamp());
         return true;
+    }
+
+    boolean handlesScheduleRule(String scheduleId) {
+        return !scheduleRuleId.isBlank() && scheduleRuleId.equalsIgnoreCase(scheduleId);
+    }
+
+    String getScheduleRuleNameForRunSummary() {
+        return firstNonBlank(scheduleRule.name, scheduleRule.externalName, getThingLabel());
+    }
+
+    String getScheduleRuleNameSourceForRunSummary() {
+        if (!scheduleRule.name.isBlank()) {
+            return "schedule handler";
+        }
+        if (!scheduleRule.externalName.isBlank()) {
+            return "schedule handler externalName";
+        }
+        if (!getThingLabel().isBlank()) {
+            return "schedule Thing label";
+        }
+        return "schedule handler";
+    }
+
+    String getScheduleRuleTypeForRunSummary() {
+        return scheduleRule.type.isBlank() ? "FIXED" : scheduleRule.type;
     }
 
     private String resolveScheduleRuleId() {
@@ -243,6 +272,20 @@ public class RachioScheduleHandler extends AbstractRachioThingHandler {
 
     protected State stringOrUndef(String value) {
         return value.isBlank() ? UnDefType.UNDEF : new StringType(value);
+    }
+
+    private String firstNonBlank(@Nullable String... values) {
+        for (String value : values) {
+            if (value != null && !value.isBlank()) {
+                return value;
+            }
+        }
+        return "";
+    }
+
+    private String getThingLabel() {
+        String label = getThing().getLabel();
+        return label != null ? label.trim() : "";
     }
 
     protected State dateTimeOrUndef(String channel, String... fieldNamesAndValues) {

@@ -88,6 +88,38 @@
 				<required>false</required>
 				<default>false</default>
 			</parameter>
+			<parameter name="autoConfigureWebhooks" type="boolean">
+				<label>Auto Configure Webhooks</label>
+				<description>Register modern Rachio WebhookService callbacks for irrigation controllers. This is optional and
+					off by
+					default.</description>
+				<required>false</required>
+				<default>false</default>
+			</parameter>
+			<parameter name="autoConfigureHoseTimerWebhooks" type="boolean">
+				<label>Auto Configure Hose Timer Webhooks</label>
+				<description>Also register modern Rachio WebhookService callbacks for Smart Hose Timer valves and
+					programs. Requires
+					Auto Configure Webhooks and is off by default.</description>
+				<required>false</required>
+				<default>false</default>
+			</parameter>
+			<parameter name="useCloudWebhook" type="boolean">
+				<label>Use openHAB Cloud Webhook</label>
+				<description>Request the public callback URL from the openHAB core WebhookService, typically provided by the
+					openHAB
+					Cloud Connector.</description>
+				<required>false</required>
+				<default>false</default>
+			</parameter>
+			<parameter name="publicWebhookUrl" type="text">
+				<label>Public Webhook URL</label>
+				<description>Public HTTPS URL for modern Rachio WebhookService callbacks. Used only when cloud webhook mode
+					is
+					disabled.</description>
+				<context>url</context>
+				<required>false</required>
+			</parameter>
 		</config-description>
 	</bridge-type>
 

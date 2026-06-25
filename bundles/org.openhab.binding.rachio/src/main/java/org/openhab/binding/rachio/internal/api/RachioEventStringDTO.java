@@ -69,7 +69,8 @@ public class RachioEventStringDTO {
             subType = event.subType;
 
             zoneName = event.zoneName;
-            zoneNumber = event.zoneNumber;
+            Integer eventZoneNumber = event.zoneNumber;
+            zoneNumber = eventZoneNumber != null ? eventZoneNumber : 0;
             zoneRunState = event.zoneRunState;
             RachioZoneStatus runStatus = event.zoneRunStatus;
             scheduleType = runStatus != null ? runStatus.scheduleType : "";

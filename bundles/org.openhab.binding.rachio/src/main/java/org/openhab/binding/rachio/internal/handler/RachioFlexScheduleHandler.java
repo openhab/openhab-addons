@@ -213,6 +213,31 @@ public class RachioFlexScheduleHandler extends AbstractRachioThingHandler {
         return false;
     }
 
+    boolean handlesScheduleRule(String scheduleId) {
+        return !flexScheduleRuleId.isBlank() && flexScheduleRuleId.equalsIgnoreCase(scheduleId);
+    }
+
+    String getScheduleRuleNameForRunSummary() {
+        return firstNonBlank(scheduleRule.name, scheduleRule.externalName, getThingLabel());
+    }
+
+    String getScheduleRuleNameSourceForRunSummary() {
+        if (!scheduleRule.name.isBlank()) {
+            return "flex handler";
+        }
+        if (!scheduleRule.externalName.isBlank()) {
+            return "flex handler externalName";
+        }
+        if (!getThingLabel().isBlank()) {
+            return "flex Thing label";
+        }
+        return "flex handler";
+    }
+
+    String getScheduleRuleTypeForRunSummary() {
+        return scheduleRule.type.isBlank() ? "FLEX" : scheduleRule.type;
+    }
+
     private String resolveFlexScheduleRuleId() {
         String configuredId = getThingConfigurationString(PROPERTY_FLEX_SCHEDULE_RULE_ID);
         if (!configuredId.isBlank()) {
@@ -235,6 +260,20 @@ public class RachioFlexScheduleHandler extends AbstractRachioThingHandler {
 
     private State stringOrUndef(String value) {
         return value.isBlank() ? UnDefType.UNDEF : new StringType(value);
+    }
+
+    private String firstNonBlank(@Nullable String... values) {
+        for (String value : values) {
+            if (value != null && !value.isBlank()) {
+                return value;
+            }
+        }
+        return "";
+    }
+
+    private String getThingLabel() {
+        String label = getThing().getLabel();
+        return label != null ? label.trim() : "";
     }
 
     private State dateTimeOrUndef(String channel, String... fieldNamesAndValues) {

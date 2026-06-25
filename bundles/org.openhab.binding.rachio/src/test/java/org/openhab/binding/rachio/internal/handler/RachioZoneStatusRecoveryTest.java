@@ -29,6 +29,7 @@ import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_T
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -115,6 +116,31 @@ class RachioZoneStatusRecoveryTest {
 
         verify(callback).statusUpdated(eq(thing), argThat(status -> status.getStatus() == ThingStatus.ONLINE));
         verify(callback, never()).stateUpdated(any(ChannelUID.class), any(State.class));
+    }
+
+    @Test
+    void successfulPollRebindsZoneHandlerToFreshBridgeModel() {
+        Thing thing = zoneThing();
+        RachioDevice staleDevice = device("ONLINE", 60);
+        RachioDevice freshDevice = device("ONLINE", 60);
+        RachioZone staleZone = Objects.requireNonNull(staleDevice.getZones().get(ZONE_ID));
+        RachioZone freshZone = Objects.requireNonNull(freshDevice.getZones().get(ZONE_ID));
+        RachioBridgeHandler bridgeHandler = Mockito.mock(RachioBridgeHandler.class);
+        when(bridgeHandler.getZoneByThing(thing)).thenReturn(staleZone, freshZone);
+        when(bridgeHandler.getDevForZone(staleZone)).thenReturn(staleDevice);
+        when(bridgeHandler.getDevForZone(freshZone)).thenReturn(freshDevice);
+        TestZoneHandler handler = new TestZoneHandler(thing, bridgeHandler, ThingStatus.ONLINE);
+        ThingHandlerCallback callback = Mockito.mock(ThingHandlerCallback.class);
+        handler.setCallback(callback);
+
+        handler.initialize();
+        assertThat(staleZone.getThingHandler(), is(handler));
+        clearInvocations(callback);
+
+        handler.refreshThingStatusAfterSuccessfulCommunication();
+
+        assertThat(freshZone.getThingHandler(), is(handler));
+        verify(callback).statusUpdated(eq(thing), argThat(status -> status.getStatus() == ThingStatus.ONLINE));
     }
 
     @Test

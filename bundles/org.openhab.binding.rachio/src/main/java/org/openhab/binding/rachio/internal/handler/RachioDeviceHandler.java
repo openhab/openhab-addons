@@ -20,7 +20,9 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
+import java.util.Objects;
 import java.util.OptionalInt;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -32,10 +34,13 @@ import org.openhab.binding.rachio.internal.api.RachioApiThrottledException;
 import org.openhab.binding.rachio.internal.api.RachioDevice;
 import org.openhab.binding.rachio.internal.api.RachioZone;
 import org.openhab.binding.rachio.internal.api.json.RachioApiGsonDTO.RachioZoneStatus;
+import org.openhab.binding.rachio.internal.api.json.RachioDeviceGsonDTO.RachioCloudNetworkSettings;
 import org.openhab.binding.rachio.internal.api.json.RachioEventGsonDTO;
 import org.openhab.binding.rachio.internal.api.json.RachioEventGsonDTO.RachioWebhookPayload;
 import org.openhab.binding.rachio.internal.api.json.RachioSmartIrrigationGsonDTO.RachioCurrentScheduleResponse;
 import org.openhab.binding.rachio.internal.api.json.RachioSmartIrrigationGsonDTO.RachioDeviceEventListResponse;
+import org.openhab.binding.rachio.internal.api.json.RachioSmartIrrigationGsonDTO.RachioForecastResponse;
+import org.openhab.binding.rachio.internal.api.webhook.RachioWebhookMode;
 import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager.RequestPurpose;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -61,18 +66,29 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class RachioDeviceHandler extends AbstractRachioThingHandler {
     private static final long OPTIONAL_ENRICHMENT_REFRESH_INTERVAL_MS = 15 * 60 * 1000L;
+    private static final long OPTIONAL_ENRICHMENT_RETRY_AFTER_THROTTLE_MS = 60 * 1000L;
     private static final long WEBHOOK_RUN_SUMMARY_GRACE_MILLIS = 60 * 1000L;
-    private static final long DEFAULT_WEBHOOK_REGISTRATION_RETRY_DELAY_SECONDS = 30;
-    private static final long MIN_WEBHOOK_REGISTRATION_RETRY_DELAY_SECONDS = 5;
-    private static final long MAX_WEBHOOK_REGISTRATION_RETRY_DELAY_SECONDS = 5 * 60;
+    private static final long MIN_WEBHOOK_REGISTRATION_RETRY_DELAY_SECONDS = 60;
+    private static final long MEDIUM_WEBHOOK_REGISTRATION_RETRY_DELAY_SECONDS = 120;
+    private static final long MAX_WEBHOOK_REGISTRATION_RETRY_DELAY_SECONDS = 300;
     private final Logger logger = LoggerFactory.getLogger(RachioDeviceHandler.class);
 
     protected @Nullable RachioDevice dev;
-    private long lastOptionalEnrichmentRefresh = 0;
+    private long lastOptionalEnrichmentSuccessMillis = 0;
+    private long lastOptionalEnrichmentRetryMillis = 0;
     private volatile long webhookRunSummaryProtectUntilMillis = -1;
     private @Nullable ScheduledFuture<?> webhookRegistrationRetryJob;
     private boolean webhookRegistrationPending = false;
+    private int webhookRegistrationRetryBackoffStep = 0;
+    private @Nullable WebhookRegistrationRetryIntent webhookRegistrationRetryIntent;
+    private @Nullable String webhookRegistrationRetryDeviceId;
     private long nextWebhookRegistrationRetryAtMillis = 0;
+    private volatile boolean disposed;
+
+    private enum WebhookRegistrationRetryIntent {
+        LEGACY_NOTIFICATION_SERVICE,
+        MODERN_WEBHOOK_SERVICE
+    }
 
     public RachioDeviceHandler(Thing thing) {
         super(thing);
@@ -80,6 +96,7 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
 
     @Override
     public void initialize() {
+        disposed = false;
         thingId = getThing().getUID().getAsString();
         logger.debug("Initializing Rachio Thing '{}'.", thingId);
 
@@ -121,8 +138,9 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
         } catch (RachioApiException e) {
             errorMessage = e.toString();
         } catch (RuntimeException e) {
-            if (e.getMessage() != null) {
-                errorMessage = e.getMessage();
+            String message = e.getMessage();
+            if (message != null) {
+                errorMessage = message;
             }
         } finally {
             if (!errorMessage.isEmpty()) {
@@ -146,6 +164,42 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
         logger.debug("Rachio controller Thing '{}' has no configured deviceId; trying legacy property/UID fallback",
                 getThing().getUID());
         return handler.getDevByThing(getThing());
+    }
+
+    boolean rebindToCurrentModel(RachioDevice currentDevice, String reason) {
+        RachioDevice previousDevice = dev;
+        boolean changed = !Objects.equals(previousDevice, currentDevice)
+                || !Objects.equals(currentDevice.getThingHandler(), this);
+        currentDevice.setThingHandler(this);
+        dev = currentDevice;
+        thingId = currentDevice.name;
+        if (changed) {
+            logger.debug("{}: Rebound controller Thing '{}' to current bridge model for controllerId='{}' after {}",
+                    thingId, getThing().getUID(), currentDevice.id, reason);
+        }
+        return true;
+    }
+
+    private boolean rebindToCurrentBridgeModel(String reason) {
+        RachioBridgeHandler handler = cloudHandler;
+        if (handler == null && !initializeCloudHandler()) {
+            return false;
+        }
+        handler = cloudHandler;
+        if (handler == null) {
+            return false;
+        }
+        String configuredDeviceId = "";
+        try {
+            configuredDeviceId = getThingConfigurationString(PROPERTY_DEV_ID);
+        } catch (RuntimeException e) {
+            logger.trace("{}: Unable to read configured Rachio deviceId while rebinding controller model", thingId);
+        }
+        RachioDevice currentDevice = resolveDevice(handler, configuredDeviceId);
+        if (currentDevice == null) {
+            return false;
+        }
+        return rebindToCurrentModel(currentDevice, reason);
     }
 
     private String buildDeviceResolutionError(String configuredDeviceId) {
@@ -248,7 +302,8 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
         } catch (RachioApiException e) {
             errorMessage = e.toString();
         } catch (RuntimeException e) {
-            errorMessage = e.getMessage();
+            String message = e.getMessage();
+            errorMessage = message != null ? message : "";
         } finally {
             if (!errorMessage.isEmpty()) {
                 logger.debug("ERROR: {}", errorMessage);
@@ -259,10 +314,12 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
 
     @Override
     protected void postChannelData() {
+        postChannelData(true);
+    }
+
+    private void postChannelData(boolean includeForecast) {
         RachioDevice d = dev;
         if (d != null) {
-            RachioBridgeHandler handler = cloudHandler;
-            String forecastUnits = handler != null ? handler.getForecastUnits() : DEFAULT_FORECAST_UNITS;
             logger.debug("Updating device status");
             updateChannel(RachioBindingConstants.CHANNEL_DEVICE_NAME, new StringType(d.getThingName()));
             updateChannel(RachioBindingConstants.CHANNEL_DEVICE_ONLINE, d.getOnline());
@@ -290,17 +347,10 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
             updateChannel(CHANNEL_LAST_API_EVENT_TYPE, stringOrUndef(d.lastApiEventType));
             updateChannel(CHANNEL_LAST_API_EVENT_TIME, dateTimeOrUndef(d.lastApiEventTime));
             updateChannel(CHANNEL_LAST_API_EVENT_SUMMARY, stringOrUndef(d.lastApiEventSummary));
-            updateChannel(CHANNEL_FORECAST_SUMMARY, stringOrUndef(d.forecastSummary));
-            updateChannel(CHANNEL_FORECAST_TODAY_HIGH,
-                    RachioQuantityTypes.temperatureOrUndef(d.forecastTodayHigh, forecastUnits));
-            updateChannel(CHANNEL_FORECAST_TODAY_LOW,
-                    RachioQuantityTypes.temperatureOrUndef(d.forecastTodayLow, forecastUnits));
-            updateChannel(CHANNEL_FORECAST_PRECIPITATION,
-                    RachioQuantityTypes.precipitationOrUndef(d.forecastPrecipitation, forecastUnits));
-            updateChannel(CHANNEL_FORECAST_PRECIPITATION_PROBABILITY,
-                    RachioQuantityTypes.fractionOrUndef(d.forecastPrecipitationProbability));
-            updateChannel(CHANNEL_FORECAST_WIND, RachioQuantityTypes.windSpeedOrUndef(d.forecastWind, forecastUnits));
-            updateChannel(CHANNEL_FORECAST_UPDATED, dateTimeOrUndef(d.forecastUpdated));
+            if (includeForecast) {
+                RachioBridgeHandler handler = cloudHandler;
+                updateForecastChannels(d, handler != null ? handler.getForecastUnits() : DEFAULT_FORECAST_UNITS);
+            }
             updateChannel(CHANNEL_LAST_SKIP_TYPE, stringOrUndef(d.lastSkipType));
             updateChannel(CHANNEL_LAST_SKIP_SCHEDULE_ID, stringOrUndef(d.lastSkipScheduleId));
             updateChannel(CHANNEL_LAST_SKIP_START, dateTimeOrUndef(d.lastSkipStartTime));
@@ -311,12 +361,28 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
         }
     }
 
+    private void updateForecastChannels(RachioDevice d, String forecastUnits) {
+        updateChannel(CHANNEL_FORECAST_SUMMARY, stringOrUndef(d.forecastSummary));
+        updateChannel(CHANNEL_FORECAST_TODAY_HIGH,
+                RachioQuantityTypes.temperatureOrUndef(d.forecastTodayHigh, forecastUnits));
+        updateChannel(CHANNEL_FORECAST_TODAY_LOW,
+                RachioQuantityTypes.temperatureOrUndef(d.forecastTodayLow, forecastUnits));
+        updateChannel(CHANNEL_FORECAST_PRECIPITATION,
+                RachioQuantityTypes.precipitationOrUndef(d.forecastPrecipitation, forecastUnits));
+        updateChannel(CHANNEL_FORECAST_PRECIPITATION_PROBABILITY,
+                RachioQuantityTypes.fractionOrUndef(d.forecastPrecipitationProbability));
+        updateChannel(CHANNEL_FORECAST_WIND, RachioQuantityTypes.windSpeedOrUndef(d.forecastWind, forecastUnits));
+        updateChannel(CHANNEL_FORECAST_UPDATED, dateTimeOrUndef(d.forecastUpdated));
+    }
+
     @Override
     public void onConfigurationUpdated() {
         try {
+            rebindToCurrentBridgeModel("bridge configuration update");
             RachioBridgeHandler handler = cloudHandler;
             RachioDevice d = dev;
             if (handler != null && d != null) {
+                clearPendingWebhookRegistrationIfObsolete(handler, d.id, "configuration updated");
                 registerControllerWebhook(handler, d, RequestPurpose.USER_COMMAND);
             }
         } catch (RachioApiException e) {
@@ -329,7 +395,7 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
         RachioDevice d = dev;
         if (updatedDev != null && d != null && d.id.equals(updatedDev.id)) {
             logger.debug("Update for device '{}' received.", d.id);
-            dev.update(updatedDev);
+            d.update(updatedDev);
             updateChannel(CHANNEL_LAST_UPDATE, getTimestamp());
             postChannelData();
             updateThingStatusAfterSuccessfulCommunication();
@@ -359,6 +425,9 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
             long now = currentTimeMillis();
             if (currentSchedule.isRunning() || !shouldPreserveWebhookRunSummary(d, refreshReason, now)) {
                 d.applyCurrentSchedule(currentSchedule);
+                if (d.currentScheduleRunning) {
+                    applyResolvedScheduleMetadata(d, d.currentScheduleId);
+                }
                 if (!currentSchedule.isRunning()) {
                     d.clearActiveZone();
                     clearWebhookRunSummaryProtection();
@@ -381,25 +450,50 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
         }
 
         refreshOptionalEnrichments(handler, d, force);
-        postChannelData();
+        postChannelData(false);
     }
 
     private void refreshOptionalEnrichments(RachioBridgeHandler handler, RachioDevice d, boolean force) {
-        long now = System.currentTimeMillis();
-        if (!force && (now - lastOptionalEnrichmentRefresh) < OPTIONAL_ENRICHMENT_REFRESH_INTERVAL_MS) {
-            logger.trace("{}: Optional Smart Irrigation enrichment skipped; last refresh was {} ms ago", thingId,
-                    now - lastOptionalEnrichmentRefresh);
-            return;
+        long now = currentTimeMillis();
+        if (!force) {
+            if (lastOptionalEnrichmentSuccessMillis > 0
+                    && (now - lastOptionalEnrichmentSuccessMillis) < OPTIONAL_ENRICHMENT_REFRESH_INTERVAL_MS) {
+                logger.trace("{}: Optional Smart Irrigation enrichment skipped; last successful refresh was {} ms ago",
+                        thingId, now - lastOptionalEnrichmentSuccessMillis);
+                return;
+            }
+            if (lastOptionalEnrichmentRetryMillis > 0
+                    && (now - lastOptionalEnrichmentRetryMillis) < OPTIONAL_ENRICHMENT_RETRY_AFTER_THROTTLE_MS) {
+                logger.trace("{}: Optional Smart Irrigation enrichment skipped; last retryable attempt was {} ms ago",
+                        thingId, now - lastOptionalEnrichmentRetryMillis);
+                return;
+            }
         }
-        lastOptionalEnrichmentRefresh = now;
-        boolean optionalEnrichmentThrottled = false;
+        boolean optionalEnrichmentRetrySoon = false;
+        boolean optionalEnrichmentLoaded = false;
 
         try {
-            d.applyForecast(handler.getDeviceForecast(d.id, handler.getForecastUnits()));
-            logger.debug("{}: Loaded forecast for controller '{}' using {} units", thingId, d.id,
-                    handler.getForecastUnits());
+            String forecastUnits = handler.getForecastUnits();
+            RachioForecastResponse forecast = handler.getDeviceForecast(d.id, forecastUnits);
+            boolean usefulForecast = d.applyForecast(forecast, forecastUnits, Instant.ofEpochMilli(now).toString());
+            logger.debug("{}: Forecast response for controller '{}' using {} units parsed: {}", thingId, d.id,
+                    forecastUnits, forecast.parsedFieldSummary());
+            logger.trace("{}: Forecast response shape for controller '{}': {}", thingId, d.id, forecast.shapeSummary());
+            if (usefulForecast) {
+                optionalEnrichmentLoaded = true;
+                updateForecastChannels(d, forecastUnits);
+                logger.debug("{}: Loaded useful forecast for controller '{}' using {} units", thingId, d.id,
+                        forecastUnits);
+                logger.debug("{}: Applied forecast channel updates for controller '{}': {}", thingId, d.id,
+                        forecast.parsedFieldSummary());
+            } else {
+                optionalEnrichmentRetrySoon = true;
+                logger.debug(
+                        "{}: Forecast response loaded but no usable forecast fields were parsed; retaining previous values",
+                        thingId);
+            }
         } catch (RachioApiThrottledException e) {
-            optionalEnrichmentThrottled = true;
+            optionalEnrichmentRetrySoon = true;
             logger.debug(
                     "{}: Skipping forecast refresh for controller '{}' because the local API budget guard is active: {}",
                     thingId, d.id, e.getMessage());
@@ -415,10 +509,11 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
                 long startTime = endTime - (lookbackHours * 60L * 60L * 1000L);
                 RachioDeviceEventListResponse events = handler.getDeviceEvents(d.id, startTime, endTime);
                 d.applyApiEvent(events.getLatestEvent());
+                optionalEnrichmentLoaded = true;
                 logger.debug("{}: Loaded {} recent controller events over {} hours", thingId, events.events.size(),
                         lookbackHours);
             } catch (RachioApiThrottledException e) {
-                optionalEnrichmentThrottled = true;
+                optionalEnrichmentRetrySoon = true;
                 logger.debug(
                         "{}: Skipping recent event refresh for controller '{}' because the local API budget guard is active: {}",
                         thingId, d.id, e.getMessage());
@@ -430,24 +525,33 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
             d.applyApiEvent(null);
             logger.trace("{}: Event history polling is disabled", thingId);
         }
-        if (optionalEnrichmentThrottled) {
+        if (optionalEnrichmentLoaded && !optionalEnrichmentRetrySoon) {
+            lastOptionalEnrichmentSuccessMillis = now;
+        }
+        if (optionalEnrichmentRetrySoon) {
+            lastOptionalEnrichmentRetryMillis = now;
             logger.debug(
-                    "{}: Optional enrichments were throttled independently from core controller and current schedule polling",
-                    thingId);
+                    "{}: Optional enrichments need a short retry independently from core controller and current schedule polling; retry is allowed after {} ms",
+                    thingId, OPTIONAL_ENRICHMENT_RETRY_AFTER_THROTTLE_MS);
+        } else if (optionalEnrichmentLoaded) {
+            lastOptionalEnrichmentRetryMillis = 0;
         }
     }
 
     @Override
     public void shutdown() {
+        disposed = true;
         clearPendingWebhookRegistration();
-        if (dev != null) {
-            dev.setStatus("OFFLINE");
+        RachioDevice d = dev;
+        if (d != null) {
+            d.setStatus("OFFLINE");
         }
         super.shutdown();
     }
 
     @Override
     public void dispose() {
+        disposed = true;
         clearPendingWebhookRegistration();
         super.dispose();
     }
@@ -465,7 +569,7 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
 
     @Override
     protected void onBridgeOnline() {
-        if (dev == null) {
+        if (!rebindToCurrentBridgeModel("bridge online")) {
             logger.debug("Bridge is ONLINE; retrying controller initialization for '{}'", getThing().getUID());
             initialize();
         } else {
@@ -511,9 +615,14 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
 
             boolean zoneUpdated = false;
             if (zone != null) {
-                RachioZoneHandler handler = zone.getThingHandler();
+                enrichZoneEventFromResolvedZone(event, zone);
+                RachioZoneHandler handler = resolveZoneHandler(d, zone, event, zoneState, zoneNumber);
                 if (handler != null) {
                     zoneUpdated = handler.webhookEvent(event);
+                    if (zoneUpdated && directZoneRunEvent) {
+                        logger.debug("{}: Direct zone webhook handling succeeded for {}.{} on zone {}", thingId,
+                                event.type, zoneState, zoneNumber);
+                    }
                 } else if (directZoneRunEvent) {
                     logger.debug(
                             "{}: Zone webhook event {}.{} matched zone {} but its Thing handler is not initialized; reconciliation remains active",
@@ -527,6 +636,10 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
                         thingId, event.type, zoneState);
                 return false;
             }
+
+            String evt = event.subType.isEmpty() ? event.type : event.subType;
+            d.setEvent(evt, getTimestamp());
+            d.applyWebhookEvent(event);
 
             boolean devicePauseChanged = false;
             boolean activeZoneChanged = false;
@@ -565,12 +678,6 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
                 }
             }
 
-            if (zoneUpdated && !devicePauseChanged && !activeZoneChanged) {
-                return true;
-            }
-
-            String evt = event.subType.isEmpty() ? event.type : event.subType;
-            dev.setEvent(evt, getTimestamp()); // and funnel all zone events to the device
             if ("ZONE_STATUS".equals(etype)) {
                 update = zoneUpdated || devicePauseChanged || activeZoneChanged;
             } else if (event.subType.equals("RAIN_DELAY_ON")) {
@@ -584,28 +691,30 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
                 // RAIN_SENSOR_DETECTION_ON, RAIN_SENSOR_DETECTION_OFF, RAIN_DELAY_ON, RAIN_DELAY_OFF
                 logger.debug("Device {} ('{}') changed to status '{}'.", d.name, d.id, event.subType);
                 if (event.subType.equals("COLD_REBOOT")) {
-                    if (event.network != null) {
-                        dev.setNetwork(event.network);
+                    RachioCloudNetworkSettings eventNetwork = event.network;
+                    if (eventNetwork != null) {
+                        d.setNetwork(eventNetwork);
                     }
-                    if (d.network != null) {
-                        String networkDetails = String.format("ip=%s/%s, gw=%s, dns=%s/%s, wifi rssi=%s", d.network.ip,
-                                d.network.nm, d.network.gw, d.network.dns1, d.network.dns2, d.network.rssi);
+                    RachioCloudNetworkSettings network = d.network;
+                    if (network != null) {
+                        String networkDetails = String.format("ip=%s/%s, gw=%s, dns=%s/%s, wifi rssi=%s", network.ip,
+                                network.nm, network.gw, network.dns1, network.dns2, network.rssi);
                         logger.info("{}: Device {} was restarted, {}.", thingId, d.name, networkDetails);
                     } else {
                         logger.info("{}: Device {} was restarted (network information unavailable).", thingId, d.name);
                     }
                 } else if (event.subType.equals("ONLINE")) {
                     logger.info("Rachio controller '{}' reports ONLINE.", d.id);
-                    dev.setStatus(event.subType);
+                    d.setStatus(event.subType);
                 } else if (event.subType.equals("OFFLINE") || event.subType.equals("OFFLINE_NOTIFICATION")) {
                     logger.info("Rachio controller '{}' reports OFFLINE.", d.id);
-                    dev.setStatus("OFFLINE");
+                    d.setStatus("OFFLINE");
                 } else if (event.subType.equals("SLEEP_MODE_ON")) {
                     logger.info("{}: Device switch to sleep mode.", thingId);
-                    dev.setSleepMode(event.subType);
+                    d.setSleepMode(event.subType);
                 } else if (event.subType.equals("SLEEP_MODE_OFF")) {
                     logger.info("{}: Device was resumed (exit from sleep mode).", thingId);
-                    dev.setSleepMode(event.subType);
+                    d.setSleepMode(event.subType);
                 } else if (event.subType.equals("RAIN_SENSOR_DETECTION_ON")) {
                     logger.info("{}: Device reported Rain Sensor ON.", thingId);
                     d.rainSensorTripped = true;
@@ -627,14 +736,8 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
                 logger.info("{}: Status {} for schedule {}: {} (start={}, end={}, duration={}min)", thingId,
                         event.subType, event.scheduleName, event.summary, event.startTime, event.endTime,
                         event.durationInMinutes);
-                d.currentScheduleId = event.scheduleId;
-                d.currentScheduleName = event.scheduleName;
-                d.currentScheduleType = event.scheduleType;
-                d.currentScheduleStartTime = event.startTime;
-                d.currentScheduleEndTime = event.endTime;
-                d.currentScheduleDuration = event.duration;
-                d.currentScheduleRunning = event.subType.equals("SCHEDULE_STARTED");
                 if (event.subType.equals("SCHEDULE_STARTED")) {
+                    applyScheduleStartedSummary(d, event);
                     armWebhookRunSummaryProtection(event, false);
                 } else if (event.subType.equals("SCHEDULE_STOPPED") || event.subType.equals("SCHEDULE_COMPLETED")) {
                     d.clearCurrentSchedule();
@@ -706,27 +809,140 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
         String scheduleType = firstNonBlank(event.scheduleType, runStatus != null ? runStatus.scheduleType : "",
                 payload != null ? payload.runType : "");
         String scheduleName = firstNonBlank(event.scheduleName, payload != null ? payload.scheduleName : "");
+        String scheduleId = firstNonBlank(event.scheduleId, payload != null ? payload.scheduleId : "",
+                device.currentScheduleId);
+        ScheduleMetadata scheduleMetadata = resolveScheduleMetadata(device, scheduleId);
 
         device.currentScheduleRunning = true;
-        device.currentScheduleId = firstNonBlank(event.scheduleId, payload != null ? payload.scheduleId : "",
-                device.currentScheduleId);
+        device.currentScheduleId = scheduleId;
         if (device.currentScheduleName.isBlank()) {
             if (!scheduleName.isBlank()) {
                 device.currentScheduleName = scheduleName;
+            } else if (!scheduleMetadata.name().isBlank()) {
+                device.currentScheduleName = scheduleMetadata.name();
             } else if ("MANUAL".equalsIgnoreCase(scheduleType) || "QUICK_RUN".equalsIgnoreCase(scheduleType)) {
                 device.currentScheduleName = "Quick Run";
             }
         }
-        device.currentScheduleType = firstNonBlank(scheduleType, device.currentScheduleType);
-        device.currentScheduleStartTime = firstNonBlank(event.startTime, runStatus != null ? runStatus.startTime : "",
-                payload != null ? payload.startTime : "", device.currentScheduleStartTime);
-        device.currentScheduleEndTime = firstNonBlank(event.endTime, runStatus != null ? runStatus.endTime : "",
-                payload != null ? payload.endTime : "", device.currentScheduleEndTime);
+        device.currentScheduleType = firstNonBlank(scheduleType, scheduleMetadata.type(), device.currentScheduleType);
 
         int duration = positiveValue(runStatus != null ? runStatus.duration : null, event.duration,
                 payload != null ? payload.getDurationSeconds() : 0);
+        String startTime = firstNonBlank(event.startTime, runStatus != null ? runStatus.startTime : "",
+                payload != null ? payload.startTime : "", payload != null ? payload.plannedRunStartTime : "",
+                device.currentScheduleStartTime, parseableTimestamp(event.timestamp));
+        String endTime = firstNonBlank(event.endTime, runStatus != null ? runStatus.endTime : "",
+                payload != null ? payload.endTime : "", calculateEndTime(startTime, duration),
+                device.currentScheduleEndTime);
+        device.currentScheduleStartTime = startTime;
+        device.currentScheduleEndTime = endTime;
         if (duration > 0) {
             device.currentScheduleDuration = duration;
+        }
+    }
+
+    private void applyScheduleStartedSummary(RachioDevice device, RachioEventGsonDTO event) {
+        RachioWebhookPayload payload = event.payload;
+        String scheduleId = firstNonBlank(event.scheduleId, payload != null ? payload.scheduleId : "",
+                device.currentScheduleId);
+        ScheduleMetadata scheduleMetadata = resolveScheduleMetadata(device, scheduleId);
+        int duration = positiveValue(event.duration, payload != null ? payload.getDurationSeconds() : 0);
+        String startTime = firstNonBlank(event.startTime, payload != null ? payload.plannedRunStartTime : "",
+                payload != null ? payload.startTime : "", parseableTimestamp(event.timestamp),
+                device.currentScheduleStartTime);
+        String endTime = firstNonBlank(event.endTime, payload != null ? payload.endTime : "",
+                calculateEndTime(startTime, duration), device.currentScheduleEndTime);
+
+        device.currentScheduleId = scheduleId;
+        device.currentScheduleName = firstNonBlank(event.scheduleName, payload != null ? payload.scheduleName : "",
+                scheduleMetadata.name(), device.currentScheduleName);
+        device.currentScheduleType = firstNonBlank(event.scheduleType, payload != null ? payload.runType : "",
+                scheduleMetadata.type(), device.currentScheduleType);
+        device.currentScheduleStartTime = startTime;
+        device.currentScheduleEndTime = endTime;
+        if (duration > 0) {
+            device.currentScheduleDuration = duration;
+        }
+        device.currentScheduleRunning = true;
+    }
+
+    private void applyResolvedScheduleMetadata(RachioDevice device, String scheduleId) {
+        ScheduleMetadata scheduleMetadata = resolveScheduleMetadata(device, scheduleId);
+        if (device.currentScheduleName.isBlank() && !scheduleMetadata.name().isBlank()) {
+            device.currentScheduleName = scheduleMetadata.name();
+        }
+        if (device.currentScheduleType.isBlank() && !scheduleMetadata.type().isBlank()) {
+            device.currentScheduleType = scheduleMetadata.type();
+        }
+    }
+
+    private ScheduleMetadata resolveScheduleMetadata(RachioDevice device, String scheduleId) {
+        if (scheduleId.isBlank()) {
+            return ScheduleMetadata.EMPTY;
+        }
+
+        String deviceName = device.getScheduleRuleName(scheduleId);
+        String deviceType = device.getScheduleRuleType(scheduleId);
+        if (!deviceName.isBlank()) {
+            return logScheduleMetadata(scheduleId, new ScheduleMetadata(deviceName, deviceType, "device model"));
+        }
+
+        RachioBridgeHandler handler = cloudHandler;
+        if (handler != null) {
+            Set<RachioStatusListener> listeners = Objects.requireNonNullElse(handler.rachioStatusListeners, Set.of());
+            for (RachioStatusListener listener : listeners) {
+                if (listener instanceof RachioScheduleHandler scheduleHandler
+                        && scheduleHandler.handlesScheduleRule(scheduleId)) {
+                    String type = firstNonBlank(deviceType, scheduleHandler.getScheduleRuleTypeForRunSummary());
+                    return logScheduleMetadata(scheduleId,
+                            new ScheduleMetadata(scheduleHandler.getScheduleRuleNameForRunSummary(), type,
+                                    scheduleHandler.getScheduleRuleNameSourceForRunSummary()));
+                }
+                if (listener instanceof RachioFlexScheduleHandler flexScheduleHandler
+                        && flexScheduleHandler.handlesScheduleRule(scheduleId)) {
+                    String type = firstNonBlank(deviceType, flexScheduleHandler.getScheduleRuleTypeForRunSummary());
+                    return logScheduleMetadata(scheduleId,
+                            new ScheduleMetadata(flexScheduleHandler.getScheduleRuleNameForRunSummary(), type,
+                                    flexScheduleHandler.getScheduleRuleNameSourceForRunSummary()));
+                }
+            }
+        }
+        if (!deviceType.isBlank()) {
+            return logScheduleMetadata(scheduleId, new ScheduleMetadata("", deviceType, "device model"));
+        }
+        logger.trace("{}: No active schedule metadata found for scheduleId '{}'", thingId, scheduleId);
+        return ScheduleMetadata.EMPTY;
+    }
+
+    private ScheduleMetadata logScheduleMetadata(String scheduleId, ScheduleMetadata metadata) {
+        logger.debug(
+                "{}: Resolved active schedule metadata for scheduleId='{}' from {} (resolvedNamePresent={}, resolvedType='{}')",
+                thingId, scheduleId, metadata.source(), !metadata.name().isBlank(), metadata.type());
+        return metadata;
+    }
+
+    private String parseableTimestamp(String timestamp) {
+        if (timestamp.isBlank()) {
+            return "";
+        }
+        try {
+            Instant.parse(timestamp);
+            return timestamp;
+        } catch (DateTimeParseException e) {
+            logger.trace("{}: Ignoring unparsable event timestamp '{}'", thingId, timestamp);
+            return "";
+        }
+    }
+
+    private String calculateEndTime(String startTime, int duration) {
+        if (startTime.isBlank() || duration <= 0) {
+            return "";
+        }
+        try {
+            return Instant.parse(startTime).plusSeconds(duration).toString();
+        } catch (DateTimeParseException e) {
+            logger.trace("{}: Unable to calculate end time from start timestamp '{}'", thingId, startTime);
+            return "";
         }
     }
 
@@ -746,6 +962,10 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
             }
         }
         return 0;
+    }
+
+    private record ScheduleMetadata(String name, String type, String source) {
+        private static final ScheduleMetadata EMPTY = new ScheduleMetadata("", "", "none");
     }
 
     private void armWebhookRunSummaryProtection(RachioEventGsonDTO event, boolean extendExisting) {
@@ -842,11 +1062,19 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
 
     private void registerControllerWebhook(RachioBridgeHandler handler, RachioDevice device,
             RequestPurpose requestPurpose) throws RachioApiException {
+        WebhookRegistrationRetryIntent retryIntent = resolveWebhookRegistrationRetryIntent(handler);
         try {
             handler.registerWebHook(device.id, requestPurpose);
             clearPendingWebhookRegistration();
         } catch (RachioApiThrottledException e) {
-            deferWebhookRegistration(device.id, e);
+            if (retryIntent != null) {
+                deferWebhookRegistration(device.id, retryIntent, e);
+            } else {
+                clearPendingWebhookRegistration();
+                logger.debug(
+                        "{}: Skipping deferred webhook registration scheduling for controller '{}' because irrigation webhook mode is disabled.",
+                        thingId, device.id);
+            }
         } catch (RachioApiException e) {
             clearPendingWebhookRegistration();
             if (requestPurpose == RequestPurpose.USER_COMMAND) {
@@ -864,26 +1092,48 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
         }
     }
 
-    private void deferWebhookRegistration(String deviceId, RachioApiThrottledException throttle) {
-        long delaySeconds = getWebhookRegistrationRetryDelaySeconds(throttle);
+    private void deferWebhookRegistration(String deviceId, WebhookRegistrationRetryIntent retryIntent,
+            RachioApiThrottledException throttle) {
+        long delaySeconds;
+        int attempt;
+        boolean repeatedDeferral;
         boolean scheduled = false;
         synchronized (this) {
+            repeatedDeferral = webhookRegistrationPending && retryIntent == webhookRegistrationRetryIntent
+                    && Objects.equals(deviceId, webhookRegistrationRetryDeviceId);
+            if (repeatedDeferral) {
+                return;
+            }
+
+            if (webhookRegistrationPending && (retryIntent != webhookRegistrationRetryIntent
+                    || !Objects.equals(deviceId, webhookRegistrationRetryDeviceId))) {
+                clearPendingWebhookRegistration();
+            }
+
+            attempt = webhookRegistrationRetryBackoffStep;
+            delaySeconds = getWebhookRegistrationRetryDelaySeconds(throttle, attempt);
             webhookRegistrationPending = true;
+            webhookRegistrationRetryIntent = retryIntent;
+            webhookRegistrationRetryDeviceId = deviceId;
             ScheduledFuture<?> retryJob = webhookRegistrationRetryJob;
             if (retryJob == null || retryJob.isDone()) {
-                nextWebhookRegistrationRetryAtMillis = System.currentTimeMillis()
-                        + TimeUnit.SECONDS.toMillis(delaySeconds);
+                nextWebhookRegistrationRetryAtMillis = currentTimeMillis() + TimeUnit.SECONDS.toMillis(delaySeconds);
                 scheduleWebhookRegistrationRetry(deviceId, delaySeconds);
                 scheduled = true;
+                webhookRegistrationRetryBackoffStep = Math.min(2, webhookRegistrationRetryBackoffStep + 1);
             }
         }
 
         if (scheduled) {
-            logger.info(
-                    "Webhook registration for controller '{}' deferred because the local Rachio API budget guard is active; retrying later.",
-                    deviceId);
-            logger.debug("{}: Deferred webhook registration retry for controller '{}' scheduled in {} seconds: {}",
-                    thingId, deviceId, delaySeconds, throttle.getMessage());
+            if (attempt == 0) {
+                logger.info(
+                        "Webhook registration for controller '{}' deferred because the local Rachio API budget guard is active; retrying in {} seconds.",
+                        deviceId, delaySeconds);
+            } else {
+                logger.debug(
+                        "{}: Deferred webhook registration retry for controller '{}' scheduled in {} seconds (backoff attempt {}): {}",
+                        thingId, deviceId, delaySeconds, attempt + 1, throttle.getMessage());
+            }
         } else {
             logger.debug(
                     "{}: Webhook registration for controller '{}' is already deferred because the local Rachio API budget guard is active.",
@@ -916,24 +1166,64 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
     protected void retryDeferredWebhookRegistration() {
         RachioBridgeHandler handler = cloudHandler;
         RachioDevice device = dev;
-        if (handler == null || device == null) {
+        if (handler == null || device == null || disposed) {
             return;
         }
+        if (handler.isDisposed()) {
+            clearPendingWebhookRegistration();
+            logger.debug("{}: Skipping deferred webhook registration retry because bridge handler is disposed.",
+                    thingId);
+            return;
+        }
+        if (!isBridgeOnline()) {
+            logger.debug("{}: Skipping deferred webhook registration retry while bridge is offline.", thingId);
+            return;
+        }
+
+        WebhookRegistrationRetryIntent retryIntent;
+        String retryDeviceId;
 
         synchronized (this) {
             if (!webhookRegistrationPending) {
                 return;
             }
+            retryIntent = webhookRegistrationRetryIntent;
+            retryDeviceId = webhookRegistrationRetryDeviceId;
         }
 
-        logger.info("Retrying deferred webhook registration for controller '{}'.", device.id);
+        if (retryIntent == null || retryDeviceId == null) {
+            clearPendingWebhookRegistration();
+            return;
+        }
+        if (!retryDeviceId.equals(device.id)) {
+            clearPendingWebhookRegistration();
+            logger.debug(
+                    "{}: Skipping deferred webhook registration retry because the controller changed while retry was pending.",
+                    thingId);
+            return;
+        }
+        if (!isWebhookRetryIntentStillValid(handler, retryIntent)) {
+            clearPendingWebhookRegistration();
+            logger.debug(
+                    "{}: Skipping deferred webhook registration retry for controller '{}' because webhook mode/configuration changed.",
+                    thingId, retryDeviceId);
+            return;
+        }
+
+        synchronized (this) {
+            webhookRegistrationPending = false;
+            nextWebhookRegistrationRetryAtMillis = 0;
+        }
+
+        logger.debug("{}: Retrying deferred webhook registration for controller '{}'.", thingId, device.id);
         try {
             handler.registerWebHook(device.id, RequestPurpose.BACKGROUND_REFRESH);
             clearPendingWebhookRegistration();
-            logger.info("Deferred webhook registration for controller '{}' completed successfully.", device.id);
+            logger.debug("{}: Deferred webhook registration for controller '{}' completed successfully.", thingId,
+                    device.id);
             updateThingStatusAfterSuccessfulCommunication();
         } catch (RachioApiThrottledException e) {
-            deferWebhookRegistration(device.id, e);
+            deferWebhookRegistration(device.id, retryIntent, e);
         } catch (RachioApiException e) {
             clearPendingWebhookRegistration();
             logger.warn("Unable to register webhook for controller '{}'; polling fallback remains active, cause={}",
@@ -945,13 +1235,65 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
         }
     }
 
-    private long getWebhookRegistrationRetryDelaySeconds(RachioApiThrottledException throttle) {
+    private long getWebhookRegistrationRetryDelaySeconds(RachioApiThrottledException throttle, int backoffStep) {
         Duration suggestedDelay = throttle.getSuggestedRetryDelay();
-        long delaySeconds = suggestedDelay.isZero() || suggestedDelay.isNegative()
-                ? DEFAULT_WEBHOOK_REGISTRATION_RETRY_DELAY_SECONDS
+        long suggestedSeconds = suggestedDelay.isZero() || suggestedDelay.isNegative()
+                ? MIN_WEBHOOK_REGISTRATION_RETRY_DELAY_SECONDS
                 : suggestedDelay.getSeconds();
-        return Math.max(MIN_WEBHOOK_REGISTRATION_RETRY_DELAY_SECONDS,
-                Math.min(MAX_WEBHOOK_REGISTRATION_RETRY_DELAY_SECONDS, delaySeconds));
+        long boundedSuggestedSeconds = Math.max(MIN_WEBHOOK_REGISTRATION_RETRY_DELAY_SECONDS,
+                Math.min(MAX_WEBHOOK_REGISTRATION_RETRY_DELAY_SECONDS, suggestedSeconds));
+        long backoffSeconds = switch (Math.max(0, backoffStep)) {
+            case 0 -> MIN_WEBHOOK_REGISTRATION_RETRY_DELAY_SECONDS;
+            case 1 -> MEDIUM_WEBHOOK_REGISTRATION_RETRY_DELAY_SECONDS;
+            default -> MAX_WEBHOOK_REGISTRATION_RETRY_DELAY_SECONDS;
+        };
+        return Math.max(backoffSeconds, boundedSuggestedSeconds);
+    }
+
+    private @Nullable WebhookRegistrationRetryIntent resolveWebhookRegistrationRetryIntent(
+            RachioBridgeHandler handler) {
+        RachioWebhookMode mode = handler.getActiveIrrigationWebhookProcessingMode();
+        if (mode == RachioWebhookMode.LEGACY_NOTIFICATION_SERVICE) {
+            return WebhookRegistrationRetryIntent.LEGACY_NOTIFICATION_SERVICE;
+        }
+        if (mode == RachioWebhookMode.WEBHOOK_SERVICE) {
+            return WebhookRegistrationRetryIntent.MODERN_WEBHOOK_SERVICE;
+        }
+        return null;
+    }
+
+    private boolean isWebhookRetryIntentStillValid(RachioBridgeHandler handler,
+            WebhookRegistrationRetryIntent retryIntent) {
+        WebhookRegistrationRetryIntent currentIntent = resolveWebhookRegistrationRetryIntent(handler);
+        if (currentIntent != retryIntent) {
+            return false;
+        }
+        if (retryIntent == WebhookRegistrationRetryIntent.LEGACY_NOTIFICATION_SERVICE) {
+            String callbackUrl = handler.getCallbackUrl();
+            return !callbackUrl.isBlank();
+        }
+        return true;
+    }
+
+    private void clearPendingWebhookRegistrationIfObsolete(RachioBridgeHandler handler, String deviceId,
+            String reason) {
+        synchronized (this) {
+            if (!webhookRegistrationPending || !Objects.equals(webhookRegistrationRetryDeviceId, deviceId)
+                    || webhookRegistrationRetryIntent == null) {
+                return;
+            }
+        }
+
+        WebhookRegistrationRetryIntent retryIntent;
+        synchronized (this) {
+            retryIntent = webhookRegistrationRetryIntent;
+        }
+        if (retryIntent == null || !isWebhookRetryIntentStillValid(handler, retryIntent)) {
+            clearPendingWebhookRegistration();
+            logger.debug(
+                    "{}: Cleared deferred webhook registration retry for controller '{}' because webhook mode/configuration changed ({}).",
+                    thingId, deviceId, reason);
+        }
     }
 
     private synchronized void clearPendingWebhookRegistration() {
@@ -961,6 +1303,9 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
         }
         webhookRegistrationRetryJob = null;
         webhookRegistrationPending = false;
+        webhookRegistrationRetryBackoffStep = 0;
+        webhookRegistrationRetryIntent = null;
+        webhookRegistrationRetryDeviceId = null;
         nextWebhookRegistrationRetryAtMillis = 0;
     }
 
@@ -969,7 +1314,44 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
     }
 
     void refreshThingStatusAfterSuccessfulCommunication() {
+        rebindToCurrentBridgeModel("successful cloud poll");
         updateThingStatusAfterSuccessfulCommunication();
+    }
+
+    private @Nullable RachioZoneHandler resolveZoneHandler(RachioDevice device, RachioZone zone,
+            RachioEventGsonDTO event, String zoneState, int zoneNumber) {
+        RachioZoneHandler handler = zone.getThingHandler();
+        if (handler != null) {
+            return handler;
+        }
+
+        RachioBridgeHandler bridgeHandler = cloudHandler;
+        if (bridgeHandler == null) {
+            return null;
+        }
+        for (RachioStatusListener listener : bridgeHandler.rachioStatusListeners) {
+            if (listener instanceof RachioZoneHandler candidate
+                    && candidate.rebindToCurrentModel(device, zone, "webhook dispatch")) {
+                logger.debug(
+                        "{}: Zone webhook event {}.{} matched zone {} and rebound its registered Thing handler before direct dispatch",
+                        thingId, event.type, zoneState, zoneNumber);
+                return candidate;
+            }
+        }
+        return null;
+    }
+
+    private void enrichZoneEventFromResolvedZone(RachioEventGsonDTO event, RachioZone zone) {
+        if (event.zoneName.isBlank()) {
+            event.zoneName = zone.name;
+        }
+        if (event.zoneId.isBlank()) {
+            event.zoneId = zone.id;
+        }
+        Integer eventZoneNumber = event.zoneNumber;
+        if (eventZoneNumber == null || eventZoneNumber <= 0) {
+            event.zoneNumber = zone.zoneNumber;
+        }
     }
 
     private void updateThingStatusAfterSuccessfulCommunication() {

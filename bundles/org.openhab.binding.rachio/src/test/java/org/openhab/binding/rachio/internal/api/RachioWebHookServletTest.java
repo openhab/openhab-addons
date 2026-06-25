@@ -130,6 +130,23 @@ class RachioWebHookServletTest {
     }
 
     @Test
+    void signedModernWebhookEventIsNormalizedBeforeDispatch() throws Exception {
+        RachioHandlerFactory handlerFactory = mockHandlerFactory(true);
+        RachioWebHookServlet servlet = servlet(handlerFactory);
+        ArgumentCaptor<RachioEventGsonDTO> eventCaptor = ArgumentCaptor.forClass(RachioEventGsonDTO.class);
+
+        servlet.service(request(eventJson("event-1"), VALID_SIGNATURE), response());
+
+        verify(handlerFactory).webHookEvent(eq("127.0.0.1"), eventCaptor.capture());
+        RachioEventGsonDTO event = eventCaptor.getValue();
+        assertThat(event.type, is("ZONE_STATUS"));
+        assertThat(event.subType, is("ZONE_STARTED"));
+        assertThat(event.deviceId, is("controller-id"));
+        assertThat(event.getZoneNumberForWebhookHandling(), is(1));
+        assertThat(event.duration, is(60));
+    }
+
+    @Test
     void invalidSignatureDoesNotPoisonDuplicateCache() throws Exception {
         RachioHandlerFactory handlerFactory = mockHandlerFactory(false);
         when(handlerFactory.isValidWebHookSignature(anyString(), any(byte[].class), any(RachioEventGsonDTO.class)))
@@ -145,6 +162,22 @@ class RachioWebHookServletTest {
         verify(invalidResponse).sendError(HttpServletResponse.SC_UNAUTHORIZED);
         verify(validResponse).setStatus(HttpServletResponse.SC_OK);
         verify(handlerFactory, times(1)).webHookEvent(eq("127.0.0.1"), any(RachioEventGsonDTO.class));
+    }
+
+    @Test
+    void invalidModernSignatureDoesNotSuppressLaterLegacyNotification() throws Exception {
+        RachioHandlerFactory handlerFactory = mockHandlerFactory(false);
+        RachioWebHookServlet servlet = servlet(handlerFactory);
+
+        HttpServletResponse invalidResponse = response();
+        servlet.service(request(eventJson("event-1"), INVALID_SIGNATURE), invalidResponse);
+        HttpServletResponse legacyResponse = response();
+        servlet.service(request(legacyEventJson("external-id"), null), legacyResponse);
+
+        verify(invalidResponse).sendError(HttpServletResponse.SC_UNAUTHORIZED);
+        verify(legacyResponse).setStatus(HttpServletResponse.SC_OK);
+        verify(handlerFactory, never()).webHookEvent(anyString(), any(RachioEventGsonDTO.class));
+        verify(handlerFactory, times(1)).legacyWebHookEvent(eq("127.0.0.1"), any(RachioEventGsonDTO.class));
     }
 
     @Test
@@ -171,24 +204,71 @@ class RachioWebHookServletTest {
     }
 
     @Test
-    void dualShapedLegacyZoneStatusIsAcceptedWithoutSignature() throws Exception {
+    void legacyScheduleStatusWithAmbiguousHintsWithoutSignatureIsAccepted() throws Exception {
         RachioHandlerFactory handlerFactory = mockHandlerFactory(false);
         RachioWebHookServlet servlet = servlet(handlerFactory);
         ArgumentCaptor<RachioEventGsonDTO> eventCaptor = ArgumentCaptor.forClass(RachioEventGsonDTO.class);
         HttpServletResponse response = response();
 
-        servlet.service(
-                request(dualShapedLegacyEventJson("ZONE_STATUS", "ZONE_STARTED", "DEVICE_ZONE_RUN_STARTED_EVENT"),
-                        null),
-                response);
+        servlet.service(request(weakModernHintLegacyEventJson("SCHEDULE_STATUS", "SCHEDULE_COMPLETED",
+                "SCHEDULE_COMPLETED_EVENT", "DEVICE"), null), response);
 
         verify(handlerFactory).legacyWebHookEvent(eq("127.0.0.1"), eventCaptor.capture());
-        assertThat(eventCaptor.getValue().type, is("ZONE_STATUS"));
-        assertThat(eventCaptor.getValue().subType, is("ZONE_STARTED"));
-        assertThat(eventCaptor.getValue().eventType, is("DEVICE_ZONE_RUN_STARTED_EVENT"));
-        assertThat(eventCaptor.getValue().resourceType, is("DEVICE"));
-        verify(handlerFactory, never()).isValidWebHookSignature(anyString(), any(byte[].class));
+        RachioEventGsonDTO event = eventCaptor.getValue();
+        assertThat(event.type, is("SCHEDULE_STATUS"));
+        assertThat(event.subType, is("SCHEDULE_COMPLETED"));
+        assertThat(event.eventType, is("SCHEDULE_COMPLETED_EVENT"));
+        assertThat(event.resourceType, is("DEVICE"));
+        assertThat(event.resourceId, is("controller-id"));
+        assertThat(event.timestamp, is("2026-06-23T18:00:00Z"));
+        assertThat(event.eventId, is(""));
+        assertThat(event.payload == null, is(true));
+        verify(handlerFactory, never()).isValidWebHookSignature(anyString(), any(byte[].class),
+                any(RachioEventGsonDTO.class));
+        verify(handlerFactory, never()).webHookEvent(anyString(), any(RachioEventGsonDTO.class));
         verify(response).setStatus(HttpServletResponse.SC_OK);
+    }
+
+    @Test
+    void legacyZoneStatusWithAmbiguousHintsWithoutSignatureIsAccepted() throws Exception {
+        RachioHandlerFactory handlerFactory = mockHandlerFactory(false);
+        RachioWebHookServlet servlet = servlet(handlerFactory);
+        ArgumentCaptor<RachioEventGsonDTO> eventCaptor = ArgumentCaptor.forClass(RachioEventGsonDTO.class);
+        HttpServletResponse response = response();
+
+        servlet.service(request(
+                weakModernHintLegacyEventJson("ZONE_STATUS", "ZONE_STARTED", "DEVICE_ZONE_RUN_STARTED_EVENT", "DEVICE"),
+                null), response);
+
+        verify(handlerFactory).legacyWebHookEvent(eq("127.0.0.1"), eventCaptor.capture());
+        RachioEventGsonDTO event = eventCaptor.getValue();
+        assertThat(event.type, is("ZONE_STATUS"));
+        assertThat(event.subType, is("ZONE_STARTED"));
+        assertThat(event.eventType, is("DEVICE_ZONE_RUN_STARTED_EVENT"));
+        assertThat(event.resourceType, is("DEVICE"));
+        assertThat(event.resourceId, is("controller-id"));
+        assertThat(event.timestamp, is("2026-06-23T18:00:00Z"));
+        assertThat(event.eventId, is(""));
+        assertThat(event.payload == null, is(true));
+        verify(handlerFactory, never()).isValidWebHookSignature(anyString(), any(byte[].class),
+                any(RachioEventGsonDTO.class));
+        verify(handlerFactory, never()).webHookEvent(anyString(), any(RachioEventGsonDTO.class));
+        verify(response).setStatus(HttpServletResponse.SC_OK);
+    }
+
+    @Test
+    void unsignedEventIdMixedPayloadWithLegacyIdentifiersIsRejected() throws Exception {
+        RachioHandlerFactory handlerFactory = mockHandlerFactory(false);
+        RachioWebHookServlet servlet = servlet(handlerFactory);
+        HttpServletResponse response = response();
+
+        servlet.service(request(
+                eventIdStrongMixedLegacyEventJson("ZONE_STATUS", "ZONE_STARTED", "DEVICE_ZONE_RUN_STARTED_EVENT"),
+                null), response);
+
+        verify(response).sendError(HttpServletResponse.SC_UNAUTHORIZED);
+        verify(handlerFactory, never()).legacyWebHookEvent(anyString(), any(RachioEventGsonDTO.class));
+        verify(handlerFactory, never()).webHookEvent(anyString(), any(RachioEventGsonDTO.class));
     }
 
     @Test
@@ -200,7 +280,6 @@ class RachioWebHookServletTest {
                 {
                   "type": "ZONE_STATUS",
                   "subType": "ZONE_STARTED",
-                  "eventType": "DEVICE_ZONE_RUN_STARTED_EVENT",
                   "category": "ZONE",
                   "deviceId": "controller-id",
                   "externalId": "external-id",
@@ -219,20 +298,80 @@ class RachioWebHookServletTest {
     }
 
     @Test
-    void dualShapedLegacyScheduleStatusIsAcceptedWithoutSignature() throws Exception {
+    void legacyShortZoneRunStatesAreNormalizedForWebhookHandling() {
+        RachioEventGsonDTO event = new RachioEventGsonDTO();
+
+        event.zoneRunState = "STARTED";
+        assertThat(event.getZoneRunStateForWebhookHandling(), is("ZONE_STARTED"));
+
+        event.zoneRunState = "STOPPED";
+        assertThat(event.getZoneRunStateForWebhookHandling(), is("ZONE_STOPPED"));
+
+        event.zoneRunState = "COMPLETED";
+        assertThat(event.getZoneRunStateForWebhookHandling(), is("ZONE_COMPLETED"));
+    }
+
+    @Test
+    void invalidSignedEventIdMixedPayloadWithLegacyIdentifiersIsRejected() throws Exception {
         RachioHandlerFactory handlerFactory = mockHandlerFactory(false);
         RachioWebHookServlet servlet = servlet(handlerFactory);
-        ArgumentCaptor<RachioEventGsonDTO> eventCaptor = ArgumentCaptor.forClass(RachioEventGsonDTO.class);
+        HttpServletResponse response = response();
 
-        servlet.service(
-                request(dualShapedLegacyEventJson("SCHEDULE_STATUS", "SCHEDULE_COMPLETED", "SCHEDULE_COMPLETED_EVENT"),
-                        null),
-                response());
+        servlet.service(request(
+                eventIdStrongMixedLegacyEventJson("SCHEDULE_STATUS", "SCHEDULE_COMPLETED", "SCHEDULE_COMPLETED_EVENT"),
+                INVALID_SIGNATURE), response);
 
-        verify(handlerFactory).legacyWebHookEvent(eq("127.0.0.1"), eventCaptor.capture());
-        assertThat(eventCaptor.getValue().type, is("SCHEDULE_STATUS"));
-        assertThat(eventCaptor.getValue().subType, is("SCHEDULE_COMPLETED"));
-        verify(handlerFactory, never()).isValidWebHookSignature(anyString(), any(byte[].class));
+        verify(response).sendError(HttpServletResponse.SC_UNAUTHORIZED);
+        verify(handlerFactory).isValidWebHookSignature(eq(INVALID_SIGNATURE), any(byte[].class),
+                any(RachioEventGsonDTO.class));
+        verify(handlerFactory, never()).legacyWebHookEvent(anyString(), any(RachioEventGsonDTO.class));
+        verify(handlerFactory, never()).webHookEvent(anyString(), any(RachioEventGsonDTO.class));
+    }
+
+    @Test
+    void validSignedEventIdMixedPayloadWithLegacyIdentifiersProcessesAsModern() throws Exception {
+        RachioHandlerFactory handlerFactory = mockHandlerFactory(true);
+        RachioWebHookServlet servlet = servlet(handlerFactory);
+        HttpServletResponse response = response();
+
+        servlet.service(request(
+                eventIdStrongMixedLegacyEventJson("SCHEDULE_STATUS", "SCHEDULE_COMPLETED", "SCHEDULE_COMPLETED_EVENT"),
+                VALID_SIGNATURE), response);
+
+        verify(handlerFactory).webHookEvent(eq("127.0.0.1"), any(RachioEventGsonDTO.class));
+        verify(handlerFactory, never()).legacyWebHookEvent(anyString(), any(RachioEventGsonDTO.class));
+        verify(response).setStatus(HttpServletResponse.SC_OK);
+    }
+
+    @Test
+    void unsignedPayloadObjectMixedPayloadWithLegacyIdentifiersIsRejected() throws Exception {
+        RachioHandlerFactory handlerFactory = mockHandlerFactory(false);
+        RachioWebHookServlet servlet = servlet(handlerFactory);
+        HttpServletResponse response = response();
+
+        servlet.service(request(
+                payloadObjectStrongMixedLegacyEventJson("ZONE_STATUS", "ZONE_STARTED", "DEVICE_ZONE_RUN_STARTED_EVENT"),
+                null), response);
+
+        verify(response).sendError(HttpServletResponse.SC_UNAUTHORIZED);
+        verify(handlerFactory, never()).legacyWebHookEvent(anyString(), any(RachioEventGsonDTO.class));
+        verify(handlerFactory, never()).webHookEvent(anyString(), any(RachioEventGsonDTO.class));
+    }
+
+    @Test
+    void invalidSignedPayloadObjectMixedPayloadWithLegacyIdentifiersIsRejected() throws Exception {
+        RachioHandlerFactory handlerFactory = mockHandlerFactory(false);
+        RachioWebHookServlet servlet = servlet(handlerFactory);
+        HttpServletResponse response = response();
+
+        servlet.service(request(payloadObjectStrongMixedLegacyEventJson("SCHEDULE_STATUS", "SCHEDULE_COMPLETED",
+                "SCHEDULE_COMPLETED_EVENT"), INVALID_SIGNATURE), response);
+
+        verify(response).sendError(HttpServletResponse.SC_UNAUTHORIZED);
+        verify(handlerFactory).isValidWebHookSignature(eq(INVALID_SIGNATURE), any(byte[].class),
+                any(RachioEventGsonDTO.class));
+        verify(handlerFactory, never()).legacyWebHookEvent(anyString(), any(RachioEventGsonDTO.class));
+        verify(handlerFactory, never()).webHookEvent(anyString(), any(RachioEventGsonDTO.class));
     }
 
     @Test
@@ -339,17 +478,17 @@ class RachioWebHookServletTest {
     }
 
     @Test
-    void dualShapedLegacyNotificationEventWithWrongExternalIdIsRejected() throws Exception {
+    void legacyNotificationEventWithWrongExternalIdIsRejected() throws Exception {
         RachioHandlerFactory handlerFactory = mockHandlerFactory(false);
         when(handlerFactory.legacyWebHookEvent(eq("127.0.0.1"), any(RachioEventGsonDTO.class))).thenReturn(false);
         RachioWebHookServlet servlet = servlet(handlerFactory);
         HttpServletResponse response = response();
-        String body = dualShapedLegacyEventJson("ZONE_STATUS", "ZONE_STARTED", "DEVICE_ZONE_RUN_STARTED_EVENT")
-                .replace("\"externalId\": \"external-id\"", "\"externalId\": \"wrong-external-id\"");
+        String body = legacyEventJson("wrong-external-id");
 
         servlet.service(request(body, null), response);
 
         verify(response).sendError(HttpServletResponse.SC_UNAUTHORIZED);
+        verify(handlerFactory).legacyWebHookEvent(eq("127.0.0.1"), any(RachioEventGsonDTO.class));
         verify(handlerFactory, never()).webHookEvent(anyString(), any(RachioEventGsonDTO.class));
     }
 
@@ -399,7 +538,7 @@ class RachioWebHookServletTest {
         RachioHandlerFactory handlerFactory = mockHandlerFactory(true);
         RachioWebHookServlet servlet = servlet(handlerFactory);
         HttpServletResponse response = response();
-        String body = dualShapedLegacyEventJson("FUTURE_STATUS", "FUTURE_STARTED", "FUTURE_EVENT");
+        String body = eventIdStrongMixedLegacyEventJson("FUTURE_STATUS", "FUTURE_STARTED", "FUTURE_EVENT");
 
         servlet.service(request(body, null), response);
 
@@ -409,17 +548,17 @@ class RachioWebHookServletTest {
     }
 
     @Test
-    void dualShapedLegacyNotificationEventWithUnknownDeviceIdIsRejected() throws Exception {
+    void legacyNotificationEventWithUnknownDeviceIdIsRejected() throws Exception {
         RachioHandlerFactory handlerFactory = mockHandlerFactory(false);
         when(handlerFactory.legacyWebHookEvent(eq("127.0.0.1"), any(RachioEventGsonDTO.class))).thenReturn(false);
         RachioWebHookServlet servlet = servlet(handlerFactory);
         HttpServletResponse response = response();
-        String body = dualShapedLegacyEventJson("ZONE_STATUS", "ZONE_STARTED", "DEVICE_ZONE_RUN_STARTED_EVENT")
-                .replace("controller-id", "unknown-controller");
+        String body = legacyEventJson("external-id").replace("controller-id", "unknown-controller");
 
         servlet.service(request(body, null), response);
 
         verify(response).sendError(HttpServletResponse.SC_UNAUTHORIZED);
+        verify(handlerFactory).legacyWebHookEvent(eq("127.0.0.1"), any(RachioEventGsonDTO.class));
         verify(handlerFactory, never()).webHookEvent(anyString(), any(RachioEventGsonDTO.class));
     }
 
@@ -433,11 +572,19 @@ class RachioWebHookServletTest {
         event.externalId = "external-id-secret";
         event.eventType = "event-type-secret";
         event.resourceType = "resource-type-secret";
+        event.eventId = "event-id-secret";
+        event.resourceId = "resource-id-secret";
+        event.timestamp = "timestamp-secret";
+        event.payload = new RachioEventGsonDTO.RachioWebhookPayload();
 
         String summary = RachioWebHookServlet.describeLegacyClassification(event);
 
         assertThat(summary, containsString("legacyTypeRecognized=true"));
         assertThat(summary, containsString("type='ZONE_STATUS'"));
+        assertThat(summary, containsString("eventIdPresent=true"));
+        assertThat(summary, containsString("resourceIdPresent=true"));
+        assertThat(summary, containsString("timestampPresent=true"));
+        assertThat(summary, containsString("payloadPresent=true"));
         assertThat(summary, containsString("eventTypePresent=true"));
         assertThat(summary, containsString("resourceTypePresent=true"));
         assertThat(summary, containsString("subTypePresent=true"));
@@ -449,6 +596,9 @@ class RachioWebHookServletTest {
         assertThat(summary, not(containsString("external-id-secret")));
         assertThat(summary, not(containsString("event-type-secret")));
         assertThat(summary, not(containsString("resource-type-secret")));
+        assertThat(summary, not(containsString("event-id-secret")));
+        assertThat(summary, not(containsString("resource-id-secret")));
+        assertThat(summary, not(containsString("timestamp-secret")));
     }
 
     @Test
@@ -561,7 +711,44 @@ class RachioWebHookServletTest {
                 """.formatted(type, subtypeMember);
     }
 
-    private String dualShapedLegacyEventJson(String type, String subType, String eventType) {
+    private String weakModernHintLegacyEventJson(String type, String subType, String eventType, String resourceType) {
+        return """
+                {
+                  "type": "%s",
+                  "eventType": "%s",
+                  "subType": "%s",
+                  "deviceId": "controller-id",
+                  "externalId": "external-id",
+                  "resourceId": "controller-id",
+                  "resourceType": "%s",
+                  "timestamp": "2026-06-23T18:00:00Z",
+                  "zoneNumber": 7
+                }
+                """.formatted(type, eventType, subType, resourceType);
+    }
+
+    private String eventIdStrongMixedLegacyEventJson(String type, String subType, String eventType) {
+        return """
+                {
+                  "eventId": "event-id",
+                  "integrationState": "WATERING",
+                  "resourceId": "controller-id",
+                  "routingId": "controller-id",
+                  "type": "%s",
+                  "title": "Legacy notification",
+                  "deviceId": "controller-id",
+                  "zoneNumber": 7,
+                  "zoneId": "zone-id",
+                  "externalId": "external-id",
+                  "eventType": "%s",
+                  "subType": "%s",
+                  "category": "DEVICE",
+                  "resourceType": "DEVICE"
+                }
+                """.formatted(type, eventType, subType);
+    }
+
+    private String payloadObjectStrongMixedLegacyEventJson(String type, String subType, String eventType) {
         return """
                 {
                   "integrationState": "WATERING",
@@ -576,7 +763,11 @@ class RachioWebHookServletTest {
                   "eventType": "%s",
                   "subType": "%s",
                   "category": "DEVICE",
-                  "resourceType": "DEVICE"
+                  "resourceType": "DEVICE",
+                  "payload": {
+                    "zoneNumber": "7",
+                    "zoneName": "Front lawn"
+                  }
                 }
                 """.formatted(type, eventType, subType);
     }

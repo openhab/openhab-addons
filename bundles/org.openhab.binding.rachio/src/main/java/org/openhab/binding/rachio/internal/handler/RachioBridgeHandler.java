@@ -15,8 +15,12 @@ package org.openhab.binding.rachio.internal.handler;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.*;
 import static org.openhab.binding.rachio.internal.RachioUtils.getString;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.text.MessageFormat;
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -28,6 +32,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -52,9 +59,12 @@ import org.openhab.binding.rachio.internal.api.webhook.RachioWebhookMode;
 import org.openhab.binding.rachio.internal.api.webhook.RachioWebhookResourceType;
 import org.openhab.binding.rachio.internal.api.webhook.RachioWebhookTarget;
 import org.openhab.binding.rachio.internal.discovery.RachioDiscoveryService;
+import org.openhab.binding.rachio.internal.handler.RachioCloudWebhookRegistry.CloudWebhookException;
+import org.openhab.binding.rachio.internal.handler.RachioCloudWebhookRegistry.CloudWebhookLease;
 import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager.PRIORITY;
 import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager.RequestPurpose;
 import org.openhab.core.config.core.status.ConfigStatusMessage;
+import org.openhab.core.io.rest.WebhookService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -75,11 +85,25 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
+    private static final long MIN_CLOUD_WEBHOOK_REFRESH_DELAY_SECONDS = 60;
+    private static final long NO_CLOUD_WEBHOOK_GENERATION = -1;
+    private static final Duration CLOUD_WEBHOOK_REFRESH_SAFETY_WINDOW = Duration.ofHours(1);
+
     private final Logger logger = LoggerFactory.getLogger(RachioBridgeHandler.class);
     private final RachioApi rachioApi;
+    private final RachioCloudWebhookRegistry cloudWebhookRegistry;
     private RachioConfiguration thingConfig = new RachioConfiguration();
     private String personId = "";
     private final Set<RachioDiscoveryService> discoveryServices = new CopyOnWriteArraySet<>();
+    private @Nullable ScheduledFuture<?> cloudWebhookRefreshJob;
+    private @Nullable String resolvedModernWebhookUrl;
+    private long resolvedCloudWebhookGeneration = NO_CLOUD_WEBHOOK_GENERATION;
+    private String webhookMode = "disabled";
+    private String webhookRegistrationState = "disabled";
+    private String lastWebhookRegistrationAttempt = "";
+    private String lastWebhookEventTimestamp = "";
+    private String lastWebhookEventType = "";
+    private volatile boolean disposed;
 
     public enum RefreshReason {
         SCHEDULED_POLL,
@@ -95,7 +119,16 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
      * @param bridge: Bridge class object
      */
     public RachioBridgeHandler(final Bridge bridge) {
+        this(bridge, () -> null);
+    }
+
+    public RachioBridgeHandler(final Bridge bridge, Supplier<@Nullable WebhookService> webhookServiceSupplier) {
+        this(bridge, new RachioCloudWebhookRegistry(webhookServiceSupplier));
+    }
+
+    public RachioBridgeHandler(final Bridge bridge, RachioCloudWebhookRegistry cloudWebhookRegistry) {
         super(bridge);
+        this.cloudWebhookRegistry = cloudWebhookRegistry;
         rachioApi = new RachioApi(personId);
     }
 
@@ -119,6 +152,9 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
             // Pass BridgeUID to device, RachioDeviceHandler will fill DeviceUID
             Bridge bridgeThing = this.getThing();
             HashMap<String, RachioDevice> deviceList = getDevices();
+            if (deviceList == null) {
+                throw new RachioApiException("RachioCloud: Device list is unavailable after cloud initialization.");
+            }
             for (HashMap.Entry<String, RachioDevice> de : deviceList.entrySet()) {
                 RachioDevice dev = de.getValue();
                 ThingUID devThingUID = new ThingUID(THING_TYPE_DEVICE, bridgeThing.getUID(), dev.getThingID());
@@ -136,6 +172,7 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
             updateStatus(ThingStatus.ONLINE);
             updateListenerManagement();
             triggerPostInitializationDiscovery();
+            reconcileConfiguredWebhooks(RequestPurpose.INITIALIZATION);
         } catch (RachioApiException e) {
             errorMessage = e.toString();
             if (e.getApiResult().isResponseRateLimit()) {
@@ -159,8 +196,21 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
     @Override
     public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
         boolean configurationChanged = isModifyingCurrentConfig(configurationParameters);
+        boolean webhookConfigurationTouched = configurationParameters.containsKey(PARAM_AUTO_CONFIGURE_WEBHOOKS)
+                || configurationParameters.containsKey(PARAM_AUTO_CONFIGURE_HOSE_TIMER_WEBHOOKS)
+                || configurationParameters.containsKey(PARAM_USE_CLOUD_WEBHOOK)
+                || configurationParameters.containsKey(PARAM_PUBLIC_WEBHOOK_URL);
+        boolean wasUsingCloudWebhook = isCloudWebhookRegistrationEnabled();
         super.handleConfigurationUpdate(configurationParameters);
-        if (configurationChanged) {
+        if (configurationChanged || webhookConfigurationTouched) {
+            RachioConfiguration.ResolvedConfiguration resolvedConfiguration = resolveEffectiveConfiguration();
+            thingConfig = resolvedConfiguration.configuration();
+            logResolvedConfiguration(resolvedConfiguration);
+            if (wasUsingCloudWebhook && !isCloudWebhookRegistrationEnabled()) {
+                releaseCloudWebhookUrl("configuration update");
+            }
+            clearResolvedModernWebhookUrl();
+            reconcileConfiguredWebhooks(RequestPurpose.USER_COMMAND);
             rachioStatusListeners.stream().forEach(l -> l.onConfigurationUpdated());
         }
     }
@@ -340,6 +390,8 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
     @Override
     public void shutdown() {
         logger.info("RachioCloud: Shutting down");
+        disposed = true;
+        releaseCloudWebhookUrl("bridge shutdown");
         super.shutdown();
     }
 
@@ -735,6 +787,22 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
         return thingConfig.hoseSummaryLookaheadDays;
     }
 
+    public boolean isWebhookAutoConfigureEnabled() {
+        return thingConfig.autoConfigureWebhooks;
+    }
+
+    public boolean isCloudWebhookEnabled() {
+        return thingConfig.useCloudWebhook;
+    }
+
+    boolean isDisposed() {
+        return disposed;
+    }
+
+    public String getPublicWebhookUrl() {
+        return thingConfig.publicWebhookUrl;
+    }
+
     //
     // ------ Stuff used by other classes
     //
@@ -826,15 +894,27 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
         RachioWebhookMode mode = getWebhookMode(RachioWebhookResourceType.IRRIGATION_CONTROLLER);
         switch (mode) {
             case LEGACY_NOTIFICATION_SERVICE:
+                updateWebhookMode("legacy");
+                updateWebhookRegistrationAttempt();
                 rachioApi.registerLegacyNotificationWebHook(deviceId, getCallbackUrl(), getCallbackUsername(),
                         getCallbackPassword(), getExternalId(), getClearAllCallbacks(), requestPurpose);
+                updateWebhookRegistrationState("registered");
                 break;
             case WEBHOOK_SERVICE:
-                rachioApi.registerWebHook(deviceId, getCallbackUrl(), getCallbackUsername(), getCallbackPassword(),
-                        getExternalId(), getClearAllCallbacks(), requestPurpose);
+                String webhookUrl = getModernWebhookUrlForRegistration();
+                if (webhookUrl.isBlank()) {
+                    logger.debug(
+                            "RachioCloud: Modern controller webhook registration is enabled but no public webhook URL is available; polling remains active.");
+                    return;
+                }
+                updateWebhookRegistrationAttempt();
+                rachioApi.registerWebHook(deviceId, webhookUrl, "", "", getExternalId(), getClearAllCallbacks(),
+                        requestPurpose);
+                updateWebhookRegistrationState("registered");
                 break;
             case DISABLED:
                 logger.debug("RachioCloud: Controller webhook registration disabled; polling remains active.");
+                updateWebhookRegistrationState("disabled");
                 break;
         }
     }
@@ -846,10 +926,18 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
     public void registerValveWebHook(String valveId, RequestPurpose requestPurpose) throws RachioApiException {
         RachioWebhookMode mode = getWebhookMode(RachioWebhookResourceType.VALVE);
         if (mode == RachioWebhookMode.WEBHOOK_SERVICE) {
+            String webhookUrl = getModernWebhookUrlForRegistration();
+            if (webhookUrl.isBlank()) {
+                logger.debug(
+                        "RachioCloud: Smart Hose Timer valve webhook registration is enabled but no public webhook URL is available; polling remains active.");
+                return;
+            }
             RachioWebhookTarget target = new RachioWebhookTarget(valveId, RachioWebhookResourceType.VALVE,
                     List.of(EVENT_VALVE_RUN_START, EVENT_VALVE_RUN_END));
-            rachioApi.registerWebHookTarget(target, getCallbackUrl(), getCallbackUsername(), getCallbackPassword(),
-                    getExternalId(), getClearAllCallbacks(), requestPurpose);
+            logger.debug("RachioCloud: Smart Hose Timer valve webhook registration enabled for target '{}'",
+                    target.describe());
+            rachioApi.registerWebHookTarget(target, webhookUrl, "", "", getExternalId(), getClearAllCallbacks(),
+                    requestPurpose);
         } else {
             logger.debug("RachioCloud: Valve webhook registration disabled; Smart Hose Timer polling remains active.");
         }
@@ -862,10 +950,18 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
     public void registerValveProgramWebHook(String programId, RequestPurpose requestPurpose) throws RachioApiException {
         RachioWebhookMode mode = getWebhookMode(RachioWebhookResourceType.PROGRAM);
         if (mode == RachioWebhookMode.WEBHOOK_SERVICE) {
+            String webhookUrl = getModernWebhookUrlForRegistration();
+            if (webhookUrl.isBlank()) {
+                logger.debug(
+                        "RachioCloud: Smart Hose Timer program webhook registration is enabled but no public webhook URL is available; polling remains active.");
+                return;
+            }
             RachioWebhookTarget target = new RachioWebhookTarget(programId, RachioWebhookResourceType.PROGRAM,
                     List.of(EVENT_PROGRAM_RAIN_SKIP_CREATED, EVENT_PROGRAM_RAIN_SKIP_CANCELED));
-            rachioApi.registerWebHookTarget(target, getCallbackUrl(), getCallbackUsername(), getCallbackPassword(),
-                    getExternalId(), getClearAllCallbacks(), requestPurpose);
+            logger.debug("RachioCloud: Smart Hose Timer program webhook registration enabled for target '{}'",
+                    target.describe());
+            rachioApi.registerWebHookTarget(target, webhookUrl, "", "", getExternalId(), getClearAllCallbacks(),
+                    requestPurpose);
         } else {
             logger.debug(
                     "RachioCloud: Valve program webhook registration disabled; Smart Hose Timer polling remains active.");
@@ -873,17 +969,310 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
     }
 
     RachioWebhookMode getWebhookMode(RachioWebhookResourceType resourceType) {
-        return selectWebhookMode(resourceType, !getCallbackUrl().isBlank());
+        return selectWebhookMode(resourceType, !getCallbackUrl().isBlank(), thingConfig.autoConfigureWebhooks,
+                thingConfig.autoConfigureHoseTimerWebhooks,
+                thingConfig.useCloudWebhook || !thingConfig.publicWebhookUrl.isBlank());
+    }
+
+    RachioWebhookMode getActiveIrrigationWebhookProcessingMode() {
+        return selectWebhookMode(RachioWebhookResourceType.IRRIGATION_CONTROLLER, !getCallbackUrl().isBlank(),
+                thingConfig.autoConfigureWebhooks, isModernIrrigationWebhookUrlAvailableForProcessing());
+    }
+
+    private boolean isModernIrrigationWebhookUrlAvailableForProcessing() {
+        if (!thingConfig.autoConfigureWebhooks) {
+            return false;
+        }
+        if (!thingConfig.publicWebhookUrl.isBlank()) {
+            try {
+                normalizeModernWebhookUrl(thingConfig.publicWebhookUrl);
+                return true;
+            } catch (RachioApiException e) {
+                return false;
+            }
+        }
+        String cachedUrl = resolvedModernWebhookUrl;
+        return thingConfig.useCloudWebhook && cachedUrl != null && !cachedUrl.isBlank();
     }
 
     static RachioWebhookMode selectWebhookMode(RachioWebhookResourceType resourceType, boolean callbackConfigured) {
-        if (!callbackConfigured) {
-            return RachioWebhookMode.DISABLED;
+        return selectWebhookMode(resourceType, callbackConfigured, false, false, false);
+    }
+
+    static RachioWebhookMode selectWebhookMode(RachioWebhookResourceType resourceType, boolean callbackConfigured,
+            boolean autoConfigureWebhooks, boolean modernWebhookUrlConfigured) {
+        return selectWebhookMode(resourceType, callbackConfigured, autoConfigureWebhooks, false,
+                modernWebhookUrlConfigured);
+    }
+
+    static RachioWebhookMode selectWebhookMode(RachioWebhookResourceType resourceType, boolean callbackConfigured,
+            boolean autoConfigureWebhooks, boolean autoConfigureHoseTimerWebhooks, boolean modernWebhookUrlConfigured) {
+        switch (resourceType) {
+            case IRRIGATION_CONTROLLER:
+                if (autoConfigureWebhooks && modernWebhookUrlConfigured) {
+                    return RachioWebhookMode.WEBHOOK_SERVICE;
+                }
+                return callbackConfigured ? RachioWebhookMode.LEGACY_NOTIFICATION_SERVICE : RachioWebhookMode.DISABLED;
+            case VALVE:
+            case PROGRAM:
+                return autoConfigureWebhooks && autoConfigureHoseTimerWebhooks && modernWebhookUrlConfigured
+                        ? RachioWebhookMode.WEBHOOK_SERVICE
+                        : RachioWebhookMode.DISABLED;
+            case LIGHTING_CONTROLLER:
+            case LIGHTING_ZONE:
+            case LIGHTING_SCENE:
+            case LIGHTING_PROGRAM:
+            case UNKNOWN:
+            default:
+                return RachioWebhookMode.DISABLED;
         }
-        if (resourceType == RachioWebhookResourceType.IRRIGATION_CONTROLLER) {
-            return RachioWebhookMode.LEGACY_NOTIFICATION_SERVICE;
+    }
+
+    public void onWebhookServiceChanged() {
+        if (disposed) {
+            return;
         }
-        return RachioWebhookMode.DISABLED;
+        if (!thingConfig.autoConfigureWebhooks || !thingConfig.useCloudWebhook) {
+            return;
+        }
+        logger.debug("RachioCloud: openHAB core WebhookService availability changed; retrying webhook reconciliation.");
+        cloudWebhookRegistry.invalidateCachedWebhook(resolvedCloudWebhookGeneration);
+        clearResolvedModernWebhookUrl();
+        reconcileConfiguredWebhooks(RequestPurpose.BACKGROUND_REFRESH);
+        reconcileSmartHoseTimerWebhooks(RequestPurpose.BACKGROUND_REFRESH);
+    }
+
+    private void reconcileSmartHoseTimerWebhooks(RequestPurpose requestPurpose) {
+        if (getWebhookMode(RachioWebhookResourceType.VALVE) != RachioWebhookMode.WEBHOOK_SERVICE
+                && getWebhookMode(RachioWebhookResourceType.PROGRAM) != RachioWebhookMode.WEBHOOK_SERVICE) {
+            return;
+        }
+
+        for (RachioStatusListener listener : rachioStatusListeners) {
+            if (listener instanceof RachioValveHandler valveHandler) {
+                valveHandler.renewWebhookRegistration(requestPurpose);
+            } else if (listener instanceof RachioValveProgramHandler programHandler) {
+                programHandler.renewWebhookRegistration(requestPurpose);
+            }
+        }
+    }
+
+    private void reconcileConfiguredWebhooks(RequestPurpose requestPurpose) {
+        if (disposed) {
+            return;
+        }
+        if (!thingConfig.autoConfigureWebhooks) {
+            releaseCloudWebhookUrl("modern webhook registration disabled");
+            updateWebhookMode("disabled");
+            updateWebhookRegistrationState("disabled");
+            return;
+        }
+        if (getWebhookMode(RachioWebhookResourceType.IRRIGATION_CONTROLLER) != RachioWebhookMode.WEBHOOK_SERVICE) {
+            releaseCloudWebhookUrl("modern webhook mode inactive");
+            updateWebhookRegistrationState("disabled");
+            return;
+        }
+
+        HashMap<String, RachioDevice> devices = getDevices();
+        if (devices == null || devices.isEmpty()) {
+            updateWebhookRegistrationState("waiting for controller resources");
+            return;
+        }
+
+        for (RachioDevice device : devices.values()) {
+            try {
+                registerWebHook(device.id, requestPurpose);
+            } catch (RachioApiThrottledException e) {
+                updateWebhookRegistrationState("deferred by local API budget guard");
+                logger.info(
+                        "Modern webhook registration for controller '{}' deferred because the local Rachio API budget guard is active; polling remains active.",
+                        device.id);
+                return;
+            } catch (RachioApiException e) {
+                updateWebhookRegistrationState("registration failed: " + e.getClass().getSimpleName());
+                logger.warn("Modern webhook registration for controller '{}' failed; polling remains active, cause={}",
+                        device.id, e.getClass().getSimpleName());
+            } catch (RuntimeException e) {
+                updateWebhookRegistrationState("registration failed: " + e.getClass().getSimpleName());
+                logger.warn("Modern webhook registration for controller '{}' failed; polling remains active, cause={}",
+                        device.id, e.getClass().getSimpleName());
+            }
+        }
+    }
+
+    String getModernWebhookUrlForRegistration() {
+        if (!thingConfig.autoConfigureWebhooks) {
+            releaseCloudWebhookUrl("modern webhook registration disabled");
+            updateWebhookMode("disabled");
+            updateWebhookRegistrationState("disabled");
+            return "";
+        }
+        if (thingConfig.useCloudWebhook) {
+            updateWebhookMode("cloud");
+            return getCloudWebhookUrlForRegistration();
+        }
+        if (!thingConfig.publicWebhookUrl.isBlank()) {
+            releaseCloudWebhookUrl("manual webhook URL configured");
+            updateWebhookMode("manual");
+            return getManualWebhookUrlForRegistration();
+        }
+
+        releaseCloudWebhookUrl("no public webhook URL configured");
+        updateWebhookMode("disabled");
+        updateWebhookRegistrationState("no public webhook URL configured");
+        return "";
+    }
+
+    private String getManualWebhookUrlForRegistration() {
+        String cachedUrl = resolvedModernWebhookUrl;
+        if (cachedUrl != null && !cachedUrl.isBlank()) {
+            return cachedUrl;
+        }
+
+        try {
+            String webhookUrl = normalizeModernWebhookUrl(thingConfig.publicWebhookUrl);
+            resolvedModernWebhookUrl = webhookUrl;
+            updateWebhookRegistrationState("manual URL ready");
+            updateProperties();
+            return webhookUrl;
+        } catch (RachioApiException e) {
+            updateWebhookRegistrationState("invalid publicWebhookUrl");
+            logger.warn("Modern Rachio webhook registration disabled because publicWebhookUrl is invalid, cause={}",
+                    e.getClass().getSimpleName());
+            return "";
+        }
+    }
+
+    private String getCloudWebhookUrlForRegistration() {
+        String cachedUrl = resolvedModernWebhookUrl;
+        if (cachedUrl != null && !cachedUrl.isBlank()) {
+            return cachedUrl;
+        }
+
+        updateWebhookRegistrationState("requesting cloud webhook URL");
+        try {
+            CloudWebhookLease webhook = cloudWebhookRegistry.acquire(getCloudWebhookConsumerId());
+            String webhookUrl = normalizeModernWebhookUrl(webhook.url());
+            resolvedModernWebhookUrl = webhookUrl;
+            resolvedCloudWebhookGeneration = webhook.generation();
+            updateWebhookRegistrationState("cloud URL ready");
+            scheduleCloudWebhookRefresh(webhook.expiresAt());
+            updateProperties();
+            return webhookUrl;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            updateWebhookRegistrationState("cloud webhook URL request interrupted");
+            logger.warn("Unable to request openHAB Cloud webhook URL for Rachio; polling remains active, cause={}",
+                    e.getClass().getSimpleName());
+        } catch (CloudWebhookException e) {
+            updateWebhookRegistrationState("cloud webhook URL unavailable: " + e.diagnosticCause());
+            logger.warn("Unable to request openHAB Cloud webhook URL for Rachio; polling remains active, cause={}",
+                    e.diagnosticCause());
+        } catch (RachioApiException e) {
+            updateWebhookRegistrationState("cloud webhook URL unavailable: " + e.getClass().getSimpleName());
+            logger.warn("Unable to request openHAB Cloud webhook URL for Rachio; polling remains active, cause={}",
+                    e.getClass().getSimpleName());
+        }
+        return "";
+    }
+
+    private String normalizeModernWebhookUrl(String webhookUrl) throws RachioApiException {
+        try {
+            URI uri = new URI(webhookUrl.trim());
+            if (!uri.isAbsolute() || uri.getRawAuthority() == null || uri.getHost() == null) {
+                throw new RachioApiException("Invalid webhook URL format: expected an absolute URL with a host.");
+            }
+            if (!"https".equalsIgnoreCase(uri.getScheme())) {
+                throw new RachioApiException("Modern webhook URL must use HTTPS.");
+            }
+            if (uri.getRawUserInfo() != null) {
+                throw new RachioApiException("Modern webhook URL must not contain URL userinfo credentials.");
+            }
+            return uri.toASCIIString();
+        } catch (URISyntaxException e) {
+            throw new RachioApiException("Invalid webhook URL format: " + e.getReason());
+        }
+    }
+
+    private synchronized void scheduleCloudWebhookRefresh(Instant expiresAt) {
+        cancelCloudWebhookRefresh("new cloud webhook URL");
+        long delaySeconds = Duration.between(Instant.now(), expiresAt.minus(CLOUD_WEBHOOK_REFRESH_SAFETY_WINDOW))
+                .getSeconds();
+        delaySeconds = Math.max(MIN_CLOUD_WEBHOOK_REFRESH_DELAY_SECONDS, delaySeconds);
+        cloudWebhookRefreshJob = scheduler.schedule(this::onWebhookServiceChanged, delaySeconds, TimeUnit.SECONDS);
+        logger.debug("RachioCloud: Scheduled openHAB Cloud webhook URL refresh in {} seconds", delaySeconds);
+    }
+
+    private synchronized void cancelCloudWebhookRefresh(String reason) {
+        ScheduledFuture<?> refreshJob = cloudWebhookRefreshJob;
+        if (refreshJob != null) {
+            logger.debug("RachioCloud: Cancelling openHAB Cloud webhook URL refresh ({})", reason);
+            refreshJob.cancel(true);
+            cloudWebhookRefreshJob = null;
+        }
+    }
+
+    private void clearResolvedModernWebhookUrl() {
+        resolvedCloudWebhookGeneration = NO_CLOUD_WEBHOOK_GENERATION;
+        if (resolvedModernWebhookUrl == null) {
+            return;
+        }
+        resolvedModernWebhookUrl = null;
+        updateProperties();
+    }
+
+    private void releaseCloudWebhookUrl(String reason) {
+        cancelCloudWebhookRefresh(reason);
+        cloudWebhookRegistry.release(getCloudWebhookConsumerId());
+        clearResolvedModernWebhookUrl();
+    }
+
+    private boolean isCloudWebhookRegistrationEnabled() {
+        return thingConfig.autoConfigureWebhooks && thingConfig.useCloudWebhook;
+    }
+
+    private String getCloudWebhookConsumerId() {
+        return getThing().getUID().getAsString();
+    }
+
+    private void updateWebhookMode(String mode) {
+        if (webhookMode.equals(mode)) {
+            return;
+        }
+        webhookMode = mode;
+        updateProperties();
+    }
+
+    private void updateWebhookRegistrationAttempt() {
+        lastWebhookRegistrationAttempt = Instant.now().toString();
+        updateProperties();
+    }
+
+    private void updateWebhookRegistrationState(String state) {
+        if (webhookRegistrationState.equals(state)) {
+            return;
+        }
+        webhookRegistrationState = state;
+        updateProperties();
+    }
+
+    private void recordWebhookEvent(RachioEventGsonDTO event) {
+        lastWebhookEventTimestamp = Instant.now().toString();
+        lastWebhookEventType = getEventTypeForProperties(event);
+        updateProperties();
+    }
+
+    private String getEventTypeForProperties(RachioEventGsonDTO event) {
+        if (!event.eventType.isBlank()) {
+            return event.eventType;
+        }
+        if (!event.type.isBlank() && !event.subType.isBlank()) {
+            return event.type + "." + event.subType;
+        }
+        if (!event.type.isBlank()) {
+            return event.type;
+        }
+        return "unknown";
     }
 
     /**
@@ -893,7 +1282,68 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
      * @return true if the event was dispatched to a matching handler
      */
     public boolean webHookEvent(RachioEventGsonDTO event) {
+        if (isModernWebhookEvent(event)) {
+            RachioWebhookResourceType resourceType = RachioWebhookResourceType.fromApiValue(event.resourceType);
+            if (resourceType == RachioWebhookResourceType.IRRIGATION_CONTROLLER) {
+                RachioWebhookMode mode = getActiveIrrigationWebhookProcessingMode();
+                if (mode != RachioWebhookMode.WEBHOOK_SERVICE) {
+                    logger.debug(
+                            "RachioCloud: Ignoring modern WebhookService irrigation event eventType='{}', resourceType='{}' because active irrigation webhook processing mode is {}; polling remains active",
+                            event.eventType, event.resourceType, mode);
+                    return true;
+                }
+                logger.debug(
+                        "RachioCloud: Processing modern WebhookService irrigation event eventType='{}', resourceType='{}' because active irrigation webhook processing mode is {}",
+                        event.eventType, event.resourceType, mode);
+            } else if (resourceType == RachioWebhookResourceType.VALVE
+                    || resourceType == RachioWebhookResourceType.PROGRAM) {
+                RachioWebhookMode mode = getWebhookMode(resourceType);
+                if (mode != RachioWebhookMode.WEBHOOK_SERVICE) {
+                    logger.debug(
+                            "RachioCloud: Ignoring Smart Hose Timer WebhookService event eventType='{}', resourceType='{}' because active webhook processing mode is {}; polling remains active",
+                            event.eventType, event.resourceType, mode);
+                    return true;
+                }
+                logger.debug(
+                        "RachioCloud: Processing Smart Hose Timer WebhookService event eventType='{}', resourceType='{}' because active webhook processing mode is {}",
+                        event.eventType, event.resourceType, mode);
+            }
+            boolean dispatched = dispatchWebHookEvent(event);
+            if (!dispatched) {
+                logger.debug(
+                        "RachioCloud: Modern webhook event eventType='{}', resourceType='{}', resourceIdPresent={} was not directly handled; reconciliation refresh remains active",
+                        event.eventType, event.resourceType, !event.resourceId.isBlank());
+            }
+            reconcileAfterModernWebhookEvent(event);
+            return true;
+        }
+        boolean dispatched = dispatchWebHookEvent(event);
+        return dispatched;
+    }
+
+    private void reconcileAfterModernWebhookEvent(RachioEventGsonDTO event) {
+        RachioWebhookResourceType resourceType = RachioWebhookResourceType.fromApiValue(event.resourceType);
+        if (resourceType == RachioWebhookResourceType.IRRIGATION_CONTROLLER) {
+            logger.debug(
+                    "RachioCloud: Refreshing essential controller state after modern webhook event eventType='{}', resourceType='{}'",
+                    event.eventType, event.resourceType);
+            refreshDeviceStatus(RefreshReason.WEBHOOK_RECONCILIATION);
+            return;
+        }
+        if (resourceType == RachioWebhookResourceType.VALVE || resourceType == RachioWebhookResourceType.PROGRAM) {
+            logger.debug(
+                    "RachioCloud: Smart Hose Timer webhook event eventType='{}', resourceType='{}' handled or acknowledged; Thing polling remains available as reconciliation fallback",
+                    event.eventType, event.resourceType);
+            return;
+        }
+        logger.debug(
+                "RachioCloud: Modern webhook event eventType='{}', resourceType='{}' acknowledged; polling remains available as fallback",
+                event.eventType, event.resourceType);
+    }
+
+    private boolean dispatchWebHookEvent(RachioEventGsonDTO event) {
         try {
+            recordWebhookEvent(event);
             return RachioWebhookDispatcher.createDefault(this).dispatch(event);
         } catch (RuntimeException e) {
             logger.debug("RachioCloud: Unable to process event {}.{} for device {}", event.category, event.type,
@@ -902,15 +1352,33 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
         return false;
     }
 
+    private boolean isModernWebhookEvent(RachioEventGsonDTO event) {
+        return !event.eventType.isBlank() && !event.resourceType.isBlank();
+    }
+
     public boolean legacyWebHookEvent(RachioEventGsonDTO event) {
         if (findIrrigationController(event.deviceId) == null) {
             logger.warn("RachioCloud: Rejecting legacy NotificationService event for unknown controller '{}'",
                     event.deviceId);
             return false;
         }
-        logger.debug("RachioCloud: Dispatching validated legacy NotificationService event {}.{} before reconciliation",
-                event.type, event.subType);
-        boolean dispatched = webHookEvent(event);
+        RachioWebhookMode mode = getActiveIrrigationWebhookProcessingMode();
+        if (mode == RachioWebhookMode.WEBHOOK_SERVICE) {
+            logger.debug(
+                    "RachioCloud: Ignoring legacy NotificationService event {}.{} because modern WebhookService mode is active for irrigation events",
+                    event.type, event.subType);
+            return true;
+        }
+        if (mode == RachioWebhookMode.DISABLED) {
+            logger.debug(
+                    "RachioCloud: Ignoring legacy NotificationService event {}.{} because irrigation webhook processing is disabled; polling remains active",
+                    event.type, event.subType);
+            return true;
+        }
+        logger.debug(
+                "RachioCloud: Dispatching validated legacy NotificationService event {}.{} before reconciliation because active irrigation webhook processing mode is {}",
+                event.type, event.subType, mode);
+        boolean dispatched = dispatchWebHookEvent(event);
         if (!dispatched) {
             logger.debug(
                     "RachioCloud: Legacy NotificationService event {}.{} was not directly handled; reconciliation refresh remains active",
@@ -948,7 +1416,7 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
     private void logResolvedConfiguration(RachioConfiguration.ResolvedConfiguration resolvedConfiguration) {
         RachioConfiguration config = resolvedConfiguration.configuration();
         logger.debug(
-                "Rachio Cloud configuration resolved: apikeyConfigured={} ({}), pollingInterval={} ({}), defaultRuntime={} ({}), eventHistoryLookbackHours={} ({}), forecastUnits={} ({}), hoseSummaryLookbackDays={} ({}), hoseSummaryLookaheadDays={} ({}), callbackUrlConfigured={} ({}), callbackUsernameConfigured={} ({}), callbackPasswordConfigured={} ({}), clearAllCallbacks={} ({})",
+                "Rachio Cloud configuration resolved: apikeyConfigured={} ({}), pollingInterval={} ({}), defaultRuntime={} ({}), eventHistoryLookbackHours={} ({}), forecastUnits={} ({}), hoseSummaryLookbackDays={} ({}), hoseSummaryLookaheadDays={} ({}), callbackUrlConfigured={} ({}), callbackUsernameConfigured={} ({}), callbackPasswordConfigured={} ({}), clearAllCallbacks={} ({}), autoConfigureWebhooks={} ({}), autoConfigureHoseTimerWebhooks={} ({}), useCloudWebhook={} ({}), publicWebhookUrlConfigured={} ({})",
                 isConfigured(config.apikey), sourceLabel(resolvedConfiguration, PARAM_APIKEY), config.pollingInterval,
                 sourceLabel(resolvedConfiguration, PARAM_POLLING_INTERVAL), config.defaultRuntime,
                 sourceLabel(resolvedConfiguration, PARAM_DEFAULT_RUNTIME), config.eventHistoryLookbackHours,
@@ -959,7 +1427,12 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
                 sourceLabel(resolvedConfiguration, PARAM_CALLBACK_URL), isConfigured(config.callbackUsername),
                 sourceLabel(resolvedConfiguration, PARAM_CALLBACK_USERNAME), isConfigured(config.callbackPassword),
                 sourceLabel(resolvedConfiguration, PARAM_CALLBACK_PASSWORD), config.clearAllCallbacks,
-                sourceLabel(resolvedConfiguration, PARAM_CLEAR_CALLBACK));
+                sourceLabel(resolvedConfiguration, PARAM_CLEAR_CALLBACK), config.autoConfigureWebhooks,
+                sourceLabel(resolvedConfiguration, PARAM_AUTO_CONFIGURE_WEBHOOKS),
+                config.autoConfigureHoseTimerWebhooks,
+                sourceLabel(resolvedConfiguration, PARAM_AUTO_CONFIGURE_HOSE_TIMER_WEBHOOKS), config.useCloudWebhook,
+                sourceLabel(resolvedConfiguration, PARAM_USE_CLOUD_WEBHOOK), isConfigured(config.publicWebhookUrl),
+                sourceLabel(resolvedConfiguration, PARAM_PUBLIC_WEBHOOK_URL));
     }
 
     private String sourceLabel(RachioConfiguration.ResolvedConfiguration resolvedConfiguration, String parameterName) {
@@ -971,7 +1444,13 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
     }
 
     private void updateProperties() {
-        updateProperties(rachioApi.fillProperties());
+        Map<String, String> properties = new HashMap<>(rachioApi.fillProperties());
+        properties.put(PROPERTY_WEBHOOK_MODE, webhookMode);
+        properties.put(PROPERTY_WEBHOOK_REGISTRATION_STATE, webhookRegistrationState);
+        properties.put(PROPERTY_LAST_WEBHOOK_REGISTRATION_ATTEMPT, lastWebhookRegistrationAttempt);
+        properties.put(PROPERTY_LAST_WEBHOOK_EVENT_TIMESTAMP, lastWebhookEventTimestamp);
+        properties.put(PROPERTY_LAST_WEBHOOK_EVENT_TYPE, lastWebhookEventType);
+        updateProperties(properties);
     }
 
     @Override
@@ -987,6 +1466,8 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
     @Override
     public synchronized void dispose() {
         logger.debug("RachioCloud: Disposing handler");
+        disposed = true;
+        releaseCloudWebhookUrl("bridge disposal");
         super.dispose();
     }
 }

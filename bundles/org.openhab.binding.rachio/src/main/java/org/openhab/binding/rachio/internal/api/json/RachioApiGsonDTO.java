@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.rachio.internal.api.json.RachioDeviceGsonDTO.RachioCloudDevice;
 import org.openhab.binding.rachio.internal.api.webhook.RachioWebhookResourceType;
 
@@ -192,7 +193,7 @@ public class RachioApiGsonDTO {
     public static class RachioZoneStatus {
         public Integer duration = 0;
         public String scheduleType = "";
-        public Integer zoneNumber = 0;
+        public @Nullable Integer zoneNumber = 0;
         public String executionType = "";
         public String state = "";
         public String startTime = "";
