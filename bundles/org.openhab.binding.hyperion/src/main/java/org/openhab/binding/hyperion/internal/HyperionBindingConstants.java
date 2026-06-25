@@ -43,6 +43,7 @@ public class HyperionBindingConstants {
     public static final String CHANNEL_GRABBER = "grabber";
     public static final String CHANNEL_V4L = "v4l";
     public static final String CHANNEL_LEDDEVICE = "leddevice";
+    public static final String CHANNEL_HDR = "hdr";
     public static final String CHANNEL_HYPERION_ENABLED = "hyperionenabled";
 
     // Hyperion components
@@ -55,6 +56,7 @@ public class HyperionBindingConstants {
     public static final String COMPONENT_GRABBER = "GRABBER";
     public static final String COMPONENT_V4L = "V4L";
     public static final String COMPONENT_LEDDEVICE = "LEDDEVICE";
+    public static final String COMPONENT_HDR = "HDR";
     public static final String COMPONENT_ALL = "ALL";
 
     // List of all properties
@@ -71,13 +73,16 @@ public class HyperionBindingConstants {
     // thing-types
     public static final String SERVER_V1 = "serverV1";
     public static final String SERVER_NG = "serverNG";
+    public static final String SERVER_HDR = "serverHDR";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_SERVER_V1 = new ThingTypeUID(BINDING_ID, SERVER_V1);
     public static final ThingTypeUID THING_TYPE_SERVER_NG = new ThingTypeUID(BINDING_ID, SERVER_NG);
+    public static final ThingTypeUID THING_TYPE_SERVER_HDR = new ThingTypeUID(BINDING_ID, SERVER_HDR);
 
     static {
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_SERVER_V1);
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_SERVER_NG);
+        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_SERVER_HDR);
     }
 }
