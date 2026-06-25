@@ -115,17 +115,16 @@ public class AmpliPiZoneHandler extends BaseThingHandler implements AmpliPiStatu
                 break;
             case AmpliPiBindingConstants.CHANNEL_VOLUME:
                 if (command instanceof PercentType percentCommand) {
-                    update.setVol(AmpliPiUtils.percentTypeToVolume(percentCommand));
+                    update.setVolF(AmpliPiUtils.percentTypeToVolumeFraction(percentCommand));
                 } else if (command instanceof IncreaseDecreaseType) {
-                    if (zoneState != null) {
-                        if (IncreaseDecreaseType.INCREASE.equals(command)) {
-                            zoneState.setVol(
-                                    Math.min(zoneState.getVol() + getVolumeDelta(thing), AmpliPiUtils.MAX_VOLUME_DB));
-                        } else {
-                            zoneState.setVol(
-                                    Math.max(zoneState.getVol() - getVolumeDelta(thing), AmpliPiUtils.MIN_VOLUME_DB));
-                        }
-                        update.setVol(zoneState.getVol());
+                    Zone state = zoneState;
+                    if (state != null && state.getVolF() != null) {
+                        double step = getVolumeDelta(thing) / 100.0;
+                        double current = state.getVolF();
+                        double newVolF = IncreaseDecreaseType.INCREASE.equals(command) ? Math.min(current + step, 1.0)
+                                : Math.max(current - step, 0.0);
+                        state.setVolF(newVolF);
+                        update.setVolF(newVolF);
                     }
                 }
                 break;
@@ -166,12 +165,16 @@ public class AmpliPiZoneHandler extends BaseThingHandler implements AmpliPiStatu
 
         Boolean power = !zoneState.getMute();
         Boolean mute = zoneState.getMute();
-        Integer vol = zoneState.getVol();
         Integer sourceId = zoneState.getSourceId();
 
         updateState(AmpliPiBindingConstants.CHANNEL_POWER, OnOffType.from(power));
         updateState(AmpliPiBindingConstants.CHANNEL_MUTE, OnOffType.from(mute));
-        updateState(AmpliPiBindingConstants.CHANNEL_VOLUME, AmpliPiUtils.volumeToPercentType(vol));
+        // Prefer the firmware-provided volume fraction; fall back to the dB value
+        // for older firmware that does not report vol_f.
+        Double volF = zoneState.getVolF();
+        PercentType volume = volF != null ? AmpliPiUtils.volumeFractionToPercentType(volF)
+                : AmpliPiUtils.volumeToPercentType(zoneState.getVol());
+        updateState(AmpliPiBindingConstants.CHANNEL_VOLUME, volume);
         updateState(AmpliPiBindingConstants.CHANNEL_SOURCE, new DecimalType(sourceId));
     }
 }
