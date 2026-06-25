@@ -69,6 +69,7 @@ import org.openhab.core.thing.ManagedThingProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.builder.BridgeBuilder;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
@@ -946,6 +947,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         Service service = GSON.fromJson(json, Service.class);
         boolean snapshotChannelExists = thing.getChannel(CHANNEL_SNAPSHOT) != null;
         boolean snapshotChannelRefresh = false;
+        State batteryLowState = null;
         if (service != null && service.characteristics instanceof List<Characteristic> characteristics) {
             for (Channel channel : thing.getChannels()) {
                 ChannelUID channelUID = channel.getUID();
@@ -961,7 +963,12 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                                 && cxx.value instanceof JsonElement element) {
                             State state = convertJsonToState(element, channel);
                             switch (channel.getKind()) {
-                                case STATE -> updateState(channelUID, state);
+                                case STATE -> {
+                                    updateState(channelUID, state);
+                                    if (CharacteristicType.STATUS_LO_BATT.equals(cxx.getCharacteristicType())) {
+                                        batteryLowState = state;
+                                    }
+                                }
                                 case TRIGGER -> triggerChannel(channelUID, state.toFullString());
                             }
                             // check for snapshot refresh triggers
@@ -989,6 +996,9 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         }
         if (hsbChannelUID != null) {
             updateState(hsbChannelUID, Objects.requireNonNull(lightModel).getHsb());
+        }
+        if (batteryLowState != null) {
+            updateOnlineStatusDescription(batteryLowState);
         }
     }
 
@@ -1348,5 +1358,32 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         // prevent un-pairing (which would erase the pairing keys) while migration is in progress
         return migrating.get() ? ACTION_RESULT_ERROR_FORMAT.formatted("auto-migration in progress")
                 : super.unpairInner();
+    }
+
+    /**
+     * Update thing status description based on the given battery low state. If the battery is low and the description
+     * is null, then the description is set to the respective battery low translatable text. If the battery is OK, and
+     * the description is the low battery translatable text, then the description message is cleared. If the thing is
+     * not ONLINE, or if it does not have a battery low channel then the description is not updated. NOTE: this method
+     * only updates the status description if the thing does not already have a status description for a different
+     * issue.
+     */
+    private void updateOnlineStatusDescription(State batteryLowState) {
+        ThingStatusInfo statusInfo = thing.getStatusInfo();
+        if (statusInfo.getStatus() == ThingStatus.ONLINE) {
+            String description = statusInfo.getDescription();
+
+            // if battery is OK and description is the low battery text then clear the description
+            if (OpenClosedType.CLOSED.equals(batteryLowState) && TEXT_ONLINE_BATTERY_LOW.equals(description)) {
+                updateStatus(statusInfo.getStatus(), statusInfo.getStatusDetail());
+                return;
+            }
+
+            // if battery is low and description is null then apply the low battery text
+            if (OpenClosedType.OPEN.equals(batteryLowState) && (description == null || description.isBlank())) {
+                updateStatus(statusInfo.getStatus(), statusInfo.getStatusDetail(), TEXT_ONLINE_BATTERY_LOW);
+                return;
+            }
+        }
     }
 }
