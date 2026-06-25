@@ -225,8 +225,7 @@ public class RestClient {
         pb.add("device[os]", "android");
         pb.add("device[hardware_id]", hardwareId);
         pb.add("device[app_brand]", "ring");
-        // NEW: Make openHAB appear as a modern smartphone so Ring enables push routing
-        pb.add("device[metadata][device_model]", "Pixel 6");
+        pb.add("device[metadata][device_model]", "openHAB Ring Binding");
         pb.add("device[metadata][resolution]", "1080x2400");
         pb.add("device[metadata][app_version]", "3.67.0");
         pb.add("device[metadata][app_installation_date]", "");
