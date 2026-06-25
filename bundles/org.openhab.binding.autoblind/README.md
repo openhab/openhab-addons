@@ -1,5 +1,7 @@
 # AutoBlind Binding
 
+<img src="doc/autoblind_over_slats.png" width="150" alt="AutoBlind logo"> <img src="doc/autoblind_behind_slats.png" width="150" alt="AutoBlind logo (behind slats)">
+
 This binding integrates Norman ShadeAuto motorized shades (manufactured by Nien Made) with openHAB.
 It communicates with the ShadeAuto hub over the local network using the hub's HTTP API on port 10123.
 No cloud connection is required.

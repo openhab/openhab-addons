@@ -347,9 +347,6 @@ public class AutoBlindHubHandler extends BaseBridgeHandler {
                     }
                 }
             }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            logger.debug("Notification watch interrupted");
         } catch (Exception e) {
             logger.debug("Notification watch error: {}", e.getMessage());
         }
