@@ -226,7 +226,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * automatically report a minimum dimming level via the API
      */
     private @Nullable Double manualMinimumDimmingLevel;
-    private @Nullable MirekSchema manualMirekSchema;
+    private @Nullable MirekSchema manualSchema;
 
     public Clip2ThingHandler(Thing thing, Clip2StateDescriptionProvider stateDescriptionProvider,
             ThingRegistry thingRegistry, ItemChannelLinkRegistry itemChannelLinkRegistry) {
@@ -323,7 +323,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
         controlIds.clear();
         extendedResourceTypes.clear();
         manualMinimumDimmingLevel = null;
-        manualMirekSchema = null;
+        manualSchema = null;
     }
 
     /**
@@ -424,12 +424,12 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     command = OnOffType.OFF == command ? PercentType.ZERO : PercentType.HUNDRED;
                 }
                 putResource = Setters.setColorTemperaturePercent(new Resource(lightResourceType), command, cache,
-                        manualMirekSchema);
+                        manualSchema);
                 break;
 
             case CHANNEL_2_COLOR_TEMP_ABSOLUTE:
                 putResource = Setters.setColorTemperatureAbsolute(new Resource(lightResourceType), command, cache,
-                        manualMirekSchema);
+                        manualSchema);
                 break;
 
             case CHANNEL_2_COLOR:
@@ -740,7 +740,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
         if (minKelvin != null || maxKelvin != null) {
             int minMirek = maxKelvin != null ? (int) Math.round(maxKelvin / 1000000.0) : MirekSchema.MIN;
             int maxMirek = minKelvin != null ? (int) Math.round(minKelvin / 1000000.0) : MirekSchema.MAX;
-            manualMirekSchema = new MirekSchema(minMirek, maxMirek);
+            manualSchema = new MirekSchema(minMirek, maxMirek);
         }
 
         updateThingFromLegacy();

@@ -95,7 +95,7 @@ public class Setters {
      * @return the target resource.
      */
     public static Resource setColorTemperatureAbsolute(Resource target, Command command, @Nullable Resource source,
-            @Nullable MirekSchema manualMirekSchema) {
+            @Nullable MirekSchema manualSchema) {
         QuantityType<?> mirekQuantity = null;
         if (command instanceof QuantityType<?> genericQuantity) {
             mirekQuantity = genericQuantity.toInvertibleUnit(Units.MIRED);
@@ -105,7 +105,7 @@ public class Setters {
         if (Objects.nonNull(mirekQuantity)) {
             MirekSchema schema = target.getMirekSchema();
             schema = Objects.nonNull(schema) ? schema
-                    : Objects.nonNull(source) ? source.getMirekSchema() : manualMirekSchema;
+                    : Objects.nonNull(source) ? source.getMirekSchema() : manualSchema;
             schema = Objects.nonNull(schema) ? schema : MirekSchema.DEFAULT_SCHEMA;
             ColorTemperature colorTemperature = target.getColorTemperature();
             colorTemperature = Objects.nonNull(colorTemperature) ? colorTemperature : new ColorTemperature();
@@ -129,11 +129,11 @@ public class Setters {
      * @return the target resource.
      */
     public static Resource setColorTemperaturePercent(Resource target, Command command, @Nullable Resource source,
-            @Nullable MirekSchema manualMirekSchema) {
+            @Nullable MirekSchema manualSchema) {
         if (command instanceof PercentType mirek) {
             MirekSchema schema = target.getMirekSchema();
             schema = Objects.nonNull(schema) ? schema
-                    : Objects.nonNull(source) ? source.getMirekSchema() : manualMirekSchema;
+                    : Objects.nonNull(source) ? source.getMirekSchema() : manualSchema;
             schema = Objects.nonNull(schema) ? schema : MirekSchema.DEFAULT_SCHEMA;
             ColorTemperature colorTemperature = target.getColorTemperature();
             colorTemperature = Objects.nonNull(colorTemperature) ? colorTemperature : new ColorTemperature();
