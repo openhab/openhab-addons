@@ -322,6 +322,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
         serviceContributorsCache.clear();
         controlIds.clear();
         extendedResourceTypes.clear();
+        manualMinimumDimmingLevel = null;
+        manualMirekSchema = null;
     }
 
     /**
@@ -732,9 +734,13 @@ public class Clip2ThingHandler extends BaseThingHandler {
         logger.debug("{} -> initialize()", resourceId);
 
         manualMinimumDimmingLevel = config.minimumDimmingLevel;
-        if (config.minimumColorTemperature instanceof Double min && config.maximumColorTemperature instanceof Double max
-                && max > min) {
-            manualMirekSchema = new MirekSchema(min, max);
+
+        Double minKelvin = config.minimumColorTemperature;
+        Double maxKelvin = config.maximumColorTemperature;
+        if (minKelvin != null || maxKelvin != null) {
+            int minMirek = maxKelvin != null ? (int) Math.round(maxKelvin / 1000000.0) : MirekSchema.MIN;
+            int maxMirek = minKelvin != null ? (int) Math.round(minKelvin / 1000000.0) : MirekSchema.MAX;
+            manualMirekSchema = new MirekSchema(minMirek, maxMirek);
         }
 
         updateThingFromLegacy();
