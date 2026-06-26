@@ -131,4 +131,11 @@ public class RingBindingConstants {
                     DOORBELL_4_KINDS, DOORBELL_PRO_KINDS, DOORBELL_PRO_2_KINDS, DOORBELL_WIRED_KINDS,
                     DOORBELL_BATTERY_KINDS, DOORBELL_GEN2_KINDS, DOORBELL_ELITE_KINDS, PEEPHOLE_CAM_KINDS)
             .flatMap(Set::stream).collect(Collectors.toUnmodifiableSet());
+
+    // button kinds
+    public static final Set<String> BUTTON_KINDS = Stream
+            .of(DOORBELL_KINDS, DOORBELL_2_KINDS, DOORBELL_3_KINDS, DOORBELL_3_PLUS_KINDS, DOORBELL_4_KINDS,
+                    DOORBELL_PRO_KINDS, DOORBELL_PRO_2_KINDS, DOORBELL_WIRED_KINDS, DOORBELL_BATTERY_KINDS,
+                    DOORBELL_GEN2_KINDS, DOORBELL_ELITE_KINDS, PEEPHOLE_CAM_KINDS, INTERCOM_KINDS)
+            .flatMap(Set::stream).collect(Collectors.toUnmodifiableSet());
 }

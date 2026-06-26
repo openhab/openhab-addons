@@ -512,7 +512,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
             if (registry != null && !getAllDevices().isEmpty()) {
                 logger.debug("Subscribing all discovered devices to the active push notification session...");
                 for (RingDevice device : getAllDevices()) {
-                    restClient.subscribeDeviceToPush(device.getId(), config.hardwareId, tokens);
+                    restClient.subscribeDeviceToPush(device.getId(), device.getKind(), config.hardwareId, tokens);
                 }
             }
         } catch (AuthenticationException e) {

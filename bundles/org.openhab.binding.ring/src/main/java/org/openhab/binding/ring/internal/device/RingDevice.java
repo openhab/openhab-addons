@@ -30,4 +30,8 @@ public interface RingDevice {
     default String getId() {
         return getDeviceStatus().id;
     }
+
+    default String getKind() {
+        return getDeviceStatus().kind;
+    }
 }

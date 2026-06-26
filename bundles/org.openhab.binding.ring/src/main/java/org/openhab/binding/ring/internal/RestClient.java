@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.ring.internal;
 
+import static org.openhab.binding.ring.RingBindingConstants.*;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -494,27 +496,29 @@ public class RestClient {
     /**
      * Subscribes an individual camera to doorbell rings and motion events.
      */
-    public void subscribeDeviceToPush(String deviceId, String hardwareId, Tokens tokens) {
+    public void subscribeDeviceToPush(String deviceId, String kind, String hardwareId, Tokens tokens) {
         Map<String, String> headers = new HashMap<>();
-        // CRITICAL: Ring uses this header to link the camera to your FCM socket
         headers.put("hardware_id", hardwareId);
 
         // 1. Subscribe to Doorbell Rings
-        try {
-            sendCommand(ApiConstants.API_BASE + "/clients_api/doorbots/" + deviceId + "/subscribe", HttpMethod.POST,
-                    null, headers, tokens);
-            logger.debug("Successfully subscribed device {} to doorbell rings.", deviceId);
-        } catch (AuthenticationException e) {
-            logger.warn("Failed to subscribe device {} to rings: {}", deviceId, e.getMessage());
+        if (BUTTON_KINDS.contains(kind)) {
+            try {
+                sendCommand(ApiConstants.API_BASE + "/clients_api/doorbots/" + deviceId + "/subscribe", HttpMethod.POST,
+                        null, headers, tokens);
+                logger.debug("Successfully subscribed device {} to doorbell rings.", deviceId);
+            } catch (AuthenticationException e) {
+                logger.warn("Failed to subscribe device {} to rings: {}", deviceId, e.getMessage());
+            }
         }
-
         // 2. Subscribe to Motion Events
-        try {
-            sendCommand(ApiConstants.API_BASE + "/clients_api/doorbots/" + deviceId + "/motions_subscribe",
-                    HttpMethod.POST, null, headers, tokens);
-            logger.debug("Successfully subscribed device {} to motion events.", deviceId);
-        } catch (AuthenticationException e) {
-            logger.warn("Failed to subscribe device {} to motions: {}", deviceId, e.getMessage());
+        if (MOTION_DETECTION_KINDS.contains(kind)) {
+            try {
+                sendCommand(ApiConstants.API_BASE + "/clients_api/doorbots/" + deviceId + "/motions_subscribe",
+                        HttpMethod.POST, null, headers, tokens);
+                logger.debug("Successfully subscribed device {} to motion events.", deviceId);
+            } catch (AuthenticationException e) {
+                logger.warn("Failed to subscribe device {} to motions: {}", deviceId, e.getMessage());
+            }
         }
     }
 
