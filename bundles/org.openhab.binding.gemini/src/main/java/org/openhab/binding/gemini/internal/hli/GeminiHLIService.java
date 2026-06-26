@@ -33,6 +33,7 @@ import org.openhab.binding.gemini.internal.api.dto.GeminiFunctionCall;
 import org.openhab.binding.gemini.internal.api.dto.GeminiPart;
 import org.openhab.binding.gemini.internal.api.dto.response.GeminiCandidate;
 import org.openhab.binding.gemini.internal.api.dto.response.GeminiResponse;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.voice.text.HumanLanguageInterpreter;
@@ -44,7 +45,13 @@ import org.openhab.core.voice.text.conversation.ConversationRole;
 import org.openhab.core.voice.text.interpreter.llm.LLMTool;
 import org.openhab.core.voice.text.interpreter.llm.LLMToolCall;
 import org.openhab.core.voice.text.interpreter.llm.LLMToolException;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link GeminiHLIService} is a {@link HumanLanguageInterpreter} implementation based on Google Gemini.
@@ -55,8 +62,22 @@ import org.osgi.service.component.annotations.Component;
 @NonNullByDefault
 public class GeminiHLIService implements ThingHandlerService, HumanLanguageInterpreter {
     private static final String LABEL = "Gemini Human Language Interpreter";
+    private static final String ERROR_KEY_MISSING_CONFIG = "hli.error.missing-configuration";
+    private static final String ERROR_KEY_TECHNICAL_PROBLEM = "hli.error.technical-problem";
+    private static final String DEFAULT_ERROR_MISSING_CONFIG = "Cannot interpret due to missing configuration.";
+    private static final String DEFAULT_ERROR_TECHNICAL_PROBLEM = "Cannot interpret due to a technical problem.";
+
+    private final Logger logger = LoggerFactory.getLogger(GeminiHLIService.class);
+    private final TranslationProvider i18nProvider;
+    private final Bundle bundle;
 
     private @Nullable GeminiHandler handler;
+
+    @Activate
+    public GeminiHLIService(final @Reference TranslationProvider i18nProvider, BundleContext context) {
+        this.i18nProvider = i18nProvider;
+        this.bundle = context.getBundle();
+    }
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
@@ -97,19 +118,30 @@ public class GeminiHLIService implements ThingHandlerService, HumanLanguageInter
         return null;
     }
 
+    private String getLocalizedMessage(String key, String defaultText, Locale locale) {
+        String message = i18nProvider.getText(bundle, key, defaultText, locale);
+        return message != null ? message : defaultText;
+    }
+
     @Override
     public String interpret(Locale locale, String text) throws InterpretationException {
         GeminiHandler geminiHandler = handler;
         if (geminiHandler == null) {
-            throw new InterpretationException("GeminiHandler is not initialized");
+            logger.warn("Cannot interpret: GeminiHandler is not initialized");
+            throw new InterpretationException(
+                    getLocalizedMessage(ERROR_KEY_MISSING_CONFIG, DEFAULT_ERROR_MISSING_CONFIG, locale));
         }
         GeminiApiClient apiClient = geminiHandler.getApiClient();
         if (apiClient == null) {
-            throw new InterpretationException("Gemini API client is not available");
+            logger.warn("Cannot interpret: Gemini API client is not available");
+            throw new InterpretationException(
+                    getLocalizedMessage(ERROR_KEY_MISSING_CONFIG, DEFAULT_ERROR_MISSING_CONFIG, locale));
         }
         GeminiConfiguration config = geminiHandler.getGeminiConfiguration();
         if (config == null) {
-            throw new InterpretationException("Gemini HLI configuration is not available");
+            logger.warn("Cannot interpret: Gemini HLI configuration is not available");
+            throw new InterpretationException(
+                    getLocalizedMessage(ERROR_KEY_MISSING_CONFIG, DEFAULT_ERROR_MISSING_CONFIG, locale));
         }
         String model = config.model.isBlank() ? DEFAULT_MODEL : config.model;
         try {
@@ -120,27 +152,37 @@ public class GeminiHLIService implements ThingHandlerService, HumanLanguageInter
                 return response;
             }
         } catch (GeminiApiException e) {
-            var ex = new InterpretationException("Failed to get response from Gemini: " + e.getMessage());
+            logger.warn("Request to Gemini failed: {}", e.getMessage(), e);
+            var ex = new InterpretationException(
+                    getLocalizedMessage(ERROR_KEY_TECHNICAL_PROBLEM, DEFAULT_ERROR_TECHNICAL_PROBLEM, locale));
             ex.initCause(e);
             throw ex;
         }
-        throw new InterpretationException("No valid response received");
+        logger.warn("Cannot interpret: No valid response received");
+        throw new InterpretationException(
+                getLocalizedMessage(ERROR_KEY_TECHNICAL_PROBLEM, DEFAULT_ERROR_TECHNICAL_PROBLEM, locale));
     }
 
     @Override
     public String interpret(Locale locale, InterpreterContext interpreterContext) throws InterpretationException {
         GeminiHandler geminiHandler = handler;
         if (geminiHandler == null) {
-            throw new InterpretationException("GeminiHandler is not initialized");
+            logger.warn("Cannot interpret: GeminiHandler is not initialized");
+            throw new InterpretationException(
+                    getLocalizedMessage(ERROR_KEY_MISSING_CONFIG, DEFAULT_ERROR_MISSING_CONFIG, locale));
         }
         GeminiApiClient apiClient = geminiHandler.getApiClient();
         if (apiClient == null) {
-            throw new InterpretationException("Gemini API client is not available");
+            logger.warn("Cannot interpret: Gemini API client is not available");
+            throw new InterpretationException(
+                    getLocalizedMessage(ERROR_KEY_MISSING_CONFIG, DEFAULT_ERROR_MISSING_CONFIG, locale));
         }
 
         GeminiConfiguration config = geminiHandler.getGeminiConfiguration();
         if (config == null) {
-            throw new InterpretationException("Gemini HLI configuration is not available");
+            logger.warn("Cannot interpret: Gemini HLI configuration is not available");
+            throw new InterpretationException(
+                    getLocalizedMessage(ERROR_KEY_MISSING_CONFIG, DEFAULT_ERROR_MISSING_CONFIG, locale));
         }
 
         Conversation conversation = interpreterContext.conversation();
@@ -148,7 +190,9 @@ public class GeminiHLIService implements ThingHandlerService, HumanLanguageInter
 
         String systemMessage = interpreterContext.systemPrompt();
         if (systemMessage == null || systemMessage.isBlank()) {
-            throw new InterpretationException("System prompt is missing or empty");
+            logger.warn("Cannot interpret: System prompt is missing or empty");
+            throw new InterpretationException(
+                    getLocalizedMessage(ERROR_KEY_MISSING_CONFIG, DEFAULT_ERROR_MISSING_CONFIG, locale));
         }
         String locationItem = interpreterContext.locationItem();
         if (locationItem != null && !locationItem.isBlank()) {
@@ -169,8 +213,9 @@ public class GeminiHLIService implements ThingHandlerService, HumanLanguageInter
         final int maxLoops = 10;
         while (true) {
             if (loopCount >= maxLoops) {
+                logger.warn("Cannot interpret: Tool execution loop limit exceeded (max {} iterations)", maxLoops);
                 throw new InterpretationException(
-                        "Tool execution loop limit exceeded (max " + maxLoops + " iterations)");
+                        getLocalizedMessage(ERROR_KEY_TECHNICAL_PROBLEM, DEFAULT_ERROR_TECHNICAL_PROBLEM, locale));
             }
             loopCount++;
             String model = config.model.isBlank() ? DEFAULT_MODEL : config.model;
@@ -180,15 +225,21 @@ public class GeminiHLIService implements ThingHandlerService, HumanLanguageInter
 
                 List<GeminiCandidate> candidates = geminiResponse.candidates();
                 if (candidates == null || candidates.isEmpty()) {
-                    throw new InterpretationException("No valid response received");
+                    logger.warn("Cannot interpret: No valid response received (no candidates)");
+                    throw new InterpretationException(
+                            getLocalizedMessage(ERROR_KEY_TECHNICAL_PROBLEM, DEFAULT_ERROR_TECHNICAL_PROBLEM, locale));
                 }
                 GeminiContent responseContent = candidates.getFirst().content();
                 if (responseContent == null) {
-                    throw new InterpretationException("No valid response received");
+                    logger.warn("Cannot interpret: No valid response received (content is null)");
+                    throw new InterpretationException(
+                            getLocalizedMessage(ERROR_KEY_TECHNICAL_PROBLEM, DEFAULT_ERROR_TECHNICAL_PROBLEM, locale));
                 }
                 List<GeminiPart> parts = responseContent.parts();
                 if (parts == null) {
-                    throw new InterpretationException("No valid response received");
+                    logger.warn("Cannot interpret: No valid response received (parts is null)");
+                    throw new InterpretationException(
+                            getLocalizedMessage(ERROR_KEY_TECHNICAL_PROBLEM, DEFAULT_ERROR_TECHNICAL_PROBLEM, locale));
                 }
 
                 boolean hasToolCall = false;
@@ -206,7 +257,9 @@ public class GeminiHLIService implements ThingHandlerService, HumanLanguageInter
                         try {
                             conversation.addMessage(ConversationRole.TOOL_CALL, llmToolCall.toJson());
                         } catch (ConversationException e) {
-                            var ex = new InterpretationException("Failed to add TOOL_CALL to conversation");
+                            logger.warn("Cannot interpret: Failed to add TOOL_CALL to conversation", e);
+                            var ex = new InterpretationException(getLocalizedMessage(ERROR_KEY_TECHNICAL_PROBLEM,
+                                    DEFAULT_ERROR_TECHNICAL_PROBLEM, locale));
                             ex.initCause(e);
                             throw ex;
                         }
@@ -216,7 +269,9 @@ public class GeminiHLIService implements ThingHandlerService, HumanLanguageInter
                         try {
                             conversation.addMessage(ConversationRole.TOOL_RETURN, result);
                         } catch (ConversationException e) {
-                            var ex = new InterpretationException("Failed to add TOOL_RETURN to conversation");
+                            logger.warn("Cannot interpret: Failed to add TOOL_RETURN to conversation", e);
+                            var ex = new InterpretationException(getLocalizedMessage(ERROR_KEY_TECHNICAL_PROBLEM,
+                                    DEFAULT_ERROR_TECHNICAL_PROBLEM, locale));
                             ex.initCause(e);
                             throw ex;
                         }
@@ -230,15 +285,18 @@ public class GeminiHLIService implements ThingHandlerService, HumanLanguageInter
                     try {
                         conversation.addMessage(ConversationRole.OPENHAB, finalResponse);
                     } catch (ConversationException e) {
-                        var ex = new InterpretationException("Failed to add OPENHAB message to conversation");
+                        logger.warn("Cannot interpret: Failed to add OPENHAB message to conversation", e);
+                        var ex = new InterpretationException(getLocalizedMessage(ERROR_KEY_TECHNICAL_PROBLEM,
+                                DEFAULT_ERROR_TECHNICAL_PROBLEM, locale));
                         ex.initCause(e);
                         throw ex;
                     }
                     return finalResponse;
                 }
             } catch (GeminiApiException e) {
+                logger.warn("Communication with Gemini failed: {}", e.getMessage(), e);
                 InterpretationException ex = new InterpretationException(
-                        "Failed to communicate with Gemini: " + e.getMessage());
+                        getLocalizedMessage(ERROR_KEY_TECHNICAL_PROBLEM, DEFAULT_ERROR_TECHNICAL_PROBLEM, locale));
                 ex.initCause(e);
                 throw ex;
             }
