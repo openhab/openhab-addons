@@ -42,9 +42,12 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.websocket.api.Session;
+import org.eclipse.jetty.websocket.api.UpgradeRequest;
+import org.eclipse.jetty.websocket.api.UpgradeResponse;
 import org.eclipse.jetty.websocket.api.WebSocketAdapter;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
+import org.eclipse.jetty.websocket.client.io.UpgradeListener;
 import org.openhab.binding.unifi.internal.access.dto.Device;
 import org.openhab.binding.unifi.internal.access.dto.DeviceAccessMethodSettings;
 import org.openhab.binding.unifi.internal.access.dto.Door;
@@ -887,6 +890,12 @@ public final class UnifiAccessApiClient implements Closeable {
         // Seed the heartbeat timestamp so the monitor doesn't see the default 0 and immediately escalate
         // if its first tick races with onWebSocketConnect.
         this.lastHeartbeatEpochMs = System.currentTimeMillis();
+        connectNotifications(onOpen, onMessage, onError, true);
+        startWsMonitor();
+    }
+
+    private void connectNotifications(Runnable onOpen, Consumer<Notification> onMessage, Consumer<Throwable> onError,
+            boolean allowReauth) throws UnifiAccessApiException {
         try {
             URI wsUri = URI.create("wss://" + host + V2_BASE + "/ws/notification");
             logger.debug("Notifications WebSocket URI: {}", wsUri);
@@ -960,11 +969,48 @@ public final class UnifiAccessApiClient implements Closeable {
                 }
             };
 
-            wsClient.connect(socket, wsUri, req);
-            startWsMonitor();
+            // The upgrade HTTP status is delivered here directly; a 401 means an expired session cookie.
+            UpgradeListener upgradeListener = new UpgradeListener() {
+                @Override
+                @NonNullByDefault({})
+                public void onHandshakeRequest(UpgradeRequest request) {
+                }
+
+                @Override
+                @NonNullByDefault({})
+                public void onHandshakeResponse(UpgradeResponse response) {
+                    int status = response.getStatusCode();
+                    logger.debug("Notifications WebSocket upgrade response: {}", status);
+                    if (allowReauth && status == HttpStatus.UNAUTHORIZED_401) {
+                        executorService.execute(() -> reauthenticateAndReconnect(onOpen, onMessage, onError));
+                    }
+                }
+            };
+            wsClient.connect(socket, wsUri, req, upgradeListener);
         } catch (IOException e) {
             throw new UnifiAccessApiException("WebSocket connect failed: " + e.getMessage(), e);
         }
+    }
+
+    private void reauthenticateAndReconnect(Runnable onOpen, Consumer<Notification> onMessage,
+            Consumer<Throwable> onError) {
+        logger.debug("Notifications WebSocket upgrade rejected (401); re-authenticating and retrying");
+        unifiSession.reauthenticate().whenComplete((v, ex) -> {
+            if (ex != null) {
+                logger.debug("Re-authentication after WebSocket 401 failed: {}", ex.getMessage());
+                return;
+            }
+            synchronized (this) {
+                if (closed) {
+                    return;
+                }
+                try {
+                    connectNotifications(onOpen, onMessage, onError, false);
+                } catch (UnifiAccessApiException e) {
+                    logger.debug("WebSocket reconnect after re-auth failed: {}", e.getMessage());
+                }
+            }
+        });
     }
 
     // ---- HTTP Helpers ----

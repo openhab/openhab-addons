@@ -298,10 +298,11 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
             inner = cause.getCause();
         }
         if (cause instanceof AuthenticationException) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error-auth-rejected");
+            // Already survived an in-client re-auth; treat as a transient expired session and reconnect with a
+            // status detail so the failure is visible rather than a bare OFFLINE.
+            setOfflineAndReconnect(false, "@text/offline.comm-error-retrying");
         } else if (cause instanceof ThrottledException) {
-            setOfflineAndReconnect(true);
+            setOfflineAndReconnect(true, null);
         } else {
             // Public API 401 (bad token) arrives as IOException("HTTP 401: ...").
             if (cause instanceof IOException ioe) {
@@ -310,7 +311,7 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
                     attemptTokenRecovery();
                 }
             }
-            setOfflineAndReconnect(false);
+            setOfflineAndReconnect(false, null);
         }
     }
 
@@ -527,7 +528,7 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
         }
     }
 
-    private synchronized void setOfflineAndReconnect(boolean throttled) {
+    private synchronized void setOfflineAndReconnect(boolean throttled, @Nullable String message) {
         ScheduledFuture<?> existing = this.reconnectTask;
         if (shuttingDown) {
             return;
@@ -555,7 +556,11 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
             delay = Math.min((int) Math.pow(2, reconnectAttempt) * 5, MAX_RECONNECT_DELAY_SECONDS);
             reconnectAttempt++;
             logger.debug("Scheduling reconnect in {} seconds (attempt {})", delay, reconnectAttempt);
-            updateStatus(ThingStatus.OFFLINE);
+            if (message != null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+            } else {
+                updateStatus(ThingStatus.OFFLINE);
+            }
         }
 
         this.reconnectTask = scheduler.schedule(this::initialize, delay, TimeUnit.SECONDS);
@@ -574,7 +579,7 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
                     scheduler.execute(() -> syncDevices());
                 }, (code, reason) -> {
                     logger.debug("Event WS closed: {} {}", code, reason);
-                    setOfflineAndReconnect(false);
+                    setOfflineAndReconnect(false, null);
                 }, err -> logger.debug("Event WS error", err)).get();
                 return;
             } catch (ExecutionException e) {
@@ -636,7 +641,7 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
                     // ignore on-open
                 }, (code, reason) -> {
                     logger.debug("Device WS closed: {} {}", code, reason);
-                    setOfflineAndReconnect(false);
+                    setOfflineAndReconnect(false, null);
                 }, err -> logger.debug("Device WS error", err)).get();
                 return;
             } catch (ExecutionException e) {
