@@ -226,22 +226,25 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         }
     }
 
-    protected void startAutomaticRefresh(final int refreshInterval) {
-        // Prevent zombie threads! Cancel existing timer before overwriting the variable.
+    protected void startAutomaticRefresh(final int configuredInterval) {
+        // 1. Clean up existing jobs to prevent zombie threads
         if (refreshJob != null && !refreshJob.isCancelled()) {
             refreshJob.cancel(true);
         }
-        refreshJob = scheduler.scheduleWithFixedDelay(this::refresh, 0, refreshInterval, TimeUnit.SECONDS);
-
-        ScheduledFuture<?> job = eventRefresh;
-        if (job != null && !job.isCancelled()) {
-            job.cancel(true);
+        if (eventRefresh != null && !eventRefresh.isCancelled()) {
+            eventRefresh.cancel(true);
         }
         eventRefresh = null;
-        // Only run HTTP event polling when FCM is not connected (or not in use)
-        if (fcmClient == null || isPolling) {
+
+        boolean isFcmActive = (fcmClient != null && !isPolling);
+
+        int registryInterval = isFcmActive ? Math.max(60, configuredInterval) : configuredInterval;
+
+        refreshJob = scheduler.scheduleWithFixedDelay(this::refresh, 0, registryInterval, TimeUnit.SECONDS);
+
+        if (!isFcmActive) {
             isPolling = true;
-            eventRefresh = scheduler.scheduleWithFixedDelay(this::refreshEvent, refreshInterval, refreshInterval,
+            eventRefresh = scheduler.scheduleWithFixedDelay(this::refreshEvent, configuredInterval, configuredInterval,
                     TimeUnit.SECONDS);
         }
     }
@@ -527,28 +530,22 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
      * Handles the automatic transition between FCM Push and HTTP Polling
      */
     private void onFcmStateChanged(Boolean isConnected) {
-        if (scheduler == null || scheduler.isShutdown()) {
-            return;
-        }
-
-        if (fcmClient == null) {
-            logger.debug("Ignoring FCM state change because the handler is being disposed.");
+        if (scheduler == null || scheduler.isShutdown() || fcmClient == null) {
             return;
         }
 
         if (isConnected) {
-            logger.debug("Ring FCM Socket connected. Disabling HTTP event polling.");
+            logger.debug("Ring FCM Socket connected. Disabling HTTP event polling & throttling API refreshes.");
             fcmRetryCount = 0;
 
             if (fcmRetryJob != null && !fcmRetryJob.isCancelled()) {
                 fcmRetryJob.cancel(true);
             }
 
-            if (eventRefresh != null && !eventRefresh.isCancelled()) {
-                eventRefresh.cancel(true);
-                eventRefresh = null;
-            }
             isPolling = false;
+
+            // Swap gears: Applies the 60s minimum for the API
+            startAutomaticRefresh(config.refreshInterval);
         } else {
             if (fcmRetryCount < MAX_FCM_RETRIES) {
                 fcmRetryCount++;
@@ -560,12 +557,11 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                             TimeUnit.SECONDS);
                 }
             } else if (!isPolling) {
-                logger.debug("Ring FCM Socket disconnected. Max retries reached. Falling back to HTTP event polling.");
-                if (eventRefresh == null || eventRefresh.isCancelled()) {
-                    eventRefresh = scheduler.scheduleWithFixedDelay(this::refreshEvent, config.refreshInterval,
-                            config.refreshInterval, TimeUnit.SECONDS);
-                }
+                logger.debug("Ring FCM Socket disconnected. Max retries reached. Restoring rapid HTTP polling.");
                 isPolling = true;
+
+                // Swap gears: Restores the fast user-configured interval
+                startAutomaticRefresh(config.refreshInterval);
             }
         }
     }
