@@ -762,13 +762,15 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             return;
         }
         ShellySettingsEMeter emeter = status.emeters.get(slotIdx);
-        // Gen3 reports a_total_act_energy; Gen4 may omit the a_-prefix and use total_act_energy instead
+        // EMData (3EM) reports a_total_act_energy; EM1Data (EM-50/EM-Mini/Plus EM) reports total_act_energy
         Double total = emData.aTotal != null ? emData.aTotal : emData.totalActEnergy;
         if (total != null) {
             emeter.total = total;
         }
-        if (emData.aRetTotal != null) {
-            emeter.totalReturned = emData.aRetTotal;
+        // EMData: a_total_act_ret_energy; EM1Data: total_act_ret_energy
+        Double retTotal = emData.aRetTotal != null ? emData.aRetTotal : emData.totalActRetEnergy;
+        if (retTotal != null) {
+            emeter.totalReturned = retTotal;
         }
         status.emeters.set(slotIdx, emeter);
         // For single-clamp devices (EM Mini) totalKWH doubles as the device-level total

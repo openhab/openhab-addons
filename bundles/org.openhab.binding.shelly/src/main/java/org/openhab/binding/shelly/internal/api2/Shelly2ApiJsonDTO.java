@@ -773,6 +773,8 @@ public class Shelly2ApiJsonDTO {
                 public @Nullable Double totalActEnergy;
                 @SerializedName("total_act_ret")
                 public @Nullable Double totalRetKWH;
+                @SerializedName("total_act_ret_energy")
+                public @Nullable Double totalActRetEnergy;
                 public String @Nullable [] errors;
             }
 
