@@ -57,8 +57,8 @@ class OnStateDimmingEdgeCaseTest {
 
     @Test
     void getBrightnessStateWhenOnStateMissingAndDimming0ReturnMinimumBrightness0() {
-        assertThat(createLightResource(null, 0.0).getBrightnessState(),
-                is(equalTo(new PercentType(new BigDecimal(Dimming.DEFAULT_MINIMUM_DIMMIMG_LEVEL)))));
+        assertThat(createLightResource(null, 0.0).getBrightnessState(), is(equalTo(new PercentType(
+                new BigDecimal(Dimming.DEFAULT_MINIMUM_DIMMIMG_LEVEL, Resource.PERCENT_MATH_CONTEXT)))));
     }
 
     @Test
@@ -68,20 +68,20 @@ class OnStateDimmingEdgeCaseTest {
 
     @Test
     void getBrightnessStateWhenOnStateMissingAndDimmingMinus1ReturnMinimumBrightness() {
-        assertThat(createLightResource(null, -1.0).getBrightnessState(),
-                is(equalTo(new PercentType(new BigDecimal(Dimming.DEFAULT_MINIMUM_DIMMIMG_LEVEL)))));
+        assertThat(createLightResource(null, -1.0).getBrightnessState(), is(equalTo(new PercentType(
+                new BigDecimal(Dimming.DEFAULT_MINIMUM_DIMMIMG_LEVEL, Resource.PERCENT_MATH_CONTEXT)))));
     }
 
     @Test
     void getBrightnessStateWhenOnAndDimmingMinus1ReturnMinimumBrightness() {
-        assertThat(createLightResource(true, -1.0).getBrightnessState(),
-                is(equalTo(new PercentType(new BigDecimal(Dimming.DEFAULT_MINIMUM_DIMMIMG_LEVEL)))));
+        assertThat(createLightResource(true, -1.0).getBrightnessState(), is(equalTo(new PercentType(
+                new BigDecimal(Dimming.DEFAULT_MINIMUM_DIMMIMG_LEVEL, Resource.PERCENT_MATH_CONTEXT)))));
     }
 
     @Test
     void getBrightnessStateWhenOnAndDimming0ReturnMinimumBrightness() {
-        assertThat(createLightResource(true, 0.0).getBrightnessState(),
-                is(equalTo(new PercentType(new BigDecimal(Dimming.DEFAULT_MINIMUM_DIMMIMG_LEVEL)))));
+        assertThat(createLightResource(true, 0.0).getBrightnessState(), is(equalTo(new PercentType(
+                new BigDecimal(Dimming.DEFAULT_MINIMUM_DIMMIMG_LEVEL, Resource.PERCENT_MATH_CONTEXT)))));
     }
 
     @Test

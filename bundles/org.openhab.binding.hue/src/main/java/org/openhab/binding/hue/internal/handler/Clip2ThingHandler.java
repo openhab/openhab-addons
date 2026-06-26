@@ -221,6 +221,12 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private @Nullable Future<?> updateDependenciesTask;
     private @Nullable Future<?> updateServiceContributorsTask;
 
+    /*
+     * Manual minimum dimming level configuration parameter for non certified products that do not
+     * automatically report a minimum dimming level via the API
+     */
+    private @Nullable Double manualMinimumDimmingLevel;
+
     public Clip2ThingHandler(Thing thing, Clip2StateDescriptionProvider stateDescriptionProvider,
             ThingRegistry thingRegistry, ItemChannelLinkRegistry itemChannelLinkRegistry) {
         super(thing);
@@ -436,7 +442,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 }
                 if (command instanceof PercentType brightnessCommand) {
                     putResource = Setters.setDimming(putResource, brightnessCommand, cache);
-                    Double minDimLevel = Objects.nonNull(cache) ? cache.getMinimumDimmingLevel() : null;
+                    Double minDimLevel = Objects.nonNull(cache) ? cache.getMinimumDimmingLevel()
+                            : manualMinimumDimmingLevel;
                     minDimLevel = Objects.nonNull(minDimLevel) ? minDimLevel : Dimming.DEFAULT_MINIMUM_DIMMIMG_LEVEL;
                     minDimLevel = minDimLevel == 0.0 ? 0.01 : minDimLevel; // exact 0.0 must cause OFF (e.g. 'Signe')
                     command = OnOffType.from(brightnessCommand.doubleValue() >= minDimLevel);
@@ -720,6 +727,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
         thisResource.setId(resourceId);
         this.resourceId = resourceId;
         logger.debug("{} -> initialize()", resourceId);
+
+        manualMinimumDimmingLevel = config.minimumDimmingLevel;
 
         updateThingFromLegacy();
         updateStatus(ThingStatus.UNKNOWN);

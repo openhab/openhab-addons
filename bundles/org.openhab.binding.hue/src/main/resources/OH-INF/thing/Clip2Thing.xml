@@ -124,6 +124,11 @@
 				<label>Resource ID</label>
 				<description>Unique Resource ID of the device in the Hue bridge</description>
 			</parameter>
+			<parameter name="minimumDimmingLevel" type="decimal" required="false" min="0" max="3" step="0.1">
+				<label>Minimum Dimming Level</label>
+				<description>Manual minimum dimming level for non certified lights (percent)</description>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 
 	</thing-type>

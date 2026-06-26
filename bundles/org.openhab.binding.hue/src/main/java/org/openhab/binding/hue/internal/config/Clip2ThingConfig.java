@@ -13,6 +13,7 @@
 package org.openhab.binding.hue.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Configuration for CLIP V2 things.
@@ -22,4 +23,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class Clip2ThingConfig {
     public String resourceId = "";
+    public @Nullable Double minimumDimmingLevel;
 }
