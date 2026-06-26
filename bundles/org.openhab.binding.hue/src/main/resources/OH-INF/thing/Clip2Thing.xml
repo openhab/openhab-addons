@@ -129,6 +129,18 @@
 				<description>Manual minimum dimming level for non certified lights (percent)</description>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="minimumColorTemperature" type="decimal" required="false" min="1800" max="4500" step="100"
+				unit="K">
+				<label>Minimum Color Temperature</label>
+				<description>Manual minimum color temperature for non certified lights (e.g. 2000 Kelvin)</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="maximumColorTemperature" type="decimal" required="false" min="5000" max="8000" step="100"
+				unit="K">
+				<label>Maximum Color Temperature</label>
+				<description>Manual maximum color temperature for non certified lights (e.g. 6500 Kelvin)</description>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 
 	</thing-type>

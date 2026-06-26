@@ -24,4 +24,6 @@ import org.eclipse.jdt.annotation.Nullable;
 public class Clip2ThingConfig {
     public String resourceId = "";
     public @Nullable Double minimumDimmingLevel;
+    public @Nullable Double minimumColorTemperature;
+    public @Nullable Double maximumColorTemperature;
 }

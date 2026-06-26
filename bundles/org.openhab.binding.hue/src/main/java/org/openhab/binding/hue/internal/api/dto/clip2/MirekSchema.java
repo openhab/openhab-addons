@@ -51,4 +51,13 @@ public class MirekSchema {
     public String toPropertyValue() {
         return String.format("%s .. %s", toKelvin(mirekMinimum), toKelvin(mirekMaximum));
     }
+
+    public MirekSchema() {
+        // Default constructor
+    }
+
+    public MirekSchema(double kelvinMinimum, double kelvinMaximum) {
+        mirekMaximum = (int) Math.round(1000000 / kelvinMinimum);
+        mirekMinimum = (int) Math.round(1000000 / kelvinMaximum);
+    }
 }

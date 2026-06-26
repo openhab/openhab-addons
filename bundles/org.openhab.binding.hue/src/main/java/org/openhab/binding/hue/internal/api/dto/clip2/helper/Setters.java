@@ -94,7 +94,8 @@ public class Setters {
      *
      * @return the target resource.
      */
-    public static Resource setColorTemperatureAbsolute(Resource target, Command command, @Nullable Resource source) {
+    public static Resource setColorTemperatureAbsolute(Resource target, Command command, @Nullable Resource source,
+            @Nullable MirekSchema manualMirekSchema) {
         QuantityType<?> mirekQuantity = null;
         if (command instanceof QuantityType<?> genericQuantity) {
             mirekQuantity = genericQuantity.toInvertibleUnit(Units.MIRED);
@@ -103,7 +104,8 @@ public class Setters {
         }
         if (Objects.nonNull(mirekQuantity)) {
             MirekSchema schema = target.getMirekSchema();
-            schema = Objects.nonNull(schema) ? schema : Objects.nonNull(source) ? source.getMirekSchema() : null;
+            schema = Objects.nonNull(schema) ? schema
+                    : Objects.nonNull(source) ? source.getMirekSchema() : manualMirekSchema;
             schema = Objects.nonNull(schema) ? schema : MirekSchema.DEFAULT_SCHEMA;
             ColorTemperature colorTemperature = target.getColorTemperature();
             colorTemperature = Objects.nonNull(colorTemperature) ? colorTemperature : new ColorTemperature();
@@ -126,10 +128,12 @@ public class Setters {
      *
      * @return the target resource.
      */
-    public static Resource setColorTemperaturePercent(Resource target, Command command, @Nullable Resource source) {
+    public static Resource setColorTemperaturePercent(Resource target, Command command, @Nullable Resource source,
+            @Nullable MirekSchema manualMirekSchema) {
         if (command instanceof PercentType mirek) {
             MirekSchema schema = target.getMirekSchema();
-            schema = Objects.nonNull(schema) ? schema : Objects.nonNull(source) ? source.getMirekSchema() : null;
+            schema = Objects.nonNull(schema) ? schema
+                    : Objects.nonNull(source) ? source.getMirekSchema() : manualMirekSchema;
             schema = Objects.nonNull(schema) ? schema : MirekSchema.DEFAULT_SCHEMA;
             ColorTemperature colorTemperature = target.getColorTemperature();
             colorTemperature = Objects.nonNull(colorTemperature) ? colorTemperature : new ColorTemperature();

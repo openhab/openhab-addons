@@ -318,21 +318,21 @@ class Clip2DtoTest {
                 item.setMirekSchema(temp);
 
                 // change colour temperature percent to zero
-                Setters.setColorTemperaturePercent(item, PercentType.ZERO, null);
+                Setters.setColorTemperaturePercent(item, PercentType.ZERO, null, null);
                 assertEquals(PercentType.ZERO, item.getColorTemperaturePercentState());
                 state = item.getColorTemperatureAbsoluteState();
                 quantityState = assertInstanceOf(QuantityType.class, state);
                 assertEquals(6535.9, quantityState.doubleValue(), 0.1);
 
                 // change colour temperature percent to 100
-                Setters.setColorTemperaturePercent(item, PercentType.HUNDRED, null);
+                Setters.setColorTemperaturePercent(item, PercentType.HUNDRED, null, null);
                 assertEquals(PercentType.HUNDRED, item.getColorTemperaturePercentState());
                 state = item.getColorTemperatureAbsoluteState();
                 quantityState = assertInstanceOf(QuantityType.class, state);
                 assertEquals(2202.6, quantityState.doubleValue(), 0.1);
 
                 // change colour temperature kelvin to 4000 K
-                Setters.setColorTemperatureAbsolute(item, QuantityType.valueOf("4000 K"), null);
+                Setters.setColorTemperatureAbsolute(item, QuantityType.valueOf("4000 K"), null, null);
                 state = item.getColorTemperaturePercentState();
                 percentState = assertInstanceOf(PercentType.class, state);
                 assertEquals(32.2, percentState.doubleValue(), 0.1);
