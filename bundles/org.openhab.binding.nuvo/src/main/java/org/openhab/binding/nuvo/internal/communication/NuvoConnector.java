@@ -291,7 +291,7 @@ public abstract class NuvoConnector {
                     && (command.endsWith(ON) || NuvoCommand.PAGE_ON.getValue().equals(command))) {
                 messageStr += messageStr;
             }
-            dataOut.write(messageStr.getBytes(StandardCharsets.US_ASCII));
+            dataOut.write(messageStr.getBytes(StandardCharsets.UTF_8));
             dataOut.flush();
         } catch (IOException e) {
             throw new NuvoException("Send command \"" + command + "\" failed: " + e.getMessage(), e);
@@ -322,7 +322,7 @@ public abstract class NuvoConnector {
      * @param incomingMessage the received message
      */
     public void handleIncomingMessage(byte[] incomingMessage) {
-        String message = new String(incomingMessage, StandardCharsets.US_ASCII).trim();
+        String message = new String(incomingMessage, StandardCharsets.UTF_8).trim();
 
         logger.debug("handleIncomingMessage: {}", message);
 
