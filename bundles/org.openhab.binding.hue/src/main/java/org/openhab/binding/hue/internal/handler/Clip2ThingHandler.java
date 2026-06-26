@@ -624,7 +624,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
         try {
             Resources resources = getBridgeHandler().putResource(putResource);
             if (resources.hasErrors()) {
-                logger.info("Command '{}' for thing '{}', channel '{}' succeeded with errors: {}", command,
+                logger.debug("Command '{}' for thing '{}', channel '{}' succeeded with errors: {}", command,
                         thing.getUID(), channelUID, String.join("; ", resources.getErrors()));
             }
         } catch (ApiException | AssetNotLoadedException e) {
