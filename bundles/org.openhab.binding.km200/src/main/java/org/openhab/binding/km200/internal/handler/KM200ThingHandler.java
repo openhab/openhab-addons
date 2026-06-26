@@ -196,6 +196,10 @@ public class KM200ThingHandler extends BaseThingHandler {
         }
         String service = KM200Utils.translatesNameToPath(thing.getProperties().get("root"));
         if (service == null) {
+            Object rootService = thing.getConfiguration().get("rootService");
+            service = rootService != null ? rootService.toString() : null;
+        }
+        if (service == null) {
             updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "root property missing");
             return;
         }
