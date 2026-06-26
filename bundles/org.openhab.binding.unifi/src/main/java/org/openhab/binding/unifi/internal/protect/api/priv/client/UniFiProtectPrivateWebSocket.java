@@ -58,7 +58,7 @@ public class UniFiProtectPrivateWebSocket {
     private final Logger logger = LoggerFactory.getLogger(UniFiProtectPrivateWebSocket.class);
 
     private final String wsUrl;
-    private final String authCookie;
+    private final @Nullable String authCookie;
     private final Consumer<WebSocketUpdate> updateHandler;
     private final UniFiProtectPrivateClient client;
     private final WebSocketClient wsClient;
@@ -81,8 +81,8 @@ public class UniFiProtectPrivateWebSocket {
      * @param client Reference to the main client
      * @param httpClient HTTP client to use (shared from main client)
      */
-    public UniFiProtectPrivateWebSocket(String wsUrl, String authCookie, Consumer<WebSocketUpdate> updateHandler,
-            UniFiProtectPrivateClient client, HttpClient httpClient) {
+    public UniFiProtectPrivateWebSocket(String wsUrl, @Nullable String authCookie,
+            Consumer<WebSocketUpdate> updateHandler, UniFiProtectPrivateClient client, HttpClient httpClient) {
         this.wsUrl = wsUrl;
         this.authCookie = authCookie;
         this.updateHandler = updateHandler;
