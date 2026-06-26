@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -89,6 +90,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     private @Nullable ScheduledFuture<?> jobTokenRefresh = null;
     private @Nullable ScheduledFuture<?> eventRefresh = null;
     private @Nullable ScheduledFuture<?> fcmRetryJob = null;
+    private final Map<String, ScheduledFuture<?>> fallbackJobs = new ConcurrentHashMap<>();
     private @Nullable FcmClient fcmClient;
     private final HttpClient httpClient;
     private boolean isPolling = false;
@@ -583,6 +585,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
 
             String deviceId = deviceObj.has("id") ? deviceObj.get("id").getAsString() : "";
             String deviceName = deviceObj.has("name") ? deviceObj.get("name").getAsString() : "Unknown Device";
+            String deviceKind = deviceObj.has("kind") ? deviceObj.get("kind").getAsString() : "Unknown Device Kind";
 
             if (dingObj == null || !dingObj.has("id")) {
                 return;
@@ -644,6 +647,12 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
 
             if (pushSnapshotUrl != null && !pushSnapshotUrl.isEmpty()) {
                 logger.debug("Received Rich Notification URL! Downloading instantly...");
+                ScheduledFuture<?> job = fallbackJobs.remove(deviceId);
+                if (job != null && !job.isCancelled()) {
+                    job.cancel(true);
+                    logger.debug("Cancelled 3-second camera API fallback for {} because S3 URL arrived.", deviceId);
+                }
+
                 if (scheduler != null && !scheduler.isShutdown()) {
                     final String finalUrl = pushSnapshotUrl;
                     scheduler.execute(() -> updateChildSnapshots(deviceId, finalUrl));
@@ -651,28 +660,35 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
             } else {
                 logger.debug("No snapshot URL in push. Scheduling 3-second fallback to camera API...");
                 if (scheduler != null && !scheduler.isShutdown()) {
-                    scheduler.schedule(() -> {
+                    ScheduledFuture<?> job = scheduler.schedule(() -> {
+                        fallbackJobs.remove(deviceId);
+                        logger.debug("Fallback timer reached. Requesting snapshot via camera API...");
                         updateChildSnapshots(deviceId, null);
                     }, 3, java.util.concurrent.TimeUnit.SECONDS);
+
+                    // Save the job so it can be cancelled if the rich URL arrives late
+                    fallbackJobs.put(deviceId, job);
                 }
             }
 
-            scheduler.schedule(() -> {
-                try {
-                    logger.debug("Recording finished. Fetching completed video for event {}", eventId);
-                    // Fetch the last 5 events from the API to guarantee we find the completed RingEventTO
-                    List<RingEventTO> recentEvents = restClient.getHistory(tokens, 5);
-                    for (RingEventTO histEvent : recentEvents) {
-                        if (eventId.equals(String.valueOf(histEvent.id))) {
-                            logger.debug("Found matching completed event in history. Downloading MP4...");
-                            getVideo(histEvent);
-                            break;
+            if (MOTION_DETECTION_KINDS.contains(deviceKind)) {
+                scheduler.schedule(() -> {
+                    try {
+                        logger.debug("Recording finished. Fetching completed video for event {}", eventId);
+                        // Fetch the last 5 events from the API to guarantee we find the completed RingEventTO
+                        List<RingEventTO> recentEvents = restClient.getHistory(tokens, 5);
+                        for (RingEventTO histEvent : recentEvents) {
+                            if (eventId.equals(String.valueOf(histEvent.id))) {
+                                logger.debug("Found matching completed event in history. Downloading MP4...");
+                                getVideo(histEvent);
+                                break;
+                            }
                         }
+                    } catch (Exception e) {
+                        logger.warn("Failed to download delayed video for event {}: {}", eventId, e.getMessage());
                     }
-                } catch (Exception e) {
-                    logger.warn("Failed to download delayed video for event {}: {}", eventId, e.getMessage());
-                }
-            }, 65, TimeUnit.SECONDS);
+                }, 65, TimeUnit.SECONDS);
+            }
         } catch (Exception e) {
             logger.debug("Failed to parse instant push event json: {}", e.getMessage(), e);
         }
