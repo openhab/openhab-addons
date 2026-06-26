@@ -45,7 +45,7 @@
 					openHAB server</description>
 				<options>
 					<option value="disabled">Local Only (Default)</option>
-					<option value="supportedOnly">Online Supported</option>
+					<option value="supported">Online Supported</option>
 					<option value="all">All Devices (Advanced)</option>
 				</options>
 			</parameter>

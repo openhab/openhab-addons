@@ -497,20 +497,34 @@ public class MiCloudConnector {
     protected ContentResponse debugRequest(Request request)
             throws InterruptedException, TimeoutException, ExecutionException {
         ContentResponse response;
+        traceRequest(request);
+        response = request.send();
+        traceResponse(response);
+        dumpCookies(request.getHost() + request.getPath(), false);
+        return response;
+    }
+
+    private void traceRequest(Request request) {
+        if (!logger.isTraceEnabled()) {
+            return;
+        }
         logger.trace("Xiaomi cloud request  URL= {} {} {}", request.getMethod(), request.getHost(), request.getPath());
         logger.trace("Xiaomi cloud request content req= {}",
                 request.getContent() == null ? "" : request.getContent().toString());
         logger.trace("Xiaomi cloud request headers= {}", request.getHeaders().toString());
         logger.trace("Xiaomi cloud request param= {}", request.getParams());
         logger.trace("Xiaomi cloud request cookie= {}", request.getCookies().toString());
-        response = request.send();
+    }
+
+    private void traceResponse(ContentResponse response) {
+        if (!logger.isTraceEnabled()) {
+            return;
+        }
         logger.trace("Xiaomi cloud response status = {}", response.getStatus());
         logger.trace("Xiaomi cloud response response = {}", response);
         logger.trace("Xiaomi cloud response content = {}", response.toString());
         logger.trace("Xiaomi cloud response header = {}", response.getHeaders().toString());
         logger.trace("Xiaomi cloud response content = {}", response.getContentAsString());
-        dumpCookies(request.getHost() + request.getPath(), false);
-        return response;
     }
 
     protected void informImageListeners(byte[] image) {

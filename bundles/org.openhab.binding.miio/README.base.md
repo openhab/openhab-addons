@@ -129,7 +129,7 @@ To migrate:
 1. After a successful login all devices will automatically start using the new cloud connection.
 
 The binding also supports the discovery of devices via the cloud. This may be useful if the device is on a separate subnet.
-Set `cloud-discovery-mode` on the Cloud Connector thing to `supportedOnly` or `all` to enable this.
+Set `cloud-discovery-mode` on the Cloud Connector thing to `supported` or `all` to enable this.
 Note: after accepting a device discovered via the cloud on a different subnet, set the device communication to `cloud` in the thing configuration.
 
 ## Thing Configuration

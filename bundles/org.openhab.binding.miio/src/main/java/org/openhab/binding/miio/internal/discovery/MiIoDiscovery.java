@@ -95,7 +95,8 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
     @Override
     protected void startBackgroundDiscovery() {
         logger.debug("Start Xiaomi Mi IO background discovery with cloudDiscoveryMode: {}", getCloudDiscoveryMode());
-        cloudThingDiscovery();
+        // TODO: align if this is a desired pattern
+        // cloudThingDiscovery();
         final @Nullable ScheduledFuture<?> miIoDiscoveryJob = this.miIoDiscoveryJob;
         if (miIoDiscoveryJob == null || miIoDiscoveryJob.isCancelled()) {
             this.miIoDiscoveryJob = scheduler.scheduleWithFixedDelay(this::discover, 0, SEARCH_INTERVAL,
@@ -214,11 +215,17 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
         submitDiscovery(ip, token, id, label, model, country, isOnline, parent);
     }
 
-    private void cloudThingDiscovery() {
-        logger.debug("Proposing Cloud Connector thing for discovery.");
-        thingDiscovered(DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_CLOUD, "cloudConnector"))
-                .withLabel("Xiaomi Cloud Connector").build());
-    }
+    /**
+     * Proposes the Cloud Connector thing for discovery so users do not need to be aware and manually add it.
+     * TODO: Align if this is a desired pattern.
+     */
+    /*
+     * private void cloudThingDiscovery() {
+     * logger.debug("Proposing Cloud Connector thing for discovery.");
+     * thingDiscovered(DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_CLOUD, "cloudConnector"))
+     * .withLabel("Xiaomi Cloud Connector").build());
+     * }
+     */
 
     private void submitDiscovery(String ip, String token, String id, String label, String model, String country,
             boolean isOnline, String parent) {
