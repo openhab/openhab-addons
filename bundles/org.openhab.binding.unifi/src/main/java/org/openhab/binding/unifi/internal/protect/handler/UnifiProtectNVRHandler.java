@@ -298,8 +298,8 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
             inner = cause.getCause();
         }
         if (cause instanceof AuthenticationException) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error-auth-rejected");
+            // Already survived an in-client re-auth; treat as a transient expired session and reconnect.
+            setOfflineAndReconnect(false);
         } else if (cause instanceof ThrottledException) {
             setOfflineAndReconnect(true);
         } else {
