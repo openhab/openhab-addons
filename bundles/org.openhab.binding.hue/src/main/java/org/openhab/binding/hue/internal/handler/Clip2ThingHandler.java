@@ -222,8 +222,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private @Nullable Future<?> updateServiceContributorsTask;
 
     /*
-     * Manual minimum dimming level configuration parameter for non certified products that do not
-     * automatically report a minimum dimming level via the API
+     * Manual minimum dimming level configuration parameter and {@link MirekSchema} for non certified
+     * products that do not automatically report a minimum dimming level and/or minimum and maximum
+     * supported color temperatures via the API.
      */
     private @Nullable Double manualMinimumDimmingLevel;
     private @Nullable MirekSchema manualSchema;
