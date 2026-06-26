@@ -874,7 +874,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             @Nullable Double voltage, @Nullable Double current, @Nullable Double pf, @Nullable Double freq,
             @Nullable Double aprtPower, @Nullable Double totalEnergy, @Nullable Double totalReturnedEnergy,
             boolean channelUpdate) throws ShellyApiException {
-        if (status.emeters == null || phaseIdx >= status.emeters.size()) {
+        if (status.emeters == null || phaseIdx < 0 || phaseIdx >= status.emeters.size()) {
             return;
         }
         ShellySettingsEMeter emeter = status.emeters.get(phaseIdx);
@@ -1015,10 +1015,10 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             emeter.pf = cs.pf;
         }
 
-        rollerStatus.set(cs.id, rs);
-        status.rollers.set(cs.id, rs);
+        rollerStatus.set(rIdx, rs);
+        status.rollers.set(rIdx, rs);
         if (emeter.isValid) { // Shelly Shutter has no meters
-            status.emeters.set(cs.id, emeter);
+            status.emeters.set(rIdx, emeter);
         }
 
         postAlarms(cs.errors);

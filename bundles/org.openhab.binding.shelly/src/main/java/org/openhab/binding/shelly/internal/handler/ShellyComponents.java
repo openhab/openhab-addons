@@ -224,16 +224,16 @@ public class ShellyComponents {
         double accumulatedWatts = 0.0;
         double accumulatedTotal = 0.0;
         boolean updated = false;
+        boolean createChannels = !thingHandler.areChannelsCreated();
         int m = 0;
         for (ShellySettingsMeter meter : status.meters) {
             if (m >= profile.numMeters) {
                 // Shelly1: reports status.meters[0].is_valid = true, but even doesn't have a meter
-                meter.isValid = false;
                 break;
             }
             if (getBool(meter.isValid) || profile.isLight) { // RGBW2-white doesn't report valid flag correctly
                 String groupName = profile.getMeterGroup(m);
-                if (!thingHandler.areChannelsCreated()) {
+                if (createChannels) {
                     if (!profile.isBulb) { // skip for Shelly Bulb: JSON has a meter, but values don't get updated
                         thingHandler.updateChannelDefinitions(ShellyChannelDefinitions
                                 .createMeterChannels(thingHandler.getThing(), profile, meter, groupName));
@@ -273,9 +273,10 @@ public class ShellyComponents {
         double accumulatedReturned = 0.0;
         double accumulatedApparent = 0.0;
         boolean updated = false;
+        boolean createChannels = !thingHandler.areChannelsCreated();
 
         if (status.neutralCurrent != null) {
-            if (!thingHandler.areChannelsCreated()) {
+            if (createChannels) {
                 thingHandler.updateChannelDefinitions(ShellyChannelDefinitions.createEMNCurrentChannels(
                         thingHandler.getThing(), profile.settings.neutralCurrent, status.neutralCurrent));
             }
@@ -305,7 +306,7 @@ public class ShellyComponents {
             boolean meterUpdated = false;
 
             // Always create channels regardless of data validity — Gen2 first WS push may lack emdata
-            if (!thingHandler.areChannelsCreated()) {
+            if (createChannels) {
                 thingHandler.updateChannelDefinitions(ShellyChannelDefinitions
                         .createEMeterChannels(thingHandler.getThing(), profile, emeter, groupName));
             }

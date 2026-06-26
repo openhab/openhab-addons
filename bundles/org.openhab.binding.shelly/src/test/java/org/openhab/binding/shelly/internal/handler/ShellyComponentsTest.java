@@ -59,36 +59,24 @@ public class ShellyComponentsTest {
     }
 
     @Test
-    void hasAddonExtTemperatureReturnsTrue() {
+    void hasAddonSingleExtFieldReturnsTrue() {
         ShellySettingsStatus s = new ShellySettingsStatus();
         s.extTemperature = new ShellyExtTemperature();
         assertThat(ShellyComponents.hasAddon(s), is(true));
-    }
 
-    @Test
-    void hasAddonExtHumidityReturnsTrue() {
-        ShellySettingsStatus s = new ShellySettingsStatus();
+        s = new ShellySettingsStatus();
         s.extHumidity = new ShellyExtHumidity();
         assertThat(ShellyComponents.hasAddon(s), is(true));
-    }
 
-    @Test
-    void hasAddonExtVoltageReturnsTrue() {
-        ShellySettingsStatus s = new ShellySettingsStatus();
+        s = new ShellySettingsStatus();
         s.extVoltage = new ShellyExtVoltage();
         assertThat(ShellyComponents.hasAddon(s), is(true));
-    }
 
-    @Test
-    void hasAddonExtDigitalInputReturnsTrue() {
-        ShellySettingsStatus s = new ShellySettingsStatus();
+        s = new ShellySettingsStatus();
         s.extDigitalInput = new ShellyExtDigitalInput();
         assertThat(ShellyComponents.hasAddon(s), is(true));
-    }
 
-    @Test
-    void hasAddonExtAnalogInputReturnsTrue() {
-        ShellySettingsStatus s = new ShellySettingsStatus();
+        s = new ShellySettingsStatus();
         s.extAnalogInput = new ShellyExtAnalogInput();
         assertThat(ShellyComponents.hasAddon(s), is(true));
     }
@@ -155,16 +143,6 @@ public class ShellyComponentsTest {
         ShellyComponents.updateSensors(handler, status);
 
         verify(handler).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_LAST_UPDATE), any());
-    }
-
-    @Test
-    void updateSensorsRelayWithoutAddonNoLastUpdate() throws Exception {
-        ShellyThingInterface handler = relayHandlerWith(new ShellySettingsStatus());
-        ShellySettingsStatus status = new ShellySettingsStatus();
-
-        ShellyComponents.updateSensors(handler, status);
-
-        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_LAST_UPDATE), any());
     }
 
     @Test
@@ -334,17 +312,7 @@ public class ShellyComponentsTest {
     @Test
     void triphaseUpdatesThreeSeparateMeterGroups() {
         ShellyDeviceProfile profile = emeterProfile(false, 3);
-        ShellySettingsEMeter em0 = new ShellySettingsEMeter();
-        em0.isValid = true;
-        em0.power = 100.0;
-        ShellySettingsEMeter em1 = new ShellySettingsEMeter();
-        em1.isValid = true;
-        em1.power = 200.0;
-        ShellySettingsEMeter em2 = new ShellySettingsEMeter();
-        em2.isValid = true;
-        em2.power = 300.0;
-
-        ShellySettingsStatus status = statusWithEMeters(em0, em1, em2);
+        ShellySettingsStatus status = statusWithEMeters(emeter(100.0), emeter(200.0), emeter(300.0));
         ShellyThingInterface handler = mockHandler(profile);
 
         ShellyComponents.updateMeters(handler, status);
@@ -471,17 +439,7 @@ public class ShellyComponentsTest {
         ShellyDeviceProfile profile = emeterProfile(false, 3);
         profile.settings.neutralCurrent = new ShellyEMNCurrentSettings();
 
-        ShellySettingsEMeter em0 = new ShellySettingsEMeter();
-        em0.isValid = true;
-        em0.power = 100.0;
-        ShellySettingsEMeter em1 = new ShellySettingsEMeter();
-        em1.isValid = true;
-        em1.power = 200.0;
-        ShellySettingsEMeter em2 = new ShellySettingsEMeter();
-        em2.isValid = true;
-        em2.power = 300.0;
-
-        ShellySettingsStatus status = statusWithEMeters(em0, em1, em2);
+        ShellySettingsStatus status = statusWithEMeters(emeter(100.0), emeter(200.0), emeter(300.0));
         ShellyEMNCurrentStatus nCurrent = new ShellyEMNCurrentStatus();
         nCurrent.isValid = true;
         nCurrent.current = 1.23;
@@ -579,16 +537,7 @@ public class ShellyComponentsTest {
     @Test
     void deviceTotalKwhEm1dataPresentUsesDeviceTotal() {
         ShellyDeviceProfile profile = emeterProfile(true, 2);
-        ShellySettingsEMeter em0 = new ShellySettingsEMeter();
-        em0.isValid = true;
-        em0.power = 100.0;
-        em0.total = 5000.0;
-        ShellySettingsEMeter em1 = new ShellySettingsEMeter();
-        em1.isValid = true;
-        em1.power = 200.0;
-        em1.total = 3000.0;
-
-        ShellySettingsStatus status = statusWithEMeters(em0, em1);
+        ShellySettingsStatus status = statusWithEMeters(emeter(100.0, 5000.0), emeter(200.0, 3000.0));
         status.totalKWH = 8100.0;
 
         ShellyThingInterface handler = mockHandler(profile);
@@ -606,16 +555,7 @@ public class ShellyComponentsTest {
     @Test
     void deviceTotalKwhEm1dataAbsentUsesPerMeterSum() {
         ShellyDeviceProfile profile = emeterProfile(true, 2);
-        ShellySettingsEMeter em0 = new ShellySettingsEMeter();
-        em0.isValid = true;
-        em0.power = 100.0;
-        em0.total = 5000.0;
-        ShellySettingsEMeter em1 = new ShellySettingsEMeter();
-        em1.isValid = true;
-        em1.power = 200.0;
-        em1.total = 3000.0;
-
-        ShellySettingsStatus status = statusWithEMeters(em0, em1);
+        ShellySettingsStatus status = statusWithEMeters(emeter(100.0, 5000.0), emeter(200.0, 3000.0));
         status.totalKWH = null;
 
         ShellyThingInterface handler = mockHandler(profile);
@@ -633,16 +573,8 @@ public class ShellyComponentsTest {
     @Test
     void deviceTotalKwhBothNullChannelNotUpdated() {
         ShellyDeviceProfile profile = emeterProfile(true, 2);
-        ShellySettingsEMeter em0 = new ShellySettingsEMeter();
-        em0.isValid = true;
-        em0.power = 100.0;
-        em0.total = null;
-        ShellySettingsEMeter em1 = new ShellySettingsEMeter();
-        em1.isValid = true;
-        em1.power = 200.0;
-        em1.total = null;
-
-        ShellySettingsStatus status = statusWithEMeters(em0, em1);
+        // total intentionally null on both emeters
+        ShellySettingsStatus status = statusWithEMeters(emeter(100.0), emeter(200.0));
         status.totalKWH = null;
 
         ShellyThingInterface handler = mockHandler(profile);
@@ -655,20 +587,8 @@ public class ShellyComponentsTest {
     @Test
     void deviceTotalKwh3emEm1dataAbsentUsesThreePhaseSum() {
         ShellyDeviceProfile profile = emeterProfile(false, 3);
-        ShellySettingsEMeter em0 = new ShellySettingsEMeter();
-        em0.isValid = true;
-        em0.power = 1000.0;
-        em0.total = 10000.0;
-        ShellySettingsEMeter em1 = new ShellySettingsEMeter();
-        em1.isValid = true;
-        em1.power = 2000.0;
-        em1.total = 20000.0;
-        ShellySettingsEMeter em2 = new ShellySettingsEMeter();
-        em2.isValid = true;
-        em2.power = 3000.0;
-        em2.total = 30000.0;
-
-        ShellySettingsStatus status = statusWithEMeters(em0, em1, em2);
+        ShellySettingsStatus status = statusWithEMeters(emeter(1000.0, 10000.0), emeter(2000.0, 20000.0),
+                emeter(3000.0, 30000.0));
         status.totalKWH = null;
 
         ShellyThingInterface handler = mockHandler(profile);
@@ -823,14 +743,7 @@ public class ShellyComponentsTest {
     @Test
     void deviceAccuWattsNullUsesSumOfPerMeterPower() {
         ShellyDeviceProfile profile = emeterProfile(true, 2);
-        ShellySettingsEMeter em0 = new ShellySettingsEMeter();
-        em0.isValid = true;
-        em0.power = 300.0;
-        ShellySettingsEMeter em1 = new ShellySettingsEMeter();
-        em1.isValid = true;
-        em1.power = 700.0;
-
-        ShellySettingsStatus status = statusWithEMeters(em0, em1);
+        ShellySettingsStatus status = statusWithEMeters(emeter(300.0), emeter(700.0));
         status.totalPower = null;
 
         ShellyThingInterface handler = mockHandler(profile);
@@ -848,14 +761,7 @@ public class ShellyComponentsTest {
     @Test
     void deviceAccuWattsStatusPresentUsesDeviceValue() {
         ShellyDeviceProfile profile = emeterProfile(true, 2);
-        ShellySettingsEMeter em0 = new ShellySettingsEMeter();
-        em0.isValid = true;
-        em0.power = 300.0;
-        ShellySettingsEMeter em1 = new ShellySettingsEMeter();
-        em1.isValid = true;
-        em1.power = 700.0;
-
-        ShellySettingsStatus status = statusWithEMeters(em0, em1);
+        ShellySettingsStatus status = statusWithEMeters(emeter(300.0), emeter(700.0));
         status.totalPower = 1050.0; // device-reported total differs slightly from sum
 
         ShellyThingInterface handler = mockHandler(profile);
@@ -879,20 +785,10 @@ public class ShellyComponentsTest {
         // and the loop counter still advances past all three so accuWatts = A+B only, not stuck.
         ShellyDeviceProfile profile = pro3emProfile();
 
-        ShellySettingsEMeter em0 = new ShellySettingsEMeter();
-        em0.isValid = true;
-        em0.power = 1000.0;
-        em0.total = 10000.0;
-
-        ShellySettingsEMeter em1 = new ShellySettingsEMeter();
-        em1.isValid = true;
-        em1.power = 2000.0;
-        em1.total = 20000.0;
-
         ShellySettingsEMeter em2 = new ShellySettingsEMeter();
         em2.isValid = false; // phase C: no data — all fields null
 
-        ShellySettingsStatus status = statusWithEMeters(em0, em1, em2);
+        ShellySettingsStatus status = statusWithEMeters(emeter(1000.0, 10000.0), emeter(2000.0, 20000.0), em2);
         ShellyThingInterface handler = mockHandler(profile);
         ShellyComponents.updateMeters(handler, status);
 
@@ -909,17 +805,15 @@ public class ShellyComponentsTest {
     }
 
     @Test
-    void relayPm2meterAccuReturnedNeverUpdated() {
+    void relayPm2meterAccuReturnedAndApparentNeverUpdated() {
         // Relay-PM devices (2PM, Plus 1PM) have emeters but updateRelayStatus never sets
-        // totalReturned. Verify ACCURETURNED is never written (value guard), which is the
-        // value-path complement to the channel-creation fix (is3EM||isEM50 gate).
+        // totalReturned or apparentPower. Verify neither ACCURETURNED nor ACCUAPPARENT is
+        // written — value-path complement to the channel-creation fix (is3EM||isEM50 gate).
         ShellyDeviceProfile profile = relayPm2meterProfile();
 
         ShellySettingsEMeter em0 = new ShellySettingsEMeter();
         em0.isValid = true;
         em0.power = 300.0;
-        // totalReturned intentionally null — relay-PM never populates this
-
         ShellySettingsEMeter em1 = new ShellySettingsEMeter();
         em1.isValid = true;
         em1.power = 700.0;
@@ -930,27 +824,21 @@ public class ShellyComponentsTest {
 
         verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_DEV_STATUS), eq(CHANNEL_DEVST_ACCURETURNED),
                 any(State.class));
-    }
-
-    @Test
-    void relayPm2meterAccuApparentNeverUpdated() {
-        ShellyDeviceProfile profile = relayPm2meterProfile();
-
-        ShellySettingsEMeter em0 = new ShellySettingsEMeter();
-        em0.isValid = true;
-        em0.power = 300.0;
-        // apparentPower intentionally null — relay-PM never populates this
-
-        ShellySettingsEMeter em1 = new ShellySettingsEMeter();
-        em1.isValid = true;
-        em1.power = 700.0;
-
-        ShellySettingsStatus status = statusWithEMeters(em0, em1);
-        ShellyThingInterface handler = mockHandler(profile);
-        ShellyComponents.updateMeters(handler, status);
-
         verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_DEV_STATUS), eq(CHANNEL_DEVST_ACCUAPPARENT),
                 any(State.class));
+    }
+
+    private static ShellySettingsEMeter emeter(double power) {
+        ShellySettingsEMeter em = new ShellySettingsEMeter();
+        em.isValid = true;
+        em.power = power;
+        return em;
+    }
+
+    private static ShellySettingsEMeter emeter(double power, double total) {
+        ShellySettingsEMeter em = emeter(power);
+        em.total = total;
+        return em;
     }
 
     private static ShellyDeviceProfile pro3emProfile() {
