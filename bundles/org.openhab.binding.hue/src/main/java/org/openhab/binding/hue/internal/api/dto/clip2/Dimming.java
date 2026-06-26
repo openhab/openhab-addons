@@ -30,7 +30,7 @@ public class Dimming {
     private @Nullable Double brightness;
     private @Nullable @SerializedName("min_dim_level") Double minimumDimmingLevel;
 
-    public static final double DEFAULT_MINIMUM_DIMMIMG_LEVEL = 0.5f;
+    public static final double DEFAULT_MINIMUM_DIMMIMG_LEVEL = 0.39f;
 
     /**
      * @throws DTOPresentButEmptyException to indicate that the DTO is present but empty.
