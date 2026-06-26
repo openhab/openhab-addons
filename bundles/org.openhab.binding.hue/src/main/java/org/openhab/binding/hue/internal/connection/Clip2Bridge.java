@@ -289,7 +289,7 @@ public class Clip2Bridge implements Closeable {
         @Override
         public void onClosed(@Nullable Stream stream) {
             Objects.requireNonNull(stream);
-            if (bridgeHandler.isUpdatingOwnFirmware()) {
+            if (bridgeHandler.isUpdateInProgress()) {
                 // stream closes if firmware is updating; this is no error so just complete the future silently
                 if (!completable.isDone()) {
                     completable.complete(Boolean.FALSE);
@@ -342,7 +342,7 @@ public class Clip2Bridge implements Closeable {
         @Override
         public void onReset(@Nullable Stream stream, @Nullable ResetFrame frame) {
             Objects.requireNonNull(stream);
-            if (bridgeHandler.isUpdatingOwnFirmware()) {
+            if (bridgeHandler.isUpdateInProgress()) {
                 // stream closes if firmware is updating; this is no error so just complete the future silently
                 if (!completable.isDone()) {
                     completable.complete(Boolean.FALSE);
@@ -399,7 +399,7 @@ public class Clip2Bridge implements Closeable {
         @Override
         public void onClose(@Nullable Session session, @Nullable GoAwayFrame frame) {
             Objects.requireNonNull(session);
-            if (bridgeHandler.isUpdatingOwnFirmware()) {
+            if (bridgeHandler.isUpdateInProgress()) {
                 // stream closes if firmware is updating; this is no error so return silently
                 return;
             }
@@ -409,7 +409,7 @@ public class Clip2Bridge implements Closeable {
         @Override
         public void onFailure(@Nullable Session session, @Nullable Throwable failure) {
             Objects.requireNonNull(session);
-            if (bridgeHandler.isUpdatingOwnFirmware()) {
+            if (bridgeHandler.isUpdateInProgress()) {
                 // stream closes if firmware is updating; this is no error so return silently
                 return;
             }
@@ -1467,11 +1467,28 @@ public class Clip2Bridge implements Closeable {
     }
 
     /**
-     * Send a PUT request to trigger the bridge to update its software.
+     * Send a PUT request to trigger the bridge to update its software. Tears down the HTTP/2 session
+     * and event stream using exclusive locks before execution.
      * 
      * @throws IOException if there was a communications error.
      */
     public void installUpdate() throws IOException {
-        putBridgeConfig(hostName, applicationKey, new BridgeConfig().setInstallUpdate(), hueContext);
+        Lock writeLock = sessionUseCreateLock.writeLock();
+        try {
+            if (writeLock.tryLock(TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
+                try {
+                    LOGGER.debug("Executing firmware update.");
+                    close2();
+                    putBridgeConfig(hostName, applicationKey, new BridgeConfig().setInstallUpdate(), hueContext);
+                } finally {
+                    writeLock.unlock();
+                }
+            } else {
+                throw new IOException("Failed to acquire lock for firmware update.");
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IOException("Interrupted while preparing transport teardown for update.", e);
+        }
     }
 }
