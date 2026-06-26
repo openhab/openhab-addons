@@ -438,7 +438,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     putResource = Setters.setDimming(putResource, brightnessCommand, cache);
                     Double minDimLevel = Objects.nonNull(cache) ? cache.getMinimumDimmingLevel() : null;
                     minDimLevel = Objects.nonNull(minDimLevel) ? minDimLevel : Dimming.DEFAULT_MINIMUM_DIMMIMG_LEVEL;
-                    minDimLevel = minDimLevel == 0.0 ? 0.001 : minDimLevel; // exact 0.0 must cause OFF (e.g. 'Signe')
+                    minDimLevel = minDimLevel == 0.0 ? 0.01 : minDimLevel; // exact 0.0 must cause OFF (e.g. 'Signe')
                     command = OnOffType.from(brightnessCommand.doubleValue() >= minDimLevel);
                 }
                 // NB fall through for handling of switch related commands !!
