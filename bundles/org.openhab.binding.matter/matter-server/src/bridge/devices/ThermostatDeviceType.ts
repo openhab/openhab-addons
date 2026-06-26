@@ -18,9 +18,25 @@ export class ThermostatDeviceType extends BaseDeviceType {
     }
 
     override defaultClusterValues(userValues: Record<string, any>) {
-        const defaults: Record<string, any> = {
-            thermostat: CustomThermostatServer.DEFAULTS,
+        const thermostat = userValues.thermostat ?? {};
+        const hasHeating = thermostat.occupiedHeatingSetpoint !== undefined;
+        const hasCooling = thermostat.occupiedCoolingSetpoint !== undefined;
+
+        const thermostatDefaults: Record<string, any> = {
+            ...CustomThermostatServer.DEFAULTS_COMMON,
         };
-        return defaults;
+        if (hasHeating) {
+            Object.assign(thermostatDefaults, CustomThermostatServer.DEFAULTS_HEAT);
+        }
+        if (hasCooling) {
+            Object.assign(thermostatDefaults, CustomThermostatServer.DEFAULTS_COOL);
+        }
+        if (hasHeating && hasCooling) {
+            Object.assign(thermostatDefaults, CustomThermostatServer.DEFAULTS_AUTO);
+        }
+
+        return {
+            thermostat: thermostatDefaults,
+        };
     }
 }
