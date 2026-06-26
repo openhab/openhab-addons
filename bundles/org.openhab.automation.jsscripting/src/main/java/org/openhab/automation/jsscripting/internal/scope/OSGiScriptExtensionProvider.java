@@ -21,7 +21,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Jonathan Gilbert - Initial contribution
  */
-@Component(immediate = true, service = ScriptExtensionProvider.class)
+@Component(immediate = true, service = { ScriptExtensionProvider.class, OSGiScriptExtensionProvider.class })
 public class OSGiScriptExtensionProvider extends ScriptDisposalAwareScriptExtensionProvider {
 
     @Override
