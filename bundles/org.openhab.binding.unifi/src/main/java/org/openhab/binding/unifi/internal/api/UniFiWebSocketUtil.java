@@ -37,10 +37,6 @@ public final class UniFiWebSocketUtil {
             if (cause instanceof UpgradeException ue && ue.getResponseStatusCode() == HttpStatus.UNAUTHORIZED_401) {
                 return true;
             }
-            String message = cause.getMessage();
-            if (message != null && message.contains("401")) {
-                return true;
-            }
             cause = cause.getCause();
         }
         return false;

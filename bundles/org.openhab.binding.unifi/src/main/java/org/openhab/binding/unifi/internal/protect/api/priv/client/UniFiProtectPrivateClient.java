@@ -312,8 +312,8 @@ public class UniFiProtectPrivateClient {
                                     reauthenticateSession().whenComplete((rv, rex) -> {
                                         if (rex != null) {
                                             authenticator.clearAuth();
-                                            future.completeExceptionally(
-                                                    new AuthenticationException("Authentication rejected: " + status));
+                                            future.completeExceptionally(new AuthenticationException(
+                                                    "Re-authentication failed after " + status, rex));
                                         } else {
                                             makeApiRequest(method, path, body, responseType, false)
                                                     .whenComplete((retryResult, retryEx) -> {

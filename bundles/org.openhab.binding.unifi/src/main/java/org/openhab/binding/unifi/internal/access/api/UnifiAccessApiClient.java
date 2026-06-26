@@ -995,22 +995,22 @@ public final class UnifiAccessApiClient implements Closeable {
     private void reauthenticateAndReconnect(Runnable onOpen, Consumer<Notification> onMessage,
             Consumer<Throwable> onError) {
         logger.debug("Notifications WebSocket upgrade rejected (401); re-authenticating and retrying");
-        try {
-            unifiSession.reauthenticate().get(30, TimeUnit.SECONDS);
-        } catch (Exception e) {
-            logger.debug("Re-authentication after WebSocket 401 failed: {}", e.getMessage());
-            return;
-        }
-        synchronized (this) {
-            if (closed) {
+        unifiSession.reauthenticate().whenComplete((v, ex) -> {
+            if (ex != null) {
+                logger.debug("Re-authentication after WebSocket 401 failed: {}", ex.getMessage());
                 return;
             }
-            try {
-                connectNotifications(onOpen, onMessage, onError, false);
-            } catch (UnifiAccessApiException e) {
-                logger.debug("WebSocket reconnect after re-auth failed: {}", e.getMessage());
+            synchronized (this) {
+                if (closed) {
+                    return;
+                }
+                try {
+                    connectNotifications(onOpen, onMessage, onError, false);
+                } catch (UnifiAccessApiException e) {
+                    logger.debug("WebSocket reconnect after re-auth failed: {}", e.getMessage());
+                }
             }
-        }
+        });
     }
 
     // ---- HTTP Helpers ----
