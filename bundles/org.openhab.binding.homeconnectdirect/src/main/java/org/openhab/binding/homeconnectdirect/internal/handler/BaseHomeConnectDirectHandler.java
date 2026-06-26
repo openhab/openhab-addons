@@ -1109,21 +1109,21 @@ public class BaseHomeConnectDirectHandler extends BaseThingHandler implements We
     private void updateSelectedProgramDescription() {
         getLinkedChannel(CHANNEL_SELECTED_PROGRAM)
                 .ifPresent(channel -> getDeviceDescriptionServiceOptional().ifPresent(deviceDescriptionService -> {
-                    List<CommandOption> programOptions = new ArrayList<>();
+                    List<StateOption> stateOptions = new ArrayList<>();
 
                     // check if selectedProgram value is writable
                     if (deviceDescriptionService.getSelectedProgram(true) != null) {
                         deviceDescriptionService.getPrograms(true).stream()
-                                .map(command -> new CommandOption(command.key(), getProgramLabel(command.key())))
-                                .forEach(programOptions::add);
+                                .map(command -> new StateOption(command.key(), getProgramLabel(command.key())))
+                                .forEach(stateOptions::add);
                     } else {
                         var selectedProgram = keyValueStore.get(SELECTED_PROGRAM_KEY);
                         if (selectedProgram != null) {
-                            programOptions.add(new CommandOption(selectedProgram, getProgramLabel(selectedProgram)));
+                            stateOptions.add(new StateOption(selectedProgram, getProgramLabel(selectedProgram)));
                         }
                     }
 
-                    setCommandOptions(channel.getUID(), programOptions);
+                    setStateDescriptions(channel.getUID(), stateOptions);
                 }));
     }
 
