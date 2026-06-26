@@ -348,8 +348,6 @@ sitemap nuvo label="Audio Control" {
 ### `nuvo.rules` Example
 
 ```java
-import java.text.Normalizer
-
 // To be used with a direct serial port or serial over IP connection
 
 val actions = getActions("nuvo","nuvo:amplifier:myamp")
@@ -399,34 +397,22 @@ rule "Load track name for Source 3"
 when
     Item Item_Containing_TrackName changed
 then
-    // The Nuvo keypad cannot display extended ASCII characters (accent, umlaut, etc.)
-    // Below we transform extended ASCII chars into their basic counterparts
-    // example: 'La Touché' becomes 'La Touche' and 'Nöel' becomes 'Noel'
-    var trackName = Normalizer::normalize(Item_Containing_TrackName.state.toString, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "")
-
-    sendCommand(nuvo_s3_display_line4, trackName)
+    sendCommand(nuvo_s3_display_line4, Item_Containing_TrackName.state.toString)
     sendCommand(nuvo_s3_display_line1, "")
-
 end
 
 rule "Load album name for Source 3"
 when
     Item Item_Containing_AlbumName changed
 then
-    // fix extended ASCII chars
-    var albumName = Normalizer::normalize(Item_Containing_AlbumName.state.toString, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "")
-
-    sendCommand(nuvo_s3_display_line2, albumName)
+    sendCommand(nuvo_s3_display_line2, Item_Containing_AlbumName.state.toString)
 end
 
 rule "Load artist name for Source 3"
 when
     Item Item_Containing_ArtistName changed
 then
-    // fix extended ASCII chars
-    var artistName = Normalizer::normalize(Item_Containing_ArtistName.state.toString, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "")
-
-    sendCommand(nuvo_s3_display_line3, artistName)
+    sendCommand(nuvo_s3_display_line3, Item_Containing_ArtistName.state.toString)
 end
 
 // In this rule we have three items: Item_Containing_PlayMode, Item_Containing_TrackLength & Item_Containing_TrackPosition
@@ -548,8 +534,6 @@ The list of favorite names should be playable via another Thing connected to ope
 #### `nuvo-advanced.rules.rules` Example
 
 ```java
-import java.text.Normalizer
-
 // all examples using Source 6
 var source = "S6"
 
@@ -648,8 +632,7 @@ when
     Item music_Music_Album received update
 then
     if (music_Music_Album.state.toString() != "") {
-        albumName = Normalizer::normalize(music_Music_Album.state.toString, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "")
-        sendCommand(nuvo_system_sendcmd, source + "DISPLINES0,0,0,\"\",\"" + albumName + "\",\"" + artistName + "\",\"" + trackName + "\"")
+        sendCommand(nuvo_system_sendcmd, source + "DISPLINES0,0,0,\"\",\"" + music_Music_Album.state.toString + "\",\"" + artistName + "\",\"" + trackName + "\"")
     }
 end
 
@@ -658,8 +641,7 @@ when
     Item music_Music_Artist received update
 then
     if (music_Music_Artist.state.toString() != "") {
-        artistName = Normalizer::normalize(music_Music_Artist.state.toString, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "")
-        sendCommand(nuvo_system_sendcmd, source + "DISPLINES0,0,0,\"\",\"" + albumName + "\",\"" + artistName + "\",\"" + trackName + "\"")
+        sendCommand(nuvo_system_sendcmd, source + "DISPLINES0,0,0,\"\",\"" + music_Music_Artist.state.toString + "\",\"" + artistName + "\",\"" + trackName + "\"")
     }
 end
 
@@ -668,8 +650,7 @@ when
     Item music_Music_Track received update
 then
     if (music_Music_Track.state.toString() != "") {
-        trackName = Normalizer::normalize(music_Music_Track.state.toString, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "")
-        sendCommand(nuvo_system_sendcmd, source + "DISPLINES0,0,0,\"\",\"" + albumName + "\",\"" + artistName + "\",\"" + trackName + "\"")
+        sendCommand(nuvo_system_sendcmd, source + "DISPLINES0,0,0,\"\",\"" + music_Music_Track.state.toString + "\",\"" + artistName + "\",\"" + trackName + "\"")
     }
 end
 
