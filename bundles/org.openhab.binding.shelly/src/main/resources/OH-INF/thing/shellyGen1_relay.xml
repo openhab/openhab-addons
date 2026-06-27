@@ -619,6 +619,7 @@
 		<item-type unitHint="VA">Number:Power</item-type>
 		<label>Apparent Power</label>
 		<description>Instantaneous apparent power in VA</description>
+		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Power</tag>

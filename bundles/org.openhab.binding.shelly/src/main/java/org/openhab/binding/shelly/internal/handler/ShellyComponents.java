@@ -347,9 +347,8 @@ public class ShellyComponents {
                             toQuantityType(getDouble(emeter.frequency), DIGITS_FREQUENCY, Units.HERTZ));
                 }
                 Double pf = computePF(emeter);
-                if (pf != null) {
-                    meterUpdated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_PFACTOR, getDecimal(pf));
-                }
+                meterUpdated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_PFACTOR,
+                        getDecimal(pf != null ? pf : 0.0));
 
                 accumulatedWatts += getDouble(emeter.power);
                 if (meterUpdated) {

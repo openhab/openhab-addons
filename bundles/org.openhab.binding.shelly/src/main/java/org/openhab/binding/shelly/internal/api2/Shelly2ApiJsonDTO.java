@@ -516,9 +516,9 @@ public class Shelly2ApiJsonDTO {
             @SerializedName("em:0")
             public Shelly2DevConfigEm em0;
             @SerializedName("em:1")
-            public Shelly2DevConfigEm emCh1; // Gen3: per-phase channel 1
+            public @Nullable Shelly2DevConfigEm emCh1; // Gen3: per-phase channel 1
             @SerializedName("em:2")
-            public Shelly2DevConfigEm emCh2; // Gen3: per-phase channel 2
+            public @Nullable Shelly2DevConfigEm emCh2; // Gen3: per-phase channel 2
             @SerializedName("em1:0")
             public Shelly2DevConfigEm em10;
             @SerializedName("em1:1")
@@ -844,9 +844,9 @@ public class Shelly2ApiJsonDTO {
             @SerializedName("em:0")
             public Shelly2DeviceStatusEm em0;
             @SerializedName("em:1")
-            public Shelly2DeviceStatusEm emCh1; // Gen3: per-phase channel 1 (phase B)
+            public @Nullable Shelly2DeviceStatusEm emCh1; // Gen3: per-phase channel 1 (phase B)
             @SerializedName("em:2")
-            public Shelly2DeviceStatusEm emCh2; // Gen3: per-phase channel 2 (phase C)
+            public @Nullable Shelly2DeviceStatusEm emCh2; // Gen3: per-phase channel 2 (phase C)
             @SerializedName("emdata:0")
             public Shelly2DeviceStatusEmData emdata0;
             @SerializedName("em1:0")
@@ -856,7 +856,7 @@ public class Shelly2ApiJsonDTO {
             @SerializedName("em1data:0")
             public Shelly2DeviceStatusEmData em1data0;
             @SerializedName("em1data:1")
-            public Shelly2DeviceStatusEmData em1data1;
+            public @Nullable Shelly2DeviceStatusEmData em1data1;
 
             @SerializedName("cover:0")
             public Shelly2CoverStatus cover0;

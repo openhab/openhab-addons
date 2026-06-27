@@ -1437,8 +1437,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 updated |= applyMigrationRule(rule);
             }
         }
-        updateProperties(PROPERTY_CHANNEL_SCHEMA_VERSION, String.valueOf(CHANNEL_SCHEMA_VERSION));
         if (updated) {
+            updateProperties(PROPERTY_CHANNEL_SCHEMA_VERSION, String.valueOf(CHANNEL_SCHEMA_VERSION));
             logger.debug("{}: Channel definitions migrated to schema version {}", thingName, CHANNEL_SCHEMA_VERSION);
         }
     }
