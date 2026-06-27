@@ -74,7 +74,7 @@ public abstract class RingDeviceHandler extends AbstractRingHandler {
         }
 
         if (this.refreshJob == null) {
-            startAutomaticRefresh(config.refreshInterval);
+            startAutomaticRefresh();
         }
     }
 
@@ -169,7 +169,7 @@ public abstract class RingDeviceHandler extends AbstractRingHandler {
                         enabled = xcommand;
                         updateState(channelUID, enabled);
                         if (enabled.equals(OnOffType.ON)) {
-                            startAutomaticRefresh(config.refreshInterval);
+                            startAutomaticRefresh();
                         } else {
                             stopAutomaticRefresh();
                         }

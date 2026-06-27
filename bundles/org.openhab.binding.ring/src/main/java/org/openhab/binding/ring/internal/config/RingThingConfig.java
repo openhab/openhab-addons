@@ -25,5 +25,4 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class RingThingConfig {
     public String id = "";
     public BigDecimal offOffset = BigDecimal.ZERO;
-    public int refreshInterval = 5;
 }
