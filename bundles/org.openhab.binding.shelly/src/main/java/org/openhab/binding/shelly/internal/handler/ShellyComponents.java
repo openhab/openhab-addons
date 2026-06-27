@@ -249,7 +249,7 @@ public class ShellyComponents {
                     accumulatedTotal += kwh;
                 }
                 if (meter.counters != null && meter.counters.length > 0 && meter.counters[0] != null) {
-                    updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_LASTENERGY1,
+                    updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_LASTMIN1,
                             toQuantityType(getDouble(meter.counters[0]) / 60.0, DIGITS_KWH, Units.WATT_HOUR));
                 }
                 if (meter.timestamp != null) {
@@ -326,7 +326,7 @@ public class ShellyComponents {
                     accumulatedReturned += totalReturned;
                 }
                 if (emeter.reactive != null) {
-                    meterUpdated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_REACTPOWER,
+                    meterUpdated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_REACTWATTS,
                             toQuantityType(emeter.reactive, DIGITS_WATT, Units.VAR));
                 }
                 if (emeter.apparentPower != null) {
@@ -401,7 +401,7 @@ public class ShellyComponents {
             return false;
         }
 
-        updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_LASTENERGY1,
+        updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_LASTMIN1,
                 toQuantityType(lastMin1 / 60.0, DIGITS_KWH, Units.WATT_HOUR));
         totalWatts = totalWatts / (60.0 * 1000.0); // convert Watt/Min to kWh
         updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_CURRENTWATTS,
@@ -438,7 +438,7 @@ public class ShellyComponents {
         // status.totalKWH is reset to null at the start of fillDeviceStatus and is only set when
         // emdata arrives; WS pushes leave it null so accumulatedTotal is used. Never fall back to 0.
         if (status.totalKWH != null || accumulatedTotal != 0.0) {
-            thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_TOTALENERGY,
+            thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCUTOTAL,
                     toQuantityType(status.totalKWH != null ? status.totalKWH / 1000 : accumulatedTotal, DIGITS_KWH,
                             Units.KILOWATT_HOUR));
         }

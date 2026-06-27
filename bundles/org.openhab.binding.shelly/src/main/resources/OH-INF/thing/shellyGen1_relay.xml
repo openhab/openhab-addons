@@ -522,6 +522,19 @@
 		</state>
 	</channel-type>
 
+	<channel-type id="meterAccuTotal" advanced="true">
+		<item-type unitHint="kWh">Number:Energy</item-type>
+		<label>Accumulated Total Energy</label>
+		<description>[deprecated] Accumulated total energy in kWh of the device (including all meters)</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state readOnly="true" pattern="%.3f %unit%">
+		</state>
+	</channel-type>
+
 	<channel-type id="meterAccuWatts" advanced="true">
 		<item-type unitHint="W">Number:Power</item-type>
 		<label>Total Active Power</label>
