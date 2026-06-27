@@ -1,3 +1,7 @@
+---
+prev: basics
+next: conditionals
+---
 # Variables & Substitution
 
 Variables allow you to define reusable values and substitute them throughout your YAML configuration.
@@ -279,3 +283,5 @@ foo: !sub:jinja "Hello {{ username }}!"
 1. **`+` vs `~`**: Use `~` for strings to avoid type mismatch errors and use `+` for numbers or lists.
 1. **Jinja Blocks**: Template blocks such as `{% for %}` are not supported; use inline `if` expressions instead.
 1. **Whitespace Sensitivity**: Spaces outside of quotes inside `${ ... }` are ignored, but spaces in quoted strings are preserved.
+
+[Return to YAML Composer main page](../)

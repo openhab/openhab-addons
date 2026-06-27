@@ -1,3 +1,6 @@
+---
+prev: anchors
+---
 # Merge Keys
 
 Merge keys (`<<`) let you combine mappings defined directly in a mapping with other mappings defined elsewhere, such as:
@@ -203,3 +206,5 @@ For details on how variables are resolved and how substitution interacts with YA
 - Keep anchors inside hidden keys to avoid clutter.
 - Use includes or packages to centralize shared structures.
 - Prefer simple, predictable structures for reusable blocks.
+
+[Return to YAML Composer main page](../)

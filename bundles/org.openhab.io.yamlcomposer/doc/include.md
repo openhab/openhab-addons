@@ -1,3 +1,7 @@
+---
+prev: conditionals
+next: templates
+---
 # Including Other Files
 
 `!include` inserts the referenced file or structure exactly at the position where the include appears.
@@ -289,3 +293,5 @@ main.yaml → a.inc.yaml → b.inc.yaml → …
 
 When an include file changes, YAML Composer reloads the main files that reference it rather than attempting to load the include file directly.
 Reloads occur only if the include file is located within `${OPENHAB_CONF}/yamlcomposer/`.
+
+[Return to YAML Composer main page](../)
