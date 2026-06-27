@@ -641,6 +641,21 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
             updateState(CHANNEL_EVENT_DOORBOT_DESCRIPTION, new StringType(deviceName));
             updateState(CHANNEL_EVENT_EXTENDED_DESCRIPTION, new StringType(extendedDescription));
 
+            for (Thing child : getThing().getThings()) {
+                String childId = (String) child.getConfiguration().get(THING_CONFIG_ID);
+                if (deviceId.equals(childId)) {
+                    if (child.getHandler() instanceof RingDeviceHandler ringHandler) {
+                        ringHandler
+                                .updateInstantEvent(
+                                        new DateTimeType(
+                                                ZonedDateTime.parse(createdAtStr, DateTimeFormatter.ISO_DATE_TIME)
+                                                        .withZoneSameInstant(ZoneId.systemDefault())),
+                                        kind, extendedDescription);
+                    }
+                    break;
+                }
+            }
+
             if (pushSnapshotUrl != null && !pushSnapshotUrl.isEmpty()) {
                 logger.debug("Received Rich Notification URL! Downloading instantly...");
                 ScheduledFuture<?> job = fallbackJobs.remove(deviceId);
@@ -787,6 +802,17 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                         };
 
                         updateState(CHANNEL_EVENT_EXTENDED_DESCRIPTION, new StringType(message));
+
+                        for (Thing child : getThing().getThings()) {
+                            String childId = (String) child.getConfiguration().get(THING_CONFIG_ID);
+                            if (Long.toString(id).equals(childId)) {
+                                if (child.getHandler() instanceof RingDeviceHandler ringHandler) {
+                                    ringHandler.updateInstantEvent(lastEvents.getFirst().getCreatedAt(),
+                                            lastEvents.getFirst().kind, message);
+                                }
+                                break;
+                            }
+                        }
                     }
                     RingEventTO latestEvent = lastEvents.getFirst();
                     scheduler.execute(() -> getVideo(latestEvent));

@@ -112,6 +112,38 @@ public class StickupcamHandler extends RingDeviceHandler {
                     thingBuilder.withChannel(channel);
                     updateThing(thingBuilder.build());
                 }
+
+                channelUID = new ChannelUID(getThing().getUID(), CHANNEL_EVENT_CREATED_AT);
+                channel = thing.getChannel(channelUID);
+                if (channel == null) {
+                    logger.debug("Adding channel for event date/time, on device {}", getThing().getUID());
+                    ThingBuilder thingBuilder = editThing();
+                    channel = ChannelBuilder.create(channelUID, CoreItemFactory.DATETIME).withLabel("Event DateTime")
+                            .withType(new ChannelTypeUID(BINDING_ID, "createdAt")).build();
+                    thingBuilder.withChannel(channel);
+                    updateThing(thingBuilder.build());
+                }
+
+                channelUID = new ChannelUID(getThing().getUID(), CHANNEL_EVENT_KIND);
+                if (thing.getChannel(channelUID) == null) {
+                    logger.debug("Adding channel for event kind, on device {}", getThing().getUID());
+                    ThingBuilder thingBuilder = editThing();
+                    channel = ChannelBuilder.create(channelUID, CoreItemFactory.STRING).withLabel("Event Type")
+                            .withType(new ChannelTypeUID(BINDING_ID, "kind")).build();
+                    thingBuilder.withChannel(channel);
+                    updateThing(thingBuilder.build());
+                }
+
+                channelUID = new ChannelUID(getThing().getUID(), CHANNEL_EVENT_EXTENDED_DESCRIPTION);
+                if (thing.getChannel(channelUID) == null) {
+                    logger.debug("Adding channel for event extended description, on device {}", getThing().getUID());
+                    ThingBuilder thingBuilder = editThing();
+                    channel = ChannelBuilder.create(channelUID, CoreItemFactory.STRING)
+                            .withLabel("Event Extended Description")
+                            .withType(new ChannelTypeUID(BINDING_ID, "extendedDescription")).build();
+                    thingBuilder.withChannel(channel);
+                    updateThing(thingBuilder.build());
+                }
             }
         }
     }
