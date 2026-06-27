@@ -522,17 +522,18 @@ The following channel IDs were renamed or have replacements. Existing items and 
 **You need to delete and re-discover Things and adapt your rules for removed channels. Deprecated channels remain available for a transition period.**
 Channel type definitions are baked into the binding JAR.
 
-| Group  | Old channel ID          | New channel ID              | Notes                                                    |
-|--------|-------------------------|-----------------------------|----------------------------------------------------------|
-| meter  | `reactiveWatts`         | `reactivePower`             | Unit changed from W to VAR                               |
-| device | `accumulatedWTotal`     | `totalEnergy`               | Was reporting wrong values (Amperes/1000 instead of kWh) |
-| meter  | `currentWatts`          | `currentPower`              | Deprecated old channel remains advanced during migration |
-| meter  | `totalKWH`              | `totalEnergy`               | Deprecated old channel remains advanced during migration |
-| meter  | `returnedKWH`           | `returnedEnergy`            | Deprecated old channel remains advanced during migration |
-| meter  | `lastPower1`            | `lastEnergy1`               | Unit corrected from W-min to Wh                          |
-| nmeter | `nmTreshhold`           | `nmThreshold`               | Typo fix                                                 |
-| device | `accumulatedWatts`      | `accumulatedPower`          | Deprecated old channel remains advanced during migration |
-| device | `accumulatedReturned`   | `accumulatedReturnedEnergy` | Deprecated old channel remains advanced during migration |
+| Group  | Old channel ID          | New channel ID              | Notes                                                                       |
+|--------|-------------------------|-----------------------------|-----------------------------------------------------------------------------|
+| meter  | `reactiveWatts`         | `reactivePower`             | Unit changed from W to VAR; existing items on `reactiveWatts` are affected  |
+| device | `accumulatedWTotal`     | `totalEnergy`               | Was reporting wrong values (Amperes/1000 instead of kWh)                    |
+| device | `totalKWH`              | `totalEnergy`               | Relay-PM devices (Plus 1PM, 2PM, Strip4 etc.); requires re-discovery        |
+| meter  | `currentWatts`          | `currentPower`              | Deprecated old channel remains advanced during migration                    |
+| meter  | `totalKWH`              | `totalEnergy`               | Deprecated old channel remains advanced during migration                    |
+| meter  | `returnedKWH`           | `returnedEnergy`            | Deprecated old channel remains advanced during migration                    |
+| meter  | `lastPower1`            | `lastEnergy1`               | Unit corrected from W-min to Wh                                             |
+| nmeter | `nmTreshhold`           | `nmThreshold`               | Typo fix                                                                    |
+| device | `accumulatedWatts`      | `accumulatedPower`          | Deprecated old channel remains advanced during migration                    |
+| device | `accumulatedReturned`   | `accumulatedReturnedEnergy` | Deprecated old channel remains advanced during migration                    |
 
 The following device-level channels are new (no migration needed — just re-discover to get them):
 
