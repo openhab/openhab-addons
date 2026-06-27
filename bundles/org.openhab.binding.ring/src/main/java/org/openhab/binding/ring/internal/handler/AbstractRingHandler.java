@@ -74,7 +74,7 @@ public abstract class AbstractRingHandler extends BaseThingHandler {
      * Check every 60 seconds if any device settings have changed.
      */
     protected void startAutomaticRefresh() {
-        refreshJob = scheduler.scheduleWithFixedDelay(this::refresh, 0, 60, TimeUnit.SECONDS);
+        refreshJob = scheduler.scheduleWithFixedDelay(this::refresh, 0, 1, TimeUnit.MINUTES);
         refreshState();
     }
 
