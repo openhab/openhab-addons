@@ -143,6 +143,7 @@ public class DoorbellHandler extends RingDeviceHandler {
         logger.debug("DoorbellHandler - minuteTick - device {}", getThing().getUID().getId());
         if (device == null) {
             initialize();
+            return;
         }
         RingDeviceTO deviceTO = device.getDeviceStatus();
         if (deviceTO.health.batteryPercentage != lastBattery) {

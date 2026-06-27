@@ -128,6 +128,7 @@ public class OtherDeviceHandler extends RingDeviceHandler {
         logger.debug("OtherDeviceHandler - minuteTick - device {}", getThing().getUID().getId());
         if (device == null) {
             initialize();
+            return;
         }
 
         if (batterySupport) {

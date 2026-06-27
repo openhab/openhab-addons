@@ -52,6 +52,7 @@ public class ChimeHandler extends RingDeviceHandler {
         logger.debug("ChimeHandler - minuteTick - device {}", getThing().getUID().getId());
         if (device == null) {
             initialize();
+            return;
         }
     }
 }

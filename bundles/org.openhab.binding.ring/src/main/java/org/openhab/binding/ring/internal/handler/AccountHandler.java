@@ -620,7 +620,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                 }
             }
 
-            String extendedDescription = "Motion Detected";
+            String extendedDescription = "";
             if (androidConfigJson != null && !androidConfigJson.isEmpty()) {
                 try {
                     JsonObject configObj = JsonParser.parseString(androidConfigJson).getAsJsonObject();
@@ -792,26 +792,26 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                     if (detectionType == null) {
                         detectionType = "";
                     }
+                    String message = "";
                     if ("motion".equals(lastEvents.getFirst().kind)) {
                         String desc = lastEvents.getFirst().doorbot.description;
 
-                        String message = switch (detectionType) {
+                        message = switch (detectionType) {
                             case "human" -> "There is a Person at your " + desc;
                             case "vehicle" -> "There is a Vehicle at your " + desc;
                             default -> "There is motion at your " + desc;
                         };
 
                         updateState(CHANNEL_EVENT_EXTENDED_DESCRIPTION, new StringType(message));
-
-                        for (Thing child : getThing().getThings()) {
-                            String childId = (String) child.getConfiguration().get(THING_CONFIG_ID);
-                            if (Long.toString(id).equals(childId)) {
-                                if (child.getHandler() instanceof RingDeviceHandler ringHandler) {
-                                    ringHandler.updateInstantEvent(lastEvents.getFirst().getCreatedAt(),
-                                            lastEvents.getFirst().kind, message);
-                                }
-                                break;
+                    }
+                    for (Thing child : getThing().getThings()) {
+                        String childId = (String) child.getConfiguration().get(THING_CONFIG_ID);
+                        if (Long.toString(id).equals(childId)) {
+                            if (child.getHandler() instanceof RingDeviceHandler ringHandler) {
+                                ringHandler.updateInstantEvent(lastEvents.getFirst().getCreatedAt(),
+                                        lastEvents.getFirst().kind, message);
                             }
+                            break;
                         }
                     }
                     RingEventTO latestEvent = lastEvents.getFirst();
