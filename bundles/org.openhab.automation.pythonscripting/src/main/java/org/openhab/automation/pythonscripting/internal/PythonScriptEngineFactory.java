@@ -27,6 +27,7 @@ import org.graalvm.polyglot.Language;
 import org.openhab.automation.pythonscripting.internal.fs.PythonDependencyTracker;
 import org.openhab.automation.pythonscripting.internal.scriptengine.graal.GraalPythonScriptEngine;
 import org.openhab.automation.pythonscripting.internal.scriptengine.graal.GraalPythonScriptEngine.ScriptEngineProvider;
+import org.openhab.automation.pythonscripting.internal.scriptengine.graal.GraalPythonScriptEngineFactory;
 import org.openhab.core.automation.module.script.ScriptDependencyTracker;
 import org.openhab.core.automation.module.script.ScriptEngineFactory;
 import org.openhab.core.config.core.ConfigurableService;
@@ -68,6 +69,8 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory, ScriptEng
      */
     private final Engine engine;
 
+    private final @Nullable Language language;
+
     @Activate
     public PythonScriptEngineFactory(final @Reference PythonDependencyTracker pythonDependencyTracker,
             final @Reference TimeZoneProvider timeZoneProvider, Map<String, Object> config) {
@@ -86,33 +89,41 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory, ScriptEng
         this.configuration.init(this);
 
         Engine.Builder engineBuilder = createEngineBuilder();
-        if (configuration.isDebuggerEnabled()) {
-            engineBuilder //
-                    .option("inspect", "0.0.0.0:" + configuration.getDebuggerPort()) //
-                    .option("inspect.Suspend", "false") // Don't pause at startup waiting for debugger to attach
-                    .option("inspect.WaitAttached", "false") // Don't block code execution waiting for debugger to
-                                                             // attach
-                    .option("inspect.Secure", "false"); // Disable TLS
+        Thread thread = Thread.currentThread();
+        ClassLoader original = thread.getContextClassLoader();
+        try {
+            thread.setContextClassLoader(GraalPythonScriptEngineFactory.class.getClassLoader());
+            if (configuration.isDebuggerEnabled()) {
+                engineBuilder //
+                        .option("inspect", "0.0.0.0:" + configuration.getDebuggerPort()) //
+                        .option("inspect.Suspend", "false") // Don't pause at startup waiting for debugger to attach
+                        .option("inspect.WaitAttached", "false") // Don't block code execution waiting for debugger to
+                                                                 // attach
+                        .option("inspect.Secure", "false"); // Disable TLS
 
-            Engine engine;
-            try {
-                engine = engineBuilder.build();
-                logger.info("Debugger support is enabled for Python Scripting on port {}",
-                        configuration.getDebuggerPort());
-            } catch (RuntimeException e) {
-                logger.error(
-                        "Failed to initialize Graal Python engine with debugger support. Continuing without debugger support.",
-                        e);
-                engine = createEngineBuilder().build();
+                Engine engine;
+                try {
+                    engine = engineBuilder.build();
+                    logger.info("Debugger support is enabled for Python Scripting on port {}",
+                            configuration.getDebuggerPort());
+                } catch (RuntimeException e) {
+                    logger.error(
+                            "Failed to initialize Graal Python engine with debugger support. Continuing without debugger support.",
+                            e);
+                    engine = createEngineBuilder().build();
+                }
+                this.engine = engine;
+            } else {
+                this.engine = createEngineBuilder().build();
             }
-            this.engine = engine;
-        } else {
-            this.engine = createEngineBuilder().build();
-        }
 
-        if (getLanguage() == null) {
-            logger.error(
-                    "Graal Python language not initialized. Restart openHAB to initialize available Graal languages properly.");
+            this.language = engine.getLanguages().get(GraalPythonScriptEngine.LANGUAGE_ID);
+            if (this.language == null) {
+                logger.error(
+                        "Graal Python language not initialized. Restart openHAB to initialize available Graal languages properly.");
+            }
+        } finally {
+            thread.setContextClassLoader(original);
         }
     }
 
@@ -183,6 +194,6 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory, ScriptEng
      * @return the Graal language of {@link PythonScriptEngine} or {@code null} if not available
      */
     public @Nullable Language getLanguage() {
-        return engine.getLanguages().get(GraalPythonScriptEngine.LANGUAGE_ID);
+        return language;
     }
 }
