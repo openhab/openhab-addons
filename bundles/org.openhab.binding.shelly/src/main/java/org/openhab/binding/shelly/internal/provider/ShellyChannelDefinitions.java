@@ -574,7 +574,7 @@ public class ShellyChannelDefinitions {
         addChannel(thing, newChannels, gen2 || meter.power != null, group, CHANNEL_METER_CURRENTWATTS);
         addChannel(thing, newChannels, gen2 || meter.total != null, group, CHANNEL_METER_TOTALKWH);
         addChannel(thing, newChannels, gen2 || hasCounter, group, CHANNEL_METER_LASTENERGY1);
-        addChannel(thing, newChannels, true, group, CHANNEL_LAST_UPDATE);
+        addChannel(thing, newChannels, !newChannels.isEmpty(), group, CHANNEL_LAST_UPDATE);
         return newChannels;
     }
 
@@ -603,7 +603,9 @@ public class ShellyChannelDefinitions {
         addChannel(thing, newChannels, always || emeter.apparentPower != null, group, CHANNEL_EMETER_APPARENT);
         addChannel(thing, newChannels, always || emeter.frequency != null, group, CHANNEL_EMETER_FREQUENCY);
         addChannel(thing, newChannels, always || emeter.pf != null, group, CHANNEL_EMETER_PFACTOR);
-        addChannel(thing, newChannels, true, group, CHANNEL_LAST_UPDATE);
+        // Only add lastUpdate if this device actually has meter channels — guards against non-PM Gen2 relay
+        // devices (e.g. Plus 1) where isEMeter=true but all emeter fields are permanently null.
+        addChannel(thing, newChannels, !newChannels.isEmpty(), group, CHANNEL_LAST_UPDATE);
         return newChannels;
     }
 
