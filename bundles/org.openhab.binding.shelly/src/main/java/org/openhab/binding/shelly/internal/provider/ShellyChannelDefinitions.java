@@ -547,7 +547,7 @@ public class ShellyChannelDefinitions {
         addChannel(thing, add, true, CHGR_ROLLER, CHANNEL_ROL_CONTROL_CONTROL);
         addChannel(thing, add, true, CHGR_ROLLER, CHANNEL_ROL_CONTROL_STATE);
         addChannel(thing, add, true, CHGR_ROLLER, CHANNEL_EVENT_TRIGGER);
-        addChannel(thing, add, roller.currentPos != null, CHGR_ROLLER, CHANNEL_ROL_CONTROL_POS);
+        addChannel(thing, add, true, CHGR_ROLLER, CHANNEL_ROL_CONTROL_POS);
         addChannel(thing, add, roller.stopReason != null, CHGR_ROLLER, CHANNEL_ROL_CONTROL_STOPR);
         addChannel(thing, add, roller.safetySwitch != null, CHGR_ROLLER, CHANNEL_ROL_CONTROL_SAFETY);
 
@@ -555,7 +555,7 @@ public class ShellyChannelDefinitions {
         if (handler != null) {
             ShellySettingsGlobal settings = handler.getProfile().settings;
             if (getBool(settings.favoritesEnabled) && settings.favorites != null) {
-                addChannel(thing, add, roller.currentPos != null, CHGR_ROLLER, CHANNEL_ROL_CONTROL_FAV);
+                addChannel(thing, add, true, CHGR_ROLLER, CHANNEL_ROL_CONTROL_FAV);
             }
         }
 
