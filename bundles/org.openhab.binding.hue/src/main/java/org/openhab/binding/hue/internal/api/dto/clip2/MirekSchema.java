@@ -27,8 +27,8 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class MirekSchema {
-    public static final int MIN = 153;
-    public static final int MAX = 500;
+    private static final int MIN = 153;
+    private static final int MAX = 500;
 
     public static final MirekSchema DEFAULT_SCHEMA = new MirekSchema();
 
@@ -50,6 +50,10 @@ public class MirekSchema {
 
     public String toPropertyValue() {
         return String.format("%s .. %s", toKelvin(mirekMinimum), toKelvin(mirekMaximum));
+    }
+
+    public static int toMirek(double kelvinValue) {
+        return (int) Math.round(1000000.0 / kelvinValue);
     }
 
     public MirekSchema() {

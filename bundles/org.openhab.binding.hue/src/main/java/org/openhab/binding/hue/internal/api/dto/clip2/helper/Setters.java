@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.hue.internal.api.dto.clip2.helper;
 
-import java.math.BigDecimal;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.HashMap;
@@ -37,6 +36,7 @@ import org.openhab.binding.hue.internal.api.dto.clip2.TimedEffects;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ActionType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.EffectType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ResourceType;
+import org.openhab.binding.hue.internal.exceptions.CriticalFieldMissing;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.PercentType;
@@ -93,9 +93,10 @@ public class Setters {
      * @param source another resource containing the MirekSchema.
      *
      * @return the target resource.
+     * @throws CriticalFieldMissing
      */
-    public static Resource setColorTemperatureAbsolute(Resource target, Command command, @Nullable Resource source,
-            @Nullable MirekSchema manualSchema) {
+    public static Resource setColorTemperatureAbsolute(Resource target, Command command, @Nullable Resource source)
+            throws CriticalFieldMissing {
         QuantityType<?> mirekQuantity = null;
         if (command instanceof QuantityType<?> genericQuantity) {
             mirekQuantity = genericQuantity.toInvertibleUnit(Units.MIRED);
@@ -104,8 +105,7 @@ public class Setters {
         }
         if (Objects.nonNull(mirekQuantity)) {
             MirekSchema schema = target.getMirekSchema();
-            schema = Objects.nonNull(schema) ? schema
-                    : Objects.nonNull(source) ? source.getMirekSchema() : manualSchema;
+            schema = Objects.nonNull(schema) ? schema : Objects.nonNull(source) ? source.getMirekSchema() : null;
             schema = Objects.nonNull(schema) ? schema : MirekSchema.DEFAULT_SCHEMA;
             ColorTemperature colorTemperature = target.getColorTemperature();
             colorTemperature = Objects.nonNull(colorTemperature) ? colorTemperature : new ColorTemperature();
@@ -127,13 +127,13 @@ public class Setters {
      * @param source another resource containing the MirekSchema.
      *
      * @return the target resource.
+     * @throws CriticalFieldMissing
      */
-    public static Resource setColorTemperaturePercent(Resource target, Command command, @Nullable Resource source,
-            @Nullable MirekSchema manualSchema) {
+    public static Resource setColorTemperaturePercent(Resource target, Command command, @Nullable Resource source)
+            throws CriticalFieldMissing {
         if (command instanceof PercentType mirek) {
             MirekSchema schema = target.getMirekSchema();
-            schema = Objects.nonNull(schema) ? schema
-                    : Objects.nonNull(source) ? source.getMirekSchema() : manualSchema;
+            schema = Objects.nonNull(schema) ? schema : Objects.nonNull(source) ? source.getMirekSchema() : null;
             schema = Objects.nonNull(schema) ? schema : MirekSchema.DEFAULT_SCHEMA;
             ColorTemperature colorTemperature = target.getColorTemperature();
             colorTemperature = Objects.nonNull(colorTemperature) ? colorTemperature : new ColorTemperature();
@@ -156,12 +156,16 @@ public class Setters {
      * @param source another resource containing the color Gamut.
      *
      * @return the target resource.
+     * @throws CriticalFieldMissing
      */
-    public static Resource setColorXy(Resource target, Command command, @Nullable Resource source) {
+    public static Resource setColorXy(Resource target, Command command, @Nullable Resource source)
+            throws CriticalFieldMissing {
         if (command instanceof HSBType hsb) {
             hsb = new HSBType(hsb.getHue(), hsb.getSaturation(), PercentType.HUNDRED);
             ColorXy color = target.getColorXy();
-            target.setColorXy((Objects.nonNull(color) ? color : new ColorXy()).setXY(ColorUtil.hsbToXY(hsb)));
+            Gamut gamut = source != null ? source.getGamut() : null;
+            gamut = gamut != null ? gamut : ColorUtil.DEFAULT_GAMUT;
+            target.setColorXy((Objects.nonNull(color) ? color : new ColorXy()).setXY(ColorUtil.hsbToXY(hsb, gamut)));
         }
         return target;
     }
@@ -173,18 +177,11 @@ public class Setters {
      *
      * @param target the target resource.
      * @param command the new state command should be a PercentType with the new dimming parameter.
-     * @param source another resource containing the minimum dimming level.
      *
      * @return the target resource.
      */
-    public static Resource setDimming(Resource target, Command command, @Nullable Resource source) {
+    public static Resource setDimming(Resource target, Command command) {
         if (command instanceof PercentType brightness) {
-            Double min = target.getMinimumDimmingLevel();
-            min = Objects.nonNull(min) ? min : Objects.nonNull(source) ? source.getMinimumDimmingLevel() : null;
-            min = Objects.nonNull(min) ? min : Dimming.DEFAULT_MINIMUM_DIMMIMG_LEVEL;
-            if (brightness.doubleValue() < min.doubleValue()) {
-                brightness = new PercentType(new BigDecimal(min, Resource.PERCENT_MATH_CONTEXT));
-            }
             Dimming dimming = target.getDimming();
             dimming = Objects.nonNull(dimming) ? dimming : new Dimming();
             dimming.setBrightness(brightness.doubleValue());
@@ -249,8 +246,8 @@ public class Setters {
         }
 
         // minimum dimming level
-        if (Objects.nonNull(targetDimming)) {
-            Double sourceMinDimLevel = Objects.isNull(sourceDimming) ? null : sourceDimming.getMinimumDimmingLevel();
+        if (Objects.nonNull(targetDimming) && Objects.nonNull(sourceDimming)) {
+            Double sourceMinDimLevel = sourceDimming.getMinimumDimmingLevel();
             if (Objects.nonNull(sourceMinDimLevel)) {
                 targetDimming.setMinimumDimmingLevel(sourceMinDimLevel);
             }
@@ -265,9 +262,11 @@ public class Setters {
         }
 
         // color gamut
-        Gamut sourceGamut = Objects.isNull(sourceColor) ? null : sourceColor.getGamut();
-        if (Objects.nonNull(targetColor) && Objects.nonNull(sourceGamut)) {
-            targetColor.setGamut(sourceGamut);
+        if (Objects.nonNull(sourceColor) && Objects.nonNull(targetColor)) {
+            Gamut sourceGamut = sourceColor.getGamut();
+            if (Objects.nonNull(sourceGamut)) {
+                targetColor.setGamut(sourceGamut);
+            }
         }
 
         // color temperature
@@ -279,8 +278,8 @@ public class Setters {
         }
 
         // mirek schema
-        if (Objects.nonNull(targetColorTemp)) {
-            MirekSchema sourceMirekSchema = Objects.isNull(sourceColorTemp) ? null : sourceColorTemp.getMirekSchema();
+        if (Objects.nonNull(targetColorTemp) && Objects.nonNull(sourceColorTemp)) {
+            MirekSchema sourceMirekSchema = sourceColorTemp.getMirekSchema();
             if (Objects.nonNull(sourceMirekSchema)) {
                 targetColorTemp.setMirekSchema(sourceMirekSchema);
             }

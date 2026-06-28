@@ -67,6 +67,7 @@ import org.openhab.binding.hue.internal.api.dto.clip2.helper.Setters;
 import org.openhab.binding.hue.internal.config.Clip2ThingConfig;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
 import org.openhab.binding.hue.internal.exceptions.AssetNotLoadedException;
+import org.openhab.binding.hue.internal.exceptions.CriticalFieldMissing;
 import org.openhab.core.items.Item;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -102,6 +103,8 @@ import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.StateOption;
 import org.openhab.core.types.UnDefType;
+import org.openhab.core.util.ColorUtil;
+import org.openhab.core.util.ColorUtil.Gamut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -221,14 +224,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private @Nullable Future<?> updateDependenciesTask;
     private @Nullable Future<?> updateServiceContributorsTask;
 
-    /*
-     * Manual minimum dimming level configuration parameter and {@link MirekSchema} for non certified
-     * products that do not automatically report a minimum dimming level and/or minimum and maximum
-     * supported color temperatures via the API.
-     */
-    private @Nullable Double manualMinimumDimmingLevel;
-    private @Nullable MirekSchema manualSchema;
-
     public Clip2ThingHandler(Thing thing, Clip2StateDescriptionProvider stateDescriptionProvider,
             ThingRegistry thingRegistry, ItemChannelLinkRegistry itemChannelLinkRegistry) {
         super(thing);
@@ -323,8 +318,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
         serviceContributorsCache.clear();
         controlIds.clear();
         extendedResourceTypes.clear();
-        manualMinimumDimmingLevel = null;
-        manualSchema = null;
     }
 
     /**
@@ -392,6 +385,15 @@ public class Clip2ThingHandler extends BaseThingHandler {
             return;
         }
 
+        try {
+            handleCommandInner(channelUID, commandParam);
+        } catch (CriticalFieldMissing e) {
+            logger.debug("{} -> handleCommand() channelUID:{} command:{} error: {}", resourceId, channelUID, command,
+                    e.getMessage(), e);
+        }
+    }
+
+    public void handleCommandInner(ChannelUID channelUID, Command commandParam) throws CriticalFieldMissing {
         ResourceType lightResourceType = thisResource.getType() == ResourceType.DEVICE ? ResourceType.LIGHT
                 : ResourceType.GROUPED_LIGHT;
 
@@ -419,18 +421,16 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
             case CHANNEL_2_COLOR_TEMP_PERCENT:
                 if (command instanceof IncreaseDecreaseType increaseDecreaseCommand && Objects.nonNull(cache)) {
-                    command = translateIncreaseDecreaseCommand(increaseDecreaseCommand,
-                            cache.getColorTemperaturePercentState());
+                    State priorColorTemperature = cache.getColorTemperaturePercentState();
+                    command = translateIncreaseDecreaseCommand(increaseDecreaseCommand, priorColorTemperature);
                 } else if (command instanceof OnOffType) {
                     command = OnOffType.OFF == command ? PercentType.ZERO : PercentType.HUNDRED;
                 }
-                putResource = Setters.setColorTemperaturePercent(new Resource(lightResourceType), command, cache,
-                        manualSchema);
+                putResource = Setters.setColorTemperaturePercent(new Resource(lightResourceType), command, cache);
                 break;
 
             case CHANNEL_2_COLOR_TEMP_ABSOLUTE:
-                putResource = Setters.setColorTemperatureAbsolute(new Resource(lightResourceType), command, cache,
-                        manualSchema);
+                putResource = Setters.setColorTemperatureAbsolute(new Resource(lightResourceType), command, cache);
                 break;
 
             case CHANNEL_2_COLOR:
@@ -444,15 +444,22 @@ public class Clip2ThingHandler extends BaseThingHandler {
             case CHANNEL_2_BRIGHTNESS:
                 putResource = Objects.nonNull(putResource) ? putResource : new Resource(lightResourceType);
                 if (command instanceof IncreaseDecreaseType increaseDecreaseCommand && Objects.nonNull(cache)) {
-                    command = translateIncreaseDecreaseCommand(increaseDecreaseCommand, cache.getBrightnessState());
+                    State priorBrightness = cache.getBrightnessState();
+                    command = translateIncreaseDecreaseCommand(increaseDecreaseCommand, priorBrightness);
                 }
                 if (command instanceof PercentType brightnessCommand) {
-                    putResource = Setters.setDimming(putResource, brightnessCommand, cache);
-                    Double minDimLevel = Objects.nonNull(cache) ? cache.getMinimumDimmingLevel()
-                            : manualMinimumDimmingLevel;
-                    minDimLevel = Objects.nonNull(minDimLevel) ? minDimLevel : Dimming.DEFAULT_MINIMUM_DIMMIMG_LEVEL;
-                    minDimLevel = minDimLevel == 0.0 ? 0.01 : minDimLevel; // exact 0.0 must cause OFF (e.g. 'Signe')
-                    command = OnOffType.from(brightnessCommand.doubleValue() >= minDimLevel);
+                    putResource = Setters.setDimming(putResource, brightnessCommand);
+                    Double onOffThreshold;
+                    if (lightResourceType == ResourceType.LIGHT) {
+                        // avoid "soft off" by appending a hard on/off command to match light's visible state
+                        // 0.0 must always switch OFF even for e.g. 'Signe' lights with a 0.0 minimum dimming level
+                        onOffThreshold = cache != null ? cache.getMinimumDimmingLevel() : null;
+                        onOffThreshold = onOffThreshold != null ? onOffThreshold : 0.0;
+                        onOffThreshold = Math.max(0.01, onOffThreshold);
+                    } else { // ResourceType.GROUPED_LIGHT
+                        onOffThreshold = 0.01;
+                    }
+                    command = OnOffType.from(brightnessCommand.doubleValue() >= onOffThreshold);
                 }
                 // NB fall through for handling of switch related commands !!
 
@@ -467,7 +474,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 break;
 
             case CHANNEL_2_DIMMING_ONLY:
-                putResource = Setters.setDimming(new Resource(lightResourceType), command, cache);
+                putResource = Setters.setDimming(new Resource(lightResourceType), command);
                 break;
 
             case CHANNEL_2_ON_OFF_ONLY:
@@ -733,16 +740,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
         thisResource.setId(resourceId);
         this.resourceId = resourceId;
         logger.debug("{} -> initialize()", resourceId);
-
-        manualMinimumDimmingLevel = config.minimumDimmingLevel;
-
-        Double minKelvin = config.minimumColorTemperature;
-        Double maxKelvin = config.maximumColorTemperature;
-        if (minKelvin != null || maxKelvin != null) {
-            int minMirek = maxKelvin != null ? (int) Math.round(1000000.0 / maxKelvin) : MirekSchema.MIN;
-            int maxMirek = minKelvin != null ? (int) Math.round(1000000.0 / minKelvin) : MirekSchema.MAX;
-            manualSchema = new MirekSchema(minMirek, maxMirek);
-        }
 
         updateThingFromLegacy();
         updateStatus(ThingStatus.UNKNOWN);
@@ -1050,6 +1047,16 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * @return true if the channel was found and updated.
      */
     private boolean updateChannels(Resource resource) {
+        try {
+            return updateChannelsInner(resource);
+        } catch (CriticalFieldMissing e) {
+            // this should never happen but log it just in case
+            logger.debug("{} -> updateChannels() error {}", resourceId, e.getMessage(), e);
+            return false;
+        }
+    }
+
+    private boolean updateChannelsInner(Resource resource) throws CriticalFieldMissing {
         logger.debug("{} -> updateChannels() from resource {}", resourceId, resource);
         boolean fullUpdate = resource.hasFullState();
         switch (resource.getType()) {
@@ -1104,7 +1111,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 }
                 updateState(CHANNEL_2_BRIGHTNESS, resource.getBrightnessState(), fullUpdate);
                 updateState(CHANNEL_2_DIMMING_ONLY, resource.getDimmingState(), fullUpdate);
-                updateState(CHANNEL_2_SWITCH, resource.getOnOffState(), fullUpdate);
+                updateState(CHANNEL_2_SWITCH, resource.getSwitchState(), fullUpdate);
                 updateState(CHANNEL_2_ON_OFF_ONLY, resource.getOnOffState(), fullUpdate);
                 updateState(CHANNEL_2_ALERT, resource.getAlertState(), fullUpdate);
                 break;
@@ -1317,7 +1324,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
             if (mirekSchema != null) {
                 stateDescriptionProvider.setMinMaxKelvin(new ChannelUID(thing.getUID(), CHANNEL_2_COLOR_TEMP_ABSOLUTE),
                         1000000 / mirekSchema.getMirekMaximum(), 1000000 / mirekSchema.getMirekMinimum());
-                logger.debug("{} -> updateColorTempAbsChannel() done", resource.getId());
             }
         }
     }
@@ -1365,6 +1371,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
             commandResourceIds.putAll(services.stream() // use a 'mergeFunction' to prevent duplicates
                     .collect(Collectors.toMap(ResourceReference::getType, ResourceReference::getId, (r1, r2) -> r1)));
         }
+
+        // if the device supports a light service, then add the minimum dimming level and/or Mirek schema if missing
+        ensureServicesHaveFullDTOs();
     }
 
     /**
@@ -1732,5 +1741,56 @@ public class Clip2ThingHandler extends BaseThingHandler {
             // if there is no software update status preserve the caller-provided status information
         }
         super.updateStatus(thingStatus, detail, description);
+    }
+
+    /**
+     * Generically ensure that all service resources in the serviceContributorsCache have a complete DTO.
+     * Currently this is only applied for light services.
+     * <p>
+     * For each light service in the cache, check if it has a {@link Dimming } field and a {@link MirekSchema} field. If
+     * either is missing, add the necessary entry, from from the passed manual configuration (if any) or the binding
+     * default values. This ensures that the light's channels always use a correct minimum dimming level and color
+     * temperature range.
+     * <p>
+     * TODO: strictly we should add the color gamut here as well
+     * <p>
+     * NOTE: this directly modifies the fields of the {@link Resource} instance in the {@codeserviceContributorsCache}
+     */
+    private void ensureServicesHaveFullDTOs() {
+        Clip2ThingConfig config = getConfigAs(Clip2ThingConfig.class);
+        for (ResourceType lightResourceType : Set.of(ResourceType.LIGHT, ResourceType.GROUPED_LIGHT)) {
+            if (getCachedResource(lightResourceType) instanceof Resource lightResource) {
+
+                if (lightResource.getDimming() instanceof Dimming dim) {
+                    Double minDimLevel = dim.getMinimumDimmingLevel();
+                    if (minDimLevel == null) {
+                        // exception means the minimum dimming level field is missing, so set it here
+                        Double minDimming = config.minimumDimmingLevel;
+                        minDimming = minDimming != null ? minDimming : Dimming.DEFAULT_MINIMUM_DIMMING_LEVEL;
+                        dim.setMinimumDimmingLevel(minDimming);
+                    }
+                }
+
+                if (lightResource.getColorTemperature() instanceof ColorTemperature ct) {
+                    MirekSchema mirekSchema = ct.getMirekSchema();
+                    if (mirekSchema == null) {
+                        Double maxKelvin = config.maximumColorTemperature;
+                        Double minKelvin = config.minimumColorTemperature;
+                        int minMirek = maxKelvin != null ? MirekSchema.toMirek(maxKelvin)
+                                : MirekSchema.DEFAULT_SCHEMA.getMirekMinimum();
+                        int maxMirek = minKelvin != null ? MirekSchema.toMirek(minKelvin)
+                                : MirekSchema.DEFAULT_SCHEMA.getMirekMaximum();
+                        ct.setMirekSchema(new MirekSchema(minMirek, maxMirek));
+                    }
+                }
+
+                if (lightResource.getColorXy() instanceof ColorXy xy) {
+                    Gamut gamut = xy.getGamut();
+                    if (gamut == null) {
+                        xy.setGamut(ColorUtil.DEFAULT_GAMUT); // for the time being we only apply the default
+                    }
+                }
+            }
+        }
     }
 }
