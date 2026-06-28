@@ -388,8 +388,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
         try {
             handleCommandInner(channelUID, commandParam);
         } catch (CriticalFieldMissing e) {
-            logger.debug("{} -> handleCommand() channelUID:{} command:{} error: {}", resourceId, channelUID, command,
-                    e.getMessage(), e);
+            logger.debug("{} -> handleCommand() channelUID:{} command:{} error: {}", resourceId, channelUID,
+                    commandParam, e.getMessage(), e);
         }
     }
 
