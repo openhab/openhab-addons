@@ -249,8 +249,11 @@ public class ShellyComponents {
                     accumulatedTotal += kwh;
                 }
                 if (meter.counters != null && meter.counters.length > 0 && meter.counters[0] != null) {
+                    double wattMin = getDouble(meter.counters[0]);
+                    thingHandler.updateChannel(groupName, CHANNEL_METER_LASTMIN1,
+                            toQuantityType(wattMin, DIGITS_WATT, Units.WATT));
                     updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_LASTENERGY1,
-                            toQuantityType(getDouble(meter.counters[0]) / 60.0, DIGITS_KWH, Units.WATT_HOUR));
+                            toQuantityType(wattMin / 60.0, DIGITS_KWH, Units.WATT_HOUR));
                 }
                 if (meter.timestamp != null) {
                     thingHandler.updateChannel(groupName, CHANNEL_LAST_UPDATE,
@@ -400,6 +403,8 @@ public class ShellyComponents {
             return false;
         }
 
+        thingHandler.updateChannel(groupName, CHANNEL_METER_LASTMIN1,
+                toQuantityType(lastMin1, DIGITS_WATT, Units.WATT));
         updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_LASTENERGY1,
                 toQuantityType(lastMin1 / 60.0, DIGITS_KWH, Units.WATT_HOUR));
         totalWatts = totalWatts / (60.0 * 1000.0); // convert Watt/Min to kWh
