@@ -326,7 +326,7 @@ public class ShellyComponents {
                     accumulatedReturned += totalReturned;
                 }
                 if (emeter.reactive != null) {
-                    meterUpdated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_REACTPOWER,
+                    meterUpdated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_REACTWATTS,
                             toQuantityType(emeter.reactive, DIGITS_VAR, Units.VAR));
                 }
                 if (emeter.apparentPower != null) {
