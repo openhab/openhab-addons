@@ -21,6 +21,7 @@ public class ProductionJsonDTO {
 
     public static class DataDTO {
         public String type;
+        public String measurementType;
         public int activeCount;
         public float whLifetime;
         public float whLastSevenDays;

@@ -32,6 +32,7 @@ import org.openhab.binding.enphase.internal.EnvoyConfiguration;
 import org.openhab.binding.enphase.internal.dto.EnvoyEnergyDTO;
 import org.openhab.binding.enphase.internal.dto.PdmEnergyDTO;
 import org.openhab.binding.enphase.internal.dto.PdmEnergyDTO.PdmProductionDTO;
+import org.openhab.binding.enphase.internal.dto.ProductionJsonDTO.DataDTO;
 import org.openhab.binding.enphase.internal.exception.EnphaseException;
 import org.openhab.binding.enphase.internal.exception.EntrezJwtInvalidException;
 import org.openhab.binding.enphase.internal.exception.EnvoyConnectionException;
@@ -52,6 +53,7 @@ public class EnvoyEntrezConnector extends EnvoyConnector {
     private static final String LOGIN_URL = "/auth/check_jwt";
     private static final String SESSION_COOKIE_NAME = "session";
     private static final String IVP_PDM_ENERGY_URL = "/ivp/pdm/energy";
+    private static final String TOTAL_CONSUMPTION = "total-consumption";
     private static final EnvoyEnergyDTO NO_DATA = new EnvoyEnergyDTO();
 
     private final Logger logger = LoggerFactory.getLogger(EnvoyEntrezConnector.class);
@@ -104,6 +106,39 @@ public class EnvoyEntrezConnector extends EnvoyConnector {
 
     private @Nullable PdmEnergyDTO jsonToPdmEnergyDTO(final String json) {
         return gson.fromJson(json, PdmEnergyDTO.class);
+    }
+
+    /**
+     * Retrieves consumption data from the {@code /production.json} endpoint instead of the {@code /api/v1/consumption}
+     * endpoint used by the base connector. On firmware version 7 and higher the {@code /api/v1/consumption} (and the
+     * {@code /ivp/pdm/energy}) aggregated consumption values can freeze after a firmware update and report a constant,
+     * stale value, while {@code /production.json} keeps reporting live data. The {@code total-consumption} entry
+     * represents the household load and matches the value shown in the Enphase app.
+     *
+     * @return the consumption data from the Envoy gateway
+     */
+    @Override
+    public EnvoyEnergyDTO getConsumption() throws EnphaseException {
+        final DataDTO @Nullable [] consumption = getProductionJson().consumption;
+
+        if (consumption != null) {
+            for (final DataDTO data : consumption) {
+                if (TOTAL_CONSUMPTION.equals(data.measurementType)) {
+                    return toEnvoyEnergyDTO(data);
+                }
+            }
+        }
+        throw new EnvoyConnectionException("No total-consumption data available from the Envoy.");
+    }
+
+    private EnvoyEnergyDTO toEnvoyEnergyDTO(final DataDTO data) {
+        final EnvoyEnergyDTO dto = new EnvoyEnergyDTO();
+
+        dto.wattsNow = Math.round(data.wNow);
+        dto.wattHoursToday = Math.round(data.whToday);
+        dto.wattHoursSevenDays = Math.round(data.whLastSevenDays);
+        dto.wattHoursLifetime = Math.round(data.whLifetime);
+        return dto;
     }
 
     @Override
