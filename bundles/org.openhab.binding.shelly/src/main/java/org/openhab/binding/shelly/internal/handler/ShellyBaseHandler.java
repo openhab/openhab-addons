@@ -1440,6 +1440,9 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         if (updated) {
             updateProperties(PROPERTY_CHANNEL_SCHEMA_VERSION, String.valueOf(CHANNEL_SCHEMA_VERSION));
             logger.debug("{}: Channel definitions migrated to schema version {}", thingName, CHANNEL_SCHEMA_VERSION);
+        } else if (!getThing().getChannels().isEmpty()) {
+            // Fresh Thing: no legacy channels to migrate; stamp current version to prevent scanning on every poll
+            updateProperties(PROPERTY_CHANNEL_SCHEMA_VERSION, String.valueOf(CHANNEL_SCHEMA_VERSION));
         }
     }
 
