@@ -600,8 +600,9 @@ public class ShellyChannelDefinitions {
                 CHANNEL_EMETER_REACTPOWER);
         addChannel(thing, newChannels, always || emeter.voltage != null, group, CHANNEL_EMETER_VOLTAGE);
         addChannel(thing, newChannels, always || emeter.current != null, group, CHANNEL_EMETER_CURRENT);
-        addChannel(thing, newChannels, always || emeter.apparentPower != null, group, CHANNEL_EMETER_APPARENT);
-        addChannel(thing, newChannels, always || emeter.frequency != null, group, CHANNEL_EMETER_FREQUENCY);
+        addChannel(thing, newChannels, (always && profile.isGen2) || emeter.apparentPower != null, group,
+                CHANNEL_EMETER_APPARENT);
+        addChannel(thing, newChannels, emeter.frequency != null, group, CHANNEL_EMETER_FREQUENCY);
         addChannel(thing, newChannels, always || emeter.pf != null, group, CHANNEL_EMETER_PFACTOR);
         // Only add lastUpdate if this device actually has meter channels — guards against non-PM Gen2 relay
         // devices (e.g. Plus 1) where isEMeter=true but all emeter fields are permanently null.

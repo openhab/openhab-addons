@@ -290,6 +290,7 @@ public class ShellyBindingConstants {
     // Formatting: Number of scaling digits
     public static final int DIGITS_NONE = 0;
     public static final int DIGITS_WATT = 2;
+    public static final int DIGITS_VAR = 2;
     public static final int DIGITS_KWH = 3;
     public static final int DIGITS_VOLT = 2;
     public static final int DIGITS_AMPERE = 3;
