@@ -50,6 +50,7 @@ import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.StatusCode;
 import org.eclipse.jetty.websocket.api.WebSocketListener;
+import org.eclipse.jetty.websocket.api.WebSocketPingPongListener;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.freeathome.internal.FreeAtHomeDiscoveryService;
@@ -82,7 +83,7 @@ import com.google.gson.stream.JsonReader;
  *
  */
 @NonNullByDefault
-public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSocketListener {
+public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSocketListener, WebSocketPingPongListener {
 
     private final Logger logger = LoggerFactory.getLogger(FreeAtHomeBridgeHandler.class);
 
@@ -607,7 +608,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
     /**
      * Method to connect the WebSocket session.
      * Attempts to establish a WebSocket connection to the SysAP and handles authentication.
-     * 
+     *
      * @return true if the connection attempt is initiated successfully, false otherwise
      */
     public boolean connectWebsocketSession() {
@@ -1146,6 +1147,18 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
     @NonNullByDefault({})
     public void onWebSocketBinary(byte[] payload, int offset, int len) {
         logger.warn("Binary message received via websocket - It shall not happen with the free@home SysAp");
+    }
+
+    @Override
+    @NonNullByDefault({})
+    public void onWebSocketPong(ByteBuffer payload) {
+        lastReceivedTime = System.currentTimeMillis();
+        logger.debug("WebSocket pong received");
+    }
+
+    @Override
+    @NonNullByDefault({})
+    public void onWebSocketPing(ByteBuffer payload) {
     }
 
     /**
