@@ -19,8 +19,8 @@ import java.util.concurrent.ScheduledFuture;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.nanoleaf.internal.NanoleafException;
 import org.openhab.binding.nanoleaf.internal.NanoleafUnauthorizedException;
@@ -249,7 +249,7 @@ public class NanoleafPanelHandler extends BaseThingHandler implements NanoleafPa
                         HttpMethod.PUT);
                 String content = gson.toJson(effects);
                 logger.debug("sending effect command from panel {}: {}", getThing().getUID(), content);
-                setNewRenderedEffectRequest.content(new StringContentProvider(content), "application/json");
+                setNewRenderedEffectRequest.body(new StringRequestContent("application/json", content));
                 OpenAPIUtils.sendOpenAPIRequest(setNewRenderedEffectRequest);
             } else {
                 logger.warn("Couldn't set rendering effect as Bridge-Handler {} is null", bridge.getUID());

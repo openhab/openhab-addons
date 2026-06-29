@@ -29,11 +29,10 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
-import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.http.MimeTypes;
@@ -252,9 +251,8 @@ public class GeminiApiClient {
         while (true) {
             Request request = httpClient.newRequest(url).method(HttpMethod.POST)
                     .timeout((Objects.requireNonNullElse(timeoutSeconds, DEFAULT_REQUEST_TIMEOUT)), TimeUnit.SECONDS)
-                    .header(HttpHeader.CONTENT_TYPE, MimeTypes.Type.APPLICATION_JSON.asString())
-                    .header(HEADER_API_KEY, apiKey)
-                    .content(new StringContentProvider(queryJson, StandardCharsets.UTF_8));
+                    .headers(f -> f.add(HEADER_API_KEY, apiKey)).body(new StringRequestContent(
+                            MimeTypes.Type.APPLICATION_JSON.asString(), queryJson, StandardCharsets.UTF_8));
             if (logger.isDebugEnabled()) {
                 try {
                     String prettyJson = objectMapper.writerWithDefaultPrettyPrinter()
@@ -318,7 +316,7 @@ public class GeminiApiClient {
         String modelsUrl = GEMINI_API_BASE_URL + "/models";
         Request request = httpClient.newRequest(modelsUrl)
                 .timeout(Objects.requireNonNullElse(timeoutSeconds, DEFAULT_REQUEST_TIMEOUT), TimeUnit.SECONDS)
-                .method(HttpMethod.GET).header(HEADER_API_KEY, apiKey);
+                .method(HttpMethod.GET).headers(f -> f.add(HEADER_API_KEY, apiKey));
         logger.debug("Request to {}: (GET)", modelsUrl);
 
         try {

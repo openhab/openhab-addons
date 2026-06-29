@@ -21,10 +21,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.io.mcp.internal.tools.McpToolUtils;
 import org.slf4j.Logger;
@@ -32,6 +28,10 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Minimal OAuth 2.0 Dynamic Client Registration (RFC 7591) endpoint. openHAB core's
@@ -58,6 +58,7 @@ public class OAuthRegisterServlet extends HttpServlet {
     private final ObjectMapper jackson = McpToolUtils.jackson();
 
     @Override
+    @NonNullByDefault({})
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String contentType = request.getContentType();
         logger.debug("OAuth DCR: POST {} Content-Type={}", request.getRequestURI(), contentType);

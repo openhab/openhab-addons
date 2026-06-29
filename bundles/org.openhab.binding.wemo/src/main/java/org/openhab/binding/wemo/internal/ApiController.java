@@ -21,10 +21,10 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -102,8 +102,9 @@ public class ApiController {
     public String executeCall(String wemoURL, String soapHeader, String soapBody)
             throws InterruptedException, WemoException {
         Request request = httpClient.newRequest(wemoURL).timeout(HTTP_TIMEOUT_MS, TimeUnit.MILLISECONDS)
-                .header(HttpHeader.CONTENT_TYPE, HTTP_CALL_CONTENT_HEADER).header("SOAPACTION", soapHeader)
-                .method(HttpMethod.POST).content(new StringContentProvider(soapBody));
+                .headers(h -> h.add(HttpHeader.CONTENT_TYPE, HTTP_CALL_CONTENT_HEADER))
+                .headers(h -> h.add("SOAPACTION", soapHeader)).method(HttpMethod.POST)
+                .body(new StringRequestContent(soapBody));
 
         logger.trace("POST request for URL: '{}', header: '{}', request body: '{}'", wemoURL, soapHeader, soapBody);
 

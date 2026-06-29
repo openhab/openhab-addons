@@ -23,9 +23,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.openhab.binding.homematic.internal.common.AuthenticationHandler;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
@@ -219,10 +219,12 @@ public class CcuGateway extends AbstractHomematicGateway {
             logger.trace("TclRegaScript: {}", script);
         }
         try {
-            StringContentProvider content = new StringContentProvider(script, config.getEncoding());
-            ContentResponse response = authenticationHandler.updateAuthenticationInformation(httpClient
-                    .POST(config.getTclRegaUrl()).content(content).timeout(config.getTimeout(), TimeUnit.SECONDS)
-                    .header(HttpHeader.CONTENT_TYPE, "text/plain;charset=" + config.getEncoding())).send();
+            StringRequestContent content = new StringRequestContent(script, config.getEncoding());
+            ContentResponse response = authenticationHandler
+                    .updateAuthenticationInformation(httpClient.POST(config.getTclRegaUrl()).body(content)
+                            .timeout(config.getTimeout(), TimeUnit.SECONDS).headers(headers -> headers
+                                    .put(HttpHeader.CONTENT_TYPE, "text/plain;charset=" + config.getEncoding())))
+                    .send();
 
             String result = new String(response.getContent(), config.getEncoding());
             int lastPos = result.lastIndexOf("<xml><exec>");

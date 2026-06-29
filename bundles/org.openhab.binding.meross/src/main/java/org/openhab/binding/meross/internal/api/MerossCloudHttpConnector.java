@@ -27,10 +27,10 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.meross.internal.ContentAnonymizer;
 import org.openhab.binding.meross.internal.dto.CloudCredentials;
@@ -93,8 +93,8 @@ public class MerossCloudHttpConnector extends MerossHttpConnector {
             authorizationValue = "Basic";
         }
         Request request = httpClient.newRequest(URI.create(uri + path)).method(HttpMethod.POST)
-                .header("Authorization", authorizationValue)
-                .content(new StringContentProvider(content), "application/json")
+                .headers(h -> h.add("Authorization", authorizationValue))
+                .body(new StringRequestContent("application/json", content))
                 .timeout(CONNECTION_TIMEOUT_SECONDS, TimeUnit.SECONDS);
         try {
             return request.send();

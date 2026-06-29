@@ -21,13 +21,11 @@ import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
-import javax.ws.rs.core.UriBuilder;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -50,6 +48,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
+
+import jakarta.ws.rs.core.UriBuilder;
 
 /**
  * IAqualink HTTP Client
@@ -115,7 +115,7 @@ public class IAqualinkClient {
         String signIn = gson.toJson(new SignIn(apiKey, username, password)).toString();
         try {
             ContentResponse response = httpClient.newRequest(AUTH_URL).method(HttpMethod.POST)
-                    .content(new StringContentProvider(signIn), "application/json").send();
+                    .body(new StringRequestContent("application/json", signIn)).send();
             if (response.getStatus() == HttpStatus.UNAUTHORIZED_401) {
                 throw new NotAuthorizedException(response.getReason());
             }
@@ -363,12 +363,12 @@ public class IAqualinkClient {
     private String getRequest(URI uri) throws IOException, NotAuthorizedException {
         try {
             logger.trace("Trying {}", uri);
-            ContentResponse response = httpClient.newRequest(uri).method(HttpMethod.GET) //
-                    .agent(HEADER_AGENT) //
-                    .header(HttpHeader.ACCEPT_LANGUAGE, HEADER_ACCEPT_LANGUAGE) //
-                    .header(HttpHeader.ACCEPT_ENCODING, HEADER_ACCEPT_ENCODING) //
-                    .header(HttpHeader.ACCEPT, HEADER_ACCEPT) //
-                    .send();
+            ContentResponse response = httpClient.newRequest(uri).method(HttpMethod.GET).agent(HEADER_AGENT) //
+                    .headers(headers -> {
+                        headers.put(HttpHeader.ACCEPT_LANGUAGE, HEADER_ACCEPT_LANGUAGE);
+                        headers.put(HttpHeader.ACCEPT_ENCODING, HEADER_ACCEPT_ENCODING);
+                        headers.put(HttpHeader.ACCEPT, HEADER_ACCEPT);
+                    }).send();
             logger.trace("Response {}", response);
             if (response.getStatus() == HttpStatus.UNAUTHORIZED_401) {
                 throw new NotAuthorizedException(response.getReason());

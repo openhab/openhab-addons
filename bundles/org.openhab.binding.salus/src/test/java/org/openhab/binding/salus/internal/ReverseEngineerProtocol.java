@@ -35,7 +35,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http2.client.HTTP2Client;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.junit.jupiter.api.Test;
 import org.openhab.binding.salus.internal.aws.http.AwsSalusApi;
 import org.openhab.binding.salus.internal.cloud.rest.HttpSalusApi;
 import org.openhab.binding.salus.internal.rest.Device;
@@ -58,8 +57,7 @@ public class ReverseEngineerProtocol implements AutoCloseable {
             "monitorProperty");
     final BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
     final String baseUrl = "https://service-api.eu.premium.salusconnect.io";
-    final org.eclipse.jetty.client.HttpClient client = new org.eclipse.jetty.client.HttpClient(
-            new SslContextFactory.Client());
+    final org.eclipse.jetty.client.HttpClient client = new org.eclipse.jetty.client.HttpClient();
     final HttpClientFactory httpClientFactory = new HttpClientFactory() {
 
         @Override
@@ -229,14 +227,12 @@ public class ReverseEngineerProtocol implements AutoCloseable {
                 """);
     }
 
-    @Test
     void findDevices() throws AuthSalusApiException, SalusApiException {
         var devices = api.findDevices();
         LOGGER.info(String.format("Your devices (%s):", api.getClass().getSimpleName()));
         printDevices(devices);
     }
 
-    @Test
     void findDeviceProperties(String dsn) throws AuthSalusApiException, SalusApiException {
         var properties = api.findDeviceProperties(dsn);
         LOGGER.info(String.format("Properties for device %s (%s):", dsn, api.getClass().getSimpleName()));

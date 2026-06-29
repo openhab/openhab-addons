@@ -32,9 +32,9 @@ import javax.measure.spi.SystemOfUnits;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -206,8 +206,8 @@ public abstract class WeatherCompanyAbstractHandler extends BaseThingHandler {
         Request request = httpClient.newRequest(url);
         request.timeout(WEATHER_COMPANY_API_TIMEOUT_SECONDS, TimeUnit.SECONDS);
         request.method(HttpMethod.GET);
-        request.header(HttpHeader.ACCEPT, "application/json");
-        request.header(HttpHeader.ACCEPT_ENCODING, "gzip");
+        request.headers(h -> h.add(HttpHeader.ACCEPT, "application/json"));
+        request.headers(h -> h.add(HttpHeader.ACCEPT_ENCODING, "gzip"));
 
         String errorMsg;
         try {

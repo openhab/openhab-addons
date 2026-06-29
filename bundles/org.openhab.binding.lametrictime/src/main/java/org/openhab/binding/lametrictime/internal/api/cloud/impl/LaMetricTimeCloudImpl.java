@@ -14,10 +14,6 @@ package org.openhab.binding.lametrictime.internal.api.cloud.impl;
 
 import java.util.logging.Logger;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.core.MediaType;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lametrictime.internal.GsonProvider;
@@ -27,6 +23,10 @@ import org.openhab.binding.lametrictime.internal.api.cloud.dto.IconFilter;
 import org.openhab.binding.lametrictime.internal.api.cloud.dto.Icons;
 import org.openhab.binding.lametrictime.internal.api.common.impl.AbstractClient;
 import org.openhab.binding.lametrictime.internal.api.filter.LoggingFilter;
+
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.core.MediaType;
 
 /**
  * Implementation class for LaMetricTimeCloud interface.

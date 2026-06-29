@@ -14,10 +14,10 @@ package org.openhab.binding.avmfritz.internal.dto;
 
 import java.math.BigDecimal;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-
 import org.eclipse.jdt.annotation.Nullable;
+
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlElement;
 
 /**
  * See {@link DeviceListModel}.

@@ -21,9 +21,9 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.daikin.internal.api.BasicInfo;
@@ -270,7 +270,7 @@ public class DaikinWebTargets {
         }
         Request request = httpClient.newRequest(url).method(HttpMethod.GET).timeout(TIMEOUT_MS, TimeUnit.MILLISECONDS);
         if (uuid != null) {
-            request.header("X-Daikin-uuid", uuid);
+            request.headers(headers -> headers.add("X-Daikin-uuid", uuid));
             logger.trace("Header: X-Daikin-uuid: {}", uuid);
         }
         if (params != null) {

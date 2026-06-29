@@ -28,14 +28,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.ws.rs.core.HttpHeaders;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
@@ -50,6 +48,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+
+import jakarta.ws.rs.core.HttpHeaders;
 
 /**
  * {@link ShellyHttpClient} implements basic HTTP access
@@ -185,7 +185,8 @@ public class ShellyHttpClient {
                     }
                 }
                 if (!authHeader.isEmpty()) {
-                    request.header(HTTP_HEADER_AUTH, authHeader);
+                    final String finalAuthHeader = authHeader;
+                    request.headers(h -> h.add(HTTP_HEADER_AUTH, finalAuthHeader));
                 }
             }
             fillPostData(request, data);
@@ -278,12 +279,9 @@ public class ShellyHttpClient {
     private void fillPostData(Request request, String data) {
         boolean json = data.startsWith("{") || data.contains("\": {");
         String type = json ? CONTENT_TYPE_JSON : CONTENT_TYPE_FORM_URLENC;
-        request.header(HttpHeader.CONTENT_TYPE, type);
+        request.headers(h -> h.add(HttpHeader.CONTENT_TYPE, type));
         if (!data.isEmpty()) {
-            StringContentProvider postData;
-            postData = new StringContentProvider(type, data, StandardCharsets.UTF_8);
-            request.content(postData);
-            // request.header(HttpHeader.CONTENT_LENGTH, Long.toString(postData.getLength()));
+            request.body(new StringRequestContent(type, data));
         }
     }
 

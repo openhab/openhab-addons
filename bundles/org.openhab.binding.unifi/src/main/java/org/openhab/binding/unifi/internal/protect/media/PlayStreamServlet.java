@@ -18,17 +18,12 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
-import javax.servlet.Servlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.unifi.internal.protect.UnifiProtectBindingConstants;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -36,10 +31,15 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletName;
-import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletPattern;
+import org.osgi.service.servlet.whiteboard.propertytypes.HttpWhiteboardServletName;
+import org.osgi.service.servlet.whiteboard.propertytypes.HttpWhiteboardServletPattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.servlet.Servlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * WebRTCServlet acts as a SDP proxy for go2rtc.
@@ -141,9 +141,9 @@ public class PlayStreamServlet extends HttpServlet {
         // Forward to go2rtc as raw SDP
         final URI target = URI.create(go2rtcBase + "/api/webrtc?src=" + encodedId);
         logger.debug("Starting go2rtc stream: {}", target);
-        Request reqJetty = httpClient.newRequest(target).header("Content-Type", "application/sdp");
+        Request reqJetty = httpClient.newRequest(target).headers(h -> h.add("Content-Type", "application/sdp"));
         reqJetty.method("POST");
-        reqJetty.content(new StringContentProvider("application/sdp", sdpOffer, StandardCharsets.UTF_8));
+        reqJetty.body(new StringRequestContent("application/sdp", sdpOffer, StandardCharsets.UTF_8));
 
         try {
             ContentResponse r = reqJetty.send();

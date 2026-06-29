@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.mielecloud.internal.config.servlet;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mielecloud.internal.auth.OAuthException;
 import org.openhab.binding.mielecloud.internal.config.OAuthAuthorizationHandler;
@@ -21,6 +19,8 @@ import org.openhab.binding.mielecloud.internal.config.exception.NoOngoingAuthori
 import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Servlet processing the response by the Miele service after a login. This servlet is called as a result of a

@@ -32,10 +32,10 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.nanoleaf.internal.NanoleafBadRequestException;
@@ -944,7 +944,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler implements Nano
 
         Request setNewStateRequest = OpenAPIUtils.requestBuilder(httpClient, getControllerConfig(), API_SET_VALUE,
                 HttpMethod.PUT);
-        setNewStateRequest.content(new StringContentProvider(gson.toJson(stateObject)), "application/json");
+        setNewStateRequest.body(new StringRequestContent("application/json", gson.toJson(stateObject)));
         OpenAPIUtils.sendOpenAPIRequest(setNewStateRequest);
     }
 
@@ -956,7 +956,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler implements Nano
                     HttpMethod.PUT);
             String content = gson.toJson(effects);
             logger.debug("sending effect command from controller {}: {}", getThing().getUID(), content);
-            setNewEffectRequest.content(new StringContentProvider(content), "application/json");
+            setNewEffectRequest.body(new StringRequestContent("application/json", content));
             OpenAPIUtils.sendOpenAPIRequest(setNewEffectRequest);
         } else {
             logger.warn("Unhandled command type: {}", command.getClass().getName());
@@ -969,7 +969,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler implements Nano
             rhythm.setRhythmMode(((DecimalType) command).intValue());
             Request setNewRhythmRequest = OpenAPIUtils.requestBuilder(httpClient, getControllerConfig(),
                     API_RHYTHM_MODE, HttpMethod.PUT);
-            setNewRhythmRequest.content(new StringContentProvider(gson.toJson(rhythm)), "application/json");
+            setNewRhythmRequest.body(new StringRequestContent("application/json", gson.toJson(rhythm)));
             OpenAPIUtils.sendOpenAPIRequest(setNewRhythmRequest);
         } else {
             logger.warn("Unhandled command type: {}", command.getClass().getName());
@@ -1028,7 +1028,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler implements Nano
             NanoleafControllerConfig config = getControllerConfig();
             logger.debug("Sending Request from Panel for getColor()");
             Request setPanelUpdateRequest = OpenAPIUtils.requestBuilder(httpClient, config, API_EFFECT, HttpMethod.PUT);
-            setPanelUpdateRequest.content(new StringContentProvider(gson.toJson(effects)), "application/json");
+            setPanelUpdateRequest.body(new StringRequestContent("application/json", gson.toJson(effects)));
             ContentResponse panelData = OpenAPIUtils.sendOpenAPIRequest(setPanelUpdateRequest);
             // parse panel data
             parsePanelData(config, panelData);

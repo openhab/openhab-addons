@@ -19,9 +19,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -65,8 +65,8 @@ public class WorxApiHandler {
 
     private Request buildRequest(String url, String accessToken, HttpMethod method) {
         Request request = httpClient.newRequest(url).method(method);
-        request.header(HttpHeader.AUTHORIZATION, "Bearer %s".formatted(accessToken));
-        request.header(HttpHeader.CONTENT_TYPE, "application/json; utf-8");
+        request.headers(h -> h.add(HttpHeader.AUTHORIZATION, "Bearer %s".formatted(accessToken)));
+        request.headers(h -> h.add(HttpHeader.CONTENT_TYPE, "application/json; utf-8"));
         request.timeout(TIMEOUT_S, TimeUnit.SECONDS);
         return request;
     }

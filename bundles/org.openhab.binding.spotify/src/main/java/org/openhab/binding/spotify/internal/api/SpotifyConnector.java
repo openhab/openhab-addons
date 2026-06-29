@@ -22,9 +22,9 @@ import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.openhab.binding.spotify.internal.api.exception.SpotifyAuthorizationException;
 import org.openhab.binding.spotify.internal.api.exception.SpotifyException;
 import org.openhab.binding.spotify.internal.api.exception.SpotifyTokenExpiredException;
@@ -133,7 +133,7 @@ class SpotifyConnector {
             attempts++;
             try {
                 final boolean success = processResponse(
-                        requester.apply(httpClient).header(AUTHORIZATION_HEADER, authorization)
+                        requester.apply(httpClient).headers(h -> h.add(AUTHORIZATION_HEADER, authorization))
                                 .timeout(HTTP_CLIENT_TIMEOUT_SECONDS, TimeUnit.SECONDS).send());
 
                 if (!success) {

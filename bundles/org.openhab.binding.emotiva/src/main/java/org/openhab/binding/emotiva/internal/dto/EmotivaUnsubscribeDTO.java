@@ -16,9 +16,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
 import org.openhab.binding.emotiva.internal.protocol.EmotivaSubscriptionTags;
+
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * The EmotivaUnsubscriptionDTO message type. Use to remove subscription after registration via {

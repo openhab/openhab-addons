@@ -18,8 +18,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.mielecloud.internal.webservice.exception.MieleWebserviceInitializationException;
 import org.openhab.binding.mielecloud.internal.webservice.language.LanguageProvider;
@@ -57,8 +57,11 @@ public class RequestFactoryImpl implements RequestFactory {
     }
 
     private Request createRequestWithDefaultHeaders(String url, String accessToken) {
-        return httpClient.newRequest(url).header("Content-type", "application/json").header("Authorization",
-                "Bearer " + accessToken);
+        final String bearer = "Bearer " + accessToken;
+        Request request = httpClient.newRequest(url);
+        request.headers(h -> h.add("Content-type", "application/json"));
+        request.headers(h -> h.add("Authorization", bearer));
+        return request;
     }
 
     private Request decorateWithLanguageParameter(Request request) {
@@ -73,15 +76,18 @@ public class RequestFactoryImpl implements RequestFactory {
     private Request decorateWithAcceptLanguageHeader(Request request) {
         Optional<String> language = languageProvider.getLanguage();
         if (language.isPresent() && !language.get().isEmpty()) {
-            return request.header("Accept-Language", language.get());
+            String lang = language.get();
+            request.headers(h -> h.add("Accept-Language", lang));
+            return request;
         } else {
             return request;
         }
     }
 
     private Request createDefaultHttpRequest(String url, String accessToken, long timeout) {
-        return decorateWithLanguageParameter(createRequestWithDefaultHeaders(url, accessToken)).header("Accept", "*/*")
-                .timeout(timeout, REQUEST_TIMEOUT_UNIT);
+        Request request = decorateWithLanguageParameter(createRequestWithDefaultHeaders(url, accessToken));
+        request.headers(h -> h.add("Accept", "*/*"));
+        return request.timeout(timeout, REQUEST_TIMEOUT_UNIT);
     }
 
     @Override
@@ -92,7 +98,7 @@ public class RequestFactoryImpl implements RequestFactory {
     @Override
     public Request createPutRequest(String url, String accessToken, String jsonContent) {
         return createDefaultHttpRequest(url, accessToken, EXTENDED_REQUEST_TIMEOUT).method(HttpMethod.PUT)
-                .content(new StringContentProvider("application/json", jsonContent, StandardCharsets.UTF_8));
+                .body(new StringRequestContent("application/json", jsonContent, StandardCharsets.UTF_8));
     }
 
     @Override
@@ -102,8 +108,9 @@ public class RequestFactoryImpl implements RequestFactory {
 
     @Override
     public Request createSseRequest(String url, String accessToken) {
-        return decorateWithAcceptLanguageHeader(createRequestWithDefaultHeaders(url, accessToken)).header("Accept",
-                "text/event-stream");
+        Request request = decorateWithAcceptLanguageHeader(createRequestWithDefaultHeaders(url, accessToken));
+        request.headers(h -> h.add("Accept", "text/event-stream"));
+        return request;
     }
 
     @Override

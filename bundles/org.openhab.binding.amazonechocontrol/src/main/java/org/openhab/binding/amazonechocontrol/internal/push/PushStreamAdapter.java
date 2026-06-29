@@ -16,6 +16,7 @@ import static org.eclipse.jetty.http.HttpHeader.CONTENT_TYPE;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
+import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Objects;
 
@@ -23,7 +24,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http2.api.Session;
 import org.eclipse.jetty.http2.api.Stream;
-import org.eclipse.jetty.http2.frames.DataFrame;
 import org.eclipse.jetty.http2.frames.HeadersFrame;
 import org.eclipse.jetty.http2.frames.PingFrame;
 import org.eclipse.jetty.util.Callback;
@@ -40,7 +40,7 @@ import com.google.gson.Gson;
  * @author Jan N. Klug - Initial contribution
  */
 @NonNullByDefault
-public class PushStreamAdapter extends Stream.Listener.Adapter {
+public class PushStreamAdapter implements Stream.Listener {
     private final Logger logger = LoggerFactory.getLogger(PushStreamAdapter.class);
     private final Gson gson;
     private final Session session;
@@ -55,7 +55,7 @@ public class PushStreamAdapter extends Stream.Listener.Adapter {
 
     @Override
     public void onHeaders(@NonNullByDefault({}) Stream stream, @NonNullByDefault({}) HeadersFrame frame) {
-        HttpFields headers = frame.getMetaData().getFields();
+        HttpFields headers = frame.getMetaData().getHttpFields();
         if (logger.isTraceEnabled()) {
             logger.trace("Received headers: {}", HttpUtil.logToString(headers));
         }
@@ -65,15 +65,28 @@ public class PushStreamAdapter extends Stream.Listener.Adapter {
             return;
         }
         int boundaryStart = contentType.indexOf("boundary=");
+        if (boundaryStart < 0) {
+            logger.warn("Headers of HTTP/2 stream don't contain a boundary: {}", contentType);
+            return;
+        }
         int boundaryEnd = contentType.indexOf(";", boundaryStart);
+        if (boundaryEnd < 0) {
+            boundaryEnd = contentType.length();
+        }
         boundary = contentType.substring(boundaryStart + 9, boundaryEnd);
     }
 
     @Override
-    public void onData(@NonNullByDefault({}) Stream stream, @NonNullByDefault({}) DataFrame frame,
-            @NonNullByDefault({}) Callback callback) {
-        byte[] contentBuffer = new byte[frame.remaining()];
-        frame.getData().get(contentBuffer);
+    public void onDataAvailable(@NonNullByDefault({}) Stream stream) {
+        Stream.Data data = stream.readData();
+        if (data == null) {
+            stream.demand();
+            return;
+        }
+
+        ByteBuffer dataBuffer = data.frame().getByteBuffer();
+        byte[] contentBuffer = new byte[dataBuffer.remaining()];
+        dataBuffer.get(contentBuffer);
         String contentString = new String(contentBuffer);
         logger.trace("Received raw data {}", contentString);
 
@@ -108,6 +121,9 @@ public class PushStreamAdapter extends Stream.Listener.Adapter {
             }
         } catch (RuntimeException e) {
             logger.warn("Exception while processing message", e);
+        } finally {
+            data.release();
+            stream.demand();
         }
     }
 

@@ -17,7 +17,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.net.URI;
-import java.util.concurrent.Future;
+import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
@@ -44,11 +44,10 @@ public class LivisiWebSocketTest {
     public void before() throws Exception {
         sessionMock = mock(Session.class);
 
-        Future<Session> futureMock = mock(Future.class);
-        when(futureMock.get()).thenReturn(sessionMock);
+        CompletableFuture<Session> futureMock = CompletableFuture.completedFuture(sessionMock);
 
         webSocketClientMock = mock(WebSocketClient.class);
-        when(webSocketClientMock.connect(any(), any())).thenReturn(futureMock);
+        when(webSocketClientMock.connect(any(Object.class), any(URI.class))).thenReturn(futureMock);
 
         HttpClient httpClientMock = mock(HttpClient.class);
 
