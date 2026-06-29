@@ -569,13 +569,13 @@ public class ShellyChannelDefinitions {
     public static Map<String, Channel> createMeterChannels(Thing thing, final ShellyDeviceProfile profile,
             final ShellySettingsMeter meter, String group) {
         Map<String, Channel> newChannels = new LinkedHashMap<>();
-        // Gen2: create all channels unconditionally — first WebSocket push may arrive before cover:0 data,
-        // leaving meter fields null even though the device definitely has a meter
-        boolean gen2 = profile.isGen2;
         boolean hasCounter = meter.counters != null && meter.counters.length > 0 && meter.counters[0] != null;
-        addChannel(thing, newChannels, gen2 || meter.power != null, group, CHANNEL_METER_CURRENTWATTS);
-        addChannel(thing, newChannels, gen2 || meter.total != null, group, CHANNEL_METER_TOTALKWH);
-        addChannel(thing, newChannels, gen2 || hasCounter, group, CHANNEL_METER_LASTMIN1);
+        addChannel(thing, newChannels, meter.power != null, group, CHANNEL_METER_CURRENTWATTS);
+        addChannel(thing, newChannels, meter.total != null, group, CHANNEL_METER_TOTALKWH);
+        // lastPower1 (W, deprecated) and lastEnergy1 (Wh) are always created together. Both channels
+        // receive updates so existing items linked to lastPower1 keep working without re-discovery.
+        addChannel(thing, newChannels, hasCounter, group, CHANNEL_METER_LASTMIN1);
+        addChannel(thing, newChannels, hasCounter, group, CHANNEL_METER_LASTENERGY1);
         addChannel(thing, newChannels, !newChannels.isEmpty(), group, CHANNEL_LAST_UPDATE);
         return newChannels;
     }
@@ -606,9 +606,11 @@ public class ShellyChannelDefinitions {
                 CHANNEL_EMETER_APPARENT);
         addChannel(thing, newChannels, emeter.frequency != null, group, CHANNEL_EMETER_FREQUENCY);
         addChannel(thing, newChannels, always || emeter.pf != null, group, CHANNEL_EMETER_PFACTOR);
-        // Gen2 relay+PM devices (Plus Plug S, Plus 1PM, etc.) populate aenergy.by_minute[0] → lastMinuteWh.
-        // Non-PM Gen2 relays (e.g. Plus 1) omit aenergy entirely, so lastMinuteWh stays null — no channel.
-        addChannel(thing, newChannels, emeter.lastMinuteWh != null, group, CHANNEL_METER_LASTMIN1);
+        // lastPower1 (W, deprecated) and lastEnergy1 (Wh) are always created together when the device
+        // reports last-minute energy. Non-PM Gen2 relays (e.g. Plus 1) omit aenergy entirely — both absent.
+        boolean hasLastMinute = emeter.lastMinuteWh != null;
+        addChannel(thing, newChannels, hasLastMinute, group, CHANNEL_METER_LASTMIN1);
+        addChannel(thing, newChannels, hasLastMinute, group, CHANNEL_METER_LASTENERGY1);
         // Only add lastUpdate if this device actually has meter channels — guards against non-PM Gen2 relay
         // devices (e.g. Plus 1) where isEMeter=true but all emeter fields are permanently null.
         addChannel(thing, newChannels, !newChannels.isEmpty(), group, CHANNEL_LAST_UPDATE);
