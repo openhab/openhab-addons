@@ -36,7 +36,6 @@ import org.openhab.binding.hue.internal.api.dto.clip2.TimedEffects;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ActionType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.EffectType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ResourceType;
-import org.openhab.binding.hue.internal.exceptions.CriticalFieldMissing;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.PercentType;
@@ -93,10 +92,8 @@ public class Setters {
      * @param source another resource containing the MirekSchema.
      *
      * @return the target resource.
-     * @throws CriticalFieldMissing
      */
-    public static Resource setColorTemperatureAbsolute(Resource target, Command command, @Nullable Resource source)
-            throws CriticalFieldMissing {
+    public static Resource setColorTemperatureAbsolute(Resource target, Command command, @Nullable Resource source) {
         QuantityType<?> mirekQuantity = null;
         if (command instanceof QuantityType<?> genericQuantity) {
             mirekQuantity = genericQuantity.toInvertibleUnit(Units.MIRED);
@@ -127,10 +124,8 @@ public class Setters {
      * @param source another resource containing the MirekSchema.
      *
      * @return the target resource.
-     * @throws CriticalFieldMissing
      */
-    public static Resource setColorTemperaturePercent(Resource target, Command command, @Nullable Resource source)
-            throws CriticalFieldMissing {
+    public static Resource setColorTemperaturePercent(Resource target, Command command, @Nullable Resource source) {
         if (command instanceof PercentType mirek) {
             MirekSchema schema = target.getMirekSchema();
             schema = Objects.nonNull(schema) ? schema : Objects.nonNull(source) ? source.getMirekSchema() : null;
@@ -156,10 +151,8 @@ public class Setters {
      * @param source another resource containing the color Gamut.
      *
      * @return the target resource.
-     * @throws CriticalFieldMissing
      */
-    public static Resource setColorXy(Resource target, Command command, @Nullable Resource source)
-            throws CriticalFieldMissing {
+    public static Resource setColorXy(Resource target, Command command, @Nullable Resource source) {
         if (command instanceof HSBType hsb) {
             hsb = new HSBType(hsb.getHue(), hsb.getSaturation(), PercentType.HUNDRED);
             ColorXy color = target.getColorXy();
@@ -247,8 +240,9 @@ public class Setters {
 
         // minimum dimming level
         if (Objects.nonNull(targetDimming) && Objects.nonNull(sourceDimming)) {
+            Double targetMinDimLevel = targetDimming.getMinimumDimmingLevel();
             Double sourceMinDimLevel = sourceDimming.getMinimumDimmingLevel();
-            if (Objects.nonNull(sourceMinDimLevel)) {
+            if (Objects.isNull(targetMinDimLevel) && Objects.nonNull(sourceMinDimLevel)) {
                 targetDimming.setMinimumDimmingLevel(sourceMinDimLevel);
             }
         }
@@ -263,8 +257,9 @@ public class Setters {
 
         // color gamut
         if (Objects.nonNull(sourceColor) && Objects.nonNull(targetColor)) {
+            Gamut targetGamut = targetColor.getGamut();
             Gamut sourceGamut = sourceColor.getGamut();
-            if (Objects.nonNull(sourceGamut)) {
+            if (Objects.isNull(targetGamut) && Objects.nonNull(sourceGamut)) {
                 targetColor.setGamut(sourceGamut);
             }
         }
@@ -279,8 +274,9 @@ public class Setters {
 
         // mirek schema
         if (Objects.nonNull(targetColorTemp) && Objects.nonNull(sourceColorTemp)) {
+            MirekSchema targetMirekSchema = targetColorTemp.getMirekSchema();
             MirekSchema sourceMirekSchema = sourceColorTemp.getMirekSchema();
-            if (Objects.nonNull(sourceMirekSchema)) {
+            if (Objects.isNull(targetMirekSchema) && Objects.nonNull(sourceMirekSchema)) {
                 targetColorTemp.setMirekSchema(sourceMirekSchema);
             }
         }
