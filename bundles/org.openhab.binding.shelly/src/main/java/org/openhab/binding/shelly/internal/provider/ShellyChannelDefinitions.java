@@ -598,8 +598,11 @@ public class ShellyChannelDefinitions {
         addChannel(thing, newChannels, always || profile.isEM50 || emeter.total != null, group, CHANNEL_METER_TOTALKWH);
         addChannel(thing, newChannels, always || profile.isEM50 || emeter.totalReturned != null, group,
                 CHANNEL_EMETER_TOTALRET);
-        addChannel(thing, newChannels, (always && !profile.isGen2) || emeter.reactive != null, group,
-                CHANNEL_EMETER_REACTWATTS);
+        // reactiveWatts (deprecated, VAR) and reactivePower (VAR) are always created together.
+        // Both use channel-type meterReactive (VAR); the dual-write posts the same value to both.
+        boolean hasReactive = (always && !profile.isGen2) || emeter.reactive != null;
+        addChannel(thing, newChannels, hasReactive, group, CHANNEL_EMETER_REACTWATTS);
+        addChannel(thing, newChannels, hasReactive, group, CHANNEL_EMETER_REACTPOWER);
         addChannel(thing, newChannels, always || emeter.voltage != null, group, CHANNEL_EMETER_VOLTAGE);
         addChannel(thing, newChannels, always || emeter.current != null, group, CHANNEL_EMETER_CURRENT);
         addChannel(thing, newChannels, (always && profile.isGen2) || emeter.apparentPower != null, group,
