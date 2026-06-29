@@ -353,6 +353,18 @@ public class ShellyComponents {
                 meterUpdated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_PFACTOR,
                         getDecimal(pf != null ? pf : 0.0));
 
+                if (emeter.lastMinuteWh != null) {
+                    // Gen2 aenergy.by_minute[0] is Wh consumed during the previous complete minute.
+                    // OLD channel lastPower1 (CHANNEL_METER_LASTMIN1): average power = Wh * 60 → W, kept for
+                    // backward compatibility. The dual-write via getReplacementChannelId() copies this value
+                    // to lastEnergy1 too, but the explicit write below immediately overrides it with the
+                    // correct Wh value (same pattern as updateSimpleMeters for Gen1).
+                    thingHandler.updateChannel(groupName, CHANNEL_METER_LASTMIN1,
+                            toQuantityType(emeter.lastMinuteWh * 60.0, DIGITS_WATT, Units.WATT));
+                    meterUpdated |= thingHandler.updateChannel(groupName, CHANNEL_METER_LASTENERGY1,
+                            toQuantityType(emeter.lastMinuteWh, DIGITS_KWH, Units.WATT_HOUR));
+                }
+
                 accumulatedWatts += getDouble(emeter.power);
                 if (meterUpdated) {
                     thingHandler.updateChannel(groupName, CHANNEL_LAST_UPDATE, getTimestamp());

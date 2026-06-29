@@ -606,6 +606,9 @@ public class ShellyChannelDefinitions {
                 CHANNEL_EMETER_APPARENT);
         addChannel(thing, newChannels, emeter.frequency != null, group, CHANNEL_EMETER_FREQUENCY);
         addChannel(thing, newChannels, always || emeter.pf != null, group, CHANNEL_EMETER_PFACTOR);
+        // Gen2 relay+PM devices (Plus Plug S, Plus 1PM, etc.) populate aenergy.by_minute[0] → lastMinuteWh.
+        // Non-PM Gen2 relays (e.g. Plus 1) omit aenergy entirely, so lastMinuteWh stays null — no channel.
+        addChannel(thing, newChannels, emeter.lastMinuteWh != null, group, CHANNEL_METER_LASTMIN1);
         // Only add lastUpdate if this device actually has meter channels — guards against non-PM Gen2 relay
         // devices (e.g. Plus 1) where isEMeter=true but all emeter fields are permanently null.
         addChannel(thing, newChannels, !newChannels.isEmpty(), group, CHANNEL_LAST_UPDATE);

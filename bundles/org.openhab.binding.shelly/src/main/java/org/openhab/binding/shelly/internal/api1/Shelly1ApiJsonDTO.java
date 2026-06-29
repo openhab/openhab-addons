@@ -567,6 +567,9 @@ public class Shelly1ApiJsonDTO {
         public Double pf; // 3EM
         public Double current; // 3EM
         public Double frequency; // Gen4
+        // Gen2 relay+PM only: energy consumed during the previous complete minute (Wh)
+        // Populated from aenergy.by_minute[0] in Shelly2ApiClient.fillRelayStatus()
+        public @Nullable Double lastMinuteWh;
     }
 
     public static class ShellyEMNCurrentSettings {

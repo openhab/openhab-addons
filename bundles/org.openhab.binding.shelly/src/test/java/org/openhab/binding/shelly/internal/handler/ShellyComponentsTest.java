@@ -543,13 +543,8 @@ public class ShellyComponentsTest {
         ShellyThingInterface handler = mockHandler(profile);
         ShellyComponents.updateMeters(handler, status);
 
-        ArgumentCaptor<org.openhab.core.types.State> captor = ArgumentCaptor
-                .forClass(org.openhab.core.types.State.class);
-        verify(handler, atLeastOnce()).updateChannel(eq(CHANNEL_GROUP_DEV_STATUS), eq(CHANNEL_DEVST_ACCUTOTAL),
-                captor.capture());
-        List<org.openhab.core.types.State> values = captor.getAllValues();
-        QuantityType<?> last = (QuantityType<?>) values.get(values.size() - 1);
-        assertEquals(8.1, last.doubleValue(), 0.001);
+        assertEquals(8.1, lastQuantity(handler, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCUTOTAL).doubleValue(),
+                0.001);
     }
 
     @Test
@@ -561,13 +556,8 @@ public class ShellyComponentsTest {
         ShellyThingInterface handler = mockHandler(profile);
         ShellyComponents.updateMeters(handler, status);
 
-        ArgumentCaptor<org.openhab.core.types.State> captor = ArgumentCaptor
-                .forClass(org.openhab.core.types.State.class);
-        verify(handler, atLeastOnce()).updateChannel(eq(CHANNEL_GROUP_DEV_STATUS), eq(CHANNEL_DEVST_ACCUTOTAL),
-                captor.capture());
-        List<org.openhab.core.types.State> values = captor.getAllValues();
-        QuantityType<?> last = (QuantityType<?>) values.get(values.size() - 1);
-        assertEquals(8.0, last.doubleValue(), 0.001);
+        assertEquals(8.0, lastQuantity(handler, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCUTOTAL).doubleValue(),
+                0.001);
     }
 
     @Test
@@ -594,13 +584,8 @@ public class ShellyComponentsTest {
         ShellyThingInterface handler = mockHandler(profile);
         ShellyComponents.updateMeters(handler, status);
 
-        ArgumentCaptor<org.openhab.core.types.State> captor = ArgumentCaptor
-                .forClass(org.openhab.core.types.State.class);
-        verify(handler, atLeastOnce()).updateChannel(eq(CHANNEL_GROUP_DEV_STATUS), eq(CHANNEL_DEVST_ACCUTOTAL),
-                captor.capture());
-        List<org.openhab.core.types.State> values = captor.getAllValues();
-        QuantityType<?> last = (QuantityType<?>) values.get(values.size() - 1);
-        assertEquals(60.0, last.doubleValue(), 0.001);
+        assertEquals(60.0, lastQuantity(handler, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCUTOTAL).doubleValue(),
+                0.001);
     }
 
     @Test
@@ -646,13 +631,8 @@ public class ShellyComponentsTest {
 
         ShellyComponents.updateMeters(handler, status);
 
-        ArgumentCaptor<org.openhab.core.types.State> captor = ArgumentCaptor
-                .forClass(org.openhab.core.types.State.class);
-        verify(handler, atLeastOnce()).updateChannel(eq(CHANNEL_GROUP_DEV_STATUS), eq(CHANNEL_DEVST_ACCURETURNED),
-                captor.capture());
-        List<org.openhab.core.types.State> values = captor.getAllValues();
-        QuantityType<?> last = (QuantityType<?>) values.get(values.size() - 1);
-        assertEquals(5.0, last.doubleValue(), 0.001);
+        assertEquals(5.0, lastQuantity(handler, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCURETURNED).doubleValue(),
+                0.001);
     }
 
     @Test
@@ -698,12 +678,8 @@ public class ShellyComponentsTest {
         ShellyThingInterface handler = mockHandler(profile);
         ShellyComponents.updateMeters(handler, status);
 
-        ArgumentCaptor<State> captor = ArgumentCaptor.forClass(State.class);
-        verify(handler, atLeastOnce()).updateChannel(eq(CHANNEL_GROUP_DEV_STATUS), eq(CHANNEL_DEVST_ACCURETURNED),
-                captor.capture());
-        List<State> values = captor.getAllValues();
-        QuantityType<?> last = (QuantityType<?>) values.get(values.size() - 1);
-        assertEquals(7.0, last.doubleValue(), 0.001); // 7000 / 1000 = 7.0 kWh, not the 6.0 per-phase sum
+        assertEquals(7.0, lastQuantity(handler, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCURETURNED).doubleValue(),
+                0.001);
     }
 
     @Test
@@ -731,13 +707,8 @@ public class ShellyComponentsTest {
         verify(handler, atLeastOnce()).updateChannel(eq("meter2"), eq(CHANNEL_EMETER_APPARENT), any(State.class));
         verify(handler, atLeastOnce()).updateChannel(eq("meter3"), eq(CHANNEL_EMETER_APPARENT), any(State.class));
 
-        ArgumentCaptor<org.openhab.core.types.State> captor = ArgumentCaptor
-                .forClass(org.openhab.core.types.State.class);
-        verify(handler, atLeastOnce()).updateChannel(eq(CHANNEL_GROUP_DEV_STATUS), eq(CHANNEL_DEVST_ACCUAPPARENT),
-                captor.capture());
-        List<org.openhab.core.types.State> values = captor.getAllValues();
-        QuantityType<?> last = (QuantityType<?>) values.get(values.size() - 1);
-        assertEquals(3000.0, last.doubleValue(), 0.1);
+        assertEquals(3000.0, lastQuantity(handler, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCUAPPARENT).doubleValue(),
+                0.1);
     }
 
     @Test
@@ -749,13 +720,8 @@ public class ShellyComponentsTest {
         ShellyThingInterface handler = mockHandler(profile);
         ShellyComponents.updateMeters(handler, status);
 
-        ArgumentCaptor<org.openhab.core.types.State> captor = ArgumentCaptor
-                .forClass(org.openhab.core.types.State.class);
-        verify(handler, atLeastOnce()).updateChannel(eq(CHANNEL_GROUP_DEV_STATUS), eq(CHANNEL_DEVST_ACCUWATTS),
-                captor.capture());
-        List<org.openhab.core.types.State> values = captor.getAllValues();
-        QuantityType<?> last = (QuantityType<?>) values.get(values.size() - 1);
-        assertEquals(1000.0, last.doubleValue(), 0.1);
+        assertEquals(1000.0, lastQuantity(handler, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCUWATTS).doubleValue(),
+                0.1);
     }
 
     @Test
@@ -767,13 +733,8 @@ public class ShellyComponentsTest {
         ShellyThingInterface handler = mockHandler(profile);
         ShellyComponents.updateMeters(handler, status);
 
-        ArgumentCaptor<org.openhab.core.types.State> captor = ArgumentCaptor
-                .forClass(org.openhab.core.types.State.class);
-        verify(handler, atLeastOnce()).updateChannel(eq(CHANNEL_GROUP_DEV_STATUS), eq(CHANNEL_DEVST_ACCUWATTS),
-                captor.capture());
-        List<org.openhab.core.types.State> values = captor.getAllValues();
-        QuantityType<?> last = (QuantityType<?>) values.get(values.size() - 1);
-        assertEquals(1050.0, last.doubleValue(), 0.1);
+        assertEquals(1050.0, lastQuantity(handler, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCUWATTS).doubleValue(),
+                0.1);
     }
 
     @Test
@@ -796,12 +757,8 @@ public class ShellyComponentsTest {
         verify(handler, atLeastOnce()).updateChannel(eq("meter2"), eq(CHANNEL_METER_CURRENTWATTS), any(State.class));
         verify(handler, never()).updateChannel(eq("meter3"), eq(CHANNEL_METER_CURRENTWATTS), any(State.class));
 
-        ArgumentCaptor<org.openhab.core.types.State> captor = ArgumentCaptor
-                .forClass(org.openhab.core.types.State.class);
-        verify(handler, atLeastOnce()).updateChannel(eq(CHANNEL_GROUP_DEV_STATUS), eq(CHANNEL_DEVST_ACCUWATTS),
-                captor.capture());
-        QuantityType<?> accuWatts = (QuantityType<?>) captor.getAllValues().get(captor.getAllValues().size() - 1);
-        assertEquals(3000.0, accuWatts.doubleValue(), 0.1); // A+B only, C had null power
+        assertEquals(3000.0, lastQuantity(handler, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCUWATTS).doubleValue(),
+                0.1);
     }
 
     @Test
@@ -839,6 +796,40 @@ public class ShellyComponentsTest {
         ShellySettingsEMeter em = emeter(power);
         em.total = total;
         return em;
+    }
+
+    private static ShellySettingsEMeter emeterWithLastMinute(double power, double lastMinuteWh) {
+        ShellySettingsEMeter em = emeter(power);
+        em.lastMinuteWh = lastMinuteWh;
+        return em;
+    }
+
+    @Test
+    void gen2RelayPmLastMinuteChannelsBothWrittenWithCorrectUnits() {
+        // lastMinuteWh=3.0 → lastPower1 (LASTMIN1)=180.0 W (Wh×60), lastEnergy1=3.0 Wh
+        ShellyDeviceProfile profile = emeterProfile(false, 1);
+        ShellyThingInterface handler = mockHandler(profile);
+        ShellyComponents.updateMeters(handler, statusWithEMeters(emeterWithLastMinute(50.0, 3.0)));
+
+        assertEquals(180.0, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_LASTMIN1).doubleValue(), 0.1);
+        assertEquals(3.0, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_LASTENERGY1).doubleValue(), 0.001);
+    }
+
+    @Test
+    void gen2EMetersNullLastMinuteWhSkipsLastMinuteChannels() {
+        ShellyDeviceProfile profile = emeterProfile(false, 1);
+        ShellyThingInterface handler = mockHandler(profile);
+        ShellyComponents.updateMeters(handler, statusWithEMeters(emeter(50.0)));
+
+        verify(handler, never()).updateChannel(anyString(), eq(CHANNEL_METER_LASTMIN1), any(State.class));
+        verify(handler, never()).updateChannel(anyString(), eq(CHANNEL_METER_LASTENERGY1), any(State.class));
+    }
+
+    private static QuantityType<?> lastQuantity(ShellyThingInterface handler, String group, String channel) {
+        ArgumentCaptor<State> captor = ArgumentCaptor.forClass(State.class);
+        verify(handler, atLeastOnce()).updateChannel(eq(group), eq(channel), captor.capture());
+        List<State> vals = captor.getAllValues();
+        return (QuantityType<?>) vals.get(vals.size() - 1);
     }
 
     private static ShellyDeviceProfile pro3emProfile() {

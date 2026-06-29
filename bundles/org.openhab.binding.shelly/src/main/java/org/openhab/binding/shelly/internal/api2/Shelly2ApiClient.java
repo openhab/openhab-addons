@@ -636,6 +636,10 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
                 // aenergy.total is in Wh (accumulated energy since last reset)
                 emeter.total = aeTotal;
             }
+            Double[] byMinute = aenergy.byMinute;
+            if (byMinute != null && byMinute.length > 0 && byMinute[0] != null) {
+                emeter.lastMinuteWh = byMinute[0];
+            }
         }
         if (rs.voltage != null) {
             emeter.voltage = rs.voltage;
@@ -753,7 +757,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             return;
         }
         emeter.isValid = emeter.current != null || emeter.voltage != null || emeter.power != null
-                || emeter.total != null;
+                || emeter.total != null || emeter.lastMinuteWh != null;
         status.emeters.set(id, emeter);
     }
 
@@ -1006,6 +1010,10 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         }
         if (cs.aenergy != null) {
             emeter.total = getDouble(cs.aenergy.total);
+            Double[] byMinute = cs.aenergy.byMinute;
+            if (byMinute != null && byMinute.length > 0 && byMinute[0] != null) {
+                emeter.lastMinuteWh = byMinute[0];
+            }
         }
         if (cs.voltage != null) {
             emeter.voltage = cs.voltage;
