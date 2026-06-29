@@ -176,6 +176,7 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_WAKEUP, "sensorWakeup", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ACCUWATTS, "meterAccuWatts", ITEMT_POWER))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ACCUMULATEDPOWER, "accumulatedPower", ITEMT_POWER))
+                .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ACCUTOTAL, "meterAccuTotal", ITEMT_ENERGY))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_TOTALENERGY, "totalEnergy", ITEMT_ENERGY))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ACCURETURNED, "meterAccuReturned", ITEMT_ENERGY))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ACCURETURNEDENERGY, "meterAccuReturned",
@@ -252,6 +253,7 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_EMETER_TOTALRET, "meterReturned", ITEMT_ENERGY))
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_EMETER_RETURNEDENERGY, "meterReturnedEnergy",
                         ITEMT_ENERGY))
+                .add(new ShellyChannel(m, CHGR_METER, CHANNEL_EMETER_REACTWATTS, "meterReactive", ITEMT_POWER))
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_EMETER_REACTPOWER, "meterReactive", ITEMT_POWER))
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_EMETER_APPARENT, "meterApparentPower", ITEMT_POWER))
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_EMETER_VOLTAGE, "meterVoltage", ITEMT_VOLT))
@@ -394,13 +396,13 @@ public class ShellyChannelDefinitions {
 
         // Any multi-meter device (relay or pure meter like ProEM50) gets device-level accumulated channels
         boolean accuChannel = profile.numMeters > 1 && !profile.isRoller && !profile.isRGBW2;
-        addChannel(thing, add, accuChannel, CHGR_DEVST, CHANNEL_DEVST_ACCUMULATEDPOWER);
-        addChannel(thing, add, accuChannel, CHGR_DEVST, CHANNEL_DEVST_TOTALENERGY);
+        addChannel(thing, add, accuChannel, CHGR_DEVST, CHANNEL_DEVST_ACCUWATTS);
+        addChannel(thing, add, accuChannel, CHGR_DEVST, CHANNEL_DEVST_ACCUTOTAL);
         // Gate returned/apparent totals on the device actually being a dedicated EMeter (3EM or EM50).
         // Relay-PM devices (2PM, Plus 1PM) have status.emeters but never populate totalReturned or
         // apparentPower, so these channels would be phantom (created but permanently UNDEF).
         boolean hasReturnedEnergy = accuChannel && (profile.is3EM || profile.isEM50);
-        addChannel(thing, add, hasReturnedEnergy, CHGR_DEVST, CHANNEL_DEVST_ACCURETURNEDENERGY);
+        addChannel(thing, add, hasReturnedEnergy, CHGR_DEVST, CHANNEL_DEVST_ACCURETURNED);
         addChannel(thing, add, hasReturnedEnergy, CHGR_DEVST, CHANNEL_DEVST_ACCUAPPARENT);
         addChannel(thing, add, status.voltage != null || profile.settings.supplyVoltage != null, CHGR_DEVST,
                 CHANNEL_DEVST_VOLTAGE);
@@ -573,7 +575,7 @@ public class ShellyChannelDefinitions {
         boolean hasCounter = meter.counters != null && meter.counters.length > 0 && meter.counters[0] != null;
         addChannel(thing, newChannels, gen2 || meter.power != null, group, CHANNEL_METER_CURRENTWATTS);
         addChannel(thing, newChannels, gen2 || meter.total != null, group, CHANNEL_METER_TOTALKWH);
-        addChannel(thing, newChannels, gen2 || hasCounter, group, CHANNEL_METER_LASTENERGY1);
+        addChannel(thing, newChannels, gen2 || hasCounter, group, CHANNEL_METER_LASTMIN1);
         addChannel(thing, newChannels, !newChannels.isEmpty(), group, CHANNEL_LAST_UPDATE);
         return newChannels;
     }
@@ -597,7 +599,7 @@ public class ShellyChannelDefinitions {
         addChannel(thing, newChannels, always || profile.isEM50 || emeter.totalReturned != null, group,
                 CHANNEL_EMETER_TOTALRET);
         addChannel(thing, newChannels, (always && !profile.isGen2) || emeter.reactive != null, group,
-                CHANNEL_EMETER_REACTPOWER);
+                CHANNEL_EMETER_REACTWATTS);
         addChannel(thing, newChannels, always || emeter.voltage != null, group, CHANNEL_EMETER_VOLTAGE);
         addChannel(thing, newChannels, always || emeter.current != null, group, CHANNEL_EMETER_CURRENT);
         addChannel(thing, newChannels, (always && profile.isGen2) || emeter.apparentPower != null, group,
@@ -619,7 +621,7 @@ public class ShellyChannelDefinitions {
         addChannel(thing, newChannels, status.mismatch != null, group, CHANNEL_NMETER_MISMATCH);
         // mismatchThreshold only available from Gen1 settings; absent on Gen2
         addChannel(thing, newChannels, settings != null && settings.mismatchThreshold != null, group,
-                CHANNEL_NMETER_THRESHOLD);
+                CHANNEL_NMETER_MTRESHHOLD);
         return newChannels;
     }
 

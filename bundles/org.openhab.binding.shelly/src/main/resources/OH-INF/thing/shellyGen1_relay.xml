@@ -654,7 +654,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="lastEnergy1" advanced="true">
+	<channel-type id="lastEnergy1">
 		<item-type unitHint="Wh">Number:Energy</item-type>
 		<label>Last Minute Energy</label>
 		<description>Energy consumed during the previous minute</description>
