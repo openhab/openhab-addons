@@ -509,8 +509,6 @@ public class MiCloudConnector {
             return;
         }
         logger.trace("Xiaomi cloud request  URL= {} {} {}", request.getMethod(), request.getHost(), request.getPath());
-        logger.trace("Xiaomi cloud request content req= {}",
-                request.getContent() == null ? "" : request.getContent().toString());
         logger.trace("Xiaomi cloud request headers= {}", request.getHeaders().toString());
         logger.trace("Xiaomi cloud request param= {}", request.getParams());
         logger.trace("Xiaomi cloud request cookie= {}", request.getCookies().toString());
