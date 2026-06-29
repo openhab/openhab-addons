@@ -32,6 +32,9 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.measure.Quantity;
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -64,6 +67,7 @@ import org.openhab.core.thing.binding.builder.BridgeBuilder;
 import org.openhab.core.thing.util.ThingHandlerHelper;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -123,19 +127,27 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
         } else {
             switch (channelUID.getIdWithoutGroup()) {
                 case ENVOY_WATT_HOURS_TODAY:
-                    updateState(channelUID, new QuantityType<>(data.wattHoursToday, Units.WATT_HOUR));
+                    updateState(channelUID, toState(data.wattHoursToday, Units.WATT_HOUR));
                     break;
                 case ENVOY_WATT_HOURS_SEVEN_DAYS:
-                    updateState(channelUID, new QuantityType<>(data.wattHoursSevenDays, Units.WATT_HOUR));
+                    updateState(channelUID, toState(data.wattHoursSevenDays, Units.WATT_HOUR));
                     break;
                 case ENVOY_WATT_HOURS_LIFETIME:
-                    updateState(channelUID, new QuantityType<>(data.wattHoursLifetime, Units.WATT_HOUR));
+                    updateState(channelUID, toState(data.wattHoursLifetime, Units.WATT_HOUR));
                     break;
                 case ENVOY_WATTS_NOW:
-                    updateState(channelUID, new QuantityType<>(data.wattsNow, Units.WATT));
+                    updateState(channelUID, toState(data.wattsNow, Units.WATT));
                     break;
             }
         }
+    }
+
+    /**
+     * Converts a possibly {@code null} measured value to a {@link QuantityType} state, or {@link UnDefType#UNDEF} when
+     * the value is not available (e.g. energy buckets that the meter readings endpoint does not provide).
+     */
+    private <Q extends Quantity<Q>> State toState(final @Nullable Integer value, final Unit<Q> unit) {
+        return value == null ? UnDefType.UNDEF : new QuantityType<>(value, unit);
     }
 
     @Override
