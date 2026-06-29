@@ -314,8 +314,10 @@ public class ShellyComponents {
                         .createEMeterChannels(thingHandler.getThing(), profile, emeter, groupName));
             }
             if (getBool(emeter.isValid)) {
-                meterUpdated |= thingHandler.updateChannel(groupName, CHANNEL_METER_CURRENTWATTS,
-                        toQuantityType(getDouble(emeter.power), DIGITS_WATT, Units.WATT));
+                if (emeter.power != null) {
+                    meterUpdated |= thingHandler.updateChannel(groupName, CHANNEL_METER_CURRENTWATTS,
+                            toQuantityType(emeter.power, DIGITS_WATT, Units.WATT));
+                }
                 if (emeter.total != null) {
                     double total = emeter.total / 1000; // convert Wh to kWh
                     meterUpdated |= thingHandler.updateChannel(groupName, CHANNEL_METER_TOTALKWH,
@@ -365,7 +367,9 @@ public class ShellyComponents {
                             toQuantityType(emeter.lastMinuteWh, DIGITS_KWH, Units.WATT_HOUR));
                 }
 
-                accumulatedWatts += getDouble(emeter.power);
+                if (emeter.power != null) {
+                    accumulatedWatts += emeter.power;
+                }
                 if (meterUpdated) {
                     thingHandler.updateChannel(groupName, CHANNEL_LAST_UPDATE, getTimestamp());
                 }
