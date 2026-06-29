@@ -18,7 +18,7 @@
     <dependency>
       <groupId>dev.digiried</groupId>
       <artifactId>wattpilot4j</artifactId>
-      <version>3.0.0</version>
+      <version>3.1.0</version>
       <!-- provided as OSGi bundle at runtime, available only at compile time -->
       <scope>provided</scope>
     </dependency>
