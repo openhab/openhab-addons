@@ -530,17 +530,19 @@ Channel type definitions are baked into the binding JAR.
 | meter  | `currentWatts`          | `currentPower`              | Deprecated old channel remains advanced during migration                    |
 | meter  | `totalKWH`              | `totalEnergy`               | Deprecated old channel remains advanced during migration                    |
 | meter  | `returnedKWH`           | `returnedEnergy`            | Deprecated old channel remains advanced during migration                    |
-| meter  | `lastPower1`            | `lastEnergy1`               | Unit corrected from W-min to Wh                                             |
+| meter  | `lastPower1`            | `lastEnergy1`               | Unit changed: W (power-like) → Wh (energy); old channel stays active        |
 | nmeter | `nmTreshhold`           | `nmThreshold`               | Typo fix                                                                    |
 | device | `accumulatedWatts`      | `accumulatedPower`          | Deprecated old channel remains advanced during migration                    |
 | device | `accumulatedReturned`   | `accumulatedReturnedEnergy` | Deprecated old channel remains advanced during migration                    |
 
-The following device-level channels are new (no migration needed — just re-discover to get them):
+The following channels are new or corrected (no migration needed — just re-discover to get them):
 
-| Group  | Channel             | Devices                                  |
-| ------ | ------------------- | ---------------------------------------- |
-| meter  | `apparentPower`     | 3EM, EM-50, Plus EM, Plus 3EM-63        |
-| device | `accumulatedApparent` | 3EM, EM-50, Plus EM, Plus 3EM-63      |
+| Group  | Channel               | Devices                                                        |
+| ------ | --------------------- | -------------------------------------------------------------- |
+| meter  | `apparentPower`       | 3EM, EM-50, Plus EM, Plus 3EM-63                              |
+| device | `accumulatedApparent` | 3EM, EM-50, Plus EM, Plus 3EM-63                              |
+| meter  | `lastEnergy1`         | All relay-PM devices (Gen1 and Gen2+); successor to `lastPower1` |
+| meter  | `frequency`           | Gen4 PM devices (Plus 1PM G4 etc.) and EM devices (3EM, EM-50) |
 
 ## Channels
 
