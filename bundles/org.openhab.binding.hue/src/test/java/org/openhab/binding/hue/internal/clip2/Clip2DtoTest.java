@@ -449,7 +449,7 @@ class Clip2DtoTest {
         // switching off should change HSB and Brightness
         one.setOnOff(OnOffType.OFF);
         colorState = assertInstanceOf(HSBType.class, one.getColorState());
-        assertEquals(100.0, colorState.getBrightness().doubleValue(), 0.01);
+        assertEquals(PercentType.ZERO, colorState.getBrightness());
         assertEquals(PercentType.ZERO, one.getBrightnessState());
         one.setOnOff(OnOffType.ON);
 

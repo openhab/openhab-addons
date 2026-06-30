@@ -334,8 +334,10 @@ public class Resource {
                 throw new CriticalFieldMissing("'xy', 'gamut', or 'brightness' missing");
             }
             HSBType hsb = ColorUtil.xyToHsb(xy.getXY(), gamut);
-            return new HSBType(hsb.getHue(), hsb.getSaturation(),
-                    new PercentType(new BigDecimal(brightness, PERCENT_MATH_CONTEXT)));
+            PercentType percent = (on instanceof OnState on && on.getOn() instanceof Boolean on2 && !on2) //
+                    ? PercentType.ZERO
+                    : new PercentType(new BigDecimal(brightness, PERCENT_MATH_CONTEXT));
+            return new HSBType(hsb.getHue(), hsb.getSaturation(), percent);
         }
         return UnDefType.NULL;
     }
@@ -375,9 +377,12 @@ public class Resource {
         ColorTemperature colorTemperature = this.colorTemperature;
         if (Objects.nonNull(colorTemperature)) {
             Long mirek = colorTemperature.getMirek();
+            if (mirek == null) {
+                return UnDefType.UNDEF;
+            }
             MirekSchema mirekSchema = colorTemperature.getMirekSchema();
-            if (mirek == null || mirekSchema == null) {
-                throw new CriticalFieldMissing("'mirek' or 'mirek_schema' is missing");
+            if (mirekSchema == null) {
+                throw new CriticalFieldMissing("'mirek_schema' is missing");
             }
             double min = mirekSchema.getMirekMinimum();
             double max = mirekSchema.getMirekMaximum();
