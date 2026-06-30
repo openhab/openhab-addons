@@ -169,7 +169,7 @@ public class CryptoUtil {
      * @param t the timestamp of the message (used as AAD)
      * @return the decrypted message as String (or null if decryption failed)
      */
-    public static @Nullable String decryptAesGcm(String msg, String password, long t) {
+    public static @Nullable String decryptAesGcm(String msg, String password, @Nullable Long t) {
         try {
             byte[] rawBuffer = Base64.getDecoder().decode(msg);
             // first four bytes are IV length
@@ -181,7 +181,9 @@ public class CryptoUtil {
             final Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
             GCMParameterSpec parameterSpec = new GCMParameterSpec(GCM_TAG_LENGTH * 8, rawBuffer, 4, ivLength);
             cipher.init(Cipher.DECRYPT_MODE, secretKey, parameterSpec);
-            cipher.updateAAD(Long.toString(t).getBytes(StandardCharsets.UTF_8));
+            if (t != null) {
+                cipher.updateAAD(t.toString().getBytes(StandardCharsets.UTF_8));
+            }
             byte[] decoded = cipher.doFinal(rawBuffer, 4 + ivLength, dataLength);
             return new String(decoded);
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException
