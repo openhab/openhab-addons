@@ -370,26 +370,27 @@ public class Setters {
      * Create an OnOffType command based on the given brightness and delta values, considering the minimum dimming level
      * from the cache if available. The purpose is to send a "hard" ON if the lamp is definitely ON and a hard "OFF" if
      * it is definitely OFF, and thus avoiding sending "soft off" commands to the light. Note the minimum dimming level
-     * only to lights.
+     * is applied on lights only and not on grouped lights.
      * 
-     * @param brightness the target brightness (may be null).
+     * @param brightnessTarget the target brightness (may be null).
      * @param brightnessDelta the delta to be added to the prior cached value.
      * @param source the cached resource to get the minimum dimming level from (may be null).
      * @return the OnOffType command to be sent.
      * @throws CriticalFieldMissing if there is not enough data to create the command.
      */
-    public static OnOffType buildHardOnOff(ResourceType targetType, @Nullable Double brightness,
+    public static OnOffType buildHardOnOff(Resource target, @Nullable Double brightnessTarget,
             @Nullable Double brightnessDelta, @Nullable Resource source) throws CriticalFieldMissing {
-        Double targetBrightness;
-        if (brightness != null) {
-            targetBrightness = brightness;
-        } else if (brightnessDelta != null && source != null && source.getDimmingValue() instanceof Double bri) {
-            targetBrightness = bri + brightnessDelta;
+        Double bri;
+        if (brightnessTarget != null) {
+            bri = brightnessTarget;
+        } else if (brightnessDelta != null && source != null && source.getDimmingValue() instanceof Double dim) {
+            bri = dim + brightnessDelta;
         } else {
             throw new CriticalFieldMissing("Not enough data to create hard on/off command");
         }
-        Double minDimLevel = ResourceType.LIGHT == targetType //
-                && source != null && source.getMinimumDimmingLevel() instanceof Double min ? min : 0.0;
-        return OnOffType.from(targetBrightness >= Math.max(0.01, minDimLevel));
+        Double min = target.getMinimumDimmingLevel();
+        min = min != null ? min : source != null ? source.getMinimumDimmingLevel() : null;
+        min = min != null ? min : ResourceType.LIGHT == target.getType() ? Dimming.DEFAULT_MINIMUM_DIMMING_LEVEL : 0.0;
+        return OnOffType.from(bri >= Math.max(0.01, min));
     }
 }

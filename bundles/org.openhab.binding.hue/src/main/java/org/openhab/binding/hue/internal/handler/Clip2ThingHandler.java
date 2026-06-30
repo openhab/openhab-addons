@@ -449,10 +449,10 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 putResource = Objects.nonNull(putResource) ? putResource : new Resource(lightResourceType);
                 if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
                     putResource.setDimmingDelta(increaseDecreaseCommand, DIMMING_DELTA);
-                    command = Setters.buildHardOnOff(lightResourceType, null, DIMMING_DELTA, cache);
+                    command = Setters.buildHardOnOff(putResource, null, DIMMING_DELTA, cache);
                 } else if (command instanceof PercentType brightnessCommand) {
                     putResource = putResource.setBrightness(brightnessCommand);
-                    command = Setters.buildHardOnOff(lightResourceType, brightnessCommand.doubleValue(), null, cache);
+                    command = Setters.buildHardOnOff(putResource, brightnessCommand.doubleValue(), null, cache);
                 }
                 // NB fall through for handling of switch related had on/off commands !!
 
