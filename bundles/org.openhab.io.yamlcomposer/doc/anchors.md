@@ -1,3 +1,7 @@
+---
+prev: packages
+next: merge-keys
+---
 # Anchors & Aliases
 
 Anchors and aliases provide efficient, in‑file content reuse to reduce repetition without the overhead of external include files or packages.
@@ -61,3 +65,5 @@ They participate in variable substitution, but they do not support cross‑file 
 
 - **Naming** — Use `UPPER_CASE` for anchors to distinguish them from standard keys.
 - **Standardization** — Use anchors to enforce consistent structure across repeated YAML blocks within a file.
+
+[Return to YAML Composer main page](../)

@@ -1,3 +1,7 @@
+---
+prev: include
+next: packages
+---
 # Templates
 
 Templates let you define reusable blocks of YAML directly within the same file.
@@ -186,3 +190,5 @@ Inside a template:
 
 In‑file templates provide a flexible, parameterizable way to structure reusable YAML within a single file.
 They complement `!include` and anchors, offering a clean mechanism for building consistent configurations.
+
+[Return to YAML Composer main page](../)

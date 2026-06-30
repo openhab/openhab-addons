@@ -1,3 +1,7 @@
+---
+prev: templates
+next: anchors
+---
 # Packages
 
 Packages provide a way to bundle multiple related YAML sections into a reusable, parameterized unit.
@@ -448,3 +452,5 @@ packages:
 
 In this form, the merge key tries to inject package declarations into `packages:` itself.
 The composer does not expand package declarations through top-level merge keys.
+
+[Return to YAML Composer main page](../)

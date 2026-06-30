@@ -1,3 +1,7 @@
+---
+prev: variables
+next: include
+---
 # Conditionals (!if)
 
 The `!if` tag performs logical branching during the **preprocessing phase**.
@@ -162,3 +166,5 @@ network_settings: !if
 1. **Invalid YAML**: Even inactive branches must be syntactically valid YAML.
 
 See [Expression Syntax](variables.md#expression-syntax) for more details.
+
+[Return to YAML Composer main page](../)

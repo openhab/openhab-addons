@@ -1,4 +1,8 @@
-# Standard YAML Syntax
+---
+prev: ../
+next: variables
+---
+# YAML Basics
 
 This page introduces the standard YAML syntax used throughout this documentation.
 It is not a full YAML tutorial.
@@ -327,3 +331,5 @@ You will see these custom tags throughout the enhanced YAML configuration.
 - Incorrect indentation under `|` or `>` for multiline strings.
 
 If a YAML file fails to load, indentation, quoting, or multiline formatting issues are often the cause.
+
+[Return to YAML Composer main page](../)
