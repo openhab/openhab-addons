@@ -43,6 +43,7 @@ import org.openhab.binding.hue.internal.exceptions.CriticalFieldMissing;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
+import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
@@ -127,6 +128,8 @@ public class Resource {
     private @Nullable Sound alarm;
     private @Nullable Sound chime;
     private @Nullable Mute mute;
+    private @Nullable @SerializedName("dimming_delta") DimmingDelta dimmingDelta;
+    private @Nullable @SerializedName("color_temperature_delta") ColorTemperatureDelta colorTemperatureDelta;
 
     /**
      * Constructor
@@ -325,7 +328,7 @@ public class Resource {
                 throw new CriticalFieldMissing("'dimming' is missing");
             }
             PairXy xy = color.getXY();
-            Gamut gamut = color.getGamut();
+            Gamut gamut = (ResourceType.LIGHT == getType()) ? color.getGamut() : ColorUtil.DEFAULT_GAMUT;
             Double brightness = dimming.getBrightness();
             if (xy == null || gamut == null || brightness == null) {
                 throw new CriticalFieldMissing("'xy', 'gamut', or 'brightness' missing");
@@ -408,7 +411,7 @@ public class Resource {
         ColorXy color = this.color;
         if (Objects.nonNull(color)) {
             PairXy xy = color.getXY();
-            Gamut gamut = color.getGamut();
+            Gamut gamut = (ResourceType.LIGHT == getType()) ? color.getGamut() : ColorUtil.DEFAULT_GAMUT;
             if (xy == null || gamut == null) {
                 throw new CriticalFieldMissing("'xy' or 'gamut' is missing");
             }
@@ -461,6 +464,14 @@ public class Resource {
             return new PercentType(new BigDecimal(brightness, PERCENT_MATH_CONTEXT));
         }
         return UnDefType.NULL;
+    }
+
+    public @Nullable Double getDimmingValue() {
+        Dimming dimming = this.dimming;
+        if (Objects.nonNull(dimming)) {
+            return dimming.getBrightness();
+        }
+        return null;
     }
 
     public @Nullable Effects getFixedEffects() {
@@ -917,6 +928,16 @@ public class Resource {
         return this;
     }
 
+    public Resource setBrightness(Command command) {
+        if (command instanceof PercentType brightness) {
+            Dimming dimming = this.dimming;
+            dimming = Objects.nonNull(dimming) ? dimming : new Dimming();
+            dimming.setBrightness(brightness.doubleValue());
+            setDimming(dimming);
+        }
+        return this;
+    }
+
     public Resource setColorTemperature(ColorTemperature colorTemperature) {
         this.colorTemperature = colorTemperature;
         return this;
@@ -939,6 +960,11 @@ public class Resource {
 
     public Resource setDimming(@Nullable Dimming dimming) {
         this.dimming = dimming;
+        return this;
+    }
+
+    public Resource setDimmingDelta(IncreaseDecreaseType action, double delta) {
+        dimmingDelta = new DimmingDelta().setAction(action).setDelta(delta);
         return this;
     }
 
@@ -966,6 +992,11 @@ public class Resource {
 
     public Resource setMetadata(MetaData metadata) {
         this.metadata = metadata;
+        return this;
+    }
+
+    public Resource setMirekDelta(IncreaseDecreaseType action, int delta) {
+        colorTemperatureDelta = new ColorTemperatureDelta().setAction(action).setDelta(delta);
         return this;
     }
 

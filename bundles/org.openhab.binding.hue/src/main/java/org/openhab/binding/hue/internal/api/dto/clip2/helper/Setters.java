@@ -36,8 +36,10 @@ import org.openhab.binding.hue.internal.api.dto.clip2.TimedEffects;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ActionType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.EffectType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ResourceType;
+import org.openhab.binding.hue.internal.exceptions.CriticalFieldMissing;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -156,29 +158,10 @@ public class Setters {
         if (command instanceof HSBType hsb) {
             hsb = new HSBType(hsb.getHue(), hsb.getSaturation(), PercentType.HUNDRED);
             ColorXy color = target.getColorXy();
-            Gamut gamut = source != null ? source.getGamut() : null;
-            gamut = gamut != null ? gamut : ColorUtil.DEFAULT_GAMUT;
+            Gamut gamut = target.getGamut();
+            gamut = Objects.nonNull(gamut) ? gamut : Objects.nonNull(source) ? source.getGamut() : null;
+            gamut = Objects.nonNull(gamut) ? gamut : ColorUtil.DEFAULT_GAMUT;
             target.setColorXy((Objects.nonNull(color) ? color : new ColorXy()).setXY(ColorUtil.hsbToXY(hsb, gamut)));
-        }
-        return target;
-    }
-
-    /**
-     * Setter for Dimming field:
-     * Use the given command value to set the target resource DTO value based on the attributes of the source resource
-     * (if any).
-     *
-     * @param target the target resource.
-     * @param command the new state command should be a PercentType with the new dimming parameter.
-     *
-     * @return the target resource.
-     */
-    public static Resource setDimming(Resource target, Command command) {
-        if (command instanceof PercentType brightness) {
-            Dimming dimming = target.getDimming();
-            dimming = Objects.nonNull(dimming) ? dimming : new Dimming();
-            dimming.setBrightness(brightness.doubleValue());
-            target.setDimming(dimming);
         }
         return target;
     }
@@ -381,5 +364,32 @@ public class Setters {
         }
 
         return resources;
+    }
+
+    /**
+     * Create an OnOffType command based on the given brightness and delta values, considering the minimum dimming level
+     * from the cache if available. The purpose is to send a "hard" ON if the lamp is definitely ON and a hard "OFF" if
+     * it is definitely OFF, and thus avoiding sending "soft off" commands to the light. Note the minimum dimming level
+     * only to lights.
+     * 
+     * @param brightness the target brightness (may be null).
+     * @param brightnessDelta the delta to be added to the prior cached value.
+     * @param source the cached resource to get the minimum dimming level from (may be null).
+     * @return the OnOffType command to be sent.
+     * @throws CriticalFieldMissing if there is not enough data to create the command.
+     */
+    public static OnOffType buildHardOnOff(ResourceType targetType, @Nullable Double brightness,
+            @Nullable Double brightnessDelta, @Nullable Resource source) throws CriticalFieldMissing {
+        Double targetBrightness;
+        if (brightness != null) {
+            targetBrightness = brightness;
+        } else if (brightnessDelta != null && source != null && source.getDimmingValue() instanceof Double bri) {
+            targetBrightness = bri + brightnessDelta;
+        } else {
+            throw new CriticalFieldMissing("Not enough data to create hard on/off command");
+        }
+        Double minDimLevel = ResourceType.LIGHT == targetType //
+                && source != null && source.getMinimumDimmingLevel() instanceof Double min ? min : 0.0;
+        return OnOffType.from(targetBrightness >= Math.max(0.01, minDimLevel));
     }
 }

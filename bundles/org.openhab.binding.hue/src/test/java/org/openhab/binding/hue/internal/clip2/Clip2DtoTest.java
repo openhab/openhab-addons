@@ -438,7 +438,7 @@ class Clip2DtoTest {
             fail();
         }
         Setters.setColorXy(one, HSBType.RED, null);
-        Setters.setDimming(one, PercentType.HUNDRED);
+        one.setBrightness(PercentType.HUNDRED);
         ColorXy xy = one.getColorXy();
         assertNotNull(xy);
         xy.setGamut(ColorUtil.DEFAULT_GAMUT);
@@ -454,7 +454,7 @@ class Clip2DtoTest {
         one.setOnOff(OnOffType.ON);
 
         // setting brightness to zero should change it to the minimum dimming level
-        Setters.setDimming(one, PercentType.ZERO);
+        one.setBrightness(PercentType.ZERO);
         colorState = assertInstanceOf(HSBType.class, one.getColorState());
         assertEquals(0.0, colorState.getBrightness().doubleValue(), 0.01);
         assertEquals(0.0, ((PercentType) one.getBrightnessState()).doubleValue(), 0.01);
@@ -478,7 +478,7 @@ class Clip2DtoTest {
         // create resource two
         Resource two = new Resource(ResourceType.DEVICE).setId("ALLIGATOR");
         assertNotNull(two);
-        Setters.setDimming(two, testBrightness);
+        two.setBrightness(testBrightness);
         assertEquals(UnDefType.NULL, two.getColorState());
         assertEquals(testBrightness, two.getBrightnessState());
 
