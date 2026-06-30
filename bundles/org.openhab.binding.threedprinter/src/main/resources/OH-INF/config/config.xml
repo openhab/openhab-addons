@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<!-- PrusaLink -->
+	<config-description uri="thing-type:threedprinter:prusaprinter">
+		<parameter name="hostname" type="text" required="true">
+			<label>Hostname / IP</label>
+			<description>Hostname or IP address of the Prusa printer.</description>
+			<context>network-address</context>
+		</parameter>
+		<parameter name="port" type="integer" min="1" max="65535">
+			<label>Port</label>
+			<description>HTTP port of the PrusaLink web server.</description>
+			<default>80</default>
+		</parameter>
+		<parameter name="apiKey" type="text" required="true">
+			<label>API Key</label>
+			<description>PrusaLink API key (found in the printer menu under Settings → Network → PrusaLink).</description>
+			<context>password</context>
+		</parameter>
+		<parameter name="refreshInterval" type="integer" min="5" max="3600" unit="s">
+			<label>Refresh Interval</label>
+			<description>How often to poll the printer for status updates.</description>
+			<default>30</default>
+			<unitLabel>s</unitLabel>
+		</parameter>
+	</config-description>
+
+	<!-- Klipper / Moonraker -->
+	<config-description uri="thing-type:threedprinter:klipper">
+		<parameter name="hostname" type="text" required="true">
+			<label>Hostname / IP</label>
+			<description>Hostname or IP address of the Moonraker server.</description>
+			<context>network-address</context>
+		</parameter>
+		<parameter name="port" type="integer" min="1" max="65535">
+			<label>Port</label>
+			<description>Moonraker API port (default 7125).</description>
+			<default>7125</default>
+		</parameter>
+		<parameter name="apiKey" type="text">
+			<label>API Key</label>
+			<description>Moonraker API key. Leave empty if no authentication is required (typical for local networks).</description>
+			<context>password</context>
+		</parameter>
+		<parameter name="refreshInterval" type="integer" min="5" max="3600" unit="s">
+			<label>Refresh Interval</label>
+			<description>How often to poll the printer for status updates.</description>
+			<default>30</default>
+			<unitLabel>s</unitLabel>
+		</parameter>
+	</config-description>
+
+	<!-- OctoPrint -->
+	<config-description uri="thing-type:threedprinter:octoprint">
+		<parameter name="hostname" type="text" required="true">
+			<label>Hostname / IP</label>
+			<description>Hostname or IP address of the OctoPrint server.</description>
+			<context>network-address</context>
+		</parameter>
+		<parameter name="port" type="integer" min="1" max="65535">
+			<label>Port</label>
+			<description>OctoPrint HTTP port (default 5000).</description>
+			<default>5000</default>
+		</parameter>
+		<parameter name="apiKey" type="text" required="true">
+			<label>API Key</label>
+			<description>OctoPrint API key (found in OctoPrint Settings → API).</description>
+			<context>password</context>
+		</parameter>
+		<parameter name="refreshInterval" type="integer" min="5" max="3600" unit="s">
+			<label>Refresh Interval</label>
+			<description>How often to poll the printer for status updates.</description>
+			<default>30</default>
+			<unitLabel>s</unitLabel>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="threedprinter"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- PrusaLink (Prusa MK3, MK4, Mini, XL running PrusaLink firmware) -->
+	<thing-type id="prusaprinter">
+		<label>Prusa Printer</label>
+		<description>A Prusa 3D printer running PrusaLink firmware.</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
+
+		<channels>
+			<channel id="printer-state" typeId="printer-state"/>
+			<channel id="job-name" typeId="job-name"/>
+			<channel id="job-progress" typeId="job-progress"/>
+			<channel id="time-elapsed" typeId="time-elapsed"/>
+			<channel id="time-remaining" typeId="time-remaining"/>
+			<channel id="nozzle-temperature" typeId="nozzle-temperature"/>
+			<channel id="nozzle-temperature-setpoint" typeId="nozzle-temperature-setpoint"/>
+			<channel id="bed-temperature" typeId="bed-temperature"/>
+			<channel id="bed-temperature-setpoint" typeId="bed-temperature-setpoint"/>
+			<channel id="print-speed" typeId="print-speed"/>
+			<channel id="fan-speed" typeId="fan-speed"/>
+			<channel id="pause-resume" typeId="pause-resume"/>
+			<channel id="cancel" typeId="cancel"/>
+			<channel id="job-preview" typeId="job-preview"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:threedprinter:prusaprinter"/>
+	</thing-type>
+
+	<!-- Klipper (via Moonraker API) -->
+	<thing-type id="klipper">
+		<label>Klipper Printer</label>
+		<description>A 3D printer running Klipper firmware, accessed via the Moonraker API.</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
+
+		<channels>
+			<channel id="printer-state" typeId="printer-state"/>
+			<channel id="job-name" typeId="job-name"/>
+			<channel id="job-progress" typeId="job-progress"/>
+			<channel id="time-elapsed" typeId="time-elapsed"/>
+			<channel id="time-remaining" typeId="time-remaining"/>
+			<channel id="nozzle-temperature" typeId="nozzle-temperature"/>
+			<channel id="nozzle-temperature-setpoint" typeId="nozzle-temperature-setpoint"/>
+			<channel id="bed-temperature" typeId="bed-temperature"/>
+			<channel id="bed-temperature-setpoint" typeId="bed-temperature-setpoint"/>
+			<channel id="print-speed" typeId="print-speed"/>
+			<channel id="fan-speed" typeId="fan-speed"/>
+			<channel id="pause-resume" typeId="pause-resume"/>
+			<channel id="cancel" typeId="cancel"/>
+			<channel id="job-preview" typeId="job-preview"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:threedprinter:klipper"/>
+	</thing-type>
+
+	<!-- OctoPrint -->
+	<thing-type id="octoprint">
+		<label>OctoPrint Printer</label>
+		<description>A 3D printer managed by an OctoPrint server.</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
+
+		<channels>
+			<channel id="printer-state" typeId="printer-state"/>
+			<channel id="job-name" typeId="job-name"/>
+			<channel id="job-progress" typeId="job-progress"/>
+			<channel id="time-elapsed" typeId="time-elapsed"/>
+			<channel id="time-remaining" typeId="time-remaining"/>
+			<channel id="nozzle-temperature" typeId="nozzle-temperature"/>
+			<channel id="nozzle-temperature-setpoint" typeId="nozzle-temperature-setpoint"/>
+			<channel id="bed-temperature" typeId="bed-temperature"/>
+			<channel id="bed-temperature-setpoint" typeId="bed-temperature-setpoint"/>
+			<channel id="print-speed" typeId="print-speed"/>
+			<channel id="fan-speed" typeId="fan-speed"/>
+			<channel id="pause-resume" typeId="pause-resume"/>
+			<channel id="cancel" typeId="cancel"/>
+			<channel id="job-preview" typeId="job-preview"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:threedprinter:octoprint"/>
+	</thing-type>
+
+</thing:thing-descriptions>
