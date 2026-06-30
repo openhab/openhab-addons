@@ -88,6 +88,9 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
     }
 
     private static final long RETRY_RECONNECT_SECONDS = 10;
+    // Number of consecutive connection failures tolerated before the bridge is taken offline. The Envoy local API can
+    // be briefly unresponsive (e.g. during nightly firmware maintenance); a single timeout should not flap the bridge.
+    private static final int MAX_TRANSIENT_CONNECTION_ERRORS = 3;
 
     private final Logger logger = LoggerFactory.getLogger(EnvoyBridgeHandler.class);
     private final EnvoyHostAddressCache envoyHostnameCache;
@@ -97,6 +100,7 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
 
     private @Nullable ScheduledFuture<?> updataDataFuture;
     private @Nullable ScheduledFuture<?> updateHostnameFuture;
+    private int consecutiveConnectionErrors;
     private @Nullable ExpiringCache<Map<String, @Nullable InverterDTO>> invertersCache;
     private @Nullable ExpiringCache<Map<String, @Nullable DeviceDTO>> devicesCache;
     private @Nullable EnvoyEnergyDTO productionDTO;
@@ -279,12 +283,22 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
                 updateEnvoy();
                 updateInverters(forceUpdate);
                 updateDevices(forceUpdate);
+                consecutiveConnectionErrors = 0;
             }
         } catch (final EnvoyNoHostnameException e) {
             scheduleHostnameUpdate(false);
         } catch (final EnvoyConnectionException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            scheduleHostnameUpdate(false);
+            // The Envoy local API is intermittently unresponsive on some firmware. Tolerate a few consecutive
+            // timeouts (keeping the last known values and the bridge online) before treating it as a real outage, so a
+            // brief blip doesn't flap the bridge - and its child things - offline or trigger a hostname rediscovery.
+            if (++consecutiveConnectionErrors < MAX_TRANSIENT_CONNECTION_ERRORS) {
+                logger.debug("Transient connection problem ({}/{}) for Enphase thing {}, keeping bridge online: {}",
+                        consecutiveConnectionErrors, MAX_TRANSIENT_CONNECTION_ERRORS, getThing().getUID(),
+                        e.getMessage());
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                scheduleHostnameUpdate(false);
+            }
         } catch (final EntrezConnectionException e) {
             logger.debug("EntrezConnectionException in Enphase thing {}: ", getThing().getUID(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -452,13 +466,22 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
     private void updateHostname() {
         final String lastKnownHostname = envoyHostnameCache.getLastKnownHostAddress(configuration.serialNumber);
 
-        if (lastKnownHostname.isEmpty()) {
+        if (!lastKnownHostname.isEmpty()) {
+            updateConfigurationOnHostnameUpdate(lastKnownHostname);
+            updateData(true);
+        } else if (!configuration.hostname.isEmpty()) {
+            // No address from mDNS discovery, but a hostname is configured. Retry with the configured hostname rather
+            // than flapping the bridge OFFLINE with "No ip address known"; the gateway is most likely just temporarily
+            // unreachable (e.g. firmware maintenance) and will respond again shortly. updateData reschedules another
+            // attempt if it still fails.
+            logger.debug("No mDNS address for {}, retrying the configured hostname '{}'.", getThing().getUID(),
+                    configuration.hostname);
+            updateHostnameFuture = null;
+            updateData(true);
+        } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "No ip address known of the Envoy gateway. If this isn't updated in a few minutes run discovery scan or check your connection.");
             scheduleHostnameUpdate(true);
-        } else {
-            updateConfigurationOnHostnameUpdate(lastKnownHostname);
-            updateData(true);
         }
     }
 
