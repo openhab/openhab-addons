@@ -214,8 +214,11 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
                         "This Ephase Envoy device ({}) doesn't seem to support json data. So not all channels are set.",
                         getThing().getUID());
                 jsonSupported = FeatureStatus.UNSUPPORTED;
-            } else if (consumptionSupported == FeatureStatus.SUPPORTED) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            } else {
+                // Inventory/device data is optional and the endpoint can be intermittently unavailable. Don't take the
+                // bridge offline (which would also gate production/consumption updates); keep the last known data. A
+                // genuinely unreachable gateway is detected by the production call in the main update path.
+                logger.trace("refreshDevices connection problem", e);
             }
         } catch (final EnphaseException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
