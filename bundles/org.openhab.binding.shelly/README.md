@@ -54,29 +54,29 @@ See section [Discovery](#discovery) for details.
 | shellydimmer2     | Shelly Dimmer2                                         | SHDM-2              |
 | shellyix3         | Shelly ix3                                             | SHIX3-1             |
 | shellyuni         | Shelly UNI, Shelly Plus UNI                            | SHUNI-1             |
-| shellyplug        | Shelly Plug                                            | SHPLG2-1            |
+| shellyplug        | Shelly Plug                                            | SHPLG-1, SHPLG2-1   |
 | shellyplugs       | Shelly Plug-S                                          | SHPLG-S             |
+| shellyplugu1      | Shelly Plug U1                                         | SHPLG-U1, SHPLG-US  |
 | shellyem          | Shelly EM with integrated Power Meters                 | SHEM                |
 | shellyem3         | Shelly 3EM with 3 integrated Power Meter               | SHEM-3              |
 | shellyrgbw2-color | Shelly RGBW2 Controller in Color Mode                  | SHRGBW2             |
 | shellyrgbw2-white | Shelly RGBW2 Controller in White Mode                  | SHRGBW2             |
 | shellybulb-color  | Shelly Bulb in Color Mode                              | SHBLB-1             |
 | shellybulb-white  | Shelly Bulb in White Mode                              | SHBLB-1             |
-| shellybulbduo     | Shelly Duo White                                       | SHBDUO-1            |
-| shellybulbduo     | Shelly Duo White G10                                   | SHBDUO-1            |
+| shellybulbduo     | Shelly Duo White / Duo White G10                       | SHBDUO-1            |
 | shellycolorbulb   | Shelly Duo Color G10                                   | SHCB-1              |
 | shellyvintage     | Shelly Vintage (White Mode)                            | SHVIN-1             |
 | shellyht          | Shelly Sensor (temperature+humidity)                   | SHHT-1              |
 | shellyflood       | Shelly Flood Sensor                                    | SHWT-1              |
-| shellysmoke       | Shelly Smoke Sensor                                    | SHSM-1              |
-| shellymotion      | Shelly Motion Sensor                                   | SHMOS-01            |
-| shellymotion2     | Shelly Motion Sensor 2                                 | SHMOS-02            |
+| shellysmoke       | Shelly Smoke Sensor                                    | SHSM-01             |
+| shellymotion      | Shelly Motion Sensor, Shelly Motion Sensor 2           | SHMOS-01, SHMOS-02  |
 | shellygas         | Shelly Gas Sensor                                      | SHGS-1              |
 | shellydw          | Shelly Door/Window                                     | SHDW-1              |
 | shellydw2         | Shelly Door/Window 2                                   | SHDW-2              |
 | shellybutton1     | Shelly Button 1                                        | SHBTN-1             |
 | shellybutton2     | Shelly Button 2                                        | SHBTN-2             |
 | shellysense       | Shelly Motion and IR Controller                        | SHSEN-1             |
+| shellyseye        | Shelly Eye                                             | SHEYE-1             |
 | shellytrv         | Shelly TRV                                             | SHTRV-01            |
 
 ### Shelly Plus series (Generation 2+3+4)
@@ -891,7 +891,7 @@ This information applies to the Shelly Duo-1 as well as the Duo White for the G1
 |         | totalKWH     | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart) |
 |         | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                               |
 
-### Shelly Duo Color (thing-type: shellyduocolor-color)
+### Shelly Duo Color (thing-type: shellycolorbulb)
 
 | Group   | Channel      | Type    | read-only | Description                                                                              |
 | ------- | ------------ | ------- | --------- | ---------------------------------------------------------------------------------------- |
@@ -1075,7 +1075,7 @@ You have a Motion controlling your light.
 You switch off the light and want to leave the room, but the motion sensor immediately switches light back on.
 Using 'sensorSleepTime' you can suppress motion events while leaving the room (e.g., for 5 seconds) so the light doesn't switch on.
 
-### Shelly Motion 2 (thing-type: shellymotion2)
+### Shelly Motion 2 (thing-type: shellymotion)
 
 | Group   | Channel         | Type     | read-only | Description                                                            |
 | ------- | --------------- | -------- | --------- | ---------------------------------------------------------------------- |
