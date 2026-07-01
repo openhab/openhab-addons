@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Authorize openHAB binding for SmartThings</title>
+<base href="${assetBaseUri}/">
+<link rel="stylesheet" href="img/auth.css">
+</head>
+<body class="auth-page">
+    <main class="auth-card">
+        <div class="auth-accent"></div>
+        <div class="auth-body">
+            <div class="brand-row">
+                <div class="logo-pair">
+                    <img class="openhab-logo" src="img/openhab-logo.svg" alt="openHAB logo">
+                    <span class="logo-connector" aria-hidden="true"></span>
+                    <img class="smartthings-logo" src="img/smartthings-logo.svg" alt="SmartThings logo">
+                </div>
+                <div class="brand-copy">
+                    <strong>openHAB SmartThings Binding</strong>
+                    <span>Account authorization</span>
+                </div>
+            </div>
+
+            <div class="spinner" aria-hidden="true"></div>
+            <p class="kicker">Authorization step 2</p>
+            <h1>Continue in SmartThings</h1>
+            <p class="lead">The SmartThings app was created. You will be redirected to authorize access to your location and devices.</p>
+
+            <div class="action-row">
+                <a class="primary-button" href="${authorizationUri}">Continue now</a>
+            </div>
+
+            <p class="footnote">Redirecting automatically in 2 seconds...</p>
+        </div>
+    </main>
+
+    <script>
+        window.setTimeout(function () {
+            window.location.href = "${authorizationUriJs}";
+        }, 2000);
+    </script>
+</body>
+</html>

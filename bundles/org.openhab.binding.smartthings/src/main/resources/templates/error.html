@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Authorize openHAB binding for SmartThings</title>
+<base href="${assetBaseUri}/">
+<link rel="stylesheet" href="img/auth.css">
+</head>
+<body class="auth-page">
+    <main class="auth-card">
+        <div class="auth-accent"></div>
+        <div class="auth-body">
+            <div class="brand-row">
+                <div class="logo-pair">
+                    <img class="openhab-logo" src="img/openhab-logo.svg" alt="openHAB logo">
+                    <span class="logo-connector" aria-hidden="true"></span>
+                    <img class="smartthings-logo" src="img/smartthings-logo.svg" alt="SmartThings logo">
+                </div>
+                <div class="brand-copy">
+                    <strong>openHAB SmartThings Binding</strong>
+                    <span>Account authorization</span>
+                </div>
+            </div>
+
+            <div class="status-icon error-state" aria-hidden="true">!</div>
+            <p class="kicker">Authorization error</p>
+            <h1>SmartThings could not connect</h1>
+            <p class="lead">The authorization flow stopped before openHAB could finish the SmartThings setup.</p>
+
+            ${error}
+
+            <p class="footnote">You can close this window and retry authorization from the SmartThings bridge settings.</p>
+        </div>
+    </main>
+</body>
+</html>

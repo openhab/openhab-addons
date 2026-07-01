@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="smartthings"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+
+	<!-- ═══════════════════════════════════════════════════════════════════
+		Presence thing type
+		═══════════════════════════════════════════════════════════════════ -->
+
+	<thing-type id="generic-presence-sensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+		<label>SmartThings Presence Sensor</label>
+		<description>A SmartThings presence sensor or mobile phone showing home/away state.</description>
+
+		<channel-groups>
+			<channel-group typeId="main-group-type-generic-presence-detector" id="main"/>
+		</channel-groups>
+
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device ID</label>
+				<description>SmartThings device UUID. Find it via GET https://api.smartthings.com/v1/devices.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-group-type id="main-group-type-generic-presence-detector">
+		<label>Main group type Generic Presence Detector</label>
+		<channels>
+			<channel id="presence" typeId="presence">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">switch</property>
+					<property name="attribute">switch</property>
+				</properties>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="auth-status">
+		<item-type>String</item-type>
+		<label>Authorization Status</label>
+		<description>Shows whether the SmartThings account is authorized. Use the authorization link shown in the
+			account Thing
+			status.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="presence">
+		<item-type>Switch</item-type>
+		<label>Presence</label>
+		<description>ON = present (home), OFF = not present (away)</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>

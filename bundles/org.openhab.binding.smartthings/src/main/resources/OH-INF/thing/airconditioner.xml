@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="smartthings"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+
+	<!-- ═══════════════════════════════════════════════════════════════════
+		Air Conditioner thing type
+		═══════════════════════════════════════════════════════════════════ -->
+
+	<thing-type id="Samsung_Room_A_C">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+		<label>Samsung WindFree A/C</label>
+		<description>A Samsung WindFree air conditioner connected via SmartThings Cloud.</description>
+
+		<channel-groups>
+			<channel-group typeId="air-conditioner-control-group" id="control"/>
+			<channel-group typeId="air-conditioner-environment-group" id="environment"/>
+			<channel-group typeId="air-conditioner-energy-group" id="energy"/>
+			<channel-group typeId="air-conditioner-advanced-group" id="advanced"/>
+		</channel-groups>
+
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device ID</label>
+				<description>SmartThings device UUID. Find it via GET https://api.smartthings.com/v1/devices.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-group-type id="air-conditioner-control-group">
+		<label>Controls</label>
+		<channels>
+			<channel id="switch" typeId="system.power">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">switch</property>
+					<property name="attribute">switch</property>
+				</properties>
+			</channel>
+			<channel id="mode" typeId="ac-mode">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">airConditionerMode</property>
+					<property name="attribute">airConditionerMode</property>
+					<property name="command">setAirConditionerMode</property>
+				</properties>
+			</channel>
+			<channel id="fan-mode" typeId="fan-mode">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">airConditionerFanMode</property>
+					<property name="attribute">fanMode</property>
+					<property name="command">setFanMode</property>
+				</properties>
+			</channel>
+			<channel id="fan-oscillation-mode" typeId="fan-oscillation-mode">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">fanOscillationMode</property>
+					<property name="attribute">fanOscillationMode</property>
+					<property name="command">setFanOscillationMode</property>
+				</properties>
+			</channel>
+			<channel id="setpoint" typeId="ac-setpoint">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">thermostatCoolingSetpoint</property>
+					<property name="attribute">coolingSetpoint</property>
+					<property name="command">setCoolingSetpoint</property>
+				</properties>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="air-conditioner-environment-group">
+		<label>Environment</label>
+		<channels>
+			<channel id="temperature" typeId="ac-temperature">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">temperatureMeasurement</property>
+					<property name="attribute">temperature</property>
+				</properties>
+			</channel>
+			<channel id="humidity" typeId="ac-humidity">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">relativeHumidityMeasurement</property>
+					<property name="attribute">humidity</property>
+				</properties>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="air-conditioner-energy-group">
+		<label>Energy</label>
+		<channels>
+			<channel id="power" typeId="ac-power-consumption">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">powerConsumptionReport</property>
+					<property name="attribute">powerConsumption</property>
+				</properties>
+			</channel>
+			<channel id="energy" typeId="ac-energy">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">powerConsumptionReport</property>
+					<property name="attribute">powerConsumption</property>
+					<property name="unit">Wh</property>
+				</properties>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="air-conditioner-advanced-group">
+		<label>Advanced</label>
+		<channels>
+			<channel id="operating-state" typeId="ac-auto-cleaning-operating-state">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">custom.autoCleaningMode</property>
+					<property name="attribute">operatingState</property>
+				</properties>
+			</channel>
+			<channel id="progress" typeId="ac-auto-cleaning-progress">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">custom.autoCleaningMode</property>
+					<property name="attribute">progress</property>
+				</properties>
+			</channel>
+			<channel id="dust-filter-status" typeId="ac-filter-status">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">custom.dustFilter</property>
+					<property name="attribute">dustFilterStatus</property>
+				</properties>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="ac-mode">
+		<item-type>String</item-type>
+		<label>Mode</label>
+		<description>Operating mode of the air conditioner.</description>
+		<state readOnly="false">
+			<options>
+				<option value="auto">Auto</option>
+				<option value="cool">Cool</option>
+				<option value="dry">Dry</option>
+				<option value="fanOnly">Fan Only</option>
+				<option value="heat">Heat</option>
+				<option value="wind">Clean</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="fan-mode">
+		<item-type>String</item-type>
+		<label>Fan Mode</label>
+		<description>Fan speed or optional Samsung mode of the air conditioner.</description>
+		<state readOnly="false">
+			<options>
+				<option value="auto">Auto</option>
+				<option value="low">Low</option>
+				<option value="medium">Medium</option>
+				<option value="high">High</option>
+				<option value="turbo">Turbo</option>
+				<option value="quiet">Quiet</option>
+				<option value="sleep">Sleep</option>
+				<option value="windFree">WindFree</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="fan-oscillation-mode">
+		<item-type>String</item-type>
+		<label>Fan Oscillation</label>
+		<description>Swing or oscillation mode of the air conditioner fan.</description>
+		<state readOnly="false">
+			<options>
+				<option value="fixed">Fixed</option>
+				<option value="all">All</option>
+				<option value="vertical">Vertical</option>
+				<option value="horizontal">Horizontal</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="ac-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Room Temperature</label>
+		<description>Current room temperature measured by the air conditioner.</description>
+		<state readOnly="true" pattern="%.1f °C"/>
+	</channel-type>
+
+	<channel-type id="ac-setpoint">
+		<item-type>Number:Temperature</item-type>
+		<label>Setpoint</label>
+		<description>Target temperature setpoint.</description>
+		<state readOnly="false" pattern="%.1f °C" min="16" max="30"/>
+	</channel-type>
+
+	<channel-type id="ac-humidity">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Humidity</label>
+		<description>Current relative humidity measured by the air conditioner.</description>
+		<state readOnly="true" pattern="%.0f %%"/>
+	</channel-type>
+
+	<channel-type id="ac-power-consumption">
+		<item-type>Number:Power</item-type>
+		<label>Power Consumption</label>
+		<description>Current power consumption of the air conditioner.</description>
+		<state readOnly="true" pattern="%.0f W"/>
+	</channel-type>
+
+	<channel-type id="ac-energy">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Usage</label>
+		<description>Accumulated energy consumption reported by the air conditioner.</description>
+		<state readOnly="true" pattern="%.0f Wh"/>
+	</channel-type>
+
+	<channel-type id="ac-auto-cleaning-operating-state" advanced="true">
+		<item-type>String</item-type>
+		<label>Auto Cleaning State</label>
+		<description>Current operating state of the auto-cleaning function.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="ac-auto-cleaning-progress" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Auto Cleaning Progress</label>
+		<description>Progress of the current auto-cleaning operation.</description>
+		<state readOnly="true" pattern="%.0f %%" min="0" max="100"/>
+	</channel-type>
+
+	<channel-type id="ac-filter-status" advanced="true">
+		<item-type>String</item-type>
+		<label>Filter Status</label>
+		<description>Filter status reported by the air conditioner.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+
+</thing:thing-descriptions>

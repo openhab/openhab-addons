@@ -1,0 +1,508 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="smartthings"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+
+	<!-- ═══════════════════════════════════════════════════════════════════════
+		Thing: Washer
+		═══════════════════════════════════════════════════════════════════════ -->
+	<thing-type id="generic-washer">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+
+		<label>SmartThings Washing Machine</label>
+		<description>A Samsung washing machine connected via SmartThings Cloud.
+			Provides real-time state, program info, energy
+			monitoring and remote control.</description>
+
+		<channel-groups>
+			<channel-group typeId="main-group-type-generic-washer" id="main"/>
+		</channel-groups>
+
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device ID</label>
+				<description>SmartThings device UUID. Find it via GET https://api.smartthings.com/v1/devices.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-group-type id="main-group-type-generic-washer">
+		<label>Main group type generic Washer</label>
+		<channels>
+			<channel id="switch" typeId="system.power">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">switch</property>
+					<property name="attribute">switch</property>
+				</properties>
+			</channel>
+
+
+			<!-- Operating state -->
+			<channel id="machineState" typeId="machine-state">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">switch</property>
+					<property name="attribute">switch</property>
+				</properties>
+			</channel>
+
+			<channel id="jobState" typeId="job-state">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">switch</property>
+					<property name="attribute">switch</property>
+				</properties>
+			</channel>
+
+			<channel id="completionTime" typeId="completion-time">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">switch</property>
+					<property name="attribute">switch</property>
+				</properties>
+			</channel>
+
+			<channel id="running" typeId="running">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">switch</property>
+					<property name="attribute">switch</property>
+				</properties>
+			</channel>
+
+			<channel id="remaining" typeId="remaining">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">switch</property>
+					<property name="attribute">switch</property>
+				</properties>
+			</channel>
+
+			<!-- Power and remote -->
+			<channel id="power" typeId="power">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">switch</property>
+					<property name="attribute">switch</property>
+				</properties>
+			</channel>
+
+			<channel id="remoteEnabled" typeId="remote-enabled">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">switch</property>
+					<property name="attribute">switch</property>
+				</properties>
+			</channel>
+
+
+			<!-- Program settings -->
+			<channel id="mode" typeId="mode">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">switch</property>
+					<property name="attribute">switch</property>
+				</properties>
+			</channel>
+
+			<!-- Energy monitoring -->
+			<channel id="watt" typeId="watt">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">switch</property>
+					<property name="attribute">switch</property>
+				</properties>
+			</channel>
+
+			<channel id="kwh" typeId="kwh">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">switch</property>
+					<property name="attribute">switch</property>
+				</properties>
+			</channel>
+
+			<channel id="rinseMode" typeId="rinse-mode">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">switch</property>
+					<property name="attribute">switch</property>
+				</properties>
+			</channel>
+
+			<channel id="spinSpeed" typeId="spin-speed">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">switch</property>
+					<property name="attribute">switch</property>
+				</properties>
+			</channel>
+
+			<channel id="temperature" typeId="temperature">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">switch</property>
+					<property name="attribute">switch</property>
+				</properties>
+			</channel>
+
+			<channel id="bubbleSoak" typeId="bubble-soak">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">switch</property>
+					<property name="attribute">switch</property>
+				</properties>
+			</channel>
+
+			<channel id="volume" typeId="volume">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">switch</property>
+					<property name="attribute">switch</property>
+				</properties>
+			</channel>
+
+			<channel id="extraCare" typeId="extra-care">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">switch</property>
+					<property name="attribute">switch</property>
+				</properties>
+			</channel>
+
+			<channel id="extraCareLocation" typeId="extra-care-location">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">switch</property>
+					<property name="attribute">switch</property>
+				</properties>
+			</channel>
+
+
+			<!-- Extended monitoring -->
+			<channel id="waterLiters" typeId="water-liters">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">switch</property>
+					<property name="attribute">switch</property>
+				</properties>
+			</channel>
+
+			<channel id="kidsLock" typeId="kids-lock">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">switch</property>
+					<property name="attribute">switch</property>
+				</properties>
+			</channel>
+
+			<channel id="currentCycle" typeId="current-cycle">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">switch</property>
+					<property name="attribute">switch</property>
+				</properties>
+			</channel>
+
+			<channel id="operatingState" typeId="operating-state">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">switch</property>
+					<property name="attribute">switch</property>
+				</properties>
+			</channel>
+
+			<channel id="progress" typeId="progress">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">switch</property>
+					<property name="attribute">switch</property>
+				</properties>
+			</channel>
+
+			<channel id="detergentRemaining" typeId="detergent-remaining">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">switch</property>
+					<property name="attribute">switch</property>
+				</properties>
+			</channel>
+
+			<channel id="softenerRemaining" typeId="softener-remaining">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">switch</property>
+					<property name="attribute">switch</property>
+				</properties>
+			</channel>
+
+			<channel id="delayEnd" typeId="delay-end">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">switch</property>
+					<property name="attribute">switch</property>
+				</properties>
+			</channel>
+
+			<channel id="supportedCourses" typeId="supported-courses">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">switch</property>
+					<property name="attribute">switch</property>
+				</properties>
+			</channel>
+
+			<channel id="remainingTimeStr" typeId="remaining-time-str">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">switch</property>
+					<property name="attribute">switch</property>
+				</properties>
+			</channel>
+
+			<channel id="operationTime" typeId="operation-time">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">switch</property>
+					<property name="attribute">switch</property>
+				</properties>
+			</channel>
+
+			<channel id="updateAvailable" typeId="update-available">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">switch</property>
+					<property name="attribute">switch</property>
+				</properties>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+
+	<!-- ═══════════════════════════════════════════════════════════════════════
+		Channel Types
+		═══════════════════════════════════════════════════════════════════════ -->
+
+	<channel-type id="machine-state">
+		<item-type>String</item-type>
+		<label>Machine State</label>
+		<description>Overall machine state: run, pause, stop</description>
+		<state readOnly="false">
+			<options>
+				<option value="run">Running</option>
+				<option value="pause">Paused</option>
+				<option value="stop">Stopped</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="job-state">
+		<item-type>String</item-type>
+		<label>Job State</label>
+		<description>Current wash cycle phase: washing, rinsing, spin, finish, none, airWash, cooling, preWash, wrinklePrevent</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="completion-time">
+		<item-type>DateTime</item-type>
+		<label>Completion Time</label>
+		<description>Expected finish time for the current wash cycle</description>
+		<state readOnly="true" pattern="%1$tH:%1$tM"/>
+	</channel-type>
+
+	<channel-type id="running">
+		<item-type>Switch</item-type>
+		<label>Running</label>
+		<description>ON when washer is actively running (jobState is not none/finish/stopped)</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="remaining">
+		<item-type>Number</item-type>
+		<label>Remaining</label>
+		<description>Minutes remaining until the current cycle completes</description>
+		<state readOnly="true" pattern="%.0f min"/>
+	</channel-type>
+
+	<channel-type id="power">
+		<item-type>Switch</item-type>
+		<label>Power</label>
+		<description>Turn the washing machine on or off</description>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="remote-enabled">
+		<item-type>Switch</item-type>
+		<label>Remote Control Enabled</label>
+		<description>ON when the washer allows remote control from SmartThings</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="mode">
+		<item-type>String</item-type>
+		<label>Wash Program</label>
+		<description>Active wash course/program (normal, heavy, delicates, permanentPress, etc.). Send the Samsung courseCode
+			(e.g. 1B, 7F) to change program.</description>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="rinse-mode">
+		<item-type>String</item-type>
+		<label>Rinse Mode</label>
+		<description>Rinse cycles setting (none, normal, extra, max)</description>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="spin-speed">
+		<item-type>String</item-type>
+		<label>Spin Speed</label>
+		<description>Centrifuge speed in RPM as string (e.g. 800, 1200, 1400). Send to change spin speed.</description>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="temperature">
+		<item-type>String</item-type>
+		<label>Water Temperature</label>
+		<description>Wash temperature in °C as string (e.g. 30, 40, 60, cold). Send to change temperature.</description>
+		<state readOnly="false" pattern="%s°C"/>
+	</channel-type>
+
+	<channel-type id="bubble-soak">
+		<item-type>Switch</item-type>
+		<label>Bubble Soak</label>
+		<description>Enable or disable bubble soak pre-wash</description>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="volume">
+		<item-type>Number</item-type>
+		<label>Buzzer Volume</label>
+		<description>Buzzer volume level (0=mute, 1=low, 2=medium, 3=high)</description>
+		<state readOnly="false" pattern="%.0f" min="0" max="3"/>
+	</channel-type>
+
+	<channel-type id="extra-care">
+		<item-type>String</item-type>
+		<label>Extra Care Mode</label>
+		<description>Clothing extra care operation mode (e.g. on, off, rotating)</description>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="extra-care-location">
+		<item-type>String</item-type>
+		<label>Extra Care Location</label>
+		<description>Extra care user location (indoor, outdoor)</description>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="watt">
+		<item-type>Number:Power</item-type>
+		<label>Power Consumption</label>
+		<description>Current power draw of the washing machine</description>
+		<state readOnly="true" pattern="%.0f W"/>
+	</channel-type>
+
+	<channel-type id="kwh">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Usage</label>
+		<description>Accumulated energy consumption in kWh</description>
+		<state readOnly="true" pattern="%.2f kWh"/>
+	</channel-type>
+
+	<channel-type id="water-liters">
+		<item-type>Number</item-type>
+		<label>Water Consumption</label>
+		<description>Cumulative water used in this session (liters)</description>
+		<state readOnly="true" pattern="%.1f L"/>
+	</channel-type>
+
+	<channel-type id="kids-lock">
+		<item-type>Switch</item-type>
+		<label>Child Lock</label>
+		<description>ON when child lock is active (panel locked)</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="current-cycle">
+		<item-type>String</item-type>
+		<label>Active Program Code</label>
+		<description>Currently selected wash program code (e.g. B0, 1B, 65)</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="operating-state">
+		<item-type>String</item-type>
+		<label>Operating State</label>
+		<description>Samsung operating state: ready, running, paused</description>
+		<state readOnly="true">
+			<options>
+				<option value="ready">Ready</option>
+				<option value="running">Running</option>
+				<option value="paused">Paused</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="progress">
+		<item-type>Number</item-type>
+		<label>Progress</label>
+		<description>Wash cycle progress in percent</description>
+		<state readOnly="true" pattern="%.0f %%" min="0" max="100"/>
+	</channel-type>
+
+	<channel-type id="detergent-remaining">
+		<item-type>Number</item-type>
+		<label>Detergent Remaining</label>
+		<description>Remaining detergent amount</description>
+		<state readOnly="true" pattern="%.0f"/>
+	</channel-type>
+
+	<channel-type id="softener-remaining">
+		<item-type>Number</item-type>
+		<label>Softener Remaining</label>
+		<description>Remaining fabric softener amount</description>
+		<state readOnly="true" pattern="%.0f"/>
+	</channel-type>
+
+	<channel-type id="delay-end">
+		<item-type>Number</item-type>
+		<label>Delay End (min)</label>
+		<description>Remaining time until delayed start begins (minutes)</description>
+		<state readOnly="true" pattern="%.0f min"/>
+	</channel-type>
+
+	<channel-type id="supported-courses">
+		<item-type>String</item-type>
+		<label>Supported Courses</label>
+		<description>Comma-separated list of available wash program codes</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="remaining-time-str">
+		<item-type>String</item-type>
+		<label>Remaining Time</label>
+		<description>Remaining cycle time formatted as HH:MM (e.g. "00:15")</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="operation-time">
+		<item-type>Number:Time</item-type>
+		<label>Total Cycle Time</label>
+		<description>Total duration of the selected wash cycle (minutes)</description>
+		<state readOnly="true" pattern="%.0f min"/>
+	</channel-type>
+
+	<channel-type id="update-available">
+		<item-type>Switch</item-type>
+		<label>Firmware Update Available</label>
+		<description>ON when a new firmware version is available for the appliance</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+
+
+</thing:thing-descriptions>
