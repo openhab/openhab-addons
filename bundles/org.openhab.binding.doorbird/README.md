@@ -137,6 +137,11 @@ If the Doorbord is on a separate subnet or VLAN from openHAB, those UDP packets 
 In that case, the Doorbird binding will not receive those events.
 Either put the Doorbird and openHAB on the same subnet/VLAN, or set up your network to explicitly route those UDP packets.
 
+Alternatively to UDP broadcast, you can configure the following webhooks in your doorbell:
+
+- Doorbell (pressed) wbehook: `http[s]://<openhab-ip>:<openhab-port>/doorbird/<thing-uid>/doorbell`
+- Motion Webhook: `http[s]://<openhab-ip>:<openhab-port>/doorbird/<thing-uid>/motion`
+
 ## Example
 
 ### Things

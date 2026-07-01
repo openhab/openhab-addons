@@ -37,6 +37,12 @@
       <version>${jna.version}</version>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>org.openhab.core.bundles</groupId>
+      <artifactId>org.openhab.core.io.rest</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 
 </project>
