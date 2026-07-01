@@ -14,6 +14,11 @@ package org.openhab.binding.rachio.internal.api;
 
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.*;
 
+import java.time.DateTimeException;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -438,12 +443,26 @@ public class RachioDevice extends RachioCloudDevice {
     }
 
     public boolean applyForecast(RachioForecastResponse forecast, String forecastUnits, String retrievedAt) {
-        if (!forecast.hasUsefulData()) {
+        return applyForecastInternal(forecast, forecastUnits, retrievedAt, parseInstant(retrievedAt));
+    }
+
+    public boolean applyForecast(RachioForecastResponse forecast, String forecastUnits, String retrievedAt,
+            Instant retrievedAtInstant) {
+        return applyForecastInternal(forecast, forecastUnits, retrievedAt, retrievedAtInstant);
+    }
+
+    private boolean applyForecastInternal(RachioForecastResponse forecast, String forecastUnits, String retrievedAt,
+            @Nullable Instant retrievedAtInstant) {
+        ZoneId forecastZoneId = getForecastZoneId();
+        LocalDate forecastLocalDate = retrievedAtInstant != null
+                ? LocalDate.ofInstant(retrievedAtInstant, forecastZoneId)
+                : LocalDate.now(forecastZoneId);
+        if (!forecast.hasUsefulData(forecastLocalDate, forecastZoneId)) {
             return false;
         }
-        String summary = forecast.getSummary();
+        String summary = forecast.getSummary(forecastLocalDate, forecastZoneId);
         if (summary.isBlank()) {
-            summary = forecast.buildSummary(forecastUnits);
+            summary = forecast.buildSummary(forecastUnits, forecastLocalDate, forecastZoneId);
         }
         if (!summary.isBlank()) {
             forecastSummary = summary;
@@ -455,7 +474,7 @@ public class RachioDevice extends RachioCloudDevice {
         if (!updated.isBlank()) {
             forecastUpdated = updated;
         }
-        RachioForecastEntry today = forecast.getTodayForecast();
+        RachioForecastEntry today = forecast.getTodayForecast(forecastLocalDate, forecastZoneId);
         if (today == null) {
             return true;
         }
@@ -480,6 +499,45 @@ public class RachioDevice extends RachioCloudDevice {
             forecastWind = wind;
         }
         return true;
+    }
+
+    private @Nullable Instant parseInstant(String value) {
+        if (value.isBlank()) {
+            return null;
+        }
+        try {
+            return Instant.parse(value);
+        } catch (DateTimeException e) {
+            return null;
+        }
+    }
+
+    private ZoneId getForecastZoneId() {
+        @Nullable
+        ZoneOffset offset = getUtcOffsetZone();
+        return offset != null ? offset : ZoneId.systemDefault();
+    }
+
+    private @Nullable ZoneOffset getUtcOffsetZone() {
+        if (utcOffset == 0) {
+            return null;
+        }
+
+        long offsetSeconds = utcOffset;
+        long absoluteOffset = Math.abs(offsetSeconds);
+        if (absoluteOffset <= 18L * 60 && offsetSeconds % 15 == 0) {
+            offsetSeconds *= 60;
+        } else if (absoluteOffset > 18L * 60 * 60 && absoluteOffset <= 18L * 60 * 60 * 1000) {
+            offsetSeconds /= 1000;
+        }
+        if (offsetSeconds < -18L * 60 * 60 || offsetSeconds > 18L * 60 * 60) {
+            return null;
+        }
+        try {
+            return ZoneOffset.ofTotalSeconds(Math.toIntExact(offsetSeconds));
+        } catch (ArithmeticException | DateTimeException e) {
+            return null;
+        }
     }
 
     public void applySkipEvent(String skipType, String scheduleId, String startTime, String reason) {

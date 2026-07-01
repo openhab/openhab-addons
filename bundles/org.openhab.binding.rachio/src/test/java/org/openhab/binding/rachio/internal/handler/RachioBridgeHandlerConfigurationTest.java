@@ -64,6 +64,8 @@ import static org.openhab.binding.rachio.internal.RachioBindingConstants.PARAM_A
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.PARAM_FORECAST_UNITS;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.PARAM_PUBLIC_WEBHOOK_URL;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.PARAM_USE_CLOUD_WEBHOOK;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.PROPERTY_LAST_WEBHOOK_EVENT_TIMESTAMP;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.PROPERTY_LAST_WEBHOOK_EVENT_TYPE;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_TYPE_CLOUD;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_TYPE_DEVICE;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_TYPE_SCHEDULE;
@@ -1093,6 +1095,28 @@ class RachioBridgeHandlerConfigurationTest {
     }
 
     @Test
+    void acceptedModernWebhookEventUpdatesSafeLastEventProperties() throws Exception {
+        ModernWebhookFixture fixture = modernWebhookFixture();
+        enableModernWebhookMode(fixture.handler);
+        RachioEventGsonDTO modernEvent = modernIrrigationEvent(EVENT_DEVICE_ZONE_RUN_STARTED, """
+                "zoneId": "zone-id",
+                "zoneNumber": "7",
+                "zoneName": "Front lawn",
+                "durationSeconds": "120"
+                """);
+
+        assertThat(fixture.handler.webHookEvent(modernEvent), is(true));
+
+        Map<String, String> properties = fixture.handler.getThing().getProperties();
+        assertThat(properties.get(PROPERTY_LAST_WEBHOOK_EVENT_TYPE), is(EVENT_DEVICE_ZONE_RUN_STARTED));
+        assertThat(properties.get(PROPERTY_LAST_WEBHOOK_EVENT_TIMESTAMP).isBlank(), is(false));
+        assertThat(
+                properties.values().stream().noneMatch(
+                        value -> value.contains("external-id") || value.contains("https://example.org/rachio/webhook")),
+                is(true));
+    }
+
+    @Test
     void modernIrrigationEventIsAcknowledgedWithoutDispatchWhenLegacyModeActive() throws Exception {
         ModernWebhookFixture fixture = modernWebhookFixture();
         enableLegacyWebhookMode(fixture.handler);
@@ -1107,6 +1131,10 @@ class RachioBridgeHandlerConfigurationTest {
 
         verify(fixture.deviceHandler, never()).webhookEvent(Mockito.any(RachioEventGsonDTO.class));
         verify(fixture.handler, never()).refreshDeviceStatus(RefreshReason.WEBHOOK_RECONCILIATION);
+        assertThat(fixture.handler.getThing().getProperties().getOrDefault(PROPERTY_LAST_WEBHOOK_EVENT_TYPE, ""),
+                is(""));
+        assertThat(fixture.handler.getThing().getProperties().getOrDefault(PROPERTY_LAST_WEBHOOK_EVENT_TIMESTAMP, ""),
+                is(""));
     }
 
     @Test
@@ -1600,7 +1628,7 @@ class RachioBridgeHandlerConfigurationTest {
             order.verify(deviceCallback).stateUpdated(
                     new ChannelUID(deviceThing.getUID(), CHANNEL_DEVICE_ACTIVE_ZONE_NAME), UnDefType.NULL);
             order.verify(deviceCallback)
-                    .stateUpdated(new ChannelUID(deviceThing.getUID(), CHANNEL_CURRENT_SCHEDULE_NAME), UnDefType.UNDEF);
+                    .stateUpdated(new ChannelUID(deviceThing.getUID(), CHANNEL_CURRENT_SCHEDULE_NAME), UnDefType.NULL);
             order.verify(deviceCallback).stateUpdated(
                     new ChannelUID(deviceThing.getUID(), CHANNEL_CURRENT_SCHEDULE_DURATION),
                     RachioQuantityTypes.seconds(0));
@@ -1731,7 +1759,7 @@ class RachioBridgeHandlerConfigurationTest {
                 OnOffType.OFF);
         verify(fixture.deviceCallback).stateUpdated(
                 new ChannelUID(fixture.deviceHandler.getThing().getUID(), CHANNEL_CURRENT_SCHEDULE_NAME),
-                UnDefType.UNDEF);
+                UnDefType.NULL);
         verify(fixture.deviceCallback).stateUpdated(
                 new ChannelUID(fixture.deviceHandler.getThing().getUID(), CHANNEL_DEVICE_ACTIVE_ZONE_NUMBER),
                 UnDefType.NULL);

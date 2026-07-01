@@ -144,6 +144,29 @@ class RachioHandlerFactoryTest {
     }
 
     @Test
+    void modernWebhookRoutesOnlyToBridgeWithMatchingExternalId() throws Exception {
+        RachioHandlerFactory factory = new RachioHandlerFactory();
+        RachioBridgeHandler bridgeHandler = Mockito.mock(RachioBridgeHandler.class);
+        when(bridgeHandler.getExternalId()).thenReturn("expected-external-id");
+        when(bridgeHandler.webHookEvent(Mockito.any(RachioEventGsonDTO.class))).thenReturn(true);
+        RachioHandlerFactory.RachioBridge bridge = factory.new RachioBridge();
+        bridge.cloudHandler = bridgeHandler;
+        bridgeList(factory).put("bridge", bridge);
+        RachioEventGsonDTO event = new RachioEventGsonDTO();
+        event.externalId = "expected-external-id";
+
+        assertThat(factory.webHookEvent("127.0.0.1", event), is(true));
+        verify(bridgeHandler).webHookEvent(event);
+
+        Mockito.clearInvocations(bridgeHandler);
+        event.externalId = "wrong-external-id";
+
+        assertThat(factory.webHookEvent("127.0.0.1", event), is(false));
+        verify(bridgeHandler, never()).webHookEvent(event);
+        verify(bridgeHandler, never()).legacyWebHookEvent(event);
+    }
+
+    @Test
     void webhookSignatureValidationUsesBridgeMatchedByExternalId() throws Exception {
         RachioHandlerFactory factory = new RachioHandlerFactory();
         RachioBridgeHandler firstBridgeHandler = Mockito.mock(RachioBridgeHandler.class);

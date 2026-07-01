@@ -19,6 +19,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.lang.reflect.Field;
 import java.time.Duration;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -47,6 +49,8 @@ import com.google.gson.JsonParser;
 @NonNullByDefault
 @SuppressWarnings({ "null" })
 class RachioSmartIrrigationApiTest {
+    private static final LocalDate JUNE_30_2026 = LocalDate.of(2026, 6, 30);
+
     @Test
     void currentScheduleRemainsEssentialWhenOptionalForecastIsLocallyThrottled() throws Exception {
         RachioApi api = new RachioApi("person-id");
@@ -211,6 +215,7 @@ class RachioSmartIrrigationApiTest {
 
     @Test
     void forecastDtoMapsRuntimeDailyAliases() {
+        LocalDate forecastDate = LocalDate.of(2026, 6, 20);
         RachioForecastResponse response = RachioForecastResponse.fromJson("""
                 {
                   "weather": {
@@ -228,21 +233,155 @@ class RachioSmartIrrigationApiTest {
                   }
                 }
                 """);
-        RachioForecastEntry todayForecast = Objects.requireNonNull(response.getTodayForecast());
+        RachioForecastEntry todayForecast = Objects
+                .requireNonNull(response.getTodayForecast(forecastDate, ZoneOffset.UTC));
 
-        assertThat(response.getSummary(), is("Scattered showers"));
-        assertThat(response.getUpdated(), is("2026-06-20T08:00:00Z"));
+        assertThat(response.getSummary(forecastDate, ZoneOffset.UTC), is("Scattered showers"));
+        assertThat(response.getUpdated(), is(""));
         assertThat(todayForecast.precipitation, is(3.4));
-        assertThat(response.parsedFieldSummary().contains("summary=true"), is(true));
-        assertThat(response.parsedFieldSummary().contains("precipitation=true"), is(true));
-        assertThat(response.parsedFieldSummary().contains("updated=true"), is(true));
-        assertThat(response.shapeSummary().contains(
+        assertThat(response.parsedFieldSummary(forecastDate, ZoneOffset.UTC).contains("summary=true"), is(true));
+        assertThat(response.parsedFieldSummary(forecastDate, ZoneOffset.UTC).contains("precipitation=true"), is(true));
+        assertThat(response.parsedFieldSummary(forecastDate, ZoneOffset.UTC).contains("updated=false"), is(true));
+        assertThat(response.shapeSummary(forecastDate, ZoneOffset.UTC).contains(
                 "matchedAliases=weatherSummary,localizedTimeStamp,temperatureMax,temperatureMin,calculatedPrecip,precipIntensity,precipProbability"),
                 is(true));
     }
 
     @Test
-    void forecastDtoPreservesAliasPrecedenceAndUsesTimeAsTimestampFallback() {
+    void forecastDtoSelectsDatedDailyForecastOverFutureTopLevelEntry() {
+        RachioForecastResponse response = RachioForecastResponse.fromJson("""
+                {
+                  "localizedTimeStamp": "2026-07-11T08:00:00Z",
+                  "weatherSummary": "Future top-level forecast",
+                  "temperatureMax": 99.0,
+                  "temperatureMin": 77.0,
+                  "dailyForecasts": [
+                    {
+                      "localizedTimeStamp": "2026-06-30T08:00:00Z",
+                      "weatherSummary": "Today daily forecast",
+                      "temperatureMax": 82.0,
+                      "temperatureMin": 61.0
+                    }
+                  ]
+                }
+                """);
+        RachioForecastEntry todayForecast = Objects
+                .requireNonNull(response.getTodayForecast(JUNE_30_2026, ZoneOffset.UTC));
+
+        assertThat(response.getSummary(JUNE_30_2026, ZoneOffset.UTC), is("Today daily forecast"));
+        assertThat(todayForecast.summary, is("Today daily forecast"));
+        assertThat(todayForecast.getHighTemperature(), is(82.0));
+        assertThat(todayForecast.getLowTemperature(), is(61.0));
+    }
+
+    @Test
+    void forecastDtoSelectsTodayFromLaterForecastArrayEntry() {
+        RachioForecastResponse response = RachioForecastResponse.fromJson("""
+                {
+                  "forecast": [
+                    {
+                      "localizedTimeStamp": "2026-07-11T08:00:00Z",
+                      "weatherSummary": "Future first forecast",
+                      "temperatureMax": 99.0
+                    },
+                    {
+                      "localizedTimeStamp": "2026-06-30T08:00:00Z",
+                      "weatherSummary": "Today second forecast",
+                      "temperatureMax": 82.0
+                    }
+                  ]
+                }
+                """);
+        RachioForecastEntry todayForecast = Objects
+                .requireNonNull(response.getTodayForecast(JUNE_30_2026, ZoneOffset.UTC));
+
+        assertThat(response.getSummary(JUNE_30_2026, ZoneOffset.UTC), is("Today second forecast"));
+        assertThat(todayForecast.getHighTemperature(), is(82.0));
+    }
+
+    @Test
+    void forecastDtoDoesNotPublishFutureDatedEntryAsToday() {
+        RachioForecastResponse response = RachioForecastResponse.fromJson("""
+                {
+                  "forecast": [
+                    {
+                      "localizedTimeStamp": "2026-07-11T08:00:00Z",
+                      "weatherSummary": "Future first forecast",
+                      "temperatureMax": 99.0
+                    }
+                  ],
+                  "dailyForecasts": [
+                    {
+                      "localizedTimeStamp": "2026-07-12T08:00:00Z",
+                      "weatherSummary": "Future daily forecast",
+                      "temperatureMax": 100.0
+                    }
+                  ]
+                }
+                """);
+
+        assertThat(response.getTodayForecast(JUNE_30_2026, ZoneOffset.UTC) == null, is(true));
+        assertThat(response.hasUsefulData(JUNE_30_2026, ZoneOffset.UTC), is(false));
+        assertThat(response.getSummary(JUNE_30_2026, ZoneOffset.UTC), is(""));
+    }
+
+    @Test
+    void forecastDtoKeepsUndatedEntryFallbackCompatibility() {
+        RachioForecastResponse response = RachioForecastResponse.fromJson("""
+                {
+                  "forecast": [
+                    {
+                      "weatherSummary": "Undated first forecast",
+                      "temperatureMax": 82.0
+                    },
+                    {
+                      "weatherSummary": "Undated second forecast",
+                      "temperatureMax": 99.0
+                    }
+                  ]
+                }
+                """);
+        RachioForecastEntry todayForecast = Objects
+                .requireNonNull(response.getTodayForecast(JUNE_30_2026, ZoneOffset.UTC));
+
+        assertThat(response.hasUsefulData(JUNE_30_2026, ZoneOffset.UTC), is(true));
+        assertThat(response.getSummary(JUNE_30_2026, ZoneOffset.UTC), is("Undated first forecast"));
+        assertThat(todayForecast.getHighTemperature(), is(82.0));
+    }
+
+    @Test
+    void forecastDtoUsesResponseUpdatedFieldsOnlyForUpdatedTimestamp() {
+        RachioForecastResponse updatedResponse = RachioForecastResponse.fromJson("""
+                {
+                  "updated": "2026-06-30T07:55:00Z",
+                  "updatedAt": "2026-06-30T08:00:00Z",
+                  "forecast": [
+                    {
+                      "localizedTimeStamp": "2026-06-30T12:00:00Z",
+                      "weatherSummary": "Today forecast"
+                    }
+                  ]
+                }
+                """);
+        RachioForecastResponse updatedAtResponse = RachioForecastResponse.fromJson("""
+                {
+                  "updatedAt": "2026-06-30T08:00:00Z",
+                  "forecast": [
+                    {
+                      "localizedTimeStamp": "2026-06-30T12:00:00Z",
+                      "weatherSummary": "Today forecast"
+                    }
+                  ]
+                }
+                """);
+
+        assertThat(updatedResponse.getUpdated(), is("2026-06-30T07:55:00Z"));
+        assertThat(updatedAtResponse.getUpdated(), is("2026-06-30T08:00:00Z"));
+    }
+
+    @Test
+    void forecastDtoPreservesAliasPrecedenceWithoutUsingEntryTimeAsUpdateFallback() {
+        LocalDate forecastDate = LocalDate.of(2026, 6, 20);
         RachioForecastResponse response = RachioForecastResponse.fromJson("""
                 {
                   "today": {
@@ -254,12 +393,14 @@ class RachioSmartIrrigationApiTest {
                   }
                 }
                 """);
-        RachioForecastEntry todayForecast = Objects.requireNonNull(response.getTodayForecast());
+        RachioForecastEntry todayForecast = Objects
+                .requireNonNull(response.getTodayForecast(forecastDate, ZoneOffset.UTC));
 
-        assertThat(response.getSummary(), is("Preferred summary"));
-        assertThat(response.getUpdated(), is("1781942400"));
+        assertThat(response.getSummary(forecastDate, ZoneOffset.UTC), is("Preferred summary"));
+        assertThat(response.getUpdated(), is(""));
         assertThat(todayForecast.precipitation, is(1.2));
-        assertThat(response.shapeSummary().contains("matchedAliases=summary,time,precipitationAmount"), is(true));
+        assertThat(response.shapeSummary(forecastDate, ZoneOffset.UTC)
+                .contains("matchedAliases=summary,time,precipitationAmount"), is(true));
     }
 
     @Test
