@@ -431,10 +431,12 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     // fall through
                 }
                 putResource = Setters.setColorTemperaturePercent(new Resource(lightResourceType), command, cache);
+                putResource.setOnOff(Setters.getHardOnOff(putResource, 0.0, false, cache)); // avoid "soft off"
                 break;
 
             case CHANNEL_2_COLOR_TEMP_ABSOLUTE:
                 putResource = Setters.setColorTemperatureAbsolute(new Resource(lightResourceType), command, cache);
+                putResource.setOnOff(Setters.getHardOnOff(putResource, 0.0, false, cache)); // avoid "soft off"
                 break;
 
             case CHANNEL_2_COLOR:
@@ -449,10 +451,11 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 putResource = Objects.nonNull(putResource) ? putResource : new Resource(lightResourceType);
                 if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
                     putResource.setDimmingDelta(increaseDecreaseCommand, DIMMING_DELTA);
-                    command = Setters.buildHardOnOff(putResource, null, DIMMING_DELTA, cache);
+                    command = Setters.getHardOnOff(putResource, DIMMING_DELTA, false, cache);// avoid "soft off"
                 } else if (command instanceof PercentType brightnessCommand) {
                     putResource = putResource.setBrightness(brightnessCommand);
-                    command = Setters.buildHardOnOff(putResource, brightnessCommand.doubleValue(), null, cache);
+                    double brightnessAbsolute = brightnessCommand.doubleValue();
+                    command = Setters.getHardOnOff(putResource, brightnessAbsolute, true, cache);// avoid "soft off"
                 }
                 // NB fall through for handling of switch related had on/off commands !!
 

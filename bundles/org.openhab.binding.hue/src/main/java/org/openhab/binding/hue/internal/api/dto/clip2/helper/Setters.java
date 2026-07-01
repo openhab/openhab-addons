@@ -367,24 +367,24 @@ public class Setters {
     }
 
     /**
-     * Create an OnOffType command based on the given brightness and delta values, considering the minimum dimming level
+     * Create an OnOffType command based on the given brightness or delta value, considering the minimum dimming level
      * from the cache if available. The purpose is to send a "hard" ON if the lamp is definitely ON and a hard "OFF" if
      * it is definitely OFF, and thus avoiding sending "soft off" commands to the light. Note the minimum dimming level
      * is applied on lights only and not on grouped lights.
      * 
-     * @param brightnessTarget the target brightness (may be null).
-     * @param brightnessDelta the delta to be added to the prior cached value.
+     * @param brightnessValue the target brightness or the delta to be added to the prior cached value.
+     * @param valueIsAbsolute true if the brightnessValue is an absolute value, false if it is a delta.
      * @param source the cached resource to get the minimum dimming level from (may be null).
      * @return the OnOffType command to be sent.
      * @throws CriticalFieldMissing if there is not enough data to create the command.
      */
-    public static OnOffType buildHardOnOff(Resource target, @Nullable Double brightnessTarget,
-            @Nullable Double brightnessDelta, @Nullable Resource source) throws CriticalFieldMissing {
+    public static OnOffType getHardOnOff(Resource target, Double brightnessValue, boolean valueIsAbsolute,
+            @Nullable Resource source) throws CriticalFieldMissing {
         Double bri;
-        if (brightnessTarget != null) {
-            bri = brightnessTarget;
-        } else if (brightnessDelta != null && source != null && source.getDimmingValue() instanceof Double dim) {
-            bri = dim + brightnessDelta;
+        if (valueIsAbsolute) {
+            bri = brightnessValue;
+        } else if (source != null && source.getDimmingValue() instanceof Double dim) {
+            bri = dim + brightnessValue;
         } else {
             throw new CriticalFieldMissing("Not enough data to create hard on/off command");
         }
