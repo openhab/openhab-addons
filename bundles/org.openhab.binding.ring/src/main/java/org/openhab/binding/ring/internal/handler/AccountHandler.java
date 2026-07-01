@@ -300,20 +300,6 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         return refreshToken;
     }
 
-    private void deleteRefreshTokenFile() {
-        String folderName = OpenHAB.getUserDataFolder() + "/ring";
-        String thingId = getThing().getUID().getId();
-        String fileName = folderName + "/ring." + thingId + ".refreshToken";
-        File file = new File(fileName);
-        if (file.exists()) {
-            if (file.delete()) {
-                logger.info("Successfully deleted invalid/expired Ring refresh token file.");
-            } else {
-                logger.warn("Failed to delete expired Ring refresh token file.");
-            }
-        }
-    }
-
     private File getFcmCredentialsFile() {
         File ringDir = new File(OpenHAB.getUserDataFolder(), "ring");
         if (!ringDir.exists()) {
@@ -745,11 +731,10 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                     updateStatus(ThingStatus.ONLINE);
                 } catch (AuthenticationException ex) {
                     logger.warn(
-                            "Ring token rejected during minuteTick. Deleting saved token to force re-authentication.");
-                    deleteRefreshTokenFile();
-                    tokens = new Tokens("", "");
+                            "Communication or authentication failure during minuteTick recovery. Preserving token. Reason: {}",
+                            ex.getMessage());
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Invalid credentials - Please re-authenticate");
+                            "API Error - Will retry on next tick.");
                 } catch (JsonParseException e1) {
                     logger.debug("RestClient reported JsonParseException trying to get tokens: {}", e1.getMessage());
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -838,14 +823,11 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         try {
             refreshRegistry(false);
             tokens = restClient.getTokens("", "", tokens.refreshToken(), "", config.hardwareId);
+            updateStatus(ThingStatus.ONLINE);
         } catch (AuthenticationException e) {
-            logger.warn("Failed to refresh Ring token. Token may have been revoked: {}", e.getMessage());
-            if (e.getMessage() != null && e.getMessage().contains("Invalid username or password")) {
-                deleteRefreshTokenFile();
-                tokens = new Tokens("", ""); // Clear token from memory
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Invalid credentials - Please re-authenticate");
-            }
+            logger.warn("Failed to refresh Ring token. Network error or token revoked: {}", e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Token refresh failed - API Error");
         }
     }
 
