@@ -14,7 +14,7 @@ _Other_ is identified as any of the non-traditional types such as the intercom.
 ## Discovery
 
 Auto-discovery is supported by this binding.
-After (manually) adding a Ring Account bridge, registered doorbells and chimes will be auto discovered.
+After (manually) adding a Ring Account bridge, registered devices will be auto discovered.
 
 ## Account Configuration
 
@@ -76,10 +76,10 @@ ring.things:
 
 ```java
 ring:account:ringAccount                "Ring Account"           [ username="user@domain.com", password="XXXXXXX", hardwareId="AA-BB-CC-DD-EE-FF", refreshInterval=5 ]
-ring:doorbell:<ring_device_id>          "Ring Doorbell"          [ refreshInterval=5, offOffset=0 ]
-ring:chime:<ring_device_id>             "Ring Chime"             [ refreshInterval=5, offOffset=0 ]
-ring:stickupcam:<ring_device_id>        "Ring Stickup Camera"    [ refreshInterval=5, offOffset=0 ]
-ring:other:<ring_device_id>             "Ring Other Device"      [ refreshInterval=5, offOffset=0 ]
+ring:doorbell:<ring_device_id>          "Ring Doorbell"          [ offOffset=0 ]
+ring:chime:<ring_device_id>             "Ring Chime"             [ offOffset=0 ]
+ring:stickupcam:<ring_device_id>        "Ring Stickup Camera"    [ offOffset=0 ]
+ring:other:<ring_device_id>             "Ring Other Device"      [ offOffset=0 ]
 ```
 
 ring.items:
