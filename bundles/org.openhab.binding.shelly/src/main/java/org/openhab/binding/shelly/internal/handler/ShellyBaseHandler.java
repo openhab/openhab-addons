@@ -510,7 +510,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                     break;
                 case CHANNEL_CONTROL_MODE:
                     logger.debug("{}: Set mode to {}", thingName, command);
-                    api.setValveMode(0, CHANNEL_CONTROL_MODE.equalsIgnoreCase(command.toString()));
+                    api.setValveMode(0, SHELLY_TRV_MODE_AUTO.equalsIgnoreCase(command.toString()));
                     break;
                 case CHANNEL_CONTROL_SETTEMP:
                     logger.debug("{}: Set temperature to {}", thingName, command);
