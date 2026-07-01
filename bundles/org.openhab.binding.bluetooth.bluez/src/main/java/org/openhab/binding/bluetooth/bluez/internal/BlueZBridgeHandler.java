@@ -27,6 +27,7 @@ import org.bluez.exceptions.BluezNotSupportedException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.freedesktop.dbus.exceptions.DBusExecutionException;
+import org.freedesktop.dbus.messages.MethodCall;
 import org.freedesktop.dbus.types.Variant;
 import org.openhab.binding.bluetooth.AbstractBluetoothBridgeHandler;
 import org.openhab.binding.bluetooth.BluetoothAddress;
@@ -60,6 +61,10 @@ import com.github.hypfvieh.bluetooth.wrapper.BluetoothDevice;
 @NonNullByDefault
 public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBluetoothDevice>
         implements BlueZEventListener {
+
+    static {
+        MethodCall.setDefaultTimeout(60_000);
+    }
 
     private final Logger logger = LoggerFactory.getLogger(BlueZBridgeHandler.class);
 
