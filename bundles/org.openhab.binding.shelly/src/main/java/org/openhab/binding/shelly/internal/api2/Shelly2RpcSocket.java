@@ -363,9 +363,10 @@ public class Shelly2RpcSocket implements WriteCallback {
                                     String address = getString(e.blu != null ? e.blu.addr : "").replace(":", "");
                                     ShellyThingInterface bluThing = thingTable.findThing(address);
                                     if (bluThing != null) {
-                                        // known device — route to the BLU thing's own handler
+                                        // known device
                                         if (bluThing.getApi() instanceof Shelly2ApiRpc bluApi) {
-                                            bluApi.getRpcHandler().onNotifyEvent(receivedMessage);
+                                            handler = bluApi.getRpcHandler();
+                                            handler.onNotifyEvent(receivedMessage);
                                         } else {
                                             logger.debug("{}: BLU thing {} has unexpected API type, skipping event",
                                                     thingName, address);
@@ -377,7 +378,7 @@ public class Shelly2RpcSocket implements WriteCallback {
                                         } else {
                                             logger.debug(
                                                     "{}: NotifyEvent {} for unknown BLU device {} or Thing in Inbox",
-                                                    message.src, e.event, e.blu.addr);
+                                                    message.src, e.event, e.blu != null ? e.blu.addr : "unknown");
                                         }
                                     }
                                 } else {
@@ -397,7 +398,7 @@ public class Shelly2RpcSocket implements WriteCallback {
                 }
             }
         } catch (ShellyApiException | IllegalArgumentException e) {
-            logger.debug("{}: Unable to process Rpc message ({}): {}", thingName, e.getMessage(), receivedMessage);
+            logger.debug("{}: Unable to process Rpc message ({}): {}", thingName, e.getMessage(), receivedMessage, e);
         }
     }
 

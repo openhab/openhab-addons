@@ -161,6 +161,7 @@ See section [Discovery](#discovery) for details.
 | shellyblumotion      | Shelly BLU Motion ZB                                   | SBMO-103Z               |
 | shellybludistance    | Shelly BLU Distance                                    | SBDI-003E               |
 | shellybluremote      | Shelly BLU Remote Control                              | SBRC-005B               |
+| shellybluws90        | Ecowitt WS90 (powered by Shelly)                       | SBWS-90CM               |
 
 ### Special Thing Types
 
@@ -249,6 +250,8 @@ Follow these steps to add the Shelly BLU Device to openHAB:
 
 - During initialization the script 'oh-blu-scanner.js' gets installed and activated on the Shelly Gateway device.
 - Shelly BLU Motion: It may take some time until channels like Lux show up.
+- Ecowitt WS90: The WS90 is solar-powered and broadcasts continuously — no button press is required to add it to the Inbox.
+  It will appear automatically once it is within range of a configured BLU gateway.
 
 Try moving the device to force status updates.
 
@@ -1908,6 +1911,28 @@ See notes on discovery of Shelly BLU devices above.
 | battery | batteryLevel  | Number   | yes       | Battery Level in %                                                                  |
 |         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                                                           |
 | device  | gatewayDevice | String   | yes       | Shelly forwarded last status update (BLU gateway), could vary from packet to packet |
+
+### Ecowitt WS90 - powered by Shelly (thing-type: shellybluws90)
+
+See notes on discovery of Shelly BLU devices above.
+
+| Group   | Channel       | Type                 | read-only | Description                                                                         |
+| ------- | ------------- | -------------------- | --------- | ----------------------------------------------------------------------------------- |
+| sensors | temperature   | Number:Temperature   | yes       | Temperature in degrees Celsius                                                      |
+|         | humidity      | Number:Dimensionless | yes       | Relative humidity in %                                                              |
+|         | uvIndex       | Number               | yes       | UV Index (dimensionless, 0-11+)                                                     |
+|         | windSpeed     | Number:Speed         | yes       | Wind speed in m/s                                                                   |
+|         | windDirection | Number:Angle         | yes       | Wind direction in degrees (0-360)                                                   |
+|         | gustSpeed     | Number:Speed         | yes       | Wind gust speed in m/s                                                              |
+|         | pressure      | Number:Pressure      | yes       | Atmospheric pressure in hPa                                                         |
+|         | dewPoint      | Number:Temperature   | yes       | Dew point in degrees Celsius                                                        |
+|         | rainStatus    | Switch               | yes       | ON: It's raining, OFF: It's not raining                                             |
+|         | precipitation | Number:Length        | yes       | Accumulated rainfall in mm (monotonic total since sensor reset)                     |
+|         | lastUpdate    | DateTime             | yes       | Timestamp of the last update (any sensor value changed)                             |
+| battery | batteryLevel  | Number               | yes       | Battery Level in %                                                                  |
+|         | lowBattery    | Switch               | yes       | Low battery alert (< 20%)                                                           |
+| device  | gatewayDevice | String               | yes       | Shelly forwarded last status update (BLU gateway), could vary from packet to packet |
+|         | firmware      | String               | yes       | Firmware version (may be empty — not all firmware versions report it)               |
 
 ## Shelly Wall Displays
 

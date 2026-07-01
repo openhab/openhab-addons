@@ -96,22 +96,23 @@ public class ShellyDeviceProfile {
     public boolean isRGBW2; // true only if it a RGBW2
     public boolean inColor; // true if bulb/rgbw2 is in color mode
 
-    public boolean isSensor; // true for HT & Smoke
-    public boolean hasBattery; // true if battery device
-    public boolean isSense; // true if thing is a Shelly Sense
-    public boolean isHT; // true for H&T
-    public boolean isDW; // true for Door Window sensor
-    public boolean isButton; // true for a Shelly Button 1
-    public boolean isMultiButton; // true for a Shelly BLU Wall Switch 4 or RC Button 4
-    public boolean isMotion; // true if thing is a Shelly Motion
-    public boolean isDistance; // true if thing is a Shelly BLU Distance
-    public boolean isRemote; // true if thing is a Shelly BLU Remote
-    public boolean isIX; // true for a Shelly IX
-    public boolean isTRV; // true for a Shelly TRV
-    public boolean isSmoke; // true for Shelly Smoke
-    public boolean isWall; // true: Shelly Wall Display
-    public boolean is3EM; // true for Shelly 3EM and Pro 3EM
-    public boolean isEM50; // true for Shelly Pro EM50
+    public boolean isSensor = false; // true for HT & Smoke
+    public boolean hasBattery = false; // true if battery device
+    public boolean isSense = false; // true if thing is a Shelly Sense
+    public boolean isHT = false; // true for H&T
+    public boolean isDW = false; // true for Door Window sensor
+    public boolean isButton = false; // true for a Shelly Button 1
+    public boolean isMultiButton = false; // true for a Shelly BLU Wall Switch 4 or RC Button 4
+    public boolean isMotion = false; // true if thing is a Shelly Motion
+    public boolean isDistance = false; // true if thing is a Shelly BLU Distance
+    public boolean isRemote = false; // true if thing is a Shelly BLU Remote
+    public boolean isIX = false; // true for a Shelly IX
+    public boolean isTRV = false; // true for a Shelly TRV
+    public boolean isSmoke = false; // true for Shelly Smoke
+    public boolean isWall = false; // true: Shelly Wall Display
+    public boolean is3EM = false; // true for Shelly 3EM and Pro 3EM
+    public boolean isEM50 = false; // true for Shelly Pro EM50
+    public boolean isWS90 = false; // true for Ecowitt WS90
 
     public int minTemp = 0; // Bulb/Duo: Min Light Temp
     public int maxTemp = 0; // Bulb/Duo: Max Light Temp
@@ -232,9 +233,10 @@ public class ShellyDeviceProfile {
         isWall = GROUP_WALLDISPLAY_THING_TYPES.contains(thingTypeUID);
         is3EM = GROUP_3EM_THING_TYPES.contains(thingTypeUID);
         isEM50 = THING_TYPE_SHELLYPROEM50.equals(thingTypeUID);
+        isWS90 = THING_TYPE_SHELLYBLUWS90.equals(thingTypeUID);
 
         isSensor = isHT || isFlood || isDW || isSmoke || isGas || isButton || isMultiButton || isUNI || isMotion
-                || isSense || isTRV || isWall;
+                || isSense || isTRV || isWall || isWS90;
         hasBattery = isHT || isFlood || isDW || isSmoke || isButton || isMotion || isTRV || isBlu;
         alwaysOn = !hasBattery || (isMotion && !isBlu) || isSense; // true means: device is reachable all the time (no
                                                                    // sleep mode)

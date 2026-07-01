@@ -112,6 +112,21 @@ public class ShellyBluJsonDTO {
         public Double[] rotations;
         @SerializedName("Dimmer") // BLU Remote
         public Shelly2NotifyBluEventDimmer dimmer;
+        @SerializedName("Moisture") // WS90 rain detection (BTHome 0x20)
+        public Double rain;
+        @SerializedName("Speed") // WS90
+        public Double[] speeds;
+        @SerializedName("UVIndex") // WS90
+        public Double uvIndex;
+        @SerializedName("Pressure") // WS90
+        public Double pressure;
+        @SerializedName("Dewpoint") // WS90
+        public Double dewPoint;
+        @SerializedName("Precipitation") // WS90
+        public Double precipitation;
+        @SerializedName("Direction") // WS90
+        public Double direction;
+
         @SerializedName("Firmware32")
         public Long firmware32;
         @SerializedName("LightLevel") // BLU ZB: 0=dark, 1=twilight, 2=bright

@@ -25,14 +25,18 @@ import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.shelly.internal.api.ShellyApiException;
+import org.openhab.binding.shelly.internal.api.ShellyApiInterface;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtAnalogInput;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtDigitalInput;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtHumidity;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtTemperature;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtTemperature.ShellyShortTemp;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtVoltage;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.types.UnDefType;
@@ -294,7 +298,86 @@ public class ShellyComponentsTest {
         verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_ESENSOR_TEMP3), any());
     }
 
+    // ── WS90 channel updates ─────────────────────────────────────────────────
+
+    @Test
+    void updateSensors_ws90Rain_publishesOnOff() throws Exception {
+        ShellyStatusSensor sdata = new ShellyStatusSensor();
+        sdata.rain = true;
+        ShellyThingInterface handler = ws90HandlerWith(sdata);
+
+        ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
+
+        verify(handler).updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_RAINST, OnOffType.ON);
+    }
+
+    @Test
+    void updateSensors_ws90RainFalse_publishesOff() throws Exception {
+        ShellyStatusSensor sdata = new ShellyStatusSensor();
+        sdata.rain = false;
+        ShellyThingInterface handler = ws90HandlerWith(sdata);
+
+        ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
+
+        verify(handler).updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_RAINST, OnOffType.OFF);
+    }
+
+    @Test
+    void updateSensors_ws90WindSpeed_publishesQuantityType() throws Exception {
+        ShellyStatusSensor sdata = new ShellyStatusSensor();
+        sdata.windSpeed = 3.5;
+        ShellyThingInterface handler = ws90HandlerWith(sdata);
+
+        ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
+
+        verify(handler).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_WINDSP), argThat(
+                s -> s instanceof QuantityType<?> && Math.abs(((QuantityType<?>) s).doubleValue() - 3.5) < 0.01));
+    }
+
+    @Test
+    void updateSensors_ws90UvIndex_publishesDecimalType() throws Exception {
+        ShellyStatusSensor sdata = new ShellyStatusSensor();
+        sdata.uvIndex = 5.3;
+        ShellyThingInterface handler = ws90HandlerWith(sdata);
+
+        ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
+
+        verify(handler).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_UV),
+                argThat(s -> s instanceof DecimalType && ((DecimalType) s).doubleValue() == 5.3));
+    }
+
+    @Test
+    void updateSensors_ws90NullWindFields_skipsWindChannels() throws Exception {
+        ShellyStatusSensor sdata = new ShellyStatusSensor();
+        // all WS90 fields null — simulates atmospheric-only packet arriving before wind packet
+        ShellyThingInterface handler = ws90HandlerWith(sdata);
+
+        ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
+
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_WINDSP), any());
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_WINDDIR), any());
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_GUSTSP), any());
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_RAINST), any());
+    }
+
     // ── helpers ───────────────────────────────────────────────────────────────
+
+    private static ShellyThingInterface ws90HandlerWith(ShellyStatusSensor sdata) throws ShellyApiException {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYBLUWS90);
+        profile.isSensor = true;
+        profile.hasBattery = true;
+        profile.isWS90 = true;
+
+        ShellyApiInterface api = mock(ShellyApiInterface.class);
+        when(api.getSensorStatus()).thenReturn(sdata);
+
+        ShellyThingInterface handler = mock(ShellyThingInterface.class);
+        when(handler.getProfile()).thenReturn(profile);
+        when(handler.getApi()).thenReturn(api);
+        when(handler.areChannelsCreated()).thenReturn(true);
+        when(handler.updateChannel(anyString(), anyString(), any())).thenReturn(true);
+        return handler;
+    }
 
     private static ShellyThingInterface relayHandlerWith(ShellySettingsStatus profileStatus) {
         ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUS1PM);
