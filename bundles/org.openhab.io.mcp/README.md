@@ -163,6 +163,50 @@ claude mcp add --transport http openhab http://openhab.local:8080/mcp \
 
 Works with both direct LAN URLs and Cloud URLs.
 
+#### Antigravity CLI (agy)
+
+Antigravity CLI configuration is stored in `~/.gemini/config/mcp_config.json`.
+
+**Option A — Direct HTTP/SSE connection:**
+
+Use the native `serverUrl` field. Works with both direct LAN URLs and Cloud URLs.
+
+```json
+{
+  "mcpServers": {
+    "openhab": {
+      "serverUrl": "http://openhab.local:8080/mcp",
+      "headers": {
+        "Authorization": "Bearer oh.YOUR_TOKEN"
+      }
+    }
+  }
+}
+```
+
+**Option B — stdio connection via `mcp-remote` bridge:**
+
+If you prefer to connect using a local stdio-to-HTTP bridge (requires Node.js 18+):
+
+```json
+{
+  "mcpServers": {
+    "openhab": {
+      "command": "npx",
+      "args": [
+        "mcp-remote@latest",
+        "http://openhab.local:8080/mcp",
+        "--allow-http",
+        "--header",
+        "Authorization: Bearer oh.YOUR_TOKEN"
+      ]
+    }
+  }
+}
+```
+
+Verify that the server is connected and view the exposed tools by typing `/mcp` inside the interactive `agy` CLI session.
+
 #### ChatGPT (chatgpt.com, desktop, mobile)
 
 ChatGPT requires a **public HTTPS URL**, so use the **openHAB Cloud** method.
