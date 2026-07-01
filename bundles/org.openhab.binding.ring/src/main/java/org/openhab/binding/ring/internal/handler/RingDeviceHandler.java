@@ -23,9 +23,11 @@ import org.openhab.binding.ring.internal.config.RingThingConfig;
 import org.openhab.binding.ring.internal.device.RingDevice;
 import org.openhab.binding.ring.internal.errors.IllegalDeviceClassException;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -118,6 +120,22 @@ public abstract class RingDeviceHandler extends AbstractRingHandler {
             if (bridge.getHandler() instanceof RingAccount ringAccount) {
                 ringAccount.sendCommand(url + "/" + config.id + command, httpMethod, payload);
             }
+        }
+    }
+
+    /**
+     * Receives instant event metadata (motion/dings) pushed down from the Account Bridge
+     */
+    protected void updateInstantEvent(DateTimeType createdAt, String kind, String extendedDescription) {
+        logger.info("createdAt {}, kind {}, extendedDescription {}", createdAt, kind, extendedDescription);
+        if (createdAt != null) {
+            updateState(CHANNEL_EVENT_CREATED_AT, createdAt);
+        }
+        if (kind != null && !kind.isEmpty()) {
+            updateState(CHANNEL_EVENT_KIND, new StringType(kind));
+        }
+        if (extendedDescription != null && !extendedDescription.isEmpty()) {
+            updateState(CHANNEL_EVENT_EXTENDED_DESCRIPTION, new StringType(extendedDescription));
         }
     }
 

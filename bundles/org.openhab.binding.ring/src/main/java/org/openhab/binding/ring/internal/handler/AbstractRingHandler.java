@@ -48,7 +48,7 @@ public abstract class AbstractRingHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Initializing AbstractRingHandler");
+        logger.debug("Initializing AbstractRingHandler for {}", getThing().getUID());
     }
 
     /**
@@ -92,5 +92,6 @@ public abstract class AbstractRingHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         stopAutomaticRefresh();
+        super.dispose();
     }
 }
