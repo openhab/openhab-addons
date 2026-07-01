@@ -35,6 +35,10 @@ public class List {
     private Wind wind;
     private @Nullable Precipitation rain;
     private @Nullable Precipitation snow;
+    /** Probability of precipitation (0.0–1.0), returned by the Forecast5 API as {@code pop}. */
+    private @Nullable Double pop;
+    /** Average visibility in metres, returned by the Forecast5 API as {@code visibility}. */
+    private @Nullable Integer visibility;
     private Sys sys;
     @SerializedName("dt_txt")
     private String dtTxt;
@@ -65,6 +69,14 @@ public class List {
 
     public @Nullable Precipitation getSnow() {
         return snow;
+    }
+
+    public @Nullable Double getPop() {
+        return pop;
+    }
+
+    public @Nullable Integer getVisibility() {
+        return visibility;
     }
 
     public Sys getSys() {
