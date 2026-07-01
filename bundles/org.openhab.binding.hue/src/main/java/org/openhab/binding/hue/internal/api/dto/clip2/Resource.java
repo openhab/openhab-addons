@@ -381,8 +381,8 @@ public class Resource {
                 return UnDefType.UNDEF;
             }
             MirekSchema mirekSchema = colorTemperature.getMirekSchema();
-            if (mirekSchema == null) {
-                throw new CriticalFieldMissing("'mirek_schema' is missing");
+            if (mirekSchema == null || mirekSchema.invalid()) {
+                throw new CriticalFieldMissing("'mirek_schema' is missing or invalid");
             }
             double min = mirekSchema.getMirekMinimum();
             double max = mirekSchema.getMirekMaximum();

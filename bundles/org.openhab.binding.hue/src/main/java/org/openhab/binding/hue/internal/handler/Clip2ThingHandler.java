@@ -217,6 +217,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private boolean hasConnectivityIssue;
     private boolean updateSceneContributorsDone;
     private boolean updateLightPropertiesDone;
+    private boolean updateLightCacheRequiredFieldsDone;
     private boolean updatePropertiesDone;
     private boolean updateDependenciesDone;
     private boolean applyOffTransitionWorkaround;
@@ -431,12 +432,10 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     // fall through
                 }
                 putResource = Setters.setColorTemperaturePercent(new Resource(lightResourceType), command, cache);
-                putResource.setOnOff(Setters.getHardOnOff(putResource, 0.0, false, cache)); // avoid "soft off"
                 break;
 
             case CHANNEL_2_COLOR_TEMP_ABSOLUTE:
                 putResource = Setters.setColorTemperatureAbsolute(new Resource(lightResourceType), command, cache);
-                putResource.setOnOff(Setters.getHardOnOff(putResource, 0.0, false, cache)); // avoid "soft off"
                 break;
 
             case CHANNEL_2_COLOR:
@@ -628,8 +627,10 @@ public class Clip2ThingHandler extends BaseThingHandler {
         try {
             Resources resources = getBridgeHandler().putResource(putResource);
             if (resources.hasErrors()) {
-                logger.debug("Command '{}' for thing '{}', channel '{}' succeeded with errors: {}", command,
-                        thing.getUID(), channelUID, String.join("; ", resources.getErrors()));
+                logger.debug("{} command '{}' for channel '{}' succeeded with error(s): {}", resourceId, command,
+                        channelUID, String.join("; ", resources.getErrors()));
+                Resource snapshot = putResource;
+                scheduler.submit(() -> loopBackNotify(snapshot));
             }
         } catch (ApiException | AssetNotLoadedException e) {
             if (logger.isDebugEnabled()) {
@@ -641,6 +642,17 @@ public class Clip2ThingHandler extends BaseThingHandler {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
+    }
+
+    /*
+     * Many channels have 'autoUpdatePolicy == veto' since we normally expect the bridge to immediately send a
+     * state update event after a PUT command. However if the bridge returned a "succeeded with error" message
+     * then, depending on the manufacturer, it may not send a state update, so we send ourself a mock event via
+     * loop-back in order to update the channel faster.
+     */
+    private void loopBackNotify(Resource resource) {
+        logger.debug("{} -> loopBackNotify() resource {}", resourceId, resource);
+        onResource(resource);
     }
 
     /**
@@ -738,6 +750,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
         updatePropertiesDone = false;
         updateDependenciesDone = false;
         updateLightPropertiesDone = false;
+        updateLightCacheRequiredFieldsDone = false;
         updateSceneContributorsDone = false;
 
         Bridge bridge = getBridge();
@@ -817,11 +830,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 switch (resource.getType()) {
                     case DEVICE_SOFTWARE_UPDATE:
                         refreshSoftwareStatusUI(resource);
-                        break;
-                    case LIGHT:
-                        if (!updateLightPropertiesDone) {
-                            updateLightProperties(resource);
-                        }
                         break;
                     default:
                 }
@@ -1081,6 +1089,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
             case LIGHT:
                 if (fullUpdate) {
+                    updateLightProperties(resource);
+                    updateLightCacheRequiredFields(resource);
                     updateEffectChannel(resource);
                     updateColorTemperatureAbsoluteChannel(resource);
                 }
@@ -1320,7 +1330,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * @param resource a Resource object containing the property data.
      */
     private synchronized void updateLightProperties(Resource resource) {
-        if (!disposing && !updateLightPropertiesDone) {
+        if (!disposing && !updateLightPropertiesDone && (ResourceType.LIGHT == resource.getType())) {
             logger.debug("{} -> updateLightProperties()", resourceId);
 
             Dimming dimming = resource.getDimming();
@@ -1357,9 +1367,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
             commandResourceIds.putAll(services.stream() // use a 'mergeFunction' to prevent duplicates
                     .collect(Collectors.toMap(ResourceReference::getType, ResourceReference::getId, (r1, r2) -> r1)));
         }
-
-        // if the device supports a light service, then add the minimum dimming level and/or Mirek schema if missing
-        ensureLightServicesHaveFullDTOs();
     }
 
     /**
@@ -1730,48 +1737,50 @@ public class Clip2ThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Generically ensure that light service resources in the serviceContributorsCache have a complete DTO.
-     * <p>
-     * For each light service in the cache, check if it has a {@link Dimming} field, a {@link MirekSchema} field, and a
-     * {@link Gamut} field. If any is missing, add the necessary entry from from the passed manual configuration (if
-     * any) or the binding default values. This ensures that the light's channels always use a correct minimum dimming
-     * level, color temperature range, and gamut.
-     * <p>
-     * NOTE: this directly modifies the fields of the {@link Resource} instance in the {@codeserviceContributorsCache}
+     * Ensure that the light service resource in the serviceContributorsCache has a complete DTO for it to
+     * yield valid channel state values. Check if the given (cached) light service has a {@link Dimming} field,
+     * a {@link MirekSchema} field, and a {@link Gamut} field. If any is missing, add the necessary entry from
+     * from the manual configuration (if any) or the binding default values. This ensures that the light's
+     * channels always have a valid minimum dimming level, color temperature range, and gamut, to use.
      */
-    private void ensureLightServicesHaveFullDTOs() {
-        Clip2ThingConfig config = getConfigAs(Clip2ThingConfig.class);
-        if (getCachedResource(ResourceType.LIGHT) instanceof Resource lightResource) {
+    private synchronized void updateLightCacheRequiredFields(Resource resource) {
+        if (!disposing && !updateLightCacheRequiredFieldsDone && (ResourceType.LIGHT == resource.getType())) {
+            logger.debug("{} -> updateLightServiceCacheDTOs()", resourceId);
 
-            if (lightResource.getDimming() instanceof Dimming dim) {
+            if (resource.getDimming() instanceof Dimming dim) {
                 Double minDimLevel = dim.getMinimumDimmingLevel();
                 if (minDimLevel == null) {
-                    // exception means the minimum dimming level field is missing, so set it here
-                    Double minDimming = config.minimumDimmingLevel;
-                    minDimming = minDimming != null ? minDimming : Dimming.DEFAULT_MINIMUM_DIMMING_LEVEL;
+                    Double minDimming = Dimming.DEFAULT_MINIMUM_DIMMING_LEVEL;
                     dim.setMinimumDimmingLevel(minDimming);
                 }
             }
 
-            if (lightResource.getColorTemperature() instanceof ColorTemperature ct) {
+            if (resource.getColorTemperature() instanceof ColorTemperature ct) {
                 MirekSchema mirekSchema = ct.getMirekSchema();
-                if (mirekSchema == null) {
-                    Double maxKelvin = config.maximumColorTemperature;
-                    Double minKelvin = config.minimumColorTemperature;
-                    int minMirek = maxKelvin != null ? MirekSchema.toMirek(maxKelvin)
-                            : MirekSchema.DEFAULT_SCHEMA.getMirekMinimum();
-                    int maxMirek = minKelvin != null ? MirekSchema.toMirek(minKelvin)
-                            : MirekSchema.DEFAULT_SCHEMA.getMirekMaximum();
-                    ct.setMirekSchema(new MirekSchema(minMirek, maxMirek));
+                if (mirekSchema == null || mirekSchema.invalid()) {
+                    if (mirekSchema.invalid()) {
+                        logger.warn("{} -> light MirekSchema {} -> using default", resourceId,
+                                mirekSchema.toPropertyValue());
+                    }
+                    ct.setMirekSchema(MirekSchema.DEFAULT_SCHEMA);
                 }
             }
 
-            if (lightResource.getColorXy() instanceof ColorXy xy) {
+            if (resource.getColorXy() instanceof ColorXy xy) {
                 Gamut gamut = xy.getGamut();
                 if (gamut == null) {
-                    xy.setGamut(ColorUtil.DEFAULT_GAMUT); // for the time being we only apply the default
+                    xy.setGamut(ColorUtil.DEFAULT_GAMUT);
                 }
             }
+
+            Resource cacheEntry = getCachedResource(ResourceType.LIGHT);
+            if (cacheEntry != null) {
+                Setters.setResource(cacheEntry, resource);
+            } else {
+                // should never happen, but just in case
+                logger.warn("{} -> updateLightServiceCacheDTOs() -> missing cache light resource", resourceId);
+            }
+            updateLightCacheRequiredFieldsDone = true;
         }
     }
 }
