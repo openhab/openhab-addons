@@ -12,18 +12,15 @@
  */
 package org.openhab.binding.bluetooth.govee.internal.command.hygrometer;
 
-import java.util.concurrent.TimeUnit;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.bluetooth.gattserial.SimpleMessageServicer;
 
 /**
  * @author Connor Petty - Initial Contribution
  *
  */
 @NonNullByDefault
-public abstract class GoveeCommand implements SimpleMessageServicer<GoveeMessage> {
+public abstract class GoveeCommand {
 
     public static final byte READ_TYPE = -86;
     public static final byte WRITE_TYPE = 51;
@@ -34,37 +31,13 @@ public abstract class GoveeCommand implements SimpleMessageServicer<GoveeMessage
 
     protected abstract byte @Nullable [] getData();
 
-    @Override
-    public long getTimeout(TimeUnit unit) {
-        return unit.convert(60, TimeUnit.SECONDS);
-    }
-
-    @Override
     public GoveeMessage createMessage() {
         return new GoveeMessage(getCommandType(), getCommandCode(), getData());
     }
 
-    @Override
-    public boolean handleFailedMessage(GoveeMessage message, Throwable th) {
-        if (matches(message)) {
-            handleResponse(null, th);
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public boolean handleReceivedMessage(GoveeMessage message) {
-        if (matches(message)) {
-            handleResponse(message.getData(), null);
-            return true;
-        }
-        return false;
-    }
-
     public abstract void handleResponse(byte @Nullable [] data, @Nullable Throwable th);
 
-    protected boolean matches(GoveeMessage message) {
+    public boolean matches(GoveeMessage message) {
         return message.getCommandType() == getCommandType() && message.getCommandCode() == getCommandCode();
     }
 }
