@@ -28,6 +28,7 @@ import org.openhab.binding.gemini.internal.GeminiConfiguration;
 import org.openhab.binding.gemini.internal.GeminiHandler;
 import org.openhab.binding.gemini.internal.api.GeminiApiClient;
 import org.openhab.binding.gemini.internal.api.GeminiApiException;
+import org.openhab.binding.gemini.internal.api.GeminiLLMToolCall;
 import org.openhab.binding.gemini.internal.api.dto.GeminiContent;
 import org.openhab.binding.gemini.internal.api.dto.GeminiFunctionCall;
 import org.openhab.binding.gemini.internal.api.dto.GeminiPart;

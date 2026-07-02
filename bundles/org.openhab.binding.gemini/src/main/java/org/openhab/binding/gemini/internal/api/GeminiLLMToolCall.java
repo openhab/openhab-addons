@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.gemini.internal.hli;
+package org.openhab.binding.gemini.internal.api;
 
 import java.util.Map;
 
@@ -41,10 +41,10 @@ public class GeminiLLMToolCall extends LLMToolCall {
     public static GeminiLLMToolCall fromJson(String json) throws JsonSyntaxException {
         GeminiLLMToolCall call = GSON.fromJson(json, GeminiLLMToolCall.class);
         if (call == null) {
-            throw new JsonSyntaxException("Deserialized LLMToolCall is null.");
+            throw new JsonSyntaxException("Deserialized GeminiLLMToolCall is null.");
         }
         if (call.tool == null || call.params == null) {
-            throw new JsonSyntaxException("Deserialized LLMToolCall has null tool or params.");
+            throw new JsonSyntaxException("Deserialized GeminiLLMToolCall has null tool or params.");
         }
         return call;
     }

@@ -49,7 +49,6 @@ import org.openhab.binding.gemini.internal.api.dto.request.GeminiTool;
 import org.openhab.binding.gemini.internal.api.dto.response.GeminiModel;
 import org.openhab.binding.gemini.internal.api.dto.response.GeminiModelsResponse;
 import org.openhab.binding.gemini.internal.api.dto.response.GeminiResponse;
-import org.openhab.binding.gemini.internal.hli.GeminiLLMToolCall;
 import org.openhab.core.voice.text.conversation.Conversation;
 import org.openhab.core.voice.text.interpreter.llm.LLMTool;
 import org.openhab.core.voice.text.interpreter.llm.LLMToolParam;
