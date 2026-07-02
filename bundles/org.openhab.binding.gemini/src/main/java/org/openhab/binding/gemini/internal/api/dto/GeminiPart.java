@@ -27,5 +27,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @NonNullByDefault
 public record GeminiPart(@Nullable String text, @Nullable GeminiFunctionCall functionCall,
-        @Nullable GeminiFunctionResponse functionResponse, @Nullable Boolean thought) {
+        @Nullable GeminiFunctionResponse functionResponse, @Nullable Boolean thought,
+        @Nullable String thoughtSignature) {
 }
