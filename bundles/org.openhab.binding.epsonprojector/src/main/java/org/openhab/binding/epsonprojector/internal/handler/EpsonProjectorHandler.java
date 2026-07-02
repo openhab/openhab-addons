@@ -428,7 +428,7 @@ public class EpsonProjectorHandler extends BaseThingHandler {
                     logger.warn("Unknown channel: '{}'!", commandType);
                     break;
             }
-        } catch (EpsonProjectorCommandException e) {
+        } catch (EpsonProjectorCommandException | ClassCastException e) {
             logger.debug("Error executing command '{}', {}", commandType, e.getMessage());
         } catch (EpsonProjectorPasswordException e) {
             logger.debug("Password error: {}", e.getMessage());
