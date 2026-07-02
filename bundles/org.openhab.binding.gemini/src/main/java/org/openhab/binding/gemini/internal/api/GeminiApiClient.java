@@ -51,7 +51,6 @@ import org.openhab.binding.gemini.internal.api.dto.response.GeminiModelsResponse
 import org.openhab.binding.gemini.internal.api.dto.response.GeminiResponse;
 import org.openhab.core.voice.text.conversation.Conversation;
 import org.openhab.core.voice.text.interpreter.llm.LLMTool;
-import org.openhab.core.voice.text.interpreter.llm.LLMToolCall;
 import org.openhab.core.voice.text.interpreter.llm.LLMToolParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -105,7 +104,7 @@ public class GeminiApiClient {
         GeminiContent systemInstruction = createSystemInstruction(systemMessage);
 
         // Contents
-        GeminiPart userPart = new GeminiPart(prompt, null, null, null);
+        GeminiPart userPart = new GeminiPart(prompt, null, null, null, null);
         GeminiContent userContent = new GeminiContent(ROLE_USER, List.of(userPart));
 
         // Config
@@ -141,21 +140,21 @@ public class GeminiApiClient {
         for (Conversation.Message msg : history) {
             switch (msg.role()) {
                 case USER: {
-                    GeminiPart part = new GeminiPart(msg.content(), null, null, null);
-                    contents.add(new GeminiContent(ROLE_USER, List.of(part)));
+                    GeminiPart part = new GeminiPart(msg.content(), null, null, null, null);
+                    contents.add(new GeminiContent(ROLE_USER, new ArrayList<>(List.of(part))));
                     break;
                 }
                 case OPENHAB: {
-                    GeminiPart part = new GeminiPart(msg.content(), null, null, null);
-                    contents.add(new GeminiContent(ROLE_MODEL, List.of(part)));
+                    GeminiPart part = new GeminiPart(msg.content(), null, null, null, null);
+                    contents.add(new GeminiContent(ROLE_MODEL, new ArrayList<>(List.of(part))));
                     break;
                 }
                 case TOOL_CALL: {
-                    LLMToolCall toolCall = LLMToolCall.fromJson(msg.content());
-                    String name = toolCall.tool().replaceAll("[^a-zA-Z0-9_-]", "_");
+                    GeminiLLMToolCall toolCall = GeminiLLMToolCall.fromJson(msg.content());
+                    String name = toolCall.tool.replaceAll("[^a-zA-Z0-9_-]", "_");
                     pendingToolCallNames.add(name);
-                    GeminiFunctionCall fc = new GeminiFunctionCall(name, toolCall.params());
-                    GeminiPart part = new GeminiPart(null, fc, null, null);
+                    GeminiFunctionCall fc = new GeminiFunctionCall(name, toolCall.params, toolCall.id);
+                    GeminiPart part = new GeminiPart(null, fc, null, null, toolCall.thoughtSignature);
                     contents.add(new GeminiContent(ROLE_MODEL, List.of(part)));
                     break;
                 }
@@ -166,8 +165,21 @@ public class GeminiApiClient {
                         break; // TOOL_RETURN without preceding TOOL_CALL - ignore
                     }
                     GeminiFunctionResponse fr = new GeminiFunctionResponse(name, Map.of("result", msg.content()));
-                    GeminiPart part = new GeminiPart(null, null, fr, null);
-                    contents.add(new GeminiContent(ROLE_USER, List.of(part)));
+                    GeminiPart part = new GeminiPart(null, null, fr, null, null);
+
+                    // Consolidate consecutive TOOL_RETURNs into the same ROLE_USER content
+                    if (!contents.isEmpty() && ROLE_USER.equals(contents.getLast().role())) {
+                        GeminiContent lastContent = contents.getLast();
+                        List<GeminiPart> lastParts = lastContent.parts();
+                        if (lastParts != null && !lastParts.isEmpty()
+                                && lastParts.getFirst().functionResponse() != null) {
+                            lastParts.add(part);
+                        } else {
+                            contents.add(new GeminiContent(ROLE_USER, new ArrayList<>(List.of(part))));
+                        }
+                    } else {
+                        contents.add(new GeminiContent(ROLE_USER, new ArrayList<>(List.of(part))));
+                    }
                     break;
                 }
                 case THINKING:
@@ -356,7 +368,7 @@ public class GeminiApiClient {
 
     private @Nullable GeminiContent createSystemInstruction(@Nullable String systemMessage) {
         if (systemMessage != null && !systemMessage.isBlank()) {
-            GeminiPart sysPart = new GeminiPart(systemMessage, null, null, null);
+            GeminiPart sysPart = new GeminiPart(systemMessage, null, null, null, null);
             return new GeminiContent(null, List.of(sysPart));
         }
         return null;
