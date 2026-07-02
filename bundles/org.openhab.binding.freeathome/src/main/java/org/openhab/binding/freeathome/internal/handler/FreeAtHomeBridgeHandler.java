@@ -48,10 +48,12 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.websocket.api.Callback;
+import org.eclipse.jetty.websocket.api.Frame;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.StatusCode;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketFrame;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketOpen;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
@@ -89,7 +91,7 @@ import com.google.gson.stream.JsonReader;
 @NonNullByDefault
 
 @WebSocket
-public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSocketListener, WebSocketPingPongListener {
+public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(FreeAtHomeBridgeHandler.class);
 
@@ -1146,16 +1148,13 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
         logger.warn("Binary message received via websocket - It shall not happen with the free@home SysAp");
     }
 
-    @Override
+    @OnWebSocketFrame
     @NonNullByDefault({})
-    public void onWebSocketPong(ByteBuffer payload) {
-        lastReceivedTime = System.currentTimeMillis();
-        logger.debug("WebSocket pong received");
-    }
-
-    @Override
-    @NonNullByDefault({})
-    public void onWebSocketPing(ByteBuffer payload) {
+    public void onFrame(Frame frame) {
+        if (frame.getType() == Frame.Type.PONG) {
+            lastReceivedTime = System.currentTimeMillis();
+            logger.debug("WebSocket pong received");
+        }
     }
 
     /**
