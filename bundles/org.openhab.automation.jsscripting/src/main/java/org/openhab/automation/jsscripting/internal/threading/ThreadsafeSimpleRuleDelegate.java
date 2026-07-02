@@ -43,6 +43,11 @@ class ThreadsafeSimpleRuleDelegate implements Rule, SimpleRuleActionHandler {
     private final Lock lock;
     private final long lockAcquisitionTimeoutMS;
     private final SimpleRule delegate;
+    /**
+     * Get and store the UID upon wrapping as {@link SimpleRule#getUID()} is overwritten in openhab-js,
+     * which means calling it is a GraalJS context access and needs to be synchronized.
+     */
+    private final String uid;
 
     /**
      * Constructor requires a lock object and delegate to forward invocations to.
@@ -55,6 +60,7 @@ class ThreadsafeSimpleRuleDelegate implements Rule, SimpleRuleActionHandler {
         this.lock = lock;
         this.lockAcquisitionTimeoutMS = lockAcquisitionTimeoutMS;
         this.delegate = delegate;
+        this.uid = delegate.getUID();
     }
 
     @Override
@@ -66,7 +72,7 @@ class ThreadsafeSimpleRuleDelegate implements Rule, SimpleRuleActionHandler {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException("Interrupted while waiting to acquire the lock for action '" + module.getId()
-                    + "' of rule '" + delegate.getUID() + '\'', e);
+                    + "' of rule '" + uid + '\'', e);
         }
         if (locked) {
             try {
@@ -76,15 +82,14 @@ class ThreadsafeSimpleRuleDelegate implements Rule, SimpleRuleActionHandler {
                 lock.unlock();
             }
         } else {
-            throw new RuntimeException(
-                    "Failed to acquire the lock for action '" + module.getId() + "' of rule '" + delegate.getUID()
-                            + "' within " + TimeUnit.MILLISECONDS.toSeconds(lockAcquisitionTimeoutMS) + " seconds.");
+            throw new RuntimeException("Failed to acquire the lock for action '" + module.getId() + "' of rule '" + uid
+                    + "' within " + TimeUnit.MILLISECONDS.toSeconds(lockAcquisitionTimeoutMS) + " seconds.");
         }
     }
 
     @Override
     public String getUID() {
-        return delegate.getUID();
+        return uid;
     }
 
     @Override
