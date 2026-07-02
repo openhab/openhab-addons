@@ -245,7 +245,7 @@ public class BenqProjectorHandler extends BaseThingHandler {
                     logger.warn("Unknown channel: '{}'!", commandType);
                     break;
             }
-        } catch (BenqProjectorCommandException e) {
+        } catch (BenqProjectorCommandException | ClassCastException e) {
             logger.debug("Error executing command '{}', {}", commandType, e.getMessage());
         } catch (BenqProjectorException e) {
             logger.warn("Couldn't execute command '{}', {}", commandType, e.getMessage());
