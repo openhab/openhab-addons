@@ -43,7 +43,6 @@ import org.openhab.core.voice.text.conversation.Conversation;
 import org.openhab.core.voice.text.conversation.ConversationException;
 import org.openhab.core.voice.text.conversation.ConversationRole;
 import org.openhab.core.voice.text.interpreter.llm.LLMTool;
-import org.openhab.core.voice.text.interpreter.llm.LLMToolCall;
 import org.openhab.core.voice.text.interpreter.llm.LLMToolException;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -252,8 +251,8 @@ public class GeminiHLIService implements ThingHandlerService, HumanLanguageInter
                         String toolName = fc.name();
                         Map<String, Object> args = fc.args();
 
-                        LLMToolCall llmToolCall = new LLMToolCall(toolName != null ? toolName : "",
-                                args != null ? args : new HashMap<>());
+                        GeminiLLMToolCall llmToolCall = new GeminiLLMToolCall(toolName != null ? toolName : "",
+                                args != null ? args : new HashMap<>(), fc.id(), part.thoughtSignature());
                         try {
                             conversation.addMessage(ConversationRole.TOOL_CALL, llmToolCall.toJson());
                         } catch (ConversationException e) {
