@@ -14,7 +14,6 @@ package org.openhab.binding.hue.internal.handler;
 
 import static org.openhab.binding.hue.internal.HueBindingConstants.*;
 
-import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -67,6 +66,7 @@ import org.openhab.binding.hue.internal.api.dto.clip2.helper.Setters;
 import org.openhab.binding.hue.internal.config.Clip2ThingConfig;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
 import org.openhab.binding.hue.internal.exceptions.AssetNotLoadedException;
+import org.openhab.binding.hue.internal.exceptions.CriticalFieldMissing;
 import org.openhab.core.items.Item;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -102,6 +102,8 @@ import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.StateOption;
 import org.openhab.core.types.UnDefType;
+import org.openhab.core.util.ColorUtil;
+import org.openhab.core.util.ColorUtil.Gamut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -138,6 +140,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
     // smart chime devices use write-only volume and duration channels, so these are their default values
     private static final PercentType DEFAULT_SOUND_VOLUME = new PercentType(50);
     private static final QuantityType<?> DEFAULT_ALARM_DURATION = QuantityType.valueOf(3, Units.SECOND);
+
+    private static final double DIMMING_DELTA = 20.0; // dimming change for IncreaseDecreaseType commands
+    private static final int MIREK_DELTA = 70; // mirek change for IncreaseDecreaseType commands
 
     /**
      * A map of service Resources whose state contributes to the overall state of this thing. It is a map between the
@@ -212,6 +217,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private boolean hasConnectivityIssue;
     private boolean updateSceneContributorsDone;
     private boolean updateLightPropertiesDone;
+    private boolean updateLightCacheRequiredFieldsDone;
     private boolean updatePropertiesDone;
     private boolean updateDependenciesDone;
     private boolean applyOffTransitionWorkaround;
@@ -382,6 +388,15 @@ public class Clip2ThingHandler extends BaseThingHandler {
             return;
         }
 
+        try {
+            handleCommandInner(channelUID, commandParam);
+        } catch (CriticalFieldMissing e) {
+            logger.debug("{} -> handleCommand() channelUID:{} command:{} error: {}", resourceId, channelUID,
+                    commandParam, e.getMessage(), e);
+        }
+    }
+
+    public void handleCommandInner(ChannelUID channelUID, Command commandParam) throws CriticalFieldMissing {
         ResourceType lightResourceType = thisResource.getType() == ResourceType.DEVICE ? ResourceType.LIGHT
                 : ResourceType.GROUPED_LIGHT;
 
@@ -409,10 +424,12 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
             case CHANNEL_2_COLOR_TEMP_PERCENT:
                 if (command instanceof IncreaseDecreaseType increaseDecreaseCommand && Objects.nonNull(cache)) {
-                    command = translateIncreaseDecreaseCommand(increaseDecreaseCommand,
-                            cache.getColorTemperaturePercentState());
-                } else if (command instanceof OnOffType) {
+                    putResource = new Resource(lightResourceType).setMirekDelta(increaseDecreaseCommand, MIREK_DELTA);
+                    break;
+                }
+                if (command instanceof OnOffType) {
                     command = OnOffType.OFF == command ? PercentType.ZERO : PercentType.HUNDRED;
+                    // fall through
                 }
                 putResource = Setters.setColorTemperaturePercent(new Resource(lightResourceType), command, cache);
                 break;
@@ -431,16 +448,15 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
             case CHANNEL_2_BRIGHTNESS:
                 putResource = Objects.nonNull(putResource) ? putResource : new Resource(lightResourceType);
-                if (command instanceof IncreaseDecreaseType increaseDecreaseCommand && Objects.nonNull(cache)) {
-                    command = translateIncreaseDecreaseCommand(increaseDecreaseCommand, cache.getBrightnessState());
+                if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
+                    putResource.setDimmingDelta(increaseDecreaseCommand, DIMMING_DELTA);
+                    command = Setters.getHardOnOff(putResource, DIMMING_DELTA, false, cache);// avoid "soft off"
+                } else if (command instanceof PercentType brightnessCommand) {
+                    putResource = putResource.setBrightness(brightnessCommand);
+                    double brightnessAbsolute = brightnessCommand.doubleValue();
+                    command = Setters.getHardOnOff(putResource, brightnessAbsolute, true, cache);// avoid "soft off"
                 }
-                if (command instanceof PercentType brightnessCommand) {
-                    putResource = Setters.setDimming(putResource, brightnessCommand, cache);
-                    Double minDimLevel = Objects.nonNull(cache) ? cache.getMinimumDimmingLevel() : null;
-                    minDimLevel = Objects.nonNull(minDimLevel) ? minDimLevel : Dimming.DEFAULT_MINIMUM_DIMMIMG_LEVEL;
-                    command = OnOffType.from(brightnessCommand.doubleValue() >= minDimLevel);
-                }
-                // NB fall through for handling of switch related commands !!
+                // NB fall through for handling of switch related had on/off commands !!
 
             case CHANNEL_2_SWITCH:
                 putResource = Objects.nonNull(putResource) ? putResource : new Resource(lightResourceType);
@@ -453,7 +469,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 break;
 
             case CHANNEL_2_DIMMING_ONLY:
-                putResource = Setters.setDimming(new Resource(lightResourceType), command, cache);
+                putResource = new Resource(lightResourceType).setBrightness(command);
                 break;
 
             case CHANNEL_2_ON_OFF_ONLY:
@@ -611,8 +627,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
         try {
             Resources resources = getBridgeHandler().putResource(putResource);
             if (resources.hasErrors()) {
-                logger.info("Command '{}' for thing '{}', channel '{}' succeeded with errors: {}", command,
-                        thing.getUID(), channelUID, String.join("; ", resources.getErrors()));
+                logger.debug("{} command '{}' for channel '{}' succeeded with error(s): {}", resourceId, command,
+                        channelUID, String.join("; ", resources.getErrors()));
+                loopBackNotify(putResource);
             }
         } catch (ApiException | AssetNotLoadedException e) {
             if (logger.isDebugEnabled()) {
@@ -624,6 +641,19 @@ public class Clip2ThingHandler extends BaseThingHandler {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
+    }
+
+    /*
+     * Many channels have 'autoUpdatePolicy == veto' since we normally expect the bridge to immediately send a
+     * state update event after a PUT command. However if the bridge returned a "succeeded with error" message
+     * then, depending on the manufacturer, it may not send a state update, so we send ourself a mock event via
+     * loop-back in order to update the channel faster.
+     */
+    private void loopBackNotify(Resource resource) {
+        scheduler.submit(() -> {
+            logger.debug("{} -> loopBackNotify() resource {}", resourceId, resource);
+            onResource(resource);
+        });
     }
 
     /**
@@ -643,16 +673,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
      */
     private ResourceType getExtendedResourceType(ResourceType baseType) {
         return extendedResourceTypes.get(baseType) instanceof ResourceType extendedType ? extendedType : baseType;
-    }
-
-    private Command translateIncreaseDecreaseCommand(IncreaseDecreaseType command, State currentValue) {
-        if (currentValue instanceof PercentType currentPercent) {
-            int delta = command == IncreaseDecreaseType.INCREASE ? 10 : -10;
-            double newPercent = Math.min(100.0, Math.max(0.0, currentPercent.doubleValue() + delta));
-            return new PercentType(new BigDecimal(newPercent, Resource.PERCENT_MATH_CONTEXT));
-        }
-
-        return command;
     }
 
     private void refreshAllChannels() {
@@ -731,6 +751,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
         updatePropertiesDone = false;
         updateDependenciesDone = false;
         updateLightPropertiesDone = false;
+        updateLightCacheRequiredFieldsDone = false;
         updateSceneContributorsDone = false;
 
         Bridge bridge = getBridge();
@@ -810,11 +831,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 switch (resource.getType()) {
                     case DEVICE_SOFTWARE_UPDATE:
                         refreshSoftwareStatusUI(resource);
-                        break;
-                    case LIGHT:
-                        if (!updateLightPropertiesDone) {
-                            updateLightProperties(resource);
-                        }
                         break;
                     default:
                 }
@@ -1026,6 +1042,16 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * @return true if the channel was found and updated.
      */
     private boolean updateChannels(Resource resource) {
+        try {
+            return updateChannelsInner(resource);
+        } catch (CriticalFieldMissing e) {
+            // this should never happen but log it just in case
+            logger.debug("{} -> updateChannels() error {}", resourceId, e.getMessage(), e);
+            return false;
+        }
+    }
+
+    private boolean updateChannelsInner(Resource resource) throws CriticalFieldMissing {
         logger.debug("{} -> updateChannels() from resource {}", resourceId, resource);
         boolean fullUpdate = resource.hasFullState();
         switch (resource.getType()) {
@@ -1064,6 +1090,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
             case LIGHT:
                 if (fullUpdate) {
+                    updateLightProperties(resource);
+                    updateLightCacheRequiredFields(resource);
                     updateEffectChannel(resource);
                     updateColorTemperatureAbsoluteChannel(resource);
                 }
@@ -1080,7 +1108,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 }
                 updateState(CHANNEL_2_BRIGHTNESS, resource.getBrightnessState(), fullUpdate);
                 updateState(CHANNEL_2_DIMMING_ONLY, resource.getDimmingState(), fullUpdate);
-                updateState(CHANNEL_2_SWITCH, resource.getOnOffState(), fullUpdate);
+                updateState(CHANNEL_2_SWITCH, resource.getSwitchState(), fullUpdate);
                 updateState(CHANNEL_2_ON_OFF_ONLY, resource.getOnOffState(), fullUpdate);
                 updateState(CHANNEL_2_ALERT, resource.getAlertState(), fullUpdate);
                 break;
@@ -1293,7 +1321,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
             if (mirekSchema != null) {
                 stateDescriptionProvider.setMinMaxKelvin(new ChannelUID(thing.getUID(), CHANNEL_2_COLOR_TEMP_ABSOLUTE),
                         1000000 / mirekSchema.getMirekMaximum(), 1000000 / mirekSchema.getMirekMinimum());
-                logger.debug("{} -> updateColorTempAbsChannel() done", resource.getId());
             }
         }
     }
@@ -1304,7 +1331,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * @param resource a Resource object containing the property data.
      */
     private synchronized void updateLightProperties(Resource resource) {
-        if (!disposing && !updateLightPropertiesDone) {
+        if (!disposing && !updateLightPropertiesDone && (ResourceType.LIGHT == resource.getType())) {
             logger.debug("{} -> updateLightProperties()", resourceId);
 
             Dimming dimming = resource.getDimming();
@@ -1708,5 +1735,53 @@ public class Clip2ThingHandler extends BaseThingHandler {
             // if there is no software update status preserve the caller-provided status information
         }
         super.updateStatus(thingStatus, detail, description);
+    }
+
+    /**
+     * Ensure that the light service resource in the serviceContributorsCache has a complete DTO for it to
+     * yield valid channel state values. Check if the given (cached) light service has a {@link Dimming} field,
+     * a {@link MirekSchema} field, and a {@link Gamut} field. If any is missing, add the necessary entry from
+     * from the manual configuration (if any) or the binding default values. This ensures that the light's
+     * channels always have a valid minimum dimming level, color temperature range, and gamut, to use.
+     */
+    private synchronized void updateLightCacheRequiredFields(Resource resource) {
+        if (!disposing && !updateLightCacheRequiredFieldsDone && (ResourceType.LIGHT == resource.getType())) {
+            logger.debug("{} -> updateLightServiceCacheDTOs()", resourceId);
+
+            if (resource.getDimming() instanceof Dimming dim) {
+                Double minDimLevel = dim.getMinimumDimmingLevel();
+                if (minDimLevel == null) {
+                    Double minDimming = Dimming.DEFAULT_MINIMUM_DIMMING_LEVEL;
+                    dim.setMinimumDimmingLevel(minDimming);
+                }
+            }
+
+            if (resource.getColorTemperature() instanceof ColorTemperature ct) {
+                MirekSchema mirekSchema = ct.getMirekSchema();
+                if (mirekSchema == null || mirekSchema.invalid()) {
+                    if (mirekSchema.invalid()) {
+                        logger.warn("{} -> light MirekSchema {} -> using default", resourceId,
+                                mirekSchema.toPropertyValue());
+                    }
+                    ct.setMirekSchema(MirekSchema.DEFAULT_SCHEMA);
+                }
+            }
+
+            if (resource.getColorXy() instanceof ColorXy xy) {
+                Gamut gamut = xy.getGamut();
+                if (gamut == null) {
+                    xy.setGamut(ColorUtil.DEFAULT_GAMUT);
+                }
+            }
+
+            Resource cacheEntry = getCachedResource(ResourceType.LIGHT);
+            if (cacheEntry != null) {
+                Setters.setResource(cacheEntry, resource);
+            } else {
+                // should never happen, but just in case
+                logger.warn("{} -> updateLightServiceCacheDTOs() -> missing cache light resource", resourceId);
+            }
+            updateLightCacheRequiredFieldsDone = true;
+        }
     }
 }

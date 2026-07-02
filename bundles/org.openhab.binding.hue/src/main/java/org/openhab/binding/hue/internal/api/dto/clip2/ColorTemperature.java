@@ -16,7 +16,6 @@ import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.hue.internal.exceptions.DTOPresentButEmptyException;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 
@@ -36,14 +35,13 @@ public class ColorTemperature {
      * Get the color temperature as a QuantityType value.
      *
      * @return a QuantityType value
-     * @throws DTOPresentButEmptyException to indicate that the DTO is present but empty.
      */
-    public @Nullable QuantityType<?> getAbsolute() throws DTOPresentButEmptyException {
+    public @Nullable QuantityType<?> getAbsolute() {
         Long mirek = this.mirek;
         if (Objects.nonNull(mirek)) {
             return QuantityType.valueOf(mirek, Units.MIRED).toInvertibleUnit(Units.KELVIN);
         }
-        throw new DTOPresentButEmptyException("'color_temperature' DTO is present but empty");
+        return null;
     }
 
     public @Nullable Long getMirek() {
@@ -52,26 +50,6 @@ public class ColorTemperature {
 
     public @Nullable MirekSchema getMirekSchema() {
         return mirekSchema;
-    }
-
-    /**
-     * Get the color temperature as a percentage based on the MirekSchema. Note: this method is only to be used on
-     * cached state DTOs which already have a defined mirek schema.
-     *
-     * @return the percentage of the mirekSchema range.
-     * @throws DTOPresentButEmptyException to indicate that the DTO is present but empty.
-     */
-    public @Nullable Double getPercent() throws DTOPresentButEmptyException {
-        Long mirek = this.mirek;
-        if (Objects.nonNull(mirek)) {
-            MirekSchema mirekSchema = this.mirekSchema;
-            mirekSchema = Objects.nonNull(mirekSchema) ? mirekSchema : MirekSchema.DEFAULT_SCHEMA;
-            double min = mirekSchema.getMirekMinimum();
-            double max = mirekSchema.getMirekMaximum();
-            double percent = 100f * (mirek.doubleValue() - min) / (max - min);
-            return Math.max(0, Math.min(100, percent));
-        }
-        throw new DTOPresentButEmptyException("'mirek_schema' DTO is present but empty");
     }
 
     public ColorTemperature setMirek(double mirek) {

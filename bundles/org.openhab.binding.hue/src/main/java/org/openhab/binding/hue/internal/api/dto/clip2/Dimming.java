@@ -16,7 +16,6 @@ import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.hue.internal.exceptions.DTOPresentButEmptyException;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -30,17 +29,10 @@ public class Dimming {
     private @Nullable Double brightness;
     private @Nullable @SerializedName("min_dim_level") Double minimumDimmingLevel;
 
-    public static final double DEFAULT_MINIMUM_DIMMIMG_LEVEL = 0.5f;
+    public static final double DEFAULT_MINIMUM_DIMMING_LEVEL = 100.0 / 255.0;
 
-    /**
-     * @throws DTOPresentButEmptyException to indicate that the DTO is present but empty.
-     */
-    public double getBrightness() throws DTOPresentButEmptyException {
-        Double brightness = this.brightness;
-        if (Objects.nonNull(brightness)) {
-            return brightness;
-        }
-        throw new DTOPresentButEmptyException("'dimming' DTO is present but empty");
+    public @Nullable Double getBrightness() {
+        return brightness;
     }
 
     public @Nullable Double getMinimumDimmingLevel() {

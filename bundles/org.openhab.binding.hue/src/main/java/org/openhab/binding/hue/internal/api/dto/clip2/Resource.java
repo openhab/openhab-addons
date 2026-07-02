@@ -39,10 +39,11 @@ import org.openhab.binding.hue.internal.api.dto.clip2.enums.SoundValue;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.TamperStateType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.UpdateStatusV2;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ZigbeeStatus;
-import org.openhab.binding.hue.internal.exceptions.DTOPresentButEmptyException;
+import org.openhab.binding.hue.internal.exceptions.CriticalFieldMissing;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
+import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
@@ -127,6 +128,8 @@ public class Resource {
     private @Nullable Sound alarm;
     private @Nullable Sound chime;
     private @Nullable Mute mute;
+    private @Nullable @SerializedName("dimming_delta") DimmingDelta dimmingDelta;
+    private @Nullable @SerializedName("color_temperature_delta") ColorTemperatureDelta colorTemperatureDelta;
 
     /**
      * Constructor
@@ -233,28 +236,25 @@ public class Resource {
     }
 
     /**
-     * Get the brightness as a PercentType. If off the brightness is 0, otherwise use dimming value.
+     * Get the brightness as a PercentType.
      *
-     * @return a PercentType with the dimming state, or UNDEF, or NULL
+     * @return UnDefType.NULL if the channel is not supported
+     * @return a PercentType if the value is good
+     * @throws CriticalFieldMissing if a critical element is missing
      */
-    public State getBrightnessState() {
+    public State getBrightnessState() throws CriticalFieldMissing {
         Dimming dimming = this.dimming;
         if (Objects.nonNull(dimming)) {
-            try {
-                // if off the brightness is 0, otherwise it is the larger of dimming value or minimum dimming level
-                OnState on = this.on;
-                double brightness;
-                if (Objects.nonNull(on) && !on.isOn()) {
-                    brightness = 0f;
-                } else {
-                    Double minimumDimmingLevel = dimming.getMinimumDimmingLevel();
-                    brightness = Math.max(Objects.nonNull(minimumDimmingLevel) ? minimumDimmingLevel
-                            : Dimming.DEFAULT_MINIMUM_DIMMIMG_LEVEL, Math.min(100f, dimming.getBrightness()));
-                }
-                return new PercentType(new BigDecimal(brightness, PERCENT_MATH_CONTEXT));
-            } catch (DTOPresentButEmptyException e) {
-                return UnDefType.UNDEF; // indicates the DTO is present but its inner fields are missing
+            Double brightness = dimming.getBrightness();
+            if (brightness == null) {
+                throw new CriticalFieldMissing("'brightness' is missing");
             }
+            OnState on = this.on;
+            if (on != null && on.getOn() instanceof Boolean on2 && !on2) {
+                return PercentType.ZERO;
+            }
+            brightness = Math.max(0.0, Math.min(100.0, brightness));
+            return new PercentType(new BigDecimal(brightness, PERCENT_MATH_CONTEXT));
         }
         return UnDefType.NULL;
     }
@@ -316,22 +316,28 @@ public class Resource {
      * on/off resp. dimming JSON elements. If off the B part is 0, otherwise it is the dimming element value. Note: this
      * method is only to be used on cached state DTOs which already have a defined color gamut.
      *
-     * @return an HSBType containing the current color and brightness level, or UNDEF or NULL.
+     * @return UnDefType.NULL if the channel is not supported
+     * @return an HSBType if the value is good
+     * @throws CriticalFieldMissing if a critical element is missing
      */
-    public State getColorState() {
+    public State getColorState() throws CriticalFieldMissing {
         ColorXy color = this.color;
         if (Objects.nonNull(color)) {
-            try {
-                HSBType hsb = ColorUtil.xyToHsb(color.getXY());
-                OnState on = this.on;
-                Dimming dimming = this.dimming;
-                double brightness = Objects.nonNull(on) && !on.isOn() ? 0
-                        : Objects.nonNull(dimming) ? Math.max(0, Math.min(100, dimming.getBrightness())) : 50;
-                return new HSBType(hsb.getHue(), hsb.getSaturation(),
-                        new PercentType(new BigDecimal(brightness, PERCENT_MATH_CONTEXT)));
-            } catch (DTOPresentButEmptyException e) {
-                return UnDefType.UNDEF; // indicates the DTO is present but its inner fields are missing
+            Dimming dimming = this.dimming;
+            if (dimming == null) {
+                throw new CriticalFieldMissing("'dimming' is missing");
             }
+            PairXy xy = color.getXY();
+            Gamut gamut = (ResourceType.LIGHT == getType()) ? color.getGamut() : ColorUtil.DEFAULT_GAMUT;
+            Double brightness = dimming.getBrightness();
+            if (xy == null || gamut == null || brightness == null) {
+                throw new CriticalFieldMissing("'xy', 'gamut', or 'brightness' missing");
+            }
+            HSBType hsb = ColorUtil.xyToHsb(xy.getXY(), gamut);
+            PercentType percent = (on instanceof OnState on && on.getOn() instanceof Boolean on2 && !on2) //
+                    ? PercentType.ZERO
+                    : new PercentType(new BigDecimal(brightness, PERCENT_MATH_CONTEXT));
+            return new HSBType(hsb.getHue(), hsb.getSaturation(), percent);
         }
         return UnDefType.NULL;
     }
@@ -340,38 +346,49 @@ public class Resource {
         return colorTemperature;
     }
 
+    /**
+     * Gets the absolute color temperature as a QuantityType in Kelvin.
+     * 
+     * @return UnDefType.NULL if the channel is not supported
+     * @return a QuantityType if the value is good
+     * @return UnDefType.UNDEF if the value is bad
+     */
     public State getColorTemperatureAbsoluteState() {
         ColorTemperature colorTemp = colorTemperature;
         if (Objects.nonNull(colorTemp)) {
-            try {
-                QuantityType<?> colorTemperature = colorTemp.getAbsolute();
-                if (Objects.nonNull(colorTemperature)) {
-                    return colorTemperature;
-                }
-            } catch (DTOPresentButEmptyException e) {
-                return UnDefType.UNDEF; // indicates the DTO is present but its inner fields are missing
+            QuantityType<?> colorTemperature = colorTemp.getAbsolute();
+            if (Objects.nonNull(colorTemperature)) {
+                return colorTemperature;
             }
+            return UnDefType.UNDEF;
         }
         return UnDefType.NULL;
     }
 
     /**
-     * Get the colour temperature in percent. Note: this method is only to be used on cached state DTOs which already
-     * have a defined mirek schema.
+     * Get the colour temperature in percent. Note: this method is only to be used on cached state DTOs
+     * which already have a defined mirek schema.
      *
-     * @return a PercentType with the colour temperature percentage.
+     * @return UnDefType.NULL if the channel is not supported
+     * @return a PercentType if the value is good
+     * @throws CriticalFieldMissing if a critical element is missing
      */
-    public State getColorTemperaturePercentState() {
+    public State getColorTemperaturePercentState() throws CriticalFieldMissing {
         ColorTemperature colorTemperature = this.colorTemperature;
         if (Objects.nonNull(colorTemperature)) {
-            try {
-                Double percent = colorTemperature.getPercent();
-                if (Objects.nonNull(percent)) {
-                    return new PercentType(new BigDecimal(percent, PERCENT_MATH_CONTEXT));
-                }
-            } catch (DTOPresentButEmptyException e) {
-                return UnDefType.UNDEF; // indicates the DTO is present but its inner fields are missing
+            Long mirek = colorTemperature.getMirek();
+            if (mirek == null) {
+                return UnDefType.UNDEF;
             }
+            MirekSchema mirekSchema = colorTemperature.getMirekSchema();
+            if (mirekSchema == null || mirekSchema.invalid()) {
+                throw new CriticalFieldMissing("'mirek_schema' is missing or invalid");
+            }
+            double min = mirekSchema.getMirekMinimum();
+            double max = mirekSchema.getMirekMaximum();
+            double percent = 100.0 * (mirek.doubleValue() - min) / (max - min);
+            percent = Math.max(0.0, Math.min(100.0, percent));
+            return new PercentType(new BigDecimal(percent, PERCENT_MATH_CONTEXT));
         }
         return UnDefType.NULL;
     }
@@ -390,18 +407,21 @@ public class Resource {
 
     /**
      * Return an HSB where the HS part is derived from the color xy JSON element (only), so the B part is 100%
-     *
-     * @return an HSBType.
+     * 
+     * @return UnDefType.NULL if the channel is not supported
+     * @return an HSBType if the value is good
+     * @throws CriticalFieldMissing if a critical element is missing
      */
-    public State getColorXyState() {
+    public State getColorXyState() throws CriticalFieldMissing {
         ColorXy color = this.color;
         if (Objects.nonNull(color)) {
-            try {
-                HSBType hsb = ColorUtil.xyToHsb(color.getXY());
-                return new HSBType(hsb.getHue(), hsb.getSaturation(), PercentType.HUNDRED);
-            } catch (DTOPresentButEmptyException e) {
-                return UnDefType.UNDEF; // indicates the DTO is present but its inner fields are missing
+            PairXy xy = color.getXY();
+            Gamut gamut = (ResourceType.LIGHT == getType()) ? color.getGamut() : ColorUtil.DEFAULT_GAMUT;
+            if (xy == null || gamut == null) {
+                throw new CriticalFieldMissing("'xy' or 'gamut' is missing");
             }
+            HSBType hsb = ColorUtil.xyToHsb(xy.getXY(), gamut);
+            return new HSBType(hsb.getHue(), hsb.getSaturation(), PercentType.HUNDRED);
         }
         return UnDefType.NULL;
     }
@@ -434,19 +454,29 @@ public class Resource {
     /**
      * Return a PercentType which is derived from the dimming JSON element (only).
      *
-     * @return a PercentType.
+     * @return UnDefType.NULL if the channel is not supported
+     * @return a PercentType if the value is good
+     * @throws CriticalFieldMissing if a critical element is missing
      */
-    public State getDimmingState() {
+    public State getDimmingState() throws CriticalFieldMissing {
         Dimming dimming = this.dimming;
         if (Objects.nonNull(dimming)) {
-            try {
-                double dimmingValue = Math.max(0f, Math.min(100f, dimming.getBrightness()));
-                return new PercentType(new BigDecimal(dimmingValue, PERCENT_MATH_CONTEXT));
-            } catch (DTOPresentButEmptyException e) {
-                return UnDefType.UNDEF; // indicates the DTO is present but its inner fields are missing
+            Double brightness = dimming.getBrightness();
+            if (brightness == null) {
+                throw new CriticalFieldMissing("'brightness' is missing");
             }
+            brightness = Math.max(0.0, Math.min(100.0, brightness));
+            return new PercentType(new BigDecimal(brightness, PERCENT_MATH_CONTEXT));
         }
         return UnDefType.NULL;
+    }
+
+    public @Nullable Double getDimmingValue() {
+        Dimming dimming = this.dimming;
+        if (Objects.nonNull(dimming)) {
+            return dimming.getBrightness();
+        }
+        return null;
     }
 
     public @Nullable Effects getFixedEffects() {
@@ -489,7 +519,10 @@ public class Resource {
 
     public @Nullable Gamut getGamut() {
         ColorXy color = this.color;
-        return Objects.nonNull(color) ? color.getGamut() : null;
+        if (Objects.nonNull(color)) {
+            return color.getGamut();
+        }
+        return null;
     }
 
     public @Nullable ResourceReference getGroup() {
@@ -544,12 +577,18 @@ public class Resource {
 
     public @Nullable Double getMinimumDimmingLevel() {
         Dimming dimming = this.dimming;
-        return Objects.nonNull(dimming) ? dimming.getMinimumDimmingLevel() : null;
+        if (Objects.nonNull(dimming)) {
+            return dimming.getMinimumDimmingLevel();
+        }
+        return null;
     }
 
     public @Nullable MirekSchema getMirekSchema() {
         ColorTemperature colorTemp = this.colorTemperature;
-        return Objects.nonNull(colorTemp) ? colorTemp.getMirekSchema() : null;
+        if (Objects.nonNull(colorTemp)) {
+            return colorTemp.getMirekSchema();
+        }
+        return null;
     }
 
     public @Nullable Motion getMotion() {
@@ -601,15 +640,51 @@ public class Resource {
     }
 
     /**
-     * Return the state of the On/Off element (only).
+     * Return the state of the On/Off element treating "soft off" as off.
+     * 
+     * @return UnDefType.NULL if the channel is not supported
+     * @return an OnOffType if the value is good
+     * @throws CriticalFieldMissing if a critical element is missing
      */
-    public State getOnOffState() {
-        try {
-            OnState on = this.on;
-            return Objects.nonNull(on) ? OnOffType.from(on.isOn()) : UnDefType.NULL;
-        } catch (DTOPresentButEmptyException e) {
-            return UnDefType.UNDEF; // indicates the DTO is present but its inner fields are missing
+    public State getSwitchState() throws CriticalFieldMissing {
+        OnState on = this.on;
+        if (on == null) {
+            return UnDefType.NULL;
         }
+        if (on.getOn() == Boolean.FALSE) {
+            return OnOffType.OFF;
+        }
+        Dimming dimming = getDimming();
+        if (dimming == null) {
+            // simple on/off device so if not off it is on
+            return OnOffType.ON;
+        }
+        // we have dimming so handle "soft off" by comparing brightness to minimum dimming level
+        Double brightness = dimming.getBrightness();
+        Double minDimLevel = dimming.getMinimumDimmingLevel();
+        if (brightness == null || minDimLevel == null) {
+            throw new CriticalFieldMissing("'brightness' or 'minimum_dimming_level' missing");
+        }
+        return OnOffType.from(brightness >= minDimLevel);
+    }
+
+    /**
+     * Return the state of the On/Off element (only).
+     * 
+     * @return UnDefType.NULL if the channel is not supported
+     * @return an OnOffType if the value is good
+     * @throws CriticalFieldMissing if a critical element is missing
+     */
+    public State getOnOffState() throws CriticalFieldMissing {
+        OnState onState = this.on;
+        if (onState == null) {
+            return UnDefType.NULL;
+        }
+        Boolean on = onState.getOn();
+        if (on == null) {
+            throw new CriticalFieldMissing("'on' is missing");
+        }
+        return OnOffType.from(on);
     }
 
     public @Nullable OnState getOnState() {
@@ -858,6 +933,16 @@ public class Resource {
         return this;
     }
 
+    public Resource setBrightness(Command command) {
+        if (command instanceof PercentType brightness) {
+            Dimming dimming = this.dimming;
+            dimming = Objects.nonNull(dimming) ? dimming : new Dimming();
+            dimming.setBrightness(brightness.doubleValue());
+            setDimming(dimming);
+        }
+        return this;
+    }
+
     public Resource setColorTemperature(ColorTemperature colorTemperature) {
         this.colorTemperature = colorTemperature;
         return this;
@@ -880,6 +965,11 @@ public class Resource {
 
     public Resource setDimming(@Nullable Dimming dimming) {
         this.dimming = dimming;
+        return this;
+    }
+
+    public Resource setDimmingDelta(IncreaseDecreaseType action, double delta) {
+        dimmingDelta = new DimmingDelta().setAction(action).setDelta(delta);
         return this;
     }
 
@@ -907,6 +997,11 @@ public class Resource {
 
     public Resource setMetadata(MetaData metadata) {
         this.metadata = metadata;
+        return this;
+    }
+
+    public Resource setMirekDelta(IncreaseDecreaseType action, int delta) {
+        colorTemperatureDelta = new ColorTemperatureDelta().setAction(action).setDelta(delta);
         return this;
     }
 
