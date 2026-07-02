@@ -23,7 +23,6 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.openweathermap.internal.config.OpenWeatherMapCombinedForecastConfiguration;
 import org.openhab.binding.openweathermap.internal.connection.OpenWeatherMapConnection;
 import org.openhab.binding.openweathermap.internal.dto.OpenWeatherMapJsonHourlyForecastData;
 import org.openhab.binding.openweathermap.internal.dto.OpenWeatherMapOneCallAPIData;
@@ -36,8 +35,6 @@ import org.openhab.core.i18n.ConfigurationException;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.State;
 import org.openhab.core.types.TimeSeries;
 import org.openhab.core.types.UnDefType;
@@ -47,7 +44,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * The {@link OpenWeatherMapCombinedForecastHandler} provides a unified 5-day weather forecast
+ * The {@link OpenWeatherMapOneCallV3TimeSeriesHandler} provides a unified 5-day weather forecast
  * TimeSeries by merging data from two APIs:
  * <ul>
  * <li>One Call API 3.0 — current conditions + hourly forecast (0–48 h)</li>
@@ -58,63 +55,37 @@ import com.google.gson.JsonSyntaxException;
  * The merge strategy appends Forecast5 slots whose {@code dt} is strictly greater than the last
  * One Call hourly slot's {@code dt}, producing a seamless 5-day TimeSeries.
  *
- * <p>
- * The {@code forecastResolution} configuration parameter determines which API tiers are active:
- * <ul>
- * <li>{@code hourly} — hourly (0–48 h) + 3-hourly (48–120 h) — default</li>
- * <li>{@code 3hourly} — 3-hourly only (0–120 h), requires only the free-tier Forecast5 API</li>
- * </ul>
- *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class OpenWeatherMapCombinedForecastHandler extends AbstractOpenWeatherMapHandler {
-
-    private static final String RESOLUTION_HOURLY = "hourly";
-    private static final String RESOLUTION_3HOURLY = "3hourly";
+public class OpenWeatherMapOneCallV3TimeSeriesHandler extends AbstractOpenWeatherMapHandler {
 
     /** Maximum number of Forecast5 slots to request (40 × 3 h = 120 h). */
     private static final int FORECAST5_SLOT_COUNT = 40;
 
-    private final Logger logger = LoggerFactory.getLogger(OpenWeatherMapCombinedForecastHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(OpenWeatherMapOneCallV3TimeSeriesHandler.class);
 
     private @Nullable OpenWeatherMapOneCallAPIData oneCallData;
     private @Nullable OpenWeatherMapJsonHourlyForecastData forecast5Data;
-    private String forecastResolution = RESOLUTION_HOURLY;
 
-    public OpenWeatherMapCombinedForecastHandler(Thing thing) {
+    public OpenWeatherMapOneCallV3TimeSeriesHandler(Thing thing) {
         super(thing);
     }
 
     @Override
     public void initialize() {
         super.initialize();
-        logger.debug("Initialize OpenWeatherMapCombinedForecastHandler for thing '{}'.", getThing().getUID());
-        OpenWeatherMapCombinedForecastConfiguration config = getConfigAs(
-                OpenWeatherMapCombinedForecastConfiguration.class);
-
-        String resolution = config.forecastResolution;
-        if (!RESOLUTION_HOURLY.equals(resolution) && !RESOLUTION_3HOURLY.equals(resolution)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Invalid forecastResolution '" + resolution + "'. Valid values: hourly, 3hourly.");
-            return;
-        }
-        forecastResolution = resolution;
-        logger.debug("Combined forecast resolution: '{}'.", forecastResolution);
+        logger.debug("Initialize OpenWeatherMapOneCallV3TimeSeriesHandler for thing '{}'.", getThing().getUID());
     }
 
     @Override
     protected boolean requestData(OpenWeatherMapConnection connection)
             throws CommunicationException, ConfigurationException {
-        logger.debug("Update combined forecast data of thing '{}'.", getThing().getUID());
+        logger.debug("Update onecall-v3-timeseries data of thing '{}'.", getThing().getUID());
         try {
-            if (!RESOLUTION_3HOURLY.equals(forecastResolution)) {
-                // One Call 3.0: exclude daily, alerts and minutely — only current + hourly needed
-                oneCallData = connection.getOneCallAPIData(location, true, false, true, true);
-            } else {
-                oneCallData = null;
-            }
-            // Forecast5 is always fetched (either as extension or as sole source)
+            // One Call 3.0: exclude minutely, daily and alerts — only current + hourly needed
+            oneCallData = connection.getOneCallAPIData(location, true, false, true, true);
+            // Forecast5: 40 slots × 3 h = 120 h coverage; slots beyond 48 h extend the TimeSeries
             forecast5Data = connection.getHourlyForecastData(location, FORECAST5_SLOT_COUNT);
             return true;
         } catch (JsonSyntaxException e) {
@@ -130,16 +101,16 @@ public class OpenWeatherMapCombinedForecastHandler extends AbstractOpenWeatherMa
             logger.debug("Cannot update {} as it has no GroupId", channelUID);
             return;
         }
-        logger.debug("CombinedForecastHandler: updateChannel {}, groupID {}", channelUID, channelGroupId);
+        logger.debug("OneCallV3TimeSeriesHandler: updateChannel {}, groupID {}", channelUID, channelGroupId);
         switch (channelGroupId) {
             case CHANNEL_GROUP_ONECALL_CURRENT:
                 updateCurrentChannel(channelUID);
                 break;
-            case CHANNEL_GROUP_COMBINED_FORECAST:
-                updateCombinedForecastTimeSeries(channelUID);
+            case CHANNEL_GROUP_FORECAST:
+                updateForecastTimeSeries(channelUID);
                 break;
             default:
-                logger.warn("Unknown channel group '{}' for combined forecast thing.", channelGroupId);
+                logger.warn("Unknown channel group '{}' for onecall-v3-timeseries thing.", channelGroupId);
                 break;
         }
     }
@@ -238,7 +209,7 @@ public class OpenWeatherMapCombinedForecastHandler extends AbstractOpenWeatherMa
                 state = (visState == null ? state : visState);
                 break;
             default:
-                logger.warn("Unknown channel id '{}' in combined forecast current data.", channelId);
+                logger.warn("Unknown channel id '{}' in onecall-v3-timeseries current data.", channelId);
                 break;
         }
         logger.debug("Update channel '{}' of group '{}' with new state '{}'.", channelId, channelGroupId, state);
@@ -250,16 +221,16 @@ public class OpenWeatherMapCombinedForecastHandler extends AbstractOpenWeatherMa
      * {@code forecast} channel group.
      *
      * <p>
-     * The TimeSeries is assembled as follows:
-     * <ul>
-     * <li>If resolution is {@code hourly}: all One Call hourly slots (0–48 h) are added first.</li>
+     * Assembly order:
+     * <ol>
+     * <li>All One Call 3.0 hourly slots (0–48 h) are added first.</li>
      * <li>Forecast5 slots whose {@code dt} is strictly greater than the last One Call hourly
-     * slot's {@code dt} are then appended (or all Forecast5 slots for {@code 3hourly}).</li>
-     * </ul>
+     * slot's {@code dt} are appended (48–120 h).</li>
+     * </ol>
      *
      * @param channelUID the channel to update
      */
-    private void updateCombinedForecastTimeSeries(ChannelUID channelUID) {
+    private void updateForecastTimeSeries(ChannelUID channelUID) {
         String channelId = channelUID.getIdWithoutGroup();
         String channelGroupId = channelUID.getGroupId();
 
@@ -272,28 +243,22 @@ public class OpenWeatherMapCombinedForecastHandler extends AbstractOpenWeatherMa
         TimeSeries timeSeries = new TimeSeries(REPLACE);
         long cutoffDt = Long.MIN_VALUE;
 
-        if (!RESOLUTION_3HOURLY.equals(forecastResolution)) {
-            OpenWeatherMapOneCallAPIData localOneCall = oneCallData;
-            if (localOneCall != null) {
-                // --- One Call hourly data (0–48 h) ---
-                if (!localOneCall.getHourly().isEmpty()) {
-                    List<Hourly> hourlyList = localOneCall.getHourly();
-                    for (Hourly slot : hourlyList) {
-                        timeSeries.add(Instant.ofEpochSecond(slot.getDt()), getOneCallHourlyState(channelId, slot));
-                    }
-                    cutoffDt = hourlyList.get(hourlyList.size() - 1).getDt();
-                }
+        // --- One Call 3.0 hourly data (0–48 h) ---
+        OpenWeatherMapOneCallAPIData localOneCall = oneCallData;
+        if (localOneCall != null && !localOneCall.getHourly().isEmpty()) {
+            List<Hourly> hourlyList = localOneCall.getHourly();
+            for (Hourly slot : hourlyList) {
+                timeSeries.add(Instant.ofEpochSecond(slot.getDt()), getOneCallHourlyState(channelId, slot));
             }
+            cutoffDt = hourlyList.get(hourlyList.size() - 1).getDt();
         }
 
-        // --- Forecast5 data (48–120 h, or 0–120 h in 3hourly mode) ---
+        // --- Forecast5 data (48–120 h) ---
         OpenWeatherMapJsonHourlyForecastData localForecast5 = forecast5Data;
         if (localForecast5 != null && localForecast5.getList() != null) {
             final long cutoff = cutoffDt;
             localForecast5.getList().stream().filter(slot -> slot.getDt() > cutoff).forEach(slot -> {
-                Instant timestamp = Instant.ofEpochSecond(slot.getDt());
-                State state = getForecast5State(channelId, slot);
-                timeSeries.add(timestamp, state);
+                timeSeries.add(Instant.ofEpochSecond(slot.getDt()), getForecast5State(channelId, slot));
             });
         }
 
@@ -379,7 +344,7 @@ public class OpenWeatherMapCombinedForecastHandler extends AbstractOpenWeatherMa
                 state = (visState == null ? state : visState);
                 break;
             default:
-                logger.warn("Unknown channel id '{}' in combined forecast One Call hourly data.", channelId);
+                logger.warn("Unknown channel id '{}' in onecall-v3-timeseries One Call hourly data.", channelId);
                 break;
         }
         return state;
@@ -482,7 +447,7 @@ public class OpenWeatherMapCombinedForecastHandler extends AbstractOpenWeatherMa
                 }
                 break;
             default:
-                logger.warn("Unknown channel id '{}' in combined forecast Forecast5 data.", channelId);
+                logger.warn("Unknown channel id '{}' in onecall-v3-timeseries Forecast5 data.", channelId);
                 break;
         }
         return state;

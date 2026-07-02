@@ -153,24 +153,11 @@
 		</parameter>
 	</config-description>
 
-	<config-description uri="thing-type:openweathermap:combined-forecast">
+	<config-description uri="thing-type:openweathermap:onecall-v3-timeseries">
 		<parameter name="location" type="text" required="true">
 			<context>location</context>
 			<label>Location of Weather</label>
 			<description>Location of weather in geographical coordinates (latitude/longitude/altitude).</description>
-		</parameter>
-		<parameter name="forecastResolution" type="text">
-			<label>Forecast Resolution</label>
-			<description>Controls the granularity of the unified forecast TimeSeries. "hourly" (default) includes hourly
-				(0–48 h)
-				+ 3-hourly (48–120 h) data and requires a One Call API 3.0 subscription. "3hourly" includes only
-				3-hourly (0–120 h)
-				data from the free-tier Forecast5 API.</description>
-			<default>hourly</default>
-			<options>
-				<option value="hourly">Hourly (0–48 h) + 3-Hourly (48–120 h)</option>
-				<option value="3hourly">3-Hourly only (0–120 h, free tier)</option>
-			</options>
 		</parameter>
 	</config-description>
 

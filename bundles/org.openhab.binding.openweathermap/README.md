@@ -55,18 +55,14 @@ It requires coordinates of the location of your interest.
 You can add as many `onecall-history` things for different locations to your setup as you like to observe.
 For every day in history you have to create a different Thing.
 
-### Combined Forecast
+### One Call v3 TimeSeries Forecast
 
-The Thing `combined-forecast` provides a unified 5-day weather forecast as a single continuous [TimeSeries](#persisting-time-series) per channel, by merging data from two APIs:
+The Thing `onecall-v3-timeseries` provides a unified 5-day weather forecast as a single continuous [TimeSeries](#persisting-time-series) per channel, by merging data from two APIs:
 
 - **One Call API 3.0** — current conditions and hourly forecast for 0–48 h. Requires a paid subscription.
 - **Forecast5 API** (`data/2.5/forecast`) — 3-hourly slots for 48–120 h. Available on the free tier.
 
 The merge is seamless: all One Call hourly slots are used first, then Forecast5 slots that start strictly after the last One Call slot are appended.
-The `forecastResolution` configuration parameter controls which API tiers are active, allowing you to balance forecast precision against long-term database growth.
-
-Users with a free API key only can use `forecastResolution=3hourly`, which relies solely on the Forecast5 API and does not require a One Call 3.0 subscription.
-In this mode the `current` channel group will show `UNDEF` because current conditions are only available through the One Call API.
 
 ## Discovery
 
@@ -123,20 +119,14 @@ In a future release, this will become the default setting as usage of the time s
 | location       | Location of weather in geographical coordinates (latitude/longitude/altitude). **Mandatory**                                   |
 | historyDay     | Number of days back in history. The API supports going back up to 5 days at the moment. **Mandatory**                          |
 
-### Combined Forecast
+### One Call v3 TimeSeries Forecast
 
-| Parameter          | Description                                                                                                                                                                                                                           |
-|--------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| location           | Location of weather in geographical coordinates (latitude/longitude/altitude). **Mandatory**                                                                                                                                          |
-| forecastResolution | Granularity of the unified forecast TimeSeries. Optional, the default value is `hourly`. Valid values: `hourly`, `3hourly`. See the table below for details.                                                                          |
+| Parameter | Description                                                                                                  |
+|-----------|--------------------------------------------------------------------------------------------------------------|
+| location  | Location of weather in geographical coordinates (latitude/longitude/altitude). **Mandatory**                 |
 
-| `forecastResolution` | TimeSeries content                                            | API calls | Approx. entries/year |
-|----------------------|---------------------------------------------------------------|-----------|----------------------|
-| `hourly` _(default)_ | Hourly (0–48 h) + 3-hourly (48–120 h)                        | 2         | ~8,760               |
-| `3hourly`            | 3-hourly only (0–120 h), Forecast5 API, free tier             | 1         | ~2,920               |
-
-**Attention**: The `hourly` resolution requires a [One Call API 3.0](https://openweathermap.org/api/one-call-3) subscription.
-The `3hourly` resolution uses only the free-tier [Forecast5 API](https://openweathermap.org/forecast5).
+**Attention**: Requires a [One Call API 3.0](https://openweathermap.org/api/one-call-3) subscription.
+The Forecast5 API (48–120 h extension) is available on the free tier and is fetched automatically.
 
 ## Channels
 
@@ -301,12 +291,11 @@ The `forecastHourly` channel group provides all channels as described above with
 
 In a future release, the `forecastHours01` to `forecastHours120` channel groups won't be created anymore by default as usage of the time series channels instead is encouraged.
 
-### Combined Forecast
+### One Call v3 TimeSeries Forecast
 
-The `combined-forecast` Thing provides two channel groups.
+The `onecall-v3-timeseries` Thing provides two channel groups.
 
 The `current` channel group uses the `oneCallCurrent` type — the same channels as described in [Current Weather](#current-weather), including `sunrise`, `sunset`, `dew-point`, and `uvindex`.
-It is only populated when `forecastResolution` is `hourly`.
 
 The `forecast` channel group delivers the unified 5-day TimeSeries and supports [time series persistence](#persisting-time-series).
 
@@ -333,7 +322,7 @@ The `forecast` channel group delivers the unified 5-day TimeSeries and supports 
 
 ## Persisting Time Series
 
-The binding offers support for persisting forecast values for most channels of the [One Call API Weather and Forecast](#one-call-api-weather-and-forecast) and [Combined Forecast](#combined-forecast) Things.
+The binding offers support for persisting forecast values for most channels of the [One Call API Weather and Forecast](#one-call-api-weather-and-forecast) and [One Call v3 TimeSeries Forecast](#one-call-v3-timeseries-forecast) Things.
 The recommended persistence strategy is `forecast`, as it ensures a clean history without redundancy.
 
 ### Configuration
@@ -368,14 +357,12 @@ Bridge openweathermap:weather-api:api "OpenWeatherMap Account" [apikey="Add your
 }
 ```
 
-#### Combined Forecast
+#### One Call v3 TimeSeries Forecast
 
 ```java
 Bridge openweathermap:weather-api:api "OpenWeatherMap Account" [apikey="Add your API key", refreshInterval=60, language="de", apiVersion="3.0"] {
-    // Default: hourly resolution — One Call 3.0 (0–48 h) merged with Forecast5 (48–120 h)
-    Thing combined-forecast local "Local Combined Forecast" [location="xxx,yyy", forecastResolution="hourly"]
-    // Free-tier alternative: Forecast5 only, 3-hourly resolution, no One Call subscription needed
-    Thing combined-forecast local-free "Local Forecast (Free Tier)" [location="xxx,yyy", forecastResolution="3hourly"]
+    // One Call 3.0 (0–48 h hourly) merged with Forecast5 (48–120 h 3-hourly)
+    Thing onecall-v3-timeseries local "Local One Call v3 TimeSeries Forecast" [location="xxx,yyy"]
 }
 ```
 
@@ -640,44 +627,44 @@ Number:Length localHistory1Hours24SnowVolume  "Snow volume [%.1f %unit%]"  <snow
 Number:Length localHistory1Hours24visibility "Visibility [%.1f km]"  <visibility> { channel="openweathermap:onecall-history:api:local-history:historyHours24#visibility" }
 ```
 
-#### Combined Forecast
+#### One Call v3 TimeSeries Forecast
 
 ```java
-// Current conditions (only available with forecastResolution=hourly)
-DateTime localCombinedCurrentTimestamp "Timestamp [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="openweathermap:combined-forecast:api:local:current#time-stamp" }
-String localCombinedCurrentCondition "Current Condition [%s]" <sun_clouds> { channel="openweathermap:combined-forecast:api:local:current#condition" }
-Image localCombinedCurrentConditionIcon "Icon" { channel="openweathermap:combined-forecast:api:local:current#icon" }
-Number:Temperature localCombinedCurrentTemperature "Current Temperature [%.1f %unit%]" <temperature> { channel="openweathermap:combined-forecast:api:local:current#temperature" }
-Number:Temperature localCombinedCurrentApparentTemperature "Apparent Temperature [%.1f %unit%]" <temperature> { channel="openweathermap:combined-forecast:api:local:current#apparent-temperature" }
-Number:Pressure localCombinedCurrentPressure "Barometric Pressure [%.1f %unit%]" <pressure> { channel="openweathermap:combined-forecast:api:local:current#pressure" }
-Number:Dimensionless localCombinedCurrentHumidity "Atmospheric Humidity [%d %unit%]" <humidity> { channel="openweathermap:combined-forecast:api:local:current#humidity" }
-Number:Temperature localCombinedCurrentDewpoint "Dew Point [%.1f %unit%]" <temperature> { channel="openweathermap:combined-forecast:api:local:current#dew-point" }
-Number:Speed localCombinedCurrentWindSpeed "Wind Speed [%.1f km/h]" <wind> { channel="openweathermap:combined-forecast:api:local:current#wind-speed" }
-Number:Angle localCombinedCurrentWindDirection "Wind Direction [%d %unit%]" <wind> { channel="openweathermap:combined-forecast:api:local:current#wind-direction" }
-Number:Speed localCombinedCurrentGustSpeed "Gust Speed [%.1f km/h]" <wind> { channel="openweathermap:combined-forecast:api:local:current#gust-speed" }
-Number:Dimensionless localCombinedCurrentCloudiness "Cloudiness [%d %unit%]" <clouds> { channel="openweathermap:combined-forecast:api:local:current#cloudiness" }
-Number:Dimensionless localCombinedCurrentUvindex "UV Index [%.1f]" { channel="openweathermap:combined-forecast:api:local:current#uvindex" }
-Number:Length localCombinedCurrentRainVolume "Rain Volume [%.1f %unit%]" <rain> { channel="openweathermap:combined-forecast:api:local:current#rain" }
-Number:Length localCombinedCurrentSnowVolume "Snow Volume [%.1f %unit%]" <snow> { channel="openweathermap:combined-forecast:api:local:current#snow" }
-Number:Length localCombinedCurrentVisibility "Visibility [%.1f km]" <visibility> { channel="openweathermap:combined-forecast:api:local:current#visibility" }
+// Current conditions
+DateTime localOneCallV3CurrentTimestamp "Timestamp [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="openweathermap:onecall-v3-timeseries:api:local:current#time-stamp" }
+String localOneCallV3CurrentCondition "Current Condition [%s]" <sun_clouds> { channel="openweathermap:onecall-v3-timeseries:api:local:current#condition" }
+Image localOneCallV3CurrentConditionIcon "Icon" { channel="openweathermap:onecall-v3-timeseries:api:local:current#icon" }
+Number:Temperature localOneCallV3CurrentTemperature "Current Temperature [%.1f %unit%]" <temperature> { channel="openweathermap:onecall-v3-timeseries:api:local:current#temperature" }
+Number:Temperature localOneCallV3CurrentApparentTemperature "Apparent Temperature [%.1f %unit%]" <temperature> { channel="openweathermap:onecall-v3-timeseries:api:local:current#apparent-temperature" }
+Number:Pressure localOneCallV3CurrentPressure "Barometric Pressure [%.1f %unit%]" <pressure> { channel="openweathermap:onecall-v3-timeseries:api:local:current#pressure" }
+Number:Dimensionless localOneCallV3CurrentHumidity "Atmospheric Humidity [%d %unit%]" <humidity> { channel="openweathermap:onecall-v3-timeseries:api:local:current#humidity" }
+Number:Temperature localOneCallV3CurrentDewpoint "Dew Point [%.1f %unit%]" <temperature> { channel="openweathermap:onecall-v3-timeseries:api:local:current#dew-point" }
+Number:Speed localOneCallV3CurrentWindSpeed "Wind Speed [%.1f km/h]" <wind> { channel="openweathermap:onecall-v3-timeseries:api:local:current#wind-speed" }
+Number:Angle localOneCallV3CurrentWindDirection "Wind Direction [%d %unit%]" <wind> { channel="openweathermap:onecall-v3-timeseries:api:local:current#wind-direction" }
+Number:Speed localOneCallV3CurrentGustSpeed "Gust Speed [%.1f km/h]" <wind> { channel="openweathermap:onecall-v3-timeseries:api:local:current#gust-speed" }
+Number:Dimensionless localOneCallV3CurrentCloudiness "Cloudiness [%d %unit%]" <clouds> { channel="openweathermap:onecall-v3-timeseries:api:local:current#cloudiness" }
+Number:Dimensionless localOneCallV3CurrentUvindex "UV Index [%.1f]" { channel="openweathermap:onecall-v3-timeseries:api:local:current#uvindex" }
+Number:Length localOneCallV3CurrentRainVolume "Rain Volume [%.1f %unit%]" <rain> { channel="openweathermap:onecall-v3-timeseries:api:local:current#rain" }
+Number:Length localOneCallV3CurrentSnowVolume "Snow Volume [%.1f %unit%]" <snow> { channel="openweathermap:onecall-v3-timeseries:api:local:current#snow" }
+Number:Length localOneCallV3CurrentVisibility "Visibility [%.1f km]" <visibility> { channel="openweathermap:onecall-v3-timeseries:api:local:current#visibility" }
 
 // Unified 5-day forecast TimeSeries — persist these with the "forecast" strategy
-String localCombinedForecastCondition "Forecast Condition [%s]" <sun_clouds> { channel="openweathermap:combined-forecast:api:local:forecast#condition" }
-Image localCombinedForecastConditionIcon "Forecast Icon" { channel="openweathermap:combined-forecast:api:local:forecast#icon" }
-Number:Temperature localCombinedForecastTemperature "Forecast Temperature [%.1f %unit%]" <temperature> { channel="openweathermap:combined-forecast:api:local:forecast#temperature" }
-Number:Temperature localCombinedForecastApparentTemperature "Forecast Apparent Temperature [%.1f %unit%]" <temperature> { channel="openweathermap:combined-forecast:api:local:forecast#apparent-temperature" }
-Number:Pressure localCombinedForecastPressure "Forecast Barometric Pressure [%.1f %unit%]" <pressure> { channel="openweathermap:combined-forecast:api:local:forecast#pressure" }
-Number:Dimensionless localCombinedForecastHumidity "Forecast Atmospheric Humidity [%d %unit%]" <humidity> { channel="openweathermap:combined-forecast:api:local:forecast#humidity" }
-Number:Temperature localCombinedForecastDewpoint "Forecast Dew Point [%.1f %unit%]" <temperature> { channel="openweathermap:combined-forecast:api:local:forecast#dew-point" }
-Number:Speed localCombinedForecastWindSpeed "Forecast Wind Speed [%.1f km/h]" <wind> { channel="openweathermap:combined-forecast:api:local:forecast#wind-speed" }
-Number:Angle localCombinedForecastWindDirection "Forecast Wind Direction [%d %unit%]" <wind> { channel="openweathermap:combined-forecast:api:local:forecast#wind-direction" }
-Number:Speed localCombinedForecastGustSpeed "Forecast Gust Speed [%.1f km/h]" <wind> { channel="openweathermap:combined-forecast:api:local:forecast#gust-speed" }
-Number:Dimensionless localCombinedForecastCloudiness "Forecast Cloudiness [%d %unit%]" <clouds> { channel="openweathermap:combined-forecast:api:local:forecast#cloudiness" }
-Number:Dimensionless localCombinedForecastUvindex "Forecast UV Index [%.1f]" { channel="openweathermap:combined-forecast:api:local:forecast#uvindex" }
-Number:Dimensionless localCombinedForecastPrecipProbability "Precipitation Probability [%.0f %unit%]" { channel="openweathermap:combined-forecast:api:local:forecast#precip-probability" }
-Number:Length localCombinedForecastRainVolume "Forecast Rain Volume [%.1f %unit%]" <rain> { channel="openweathermap:combined-forecast:api:local:forecast#rain" }
-Number:Length localCombinedForecastSnowVolume "Forecast Snow Volume [%.1f %unit%]" <snow> { channel="openweathermap:combined-forecast:api:local:forecast#snow" }
-Number:Length localCombinedForecastVisibility "Forecast Visibility [%.1f km]" <visibility> { channel="openweathermap:combined-forecast:api:local:forecast#visibility" }
+String localOneCallV3ForecastCondition "Forecast Condition [%s]" <sun_clouds> { channel="openweathermap:onecall-v3-timeseries:api:local:forecast#condition" }
+Image localOneCallV3ForecastConditionIcon "Forecast Icon" { channel="openweathermap:onecall-v3-timeseries:api:local:forecast#icon" }
+Number:Temperature localOneCallV3ForecastTemperature "Forecast Temperature [%.1f %unit%]" <temperature> { channel="openweathermap:onecall-v3-timeseries:api:local:forecast#temperature" }
+Number:Temperature localOneCallV3ForecastApparentTemperature "Forecast Apparent Temperature [%.1f %unit%]" <temperature> { channel="openweathermap:onecall-v3-timeseries:api:local:forecast#apparent-temperature" }
+Number:Pressure localOneCallV3ForecastPressure "Forecast Barometric Pressure [%.1f %unit%]" <pressure> { channel="openweathermap:onecall-v3-timeseries:api:local:forecast#pressure" }
+Number:Dimensionless localOneCallV3ForecastHumidity "Forecast Atmospheric Humidity [%d %unit%]" <humidity> { channel="openweathermap:onecall-v3-timeseries:api:local:forecast#humidity" }
+Number:Temperature localOneCallV3ForecastDewpoint "Forecast Dew Point [%.1f %unit%]" <temperature> { channel="openweathermap:onecall-v3-timeseries:api:local:forecast#dew-point" }
+Number:Speed localOneCallV3ForecastWindSpeed "Forecast Wind Speed [%.1f km/h]" <wind> { channel="openweathermap:onecall-v3-timeseries:api:local:forecast#wind-speed" }
+Number:Angle localOneCallV3ForecastWindDirection "Forecast Wind Direction [%d %unit%]" <wind> { channel="openweathermap:onecall-v3-timeseries:api:local:forecast#wind-direction" }
+Number:Speed localOneCallV3ForecastGustSpeed "Forecast Gust Speed [%.1f km/h]" <wind> { channel="openweathermap:onecall-v3-timeseries:api:local:forecast#gust-speed" }
+Number:Dimensionless localOneCallV3ForecastCloudiness "Forecast Cloudiness [%d %unit%]" <clouds> { channel="openweathermap:onecall-v3-timeseries:api:local:forecast#cloudiness" }
+Number:Dimensionless localOneCallV3ForecastUvindex "Forecast UV Index [%.1f]" { channel="openweathermap:onecall-v3-timeseries:api:local:forecast#uvindex" }
+Number:Dimensionless localOneCallV3ForecastPrecipProbability "Precipitation Probability [%.0f %unit%]" { channel="openweathermap:onecall-v3-timeseries:api:local:forecast#precip-probability" }
+Number:Length localOneCallV3ForecastRainVolume "Forecast Rain Volume [%.1f %unit%]" <rain> { channel="openweathermap:onecall-v3-timeseries:api:local:forecast#rain" }
+Number:Length localOneCallV3ForecastSnowVolume "Forecast Snow Volume [%.1f %unit%]" <snow> { channel="openweathermap:onecall-v3-timeseries:api:local:forecast#snow" }
+Number:Length localOneCallV3ForecastVisibility "Forecast Visibility [%.1f km]" <visibility> { channel="openweathermap:onecall-v3-timeseries:api:local:forecast#visibility" }
 ```
 
 ### Sitemap
