@@ -74,11 +74,11 @@ public class EpsonProjectorHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(EpsonProjectorHandler.class);
     private final SerialPortManager serialPortManager;
     private final EpsonStateDescriptionOptionProvider stateDescriptionProvider;
+    private final Object sequenceLock = new Object();
 
     private @Nullable ScheduledFuture<?> pollingJob;
     private Optional<EpsonProjectorDevice> device = Optional.empty();
 
-    private Object sequenceLock = new Object();
     private boolean loadSourceList = false;
     private boolean isSourceListLoaded = false;
     private boolean isMetadataLoaded = false;

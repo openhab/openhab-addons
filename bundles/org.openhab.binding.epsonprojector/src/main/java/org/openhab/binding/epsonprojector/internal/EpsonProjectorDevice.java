@@ -98,7 +98,7 @@ public class EpsonProjectorDevice {
     private ExpiringCache<Integer> cachedLampHours = new ExpiringCache<>(Duration.ofMinutes(LAMP_REFRESH_WAIT_MINUTES),
             this::queryLamp);
     private boolean connected = false;
-    private boolean ready = true;
+    private volatile boolean ready = true;
 
     public EpsonProjectorDevice(SerialPortManager serialPortManager, EpsonProjectorConfiguration config) {
         this.config = config;
