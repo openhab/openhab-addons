@@ -134,8 +134,13 @@ public class Shelly1CoIoTVersion1 extends Shelly1CoIoTProtocol implements Shelly
                         }
                         break;
                     case "energy counter 0 [w-min]":
+                        // Write OLD channel first (backward compat, W); dual-write then attempts
+                        // LASTMIN1→LASTENERGY1 but that is a dimensional no-op (W cannot convert to Wh).
+                        // The explicit LASTENERGY1 write below is therefore not overridden.
                         updateChannel(updates, rGroup, CHANNEL_METER_LASTMIN1,
                                 toQuantityType(s.value, DIGITS_WATT, Units.WATT));
+                        updateChannel(updates, rGroup, CHANNEL_METER_LASTENERGY1,
+                                toQuantityType(s.value / 60.0, DIGITS_KWH, Units.WATT_HOUR));
                         break;
                     case "energy counter 1 [w-min]":
                     case "energy counter 2 [w-min]":

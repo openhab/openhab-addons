@@ -279,4 +279,76 @@ public class ShellyDeviceProfileTest {
         deviceProfile.updateFromStatus(status);
         assertThat(deviceProfile.numInputs, is(equalTo(-1)));
     }
+
+    // resolveNumMeters(thingTypeUID, fromDevice, fromDeviceConfig, isLight, inColor, numOutputs,
+    // hasRelays, numRelays, numRollers, isRoller) -> expected
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForResolveNumMeters")
+    void resolveNumMeters(ThingTypeUID thingTypeUID, int fromDevice, int fromDeviceConfig, boolean isLight,
+            boolean inColor, int numOutputs, boolean hasRelays, int numRelays, int numRollers, boolean isRoller,
+            int expected) {
+        int actual = ShellyDeviceProfile.resolveNumMeters(thingTypeUID, fromDevice, fromDeviceConfig, isLight, inColor,
+                numOutputs, hasRelays, numRelays, numRollers, isRoller);
+        assertThat("thingType=" + thingTypeUID.getId() + " fromDevice=" + fromDevice + " fromDeviceConfig="
+                + fromDeviceConfig, actual, is(equalTo(expected)));
+    }
+
+    private static Stream<Arguments> provideTestCasesForResolveNumMeters() {
+        // Parameters: thingTypeUID, fromDevice, fromDeviceConfig, isLight, inColor, numOutputs,
+        // hasRelays, numRelays, numRollers, isRoller, expected
+
+        // Priority 1: device-reported value > 0 wins unconditionally
+        return Stream.of( //
+                // P1: fromDevice > 0 — wins regardless of capMap, config or relay count
+                Arguments.of(THING_TYPE_SHELLYPRO3EM, 3, -1, false, false, 0, false, 0, 0, false, 3), //
+                Arguments.of(THING_TYPE_SHELLYPLUS1PM, 1, -1, false, false, 0, true, 1, 0, false, 1), //
+                Arguments.of(THING_TYPE_SHELLYPRO2, 2, -1, false, false, 0, true, 2, 0, false, 2), // capMap says 0,
+                                                                                                   // device wins
+                Arguments.of(THING_TYPE_SHELLY3EM, 3, -1, false, false, 0, false, 0, 0, false, 3), //
+
+                // P2: capability-map override (fromDevice <= 0)
+                Arguments.of(THING_TYPE_SHELLYPRO2, 0, -1, false, false, 0, true, 2, 0, false, 0), // relay-only Pro2
+                Arguments.of(THING_TYPE_SHELLYPRO3, 0, -1, false, false, 0, true, 3, 0, false, 0), // relay-only Pro3
+                Arguments.of(THING_TYPE_SHELLY3EM, 0, -1, false, false, 0, false, 0, 0, false, 3), //
+                Arguments.of(THING_TYPE_SHELLYPRO3EM, -1, -1, false, false, 0, false, 0, 0, false, 3), //
+                Arguments.of(THING_TYPE_SHELLYPRO3EM63, -1, -1, false, false, 0, false, 0, 0, false, 3), //
+                Arguments.of(THING_TYPE_SHELLYPRO3EM400, -1, -1, false, false, 0, false, 0, 0, false, 3), //
+                Arguments.of(THING_TYPE_SHELLYPLUS3EM63, -1, -1, false, false, 0, false, 0, 0, false, 3), //
+                Arguments.of(THING_TYPE_SHELLYPROEM50, -1, -1, false, false, 0, false, 0, 0, false, 2), //
+                // ProEM50 capMap wins even when relay is present (relay gets its own slot via hasEM1Clamps override)
+                Arguments.of(THING_TYPE_SHELLYPROEM50, -1, -1, false, false, 0, true, 1, 0, false, 2), //
+
+                // P3: device-config detection — thingType not in capMap
+                Arguments.of(THING_TYPE_SHELLYMINI_PM, -1, 1, false, false, 0, false, 0, 0, false, 1), // pm10 → 1
+                Arguments.of(THING_TYPE_SHELLYPLUSEM, -1, 1, false, false, 0, false, 0, 0, false, 1), // pm10 → 1
+                Arguments.of(THING_TYPE_SHELLYMINI_EM, -1, 3, false, false, 0, false, 0, 0, false, 3), // em0 → 3
+                // em1:0 alone → 1 meter (EM Mini G4 single clamp; fix for fromDeviceConfig=1 when em11 absent)
+                Arguments.of(THING_TYPE_SHELLYMINI_EM, -1, 1, false, false, 0, false, 0, 0, false, 1), //
+                // em1:0 + em1:1 → 2 meters (Pro EM50 two clamps; capMap also says 2 so result is the same)
+                Arguments.of(THING_TYPE_SHELLYPLUS1PM, -1, 2, false, false, 0, true, 1, 0, false, 2), //
+                Arguments.of(THING_TYPE_SHELLYPRO1PM, -1, 0, false, false, 0, true, 1, 0, false, 0), // config says 0
+
+                // P4: light special-case (fromDeviceConfig=-1, not in capMap)
+                Arguments.of(THING_TYPE_SHELLYRGBW2_COLOR, -1, -1, true, true, 4, false, 0, 0, false, 1), // color → 1
+                Arguments.of(THING_TYPE_SHELLYRGBW2_WHITE, -1, -1, true, false, 4, false, 0, 0, false, 4), // white →
+                                                                                                           // numOutputs
+                Arguments.of(THING_TYPE_SHELLYDIMMER, -1, -1, true, false, 1, false, 0, 0, false, 1), //
+                Arguments.of(THING_TYPE_SHELLYBULB, -1, -1, true, true, 1, false, 0, 0, false, 1), //
+
+                // P5: relay fallback (not in capMap, not a light, no config data)
+                Arguments.of(THING_TYPE_SHELLYPLUS1, -1, -1, false, false, 0, true, 1, 0, false, 1), //
+                Arguments.of(THING_TYPE_SHELLYPRO1PM, -1, -1, false, false, 0, true, 1, 0, false, 1), //
+                Arguments.of(THING_TYPE_SHELLYPRO4PM, -1, -1, false, false, 0, true, 4, 0, false, 4), //
+                Arguments.of(THING_TYPE_SHELLY25_ROLLER, -1, -1, false, false, 0, true, 0, 1, true, 1), //
+                Arguments.of(THING_TYPE_SHELLYPLUS2PM_ROLLER, -1, -1, false, false, 0, true, 0, 1, true, 1), //
+
+                // P5 extras: relay fallback with multiple relays or rollers
+                Arguments.of(THING_TYPE_SHELLYPRO4PM, -1, -1, false, false, 0, true, 2, 0, false, 2), //
+                Arguments.of(THING_TYPE_SHELLY25_ROLLER, -1, -1, false, false, 0, true, 0, 2, true, 2), //
+
+                // Default: sensor / BLU device with no meters
+                Arguments.of(THING_TYPE_SHELLYHT, -1, -1, false, false, 0, false, 0, 0, false, 0), //
+                Arguments.of(THING_TYPE_SHELLYBLUBUTTON1, -1, -1, false, false, 0, false, 0, 0, false, 0), //
+                Arguments.of(THING_TYPE_SHELLYBLUHT, -1, -1, false, false, 0, false, 0, 0, false, 0)); //
+    }
 }
