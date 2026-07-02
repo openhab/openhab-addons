@@ -23,9 +23,9 @@ import org.openhab.binding.benqprojector.internal.configuration.BenqProjectorCon
 import org.openhab.binding.benqprojector.internal.connector.BenqProjectorConnector;
 import org.openhab.binding.benqprojector.internal.connector.BenqProjectorSerialConnector;
 import org.openhab.binding.benqprojector.internal.connector.BenqProjectorTcpConnector;
-import org.openhab.binding.benqprojector.internal.enums.Switch;
 import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.io.transport.serial.SerialPortManager;
+import org.openhab.core.library.types.OnOffType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,25 +56,25 @@ public class BenqProjectorDevice {
 
     private synchronized String sendQuery(String query) throws BenqProjectorCommandException, BenqProjectorException {
         logger.debug("Query: '{}'", query);
-        String response = connection.sendMessage(query);
+        final String response = connection.sendMessage(query);
 
-        if (response.length() == 0) {
+        if (response.isBlank()) {
             throw new BenqProjectorException("No response received");
         }
 
         if (response.contains(UNSUPPORTED_ITM)) {
-            return "UNSUPPORTED";
+            throw new BenqProjectorCommandException(UNSUPPORTED_ITM + " response received for command: " + query);
         }
 
         logger.debug("Response: '{}'", response);
 
         // example: SOUR=HDMI2
-        String[] responseParts = response.split("=");
+        final String[] responseParts = response.split("=");
         if (responseParts.length != 2) {
-            throw new BenqProjectorCommandException("Invalid respose for command: " + query);
+            throw new BenqProjectorCommandException("Invalid response for command: " + query);
         }
 
-        return responseParts[1].toLowerCase();
+        return responseParts[1].toLowerCase(Locale.ENGLISH);
     }
 
     protected void sendCommand(String command) throws BenqProjectorCommandException, BenqProjectorException {
@@ -82,7 +82,7 @@ public class BenqProjectorDevice {
     }
 
     protected int queryInt(String query) throws BenqProjectorCommandException, BenqProjectorException {
-        String response = sendQuery(query);
+        final String response = sendQuery(query);
         try {
             return Integer.parseInt(response);
         } catch (NumberFormatException nfe) {
@@ -112,12 +112,12 @@ public class BenqProjectorDevice {
     /*
      * Power
      */
-    public Switch getPowerStatus() throws BenqProjectorCommandException, BenqProjectorException {
-        return (queryString("pow=?").toLowerCase(Locale.ENGLISH).contains("on") ? Switch.ON : Switch.OFF);
+    public OnOffType getPower() throws BenqProjectorCommandException, BenqProjectorException {
+        return OnOffType.from(queryString("pow=?").contains("on"));
     }
 
-    public void setPower(Switch value) throws BenqProjectorCommandException, BenqProjectorException {
-        if (value == Switch.ON) {
+    public void setPower(OnOffType value) throws BenqProjectorCommandException, BenqProjectorException {
+        if (value == OnOffType.ON) {
             sendCommand("pow=on");
         } else {
             // some projectors need the off command twice to switch off
@@ -129,7 +129,7 @@ public class BenqProjectorDevice {
     /*
      * Source
      */
-    public @Nullable String getSource() throws BenqProjectorCommandException, BenqProjectorException {
+    public String getSource() throws BenqProjectorCommandException, BenqProjectorException {
         return queryString("sour=?");
     }
 
@@ -140,7 +140,7 @@ public class BenqProjectorDevice {
     /*
      * Picture Mode
      */
-    public @Nullable String getPictureMode() throws BenqProjectorCommandException, BenqProjectorException {
+    public String getPictureMode() throws BenqProjectorCommandException, BenqProjectorException {
         return queryString("appmod=?");
     }
 
@@ -151,7 +151,7 @@ public class BenqProjectorDevice {
     /*
      * Aspect Ratio
      */
-    public @Nullable String getAspectRatio() throws BenqProjectorCommandException, BenqProjectorException {
+    public String getAspectRatio() throws BenqProjectorCommandException, BenqProjectorException {
         return queryString("asp=?");
     }
 
@@ -162,23 +162,23 @@ public class BenqProjectorDevice {
     /*
      * Blank Screen
      */
-    public Switch getBlank() throws BenqProjectorCommandException, BenqProjectorException {
-        return (queryString("blank=?").toLowerCase(Locale.ENGLISH).contains("on") ? Switch.ON : Switch.OFF);
+    public OnOffType getBlank() throws BenqProjectorCommandException, BenqProjectorException {
+        return OnOffType.from(queryString("blank=?").contains("on"));
     }
 
-    public void setBlank(Switch value) throws BenqProjectorCommandException, BenqProjectorException {
-        sendCommand(String.format("blank=%s", (value == Switch.ON ? "on" : "off")));
+    public void setBlank(OnOffType value) throws BenqProjectorCommandException, BenqProjectorException {
+        sendCommand(String.format("blank=%s", (value == OnOffType.ON ? "on" : "off")));
     }
 
     /*
      * Freeze
      */
-    public Switch getFreeze() throws BenqProjectorCommandException, BenqProjectorException {
-        return (queryString("freeze=?").toLowerCase(Locale.ENGLISH).contains("on") ? Switch.ON : Switch.OFF);
+    public OnOffType getFreeze() throws BenqProjectorCommandException, BenqProjectorException {
+        return OnOffType.from(queryString("freeze=?").contains("on"));
     }
 
-    public void setFreeze(Switch value) throws BenqProjectorCommandException, BenqProjectorException {
-        sendCommand(String.format("freeze=%s", (value == Switch.ON ? "on" : "off")));
+    public void setFreeze(OnOffType value) throws BenqProjectorCommandException, BenqProjectorException {
+        sendCommand(String.format("freeze=%s", (value == OnOffType.ON ? "on" : "off")));
     }
 
     /*
@@ -189,24 +189,23 @@ public class BenqProjectorDevice {
     }
 
     /*
-     * Lamp Time (hours) - get from cache
+     * Lamp Time (hours) - Get from cache or throw BenqProjectorCommandException if null.
      */
-    public int getLampTime() throws BenqProjectorCommandException, BenqProjectorException {
-        Integer lampHours = cachedLampHours.getValue();
+    public int getLampTime() throws BenqProjectorCommandException {
+        final Integer lampHours = cachedLampHours.getValue();
 
         if (lampHours != null) {
             return lampHours.intValue();
-        } else {
-            throw new BenqProjectorCommandException("cachedLampHours returned null");
         }
+        throw new BenqProjectorCommandException("cachedLampHours returned null");
     }
 
     /*
-     * Get Lamp Time
+     * Get Lamp Time for the ExpiringCache. If command fails, swallow any exceptions and return null.
      */
     private @Nullable Integer queryLamp() {
         try {
-            return Integer.valueOf(queryInt("ltim=?"));
+            return queryInt("ltim=?");
         } catch (BenqProjectorCommandException | BenqProjectorException e) {
             logger.debug("Error executing command ltim=?", e);
             return null;

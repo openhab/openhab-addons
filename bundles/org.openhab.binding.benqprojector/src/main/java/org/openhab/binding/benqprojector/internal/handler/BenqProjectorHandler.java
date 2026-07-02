@@ -14,10 +14,12 @@ package org.openhab.binding.benqprojector.internal.handler;
 
 import static org.openhab.binding.benqprojector.internal.BenqProjectorBindingConstants.*;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+
+import javax.measure.Unit;
+import javax.measure.quantity.Time;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -26,11 +28,11 @@ import org.openhab.binding.benqprojector.internal.BenqProjectorCommandType;
 import org.openhab.binding.benqprojector.internal.BenqProjectorDevice;
 import org.openhab.binding.benqprojector.internal.BenqProjectorException;
 import org.openhab.binding.benqprojector.internal.configuration.BenqProjectorConfiguration;
-import org.openhab.binding.benqprojector.internal.enums.Switch;
 import org.openhab.core.io.transport.serial.SerialPortManager;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -56,9 +58,11 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class BenqProjectorHandler extends BaseThingHandler {
     private static final int DEFAULT_POLLING_INTERVAL_SEC = 10;
+    private static final Unit<Time> API_HOUR_UNIT = Units.HOUR;
 
     private final Logger logger = LoggerFactory.getLogger(BenqProjectorHandler.class);
     private final SerialPortManager serialPortManager;
+    private final Object sequenceLock = new Object();
 
     private @Nullable ScheduledFuture<?> pollingJob;
     private Optional<BenqProjectorDevice> device = Optional.empty();
@@ -73,15 +77,15 @@ public class BenqProjectorHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        String channelId = channelUID.getId();
-        if (command instanceof RefreshType) {
-            Channel channel = this.thing.getChannel(channelUID);
-            if (channel != null && getThing().getStatus() == ThingStatus.ONLINE) {
-                updateChannelState(channel);
+        synchronized (sequenceLock) {
+            if (command instanceof RefreshType) {
+                final Channel channel = this.thing.getChannel(channelUID);
+                if (channel != null && getThing().getStatus() == ThingStatus.ONLINE) {
+                    updateChannelState(channel);
+                }
+            } else {
+                sendDataToDevice(BenqProjectorCommandType.getCommandType(channelUID.getId()), command);
             }
-        } else {
-            BenqProjectorCommandType benqCommand = BenqProjectorCommandType.getCommandType(channelId);
-            sendDataToDevice(benqCommand, command);
         }
     }
 
@@ -111,11 +115,12 @@ public class BenqProjectorHandler extends BaseThingHandler {
         cancelPollingJob();
 
         pollingJob = scheduler.scheduleWithFixedDelay(() -> {
-            List<Channel> channels = this.thing.getChannels();
-            for (Channel channel : channels) {
-                // only query power when projector is off
-                if (isPowerOn || channel.getUID().getId().equals(CHANNEL_TYPE_POWER)) {
-                    updateChannelState(channel);
+            synchronized (sequenceLock) {
+                for (Channel channel : this.thing.getChannels()) {
+                    // only query power when projector is off
+                    if (isPowerOn || CHANNEL_TYPE_POWER.equals(channel.getUID().getId())) {
+                        updateChannelState(channel);
+                    }
                 }
             }
         }, 0, (pollingInterval > 0) ? pollingInterval : DEFAULT_POLLING_INTERVAL_SEC, TimeUnit.SECONDS);
@@ -125,7 +130,7 @@ public class BenqProjectorHandler extends BaseThingHandler {
      * Cancel the polling job
      */
     private void cancelPollingJob() {
-        ScheduledFuture<?> pollingJob = this.pollingJob;
+        final ScheduledFuture<?> pollingJob = this.pollingJob;
         if (pollingJob != null) {
             pollingJob.cancel(true);
             this.pollingJob = null;
@@ -141,13 +146,11 @@ public class BenqProjectorHandler extends BaseThingHandler {
 
     private void updateChannelState(Channel channel) {
         try {
-            if (!isLinked(channel.getUID()) && !channel.getUID().getId().equals(CHANNEL_TYPE_POWER)) {
+            if (!isLinked(channel.getUID()) && !CHANNEL_TYPE_POWER.equals(channel.getUID().getId())) {
                 return;
             }
 
-            BenqProjectorCommandType benqCommand = BenqProjectorCommandType.getCommandType(channel.getUID().getId());
-
-            State state = queryDataFromDevice(benqCommand);
+            final State state = queryDataFromDevice(BenqProjectorCommandType.getCommandType(channel.getUID().getId()));
 
             if (state != null) {
                 if (isLinked(channel.getUID())) {
@@ -165,7 +168,7 @@ public class BenqProjectorHandler extends BaseThingHandler {
 
     @Nullable
     private State queryDataFromDevice(BenqProjectorCommandType commandType) {
-        BenqProjectorDevice remoteController = device.get();
+        final BenqProjectorDevice remoteController = device.get();
 
         try {
             if (!remoteController.isConnected()) {
@@ -174,46 +177,23 @@ public class BenqProjectorHandler extends BaseThingHandler {
 
             switch (commandType) {
                 case POWER:
-                    Switch powerStatus = remoteController.getPowerStatus();
-                    if (powerStatus == Switch.ON) {
-                        isPowerOn = true;
-                        return OnOffType.ON;
-                    } else {
-                        isPowerOn = false;
-                        return OnOffType.OFF;
-                    }
+                    final OnOffType powerState = remoteController.getPower();
+                    isPowerOn = powerState == OnOffType.ON;
+                    return powerState;
                 case SOURCE:
-                    String source = remoteController.getSource();
-                    if (source != null) {
-                        return new StringType(source);
-                    } else {
-                        return UnDefType.UNDEF;
-                    }
-                case PICTURE_MODE:
-                    String picturemode = remoteController.getPictureMode();
-                    if (picturemode != null) {
-                        return new StringType(picturemode);
-                    } else {
-                        return UnDefType.UNDEF;
-                    }
-                case ASPECT_RATIO:
-                    String aspectratio = remoteController.getAspectRatio();
-                    if (aspectratio != null) {
-                        return new StringType(aspectratio);
-                    } else {
-                        return UnDefType.UNDEF;
-                    }
+                    return new StringType(remoteController.getSource());
+                case PICTUREMODE:
+                    return new StringType(remoteController.getPictureMode());
+                case ASPECTRATIO:
+                    return new StringType(remoteController.getAspectRatio());
                 case FREEZE:
-                    Switch freeze = remoteController.getFreeze();
-                    return OnOffType.from(freeze == Switch.ON);
+                    return remoteController.getFreeze();
                 case BLANK:
-                    Switch blank = remoteController.getBlank();
-                    return OnOffType.from(blank == Switch.ON);
+                    return remoteController.getBlank();
                 case DIRECTCMD:
                     break;
-                case LAMP_TIME:
-                    int lampTime = remoteController.getLampTime();
-                    return new DecimalType(lampTime);
+                case LAMPTIME:
+                    return new QuantityType<>(remoteController.getLampTime(), API_HOUR_UNIT);
                 default:
                     logger.warn("Unknown '{}' command!", commandType);
                     return UnDefType.UNDEF;
@@ -231,7 +211,7 @@ public class BenqProjectorHandler extends BaseThingHandler {
     }
 
     private void sendDataToDevice(BenqProjectorCommandType commandType, Command command) {
-        BenqProjectorDevice remoteController = device.get();
+        final BenqProjectorDevice remoteController = device.get();
 
         try {
             if (!remoteController.isConnected()) {
@@ -240,34 +220,29 @@ public class BenqProjectorHandler extends BaseThingHandler {
 
             switch (commandType) {
                 case POWER:
-                    if (command == OnOffType.ON) {
-                        remoteController.setPower(Switch.ON);
-                        isPowerOn = true;
-                    } else {
-                        remoteController.setPower(Switch.OFF);
-                        isPowerOn = false;
-                    }
+                    remoteController.setPower((OnOffType) command);
+                    isPowerOn = (OnOffType) command == OnOffType.ON;
                     break;
                 case SOURCE:
                     remoteController.setSource(command.toString());
                     break;
-                case PICTURE_MODE:
+                case PICTUREMODE:
                     remoteController.setPictureMode(command.toString());
                     break;
-                case ASPECT_RATIO:
+                case ASPECTRATIO:
                     remoteController.setAspectRatio(command.toString());
                     break;
                 case FREEZE:
-                    remoteController.setFreeze(command == OnOffType.ON ? Switch.ON : Switch.OFF);
+                    remoteController.setFreeze((OnOffType) command);
                     break;
                 case BLANK:
-                    remoteController.setBlank(command == OnOffType.ON ? Switch.ON : Switch.OFF);
+                    remoteController.setBlank((OnOffType) command);
                     break;
                 case DIRECTCMD:
                     remoteController.sendDirectCommand(command.toString());
                     break;
                 default:
-                    logger.warn("Unknown '{}' command!", commandType);
+                    logger.warn("Unknown channel: '{}'!", commandType);
                     break;
             }
         } catch (BenqProjectorCommandException e) {

@@ -12,11 +12,9 @@
  */
 package org.openhab.binding.benqprojector.internal;
 
+import java.util.Locale;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.items.Item;
-import org.openhab.core.library.items.NumberItem;
-import org.openhab.core.library.items.StringItem;
-import org.openhab.core.library.items.SwitchItem;
 
 /**
  * Represents all valid command types which could be processed by this
@@ -26,44 +24,27 @@ import org.openhab.core.library.items.SwitchItem;
  */
 @NonNullByDefault
 public enum BenqProjectorCommandType {
-    POWER("power", SwitchItem.class),
-    SOURCE("source", StringItem.class),
-    PICTURE_MODE("picturemode", StringItem.class),
-    ASPECT_RATIO("aspectratio", StringItem.class),
-    FREEZE("freeze", SwitchItem.class),
-    BLANK("blank", SwitchItem.class),
-    DIRECTCMD("directcmd", StringItem.class),
-    LAMP_TIME("lamptime", NumberItem.class);
-
-    private final String text;
-    private Class<? extends Item> itemClass;
-
-    private BenqProjectorCommandType(final String text, Class<? extends Item> itemClass) {
-        this.text = text;
-        this.itemClass = itemClass;
-    }
-
-    @Override
-    public String toString() {
-        return text;
-    }
-
-    public Class<? extends Item> getItemClass() {
-        return itemClass;
-    }
+    POWER,
+    SOURCE,
+    PICTUREMODE,
+    ASPECTRATIO,
+    FREEZE,
+    BLANK,
+    DIRECTCMD,
+    LAMPTIME;
 
     /**
      * Procedure to convert command type string to command type class.
      *
      * @param commandTypeText
-     *            command string e.g. RawData, Command, Brightness
+     *            command string e.g. power, source, picturemode, etc.
      * @return corresponding command type.
      * @throws IllegalArgumentException
      *             No valid class for command type.
      */
     public static BenqProjectorCommandType getCommandType(String commandTypeText) throws IllegalArgumentException {
         for (BenqProjectorCommandType c : BenqProjectorCommandType.values()) {
-            if (c.text.equals(commandTypeText)) {
+            if (c.name().toLowerCase(Locale.ENGLISH).equals(commandTypeText)) {
                 return c;
             }
         }
