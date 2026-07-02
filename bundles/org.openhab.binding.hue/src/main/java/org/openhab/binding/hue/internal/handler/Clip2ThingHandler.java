@@ -629,8 +629,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
             if (resources.hasErrors()) {
                 logger.debug("{} command '{}' for channel '{}' succeeded with error(s): {}", resourceId, command,
                         channelUID, String.join("; ", resources.getErrors()));
-                Resource snapshot = putResource;
-                scheduler.submit(() -> loopBackNotify(snapshot));
+                loopBackNotify(putResource);
             }
         } catch (ApiException | AssetNotLoadedException e) {
             if (logger.isDebugEnabled()) {
@@ -651,8 +650,10 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * loop-back in order to update the channel faster.
      */
     private void loopBackNotify(Resource resource) {
-        logger.debug("{} -> loopBackNotify() resource {}", resourceId, resource);
-        onResource(resource);
+        scheduler.submit(() -> {
+            logger.debug("{} -> loopBackNotify() resource {}", resourceId, resource);
+            onResource(resource);
+        });
     }
 
     /**
