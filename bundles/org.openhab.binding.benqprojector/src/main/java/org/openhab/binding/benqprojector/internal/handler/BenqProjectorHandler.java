@@ -38,7 +38,6 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -92,11 +91,10 @@ public class BenqProjectorHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         final BenqProjectorConfiguration config = getConfigAs(BenqProjectorConfiguration.class);
-        final ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_TYPE_PROJECTOR_SERIAL.equals(thingTypeUID)) {
+        if (THING_TYPE_PROJECTOR_SERIAL.equals(thing.getThingTypeUID())) {
             device = Optional.of(new BenqProjectorDevice(serialPortManager, config));
-        } else if (THING_TYPE_PROJECTOR_TCP.equals(thingTypeUID)) {
+        } else if (THING_TYPE_PROJECTOR_TCP.equals(thing.getThingTypeUID())) {
             device = Optional.of(new BenqProjectorDevice(config));
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
