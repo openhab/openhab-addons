@@ -20,12 +20,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Response;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.Response;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.core.thing.firmware.types.SemverVersion;
@@ -68,9 +69,9 @@ public class FroniusConfigAuthUtil {
             throws FroniusCommunicationException {
         LOGGER.debug("Sending login request to get authentication challenge ...");
         CountDownLatch latch = new CountDownLatch(1);
+        AtomicReference<String> authHeaderRef = new AtomicReference<>();
         Request request = httpClient.newRequest(loginUri).timeout(timeout, TimeUnit.MILLISECONDS);
-        XWwwAuthenticateHeaderListener xWwwAuthenticateHeaderListener = new XWwwAuthenticateHeaderListener(latch);
-        request.onResponseHeaders(xWwwAuthenticateHeaderListener);
+        request.onResponseHeaders(response -> authHeaderRef.set(response.getHeaders().get(AUTHENTICATE_HEADER)));
         request.send(result -> latch.countDown());
         // Wait for the request to complete
         try {
@@ -79,7 +80,7 @@ public class FroniusConfigAuthUtil {
             throw new FroniusCommunicationException("Failed to sent authentication challenge request", e);
         }
 
-        String authHeader = xWwwAuthenticateHeaderListener.getAuthHeader();
+        String authHeader = authHeaderRef.get();
         if (authHeader == null) {
             throw new FroniusCommunicationException("No authentication header found in login response");
         }
@@ -166,10 +167,10 @@ public class FroniusConfigAuthUtil {
     private static void performLoginRequest(HttpClient httpClient, URI loginUri, String authHeader, int timeout)
             throws FroniusCommunicationException, FroniusUnauthorizedException {
         CountDownLatch latch = new CountDownLatch(1);
-        Request request = httpClient.newRequest(loginUri).header(HttpHeader.AUTHORIZATION, authHeader).timeout(timeout,
-                TimeUnit.MILLISECONDS);
-        StatusListener statusListener = new StatusListener(latch);
-        request.onResponseBegin(statusListener);
+        AtomicReference<@Nullable Integer> statusRef = new AtomicReference<>();
+        Request request = httpClient.newRequest(loginUri).headers(h -> h.add(HttpHeader.AUTHORIZATION, authHeader))
+                .timeout(timeout, TimeUnit.MILLISECONDS);
+        request.onResponseBegin(response -> statusRef.set(response.getStatus()));
         Integer status;
         LOGGER.debug("Logging in ...");
         try {
@@ -177,7 +178,7 @@ public class FroniusConfigAuthUtil {
             // Wait for the request to complete
             latch.await();
 
-            status = statusListener.getStatus();
+            status = statusRef.get();
             if (status == null) {
                 throw new FroniusCommunicationException("Failed to send login request: No status code received.");
             }
@@ -300,56 +301,5 @@ public class FroniusConfigAuthUtil {
         LOGGER.debug("Created auth header for next request.");
 
         return authHeader;
-    }
-
-    /**
-     * Listener to extract the X-Www-Authenticate header from the response of a {@link Request}.
-     * Required to mitigate {@link org.eclipse.jetty.client.HttpResponseException}: HTTP protocol violation:
-     * Authentication challenge without WWW-Authenticate header being thrown due to Fronius non-standard authentication
-     * header.
-     */
-    private static class XWwwAuthenticateHeaderListener extends Response.Listener.Adapter {
-        private final CountDownLatch latch;
-        private @Nullable String authHeader;
-
-        public XWwwAuthenticateHeaderListener(CountDownLatch latch) {
-            this.latch = latch;
-        }
-
-        @Override
-        public void onHeaders(Response response) {
-            authHeader = response.getHeaders().get(AUTHENTICATE_HEADER);
-            latch.countDown();
-        }
-
-        public @Nullable String getAuthHeader() {
-            return authHeader;
-        }
-    }
-
-    /**
-     * Listener to extract the HTTP status code from the response of a {@link Request} on response begin.
-     * Required to mitigate {@link org.eclipse.jetty.client.HttpResponseException}: HTTP protocol violation:
-     * Authentication challenge without WWW-Authenticate header being thrown due to Fronius non-standard authentication
-     * header.
-     */
-    private static class StatusListener extends Response.Listener.Adapter {
-        private final CountDownLatch latch;
-        private @Nullable Integer status;
-
-        public StatusListener(CountDownLatch latch) {
-            this.latch = latch;
-        }
-
-        @Override
-        public void onBegin(Response response) {
-            this.status = response.getStatus();
-            latch.countDown();
-            super.onBegin(response);
-        }
-
-        public @Nullable Integer getStatus() {
-            return status;
-        }
     }
 }

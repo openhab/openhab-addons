@@ -18,11 +18,11 @@ import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.BufferingResponseListener;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Result;
-import org.eclipse.jetty.client.util.BufferingResponseListener;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.Result;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.openhab.binding.ojelectronics.internal.common.OJGSonBuilder;
 import org.openhab.binding.ojelectronics.internal.config.OJElectronicsBridgeConfiguration;
@@ -68,10 +68,10 @@ public class SignInService {
     public void signIn(Consumer<String> signInDone, Consumer<@Nullable String> connectionLosed, Runnable unauthorized) {
         logger.trace("Trying to sign in");
 
+        String jsonBody = gson.toJson(getPostSignInQueryModel());
         Request request = httpClient.POST(config.getRestApiUrl() + "/UserProfile/SignIn")
-                .header(HttpHeader.CONTENT_TYPE, "application/json")
-                .content(new StringContentProvider(gson.toJson(getPostSignInQueryModel())))
-                .timeout(1, TimeUnit.MINUTES);
+                .headers(h -> h.add(HttpHeader.CONTENT_TYPE, "application/json"))
+                .body(new StringRequestContent("application/json", jsonBody)).timeout(1, TimeUnit.MINUTES);
 
         request.send(new BufferingResponseListener() {
             @Override

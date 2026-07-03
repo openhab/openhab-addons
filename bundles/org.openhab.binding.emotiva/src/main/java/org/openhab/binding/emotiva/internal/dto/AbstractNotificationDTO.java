@@ -14,8 +14,8 @@ package org.openhab.binding.emotiva.internal.dto;
 
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAnyElement;
-import javax.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlAnyElement;
+import jakarta.xml.bind.annotation.XmlElement;
 
 /**
  * Defines elements used by common notification DTO classes.

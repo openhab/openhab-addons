@@ -17,7 +17,6 @@ import static org.openhab.transform.geocoding.internal.GeoProfileConstants.FORMA
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.transform.geocoding.internal.config.GeoProfileConfig;
@@ -55,7 +54,7 @@ class OSMRealTest {
     }
 
     private HttpClient getHttpClient() {
-        HttpClient httpClient = new HttpClient(new SslContextFactory.Client());
+        HttpClient httpClient = new HttpClient();
         try {
             httpClient.start();
         } catch (Exception e) {

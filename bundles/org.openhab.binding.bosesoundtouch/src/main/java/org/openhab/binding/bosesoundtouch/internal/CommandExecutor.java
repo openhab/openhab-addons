@@ -20,6 +20,7 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.websocket.api.Callback;
 import org.eclipse.jetty.websocket.api.Session;
 import org.openhab.binding.bosesoundtouch.internal.handler.BoseSoundTouchHandler;
 import org.openhab.core.library.types.DecimalType;
@@ -124,7 +125,7 @@ public class CommandExecutor implements AvailableSources {
                 + "\" method=\"GET\"><request requestID=\"0\"><info type=\"new\"/></request></header></msg>";
         Session localSession = handler.getSession();
         if (localSession != null) {
-            localSession.getRemote().sendStringByFuture(msg);
+            localSession.sendText(msg, Callback.NOOP);
             logger.debug("{}: sending request: {}", handler.getDeviceName(), msg);
         }
     }
@@ -374,7 +375,7 @@ public class CommandExecutor implements AvailableSources {
                 + " type=\"new\"/></request></header><body>" + postData + "</body></msg>";
         Session localSession = handler.getSession();
         if (localSession != null) {
-            localSession.getRemote().sendStringByFuture(msg);
+            localSession.sendText(msg, Callback.NOOP);
             logger.debug("{}: sending request: {}", handler.getDeviceName(), msg);
         } else {
             handler.onWebSocketError(new NullPointerException("NPE: Session is unexpected null"));

@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>5.2.0-SNAPSHOT</version>
+    <version>6.0.0-SNAPSHOT</version>
   </parent>
   <artifactId>org.openhab.binding.iaqualink</artifactId>
   <name>openHAB Add-ons :: Bundles :: iAquaLink Binding</name>
@@ -13,6 +13,12 @@
     <bnd.importpackage>!org.graalvm.nativeimage.hosted;!org.apache.tapestry5.json.*,!org.codehaus.jettison.json.*,!org.json.*,!com.fasterxml.jackson.*,!jakarta.json.*</bnd.importpackage>
   </properties>
   <dependencies>
+    <dependency>
+      <groupId>jakarta.ws.rs</groupId>
+      <artifactId>jakarta.ws.rs-api</artifactId>
+      <version>3.1.0</version>
+      <scope>compile</scope>
+    </dependency>
     <dependency>
       <groupId>software.amazon.awssdk.iotdevicesdk</groupId>
       <artifactId>aws-iot-device-sdk</artifactId>

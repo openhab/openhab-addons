@@ -32,13 +32,13 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.websocket.api.Callback;
 import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.jetty.websocket.api.WebSocketException;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.orbitbhyve.internal.OrbitBhyveConfiguration;
 import org.openhab.binding.orbitbhyve.internal.discovery.OrbitBhyveDiscoveryService;
@@ -140,7 +140,7 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
             String urlParameters = "{\"session\":{\"email\":\"" + config.email + "\",\"password\":\"" + config.password
                     + "\"}}";
             ContentResponse response = httpClient.newRequest(BHYVE_SESSION).method(HttpMethod.POST).agent(AGENT)
-                    .content(new StringContentProvider(urlParameters), "application/json; charset=utf-8")
+                    .body(new StringRequestContent("application/json; charset=utf-8", urlParameters))
                     .timeout(BHYVE_TIMEOUT, TimeUnit.SECONDS).send();
             if (response.getStatus() == 200) {
                 if (logger.isTraceEnabled()) {
@@ -179,18 +179,10 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
                 initializeWebSocketSession();
             }
             localSession = session;
-            if (localSession != null && localSession.isOpen() && localSession.getRemote() != null) {
-                try {
-                    logger.debug("Sending ping");
-                    localSession.getRemote().sendString("{\"event\":\"ping\"}");
-                    updateAllStatuses();
-                } catch (IOException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Error sending ping (IOException on web socket)");
-                } catch (WebSocketException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            String.format("Error sending ping (WebSocketException: %s)", e.getMessage()));
-                }
+            if (localSession != null && localSession.isOpen()) {
+                logger.debug("Sending ping");
+                localSession.sendText("{\"event\":\"ping\"}", Callback.NOOP);
+                updateAllStatuses();
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Web socket creation error");
             }
@@ -223,7 +215,8 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
     }
 
     Request sendRequestBuilder(String uri, HttpMethod method) {
-        return httpClient.newRequest(uri).method(method).agent(AGENT).header("Orbit-Session-Token", sessionToken)
+        final String token = sessionToken;
+        return httpClient.newRequest(uri).method(method).agent(AGENT).headers(h -> h.add("Orbit-Session-Token", token))
                 .timeout(BHYVE_TIMEOUT, TimeUnit.SECONDS);
     }
 
@@ -435,17 +428,9 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
         Session localSession = session;
         if (localSession != null) {
             logger.debug("WebSocket connected!");
-            try {
-                String msg = "{\"event\":\"app_connection\",\"orbit_session_token\":\"" + sessionToken + "\"}";
-                logger.trace("sending message:\n {}", msg);
-                localSession.getRemote().sendString(msg);
-            } catch (IOException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Error sending hello string (IOException on web socket)");
-            } catch (WebSocketException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        String.format("Error sending hello string (WebSocketException: %s)", e.getMessage()));
-            }
+            String msg = "{\"event\":\"app_connection\",\"orbit_session_token\":\"" + sessionToken + "\"}";
+            logger.trace("sending message:\n {}", msg);
+            localSession.sendText(msg, Callback.NOOP);
         }
     }
 
@@ -458,36 +443,22 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
 
     public void runZone(String deviceId, String zone, int time) {
         String dateTime = format.format(new Date());
-        try {
-            ping();
-            Session localSession = session;
-            if (localSession != null && localSession.isOpen() && localSession.getRemote() != null) {
-                localSession.getRemote()
-                        .sendString("{\"event\":\"change_mode\",\"device_id\":\"" + deviceId + "\",\"timestamp\":\""
-                                + dateTime + "\",\"mode\":\"manual\",\"stations\":[{\"station\":" + zone
-                                + ",\"run_time\":" + time + "}]}");
-            }
-        } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Error during zone watering execution");
+        ping();
+        Session localSession = session;
+        if (localSession != null && localSession.isOpen()) {
+            localSession.sendText("{\"event\":\"change_mode\",\"device_id\":\"" + deviceId + "\",\"timestamp\":\""
+                    + dateTime + "\",\"mode\":\"manual\",\"stations\":[{\"station\":" + zone + ",\"run_time\":" + time
+                    + "}]}", Callback.NOOP);
         }
     }
 
     public void runProgram(String deviceId, String program) {
         String dateTime = format.format(new Date());
-        try {
-            ping();
-            Session localSession = session;
-            if (localSession != null && localSession.isOpen() && localSession.getRemote() != null) {
-                localSession.getRemote().sendString("{\"event\":\"change_mode\",\"mode\":\"manual\",\"program\":\""
-                        + program + "\",\"device_id\":\"" + deviceId + "\",\"timestamp\":\"" + dateTime + "\"}");
-            }
-        } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Error sending program watering execution (IOException on web socket)");
-        } catch (WebSocketException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    String.format("Error sending program watering execution (WebSocketException: %s)", e.getMessage()));
+        ping();
+        Session localSession = session;
+        if (localSession != null && localSession.isOpen()) {
+            localSession.sendText("{\"event\":\"change_mode\",\"mode\":\"manual\",\"program\":\"" + program
+                    + "\",\"device_id\":\"" + deviceId + "\",\"timestamp\":\"" + dateTime + "\"}", Callback.NOOP);
         }
     }
 
@@ -498,7 +469,7 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
                     + "}}";
             logger.debug("updating program {} with data {}", program.getProgram(), payLoad);
             ContentResponse response = sendRequestBuilder(BHYVE_PROGRAMS + "/" + program.getId(), HttpMethod.PUT)
-                    .content(new StringContentProvider(payLoad), "application/json; charset=utf-8").send();
+                    .body(new StringRequestContent("application/json; charset=utf-8", payLoad)).send();
             if (response.getStatus() == 200) {
                 if (logger.isTraceEnabled()) {
                     logger.trace("Enable programs response: {}", response.getContentAsString());
@@ -518,37 +489,21 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
 
     public void setRainDelay(String deviceId, int delay) {
         String dateTime = format.format(new Date());
-        try {
-            ping();
-            Session localSession = session;
-            if (localSession != null && localSession.isOpen() && localSession.getRemote() != null) {
-                localSession.getRemote().sendString("{\"event\":\"rain_delay\",\"device_id\":\"" + deviceId
-                        + "\",\"delay\":" + delay + ",\"timestamp\":\"" + dateTime + "\"}");
-            }
-        } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Error setting rain delay (IOException on web socket)");
-        } catch (WebSocketException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    String.format("Error setting rain delay (WebSocketException: %s)", e.getMessage()));
+        ping();
+        Session localSession = session;
+        if (localSession != null && localSession.isOpen()) {
+            localSession.sendText("{\"event\":\"rain_delay\",\"device_id\":\"" + deviceId + "\",\"delay\":" + delay
+                    + ",\"timestamp\":\"" + dateTime + "\"}", Callback.NOOP);
         }
     }
 
     public void stopWatering(String deviceId) {
         String dateTime = format.format(new Date());
-        try {
-            ping();
-            Session localSession = session;
-            if (localSession != null && localSession.isOpen() && localSession.getRemote() != null) {
-                localSession.getRemote().sendString("{\"event\":\"change_mode\",\"device_id\":\"" + deviceId
-                        + "\",\"timestamp\":\"" + dateTime + "\",\"mode\":\"manual\",\"stations\":[]}");
-            }
-        } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Error sending stop watering (IOException on web socket)");
-        } catch (WebSocketException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    String.format("Error sending stop watering (WebSocketException: %s)", e.getMessage()));
+        ping();
+        Session localSession = session;
+        if (localSession != null && localSession.isOpen()) {
+            localSession.sendText("{\"event\":\"change_mode\",\"device_id\":\"" + deviceId + "\",\"timestamp\":\""
+                    + dateTime + "\",\"mode\":\"manual\",\"stations\":[]}", Callback.NOOP);
         }
     }
 
@@ -576,19 +531,11 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
 
     public void changeRunMode(String deviceId, String mode) {
         String dateTime = format.format(new Date());
-        try {
-            ping();
-            Session localSession = session;
-            if (localSession != null && localSession.isOpen() && localSession.getRemote() != null) {
-                localSession.getRemote().sendString("{\"event\":\"change_mode\",\"mode\":\"" + mode
-                        + "\",\"device_id\":\"" + deviceId + "\",\"timestamp\":\"" + dateTime + "\"}");
-            }
-        } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Error setting run mode (IOException on web socket)");
-        } catch (WebSocketException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    String.format("Error setting run mode (WebSocketException: %s)", e.getMessage()));
+        ping();
+        Session localSession = session;
+        if (localSession != null && localSession.isOpen()) {
+            localSession.sendText("{\"event\":\"change_mode\",\"mode\":\"" + mode + "\",\"device_id\":\"" + deviceId
+                    + "\",\"timestamp\":\"" + dateTime + "\"}", Callback.NOOP);
         }
     }
 
@@ -605,7 +552,7 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
         logger.trace("New String: {}", payload);
         try {
             ContentResponse response = sendRequestBuilder(BHYVE_DEVICES + "/" + deviceId, HttpMethod.PUT)
-                    .content(new StringContentProvider(payload), "application/json;charset=UTF-8").send();
+                    .body(new StringRequestContent("application/json;charset=UTF-8", payload)).send();
             if (logger.isTraceEnabled()) {
                 logger.trace("Device update response: {}", response.getContentAsString());
             }

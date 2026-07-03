@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>5.2.0-SNAPSHOT</version>
+    <version>6.0.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.binding.zway</artifactId>
@@ -16,6 +16,10 @@
 
   <properties>
     <dep.noembedding>commons-lang3,commons-net</dep.noembedding>
+    <!-- zway-lib was compiled against Jetty 9 (org.eclipse.jetty.client.api/.util);
+         those packages no longer exist in Jetty 12. Mark them optional so the bundle
+         resolves in OSGi. zway-lib must be rebuilt against Jetty 12 for runtime use. -->
+    <bnd.importpackage>org.eclipse.jetty.client.api;resolution:="optional",org.eclipse.jetty.client.util;resolution:="optional"</bnd.importpackage>
   </properties>
 
   <dependencies>

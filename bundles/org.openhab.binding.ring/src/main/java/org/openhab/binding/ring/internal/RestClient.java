@@ -19,7 +19,6 @@ import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -34,10 +33,10 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -124,15 +123,15 @@ public class RestClient {
         try {
             Request request = httpClient.newRequest(endpoint);
             request.method(HttpMethod.POST);
-            request.content(new StringContentProvider(content, StandardCharsets.UTF_8));
+            request.body(new StringRequestContent(content));
             request.timeout(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS);
             request.agent(ApiConstants.API_USER_AGENT);
-            request.header("X-API-LANG", "en");
-            request.header(HttpHeader.CONTENT_TYPE.asString(), "application/x-www-form-urlencoded");
+            request.headers(h -> h.add("X-API-LANG", "en"));
+            request.headers(h -> h.add(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded"));
             if (tokens != null) {
-                request.header(HttpHeader.AUTHORIZATION.asString(), "Bearer " + tokens.accessToken());
+                request.headers(h -> h.add(HttpHeader.AUTHORIZATION.asString(), "Bearer " + tokens.accessToken()));
             }
-            additionalHeaders.forEach(request::header);
+            additionalHeaders.forEach((k, v) -> request.headers(h -> h.add(k, v)));
 
             ContentResponse response = request.send();
             validateResponse(response);
@@ -156,10 +155,10 @@ public class RestClient {
             request.method(HttpMethod.GET);
             request.timeout(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS);
             request.agent(ApiConstants.API_USER_AGENT);
-            request.header("X-API-LANG", "en");
-            request.header(HttpHeader.CONTENT_TYPE.asString(), "application/x-www-form-urlencoded");
-            request.header(HttpHeader.AUTHORIZATION.asString(), "Bearer " + tokens.accessToken());
-            additionalHeaders.forEach(request::header);
+            request.headers(h -> h.add("X-API-LANG", "en"));
+            request.headers(h -> h.add(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded"));
+            request.headers(h -> h.add(HttpHeader.AUTHORIZATION.asString(), "Bearer " + tokens.accessToken()));
+            additionalHeaders.forEach((k, v) -> request.headers(h -> h.add(k, v)));
 
             ContentResponse response = request.send();
             validateResponse(response);
@@ -261,8 +260,9 @@ public class RestClient {
      */
     public byte[] getSnapshot(String deviceId, Tokens tokens) throws AuthenticationException {
         try {
+            final String authHeader = "Bearer " + tokens.accessToken();
             ContentResponse response = httpClient.newRequest(ApiConstants.URL_SNAPSHOTS + deviceId)
-                    .header(HttpHeader.AUTHORIZATION.asString(), "Bearer " + tokens.accessToken()).send();
+                    .headers(h -> h.add(HttpHeader.AUTHORIZATION, authHeader)).send();
 
             if (response.getStatus() == 200) {
                 return response.getContent();
@@ -428,10 +428,10 @@ public class RestClient {
             request.method(httpMethod);
             request.timeout(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS);
             request.agent(ApiConstants.API_USER_AGENT);
-            request.header(HttpHeader.AUTHORIZATION.asString(), "Bearer " + tokens.accessToken());
+            request.headers(h -> h.add(HttpHeader.AUTHORIZATION.asString(), "Bearer " + tokens.accessToken()));
 
             if (payload != null) {
-                request.content(new StringContentProvider(payload), "application/json");
+                request.body(new StringRequestContent("application/json", payload));
             }
             ContentResponse response = request.send();
             validateResponse(response);

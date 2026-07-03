@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.emotiva.internal.dto;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * The EmotivaTransponder message type. Received from a device if after a successful device discovery via the

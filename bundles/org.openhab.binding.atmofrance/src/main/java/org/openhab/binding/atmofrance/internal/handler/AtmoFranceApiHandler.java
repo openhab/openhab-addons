@@ -28,14 +28,12 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import javax.ws.rs.core.MediaType;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -62,6 +60,8 @@ import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.ws.rs.core.MediaType;
 
 /**
  * The {@link AtmoFranceApiHandler} is responsible for handling commands, which are
@@ -143,7 +143,7 @@ public class AtmoFranceApiHandler extends BaseBridgeHandler implements HandlerUt
         logger.debug("executeUrl: {} ", uri);
 
         Request request = httpClient.newRequest(uri).method(method).timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS)
-                .header(HttpHeader.ACCEPT, MediaType.APPLICATION_JSON);
+                .headers(headers -> headers.put(HttpHeader.ACCEPT, MediaType.APPLICATION_JSON));
 
         handleBearer(request, bearer);
         handlePayload(request, payload);
@@ -175,16 +175,14 @@ public class AtmoFranceApiHandler extends BaseBridgeHandler implements HandlerUt
             return;
         }
 
-        StringContentProvider contentProvider = new StringContentProvider(MediaType.APPLICATION_JSON, payload,
-                DEFAULT_CHARSET);
-        request.content(contentProvider, MediaType.APPLICATION_JSON);
+        request.body(new StringRequestContent(MediaType.APPLICATION_JSON, payload, DEFAULT_CHARSET));
     }
 
     private void handleBearer(Request request, @Nullable String bearer) {
         if (bearer == null) {
             return;
         }
-        request.header(HttpHeader.AUTHORIZATION, "Bearer %s".formatted(bearer));
+        request.headers(headers -> headers.put(HttpHeader.AUTHORIZATION, "Bearer %s".formatted(bearer)));
     }
 
     @Override

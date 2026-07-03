@@ -34,20 +34,16 @@ import java.util.function.Supplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.jetty.websocket.api.UpgradeRequest;
-import org.eclipse.jetty.websocket.api.UpgradeResponse;
-import org.eclipse.jetty.websocket.api.WebSocketAdapter;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
-import org.eclipse.jetty.websocket.client.io.UpgradeListener;
 import org.openhab.binding.unifi.internal.access.dto.Device;
 import org.openhab.binding.unifi.internal.access.dto.DeviceAccessMethodSettings;
 import org.openhab.binding.unifi.internal.access.dto.Door;
@@ -59,6 +55,7 @@ import org.openhab.binding.unifi.internal.access.dto.Notification;
 import org.openhab.binding.unifi.internal.access.dto.UnifiAccessApiException;
 import org.openhab.binding.unifi.internal.api.UniFiException.AuthState;
 import org.openhab.binding.unifi.internal.api.UniFiSession;
+import org.openhab.binding.unifi.internal.api.UniFiWebSocketUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -907,11 +904,10 @@ public final class UnifiAccessApiClient implements Closeable {
             req.setHeader("Upgrade", "websocket");
             req.setHeader("Connection", "Upgrade");
 
-            WebSocketAdapter socket = new WebSocketAdapter() {
+            Session.Listener.AutoDemanding socket = new Session.Listener.AutoDemanding() {
                 @Override
                 @NonNullByDefault({})
-                public void onWebSocketConnect(Session sess) {
-                    super.onWebSocketConnect(sess);
+                public void onWebSocketOpen(Session sess) {
                     logger.debug("Notifications WebSocket connected: {}", wsUri);
                     wsSession = sess;
                     try {
@@ -969,24 +965,16 @@ public final class UnifiAccessApiClient implements Closeable {
                 }
             };
 
-            // The upgrade HTTP status is delivered here directly; a 401 means an expired session cookie.
-            UpgradeListener upgradeListener = new UpgradeListener() {
-                @Override
-                @NonNullByDefault({})
-                public void onHandshakeRequest(UpgradeRequest request) {
-                }
-
-                @Override
-                @NonNullByDefault({})
-                public void onHandshakeResponse(UpgradeResponse response) {
-                    int status = response.getStatusCode();
-                    logger.debug("Notifications WebSocket upgrade response: {}", status);
-                    if (allowReauth && status == HttpStatus.UNAUTHORIZED_401) {
+            // In Jetty 12 UpgradeListener was removed; a failed upgrade (e.g. HTTP 401) surfaces as an
+            // exceptional completion of the Future returned by connect().
+            wsClient.connect(socket, wsUri, req).whenComplete((session, throwable) -> {
+                if (throwable != null) {
+                    logger.debug("Notifications WebSocket upgrade failed: {}", throwable.getMessage());
+                    if (allowReauth && UniFiWebSocketUtil.isUnauthorizedUpgrade(throwable)) {
                         executorService.execute(() -> reauthenticateAndReconnect(onOpen, onMessage, onError));
                     }
                 }
-            };
-            wsClient.connect(socket, wsUri, req, upgradeListener);
+            });
         } catch (IOException e) {
             throw new UnifiAccessApiException("WebSocket connect failed: " + e.getMessage(), e);
         }
@@ -1041,12 +1029,12 @@ public final class UnifiAccessApiClient implements Closeable {
             throws UnifiAccessApiException {
         try {
             URI uri = baseUri(path);
-            Request req = httpClient.newRequest(uri).method(HttpMethod.POST)
-                    .header(HttpHeader.ACCEPT, "application/json").header("X-API-KEY", token)
-                    .timeout(HTTP_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+            Request req = httpClient.newRequest(uri).method(HttpMethod.POST).headers(h -> {
+                h.add(HttpHeader.ACCEPT, "application/json");
+                h.add("X-API-KEY", token);
+            }).timeout(HTTP_TIMEOUT_MS, TimeUnit.MILLISECONDS);
             if (body != null) {
-                req.header(HttpHeader.CONTENT_TYPE, "application/json");
-                req.content(new StringContentProvider(body, StandardCharsets.UTF_8));
+                req.body(new StringRequestContent("application/json", body, StandardCharsets.UTF_8));
             }
             logger.debug("Developer POST {}", uri);
             ContentResponse resp = req.send();
@@ -1073,14 +1061,15 @@ public final class UnifiAccessApiClient implements Closeable {
     private Request newAuthenticatedRequest(HttpMethod method, String path, @Nullable String body)
             throws UnifiAccessApiException {
         URI uri = baseUri(path);
-        Request req = httpClient.newRequest(uri).method(method).header(HttpHeader.ACCEPT, "application/json")
+        Request req = httpClient.newRequest(uri).method(method)
+                .headers(h -> h.add(HttpHeader.ACCEPT, "application/json"))
                 .timeout(HTTP_TIMEOUT_MS, TimeUnit.MILLISECONDS);
 
         unifiSession.addAuthHeaders(req);
 
         if (body != null) {
-            req.header(HttpHeader.CONTENT_TYPE, "application/json");
-            req.content(new StringContentProvider(body, StandardCharsets.UTF_8));
+            req.headers(h -> h.add(HttpHeader.CONTENT_TYPE, "application/json"));
+            req.body(new StringRequestContent(body, StandardCharsets.UTF_8));
         }
 
         logger.debug("{} {}", method, uri);

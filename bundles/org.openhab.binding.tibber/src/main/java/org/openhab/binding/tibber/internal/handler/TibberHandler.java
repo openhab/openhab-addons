@@ -41,10 +41,10 @@ import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.tibber.internal.Utils;
@@ -259,11 +259,11 @@ public class TibberHandler extends BaseThingHandler implements TibberHistoryList
 
     public Request getRequest() {
         Request req = httpClient.POST(BASE_URL).timeout(REQUEST_TIMEOUT_SEC, TimeUnit.SECONDS);
-        req.header(HttpHeader.AUTHORIZATION, "Bearer " + tibberConfig.token);
-        req.header(HttpHeader.USER_AGENT, Utils.getUserAgent(this));
+        req.headers(h -> h.add(HttpHeader.AUTHORIZATION, "Bearer " + tibberConfig.token));
+        req.headers(h -> h.add(HttpHeader.USER_AGENT, Utils.getUserAgent(this)));
 
-        req.header(HttpHeader.CONTENT_TYPE, JSON_CONTENT_TYPE);
-        req.header("cache-control", "no-cache");
+        req.headers(h -> h.add(HttpHeader.CONTENT_TYPE, JSON_CONTENT_TYPE));
+        req.headers(h -> h.add("cache-control", "no-cache"));
         return req;
     }
 
@@ -276,7 +276,7 @@ public class TibberHandler extends BaseThingHandler implements TibberHistoryList
         String body = String.format(QUERY_CONTAINER,
                 String.format(getTemplate(CURRENCY_QUERY_RESOURCE_PATH), tibberConfig.homeid));
         logger.trace("Query with body {}", body);
-        initializeRequest.content(new StringContentProvider(body, "utf-8"));
+        initializeRequest.body(new StringRequestContent(body));
         try {
             ContentResponse cr = initializeRequest.send();
             int responseStatus = cr.getStatus();
@@ -412,7 +412,7 @@ public class TibberHandler extends BaseThingHandler implements TibberHistoryList
         Request priceRequest = getRequest();
         String body = String.format(QUERY_CONTAINER,
                 String.format(getTemplate(PRICE_QUERY_RESOURCE_PATH), tibberConfig.homeid));
-        priceRequest.content(new StringContentProvider(body, "utf-8"));
+        priceRequest.body(new StringRequestContent(body));
         try {
             ContentResponse cr = priceRequest.send();
             int responseStatus = cr.getStatus();
@@ -553,7 +553,7 @@ public class TibberHandler extends BaseThingHandler implements TibberHistoryList
             Request realtimeRequest = getRequest();
             String body = String.format(QUERY_CONTAINER,
                     String.format(getTemplate(REALTIME_QUERY_RESOURCE_PATH), tibberConfig.homeid));
-            realtimeRequest.content(new StringContentProvider(body, "utf-8"));
+            realtimeRequest.body(new StringRequestContent(body));
 
             try {
                 ContentResponse cr = realtimeRequest.send();

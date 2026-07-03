@@ -18,11 +18,10 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpStatus;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +42,7 @@ public class SeneyeService {
     public int seneyeType;
     private boolean isInitialized;
     private final Gson gson;
-    private HttpClient httpClient = new HttpClient(new SslContextFactory.Client());
+    private HttpClient httpClient = new HttpClient();
     private ScheduledFuture<?> scheduledJob;
 
     public SeneyeService(SeneyeConfigurationParameters config) throws CommunicationException {

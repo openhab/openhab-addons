@@ -26,15 +26,15 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketOpen;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
@@ -239,7 +239,8 @@ public class PlexApiConnector {
                 if (httpHeaderKey.equalsIgnoreCase(HttpHeader.USER_AGENT.toString())) {
                     request.agent(headers.getProperty(httpHeaderKey));
                 } else {
-                    request.header(httpHeaderKey, headers.getProperty(httpHeaderKey));
+                    final String headerKey = httpHeaderKey;
+                    request.headers(h -> h.add(headerKey, headers.getProperty(headerKey)));
                 }
             }
             final ContentResponse res = request.send();
@@ -338,7 +339,7 @@ public class PlexApiConnector {
     /**
      * PlexSocket class to handle the websocket connection to the PLEX server
      */
-    @WebSocket(maxIdleTime = 360000) // WEBSOCKET_IDLE_TIMEOUT_MS)
+    @WebSocket
     public class PlexSocket {
         @OnWebSocketClose
         public void onClose(int statusCode, String reason) {
@@ -349,9 +350,9 @@ public class PlexApiConnector {
             }
         }
 
-        @OnWebSocketConnect
+        @OnWebSocketOpen
         public void onConnect(Session session) {
-            logger.debug("PLEX Socket connected to {}", session.getRemoteAddress().getAddress());
+            logger.debug("PLEX Socket connected to {}", session.getRemoteSocketAddress());
         }
 
         @OnWebSocketMessage

@@ -26,10 +26,10 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -114,10 +114,10 @@ public class RemoteAPIController {
         Request request = httpClient.newRequest(RESTHelper.generateConfigUrl(apiConfig));
         request.timeout(REQUEST_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS);
         request.method(HttpMethod.PUT);
-        request.header(HttpHeader.CONTENT_TYPE, CONTENTTYPE_JSON);
+        request.headers(f -> f.add(HttpHeader.CONTENT_TYPE, CONTENTTYPE_JSON));
         String configJson = gson.toJson(config);
         logger.debug("Setting configuration: {}", configJson);
-        request.content(new StringContentProvider(CONTENTTYPE_JSON, configJson, StandardCharsets.UTF_8));
+        request.body(new StringRequestContent(CONTENTTYPE_JSON, configJson, StandardCharsets.UTF_8));
         sendRequest(request);
     }
 
@@ -125,12 +125,12 @@ public class RemoteAPIController {
         Request request = httpClient.newRequest(RESTHelper.generateGetLedsModeUrl(apiConfig, serialNo));
         request.timeout(REQUEST_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS);
         request.method(HttpMethod.PUT);
-        request.header(HttpHeader.CONTENT_TYPE, CONTENTTYPE_JSON);
+        request.headers(f -> f.add(HttpHeader.CONTENT_TYPE, CONTENTTYPE_JSON));
         LedMode ledMode = new LedMode();
         ledMode.mode = mode;
         String modeJson = gson.toJson(ledMode);
         logger.debug("Setting LEDS mode for {}: {}", serialNo, modeJson);
-        request.content(new StringContentProvider(CONTENTTYPE_JSON, modeJson, StandardCharsets.UTF_8));
+        request.body(new StringRequestContent(CONTENTTYPE_JSON, modeJson, StandardCharsets.UTF_8));
         sendRequest(request);
     }
 

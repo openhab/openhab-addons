@@ -17,8 +17,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.StringReader;
 import java.util.Optional;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
@@ -28,6 +26,9 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.avmfritz.internal.dto.templates.TemplateListModel;
 import org.openhab.binding.avmfritz.internal.dto.templates.TemplateModel;
 import org.openhab.binding.avmfritz.internal.util.JAXBUtils;
+
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Unmarshaller;
 
 /**
  * Tests for {@link TemplateListModel}.

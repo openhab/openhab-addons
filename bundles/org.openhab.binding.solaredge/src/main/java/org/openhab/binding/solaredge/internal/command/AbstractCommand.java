@@ -14,8 +14,6 @@ package org.openhab.binding.solaredge.internal.command;
 
 import static org.openhab.binding.solaredge.internal.SolarEdgeBindingConstants.*;
 
-import java.net.CookieStore;
-import java.net.HttpCookie;
 import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.UnknownHostException;
@@ -25,10 +23,12 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.BufferingResponseListener;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Response;
-import org.eclipse.jetty.client.util.BufferingResponseListener;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.Response;
+import org.eclipse.jetty.http.HttpCookie;
+import org.eclipse.jetty.http.HttpCookieStore;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.http.HttpStatus.Code;
 import org.openhab.binding.solaredge.internal.config.SolarEdgeConfiguration;
@@ -91,6 +91,7 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
      * Log request success
      */
     @Override
+    @NonNullByDefault({})
     public final void onSuccess(Response response) {
         super.onSuccess(response);
         if (response != null) {
@@ -124,6 +125,7 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
     }
 
     @Override
+    @NonNullByDefault({})
     public void onContent(Response response, ByteBuffer content) {
         super.onContent(response, content);
         logger.debug("received content, length: {}", getContentAsString().length());
@@ -137,10 +139,9 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
         // every command
         if (config.isUsePrivateApi()) {
             // token cookie is only used by private API therefore this can be skipped when using public API
-            CookieStore cookieStore = asyncclient.getCookieStore();
-            HttpCookie c = new HttpCookie(PRIVATE_API_TOKEN_COOKIE_NAME, config.getTokenOrApiKey());
-            c.setDomain(PRIVATE_API_TOKEN_COOKIE_DOMAIN);
-            c.setPath(PRIVATE_API_TOKEN_COOKIE_PATH);
+            HttpCookieStore cookieStore = asyncclient.getHttpCookieStore();
+            HttpCookie c = HttpCookie.build(PRIVATE_API_TOKEN_COOKIE_NAME, config.getTokenOrApiKey())
+                    .domain(PRIVATE_API_TOKEN_COOKIE_DOMAIN).path(PRIVATE_API_TOKEN_COOKIE_PATH).build();
             cookieStore.add(URI.create(getURL()), c);
         } else {
             // this is only relevant when using public API

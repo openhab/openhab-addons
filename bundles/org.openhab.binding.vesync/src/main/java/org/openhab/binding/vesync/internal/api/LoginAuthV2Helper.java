@@ -22,10 +22,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.vesync.internal.VeSyncConstants;
@@ -78,10 +78,9 @@ class LoginAuthV2Helper {
         final Request request = client.newRequest(US_TOKEN_REQ_URL).method(HttpMethod.POST)
                 .timeout(VeSyncV2ApiHelper.RESPONSE_TIMEOUT_SEC, TimeUnit.SECONDS);
 
-        request.header(HttpHeader.CONTENT_TYPE, AUTH_CONTENT_TYPE);
+        request.headers(h -> h.add(HttpHeader.CONTENT_TYPE, AUTH_CONTENT_TYPE));
 
-        request.content(
-                new StringContentProvider(VeSyncConstants.GSON.toJson(new AuthTokenReq(username, password, ""))));
+        request.body(new StringRequestContent(VeSyncConstants.GSON.toJson(new AuthTokenReq(username, password, ""))));
 
         final ContentResponse response = request.send();
 
@@ -123,10 +122,9 @@ class LoginAuthV2Helper {
         final Request request = client.newRequest(US_AUTH_BY_TOKEN).method(HttpMethod.POST)
                 .timeout(VeSyncV2ApiHelper.RESPONSE_TIMEOUT_SEC, TimeUnit.SECONDS);
 
-        request.header(HttpHeader.CONTENT_TYPE, AUTH_CONTENT_TYPE);
+        request.headers(h -> h.add(HttpHeader.CONTENT_TYPE, AUTH_CONTENT_TYPE));
 
-        request.content(
-                new StringContentProvider(VeSyncConstants.GSON.toJson(new AuthCodeReq(this.authorizeCode, ""))));
+        request.body(new StringRequestContent(VeSyncConstants.GSON.toJson(new AuthCodeReq(this.authorizeCode, ""))));
 
         final ContentResponse response = request.send();
         if (response.getStatus() != HttpURLConnection.HTTP_OK) {
@@ -177,11 +175,11 @@ class LoginAuthV2Helper {
 
         final Request request = client.newRequest(redirectedRegion).method(HttpMethod.POST)
                 .timeout(VeSyncV2ApiHelper.RESPONSE_TIMEOUT_SEC, TimeUnit.SECONDS);
-        request.header(HttpHeader.CONTENT_TYPE, AUTH_CONTENT_TYPE);
+        request.headers(h -> h.add(HttpHeader.CONTENT_TYPE, AUTH_CONTENT_TYPE));
 
         RegionSwitchReq regionChange = new RegionSwitchReq(this.authorizeCode, loginData.countryCode, this.bizToken);
 
-        request.content(new StringContentProvider(VeSyncConstants.GSON.toJson(regionChange)));
+        request.body(new StringRequestContent(VeSyncConstants.GSON.toJson(regionChange)));
 
         final ContentResponse response = request.send();
 

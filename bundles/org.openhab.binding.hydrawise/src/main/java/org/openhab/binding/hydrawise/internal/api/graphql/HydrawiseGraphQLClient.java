@@ -25,10 +25,10 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Response;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Response;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.hydrawise.internal.api.HydrawiseAuthenticationException;
@@ -328,8 +328,9 @@ public class HydrawiseGraphQLClient {
                 throw new HydrawiseAuthenticationException("Login required");
             }
             response = httpClient.newRequest(GRAPH_URL).method(HttpMethod.POST)
-                    .content(new StringContentProvider(content), "application/json")
-                    .header("Authorization", token.getTokenType() + " " + token.getAccessToken())
+                    .body(new StringRequestContent("application/json", content))
+                    .headers(headers -> headers.add("Authorization",
+                            token.getTokenType() + " " + token.getAccessToken()))
                     .onResponseFailure(new Response.FailureListener() {
                         @Override
                         public void onFailure(@Nullable Response response, @Nullable Throwable failure) {

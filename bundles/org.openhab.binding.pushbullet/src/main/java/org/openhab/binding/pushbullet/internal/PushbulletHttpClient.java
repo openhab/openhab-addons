@@ -22,16 +22,17 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.BytesRequestContent;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.BytesContentProvider;
-import org.eclipse.jetty.client.util.MultiPartContentProvider;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.MultiPartRequestContent;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.http.MimeTypes;
+import org.eclipse.jetty.http.MultiPart;
 import org.openhab.binding.pushbullet.internal.exception.PushbulletApiException;
 import org.openhab.binding.pushbullet.internal.exception.PushbulletAuthenticationException;
 import org.openhab.binding.pushbullet.internal.model.InstantDeserializer;
@@ -99,13 +100,11 @@ public class PushbulletHttpClient {
         String url = API_BASE_URL + apiEndpoint;
         String accessToken = config.getAccessToken();
 
-        Request request = newRequest(url).header("Access-Token", accessToken);
+        Request request = newRequest(url).headers(h -> h.add("Access-Token", accessToken));
 
         if (body != null) {
-            StringContentProvider content = new StringContentProvider(gson.toJson(body));
-            String contentType = MimeTypes.Type.APPLICATION_JSON.asString();
-
-            request.method(HttpMethod.POST).content(content, contentType);
+            request.method(HttpMethod.POST)
+                    .body(new StringRequestContent(MimeTypes.Type.APPLICATION_JSON.asString(), gson.toJson(body)));
         }
 
         String responseBody = sendRequest(request);
@@ -128,10 +127,12 @@ public class PushbulletHttpClient {
      * @throws PushbulletApiException
      */
     public void uploadFile(String url, RawType data) throws PushbulletApiException {
-        MultiPartContentProvider content = new MultiPartContentProvider();
-        content.addFieldPart("file", new BytesContentProvider(data.getMimeType(), data.getBytes()), null);
+        MultiPartRequestContent content = new MultiPartRequestContent();
+        content.addPart(new MultiPart.ContentSourcePart("file", null, null,
+                new BytesRequestContent(data.getMimeType(), data.getBytes())));
+        content.close();
 
-        Request request = newRequest(url).method(HttpMethod.POST).content(content);
+        Request request = newRequest(url).method(HttpMethod.POST).body(content);
 
         sendRequest(request);
     }

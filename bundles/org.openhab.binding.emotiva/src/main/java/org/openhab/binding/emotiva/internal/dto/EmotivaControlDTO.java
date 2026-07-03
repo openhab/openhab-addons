@@ -16,11 +16,11 @@ import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.DEFAU
 
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-
 import org.openhab.binding.emotiva.internal.protocol.EmotivaControlCommands;
+
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * The EmotivaControl message type. Use to send commands via {@link EmotivaCommandDTO} to Emotiva devices.

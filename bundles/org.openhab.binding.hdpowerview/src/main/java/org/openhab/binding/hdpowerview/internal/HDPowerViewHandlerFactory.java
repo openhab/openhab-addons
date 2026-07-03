@@ -14,8 +14,6 @@ package org.openhab.binding.hdpowerview.internal;
 
 import java.util.Hashtable;
 
-import javax.ws.rs.client.ClientBuilder;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -40,7 +38,9 @@ import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.jaxrs.client.SseEventSourceFactory;
+import org.osgi.service.jakartars.client.SseEventSourceFactory;
+
+import jakarta.ws.rs.client.ClientBuilder;
 
 /**
  * The {@link HDPowerViewHandlerFactory} is responsible for creating things and thing
