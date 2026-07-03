@@ -642,7 +642,11 @@ public class Resource {
         if (on == null) {
             return UnDefType.NULL;
         }
-        if (on.getOn() == Boolean.FALSE) {
+        Boolean onValue = on.getOn();
+        if (onValue == null) {
+            throw new CriticalFieldMissing("'on' is missing");
+        }
+        if (onValue == Boolean.FALSE) {
             return OnOffType.OFF;
         }
         Dimming dimming = getDimming();

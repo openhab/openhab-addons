@@ -423,7 +423,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 break;
 
             case CHANNEL_2_COLOR_TEMP_PERCENT:
-                if (command instanceof IncreaseDecreaseType increaseDecreaseCommand && Objects.nonNull(cache)) {
+                if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
                     putResource = new Resource(lightResourceType).setMirekDelta(increaseDecreaseCommand, MIREK_DELTA);
                     break;
                 }
@@ -1758,11 +1758,11 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
             if (resource.getColorTemperature() instanceof ColorTemperature ct) {
                 MirekSchema mirekSchema = ct.getMirekSchema();
-                if (mirekSchema == null || mirekSchema.invalid()) {
-                    if (mirekSchema.invalid()) {
-                        logger.warn("{} -> light MirekSchema {} -> using default", resourceId,
-                                mirekSchema.toPropertyValue());
-                    }
+                if (mirekSchema == null) {
+                    ct.setMirekSchema(MirekSchema.DEFAULT_SCHEMA);
+                } else if (mirekSchema.invalid()) {
+                    logger.warn("{} -> light MirekSchema {} invalid -> using default", resourceId,
+                            mirekSchema.toPropertyValue());
                     ct.setMirekSchema(MirekSchema.DEFAULT_SCHEMA);
                 }
             }
