@@ -4,6 +4,12 @@
 	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
 
 	<thing-type uid="benqprojector:projector-serial">
+		<instruction-set targetVersion="1">
+			<update-channel id="lamptime">
+				<type>benqprojector:lamptime</type>
+			</update-channel>
+		</instruction-set>
+
 		<instruction-set targetVersion="2">
 			<update-channel id="lamptime">
 				<type>benqprojector:lamptime</type>
@@ -12,6 +18,12 @@
 	</thing-type>
 
 	<thing-type uid="benqprojector:projector-tcp">
+		<instruction-set targetVersion="1">
+			<update-channel id="lamptime">
+				<type>benqprojector:lamptime</type>
+			</update-channel>
+		</instruction-set>
+
 		<instruction-set targetVersion="2">
 			<update-channel id="lamptime">
 				<type>benqprojector:lamptime</type>
