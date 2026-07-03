@@ -91,8 +91,8 @@ public class BenqProjectorHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        BenqProjectorConfiguration config = getConfigAs(BenqProjectorConfiguration.class);
-        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+        final BenqProjectorConfiguration config = getConfigAs(BenqProjectorConfiguration.class);
+        final ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_PROJECTOR_SERIAL.equals(thingTypeUID)) {
             device = Optional.of(new BenqProjectorDevice(serialPortManager, config));
