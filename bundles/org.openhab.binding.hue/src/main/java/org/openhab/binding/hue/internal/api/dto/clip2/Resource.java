@@ -236,7 +236,7 @@ public class Resource {
     }
 
     /**
-     * Get the brightness as a PercentType.
+     * Get the brightness as a PercentType. If off the brightness is 0, otherwise use dimming value.
      *
      * @return UnDefType.NULL if the channel is not supported
      * @return a PercentType if the value is good
@@ -366,8 +366,8 @@ public class Resource {
     }
 
     /**
-     * Get the colour temperature in percent. Note: this method is only to be used on cached state DTOs
-     * which already have a defined mirek schema.
+     * Get the colour temperature in percent. Note: this method is only to be used on cached state DTOs which already
+     * have a defined mirek schema.
      *
      * @return UnDefType.NULL if the channel is not supported
      * @return a PercentType if the value is good
@@ -519,10 +519,7 @@ public class Resource {
 
     public @Nullable Gamut getGamut() {
         ColorXy color = this.color;
-        if (Objects.nonNull(color)) {
-            return color.getGamut();
-        }
-        return null;
+        return Objects.nonNull(color) ? color.getGamut() : null;
     }
 
     public @Nullable ResourceReference getGroup() {
@@ -577,18 +574,12 @@ public class Resource {
 
     public @Nullable Double getMinimumDimmingLevel() {
         Dimming dimming = this.dimming;
-        if (Objects.nonNull(dimming)) {
-            return dimming.getMinimumDimmingLevel();
-        }
-        return null;
+        return Objects.nonNull(dimming) ? dimming.getMinimumDimmingLevel() : null;
     }
 
     public @Nullable MirekSchema getMirekSchema() {
         ColorTemperature colorTemp = this.colorTemperature;
-        if (Objects.nonNull(colorTemp)) {
-            return colorTemp.getMirekSchema();
-        }
-        return null;
+        return Objects.nonNull(colorTemp) ? colorTemp.getMirekSchema() : null;
     }
 
     public @Nullable Motion getMotion() {

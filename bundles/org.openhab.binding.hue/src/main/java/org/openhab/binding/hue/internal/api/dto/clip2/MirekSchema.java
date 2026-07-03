@@ -61,15 +61,6 @@ public class MirekSchema {
         return (int) Math.round(1000000.0 / kelvinValue);
     }
 
-    public MirekSchema() {
-        // Default constructor
-    }
-
-    public MirekSchema(int mirekMinimum, int mirekMaximum) {
-        this.mirekMinimum = mirekMinimum;
-        this.mirekMaximum = mirekMaximum;
-    }
-
     public boolean invalid() {
         return mirekMinimum < MIN_ALLOWED || mirekMaximum > MAX_ALLOWED || mirekMinimum >= mirekMaximum;
     }

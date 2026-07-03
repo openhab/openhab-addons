@@ -456,7 +456,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     double brightnessAbsolute = brightnessCommand.doubleValue();
                     command = Setters.getHardOnOff(putResource, brightnessAbsolute, true, cache);// avoid "soft off"
                 }
-                // NB fall through for handling of switch related had on/off commands !!
+                // NB fall through for handling of switch related commands !!
 
             case CHANNEL_2_SWITCH:
                 putResource = Objects.nonNull(putResource) ? putResource : new Resource(lightResourceType);
