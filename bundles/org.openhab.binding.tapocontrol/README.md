@@ -32,6 +32,7 @@ The following Tapo-Devices are supported. For precise channel-description look a
 
 Before using Smart Plugs with openHAB the devices must be connected to the Wi-Fi network.
 This can be done using the Tapo provided mobile app.
+Some devices require Third-Party Compatibility to be enabled via the mobile app.
 You need to setup a bridge (Cloud-Login) to communicate with your devices.
 
 **Note:** If the Tapo device is to be isolated from the internet e.g. on an IoT LAN, the P110 will not expose its energy and power data until it has successfully synchronised it's clock with an NTP server - at time of writing, this was `pool.ntp.org`.
