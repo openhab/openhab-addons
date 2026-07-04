@@ -126,6 +126,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private static final Duration DYNAMICS_ACTIVE_WINDOW = Duration.ofSeconds(10);
 
     private static final String LK_WISER_DIMMER_MODEL_ID = "LK Dimmer";
+    private static final String IKEA_TRADFRI_MODEL_ID = "tradfri";
 
     private final Logger logger = LoggerFactory.getLogger(Clip2ThingHandler.class);
 
@@ -1426,8 +1427,14 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     // Apply transition time as a workaround for LK Wiser Dimmer firmware bug.
                     // Additional details here: https://techblog.vindvejr.dk/?p=455
                     applyOffTransitionWorkaround = true;
-                    logger.debug("{} -> enabling work-around for turning off LK Wiser Dimmer", resourceId);
+                } else if (modelId.toLowerCase().contains(IKEA_TRADFRI_MODEL_ID)) {
+                    // It seems that IKEA Tradfri bulbs have the same firmware bug as LK Wiser Dimmer.
+                    applyOffTransitionWorkaround = true;
                 }
+                if (applyOffTransitionWorkaround) {
+                    logger.debug("{} -> enabling work-around for turning off {}", resourceId, modelId);
+                }
+
             }
 
             thing.setProperties(properties);
