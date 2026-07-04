@@ -79,9 +79,10 @@ public class LightSetHandler extends ColorLightHandler {
 
         // initialize all members as not reachable
         memberReachability.clear();
+        // Apply properties for each member so device set has all capabilities of its members (e.g. color temperature,
+        // color, etc.).
+        memberDeviceIds.forEach(id -> updateProperties(id));
         memberDeviceIds.forEach(id -> memberReachability.put(id, false));
-
-        updateProperties();
 
         // 2) Initialize the set's own customName from the model so that subsequent member
         // updates (which carry the member's own customName) cannot overwrite it.
