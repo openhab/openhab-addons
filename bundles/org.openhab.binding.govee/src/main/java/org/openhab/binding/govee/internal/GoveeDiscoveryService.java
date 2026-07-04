@@ -25,6 +25,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.govee.internal.CommunicationManager.GoveeDiscoveryListener;
 import org.openhab.binding.govee.internal.model.DiscoveryData;
+import org.openhab.binding.govee.internal.model.DiscoveryMsg;
 import org.openhab.binding.govee.internal.model.DiscoveryResponse;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -115,22 +116,28 @@ public class GoveeDiscoveryService extends AbstractDiscoveryService implements G
     }
 
     public @Nullable DiscoveryResult responseToResult(DiscoveryResponse response) {
-        final DiscoveryData data = response.msg().data();
+        final DiscoveryMsg msg = response.msg();
+        if (!"scan".equals(msg.cmd())) {
+            logger.trace("Ignoring non-scan message received during discovery - {}", response);
+            return null;
+        }
+
+        final DiscoveryData data = msg.data();
         final String macAddress = data.device();
-        if (macAddress.isEmpty()) {
-            logger.warn("Empty Mac address received during discovery - ignoring {}", response);
+        if (macAddress == null || macAddress.isEmpty()) {
+            logger.warn("Missing Mac address received during discovery - ignoring {}", response);
             return null;
         }
 
         final String ipAddress = data.ip();
-        if (ipAddress.isEmpty()) {
-            logger.warn("Empty IP address received during discovery - ignoring {}", response);
+        if (ipAddress == null || ipAddress.isEmpty()) {
+            logger.warn("Missing IP address received during discovery - ignoring {}", response);
             return null;
         }
 
         final String sku = data.sku();
-        if (sku.isEmpty()) {
-            logger.warn("Empty SKU (product name) received during discovery - ignoring {}", response);
+        if (sku == null || sku.isEmpty()) {
+            logger.warn("Missing SKU (product name) received during discovery - ignoring {}", response);
             return null;
         }
 
@@ -157,11 +164,11 @@ public class GoveeDiscoveryService extends AbstractDiscoveryService implements G
         }
 
         String hwVersion = data.wifiVersionHard();
-        if (!hwVersion.isEmpty()) {
+        if (hwVersion != null && !hwVersion.isEmpty()) {
             builder.withProperty(GoveeBindingConstants.HW_VERSION, hwVersion);
         }
         String swVersion = data.wifiVersionSoft();
-        if (!swVersion.isEmpty()) {
+        if (swVersion != null && !swVersion.isEmpty()) {
             builder.withProperty(GoveeBindingConstants.SW_VERSION, swVersion);
         }
 

@@ -24,6 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.graalvm.polyglot.Engine;
 import org.graalvm.polyglot.Language;
 import org.openhab.automation.jsscripting.internal.fs.watch.JSDependencyTracker;
+import org.openhab.automation.jsscripting.internal.scope.OSGiScriptExtensionProvider;
 import org.openhab.automation.jsscripting.internal.util.ThreadLocalSlf4jOutputStream;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.automation.module.script.ScriptDependencyTracker;
@@ -75,8 +76,16 @@ public class GraalJSScriptEngineFactory implements ScriptEngineFactory {
     private final JSDependencyTracker jsDependencyTracker;
 
     @Activate
-    public GraalJSScriptEngineFactory(final @Reference JSScriptServiceUtil jsScriptServiceUtil,
-            final @Reference JSDependencyTracker jsDependencyTracker, Map<String, Object> config) {
+    public GraalJSScriptEngineFactory(final @Reference JSScriptServiceUtil jsScriptServiceUtil, //
+            final @Reference JSDependencyTracker jsDependencyTracker, //
+            final @Reference OSGiScriptExtensionProvider osgiScriptExtensionProvider, // declare dependency on
+                                                                                      // OSGiScriptExtensionProvider to
+                                                                                      // fix a timing issue where
+                                                                                      // openhab-js attempts to lookup
+                                                                                      // OSGi services before
+                                                                                      // OSGiScriptExtensionProvider is
+                                                                                      // active
+            Map<String, Object> config) {
         logger.debug("Loading GraalJSScriptEngineFactory");
 
         this.jsDependencyTracker = jsDependencyTracker;

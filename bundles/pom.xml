@@ -118,6 +118,7 @@
     <module>org.openhab.binding.dali</module>
     <module>org.openhab.binding.danfossairunit</module>
     <module>org.openhab.binding.dbquery</module>
+    <module>org.openhab.binding.ddwrt</module>
     <module>org.openhab.binding.deconz</module>
     <module>org.openhab.binding.denonmarantz</module>
     <module>org.openhab.binding.deutschebahn</module>
@@ -181,6 +182,7 @@
     <module>org.openhab.binding.ftpupload</module>
     <module>org.openhab.binding.gardena</module>
     <module>org.openhab.binding.gce</module>
+    <module>org.openhab.binding.gemini</module>
     <module>org.openhab.binding.generacmobilelink</module>
     <module>org.openhab.binding.goecharger</module>
     <module>org.openhab.binding.govee</module>
