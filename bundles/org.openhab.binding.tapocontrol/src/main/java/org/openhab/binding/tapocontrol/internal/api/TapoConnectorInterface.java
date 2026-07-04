@@ -14,6 +14,7 @@ package org.openhab.binding.tapocontrol.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.tapocontrol.internal.devices.bridge.TapoBridgeHandler;
 import org.openhab.binding.tapocontrol.internal.dto.TapoResponse;
 import org.openhab.binding.tapocontrol.internal.helpers.TapoErrorHandler;
 
@@ -40,6 +41,9 @@ public interface TapoConnectorInterface {
     /* get base url of device */
     public String getBaseUrl();
 
-    /* geth ThingUID of device */
+    /* get ThingUID of device */
     public String getThingUID();
+
+    /* get bridge */
+    public TapoBridgeHandler getBridge();
 }
