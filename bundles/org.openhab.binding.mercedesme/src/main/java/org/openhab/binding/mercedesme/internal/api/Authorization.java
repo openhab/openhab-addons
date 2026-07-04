@@ -487,7 +487,7 @@ public class Authorization {
 
     private String generateCodeVerifier(int size) {
         String verifierBytes = StringUtils.getRandomAlphanumeric(size);
-        return Base64.getUrlEncoder().withoutPadding().encodeToString(verifierBytes.getBytes());
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(verifierBytes.getBytes(StandardCharsets.UTF_8));
     }
 
     public void addBasicHeaders(Request req) {
