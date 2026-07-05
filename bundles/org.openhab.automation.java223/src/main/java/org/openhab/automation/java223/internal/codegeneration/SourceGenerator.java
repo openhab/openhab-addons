@@ -98,6 +98,7 @@ public class SourceGenerator {
 
     private final ScheduledExecutorService scheduledPool = ThreadPoolManager
             .getScheduledPool(ThreadPoolManager.THREAD_POOL_NAME_COMMON);
+    private boolean deactivated = false;
 
     /**
      * @param sourceWriter The real writer, to avoid writing something already existing
@@ -153,13 +154,16 @@ public class SourceGenerator {
      * @param writeGuardTime Delay before writing the file. Each call may delay it further.
      */
     private synchronized void delayWhenStable(InternalGenerator generator, int writeGuardTime) {
-        ScheduledFuture<?> scheduledFuture = futureGeneration.get(generator);
+        ScheduledFuture<?> scheduledFuture = futureGeneration.remove(generator);
         if (scheduledFuture != null) {
             if (scheduledFuture.getDelay(TimeUnit.MILLISECONDS) < writeGuardTime) {
                 scheduledFuture.cancel(false);
             } else {
                 return;
             }
+        }
+        if (deactivated) {
+            return;
         }
         Runnable command = () -> {
             try {
@@ -170,7 +174,7 @@ public class SourceGenerator {
             }
         };
         int computedDelay = writeGuardTime;
-        // Minimal delay if the file doesn't exist, we can write it
+        // Minimal delay: if the file doesn't exist, we can write it sooner
         Path path = sourceWriter.getPath(getGeneratedPackageName(), generator.generatedFileName());
         if (!path.toFile().exists()) {
             computedDelay = 1000;
@@ -216,6 +220,9 @@ public class SourceGenerator {
      * as annotation value).
      */
     public void generateEnumStrings() {
+        if (deactivated) {
+            return;
+        }
         String packageName = getGeneratedPackageName();
         try {
             Template template = cfg.getTemplate(TPL_LOCATION + "EnumStrings.ftl");
@@ -235,6 +242,9 @@ public class SourceGenerator {
 
     @Nullable
     private Void internalGenerateActions() throws IOException, TemplateException {
+        if (deactivated) {
+            return null;
+        }
         logger.debug("Generating actions");
         List<ThingActions> thingActions;
         Collection<ActionType> actions = moduleTypeRegistry.getActions();
@@ -501,6 +511,9 @@ public class SourceGenerator {
 
     @Nullable
     private Void internalGenerateItems() throws IOException, TemplateException {
+        if (deactivated) {
+            return null;
+        }
         logger.debug("Generating items");
         Collection<Item> items = itemRegistry.getItems();
         String packageName = getGeneratedPackageName();
@@ -526,6 +539,9 @@ public class SourceGenerator {
 
     @Nullable
     private Void internalGenerateThings() throws IOException, TemplateException {
+        if (deactivated) {
+            return null;
+        }
         logger.debug("Generating things");
         Collection<Thing> things = thingRegistry.getAll();
         String packageName = getGeneratedPackageName();
@@ -559,6 +575,12 @@ public class SourceGenerator {
     private static Optional<String> className(String fullName) {
         int lastDotIndex = fullName.lastIndexOf('.');
         return lastDotIndex == -1 ? Optional.empty() : Optional.of(fullName.substring(lastDotIndex + 1));
+    }
+
+    public void deactivate() {
+        futureGeneration.values().forEach(scheduledFuture -> scheduledFuture.cancel(false));
+        futureGeneration.clear();
+        this.deactivated = true;
     }
 
     public record MethodDTO(String returnValueType, List<Output> outputs, String name, String description,
