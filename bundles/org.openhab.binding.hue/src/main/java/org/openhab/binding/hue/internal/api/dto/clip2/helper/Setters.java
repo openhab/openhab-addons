@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.hue.internal.api.dto.clip2.helper;
 
+import static org.openhab.binding.hue.internal.HueBindingConstants.LIGHT_TYPES;
+
 import java.time.Duration;
 import java.util.Collection;
 import java.util.HashMap;
@@ -19,7 +21,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -56,8 +57,6 @@ import org.openhab.core.util.ColorUtil.Gamut;
  */
 @NonNullByDefault
 public class Setters {
-
-    private static final Set<ResourceType> LIGHT_TYPES = Set.of(ResourceType.LIGHT, ResourceType.GROUPED_LIGHT);
 
     /**
      * Setter for Alert field:

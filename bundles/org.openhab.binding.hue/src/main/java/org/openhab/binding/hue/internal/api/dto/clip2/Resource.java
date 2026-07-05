@@ -479,6 +479,10 @@ public class Resource {
         return null;
     }
 
+    public @Nullable Dynamics getDynamics() {
+        return dynamics;
+    }
+
     public @Nullable Effects getFixedEffects() {
         return effects;
     }

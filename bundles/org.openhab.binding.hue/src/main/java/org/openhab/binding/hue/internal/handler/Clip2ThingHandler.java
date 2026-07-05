@@ -125,8 +125,13 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
     private static final Duration DYNAMICS_ACTIVE_WINDOW = Duration.ofSeconds(10);
 
-    private static final String LK_WISER_DIMMER_MODEL_ID = "LK Dimmer";
-    private static final String IKEA_TRADFRI_MODEL_ID = "tradfri";
+    /*
+     * Set of Model Ids having an issue where they do not correctly handle a PUT command for the 'on' state.
+     */
+    private static final Set<String> WORK_AROUND_MODEL_IDS = Set.of( //
+            "LK Dimmer", // LK Wiser Dimmer -- see https://techblog.vindvejr.dk/?p=455
+            "Tradfri" // IKEA Tradfri bulbs
+    );
 
     private final Logger logger = LoggerFactory.getLogger(Clip2ThingHandler.class);
 
@@ -1106,6 +1111,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
             case GROUPED_LIGHT:
                 if (fullUpdate) {
                     updateAlertChannel(resource);
+                    updateLightCacheRequiredFields(resource);
                 }
                 updateState(CHANNEL_2_BRIGHTNESS, resource.getBrightnessState(), fullUpdate);
                 updateState(CHANNEL_2_DIMMING_ONLY, resource.getDimmingState(), fullUpdate);
@@ -1271,6 +1277,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 updateChannelList();
                 updateChannelItemLinksFromLegacy();
                 updateEquipmentTag();
+                updateWorkaroundForChildren();
                 if (!hasConnectivityIssue) {
                     updateStatus(ThingStatus.ONLINE);
                 }
@@ -1423,18 +1430,11 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 properties.put(PROPERTY_PRODUCT_CERTIFIED, productData.getCertified().toString());
 
                 // Check device for needed work-arounds.
-                if (LK_WISER_DIMMER_MODEL_ID.equals(modelId)) {
-                    // Apply transition time as a workaround for LK Wiser Dimmer firmware bug.
-                    // Additional details here: https://techblog.vindvejr.dk/?p=455
+                if (WORK_AROUND_MODEL_IDS.stream().map(id -> id.toLowerCase())
+                        .anyMatch(id -> modelId.toLowerCase().contains(id))) {
                     applyOffTransitionWorkaround = true;
-                } else if (modelId.toLowerCase().contains(IKEA_TRADFRI_MODEL_ID)) {
-                    // It seems that IKEA Tradfri bulbs have the same firmware bug as LK Wiser Dimmer.
-                    applyOffTransitionWorkaround = true;
-                }
-                if (applyOffTransitionWorkaround) {
                     logger.debug("{} -> enabling work-around for turning off {}", resourceId, modelId);
                 }
-
             }
 
             thing.setProperties(properties);
@@ -1752,13 +1752,14 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * and gamut, to use.
      */
     private synchronized void updateLightCacheRequiredFields(Resource resource) {
-        if (!disposing && !updateLightCacheRequiredFieldsDone && (ResourceType.LIGHT == resource.getType())) {
+        ResourceType type = resource.getType();
+        if (!disposing && !updateLightCacheRequiredFieldsDone && LIGHT_TYPES.contains(type)) {
             logger.debug("{} -> updateLightCacheRequiredFields()", resourceId);
 
             if (resource.getDimming() instanceof Dimming dim) {
                 Double minDimLevel = dim.getMinimumDimmingLevel();
                 if (minDimLevel == null) {
-                    Double minDimming = Dimming.DEFAULT_MINIMUM_DIMMING_LEVEL;
+                    Double minDimming = ResourceType.LIGHT == type ? Dimming.DEFAULT_MINIMUM_DIMMING_LEVEL : 0.01;
                     dim.setMinimumDimmingLevel(minDimming);
                 }
             }
@@ -1781,7 +1782,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 }
             }
 
-            Resource cacheEntry = getCachedResource(ResourceType.LIGHT);
+            Resource cacheEntry = getCachedResource(type);
             if (cacheEntry != null) {
                 Setters.setResource(cacheEntry, resource);
             } else {
@@ -1789,6 +1790,52 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 logger.warn("{} -> updateLightCacheRequiredFields() -> missing cache light resource", resourceId);
             }
             updateLightCacheRequiredFieldsDone = true;
+        }
+    }
+
+    /**
+     * Parses the children element of `thisResource` and GETs the product data of each child device to check if any
+     * of them require the work-around for turning off. If so, sets the `applyOffTransitionWorkaround` flag to true.
+     */
+    private void updateWorkaroundForChildren() {
+        ResourceType type = thisResource.getType();
+        if (!disposing && GROUP_TYPES.contains(type)) {
+            Exception exception = null;
+            try {
+                Clip2BridgeHandler bridge = getBridgeHandler();
+                ResourceReference request = new ResourceReference().setType(ResourceType.DEVICE);
+                for (String childId : thisResource.getChildren().stream()
+                        .filter(ref -> ResourceType.DEVICE == ref.getType()).map(ref -> ref.getId())
+                        .filter(Objects::nonNull).toList()) {
+                    try {
+                        Resource child = bridge.getResources(request.setId(childId)).getResources().stream().findFirst()
+                                .orElse(null);
+                        if (child != null) {
+                            ProductData productData = child.getProductData();
+                            if (productData != null) {
+                                String modelId = productData.getModelId().toLowerCase();
+                                if (WORK_AROUND_MODEL_IDS.stream().map(id -> id.toLowerCase())
+                                        .anyMatch(id -> modelId.contains(id))) {
+                                    applyOffTransitionWorkaround = true;
+                                    logger.debug("{} -> enabling work-around for turning off {}", resourceId, type);
+                                    break; // no need to check further children once workaround is enabled
+                                }
+                            }
+                        }
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        break;
+                    } catch (ApiException | AssetNotLoadedException e) {
+                        exception = e;
+                        break;
+                    }
+                }
+            } catch (AssetNotLoadedException e) {
+                exception = e;
+            }
+            if (exception != null) {
+                logger.warn("{} -> updateWorkaroundForChildren() {}", resourceId, exception.getMessage(), exception);
+            }
         }
     }
 }
