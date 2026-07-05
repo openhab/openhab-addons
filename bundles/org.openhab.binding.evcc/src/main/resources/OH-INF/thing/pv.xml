@@ -31,6 +31,18 @@
 		<state pattern="%.0f %unit%" readOnly="true"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
+	<channel-type id="pv-energy">
+		<item-type unitHint="kWh">Number:Energy</item-type>
+		<label>PV Energy</label>
+		<description>Accumulated energy of this photovoltaic system in Kilowatt hours</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
 	<channel-type id="pv-title">
 		<item-type>String</item-type>
 		<label>Title</label>
