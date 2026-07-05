@@ -263,7 +263,7 @@ public class Java223Strategy
     }
 
     public Set<Path> getAllLibraries() {
-        // combine lib package (jar) and lib java file :
+        // combine lib package (jar) and lib java file:
         HashSet<Path> libsPath = new HashSet<>();
         libsPath.addAll(LIBRARIES_BY_PATH.keySet().stream().map(Path::of).collect(Collectors.toSet()));
         libsPath.addAll(jarFileManagerfactory.getAllJarPaths());

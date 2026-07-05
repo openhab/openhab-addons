@@ -158,7 +158,7 @@ public class BindingInjector {
         }
         Queue<String> namePath = new LinkedList<>(Arrays.asList(named.split("\\.")));
 
-        // 2.b, choose where to look: in bindings, or deeper, in a preset :
+        // 2.b, choose where to look: in bindings, or deeper, in a preset:
         Object value = bindings;
         boolean found = false;
         if (injectBindingAnnotation.isPresent()
