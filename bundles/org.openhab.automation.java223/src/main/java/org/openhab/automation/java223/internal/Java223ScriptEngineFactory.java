@@ -108,6 +108,7 @@ public class Java223ScriptEngineFactory extends JavaScriptEngineFactory
     private static final Set<String> EVENTS = Stream.of(ACTION_EVENTS, ITEM_EVENTS, THING_EVENTS).flatMap(Set::stream)
             .collect(Collectors.toSet());
     Boolean enableHelper;
+    boolean deactivated = false;
 
     @Activate
     public Java223ScriptEngineFactory(BundleContext bundleContext, Map<String, Object> properties,
@@ -246,6 +247,8 @@ public class Java223ScriptEngineFactory extends JavaScriptEngineFactory
     @Deactivate
     public void deactivate() {
         watchService.unregisterListener(this);
+        sourceGenerator.deactivate();
+        this.deactivated = true;
     }
 
     @Override
@@ -294,6 +297,10 @@ public class Java223ScriptEngineFactory extends JavaScriptEngineFactory
     public void receive(Event event) {
         if (!enableHelper) {
             LOGGER.debug("Event received but helper is disabled");
+            return;
+        }
+        if (deactivated) {
+            LOGGER.debug("Event received but bundle is deactivated");
             return;
         }
 
