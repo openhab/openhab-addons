@@ -277,7 +277,8 @@ public class DataTransportServiceTest {
         dataTransportService.refreshUnit();
 
         dataTransportService.setCurrentOperationMode(Enums.OperationMode.AUTO);
-        verify(onectaConnectionClientMock).setCurrentOperationMode(UNITID, MANAGEMENTPOINT, Enums.OperationMode.AUTO);
+        verify(onectaConnectionClientMock).setCurrentOperationMode(UNITID, MANAGEMENTPOINT.getValue(),
+                Enums.OperationMode.AUTO);
 
         dataTransportService.setFanSpeed(Enums.FanSpeed.LEVEL_3);
         verify(onectaConnectionClientMock).setFanSpeed(UNITID, MANAGEMENTPOINT.getValue(), Enums.OperationMode.COLD,
@@ -296,13 +297,13 @@ public class DataTransportServiceTest {
                 Enums.OperationMode.COLD, Enums.FanMovementVer.WINDNICE);
 
         dataTransportService.setPowerOnOff(Enums.OnOff.OFF);
-        verify(onectaConnectionClientMock).setPowerOnOff(UNITID, MANAGEMENTPOINT, Enums.OnOff.OFF);
+        verify(onectaConnectionClientMock).setPowerOnOff(UNITID, MANAGEMENTPOINT.getValue(), Enums.OnOff.OFF);
 
         dataTransportService.setPowerfulModeOnOff(Enums.OnOff.OFF);
-        verify(onectaConnectionClientMock).setPowerfulModeOnOff(UNITID, MANAGEMENTPOINT, Enums.OnOff.OFF);
+        verify(onectaConnectionClientMock).setPowerfulModeOnOff(UNITID, MANAGEMENTPOINT.getValue(), Enums.OnOff.OFF);
 
         dataTransportService.setEconoMode(Enums.OnOff.OFF);
-        verify(onectaConnectionClientMock).setEconoMode(UNITID, MANAGEMENTPOINT, Enums.OnOff.OFF);
+        verify(onectaConnectionClientMock).setEconoMode(UNITID, MANAGEMENTPOINT.getValue(), Enums.OnOff.OFF);
 
         dataTransportService.setStreamerMode(Enums.OnOff.OFF);
         verify(onectaConnectionClientMock).setStreamerMode(UNITID, MANAGEMENTPOINT.getValue(), Enums.OnOff.OFF);

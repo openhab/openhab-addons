@@ -32,16 +32,16 @@ public class OnectaPropertiesTest {
 
         assertEquals(
                 "https://api.onecta.daikineurope.com/v1/gateway-devices/1ce8c13f-5271-4343-ac9f-a1b2c3d4e5f6/management-points/climateControl/characteristics/onOffMode",
-                OnectaProperties.getUrlOnOff(UNITID, MANAGEMENTPOINTTYPE));
+                OnectaProperties.getUrlOnOff(UNITID, MANAGEMENTPOINTTYPE.getValue()));
         assertEquals(
                 "https://api.onecta.daikineurope.com/v1/gateway-devices/1ce8c13f-5271-4343-ac9f-a1b2c3d4e5f6/management-points/climateControl/characteristics/powerfulMode",
-                OnectaProperties.getUrlPowerfulModeOnOff(UNITID, MANAGEMENTPOINTTYPE));
+                OnectaProperties.getUrlPowerfulModeOnOff(UNITID, MANAGEMENTPOINTTYPE.getValue()));
         assertEquals(
                 "https://api.onecta.daikineurope.com/v1/gateway-devices/1ce8c13f-5271-4343-ac9f-a1b2c3d4e5f6/management-points/climateControl/characteristics/econoMode",
-                OnectaProperties.getEconoMode(UNITID, MANAGEMENTPOINTTYPE));
+                OnectaProperties.getEconoMode(UNITID, MANAGEMENTPOINTTYPE.getValue()));
         assertEquals(
                 "https://api.onecta.daikineurope.com/v1/gateway-devices/1ce8c13f-5271-4343-ac9f-a1b2c3d4e5f6/management-points/climateControl/characteristics/operationMode",
-                OnectaProperties.getOperationModeUrl(UNITID, MANAGEMENTPOINTTYPE));
+                OnectaProperties.getOperationModeUrl(UNITID, MANAGEMENTPOINTTYPE.getValue()));
 
         assertEquals(20f, OnectaProperties.getTargetTemperaturCommand(20f).value);
         assertEquals(null, OnectaProperties.getTargetTemperaturCommand(20f).path);

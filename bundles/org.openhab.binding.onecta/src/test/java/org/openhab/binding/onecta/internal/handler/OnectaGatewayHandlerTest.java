@@ -27,6 +27,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.onecta.internal.OnectaConfiguration;
+import org.openhab.binding.onecta.internal.api.OnectaConnectionClient;
 import org.openhab.binding.onecta.internal.service.DataTransportService;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
@@ -57,6 +58,9 @@ public class OnectaGatewayHandlerTest {
     private OnectaConfiguration onectaConfigurationMock;
 
     @Mock
+    private OnectaConnectionClient onectaConnectionClientMock;
+
+    @Mock
     private Thing thingMock;
 
     @Mock
@@ -70,6 +74,7 @@ public class OnectaGatewayHandlerTest {
         Configuration thingConfiguration = new Configuration();
         thingConfiguration.setProperties(Map.of("unitID", "ThisIsDummyID", "refreshDelay", "10"));
         when(thingMock.getConfiguration()).thenReturn(thingConfiguration);
+        when(onectaConfigurationMock.getOnectaConnectionClient()).thenReturn(onectaConnectionClientMock);
         handler = new OnectaGatewayHandler(thingMock, onectaConfigurationMock);
         handler.setCallback(callbackMock);
 

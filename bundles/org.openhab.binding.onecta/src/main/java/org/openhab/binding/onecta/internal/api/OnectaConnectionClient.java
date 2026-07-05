@@ -210,29 +210,27 @@ public class OnectaConnectionClient {
         return new JsonObject();
     }
 
-    public void setPowerOnOff(String unitId, Enums.ManagementPoint managementPointType, Enums.OnOff value) {
-        logger.debug("setPowerOnOff : {}, {}, {}", unitId, managementPointType.getValue(), value);
+    public void setPowerOnOff(String unitId, String embeddedId, Enums.OnOff value) {
+        logger.debug("setPowerOnOff : {}, {}, {}", unitId, embeddedId, value);
         CommandOnOf commandOnOf = new CommandOnOf(value);
-        doBearerRequestPatch(getUrlOnOff(unitId, managementPointType), commandOnOf);
+        doBearerRequestPatch(getUrlOnOff(unitId, embeddedId), commandOnOf);
     }
 
-    public void setPowerfulModeOnOff(String unitId, Enums.ManagementPoint managementPointType, Enums.OnOff value) {
-        logger.debug("setPowerfulModeOnOff : {}, {}, {}", unitId, managementPointType.getValue(), value);
+    public void setPowerfulModeOnOff(String unitId, String embeddedId, Enums.OnOff value) {
+        logger.debug("setPowerfulModeOnOff : {}, {}, {}", unitId, embeddedId, value);
         CommandOnOf commandOnOf = new CommandOnOf(value);
-        doBearerRequestPatch(getUrlPowerfulModeOnOff(unitId, managementPointType), commandOnOf);
+        doBearerRequestPatch(getUrlPowerfulModeOnOff(unitId, embeddedId), commandOnOf);
     }
 
-    public void setEconoMode(String unitId, Enums.ManagementPoint managementPointType, Enums.OnOff value) {
-        logger.debug("setEconoMode: {}, {}, {}", unitId, managementPointType.getValue(), value);
+    public void setEconoMode(String unitId, String embeddedId, Enums.OnOff value) {
+        logger.debug("setEconoMode: {}, {}, {}", unitId, embeddedId, value);
         CommandOnOf commandOnOf = new CommandOnOf(value);
-        doBearerRequestPatch(getEconoMode(unitId, managementPointType), commandOnOf);
+        doBearerRequestPatch(getEconoMode(unitId, embeddedId), commandOnOf);
     }
 
-    public void setCurrentOperationMode(String unitId, Enums.ManagementPoint managementPointType,
-            Enums.OperationMode operationMode) {
-        logger.debug("setCurrentOperationMode : {}, {}, {}", unitId, managementPointType.getValue(),
-                operationMode.getValue());
-        doBearerRequestPatch(getOperationModeUrl(unitId, managementPointType), getOperationModeCommand(operationMode));
+    public void setCurrentOperationMode(String unitId, String embeddedId, Enums.OperationMode operationMode) {
+        logger.debug("setCurrentOperationMode : {}, {}, {}", unitId, embeddedId, operationMode.getValue());
+        doBearerRequestPatch(getOperationModeUrl(unitId, embeddedId), getOperationModeCommand(operationMode));
     }
 
     public void setCurrentTemperatureRoomSet(String unitId, String embeddedId, Enums.OperationMode currentMode,

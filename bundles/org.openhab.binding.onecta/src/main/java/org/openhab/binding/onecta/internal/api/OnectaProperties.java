@@ -52,22 +52,20 @@ public class OnectaProperties {
         return StringUtils.removeEnd(String.format(BASE_URL, unitId), "/");
     }
 
-    public static String getUrlOnOff(String unitId, Enums.ManagementPoint managementPointType) {
-        return String.format(getBaseUrl(unitId) + BASE_URL_COMMAND, managementPointType.getValue(), COMMAND_ONOFFMODE);
+    public static String getUrlOnOff(String unitId, String embeddedId) {
+        return String.format(getBaseUrl(unitId) + BASE_URL_COMMAND, embeddedId, COMMAND_ONOFFMODE);
     }
 
-    public static String getUrlPowerfulModeOnOff(String unitId, Enums.ManagementPoint managementPointType) {
-        return String.format(getBaseUrl(unitId) + BASE_URL_COMMAND, managementPointType.getValue(),
-                COMMAND_POWERFULMODE);
+    public static String getUrlPowerfulModeOnOff(String unitId, String embeddedId) {
+        return String.format(getBaseUrl(unitId) + BASE_URL_COMMAND, embeddedId, COMMAND_POWERFULMODE);
     }
 
-    public static String getEconoMode(String unitId, Enums.ManagementPoint managementPointType) {
-        return String.format(getBaseUrl(unitId) + BASE_URL_COMMAND, managementPointType.getValue(), COMMAND_ECONOMODE);
+    public static String getEconoMode(String unitId, String embeddedId) {
+        return String.format(getBaseUrl(unitId) + BASE_URL_COMMAND, embeddedId, COMMAND_ECONOMODE);
     }
 
-    public static String getOperationModeUrl(String unitId, Enums.ManagementPoint managementPointType) {
-        return String.format(getBaseUrl(unitId) + BASE_URL_COMMAND, managementPointType.getValue(),
-                COMMAND_OPERATIONMODE);
+    public static String getOperationModeUrl(String unitId, String embeddedId) {
+        return String.format(getBaseUrl(unitId) + BASE_URL_COMMAND, embeddedId, COMMAND_OPERATIONMODE);
     }
 
     public static CommandFloat getTargetTemperaturCommand(float value) {

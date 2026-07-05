@@ -71,6 +71,7 @@ public class OnectaWaterTankHandlerTest {
         Configuration thingConfiguration = new Configuration();
         thingConfiguration.setProperties(Map.of("unitID", "ThisIsDummyID", "refreshDelay", "10"));
         when(thingMock.getConfiguration()).thenReturn(thingConfiguration);
+        when(onectaConfigurationMock.getOnectaConnectionClient()).thenReturn(onectaConnectionClientMock);
         handler = new OnectaWaterTankHandler(thingMock, onectaConfigurationMock);
         handler.setCallback(callbackMock);
 
@@ -83,8 +84,6 @@ public class OnectaWaterTankHandlerTest {
         Field privateChannelsRefreshDelayField = OnectaWaterTankHandler.class.getDeclaredField("channelsRefreshDelay");
         privateChannelsRefreshDelayField.setAccessible(true);
         privateChannelsRefreshDelayField.set(handler, channelsRefreshDelayMock);
-
-        when(onectaConfigurationMock.getOnectaConnectionClient()).thenReturn(onectaConnectionClientMock);
 
         lenient().when(thingMock.getUID()).thenReturn(new ThingUID("onecta", "domesticHotWaterTank", "bridge"));
     }

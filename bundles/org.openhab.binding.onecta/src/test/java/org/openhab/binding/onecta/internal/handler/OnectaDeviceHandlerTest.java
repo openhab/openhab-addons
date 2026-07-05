@@ -34,6 +34,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.onecta.internal.OnectaConfiguration;
 import org.openhab.binding.onecta.internal.api.Enums;
+import org.openhab.binding.onecta.internal.api.OnectaConnectionClient;
 import org.openhab.binding.onecta.internal.service.ChannelsRefreshDelay;
 import org.openhab.binding.onecta.internal.service.DataTransportService;
 import org.openhab.core.config.core.Configuration;
@@ -63,6 +64,8 @@ public class OnectaDeviceHandlerTest {
 
     @Mock
     private OnectaConfiguration onectaConfigMock;
+    @Mock
+    private OnectaConnectionClient onectaConnectionClientMock;
 
     @Mock
     private DataTransportService dataTransServiceMock;
@@ -78,6 +81,8 @@ public class OnectaDeviceHandlerTest {
         Configuration thingConfiguration = new Configuration();
         thingConfiguration.setProperties(Map.of("unitID", "ThisIsDummyID", "refreshDelay", "10"));
         when(thingMock.getConfiguration()).thenReturn(thingConfiguration);
+        when(onectaConfigMock.getOnectaConnectionClient()).thenReturn(onectaConnectionClientMock);
+
         handler = new OnectaDeviceHandler(thingMock, onectaConfigMock);
         handler.setCallback(callbackMock);
 
