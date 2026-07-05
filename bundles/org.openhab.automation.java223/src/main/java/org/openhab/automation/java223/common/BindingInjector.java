@@ -164,7 +164,6 @@ public class BindingInjector {
 
         // second. It's not a library, so we will search value in the binding map.
         // 2.a Choose a name to search as a key in the binding map
-        // the name can be a path inside the object
         String named;
         if (injectBindingAnnotation.isPresent()
                 && !injectBindingAnnotation.get().named().equals(Java223Constants.ANNOTATION_DEFAULT)) {
@@ -172,18 +171,16 @@ public class BindingInjector {
         } else {
             named = codeName;
         }
-        Queue<String> namePath = new LinkedList<>(Arrays.asList(named.split("\\.")));
 
         // 2.b, choose where to look: in bindings, or deeper, in a preset:
-        Object value = bindings;
-        boolean found = false;
+        Map<String, Object> bindingsOrPreset = bindings;
         if (injectBindingAnnotation.isPresent()
                 && !injectBindingAnnotation.get().preset().equals(Java223Constants.ANNOTATION_DEFAULT)) {
             ScriptExtensionManagerWrapper se = (ScriptExtensionManagerWrapper) bindings.get("scriptExtension");
             if (se != null) {
                 Map<String, Object> presetMap = se.importPreset(injectBindingAnnotation.get().preset());
                 if (!presetMap.isEmpty()) {
-                    value = presetMap;
+                    bindingsOrPreset = presetMap;
                 } else {
                     LOGGER.warn("Cannot find the preset {} for the named parameter {}",
                             injectBindingAnnotation.get().preset(), named);
@@ -193,8 +190,19 @@ public class BindingInjector {
             }
         }
 
+        // interrupt search if the name is found
+        boolean found = false;
+        Object value = bindingsOrPreset.get(named);
+        if (value != null) {
+            found = true;
+        } else { // we will continue search in the next step
+            value = bindingsOrPreset;
+        }
+
+        // the name can be a path inside the object, so:
         // 2.c, browse deep inside the object if there is a path to traverse
-        while (!namePath.isEmpty()) {
+        Queue<String> namePath = new LinkedList<>(Arrays.asList(named.split("\\.")));
+        while (!namePath.isEmpty() && !found) {
             if (value == null) {
                 LOGGER.debug("Find null value for the path {}", named);
                 break;
@@ -203,22 +211,25 @@ public class BindingInjector {
             if (value instanceof Map<?, ?> elementToParseAsMap) {
                 value = elementToParseAsMap.get(namePart);
                 if (elementToParseAsMap.containsKey(namePart)) {
-                    found = true;
+                    if (namePath.isEmpty()) { // it's the last element, we found the value
+                        found = true;
+                    }
                 } else {
                     LOGGER.trace("Didn't find an element with the key '{}'. Ignoring (not an error)", namePart);
                 }
             } else {
                 try {
-                    if (namePart != null) {
+                    if (namePart != null) { // cannot be null, nut null check thinks so
                         Field targetField = getFieldDeep(value.getClass(), namePart);
                         targetField.setAccessible(true);
                         value = targetField.get(value);
-                        found = true;
+                        if (namePath.isEmpty()) { // it's the last element, we found the value
+                            found = true;
+                        }
                     }
                 } catch (NoSuchFieldException | SecurityException e) {
                     LOGGER.debug("Cannot map a value to the path {}", named);
                     value = null;
-                    found = false;
                     break;
                 }
             }
