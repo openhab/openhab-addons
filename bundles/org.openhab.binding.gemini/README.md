@@ -160,7 +160,7 @@ To configure the Gemini HLI as default, go to _Settings_ → _Voice_ and select 
 In that place, you can also configure the system prompt used to instruct the LLM on how to process the user's input.
 The used model, temperature, topP and maximum output tokens parameters can be configured in the thing configuration.
 
-For more information on human language interpreters, refer to the [Voice documentation]({{base}}/docs/configuration/multimedia.html#human-language-interpreter).
+For more information on human language interpreters, refer to the [Voice documentation](/docs/configuration/multimedia.html#human-language-interpreter).
 
 ## Full Example
 
