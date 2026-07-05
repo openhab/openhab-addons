@@ -146,4 +146,10 @@ public class UniFiProtectAuthenticator {
         this.userId = null;
         logger.debug("Cleared cached user id");
     }
+
+    public CompletableFuture<Void> reauthenticate() {
+        this.userId = null;
+        logger.debug("Re-authenticating shared UniFi session");
+        return session.reauthenticate();
+    }
 }

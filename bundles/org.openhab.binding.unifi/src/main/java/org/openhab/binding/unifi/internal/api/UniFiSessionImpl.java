@@ -32,6 +32,8 @@ public class UniFiSessionImpl implements UniFiSession {
     private final String baseUrl;
     private final UniFiAuthenticator authenticator;
     private final UniFiRequestThrottler throttler;
+    private final Object reauthLock = new Object();
+    private @Nullable CompletableFuture<Void> reauthInFlight;
 
     public UniFiSessionImpl(String baseUrl, UniFiAuthenticator authenticator, UniFiRequestThrottler throttler) {
         this.baseUrl = baseUrl;
@@ -66,8 +68,17 @@ public class UniFiSessionImpl implements UniFiSession {
 
     @Override
     public CompletableFuture<Void> reauthenticate() {
-        authenticator.clearAuth();
-        return authenticator.authenticate();
+        // Don't clear credentials first: a failed/throttled login must leave the still-valid cookie in place.
+        // Coalesce concurrent callers (Network/Protect/Access share this session).
+        synchronized (reauthLock) {
+            CompletableFuture<Void> existing = reauthInFlight;
+            if (existing != null && !existing.isDone()) {
+                return existing;
+            }
+            CompletableFuture<Void> future = authenticator.authenticate();
+            reauthInFlight = future;
+            return future;
+        }
     }
 
     @Override
