@@ -1438,7 +1438,10 @@ public class Clip2ThingHandler extends BaseThingHandler {
             }
 
             if (ResourceType.BRIDGE_HOME == thisResource.getType()) {
-                // not easy to discover if home zone contains device(s) requiring work-around, so we just assume yes
+                /*
+                 * BRIDGE_HOME does not expose 'children' so we can determine neither from this resource, nor from
+                 * any other resource, which member devices require the work-around, so we just apply it anyway.
+                 */
                 applyOffTransitionWorkaround = true;
                 logger.debug("{} -> enabling work-around for turning off {}", resourceId, ResourceType.BRIDGE_HOME);
             }
@@ -1804,8 +1807,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * of them require the work-around for turning off. If so, sets the `applyOffTransitionWorkaround` flag to true.
      */
     private void updateWorkaroundForChildren() {
-        ResourceType type = thisResource.getType();
-        if (!disposing && GROUP_TYPES.contains(type)) {
+        ResourceType thisType = thisResource.getType();
+        if (!disposing && GROUP_TYPES.contains(thisType)) {
             Exception exception = null;
             try {
                 Clip2BridgeHandler bridge = getBridgeHandler();
@@ -1823,8 +1826,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
                                 if (WORK_AROUND_MODEL_IDS.stream().map(id -> id.toLowerCase())
                                         .anyMatch(id -> modelId.contains(id))) {
                                     applyOffTransitionWorkaround = true;
-                                    logger.debug("{} -> enabling work-around for turning off {}", resourceId, type);
-                                    break; // no need to check further children once workaround is enabled
+                                    logger.debug("{} -> enabling work-around for turning off {}", resourceId, thisType);
+                                    break; // no need to check further children once work-around is enabled
                                 }
                             }
                         }
