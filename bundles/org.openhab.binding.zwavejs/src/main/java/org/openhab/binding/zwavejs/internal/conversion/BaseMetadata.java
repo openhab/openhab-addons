@@ -126,6 +126,7 @@ public abstract class BaseMetadata {
         this.min = value.metadata.min;
         this.max = value.metadata.max;
         this.id = generateChannelId(value);
+        this.value = value.value;
 
         this.label = normalizeLabel(value.metadata.label, value.endpoint, value.propertyName);
         this.description = value.metadata.description != null ? value.metadata.description : null;
@@ -138,7 +139,6 @@ public abstract class BaseMetadata {
             logger.warn("Node {}, unable to parse unitSymbol '{}', please file a bug report", nodeId, unitSymbol);
         }
         this.optionList = value.metadata.states;
-        this.value = value.value;
         this.isAdvanced = isAdvanced(value.commandClass, value.propertyName, value.propertyKey);
 
         if (writable) {
