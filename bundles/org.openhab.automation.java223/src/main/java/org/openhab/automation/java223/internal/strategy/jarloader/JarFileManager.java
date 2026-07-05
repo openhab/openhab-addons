@@ -148,7 +148,7 @@ public class JarFileManager<M extends JavaFileManager> extends ForwardingJavaFil
         public JarFileManagerFactory(Path libDirectory, ClassLoader parentClassLoader) {
             this.parentClassLoader = parentClassLoader;
             this.libDirectory = libDirectory;
-            // temporary/default use of the parent :
+            // temporary/default use of the parent:
             this.upToDateClassLoader = parentClassLoader;
             try {
                 this.md5Digest = MessageDigest.getInstance("MD5");

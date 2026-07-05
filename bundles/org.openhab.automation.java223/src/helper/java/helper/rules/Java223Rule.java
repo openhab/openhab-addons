@@ -205,9 +205,9 @@ public class Java223Rule extends SimpleRule {
     @SuppressWarnings("unchecked")
     @Override
     public Object execute(Action module, Map<String, ?> bindings) {
-        // special self reference :
+        // special self reference:
         ((Map<String, Object>) bindings).put(Java223Constants.BINDINGS, bindings);
-        // actual call :
+        // actual call:
         try {
             Debounce debounceLocal = debounce;
             if (debounceLocal != null) {
