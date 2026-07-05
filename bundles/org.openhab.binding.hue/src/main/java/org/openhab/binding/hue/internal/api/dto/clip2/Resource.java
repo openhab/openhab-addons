@@ -832,7 +832,7 @@ public class Resource {
     }
 
     /**
-     * The the Hue bridge could return its raw list of tamper reports in any order, so sort the list (latest entry
+     * The Hue bridge could return its raw list of tamper reports in any order, so sort the list (latest entry
      * first) according to the respective 'changed' instant and return the first entry i.e. the latest changed entry.
      *
      * @return the latest changed tamper report
@@ -1011,7 +1011,7 @@ public class Resource {
     /**
      * Set the on/off JSON element (only).
      *
-     * @param command an OnOffTypee command value.
+     * @param command an OnOffType command value.
      * @return this resource instance.
      */
     public Resource setOnOff(Command command) {

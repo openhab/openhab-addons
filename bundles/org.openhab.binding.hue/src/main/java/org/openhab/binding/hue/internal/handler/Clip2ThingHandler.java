@@ -1747,13 +1747,13 @@ public class Clip2ThingHandler extends BaseThingHandler {
     /**
      * Ensure that the light service resource in the serviceContributorsCache has a complete DTO for it to
      * yield valid channel state values. Check if the given (cached) light service has a {@link Dimming} field,
-     * a {@link MirekSchema} field, and a {@link Gamut} field. If any is missing, add the necessary entry from
-     * from the manual configuration (if any) or the binding default values. This ensures that the light's
-     * channels always have a valid minimum dimming level, color temperature range, and gamut, to use.
+     * a {@link MirekSchema} field, and a {@link Gamut} field. If any is missing, use the binding default values.
+     * This ensures that the light's channels always have a valid minimum dimming level, color temperature range,
+     * and gamut, to use.
      */
     private synchronized void updateLightCacheRequiredFields(Resource resource) {
         if (!disposing && !updateLightCacheRequiredFieldsDone && (ResourceType.LIGHT == resource.getType())) {
-            logger.debug("{} -> updateLightServiceCacheDTOs()", resourceId);
+            logger.debug("{} -> updateLightCacheRequiredFields()", resourceId);
 
             if (resource.getDimming() instanceof Dimming dim) {
                 Double minDimLevel = dim.getMinimumDimmingLevel();
@@ -1786,7 +1786,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 Setters.setResource(cacheEntry, resource);
             } else {
                 // should never happen, but just in case
-                logger.warn("{} -> updateLightServiceCacheDTOs() -> missing cache light resource", resourceId);
+                logger.warn("{} -> updateLightCacheRequiredFields() -> missing cache light resource", resourceId);
             }
             updateLightCacheRequiredFieldsDone = true;
         }
