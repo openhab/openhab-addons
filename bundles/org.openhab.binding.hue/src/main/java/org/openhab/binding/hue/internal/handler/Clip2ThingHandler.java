@@ -1437,6 +1437,12 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 }
             }
 
+            if (ResourceType.BRIDGE_HOME == thisResource.getType()) {
+                // not easy to discover if home zone contains device(s) requiring work-around, so we just assume yes
+                applyOffTransitionWorkaround = true;
+                logger.debug("{} -> enabling work-around for turning off {}", resourceId, ResourceType.BRIDGE_HOME);
+            }
+
             thing.setProperties(properties);
             updatePropertiesDone = true;
         }
