@@ -38,6 +38,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceS
 import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyBindingRuntimeConfig;
+import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.core.net.NetworkAddressChangeListener;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.ThingTypeUID;
@@ -543,5 +544,69 @@ public class Shelly2GetDeviceProfileTest {
         Shelly2DeviceStatusEmData emdata0 = result.emdata0;
         assertThat(emdata0, is(notNullValue()));
         assertThat(emdata0.totalActiveReturnedEnergySum, is(1.5));
+    }
+
+    // ── LoRa Add-On ─────────────────────────────────────────────────────────────
+
+    /** Config with lora:100 component; rxEnabled controls the Rx-path flag */
+    private static Shelly2GetConfigResult withLora100(Gson gson, boolean rxEnabled) {
+        return parseConfig(gson, "{\"sys\":{\"device\":{},\"location\":{}},\"wifi\":{},"
+                + "\"lora:100\":{\"id\":100,\"freq\":868000000,\"rx_enable\":" + rxEnabled + "}}");
+    }
+
+    /**
+     * Config built from a ShellyThingConfiguration with enableLoRa=true. Needed because the
+     * discovery-mode constructor always sets enableLoRa=false, which suppresses LoRa detection
+     * even when lora:100 is present in GetConfig.
+     */
+    private ShellyApiConfiguration loraConfig() {
+        ShellyThingConfiguration thingConfig = new ShellyThingConfiguration() {
+            @Override
+            public boolean getEnableLoRa() {
+                return true;
+            }
+
+            @Override
+            public String getDeviceIp() {
+                return DEVICE_IP;
+            }
+        };
+        ShellyBindingConfiguration raw = ShellyBindingConfiguration
+                .fromProperties(Map.of(ShellyBindingConfiguration.CONFIG_LOCAL_IP, LOCAL_IP));
+        ShellyBindingRuntimeConfig bindingConfig = new ShellyBindingRuntimeConfig(raw, 8080, nullNas());
+        return new ShellyApiConfiguration(thingConfig, bindingConfig, "test-realm", true, false);
+    }
+
+    @Test
+    void discovery_loraEnabled_loraDetectedTrue() throws ShellyApiException {
+        Gson gson = new Gson();
+        StubApiClient client = new StubApiClient(loraConfig(), withLora100(gson, true));
+        ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYUNKNOWN, deviceInfo());
+        assertThat(profile.settings.loraDetected, is(true));
+    }
+
+    @Test
+    void discovery_loraWithoutEnableLoRa_notDetected() throws ShellyApiException {
+        Gson gson = new Gson();
+        // discoveryConfig() sets enableLoRa=false → LoRa add-on must not be activated
+        StubApiClient client = new StubApiClient(discoveryConfig(), withLora100(gson, true));
+        ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYUNKNOWN, deviceInfo());
+        assertThat(profile.settings.loraDetected, is(false));
+    }
+
+    @Test
+    void discovery_loraRxEnabled_flagTrue() throws ShellyApiException {
+        Gson gson = new Gson();
+        StubApiClient client = new StubApiClient(loraConfig(), withLora100(gson, true));
+        ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYUNKNOWN, deviceInfo());
+        assertThat(profile.settings.loraRxEnabled, is(true));
+    }
+
+    @Test
+    void discovery_loraRxDisabled_flagFalse() throws ShellyApiException {
+        Gson gson = new Gson();
+        StubApiClient client = new StubApiClient(loraConfig(), withLora100(gson, false));
+        ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYUNKNOWN, deviceInfo());
+        assertThat(profile.settings.loraRxEnabled, is(false));
     }
 }
