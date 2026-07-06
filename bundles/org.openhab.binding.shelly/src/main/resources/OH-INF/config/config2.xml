@@ -31,6 +31,11 @@
 			<description>Auto discovers devices, which are connected using the Shelly Range Extender support</description>
 			<default>false</default>
 		</parameter>
+		<parameter name="enableLoRa" type="boolean" required="false">
+			<label>@text/thing-type.config.shelly.enableLoRa.label</label>
+			<description>@text/thing-type.config.shelly.enableLoRa.description</description>
+			<default>false</default>
+		</parameter>
 	</config-description>
 
 	<config-description uri="thing-type:shelly:roller-gen2">
@@ -66,6 +71,11 @@
 		<parameter name="enableBluGateway" type="boolean" required="false">
 			<label>Enable BLU Gateway Support</label>
 			<description>Enables BLU Gateway support including auto-upload of the required script</description>
+			<default>false</default>
+		</parameter>
+		<parameter name="enableLoRa" type="boolean" required="false">
+			<label>@text/thing-type.config.shelly.enableLoRa.label</label>
+			<description>@text/thing-type.config.shelly.enableLoRa.description</description>
 			<default>false</default>
 		</parameter>
 	</config-description>
