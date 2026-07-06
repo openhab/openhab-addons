@@ -525,7 +525,8 @@ Two LoRa add-on variants are supported:
 - **Shelly LoRa Add-On** (standard form factor): attaches to Gen3 and Gen4 Plus devices — Plus 1, Plus 1PM, Plus 2PM, Plus Shutter, Plus EM, and Dimmer 0/1-10V PM Gen3/Gen4. Gen2 Plus devices and the Shelly Wall Dimmer Gen3 do not support this add-on.
 - **Shelly Pro LoRa Add-On** (DIN-rail): attaches to Pro series devices — Pro 1, Pro 1PM, Pro 2, Pro 2PM, Pro 3EM, Pro EM-50, Pro Dimmer 1PM, Pro Dimmer 2PM, and Pro Dimmer 0/1-10V PM. EU868 band only. Requires firmware 2.0 or later.
 
-Note: To enable LoRa support set thing configuration option `enableLoRa = true`.
+The binding detects the LoRa Add-On automatically: when the add-on is installed and enabled in the device configuration, the `lora` channel group is created on the next Thing initialization.
+No thing configuration is required.
 
 | Group   | Channel      | Type    | read-only | Description                                                                       |
 | ------- | ------------ | ------- | --------- | --------------------------------------------------------------------------------- |

@@ -391,7 +391,8 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             profile.settings.ledPowerDisable = "off".equals(getString(dc.led.powerLed));
         }
 
-        if (dc.lora100 != null && config.getEnableLoRa()) {
+        // The lora100 component is only present in the device config when the LoRa Add-On is installed
+        if (dc.lora100 != null) {
             profile.settings.loraDetected = true;
             profile.settings.loraRxEnabled = Boolean.TRUE.equals(dc.lora100.rxEnabled);
             profile.settings.loraComponentIds = new Integer[1];

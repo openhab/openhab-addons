@@ -52,7 +52,6 @@ public class ShellyThingConfiguration {
     // Gen2
     private Boolean enableBluGateway = false;
     private Boolean enableRangeExtender = true;
-    private Boolean enableLoRa = false;
 
     public String getDeviceIp() {
         return deviceIp;
@@ -122,17 +121,12 @@ public class ShellyThingConfiguration {
         return enableRangeExtender;
     }
 
-    public boolean getEnableLoRa() {
-        return enableLoRa;
-    }
-
     @Override
     public String toString() {
         return "Device address=" + deviceAddress + ", HTTP user/password=" + userId + "/"
                 + (password.isEmpty() ? "<none>" : "***") + ", update interval=" + updateInterval + "\n"
                 + "Events: Button: " + eventsButton + ", Switch (on/off): " + eventsSwitch + ", Push: " + eventsPush
                 + ", Roller: " + eventsRoller + "Sensor: " + eventsSensorReport + ", CoIoT: " + eventsCoIoT + "\n"
-                + "Blu Gateway=" + enableBluGateway + ", Range Extender=" + enableRangeExtender + ", LoRa support="
-                + enableLoRa;
+                + "Blu Gateway=" + enableBluGateway + ", Range Extender=" + enableRangeExtender;
     }
 }
