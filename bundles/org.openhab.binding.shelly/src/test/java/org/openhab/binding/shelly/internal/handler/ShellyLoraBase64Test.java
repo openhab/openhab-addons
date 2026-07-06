@@ -51,8 +51,6 @@ class ShellyLoraBase64Test {
         return new String(Base64.getDecoder().decode(fixBase64Padding(b64)), StandardCharsets.UTF_8);
     }
 
-    // ── fixBase64Padding ──────────────────────────────────────────────────────
-
     @ParameterizedTest(name = "fixBase64Padding(''{0}'') = ''{1}''")
     @CsvSource({
             // len%4==0 — no padding needed
@@ -63,19 +61,17 @@ class ShellyLoraBase64Test {
             "QUI,           QUI=",
             // already padded — unchanged
             "QQ==,          QQ==", "QUI=,          QUI=", })
-    void fixBase64Padding_addsCorrectPadding(String input, String expected) {
+    void fixBase64PaddingAddsCorrectPadding(String input, String expected) {
         assertThat(fixBase64Padding(input.strip()), is(expected.strip()));
     }
 
     @Test
-    void fixBase64Padding_rem1_leavesStringUnchanged() {
+    void fixBase64PaddingRem1LeavesStringUnchanged() {
         // len%4==1 is structurally invalid Base64; fixBase64Padding must not crash —
         // the caller's try/catch handles the downstream decode failure.
         String invalid = "Q"; // length 1, rem==1
         assertThat(fixBase64Padding(invalid), is(invalid));
     }
-
-    // ── Encode ────────────────────────────────────────────────────────────────
 
     @ParameterizedTest(name = "encode ''{0}'' → ''{1}''")
     @CsvSource({
@@ -87,21 +83,17 @@ class ShellyLoraBase64Test {
             "ABC,               QUJD",
             // realistic LoRa payloads
             "Hello,             SGVsbG8=", "0123456789,        MDEyMzQ1Njc4OQ==", })
-    void encode_producesStandardPaddedBase64(String text, String expected) {
+    void encodeProducesStandardPaddedBase64(String text, String expected) {
         assertThat(encode(text.strip()), is(expected.strip()));
     }
-
-    // ── Decode padded ─────────────────────────────────────────────────────────
 
     @ParameterizedTest(name = "decode padded ''{0}'' → ''{1}''")
     @CsvSource({ "QQ==,              A", "QUI=,              AB", "QUJD,              ABC", "SGVsbG8=,          Hello",
             // API-docs example (LoRa.SendBytes / lora_received event)
             "MDEyMzQ1Njc4OQ==,  0123456789", })
-    void decode_paddedBase64_returnsOriginalText(String b64, String expected) {
+    void decodePaddedBase64ReturnsOriginalText(String b64, String expected) {
         assertThat(decode(b64.strip()), is(expected.strip()));
     }
-
-    // ── Decode unpadded ───────────────────────────────────────────────────────
 
     @ParameterizedTest(name = "decode unpadded ''{0}'' → ''{1}''")
     @CsvSource({
@@ -111,11 +103,9 @@ class ShellyLoraBase64Test {
             "QUI,               AB", "SGVsbG8,           Hello",
             // no padding needed (len%4 == 0) — identical to padded case
             "QUJD,              ABC", })
-    void decode_unpaddedBase64_returnsOriginalText(String b64, String expected) {
+    void decodeUnpaddedBase64ReturnsOriginalText(String b64, String expected) {
         assertThat(decode(b64.strip()), is(expected.strip()));
     }
-
-    // ── Roundtrip ─────────────────────────────────────────────────────────────
 
     @ParameterizedTest(name = "roundtrip ''{0}''")
     @ValueSource(strings = {
@@ -125,7 +115,7 @@ class ShellyLoraBase64Test {
             "Hello, World!", "0123456789", "sensor:temp=22.5",
             // multi-byte UTF-8 (2-byte sequences)
             "élève", })
-    void roundtrip_encodeDecodeRestoresOriginal(String text) {
+    void roundtripEncodeDecodeRestoresOriginal(String text) {
         assertThat(decode(encode(text)), is(text));
     }
 }

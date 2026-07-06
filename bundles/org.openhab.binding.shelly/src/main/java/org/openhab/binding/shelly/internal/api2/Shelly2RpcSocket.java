@@ -354,10 +354,10 @@ public class Shelly2RpcSocket implements WriteCallback {
                         handler.onNotifyStatus(status);
                         return;
                     case SHELLYRPC_METHOD_NOTIFYEVENT:
-                        if (receivedMessage.contains("lora:")) {
-                            // The LoRa add-on doesn't report the data in the structured event format, but raw data
-                            // string modify JSON to avoid an exception, because data is a String and not a structure
-                            // Non-LoRa events use standard formal
+                        if (receivedMessage.contains("\"component\":\"lora:")) {
+                            // The LoRa add-on reports its payload as raw String in "data", whereas the shared
+                            // Shelly2NotifyEvent.data is a structure for all other event types. Rename the key so
+                            // Gson maps the payload to the String field "lora" instead of failing on "data".
                             receivedMessage = eventMessage.replace("\"data\":\"", "\"lora\":\"");
                         }
 
