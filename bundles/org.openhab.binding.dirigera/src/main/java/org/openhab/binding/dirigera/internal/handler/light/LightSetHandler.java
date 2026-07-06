@@ -86,22 +86,22 @@ public class LightSetHandler extends ColorLightHandler {
         // canSend properties
         receiveCapabilities.clear();
         sendCapabilities.clear();
+        TreeMap<String, String> handlerProperties = new TreeMap<>(editProperties());
         memberDeviceIds.forEach(id -> {
             Map<String, Object> modelProperties = gateway().model().getPropertiesFor(id);
-            Object customName = gateway().model().getCustonNameFor(id);
+            String customName = gateway().model().getCustonNameFor(id);
 
-            TreeMap<String, String> handlerProperties = new TreeMap<>(editProperties());
             Object receiveCapabilities = modelProperties.get(CAPABILITIES_KEY_CAN_RECEIVE);
             handlerProperties.put(customName + " " + CAPABILITIES_KEY_CAN_RECEIVE,
                     receiveCapabilities != null ? receiveCapabilities.toString() : "[]");
             Object sendCapabilities = modelProperties.get(CAPABILITIES_KEY_CAN_SEND);
             handlerProperties.put(customName + " " + CAPABILITIES_KEY_CAN_SEND,
                     sendCapabilities != null ? sendCapabilities.toString() : "[]");
-            updateProperties(handlerProperties);
             // properties updated and user is able to check all devices in the set and their capabilities, now add the
             // capabilities to the set itself
             addCapabilities(id);
         });
+        updateProperties(handlerProperties);
 
         // 2) Initialize the set's own customName from the model so that subsequent member
         // updates (which carry the member's own customName) cannot overwrite it.
