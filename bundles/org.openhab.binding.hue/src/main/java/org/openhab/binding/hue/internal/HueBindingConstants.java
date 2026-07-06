@@ -226,5 +226,4 @@ public class HueBindingConstants {
     public static final ChannelTypeUID CHANNEL_TYPE_AUTOMATION = new ChannelTypeUID(BINDING_ID, "automation-enable");
 
     public static final Set<ResourceType> LIGHT_TYPES = Set.of(ResourceType.LIGHT, ResourceType.GROUPED_LIGHT);
-    public static final Set<ResourceType> GROUP_TYPES = Set.of(ResourceType.ZONE, ResourceType.ROOM);
 }

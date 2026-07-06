@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
@@ -127,10 +128,11 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
     /*
      * Set of Model Ids having an issue where they do not correctly handle a PUT command for the 'on' state.
+     * NOTE: always use LOWER CASE case to simplify the matching process.
      */
     private static final Set<String> WORK_AROUND_MODEL_IDS = Set.of( //
-            "LK Dimmer", // LK Wiser Dimmer -- see https://techblog.vindvejr.dk/?p=455
-            "Tradfri" // IKEA Tradfri bulbs
+            "LK Dimmer".toLowerCase(), // LK Wiser Dimmer -- see https://techblog.vindvejr.dk/?p=455
+            "Tradfri".toLowerCase() // IKEA Tradfri bulbs
     );
 
     private final Logger logger = LoggerFactory.getLogger(Clip2ThingHandler.class);
@@ -1803,48 +1805,63 @@ public class Clip2ThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Parses the children element of `thisResource` and GETs the product data of each child device to check if any
-     * of them require the work-around for turning off. If so, sets the `applyOffTransitionWorkaround` flag to true.
+     * Recursively checks this resource and all room or zone children of child devices whose modelId requires the
+     * off-transition workaround and, if so, sets the `applyOffTransitionWorkaround` flag.
      */
     private void updateWorkaroundForChildren() {
-        ResourceType thisType = thisResource.getType();
-        if (!disposing && GROUP_TYPES.contains(thisType)) {
-            Exception exception = null;
-            try {
-                Clip2BridgeHandler bridge = getBridgeHandler();
-                ResourceReference request = new ResourceReference().setType(ResourceType.DEVICE);
-                for (String childId : thisResource.getChildren().stream()
-                        .filter(ref -> ResourceType.DEVICE == ref.getType()).map(ref -> ref.getId())
-                        .filter(Objects::nonNull).toList()) {
-                    try {
-                        Resource child = bridge.getResources(request.setId(childId)).getResources().stream().findFirst()
-                                .orElse(null);
-                        if (child != null) {
-                            ProductData productData = child.getProductData();
-                            if (productData != null) {
-                                String modelId = productData.getModelId().toLowerCase();
-                                if (WORK_AROUND_MODEL_IDS.stream().map(id -> id.toLowerCase())
-                                        .anyMatch(id -> modelId.contains(id))) {
-                                    applyOffTransitionWorkaround = true;
-                                    logger.debug("{} -> enabling work-around for turning off {}", resourceId, thisType);
-                                    break; // no need to check further children once work-around is enabled
-                                }
+        if (!disposing) {
+            switch (thisResource.getType()) {
+                case ROOM, ZONE, BRIDGE_HOME:
+                    checkResourceForWorkaround(thisResource);
+                default:
+                    // ignore other types
+            }
+        }
+    }
+
+    /**
+     * Checks the given resource to see if it or any of its children require the off-transition workaround and,
+     * if so, sets the `applyOffTransitionWorkaround` flag to true. Recursively checks all child resources of type
+     * ROOM or ZONE. If a child resource is of type DEVICE, its productData is inspected to see if its modelId
+     * matches any of the known modelIds that require the workaround. Returns early if a match is found.
+     * <ul>
+     * <li>If it has device children => inspects their productData.</li>
+     * <li>If it has room or zone children => calls itself recursively on them.</li>
+     * </ul>
+     */
+    private void checkResourceForWorkaround(Resource resource) {
+        try {
+            for (ResourceReference child : resource.getChildren()) {
+                Optional<Resource> optChild = getBridgeHandler().getResources(child).getResources().stream().findAny();
+                if (optChild.isEmpty()) {
+                    continue;
+                }
+                switch (child.getType()) {
+                    case DEVICE:
+                        ProductData productData = optChild.get().getProductData();
+                        if (productData != null) {
+                            String modelId = productData.getModelId();
+                            String modelIdLowerCase = modelId.toLowerCase();
+                            if (WORK_AROUND_MODEL_IDS.stream().anyMatch(modelIdLowerCase::contains)) {
+                                applyOffTransitionWorkaround = true;
+                                logger.debug("{} -> enabling work-around for turning off {}", resourceId, modelId);
+                                return; // no need to check further once we find a matching device
                             }
                         }
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
                         break;
-                    } catch (ApiException | AssetNotLoadedException e) {
-                        exception = e;
-                        break;
-                    }
+                    case ROOM, ZONE:
+                        checkResourceForWorkaround(optChild.get()); // recurse into nested room/zone
+                        if (applyOffTransitionWorkaround) {
+                            return; // no need to check further once we find a matching device
+                        }
+                    default:
+                        // ignore other types
                 }
-            } catch (AssetNotLoadedException e) {
-                exception = e;
             }
-            if (exception != null) {
-                logger.warn("{} -> updateWorkaroundForChildren() {}", resourceId, exception.getMessage(), exception);
-            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } catch (ApiException | AssetNotLoadedException e) {
+            logger.warn("{} -> checkResourceForWorkaround() {}", resourceId, e.getMessage(), e);
         }
     }
 }
