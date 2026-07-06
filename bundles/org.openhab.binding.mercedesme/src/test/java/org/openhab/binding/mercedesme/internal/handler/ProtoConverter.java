@@ -192,6 +192,10 @@ public class ProtoConverter {
             cpv.put("max_soc", soc.getValue());
             return cpv;
         }
+        // ADR-001: BatteryMaxSocConfigure carries max_soc as a plain int, no unwrapping needed
+        if (cr.hasBatteryMaxSoc()) {
+            return Utils.getJsonObject(cr.getBatteryMaxSoc().getAllFields());
+        }
         return cmJson;
     }
 }
