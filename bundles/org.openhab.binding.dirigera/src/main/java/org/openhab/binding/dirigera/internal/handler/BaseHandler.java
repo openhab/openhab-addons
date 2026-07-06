@@ -216,12 +216,8 @@ public class BaseHandler extends BaseThingHandler implements BaseDevice, DebugHa
     }
 
     protected void updateProperties() {
-        updateProperties(config.id);
-    }
-
-    protected void updateProperties(String id) {
         // fill canSend and canReceive capabilities
-        Map<String, Object> modelProperties = gateway().model().getPropertiesFor(id);
+        Map<String, Object> modelProperties = gateway().model().getPropertiesFor(config.id);
         Object canReceiveCapabilities = modelProperties.get(CAPABILITIES_KEY_CAN_RECEIVE);
         if (canReceiveCapabilities instanceof JSONArray jsonArray) {
             jsonArray.forEach(capability -> {
