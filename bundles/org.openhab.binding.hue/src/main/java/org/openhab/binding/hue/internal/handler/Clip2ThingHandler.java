@@ -1805,8 +1805,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Recursively checks this resource and all room or zone children of child devices whose modelId requires the
-     * off-transition workaround and, if so, sets the `applyOffTransitionWorkaround` flag.
+     * Recursively checks this resource and all room or zone children for (grand-) child devices whose modelId
+     * requires the off-transition work-around and, if so, sets the `applyOffTransitionWorkaround` flag.
      */
     private void updateWorkaroundForChildren() {
         if (!disposing) {
@@ -1820,13 +1820,13 @@ public class Clip2ThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Checks the given resource to see if it or any of its children require the off-transition workaround and,
+     * Checks the given resource to see if it or any of its children require the off-transition work-around and,
      * if so, sets the `applyOffTransitionWorkaround` flag to true. Recursively checks all child resources of type
-     * ROOM or ZONE. If a child resource is of type DEVICE, its productData is inspected to see if its modelId
+     * room or zone. If a child resource is of type device, its productData is inspected to see if its modelId
      * matches any of the known modelIds that require the workaround. Returns early if a match is found.
      * <ul>
-     * <li>If it has device children => inspects their productData.</li>
-     * <li>If it has room or zone children => calls itself recursively on them.</li>
+     * <li>For any device children => inspects their productData.</li>
+     * <li>For any room or zone children => calls itself recursively on their children.</li>
      * </ul>
      */
     private void checkResourceForWorkaround(Resource resource) {
