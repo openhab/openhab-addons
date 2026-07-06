@@ -481,11 +481,6 @@
 				</options>
 				<default>Generic</default>
 			</parameter>
-			<parameter name="autorelease" type="boolean">
-				<label>Auto-release</label>
-				<description>Automatically release pressed buttons</description>
-				<default>true</default>
-			</parameter>
 		</config-description>
 	</thing-type>
 
@@ -517,11 +512,6 @@
 					<option value="Generic">Generic</option>
 				</options>
 				<default>Generic</default>
-			</parameter>
-			<parameter name="autorelease" type="boolean">
-				<label>Auto-release</label>
-				<description>Automatically release pressed buttons</description>
-				<default>true</default>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -556,11 +546,6 @@
 					<option value="Generic">Generic</option>
 				</options>
 				<default>Generic</default>
-			</parameter>
-			<parameter name="autorelease" type="boolean">
-				<label>Auto-release</label>
-				<description>Automatically release pressed buttons</description>
-				<default>true</default>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -599,11 +584,6 @@
 				</options>
 				<default>Generic</default>
 			</parameter>
-			<parameter name="autorelease" type="boolean">
-				<label>Auto-release</label>
-				<description>Automatically release pressed buttons</description>
-				<default>true</default>
-			</parameter>
 		</config-description>
 	</thing-type>
 
@@ -636,11 +616,6 @@
 				</options>
 				<default>Generic</default>
 			</parameter>
-			<parameter name="autorelease" type="boolean">
-				<label>Auto-release</label>
-				<description>Automatically release pressed buttons</description>
-				<default>true</default>
-			</parameter>
 		</config-description>
 	</thing-type>
 
@@ -670,11 +645,6 @@
 				</options>
 				<default>3COL</default>
 			</parameter>
-			<parameter name="autorelease" type="boolean">
-				<label>Auto-release</label>
-				<description>Automatically release pressed buttons</description>
-				<default>true</default>
-			</parameter>
 		</config-description>
 	</thing-type>
 
@@ -693,11 +663,6 @@
 				<label>Integration ID</label>
 				<description>Address of VCRX in the Lutron control system</description>
 			</parameter>
-			<parameter name="autorelease" type="boolean">
-				<label>Auto-release</label>
-				<description>Automatically release pressed buttons</description>
-				<default>true</default>
-			</parameter>
 		</config-description>
 	</thing-type>
 
@@ -715,11 +680,6 @@
 			<parameter name="integrationId" type="integer" required="true">
 				<label>Integration ID</label>
 				<description>Address of WCI in the Lutron control system</description>
-			</parameter>
-			<parameter name="autorelease" type="boolean">
-				<label>Auto-release</label>
-				<description>Automatically release pressed buttons</description>
-				<default>true</default>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -1388,6 +1348,19 @@
 		<label>Keypad Button</label>
 		<description>Button to trigger a scene or rule</description>
 		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="buttonTrigger">
+		<kind>trigger</kind>
+		<label>Keypad Button Event</label>
+		<description>Fires PRESSED, RELEASED, or LONG_PRESSED events for a keypad button</description>
+		<event>
+			<options>
+				<option value="PRESSED">PRESSED</option>
+				<option value="RELEASED">RELEASED</option>
+				<option value="LONG_PRESSED">LONG_PRESSED</option>
+			</options>
+		</event>
 	</channel-type>
 
 	<channel-type id="ledIndicator">
