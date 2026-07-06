@@ -1432,7 +1432,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 properties.put(PROPERTY_PRODUCT_CERTIFIED, productData.getCertified().toString());
 
                 // Check device for needed work-arounds.
-                if (WORK_AROUND_MODEL_IDS.stream().anyMatch(id -> modelId.toLowerCase().contains(id))) {
+                if (modelId != null
+                        && WORK_AROUND_MODEL_IDS.stream().anyMatch(id -> modelId.toLowerCase().contains(id))) {
                     applyOffTransitionWorkaround = true;
                     logger.debug("{} -> enabling work-around for turning off {}", resourceId, modelId);
                 }
@@ -1831,6 +1832,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
                         ProductData productData = optChild.get().getProductData();
                         if (productData != null) {
                             String modelId = productData.getModelId();
+                            if (modelId == null) {
+                                continue;
+                            }
                             String modelIdLowerCase = modelId.toLowerCase();
                             if (WORK_AROUND_MODEL_IDS.stream().anyMatch(modelIdLowerCase::contains)) {
                                 applyOffTransitionWorkaround = true;

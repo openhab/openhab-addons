@@ -253,7 +253,7 @@ public class SettersTest {
         resources.add(resource1);
 
         Resource resource2 = createResource(ResourceType.LIGHT, "1");
-        resource2.setColorTemperature(createColorTemperature(370));
+        resource2.setColorTemperature(createColorTemperature(370L));
         resources.add(resource2);
 
         Setters.mergeLightResources(resources);
@@ -298,7 +298,7 @@ public class SettersTest {
 
         Resource resource2 = createResource(ResourceType.LIGHT, "1");
         resource2.setDimming(createDimming(50));
-        resource2.setColorTemperature(createColorTemperature(370));
+        resource2.setColorTemperature(createColorTemperature(370L));
         resources.add(resource2);
 
         Setters.mergeLightResources(resources);
@@ -342,7 +342,7 @@ public class SettersTest {
 
         Resource resource = createResource(ResourceType.LIGHT, "1");
         resource.setOnState(createOnState(true));
-        resource.setColorTemperature(createColorTemperature(370));
+        resource.setColorTemperature(createColorTemperature(370L));
         resources.add(resource);
 
         Setters.mergeLightResources(resources);
@@ -400,7 +400,7 @@ public class SettersTest {
         return dimming;
     }
 
-    private ColorTemperature createColorTemperature(double mirek) {
+    private ColorTemperature createColorTemperature(Long mirek) {
         ColorTemperature colorTemperature = new ColorTemperature();
         colorTemperature.setMirek(mirek);
 

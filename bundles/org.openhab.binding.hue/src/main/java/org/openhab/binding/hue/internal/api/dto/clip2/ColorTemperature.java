@@ -52,8 +52,8 @@ public class ColorTemperature {
         return mirekSchema;
     }
 
-    public ColorTemperature setMirek(double mirek) {
-        this.mirek = Math.round(mirek);
+    public ColorTemperature setMirek(@Nullable Long mirek) {
+        this.mirek = mirek;
         return this;
     }
 

@@ -32,6 +32,7 @@ import org.openhab.binding.hue.internal.api.dto.clip2.Effects;
 import org.openhab.binding.hue.internal.api.dto.clip2.MetaData;
 import org.openhab.binding.hue.internal.api.dto.clip2.MirekSchema;
 import org.openhab.binding.hue.internal.api.dto.clip2.OnState;
+import org.openhab.binding.hue.internal.api.dto.clip2.PairXy;
 import org.openhab.binding.hue.internal.api.dto.clip2.Resource;
 import org.openhab.binding.hue.internal.api.dto.clip2.TimedEffects;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ActionType;
@@ -110,7 +111,7 @@ public class Setters {
             double min = schema.getMirekMinimum();
             double max = schema.getMirekMaximum();
             double val = Math.max(min, Math.min(max, mirekQuantity.doubleValue()));
-            target.setColorTemperature(colorTemperature.setMirek(val));
+            target.setColorTemperature(colorTemperature.setMirek(Math.round(val)));
         }
         return target;
     }
@@ -136,7 +137,7 @@ public class Setters {
             double min = schema.getMirekMinimum();
             double max = schema.getMirekMaximum();
             double val = min + ((max - min) * mirek.doubleValue() / 100f);
-            target.setColorTemperature(colorTemperature.setMirek(val));
+            target.setColorTemperature(colorTemperature.setMirek(Math.round(val)));
         }
         return target;
     }
@@ -206,60 +207,56 @@ public class Setters {
      */
     public static Resource setResource(Resource target, Resource source) {
         // on
-        OnState targetOnOff = target.getOnState();
         OnState sourceOnOff = source.getOnState();
-        if (Objects.isNull(targetOnOff) && Objects.nonNull(sourceOnOff)) {
+        if (sourceOnOff != null) {
             target.setOnState(sourceOnOff);
         }
 
-        // dimming
-        Dimming targetDimming = target.getDimming();
+        // dimming & minimum dimming level
         Dimming sourceDimming = source.getDimming();
-        if (Objects.isNull(targetDimming) && Objects.nonNull(sourceDimming)) {
-            target.setDimming(sourceDimming);
-            targetDimming = target.getDimming();
-        }
-
-        // minimum dimming level
-        if (Objects.nonNull(targetDimming) && Objects.nonNull(sourceDimming)) {
-            Double targetMinDimLevel = targetDimming.getMinimumDimmingLevel();
-            Double sourceMinDimLevel = sourceDimming.getMinimumDimmingLevel();
-            if (Objects.isNull(targetMinDimLevel) && Objects.nonNull(sourceMinDimLevel)) {
-                targetDimming.setMinimumDimmingLevel(sourceMinDimLevel);
+        if (sourceDimming != null) {
+            if (target.getDimming() == null) {
+                target.setDimming(new Dimming());
+            }
+            Dimming targetDimming = target.getDimming();
+            Double sourceBrightness = sourceDimming.getBrightness();
+            if (sourceBrightness != null) {
+                targetDimming.setBrightness(sourceBrightness);
+            }
+            Double sourceMinimumDimmingLevel = sourceDimming.getMinimumDimmingLevel();
+            if (sourceMinimumDimmingLevel != null) {
+                targetDimming.setMinimumDimmingLevel(sourceMinimumDimmingLevel);
             }
         }
 
-        // color
-        ColorXy targetColor = target.getColorXy();
+        // color xy & gamut
         ColorXy sourceColor = source.getColorXy();
-        if (Objects.isNull(targetColor) && Objects.nonNull(sourceColor)) {
-            target.setColorXy(sourceColor);
-            targetColor = target.getColorXy();
-        }
-
-        // color gamut
-        if (Objects.nonNull(sourceColor) && Objects.nonNull(targetColor)) {
-            Gamut targetGamut = targetColor.getGamut();
+        if (sourceColor != null) {
+            if (target.getColorXy() == null) {
+                target.setColorXy(new ColorXy());
+            }
+            ColorXy targetColor = target.getColorXy();
+            PairXy sourceXy = sourceColor.getXY();
+            if (sourceXy != null) {
+                targetColor.setXY(sourceXy.getXY());
+            }
             Gamut sourceGamut = sourceColor.getGamut();
-            if (Objects.isNull(targetGamut) && Objects.nonNull(sourceGamut)) {
+            if (sourceGamut != null) {
                 targetColor.setGamut(sourceGamut);
             }
         }
 
-        // color temperature
-        ColorTemperature targetColorTemp = target.getColorTemperature();
-        ColorTemperature sourceColorTemp = source.getColorTemperature();
-        if (Objects.isNull(targetColorTemp) && Objects.nonNull(sourceColorTemp)) {
-            target.setColorTemperature(sourceColorTemp);
-            targetColorTemp = target.getColorTemperature();
-        }
-
-        // mirek schema
-        if (Objects.nonNull(targetColorTemp) && Objects.nonNull(sourceColorTemp)) {
-            MirekSchema targetMirekSchema = targetColorTemp.getMirekSchema();
-            MirekSchema sourceMirekSchema = sourceColorTemp.getMirekSchema();
-            if (Objects.isNull(targetMirekSchema) && Objects.nonNull(sourceMirekSchema)) {
-                targetColorTemp.setMirekSchema(sourceMirekSchema);
+        // color temperature & mirek schema
+        ColorTemperature sourceColorTemperature = source.getColorTemperature();
+        if (sourceColorTemperature != null) {
+            if (target.getColorTemperature() == null) {
+                target.setColorTemperature(new ColorTemperature());
+            }
+            ColorTemperature targetColorTemperature = target.getColorTemperature();
+            targetColorTemperature.setMirek(sourceColorTemperature.getMirek());
+            MirekSchema sourceMirekSchema = sourceColorTemperature.getMirekSchema();
+            if (sourceMirekSchema != null) {
+                targetColorTemperature.setMirekSchema(sourceMirekSchema);
             }
         }
 

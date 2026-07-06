@@ -333,6 +333,7 @@ public class Resource {
             if (xy == null || gamut == null || brightness == null) {
                 throw new CriticalFieldMissing("'xy', 'gamut', or 'brightness' missing");
             }
+            brightness = Math.max(0.0, Math.min(100.0, brightness));
             HSBType hsb = ColorUtil.xyToHsb(xy.getXY(), gamut);
             PercentType percent = (on instanceof OnState on && on.getOn() instanceof Boolean on2 && !on2) //
                     ? PercentType.ZERO
