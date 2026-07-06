@@ -529,18 +529,18 @@ The binding detects the LoRa Add-On automatically: when the add-on is installed 
 No thing configuration is required.
 The add-on firmware version is shown in the Thing property `addonFirmware`; the device reports it asynchronously, so the property appears shortly after the Thing goes online.
 
-| Group   | Channel      | Type    | read-only | Description                                                                       |
-| ------- | ------------ | ------- | --------- | --------------------------------------------------------------------------------- |
-| lora    | dataRx       | String  | yes       | Received LoRa datagram decoded as UTF-8 text. Use the LORA_RECEIVED trigger event.|
-|         | dataRxRaw    | String  | yes       | Received LoRa datagram, BASE64-encoded raw payload.                               |
-|         | bytesRx      | Number  | yes       | Number of bytes received from LoRa network so far.                                |
-|         | dataTx       | String  | r/w       | Send a UTF-8 text string; the binding encodes it as BASE64 before transmitting.   |
-|         | dataTxRaw    | String  | r/w       | Send a BASE64-encoded datagram directly to the LoRa network.                      |
-|         | bytesTx      | Number  | yes       | Number of bytes sent to the LoRa network so far.                                  |
-|         | errorsTx     | Number  | yes       | Number of failed transmissions to the LoRa network.                               |
-|         | snr          | Number  | yes       | SNR (signal-to-noise ratio in dB) of the last received packet.                    |
-|         | rssi         | Number  | yes       | RSSI (received signal strength in dBm) of the last received packet.               |
-|         | airtime      | Number  | yes       | Cumulative transmission air time in milliseconds.                                 |
+| Group   | Channel      | Type              | read-only | Description                                                                       |
+| ------- | ------------ | ----------------- | --------- | --------------------------------------------------------------------------------- |
+| lora    | dataRx       | String            | yes       | Received LoRa datagram decoded as UTF-8 text. Use the LORA_RECEIVED trigger event.|
+|         | dataRxRaw    | String            | yes       | Received LoRa datagram, BASE64-encoded raw payload.                               |
+|         | bytesRx      | Number:DataAmount | yes       | Number of bytes received from LoRa network so far.                                |
+|         | dataTx       | String            | r/w       | Send a UTF-8 text string; the binding encodes it as BASE64 before transmitting.   |
+|         | dataTxRaw    | String            | r/w       | Send a BASE64-encoded datagram directly to the LoRa network.                      |
+|         | bytesTx      | Number:DataAmount | yes       | Number of bytes sent to the LoRa network so far.                                  |
+|         | errorsTx     | Number            | yes       | Number of failed transmissions to the LoRa network.                               |
+|         | snr          | Number            | yes       | SNR (signal-to-noise ratio in dB) of the last received packet.                    |
+|         | rssi         | Number            | yes       | RSSI (received signal strength in dBm) of the last received packet.               |
+|         | airtime      | Number:Time       | yes       | Cumulative transmission air time in milliseconds.                                 |
 
 ### Shelly 1 (thing-type: shelly1)
 
