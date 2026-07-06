@@ -30,6 +30,7 @@ import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
@@ -69,7 +70,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceC
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusLight;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2RGBWStatus;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusSys.Shelly2DeviceStatusSysAvlUpdate;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusSysAvlUpdate;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2NotifyEvent;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2NotifyEventData;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcBaseMessage;
@@ -197,10 +198,17 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         if (profile.hasBattery) {
             checkSetWsCallback();
         }
+
         if (firstInit && alwaysOn) {
             getStatus(); // make sure profile.status is initialized (e.g. relay/meter status)
             asyncApiRequest(SHELLYRPC_METHOD_GETSTATUS); // request periodic status updates from device
         }
+
+        if (dc.led != null) {
+            profile.settings.ledStatusDisable = !getBool(dc.led.sysLedEnable);
+            profile.settings.ledPowerDisable = "off".equals(getString(dc.led.powerLed));
+        }
+
         profile.initialized = true;
 
         try {
@@ -627,7 +635,6 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                     logger.debug("{}: Configuration update detected, re-initialize", thingName);
                     getThing().requestUpdates(1, true); // refresh config
                     break;
-
                 case SHELLY2_EVENT_OTASTART:
                     logger.debug("{}: Firmware update started: {}", thingName, getString(e.msg));
                     getThing().setThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING,
@@ -672,6 +679,28 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                     break;
                 case SHELLY2_EVENT_BLE_SCAN_RESULT:
                     logger.trace("{}: Ignoring {} event from non-BLU BLE scanner", thingName, event);
+                    break;
+                case SHELLY2_EVENT_LORADATA:
+                    logger.debug("{}: LoRa data received, payload = {}", thingName, e.lora);
+                    String loraRaw = e.lora;
+                    if (loraRaw != null) {
+                        String rxB64 = loraRaw;
+                        int rxRem = rxB64.length() % 4;
+                        if (rxRem == 2)
+                            rxB64 += "==";
+                        else if (rxRem == 3)
+                            rxB64 += "=";
+                        updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_RXDATARAW, getStringType(loraRaw));
+                        try {
+                            String rxData = new String(Base64.getDecoder().decode(rxB64), StandardCharsets.UTF_8);
+                            updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_RXDATA, getStringType(rxData));
+                        } catch (IllegalArgumentException ex) {
+                            logger.debug("{}: LoRa RX payload is not valid Base64: {}", thingName, ex.getMessage());
+                        }
+                    }
+                    updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_RSSI, getDecimal(e.rssi));
+                    updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_SNR, getDecimal(e.snr));
+                    getThing().postEvent(SHELLY2_EVENT_LORADATA.toUpperCase(), false);
                     break;
                 default:
                     logger.debug("{}: Event {} was not handled", thingName, e.event);
@@ -1200,6 +1229,19 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
      * The following API calls are not yet relevant, because currently there a no Plus/Pro (Gen2) devices of those
      * categories (e.g. bulbs)
      */
+
+    @Override
+    public void loraSendData(int index, String data) throws ShellyApiException {
+        ShellyDeviceProfile profile = getProfile();
+        if (profile.settings.loraComponentIds == null || index < 0
+                || index >= profile.settings.loraComponentIds.length) {
+            throw new IllegalArgumentException("Invalid LoRa component id");
+        }
+        Integer componentId = profile.settings.loraComponentIds[index];
+        Shelly2RpcRequest req = new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_LORA_SENDDATA)
+                .withId(componentId != null ? componentId.intValue() : 100).withData(data);
+        apiRequest(req);
+    }
 
     @Override
     public void setLightMode(String mode) throws ShellyApiException {
