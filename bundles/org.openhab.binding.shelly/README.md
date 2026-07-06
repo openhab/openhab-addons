@@ -527,6 +527,7 @@ Two LoRa add-on variants are supported:
 
 The binding detects the LoRa Add-On automatically: when the add-on is installed and enabled in the device configuration, the `lora` channel group is created on the next Thing initialization.
 No thing configuration is required.
+The add-on firmware version is shown in the Thing property `addonFirmware`; the device reports it asynchronously, so the property appears shortly after the Thing goes online.
 
 | Group   | Channel      | Type    | read-only | Description                                                                       |
 | ------- | ------------ | ------- | --------- | --------------------------------------------------------------------------------- |

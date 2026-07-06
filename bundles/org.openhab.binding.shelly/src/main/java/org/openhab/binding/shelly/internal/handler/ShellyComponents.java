@@ -87,10 +87,6 @@ public class ShellyComponents {
         if (!profile.gateway.isEmpty()) {
             thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_GATEWAY, getStringType(profile.gateway));
         }
-        if (!profile.addOnFw.isEmpty()) {
-            thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ADDONFW, getStringType(profile.addOnFw));
-        }
-
         if (getLong(status.uptime) > 10) {
             thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_UPTIME,
                     toQuantityType((double) getLong(status.uptime), DIGITS_NONE, Units.SECOND));
@@ -749,7 +745,13 @@ public class ShellyComponents {
                     getDecimal(status.txErrors));
             updated |= thingHandler.updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_AIRTIME,
                     toQuantityType(status.airtime, MetricPrefix.MILLI(Units.SECOND)));
-            profile.addOnFw = getString(status.fw);
+
+            // The add-on reports its firmware version asynchronously, usually not before the first status cycle
+            String addOnFw = getString(status.fw);
+            if (!addOnFw.isEmpty() && !addOnFw.equals(profile.addOnFw)) {
+                profile.addOnFw = addOnFw;
+                thingHandler.updateProperties(PROPERTY_ADDON_FIRMWARE, addOnFw);
+            }
         }
 
         return updated;
