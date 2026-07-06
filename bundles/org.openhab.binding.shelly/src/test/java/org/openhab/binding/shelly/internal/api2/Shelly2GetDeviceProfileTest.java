@@ -355,7 +355,6 @@ public class Shelly2GetDeviceProfileTest {
         assertThat(profile.initialized, is(true));
     }
 
-<<<<<<< HEAD
     @Test
     void initProfilePreservesEmetersWhenCountUnchanged() throws ShellyApiException {
         // Regression test for the race condition in ShellyBaseHandler.refreshStatus():
