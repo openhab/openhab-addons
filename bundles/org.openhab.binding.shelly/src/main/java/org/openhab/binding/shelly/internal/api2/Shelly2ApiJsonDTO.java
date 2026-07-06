@@ -1347,17 +1347,6 @@ public class Shelly2ApiJsonDTO {
         public String authType;
     }
 
-    public static class ShellyNotifyLoraEvent {
-        public @Nullable String component;
-        public @Nullable Integer id;
-        public @Nullable String event;
-        public @Nullable Double ts;
-        public @Nullable String data;
-        public @Nullable Integer rssi;
-        public @Nullable Integer snr;
-        public @Nullable Long tsu;
-    }
-
     public class Shelly2NotifyEvent {
         public @Nullable Integer id;
         public @Nullable Double ts;
