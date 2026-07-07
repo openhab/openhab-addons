@@ -45,6 +45,8 @@ The OpenTelemetry service can be configured via Main UI (_Settings_ → _Add-on 
 | `logsEnabled`           | **Export Logs**: Enable/disable exporting openHAB logs to OpenTelemetry.                                                                   | `true`                  |
 | `logsEndpoint`          | **Log Endpoint**: The endpoint path to send logs to (resolved against `otlpURL`).                                                          | `/v1/logs`              |
 
+The OpenTelemetry service supports the use of environment variables in the configuration parameters using the `${ENV:MY_ENV_VAR}` syntax.
+
 ### Configuration File Example
 
 To configure the service via file, create or modify `$OPENHAB_CONF/services/opentelemetry.cfg`:

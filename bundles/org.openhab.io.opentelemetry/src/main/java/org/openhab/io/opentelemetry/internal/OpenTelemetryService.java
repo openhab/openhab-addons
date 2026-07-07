@@ -21,6 +21,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.OpenHAB;
+import org.openhab.core.config.core.ConfigUtil;
 import org.openhab.core.config.core.Configuration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -79,7 +80,8 @@ public class OpenTelemetryService {
     }
 
     private synchronized void updateConfig(Map<String, Object> configMap) {
-        OpenTelemetryConfiguration config = new Configuration(configMap).as(OpenTelemetryConfiguration.class);
+        OpenTelemetryConfiguration config = ConfigUtil.resolveVariables(new Configuration(configMap))
+                .as(OpenTelemetryConfiguration.class);
         logger.debug("Updating OpenTelemetry configuration: {}", config);
 
         shutdownSdk();
