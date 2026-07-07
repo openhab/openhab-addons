@@ -11,3 +11,10 @@ https://www.eclipse.org/legal/epl-2.0/.
 == Source Code
 
 https://github.com/openhab/openhab-addons
+
+== Third-party Content
+
+OpenTelemetry Java SDK
+* License: Apache License 2.0
+* Project: https://opentelemetry.io/
+* Source:  https://github.com/open-telemetry/opentelemetry-java

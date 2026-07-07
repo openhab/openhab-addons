@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.io.opentelemetry;
+package org.openhab.io.opentelemetry.internal;
 
 import java.net.URI;
 
@@ -42,8 +42,9 @@ public class OpenTelemetryConfiguration {
 
     @Override
     public String toString() {
+        String headers = otlpHeaders;
         return "OpenTelemetryConfiguration{" + "otlpURL='" + otlpURL + '\'' + ", otlpHeaders="
-                + (otlpHeaders == null ? "null" : "*".repeat(otlpHeaders.length())) + ", logsEnabled=" + logsEnabled
+                + (headers == null ? "null" : "*".repeat(headers.length())) + ", logsEnabled=" + logsEnabled
                 + ", logsEndpoint='" + logsEndpoint + '\'' + '}';
     }
 }

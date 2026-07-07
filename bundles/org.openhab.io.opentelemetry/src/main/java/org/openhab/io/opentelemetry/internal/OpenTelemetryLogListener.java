@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.io.opentelemetry;
+package org.openhab.io.opentelemetry.internal;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
