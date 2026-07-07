@@ -12,22 +12,24 @@
  */
 package org.openhab.binding.ecovacs.internal.api.impl.dto.response.deviceapi.json;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
- * @author Danny Baumann - Initial contribution
+ * Represents the onLastTimeStats MQTT event from GOAT mowers, containing
+ * summary statistics about the last completed mowing session.
+ *
+ * @author Stefan Höhn - Initial contribution
  */
-public class StatsReport {
-    @SerializedName("area")
-    public int area;
-    @SerializedName("mowedArea")
-    public int mowedArea;
-    @SerializedName("time")
-    public int timeInSeconds;
-    @SerializedName("cid")
-    public String cid;
+@NonNullByDefault
+public class LastTimeStatsReport {
     @SerializedName("start")
-    public long startTimestamp;
-    @SerializedName("type")
-    public String type; // auto, ... ?
+    public String startTimestamp = "0";
+
+    @SerializedName("time")
+    public int durationSeconds;
+
+    @SerializedName("area")
+    public int areaSqCm;
 }

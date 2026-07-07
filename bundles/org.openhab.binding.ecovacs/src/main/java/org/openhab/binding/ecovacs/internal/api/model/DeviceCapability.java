@@ -57,6 +57,24 @@ public enum DeviceCapability {
     AIR_DRYING,
     @SerializedName("custom_water_amount")
     CUSTOM_WATER_AMOUNT,
+    @SerializedName("mowing")
+    MOWING,
+    @SerializedName("zone_mowing")
+    ZONE_MOWING,
+    @SerializedName("edge_mowing")
+    EDGE_MOWING,
+    @SerializedName("cutting_height")
+    CUTTING_HEIGHT,
+    @SerializedName("remote_cutting_height")
+    REMOTE_CUTTING_HEIGHT,
+    @SerializedName("rain_detection")
+    RAIN_DETECTION,
+    @SerializedName("safe_protect")
+    SAFE_PROTECT,
+    @SerializedName("child_lock")
+    CHILD_LOCK,
+    @SerializedName("moveup_warning")
+    MOVEUP_WARNING,
     // implicit capabilities added in code
     EDGE_CLEANING,
     SPOT_CLEANING,

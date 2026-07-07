@@ -42,6 +42,7 @@ public class EcovacsBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_API = new ThingTypeUID(BINDING_ID, "ecovacsapi");
     public static final ThingTypeUID THING_TYPE_VACUUM = new ThingTypeUID(BINDING_ID, "vacuum");
+    public static final ThingTypeUID THING_TYPE_MOWER = new ThingTypeUID(BINDING_ID, "mower");
 
     // List of all channel UIDs
     public static final String CHANNEL_ID_AUTO_EMPTY = "settings#auto-empty";
@@ -77,6 +78,23 @@ public class EcovacsBindingConstants {
     public static final String CHANNEL_ID_WATER_AMOUNT_PERCENT = "settings#water-amount-percent";
     public static final String CHANNEL_ID_WIFI_RSSI = "status#wifi-rssi";
 
+    // Mower-specific channel IDs
+    public static final String CHANNEL_ID_MOWER_STATE = "status#state";
+    public static final String CHANNEL_ID_CUTTING_HEIGHT = "settings#cutting-height";
+    public static final String CHANNEL_ID_MOWING_TIME = "status#current-mowing-time";
+    public static final String CHANNEL_ID_MOWED_AREA = "status#current-mowed-area";
+    public static final String CHANNEL_ID_BLADE_LIFETIME = "consumables#blade-lifetime";
+    public static final String CHANNEL_ID_SAFE_PROTECT = "settings#safe-protect";
+    public static final String CHANNEL_ID_CHILD_LOCK = "settings#child-lock";
+    public static final String CHANNEL_ID_RAIN_DELAY = "settings#rain-delay";
+    public static final String CHANNEL_ID_MOVEUP_WARNING = "settings#moveup-warning";
+    public static final String CHANNEL_ID_TOTAL_MOWING_TIME = "total-stats#total-mowing-time";
+    public static final String CHANNEL_ID_TOTAL_MOWED_AREA = "total-stats#total-mowed-area";
+    public static final String CHANNEL_ID_TOTAL_MOW_RUNS = "total-stats#total-mow-runs";
+    public static final String CHANNEL_ID_LAST_MOW_START = "last-mow#last-mow-start";
+    public static final String CHANNEL_ID_LAST_MOW_DURATION = "last-mow#last-mow-duration";
+    public static final String CHANNEL_ID_LAST_MOW_AREA = "last-mow#last-mow-area";
+
     public static final String CHANNEL_TYPE_ID_CLEAN_MODE = "current-cleaning-mode";
     public static final String CHANNEL_TYPE_ID_LAST_CLEAN_MODE = "last-clean-mode";
 
@@ -88,6 +106,11 @@ public class EcovacsBindingConstants {
     public static final String CMD_SPOT_AREA = "spotArea";
     public static final String CMD_CUSTOM_AREA = "customArea";
     public static final String CMD_SCENE_CLEAN = "sceneClean";
+
+    // Mower commands
+    public static final String CMD_MOW = "mow";
+    public static final String CMD_EDGE_CUT = "edgeCut";
+    public static final String CMD_DOCK = "dock";
 
     public static final StateOptionMapping<CleanMode> CLEAN_MODE_MAPPING = StateOptionMapping.of(
             new StateOptionEntry<>(CleanMode.AUTO, "auto"),

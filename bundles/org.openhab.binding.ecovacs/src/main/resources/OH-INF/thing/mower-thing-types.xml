@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="ecovacs"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="mower">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ecovacsapi"/>
+		</supported-bridge-type-refs>
+
+		<label>Ecovacs GOAT Mower</label>
+		<description>Represents an Ecovacs GOAT robotic lawn mower</description>
+		<category>LawnMower</category>
+		<semantic-equipment-tag>CleaningRobot</semantic-equipment-tag>
+
+		<channel-groups>
+			<channel-group id="actions" typeId="mower-actions"/>
+			<channel-group id="status" typeId="mower-status"/>
+			<channel-group id="last-mow" typeId="last-mow"/>
+			<channel-group id="total-stats" typeId="mower-total-stats"/>
+			<channel-group id="consumables" typeId="mower-consumables"/>
+			<channel-group id="settings" typeId="mower-settings"/>
+		</channel-groups>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
+		<config-description>
+			<parameter name="serialNumber" type="text" required="true">
+				<label>Device Serial Number</label>
+			</parameter>
+			<parameter name="refresh" type="integer" unit="min" min="1" required="false">
+				<label>Refresh Interval</label>
+				<advanced>true</advanced>
+				<description>Specifies the refresh interval in minutes.</description>
+				<unitLabel>Minutes</unitLabel>
+				<default>5</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Channel Group Types -->
+
+	<channel-group-type id="mower-actions">
+		<label>Actions</label>
+		<channels>
+			<channel id="command" typeId="mower-command"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="mower-status">
+		<label>Status</label>
+		<channels>
+			<channel id="state" typeId="mower-state"/>
+			<channel id="battery" typeId="system.battery-level"/>
+			<channel id="current-mowing-time" typeId="current-mowing-time"/>
+			<channel id="current-mowed-area" typeId="current-mowed-area"/>
+			<channel id="wifi-rssi" typeId="wifi-rssi"/>
+			<channel id="error-code" typeId="error-code"/>
+			<channel id="error-description" typeId="error-description"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="last-mow">
+		<label>Last Mow Run</label>
+		<channels>
+			<channel id="last-mow-start" typeId="last-mow-start"/>
+			<channel id="last-mow-duration" typeId="last-mow-duration"/>
+			<channel id="last-mow-area" typeId="last-mow-area"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="mower-total-stats">
+		<label>Device Lifetime Statistics</label>
+		<channels>
+			<channel id="total-mowing-time" typeId="total-mowing-time"/>
+			<channel id="total-mowed-area" typeId="total-mowed-area"/>
+			<channel id="total-mow-runs" typeId="total-mow-runs"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="mower-consumables">
+		<label>Consumables</label>
+		<channels>
+			<channel id="blade-lifetime" typeId="blade-lifetime"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="mower-settings">
+		<label>Settings</label>
+		<channels>
+			<channel id="cutting-height" typeId="cutting-height"/>
+			<channel id="voice-volume" typeId="voice-volume"/>
+			<channel id="true-detect-3d" typeId="true-detect-3d"/>
+			<channel id="safe-protect" typeId="safe-protect"/>
+			<channel id="child-lock" typeId="child-lock"/>
+			<channel id="rain-delay" typeId="rain-delay"/>
+			<channel id="moveup-warning" typeId="moveup-warning"/>
+		</channels>
+	</channel-group-type>
+
+	<!-- Channel Types -->
+
+	<channel-type id="mower-state">
+		<item-type>String</item-type>
+		<label>Mower State</label>
+		<description>Current operational state of the mower</description>
+		<state readOnly="true">
+			<options>
+				<option value="mowing">Mowing</option>
+				<option value="paused">Paused</option>
+				<option value="returning">Returning to dock</option>
+				<option value="charging">Charging</option>
+				<option value="idle">Idle</option>
+				<option value="docked">Docked</option>
+				<option value="error">Error</option>
+				<option value="edgeCutting">Edge cutting</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="mower-command">
+		<item-type>String</item-type>
+		<label>Command</label>
+		<description>Command to execute</description>
+		<state>
+			<options>
+				<option value="mow">Start mowing</option>
+				<option value="pause">Pause mowing</option>
+				<option value="resume">Resume mowing</option>
+				<option value="stop">Stop</option>
+				<option value="dock">Return to dock</option>
+				<option value="edgeCut">Start edge cutting</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="current-mowing-time">
+		<item-type>Number:Time</item-type>
+		<label>Current Mowing Time</label>
+		<description>Mowing time in current session</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state pattern="%d %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="current-mowed-area">
+		<item-type>Number:Area</item-type>
+		<label>Current Mowed Area</label>
+		<description>Mowed area in current session</description>
+		<state pattern="%d %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="total-mowing-time">
+		<item-type unitHint="h">Number:Time</item-type>
+		<label>Total Mowing Time</label>
+		<description>Total mowing time in device life time</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="total-mowed-area">
+		<item-type>Number:Area</item-type>
+		<label>Total Mowed Area</label>
+		<description>Total mowed area in device life time</description>
+		<state pattern="%d %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="total-mow-runs">
+		<item-type>Number</item-type>
+		<label>Total Mow Runs</label>
+		<description>Number of mowing runs in device life time</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="last-mow-start">
+		<item-type>DateTime</item-type>
+		<label>Last Mow Start</label>
+		<description>Start time of the last completed mowing run</description>
+		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="last-mow-duration">
+		<item-type unitHint="min">Number:Time</item-type>
+		<label>Last Mow Duration</label>
+		<description>Duration of the last completed mowing run</description>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="last-mow-area">
+		<item-type>Number:Area</item-type>
+		<label>Last Mowed Area</label>
+		<description>Area mowed in the last completed mowing run</description>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="blade-lifetime">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Blade Lifetime</label>
+		<description>Remaining life time of cutting blades in percent</description>
+		<state pattern="%d %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="cutting-height">
+		<item-type unitHint="mm">Number:Length</item-type>
+		<label>Cutting Height</label>
+		<description>Cutting height of the mower blades</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Level</tag>
+		</tags>
+		<state min="30" max="75" step="5" pattern="%d %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="safe-protect">
+		<item-type>Switch</item-type>
+		<label>SafeProtect</label>
+		<description>Stop mower when an obstacle or unsafe condition is detected</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="child-lock">
+		<item-type>Switch</item-type>
+		<label>Child Lock</label>
+		<description>Lock the mower to prevent unintended operation</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="rain-delay" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Rain Delay</label>
+		<description>Rain detected, mowing delayed</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="moveup-warning">
+		<item-type>Switch</item-type>
+		<label>Move-Up Warning</label>
+		<description>Trigger alarm when the mower is lifted off the ground</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
+	</channel-type>
+
+</thing:thing-descriptions>

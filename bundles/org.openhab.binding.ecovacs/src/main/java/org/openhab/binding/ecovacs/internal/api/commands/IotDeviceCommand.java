@@ -64,7 +64,7 @@ public abstract class IotDeviceCommand<RESPONSETYPE> {
 
     public final JsonElement getJsonPayload(ProtocolVersion version, Gson gson) {
         JsonObject result = new JsonObject();
-        result.add("header", gson.toJsonTree(new JsonPayloadHeader()));
+        result.add("header", gson.toJsonTree(new JsonPayloadHeader(getHeaderVersion())));
         @Nullable
         JsonElement args = getJsonPayloadArgs(version);
         if (args != null) {
@@ -73,6 +73,15 @@ public abstract class IotDeviceCommand<RESPONSETYPE> {
             result.add("body", body);
         }
         return result;
+    }
+
+    /**
+     * Returns the protocol header version to use for this command.
+     * Default is "0.0.50". GOAT mower commands override this to return "0.0.22"
+     * which is what the official app sends and the mower firmware requires.
+     */
+    protected String getHeaderVersion() {
+        return "0.0.50";
     }
 
     protected @Nullable JsonElement getJsonPayloadArgs(ProtocolVersion version) {
