@@ -87,7 +87,7 @@ public class OpenTelemetryService {
         shutdownSdk();
 
         if (config.otlpURL.isBlank()) {
-            logger.info("OpenTelemetry is disabled: No URL configured.");
+            logger.debug("OpenTelemetry is disabled: No URL configured.");
             return;
         }
 
@@ -138,7 +138,7 @@ public class OpenTelemetryService {
 
     private @Nullable SdkLoggerProviderBuilder createOtlpLoggerProvider(OpenTelemetryConfiguration config) {
         if (!config.logsEnabled) {
-            logger.info("OpenTelemetry logging is disabled.");
+            logger.debug("OpenTelemetry logging is disabled.");
             return null;
         } else if (config.logsEndpoint.isBlank()) {
             logger.warn("OpenTelemetry logging is enabled, but no endpoint is configured.");
