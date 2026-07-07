@@ -1,3 +1,121 @@
 # OpenTelemetry Service
 
-The OpenTelemetry service provides integration with the [OpenTelemetry](https://opentelemetry.io/) standard.
+The OpenTelemetry service integrates openHAB with the [OpenTelemetry](https://opentelemetry.io/) observability framework.
+It captures log messages generated within openHAB and exports them to an OpenTelemetry-compatible collector or backend using the OTLP/HTTP protocol.
+
+:::tip OpenTelemetry
+OpenTelemetry (also referred to as OTel) is a high-quality, industry-standard observability framework for cloud-native software.
+It provides a vendor-neutral set of APIs, SDKs, and tools to generate, collect, and export telemetry data (metrics, logs, and traces) to monitoring backends (such as Prometheus, Grafana Loki, etc.) for analyzing application performance and health.
+:::
+
+This add-on hooks into openHAB's internal logging framework.
+Every log entry emitted by openHAB is intercepted and pushed to the configured OpenTelemetry Collector.
+
+## Global Resource Attributes (Application & Environment)
+
+The service attaches resource attributes to identify the source of the logs:
+
+- `service.name`: `openHAB`
+- `service.namespace`: `org.openhab`
+- `service.version`: The running openHAB version.
+- `os.name`: The host Operating System name.
+- `os.version`: The host Operating System version.
+- `host.name`: The system hostname.
+
+## Exported Log Record Attributes
+
+Each log record is sent with detailed metadata:
+
+- `log.logger.name`: The class name or logging namespace that generated the log.
+- `thread.name`: The name of the thread executing the log.
+- `exception.type`: The Java exception class name (if an exception was thrown).
+- `exception.message`: The exception's message (if applicable).
+- `exception.stacktrace`: The complete Java stack trace (if applicable).
+
+## Configuration
+
+The OpenTelemetry service can be configured via Main UI (_Settings_ → _Add-on Settings_ → _OpenTelemetry Service_) or by using a configuration file (see [below](#configuration-file-example)).
+
+### Configuration Parameters
+
+| Configuration Parameter | Description                                                                                                                                | Default Value           |
+|:------------------------|:-------------------------------------------------------------------------------------------------------------------------------------------|:------------------------|
+| `otlpURL`               | **OpenTelemetry Collector URL**: The base URL of the OpenTelemetry Collector instance.                                                     | `http://localhost:4317` |
+| `otlpHeaders`           | **OTLP Headers**: Optional comma-separated headers for authentication or routing (e.g., `Authorization=Bearer token,X-Tenant-Id=openhab`). |                         |
+| `logsEnabled`           | **Export Logs**: Enable/disable exporting openHAB logs to OpenTelemetry.                                                                   | `true`                  |
+| `logsEndpoint`          | **Log Endpoint**: The endpoint path to send logs to (appended to `oltpURL`).                                                               | `/v1/logs`              |
+
+### Configuration File Example
+
+To configure the service via file, create or modify `$OPENHAB_CONF/services/opentelemetry.cfg`:
+
+```ini
+# The URL of the OpenTelemetry Collector instance
+oltpURL=http://localhost:4317
+
+# Optional headers for authentication/routing (e.g., header=value,header2=value2)
+# otlpHeaders=Authorization=Bearer mySecretToken
+
+# Enable exporting logs
+logsEnabled=true
+
+# The endpoint path to send logs to
+logsEndpoint=/v1/logs
+```
+
+## OTel Collector Configuration Example
+
+To receive and view these logs, you need a running collector, e.g., [OTel Collector](https://opentelemetry.io/docs/collector/).
+Below is a minimal Docker Compose setup to collect openHAB logs and print them to the console.
+
+Create an OTel Collector configuration file:
+
+```yaml
+receivers:
+  otlp:
+    protocols:
+      http:
+        endpoint: 0.0.0.0:4317
+
+processors:
+  batch:
+
+exporters:
+  debug:
+    verbosity: detailed
+
+service:
+  pipelines:
+    logs:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [debug]
+```
+
+Define the OTel Collector service using Docker Compose:
+
+```yaml
+version: '3.8'
+
+services:
+  otel-collector:
+    image: otel/opentelemetry-collector:latest
+    container_name: otel-collector
+    command: ["--config=/etc/otel-collector-config.yaml"]
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
+    ports:
+      - "4317:4317" # OTLP HTTP receiver
+```
+
+Start the containers:
+
+```bash
+docker compose up -d
+```
+
+Once openHAB is configured with `oltpURL=http://localhost:4317`, you will see openHAB logs appearing in the console of your OpenTelemetry Collector container:
+
+```bash
+docker compose logs -f
+```
