@@ -24,7 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class OpenTelemetryConfiguration {
-    public String otlpURL = "http://localhost:4317";
+    public String otlpURL = "http://localhost:4318";
     public @Nullable String otlpHeaders;
 
     public boolean logsEnabled = true;

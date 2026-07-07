@@ -12,8 +12,8 @@
 
 		<parameter name="otlpURL" type="text">
 			<label>OpenTelemetry Collector URL</label>
-			<description>The URL of the OpenTelemetry Collector instance. Defaults to http://localhost:4317.</description>
-			<default>http://localhost:4317</default>
+			<description>The URL of the OpenTelemetry Collector instance (using HTTP transport)</description>
+			<default>http://localhost:4318</default>
 			<context>network-address</context>
 		</parameter>
 		<parameter name="otlpHeaders" type="text">

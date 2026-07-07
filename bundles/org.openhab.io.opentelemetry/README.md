@@ -40,7 +40,7 @@ The OpenTelemetry service can be configured via Main UI (_Settings_ → _Add-on 
 
 | Configuration Parameter | Description                                                                                                                                | Default Value           |
 |:------------------------|:-------------------------------------------------------------------------------------------------------------------------------------------|:------------------------|
-| `otlpURL`               | **OpenTelemetry Collector URL**: The base URL of the OpenTelemetry Collector instance.                                                     | `http://localhost:4317` |
+| `otlpURL`               | **OpenTelemetry Collector URL**: The base URL of the OpenTelemetry Collector instance (using HTTP transport)                               | `http://localhost:4317` |
 | `otlpHeaders`           | **OTLP Headers**: Optional comma-separated headers for authentication or routing (e.g., `Authorization=Bearer token,X-Tenant-Id=openhab`). |                         |
 | `logsEnabled`           | **Export Logs**: Enable/disable exporting openHAB logs to OpenTelemetry.                                                                   | `true`                  |
 | `logsEndpoint`          | **Log Endpoint**: The endpoint path to send logs to (resolved against `otlpURL`).                                                          | `/v1/logs`              |
