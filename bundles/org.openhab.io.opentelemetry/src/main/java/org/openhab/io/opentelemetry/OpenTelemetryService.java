@@ -147,7 +147,7 @@ public class OpenTelemetryService {
         try {
             logExporterBuilder.setEndpoint(config.getLogsURL());
         } catch (IllegalArgumentException e) {
-            logger.warn("Invalid OTLP endpoint {}: {}", config.getLogsURL(), e.getMessage());
+            logger.warn("Invalid OTLP log endpoint: {}", e.getMessage());
             return null;
         }
 
@@ -164,22 +164,6 @@ public class OpenTelemetryService {
 
     private void initializeSdk(OpenTelemetryConfiguration config) {
         Resource resource = getOtlpResource();
-
-        OtlpHttpLogRecordExporterBuilder logExporterBuilder = OtlpHttpLogRecordExporter.builder();
-
-        try {
-            logExporterBuilder.setEndpoint(config.getLogsURL());
-        } catch (IllegalArgumentException e) {
-            logger.warn("Invalid OTLP endpoint {}: {}", config.getLogsURL(), e.getMessage());
-            return;
-        }
-
-        Map<String, String> headers = parseOtlpHeaders(config.otlpHeaders);
-        if (!headers.isEmpty()) {
-            for (Map.Entry<String, String> header : headers.entrySet()) {
-                logExporterBuilder.addHeader(header.getKey(), header.getValue());
-            }
-        }
 
         SdkLoggerProviderBuilder loggerProviderBuilder = createOtlpLoggerProvider(config);
         SdkLoggerProvider loggerProvider = null;

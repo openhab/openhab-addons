@@ -43,7 +43,7 @@ The OpenTelemetry service can be configured via Main UI (_Settings_ → _Add-on 
 | `otlpURL`               | **OpenTelemetry Collector URL**: The base URL of the OpenTelemetry Collector instance.                                                     | `http://localhost:4317` |
 | `otlpHeaders`           | **OTLP Headers**: Optional comma-separated headers for authentication or routing (e.g., `Authorization=Bearer token,X-Tenant-Id=openhab`). |                         |
 | `logsEnabled`           | **Export Logs**: Enable/disable exporting openHAB logs to OpenTelemetry.                                                                   | `true`                  |
-| `logsEndpoint`          | **Log Endpoint**: The endpoint path to send logs to (appended to `oltpURL`).                                                               | `/v1/logs`              |
+| `logsEndpoint`          | **Log Endpoint**: The endpoint path to send logs to (resolved against `otlpURL`).                                                          | `/v1/logs`              |
 
 ### Configuration File Example
 
@@ -51,7 +51,7 @@ To configure the service via file, create or modify `$OPENHAB_CONF/services/open
 
 ```ini
 # The URL of the OpenTelemetry Collector instance
-oltpURL=http://localhost:4317
+otlpURL=http://localhost:4317
 
 # Optional headers for authentication/routing (e.g., header=value,header2=value2)
 # otlpHeaders=Authorization=Bearer mySecretToken
@@ -114,7 +114,7 @@ Start the containers:
 docker compose up -d
 ```
 
-Once openHAB is configured with `oltpURL=http://localhost:4317`, you will see openHAB logs appearing in the console of your OpenTelemetry Collector container:
+Once openHAB is configured with `otlpURL=http://localhost:4317`, you will see openHAB logs appearing in the console of your OpenTelemetry Collector container:
 
 ```bash
 docker compose logs -f

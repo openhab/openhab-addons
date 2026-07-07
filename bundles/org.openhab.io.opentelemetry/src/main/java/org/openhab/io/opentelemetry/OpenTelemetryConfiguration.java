@@ -12,6 +12,8 @@
  */
 package org.openhab.io.opentelemetry;
 
+import java.net.URI;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -28,13 +30,20 @@ public class OpenTelemetryConfiguration {
     public boolean logsEnabled = true;
     public String logsEndpoint = "/v1/logs";
 
-    public String getLogsURL() {
-        return otlpURL + logsEndpoint;
+    /**
+     * Get the resolved URL for the OTLP log endpoint.
+     * 
+     * @return the resolved URL for the OTLP log endpoint.
+     * @throws IllegalArgumentException if the URL is invalid
+     */
+    public String getLogsURL() throws IllegalArgumentException {
+        return URI.create(otlpURL).resolve(logsEndpoint).toString();
     }
 
     @Override
     public String toString() {
-        return "OpenTelemetryConfiguration{" + "otlpURL='" + otlpURL + '\'' + ", otlpHeaders='" + otlpHeaders + '\''
-                + ", logsEnabled=" + logsEnabled + ", logsEndpoint='" + logsEndpoint + '\'' + '}';
+        return "OpenTelemetryConfiguration{" + "otlpURL='" + otlpURL + '\'' + ", otlpHeaders="
+                + (otlpHeaders == null ? "null" : "*".repeat(otlpHeaders.length())) + ", logsEnabled=" + logsEnabled
+                + ", logsEndpoint='" + logsEndpoint + '\'' + '}';
     }
 }
