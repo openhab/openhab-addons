@@ -31,6 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -127,13 +128,16 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private static final Duration DYNAMICS_ACTIVE_WINDOW = Duration.ofSeconds(10);
 
     /*
-     * Set of Model Ids having an issue where they do not correctly handle a PUT command for the 'on' state.
-     * NOTE: always use LOWER CASE case to simplify the matching process.
+     * Pre-compiled pattern matcher based on the following set of Model Id regular expressions for devices having an
+     * issue where they do not correctly handle a PUT command for the 'on' state.
      */
     private static final Set<String> WORK_AROUND_MODEL_IDS = Set.of( //
-            "LK Dimmer".toLowerCase(), // LK Wiser Dimmer -- see https://techblog.vindvejr.dk/?p=455
-            "Tradfri".toLowerCase() // IKEA Tradfri bulbs
+            "LK Dimmer", // LK Wiser Dimmer -- see https://techblog.vindvejr.dk/?p=455
+            "^TRADFRI.*1055l$" // IKEA Tradfri 1055l bulb
     );
+    private static final Pattern WORK_AROUND_MODEL_ID_PATTERN = Pattern.compile(
+            WORK_AROUND_MODEL_IDS.stream().map(Pattern::quote).collect(Collectors.joining("|")),
+            Pattern.CASE_INSENSITIVE);
 
     private final Logger logger = LoggerFactory.getLogger(Clip2ThingHandler.class);
 
@@ -1432,8 +1436,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 properties.put(PROPERTY_PRODUCT_CERTIFIED, productData.getCertified().toString());
 
                 // Check device for needed work-arounds.
-                if (modelId != null
-                        && WORK_AROUND_MODEL_IDS.stream().anyMatch(id -> modelId.toLowerCase().contains(id))) {
+                if (modelId != null && WORK_AROUND_MODEL_ID_PATTERN.matcher(modelId).find()) {
                     applyOffTransitionWorkaround = true;
                     logger.debug("{} -> enabling work-around for turning off {}", resourceId, modelId);
                 }
@@ -1811,10 +1814,11 @@ public class Clip2ThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Checks the given resource to see if it or any of its children require the off-transition work-around and,
-     * if so, sets the `applyOffTransitionWorkaround` flag to true. Recursively checks all child resources of type
-     * room or zone. If a child resource is of type device, its productData is inspected to see if its modelId
-     * matches any of the known modelIds that require the workaround. Returns early if a match is found.
+     * Checks the given resource to see if any of its children or grand-children require the off-transition work-
+     * around and, if so, sets the `applyOffTransitionWorkaround` flag to true. Recursively checks all child
+     * resources of type room or zone. If a child resource is of type device, its productData is inspected to see
+     * if its modelId matches any of the known modelIds that require the workaround. Returns early if a match is
+     * found.
      * <ul>
      * <li>For any device children => inspects their productData.</li>
      * <li>For any room or zone children => calls itself recursively on their children.</li>
@@ -1832,11 +1836,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                         ProductData productData = optChild.get().getProductData();
                         if (productData != null) {
                             String modelId = productData.getModelId();
-                            if (modelId == null) {
-                                continue;
-                            }
-                            String modelIdLowerCase = modelId.toLowerCase();
-                            if (WORK_AROUND_MODEL_IDS.stream().anyMatch(modelIdLowerCase::contains)) {
+                            if (modelId != null && WORK_AROUND_MODEL_ID_PATTERN.matcher(modelId).find()) {
                                 applyOffTransitionWorkaround = true;
                                 logger.debug("{} -> enabling work-around for turning off {}", resourceId, modelId);
                                 return; // no need to check further once we find a matching device
