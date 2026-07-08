@@ -14,6 +14,8 @@ package org.openhab.binding.chatgpt.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import java.io.Serial;
+
 /**
  * The {@link ChatGPTApiException} is thrown when an error occurs during ChatGPT API request.
  *
@@ -21,6 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class ChatGPTApiException extends Exception {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public ChatGPTApiException(String message) {
