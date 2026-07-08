@@ -73,5 +73,5 @@ logsEndpoint=/v1/logs
 
 ## Limitations
 
-Please note that the OpenTelemetry service is not able to capture all logs during openHAB startup and shutdown, 
+Please note that the OpenTelemetry service is not able to capture all logs during openHAB startup and shutdown,
 as the OpenTelemetry service starts and stops after or before the openHAB runtime.

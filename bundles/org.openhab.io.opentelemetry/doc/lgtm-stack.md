@@ -19,4 +19,5 @@ Clicking on a log message will open a pane that provides more details about the 
 
 ![Event Logs](grafana-dashboard-events.png)
 
+<!-- markdownlint-disable-next-line descriptive-link-text -->
 You can download the dashboard JSON file [here](grafana-dashboard.json).
