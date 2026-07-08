@@ -720,7 +720,7 @@ class VehicleHandlerTest {
     /**
      * ADR-001: MB-BEV-CLA reports maxSoc/maxSocLowerLimit/maxSocUpperLimit as flat attributes with no
      * chargePrograms list at all. charge#max-soc must still be populated on update, and commanding it must
-     * send BatteryMaxSocConfigure instead of ChargeProgramConfigure.
+     * send ChargingConfigure instead of ChargeProgramConfigure.
      */
     public void testMaxSocFallbackWithoutChargePrograms() {
         Thing thingMock = mock(Thing.class);
@@ -747,6 +747,6 @@ class VehicleHandlerTest {
         ChannelUID cuid = new ChannelUID(thingMock.getUID(), Constants.GROUP_CHARGE, "max-soc");
         vHandler.handleCommand(cuid, QuantityType.valueOf("70 %"));
         assertEquals(70, ahm.getCommand().getInt("max_soc"),
-                "BatteryMaxSocConfigure command sent instead of ChargeProgramConfigure");
+                "ChargingConfigure command sent instead of ChargeProgramConfigure");
     }
 }

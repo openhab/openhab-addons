@@ -75,8 +75,8 @@ import com.daimler.mbcarkit.proto.Acp.VehicleAPI.CommandState;
 import com.daimler.mbcarkit.proto.Client.ClientMessage;
 import com.daimler.mbcarkit.proto.VehicleCommands.AuxheatStart;
 import com.daimler.mbcarkit.proto.VehicleCommands.AuxheatStop;
-import com.daimler.mbcarkit.proto.VehicleCommands.BatteryMaxSocConfigure;
 import com.daimler.mbcarkit.proto.VehicleCommands.ChargeProgramConfigure;
+import com.daimler.mbcarkit.proto.VehicleCommands.ChargingConfigure;
 import com.daimler.mbcarkit.proto.VehicleCommands.CommandRequest;
 import com.daimler.mbcarkit.proto.VehicleCommands.DoorsLock;
 import com.daimler.mbcarkit.proto.VehicleCommands.DoorsUnlock;
@@ -133,7 +133,7 @@ public class VehicleHandler extends BaseThingHandler {
     private boolean chargingState = false;
     private int selectedChargeProgram = -1;
     // ADR-001: true once a chargePrograms list was received; false means max-soc must be read/written
-    // via the flat maxSoc / BatteryMaxSocConfigure fallback (e.g. MB-BEV-CLA)
+    // via the flat maxSoc / ChargingConfigure fallback (e.g. MB-BEV-CLA)
     private boolean hasChargePrograms = false;
     private int activeTemperaturePoint = -1;
     private Map<Integer, QuantityType<Temperature>> temperaturePointsStorage = new HashMap<>();
@@ -432,13 +432,13 @@ public class VehicleHandler extends BaseThingHandler {
                 if (OH_CHANNEL_MAX_SOC.equals(channel) && !hasChargePrograms) {
                     /**
                      * ADR-001: vehicle doesn't report a chargePrograms list (e.g. MB-BEV-CLA) - set max-soc
-                     * directly via BatteryMaxSocConfigure, which needs no charge program selection, instead
-                     * of ChargeProgramConfigure.
+                     * directly via ChargingConfigure, which needs no charge program selection, instead of
+                     * ChargeProgramConfigure.
                      */
                     int flatMaxSocToSelect = ((QuantityType<?>) command).intValue();
-                    BatteryMaxSocConfigure bmsc = BatteryMaxSocConfigure.newBuilder().setMaxSoc(flatMaxSocToSelect)
-                            .build();
-                    CommandRequest cr = crBuilder.setBatteryMaxSoc(bmsc).build();
+                    Int32Value maxSocValue = Int32Value.newBuilder().setValue(flatMaxSocToSelect).build();
+                    ChargingConfigure cc = ChargingConfigure.newBuilder().setMaxSoc(maxSocValue).build();
+                    CommandRequest cr = crBuilder.setChargingConfigure(cc).build();
                     localAccountHandler.sendCommand(createCM(cr));
                     break;
                 }
