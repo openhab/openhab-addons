@@ -128,7 +128,7 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
 
     @Override
     public String interpret(Locale locale, String text) throws InterpretationException {
-        ChatGPTHandler handler = null;
+        ChatGPTHandler handler = this.handler;
         if (handler == null) {
             logger.warn("Cannot interpret: ChatGPTHandler is not initialized");
             throw new InterpretationException(
@@ -160,7 +160,7 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
 
     @Override
     public String interpret(Locale locale, InterpreterContext interpreterContext) throws InterpretationException {
-        ChatGPTHandler chatGPTHandler = null;
+        ChatGPTHandler chatGPTHandler = this.handler;
         if (chatGPTHandler == null) {
             logger.warn("Cannot interpret: ChatGPTHandler is not initialized");
             throw new InterpretationException(
