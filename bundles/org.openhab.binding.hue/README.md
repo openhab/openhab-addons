@@ -46,8 +46,8 @@ Once the binding is authorized, it automatically reads all devices (and groups) 
 
 ## Configuration
 
-### [Configuration API v1](doc/readme_v1.md#philips-hue-binding-api-v1)
-### [Configuration API v2](doc/readme_v2.md#philips-hue-binding-api-v2)
+### [API v1 Configuration](doc/readme_v1.md#philips-hue-binding-api-v1)
+### [API v2 Configuration](doc/readme_v2.md#philips-hue-binding-api-v2)
 
 ## Migration from API v1 to API v2
 
