@@ -1,5 +1,6 @@
 ---
 children:
+  - ["doc/lgtm-stack", "LGTM Stack Example"]
   - ["doc/otel-collector", "OpenTelemetry Collector Example"]
 ---
 
