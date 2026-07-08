@@ -27,9 +27,9 @@ The service attaches resource attributes to identify the source of the logs:
 - `os.version`: The host Operating System version.
 - `host.name`: The system hostname.
 
-## Exported Log Record Attributes
+## Exported Log Attributes
 
-Each log record is sent with detailed metadata:
+Each log entry is sent with detailed metadata:
 
 - `log.logger.name`: The class name or logging namespace that generated the log.
 - `thread.name`: The name of the thread executing the log.
@@ -69,3 +69,8 @@ logsEnabled=true
 # The endpoint path to send logs to
 logsEndpoint=/v1/logs
 ```
+
+## Limitations
+
+Please note that the OpenTelemetry service is not able to capture all logs during openHAB startup and shutdown, 
+as the OpenTelemetry service starts and stops after or before the openHAB runtime.
