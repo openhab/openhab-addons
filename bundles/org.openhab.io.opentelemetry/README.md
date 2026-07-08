@@ -1,3 +1,8 @@
+---
+children:
+  - ["doc/otel-collector", "OpenTelemetry Collector Example"]
+---
+
 # OpenTelemetry Service
 
 The OpenTelemetry service integrates openHAB with the [OpenTelemetry](https://opentelemetry.io/) observability framework.
@@ -63,61 +68,4 @@ logsEnabled=true
 
 # The endpoint path to send logs to
 logsEndpoint=/v1/logs
-```
-
-## OTel Collector Configuration Example
-
-To receive and view these logs, you need a running collector, e.g., [OTel Collector](https://opentelemetry.io/docs/collector/).
-Below is a minimal Docker Compose setup to collect openHAB logs and print them to the console.
-
-Create an OTel Collector configuration file:
-
-```yaml
-receivers:
-  otlp:
-    protocols:
-      http:
-        endpoint: 0.0.0.0:4317
-
-processors:
-  batch:
-
-exporters:
-  debug:
-    verbosity: detailed
-
-service:
-  pipelines:
-    logs:
-      receivers: [otlp]
-      processors: [batch]
-      exporters: [debug]
-```
-
-Define the OTel Collector service using Docker Compose:
-
-```yaml
-version: '3.8'
-
-services:
-  otel-collector:
-    image: otel/opentelemetry-collector:latest
-    container_name: otel-collector
-    command: ["--config=/etc/otel-collector-config.yaml"]
-    volumes:
-      - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
-    ports:
-      - "4317:4317" # OTLP HTTP receiver
-```
-
-Start the containers:
-
-```bash
-docker compose up -d
-```
-
-Once openHAB is configured with `otlpURL=http://localhost:4317`, you will see openHAB logs appearing in the console of your OpenTelemetry Collector container:
-
-```bash
-docker compose logs -f
 ```
