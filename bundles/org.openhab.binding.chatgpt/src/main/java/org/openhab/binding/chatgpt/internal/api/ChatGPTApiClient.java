@@ -290,15 +290,43 @@ public class ChatGPTApiClient {
                 .header(HttpHeader.AUTHORIZATION, "Bearer " + apiKey)
                 .content(new StringContentProvider(queryJson, StandardCharsets.UTF_8));
 
-        logger.trace("Query '{}'", queryJson);
+        if (logger.isDebugEnabled()) {
+            try {
+                String prettyRequest = objectMapper.writerWithDefaultPrettyPrinter()
+                        .writeValueAsString(objectMapper.readTree(queryJson));
+                logger.debug("Request to {} (POST):\n{}", baseUrl + PATH_CHAT_COMPLETIONS, prettyRequest);
+            } catch (IOException e) {
+                logger.debug("Request to {} (POST): {}", baseUrl + PATH_CHAT_COMPLETIONS, queryJson);
+            }
+        }
         try {
             ContentResponse response = request.send();
             if (response.getStatus() == HttpStatus.OK_200) {
                 String body = response.getContentAsString();
+                if (logger.isDebugEnabled()) {
+                    try {
+                        String prettyResponse = objectMapper.writerWithDefaultPrettyPrinter()
+                                .writeValueAsString(objectMapper.readTree(body));
+                        logger.debug("Response from {} (POST):\n{}", baseUrl + PATH_CHAT_COMPLETIONS, prettyResponse);
+                    } catch (IOException e) {
+                        logger.debug("Response from {} (POST):\n{}", baseUrl + PATH_CHAT_COMPLETIONS, body);
+                    }
+                }
                 return objectMapper.readValue(body, ChatResponse.class);
             } else {
-                throw new ChatGPTApiException("ChatGPT API request failed with HTTP status " + response.getStatus()
-                        + " " + response.getReason() + ": " + response.getContentAsString());
+                String errorBody = response.getContentAsString();
+                if (logger.isDebugEnabled()) {
+                    try {
+                        String prettyError = objectMapper.writerWithDefaultPrettyPrinter()
+                                .writeValueAsString(objectMapper.readTree(errorBody));
+                        logger.debug("Error response from {} (POST):\n{}", baseUrl + PATH_CHAT_COMPLETIONS,
+                                prettyError);
+                    } catch (IOException e) {
+                        logger.debug("Error response from {} (POST):\n{}", baseUrl + PATH_CHAT_COMPLETIONS, errorBody);
+                    }
+                }
+                throw new ChatGPTApiException(
+                        "ChatGPT API request failed with HTTP " + response.getStatus() + " " + response.getReason());
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -319,10 +347,15 @@ public class ChatGPTApiClient {
         Request request = httpClient.newRequest(baseUrl + PATH_MODELS)
                 .timeout(timeoutSeconds != null ? timeoutSeconds : 10, TimeUnit.SECONDS).method(HttpMethod.GET)
                 .header(HttpHeader.AUTHORIZATION, "Bearer " + apiKey);
+        logger.debug("Request to {} (GET)", baseUrl + PATH_MODELS);
         try {
             ContentResponse response = request.send();
             if (response.getStatus() == HttpStatus.OK_200) {
-                JsonNode modelsNode = objectMapper.readTree(response.getContentAsString());
+                String body = response.getContentAsString();
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Response from {} (GET):\n{}", baseUrl + PATH_MODELS, body);
+                }
+                JsonNode modelsNode = objectMapper.readTree(body);
                 JsonNode data = modelsNode.get("data");
                 List<String> modelList = new ArrayList<>();
                 if (data != null) {
@@ -336,7 +369,7 @@ public class ChatGPTApiClient {
                 return modelList;
             } else {
                 throw new ChatGPTApiException(
-                        "Fetching models failed with HTTP status " + response.getStatus() + " " + response.getReason());
+                        "Fetching models failed with HTTP " + response.getStatus() + " " + response.getReason());
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -346,13 +379,6 @@ public class ChatGPTApiClient {
         }
     }
 
-    private static class PendingToolCall {
-        final String id;
-        final String name;
-
-        PendingToolCall(String id, String name) {
-            this.id = id;
-            this.name = name;
-        }
+    private record PendingToolCall(String id, String name) {
     }
 }
