@@ -36,6 +36,12 @@ import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.openhab.binding.chatgpt.internal.ChatGPTBindingConstants.DEFAULT_MAX_TOKENS;
+import static org.openhab.binding.chatgpt.internal.ChatGPTBindingConstants.DEFAULT_MODEL;
+import static org.openhab.binding.chatgpt.internal.ChatGPTBindingConstants.DEFAULT_SYSTEM_MESSAGE;
+import static org.openhab.binding.chatgpt.internal.ChatGPTBindingConstants.DEFAULT_TEMPERATURE;
+import static org.openhab.binding.chatgpt.internal.ChatGPTBindingConstants.DEFAULT_TOP_P;
+
 /**
  * The {@link ChatGPTHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -45,9 +51,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ChatGPTHandler extends BaseThingHandler {
-
-    static final int DEFAULT_REQUEST_TIMEOUT_S = 10;
-
     private final Logger logger = LoggerFactory.getLogger(ChatGPTHandler.class);
 
     private final HttpClient httpClient;
@@ -76,16 +79,48 @@ public class ChatGPTHandler extends BaseThingHandler {
                 return;
             }
 
-            ChatGPTChannelConfiguration channelConfig = channel.getConfiguration()
-                    .as(ChatGPTChannelConfiguration.class);
             ChatGPTApiClient client = apiClient;
 
             if (client != null) {
                 final var timeout = resolveTimeout(channelUID);
+                String model = (config != null && !config.model.isBlank()) ? config.model : DEFAULT_MODEL;
+                double temp = config != null ? config.temperature : DEFAULT_TEMPERATURE;
+                double topP = config != null ? config.topP : DEFAULT_TOP_P;
+                int maxTokens = config != null ? config.maxTokens : DEFAULT_MAX_TOKENS;
+                String systemMessage = DEFAULT_SYSTEM_MESSAGE;
+
+                ChatGPTChannelConfiguration channelConfig = channel.getConfiguration()
+                        .as(ChatGPTChannelConfiguration.class);
+
+                String channelModel = channelConfig.model;
+                if (channelModel != null && !channelModel.isBlank()) {
+                    model = channelModel;
+                }
+
+                Double channelTemp = channelConfig.temperature;
+                if (channelTemp != null) {
+                    temp = channelTemp;
+                }
+
+                Double channelTopP = channelConfig.topP;
+                if (channelTopP != null) {
+                    topP = channelTopP;
+                }
+
+                Integer channelMaxTokens = channelConfig.maxTokens;
+                if (channelMaxTokens != null) {
+                    maxTokens = channelMaxTokens;
+                }
+
+                String channelSystemMessage = channelConfig.systemMessage;
+                if (channelSystemMessage != null && !channelSystemMessage.isBlank()) {
+                    systemMessage = channelSystemMessage;
+                }
+
                 try {
-                    ChatResponse response = client.sendPrompt(channelConfig.model, lastPrompt,
-                            channelConfig.systemMessage, channelConfig.temperature, channelConfig.topP,
-                            channelConfig.maxTokens, timeout);
+                    ChatResponse response = client.sendPrompt(model, lastPrompt,
+                            systemMessage, temp, topP,
+                            maxTokens, timeout);
                     processChatResponse(channelUID, response);
                     updateStatus(ThingStatus.ONLINE);
                 } catch (ChatGPTApiException e) {

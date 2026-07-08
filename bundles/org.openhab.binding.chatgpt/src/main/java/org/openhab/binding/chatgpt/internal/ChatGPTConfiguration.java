@@ -14,6 +14,14 @@ package org.openhab.binding.chatgpt.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import static org.openhab.binding.chatgpt.internal.ChatGPTBindingConstants.DEFAULT_BASE_URL;
+import static org.openhab.binding.chatgpt.internal.ChatGPTBindingConstants.DEFAULT_MAX_TOKENS;
+import static org.openhab.binding.chatgpt.internal.ChatGPTBindingConstants.DEFAULT_MAX_TOOL_CALLS;
+import static org.openhab.binding.chatgpt.internal.ChatGPTBindingConstants.DEFAULT_MODEL;
+import static org.openhab.binding.chatgpt.internal.ChatGPTBindingConstants.DEFAULT_REQUEST_TIMEOUT;
+import static org.openhab.binding.chatgpt.internal.ChatGPTBindingConstants.DEFAULT_TEMPERATURE;
+import static org.openhab.binding.chatgpt.internal.ChatGPTBindingConstants.DEFAULT_TOP_P;
+
 /**
  * The {@link ChatGPTConfiguration} class contains fields mapping thing configuration parameters.
  *
@@ -21,14 +29,15 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class ChatGPTConfiguration {
-
+    // API
+    public String baseUrl = DEFAULT_BASE_URL;
     public String apiKey = "";
-    public String baseUrl = "https://api.openai.com/v1";
-    public String model = "gpt-4o-mini";
-    public Double temperature = 1.0;
-    public Integer maxTokens = 1000;
-    public Double topP = 1.0;
-    public String systemMessage = "";
-    public Integer requestTimeout = ChatGPTHandler.DEFAULT_REQUEST_TIMEOUT_S;
-    public Integer maxToolCalls = 10;
+    // Connection
+    public Integer requestTimeout = DEFAULT_REQUEST_TIMEOUT;
+    // HLI
+    public String model = DEFAULT_MODEL;
+    public Double temperature = DEFAULT_TEMPERATURE;
+    public Double topP = DEFAULT_TOP_P;
+    public Integer maxTokens = DEFAULT_MAX_TOKENS;
+    public Integer maxToolCalls = DEFAULT_MAX_TOOL_CALLS;
 }
