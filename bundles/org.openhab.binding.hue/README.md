@@ -3,6 +3,7 @@ children:
   - ["doc/readme_v1", "Configuration API v1"]
   - ["doc/readme_v2", "Configuration API v2"]
 ---
+
 # Philips Hue Binding
 
 This binding integrates the [Philips Hue Lighting system](https://www.meethue.com).
