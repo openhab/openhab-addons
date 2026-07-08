@@ -32,23 +32,13 @@
 				<label>API Key</label>
 				<description>API key to access the account</description>
 			</parameter>
-			<parameter name="apiUrl" type="text" required="false" groupName="authentication">
-				<label>API URL</label>
-				<description>The server API where to reach the AI service.</description>
-				<default>https://api.openai.com/v1/chat/completions</default>
+			<parameter name="baseUrl" type="text" required="false" groupName="authentication">
+				<label>API Base URL</label>
+				<description>The base URL of the OpenAI API service.</description>
+				<default>https://api.openai.com/v1</default>
 				<advanced>true</advanced>
 				<options>
-					<option value="https://api.openai.com/v1/chat/completions">https://api.openai.com/v1/chat/completions</option>
-				</options>
-				<limitToOptions>false</limitToOptions>
-			</parameter>
-			<parameter name="modelUrl" type="text" required="false" groupName="authentication">
-				<label>Model URL</label>
-				<description>The model url where to retrieve the available models from.</description>
-				<default>https://api.openai.com/v1/models</default>
-				<advanced>true</advanced>
-				<options>
-					<option value="https://api.openai.com/v1/models">https://api.openai.com/v1/models</option>
+					<option value="https://api.openai.com/v1">https://api.openai.com/v1</option>
 				</options>
 				<limitToOptions>false</limitToOptions>
 			</parameter>
@@ -112,23 +102,10 @@
 				<default>1000</default>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="keepContext" type="integer" groupName="hli">
-				<label>Keep Context</label>
-				<description>How long to store the context in minutes.</description>
-				<default>2</default>
-				<advanced>true</advanced>
-			</parameter>
-			<parameter name="contextThreshold" type="integer" groupName="hli">
-				<label>Context Threshold</label>
-				<description>Limit total tokens included in context.</description>
-				<default>10000</default>
-				<advanced>true</advanced>
-			</parameter>
-			<parameter name="useSemanticModel" type="boolean" groupName="hli">
-				<label>Use Semantic Model</label>
-				<description>Use a semantic model to determine the location of an item. Otherwise, item names must begin with a
-					"location_" e.g. "Kitchen_Light"</description>
-				<default>true</default>
+			<parameter name="maxToolCalls" type="integer" min="1" groupName="hli">
+				<label>Maximum Number of Tool Calls</label>
+				<description>The maximum number of sequential tool calls to execute in a single HLI request.</description>
+				<default>10</default>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>

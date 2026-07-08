@@ -12,24 +12,16 @@
  */
 package org.openhab.binding.chatgpt.internal;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
-import org.eclipse.jetty.http.HttpMethod;
-import org.eclipse.jetty.http.HttpStatus;
-import org.openhab.binding.chatgpt.internal.dto.ChatMessage;
-import org.openhab.binding.chatgpt.internal.dto.ChatRequestBody;
-import org.openhab.binding.chatgpt.internal.dto.ChatResponse;
+import org.openhab.binding.chatgpt.internal.api.ChatGPTApiClient;
+import org.openhab.binding.chatgpt.internal.api.ChatGPTApiException;
+import org.openhab.binding.chatgpt.internal.api.dto.ChatMessage;
+import org.openhab.binding.chatgpt.internal.api.dto.ChatResponse;
 import org.openhab.binding.chatgpt.internal.hli.ChatGPTHLIService;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.StringType;
@@ -43,12 +35,6 @@ import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
 
 /**
  * The {@link ChatGPTHandler} is responsible for handling commands, which are
@@ -64,11 +50,9 @@ public class ChatGPTHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ChatGPTHandler.class);
 
-    private HttpClient httpClient;
+    private final HttpClient httpClient;
     private @Nullable ChatGPTConfiguration config;
-    private String apiKey = "";
-    private String apiUrl = "";
-    private String modelUrl = "";
+    private @Nullable ChatGPTApiClient apiClient;
     private String lastPrompt = "";
     private List<String> models = List.of();
 
@@ -77,123 +61,65 @@ public class ChatGPTHandler extends BaseThingHandler {
         this.httpClient = httpClientFactory.getCommonHttpClient();
     }
 
+    public @Nullable ChatGPTApiClient getApiClient() {
+        return apiClient;
+    }
+
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof StringType stringCommand) {
             lastPrompt = stringCommand.toFullString();
 
-            String queryJson = prepareRequestBody(channelUID);
-
-            if (queryJson != null) {
-                final var timeout = resolveTimeout(channelUID);
-                String response = sendPrompt(queryJson, timeout);
-                processChatResponse(channelUID, response);
-            }
-        }
-    }
-
-    private void processChatResponse(ChannelUID channelUID, @Nullable String response) {
-        if (response != null) {
-            ObjectMapper objectMapper = new ObjectMapper();
-            ChatResponse chatResponse;
-            try {
-                chatResponse = objectMapper.readValue(response, ChatResponse.class);
-            } catch (JsonProcessingException e) {
-                logger.error("Failed to parse ChatGPT response: {}", e.getMessage(), e);
+            Channel channel = getThing().getChannel(channelUID);
+            if (channel == null) {
+                logger.error("Channel with UID '{}' cannot be found on Thing '{}'.", channelUID, getThing().getUID());
                 return;
             }
 
-            if (chatResponse != null) {
-                String finishReason = chatResponse.getChoices().get(0).getFinishReason();
+            ChatGPTChannelConfiguration channelConfig = channel.getConfiguration()
+                    .as(ChatGPTChannelConfiguration.class);
+            ChatGPTApiClient client = apiClient;
 
-                if ("length".equals(finishReason)) {
-                    logger.warn("Token length exceeded. Increase maximum token limit to avoid the issue.");
-                    return;
+            if (client != null) {
+                final var timeout = resolveTimeout(channelUID);
+                try {
+                    ChatResponse response = client.sendPrompt(channelConfig.model, lastPrompt,
+                            channelConfig.systemMessage, channelConfig.temperature, channelConfig.topP,
+                            channelConfig.maxTokens, timeout);
+                    processChatResponse(channelUID, response);
+                    updateStatus(ThingStatus.ONLINE);
+                } catch (ChatGPTApiException e) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "Could not connect to OpenAI API: " + e.getMessage());
+                    logger.debug("Request to OpenAI failed: {}", e.getMessage(), e);
                 }
-
-                @Nullable
-                ChatMessage chatResponseMessage = chatResponse.getChoices().get(0).getChatMessage();
-
-                if (chatResponseMessage == null) {
-                    logger.error("ChatGPT response does not contain a message.");
-                    return;
-                }
-
-                @Nullable
-                String msg = chatResponseMessage.getContent();
-                if (msg != null) {
-                    updateState(channelUID, new StringType(msg));
-                }
-            } else {
-                logger.warn("Didn't receive any response from ChatGPT - this is unexpected.");
             }
         }
     }
 
-    private @Nullable String prepareRequestBody(ChannelUID channelUID) {
-        Channel channel = getThing().getChannel(channelUID);
-        if (channel == null) {
-            logger.error("Channel with UID '{}' cannot be found on Thing '{}'.", channelUID, getThing().getUID());
-            return null;
-        }
+    private void processChatResponse(ChannelUID channelUID, ChatResponse chatResponse) {
+        if (chatResponse.getChoices() != null && !chatResponse.getChoices().isEmpty()) {
+            String finishReason = chatResponse.getChoices().get(0).getFinishReason();
 
-        ChatGPTChannelConfiguration channelConfig = channel.getConfiguration().as(ChatGPTChannelConfiguration.class);
-
-        List<ChatMessage> messages = new ArrayList<>();
-
-        ChatMessage systemMessage = new ChatMessage();
-        systemMessage.setRole(ChatMessage.Role.SYSTEM.value());
-        systemMessage.setContent(channelConfig.systemMessage);
-        messages.add(systemMessage);
-
-        ChatMessage userMessage = new ChatMessage();
-        userMessage.setRole(ChatMessage.Role.USER.value());
-        userMessage.setContent(lastPrompt);
-        messages.add(userMessage);
-
-        ChatRequestBody chatRequestBody = new ChatRequestBody();
-
-        chatRequestBody.setModel(channelConfig.model);
-        chatRequestBody.setTemperature(channelConfig.temperature);
-        chatRequestBody.setMaxTokens(channelConfig.maxTokens);
-        chatRequestBody.setTopP(channelConfig.topP);
-        chatRequestBody.setMessages(messages);
-
-        ObjectMapper objectMapper = JsonMapper.builder().serializationInclusion(Include.NON_NULL).build();
-
-        try {
-            return objectMapper.writeValueAsString(chatRequestBody);
-        } catch (JsonProcessingException e) {
-            logger.error("Failed to serialize ChatGPT request: {}", e.getMessage(), e);
-            return null;
-        }
-    }
-
-    public @Nullable String sendPrompt(String queryJson) {
-        return sendPrompt(queryJson, config != null ? config.requestTimeout : null);
-    }
-
-    public @Nullable String sendPrompt(String queryJson, @Nullable Integer timeoutSeconds) {
-        Request request = httpClient.newRequest(apiUrl).method(HttpMethod.POST)
-                .timeout(timeoutSeconds != null ? timeoutSeconds : DEFAULT_REQUEST_TIMEOUT_S, TimeUnit.SECONDS)
-                .header("Content-Type", "application/json").header("Authorization", "Bearer " + apiKey)
-                .content(new StringContentProvider(queryJson));
-        logger.trace("Query '{}'", queryJson);
-        try {
-            ContentResponse response = request.send();
-            updateStatus(ThingStatus.ONLINE);
-            if (response.getStatus() == HttpStatus.OK_200) {
-                return response.getContentAsString();
-            } else {
-                logger.error("ChatGPT request resulted in HTTP {} with message: {}", response.getStatus(),
-                        response.getReason());
-                return null;
+            if ("length".equals(finishReason)) {
+                logger.warn("Token length exceeded. Increase maximum token limit to avoid the issue.");
+                return;
             }
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Could not connect to OpenAI API: " + e.getMessage());
-            logger.debug("Request to OpenAI failed: {}", e.getMessage(), e);
-            return null;
+
+            @Nullable
+            ChatMessage chatResponseMessage = chatResponse.getChoices().getFirst().getChatMessage();
+            if (chatResponseMessage == null) {
+                logger.error("ChatGPT response does not contain a message.");
+                return;
+            }
+
+            @Nullable
+            String msg = chatResponseMessage.getContent();
+            if (msg != null) {
+                updateState(channelUID, new StringType(msg));
+            }
+        } else {
+            logger.warn("Didn't receive any response from ChatGPT - this is unexpected.");
         }
     }
 
@@ -210,14 +136,16 @@ public class ChatGPTHandler extends BaseThingHandler {
                 return channelConfig.requestTimeout;
             }
         }
-        return config != null ? config.requestTimeout : null;
+        ChatGPTConfiguration c = config;
+        return c != null ? c.requestTimeout : null;
     }
 
     @Override
     public void initialize() {
-        this.config = getConfigAs(ChatGPTConfiguration.class);
+        final ChatGPTConfiguration c = getConfigAs(ChatGPTConfiguration.class);
+        this.config = c;
 
-        String apiKey = config.apiKey;
+        String apiKey = c.apiKey;
 
         if (apiKey.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -225,11 +153,7 @@ public class ChatGPTHandler extends BaseThingHandler {
             return;
         }
 
-        this.apiKey = apiKey;
-        this.apiUrl = config.apiUrl;
-        this.modelUrl = config.modelUrl;
-
-        if (!isValidTimeout(config.requestTimeout)) {
+        if (!isValidTimeout(c.requestTimeout)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/requestTimeout.configuration-error");
             return;
@@ -241,43 +165,26 @@ public class ChatGPTHandler extends BaseThingHandler {
                     "@text/requestTimeout.configuration-error");
             return;
         }
+
+        this.apiClient = new ChatGPTApiClient(httpClient, apiKey, c.baseUrl);
+
         updateStatus(ThingStatus.UNKNOWN);
 
         scheduler.execute(() -> {
+            ChatGPTApiClient client = this.apiClient;
+            if (client == null) {
+                return;
+            }
             try {
-                Request request = httpClient.newRequest(modelUrl).timeout(DEFAULT_REQUEST_TIMEOUT_S, TimeUnit.SECONDS)
-                        .method(HttpMethod.GET).header("Authorization", "Bearer " + apiKey);
-                ContentResponse response = request.send();
-                if (response.getStatus() == 200) {
+                List<String> apiModels = client.fetchModels(c.requestTimeout);
+                if (!apiModels.isEmpty()) {
                     updateStatus(ThingStatus.ONLINE);
-                    ObjectMapper objectMapper = new ObjectMapper();
-                    try {
-                        JsonNode models = objectMapper.readTree(response.getContentAsString());
-                        JsonNode data = models.get("data");
-
-                        if (data != null) {
-                            logger.debug("Models: {}", data.toString());
-                            List<String> modelList = new ArrayList<>();
-                            data.forEach(model -> {
-                                JsonNode id = model.get("id");
-                                if (id != null) {
-                                    modelList.add(id.asText());
-                                }
-                            });
-
-                            this.models = List.copyOf(modelList);
-                        } else {
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                    "@text/offline.communication-error");
-                        }
-                    } catch (JsonProcessingException e) {
-                        logger.warn("Failed to parse models: {}", e.getMessage(), e);
-                    }
+                    this.models = List.copyOf(apiModels);
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "@text/offline.communication-error");
                 }
-            } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            } catch (ChatGPTApiException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         });
@@ -292,7 +199,7 @@ public class ChatGPTHandler extends BaseThingHandler {
         return List.of(ChatGPTModelOptionProvider.class, ChatGPTHLIService.class);
     }
 
-    private boolean isValidTimeout(@Nullable Integer timeout) {
+    boolean isValidTimeout(@Nullable Integer timeout) {
         return timeout == null || timeout > 0;
     }
 }

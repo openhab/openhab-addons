@@ -23,15 +23,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class ChatGPTConfiguration {
 
     public String apiKey = "";
-    public String apiUrl = "https://api.openai.com/v1/chat/completions";
-    public String modelUrl = "https://api.openai.com/v1/models";
-    public boolean useSemanticModel = true;
+    public String baseUrl = "https://api.openai.com/v1";
     public String model = "gpt-4o-mini";
     public Double temperature = 1.0;
     public Integer maxTokens = 1000;
     public Double topP = 1.0;
     public String systemMessage = "";
-    public Integer keepContext = 2;
-    public Integer contextThreshold = 10000;
     public Integer requestTimeout = ChatGPTHandler.DEFAULT_REQUEST_TIMEOUT_S;
+    public Integer maxToolCalls = 10;
 }
