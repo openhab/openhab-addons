@@ -135,9 +135,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
             "LK Dimmer", // LK Wiser Dimmer -- see https://techblog.vindvejr.dk/?p=455
             "^TRADFRI.*1055l$" // IKEA Tradfri 1055l bulb
     );
-    private static final Pattern WORK_AROUND_MODEL_ID_PATTERN = Pattern.compile(
-            WORK_AROUND_MODEL_IDS.stream().map(Pattern::quote).collect(Collectors.joining("|")),
-            Pattern.CASE_INSENSITIVE);
+    private static final Pattern WORK_AROUND_MODEL_ID_PATTERN = Pattern
+            .compile(WORK_AROUND_MODEL_IDS.stream().collect(Collectors.joining("|")), Pattern.CASE_INSENSITIVE);
 
     private final Logger logger = LoggerFactory.getLogger(Clip2ThingHandler.class);
 
@@ -1436,7 +1435,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 properties.put(PROPERTY_PRODUCT_CERTIFIED, productData.getCertified().toString());
 
                 // Check device for needed work-arounds.
-                if (modelId != null && WORK_AROUND_MODEL_ID_PATTERN.matcher(modelId).find()) {
+                if (WORK_AROUND_MODEL_ID_PATTERN.matcher(Objects.requireNonNull(modelId)).matches()) {
                     applyOffTransitionWorkaround = true;
                     logger.debug("{} -> enabling work-around for turning off {}", resourceId, modelId);
                 }
@@ -1836,7 +1835,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                         ProductData productData = optChild.get().getProductData();
                         if (productData != null) {
                             String modelId = productData.getModelId();
-                            if (modelId != null && WORK_AROUND_MODEL_ID_PATTERN.matcher(modelId).find()) {
+                            if (WORK_AROUND_MODEL_ID_PATTERN.matcher(Objects.requireNonNull(modelId)).matches()) {
                                 applyOffTransitionWorkaround = true;
                                 logger.debug("{} -> enabling work-around for turning off {}", resourceId, modelId);
                                 return; // no need to check further once we find a matching device
