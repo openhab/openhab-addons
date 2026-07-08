@@ -10,7 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.chatgpt.internal.dto;
+package org.openhab.binding.chatgpt.internal.api.dto;
+
+import org.eclipse.jdt.annotation.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -18,27 +20,24 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  * @author Artur Fedjukevits - Initial contribution
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ChatTools {
+public class ChatFunctionCall {
 
-    private String type;
-    private ChatFunction function;
+    private @Nullable String name;
+    private @Nullable String arguments;
 
-    public ChatTools() {
+    public String getName() {
+        return name;
     }
 
-    public String getType() {
-        return type;
+    public String getArguments() {
+        return arguments;
     }
 
-    public ChatFunction getFunction() {
-        return function;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public void setFunction(ChatFunction function) {
-        this.function = function;
+    public void setArguments(String arguments) {
+        this.arguments = arguments;
     }
 }

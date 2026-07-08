@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.chatgpt.internal.dto;
+package org.openhab.binding.chatgpt.internal.api.dto;
 
 import java.util.List;
 
