@@ -39,7 +39,6 @@ import org.osgi.service.component.annotations.ServiceScope;
 @Component(scope = ServiceScope.PROTOTYPE, service = { ChatGPTModelOptionProvider.class, ConfigOptionProvider.class })
 @NonNullByDefault
 public class ChatGPTModelOptionProvider implements ThingHandlerService, ConfigOptionProvider {
-
     private @Nullable ThingHandler thingHandler;
 
     @Override

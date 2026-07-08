@@ -318,7 +318,7 @@ public class ChatGPTApiClient {
     public List<String> fetchModels(@Nullable Integer timeoutSeconds) throws ChatGPTApiException {
         Request request = httpClient.newRequest(baseUrl + PATH_MODELS)
                 .timeout(timeoutSeconds != null ? timeoutSeconds : 10, TimeUnit.SECONDS).method(HttpMethod.GET)
-                .header("Authorization", "Bearer " + apiKey);
+                .header(HttpHeader.AUTHORIZATION, "Bearer " + apiKey);
         try {
             ContentResponse response = request.send();
             if (response.getStatus() == HttpStatus.OK_200) {
