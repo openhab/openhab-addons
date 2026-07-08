@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.chatgpt.internal;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 import static org.openhab.binding.chatgpt.internal.ChatGPTBindingConstants.DEFAULT_BASE_URL;
 import static org.openhab.binding.chatgpt.internal.ChatGPTBindingConstants.DEFAULT_MAX_TOKENS;
 import static org.openhab.binding.chatgpt.internal.ChatGPTBindingConstants.DEFAULT_MAX_TOOL_CALLS;
@@ -21,6 +19,8 @@ import static org.openhab.binding.chatgpt.internal.ChatGPTBindingConstants.DEFAU
 import static org.openhab.binding.chatgpt.internal.ChatGPTBindingConstants.DEFAULT_REQUEST_TIMEOUT;
 import static org.openhab.binding.chatgpt.internal.ChatGPTBindingConstants.DEFAULT_TEMPERATURE;
 import static org.openhab.binding.chatgpt.internal.ChatGPTBindingConstants.DEFAULT_TOP_P;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link ChatGPTConfiguration} class contains fields mapping thing configuration parameters.

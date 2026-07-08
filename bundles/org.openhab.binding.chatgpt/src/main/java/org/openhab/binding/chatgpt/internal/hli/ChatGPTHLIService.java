@@ -101,7 +101,6 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
         return SERVICE_ID;
     }
 
-
     @Override
     public String getLabel(@Nullable Locale locale) {
         return "ChatGPT Human Language Interpreter";

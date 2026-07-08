@@ -12,6 +12,12 @@
  */
 package org.openhab.binding.chatgpt.internal;
 
+import static org.openhab.binding.chatgpt.internal.ChatGPTBindingConstants.DEFAULT_MAX_TOKENS;
+import static org.openhab.binding.chatgpt.internal.ChatGPTBindingConstants.DEFAULT_MODEL;
+import static org.openhab.binding.chatgpt.internal.ChatGPTBindingConstants.DEFAULT_SYSTEM_MESSAGE;
+import static org.openhab.binding.chatgpt.internal.ChatGPTBindingConstants.DEFAULT_TEMPERATURE;
+import static org.openhab.binding.chatgpt.internal.ChatGPTBindingConstants.DEFAULT_TOP_P;
+
 import java.util.Collection;
 import java.util.List;
 
@@ -35,12 +41,6 @@ import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.openhab.binding.chatgpt.internal.ChatGPTBindingConstants.DEFAULT_MAX_TOKENS;
-import static org.openhab.binding.chatgpt.internal.ChatGPTBindingConstants.DEFAULT_MODEL;
-import static org.openhab.binding.chatgpt.internal.ChatGPTBindingConstants.DEFAULT_SYSTEM_MESSAGE;
-import static org.openhab.binding.chatgpt.internal.ChatGPTBindingConstants.DEFAULT_TEMPERATURE;
-import static org.openhab.binding.chatgpt.internal.ChatGPTBindingConstants.DEFAULT_TOP_P;
 
 /**
  * The {@link ChatGPTHandler} is responsible for handling commands, which are
@@ -118,9 +118,8 @@ public class ChatGPTHandler extends BaseThingHandler {
                 }
 
                 try {
-                    ChatResponse response = client.sendPrompt(model, lastPrompt,
-                            systemMessage, temp, topP,
-                            maxTokens, timeout);
+                    ChatResponse response = client.sendPrompt(model, lastPrompt, systemMessage, temp, topP, maxTokens,
+                            timeout);
                     processChatResponse(channelUID, response);
                     updateStatus(ThingStatus.ONLINE);
                 } catch (ChatGPTApiException e) {

@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.chatgpt.internal.api;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 import java.io.Serial;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link ChatGPTApiException} is thrown when an error occurs during ChatGPT API request.
