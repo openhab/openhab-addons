@@ -99,3 +99,8 @@ Bridge hue:bridge-api2:g24 "Philips Hue Hub (api2)" @ "Home" [ipAddress="192.168
     ..
 }
 ```
+
+## Configuration
+
+- [API v1](doc/readme_v1.md#philips-hue-binding-api-v1)
+- [API v2](doc/readme_v2.md#philips-hue-binding-api-v2)
