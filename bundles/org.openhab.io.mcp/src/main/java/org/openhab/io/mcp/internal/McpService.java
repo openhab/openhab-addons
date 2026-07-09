@@ -329,6 +329,7 @@ public class McpService {
                     .jsonSchemaValidator(new DefaultJsonSchemaValidator()).serverInfo(SERVER_NAME, SERVER_VERSION)
                     .capabilities(capabilities).resources(resourceProvider.resources())
                     .resourceTemplates(resourceProvider.templates()).instructions(buildInstructions())
+                    .rootsChangeHandlers(List.of((exchange, roots) -> logger.debug("Roots list changed: {}", roots)))
                     .toolCall(semanticTools.getSemanticModelTool(),
                             (exchange, req) -> semanticTools.handleGetSemanticModel(req))
                     .toolCall(itemTools.getSearchItemsTool(), (exchange, req) -> itemTools.handleSearchItems(req))
