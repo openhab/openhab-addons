@@ -142,12 +142,8 @@ public class Shelly1CoIoTVersion1 extends Shelly1CoIoTProtocol implements Shelly
                                 toQuantityType(s.value / 60.0, DIGITS_KWH, Units.WATT_HOUR));
                         break;
                     case "energy counter 1 [w-min]":
-                        updateChannel(updates, rGroup, CHANNEL_METER_ENERGYAVG2MIN,
-                                toQuantityType(s.value / 60.0, DIGITS_KWH, Units.WATT_HOUR));
-                        break;
                     case "energy counter 2 [w-min]":
-                        updateChannel(updates, rGroup, CHANNEL_METER_ENERGYAVG3MIN,
-                                toQuantityType(s.value / 60.0, DIGITS_KWH, Units.WATT_HOUR));
+                        // we don't use them
                         break;
                     case "energy counter total [w-h]": // 3EM reports W/h
                     case "energy counter total [w-min]":

@@ -563,18 +563,12 @@ public class Shelly1ApiJsonDTO {
         @SerializedName("total_returned")
         public Double totalReturned; // Total returned energy, Wh
 
-        /**
-         * Instantaneous apparent power, VA (Gen2 only)
-         */
-        public Double apparentPower;
+        public Double apparentPower; // Instantaneous apparent power, VA (Gen2 only)
         public Double pf; // 3EM
         public Double current; // 3EM
         public Double frequency; // Gen4
-        /**
-         * Energy consumed per complete minute, Wh (Gen2 relay+PM only).
-         * Slot 0 = previous minute, slot 1 = two minutes ago, slot 2 = three minutes ago.
-         * Converted from aenergy.by_minute (mWh) in Shelly2ApiClient.
-         */
+        // Energy per complete minute in Wh, slot 0 = previous minute (Gen2 relay+PM only);
+        // converted from aenergy.by_minute (mWh) in Shelly2ApiClient
         public @Nullable Double @Nullable [] energyByMinute;
     }
 
@@ -799,10 +793,7 @@ public class Shelly1ApiJsonDTO {
 
         public Double totalCurrent;
         public Double totalPower;
-        /**
-         * Total instantaneous apparent power across all meters, VA (Gen2 only)
-         */
-        public Double totalApparent;
+        public Double totalApparent; // Total instantaneous apparent power across all meters, VA (Gen2 only)
         public Double totalKWH;
         public Double totalReturned;
 

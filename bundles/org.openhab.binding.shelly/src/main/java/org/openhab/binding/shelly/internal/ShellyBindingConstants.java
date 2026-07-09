@@ -111,8 +111,6 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_METER_LASTMIN = "lastPower";
     public static final String CHANNEL_METER_LASTMIN1 = CHANNEL_METER_LASTMIN + "1"; // deprecated, use ENERGYAVG1MIN
     public static final String CHANNEL_METER_ENERGYAVG1MIN = "energyAvg1Min";
-    public static final String CHANNEL_METER_ENERGYAVG2MIN = "energyAvg2Min";
-    public static final String CHANNEL_METER_ENERGYAVG3MIN = "energyAvg3Min";
     public static final String CHANNEL_METER_TOTALKWH = "totalKWH";
     public static final String CHANNEL_METER_TOTALENERGY = "totalEnergy";
     public static final String CHANNEL_EMETER_TOTALRET = "returnedKWH";

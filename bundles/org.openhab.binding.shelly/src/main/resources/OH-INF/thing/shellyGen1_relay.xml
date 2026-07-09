@@ -681,20 +681,6 @@
 		</state>
 	</channel-type>
 
-	<!-- lastEnergy1 never shipped in a release, but interim test builds of PR #20805 created it;
-		the stub avoids 'channel type not found' errors for those Things -->
-	<channel-type id="lastEnergy1" advanced="true">
-		<item-type unitHint="Wh">Number:Energy</item-type>
-		<label>Last Minute Energy</label>
-		<description>[deprecated] Use energyAvg1Min instead. Energy consumed during the previous complete minute</description>
-		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
-		</tags>
-		<state readOnly="true" pattern="%.3f %unit%">
-		</state>
-	</channel-type>
 
 	<channel-type id="energyAvg1Min">
 		<item-type unitHint="Wh">Number:Energy</item-type>
@@ -709,31 +695,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="energyAvg2Min" advanced="true">
-		<item-type unitHint="Wh">Number:Energy</item-type>
-		<label>Energy 2 Minutes Ago</label>
-		<description>Energy consumed during the complete minute two minutes ago</description>
-		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
-		</tags>
-		<state readOnly="true" pattern="%.3f %unit%">
-		</state>
-	</channel-type>
 
-	<channel-type id="energyAvg3Min" advanced="true">
-		<item-type unitHint="Wh">Number:Energy</item-type>
-		<label>Energy 3 Minutes Ago</label>
-		<description>Energy consumed during the complete minute three minutes ago</description>
-		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
-		</tags>
-		<state readOnly="true" pattern="%.3f %unit%">
-		</state>
-	</channel-type>
 
 	<channel-type id="meterTotal" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>

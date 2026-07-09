@@ -140,7 +140,7 @@ public class Shelly2AddonStatusTest {
     }
 
     @Test
-    void temperatureStatusTemp_readError_parsesErrorsFieldAndNullTc() {
+    void temperatureStatusTempReadErrorParsesErrorsFieldAndNullTc() {
         Gson gson = new Gson();
         Shelly2DeviceStatusTemp t = Objects
                 .requireNonNull(gson.fromJson("{\"tC\":null,\"errors\":[\"read\"]}", Shelly2DeviceStatusTemp.class));
@@ -150,7 +150,7 @@ public class Shelly2AddonStatusTest {
     }
 
     @Test
-    void temperatureStatusTemp_normalReading_noErrorsField() {
+    void temperatureStatusTempNormalReadingNoErrorsField() {
         Gson gson = new Gson();
         Shelly2DeviceStatusTemp t = Objects
                 .requireNonNull(gson.fromJson("{\"tC\":22.5,\"tF\":72.5}", Shelly2DeviceStatusTemp.class));
@@ -159,7 +159,7 @@ public class Shelly2AddonStatusTest {
     }
 
     @Test
-    void fillDeviceStatus_tempReadError_extTemperatureNull() throws ShellyApiException {
+    void fillDeviceStatusTempReadErrorExtTemperatureNull() throws ShellyApiException {
         Shelly2DeviceStatusResult result = new Shelly2DeviceStatusResult();
         result.temperature100 = result.new Shelly2DeviceStatusTempId();
         result.temperature100.id = 100;
@@ -172,7 +172,7 @@ public class Shelly2AddonStatusTest {
     }
 
     @Test
-    void fillDeviceStatus_tempValid_extTemperaturePopulated() throws ShellyApiException {
+    void fillDeviceStatusTempValidExtTemperaturePopulated() throws ShellyApiException {
         Shelly2DeviceStatusResult result = new Shelly2DeviceStatusResult();
         result.temperature100 = result.new Shelly2DeviceStatusTempId();
         result.temperature100.id = 100;
@@ -187,7 +187,7 @@ public class Shelly2AddonStatusTest {
     }
 
     @Test
-    void fillDeviceStatus_mixedSensors_errorSlotNullValidSlotSet() throws ShellyApiException {
+    void fillDeviceStatusMixedSensorsErrorSlotNullValidSlotSet() throws ShellyApiException {
         Shelly2DeviceStatusResult result = new Shelly2DeviceStatusResult();
         // sensor 100 errors — sensor 101 is valid
         result.temperature100 = result.new Shelly2DeviceStatusTempId();
@@ -208,7 +208,7 @@ public class Shelly2AddonStatusTest {
     }
 
     @Test
-    void fillDeviceStatus_humidityReadError_extHumidityNull() throws ShellyApiException {
+    void fillDeviceStatusHumidityReadErrorExtHumidityNull() throws ShellyApiException {
         Shelly2DeviceStatusResult result = new Shelly2DeviceStatusResult();
         result.humidity100 = result.new Shelly2DeviceStatusHumidity();
         result.humidity100.id = 100;
@@ -221,7 +221,7 @@ public class Shelly2AddonStatusTest {
     }
 
     @Test
-    void fillDeviceStatus_humidityValid_extHumidityPopulated() throws ShellyApiException {
+    void fillDeviceStatusHumidityValidExtHumidityPopulated() throws ShellyApiException {
         Shelly2DeviceStatusResult result = new Shelly2DeviceStatusResult();
         result.humidity100 = result.new Shelly2DeviceStatusHumidity();
         result.humidity100.id = 100;
@@ -234,7 +234,7 @@ public class Shelly2AddonStatusTest {
     }
 
     @Test
-    void fillDeviceStatus_voltageReadError_extVoltageNull() throws ShellyApiException {
+    void fillDeviceStatusVoltageReadErrorExtVoltageNull() throws ShellyApiException {
         Shelly2DeviceStatusResult result = new Shelly2DeviceStatusResult();
         result.voltmeter100 = result.new Shelly2DeviceStatusVoltage();
         result.voltmeter100.id = 100;
@@ -247,7 +247,7 @@ public class Shelly2AddonStatusTest {
     }
 
     @Test
-    void fillDeviceStatus_voltageValid_extVoltagePopulated() throws ShellyApiException {
+    void fillDeviceStatusVoltageValidExtVoltagePopulated() throws ShellyApiException {
         Shelly2DeviceStatusResult result = new Shelly2DeviceStatusResult();
         result.voltmeter100 = result.new Shelly2DeviceStatusVoltage();
         result.voltmeter100.id = 100;

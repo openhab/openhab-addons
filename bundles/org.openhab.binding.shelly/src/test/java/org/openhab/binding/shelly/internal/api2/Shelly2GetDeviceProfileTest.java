@@ -144,6 +144,12 @@ public class Shelly2GetDeviceProfileTest {
                 "{\"sys\":{\"device\":{},\"location\":{}},\"wifi\":{}," + "\"em1:0\":{\"id\":0},\"em1:1\":{\"id\":1}}");
     }
 
+    /** GetConfig with em1:0..em1:2 (Pro 3EM in monophase profile — 3 independent clamps) */
+    private static Shelly2GetConfigResult withEm10ToEm12(Gson gson) {
+        return parseConfig(gson, "{\"sys\":{\"device\":{},\"location\":{}},\"wifi\":{},"
+                + "\"em1:0\":{\"id\":0},\"em1:1\":{\"id\":1},\"em1:2\":{\"id\":2}}");
+    }
+
     /** GetConfig with cover:0 (roller device) */
     private static Shelly2GetConfigResult withCover0(Gson gson) {
         // ui_data must be present (even empty) so fillRollerFavorites doesn't NPE on uiData.cover
@@ -255,11 +261,19 @@ public class Shelly2GetDeviceProfileTest {
         assertThat(profile.numMeters, is(2));
     }
 
+    @Test
+    void discoveryEm10ToEm12MonophaseNumMetersIsThree() throws ShellyApiException {
+        Gson gson = new Gson();
+        StubApiClient client = new StubApiClient(discoveryConfig(), withEm10ToEm12(gson));
+        ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYUNKNOWN, deviceInfo());
+        assertThat(profile.numMeters, is(3));
+    }
+
     @ParameterizedTest(name = "{0} → numMeters={1}")
     @CsvSource({
             // Only types present in THING_TYPE_CAP_NUM_METERS — IDs from ShellyDevices ThingTypeUID definitions
             "shellypro3em,    3", "shellyplus3em63, 3", "shellyproem50,   2", "shellyem3,       3",
-            "shellypro2,      0", "shellypro3,      0" })
+            "shellypro2,      0", "shellypro3,      0", "shellyplus1l,    0", "shellyplus2l,    0" })
     void discoveryNumMetersFromCapabilityMap(String thingTypeId, int expectedNumMeters) throws ShellyApiException {
         ThingTypeUID uid = new ThingTypeUID("shelly", thingTypeId);
         Gson gson = new Gson();
@@ -371,10 +385,13 @@ public class Shelly2GetDeviceProfileTest {
                 + "\"total_act_ret\":1.5,\"total_act\":5.0}";
         Shelly2DeviceStatusEmData emData = gson.fromJson(json, Shelly2DeviceStatusEmData.class);
         assertNotNull(emData);
-        assertThat("total_act_ret maps to totalRetKWH", emData.totalRetKWH, is(1.5));
-        assertThat("a_total_act_ret_energy maps to aRetTotal", emData.aRetTotal, is(500.0));
-        assertThat("b_total_act_ret_energy maps to bRetTotal", emData.bRetTotal, is(300.0));
-        assertThat("c_total_act_ret_energy maps to cRetTotal", emData.cRetTotal, is(200.0));
+        assertThat("total_act_ret maps to totalActiveReturnedEnergySum", emData.totalActiveReturnedEnergySum, is(1.5));
+        assertThat("a_total_act_ret_energy maps to totalActiveReturnedEnergyA", emData.totalActiveReturnedEnergyA,
+                is(500.0));
+        assertThat("b_total_act_ret_energy maps to totalActiveReturnedEnergyB", emData.totalActiveReturnedEnergyB,
+                is(300.0));
+        assertThat("c_total_act_ret_energy maps to totalActiveReturnedEnergyC", emData.totalActiveReturnedEnergyC,
+                is(200.0));
     }
 
     @Test
@@ -384,7 +401,7 @@ public class Shelly2GetDeviceProfileTest {
         String json = "{\"a_total_act_ret_energy\":500.0,\"total_act\":5.0}";
         Shelly2DeviceStatusEmData emData = gson.fromJson(json, Shelly2DeviceStatusEmData.class);
         assertNotNull(emData);
-        assertThat("absent total_act_ret deserializes to null", emData.totalRetKWH, is(nullValue()));
+        assertThat("absent total_act_ret deserializes to null", emData.totalActiveReturnedEnergySum, is(nullValue()));
     }
 
     @Test
@@ -401,6 +418,6 @@ public class Shelly2GetDeviceProfileTest {
                 .requireNonNull(gson.fromJson(reserialised, Shelly2DeviceStatusResult.class));
         Shelly2DeviceStatusEmData emdata0 = result.emdata0;
         assertThat(emdata0, is(notNullValue()));
-        assertThat(emdata0.totalRetKWH, is(1.5));
+        assertThat(emdata0.totalActiveReturnedEnergySum, is(1.5));
     }
 }

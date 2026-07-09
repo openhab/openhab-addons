@@ -514,15 +514,17 @@ public class Shelly2ApiJsonDTO {
             ShellyDeviceConfigCB cb3;
 
             @SerializedName("em:0")
-            public Shelly2DevConfigEm em0;
+            public Shelly2DevConfigEm em0; // 3-phase config or Gen3 per-phase channel 0
             @SerializedName("em:1")
             public @Nullable Shelly2DevConfigEm emCh1; // Gen3: per-phase channel 1
             @SerializedName("em:2")
             public @Nullable Shelly2DevConfigEm emCh2; // Gen3: per-phase channel 2
             @SerializedName("em1:0")
-            public Shelly2DevConfigEm em10;
+            public Shelly2DevConfigEm em10; // single-phase clamp 0 config
             @SerializedName("em1:1")
-            public Shelly2DevConfigEm em11;
+            public Shelly2DevConfigEm em11; // single-phase clamp 1 config
+            @SerializedName("em1:2")
+            public @Nullable Shelly2DevConfigEm em12; // Pro 3EM monophase profile: 3rd clamp
             @SerializedName("pm1:0")
             public Shelly2DevConfigPm1 pm10;
 
@@ -754,28 +756,43 @@ public class Shelly2ApiJsonDTO {
                 public @Nullable Integer id;
 
                 @SerializedName("a_total_act_energy")
-                public @Nullable Double aTotal;
+                public @Nullable Double totalActiveEnergyA; // Total active energy on phase A, Wh
                 @SerializedName("b_total_act_energy")
-                public @Nullable Double bTotal;
+                public @Nullable Double totalActiveEnergyB; // Total active energy on phase B, Wh
                 @SerializedName("c_total_act_energy")
-                public @Nullable Double cTotal;
+                public @Nullable Double totalActiveEnergyC; // Total active energy on phase C, Wh
 
                 @SerializedName("a_total_act_ret_energy")
-                public @Nullable Double aRetTotal;
+                public @Nullable Double totalActiveReturnedEnergyA; // Total returned energy on phase A, Wh
                 @SerializedName("b_total_act_ret_energy")
-                public @Nullable Double bRetTotal;
+                public @Nullable Double totalActiveReturnedEnergyB; // Total returned energy on phase B, Wh
                 @SerializedName("c_total_act_ret_energy")
-                public @Nullable Double cRetTotal;
+                public @Nullable Double totalActiveReturnedEnergyC; // Total returned energy on phase C, Wh
 
                 @SerializedName("total_act")
-                public @Nullable Double totalKWH;
+                public @Nullable Double totalActiveEnergySum; // Total active energy over all phases, Wh (EMData)
                 @SerializedName("total_act_energy")
-                public @Nullable Double totalActEnergy;
+                public @Nullable Double totalActiveEnergy; // Total active energy of the clamp, Wh (EM1Data)
                 @SerializedName("total_act_ret")
-                public @Nullable Double totalRetKWH;
+                public @Nullable Double totalActiveReturnedEnergySum; // Total returned energy over all phases, Wh
                 @SerializedName("total_act_ret_energy")
-                public @Nullable Double totalActRetEnergy;
+                public @Nullable Double totalActiveReturnedEnergy; // Total returned energy of the clamp, Wh (EM1Data)
                 public String @Nullable [] errors;
+
+                /**
+                 * Active energy of a single-phase payload, Wh: EMData reports phase A under
+                 * a_total_act_energy, EM1Data reports the clamp total under total_act_energy.
+                 */
+                public @Nullable Double getTotalActiveEnergy() {
+                    return totalActiveEnergyA != null ? totalActiveEnergyA : totalActiveEnergy;
+                }
+
+                /**
+                 * Returned energy of a single-phase payload, Wh — same fallback as {@link #getTotalActiveEnergy()}.
+                 */
+                public @Nullable Double getTotalActiveReturnedEnergy() {
+                    return totalActiveReturnedEnergyA != null ? totalActiveReturnedEnergyA : totalActiveReturnedEnergy;
+                }
             }
 
             public class Shelly2DeviceStatusSmoke {
@@ -842,7 +859,7 @@ public class Shelly2ApiJsonDTO {
             public Shelly2RelayStatus pm10;
 
             @SerializedName("em:0")
-            public Shelly2DeviceStatusEm em0;
+            public Shelly2DeviceStatusEm em0; // 3-phase status (phases A/B/C) or Gen3 per-phase channel 0 (phase A)
             @SerializedName("em:1")
             public @Nullable Shelly2DeviceStatusEm emCh1; // Gen3: per-phase channel 1 (phase B)
             @SerializedName("em:2")
@@ -850,13 +867,17 @@ public class Shelly2ApiJsonDTO {
             @SerializedName("emdata:0")
             public Shelly2DeviceStatusEmData emdata0;
             @SerializedName("em1:0")
-            public Shelly2StatusEm1 em10;
+            public Shelly2StatusEm1 em10; // single-phase clamp 0 (EM Mini, Pro EM-50, Pro 3EM monophase)
             @SerializedName("em1:1")
-            public Shelly2StatusEm1 em11;
+            public Shelly2StatusEm1 em11; // single-phase clamp 1
+            @SerializedName("em1:2")
+            public @Nullable Shelly2StatusEm1 em12; // Pro 3EM monophase profile: 3rd clamp
             @SerializedName("em1data:0")
-            public Shelly2DeviceStatusEmData em1data0;
+            public Shelly2DeviceStatusEmData em1data0; // accumulated energy of clamp 0
             @SerializedName("em1data:1")
-            public @Nullable Shelly2DeviceStatusEmData em1data1;
+            public @Nullable Shelly2DeviceStatusEmData em1data1; // accumulated energy of clamp 1
+            @SerializedName("em1data:2")
+            public @Nullable Shelly2DeviceStatusEmData em1data2; // Pro 3EM monophase profile: 3rd clamp
 
             @SerializedName("cover:0")
             public Shelly2CoverStatus cover0;

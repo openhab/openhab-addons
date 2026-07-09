@@ -60,8 +60,7 @@ public class ShellyChannelMigrationTest {
     }
 
     @ParameterizedTest
-    @CsvSource({ CHANNEL_METER_ENERGYAVG1MIN, CHANNEL_METER_ENERGYAVG2MIN, CHANNEL_METER_ENERGYAVG3MIN,
-            CHANNEL_METER_TOTALENERGY })
+    @CsvSource({ CHANNEL_METER_ENERGYAVG1MIN, CHANNEL_METER_TOTALENERGY })
     void newChannelNamesHaveNoReplacement(String channel) {
         assertNull(ShellyChannelDefinitions.getReplacementChannelName(channel));
     }
@@ -89,8 +88,8 @@ public class ShellyChannelMigrationTest {
     void meterGroupMinuteEnergyDefinitionsResolvableForAllIndexedGroups() {
         // meter1..meterN map to the meter-group definitions
         assertNotNull(ShellyChannelDefinitions.getDefinition("meter#" + CHANNEL_METER_ENERGYAVG1MIN));
-        assertNotNull(ShellyChannelDefinitions.getDefinition("meter1#" + CHANNEL_METER_ENERGYAVG2MIN));
-        assertNotNull(ShellyChannelDefinitions.getDefinition("meter3#" + CHANNEL_METER_ENERGYAVG3MIN));
+        assertNotNull(ShellyChannelDefinitions.getDefinition("meter1#" + CHANNEL_METER_ENERGYAVG1MIN));
+        assertNotNull(ShellyChannelDefinitions.getDefinition("meter3#" + CHANNEL_METER_ENERGYAVG1MIN));
     }
 
     @Test

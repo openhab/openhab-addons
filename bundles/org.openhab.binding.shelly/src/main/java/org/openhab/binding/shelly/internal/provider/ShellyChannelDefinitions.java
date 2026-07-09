@@ -247,8 +247,6 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_METER_TOTALENERGY, "totalEnergy", ITEMT_ENERGY))
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_METER_LASTMIN1, "lastPower1", ITEMT_POWER))
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_METER_ENERGYAVG1MIN, "energyAvg1Min", ITEMT_ENERGY))
-                .add(new ShellyChannel(m, CHGR_METER, CHANNEL_METER_ENERGYAVG2MIN, "energyAvg2Min", ITEMT_ENERGY))
-                .add(new ShellyChannel(m, CHGR_METER, CHANNEL_METER_ENERGYAVG3MIN, "energyAvg3Min", ITEMT_ENERGY))
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_LAST_UPDATE, "lastUpdate", ITEMT_DATETIME))
 
                 // EMeter
@@ -573,16 +571,12 @@ public class ShellyChannelDefinitions {
         Map<String, Channel> newChannels = new LinkedHashMap<>();
         Double[] counters = meter.counters;
         boolean hasCounter = counters != null && counters.length > 0 && counters[0] != null;
-        boolean hasCounter2 = counters != null && counters.length > 1 && counters[1] != null;
-        boolean hasCounter3 = counters != null && counters.length > 2 && counters[2] != null;
         addChannel(thing, newChannels, meter.power != null, group, CHANNEL_METER_CURRENTWATTS);
         addChannel(thing, newChannels, meter.total != null, group, CHANNEL_METER_TOTALKWH);
         // lastPower1 (W, deprecated) and energyAvg1Min (Wh) are always created together. Both channels
         // receive updates so existing items linked to lastPower1 keep working without re-discovery.
         addChannel(thing, newChannels, hasCounter, group, CHANNEL_METER_LASTMIN1);
         addChannel(thing, newChannels, hasCounter, group, CHANNEL_METER_ENERGYAVG1MIN);
-        addChannel(thing, newChannels, hasCounter && hasCounter2, group, CHANNEL_METER_ENERGYAVG2MIN);
-        addChannel(thing, newChannels, hasCounter && hasCounter3, group, CHANNEL_METER_ENERGYAVG3MIN);
         addChannel(thing, newChannels, !newChannels.isEmpty(), group, CHANNEL_LAST_UPDATE);
         return newChannels;
     }
@@ -594,9 +588,10 @@ public class ShellyChannelDefinitions {
         // Channel creation always runs during the first HTTP poll (full Shelly.GetStatus response),
         // so all fields the device supports are present. WS NotifyStatus pushes arrive after
         // channelsCreated=true and never trigger this path.
-        // totalKWH and totalReturned use profile flags as a safety net: emdata:0 (accumulated totals)
-        // arrives as a separate component from em:0 and may be absent on the first HTTP poll for
-        // some 3EM/EM50 firmware versions.
+        // The totalKWH/totalEnergy and returnedKWH/returnedEnergy channel pairs (deprecated id plus
+        // replacement, created together) use profile flags as a safety net: emdata:0 (accumulated
+        // totals) arrives as a separate component from em:0 and may be absent on the first HTTP poll
+        // for some 3EM/EM50 firmware versions.
         // 3EM always has 3 phases — create all channels unconditionally so phase C channels exist
         // even when the phase is unloaded and the first poll returns null for that field.
         // Pro EM-50 has a variable number of clamps, so remains data-driven.
@@ -618,16 +613,12 @@ public class ShellyChannelDefinitions {
         addChannel(thing, newChannels, emeter.frequency != null, group, CHANNEL_EMETER_FREQUENCY);
         addChannel(thing, newChannels, always || emeter.pf != null, group, CHANNEL_EMETER_PFACTOR);
         // lastPower1 (W, deprecated) and energyAvg1Min (Wh) are always created together when the device
-        // reports last-minute energy. Non-PM Gen2 relays (e.g. Plus 1) omit aenergy entirely — all absent.
+        // reports last-minute energy. Non-PM Gen2 relays (e.g. Plus 1) omit aenergy entirely — both absent.
         @Nullable
         Double @Nullable [] byMinute = emeter.energyByMinute;
         boolean hasLastMinute = byMinute != null && byMinute.length > 0 && byMinute[0] != null;
-        boolean hasMinute2 = byMinute != null && byMinute.length > 1 && byMinute[1] != null;
-        boolean hasMinute3 = byMinute != null && byMinute.length > 2 && byMinute[2] != null;
         addChannel(thing, newChannels, hasLastMinute, group, CHANNEL_METER_LASTMIN1);
         addChannel(thing, newChannels, hasLastMinute, group, CHANNEL_METER_ENERGYAVG1MIN);
-        addChannel(thing, newChannels, hasLastMinute && hasMinute2, group, CHANNEL_METER_ENERGYAVG2MIN);
-        addChannel(thing, newChannels, hasLastMinute && hasMinute3, group, CHANNEL_METER_ENERGYAVG3MIN);
         // Only add lastUpdate if this device actually has meter channels — guards against non-PM Gen2 relay
         // devices (e.g. Plus 1) where isEMeter=true but all emeter fields are permanently null.
         addChannel(thing, newChannels, !newChannels.isEmpty(), group, CHANNEL_LAST_UPDATE);

@@ -21,7 +21,6 @@ import static org.openhab.core.thing.Thing.*;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -111,28 +110,6 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     private final ShellyTranslationProvider messages;
     private final ShellyChannelCache cache;
     private static final long DEPRECATED_CHANNEL_WARNING_INTERVAL_MS = TimeUnit.DAYS.toMillis(1);
-    private static final List<ChannelMigrationRule> CHANNEL_MIGRATION_RULES = List.of(
-            new ChannelMigrationRule(2, CHANNEL_METER_CURRENTWATTS, CHANNEL_METER_CURRENTPOWER, true),
-            new ChannelMigrationRule(2, CHANNEL_METER_TOTALKWH, CHANNEL_METER_TOTALENERGY, true),
-            new ChannelMigrationRule(2, CHANNEL_EMETER_TOTALRET, CHANNEL_EMETER_RETURNEDENERGY, true),
-            new ChannelMigrationRule(2, CHANNEL_DEVST_ACCUWATTS, CHANNEL_DEVST_ACCUMULATEDPOWER, true),
-            new ChannelMigrationRule(3, CHANNEL_EMETER_REACTWATTS, CHANNEL_EMETER_REACTPOWER, false),
-            new ChannelMigrationRule(3, CHANNEL_DEVST_ACCUTOTAL, CHANNEL_DEVST_TOTALENERGY, false),
-            new ChannelMigrationRule(3, CHANNEL_NMETER_MTRESHHOLD, CHANNEL_NMETER_THRESHOLD, false),
-            new ChannelMigrationRule(4, CHANNEL_DEVST_ACCURETURNED, CHANNEL_DEVST_ACCURETURNEDENERGY, false),
-            // lastPower1 → energyAvg1Min (version 5 so test builds that already created the interim
-            // lastEnergy1 channel at version 3/4 still pick up the final channel name)
-            new ChannelMigrationRule(5, CHANNEL_METER_LASTMIN1, CHANNEL_METER_ENERGYAVG1MIN, false),
-            // "lastEnergy1" existed only in interim test builds of this PR (never released); the rule
-            // makes sure those Things also get energyAvg1Min even without a lastPower1 channel
-            new ChannelMigrationRule(5, "lastEnergy1", CHANNEL_METER_ENERGYAVG1MIN, false),
-            // CHANNEL_DEVST_TOTALKWH = "totalKWH" shares the bare name with CHANNEL_METER_TOTALKWH,
-            // so this rule uses the group-qualified id: findChannels() then matches the full id only
-            // and cannot create the replacement in a meter group.
-            new ChannelMigrationRule(5, mkChannelId(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_TOTALKWH),
-                    CHANNEL_DEVST_TOTALENERGY, false));
-    private static final int CHANNEL_SCHEMA_VERSION = CHANNEL_MIGRATION_RULES.stream()
-            .mapToInt(ChannelMigrationRule::version).max().orElse(0);
 
     private final Map<String, Long> deprecatedChannelWarnings = new ConcurrentHashMap<>();
     private final int cacheCount = UPDATE_SETTINGS_INTERVAL_SECONDS / UPDATE_STATUS_INTERVAL_SECONDS;
@@ -448,7 +425,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         postEvent(ALARM_TYPE_NONE, false);
 
         profile = tmpPrf;
-        migrateChannels();
+        ShellyChannelMigration.migrateChannels(this);
         showThingConfig(profile);
 
         logger.debug("{}: Thing successfully initialized.", thingName);
@@ -644,7 +621,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 updated |= updateInputs(status);
                 updated |= updateMeters(this, status);
                 updated |= updateSensors(this, status);
-                migrateChannels();
+                ShellyChannelMigration.migrateChannels(this);
 
                 // All channels must be created after the first cycle
                 channelsCreated = true;
@@ -1428,86 +1405,10 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         addMissingChannelDefinitions(dynChannels);
     }
 
-    private record ChannelMigrationRule(int version, String channelId, @Nullable String replacementChannelId,
-            boolean refreshExistingChannel) {
-    }
-
-    private void migrateChannels() {
-        int currentVersion = getChannelSchemaVersion();
-        if (currentVersion >= CHANNEL_SCHEMA_VERSION) {
-            return;
-        }
-
-        boolean updated = false;
-        for (ChannelMigrationRule rule : CHANNEL_MIGRATION_RULES) {
-            if (currentVersion < rule.version()) {
-                updated |= applyMigrationRule(rule);
-            }
-        }
-        if (updated) {
-            updateProperties(PROPERTY_CHANNEL_SCHEMA_VERSION, String.valueOf(CHANNEL_SCHEMA_VERSION));
-            logger.debug("{}: Channel definitions migrated to schema version {}", thingName, CHANNEL_SCHEMA_VERSION);
-        } else if (!getThing().getChannels().isEmpty()) {
-            // Fresh Thing: no legacy channels to migrate; stamp current version to prevent scanning on every poll
-            updateProperties(PROPERTY_CHANNEL_SCHEMA_VERSION, String.valueOf(CHANNEL_SCHEMA_VERSION));
-        }
-    }
-
-    private int getChannelSchemaVersion() {
-        try {
-            return Integer.parseInt(getString(getThing().getProperties().get(PROPERTY_CHANNEL_SCHEMA_VERSION)));
-        } catch (NumberFormatException e) {
-            return 0;
-        }
-    }
-
-    private boolean applyMigrationRule(ChannelMigrationRule rule) {
-        List<Channel> existingChannels = getThing().getChannels();
-        List<Channel> matchingChannels = findChannels(existingChannels, rule.channelId());
-        String replacementChannelName = rule.replacementChannelId();
-        if (matchingChannels.isEmpty() && (replacementChannelName == null || replacementChannelName.isEmpty())) {
-            return false;
-        }
-
-        Map<String, Channel> channelUpdates = new HashMap<>();
-        Map<String, Channel> newOrReplacementChannels = new HashMap<>();
-
-        for (Channel channel : matchingChannels) {
-            String fullExistingId = channel.getUID().getId();
-            int sep = fullExistingId.indexOf(ChannelUID.CHANNEL_GROUP_SEPARATOR);
-            String groupPrefix = sep > 0 ? fullExistingId.substring(0, sep + 1) : "";
-
-            if (rule.refreshExistingChannel()) {
-                try {
-                    Channel updatedChannel = ShellyChannelDefinitions.createChannel(getThing(), fullExistingId);
-                    if (updatedChannel != null && !getString(updatedChannel.getDescription())
-                            .equals(getString(channel.getDescription()))) {
-                        channelUpdates.put(fullExistingId, updatedChannel);
-                    }
-                } catch (IllegalArgumentException e) {
-                    logger.debug("{}: Cannot refresh channel definition for {}", thingName, fullExistingId, e);
-                }
-            }
-
-            if (!groupPrefix.isEmpty()) {
-                String newChannelId = (replacementChannelName != null && !replacementChannelName.isEmpty())
-                        ? groupPrefix + replacementChannelName
-                        : fullExistingId;
-                if (findChannel(existingChannels, newChannelId) == null) {
-                    try {
-                        Channel newChannel = ShellyChannelDefinitions.createChannel(getThing(), newChannelId);
-                        if (newChannel != null) {
-                            newOrReplacementChannels.put(newChannelId, newChannel);
-                        }
-                    } catch (IllegalArgumentException e) {
-                        logger.debug("{}: Cannot create replacement channel {}", thingName, newChannelId, e);
-                    }
-                }
-            }
-        }
-
+    @Override
+    public boolean updateThingChannels(Map<String, Channel> channelUpdates, Map<String, Channel> newChannels) {
         boolean updated = replaceChannelDefinitions(channelUpdates);
-        updated |= addMissingChannelDefinitions(newOrReplacementChannels);
+        updated |= addMissingChannelDefinitions(newChannels);
         return updated;
     }
 
@@ -1520,7 +1421,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             List<Channel> existingChannels = getThing().getChannels();
             boolean changed = false;
             for (Map.Entry<String, Channel> channelUpdate : channelUpdates.entrySet()) {
-                Channel oldChannel = findChannel(existingChannels, channelUpdate.getKey());
+                Channel oldChannel = ShellyChannelMigration.findChannel(existingChannels, channelUpdate.getKey());
                 if (oldChannel != null) {
                     Channel newChannel = channelUpdate.getValue();
                     logger.debug("{}: Updating channel {}", thingName, newChannel.getUID().getId());
@@ -1566,27 +1467,6 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             logger.debug("{}: Unable to update channel definitions", thingName, e);
         }
         return false;
-    }
-
-    /**
-     * A group-qualified channelId ("device#totalKWH") matches the full channel id only;
-     * a bare name ("totalKWH") matches the channel name in any group (meter, meter1, ...).
-     */
-    private List<Channel> findChannels(List<Channel> channels, String channelId) {
-        boolean groupQualified = channelId.indexOf(ChannelUID.CHANNEL_GROUP_SEPARATOR) >= 0;
-        List<Channel> result = new ArrayList<>();
-        for (Channel channel : channels) {
-            ChannelUID uid = channel.getUID();
-            if (groupQualified ? uid.getId().equals(channelId) : uid.getIdWithoutGroup().equals(channelId)) {
-                result.add(channel);
-            }
-        }
-        return result;
-    }
-
-    private @Nullable Channel findChannel(List<Channel> channels, String channelId) {
-        List<Channel> matches = findChannels(channels, channelId);
-        return matches.isEmpty() ? null : matches.get(0);
     }
 
     @Override

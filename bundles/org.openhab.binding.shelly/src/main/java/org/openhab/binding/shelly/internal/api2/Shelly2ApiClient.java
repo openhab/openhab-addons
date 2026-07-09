@@ -310,10 +310,20 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             }
         }
 
-        // pm1:0 → 1 (Plus 1PM Gen4); em:0 → 3 (Pro 3EM, 3-phase); em1:0 alone → 1 (EM Mini, single clamp);
-        // em1:0 + em1:1 → 2 (Pro EM-50, 2 clamps). -1 means not detectable from config (relay count fallback).
-        int fromDeviceConfig = dc.pm10 != null ? 1
-                : dc.em0 != null ? 3 : dc.em10 != null ? (dc.em11 != null ? 2 : 1) : -1;
+        int fromDeviceConfig;
+        if (dc.pm10 != null) {
+            fromDeviceConfig = 1; // pm1:0 → single power meter (e.g. Plus 1PM Gen4)
+        } else if (dc.em0 != null) {
+            fromDeviceConfig = 3; // em:0 → 3-phase EM (Pro 3EM triphase profile)
+        } else if (dc.em12 != null) {
+            fromDeviceConfig = 3; // em1:0..em1:2 → 3 clamps (Pro 3EM monophase profile)
+        } else if (dc.em11 != null) {
+            fromDeviceConfig = 2; // em1:0 + em1:1 → 2 clamps (Pro EM-50)
+        } else if (dc.em10 != null) {
+            fromDeviceConfig = 1; // em1:0 alone → single clamp (EM Mini)
+        } else {
+            fromDeviceConfig = -1; // not detectable from config → relay count fallback
+        }
         profile.numMeters = ShellyDeviceProfile.resolveNumMeters(thingTypeUID, -1, fromDeviceConfig, false, false, 0,
                 profile.hasRelays, profile.numRelays, profile.numRollers, profile.isRoller);
         if (profile.numMeters > 0) {
@@ -535,15 +545,17 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         updated |= updateBreakerStatus(3, status, result.cb3, result.voltmeter3, channelUpdate);
         updated |= updateEmStatus(0, status, result.em0, result.emdata0, channelUpdate);
         // Apply accumulated energy from em1data:x (single-phase clamp devices: Plus EM, Pro EM-50, EM Mini).
-        // Each em1data:N belongs to exactly one clamp (em1:N). Use totalActEnergy as fallback for Gen4 devices
-        // that omit the a_-prefixed key and report the same value under total_act_energy instead.
+        // Each em1data:N belongs to exactly one clamp (em1:N); the EMData/EM1Data key difference is
+        // handled by Shelly2DeviceStatusEmData.getTotalActiveEnergy().
         applyEm1Data(status, 0, result.em1data0);
         applyEm1Data(status, 1, result.em1data1);
+        applyEm1Data(status, 2, result.em1data2);
         // Gen3 three-phase devices may use separate em:1 / em:2 per-phase channels instead of a single em:0 a/b/c
         updated |= updateSinglePhaseEm(1, status, result.emCh1, channelUpdate);
         updated |= updateSinglePhaseEm(2, status, result.emCh2, channelUpdate);
         updated |= updateEmStatus(10, status, result.em10, channelUpdate);
         updated |= updateEmStatus(11, status, result.em11, channelUpdate);
+        updated |= updateEmStatus(12, status, result.em12, channelUpdate);
         updated |= updateRollerStatus(0, status, result.cover0, channelUpdate);
         updated |= updateDimmerStatus(0, status, result.light0, channelUpdate);
         updated |= updateDimmerStatus(1, status, result.light1, channelUpdate);
@@ -631,10 +643,9 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         }
         Shelly2Energy aenergy = rs.aenergy;
         if (aenergy != null) {
-            Double aeTotal = aenergy.total;
-            if (aeTotal != null) {
-                // aenergy.total is in Wh (accumulated energy since last reset)
-                emeter.total = aeTotal;
+            Double accumulatedEnergyWh = aenergy.total;
+            if (accumulatedEnergyWh != null) {
+                emeter.total = accumulatedEnergyWh;
             }
             emeter.energyByMinute = byMinuteToWh(aenergy.byMinute);
         }
@@ -781,20 +792,18 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             return;
         }
         ShellySettingsEMeter emeter = status.emeters.get(slotIdx);
-        // EMData (3EM) reports a_total_act_energy; EM1Data (EM-50/EM-Mini/Plus EM) reports total_act_energy
-        Double total = emData.aTotal != null ? emData.aTotal : emData.totalActEnergy;
+        Double total = emData.getTotalActiveEnergy();
         if (total != null) {
             emeter.total = total;
         }
-        // EMData: a_total_act_ret_energy; EM1Data: total_act_ret_energy
-        Double retTotal = emData.aRetTotal != null ? emData.aRetTotal : emData.totalActRetEnergy;
+        Double retTotal = emData.getTotalActiveReturnedEnergy();
         if (retTotal != null) {
             emeter.totalReturned = retTotal;
         }
         status.emeters.set(slotIdx, emeter);
-        // For single-clamp devices (EM Mini) totalKWH doubles as the device-level total
-        if (slotIdx == 0 && emData.totalKWH != null) {
-            status.totalKWH = emData.totalKWH;
+        // For single-clamp devices (EM Mini) the clamp total doubles as the device-level total
+        if (slotIdx == 0 && emData.totalActiveEnergySum != null) {
+            status.totalKWH = emData.totalActiveEnergySum;
         }
     }
 
@@ -865,20 +874,22 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             status.totalApparent = em.totalAprtPower;
         }
         // Accumulated total energy (Wh) from emdata:0; absent in WebSocket push updates but present in polling
-        if (emData != null && emData.totalKWH != null) {
-            status.totalKWH = emData.totalKWH;
+        if (emData != null && emData.totalActiveEnergySum != null) {
+            status.totalKWH = emData.totalActiveEnergySum;
         }
-        // total_ret is device-level returned energy in Wh (same unit as total_act / totalKWH).
-        if (emData != null && emData.totalRetKWH != null) {
-            status.totalReturned = emData.totalRetKWH;
+        if (emData != null && emData.totalActiveReturnedEnergySum != null) {
+            status.totalReturned = emData.totalActiveReturnedEnergySum;
         }
 
         updateEmPhase(status, 0, em.aActPower, em.aVoltage, em.aCurrent, em.aPF, em.aFreq, em.aAprtPower,
-                emData != null ? emData.aTotal : null, emData != null ? emData.aRetTotal : null, channelUpdate);
+                emData != null ? emData.totalActiveEnergyA : null,
+                emData != null ? emData.totalActiveReturnedEnergyA : null, channelUpdate);
         updateEmPhase(status, 1, em.bActPower, em.bVoltage, em.bCurrent, em.bPF, em.bFreq, em.bAprtPower,
-                emData != null ? emData.bTotal : null, emData != null ? emData.bRetTotal : null, channelUpdate);
+                emData != null ? emData.totalActiveEnergyB : null,
+                emData != null ? emData.totalActiveReturnedEnergyB : null, channelUpdate);
         updateEmPhase(status, 2, em.cActPower, em.cVoltage, em.cCurrent, em.cPF, em.cFreq, em.cAprtPower,
-                emData != null ? emData.cTotal : null, emData != null ? emData.cRetTotal : null, channelUpdate);
+                emData != null ? emData.totalActiveEnergyC : null,
+                emData != null ? emData.totalActiveReturnedEnergyC : null, channelUpdate);
 
         if (em.nCurrent != null) {
             if (status.neutralCurrent == null) {
