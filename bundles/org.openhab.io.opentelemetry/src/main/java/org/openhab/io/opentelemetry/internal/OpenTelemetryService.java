@@ -79,7 +79,7 @@ public class OpenTelemetryService {
         shutdownSdk();
     }
 
-    private synchronized void updateConfig(Map<String, Object> configMap) {
+    private void updateConfig(Map<String, Object> configMap) {
         OpenTelemetryConfiguration config = ConfigUtil.resolveVariables(new Configuration(configMap))
                 .as(OpenTelemetryConfiguration.class);
         logger.debug("Updating OpenTelemetry configuration: {}", config);
@@ -165,7 +165,12 @@ public class OpenTelemetryService {
                 .addLogRecordProcessor(BatchLogRecordProcessor.builder(logExporterBuilder.build()).build());
     }
 
-    private void initializeSdk(OpenTelemetryConfiguration config) {
+    private synchronized void initializeSdk(OpenTelemetryConfiguration config) {
+        if (openTelemetrySdk != null) {
+            logger.debug("OpenTelemetry SDK already initialized.");
+            return;
+        }
+
         Resource resource = getOtlpResource();
 
         SdkLoggerProviderBuilder loggerProviderBuilder = createOtlpLoggerProvider(config);
@@ -194,7 +199,7 @@ public class OpenTelemetryService {
         logger.info("OpenTelemetry service started.");
     }
 
-    private void shutdownSdk() {
+    private synchronized void shutdownSdk() {
         LogReaderService lrs = this.logReaderService;
         OpenTelemetryLogListener listener = this.logListener;
         if (lrs != null && listener != null) {
