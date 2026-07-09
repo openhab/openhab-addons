@@ -168,7 +168,6 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         boolean firstInit = !profile.initialized;
 
         Shelly2GetConfigResult dc = initProfile(profile, thingTypeUID, devInfo);
-
         if (profile.hasBattery) {
             checkSetWsCallback();
         }
@@ -531,12 +530,15 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 case SHELLY2_EVENT_LPUSH:
                 case SHELLY2_EVENT_SLPUSH:
                 case SHELLY2_EVENT_LSPUSH:
-                    if (e.id < profile.numInputs) {
+                    if (e.id < profile.numInputs && e.id < relayStatus.inputs.size()) {
                         ShellyInputState input = relayStatus.inputs.get(e.id);
                         input.event = getString(MAP_INPUT_EVENT_TYPE.get(e.event));
                         input.eventCount = getInteger(input.eventCount) + 1;
                         relayStatus.inputs.set(e.id, input);
-                        profile.status.inputs.set(e.id, input);
+                        List<@Nullable ShellyInputState> statusInputs = profile.status.inputs;
+                        if (statusInputs != null && e.id < statusInputs.size()) {
+                            statusInputs.set(e.id, input);
+                        }
 
                         String group = getProfile().getInputGroup(e.id);
                         updateChannel(group, CHANNEL_STATUS_EVENTTYPE + profile.getInputSuffix(e.id),

@@ -17,7 +17,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
-import static org.openhab.binding.shelly.internal.ShellyDevices.*;
+import static org.openhab.binding.shelly.internal.ShellyDevices.THING_TYPE_SHELLYPLUS1PM;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,8 +63,6 @@ public class Shelly2AddonStatusTest {
 
     private static final String LOCAL_IP = "192.168.1.50";
     private static final String DEVICE_IP = "192.168.1.100";
-
-    // ── helpers ──────────────────────────────────────────────────────────────────
 
     private ShellyApiConfiguration testConfig() {
         ShellyBindingConfiguration raw = ShellyBindingConfiguration
@@ -141,8 +139,6 @@ public class Shelly2AddonStatusTest {
         return new TestableApiClient(testConfig(), mockRelayThing());
     }
 
-    // ── DTO parsing ───────────────────────────────────────────────────────────────
-
     @Test
     void temperatureStatusTemp_readError_parsesErrorsFieldAndNullTc() {
         Gson gson = new Gson();
@@ -161,8 +157,6 @@ public class Shelly2AddonStatusTest {
         assertThat(t.tC, is(22.5));
         assertThat(t.errors, is(nullValue()));
     }
-
-    // ── fillDeviceStatus — temperature ────────────────────────────────────────────
 
     @Test
     void fillDeviceStatus_tempReadError_extTemperatureNull() throws ShellyApiException {
@@ -213,8 +207,6 @@ public class Shelly2AddonStatusTest {
         assertThat(status.extTemperature.sensor2.tC, is(18.0));
     }
 
-    // ── fillDeviceStatus — humidity ───────────────────────────────────────────────
-
     @Test
     void fillDeviceStatus_humidityReadError_extHumidityNull() throws ShellyApiException {
         Shelly2DeviceStatusResult result = new Shelly2DeviceStatusResult();
@@ -240,8 +232,6 @@ public class Shelly2AddonStatusTest {
 
         assertThat("valid humidity must set extHumidity", status.extHumidity, is(not(nullValue())));
     }
-
-    // ── fillDeviceStatus — voltage ────────────────────────────────────────────────
 
     @Test
     void fillDeviceStatus_voltageReadError_extVoltageNull() throws ShellyApiException {

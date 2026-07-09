@@ -12,20 +12,26 @@
  */
 package org.openhab.binding.shelly.internal.handler;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_API_INVTEMP;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyEMNCurrentSettings;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyEMNCurrentStatus;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsEMeter;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsMeter;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtAnalogInput;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtDigitalInput;
@@ -35,15 +41,11 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSe
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtVoltage;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
 /**
- * Tests for {@link ShellyComponents} — addon sensor update path.
- *
- * Covers:
- * - {@link ShellyComponents#hasAddon} detection logic
- * - {@link ShellyComponents#updateTempChannel} INVTEMP → UNDEF promotion
- * - {@link ShellyComponents#updateSensors} lastUpdate heartbeat for relay+addon devices
+ * Tests for {@link ShellyComponents} — addon sensor update path and meter update path.
  *
  * @author Markus Michels - Initial contribution
  */
@@ -51,59 +53,51 @@ import org.openhab.core.types.UnDefType;
 @SuppressWarnings({ "null" })
 public class ShellyComponentsTest {
 
-    // ── hasAddon ─────────────────────────────────────────────────────────────
-
     @Test
-    void hasAddon_allNull_returnsFalse() {
+    void hasAddonAllNullReturnsFalse() {
         assertThat(ShellyComponents.hasAddon(new ShellySettingsStatus()), is(false));
     }
 
     @Test
-    void hasAddon_extTemperature_returnsTrue() {
+    void hasAddonSingleExtFieldReturnsTrue() {
         ShellySettingsStatus s = new ShellySettingsStatus();
         s.extTemperature = new ShellyExtTemperature();
+        assertThat(ShellyComponents.hasAddon(s), is(true));
+
+        s = new ShellySettingsStatus();
+        s.extHumidity = new ShellyExtHumidity();
+        assertThat(ShellyComponents.hasAddon(s), is(true));
+
+        s = new ShellySettingsStatus();
+        s.extVoltage = new ShellyExtVoltage();
+        assertThat(ShellyComponents.hasAddon(s), is(true));
+
+        s = new ShellySettingsStatus();
+        s.extDigitalInput = new ShellyExtDigitalInput();
+        assertThat(ShellyComponents.hasAddon(s), is(true));
+
+        s = new ShellySettingsStatus();
+        s.extAnalogInput = new ShellyExtAnalogInput();
         assertThat(ShellyComponents.hasAddon(s), is(true));
     }
 
     @Test
-    void hasAddon_extHumidity_returnsTrue() {
+    void hasAddonMultipleFieldsSetReturnsTrue() {
         ShellySettingsStatus s = new ShellySettingsStatus();
+        s.extTemperature = new ShellyExtTemperature();
         s.extHumidity = new ShellyExtHumidity();
         assertThat(ShellyComponents.hasAddon(s), is(true));
     }
 
     @Test
-    void hasAddon_extVoltage_returnsTrue() {
-        ShellySettingsStatus s = new ShellySettingsStatus();
-        s.extVoltage = new ShellyExtVoltage();
-        assertThat(ShellyComponents.hasAddon(s), is(true));
-    }
-
-    @Test
-    void hasAddon_extDigitalInput_returnsTrue() {
-        ShellySettingsStatus s = new ShellySettingsStatus();
-        s.extDigitalInput = new ShellyExtDigitalInput();
-        assertThat(ShellyComponents.hasAddon(s), is(true));
-    }
-
-    @Test
-    void hasAddon_extAnalogInput_returnsTrue() {
-        ShellySettingsStatus s = new ShellySettingsStatus();
-        s.extAnalogInput = new ShellyExtAnalogInput();
-        assertThat(ShellyComponents.hasAddon(s), is(true));
-    }
-
-    // ── updateTempChannel ─────────────────────────────────────────────────────
-
-    @Test
-    void updateTempChannel_nullSensor_returnsFalse() {
+    void updateTempChannelNullSensorReturnsFalse() {
         ShellyThingInterface handler = mock(ShellyThingInterface.class);
         assertThat(ShellyComponents.updateTempChannel(null, handler, CHANNEL_ESENSOR_TEMP1), is(false));
         verify(handler, never()).updateChannel(anyString(), anyString(), any());
     }
 
     @Test
-    void updateTempChannel_invTemp_publishesUndef() {
+    void updateTempChannelInvTempPublishesUndef() {
         ShellyThingInterface handler = mock(ShellyThingInterface.class);
         when(handler.updateChannel(anyString(), anyString(), any())).thenReturn(true);
 
@@ -115,7 +109,7 @@ public class ShellyComponentsTest {
     }
 
     @Test
-    void updateTempChannel_validTemp_publishesQuantityType() {
+    void updateTempChannelValidTempPublishesQuantityType() {
         ShellyThingInterface handler = mock(ShellyThingInterface.class);
         when(handler.updateChannel(anyString(), anyString(), any())).thenReturn(true);
 
@@ -128,7 +122,7 @@ public class ShellyComponentsTest {
     }
 
     @Test
-    void updateTempChannel_nullTc_returnsFalse() {
+    void updateTempChannelNullTcReturnsFalse() {
         ShellyThingInterface handler = mock(ShellyThingInterface.class);
 
         ShellyShortTemp sensor = new ShellyShortTemp();
@@ -138,10 +132,8 @@ public class ShellyComponentsTest {
         verify(handler, never()).updateChannel(anyString(), anyString(), any());
     }
 
-    // ── updateSensors — relay + addon ─────────────────────────────────────────
-
     @Test
-    void updateSensors_relayWithAddonTemp_updatesLastUpdate() throws Exception {
+    void updateSensorsRelayWithAddonTempUpdatesLastUpdate() throws Exception {
         ShellyThingInterface handler = relayHandlerWith(new ShellySettingsStatus());
         ShellySettingsStatus status = new ShellySettingsStatus();
         ShellyExtTemperature ext1 = new ShellyExtTemperature();
@@ -154,18 +146,7 @@ public class ShellyComponentsTest {
     }
 
     @Test
-    void updateSensors_relayWithoutAddon_noLastUpdate() throws Exception {
-        ShellyThingInterface handler = relayHandlerWith(new ShellySettingsStatus());
-        ShellySettingsStatus status = new ShellySettingsStatus();
-        // no extTemperature, extHumidity, etc.
-
-        ShellyComponents.updateSensors(handler, status);
-
-        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_LAST_UPDATE), any());
-    }
-
-    @Test
-    void updateSensors_relayWithInvTemp_publishesUndefAndUpdatesLastUpdate() throws Exception {
+    void updateSensorsRelayWithInvTempPublishesUndefAndUpdatesLastUpdate() throws Exception {
         ShellyThingInterface handler = relayHandlerWith(new ShellySettingsStatus());
         ShellySettingsStatus status = new ShellySettingsStatus();
         ShellyExtTemperature ext2 = new ShellyExtTemperature();
@@ -179,7 +160,7 @@ public class ShellyComponentsTest {
     }
 
     @Test
-    void updateSensors_pureRelayNoAddon_lastUpdateNeverWritten() throws Exception {
+    void updateSensorsPureRelayNoAddonLastUpdateNeverWritten() throws Exception {
         ShellyThingInterface handler = relayHandlerWith(new ShellySettingsStatus());
 
         ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
@@ -188,14 +169,9 @@ public class ShellyComponentsTest {
     }
 
     @Test
-    void updateSensors_lastUpdateWrittenEvenWhenTempValueUnchanged() throws Exception {
-        // Critical heartbeat test: even when the temperature channel is cache-deduplicated
-        // (updateChannel returns false), sensors#lastUpdate must still be written so the
-        // channel acts as a "sensor alive" indicator.
+    void updateSensorsLastUpdateWrittenEvenWhenTempValueUnchanged() throws Exception {
         ShellyThingInterface handler = relayHandlerWith(new ShellySettingsStatus());
-        when(handler.updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_ESENSOR_TEMP1), any())).thenReturn(false); // simulate
-                                                                                                                   // cache
-                                                                                                                   // dedup
+        when(handler.updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_ESENSOR_TEMP1), any())).thenReturn(false);
 
         ShellySettingsStatus status = new ShellySettingsStatus();
         ShellyExtTemperature ext3 = new ShellyExtTemperature();
@@ -209,8 +185,7 @@ public class ShellyComponentsTest {
     }
 
     @Test
-    void updateSensors_nullSensorSlot_skipsPublish() throws Exception {
-        // sensor1 valid, sensor2 null — only sensor1 published, sensor2 not touched
+    void updateSensorsNullSensorSlotSkipsPublish() throws Exception {
         ShellyThingInterface handler = relayHandlerWith(new ShellySettingsStatus());
         ShellySettingsStatus status = new ShellySettingsStatus();
         ShellyExtTemperature ext4 = new ShellyExtTemperature();
@@ -225,7 +200,7 @@ public class ShellyComponentsTest {
     }
 
     @Test
-    void updateSensors_addonHumidity_updatesLastUpdate() throws Exception {
+    void updateSensorsAddonHumidityUpdatesLastUpdate() throws Exception {
         ShellyThingInterface handler = relayHandlerWith(new ShellySettingsStatus());
         ShellySettingsStatus status = new ShellySettingsStatus();
         status.extHumidity = new ShellyExtHumidity(55.0);
@@ -236,15 +211,7 @@ public class ShellyComponentsTest {
     }
 
     @Test
-    void hasAddon_multipleFieldsSet_returnsTrue() {
-        ShellySettingsStatus s = new ShellySettingsStatus();
-        s.extTemperature = new ShellyExtTemperature();
-        s.extHumidity = new ShellyExtHumidity();
-        assertThat(ShellyComponents.hasAddon(s), is(true));
-    }
-
-    @Test
-    void updateSensors_voltage_updatesVoltageChannel() throws Exception {
+    void updateSensorsVoltageUpdatesVoltageChannel() throws Exception {
         ShellyThingInterface handler = relayHandlerWith(new ShellySettingsStatus());
         ShellySettingsStatus status = new ShellySettingsStatus();
         status.extVoltage = new ShellyExtVoltage(3.3);
@@ -256,7 +223,7 @@ public class ShellyComponentsTest {
     }
 
     @Test
-    void updateSensors_digitalInput_updatesDigitalInputChannel() throws Exception {
+    void updateSensorsDigitalInputUpdatesDigitalInputChannel() throws Exception {
         ShellyThingInterface handler = relayHandlerWith(new ShellySettingsStatus());
         ShellySettingsStatus status = new ShellySettingsStatus();
         status.extDigitalInput = new ShellyExtDigitalInput(true);
@@ -267,7 +234,7 @@ public class ShellyComponentsTest {
     }
 
     @Test
-    void updateSensors_analogInput_updatesAnalogInputChannel() throws Exception {
+    void updateSensorsAnalogInputUpdatesAnalogInputChannel() throws Exception {
         ShellyThingInterface handler = relayHandlerWith(new ShellySettingsStatus());
         ShellySettingsStatus status = new ShellySettingsStatus();
         status.extAnalogInput = new ShellyExtAnalogInput(75.0);
@@ -279,7 +246,7 @@ public class ShellyComponentsTest {
     }
 
     @Test
-    void updateSensors_multipleExtTempSlots_allPublished() throws Exception {
+    void updateSensorsMultipleExtTempSlotsAllPublished() throws Exception {
         ShellyThingInterface handler = relayHandlerWith(new ShellySettingsStatus());
         ShellySettingsStatus status = new ShellySettingsStatus();
         ShellyExtTemperature ext = new ShellyExtTemperature();
@@ -294,7 +261,197 @@ public class ShellyComponentsTest {
         verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_ESENSOR_TEMP3), any());
     }
 
-    // ── helpers ───────────────────────────────────────────────────────────────
+    @Test
+    void frequencyNullChannelNotUpdated() {
+        ShellyDeviceProfile profile = emeterProfile(false, 1);
+        ShellySettingsEMeter emeter = new ShellySettingsEMeter();
+        emeter.isValid = true;
+        emeter.power = 100.0;
+        emeter.frequency = null;
+
+        ShellySettingsStatus status = statusWithEMeters(emeter);
+        ShellyThingInterface handler = mockHandler(profile);
+
+        ShellyComponents.updateMeters(handler, status);
+
+        verify(handler, never()).updateChannel(anyString(), eq(CHANNEL_EMETER_FREQUENCY), any(State.class));
+    }
+
+    @Test
+    void frequencySetChannelUpdated() {
+        ShellyDeviceProfile profile = emeterProfile(false, 1);
+        ShellySettingsEMeter emeter = new ShellySettingsEMeter();
+        emeter.isValid = true;
+        emeter.power = 100.0;
+        emeter.frequency = 50.0;
+
+        ShellySettingsStatus status = statusWithEMeters(emeter);
+        ShellyThingInterface handler = mockHandler(profile);
+
+        ShellyComponents.updateMeters(handler, status);
+
+        verify(handler, atLeastOnce()).updateChannel(anyString(), eq(CHANNEL_EMETER_FREQUENCY), any(State.class));
+    }
+
+    @Test
+    void gen2RollerFrequencyNotUpdated() {
+        ShellyDeviceProfile profile = rollerGen2Profile(1);
+        ShellySettingsEMeter emeter = new ShellySettingsEMeter();
+        emeter.isValid = true;
+        emeter.power = 300.0;
+        emeter.frequency = null;
+
+        ShellySettingsStatus status = statusWithEMeters(emeter);
+        ShellyThingInterface handler = mockHandler(profile);
+
+        ShellyComponents.updateMeters(handler, status);
+
+        verify(handler, never()).updateChannel(anyString(), eq(CHANNEL_EMETER_FREQUENCY), any(State.class));
+    }
+
+    @Test
+    void triphaseUpdatesThreeSeparateMeterGroups() {
+        ShellyDeviceProfile profile = emeterProfile(false, 3);
+        ShellySettingsStatus status = statusWithEMeters(emeter(100.0), emeter(200.0), emeter(300.0));
+        ShellyThingInterface handler = mockHandler(profile);
+
+        ShellyComponents.updateMeters(handler, status);
+
+        verify(handler, atLeastOnce()).updateChannel(eq(CHANNEL_GROUP_METER + "1"), eq(CHANNEL_METER_CURRENTWATTS),
+                any(State.class));
+        verify(handler, atLeastOnce()).updateChannel(eq(CHANNEL_GROUP_METER + "2"), eq(CHANNEL_METER_CURRENTWATTS),
+                any(State.class));
+        verify(handler, atLeastOnce()).updateChannel(eq(CHANNEL_GROUP_METER + "3"), eq(CHANNEL_METER_CURRENTWATTS),
+                any(State.class));
+    }
+
+    @Test
+    void gen1TwoRelaysTwoMeterGroups() {
+        ShellyDeviceProfile profile = simpleRelayProfile(2);
+        ShellySettingsMeter m0 = new ShellySettingsMeter();
+        m0.isValid = true;
+        m0.power = 55.0;
+        ShellySettingsMeter m1 = new ShellySettingsMeter();
+        m1.isValid = true;
+        m1.power = 88.0;
+
+        ShellySettingsStatus status = statusWithMeters(m0, m1);
+        ShellyThingInterface handler = mockHandler(profile);
+
+        ShellyComponents.updateMeters(handler, status);
+
+        verify(handler, atLeastOnce()).updateChannel(eq(CHANNEL_GROUP_METER + "1"), eq(CHANNEL_METER_CURRENTWATTS),
+                any(State.class));
+        verify(handler, atLeastOnce()).updateChannel(eq(CHANNEL_GROUP_METER + "2"), eq(CHANNEL_METER_CURRENTWATTS),
+                any(State.class));
+    }
+
+    @Test
+    void gen1TwoRelaysExtraMeterSlotIgnored() {
+        ShellyDeviceProfile profile = simpleRelayProfile(1);
+        ShellySettingsMeter m0 = new ShellySettingsMeter();
+        m0.isValid = true;
+        m0.power = 55.0;
+        ShellySettingsMeter m1 = new ShellySettingsMeter();
+        m1.isValid = true;
+        m1.power = 88.0;
+
+        ShellySettingsStatus status = statusWithMeters(m0, m1);
+        ShellyThingInterface handler = mockHandler(profile);
+
+        ShellyComponents.updateMeters(handler, status);
+
+        verify(handler, atLeastOnce()).updateChannel(eq(CHANNEL_GROUP_METER), eq(CHANNEL_METER_CURRENTWATTS),
+                any(State.class));
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_METER + "2"), anyString(), any(State.class));
+    }
+
+    @Test
+    void gen1RollerAggregatedMeterSumsBothMotorChannels() {
+        ShellyDeviceProfile profile = gen1RollerProfile();
+        ShellySettingsMeter m0 = new ShellySettingsMeter();
+        m0.isValid = true;
+        m0.power = 100.0;
+        m0.total = 500.0;
+        ShellySettingsMeter m1 = new ShellySettingsMeter();
+        m1.isValid = true;
+        m1.power = 200.0;
+        m1.total = 300.0;
+
+        ShellySettingsStatus status = statusWithMeters(m0, m1);
+        ShellyThingInterface handler = mockHandler(profile);
+
+        ShellyComponents.updateMeters(handler, status);
+
+        verify(handler, atLeastOnce()).updateChannel(eq(CHANNEL_GROUP_METER), eq(CHANNEL_METER_CURRENTWATTS),
+                any(State.class));
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_METER + "1"), anyString(), any(State.class));
+    }
+
+    @Test
+    void gen1RollerFrequencyChannelNotWritten() {
+        ShellyDeviceProfile profile = gen1RollerProfile();
+        ShellySettingsMeter m0 = new ShellySettingsMeter();
+        m0.isValid = true;
+        m0.power = 100.0;
+
+        ShellySettingsStatus status = statusWithMeters(m0);
+        ShellyThingInterface handler = mockHandler(profile);
+
+        ShellyComponents.updateMeters(handler, status);
+
+        verify(handler, never()).updateChannel(anyString(), eq(CHANNEL_EMETER_FREQUENCY), any(State.class));
+    }
+
+    @Test
+    void simpleMetersEmptyCountersArrayNoThrow() {
+        ShellyDeviceProfile profile = simpleRelayProfile(1);
+        ShellySettingsMeter m0 = new ShellySettingsMeter();
+        m0.isValid = true;
+        m0.power = 55.0;
+        m0.counters = new Double[0];
+
+        ShellySettingsStatus status = statusWithMeters(m0);
+        ShellyThingInterface handler = mockHandler(profile);
+
+        ShellyComponents.updateMeters(handler, status);
+
+        verify(handler, never()).updateChannel(anyString(), eq(CHANNEL_METER_LASTMIN1), any(State.class));
+    }
+
+    @Test
+    void metersNullEmetersReturnsFalse() {
+        ShellyDeviceProfile profile = emeterProfile(false, 1);
+        ShellySettingsStatus status = new ShellySettingsStatus();
+        status.emeters = null;
+        status.meters = null;
+
+        ShellyThingInterface handler = mockHandler(profile);
+
+        boolean result = ShellyComponents.updateMeters(handler, status);
+
+        assertFalse(result);
+        verify(handler, never()).updateChannel(anyString(), anyString(), any(State.class));
+    }
+
+    @Test
+    void neutralCurrentUpdatesNMeterChannels() {
+        ShellyDeviceProfile profile = emeterProfile(false, 3);
+        profile.settings.neutralCurrent = new ShellyEMNCurrentSettings();
+
+        ShellySettingsStatus status = statusWithEMeters(emeter(100.0), emeter(200.0), emeter(300.0));
+        ShellyEMNCurrentStatus nCurrent = new ShellyEMNCurrentStatus();
+        nCurrent.isValid = true;
+        nCurrent.current = 1.23;
+        status.neutralCurrent = nCurrent;
+
+        ShellyThingInterface handler = mockHandler(profile);
+
+        ShellyComponents.updateMeters(handler, status);
+
+        verify(handler, atLeastOnce()).updateChannel(eq(CHANNEL_GROUP_NMETER), eq(CHANNEL_NMETER_CURRENT),
+                any(State.class));
+    }
 
     private static ShellyThingInterface relayHandlerWith(ShellySettingsStatus profileStatus) {
         ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUS1PM);
@@ -309,9 +466,396 @@ public class ShellyComponentsTest {
         return handler;
     }
 
+    private static ShellyThingInterface mockHandler(ShellyDeviceProfile profile) {
+        ShellyThingInterface handler = mock(ShellyThingInterface.class);
+        when(handler.getProfile()).thenReturn(profile);
+        when(handler.areChannelsCreated()).thenReturn(true);
+        when(handler.updateChannel(anyString(), anyString(), any(State.class))).thenReturn(true);
+        return handler;
+    }
+
     private static ShellyShortTemp sensorAt(double tC) {
         ShellyShortTemp s = new ShellyShortTemp();
         s.tC = tC;
         return s;
+    }
+
+    private static ShellySettingsStatus statusWithEMeters(ShellySettingsEMeter... emeters) {
+        ShellySettingsStatus status = new ShellySettingsStatus();
+        status.emeters = new ArrayList<>();
+        for (ShellySettingsEMeter em : emeters) {
+            status.emeters.add(em);
+        }
+        return status;
+    }
+
+    private static ShellySettingsStatus statusWithMeters(ShellySettingsMeter... meters) {
+        ShellySettingsStatus status = new ShellySettingsStatus();
+        status.meters = new ArrayList<>();
+        for (ShellySettingsMeter m : meters) {
+            status.meters.add(m);
+        }
+        return status;
+    }
+
+    private static ShellyDeviceProfile emeterProfile(boolean isEM50, int numMeters) {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUS1PM);
+        profile.isEMeter = true;
+        profile.isGen2 = true;
+        profile.isEM50 = isEM50;
+        profile.numMeters = numMeters;
+        return profile;
+    }
+
+    private static ShellyDeviceProfile rollerGen2Profile(int numMeters) {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUS2PM_ROLLER);
+        profile.isEMeter = true;
+        profile.isGen2 = true;
+        profile.isRoller = true;
+        profile.numMeters = numMeters;
+        return profile;
+    }
+
+    private static ShellyDeviceProfile simpleRelayProfile(int numMeters) {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLY25_RELAY);
+        profile.isEMeter = false;
+        profile.isGen2 = false;
+        profile.isRoller = false;
+        profile.numMeters = numMeters;
+        return profile;
+    }
+
+    private static ShellyDeviceProfile gen1RollerProfile() {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLY25_ROLLER);
+        profile.isEMeter = false;
+        profile.isGen2 = false;
+        profile.isRoller = true;
+        profile.numMeters = 1;
+        return profile;
+    }
+
+    @Test
+    void deviceTotalKwhEm1dataPresentUsesDeviceTotal() {
+        ShellyDeviceProfile profile = emeterProfile(true, 2);
+        ShellySettingsStatus status = statusWithEMeters(emeter(100.0, 5000.0), emeter(200.0, 3000.0));
+        status.totalKWH = 8100.0;
+
+        ShellyThingInterface handler = mockHandler(profile);
+        ShellyComponents.updateMeters(handler, status);
+
+        ArgumentCaptor<org.openhab.core.types.State> captor = ArgumentCaptor
+                .forClass(org.openhab.core.types.State.class);
+        verify(handler, atLeastOnce()).updateChannel(eq(CHANNEL_GROUP_DEV_STATUS), eq(CHANNEL_DEVST_ACCUTOTAL),
+                captor.capture());
+        List<org.openhab.core.types.State> values = captor.getAllValues();
+        QuantityType<?> last = (QuantityType<?>) values.get(values.size() - 1);
+        assertEquals(8.1, last.doubleValue(), 0.001);
+    }
+
+    @Test
+    void deviceTotalKwhEm1dataAbsentUsesPerMeterSum() {
+        ShellyDeviceProfile profile = emeterProfile(true, 2);
+        ShellySettingsStatus status = statusWithEMeters(emeter(100.0, 5000.0), emeter(200.0, 3000.0));
+        status.totalKWH = null;
+
+        ShellyThingInterface handler = mockHandler(profile);
+        ShellyComponents.updateMeters(handler, status);
+
+        ArgumentCaptor<org.openhab.core.types.State> captor = ArgumentCaptor
+                .forClass(org.openhab.core.types.State.class);
+        verify(handler, atLeastOnce()).updateChannel(eq(CHANNEL_GROUP_DEV_STATUS), eq(CHANNEL_DEVST_ACCUTOTAL),
+                captor.capture());
+        List<org.openhab.core.types.State> values = captor.getAllValues();
+        QuantityType<?> last = (QuantityType<?>) values.get(values.size() - 1);
+        assertEquals(8.0, last.doubleValue(), 0.001);
+    }
+
+    @Test
+    void deviceTotalKwhBothNullChannelNotUpdated() {
+        ShellyDeviceProfile profile = emeterProfile(true, 2);
+        // total intentionally null on both emeters
+        ShellySettingsStatus status = statusWithEMeters(emeter(100.0), emeter(200.0));
+        status.totalKWH = null;
+
+        ShellyThingInterface handler = mockHandler(profile);
+        ShellyComponents.updateMeters(handler, status);
+
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_DEV_STATUS), eq(CHANNEL_DEVST_ACCUTOTAL),
+                any(org.openhab.core.types.State.class));
+    }
+
+    @Test
+    void deviceTotalKwh3emEm1dataAbsentUsesThreePhaseSum() {
+        ShellyDeviceProfile profile = emeterProfile(false, 3);
+        ShellySettingsStatus status = statusWithEMeters(emeter(1000.0, 10000.0), emeter(2000.0, 20000.0),
+                emeter(3000.0, 30000.0));
+        status.totalKWH = null;
+
+        ShellyThingInterface handler = mockHandler(profile);
+        ShellyComponents.updateMeters(handler, status);
+
+        ArgumentCaptor<org.openhab.core.types.State> captor = ArgumentCaptor
+                .forClass(org.openhab.core.types.State.class);
+        verify(handler, atLeastOnce()).updateChannel(eq(CHANNEL_GROUP_DEV_STATUS), eq(CHANNEL_DEVST_ACCUTOTAL),
+                captor.capture());
+        List<org.openhab.core.types.State> values = captor.getAllValues();
+        QuantityType<?> last = (QuantityType<?>) values.get(values.size() - 1);
+        assertEquals(60.0, last.doubleValue(), 0.001);
+    }
+
+    @Test
+    void returnedEnergyNonNullRoutedToEachMeterGroup() {
+        ShellyDeviceProfile profile = emeterProfile(false, 3);
+        ShellySettingsEMeter em0 = new ShellySettingsEMeter();
+        em0.isValid = true;
+        em0.power = 100.0;
+        em0.totalReturned = 1_000_000.0;
+        ShellySettingsEMeter em1 = new ShellySettingsEMeter();
+        em1.isValid = true;
+        em1.power = 200.0;
+        em1.totalReturned = 1_000_000.0;
+        ShellySettingsEMeter em2 = new ShellySettingsEMeter();
+        em2.isValid = true;
+        em2.power = 300.0;
+        em2.totalReturned = 1_000_000.0;
+
+        ShellySettingsStatus status = statusWithEMeters(em0, em1, em2);
+        ShellyThingInterface handler = mockHandler(profile);
+
+        ShellyComponents.updateMeters(handler, status);
+
+        verify(handler, atLeastOnce()).updateChannel(eq("meter1"), eq(CHANNEL_EMETER_TOTALRET), any(State.class));
+        verify(handler, atLeastOnce()).updateChannel(eq("meter2"), eq(CHANNEL_EMETER_TOTALRET), any(State.class));
+        verify(handler, atLeastOnce()).updateChannel(eq("meter3"), eq(CHANNEL_EMETER_TOTALRET), any(State.class));
+    }
+
+    @Test
+    void accumulatedReturnedIsSumOfPerPhaseReturned() {
+        ShellyDeviceProfile profile = emeterProfile(true, 2);
+        ShellySettingsEMeter em0 = new ShellySettingsEMeter();
+        em0.isValid = true;
+        em0.power = 100.0;
+        em0.totalReturned = 2000.0;
+        ShellySettingsEMeter em1 = new ShellySettingsEMeter();
+        em1.isValid = true;
+        em1.power = 200.0;
+        em1.totalReturned = 3000.0;
+
+        ShellySettingsStatus status = statusWithEMeters(em0, em1);
+        ShellyThingInterface handler = mockHandler(profile);
+
+        ShellyComponents.updateMeters(handler, status);
+
+        ArgumentCaptor<org.openhab.core.types.State> captor = ArgumentCaptor
+                .forClass(org.openhab.core.types.State.class);
+        verify(handler, atLeastOnce()).updateChannel(eq(CHANNEL_GROUP_DEV_STATUS), eq(CHANNEL_DEVST_ACCURETURNED),
+                captor.capture());
+        List<org.openhab.core.types.State> values = captor.getAllValues();
+        QuantityType<?> last = (QuantityType<?>) values.get(values.size() - 1);
+        assertEquals(5.0, last.doubleValue(), 0.001);
+    }
+
+    @Test
+    void returnedEnergyNullTotalReturnedChannelSkipped() {
+        // When emeter.totalReturned is null (no emdata:0 received yet, e.g. before first HTTP poll),
+        // the per-meter channel and device-level ACCURETURNED must NOT be updated.
+        ShellyDeviceProfile profile = emeterProfile(false, 1);
+        ShellySettingsEMeter em0 = new ShellySettingsEMeter();
+        em0.isValid = true;
+        em0.power = 100.0;
+        // totalReturned intentionally left null
+
+        ShellySettingsStatus status = statusWithEMeters(em0);
+        ShellyThingInterface handler = mockHandler(profile);
+        ShellyComponents.updateMeters(handler, status);
+
+        verify(handler, never()).updateChannel(anyString(), eq(CHANNEL_EMETER_TOTALRET), any(State.class));
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_DEV_STATUS), eq(CHANNEL_DEVST_ACCURETURNED),
+                any(State.class));
+    }
+
+    @Test
+    void accumulatedReturnedStatusTotalReturnedTakesPriority() {
+        // When status.totalReturned is set (from emdata:0 total_act_ret on HTTP poll, stored as Wh),
+        // CHANNEL_DEVST_ACCURETURNED must use that value (÷1000 = kWh) rather than the per-phase sum.
+        ShellyDeviceProfile profile = emeterProfile(false, 3);
+        ShellySettingsEMeter em0 = new ShellySettingsEMeter();
+        em0.isValid = true;
+        em0.power = 100.0;
+        em0.totalReturned = 1000.0; // per-phase sum would be 6 kWh
+        ShellySettingsEMeter em1 = new ShellySettingsEMeter();
+        em1.isValid = true;
+        em1.power = 200.0;
+        em1.totalReturned = 2000.0;
+        ShellySettingsEMeter em2 = new ShellySettingsEMeter();
+        em2.isValid = true;
+        em2.power = 300.0;
+        em2.totalReturned = 3000.0;
+
+        ShellySettingsStatus status = statusWithEMeters(em0, em1, em2);
+        status.totalReturned = 7000.0; // device hardware counter: 7000 Wh = 7 kWh
+
+        ShellyThingInterface handler = mockHandler(profile);
+        ShellyComponents.updateMeters(handler, status);
+
+        ArgumentCaptor<State> captor = ArgumentCaptor.forClass(State.class);
+        verify(handler, atLeastOnce()).updateChannel(eq(CHANNEL_GROUP_DEV_STATUS), eq(CHANNEL_DEVST_ACCURETURNED),
+                captor.capture());
+        List<State> values = captor.getAllValues();
+        QuantityType<?> last = (QuantityType<?>) values.get(values.size() - 1);
+        assertEquals(7.0, last.doubleValue(), 0.001); // 7000 / 1000 = 7.0 kWh, not the 6.0 per-phase sum
+    }
+
+    @Test
+    void apparentPowerNonNullRoutedPerMeterAndAccumulated() {
+        ShellyDeviceProfile profile = emeterProfile(false, 3);
+        ShellySettingsEMeter em0 = new ShellySettingsEMeter();
+        em0.isValid = true;
+        em0.power = 100.0;
+        em0.apparentPower = 1000.0;
+        ShellySettingsEMeter em1 = new ShellySettingsEMeter();
+        em1.isValid = true;
+        em1.power = 200.0;
+        em1.apparentPower = 1000.0;
+        ShellySettingsEMeter em2 = new ShellySettingsEMeter();
+        em2.isValid = true;
+        em2.power = 300.0;
+        em2.apparentPower = 1000.0;
+
+        ShellySettingsStatus status = statusWithEMeters(em0, em1, em2);
+        ShellyThingInterface handler = mockHandler(profile);
+
+        ShellyComponents.updateMeters(handler, status);
+
+        verify(handler, atLeastOnce()).updateChannel(eq("meter1"), eq(CHANNEL_EMETER_APPARENT), any(State.class));
+        verify(handler, atLeastOnce()).updateChannel(eq("meter2"), eq(CHANNEL_EMETER_APPARENT), any(State.class));
+        verify(handler, atLeastOnce()).updateChannel(eq("meter3"), eq(CHANNEL_EMETER_APPARENT), any(State.class));
+
+        ArgumentCaptor<org.openhab.core.types.State> captor = ArgumentCaptor
+                .forClass(org.openhab.core.types.State.class);
+        verify(handler, atLeastOnce()).updateChannel(eq(CHANNEL_GROUP_DEV_STATUS), eq(CHANNEL_DEVST_ACCUAPPARENT),
+                captor.capture());
+        List<org.openhab.core.types.State> values = captor.getAllValues();
+        QuantityType<?> last = (QuantityType<?>) values.get(values.size() - 1);
+        assertEquals(3000.0, last.doubleValue(), 0.1);
+    }
+
+    @Test
+    void deviceAccuWattsNullUsesSumOfPerMeterPower() {
+        ShellyDeviceProfile profile = emeterProfile(true, 2);
+        ShellySettingsStatus status = statusWithEMeters(emeter(300.0), emeter(700.0));
+        status.totalPower = null;
+
+        ShellyThingInterface handler = mockHandler(profile);
+        ShellyComponents.updateMeters(handler, status);
+
+        ArgumentCaptor<org.openhab.core.types.State> captor = ArgumentCaptor
+                .forClass(org.openhab.core.types.State.class);
+        verify(handler, atLeastOnce()).updateChannel(eq(CHANNEL_GROUP_DEV_STATUS), eq(CHANNEL_DEVST_ACCUWATTS),
+                captor.capture());
+        List<org.openhab.core.types.State> values = captor.getAllValues();
+        QuantityType<?> last = (QuantityType<?>) values.get(values.size() - 1);
+        assertEquals(1000.0, last.doubleValue(), 0.1);
+    }
+
+    @Test
+    void deviceAccuWattsStatusPresentUsesDeviceValue() {
+        ShellyDeviceProfile profile = emeterProfile(true, 2);
+        ShellySettingsStatus status = statusWithEMeters(emeter(300.0), emeter(700.0));
+        status.totalPower = 1050.0; // device-reported total differs slightly from sum
+
+        ShellyThingInterface handler = mockHandler(profile);
+        ShellyComponents.updateMeters(handler, status);
+
+        ArgumentCaptor<org.openhab.core.types.State> captor = ArgumentCaptor
+                .forClass(org.openhab.core.types.State.class);
+        verify(handler, atLeastOnce()).updateChannel(eq(CHANNEL_GROUP_DEV_STATUS), eq(CHANNEL_DEVST_ACCUWATTS),
+                captor.capture());
+        List<org.openhab.core.types.State> values = captor.getAllValues();
+        QuantityType<?> last = (QuantityType<?>) values.get(values.size() - 1);
+        assertEquals(1050.0, last.doubleValue(), 0.1);
+    }
+
+    @Test
+    void pro3emThirdPhaseInvalidSkipsValueUpdateButLoopContinues() {
+        // Regression guard: channel creation was once inside the isValid block; when phase C
+        // reported isValid=false on first poll, meter3 channels were never created and stayed
+        // missing permanently. The fix moved creation outside isValid. This test verifies
+        // the value-update side: phases A/B are updated, phase C is skipped (no value to post),
+        // and the loop counter still advances past all three so accuWatts = A+B only, not stuck.
+        ShellyDeviceProfile profile = pro3emProfile();
+
+        ShellySettingsEMeter em2 = new ShellySettingsEMeter();
+        em2.isValid = false; // phase C: no data — all fields null
+
+        ShellySettingsStatus status = statusWithEMeters(emeter(1000.0, 10000.0), emeter(2000.0, 20000.0), em2);
+        ShellyThingInterface handler = mockHandler(profile);
+        ShellyComponents.updateMeters(handler, status);
+
+        verify(handler, atLeastOnce()).updateChannel(eq("meter1"), eq(CHANNEL_METER_CURRENTWATTS), any(State.class));
+        verify(handler, atLeastOnce()).updateChannel(eq("meter2"), eq(CHANNEL_METER_CURRENTWATTS), any(State.class));
+        verify(handler, never()).updateChannel(eq("meter3"), eq(CHANNEL_METER_CURRENTWATTS), any(State.class));
+
+        ArgumentCaptor<org.openhab.core.types.State> captor = ArgumentCaptor
+                .forClass(org.openhab.core.types.State.class);
+        verify(handler, atLeastOnce()).updateChannel(eq(CHANNEL_GROUP_DEV_STATUS), eq(CHANNEL_DEVST_ACCUWATTS),
+                captor.capture());
+        QuantityType<?> accuWatts = (QuantityType<?>) captor.getAllValues().get(captor.getAllValues().size() - 1);
+        assertEquals(3000.0, accuWatts.doubleValue(), 0.1); // A+B only, C had null power
+    }
+
+    @Test
+    void relayPm2meterAccuReturnedAndApparentNeverUpdated() {
+        // Relay-PM devices (2PM, Plus 1PM) have emeters but updateRelayStatus never sets
+        // totalReturned or apparentPower. Verify neither ACCURETURNED nor ACCUAPPARENT is
+        // written — value-path complement to the channel-creation fix (is3EM||isEM50 gate).
+        ShellyDeviceProfile profile = relayPm2meterProfile();
+
+        ShellySettingsEMeter em0 = new ShellySettingsEMeter();
+        em0.isValid = true;
+        em0.power = 300.0;
+        ShellySettingsEMeter em1 = new ShellySettingsEMeter();
+        em1.isValid = true;
+        em1.power = 700.0;
+
+        ShellySettingsStatus status = statusWithEMeters(em0, em1);
+        ShellyThingInterface handler = mockHandler(profile);
+        ShellyComponents.updateMeters(handler, status);
+
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_DEV_STATUS), eq(CHANNEL_DEVST_ACCURETURNED),
+                any(State.class));
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_DEV_STATUS), eq(CHANNEL_DEVST_ACCUAPPARENT),
+                any(State.class));
+    }
+
+    private static ShellySettingsEMeter emeter(double power) {
+        ShellySettingsEMeter em = new ShellySettingsEMeter();
+        em.isValid = true;
+        em.power = power;
+        return em;
+    }
+
+    private static ShellySettingsEMeter emeter(double power, double total) {
+        ShellySettingsEMeter em = emeter(power);
+        em.total = total;
+        return em;
+    }
+
+    private static ShellyDeviceProfile pro3emProfile() {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPRO3EM);
+        profile.isEMeter = true;
+        profile.isGen2 = true;
+        profile.numMeters = 3;
+        return profile;
+    }
+
+    private static ShellyDeviceProfile relayPm2meterProfile() {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUS2PM_RELAY);
+        profile.isEMeter = true;
+        profile.isGen2 = true;
+        profile.hasRelays = true;
+        profile.numRelays = 2;
+        profile.numMeters = 2;
+        return profile;
     }
 }
