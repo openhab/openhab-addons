@@ -125,7 +125,7 @@ public class ChatGPTHandler extends BaseThingHandler {
                     updateStatus(ThingStatus.ONLINE);
                 } catch (ChatGPTApiException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Could not connect to OpenAI API: " + e.getMessage());
+                            "@text/offline.communication-error");
                     logger.debug("Request to OpenAI failed: {}", e.getMessage(), e);
                 }
             }
@@ -221,6 +221,7 @@ public class ChatGPTHandler extends BaseThingHandler {
                 }
             } catch (ChatGPTApiException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                logger.debug("Fetching models failed: {}", e.getMessage(), e);
             }
         });
     }

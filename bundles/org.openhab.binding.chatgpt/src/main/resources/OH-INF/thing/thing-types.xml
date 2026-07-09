@@ -39,9 +39,9 @@
 				<default>https://api.openai.com/v1</default>
 				<advanced>true</advanced>
 				<options>
-					<option value="OpenAI">https://api.openai.com/v1</option>
-					<option value="OpenRouter">https://openrouter.ai/api/v1</option>
-					<option value="Mistral AI">https://api.mistral.ai/v1</option>
+					<option value="https://api.openai.com/v1">OpenAI</option>
+					<option value="https://openrouter.ai/api/v1">OpenRouter</option>
+					<option value="https://api.mistral.ai/v1">Mistral AI</option>
 				</options>
 				<limitToOptions>false</limitToOptions>
 			</parameter>
@@ -116,7 +116,7 @@
 					mass are considered. We generally recommend altering this or temperature but not both.</description>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="maxTokens" type="decimal">
+			<parameter name="maxTokens" type="integer">
 				<label>Maximum Number of Tokens</label>
 				<description>The maximum number of tokens to generate in the completion.</description>
 				<advanced>true</advanced>
