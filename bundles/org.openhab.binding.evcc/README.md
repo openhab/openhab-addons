@@ -231,6 +231,7 @@ Switch               Evcc_Plan_Active         "Active [%s]"              { chann
 
 ```java
 Number:Power Evcc_Pv_Power "PV Power [%s]" { channel="evcc:battery:demo-server:demo-pv:pv-power" }
+Number:Energy Evcc_Pv_Energy "PV Energy [%s]" { channel="evcc:battery:demo-server:demo-pv:pv-energy" }
 String       Evcc_Pv_Title "Title [%s]"    { channel="evcc:battery:demo-server:demo-pv:pv-title" }
 ```
 
