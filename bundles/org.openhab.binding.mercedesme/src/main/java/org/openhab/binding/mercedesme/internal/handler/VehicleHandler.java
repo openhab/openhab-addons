@@ -435,7 +435,15 @@ public class VehicleHandler extends BaseThingHandler {
                      * directly via ChargingConfigure, which needs no charge program selection, instead of
                      * ChargeProgramConfigure.
                      */
-                    int flatMaxSocToSelect = ((QuantityType<?>) command).intValue();
+                    int flatMaxSocToSelect;
+                    if (command instanceof QuantityType<?> quantityTypeCommand) {
+                        flatMaxSocToSelect = quantityTypeCommand.intValue();
+                    } else if (command instanceof DecimalType decimalTypeCommand) {
+                        flatMaxSocToSelect = decimalTypeCommand.intValue();
+                    } else {
+                        logger.trace("Cannot handle max-soc command {}", command);
+                        return;
+                    }
                     Int32Value maxSocValue = Int32Value.newBuilder().setValue(flatMaxSocToSelect).build();
                     ChargingConfigure cc = ChargingConfigure.newBuilder().setMaxSoc(maxSocValue).build();
                     CommandRequest cr = crBuilder.setChargingConfigure(cc).build();
@@ -1060,7 +1068,7 @@ public class VehicleHandler extends BaseThingHandler {
         for (; step <= upperLimit; step += 10) {
             String label = step + " %";
             commandOptions.add(new CommandOption(label, label));
-            stateOptions.add(new StateOption(Integer.toString(step), label));
+            stateOptions.add(new StateOption(label, label));
         }
         ChannelUID cuid = new ChannelUID(thing.getUID(), GROUP_CHARGE, OH_CHANNEL_MAX_SOC);
         mmcop.setCommandOptions(cuid, commandOptions);

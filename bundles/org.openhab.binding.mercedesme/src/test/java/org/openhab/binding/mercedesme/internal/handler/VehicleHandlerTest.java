@@ -716,12 +716,12 @@ class VehicleHandlerTest {
         assertEquals(10.640, energy.doubleValue(), 0.001, "Energy to max SoC Update");
     }
 
-    @Test
     /**
      * ADR-001: MB-BEV-CLA reports maxSoc/maxSocLowerLimit/maxSocUpperLimit as flat attributes with no
      * chargePrograms list at all. charge#max-soc must still be populated on update, and commanding it must
      * send ChargingConfigure instead of ChargeProgramConfigure.
      */
+    @Test
     public void testMaxSocFallbackWithoutChargePrograms() {
         Thing thingMock = mock(Thing.class);
         when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_BEV);
