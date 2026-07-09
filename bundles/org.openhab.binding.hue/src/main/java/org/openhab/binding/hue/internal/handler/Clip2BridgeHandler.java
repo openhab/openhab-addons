@@ -1255,14 +1255,20 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             UpdateStatusV2 installingStatus = UpdateStatusV2.INSTALLING;
             String installingKey = installingStatus.i18nKey();
 
-            if (softwareStatusMap.get(BridgeConfig.V1_BRIDGE) == UpdateStatusV2.READY_TO_INSTALL) {
+            boolean doBridge = softwareStatusMap.get(BridgeConfig.V1_BRIDGE) == UpdateStatusV2.READY_TO_INSTALL;
+            if (doBridge) {
                 putSoftwareStatus(BridgeConfig.V1_BRIDGE, installingStatus);
-            }
-            if (softwareStatusMap.get(BridgeConfig.V1_ANY_DEVICE) == UpdateStatusV2.READY_TO_INSTALL) {
-                putSoftwareStatus(BridgeConfig.V1_ANY_DEVICE, installingStatus);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING, installingKey);
             }
 
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING, installingKey);
+            boolean doDevices = softwareStatusMap.get(BridgeConfig.V1_ANY_DEVICE) == UpdateStatusV2.READY_TO_INSTALL;
+            if (doDevices) {
+                putSoftwareStatus(BridgeConfig.V1_ANY_DEVICE, installingStatus);
+                if (!doBridge) {
+                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.FIRMWARE_UPDATING, installingKey);
+                }
+            }
+
             refreshSoftwareStatusUI();
 
             try {
@@ -1275,11 +1281,17 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
 
             cancelTask(afterUpdateTask, false);
 
-            // don't interrupt the update; wait full UPDATE_DURATION_SECONDS whether updating bridge or a device only
-            afterUpdateTask = scheduler.schedule(() -> {
-                logger.debug("Firmware update timer elapsed. Re-initiating connection.");
-                checkConnection();
-            }, UPDATE_DURATION_SECONDS, TimeUnit.SECONDS);
+            if (doBridge) {
+                afterUpdateTask = scheduler.schedule(() -> {
+                    logger.debug("Firmware update timer elapsed. Re-initiating connection.");
+                    checkConnection();
+                }, UPDATE_DURATION_SECONDS, TimeUnit.SECONDS);
+            } else if (doDevices) {
+                afterUpdateTask = scheduler.schedule(() -> {
+                    putSoftwareStatus(BridgeConfig.V1_ANY_DEVICE, null);
+                    refreshSoftwareStatusUI();
+                }, 5, TimeUnit.SECONDS);
+            }
 
             return getText("install.update.success");
         } finally {
