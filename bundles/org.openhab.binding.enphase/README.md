@@ -84,6 +84,10 @@ An example of a production channel name is: `production#wattsNow`.
 | wattHoursLifetime  | Number:Energy | Watt hours produced over the lifetime |
 | wattsNow           | Number:Power  | Latest watts produced                 |
 
+On Envoy gateways with version 7 firmware and higher the `consumption` data is read from the metering endpoint.
+This endpoint only provides the instantaneous `wattsNow` value (and `wattHoursLifetime` when a total-consumption meter is present).
+The `wattHoursToday` and `wattHoursSevenDays` consumption channels are not available from this endpoint and stay undefined.
+
 The `inverter` thing has the following channels:
 
 | channel         | type         | description                          |
