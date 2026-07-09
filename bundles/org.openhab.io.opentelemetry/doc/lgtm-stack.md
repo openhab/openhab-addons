@@ -7,7 +7,7 @@ For our use case of receiving and viewing logs, Loki and Grafana are enough.
 However, the [grafana/otel-lgtm](https://github.com/grafana/docker-otel-lgtm) container image makes it easy to set up a complete LGTM Stack, so you can use that instead of setting up the individual components yourself.
 We won't cover setting up the LGTM Stack in this documentation, you should be able to figure this out with their documentation and the internet.
 
-Configure openHAB with the URL of your LGTM Stack, e.g., `http://localhost:4318`, to send OpenTelemetry data.
+Configure openHAB with the URL of your LGTM Stack, e.g., `http://localhost:4318`, and turn on _Export Logs_ to send OpenTelemetry data.
 
 ## Grafana Dashboard
 

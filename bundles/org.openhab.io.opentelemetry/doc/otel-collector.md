@@ -58,7 +58,7 @@ docker compose up -d
 
 ### Configure openHAB
 
-Configure openHAB with the URL of your OpenTelemetry Collector, e.g., `http://localhost:4318`.
+Configure openHAB with the URL of your OpenTelemetry Collector, e.g., `http://localhost:4318`, and turn on _Export Logs_.
 
 ### View the Logs
 

@@ -55,11 +55,12 @@ public class OpenTelemetryServiceTest {
         assertEquals("value2", headers.get("key2"));
 
         // Malformed pairs
-        headers = service.parseOtlpHeaders("key1,key2=value2,,key3=");
+        headers = service.parseOtlpHeaders("key1,key2=value2,,key3=,=value4");
         assertEquals(2, headers.size());
         assertFalse(headers.containsKey("key1"));
         assertEquals("value2", headers.get("key2"));
         assertEquals("", headers.get("key3"));
+        assertFalse(headers.containsValue("value4"));
 
         // Equal signs in values
         headers = service.parseOtlpHeaders("key1=val=ue,key2=value2");
@@ -97,6 +98,6 @@ public class OpenTelemetryServiceTest {
 
         // Invalid URI structure throws IllegalArgumentException
         config.otlpURL = "invalid-uri-scheme:\\";
-        assertThrows(IllegalArgumentException.class, () -> config.getLogsURL());
+        assertThrows(IllegalArgumentException.class, config::getLogsURL);
     }
 }

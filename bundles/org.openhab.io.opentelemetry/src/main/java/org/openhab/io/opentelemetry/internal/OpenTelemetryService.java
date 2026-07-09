@@ -107,10 +107,15 @@ public class OpenTelemetryService {
                 .put("service.name", "openHAB") //
                 .put("service.namespace", "org.openhab") //
                 .put("service.version", OpenHAB.getVersion());
-        resourceBuilder
-                // Host/Infrastructure Metadata
-                .put("os.name", System.getProperty("os.name")) //
-                .put("os.version", System.getProperty("os.version"));
+        // Host/Infrastructure Metadata
+        String osName = System.getProperty("os.name");
+        if (osName != null) {
+            resourceBuilder.put("os.name", osName);
+        }
+        String osVersion = System.getProperty("os.version");
+        if (osVersion != null) {
+            resourceBuilder.put("os.version", osVersion);
+        }
         if (hostname != null) {
             resourceBuilder.put("host.name", hostname);
         }
@@ -129,7 +134,10 @@ public class OpenTelemetryService {
         for (String pair : pairs) {
             String[] kv = pair.split("=", 2);
             if (kv.length == 2) {
-                headers.put(kv[0].trim(), kv[1].trim());
+                String key = kv[0].trim();
+                if (!key.isEmpty()) {
+                    headers.put(key, kv[1].trim());
+                }
             }
         }
 

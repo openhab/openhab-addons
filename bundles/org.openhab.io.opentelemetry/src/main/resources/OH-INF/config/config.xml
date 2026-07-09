@@ -28,7 +28,7 @@
 		<parameter name="logsEnabled" type="boolean" groupName="logs">
 			<label>Export Logs</label>
 			<description>Enable exporting openHAB logs to OpenTelemetry.</description>
-			<default>true</default>
+			<default>false</default>
 		</parameter>
 		<parameter name="logsEndpoint" type="text" groupName="logs">
 			<label>Log Endpoint</label>

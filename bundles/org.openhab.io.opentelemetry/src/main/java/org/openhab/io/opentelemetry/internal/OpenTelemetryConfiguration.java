@@ -27,7 +27,7 @@ public class OpenTelemetryConfiguration {
     public String otlpURL = "http://localhost:4318";
     public @Nullable String otlpHeaders;
 
-    public boolean logsEnabled = true;
+    public boolean logsEnabled = false;
     public String logsEndpoint = "/v1/logs";
 
     /**
