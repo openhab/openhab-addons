@@ -55,16 +55,16 @@ Some notes:
 
 ## Channels
 
-| Channel            | Item Type   | Purpose                                               | Values     |
-| ------------------ | ----------- | ----------------------------------------------------- | ---------- |
-| power              | Switch      | Powers the projector on or off.                       |            |
-| source             | String      | Retrieve or set the input source.                     | See above  |
-| picturemode        | String      | Retrieve or set the picture mode.                     | See above  |
-| aspectratio        | String      | Retrieve or set the aspect ratio.                     | See above  |
-| freeze             | Switch      | Turn the freeze image mode on or off.                 |            |
-| blank              | Switch      | Turn the screen blank mode on or off.                 |            |
-| directcmd          | String      | Send a command directly to the projector.             | Write-only |
-| lamptime           | Number:Time | Retrieves the number of hours the lamp has been used. | Read-only  |
+| Channel            | Item Type | Purpose                                               | Values     |
+| ------------------ | --------- | ----------------------------------------------------- | ---------- |
+| power              | Switch    | Powers the projector on or off.                       |            |
+| source             | String    | Retrieve or set the input source.                     | See above  |
+| picturemode        | String    | Retrieve or set the picture mode.                     | See above  |
+| aspectratio        | String    | Retrieve or set the aspect ratio.                     | See above  |
+| freeze             | Switch    | Turn the freeze image mode on or off.                 |            |
+| blank              | Switch    | Turn the screen blank mode on or off.                 |            |
+| directcmd          | String    | Send a command directly to the projector.             | Write-only |
+| lamptime           | Number    | Retrieves the number of hours the lamp has been used. | Read-only  |
 
 ## Full Example
 
@@ -84,14 +84,14 @@ benqprojector:projector-tcp:hometheater "Projector" [ host="192.168.0.10", port=
 ```java
 // Note: replace `-serial` with `-tcp` for `projector-tcp` thing type
 
-Switch benqPower                                           { channel="benqprojector:projector-serial:hometheater:power" }
-String benqSource        "Source [%s]"                     { channel="benqprojector:projector-serial:hometheater:source" }
-String benqPictureMode   "Picture Mode [%s]"               { channel="benqprojector:projector-serial:hometheater:picturemode" }
-String benqAspectRatio   "Aspect Ratio [%s]"               { channel="benqprojector:projector-serial:hometheater:aspectratio" }
-Switch benqFreeze                                          { channel="benqprojector:projector-serial:hometheater:freeze" }
-Switch benqBlank                                           { channel="benqprojector:projector-serial:hometheater:blank" }
-String benqDirect                                          { channel="benqprojector:projector-serial:hometheater:directcmd" }
-Number:Time benqLampTime "Lamp Time [%d %unit%]" <light>   { channel="benqprojector:projector-serial:hometheater:lamptime" }
+Switch benqPower                                      { channel="benqprojector:projector-serial:hometheater:power" }
+String benqSource       "Source [%s]"                 { channel="benqprojector:projector-serial:hometheater:source" }
+String benqPictureMode  "Picture Mode [%s]"           { channel="benqprojector:projector-serial:hometheater:picturemode" }
+String benqAspectRatio  "Aspect Ratio [%s]"           { channel="benqprojector:projector-serial:hometheater:aspectratio" }
+Switch benqFreeze                                     { channel="benqprojector:projector-serial:hometheater:freeze" }
+Switch benqBlank                                      { channel="benqprojector:projector-serial:hometheater:blank" }
+String benqDirect                                     { channel="benqprojector:projector-serial:hometheater:directcmd" }
+Number benqLampTime     "Lamp Time [%d h]" <light>    { channel="benqprojector:projector-serial:hometheater:lamptime" }
 ```
 
 ### `benq.sitemap` Example

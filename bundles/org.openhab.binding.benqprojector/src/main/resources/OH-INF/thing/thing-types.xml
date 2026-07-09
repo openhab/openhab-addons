@@ -21,7 +21,7 @@
 		</channels>
 
 		<properties>
-			<property name="thingTypeVersion">2</property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 
 		<config-description>
@@ -58,7 +58,7 @@
 		</channels>
 
 		<properties>
-			<property name="thingTypeVersion">2</property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 
 		<config-description>
@@ -186,14 +186,14 @@
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="lamptime">
-		<item-type unitHint="h">Number:Time</item-type>
+		<item-type>Number</item-type>
 		<label>Lamp Time</label>
 		<description>Retrieves the number of hours the lamp has been used</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Duration</tag>
 		</tags>
-		<state readOnly="true" pattern="%d %unit%"/>
+		<state readOnly="true" pattern="%d h"/>
 	</channel-type>
 
 </thing:thing-descriptions>

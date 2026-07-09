@@ -18,9 +18,6 @@ import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import javax.measure.Unit;
-import javax.measure.quantity.Time;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.benqprojector.internal.BenqProjectorCommandException;
@@ -29,10 +26,9 @@ import org.openhab.binding.benqprojector.internal.BenqProjectorDevice;
 import org.openhab.binding.benqprojector.internal.BenqProjectorException;
 import org.openhab.binding.benqprojector.internal.configuration.BenqProjectorConfiguration;
 import org.openhab.core.io.transport.serial.SerialPortManager;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -57,7 +53,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class BenqProjectorHandler extends BaseThingHandler {
     private static final int DEFAULT_POLLING_INTERVAL_SEC = 10;
-    private static final Unit<Time> API_HOUR_UNIT = Units.HOUR;
 
     private final Logger logger = LoggerFactory.getLogger(BenqProjectorHandler.class);
     private final SerialPortManager serialPortManager;
@@ -191,7 +186,7 @@ public class BenqProjectorHandler extends BaseThingHandler {
                 case DIRECTCMD:
                     break;
                 case LAMPTIME:
-                    return new QuantityType<>(remoteController.getLampTime(), API_HOUR_UNIT);
+                    return new DecimalType(remoteController.getLampTime());
                 default:
                     logger.warn("Unknown '{}' command!", commandType);
                     return UnDefType.UNDEF;
