@@ -1,4 +1,4 @@
-# Xiaomi Wifi devices (Mi IO) Binding
+# Xiaomi Wifi Devices (Mi IO) Binding
 
 This binding is used to control Xiaomi products implementing the Mi IO protocol.
 This protocol is used for most of Xiaomi Mi Ecosystem wifi devices which is branded as MiJia.
@@ -10,14 +10,15 @@ If your Xiaomi wifi device is controlled by the mihome app, most likely it commu
 
 The following things types are available:
 
-| ThingType        | Description                                                                                                              |
-|------------------|--------------------------------------------------------------------------------------------------------------------------|
-| miio:generic     | Generic type for discovered devices. Once the token is available and the device model is determined, this ThingType will automatically change to the appropriate ThingType |
-| miio:vacuum      | For Xiaomi/Roborock Robot Vacuum products                                                                                         |
-| miio:basic       | For most other devices like yeelights, airpurifiers. Channels and commands are determined by database configuration   |
-| miio:gateway     | Similar to basic, but with the Bridge feature, it can support to forward commands for connected devices                  |
-| miio:lumi        | Thing type for subdevices connected to the gateway. Note, these devices require a defined gateway to function            |
-| miio:unsupported | For experimenting with other devices which use the Mi IO protocol or to build experimental support                                                       |
+| ThingType          | Description                                                                                                                                                                |
+|--------------------|--------------------------------------------------------------------------------------------------------------------------                                                  |
+| `miio:cloud`       | Cloud Connector — manages Xiaomi cloud authentication and provides device tokens to all other things. Add one per openHAB instance.                                        |
+| `miio:generic`     | Generic type for discovered devices. Once the token is available and the device model is determined, this ThingType will automatically change to the appropriate ThingType |
+| `miio:vacuum`      | For Xiaomi/Roborock Robot Vacuum products                                                                                                                                  |
+| `miio:basic`       | For most other devices like yeelights, airpurifiers. Channels and commands are determined by database configuration                                                        |
+| `miio:gateway`     | Similar to basic, but with the Bridge feature, it can support to forward commands for connected devices                                                                    |
+| `miio:lumi`        | Thing type for subdevices connected to the gateway. Note, these devices require a defined gateway to function                                                              |
+| `miio:unsupported` | For experimenting with other devices which use the Mi IO protocol or to build experimental support                                                                         |
 
 # Discovery
 
@@ -37,7 +38,7 @@ Use the one of the regional servers: cn,de,i2,tw,ru,sg,us.
 Multiple servers can be separated with comma, or leave blank to test all known servers.
 See [binding configuration](#binding-configuration) for more details about the binding config.
 
-## Tokens without cloud access
+## Tokens Without Cloud Access
 
 Some devices provide the token upon discovery. This may depends on the firmware version.
 If the device does not discover your token, it needs to be retrieved from the Mi Home app.
@@ -54,19 +55,82 @@ Note. The Xiaomi devices change the token when inclusion is done. Hence if you g
 
 ## Binding Configuration
 
-No binding configuration is required. However to enable cloud functionality enter your Xiaomi username, password and server(s).
-The list of the known countries and related servers is available [in the country servers](#country-servers) section.
+No binding configuration is required.
+Cloud functionality is provided through the dedicated **Cloud Connector** thing (`miio:cloud`) described below.
 
-After successful Xiaomi cloud login, the binding will use the connection to retrieve the required device tokens from the cloud.
-For Xiaomi vacuums the map can be visualized in openHAB using the cloud connection.
+> **Note:** Entering cloud credentials directly in the binding configuration page (username / password fields) is **deprecated** and no longer has any effect.
+> Please migrate to the Cloud Connector thing as described in the [Cloud Connector Thing](#cloud-connector-thing) section.
 
-To enter your cloud details go to the bindings page, click the Xiaomi Mi IO binding and than configure.
-![Binding Config](doc/miioBindingConfig.jpg)
+## Cloud Connector Thing
 
-In the configuration page, enter your userID /passwd and county(s) or leave the countries servers blank.
-![Binding Config](doc/miioBindingConfig2.jpg)
+Cloud access — needed to retrieve device tokens and to show vacuum maps — is managed by a dedicated `miio:cloud` thing called the **Cloud Connector**.
 
-The binding also supports the discovery of devices via the cloud. This may be useful if the device is on a separate subnet. (note, after accepting such a device on a different subnet, the communication needs to be set to cloud in order to have it working.)
+### Why a Separate Thing?
+
+The Cloud Connector thing allows openHAB to surface the Xiaomi login flow as regular channels.
+This makes it possible to scan a QR code directly from the openHAB UI, respond to captcha challenges, and handle two-factor authentication without leaving openHAB.
+Stored session tokens are persisted back into the thing configuration so that subsequent binding restarts reuse the existing session automatically (TOKEN login fast-path).
+
+### Discovery and Creation
+
+The binding automatically proposes a Cloud Connector discovery result in the inbox on startup.
+Accept it, or manually add a thing of type `miio:cloud` with the ID `cloudConnector`.
+
+### Cloud Connector Thing Configuration
+
+| Parameter              | Type    | Required | Description                                                                                                                                                                         |
+|------------------------|---------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| username               | text    | false    | Xiaomi account e-mail address. Only used with `PASSWORD` login method.                                                                                                              |
+| password               | text    | false    | Xiaomi account password. Only used with `PASSWORD` login method.                                                                                                                    |
+| login-method           | text    | false    | Login method: `QRCODE` (default — scan QR code with Mi Home app) or `PASSWORD` (username + password, may require captcha / 2FA). Options: `QR Code (Default)`, `Password Login`     |
+| country                | text    | false    | Regional server(s) to connect to (e.g. `de`, `sg,de`). Separate multiple values with a comma. Leave blank to try all known servers.                                                 |
+| cloud-discovery-mode   | text    | false    | Enable cloud-based device discovery. Options: `Local Only (Default)` (default), `Online Supported`, `All Devices (Advanced)`.                                                       |
+| user-id                | text    | false    | _(Advanced)_ Xiaomi user ID — retrieved automatically after successful login. Do not edit manually.                                                                                 |
+| client-id              | text    | false    | _(Advanced)_ Unique client identifier — generated automatically on first use. Do not change unless you know what you are doing.                                                     |
+| service-token          | text    | false    | _(Advanced)_ Xiaomi service token — retrieved automatically after successful login. Do not edit manually.                                                                           |
+| ssecurity              | text    | false    | _(Advanced)_ Xiaomi ssecurity value — retrieved automatically after successful login. Do not edit manually.                                                                         |
+
+### Cloud Connector Channels
+
+| Channel             | Type    | Description                                                                                                                                                 |
+|---------------------|---------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| login-image         | Image   | Displays the QR code to scan (QR code login) or the captcha image to solve (password login). Use the openHAB UI or a sidecar image item to view this image. |
+| captcha-response    | String  | Send the text visible in the captcha image to this channel when a captcha is required.                                                                      |
+| two-fa              | String  | Send the 2FA / email verification code to this channel when two-factor authentication is required.                                                          |
+| trigger-login       | Switch  | Turn `ON` to cancel any in-progress login and start a fresh login sequence (new QR code). Resets to `OFF` automatically. Has a 30-second cooldown.          |
+
+### Login Flow: QR Code (Default)
+
+1. Add and accept the Cloud Connector thing.
+1. The `login-image` channel shows an orange hourglass while the QR code is being fetched.
+1. Within about one second a QR code appears in the `login-image` channel.
+1. Open the **Mi Home** app → Me → tap your account photo → **Sign out** is shown if already signed in, otherwise go to **Settings → Xiaomi Account → Scan QR code**.
+1. Scan the QR code. The thing status changes to ONLINE and device tokens are retrieved automatically.
+1. After a successful login the session credentials are persisted into the thing configuration; subsequent openHAB restarts will reuse the session without requiring a new QR scan.
+1. If the QR code expires (after ~5 minutes) before you scan it, turn the `trigger-login` channel ON to obtain a fresh QR code.
+
+### Login Flow: Username + Password
+
+1. Set `login-method` to `PASSWORD` and enter your `username` and `password` in the thing configuration.
+1. The binding attempts to log in automatically.
+1. If a **captcha** is required, the `login-image` channel shows the captcha image. Send the text you see to the `captcha-response` channel.
+1. If **two-factor authentication** is required, an e-mail code is sent to your account. Send the code to the `two-fa` channel.
+1. After a successful login the session credentials are persisted; subsequent restarts skip the password flow automatically.
+
+### Migration from Binding-Level Credentials
+
+In previous versions, cloud credentials were entered in the binding configuration page.
+That mechanism is now **deprecated and ignored**.
+To migrate:
+
+1. Open the openHAB UI and accept the **Cloud Connector** discovery result from the inbox (or add a `miio:cloud` thing manually).
+1. Configure the thing: set `login-method`, `username`/`password` (if using password login), and `country`.
+1. Remove the old credentials from the binding configuration page (optional but recommended to avoid confusion).
+1. After a successful login all devices will automatically start using the new cloud connection.
+
+The binding also supports the discovery of devices via the cloud. This may be useful if the device is on a separate subnet.
+Set `cloud-discovery-mode` on the Cloud Connector thing to `supported` or `all` to enable this.
+Note: after accepting a device discovered via the cloud on a different subnet, set the device communication to `cloud` in the thing configuration.
 
 ## Thing Configuration
 
@@ -90,7 +154,7 @@ Note: Suggest to use the cloud communication only for devices that require it.
 It is unknown at this time if Xiaomi has a rate limit or other limitations on the cloud usage. e.g. if having many devices would trigger some throttling from the cloud side.
 Note2: communications parameter is not available for lumi devices. Lumi devices communicate using the bridge/gateway.
 
-### Example Thing file
+### Example Thing File
 
 `Thing miio:basic:light "My Light" [ host="192.168.x.x", token="put here your token", deviceId="326xxxx", model="philips.light.bulb", communication="direct" ]`
 
@@ -102,7 +166,7 @@ in case of gateway, instead of defining it as a Thing, use Bridge
 
 `Bridge miio:gateway:lumigateway "Mi Smarter Gateway" [ host="10.10.x.x", token="put here your token", deviceId="326xxxx", model="lumi.gateway.mieu01", communication="direct", cloudServer="de" ]`
 
-# Advanced: Getting unsupported devices to work with the binding
+# Advanced: Getting Unsupported Devices to Work with the Binding
 
 Newer devices may not yet be supported.
 However, many devices share large similarities with existing devices.
@@ -114,7 +178,7 @@ There are 3 ways to get unsupported devices working:
 - by switching on the `(experimental) Create channels for new/unsupported devices (MIOT protocol)` channel, this works for most newer devices. See [Create support for new devices based on online published spec database](#create-support-for-new-devices-based-on-online-published-spec-database)
 - by switching on the `(experimental) Create channels / test properties for unsupported devices (legacy protocol)` channel. This works for older / legacy devices. It test all known properties to see which are supported by your device. See [Supported property test for unsupported devices](#supported-property-test-for-unsupported-devices)
 
-## Substitute model for unsupported devices
+## Substitute Model for Unsupported Devices
 
 Replace the model with the model which is already supported.
 For this, first remove your unsupported Thing. Manually add a miio:basic Thing.
@@ -122,7 +186,7 @@ Besides the regular configuration (like ip address, token) the modelId needs to 
 Normally the modelId is populated with the model of your device, however in this case, use the modelId of a similar device.
 Look at the openHAB forum, or the openHAB GitHub repository or this readme for the modelId of similar devices.
 
-## Create support for new devices based on online published spec database
+## Create Support for New Devices Based on Online Published Spec Database
 
 The unsupported device has a `(experimental) Create channels for new/unsupported devices (MIOT protocol)` channel. When switching on, it will try to build support based on the published spec from [https://home.miot-spec.com/](https://home.miot-spec.com/).
 It will test all properties are in the spec for your device, which may take few minutes.
@@ -133,7 +197,7 @@ If this does not happen automatically, restart the binding or restart openHAB in
 
 Please validate and feedback if all channels and actions are working, and share the logfile and json files on the openHAB forum or the openHAB GitHub to build future support for this model.
 
-## Supported property test for unsupported devices
+## Supported Property Test for Unsupported Devices
 
 The unsupported device has a test channel with switch. When switching on, all known properties are tested, this may take few minutes.
 A test report will be shown in the log and is saved in the `userdata/miio` folder with a filename `test-[your model]-[timestamp].txt`.
@@ -142,7 +206,7 @@ The Thing will go offline and will come back online as basic device, supporting 
 The database file may need to be modified to display the right channel names.
 After validation, please share the logfile and json files on the openHAB forum or the openHAB GitHub to build future support for this model.
 
-## Advanced: adding local database files to support new devices
+## Advanced: Adding Local Database Files to Support New Devices
 
 Things using the basic handler (miio:basic things) are driven by json 'database' files.
 This instructs the binding which channels to create, which properties and actions are associated with the channels etc.
@@ -153,7 +217,7 @@ If this folder is created after the start of the binding, you may need to restar
 Note that local database files take preference over build-in ones, hence if a json file is local and in the database the local file will be used.
 For format, please check the current database files in openHAB GitHub.
 
-# FAQ.. what to do in case of problems
+# FAQ: What to Do in Case of Problems
 
 If your device is not getting online:
 
@@ -186,17 +250,20 @@ Firmware of the device don't accept commands coming from other subnets.
 Set the communication in the Thing configuration to 'cloud'.
 
 _Cloud connectivity is not working_
-The most common problem is a wrong or missing userId/password. Update your Xiaomi cloud userId & password in the [miio binding configuration screen](#binding-configuration).
-If the problem persists you can try the following:
+The most common problem is a wrong or missing user-id/password, or the Cloud Connector thing has not been set up yet.
+Cloud credentials are no longer configured on the binding configuration page — see the [Cloud Connector Thing](#cloud-connector-thing) section for setup instructions.
+If the Cloud Connector thing is configured and still not working, try the following:
 
-- Xiaomi Account verification might be needed. For some users login by the binding is unsuccessful as account verification is required, but the binding currently has no possibilities to handle this.
-In order to pass validation your (openHAB server) ip need to be validated/confirmed.
-Browse to [https://account.xiaomi.com/](https://account.xiaomi.com/) and logon to your account. Note: use the same external ip address as your openHAB server, e.g.  you may need to disable your VPN.
-- If above is not possible or fails, You can try to find in the binding debug logging a `location url`. Try to login using this url (just after it fails) with your browser.
+- Use the **QR code** login method instead of password login, as it avoids captcha / account-verification issues.
+- Turn the `triggerlogin` channel ON to restart the login sequence and get a fresh QR code.
+- Xiaomi Account verification might be needed. For some users login by the binding is unsuccessful as account verification is required.
+  In order to pass validation your (openHAB server) ip needs to be validated/confirmed.
+  Browse to [https://account.xiaomi.com/](https://account.xiaomi.com/) and log on to your account. Note: use the same external IP address as your openHAB server, e.g. you may need to disable your VPN.
+- If above is not possible or fails, you can try to find in the binding debug logging a `location url`. Try to login using this url (just after it fails) with your browser.
 - Several users also reported success by resetting their Xiaomi password.
 
-If it still fails, you're bit out of luck. You may try to restart openHAB (not just the binding) to clean the cookies.
-As the cloud logon process is still little understood, your only luck might be to enable trace logging and see if you can translate the Chinese error code that it returns.
+If it still fails, try restarting openHAB (not just the binding) to clear the cookies.
+Enable TRACE logging on `org.openhab.binding.miio.internal.cloud` for detailed diagnostics.
 
 _My Roborock vacuum is not found or not reacting_
 Did you link the vacuum with the Roborock app?
@@ -679,7 +746,7 @@ To (re-)read the file either restart openHAB, restart the binding or alternative
 Note, cropping is disabled (hence showing like the maps in OH3.1 and earlier) for any `cropBorder` value < 0.
 Note, not all the values need to be in the json file, e.g. a subset of the parameters also works, the parameters not in the `mapConfig.json` will take the default values.
 
-### Basic, gateway and lumi Things channels
+### Basic, Gateway and Lumi Things Channels
 
 ### Mi Air Frying Pan (<a name="careli-fryer-maf01">careli.fryer.maf01</a>) Channels
 
@@ -6473,7 +6540,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | lp_autooff_delay           | Number               | Low Power Limit Time                     |            |
 | lp_threshold               | Number               | Low Power Threshold                      |            |
 
-## Example item file Roborock vacuum
+## Example Item File Roborock Vacuum
 
 ```java
 Group  gVac     "Xiaomi Robot Vacuum"      <fan>
@@ -6519,7 +6586,7 @@ Switch lastCompleted  "Last Cleaning Completed"    (gVacLast) {channel="miio:vac
 Image map "Cleaning Map" (gVacLast) {channel="miio:vacuum:034F0E45:cleaning#map"}
 ```
 
-### Basic, gateway and lumi Things item files examples
+### Basic, Gateway and Lumi Things Item File Examples
 
 ### Mi Air Frying Pan (careli.fryer.maf01) item file lines
 

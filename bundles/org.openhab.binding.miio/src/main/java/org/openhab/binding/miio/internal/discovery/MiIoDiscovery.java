@@ -20,7 +20,6 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.Arrays;
-import java.util.Dictionary;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -43,8 +42,6 @@ import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.net.NetUtil;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.osgi.service.cm.Configuration;
-import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -78,42 +75,16 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(MiIoDiscovery.class);
     private final CloudConnector cloudConnector;
     private Map<String, String> cloudDevices = new ConcurrentHashMap<>();
-    private @Nullable Configuration miioConfig;
 
     @Activate
-    public MiIoDiscovery(@Reference CloudConnector cloudConnector, @Reference ConfigurationAdmin configAdmin)
-            throws IllegalArgumentException {
+    public MiIoDiscovery(@Reference CloudConnector cloudConnector) throws IllegalArgumentException {
         super(DISCOVERY_TIME);
         this.cloudConnector = cloudConnector;
-        try {
-            miioConfig = configAdmin.getConfiguration("binding.miio");
-        } catch (IOException | SecurityException e) {
-            logger.debug("Error getting configuration: {}", e.getMessage());
-        }
     }
 
     private String getCloudDiscoveryMode() {
-        final Configuration miioConfig = this.miioConfig;
-        if (miioConfig != null) {
-            try {
-                Dictionary<String, @Nullable Object> properties = miioConfig.getProperties();
-                String cloudDiscoveryModeConfig;
-                if (properties == null) {
-                    cloudDiscoveryModeConfig = DISABLED;
-                } else {
-                    cloudDiscoveryModeConfig = (String) properties.get("cloudDiscoveryMode");
-                    if (cloudDiscoveryModeConfig == null) {
-                        cloudDiscoveryModeConfig = DISABLED;
-                    } else {
-                        cloudDiscoveryModeConfig = cloudDiscoveryModeConfig.toLowerCase();
-                    }
-                }
-                return Set.of(SUPPORTED, ALL).contains(cloudDiscoveryModeConfig) ? cloudDiscoveryModeConfig : DISABLED;
-            } catch (ClassCastException | SecurityException e) {
-                logger.debug("Error getting cloud discovery configuration: {}", e.getMessage());
-            }
-        }
-        return DISABLED;
+        String cloudDiscoveryModeConfig = cloudConnector.getCloudDiscoveryMode().toLowerCase();
+        return Set.of(SUPPORTED, ALL).contains(cloudDiscoveryModeConfig) ? cloudDiscoveryModeConfig : DISABLED;
     }
 
     @Override
@@ -124,6 +95,8 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
     @Override
     protected void startBackgroundDiscovery() {
         logger.debug("Start Xiaomi Mi IO background discovery with cloudDiscoveryMode: {}", getCloudDiscoveryMode());
+        // TODO: align if this is a desired pattern
+        // cloudThingDiscovery();
         final @Nullable ScheduledFuture<?> miIoDiscoveryJob = this.miIoDiscoveryJob;
         if (miIoDiscoveryJob == null || miIoDiscoveryJob.isCancelled()) {
             this.miIoDiscoveryJob = scheduler.scheduleWithFixedDelay(this::discover, 0, SEARCH_INTERVAL,
@@ -241,6 +214,18 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
         }
         submitDiscovery(ip, token, id, label, model, country, isOnline, parent);
     }
+
+    /**
+     * Proposes the Cloud Connector thing for discovery so users do not need to be aware and manually add it.
+     * TODO: Align if this is a desired pattern.
+     */
+    /*
+     * private void cloudThingDiscovery() {
+     * logger.debug("Proposing Cloud Connector thing for discovery.");
+     * thingDiscovered(DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_CLOUD, "cloudConnector"))
+     * .withLabel("Xiaomi Cloud Connector").build());
+     * }
+     */
 
     private void submitDiscovery(String ip, String token, String id, String label, String model, String country,
             boolean isOnline, String parent) {

@@ -6,7 +6,7 @@ import { DeviceFunctions } from "../DeviceFunctions";
 export class CustomThermostatServer extends ThermostatServer {
     static readonly DEFAULTS_COMMON = {
         systemMode: 0,
-        localTemperature: 0,       
+        localTemperature: 0,
     } as const;
 
     static readonly DEFAULTS_COOL = {
@@ -25,9 +25,6 @@ export class CustomThermostatServer extends ThermostatServer {
 
     static readonly DEFAULTS_AUTO = {
         minSetpointDeadBand: 0,
-    } as const;
-
-    static readonly DEFAULTS = {
     } as const;
 
     static selectFeatures(values: any): Thermostat.Feature[] {

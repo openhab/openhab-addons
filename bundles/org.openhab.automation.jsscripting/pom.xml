@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>5.2.0-SNAPSHOT</version>
+    <version>5.3.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.automation.jsscripting</artifactId>
@@ -15,9 +15,8 @@
   <name>openHAB Add-ons :: Bundles :: Automation :: JavaScript Scripting</name>
 
   <properties>
-    <!-- Remember to check if the fix https://github.com/openhab/openhab-core/pull/4437 still works when upgrading GraalJS -->
     <node.version>v22.17.1</node.version>
-    <ohjs.version>openhab@5.18.2</ohjs.version>
+    <ohjs.version>v5.18.2</ohjs.version>
   </properties>
 
   <dependencies>
@@ -41,17 +40,52 @@
 
   <build>
     <plugins>
-      <!-- bundle the openhab-js library -->
+      <!-- clone openhab-js -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-scm-plugin</artifactId>
+        <version>2.2.1</version>
+        <configuration>
+          <providerImplementations>
+            <git>jgit</git>
+          </providerImplementations>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.maven.scm</groupId>
+            <artifactId>maven-scm-provider-jgit</artifactId>
+            <version>2.2.1</version>
+          </dependency>
+        </dependencies>
+        <executions>
+          <execution>
+            <id>checkout-openhab-js</id>
+            <goals>
+              <goal>checkout</goal>
+            </goals>
+            <phase>initialize</phase>
+            <configuration>
+              <connectionUrl>scm:git:https://github.com/openhab/openhab-js.git</connectionUrl>
+              <checkoutDirectory>${project.build.directory}/js/openhab-js</checkoutDirectory>
+              <scmVersion>${ohjs.version}</scmVersion>
+              <scmVersionType>tag</scmVersionType>
+              <shallow>true</shallow>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
       <plugin>
         <groupId>com.github.eirslett</groupId>
         <artifactId>frontend-maven-plugin</artifactId>
         <version>2.0.1</version>
         <configuration>
-          <installDirectory>target/js</installDirectory>
+          <installDirectory>${project.build.directory}/js</installDirectory>
           <nodeVersion>${node.version}</nodeVersion>
-          <workingDirectory>target/js</workingDirectory>
+          <workingDirectory>${project.build.directory}/js/openhab-js</workingDirectory>
         </configuration>
         <executions>
+          <!-- install Node.js and npm -->
           <execution>
             <id>Install node and npm</id>
             <goals>
@@ -59,17 +93,18 @@
             </goals>
             <phase>generate-sources</phase>
           </execution>
+          <!-- install dependencies -->
           <execution>
             <id>npm install</id>
             <goals>
               <goal>npm</goal>
             </goals>
+            <phase>generate-sources</phase>
             <configuration>
-              <!--suppress UnresolvedMavenProperty -->
-              <arguments>install ${ohjs.version} webpack@^5.105.0 webpack-cli@^6.0.1 --prefix .</arguments>
-              <!-- webpack & webpack-cli versions should match to the ones from openhab-js -->
+              <arguments>ci</arguments>
             </configuration>
           </execution>
+          <!-- bundle openhab-js -->
           <execution>
             <id>npx webpack (openhab-js globals injection)</id>
             <goals>
@@ -77,8 +112,7 @@
             </goals>
             <configuration>
               <!--suppress UnresolvedMavenProperty -->
-              <arguments>webpack -c ./node_modules/openhab/build/@globals-webpack.config.js --entry-reset --entry
-                ./node_modules/openhab/build/@openhab-globals.js -o ./dist</arguments>
+              <arguments>webpack -c ./build/@globals-webpack.config.js --entry-reset --entry ./build/@openhab-globals.js -o ../dist</arguments>
             </configuration>
           </execution>
           <execution>
@@ -87,9 +121,7 @@
               <goal>npx</goal>
             </goals>
             <configuration>
-              <!--suppress UnresolvedMavenProperty -->
-              <arguments>webpack -c ./node_modules/openhab/build/webpack.config.js --entry-reset --entry
-                ./node_modules/openhab/ -o ./dist</arguments>
+              <arguments>webpack -c ./build/webpack.config.js --entry-reset --entry ./ -o ../dist</arguments>
             </configuration>
           </execution>
         </executions>
@@ -100,6 +132,7 @@
         <artifactId>build-helper-maven-plugin</artifactId>
         <executions>
           <execution>
+            <id>add-js-resource</id>
             <goals>
               <goal>add-resource</goal>
             </goals>
@@ -107,7 +140,7 @@
             <configuration>
               <resources>
                 <resource>
-                  <directory>target/js/dist</directory>
+                  <directory>${project.build.directory}/js/dist</directory>
                   <targetPath>node_modules</targetPath>
                 </resource>
               </resources>
@@ -121,6 +154,13 @@
         <artifactId>sat-plugin</artifactId>
         <configuration>
           <pmdFilter>${project.basedir}/suppressions.properties</pmdFilter>
+        </configuration>
+      </plugin>
+      <!-- workaround for failing clean of checked out git repo breaking the Windows build, #19250 -->
+      <plugin>
+        <artifactId>maven-clean-plugin</artifactId>
+        <configuration>
+          <force>true</force>
         </configuration>
       </plugin>
     </plugins>

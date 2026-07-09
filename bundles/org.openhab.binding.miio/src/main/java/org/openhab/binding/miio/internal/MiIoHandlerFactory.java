@@ -12,7 +12,13 @@
  */
 package org.openhab.binding.miio.internal;
 
-import static org.openhab.binding.miio.internal.MiIoBindingConstants.*;
+import static org.openhab.binding.miio.internal.MiIoBindingConstants.SUPPORTED_THING_TYPES_UIDS;
+import static org.openhab.binding.miio.internal.MiIoBindingConstants.THING_TYPE_BASIC;
+import static org.openhab.binding.miio.internal.MiIoBindingConstants.THING_TYPE_CLOUD;
+import static org.openhab.binding.miio.internal.MiIoBindingConstants.THING_TYPE_GATEWAY;
+import static org.openhab.binding.miio.internal.MiIoBindingConstants.THING_TYPE_LUMI;
+import static org.openhab.binding.miio.internal.MiIoBindingConstants.THING_TYPE_MIIO;
+import static org.openhab.binding.miio.internal.MiIoBindingConstants.THING_TYPE_VACUUM;
 
 import java.util.Map;
 import java.util.concurrent.Future;
@@ -25,6 +31,7 @@ import org.openhab.binding.miio.internal.basic.BasicChannelTypeProvider;
 import org.openhab.binding.miio.internal.basic.MiIoDatabaseWatchService;
 import org.openhab.binding.miio.internal.cloud.CloudConnector;
 import org.openhab.binding.miio.internal.handler.MiIoBasicHandler;
+import org.openhab.binding.miio.internal.handler.MiIoCloudThingHandler;
 import org.openhab.binding.miio.internal.handler.MiIoGatewayHandler;
 import org.openhab.binding.miio.internal.handler.MiIoGenericHandler;
 import org.openhab.binding.miio.internal.handler.MiIoLumiHandler;
@@ -83,13 +90,12 @@ public class MiIoHandlerFactory extends BaseThingHandlerFactory {
         this.i18nProvider = i18nProvider;
         this.localeProvider = localeProvider;
         this.cloudConnector = cloudConnector;
-        @Nullable
         String username = (String) properties.get("username");
-        @Nullable
-        String password = (String) properties.get("password");
-        @Nullable
-        String country = (String) properties.get("country");
-        cloudConnector.setCredentials(username, password, country);
+        if (username != null && !username.trim().isEmpty()) {
+            logger.info("Xiaomi Mi IO binding: Cloud credentials found in the binding-level configuration. "
+                    + "This is deprecated and the credentials will be ignored. "
+                    + "Please create or discover a 'Cloud Connector' (miio:cloud) thing to manage Xiaomi cloud credentials.");
+        }
         try {
             if (!scheduler.isShutdown()) {
                 scheduledTask = scheduler.submit(() -> cloudConnector.isConnected(true));
@@ -136,6 +142,9 @@ public class MiIoHandlerFactory extends BaseThingHandlerFactory {
         if (thingTypeUID.equals(THING_TYPE_VACUUM)) {
             return new MiIoVacuumHandler(thing, miIoDatabaseWatchService, cloudConnector, channelTypeRegistry,
                     i18nProvider, localeProvider);
+        }
+        if (thingTypeUID.equals(THING_TYPE_CLOUD)) {
+            return new MiIoCloudThingHandler(thing, cloudConnector);
         }
         return new MiIoUnsupportedHandler(thing, miIoDatabaseWatchService, cloudConnector,
                 httpClientFactory.getCommonHttpClient(), i18nProvider, localeProvider);
