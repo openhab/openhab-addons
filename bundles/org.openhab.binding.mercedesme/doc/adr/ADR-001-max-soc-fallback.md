@@ -83,7 +83,7 @@ Highest risk — field layout not fully understood, would break `auto_unlock`/`l
 1. [x] Confirm against a real CLA-class vehicle capture that `BatteryMaxSocConfigure` is actually accepted before this ships to users. Result: rejected — see Amendment.
 1. [x] Wire `MB-BEV-CLA.json` into `VehicleHandlerTest.java`.
 1. [x] Add a command test asserting `ChargingConfigure` is sent for a thing whose last update had no `chargePrograms`.
-1. [ ] Confirm `ChargingConfigure` against a real CLA-class vehicle capture before this ships to users.
+1. [x] Confirm `ChargingConfigure` against a real CLA-class vehicle capture before this ships to users. Result: confirmed — see [openhab-addons#21032](https://github.com/openhab/openhab-addons/issues/21032#issuecomment-4922536211).
 
 ## Amendment (2026-07-08): switch write path to `ChargingConfigure`
 
@@ -93,4 +93,4 @@ This does not change the overall shape-detection approach (Option B) or touch th
 
 Files touched: `VehicleHandler.java` (write-path branch and ADR-001 comments), `ProtoConverter.java` (test helper: `hasChargingConfigure()` branch replacing `hasBatteryMaxSoc()`, with `Int32Value` unwrapping), `VehicleHandlerTest.java` (`testMaxSocFallbackWithoutChargePrograms()` comment/assertion).
 
-Still open: confirm `ChargingConfigure` itself is accepted by a real CLA-class vehicle (new Action Item above) before this ships to users.
+Confirmed: `ChargingConfigure` is accepted by a real CLA-class vehicle — see [openhab-addons#21032](https://github.com/openhab/openhab-addons/issues/21032#issuecomment-4922536211). No open checkpoints remain before this ships to users.
