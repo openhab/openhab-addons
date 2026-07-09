@@ -118,7 +118,7 @@ public class OpenTelemetryService {
         return resourceBuilder.build();
     }
 
-    private Map<String, String> parseOtlpHeaders(@Nullable String rawHeaders) {
+    Map<String, String> parseOtlpHeaders(@Nullable String rawHeaders) {
         if (rawHeaders == null || rawHeaders.isBlank()) {
             return Collections.emptyMap();
         }
