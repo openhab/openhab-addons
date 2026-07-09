@@ -84,6 +84,8 @@ public interface ShellyApiInterface extends ShellyDiscoveryInterface {
 
     void muteSmokeAlarm(int smokeId) throws ShellyApiException;
 
+    void setPresenceSensor(boolean enable) throws ShellyApiException;
+
     ShellyOtaCheckResult checkForUpdate() throws ShellyApiException;
 
     ShellySettingsUpdate firmwareUpdate(String uri) throws ShellyApiException;

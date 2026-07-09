@@ -48,4 +48,19 @@
 		<representation-property>serviceName</representation-property>
 		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
 	</thing-type>
+
+	<thing-type id="shellypluspresence">
+		<label>Shelly Presence</label>
+		<description>Shelly Presence Gen4 — mmWave occupancy and motion sensor with ambient light</description>
+		<category>MotionDetector</category>
+		<semantic-equipment-tag>MotionDetector</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="sensors" typeId="sensorData"/>
+			<channel-group id="control" typeId="presenceControl"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
+	</thing-type>
 </thing:thing-descriptions>

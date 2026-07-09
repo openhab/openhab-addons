@@ -110,6 +110,8 @@ public class ShellyDeviceProfile {
     public boolean isTRV; // true for a Shelly TRV
     public boolean isSmoke; // true for Shelly Smoke
     public boolean isWall; // true: Shelly Wall Display
+    public boolean isPresence; // true: Shelly Presence Gen4 (mmWave radar)
+    public String presenceMainZoneKey = "presencezone:200";
     public boolean is3EM; // true for Shelly 3EM and Pro 3EM
     public boolean isEM50; // true for Shelly Pro EM50
 
@@ -230,11 +232,12 @@ public class ShellyDeviceProfile {
         isMultiButton = GROUP_MULTIBUTTON_THING_TYPES.contains(thingTypeUID);
         isTRV = THING_TYPE_SHELLYTRV.equals(thingTypeUID);
         isWall = GROUP_WALLDISPLAY_THING_TYPES.contains(thingTypeUID);
+        isPresence = GROUP_PRESENCE_THING_TYPES.contains(thingTypeUID);
         is3EM = GROUP_3EM_THING_TYPES.contains(thingTypeUID);
         isEM50 = THING_TYPE_SHELLYPROEM50.equals(thingTypeUID);
 
         isSensor = isHT || isFlood || isDW || isSmoke || isGas || isButton || isMultiButton || isUNI || isMotion
-                || isSense || isTRV || isWall;
+                || isSense || isTRV || isWall || isPresence;
         hasBattery = isHT || isFlood || isDW || isSmoke || isButton || isMotion || isTRV || isBlu;
         alwaysOn = !hasBattery || (isMotion && !isBlu) || isSense; // true means: device is reachable all the time (no
                                                                    // sleep mode)

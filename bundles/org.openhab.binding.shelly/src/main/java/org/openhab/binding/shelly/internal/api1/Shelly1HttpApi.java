@@ -558,6 +558,11 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
         throw new ShellyApiException("Request not supported");
     }
 
+    @Override
+    public void setPresenceSensor(boolean enable) throws ShellyApiException {
+        throw new ShellyApiException("Request not supported");
+    }
+
     /**
      * Set sensor Action URLs
      *

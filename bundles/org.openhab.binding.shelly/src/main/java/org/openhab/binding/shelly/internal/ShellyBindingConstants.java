@@ -145,6 +145,8 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_SENSOR_ERROR = "lastError";
     public static final String CHANNEL_SENSOR_ROTATIONX = "rotationX"; // BLU Remote
     public static final String CHANNEL_SENSOR_ROTATIONY = "rotationY"; // BLU Remote
+    public static final String CHANNEL_SENSOR_PRESENCE = "presence"; // Shelly Presence: zone occupancy (ON=detected)
+    public static final String CHANNEL_SENSOR_OBJECT_COUNT = "objectCount"; // Shelly Presence: objects in zone
     public static final String CHANNEL_SENSOR_ROTATIONZ = "rotationZ"; // BLU Remote
     public static final String CHANNEL_SENSOR_CHANNEL = "channel"; // BLU Remote
     public static final String CHANNEL_SENSOR_STEPS = "steps"; // BLU Remote
@@ -174,6 +176,7 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_ESENSOR_INPUT1 = CHANNEL_ESENSOR_INPUT + "1";
 
     public static final String CHANNEL_GROUP_CONTROL = "control";
+    public static final String CHANNEL_CTRL_SENSOR_ENABLE = "sensorEnable"; // Shelly Presence: enable/disable radar
     public static final String CHANNEL_SENSE_KEY = "key";
 
     public static final String CHANNEL_GROUP_BATTERY = "battery";
