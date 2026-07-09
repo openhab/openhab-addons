@@ -41,6 +41,7 @@ public class ShellyBindingConstants {
     public static final String PROPERTY_DEV_GEN = "deviceGeneration";
     public static final String PROPERTY_DEV_AUTH = "deviceAuth";
     public static final String PROPERTY_GW_DEVICE = "gatewayDevice";
+    public static final String PROPERTY_ADDON_FIRMWARE = "addonFirmware";
     public static final String PROPERTY_HWREV = "deviceHwRev";
     public static final String PROPERTY_HWBATCH = "deviceHwBatch";
     public static final String PROPERTY_UPDATE_PERIOD = "devUpdatePeriod";
@@ -234,6 +235,19 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_STATUS_EVENTCOUNT = "eventCount";
     public static final String CHANNEL_STATUS_EVENTCOUNT1 = CHANNEL_STATUS_EVENTCOUNT + "1";
     public static final String CHANNEL_STATUS_EVENTCOUNT2 = CHANNEL_STATUS_EVENTCOUNT + "2";
+
+    // LoRa
+    public static final String CHANNEL_GROUP_LORA = "lora";
+    public static final String CHANNEL_LORA_RXDATA = "dataRx"; // Regular String
+    public static final String CHANNEL_LORA_TXDATA = "dataTx"; // Regular String
+    public static final String CHANNEL_LORA_RXDATARAW = "dataRxRaw"; // BASE64-encoded string
+    public static final String CHANNEL_LORA_TXDATARAW = "dataTxRaw";// BASE64-encoded string
+    public static final String CHANNEL_LORA_RXBYTES = "bytesRx";
+    public static final String CHANNEL_LORA_TXBYTES = "bytesTx";
+    public static final String CHANNEL_LORA_TXERRORS = "errorsTx";
+    public static final String CHANNEL_LORA_RSSI = "rssi";
+    public static final String CHANNEL_LORA_SNR = "snr";
+    public static final String CHANNEL_LORA_AIRTIME = "airtime";
 
     // General
     public static final String CHANNEL_LAST_UPDATE = "lastUpdate";

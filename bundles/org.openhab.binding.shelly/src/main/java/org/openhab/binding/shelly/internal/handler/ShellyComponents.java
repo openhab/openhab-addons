@@ -47,6 +47,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSe
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtVoltage;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtVoltage.ShellyShortVoltage;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyThermnostat;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatusLora;
 import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
@@ -78,14 +79,14 @@ public class ShellyComponents {
         if (!thingHandler.areChannelsCreated()) {
             thingHandler.updateChannelDefinitions(ShellyChannelDefinitions.createDeviceChannels(thingHandler.getThing(),
                     thingHandler.getProfile(), status));
+            thingHandler.updateChannelDefinitions(ShellyChannelDefinitions.createLoraChannels(thingHandler.getThing(),
+                    thingHandler.getProfile(), status));
         }
 
         thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_FIRMWARE, getStringType(profile.fwVersion));
-
         if (!profile.gateway.isEmpty()) {
             thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_GATEWAY, getStringType(profile.gateway));
         }
-
         if (getLong(status.uptime) > 10) {
             thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_UPTIME,
                     toQuantityType((double) getLong(status.uptime), DIGITS_NONE, Units.SECOND));
@@ -730,6 +731,30 @@ public class ShellyComponents {
     public static boolean hasAddon(ShellySettingsStatus status) {
         return status.extTemperature != null || status.extHumidity != null || status.extVoltage != null
                 || status.extDigitalInput != null || status.extAnalogInput != null;
+    }
+
+    public static boolean updateLoraStatus(ShellyThingInterface thingHandler, Shelly2DeviceStatusLora status) {
+        boolean updated = false;
+        ShellyDeviceProfile profile = thingHandler.getProfile();
+        if (profile.settings.loraDetected) {
+            updated |= thingHandler.updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_RXBYTES,
+                    toQuantityType(status.rxBytes, Units.BYTE));
+            updated |= thingHandler.updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_TXBYTES,
+                    toQuantityType(status.txBytes, Units.BYTE));
+            updated |= thingHandler.updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_TXERRORS,
+                    getDecimal(status.txErrors));
+            updated |= thingHandler.updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_AIRTIME,
+                    toQuantityType(status.airtime, MetricPrefix.MILLI(Units.SECOND)));
+
+            // The add-on reports its firmware version asynchronously, usually not before the first status cycle
+            String addOnFw = getString(status.fw);
+            if (!addOnFw.isEmpty() && !addOnFw.equals(profile.addOnFw)) {
+                profile.addOnFw = addOnFw;
+                thingHandler.updateProperties(PROPERTY_ADDON_FIRMWARE, addOnFw);
+            }
+        }
+
+        return updated;
     }
 
     public static boolean updateTempChannel(@Nullable ShellyShortTemp sensor, ShellyThingInterface thingHandler,

@@ -248,6 +248,13 @@ public class ShellyUtils {
         throw new IllegalArgumentException("Invalid Number type for conversion: " + command);
     }
 
+    public static String getString(Command command) throws IllegalArgumentException {
+        if (command instanceof StringType string) {
+            return string.toString();
+        }
+        throw new IllegalArgumentException("Invalid StringType for conversion: " + command);
+    }
+
     public static OnOffType getOnOff(@Nullable Boolean value) {
         return OnOffType.from(value != null && value);
     }
@@ -379,5 +386,22 @@ public class ShellyUtils {
             hexString.append(hex);
         }
         return hexString.toString();
+    }
+
+    /**
+     * Adds missing '=' padding to a Base64 string that may have been stripped by Shelly firmware.
+     * Java's Base64.getDecoder() is strict and requires canonical padding.
+     *
+     * @param b64 raw Base64 string, possibly unpadded
+     * @return Base64 string with correct padding appended
+     */
+    public static String fixBase64Padding(String b64) {
+        int rem = b64.length() % 4;
+        if (rem == 2) {
+            return b64 + "==";
+        } else if (rem == 3) {
+            return b64 + "=";
+        }
+        return b64;
     }
 }

@@ -11,6 +11,7 @@
 		<channel-groups>
 			<channel-group id="relay" typeId="relayChannel"/>
 			<channel-group id="sensors" typeId="externalSensors"/>
+			<channel-group id="lora" typeId="loraAddon"/>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
@@ -26,6 +27,7 @@
 			<channel-group id="relay" typeId="relayChannel"/>
 			<channel-group id="meter" typeId="meter"/>
 			<channel-group id="sensors" typeId="externalSensors"/>
+			<channel-group id="lora" typeId="loraAddon"/>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
@@ -65,6 +67,7 @@
 			<channel-group id="meter2" typeId="meter">
 				<label>Power Meter 2</label>
 			</channel-group>
+			<channel-group id="lora" typeId="loraAddon"/>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
@@ -80,6 +83,7 @@
 		<channel-groups>
 			<channel-group id="roller" typeId="rollerControl"/>
 			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="lora" typeId="loraAddon"/>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
@@ -113,6 +117,7 @@
 		<channel-groups>
 			<channel-group id="roller" typeId="rollerControl"/>
 			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="lora" typeId="loraAddon"/>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
@@ -332,6 +337,7 @@
 		<channel-groups>
 			<channel-group id="relay" typeId="relayChannel"/>
 			<channel-group id="sensors" typeId="externalSensors"/>
+			<channel-group id="lora" typeId="loraAddon"/>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
@@ -347,6 +353,7 @@
 			<channel-group id="relay" typeId="relayChannel"/>
 			<channel-group id="meter" typeId="meter"/>
 			<channel-group id="sensors" typeId="externalSensors"/>
+			<channel-group id="lora" typeId="loraAddon"/>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
@@ -379,6 +386,7 @@
 			<channel-group id="relay2" typeId="relayChannel">
 				<label>Relay 2</label>
 			</channel-group>
+			<channel-group id="lora" typeId="loraAddon"/>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
@@ -403,6 +411,7 @@
 			<channel-group id="meter2" typeId="meter">
 				<label>Power Meter 2</label>
 			</channel-group>
+			<channel-group id="lora" typeId="loraAddon"/>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
@@ -418,6 +427,7 @@
 		<channel-groups>
 			<channel-group id="roller" typeId="rollerControl"/>
 			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="lora" typeId="loraAddon"/>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
@@ -461,6 +471,7 @@
 				<label>Power Meter 3</label>
 			</channel-group>
 			<channel-group id="relay" typeId="relayChannel"/>
+			<channel-group id="lora" typeId="loraAddon"/>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
@@ -480,6 +491,7 @@
 				<label>Power Meter 2</label>
 			</channel-group>
 			<channel-group id="relay" typeId="relayChannel"/>
+			<channel-group id="lora" typeId="loraAddon"/>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
@@ -590,6 +602,7 @@
 		<channel-groups>
 			<channel-group id="relay" typeId="dimmerChannel"/>
 			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="lora" typeId="loraAddon"/>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
@@ -610,6 +623,7 @@
 			</channel-group>
 			<channel-group id="nmeter" typeId="nmeter"/>
 			<channel-group id="relay" typeId="relayChannel"/>
+			<channel-group id="lora" typeId="loraAddon"/>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
@@ -648,6 +662,7 @@
 			<channel-group id="meter2" typeId="meter">
 				<label>Power Meter 2</label>
 			</channel-group>
+			<channel-group id="lora" typeId="loraAddon"/>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
@@ -676,5 +691,122 @@
 		<representation-property>serviceName</representation-property>
 		<config-description-ref uri="thing-type:shelly:relay"/>
 	</thing-type>
+
+	<channel-group-type id="loraAddon">
+		<label>LoRa Add-On</label>
+		<description>Provides access to LoRa inbound and outbound messages</description>
+	</channel-group-type>
+
+	<channel-type id="loraRxData">
+		<item-type>String</item-type>
+		<label>Data received</label>
+		<description>Received LoRa Datagram</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+
+	<channel-type id="loraRxDataRaw" advanced="true">
+		<item-type>String</item-type>
+		<label>Raw Data received</label>
+		<description>Received LoRa Datagram, BASE64-encoded</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+
+	<channel-type id="loraRxBytes">
+		<item-type>Number:DataAmount</item-type>
+		<label>Bytes received</label>
+		<description>Number of bytes received from the LoRa network so far</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+
+	<channel-type id="loraTxData">
+		<item-type>String</item-type>
+		<label>Data to send</label>
+		<description>Use this channel to send a datagram to the LoRa network</description>
+		<tags>
+			<tag>Control</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="loraTxDataRaw" advanced="true">
+		<item-type>String</item-type>
+		<label>Raw Data to send</label>
+		<description>Use this channel to send a BASE64-encoded datagram to the LoRa network</description>
+		<tags>
+			<tag>Control</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="loraTxBytes">
+		<item-type>Number:DataAmount</item-type>
+		<label>Bytes sent</label>
+		<description>Number of bytes sent to the LoRa network so far</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+
+	<channel-type id="loraTxErrors">
+		<item-type>Number</item-type>
+		<label>TX Errors</label>
+		<description>Number of failed LoRa transmits</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+
+	<channel-type id="loraAirtime" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Airtime</label>
+		<description>Cumulative on-air time of the LoRa Add-On</description>
+		<category>Time</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+
+	<channel-type id="loraSignal">
+		<item-type>Number</item-type>
+		<label>LoRa Signal Strength</label>
+		<description>Received Signal Strength (RSSI) of the last received LoRa packet, in dBm</description>
+		<category>QualityOfService</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>SignalStrength</tag>
+		</tags>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+
+	<channel-type id="loraSNR" advanced="true">
+		<item-type>Number</item-type>
+		<label>SNR</label>
+		<description>LoRa Signal/Noise Ratio of the received packet</description>
+		<category>QualityOfService</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+
 
 </thing:thing-descriptions>

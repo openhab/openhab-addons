@@ -326,13 +326,14 @@ public class Shelly2RpcSocket implements WriteCallback {
      * @param receivedMessage Textual API message
      */
     @OnWebSocketMessage
-    public void onMessage(Session session, String receivedMessage) {
+    public void onMessage(Session session, String eventMessage) {
         Shelly2RpctInterface handler;
         synchronized (this) {
             handler = websocketHandler;
         }
         try {
-            Shelly2RpcBaseMessage message = fromJson(gson, receivedMessage, Shelly2RpcBaseMessage.class);
+            Shelly2RpcBaseMessage message = fromJson(gson, eventMessage, Shelly2RpcBaseMessage.class);
+            String receivedMessage = eventMessage;
             if (logger.isTraceEnabled()) {
                 logger.trace("{}: Inbound RPC message: {}", thingName, receivedMessage);
             }
@@ -353,6 +354,13 @@ public class Shelly2RpcSocket implements WriteCallback {
                         handler.onNotifyStatus(status);
                         return;
                     case SHELLYRPC_METHOD_NOTIFYEVENT:
+                        if (receivedMessage.contains("\"component\":\"lora:")) {
+                            // The LoRa add-on reports its payload as raw String in "data", whereas the shared
+                            // Shelly2NotifyEvent.data is a structure for all other event types. Rename the key so
+                            // Gson maps the payload to the String field "lora" instead of failing on "data".
+                            receivedMessage = eventMessage.replace("\"data\":\"", "\"lora\":\"");
+                        }
+
                         Shelly2RpcNotifyEvent events = fromJson(gson, receivedMessage, Shelly2RpcNotifyEvent.class);
                         events.src = message.src;
                         if (events.params == null || events.params.events == null) {
@@ -397,7 +405,7 @@ public class Shelly2RpcSocket implements WriteCallback {
                 }
             }
         } catch (ShellyApiException | IllegalArgumentException e) {
-            logger.debug("{}: Unable to process Rpc message ({}): {}", thingName, e.getMessage(), receivedMessage);
+            logger.debug("{}: Unable to process Rpc message ({}): {}", thingName, e.getMessage(), eventMessage);
         }
     }
 
