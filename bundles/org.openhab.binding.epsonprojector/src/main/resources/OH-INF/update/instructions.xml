@@ -12,12 +12,6 @@
 				<type>epsonprojector:lamptime</type>
 			</update-channel>
 		</instruction-set>
-
-		<instruction-set targetVersion="2">
-			<update-channel id="lamptime">
-				<type>epsonprojector:lamptime</type>
-			</update-channel>
-		</instruction-set>
 	</thing-type>
 
 	<thing-type uid="epsonprojector:projector-tcp">
@@ -25,12 +19,6 @@
 			<update-channel id="powerstate">
 				<type>epsonprojector:powerstate</type>
 			</update-channel>
-			<update-channel id="lamptime">
-				<type>epsonprojector:lamptime</type>
-			</update-channel>
-		</instruction-set>
-
-		<instruction-set targetVersion="2">
 			<update-channel id="lamptime">
 				<type>epsonprojector:lamptime</type>
 			</update-channel>

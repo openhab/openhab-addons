@@ -77,36 +77,36 @@ connection: &conEpson
 
 ## Channels
 
-| Channel            | Item Type   | Purpose                                                                                    | Values     |
-| ------------------ | ----------- | ------------------------------------------------------------------------------------------ | ---------- |
-| power              | Switch      | Powers the projector on or off.                                                            |            |
-| powerstate         | String      | Retrieves the textual power state of the projector.                                        | Read-only  |
-| source             | String      | Retrieve or set the input source.                                                          | See above  |
-| aspectratio        | String      | Retrieve or set the aspect ratio.                                                          | See above  |
-| colormode          | String      | Retrieve or set the color mode.                                                            | See above  |
-| freeze             | Switch      | Turn the freeze screen mode on or off.                                                     |            |
-| mute               | Switch      | Turn the AV mute on or off.                                                                |            |
-| volume             | Dimmer      | Retrieve or set the volume. Scaled to 0-20 or 0-40 on the projector per maxVolume setting. | 0% - 100%  |
-| luminance          | String      | Retrieve or set the lamp mode.                                                             | See above  |
-| brightness         | Number      | Retrieve or set the brightness.                                                            | -24 - +24  |
-| contrast           | Number      | Retrieve or set the contrast.                                                              | -24 - +24  |
-| density            | Number      | Retrieve or set the density (color saturation).                                            | -32 - +32  |
-| tint               | Number      | Retrieve or set the tint.                                                                  | -32 - +32  |
-| colortemperature   | Number      | Retrieve or set the color temperature.                                                     | 0   - +9   |
-| fleshtemperature   | Number      | Retrieve or set the flesh temperature.                                                     | 0   - +6   |
-| gamma              | String      | Retrieve or set the gamma setting.                                                         | See above  |
-| autokeystone       | Switch      | Turn the auto keystone mode on or off.                                                     |            |
-| verticalkeystone   | Number      | Retrieve or set the vertical keystone.                                                     | -30 - +30  |
-| horizontalkeystone | Number      | Retrieve or set the horizontal keystone.                                                   | -30 - +30  |
-| verticalposition   | Number      | Retrieve or set the vertical position.                                                     | -8  - +10  |
-| horizontalposition | Number      | Retrieve or set the horizontal position.                                                   | -23 - +26  |
-| verticalreverse    | Switch      | Turn the vertical reverse mode on or off.                                                  |            |
-| horizontalreverse  | Switch      | Turn the horizontal reverse mode on or off.                                                |            |
-| background         | String      | Retrieve or set the background color/logo.                                                 | See above  |
-| keycode            | String      | Send a key operation command to the projector. (2 character code)                          | Write-only |
-| lamptime           | Number:Time | Retrieves the number of hours the lamp has been used.                                      | Read-only  |
-| errcode            | Number      | Retrieves the last error code.                                                             | Read-only  |
-| errmessage         | String      | Retrieves the description of the last error.                                               | Read-only  |
+| Channel            | Item Type | Purpose                                                                                    | Values     |
+| ------------------ | --------- | ------------------------------------------------------------------------------------------ | ---------- |
+| power              | Switch    | Powers the projector on or off.                                                            |            |
+| powerstate         | String    | Retrieves the textual power state of the projector.                                        | Read only  |
+| source             | String    | Retrieve or set the input source.                                                          | See above  |
+| aspectratio        | String    | Retrieve or set the aspect ratio.                                                          | See above  |
+| colormode          | String    | Retrieve or set the color mode.                                                            | See above  |
+| freeze             | Switch    | Turn the freeze screen mode on or off.                                                     |            |
+| mute               | Switch    | Turn the AV mute on or off.                                                                |            |
+| volume             | Dimmer    | Retrieve or set the volume. Scaled to 0-20 or 0-40 on the projector per maxVolume setting. | 0% - 100%  |
+| luminance          | String    | Retrieve or set the lamp mode.                                                             | See above  |
+| brightness         | Number    | Retrieve or set the brightness.                                                            | -24 - +24  |
+| contrast           | Number    | Retrieve or set the contrast.                                                              | -24 - +24  |
+| density            | Number    | Retrieve or set the density (color saturation).                                            | -32 - +32  |
+| tint               | Number    | Retrieve or set the tint.                                                                  | -32 - +32  |
+| colortemperature   | Number    | Retrieve or set the color temperature.                                                     | 0   - +9   |
+| fleshtemperature   | Number    | Retrieve or set the flesh temperature.                                                     | 0   - +6   |
+| gamma              | String    | Retrieve or set the gamma setting.                                                         | See above  |
+| autokeystone       | Switch    | Turn the auto keystone mode on or off.                                                     |            |
+| verticalkeystone   | Number    | Retrieve or set the vertical keystone.                                                     | -30 - +30  |
+| horizontalkeystone | Number    | Retrieve or set the horizontal keystone.                                                   | -30 - +30  |
+| verticalposition   | Number    | Retrieve or set the vertical position.                                                     | -8  - +10  |
+| horizontalposition | Number    | Retrieve or set the horizontal position.                                                   | -23 - +26  |
+| verticalreverse    | Switch    | Turn the vertical reverse mode on or off.                                                  |            |
+| horizontalreverse  | Switch    | Turn the horizontal reverse mode on or off.                                                |            |
+| background         | String    | Retrieve or set the background color/logo.                                                 | See above  |
+| keycode            | String    | Send a key operation command to the projector. (2 character code)                          | Write only |
+| lamptime           | Number    | Retrieves the number of hours the lamp has been used.                                      | Read only  |
+| errcode            | Number    | Retrieves the last error code.                                                             | Read only  |
+| errmessage         | String    | Retrieves the description of the last error.                                               | Read only  |
 
 ## Full Example
 
@@ -126,37 +126,37 @@ epsonprojector:projector-tcp:hometheater "Projector" [ host="192.168.0.10", port
 ```java
 // Note: replace `-serial` with `-tcp` for `projector-tcp` thing type
 
-Switch epsonPower                                          { channel="epsonprojector:projector-serial:hometheater:power" }
-String epsonSource        "Source [%s]"                    { channel="epsonprojector:projector-serial:hometheater:source" }
-String epsonAspectRatio   "Aspect Ratio [%s]"              { channel="epsonprojector:projector-serial:hometheater:aspectratio" }
-String epsonColorMode     "Color Mode [%s]"                { channel="epsonprojector:projector-serial:hometheater:colormode" }
-Switch epsonFreeze                                         { channel="epsonprojector:projector-serial:hometheater:freeze" }
-Switch epsonMute                                           { channel="epsonprojector:projector-serial:hometheater:mute" }
-Dimmer epsonVolume                                         { channel="epsonprojector:projector-serial:hometheater:volume" }
-String epsonLuminance     "Lamp Mode [%s]"                 { channel="epsonprojector:projector-serial:hometheater:luminance" }
+Switch epsonPower                                     { channel="epsonprojector:projector-serial:hometheater:power" }
+String epsonSource      "Source [%s]"                 { channel="epsonprojector:projector-serial:hometheater:source" }
+String epsonAspectRatio "Aspect Ratio [%s]"           { channel="epsonprojector:projector-serial:hometheater:aspectratio" }
+String epsonColorMode   "Color Mode [%s]"             { channel="epsonprojector:projector-serial:hometheater:colormode" }
+Switch epsonFreeze                                    { channel="epsonprojector:projector-serial:hometheater:freeze" }
+Switch epsonMute                                      { channel="epsonprojector:projector-serial:hometheater:mute" }
+Dimmer epsonVolume                                    { channel="epsonprojector:projector-serial:hometheater:volume" }
+String epsonLuminance   "Lamp Mode [%s]"              { channel="epsonprojector:projector-serial:hometheater:luminance" }
 
-Number epsonBrightness                                     { channel="epsonprojector:projector-serial:hometheater:brightness" }
-Number epsonContrast                                       { channel="epsonprojector:projector-serial:hometheater:contrast" }
-Number epsonDensity                                        { channel="epsonprojector:projector-serial:hometheater:density" }
-Number epsonTint                                           { channel="epsonprojector:projector-serial:hometheater:tint" }
-Number epsonColorTemperature                               { channel="epsonprojector:projector-serial:hometheater:colortemperature" }
-Number epsonFleshTemperature                               { channel="epsonprojector:projector-serial:hometheater:fleshtemperature" }
-String epsonGamma         "Gamma [%s]"                     { channel="epsonprojector:projector-serial:hometheater:gamma" }
+Number epsonBrightness                                { channel="epsonprojector:projector-serial:hometheater:brightness" }
+Number epsonContrast                                  { channel="epsonprojector:projector-serial:hometheater:contrast" }
+Number epsonDensity                                   { channel="epsonprojector:projector-serial:hometheater:density" }
+Number epsonTint                                      { channel="epsonprojector:projector-serial:hometheater:tint" }
+Number epsonColorTemperature                          { channel="epsonprojector:projector-serial:hometheater:colortemperature" }
+Number epsonFleshTemperature                          { channel="epsonprojector:projector-serial:hometheater:fleshtemperature" }
+String epsonGamma       "Gamma [%s]"                  { channel="epsonprojector:projector-serial:hometheater:gamma" }
 
-Switch epsonAutokeystone                                   { channel="epsonprojector:projector-serial:hometheater:autokeystone" }
-Number epsonVerticalKeystone                               { channel="epsonprojector:projector-serial:hometheater:verticalkeystone" }
-Number epsonHorizontalKeystone                             { channel="epsonprojector:projector-serial:hometheater:horizontalkeystone" }
-Number epsonVerticalPosition                               { channel="epsonprojector:projector-serial:hometheater:verticalposition" }
-Number epsonHorizontalPosition                             { channel="epsonprojector:projector-serial:hometheater:horizontalposition" }
-Switch epsonVerticalReverse                                { channel="epsonprojector:projector-serial:hometheater:verticalreverse" }
-Switch epsonHorizontalReverse                              { channel="epsonprojector:projector-serial:hometheater:horizontalreverse" }
+Switch epsonAutokeystone                              { channel="epsonprojector:projector-serial:hometheater:autokeystone" }
+Number epsonVerticalKeystone                          { channel="epsonprojector:projector-serial:hometheater:verticalkeystone" }
+Number epsonHorizontalKeystone                        { channel="epsonprojector:projector-serial:hometheater:horizontalkeystone" }
+Number epsonVerticalPosition                          { channel="epsonprojector:projector-serial:hometheater:verticalposition" }
+Number epsonHorizontalPosition                        { channel="epsonprojector:projector-serial:hometheater:horizontalposition" }
+Switch epsonVerticalReverse                           { channel="epsonprojector:projector-serial:hometheater:verticalreverse" }
+Switch epsonHorizontalReverse                         { channel="epsonprojector:projector-serial:hometheater:horizontalreverse" }
 
-String epsonBackground    "Background [%s]"                { channel="epsonprojector:projector-serial:hometheater:background" }
-String epsonKeyCode       "Key Code [%s]"                  { channel="epsonprojector:projector-serial:hometheater:keycode" }
-String epsonPowerState    "Power State [%s]" <switch>      { channel="epsonprojector:projector-serial:hometheater:powerstate" }
-Number:Time epsonLampTime "Lamp Time [%d %unit%]" <switch> { channel="epsonprojector:projector-serial:hometheater:lamptime" }
-Number epsonErrCode       "Error Code [%d]"  <error>       { channel="epsonprojector:projector-serial:hometheater:errcode" }
-String epsonErrMessage    "Error Message [%s]" <error>     { channel="epsonprojector:projector-serial:hometheater:errmessage" }
+String epsonBackground  "Background [%s]"             { channel="epsonprojector:projector-serial:hometheater:background" }
+String epsonKeyCode     "Key Code [%s]"               { channel="epsonprojector:projector-serial:hometheater:keycode" }
+String epsonPowerState  "Power State [%s]"   <switch> { channel="epsonprojector:projector-serial:hometheater:powerstate" }
+Number epsonLampTime    "Lamp Time [%d h]"   <switch> { channel="epsonprojector:projector-serial:hometheater:lamptime" }
+Number epsonErrCode     "Error Code [%d]"    <error>  { channel="epsonprojector:projector-serial:hometheater:errcode" }
+String epsonErrMessage  "Error Message [%s]" <error>  { channel="epsonprojector:projector-serial:hometheater:errmessage" }
 ```
 
 ### `epson.sitemap` Example

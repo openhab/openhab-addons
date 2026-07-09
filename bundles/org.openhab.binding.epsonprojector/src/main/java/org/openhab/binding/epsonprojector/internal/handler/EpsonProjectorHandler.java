@@ -20,9 +20,6 @@ import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import javax.measure.Unit;
-import javax.measure.quantity.Time;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.epsonprojector.internal.EpsonProjectorCommandException;
@@ -42,9 +39,7 @@ import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
-import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -69,7 +64,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class EpsonProjectorHandler extends BaseThingHandler {
     private static final int DEFAULT_POLLING_INTERVAL_SEC = 10;
-    private static final Unit<Time> API_HOUR_UNIT = Units.HOUR;
 
     private final Logger logger = LoggerFactory.getLogger(EpsonProjectorHandler.class);
     private final SerialPortManager serialPortManager;
@@ -118,6 +112,7 @@ public class EpsonProjectorHandler extends BaseThingHandler {
             device = Optional.of(new EpsonProjectorDevice(config));
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+            return;
         }
 
         loadSourceList = config.loadSourceList;
@@ -265,7 +260,7 @@ public class EpsonProjectorHandler extends BaseThingHandler {
                 case KEYCODE:
                     break;
                 case LAMPTIME:
-                    return new QuantityType<>(remoteController.getLampTime(), API_HOUR_UNIT);
+                    return new DecimalType(remoteController.getLampTime());
                 case LUMINANCE:
                     return new StringType(remoteController.getLuminance().toString());
                 case MUTE:
