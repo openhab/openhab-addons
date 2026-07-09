@@ -32,8 +32,9 @@
 				<context>password</context>
 				<label>API Key</label>
 				<description>API key to access the account</description>
+				<advanced>false</advanced>
 			</parameter>
-			<parameter name="baseUrl" type="text" required="false" groupName="authentication">
+			<parameter name="baseUrl" type="text" groupName="authentication">
 				<label>API Base URL</label>
 				<description>The base URL of the OpenAI API-compatible service.</description>
 				<default>https://api.openai.com/v1</default>
@@ -46,10 +47,11 @@
 				<limitToOptions>false</limitToOptions>
 			</parameter>
 			<!-- HLI Settings -->
-			<parameter name="model" type="text" required="true" groupName="hli">
+			<parameter name="model" type="text" groupName="hli">
 				<label>Model</label>
 				<description>ID of the model to use.</description>
 				<default>gpt-4o-mini</default>
+				<advanced>false</advanced>
 			</parameter>
 			<parameter name="temperature" type="decimal" min="0" max="2" groupName="hli">
 				<label>Temperature</label>
