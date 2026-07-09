@@ -397,7 +397,7 @@ As long as the remote control is pointing towards the HVAC and A/C status on the
 
   For example, (by default) the following command sent to ```cmnd/<tasmota_dev_id>/irhvac``` channel does send the iFeel temperature.
 
-  ```jsonc
+  ```json
   // Hint: You may use JINJA transform to fill the room temperature (in Celsius) from a channel.
   //       The status of IR command execution is available through [stat/<tasmota_dev_id>/RESULT] channel
   { "Vendor": "Argo", "Model": "WREM3", "Command": "iFeel Report", "SensorTemp": <the_room_temperature_value> }
