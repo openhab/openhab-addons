@@ -24,15 +24,15 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 @SuppressWarnings("unused")
 public class Token {
-    @SerializedName("access_token")
+    @SerializedName(value = "access_token", alternate = { "accessToken" })
     public final String accessToken;
-    @SerializedName("refresh_token")
+    @SerializedName(value = "refresh_token", alternate = { "refreshToken" })
     public final String refreshToken;
     public final String uid;
-    @SerializedName("expire_time")
+    @SerializedName(value = "expire_time", alternate = { "expireTime" })
     public final long expire;
 
-    public transient long expireTimestamp = 0;
+    public long expireTimestamp = 0;
 
     public Token() {
         this("", "", "", 0);
@@ -48,6 +48,6 @@ public class Token {
     @Override
     public String toString() {
         return "Token{accessToken='" + accessToken + "', refreshToken='" + refreshToken + "', uid='" + uid
-                + "', expire=" + expire + "', expireTimestamp=" + expireTimestamp + "}";
+                + "', expire=" + expire + "', expireTimestamp=" + expireTimestamp + "'}";
     }
 }

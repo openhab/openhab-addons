@@ -13,28 +13,30 @@
 package org.openhab.binding.tuya.internal.cloud.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link ResultResponse} encapsulates the Tuya Cloud Response
+ * The {@link QrToken} encapsulates the QR Token
  *
- * @author Jan N. Klug - Initial contribution
+ * @author Mike Jagdis - Initial contribution
  */
 @NonNullByDefault
-public class ResultResponse<T> {
-    public boolean success = false;
-    public String code = "0";
-    @SerializedName("t")
-    public long timestamp = 0;
+@SuppressWarnings("unused")
+public class QrToken {
+    @SerializedName("qrcode")
+    public final String qrToken;
 
-    public @Nullable String msg;
-    public @Nullable T result;
+    public QrToken() {
+        this("");
+    }
+
+    public QrToken(String qrToken) {
+        this.qrToken = qrToken;
+    }
 
     @Override
     public String toString() {
-        return "Result{timestamp=" + timestamp + ", code=" + code + ", msg=" + msg + ", success=" + success
-                + ", result=" + result + "}";
+        return "QrToken{qrToken='" + qrToken + "}";
     }
 }

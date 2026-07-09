@@ -30,6 +30,7 @@ public class TuyaBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_PROJECT = new ThingTypeUID(BINDING_ID, "project");
+    public static final ThingTypeUID THING_TYPE_TUYA_SMARTLIFE = new ThingTypeUID(BINDING_ID, "smartLife");
     public static final ThingTypeUID THING_TYPE_TUYA_DEVICE = new ThingTypeUID(BINDING_ID, "tuyaDevice");
 
     public static final String PROPERTY_CATEGORY = "category";
@@ -51,6 +52,21 @@ public class TuyaBindingConstants {
     public static final List<String> COLOUR_CHANNEL_CODES = List.of("colour_data");
     public static final List<String> DIMMER_CHANNEL_CODES = List.of("bright_value", "bright_value_1", "bright_value_2",
             "temp_value");
+
+    // How long to delay between returning the QR code and attempting to complete the login.
+    public static final int QR_LOGIN_DELAY = 5; // Seconds
+
+    // How long we keep trying to complete the login after the initial delay.
+    public static final int QR_LOGIN_DURATION = 30;
+
+    // The interval between each attempt to complete the login.
+    public static final int QR_LOGIN_INTERVAL = 3;
+
+    // The delay between retries when sending requests to the Tuya cloud.
+    public static final int CLOUD_RETRY_DELAY = 1000; // Milliseconds
+
+    // The maximum number of times to retry a request to the Tuya cloud.
+    public static final int CLOUD_RETRY_MAX = 10;
 
     // The maximum length of time a connection to the device is maintained. After this we close
     // and reconnect in an attempt to limit possible connection related, device-side memory leaks.
