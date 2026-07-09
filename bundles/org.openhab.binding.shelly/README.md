@@ -522,25 +522,32 @@ The following channel IDs were renamed or have replacements. Existing items and 
 **You need to delete and re-discover Things and adapt your rules for removed channels. Deprecated channels remain available for a transition period.**
 Channel type definitions are baked into the binding JAR.
 
-| Group  | Old channel ID          | New channel ID              | Notes                                                                       |
-|--------|-------------------------|-----------------------------|-----------------------------------------------------------------------------|
-| meter  | `reactiveWatts`         | `reactivePower`             | Unit changed from W to VAR; existing items on `reactiveWatts` are affected  |
-| device | `accumulatedWTotal`     | `totalEnergy`               | Was reporting wrong values (Amperes/1000 instead of kWh)                    |
-| device | `totalKWH`              | `totalEnergy`               | Relay-PM devices (Plus 1PM, 2PM, Strip4 etc.); requires re-discovery        |
-| meter  | `currentWatts`          | `currentPower`              | Deprecated old channel remains advanced during migration                    |
-| meter  | `totalKWH`              | `totalEnergy`               | Deprecated old channel remains advanced during migration                    |
-| meter  | `returnedKWH`           | `returnedEnergy`            | Deprecated old channel remains advanced during migration                    |
-| meter  | `lastPower1`            | `lastEnergy1`               | Unit corrected from W-min to Wh                                             |
-| nmeter | `nmTreshhold`           | `nmThreshold`               | Typo fix                                                                    |
-| device | `accumulatedWatts`      | `accumulatedPower`          | Deprecated old channel remains advanced during migration                    |
-| device | `accumulatedReturned`   | `accumulatedReturnedEnergy` | Deprecated old channel remains advanced during migration                    |
+| Group  | Old channel ID        | New channel ID              | Notes                                                                      |
+| ------ | --------------------- | --------------------------- | -------------------------------------------------------------------------- |
+| meter  | `reactiveWatts`       | `reactivePower`             | Deprecated old channel keeps its W unit (numeric value identical to VAR)   |
+| device | `accumulatedWTotal`   | `totalEnergy`               | Was reporting wrong values (Amperes/1000 instead of kWh)                   |
+| device | `accumulatedKWHTotal` | `totalEnergy`               | Relay-PM devices (Plus 1PM, 2PM, Strip4 etc.)                              |
+| device | `totalKWH`            | `totalEnergy`               | Auto-migrated; old channel stays active during the transition period       |
+| meter  | `currentWatts`        | `currentPower`              | Deprecated old channel remains advanced during migration                   |
+| meter  | `totalKWH`            | `totalEnergy`               | Deprecated old channel remains advanced during migration                   |
+| meter  | `returnedKWH`         | `returnedEnergy`            | Deprecated old channel remains advanced during migration                   |
+| meter  | `lastPower1`          | `energyAvg1Min`             | Deprecated old channel stays active (W); new channel reports energy in Wh  |
+| nmeter | `nmTreshhold`         | `nmThreshold`               | Typo fix                                                                   |
+| device | `accumulatedWatts`    | `accumulatedPower`          | Deprecated old channel remains advanced during migration                   |
+| device | `accumulatedReturned` | `accumulatedReturnedEnergy` | Deprecated old channel remains advanced during migration                   |
 
-The following device-level channels are new (no migration needed — just re-discover to get them):
+The following channels are new or corrected (no migration needed — just re-discover to get them):
 
-| Group  | Channel             | Devices                                  |
-| ------ | ------------------- | ---------------------------------------- |
-| meter  | `apparentPower`     | 3EM, EM-50, Plus EM, Plus 3EM-63        |
-| device | `accumulatedApparent` | 3EM, EM-50, Plus EM, Plus 3EM-63      |
+| Group  | Channel               | Devices                                                          |
+| ------ | --------------------- | ---------------------------------------------------------------- |
+| meter  | `apparentPower`       | 3EM, EM-50, Plus EM, Plus 3EM-63                                 |
+| device | `accumulatedApparent` | 3EM, EM-50, Plus EM, Plus 3EM-63                                 |
+| meter  | `energyAvg1Min`       | All relay-PM devices (Gen1 and Gen2+); successor to `lastPower1` |
+| meter  | `energyAvg2Min`       | All relay-PM devices; energy of the minute before last (advanced) |
+| meter  | `energyAvg3Min`       | All relay-PM devices; energy of the minute before that (advanced) |
+| meter  | `frequency`           | Gen4 PM devices (Plus 1PM G4 etc.) and EM devices (3EM, EM-50)   |
+
+See [doc/PowerMeter.md](doc/PowerMeter.md) for the full migration table and unit conversion details.
 
 ## Channels
 
@@ -606,7 +613,9 @@ In this case the is no real measurement based on power consumption, but the Shel
 |         | input        | Switch   | yes       | ON: Input/Button is powered, see General Notes on Channels                      |
 |         | button       | Trigger  | yes       | Event trigger, see section Button Events                                        |
 | meter   | currentPower  | Number   | yes       | Current power consumption in Watts                                              |
-|         | lastEnergy1   | Number   | yes       | Energy consumed in the previous minute (Wh)                                    |
+|         | energyAvg1Min   | Number   | yes       | Energy consumed in the previous minute (Wh)                                    |
+|         | energyAvg2Min   | Number   | yes       | Energy consumed 2 minutes ago (Wh), advanced                                   |
+|         | energyAvg3Min   | Number   | yes       | Energy consumed 3 minutes ago (Wh), advanced                                   |
 |         | totalEnergy     | Number   | yes       | Total energy consumption in kWh                                              |
 |         | frequency    | Number   | yes       | Grid frequency (Hz) - Gen4 only                                                 |
 |         |              |          |           |                                                                                 |
@@ -727,7 +736,9 @@ The Thing id is derived from the service name, so that's the reason why the Thin
 |        | timerActive  | Switch   | yes       | Relay #2: ON: An auto-on/off timer is active                                      |
 |        | button       | Trigger  | yes       | Event trigger, see section Button Events                                          |
 | meter  | currentPower  | Number   | yes       | Current power consumption in Watts                                                |
-|        | lastEnergy1   | Number   | yes       | Energy consumed in the previous minute (Wh)                                       |
+|        | energyAvg1Min   | Number   | yes       | Energy consumed in the previous minute (Wh)                                       |
+|        | energyAvg2Min   | Number   | yes       | Energy consumed 2 minutes ago (Wh), advanced                                      |
+|        | energyAvg3Min   | Number   | yes       | Energy consumed 3 minutes ago (Wh), advanced                                      |
 |        | totalEnergy     | Number   | yes       | Total energy consumption in kWh                                                |
 |        | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
 |        | returnedEnergy  | Number   | yes       | Total returned energy, kWh                                                     |
@@ -746,7 +757,9 @@ totalEnergy might reset on restart depending on device type and firmware version
 |        | stopReason   | String        | yes       | Last stop reasons: normal, safety_switch or obstacle                                  |
 |        | safety       | Switch        | yes       | Indicates status of the Safety Switch, ON=problem detected, powered off               |
 | meter  | currentPower  | Number        | yes       | Current power consumption in Watts                                                    |
-|        | lastEnergy1   | Number        | yes       | Energy consumed in the previous minute (Wh)                                           |
+|        | energyAvg1Min   | Number        | yes       | Energy consumed in the previous minute (Wh)                                           |
+|        | energyAvg2Min   | Number        | yes       | Energy consumed 2 minutes ago (Wh), advanced                                          |
+|        | energyAvg3Min   | Number        | yes       | Energy consumed 3 minutes ago (Wh), advanced                                          |
 |        | totalEnergy     | Number        | yes       | Total energy consumption in kWh                                                    |
 |        | lastUpdate   | DateTime      | yes       | Timestamp of the last measurement                                                     |
 
@@ -831,7 +844,9 @@ The Shelly 4Pro provides 4 relays and 4 power meters.
 |       | autoOff      | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
 |       | timerActive  | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
 | meter | currentPower  | Number   | yes       | Current power consumption in Watts                                                |
-|       | lastEnergy1   | Number   | yes       | Energy consumed in the previous minute (Wh)                                       |
+|       | energyAvg1Min   | Number   | yes       | Energy consumed in the previous minute (Wh)                                       |
+|       | energyAvg2Min   | Number   | yes       | Energy consumed 2 minutes ago (Wh), advanced                                      |
+|       | energyAvg3Min   | Number   | yes       | Energy consumed 3 minutes ago (Wh), advanced                                      |
 |       | totalEnergy     | Number   | yes       | Total energy consumption in kWh                                                |
 |       | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
 
@@ -918,7 +933,9 @@ This information applies to the Shelly Duo-1 as well as the Duo White for the G1
 |         | temperature  | Number   | r/w       | color temperature (K): 0..100% or 2700..6500                                    |
 |         | brightness   | Dimmer   |           | Brightness: 0..100% or 0..100                                                   |
 | meter   | currentPower  | Number   | yes       | Current power consumption in Watts                                              |
-|         | lastEnergy1   | Number   | yes       | Energy consumed in the previous minute (Wh)                                    |
+|         | energyAvg1Min   | Number   | yes       | Energy consumed in the previous minute (Wh)                                    |
+|         | energyAvg2Min   | Number   | yes       | Energy consumed 2 minutes ago (Wh), advanced                                   |
+|         | energyAvg3Min   | Number   | yes       | Energy consumed 3 minutes ago (Wh), advanced                                   |
 |         | totalEnergy     | Number   | yes       | Total energy consumption in kWh                                              |
 |         | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                               |
 
@@ -935,7 +952,9 @@ totalEnergy might reset on restart depending on device type and firmware version
 | white   |              |          |           | Color settings: only valid in WHITE mode                                        |
 |         | brightness   | Dimmer   |           | Brightness: 0..100% or 0..100                                                   |
 | meter   | currentPower  | Number   | yes       | Current power consumption in Watts                                              |
-|         | lastEnergy1   | Number   | yes       | Energy consumed in the previous minute (Wh)                                    |
+|         | energyAvg1Min   | Number   | yes       | Energy consumed in the previous minute (Wh)                                    |
+|         | energyAvg2Min   | Number   | yes       | Energy consumed 2 minutes ago (Wh), advanced                                   |
+|         | energyAvg3Min   | Number   | yes       | Energy consumed 3 minutes ago (Wh), advanced                                   |
 |         | totalEnergy     | Number   | yes       | Total energy consumption in kWh                                              |
 |         | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                               |
 
@@ -1017,7 +1036,9 @@ Using the Thing configuration option `brightnessAutoOn` you could decide if the 
 |         | effect       | Number   | r/w       | Puts the light into effect mode: 0..3)                                          |
 |         |              |          |           | 0=No effect, 1=Meteor Shower, 2=Gradual Change, 3=Flash                         |
 | meter   | currentPower  | Number   | yes       | Current power consumption in Watts                                              |
-|         | lastEnergy1   | Number   | yes       | Energy consumed in the previous minute (Wh)                                    |
+|         | energyAvg1Min   | Number   | yes       | Energy consumed in the previous minute (Wh)                                    |
+|         | energyAvg2Min   | Number   | yes       | Energy consumed 2 minutes ago (Wh), advanced                                   |
+|         | energyAvg3Min   | Number   | yes       | Energy consumed 3 minutes ago (Wh), advanced                                   |
 |         | totalEnergy     | Number   | yes       | Total energy consumption in kWh                                              |
 |         | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                               |
 
@@ -1262,7 +1283,9 @@ If the Shelly Add-On is installed:
 |       | timerActive  | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
 |       | button       | Trigger  | yes       | Event trigger, see section Button Events                                          |
 | meter | currentPower  | Number   | yes       | Current power consumption in Watts                                                |
-|       | lastEnergy1   | Number   | yes       | Energy consumed in the previous minute (Wh)                                       |
+|       | energyAvg1Min   | Number   | yes       | Energy consumed in the previous minute (Wh)                                       |
+|       | energyAvg2Min   | Number   | yes       | Energy consumed 2 minutes ago (Wh), advanced                                      |
+|       | energyAvg3Min   | Number   | yes       | Energy consumed 3 minutes ago (Wh), advanced                                      |
 |       | totalEnergy     | Number   | yes       | Total energy consumption in kWh                                                |
 |       | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
 
@@ -1296,7 +1319,9 @@ If the Shelly Add-On is installed:
 |        | timerActive  | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
 |        | button       | Trigger  | yes       | Event trigger, see section Button Events                                          |
 | meter1 | currentPower  | Number   | yes       | Current power consumption in Watts                                                |
-|        | lastEnergy1   | Number   | yes       | Energy consumed in the previous minute (Wh)                                       |
+|        | energyAvg1Min   | Number   | yes       | Energy consumed in the previous minute (Wh)                                       |
+|        | energyAvg2Min   | Number   | yes       | Energy consumed 2 minutes ago (Wh), advanced                                      |
+|        | energyAvg3Min   | Number   | yes       | Energy consumed 3 minutes ago (Wh), advanced                                      |
 |        | totalEnergy     | Number   | yes       | Total energy consumption in kWh                                                |
 |        | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
 | relay2 | output       | Switch   | r/w       | Relay #2: Controls the relay's output channel (on/off)                            |
@@ -1307,7 +1332,9 @@ If the Shelly Add-On is installed:
 |        | timerActive  | Switch   | yes       | Relay #2: ON: An auto-on/off timer is active                                      |
 |        | button       | Trigger  | yes       | Event trigger, see section Button Events                                          |
 | meter2 | currentPower  | Number   | yes       | Current power consumption in Watts                                                |
-|        | lastEnergy1   | Number   | yes       | Energy consumed in the previous minute (Wh)                                       |
+|        | energyAvg1Min   | Number   | yes       | Energy consumed in the previous minute (Wh)                                       |
+|        | energyAvg2Min   | Number   | yes       | Energy consumed 2 minutes ago (Wh), advanced                                      |
+|        | energyAvg3Min   | Number   | yes       | Energy consumed 3 minutes ago (Wh), advanced                                      |
 |        | totalEnergy     | Number   | yes       | Total energy consumption in kWh                                                |
 |        | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
 
@@ -1377,7 +1404,9 @@ Refer to [Smartify Roller Shutters with openHAB and Shelly](doc/UseCaseSmartRoll
 |       | timerActive  | Switch   | yes       | ON: An auto-on/off timer is active                                                |
 |       | button       | Trigger  | yes       | Event trigger, see section Button Events                                          |
 | meter | currentPower  | Number   | yes       | Current power consumption in Watts                                                |
-|       | lastEnergy1   | Number   | yes       | Energy consumed in the previous minute (Wh)                                       |
+|       | energyAvg1Min   | Number   | yes       | Energy consumed in the previous minute (Wh)                                       |
+|       | energyAvg2Min   | Number   | yes       | Energy consumed 2 minutes ago (Wh), advanced                                      |
+|       | energyAvg3Min   | Number   | yes       | Energy consumed 3 minutes ago (Wh), advanced                                      |
 |       | totalEnergy     | Number   | yes       | Total energy consumption in kWh                                                |
 |       | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
 
@@ -1496,7 +1525,9 @@ totalEnergy might reset on restart depending on device type and firmware version
 |       | autoOff      | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
 |       | timerActive  | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
 | meter | currentPower  | Number   | yes       | Current power consumption in Watts                                                |
-|       | lastEnergy1   | Number   | yes       | Energy consumed in the previous minute (Wh)                                       |
+|       | energyAvg1Min   | Number   | yes       | Energy consumed in the previous minute (Wh)                                       |
+|       | energyAvg2Min   | Number   | yes       | Energy consumed 2 minutes ago (Wh), advanced                                      |
+|       | energyAvg3Min   | Number   | yes       | Energy consumed 3 minutes ago (Wh), advanced                                      |
 |       | totalEnergy     | Number   | yes       | Total energy consumption in kWh                                                |
 |       | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
 
@@ -1580,7 +1611,9 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 |       | timerActive  | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
 |       | button       | Trigger  | yes       | Event trigger, see section Button Events                                          |
 | meter | currentPower  | Number   | yes       | Current power consumption in Watts                                                |
-|       | lastEnergy1   | Number   | yes       | Energy consumed in the previous minute (Wh)                                       |
+|       | energyAvg1Min   | Number   | yes       | Energy consumed in the previous minute (Wh)                                       |
+|       | energyAvg2Min   | Number   | yes       | Energy consumed 2 minutes ago (Wh), advanced                                      |
+|       | energyAvg3Min   | Number   | yes       | Energy consumed 3 minutes ago (Wh), advanced                                      |
 |       | totalEnergy     | Number   | yes       | Total energy consumption in kWh                                                |
 |       | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
 |       | frequency    | Number   | yes       | Grid frequency in Hertz (Hz)                                                      |
@@ -1593,7 +1626,9 @@ totalEnergy might reset on restart depending on device type and firmware version
 | Group | Channel      | Type     | read-only | Description                                                                       |
 | ----- | ------------ | -------- | --------- | --------------------------------------------------------------------------------- |
 | meter | currentPower  | Number   | yes       | Current power consumption in Watts                                                |
-|       | lastEnergy1   | Number   | yes       | Energy consumed in the previous minute (Wh)                                       |
+|       | energyAvg1Min   | Number   | yes       | Energy consumed in the previous minute (Wh)                                       |
+|       | energyAvg2Min   | Number   | yes       | Energy consumed 2 minutes ago (Wh), advanced                                      |
+|       | energyAvg3Min   | Number   | yes       | Energy consumed 3 minutes ago (Wh), advanced                                      |
 |       | totalEnergy     | Number   | yes       | Total energy consumption in kWh                                                |
 |       | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
 |       | frequency    | Number   | yes       | Grid frequency in Hertz (Hz)                                                      |
@@ -1675,7 +1710,9 @@ There are no additional channels besides the device group.
 |       | autoOff      | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
 |       | timerActive  | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
 | meter | currentPower  | Number   | yes       | Current power consumption in Watts                                                |
-|       | lastEnergy1   | Number   | yes       | Energy consumed in the previous minute (Wh)                                       |
+|       | energyAvg1Min   | Number   | yes       | Energy consumed in the previous minute (Wh)                                       |
+|       | energyAvg2Min   | Number   | yes       | Energy consumed 2 minutes ago (Wh), advanced                                      |
+|       | energyAvg3Min   | Number   | yes       | Energy consumed 3 minutes ago (Wh), advanced                                      |
 |       | totalEnergy     | Number   | yes       | Total energy consumption in kWh                                                |
 |       | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
 
@@ -1728,7 +1765,9 @@ totalEnergy might reset on restart depending on device type and firmware version
 |        | timerActive  | Switch   | yes       | Relay #2: ON: An auto-on/off timer is active                                      |
 |        | button       | Trigger  | yes       | Event trigger, see section Button Events                                          |
 | meter  | currentPower  | Number   | yes       | Current power consumption in Watts                                                |
-|        | lastEnergy1   | Number   | yes       | Energy consumed in the previous minute (Wh)                                       |
+|        | energyAvg1Min   | Number   | yes       | Energy consumed in the previous minute (Wh)                                       |
+|        | energyAvg2Min   | Number   | yes       | Energy consumed 2 minutes ago (Wh), advanced                                      |
+|        | energyAvg3Min   | Number   | yes       | Energy consumed 3 minutes ago (Wh), advanced                                      |
 |        | totalEnergy     | Number   | yes       | Total energy consumption in kWh                                                |
 |        | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
 
@@ -1747,7 +1786,9 @@ totalEnergy might reset on restart depending on device type and firmware version
 |        | safety       | Switch        | yes       | Indicates status of the Safety Switch, ON=problem detected, powered off              |
 |        | event        | Trigger       | yes       | Roller event/trigger with payload ROLLER_OPEN / ROLLER_CLOSE / ROLLER_STOP           |
 | meter  | currentPower  | Number        | yes       | Current power consumption in Watts                                                   |
-|        | lastEnergy1   | Number        | yes       | Energy consumed in the previous minute (Wh)                                          |
+|        | energyAvg1Min   | Number        | yes       | Energy consumed in the previous minute (Wh)                                          |
+|        | energyAvg2Min   | Number        | yes       | Energy consumed 2 minutes ago (Wh), advanced                                         |
+|        | energyAvg3Min   | Number        | yes       | Energy consumed 3 minutes ago (Wh), advanced                                         |
 |        | totalEnergy     | Number        | yes       | Total energy consumption in kWh                                                   |
 |        | lastUpdate   | DateTime      | yes       | Timestamp of the last measurement                                                    |
 

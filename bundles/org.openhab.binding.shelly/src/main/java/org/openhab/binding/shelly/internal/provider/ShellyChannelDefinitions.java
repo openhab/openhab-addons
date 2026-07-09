@@ -176,9 +176,10 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_WAKEUP, "sensorWakeup", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ACCUWATTS, "meterAccuWatts", ITEMT_POWER))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ACCUMULATEDPOWER, "accumulatedPower", ITEMT_POWER))
+                .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ACCUTOTAL, "meterAccuTotal", ITEMT_ENERGY))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_TOTALENERGY, "totalEnergy", ITEMT_ENERGY))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ACCURETURNED, "meterAccuReturned", ITEMT_ENERGY))
-                .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ACCURETURNEDENERGY, "meterAccuReturned",
+                .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ACCURETURNEDENERGY, "accumulatedReturnedEnergy",
                         ITEMT_ENERGY))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ACCUAPPARENT, "meterAccuApparent", ITEMT_POWER))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_VOLTAGE, "supplyVoltage", ITEMT_VOLT))
@@ -245,14 +246,17 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_METER_TOTALKWH, "meterTotal", ITEMT_ENERGY))
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_METER_TOTALENERGY, "totalEnergy", ITEMT_ENERGY))
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_METER_LASTMIN1, "lastPower1", ITEMT_POWER))
-                .add(new ShellyChannel(m, CHGR_METER, CHANNEL_METER_LASTENERGY1, "lastEnergy1", ITEMT_ENERGY))
+                .add(new ShellyChannel(m, CHGR_METER, CHANNEL_METER_ENERGYAVG1MIN, "energyAvg1Min", ITEMT_ENERGY))
+                .add(new ShellyChannel(m, CHGR_METER, CHANNEL_METER_ENERGYAVG2MIN, "energyAvg2Min", ITEMT_ENERGY))
+                .add(new ShellyChannel(m, CHGR_METER, CHANNEL_METER_ENERGYAVG3MIN, "energyAvg3Min", ITEMT_ENERGY))
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_LAST_UPDATE, "lastUpdate", ITEMT_DATETIME))
 
                 // EMeter
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_EMETER_TOTALRET, "meterReturned", ITEMT_ENERGY))
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_EMETER_RETURNEDENERGY, "meterReturnedEnergy",
                         ITEMT_ENERGY))
-                .add(new ShellyChannel(m, CHGR_METER, CHANNEL_EMETER_REACTPOWER, "meterReactive", ITEMT_POWER))
+                .add(new ShellyChannel(m, CHGR_METER, CHANNEL_EMETER_REACTWATTS, "meterReactive", ITEMT_POWER))
+                .add(new ShellyChannel(m, CHGR_METER, CHANNEL_EMETER_REACTPOWER, "meterReactivePower", ITEMT_POWER))
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_EMETER_APPARENT, "meterApparentPower", ITEMT_POWER))
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_EMETER_VOLTAGE, "meterVoltage", ITEMT_VOLT))
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_EMETER_CURRENT, "meterCurrent", ITEMT_AMP))
@@ -394,13 +398,13 @@ public class ShellyChannelDefinitions {
 
         // Any multi-meter device (relay or pure meter like ProEM50) gets device-level accumulated channels
         boolean accuChannel = profile.numMeters > 1 && !profile.isRoller && !profile.isRGBW2;
-        addChannel(thing, add, accuChannel, CHGR_DEVST, CHANNEL_DEVST_ACCUMULATEDPOWER);
-        addChannel(thing, add, accuChannel, CHGR_DEVST, CHANNEL_DEVST_TOTALENERGY);
+        addChannel(thing, add, accuChannel, CHGR_DEVST, CHANNEL_DEVST_ACCUWATTS);
+        addChannel(thing, add, accuChannel, CHGR_DEVST, CHANNEL_DEVST_ACCUTOTAL);
         // Gate returned/apparent totals on the device actually being a dedicated EMeter (3EM or EM50).
         // Relay-PM devices (2PM, Plus 1PM) have status.emeters but never populate totalReturned or
         // apparentPower, so these channels would be phantom (created but permanently UNDEF).
         boolean hasReturnedEnergy = accuChannel && (profile.is3EM || profile.isEM50);
-        addChannel(thing, add, hasReturnedEnergy, CHGR_DEVST, CHANNEL_DEVST_ACCURETURNEDENERGY);
+        addChannel(thing, add, hasReturnedEnergy, CHGR_DEVST, CHANNEL_DEVST_ACCURETURNED);
         addChannel(thing, add, hasReturnedEnergy, CHGR_DEVST, CHANNEL_DEVST_ACCUAPPARENT);
         addChannel(thing, add, status.voltage != null || profile.settings.supplyVoltage != null, CHGR_DEVST,
                 CHANNEL_DEVST_VOLTAGE);
@@ -567,13 +571,18 @@ public class ShellyChannelDefinitions {
     public static Map<String, Channel> createMeterChannels(Thing thing, final ShellyDeviceProfile profile,
             final ShellySettingsMeter meter, String group) {
         Map<String, Channel> newChannels = new LinkedHashMap<>();
-        // Gen2: create all channels unconditionally — first WebSocket push may arrive before cover:0 data,
-        // leaving meter fields null even though the device definitely has a meter
-        boolean gen2 = profile.isGen2;
-        boolean hasCounter = meter.counters != null && meter.counters.length > 0 && meter.counters[0] != null;
-        addChannel(thing, newChannels, gen2 || meter.power != null, group, CHANNEL_METER_CURRENTWATTS);
-        addChannel(thing, newChannels, gen2 || meter.total != null, group, CHANNEL_METER_TOTALKWH);
-        addChannel(thing, newChannels, gen2 || hasCounter, group, CHANNEL_METER_LASTENERGY1);
+        Double[] counters = meter.counters;
+        boolean hasCounter = counters != null && counters.length > 0 && counters[0] != null;
+        boolean hasCounter2 = counters != null && counters.length > 1 && counters[1] != null;
+        boolean hasCounter3 = counters != null && counters.length > 2 && counters[2] != null;
+        addChannel(thing, newChannels, meter.power != null, group, CHANNEL_METER_CURRENTWATTS);
+        addChannel(thing, newChannels, meter.total != null, group, CHANNEL_METER_TOTALKWH);
+        // lastPower1 (W, deprecated) and energyAvg1Min (Wh) are always created together. Both channels
+        // receive updates so existing items linked to lastPower1 keep working without re-discovery.
+        addChannel(thing, newChannels, hasCounter, group, CHANNEL_METER_LASTMIN1);
+        addChannel(thing, newChannels, hasCounter, group, CHANNEL_METER_ENERGYAVG1MIN);
+        addChannel(thing, newChannels, hasCounter && hasCounter2, group, CHANNEL_METER_ENERGYAVG2MIN);
+        addChannel(thing, newChannels, hasCounter && hasCounter3, group, CHANNEL_METER_ENERGYAVG3MIN);
         addChannel(thing, newChannels, !newChannels.isEmpty(), group, CHANNEL_LAST_UPDATE);
         return newChannels;
     }
@@ -596,14 +605,29 @@ public class ShellyChannelDefinitions {
         addChannel(thing, newChannels, always || profile.isEM50 || emeter.total != null, group, CHANNEL_METER_TOTALKWH);
         addChannel(thing, newChannels, always || profile.isEM50 || emeter.totalReturned != null, group,
                 CHANNEL_EMETER_TOTALRET);
-        addChannel(thing, newChannels, (always && !profile.isGen2) || emeter.reactive != null, group,
-                CHANNEL_EMETER_REACTPOWER);
+        // reactiveWatts (deprecated, type meterReactive/W as on the pre-5.2 binding) and reactivePower
+        // (type meterReactivePower/VAR) are always created together. The dual-write posts the same VAR
+        // state to both; on the old W-based channel it converts 1:1 (same numeric value as before).
+        boolean hasReactive = (always && !profile.isGen2) || emeter.reactive != null;
+        addChannel(thing, newChannels, hasReactive, group, CHANNEL_EMETER_REACTWATTS);
+        addChannel(thing, newChannels, hasReactive, group, CHANNEL_EMETER_REACTPOWER);
         addChannel(thing, newChannels, always || emeter.voltage != null, group, CHANNEL_EMETER_VOLTAGE);
         addChannel(thing, newChannels, always || emeter.current != null, group, CHANNEL_EMETER_CURRENT);
         addChannel(thing, newChannels, (always && profile.isGen2) || emeter.apparentPower != null, group,
                 CHANNEL_EMETER_APPARENT);
         addChannel(thing, newChannels, emeter.frequency != null, group, CHANNEL_EMETER_FREQUENCY);
         addChannel(thing, newChannels, always || emeter.pf != null, group, CHANNEL_EMETER_PFACTOR);
+        // lastPower1 (W, deprecated) and energyAvg1Min (Wh) are always created together when the device
+        // reports last-minute energy. Non-PM Gen2 relays (e.g. Plus 1) omit aenergy entirely — all absent.
+        @Nullable
+        Double @Nullable [] byMinute = emeter.energyByMinute;
+        boolean hasLastMinute = byMinute != null && byMinute.length > 0 && byMinute[0] != null;
+        boolean hasMinute2 = byMinute != null && byMinute.length > 1 && byMinute[1] != null;
+        boolean hasMinute3 = byMinute != null && byMinute.length > 2 && byMinute[2] != null;
+        addChannel(thing, newChannels, hasLastMinute, group, CHANNEL_METER_LASTMIN1);
+        addChannel(thing, newChannels, hasLastMinute, group, CHANNEL_METER_ENERGYAVG1MIN);
+        addChannel(thing, newChannels, hasLastMinute && hasMinute2, group, CHANNEL_METER_ENERGYAVG2MIN);
+        addChannel(thing, newChannels, hasLastMinute && hasMinute3, group, CHANNEL_METER_ENERGYAVG3MIN);
         // Only add lastUpdate if this device actually has meter channels — guards against non-PM Gen2 relay
         // devices (e.g. Plus 1) where isEMeter=true but all emeter fields are permanently null.
         addChannel(thing, newChannels, !newChannels.isEmpty(), group, CHANNEL_LAST_UPDATE);
@@ -619,7 +643,7 @@ public class ShellyChannelDefinitions {
         addChannel(thing, newChannels, status.mismatch != null, group, CHANNEL_NMETER_MISMATCH);
         // mismatchThreshold only available from Gen1 settings; absent on Gen2
         addChannel(thing, newChannels, settings != null && settings.mismatchThreshold != null, group,
-                CHANNEL_NMETER_THRESHOLD);
+                CHANNEL_NMETER_MTRESHHOLD);
         return newChannels;
     }
 
@@ -745,7 +769,10 @@ public class ShellyChannelDefinitions {
             case CHANNEL_DEVST_ACCUWATTS -> CHANNEL_DEVST_ACCUMULATEDPOWER;
             case CHANNEL_EMETER_REACTWATTS -> CHANNEL_EMETER_REACTPOWER;
             case CHANNEL_DEVST_ACCUTOTAL -> CHANNEL_DEVST_TOTALENERGY;
-            case CHANNEL_METER_LASTMIN1 -> CHANNEL_METER_LASTENERGY1;
+            // CHANNEL_METER_LASTMIN1 (lastPower1, W) intentionally has NO entry: its replacement
+            // energyAvg1Min is Number:Energy (Wh); forwarding the W state via the dual-write would
+            // post an incompatible unit to Wh-based items on every poll ("could not be converted
+            // to the item unit" warnings). All write sites post both channels explicitly instead.
             case CHANNEL_NMETER_MTRESHHOLD -> CHANNEL_NMETER_THRESHOLD;
             case CHANNEL_DEVST_ACCURETURNED -> CHANNEL_DEVST_ACCURETURNEDENERGY;
             default -> null;

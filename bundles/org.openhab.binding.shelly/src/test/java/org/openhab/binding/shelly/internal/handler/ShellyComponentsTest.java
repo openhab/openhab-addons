@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
@@ -543,13 +544,8 @@ public class ShellyComponentsTest {
         ShellyThingInterface handler = mockHandler(profile);
         ShellyComponents.updateMeters(handler, status);
 
-        ArgumentCaptor<org.openhab.core.types.State> captor = ArgumentCaptor
-                .forClass(org.openhab.core.types.State.class);
-        verify(handler, atLeastOnce()).updateChannel(eq(CHANNEL_GROUP_DEV_STATUS), eq(CHANNEL_DEVST_ACCUTOTAL),
-                captor.capture());
-        List<org.openhab.core.types.State> values = captor.getAllValues();
-        QuantityType<?> last = (QuantityType<?>) values.get(values.size() - 1);
-        assertEquals(8.1, last.doubleValue(), 0.001);
+        assertEquals(8.1, lastQuantity(handler, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCUTOTAL).doubleValue(),
+                0.001);
     }
 
     @Test
@@ -561,13 +557,8 @@ public class ShellyComponentsTest {
         ShellyThingInterface handler = mockHandler(profile);
         ShellyComponents.updateMeters(handler, status);
 
-        ArgumentCaptor<org.openhab.core.types.State> captor = ArgumentCaptor
-                .forClass(org.openhab.core.types.State.class);
-        verify(handler, atLeastOnce()).updateChannel(eq(CHANNEL_GROUP_DEV_STATUS), eq(CHANNEL_DEVST_ACCUTOTAL),
-                captor.capture());
-        List<org.openhab.core.types.State> values = captor.getAllValues();
-        QuantityType<?> last = (QuantityType<?>) values.get(values.size() - 1);
-        assertEquals(8.0, last.doubleValue(), 0.001);
+        assertEquals(8.0, lastQuantity(handler, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCUTOTAL).doubleValue(),
+                0.001);
     }
 
     @Test
@@ -594,13 +585,8 @@ public class ShellyComponentsTest {
         ShellyThingInterface handler = mockHandler(profile);
         ShellyComponents.updateMeters(handler, status);
 
-        ArgumentCaptor<org.openhab.core.types.State> captor = ArgumentCaptor
-                .forClass(org.openhab.core.types.State.class);
-        verify(handler, atLeastOnce()).updateChannel(eq(CHANNEL_GROUP_DEV_STATUS), eq(CHANNEL_DEVST_ACCUTOTAL),
-                captor.capture());
-        List<org.openhab.core.types.State> values = captor.getAllValues();
-        QuantityType<?> last = (QuantityType<?>) values.get(values.size() - 1);
-        assertEquals(60.0, last.doubleValue(), 0.001);
+        assertEquals(60.0, lastQuantity(handler, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCUTOTAL).doubleValue(),
+                0.001);
     }
 
     @Test
@@ -646,13 +632,8 @@ public class ShellyComponentsTest {
 
         ShellyComponents.updateMeters(handler, status);
 
-        ArgumentCaptor<org.openhab.core.types.State> captor = ArgumentCaptor
-                .forClass(org.openhab.core.types.State.class);
-        verify(handler, atLeastOnce()).updateChannel(eq(CHANNEL_GROUP_DEV_STATUS), eq(CHANNEL_DEVST_ACCURETURNED),
-                captor.capture());
-        List<org.openhab.core.types.State> values = captor.getAllValues();
-        QuantityType<?> last = (QuantityType<?>) values.get(values.size() - 1);
-        assertEquals(5.0, last.doubleValue(), 0.001);
+        assertEquals(5.0, lastQuantity(handler, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCURETURNED).doubleValue(),
+                0.001);
     }
 
     @Test
@@ -698,12 +679,8 @@ public class ShellyComponentsTest {
         ShellyThingInterface handler = mockHandler(profile);
         ShellyComponents.updateMeters(handler, status);
 
-        ArgumentCaptor<State> captor = ArgumentCaptor.forClass(State.class);
-        verify(handler, atLeastOnce()).updateChannel(eq(CHANNEL_GROUP_DEV_STATUS), eq(CHANNEL_DEVST_ACCURETURNED),
-                captor.capture());
-        List<State> values = captor.getAllValues();
-        QuantityType<?> last = (QuantityType<?>) values.get(values.size() - 1);
-        assertEquals(7.0, last.doubleValue(), 0.001); // 7000 / 1000 = 7.0 kWh, not the 6.0 per-phase sum
+        assertEquals(7.0, lastQuantity(handler, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCURETURNED).doubleValue(),
+                0.001);
     }
 
     @Test
@@ -731,13 +708,8 @@ public class ShellyComponentsTest {
         verify(handler, atLeastOnce()).updateChannel(eq("meter2"), eq(CHANNEL_EMETER_APPARENT), any(State.class));
         verify(handler, atLeastOnce()).updateChannel(eq("meter3"), eq(CHANNEL_EMETER_APPARENT), any(State.class));
 
-        ArgumentCaptor<org.openhab.core.types.State> captor = ArgumentCaptor
-                .forClass(org.openhab.core.types.State.class);
-        verify(handler, atLeastOnce()).updateChannel(eq(CHANNEL_GROUP_DEV_STATUS), eq(CHANNEL_DEVST_ACCUAPPARENT),
-                captor.capture());
-        List<org.openhab.core.types.State> values = captor.getAllValues();
-        QuantityType<?> last = (QuantityType<?>) values.get(values.size() - 1);
-        assertEquals(3000.0, last.doubleValue(), 0.1);
+        assertEquals(3000.0, lastQuantity(handler, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCUAPPARENT).doubleValue(),
+                0.1);
     }
 
     @Test
@@ -749,13 +721,8 @@ public class ShellyComponentsTest {
         ShellyThingInterface handler = mockHandler(profile);
         ShellyComponents.updateMeters(handler, status);
 
-        ArgumentCaptor<org.openhab.core.types.State> captor = ArgumentCaptor
-                .forClass(org.openhab.core.types.State.class);
-        verify(handler, atLeastOnce()).updateChannel(eq(CHANNEL_GROUP_DEV_STATUS), eq(CHANNEL_DEVST_ACCUWATTS),
-                captor.capture());
-        List<org.openhab.core.types.State> values = captor.getAllValues();
-        QuantityType<?> last = (QuantityType<?>) values.get(values.size() - 1);
-        assertEquals(1000.0, last.doubleValue(), 0.1);
+        assertEquals(1000.0, lastQuantity(handler, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCUWATTS).doubleValue(),
+                0.1);
     }
 
     @Test
@@ -767,13 +734,8 @@ public class ShellyComponentsTest {
         ShellyThingInterface handler = mockHandler(profile);
         ShellyComponents.updateMeters(handler, status);
 
-        ArgumentCaptor<org.openhab.core.types.State> captor = ArgumentCaptor
-                .forClass(org.openhab.core.types.State.class);
-        verify(handler, atLeastOnce()).updateChannel(eq(CHANNEL_GROUP_DEV_STATUS), eq(CHANNEL_DEVST_ACCUWATTS),
-                captor.capture());
-        List<org.openhab.core.types.State> values = captor.getAllValues();
-        QuantityType<?> last = (QuantityType<?>) values.get(values.size() - 1);
-        assertEquals(1050.0, last.doubleValue(), 0.1);
+        assertEquals(1050.0, lastQuantity(handler, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCUWATTS).doubleValue(),
+                0.1);
     }
 
     @Test
@@ -796,12 +758,8 @@ public class ShellyComponentsTest {
         verify(handler, atLeastOnce()).updateChannel(eq("meter2"), eq(CHANNEL_METER_CURRENTWATTS), any(State.class));
         verify(handler, never()).updateChannel(eq("meter3"), eq(CHANNEL_METER_CURRENTWATTS), any(State.class));
 
-        ArgumentCaptor<org.openhab.core.types.State> captor = ArgumentCaptor
-                .forClass(org.openhab.core.types.State.class);
-        verify(handler, atLeastOnce()).updateChannel(eq(CHANNEL_GROUP_DEV_STATUS), eq(CHANNEL_DEVST_ACCUWATTS),
-                captor.capture());
-        QuantityType<?> accuWatts = (QuantityType<?>) captor.getAllValues().get(captor.getAllValues().size() - 1);
-        assertEquals(3000.0, accuWatts.doubleValue(), 0.1); // A+B only, C had null power
+        assertEquals(3000.0, lastQuantity(handler, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCUWATTS).doubleValue(),
+                0.1);
     }
 
     @Test
@@ -839,6 +797,139 @@ public class ShellyComponentsTest {
         ShellySettingsEMeter em = emeter(power);
         em.total = total;
         return em;
+    }
+
+    private static ShellySettingsEMeter emeterWithByMinute(double power, @Nullable Double... energyByMinuteWh) {
+        ShellySettingsEMeter em = emeter(power);
+        em.energyByMinute = energyByMinuteWh;
+        return em;
+    }
+
+    @Test
+    void gen2RelayPmLastMinuteChannelsBothWrittenWithCorrectUnits() {
+        // energyByMinute[0]=3.0 Wh → lastPower1 (LASTMIN1)=180.0 W (Wh×60), energyAvg1Min=3.0 Wh
+        ShellyDeviceProfile profile = emeterProfile(false, 1);
+        ShellyThingInterface handler = mockHandler(profile);
+        ShellyComponents.updateMeters(handler, statusWithEMeters(emeterWithByMinute(50.0, 3.0)));
+
+        assertEquals(180.0, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_LASTMIN1).doubleValue(), 0.1);
+        assertEquals(3.0, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_ENERGYAVG1MIN).doubleValue(), 0.001);
+    }
+
+    @Test
+    void gen2EMetersNullByMinuteSkipsLastMinuteChannels() {
+        ShellyDeviceProfile profile = emeterProfile(false, 1);
+        ShellyThingInterface handler = mockHandler(profile);
+        ShellyComponents.updateMeters(handler, statusWithEMeters(emeter(50.0)));
+
+        verify(handler, never()).updateChannel(anyString(), eq(CHANNEL_METER_LASTMIN1), any(State.class));
+        verify(handler, never()).updateChannel(anyString(), eq(CHANNEL_METER_ENERGYAVG1MIN), any(State.class));
+        verify(handler, never()).updateChannel(anyString(), eq(CHANNEL_METER_ENERGYAVG2MIN), any(State.class));
+        verify(handler, never()).updateChannel(anyString(), eq(CHANNEL_METER_ENERGYAVG3MIN), any(State.class));
+    }
+
+    @Test
+    void gen2EMetersThreeByMinuteSlotsAllChannelsWritten() {
+        // Community-measured values: 428.5 W load → by_minute ≈ {7148.092, 7160.587, 6429.836} mWh,
+        // converted to Wh by Shelly2ApiClient before reaching the DTO.
+        ShellyDeviceProfile profile = emeterProfile(false, 1);
+        ShellyThingInterface handler = mockHandler(profile);
+        ShellyComponents.updateMeters(handler,
+                statusWithEMeters(emeterWithByMinute(428.5, 7.148092, 7.160587, 6.429836)));
+
+        assertEquals(428.9, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_LASTMIN1).doubleValue(), 0.1);
+        assertEquals(7.148, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_ENERGYAVG1MIN).doubleValue(),
+                0.001);
+        assertEquals(7.161, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_ENERGYAVG2MIN).doubleValue(),
+                0.001);
+        assertEquals(6.430, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_ENERGYAVG3MIN).doubleValue(),
+                0.001);
+    }
+
+    @Test
+    void gen2EMetersSingleByMinuteSlotOnlyFirstChannelWritten() {
+        ShellyDeviceProfile profile = emeterProfile(false, 1);
+        ShellyThingInterface handler = mockHandler(profile);
+        ShellyComponents.updateMeters(handler, statusWithEMeters(emeterWithByMinute(50.0, 3.0)));
+
+        verify(handler, atLeastOnce()).updateChannel(anyString(), eq(CHANNEL_METER_ENERGYAVG1MIN), any(State.class));
+        verify(handler, never()).updateChannel(anyString(), eq(CHANNEL_METER_ENERGYAVG2MIN), any(State.class));
+        verify(handler, never()).updateChannel(anyString(), eq(CHANNEL_METER_ENERGYAVG3MIN), any(State.class));
+    }
+
+    @Test
+    void gen2EMetersNullMiddleSlotSkipsOnlyThatChannel() {
+        ShellyDeviceProfile profile = emeterProfile(false, 1);
+        ShellyThingInterface handler = mockHandler(profile);
+        ShellyComponents.updateMeters(handler, statusWithEMeters(emeterWithByMinute(50.0, 3.0, null, 2.0)));
+
+        verify(handler, atLeastOnce()).updateChannel(anyString(), eq(CHANNEL_METER_ENERGYAVG1MIN), any(State.class));
+        verify(handler, never()).updateChannel(anyString(), eq(CHANNEL_METER_ENERGYAVG2MIN), any(State.class));
+        assertEquals(2.0, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_ENERGYAVG3MIN).doubleValue(), 0.001);
+    }
+
+    @Test
+    void gen1SimpleMeterCountersConvertedFromWattMinutes() {
+        // Gen1 counters are Watt-minutes: counters[0]=60 W-min = 60 W average = 1.0 Wh
+        ShellyDeviceProfile profile = simpleRelayProfile(1);
+        ShellySettingsMeter m0 = new ShellySettingsMeter();
+        m0.isValid = true;
+        m0.power = 60.0;
+        m0.counters = new Double[] { 60.0, 120.0, 180.0 };
+
+        ShellyThingInterface handler = mockHandler(profile);
+        ShellyComponents.updateMeters(handler, statusWithMeters(m0));
+
+        assertEquals(60.0, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_LASTMIN1).doubleValue(), 0.1);
+        assertEquals(1.0, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_ENERGYAVG1MIN).doubleValue(), 0.001);
+        assertEquals(2.0, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_ENERGYAVG2MIN).doubleValue(), 0.001);
+        assertEquals(3.0, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_ENERGYAVG3MIN).doubleValue(), 0.001);
+    }
+
+    @Test
+    void gen1AggregatedMeterSumsMinuteCountersAcrossMeters() {
+        // Roller with 2 motor meters: counters are summed per slot before conversion
+        ShellyDeviceProfile profile = gen1RollerProfile();
+        ShellySettingsMeter m0 = new ShellySettingsMeter();
+        m0.isValid = true;
+        m0.power = 100.0;
+        m0.counters = new Double[] { 30.0, 60.0, 90.0 };
+        ShellySettingsMeter m1 = new ShellySettingsMeter();
+        m1.isValid = true;
+        m1.power = 200.0;
+        m1.counters = new Double[] { 30.0, 60.0, 90.0 };
+
+        ShellyThingInterface handler = mockHandler(profile);
+        ShellyComponents.updateMeters(handler, statusWithMeters(m0, m1));
+
+        assertEquals(60.0, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_LASTMIN1).doubleValue(), 0.1);
+        assertEquals(1.0, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_ENERGYAVG1MIN).doubleValue(), 0.001);
+        assertEquals(2.0, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_ENERGYAVG2MIN).doubleValue(), 0.001);
+        assertEquals(3.0, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_ENERGYAVG3MIN).doubleValue(), 0.001);
+    }
+
+    @Test
+    void deviceTotalKwhDeprecatedDeviceChannelAlsoWritten() {
+        // Old Things may still link items to device#totalKWH; the write site posts the same
+        // value to both CHANNEL_DEVST_ACCUTOTAL and CHANNEL_DEVST_TOTALKWH (dual-write forwards
+        // both to device#totalEnergy).
+        ShellyDeviceProfile profile = emeterProfile(true, 2);
+        ShellySettingsStatus status = statusWithEMeters(emeter(100.0, 5000.0), emeter(200.0, 3000.0));
+        status.totalKWH = 8100.0;
+
+        ShellyThingInterface handler = mockHandler(profile);
+        ShellyComponents.updateMeters(handler, status);
+
+        assertEquals(8.1, lastQuantity(handler, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCUTOTAL).doubleValue(),
+                0.001);
+        assertEquals(8.1, lastQuantity(handler, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_TOTALKWH).doubleValue(), 0.001);
+    }
+
+    private static QuantityType<?> lastQuantity(ShellyThingInterface handler, String group, String channel) {
+        ArgumentCaptor<State> captor = ArgumentCaptor.forClass(State.class);
+        verify(handler, atLeastOnce()).updateChannel(eq(group), eq(channel), captor.capture());
+        List<State> vals = captor.getAllValues();
+        return (QuantityType<?>) vals.get(vals.size() - 1);
     }
 
     private static ShellyDeviceProfile pro3emProfile() {

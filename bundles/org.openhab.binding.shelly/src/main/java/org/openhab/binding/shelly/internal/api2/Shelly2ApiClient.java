@@ -636,6 +636,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
                 // aenergy.total is in Wh (accumulated energy since last reset)
                 emeter.total = aeTotal;
             }
+            emeter.energyByMinute = byMinuteToWh(aenergy.byMinute);
         }
         if (rs.voltage != null) {
             emeter.voltage = rs.voltage;
@@ -753,8 +754,26 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             return;
         }
         emeter.isValid = emeter.current != null || emeter.voltage != null || emeter.power != null
-                || emeter.total != null;
+                || emeter.total != null || emeter.energyByMinute != null;
         status.emeters.set(id, emeter);
+    }
+
+    /**
+     * Convert aenergy.by_minute (mWh per complete minute, up to 3 slots) to Wh.
+     * Returns null when the device did not report a usable slot 0 (e.g. clock not synced).
+     * Package-private for unit testing.
+     */
+    static @Nullable Double @Nullable [] byMinuteToWh(@Nullable Double @Nullable [] byMinute) {
+        if (byMinute == null || byMinute.length == 0 || byMinute[0] == null) {
+            return null;
+        }
+        @Nullable
+        Double[] wh = new @Nullable Double[byMinute.length];
+        for (int i = 0; i < byMinute.length; i++) {
+            Double mwh = byMinute[i];
+            wh[i] = mwh != null ? mwh / 1000.0 : null;
+        }
+        return wh;
     }
 
     private void applyEm1Data(ShellySettingsStatus status, int slotIdx, @Nullable Shelly2DeviceStatusEmData emData) {
@@ -1006,6 +1025,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         }
         if (cs.aenergy != null) {
             emeter.total = getDouble(cs.aenergy.total);
+            emeter.energyByMinute = byMinuteToWh(cs.aenergy.byMinute);
         }
         if (cs.voltage != null) {
             emeter.voltage = cs.voltage;

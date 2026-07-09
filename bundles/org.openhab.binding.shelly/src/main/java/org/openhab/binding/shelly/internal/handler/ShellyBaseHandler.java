@@ -118,12 +118,19 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             new ChannelMigrationRule(2, CHANNEL_DEVST_ACCUWATTS, CHANNEL_DEVST_ACCUMULATEDPOWER, true),
             new ChannelMigrationRule(3, CHANNEL_EMETER_REACTWATTS, CHANNEL_EMETER_REACTPOWER, false),
             new ChannelMigrationRule(3, CHANNEL_DEVST_ACCUTOTAL, CHANNEL_DEVST_TOTALENERGY, false),
-            // CHANNEL_DEVST_TOTALKWH = "totalKWH" shares the bare name with CHANNEL_METER_TOTALKWH;
-            // findChannel() would match the meter group first and create the wrong group's channel.
-            // device#totalKWH → device#totalEnergy requires re-discovery for existing Things.
-            new ChannelMigrationRule(3, CHANNEL_METER_LASTMIN1, CHANNEL_METER_LASTENERGY1, false),
             new ChannelMigrationRule(3, CHANNEL_NMETER_MTRESHHOLD, CHANNEL_NMETER_THRESHOLD, false),
-            new ChannelMigrationRule(4, CHANNEL_DEVST_ACCURETURNED, CHANNEL_DEVST_ACCURETURNEDENERGY, false));
+            new ChannelMigrationRule(4, CHANNEL_DEVST_ACCURETURNED, CHANNEL_DEVST_ACCURETURNEDENERGY, false),
+            // lastPower1 → energyAvg1Min (version 5 so test builds that already created the interim
+            // lastEnergy1 channel at version 3/4 still pick up the final channel name)
+            new ChannelMigrationRule(5, CHANNEL_METER_LASTMIN1, CHANNEL_METER_ENERGYAVG1MIN, false),
+            // "lastEnergy1" existed only in interim test builds of this PR (never released); the rule
+            // makes sure those Things also get energyAvg1Min even without a lastPower1 channel
+            new ChannelMigrationRule(5, "lastEnergy1", CHANNEL_METER_ENERGYAVG1MIN, false),
+            // CHANNEL_DEVST_TOTALKWH = "totalKWH" shares the bare name with CHANNEL_METER_TOTALKWH,
+            // so this rule uses the group-qualified id: findChannels() then matches the full id only
+            // and cannot create the replacement in a meter group.
+            new ChannelMigrationRule(5, mkChannelId(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_TOTALKWH),
+                    CHANNEL_DEVST_TOTALENERGY, false));
     private static final int CHANNEL_SCHEMA_VERSION = CHANNEL_MIGRATION_RULES.stream()
             .mapToInt(ChannelMigrationRule::version).max().orElse(0);
 
@@ -1440,6 +1447,9 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         if (updated) {
             updateProperties(PROPERTY_CHANNEL_SCHEMA_VERSION, String.valueOf(CHANNEL_SCHEMA_VERSION));
             logger.debug("{}: Channel definitions migrated to schema version {}", thingName, CHANNEL_SCHEMA_VERSION);
+        } else if (!getThing().getChannels().isEmpty()) {
+            // Fresh Thing: no legacy channels to migrate; stamp current version to prevent scanning on every poll
+            updateProperties(PROPERTY_CHANNEL_SCHEMA_VERSION, String.valueOf(CHANNEL_SCHEMA_VERSION));
         }
     }
 
@@ -1558,11 +1568,16 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         return false;
     }
 
+    /**
+     * A group-qualified channelId ("device#totalKWH") matches the full channel id only;
+     * a bare name ("totalKWH") matches the channel name in any group (meter, meter1, ...).
+     */
     private List<Channel> findChannels(List<Channel> channels, String channelId) {
+        boolean groupQualified = channelId.indexOf(ChannelUID.CHANNEL_GROUP_SEPARATOR) >= 0;
         List<Channel> result = new ArrayList<>();
         for (Channel channel : channels) {
             ChannelUID uid = channel.getUID();
-            if (uid.getId().equals(channelId) || uid.getIdWithoutGroup().equals(channelId)) {
+            if (groupQualified ? uid.getId().equals(channelId) : uid.getIdWithoutGroup().equals(channelId)) {
                 result.add(channel);
             }
         }
@@ -1570,13 +1585,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     }
 
     private @Nullable Channel findChannel(List<Channel> channels, String channelId) {
-        for (Channel channel : channels) {
-            ChannelUID uid = channel.getUID();
-            if (uid.getId().equals(channelId) || uid.getIdWithoutGroup().equals(channelId)) {
-                return channel;
-            }
-        }
-        return null;
+        List<Channel> matches = findChannels(channels, channelId);
+        return matches.isEmpty() ? null : matches.get(0);
     }
 
     @Override
