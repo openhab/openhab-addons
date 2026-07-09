@@ -13,13 +13,14 @@
 package org.openhab.binding.enphase.internal.dto;
 
 /**
- * Data from api/v1/production api call.
+ * Data class for a meter as returned by the ivp/meters api call. Used to map the meter id ({@code eid}) to the type of
+ * measurement the meter reports.
  *
- * @author Hilbrand Bouwkamp - Initial contribution
+ * @author Andre Lackmann - Initial contribution
  */
-public class EnvoyEnergyDTO {
-    public Integer wattHoursToday;
-    public Integer wattHoursSevenDays;
-    public Integer wattHoursLifetime;
-    public Integer wattsNow;
+public class IvpMetersDTO {
+    public long eid;
+    public String state;
+    public String measurementType;
+    public String meteringStatus;
 }
