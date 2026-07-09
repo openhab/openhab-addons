@@ -15,8 +15,6 @@ package org.openhab.binding.peblar.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
  * @author Hilbrand Bouwkamp - Initial contribution
  */
@@ -24,23 +22,17 @@ import com.google.gson.annotations.SerializedName;
 public class PeblarEvInterfaceDTO {
 
     /** IEC 61851 CP state, e.g. "State A", "State B", "State C" */
-    @SerializedName("CpState")
     public @Nullable String cpState;
 
-    @SerializedName("LockState")
     public @Nullable Boolean lockState;
 
     /** Charge current limit in milliamperes */
-    @SerializedName("ChargeCurrentLimit")
     public @Nullable Long chargeCurrentLimit;
 
-    @SerializedName("ChargeCurrentLimitSource")
     public @Nullable String chargeCurrentLimitSource;
 
     /** Actual applied charge current limit in milliamperes */
-    @SerializedName("ChargeCurrentLimitActual")
     public @Nullable Long chargeCurrentLimitActual;
 
-    @SerializedName("Force1Phase")
     public @Nullable Boolean force1Phase;
 }

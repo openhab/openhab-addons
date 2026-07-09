@@ -19,13 +19,8 @@ import com.google.gson.annotations.SerializedName;
  */
 class PeblarSystemDTO {
 
-    @SerializedName("ProductPn")
     public String productPn;
-
-    @SerializedName("ProductSn")
     public String productSn;
-
-    @SerializedName("FirmwareVersion")
     public String firmwareVersion;
 
     /** WLAN signal strength in dBm */
@@ -33,14 +28,11 @@ class PeblarSystemDTO {
     public Integer wlanSignalStrength;
 
     /** Cellular (LTE) signal strength in dBm */
-    @SerializedName("CellularSignalStrength")
     public Integer cellularSignalStrength;
 
     /** Device uptime in seconds */
-    @SerializedName("Uptime")
     public Long uptime;
 
     /** Number of phases: 1 or 3 */
-    @SerializedName("PhaseCount")
     public Integer phaseCount;
 }

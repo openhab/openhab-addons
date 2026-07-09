@@ -27,6 +27,7 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
@@ -48,7 +49,7 @@ class PeblarApiClient {
 
     public PeblarApiClient(HttpClient httpClient, String hostname, String apiToken) {
         this.httpClient = httpClient;
-        this.gson = new Gson();
+        this.gson = new Gson().newBuilder().setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE).create();
         this.baseUrl = String.format(API_BASE, hostname);
         this.apiToken = apiToken;
     }
