@@ -392,4 +392,13 @@ public class Setters {
         min = min != null ? min : ResourceType.LIGHT == target.getType() ? Dimming.DEFAULT_MINIMUM_DIMMING_LEVEL : 0.0;
         return OnOffType.from(bri >= Math.max(0.01, min));
     }
+
+    /**
+     * Put a key-value pair into the given map only if the value is not null.
+     */
+    public static void putIfExists(Map<String, String> map, String key, @Nullable String value) {
+        if (value != null) {
+            map.put(key, value);
+        }
+    }
 }

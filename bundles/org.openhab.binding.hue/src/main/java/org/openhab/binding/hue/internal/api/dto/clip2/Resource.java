@@ -705,10 +705,10 @@ public class Resource {
 
     public String getProductName() {
         ProductData productData = getProductData();
-        if (Objects.nonNull(productData)) {
-            return productData.getProductName();
+        if (Objects.nonNull(productData) && productData.getProductName() instanceof String productName) {
+            return productName;
         }
-        return getType().toString();
+        return getTypeAsString();
     }
 
     public @Nullable Recall getRecall() {
@@ -900,6 +900,10 @@ public class Resource {
 
     public ResourceType getType() {
         return ResourceType.of(type);
+    }
+
+    public String getTypeAsString() {
+        return getType().toString();
     }
 
     public State getZigbeeState() {

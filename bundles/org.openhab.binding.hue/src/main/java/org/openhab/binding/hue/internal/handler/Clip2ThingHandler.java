@@ -402,7 +402,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
         try {
             handleCommandInner(channelUID, commandParam);
         } catch (CriticalFieldMissing e) {
-            logger.debug("{} -> handleCommand() channelUID:{} command:{} error: {}", resourceId, channelUID,
+            logger.warn("{} -> handleCommand() channelUID:{} command:{} error: {}", resourceId, channelUID,
                     commandParam, e.getMessage(), e);
         }
     }
@@ -1057,7 +1057,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
             return updateChannelsInner(resource);
         } catch (CriticalFieldMissing e) {
             // this should never happen but log it just in case
-            logger.debug("{} -> updateChannels() error {}", resourceId, e.getMessage(), e);
+            logger.warn("{} -> updateChannels() error {}", resourceId, e.getMessage(), e);
             return false;
         }
     }
@@ -1391,57 +1391,50 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private synchronized void updateProperties(Resource resource) {
         if (!disposing && !updatePropertiesDone) {
             logger.debug("{} -> updateProperties()", resourceId);
-            Map<String, String> properties = new HashMap<>(thing.getProperties());
+            Map<String, String> props = new HashMap<>(thing.getProperties());
 
             // resource data
-            properties.put(PROPERTY_RESOURCE_ID, resourceId);
-            properties.put(PROPERTY_RESOURCE_TYPE, thisResource.getType().toString());
-            properties.put(PROPERTY_RESOURCE_NAME, thisResource.getName());
+            Setters.putIfExists(props, PROPERTY_RESOURCE_ID, resourceId);
+            Setters.putIfExists(props, PROPERTY_RESOURCE_TYPE, thisResource.getTypeAsString());
+            Setters.putIfExists(props, PROPERTY_RESOURCE_NAME, thisResource.getName());
 
             // owner information
             ResourceReference owner = thisResource.getOwner();
             if (Objects.nonNull(owner)) {
-                String ownerId = owner.getId();
-                if (Objects.nonNull(ownerId)) {
-                    properties.put(PROPERTY_OWNER, ownerId);
-                }
-                ResourceType ownerType = owner.getType();
-                properties.put(PROPERTY_OWNER_TYPE, ownerType.toString());
+                Setters.putIfExists(props, PROPERTY_OWNER, owner.getId());
+                Setters.putIfExists(props, PROPERTY_OWNER_TYPE, owner.getTypeAsString());
             }
 
             // metadata
             MetaData metaData = thisResource.getMetaData();
             if (Objects.nonNull(metaData)) {
-                properties.put(PROPERTY_RESOURCE_ARCHETYPE, metaData.getArchetype().toString());
+                Setters.putIfExists(props, PROPERTY_RESOURCE_ARCHETYPE, metaData.getArchetypeAsString());
             }
 
             // product data
-            ProductData productData = thisResource.getProductData();
-            if (Objects.nonNull(productData)) {
-                String modelId = productData.getModelId();
+            ProductData prodData = thisResource.getProductData();
+            if (Objects.nonNull(prodData)) {
+                String modelId = prodData.getModelId();
 
                 // standard properties
-                properties.put(Thing.PROPERTY_MODEL_ID, modelId);
-                properties.put(Thing.PROPERTY_VENDOR, productData.getManufacturerName());
-                properties.put(Thing.PROPERTY_FIRMWARE_VERSION, productData.getSoftwareVersion());
-                String hardwarePlatformType = productData.getHardwarePlatformType();
-                if (Objects.nonNull(hardwarePlatformType)) {
-                    properties.put(Thing.PROPERTY_HARDWARE_VERSION, hardwarePlatformType);
-                }
+                Setters.putIfExists(props, Thing.PROPERTY_MODEL_ID, modelId);
+                Setters.putIfExists(props, Thing.PROPERTY_VENDOR, prodData.getManufacturerName());
+                Setters.putIfExists(props, Thing.PROPERTY_FIRMWARE_VERSION, prodData.getSoftwareVersion());
+                Setters.putIfExists(props, Thing.PROPERTY_HARDWARE_VERSION, prodData.getHardwarePlatformType());
 
                 // hue specific properties
-                properties.put(PROPERTY_PRODUCT_NAME, productData.getProductName());
-                properties.put(PROPERTY_PRODUCT_ARCHETYPE, productData.getProductArchetype().toString());
-                properties.put(PROPERTY_PRODUCT_CERTIFIED, productData.getCertified().toString());
+                Setters.putIfExists(props, PROPERTY_PRODUCT_NAME, prodData.getProductName());
+                Setters.putIfExists(props, PROPERTY_PRODUCT_ARCHETYPE, prodData.getProductArchetypeAsString());
+                Setters.putIfExists(props, PROPERTY_PRODUCT_CERTIFIED, prodData.getCertifiedAsString());
 
                 // Check device for needed work-arounds.
-                if (WORK_AROUND_MODEL_ID_PATTERN.matcher(Objects.requireNonNull(modelId)).matches()) {
+                if (WORK_AROUND_MODEL_ID_PATTERN.matcher(modelId).matches()) {
                     applyOffTransitionWorkaround = true;
                     logger.debug("{} -> enabling work-around for turning off {}", resourceId, modelId);
                 }
             }
 
-            thing.setProperties(properties);
+            thing.setProperties(props);
             updatePropertiesDone = true;
         }
     }

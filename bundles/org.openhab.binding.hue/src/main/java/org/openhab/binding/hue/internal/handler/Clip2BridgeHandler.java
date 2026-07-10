@@ -719,14 +719,11 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      */
     private void updateProperties() throws ApiException, AssetNotLoadedException, InterruptedException {
         logger.debug("updateProperties()");
-        Map<String, String> properties = new HashMap<>(thing.getProperties());
+        Map<String, String> props = new HashMap<>(thing.getProperties());
 
         for (Resource bridge : getClip2Bridge().getResources(BRIDGE).getResources()) {
             // set the serial number
-            String bridgeId = bridge.getBridgeId();
-            if (Objects.nonNull(bridgeId)) {
-                properties.put(Thing.PROPERTY_SERIAL_NUMBER, bridgeId);
-            }
+            Setters.putIfExists(props, Thing.PROPERTY_SERIAL_NUMBER, bridge.getBridgeId());
             break;
         }
 
@@ -734,39 +731,35 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             MetaData metaData = device.getMetaData();
             if (Objects.nonNull(metaData) && Archetype.BRIDGES.contains(metaData.getArchetype())) {
                 // set resource properties
-                properties.put(PROPERTY_RESOURCE_ID, device.getId());
-                properties.put(PROPERTY_RESOURCE_TYPE, device.getType().toString());
+                Setters.putIfExists(props, PROPERTY_RESOURCE_ID, device.getId());
+                Setters.putIfExists(props, PROPERTY_RESOURCE_TYPE, device.getTypeAsString());
 
                 // set metadata properties
-                String metaDataName = metaData.getName();
-                if (Objects.nonNull(metaDataName)) {
-                    properties.put(PROPERTY_RESOURCE_NAME, metaDataName);
-                }
-                properties.put(PROPERTY_RESOURCE_ARCHETYPE, metaData.getArchetype().toString());
+                Setters.putIfExists(props, PROPERTY_RESOURCE_NAME, metaData.getName());
+                Setters.putIfExists(props, PROPERTY_RESOURCE_ARCHETYPE, metaData.getArchetypeAsString());
 
                 // set product data properties
-                ProductData productData = device.getProductData();
-                if (Objects.nonNull(productData)) {
+                ProductData prodData = device.getProductData();
+                if (Objects.nonNull(prodData)) {
+                    String modelId = prodData.getModelId();
+
                     // set generic thing properties
-                    properties.put(Thing.PROPERTY_MODEL_ID, productData.getModelId());
-                    properties.put(Thing.PROPERTY_VENDOR, productData.getManufacturerName());
-                    properties.put(Thing.PROPERTY_FIRMWARE_VERSION, productData.getSoftwareVersion());
-                    String hardwarePlatformType = productData.getHardwarePlatformType();
-                    if (Objects.nonNull(hardwarePlatformType)) {
-                        properties.put(Thing.PROPERTY_HARDWARE_VERSION, hardwarePlatformType);
-                    }
+                    Setters.putIfExists(props, Thing.PROPERTY_MODEL_ID, modelId);
+                    Setters.putIfExists(props, Thing.PROPERTY_VENDOR, prodData.getManufacturerName());
+                    Setters.putIfExists(props, Thing.PROPERTY_FIRMWARE_VERSION, prodData.getSoftwareVersion());
+                    Setters.putIfExists(props, Thing.PROPERTY_HARDWARE_VERSION, prodData.getHardwarePlatformType());
 
                     // set hue specific properties
-                    properties.put(PROPERTY_PRODUCT_NAME, productData.getProductName());
-                    properties.put(PROPERTY_PRODUCT_ARCHETYPE, productData.getProductArchetype().toString());
-                    properties.put(PROPERTY_PRODUCT_CERTIFIED, productData.getCertified().toString());
+                    Setters.putIfExists(props, PROPERTY_PRODUCT_NAME, prodData.getProductName());
+                    Setters.putIfExists(props, PROPERTY_PRODUCT_ARCHETYPE, prodData.getProductArchetypeAsString());
+                    Setters.putIfExists(props, PROPERTY_PRODUCT_CERTIFIED, prodData.getCertifiedAsString());
 
-                    bridgeGeneration = HueBridgeModel.getGeneration(productData.getModelId());
+                    bridgeGeneration = HueBridgeModel.getGeneration(modelId);
                 }
                 break; // we only needed the BRIDGE_V2 or BRIDGE_V3 resource
             }
         }
-        thing.setProperties(properties);
+        thing.setProperties(props);
     }
 
     /**
