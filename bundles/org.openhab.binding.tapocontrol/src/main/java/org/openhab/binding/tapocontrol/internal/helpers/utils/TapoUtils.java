@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.tapocontrol.internal.helpers.utils;
 
-import static org.openhab.binding.tapocontrol.internal.constants.TapoBindingSettings.*;
+import static org.openhab.binding.tapocontrol.internal.constants.TapoBindingSettings.BINDING_ID;
 import static org.openhab.binding.tapocontrol.internal.constants.TapoThingConstants.*;
 
 import java.util.Objects;
@@ -36,7 +36,7 @@ public class TapoUtils {
      ***********************************/
     /**
      * Limit Value between limits
-     * 
+     *
      * @param value Integer
      * @param lowerLimit
      * @param upperLimit
@@ -56,7 +56,7 @@ public class TapoUtils {
      ***********************************/
     /**
      * return value or default val if it's null
-     * 
+     *
      * @param <T> Type of value
      * @param value value
      * @param defaultValue defaut value
@@ -67,9 +67,9 @@ public class TapoUtils {
     }
 
     /**
-     * compare tow values against an comparator and return the other one
+     * compare two values against an comparator and return the other one
      * if both are null, comparator will be returned - if both have values val2 will be returned
-     * 
+     *
      * @param <T> Type of return value
      * @param val1 fist value to campare - will be returned if val2 is null or matches comparator
      * @param val2 second value to compare - will be returned if val1 is null or matches comparator
@@ -90,7 +90,7 @@ public class TapoUtils {
 
     /**
      * Format MAC-Address replacing old division chars and add new one
-     * 
+     *
      * @param mac unformated mac-Address
      * @param newDivisionChar new division char (e.g. ":","-" )
      * @return new formated mac-Address
@@ -102,7 +102,7 @@ public class TapoUtils {
 
     /**
      * unformat MAC-Address replace all division chars
-     * 
+     *
      * @param mac string with mac address
      * @return mac address without any division chars
      */
@@ -116,7 +116,7 @@ public class TapoUtils {
 
     /**
      * Get DeviceModel from String - Formats different spellings in model-strings
-     * 
+     *
      * @param device JsonObject with deviceData
      * @return String with DeviceModel
      */
@@ -126,7 +126,7 @@ public class TapoUtils {
 
     /**
      * Get DeviceModel from String - Formats different spellings in model-strings
-     * 
+     *
      * @param deviceModel String to find model from
      * @return String with DeviceModel
      */
@@ -151,7 +151,7 @@ public class TapoUtils {
 
     /**
      * GET DEVICE LABEL
-     * 
+     *
      * @param device JsonObject with deviceData
      * @return String with DeviceLabel
      */
