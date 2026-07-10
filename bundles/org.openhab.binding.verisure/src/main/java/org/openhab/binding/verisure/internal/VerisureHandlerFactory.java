@@ -36,6 +36,7 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -71,9 +72,33 @@ public class VerisureHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(VerisureHandlerFactory.class);
     private final HttpClient httpClient;
 
+    /**
+     * Verisure sends large WAF and JWT session cookies that together exceed Jetty's
+     * default 4 kB request buffer, causing "Request header too large" on login. Use a
+     * dedicated HTTP client with a larger request buffer. A dedicated client is also
+     * needed because {@link VerisureSession} temporarily replaces the cookie store.
+     */
+    private static final int REQUEST_BUFFER_SIZE = 16 * 1024;
+
     @Activate
     public VerisureHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
-        this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.httpClient = httpClientFactory.createHttpClient(VerisureBindingConstants.BINDING_ID);
+        this.httpClient.setRequestBufferSize(REQUEST_BUFFER_SIZE);
+        try {
+            this.httpClient.start();
+        } catch (Exception e) {
+            logger.warn("Failed to start Verisure HTTP client: {}", e.getMessage());
+        }
+    }
+
+    @Override
+    protected void deactivate(ComponentContext componentContext) {
+        try {
+            httpClient.stop();
+        } catch (Exception e) {
+            logger.debug("Failed to stop Verisure HTTP client: {}", e.getMessage());
+        }
+        super.deactivate(componentContext);
     }
 
     @Override

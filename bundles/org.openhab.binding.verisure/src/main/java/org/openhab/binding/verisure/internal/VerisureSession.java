@@ -674,6 +674,11 @@ public class VerisureSession {
                     logger.warn("MFA is activated on this user! Not supported by binding!");
                     return false;
                 }
+                String vsAccess = this.vsAccess;
+                if (httpStatusCode != HttpStatus.OK_200 || vsAccess == null || vsAccess.isEmpty()) {
+                    logger.debug("Failed to login, /auth/login HTTP status code: {}", httpStatusCode);
+                    return false;
+                }
 
                 // Step 3: Add the username cookie (required by j_spring_security_check)
                 try {
@@ -687,13 +692,16 @@ public class VerisureSession {
                     logger.debug("Failed to add username cookie: {}", e.getMessage());
                 }
 
-                // Step 4: Call j_spring_security_check
+                // Step 4: Call j_spring_security_check to establish the legacy session. Verisure
+                // has started to remove this endpoint (it returns 404); the vs-access token from
+                // /auth/login is then sufficient, so a failure here is not fatal.
                 url = LOGON_SUF;
                 logger.debug("Login URL: {}", url);
                 httpStatusCode = postVerisureAPI(url, authstring);
                 if (httpStatusCode != HttpStatus.OK_200) {
-                    logger.debug("Failed to login, HTTP status code: {}", httpStatusCode);
-                    return false;
+                    logger.debug("Legacy login failed with HTTP status code: {}, continuing with token based session",
+                            httpStatusCode);
+                    return true;
                 }
 
                 // Step 5: Verify login by accessing status page
