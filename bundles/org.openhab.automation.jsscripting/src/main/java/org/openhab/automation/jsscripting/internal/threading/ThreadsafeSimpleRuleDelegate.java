@@ -93,9 +93,8 @@ class ThreadsafeSimpleRuleDelegate implements Rule, SimpleRuleActionHandler {
     }
 
     @Override
-    @Nullable
-    public String getTemplateUID() {
-        return delegate.getTemplateUID();
+    public @Nullable String getTemplateUID() {
+        return null;
     }
 
     @Override
@@ -168,13 +167,13 @@ class ThreadsafeSimpleRuleDelegate implements Rule, SimpleRuleActionHandler {
         return delegate.getActions();
     }
 
+    public void setActions(@Nullable List<Action> actions) {
+        delegate.setActions(actions);
+    }
+
     @Override
     public List<Trigger> getTriggers() {
         return delegate.getTriggers();
-    }
-
-    public void setActions(@Nullable List<Action> actions) {
-        delegate.setActions(actions);
     }
 
     public void setTriggers(@Nullable List<Trigger> triggers) {
