@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -108,6 +109,9 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     protected final ShellyApiConfiguration apiConfig;
     private final ShellyTranslationProvider messages;
     private final ShellyChannelCache cache;
+    private static final long DEPRECATED_CHANNEL_WARNING_INTERVAL_MS = TimeUnit.DAYS.toMillis(1);
+
+    private final Map<String, Long> deprecatedChannelWarnings = new ConcurrentHashMap<>();
     private final int cacheCount = UPDATE_SETTINGS_INTERVAL_SECONDS / UPDATE_STATUS_INTERVAL_SECONDS;
 
     private volatile @Nullable Shelly1CoapHandler coap;
@@ -421,6 +425,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         postEvent(ALARM_TYPE_NONE, false);
 
         profile = tmpPrf;
+        ShellyChannelMigration.migrateChannels(this);
         showThingConfig(profile);
 
         logger.debug("{}: Thing successfully initialized.", thingName);
@@ -616,6 +621,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 updated |= updateInputs(status);
                 updated |= updateMeters(this, status);
                 updated |= updateSensors(this, status);
+                ShellyChannelMigration.migrateChannels(this);
 
                 // All channels must be created after the first cycle
                 channelsCreated = true;
@@ -1341,7 +1347,30 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
     @Override
     public boolean updateChannel(String channelId, State value, boolean force) {
-        return !stopping && cache.updateChannel(channelId, value, force);
+        if (stopping) {
+            return false;
+        }
+        String replacementChannelId = ShellyChannelDefinitions.getReplacementChannelId(channelId);
+        if (replacementChannelId != null) {
+            warnDeprecatedChannel(channelId, replacementChannelId);
+            boolean updated = cache.updateChannel(channelId, value, force);
+            updated |= cache.updateChannel(replacementChannelId, value, force);
+            return updated;
+        }
+        return cache.updateChannel(channelId, value, force);
+    }
+
+    private synchronized void warnDeprecatedChannel(String channelId, String replacementChannelId) {
+        if (!isLinked(channelId)) {
+            return;
+        }
+        long now = System.currentTimeMillis();
+        Long lastWarning = deprecatedChannelWarnings.get(channelId);
+        if (lastWarning == null || now - lastWarning >= DEPRECATED_CHANNEL_WARNING_INTERVAL_MS) {
+            deprecatedChannelWarnings.put(channelId, now);
+            logger.warn("{}: Channel {} is deprecated and will be removed in a future release; use {} instead.",
+                    thingName, channelId, replacementChannelId);
+        }
     }
 
     @Override
@@ -1373,9 +1402,47 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         if (channelsCreated) {
             return; // already done
         }
+        addMissingChannelDefinitions(dynChannels);
+    }
 
+    @Override
+    public boolean updateThingChannels(Map<String, Channel> channelUpdates, Map<String, Channel> newChannels) {
+        boolean updated = replaceChannelDefinitions(channelUpdates);
+        updated |= addMissingChannelDefinitions(newChannels);
+        return updated;
+    }
+
+    private boolean replaceChannelDefinitions(Map<String, Channel> channelUpdates) {
+        if (channelUpdates.isEmpty()) {
+            return false;
+        }
         try {
-            // Get subset of those channels that currently do not exist
+            ThingBuilder thingBuilder = editThing();
+            List<Channel> existingChannels = getThing().getChannels();
+            boolean changed = false;
+            for (Map.Entry<String, Channel> channelUpdate : channelUpdates.entrySet()) {
+                Channel oldChannel = ShellyChannelMigration.findChannel(existingChannels, channelUpdate.getKey());
+                if (oldChannel != null) {
+                    Channel newChannel = channelUpdate.getValue();
+                    logger.debug("{}: Updating channel {}", thingName, newChannel.getUID().getId());
+                    thingBuilder.withoutChannel(oldChannel.getUID());
+                    thingBuilder.withChannel(newChannel);
+                    changed = true;
+                }
+            }
+            if (changed) {
+                updateThing(thingBuilder.build());
+                logger.debug("{}: Channel definitions updated", thingName);
+            }
+            return changed;
+        } catch (IllegalArgumentException e) {
+            logger.debug("{}: Unable to update channel definitions", thingName, e);
+        }
+        return false;
+    }
+
+    private boolean addMissingChannelDefinitions(Map<String, Channel> dynChannels) {
+        try {
             List<Channel> existingChannels = getThing().getChannels();
             for (Channel channel : existingChannels) {
                 String id = channel.getUID().getId();
@@ -1394,10 +1461,12 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 }
                 updateThing(thingBuilder.build());
                 logger.debug("{}: Channel definitions updated", thingName);
+                return true;
             }
         } catch (IllegalArgumentException e) {
             logger.debug("{}: Unable to update channel definitions", thingName, e);
         }
+        return false;
     }
 
     @Override
