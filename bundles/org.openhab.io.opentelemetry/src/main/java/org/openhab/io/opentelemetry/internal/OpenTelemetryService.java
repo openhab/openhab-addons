@@ -22,6 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.config.core.ConfigUtil;
+import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.config.core.Configuration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -47,6 +48,7 @@ import io.opentelemetry.sdk.resources.ResourceBuilder;
  * @author Florian Hotze - Initial contribution
  */
 @Component(configurationPid = "org.openhab.opentelemetry", immediate = true, service = OpenTelemetryService.class)
+@ConfigurableService(category = "io", label = "OpenTelemetry Service", description_uri = "io:opentelemetry")
 @NonNullByDefault
 public class OpenTelemetryService {
     private final Logger logger = LoggerFactory.getLogger(OpenTelemetryService.class);

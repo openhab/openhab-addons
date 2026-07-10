@@ -23,6 +23,7 @@
 				Optional headers for authentication (e.g., <code>Authorization=Bearer token</code>)
 				]]>
 			</description>
+			<context>password</context>
 		</parameter>
 
 		<parameter name="logsEnabled" type="boolean" groupName="logs">
