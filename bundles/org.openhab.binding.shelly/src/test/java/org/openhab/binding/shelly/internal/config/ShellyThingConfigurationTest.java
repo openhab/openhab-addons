@@ -113,8 +113,6 @@ public class ShellyThingConfigurationTest {
         assertThat(config.getEnableRangeExtender(), is(false));
     }
 
-    // ── Helper ────────────────────────────────────────────────────────────────
-
     private static void setField(Object obj, String fieldName, Object value) throws Exception {
         Field field = obj.getClass().getDeclaredField(fieldName);
         field.setAccessible(true);

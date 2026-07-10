@@ -48,8 +48,6 @@ import org.openhab.core.thing.ThingTypeUID;
 @SuppressWarnings({ "null" })
 public class ShellyBluApiTest {
 
-    // ── getStatus() connection guard ─────────────────────────────────────────
-
     @Test
     void getStatusThrowsWhenNotConnected() throws Exception {
         ShellyBluApi api = buildBluApi();
@@ -64,8 +62,6 @@ public class ShellyBluApiTest {
         assertDoesNotThrow(api::getStatus);
     }
 
-    // ── getSensorStatus() connection guard ───────────────────────────────────
-
     @Test
     void getSensorStatusThrowsWhenNotConnected() throws Exception {
         ShellyBluApi api = buildBluApi();
@@ -79,8 +75,6 @@ public class ShellyBluApiTest {
         setField(api, "connected", true);
         assertDoesNotThrow(api::getSensorStatus);
     }
-
-    // ── Helpers ──────────────────────────────────────────────────────────────
 
     private ShellyBluApi buildBluApi() {
         ThingTypeUID thingTypeUID = THING_TYPE_SHELLYBLUBUTTON1;

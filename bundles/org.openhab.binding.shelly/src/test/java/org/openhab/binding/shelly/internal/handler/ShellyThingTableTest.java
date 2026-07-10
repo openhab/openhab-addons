@@ -52,8 +52,6 @@ public class ShellyThingTableTest {
         return thing;
     }
 
-    // ── findThing(InetSocketAddress) ─────────────────────────────────────────
-
     @Test
     void findBySocketAddr_exactPortMatch_returnsClientDevice() throws UnknownHostException {
         ShellyThingInterface gateway = stubThing(GATEWAY_IP);
@@ -99,8 +97,6 @@ public class ShellyThingTableTest {
         assertThat(table.findThing(addr), is(nullValue()));
     }
 
-    // ── getThing(InetSocketAddress) ───────────────────────────────────────────
-
     @Test
     void getBySocketAddr_unknownAddress_throwsIllegalArgument() throws UnknownHostException {
         ShellyThingTable table = new ShellyThingTable();
@@ -119,8 +115,6 @@ public class ShellyThingTableTest {
         InetSocketAddress addr = new InetSocketAddress(InetAddress.getByName(GATEWAY_IP), 80);
         assertThat(table.getThing(addr), is(gateway));
     }
-
-    // ── Range extender scenario (end-to-end) ─────────────────────────────────
 
     /**
      * Device A (Pro 1PM, gateway) and Device B (Pro 2, range extender client) share the same IP.

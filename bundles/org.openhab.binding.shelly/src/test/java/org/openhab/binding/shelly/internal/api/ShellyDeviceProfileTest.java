@@ -85,6 +85,7 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYHT, false, false), //
                 Arguments.of(THING_TYPE_SHELLYGAS, false, false), //
                 Arguments.of(THING_TYPE_SHELLYFLOOD, false, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUSFLOOD, true, false), //
                 Arguments.of(THING_TYPE_SHELLYDOORWIN, false, false), //
                 Arguments.of(THING_TYPE_SHELLYDOORWIN2, false, false), //
                 Arguments.of(THING_TYPE_SHELLYSENSE, false, false), //
@@ -191,6 +192,7 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYBLUBUTTON1, "", 0, 0, 0, 5, CHANNEL_GROUP_STATUS),
                 Arguments.of(THING_TYPE_SHELLYHT, "", 0, 0, 0, 5, CHANNEL_GROUP_SENSOR),
                 Arguments.of(THING_TYPE_SHELLYFLOOD, "", 0, 0, 0, 5, CHANNEL_GROUP_SENSOR),
+                Arguments.of(THING_TYPE_SHELLYPLUSFLOOD, "", 0, 0, 0, 5, CHANNEL_GROUP_SENSOR),
                 Arguments.of(THING_TYPE_SHELLYDOORWIN, "", 0, 0, 0, 5, CHANNEL_GROUP_SENSOR),
                 Arguments.of(THING_TYPE_SHELLYSMOKE, "", 0, 0, 0, 5, CHANNEL_GROUP_SENSOR),
                 Arguments.of(THING_TYPE_SHELLYGAS, "", 0, 0, 0, 5, CHANNEL_GROUP_SENSOR),
@@ -278,5 +280,31 @@ public class ShellyDeviceProfileTest {
 
         deviceProfile.updateFromStatus(status);
         assertThat(deviceProfile.numInputs, is(equalTo(-1)));
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForFloodDeviceProfile")
+    void floodDeviceProfile(ThingTypeUID thingTypeUID, boolean expectedIsFlood, boolean expectedIsSensor,
+            boolean expectedHasBattery, boolean expectedAlwaysOn, boolean expectedIsGen2) {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(thingTypeUID);
+        assertThat("isFlood for " + thingTypeUID, profile.isFlood, is(equalTo(expectedIsFlood)));
+        assertThat("isSensor for " + thingTypeUID, profile.isSensor, is(equalTo(expectedIsSensor)));
+        assertThat("hasBattery for " + thingTypeUID, profile.hasBattery, is(equalTo(expectedHasBattery)));
+        assertThat("alwaysOn for " + thingTypeUID, profile.alwaysOn, is(equalTo(expectedAlwaysOn)));
+        assertThat("isGen2 for " + thingTypeUID, profile.isGen2, is(equalTo(expectedIsGen2)));
+    }
+
+    private static Stream<Arguments> provideTestCasesForFloodDeviceProfile() {
+        return Stream.of( //
+                // Gen1 flood: not Gen2, battery-powered, sensor
+                Arguments.of(THING_TYPE_SHELLYFLOOD, true, true, true, false, false), //
+                // Gen4 flood: Gen2, battery-powered, sensor
+                Arguments.of(THING_TYPE_SHELLYPLUSFLOOD, true, true, true, false, true), //
+                // Smoke: not flood, is smoke, battery, sensor
+                Arguments.of(THING_TYPE_SHELLYPLUSSMOKE, false, true, true, false, true), //
+                // HT: not flood, is sensor, battery
+                Arguments.of(THING_TYPE_SHELLYPLUSHT, false, true, true, false, true), //
+                // Relay: not flood, not sensor, always-on
+                Arguments.of(THING_TYPE_SHELLYPLUS1, false, false, false, true, true));
     }
 }

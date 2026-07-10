@@ -369,8 +369,9 @@
 
 	<channel-type id="sensorMute">
 		<item-type>Switch</item-type>
-		<label>Mute</label>
-		<description>Indicates mute setting (ON=muted)</description>
+		<label>Mute State</label>
+		<description>ON: alarm is currently muted.</description>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="sensorLux">

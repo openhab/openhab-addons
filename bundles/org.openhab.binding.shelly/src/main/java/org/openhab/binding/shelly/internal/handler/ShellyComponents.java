@@ -497,7 +497,20 @@ public class ShellyComponents {
                         getOnOff(sdata.smoke));
             }
             if (sdata.mute != null) {
-                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MUTE, getOnOff(sdata.mute));
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_CONTROL_MUTE, getOnOff(sdata.mute));
+            }
+            if (sdata.sensor == null && (sdata.sensorError != null || (profile.isFlood && profile.isGen2))) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ERROR,
+                        getStringType(sdata.sensorError));
+            }
+
+            if (profile.isFlood && profile.isGen2) {
+                if (!profile.floodAlarmMode.isEmpty()) {
+                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_ALARM_MODE,
+                            getStringType(profile.floodAlarmMode));
+                }
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_REPORT_HOLDOFF,
+                        toQuantityType((double) profile.reportHoldoff, DIGITS_NONE, Units.SECOND));
             }
 
             if (sdata.gasSensor != null) {

@@ -75,6 +75,7 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLYRPC_METHOD_EM1DATARESET = "EM1Data.DeleteAllData";
     public static final String SHELLYRPC_METHOD_SMOKE_SETCONFIG = "Smoke.SetConfig";
     public static final String SHELLYRPC_METHOD_SMOKE_MUTE = "Smoke.Mute";
+    public static final String SHELLYRPC_METHOD_FLOOD_SETCONFIG = "Flood.SetConfig";
     public static final String SHELLYRPC_METHOD_SCRIPT_LIST = "Script.List";
     public static final String SHELLYRPC_METHOD_SCRIPT_SETCONFIG = "Script.SetConfig";
     public static final String SHELLYRPC_METHOD_SCRIPT_GETSTATUS = "Script.GetStatus";
@@ -148,6 +149,9 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLY2_EVENT_RESTART = "scheduled_restart";
     public static final String SHELLY2_EVENT_WIFICONNFAILED = "sta_connect_fail";
     public static final String SHELLY2_EVENT_WIFIDISCONNECTED = "sta_disconnected";
+    public static final String SHELLY2_EVENT_FLOOD_ALARM = "flood.alarm";
+    public static final String SHELLY2_EVENT_FLOOD_ALARM_OFF = "flood.alarm_off";
+    public static final String SHELLY2_EVENT_FLOOD_CABLE_UNPLUGGED = "flood.cable_unplugged";
 
     // Error Codes
     public static final String SHELLY2_ERROR_OVERPOWER = "overpower";
@@ -419,6 +423,15 @@ public class Shelly2ApiJsonDTO {
             public Boolean mute;
         }
 
+        public static class Shelly2ConfigFlood {
+            public @Nullable Integer id;
+            public @Nullable String name;
+            @SerializedName("alarm_mode")
+            public @Nullable String alarmMode;
+            @SerializedName("report_holdoff")
+            public @Nullable Integer reportHoldoff;
+        }
+
         public static class Shelly2GetConfigLight {
             public static class Shelly2GetConfigLightDefault {
                 public Integer brightness;
@@ -534,6 +547,9 @@ public class Shelly2ApiJsonDTO {
 
             @SerializedName("smoke:0")
             public Shelly2ConfigSmoke smoke0;
+
+            @SerializedName("flood:0")
+            public @Nullable Shelly2ConfigFlood flood0;
         }
 
         public class Shelly2DeviceConfigSta {
@@ -758,6 +774,13 @@ public class Shelly2ApiJsonDTO {
                 public Boolean mute;
             }
 
+            public class Shelly2DeviceStatusFlood {
+                public @Nullable Integer id;
+                public @Nullable Boolean alarm;
+                public @Nullable Boolean mute;
+                public @Nullable String[] errors;
+            }
+
             public static class Shelly2RGBWStatus {
                 public Integer id;
                 public String source;
@@ -858,6 +881,9 @@ public class Shelly2ApiJsonDTO {
 
             @SerializedName("smoke:0")
             public Shelly2DeviceStatusSmoke smoke0;
+
+            @SerializedName("flood:0")
+            public @Nullable Shelly2DeviceStatusFlood flood0;
 
             @SerializedName("voltmeter:0")
             public @Nullable Shelly2DeviceStatusVoltage voltmeter0;
@@ -1033,6 +1059,12 @@ public class Shelly2ApiJsonDTO {
         // BLE
         public Shelly2DevConfigBleRpc rpc;
         public Shelly2DevConfigBleObserver observer;
+
+        // Flood.SetConfig
+        @SerializedName("alarm_mode")
+        public @Nullable String alarmMode;
+        @SerializedName("report_holdoff")
+        public @Nullable Integer reportHoldoff;
     }
 
     public static class Shelly2RpcRequest {

@@ -15,6 +15,7 @@ package org.openhab.binding.shelly.internal.api;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyOtaCheckResult;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyRollerStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsLogin;
@@ -83,6 +84,8 @@ public interface ShellyApiInterface extends ShellyDiscoveryInterface {
     void startValveBoost(int valveId, int value) throws ShellyApiException;
 
     void muteSmokeAlarm(int smokeId) throws ShellyApiException;
+
+    void setFloodConfig(int id, @Nullable String alarmMode, int reportHoldoff) throws ShellyApiException;
 
     ShellyOtaCheckResult checkForUpdate() throws ShellyApiException;
 
