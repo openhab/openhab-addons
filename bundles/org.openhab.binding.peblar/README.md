@@ -137,8 +137,8 @@ Switch                  Peblar_Force_1Phase     "Force Single Phase [%s]" <energ
 String                  Peblar_Product_PN       "Part Number [%s]"                  { channel="peblar:charger:mypeblar:system#productPn" }
 String                  Peblar_Product_SN       "Serial Number [%s]"                { channel="peblar:charger:mypeblar:system#productSn" }
 String                  Peblar_Firmware         "Firmware [%s]"                     { channel="peblar:charger:mypeblar:system#firmwareVersion" }
-Number:Dimensionless    Peblar_WLAN_RSSI        "WLAN Signal [%.0f dBm]"            { channel="peblar:charger:mypeblar:system#wlanSignalStrength" }
-Number:Dimensionless    Peblar_Cell_RSSI        "Cellular Signal [%.0f dBm]"        { channel="peblar:charger:mypeblar:system#cellularSignalStrength" }
+Number:Power            Peblar_WLAN_RSSI        "WLAN Signal [%.0f dBm]"            { channel="peblar:charger:mypeblar:system#wlanSignalStrength" }
+Number:Power            Peblar_Cell_RSSI        "Cellular Signal [%.0f dBm]"        { channel="peblar:charger:mypeblar:system#cellularSignalStrength" }
 Number:Time             Peblar_Uptime           "Uptime [%d s]"                     { channel="peblar:charger:mypeblar:system#uptime" }
 Number:Dimensionless    Peblar_Phase_Count      "Phases [%d]"                       { channel="peblar:charger:mypeblar:system#phaseCount" }
 ```

@@ -19,7 +19,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Hilbrand Bouwkamp - Initial contribution
  */
 @NonNullByDefault
-public class PeblarEvInterfaceDTO {
+class PeblarEvInterfaceDTO {
 
     /** IEC 61851 CP state, e.g. "State A", "State B", "State C" */
     public @Nullable String cpState;

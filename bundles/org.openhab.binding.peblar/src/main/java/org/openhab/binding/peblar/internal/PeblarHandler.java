@@ -45,7 +45,6 @@ import java.util.function.Function;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
-import javax.measure.quantity.ElectricCurrent;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -162,15 +161,15 @@ class PeblarHandler extends BaseThingHandler {
         final long milliAmps;
         if (command instanceof QuantityType<?> qty) {
             // Convert to mA if needed
-            QuantityType<ElectricCurrent> ma = (QuantityType<ElectricCurrent>) qty
-                    .toUnit(MetricPrefix.MILLI(Units.AMPERE));
-            if (ma == null) {
+            final QuantityType<?> mA = qty.toUnit(MetricPrefix.MILLI(Units.AMPERE));
+            if (mA == null) {
                 logger.warn("Cannot convert {} to milliamperes", command);
                 return;
             }
-            milliAmps = ma.longValue();
+            milliAmps = mA.longValue();
         } else if (command instanceof DecimalType dt) {
-            milliAmps = dt.longValue();
+            // Treat unit-less numbers as amperes (openHAB default for ElectricCurrent) and convert to mA for the API
+            milliAmps = dt.toBigDecimal().movePointRight(3).longValue();
         } else {
             logger.warn("Unsupported command type {} for chargeCurrentLimit", command.getClass());
             return;
