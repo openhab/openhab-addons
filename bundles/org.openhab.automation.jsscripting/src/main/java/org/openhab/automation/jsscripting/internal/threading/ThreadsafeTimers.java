@@ -45,7 +45,7 @@ public class ThreadsafeTimers {
     private final ScriptExecution scriptExecution;
     // Mapping of positive, non-zero integer values (used as timeoutID or intervalID) and the Scheduler
     private final Map<Long, ScheduledCompletableFuture<Object>> idSchedulerMapping = new ConcurrentHashMap<>();
-    private AtomicLong lastId = new AtomicLong();
+    private final AtomicLong lastId = new AtomicLong();
     private String identifier = "javascript";
 
     public ThreadsafeTimers(Lock lock, ScriptExecution scriptExecution, Scheduler scheduler) {
