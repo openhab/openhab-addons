@@ -85,6 +85,8 @@ public interface ShellyThingInterface {
 
     void updateChannelDefinitions(Map<String, Channel> dynChannels);
 
+    boolean updateThingChannels(Map<String, Channel> channelUpdates, Map<String, Channel> newChannels);
+
     void postEvent(String event, boolean force);
 
     void triggerChannel(String group, String channelID, String event);
