@@ -16,6 +16,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -320,7 +321,7 @@ public class Websocket extends RestApi {
             try {
                 String pingId = UUID.randomUUID().toString();
                 pingPongMap.put(pingId, Instant.now());
-                localSession.getRemote().sendPing(ByteBuffer.wrap(pingId.getBytes()));
+                localSession.getRemote().sendPing(ByteBuffer.wrap(pingId.getBytes(StandardCharsets.UTF_8)));
             } catch (IOException e) {
                 logger.warn("Websocket ping failed {}", e.getMessage());
             }
@@ -333,7 +334,7 @@ public class Websocket extends RestApi {
         for (int i = 0; i < frame.getPayloadLength(); i++) {
             bytes[i] = buffer.get(i);
         }
-        String payloadString = new String(bytes);
+        String payloadString = new String(bytes, StandardCharsets.UTF_8);
         Instant sent = pingPongMap.remove(payloadString);
         if (sent == null) {
             logger.debug("Websocket received pong without ping {}", payloadString);

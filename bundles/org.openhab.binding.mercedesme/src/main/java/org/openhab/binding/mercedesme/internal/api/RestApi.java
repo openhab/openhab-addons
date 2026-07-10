@@ -15,6 +15,7 @@ package org.openhab.binding.mercedesme.internal.api;
 import static org.openhab.binding.mercedesme.internal.Constants.*;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -149,7 +150,7 @@ public class RestApi extends Authorization {
                 for (int i = 0; i < words.length; i++) {
                     String word = words[i];
                     word = word.isEmpty() ? word
-                            : Character.toUpperCase(word.charAt(0)) + word.substring(1).toLowerCase();
+                            : Character.toUpperCase(word.charAt(0)) + word.substring(1).toLowerCase(Locale.ROOT);
                     builder.append(word);
                 }
                 String value = ((JSONObject) object).get("isAvailable").toString();
