@@ -567,6 +567,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
 
             String deviceId = deviceObj.has("id") ? deviceObj.get("id").getAsString() : "";
             String deviceName = deviceObj.has("name") ? deviceObj.get("name").getAsString() : "Unknown Device";
+            String deviceKind = deviceObj.has("kind") ? deviceObj.get("kind").getAsString() : "";
 
             String category = "";
             String extendedDescription = "";
@@ -656,9 +657,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
             }
 
             // Skip all media fetching (Snapshots and MP4s) for audio-only intercoms
-            if (!isIntercom) {
-
-                // 1. Snapshot Handling
+            if (!"intercom_handset_audio".equalsIgnoreCase(deviceKind)) {
                 if (pushSnapshotUrl != null && !pushSnapshotUrl.isEmpty()) {
                     logger.debug("Received Rich Notification URL! Downloading instantly...");
                     if (scheduler != null && !scheduler.isShutdown()) {
@@ -674,7 +673,6 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                     }
                 }
 
-                // 2. Delayed Video Recording Handling
                 scheduler.schedule(() -> {
                     try {
                         logger.debug("Recording finished. Fetching completed video for event {}", eventId);
