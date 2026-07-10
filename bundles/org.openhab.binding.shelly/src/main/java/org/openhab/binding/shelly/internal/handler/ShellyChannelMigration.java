@@ -63,7 +63,8 @@ public class ShellyChannelMigration {
             new ChannelMigrationRule(5, mkChannelId(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_TOTALKWH),
                     CHANNEL_DEVST_TOTALENERGY, false),
             new ChannelMigrationRule(5, mkChannelId(CHANNEL_GROUP_NMETER, CHANNEL_NMETER_MTRESHHOLD),
-                    CHANNEL_NMETER_THRESHOLD, false));
+                    CHANNEL_NMETER_THRESHOLD, false),
+            new ChannelMigrationRule(5, mkWildcardChannelId(CHANNEL_GROUP_RELAY_CONTROL, CHANNEL_OUTPUT), null, true));
 
     public static final int CHANNEL_SCHEMA_VERSION = CHANNEL_MIGRATION_RULES.stream()
             .mapToInt(ChannelMigrationRule::version).max().orElse(0);

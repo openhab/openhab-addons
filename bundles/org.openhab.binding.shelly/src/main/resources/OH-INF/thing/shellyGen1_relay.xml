@@ -622,6 +622,7 @@
 		<item-type unitHint="W">Number:Power</item-type>
 		<label>Reactive Power</label>
 		<description>[deprecated] Use reactivePower instead. Instantaneous reactive power in Watts</description>
+		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Power</tag>
@@ -634,6 +635,7 @@
 		<item-type unitHint="var">Number:Power</item-type>
 		<label>Reactive Power</label>
 		<description>Instantaneous reactive power in VAR</description>
+		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Power</tag>
@@ -681,7 +683,6 @@
 		</state>
 	</channel-type>
 
-
 	<channel-type id="energyAvg1Min">
 		<item-type unitHint="Wh">Number:Energy</item-type>
 		<label>Last Minute Energy</label>
@@ -695,13 +696,12 @@
 		</state>
 	</channel-type>
 
-
-
 	<channel-type id="meterTotal" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
 		<label>Total Energy Consumption</label>
 		<description>[deprecated] Use totalEnergy instead. Total energy consumption of the device in kWh since the device
 			powered up (might reset on restart depending on device and firmware)</description>
+		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
@@ -766,6 +766,11 @@
 		<item-type unitHint="Hz">Number:Frequency</item-type>
 		<label>Frequency</label>
 		<description>Grid frequency in Hertz (Hz)</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Frequency</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%">
 		</state>
 	</channel-type>
