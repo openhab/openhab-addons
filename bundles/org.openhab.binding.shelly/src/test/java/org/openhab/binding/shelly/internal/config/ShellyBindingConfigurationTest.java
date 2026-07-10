@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.shelly.internal.config;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.DEFAULT_LOCAL_PORT;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.SHELLY2_DEFAULT_PASSWORD;
@@ -40,8 +40,6 @@ import org.openhab.core.net.NetworkAddressService;
 @NonNullByDefault
 public class ShellyBindingConfigurationTest {
 
-    // ── ShellyBindingConfiguration: default constructor ───────────────────────
-
     @Test
     void defaultConstructorValues() {
         ShellyBindingConfiguration config = new ShellyBindingConfiguration();
@@ -50,8 +48,6 @@ public class ShellyBindingConfigurationTest {
         assertThat(config.getLocalIP(), is(""));
         assertThat(config.isAutoCoIoT(), is(true));
     }
-
-    // ── ShellyBindingConfiguration: fromProperties(Map) ───────────────────────
 
     @Test
     void fromPropertiesOverridesCredentials() {
@@ -106,8 +102,6 @@ public class ShellyBindingConfigurationTest {
         assertThat(config.isAutoCoIoT(), is(true));
     }
 
-    // ── ShellyBindingConfiguration: fromProperties(Dictionary) ───────────────
-
     @Test
     void fromPropertiesNullDictionaryPreservesDefaults() {
         ShellyBindingConfiguration config = ShellyBindingConfiguration
@@ -128,8 +122,6 @@ public class ShellyBindingConfigurationTest {
         assertThat(config.getDefaultPassword(), is("dictpass"));
         assertThat(config.isAutoCoIoT(), is(false));
     }
-
-    // ── ShellyBindingRuntimeConfig: IP resolution ─────────────────────────────
 
     @Test
     void runtimeConfigUsesNasIpWhenConfigLocalIpIsBlank() {
@@ -161,8 +153,6 @@ public class ShellyBindingConfigurationTest {
         assertThat(runtime.getLocalIP(), is(""));
     }
 
-    // ── ShellyBindingRuntimeConfig: withHttpPort ──────────────────────────────
-
     @Test
     void setHttpPortPreservesOtherFields() {
         ShellyBindingConfiguration raw = ShellyBindingConfiguration.fromProperties(
@@ -189,8 +179,6 @@ public class ShellyBindingConfigurationTest {
                 networkAddressService(null));
         assertThat(runtime.getHttpPort(), is(DEFAULT_LOCAL_PORT));
     }
-
-    // ── Helpers ───────────────────────────────────────────────────────────────
 
     private static NetworkAddressService networkAddressService(@Nullable String ip) {
         return new NetworkAddressService() {

@@ -693,10 +693,14 @@ public class ShellyDevices {
     public static final Map<ThingTypeUID, Integer> THING_TYPE_CAP_NUM_METERS = Map.ofEntries( //
             Map.entry(THING_TYPE_SHELLYPRO2, 0), //
             Map.entry(THING_TYPE_SHELLYPRO3, 0), //
+            Map.entry(THING_TYPE_SHELLYPLUS1L, 0), //
+            Map.entry(THING_TYPE_SHELLYPLUS2L, 0), //
             Map.entry(THING_TYPE_SHELLYPROEM50, 2), //
             Map.entry(THING_TYPE_SHELLY3EM, 3), //
             Map.entry(THING_TYPE_SHELLYPLUS3EM63, 3), //
-            Map.entry(THING_TYPE_SHELLYPRO3EM, 3));
+            Map.entry(THING_TYPE_SHELLYPRO3EM, 3), //
+            Map.entry(THING_TYPE_SHELLYPRO3EM63, 3), //
+            Map.entry(THING_TYPE_SHELLYPRO3EM400, 3));
 
     // Number of inputs
     public static final Map<ThingTypeUID, Integer> THING_TYPE_CAP_NUM_INPUTS = Map.ofEntries( //
