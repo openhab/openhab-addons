@@ -109,6 +109,25 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
         unregisterDeviceDiscoveryService();
     }
 
+    /**
+     * Probes a Shelly device at the given address and builds a {@link DiscoveryResult}.
+     *
+     * <p>
+     * For Gen1 devices the {@code /shelly} endpoint (no auth) is queried first to obtain the hardware
+     * model string. If the subsequent {@code /settings} call returns HTTP 401 (auth required), the model
+     * obtained from {@code /shelly} is used to resolve the correct {@link ThingTypeUID} via the device-type
+     * map. This ensures that an auth-protected Gen1 device is discovered with its proper type (e.g.
+     * {@code shelly:shellyflood}) rather than falling back to {@code shelly:shellyunknown}.
+     *
+     * @param gen2 {@code true} for Gen2/3/4 devices (RPC/WebSocket), {@code false} for Gen1 (HTTP/CoAP)
+     * @param hostname mDNS hostname of the device (used as thing realm and log prefix)
+     * @param ipAddress IP address of the device
+     * @param bindingConfig current binding-wide runtime configuration
+     * @param httpClient HTTP client for API calls
+     * @param messages translation provider for channel labels
+     * @param thingTable registry of all known Things (used for deduplication)
+     * @return a populated {@link DiscoveryResult}, or {@code null} if the device cannot be identified
+     */
     public static @Nullable DiscoveryResult createResult(boolean gen2, String hostname, String ipAddress,
             ShellyBindingRuntimeConfig bindingConfig, HttpClient httpClient, ShellyTranslationProvider messages,
             ShellyThingTable thingTable) {
@@ -154,8 +173,15 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
         } catch (ShellyApiException e) {
             ShellyApiResult result = e.getApiResult();
             if (result.isHttpAccessUnauthorized()) {
-                // create shellyunknown thing - will be changed during thing initialization with valid credentials
-                thingUID = ShellyThingCreator.getThingUIDForUnknown(name, model, mode);
+                // /shelly (getDeviceInfo) returns without auth on Gen1; model is populated when /settings returns 401.
+                // Passing model lets the device-type map resolve precisely (e.g. SHDM-2 → shellydimmer2); service
+                // name is the fallback for mode-sensitive devices (e.g. SHSW-21 with unknown mode → shelly2relay).
+                ThingTypeUID knownType = ShellyThingCreator.getThingTypeUID(name, model, mode);
+                if (!THING_TYPE_SHELLYUNKNOWN.equals(knownType)) {
+                    thingUID = ShellyThingCreator.getThingUID(name, model, mode);
+                } else {
+                    thingUID = ShellyThingCreator.getThingUIDForUnknown(name, model, mode);
+                }
             } else {
                 if (e.getCause() instanceof IllegalArgumentException) {
                     logger.debug("{}: Unable to discover device", name, e);

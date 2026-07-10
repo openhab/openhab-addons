@@ -37,6 +37,7 @@ public class ShellyDevices {
     public static final String SHELLYDT_1PM = "SHSW-PM";
     public static final String SHELLYDT_1L = "SHSW-L";
     public static final String SHELLYDT_PLUG = "SHPLG-1";
+    public static final String SHELLYDT_PLUG2 = "SHPLG2-1"; // Gen1 Plug variant
     public static final String SHELLYDT_PLUGS = "SHPLG-S";
     public static final String SHELLYDT_PLUGU1 = "SHPLG-U1";
     public static final String SHELLYDT_PLUGU1_2 = "SHPLG-US";
@@ -47,7 +48,7 @@ public class ShellyDevices {
     public static final String SHELLYDT_3EM = "SHEM-3";
     public static final String SHELLYDT_HT = "SHHT-1";
     public static final String SHELLYDT_SMOKE = "SHSM-01";
-    public static final String SHELLYDT_FLOOD = "SH-FLOOD ";
+    public static final String SHELLYDT_FLOOD = "SHWT-1";
     public static final String SHELLYDT_DOORWINDOW = "SHDW-1";
     public static final String SHELLYDT_DOORWINDOW2 = "SHDW-2";
     public static final String SHELLYDT_UNI = "SHUNI-1";
@@ -388,6 +389,7 @@ public class ShellyDevices {
             Map.entry(SHELLYDT_1L, THING_TYPE_SHELLY1L), //
             Map.entry(SHELLYDT_1, THING_TYPE_SHELLY1), //
             Map.entry(SHELLYDT_PLUG, THING_TYPE_SHELLYPLUG), //
+            Map.entry(SHELLYDT_PLUG2, THING_TYPE_SHELLYPLUG), //
             Map.entry(SHELLYDT_PLUGS, THING_TYPE_SHELLYPLUGS), //
             Map.entry(SHELLYDT_PLUGU1, THING_TYPE_SHELLYPLUGU1), //
             Map.entry(SHELLYDT_PLUGU1_2, THING_TYPE_SHELLYPLUGU1), //
@@ -402,7 +404,7 @@ public class ShellyDevices {
             Map.entry(SHELLYDT_3EM, THING_TYPE_SHELLY3EM), //
             Map.entry(SHELLYDT_EM, THING_TYPE_SHELLYEM), //
             Map.entry(SHELLYDT_HT, THING_TYPE_SHELLYHT), //
-            Map.entry(SHELLYDT_MOTION, THING_TYPE_SHELLYMOTION),
+            Map.entry(SHELLYDT_MOTION, THING_TYPE_SHELLYMOTION), Map.entry(SHELLYDT_MOTION2, THING_TYPE_SHELLYMOTION),
             Map.entry(SHELLYDT_DOORWINDOW, THING_TYPE_SHELLYDOORWIN), //
             Map.entry(SHELLYDT_DOORWINDOW2, THING_TYPE_SHELLYDOORWIN2), //
             Map.entry(SHELLYDT_SMOKE, THING_TYPE_SHELLYSMOKE), //
@@ -574,6 +576,8 @@ public class ShellyDevices {
             Map.entry("shelly1", THING_TYPE_SHELLY1), //
             Map.entry("shelly1pm", THING_TYPE_SHELLY1PM), //
             Map.entry("shelly1l", THING_TYPE_SHELLY1L), //
+            Map.entry("shelly2", THING_TYPE_SHELLY2_RELAY), // default mode; handler corrects to roller if needed
+            Map.entry("shelly25", THING_TYPE_SHELLY25_RELAY), // default mode; handler corrects to roller if needed
             Map.entry("shellyem3", THING_TYPE_SHELLY3EM), // Product name is 3EM
             Map.entry("shellyem", THING_TYPE_SHELLYEM), //
             Map.entry("shelly4pro", THING_TYPE_SHELLY4PRO), //
