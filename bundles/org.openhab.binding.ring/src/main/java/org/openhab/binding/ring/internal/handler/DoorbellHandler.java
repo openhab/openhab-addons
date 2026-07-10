@@ -142,7 +142,7 @@ public class DoorbellHandler extends RingDeviceHandler {
     protected void minuteTick() {
         logger.debug("DoorbellHandler - minuteTick - device {}", getThing().getUID().getId());
         if (device == null) {
-            initialize();
+            logger.debug("Device data is not yet available for {}. Skipping tick.", getThing().getUID().getId());
             return;
         }
         RingDeviceTO deviceTO = device.getDeviceStatus();

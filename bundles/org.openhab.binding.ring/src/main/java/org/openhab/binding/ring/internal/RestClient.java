@@ -505,7 +505,7 @@ public class RestClient {
             try {
                 sendCommand(ApiConstants.API_BASE + "/clients_api/doorbots/" + deviceId + "/subscribe", HttpMethod.POST,
                         null, headers, tokens);
-                logger.debug("Successfully subscribed device {} to doorbell rings.", deviceId);
+                logger.debug("Successfully subscribed device {} to ding events.", deviceId);
             } catch (AuthenticationException e) {
                 logger.warn("Failed to subscribe device {} to rings: {}", deviceId, e.getMessage());
             }

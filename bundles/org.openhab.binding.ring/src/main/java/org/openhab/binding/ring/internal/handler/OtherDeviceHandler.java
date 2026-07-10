@@ -127,7 +127,7 @@ public class OtherDeviceHandler extends RingDeviceHandler {
     protected void minuteTick() {
         logger.debug("OtherDeviceHandler - minuteTick - device {}", getThing().getUID().getId());
         if (device == null) {
-            initialize();
+            logger.debug("Device data is not yet available for {}. Skipping tick.", getThing().getUID().getId());
             return;
         }
 
