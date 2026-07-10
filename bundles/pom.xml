@@ -906,7 +906,7 @@
 
             <executions>
               <execution>
-                <id>standalone-install-node-and-npm</id>
+                <id>install-node-and-npm</id>
                 <goals>
                   <goal>install-node-and-npm</goal>
                 </goals>
