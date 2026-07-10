@@ -424,7 +424,7 @@ public class ZwaveJSBridgeHandler extends BaseBridgeHandler implements ZwaveEven
         try {
             return Double.parseDouble(trimmed);
         } catch (NumberFormatException e) {
-            return value;
+            return trimmed;
         }
     }
 }
