@@ -53,6 +53,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 /**
  * Handler class for TAPO Smart Home device UDP-connections.
@@ -487,8 +488,21 @@ public class TapoUdpDiscovery {
      */
     private void handleDiscoveryResult(String responseMessage) {
         logger.trace("({}) received responseMessage: '{}'", uid, responseMessage);
-        String responseContent = responseMessage.substring(responseMessage.indexOf("{")).trim();
-        TapoResponse tapoResponse = getObjectFromJson(responseContent, TapoResponse.class);
-        bridge.getDiscoveryService().addScanResult(getObjectFromJson(tapoResponse.result(), TapoDiscoveryResult.class));
+        while (true) {
+            try {
+                int jsonIndex = responseMessage.indexOf("{");
+                if (jsonIndex < 0) {
+                    break;
+                }
+                String responseContent = responseMessage.substring(jsonIndex).trim();
+                TapoResponse tapoResponse = getObjectFromJson(responseContent, TapoResponse.class);
+                bridge.getDiscoveryService()
+                        .addScanResult(getObjectFromJson(tapoResponse.result(), TapoDiscoveryResult.class));
+            } catch (JsonParseException | IndexOutOfBoundsException e) {
+                break;
+            }
+            return;
+        }
+        logger.debug("({}) unexpected response - JSON object not found", uid);
     }
 }

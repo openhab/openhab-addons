@@ -136,7 +136,7 @@ public class KlapSession {
             byte[] bLocalSeedAuthHash = sha256Encode(concatByteArray);
 
             if (Arrays.equals(bLocalSeedAuthHash, serverHash)) {
-                logger.trace("handshake1 sucessful");
+                logger.trace("handshake1 successful");
                 this.remoteSeed = remoteSeed;
                 this.serverHash = serverHash;
                 this.localSeedAuthHash = bLocalSeedAuthHash;
@@ -211,6 +211,9 @@ public class KlapSession {
                 if (!createHandshake1()) {
                     throw new TapoErrorHandler(NO_ERROR, BINDING_ID);
                 }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new TapoErrorHandler(ERR_API_UNKNOWN_COM_ERROR, BINDING_ID);
             } catch (Exception ex) {
                 // Handshake1 failed - Try repeating after a UDP comms reset
                 if (!sendUdpDiscoveryMessage()) {

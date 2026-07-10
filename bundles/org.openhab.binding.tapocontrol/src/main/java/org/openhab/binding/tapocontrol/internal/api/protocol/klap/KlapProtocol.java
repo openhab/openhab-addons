@@ -157,7 +157,7 @@ public class KlapProtocol implements org.openhab.binding.tapocontrol.internal.ap
         String command = tapoRequest.method();
         logger.trace("({}) sendRequestRetryable unencrypted request: '{}' to '{}' ", uid, tapoRequest, url);
 
-        while (true) {
+        while (attemptCount < maxAttempts) {
             attemptCount++;
 
             // @@DGH
@@ -167,9 +167,9 @@ public class KlapProtocol implements org.openhab.binding.tapocontrol.internal.ap
 
             if (attemptCount > 1) { // re-login using existing credentials
                 switch (reLoginExistingCredentials(attemptCount, maxAttempts)) {
-                    case SuccessState.success:
+                    case success:
                         break; // move on to send message
-                    case SuccessState.retry:
+                    case retry:
                         continue;
                     default:
                         return; // error
@@ -237,6 +237,7 @@ public class KlapProtocol implements org.openhab.binding.tapocontrol.internal.ap
                 session.reset();
                 if (e.getCause() instanceof IOException) {
                     httpDelegator.handleError(new TapoErrorHandler(ERR_BINDING_SEND_REQUEST));
+                    return;
                 } else {
                     throw new TapoErrorHandler(ERR_BINDING_SEND_REQUEST, errorMessage);
                 }

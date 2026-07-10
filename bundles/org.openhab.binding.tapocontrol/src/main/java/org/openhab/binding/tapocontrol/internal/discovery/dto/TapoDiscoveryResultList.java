@@ -60,7 +60,7 @@ public class TapoDiscoveryResultList implements Iterable<TapoDiscoveryResult> {
             int role = compareValuesAgainstComparator(old.role(), result.role(), 0);
             int status = compareValuesAgainstComparator(old.status(), result.status(), 0);
             String alias = compareValuesAgainstComparator(old.alias(), result.alias(), "");
-            String appServerUrl = compareValuesAgainstComparator(old.alias(), result.alias(), "");
+            String appServerUrl = compareValuesAgainstComparator(old.appServerUrl(), result.appServerUrl(), "");
             String deviceHwVer = compareValuesAgainstComparator(old.deviceHwVer(), result.deviceHwVer(), "");
             String deviceId = compareValuesAgainstComparator(old.deviceId(), result.deviceId(), "");
             String deviceMac = compareValuesAgainstComparator(old.deviceMac(), result.deviceMac(), "");
