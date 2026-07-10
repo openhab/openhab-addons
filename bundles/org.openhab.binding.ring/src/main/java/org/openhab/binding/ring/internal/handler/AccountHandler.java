@@ -567,7 +567,25 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
 
             String deviceId = deviceObj.has("id") ? deviceObj.get("id").getAsString() : "";
             String deviceName = deviceObj.has("name") ? deviceObj.get("name").getAsString() : "Unknown Device";
-            String deviceKind = deviceObj.has("kind") ? deviceObj.get("kind").getAsString() : "Unknown Device Kind";
+
+            String category = "";
+            String extendedDescription = "";
+            if (androidConfigJson != null && !androidConfigJson.isEmpty()) {
+                try {
+                    JsonObject configObj = JsonParser.parseString(androidConfigJson).getAsJsonObject();
+                    if (configObj.has("category")) {
+                        category = configObj.get("category").getAsString();
+                    }
+                    if (configObj.has("body")) {
+                        // Grab the localized text and optionally strip the bell emoji
+                        extendedDescription = configObj.get("body").getAsString().replace("🔔 ", "");
+                    }
+                } catch (Exception e) {
+                    logger.debug("Failed to parse android_config payload: {}", e.getMessage());
+                }
+            }
+
+            boolean isIntercom = category.contains("intercom");
 
             if (dingObj == null || !dingObj.has("id")) {
                 return;
@@ -580,19 +598,26 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
             }
             lastEventId = eventId;
 
-            String kind = "motion";
+            String kind = isIntercom ? "intercom_ding" : "motion";
             String pushSnapshotUrl = null;
             String createdAtStr = java.time.ZonedDateTime.now(java.time.ZoneOffset.UTC)
                     .format(java.time.format.DateTimeFormatter.ISO_DATE_TIME);
 
             if (dingObj.has("subtype")) {
                 String subtype = dingObj.get("subtype").getAsString().toLowerCase();
-                if (subtype.contains("ding") || subtype.contains("ring")) {
+                // Map doorbell pushes OR intercom button presses to the 'ding' kind
+                if (!isIntercom
+                        && (subtype.contains("ding") || subtype.contains("ring") || subtype.contains("button_press"))) {
                     kind = "ding";
                 }
             }
+
             if (dingObj.has("created_at")) {
                 createdAtStr = dingObj.get("created_at").getAsString();
+            }
+
+            if (extendedDescription.isEmpty()) {
+                extendedDescription = isIntercom ? "Intercom Ringing" : "Motion Detected";
             }
 
             if (imgJson != null && !imgJson.isEmpty()) {
@@ -603,18 +628,6 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                     }
                 } catch (Exception e) {
                     logger.debug("Failed to parse img payload: {}", e.getMessage());
-                }
-            }
-
-            String extendedDescription = "";
-            if (androidConfigJson != null && !androidConfigJson.isEmpty()) {
-                try {
-                    JsonObject configObj = JsonParser.parseString(androidConfigJson).getAsJsonObject();
-                    if (configObj.has("body")) {
-                        extendedDescription = configObj.get("body").getAsString();
-                    }
-                } catch (Exception e) {
-                    logger.debug("Failed to parse android_config payload: {}", e.getMessage());
                 }
             }
 
@@ -642,33 +655,26 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                 }
             }
 
-            if (pushSnapshotUrl != null && !pushSnapshotUrl.isEmpty()) {
-                logger.debug("Received Rich Notification URL! Downloading instantly...");
-                ScheduledFuture<?> job = fallbackJobs.remove(deviceId);
-                if (job != null && !job.isCancelled()) {
-                    job.cancel(true);
-                    logger.debug("Cancelled 3-second camera API fallback for {} because S3 URL arrived.", deviceId);
+            // Skip all media fetching (Snapshots and MP4s) for audio-only intercoms
+            if (!isIntercom) {
+
+                // 1. Snapshot Handling
+                if (pushSnapshotUrl != null && !pushSnapshotUrl.isEmpty()) {
+                    logger.debug("Received Rich Notification URL! Downloading instantly...");
+                    if (scheduler != null && !scheduler.isShutdown()) {
+                        final String finalUrl = pushSnapshotUrl;
+                        scheduler.execute(() -> updateChildSnapshots(deviceId, finalUrl));
+                    }
+                } else {
+                    logger.debug("No snapshot URL in push. Scheduling 3-second fallback to camera API...");
+                    if (scheduler != null && !scheduler.isShutdown()) {
+                        scheduler.schedule(() -> {
+                            updateChildSnapshots(deviceId, null);
+                        }, 3, java.util.concurrent.TimeUnit.SECONDS);
+                    }
                 }
 
-                if (scheduler != null && !scheduler.isShutdown()) {
-                    final String finalUrl = pushSnapshotUrl;
-                    scheduler.execute(() -> updateChildSnapshots(deviceId, finalUrl));
-                }
-            } else {
-                logger.debug("No snapshot URL in push. Scheduling 3-second fallback to camera API...");
-                if (scheduler != null && !scheduler.isShutdown()) {
-                    ScheduledFuture<?> job = scheduler.schedule(() -> {
-                        fallbackJobs.remove(deviceId);
-                        logger.debug("Fallback timer reached. Requesting snapshot via camera API...");
-                        updateChildSnapshots(deviceId, null);
-                    }, 3, java.util.concurrent.TimeUnit.SECONDS);
-
-                    // Save the job so it can be cancelled if the rich URL arrives late
-                    fallbackJobs.put(deviceId, job);
-                }
-            }
-
-            if (MOTION_DETECTION_KINDS.contains(deviceKind)) {
+                // 2. Delayed Video Recording Handling
                 scheduler.schedule(() -> {
                     try {
                         logger.debug("Recording finished. Fetching completed video for event {}", eventId);
@@ -685,7 +691,11 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                         logger.warn("Failed to download delayed video for event {}: {}", eventId, e.getMessage());
                     }
                 }, 65, TimeUnit.SECONDS);
+
+            } else {
+                logger.debug("Push event mapped to Intercom. Skipping camera snapshot and MP4 video retrieval.");
             }
+
         } catch (Exception e) {
             logger.debug("Failed to parse instant push event json: {}", e.getMessage(), e);
         }
