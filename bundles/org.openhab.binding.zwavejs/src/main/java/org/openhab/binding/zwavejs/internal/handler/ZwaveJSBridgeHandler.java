@@ -410,11 +410,21 @@ public class ZwaveJSBridgeHandler extends BaseBridgeHandler implements ZwaveEven
                 .toArray();
     }
 
-    private static Object convertValueType(String value) {
+    /**
+     * Converts a string value to a Boolean, Double or String, in that order of precedence.
+     * Package-private (rather than private) so it can be unit tested directly.
+     */
+    static Object convertValueType(String value) {
+        String trimmed = value.trim();
+
+        if ("true".equalsIgnoreCase(trimmed) || "false".equalsIgnoreCase(trimmed)) {
+            return Boolean.parseBoolean(trimmed);
+        }
+
         try {
-            return Double.parseDouble(value.trim());
+            return Double.parseDouble(trimmed);
         } catch (NumberFormatException e) {
-            return value;
+            return trimmed;
         }
     }
 }
