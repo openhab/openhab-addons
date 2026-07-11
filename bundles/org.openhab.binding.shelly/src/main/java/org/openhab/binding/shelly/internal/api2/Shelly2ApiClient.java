@@ -790,7 +790,10 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         return wh;
     }
 
-    private void applyEm1Data(ShellySettingsStatus status, int slotIdx, @Nullable Shelly2DeviceStatusEmData emData) {
+    /**
+     * Apply em1data:N (single-phase clamp) totals to status.emeters[slotIdx]. Package-private for unit testing.
+     */
+    static void applyEm1Data(ShellySettingsStatus status, int slotIdx, @Nullable Shelly2DeviceStatusEmData emData) {
         if (emData == null || status.emeters == null || slotIdx < 0 || slotIdx >= status.emeters.size()) {
             return;
         }
