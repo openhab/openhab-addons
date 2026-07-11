@@ -140,7 +140,7 @@ public class Constants {
     public static final String MB_KEY_TEMPERATURE_POINTS = "temperaturePoints";
     public static final String MB_KEY_SELECTED_CHARGE_PROGRAM = "selectedChargeProgram";
     public static final String MB_KEY_CHARGE_PROGRAMS = "chargePrograms";
-    // ADR-001: fallback attributes for vehicles reporting max-soc as flat values without a chargePrograms list
+    // Fallback attributes for vehicles reporting max-soc as flat values without a chargePrograms list
     public static final String MB_KEY_MAX_SOC = "maxSoc";
     public static final String MB_KEY_MAX_SOC_LOWER_LIMIT = "maxSocLowerLimit";
     public static final String MB_KEY_MAX_SOC_UPPER_LIMIT = "maxSocUpperLimit";

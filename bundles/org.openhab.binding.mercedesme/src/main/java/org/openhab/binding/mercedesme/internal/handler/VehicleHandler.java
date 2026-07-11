@@ -132,7 +132,7 @@ public class VehicleHandler extends BaseThingHandler {
     private int ignitionState = -1;
     private boolean chargingState = false;
     private int selectedChargeProgram = -1;
-    // ADR-001: true once a chargePrograms list was received; false means max-soc must be read/written
+    // True once a chargePrograms list was received; false means max-soc must be read/written
     // via the flat maxSoc / ChargingConfigure fallback (e.g. MB-BEV-CLA)
     private boolean hasChargePrograms = false;
     private int activeTemperaturePoint = -1;
@@ -431,7 +431,7 @@ public class VehicleHandler extends BaseThingHandler {
             case GROUP_CHARGE:
                 if (OH_CHANNEL_MAX_SOC.equals(channel) && !hasChargePrograms) {
                     /**
-                     * ADR-001: vehicle doesn't report a chargePrograms list (e.g. MB-BEV-CLA) - set max-soc
+                     * Vehicle doesn't report a chargePrograms list (e.g. MB-BEV-CLA) - set max-soc
                      * directly via ChargingConfigure, which needs no charge program selection, instead of
                      * ChargeProgramConfigure.
                      */
@@ -979,7 +979,7 @@ public class VehicleHandler extends BaseThingHandler {
                 }
             } else {
                 /**
-                 * ADR-001 fallback: vehicle doesn't report a chargePrograms list (e.g. MB-BEV-CLA) - read the
+                 * Fallback: vehicle doesn't report a chargePrograms list (e.g. MB-BEV-CLA) - read the
                  * flat maxSoc attribute directly and derive command options from maxSocLowerLimit/UpperLimit
                  * instead of the static XML option list.
                  */
@@ -1042,7 +1042,7 @@ public class VehicleHandler extends BaseThingHandler {
     }
 
     /**
-     * ADR-001: for vehicles without a chargePrograms list, derive the max-soc command options from the
+     * For vehicles without a chargePrograms list, derive the max-soc command options from the
      * vehicle-reported maxSocLowerLimit/maxSocUpperLimit instead of the static option list in
      * charge-channel-types.xml. Options are offered in 10 % steps within the reported bounds.
      */

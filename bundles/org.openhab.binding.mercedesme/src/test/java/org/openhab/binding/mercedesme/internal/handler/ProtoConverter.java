@@ -192,7 +192,7 @@ public class ProtoConverter {
             cpv.put("max_soc", soc.getValue());
             return cpv;
         }
-        // ADR-001: ChargingConfigure carries max_soc as an Int32Value wrapper, same as
+        // ChargingConfigure carries max_soc as an Int32Value wrapper, same as
         // ChargeProgramConfigure - unwrap it before returning.
         if (cr.hasChargingConfigure()) {
             JSONObject cc = Utils.getJsonObject(cr.getChargingConfigure().getAllFields());

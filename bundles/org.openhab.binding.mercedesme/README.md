@@ -609,7 +609,7 @@ Group name: `tires`
 All channels `read-only`
 
 | Channel                  | Type                 |  Description                    |
-|--------------------------|----------------------|----------------------------------|
+|--------------------------|----------------------|---------------------------------|
 | pressure-front-left      | Number:Pressure      |  Tire Pressure Front Left       |
 | pressure-front-right     | Number:Pressure      |  Tire Pressure Front Right      |
 | pressure-rear-left       | Number:Pressure      |  Tire Pressure Rear Left        |
