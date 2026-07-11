@@ -12,9 +12,9 @@ The binding focuses on reporting the device status and device control.
 Initial setup and device configuration has to be performed using the Shelly Apps (Web UI or Smartphone App).
 The binding gets in sync with the next status refresh.
 
-Refer to [Advanced Users](doc/AdvancedUsers.md) for more information on openHAB Shelly integration, e.g. firmware update, network communication or log filtering.
+**Check channel deprecated-channel and migration handling [Channels](#channels) section below.**
 
-See [Power Meter Channels](doc/PowerMeter.md) for the power/energy meter channel reference, migration notes, and unit conversion details.
+Refer to [Advanced Users](doc/AdvancedUsers.md) for more information on openHAB Shelly integration, e.g. firmware update, network communication or log filtering.
 
 Also check out the [Shelly Manager](doc/ShellyManager.md), which
 
@@ -314,6 +314,62 @@ The channel `roller#rollerFav` allows to select those from openHAB and the rolle
 In the Thing configuration you could also configure an id when the `roller#control` channel receives UP or DOWN.
 Values 1-4 are selecting the corresponding favorite id in the Shelly App, 0 means no favorite.
 
+## Power / Energy Meters
+
+There are different types of meters.
+
+- Standard relay and roller devices have Meters or Enhanced Meters - e.g. Shelly Plus 1PM, 2PM
+- There are various devices providing an Energy Meter like 3EM/EM-50, EM Mini etc. - those are specifically designed for energy management
+
+The device dynamically detects which meter data is provided and creates channels representing the data.
+Each meter is represented by a meter channel group.
+Devices with a single meter only have the `meter` group, devices with more than one meter have `meter1`, `meter2`... channel groups.
+
+| Device family                   | Meters | Total energy | Returned energy | Reactive power | Apparent power | Minute energy | Frequency |
+| ------------------------------- | ------ | ------------ | --------------- | -------------- | -------------- | ------------- | --------- |
+| Gen1 relay-PM (Shelly 1PM, 2.5) | 1      | Yes          | —               | —              | —              | Yes           | —         |
+| Gen1 3EM                        | 3      | Yes          | Yes             | Yes            | —              | Yes           | —         |
+| Plus 1PM / Plus 2PM (Gen2/Gen3) | 1–2    | Yes          | —               | —              | —              | Yes           | —         |
+| Plus 1PM Gen4                   | 1      | Yes          | —               | —              | —              | Yes           | Yes       |
+| Plus Plug S                     | 1      | Yes          | —               | —              | —              | Yes           | —         |
+| Pro 3EM / 3EM-63 / 3EM-400      | 3      | Yes          | Yes             | —              | Yes            | Yes           | Yes       |
+| Pro EM-50                       | 1–2    | Yes          | Yes             | —              | Yes            | Yes           | Yes       |
+| Plus EM Mini Gen4               | 1      | Yes          | Yes             | —              | Yes            | Yes           | Yes       |
+
+The Pro 3EM monophase profile treats its three clamps as three independent single-phase meters rather than one 3-phase meter.
+
+Channels are created depending on device generation / series (1..4, BLU), capabilities and firmware.
+Therefore, not all channels are available for all devices.
+
+### Minute Energy — Units and Conversion
+
+The firmware reports the energy of the last complete minute in different raw units per generation.
+The binding converts both to Wh so the value is directly comparable across devices:
+
+| Generation | Source field           | Raw unit              | Conversion        |
+| ---------- | ---------------------- | --------------------- | ----------------- |
+| Gen1       | `meters[].counters[0]` | Watt-minutes (W-min)  | value ÷ 60 → Wh   |
+| Gen2+      | `aenergy.by_minute[0]` | Milliwatt-hours (mWh) | value ÷ 1000 → Wh |
+
+This applies to all metered devices — Gen1 relay-PM, Gen2+ relay-PM, and Gen1/Gen2 3EM devices.
+
+### Power Factor Range
+
+Power factor is reported as a plain number between −1.0 and +1.0 (not a dimensionless quantity), consistent across all devices that report it (3EM, EM-50, EM Mini).
+
+### Returned (Fed-Back) Energy
+
+Devices that measure bidirectional energy flow (3EM, EM-50, EM Mini, solar/grid-tie setups) report returned energy separately from consumed energy.
+Single-clamp devices (EM Mini, Pro EM-50 single clamp) report the clamp's own returned-energy total; the same value doubles as the device-level total when only one clamp is present.
+Three-phase devices (Pro 3EM) report returned energy per phase and an aggregated device-level total across all phases.
+
+### Important: Deprecated channels in openHAB 5.2.1+
+
+openHAB 5.2.1 renamed several meter-related channels for naming consistency (e.g. `currentWatts` → `currentPower`, `totalKWH` → `totalEnergy`).
+Migration happens automatically, once, at Thing startup — no re-discovery is required.
+Old channel IDs stay active as deprecated, advanced channels and keep receiving updates, so existing item links and rules keep working; move to the new channel ID at your convenience since deprecated channels will be removed in a future release.
+See [Channel Migration and Deprecated Channels](#channel-migration-and-deprecated-channels) for the full old-to-new channel mapping.
+
 ### Thing Status
 
 The binding sets the following Thing status depending on the device status:
@@ -521,6 +577,28 @@ Refer to section [Full Example](#full-example) for examples how to catch alarm t
 ## Channels
 
 Depending on the device type and firmware release channels might be not available or stay with value NaN.
+
+### Channel Migration and Deprecated Channels
+
+openHAB 5.2.1 renamed several meter-related channels for naming consistency.
+The binding migrates existing Things automatically at startup (one-time, schema-versioned); no re-discovery is required.
+Old channel IDs stay active as deprecated, advanced channels and keep receiving updates, so existing item links and rules keep working; move to the new channel ID at your convenience since deprecated channels will be removed in a future release.
+
+| Old channel ID                 | New channel ID                      | Notes                                                                     |
+| ------------------------------ | ----------------------------------- | ------------------------------------------------------------------------- |
+| `meterN#currentWatts`          | `meterN#currentPower`               | unit unchanged (W)                                                        |
+| `meterN#totalKWH`              | `meterN#totalEnergy`                | unit unchanged (kWh)                                                      |
+| `meterN#returnedKWH`           | `meterN#returnedEnergy`             | unit unchanged (kWh)                                                      |
+| `meterN#reactiveWatts`         | `meterN#reactivePower`              | old channel keeps its W unit, new channel reports VAR                     |
+| `meterN#lastPower1`            | `meterN#energyAvg1Min`              | old channel reports average power in W, new channel reports energy in Wh  |
+| `device#accumulatedWatts`      | `device#accumulatedPower`           | unit unchanged (W)                                                        |
+| `device#accumulatedReturned`   | `device#accumulatedReturnedEnergy`  | unit unchanged (kWh)                                                      |
+| `device#accumulatedWTotal`     | `device#totalEnergy`                | old channel reported incorrect values; use the new channel                |
+| `device#totalKWH`              | `device#totalEnergy`                | unit unchanged (kWh)                                                      |
+| `nmeter#nmTreshhold`           | `nmeter#nmThreshold`                | unit unchanged (A)                                                        |
+
+`meterN#powerFactor` additionally changed type from `Number:Dimensionless` to plain `Number` (range −1.0 to +1.0).
+This is an in-place type change on the same channel ID, not a rename, so there is no dual-write; items statically linked as `Number:Dimensionless` need relinking.
 
 ### Shelly 1 (thing-type: shelly1)
 
