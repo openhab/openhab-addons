@@ -64,6 +64,7 @@ public abstract class BaseKeypadHandler extends LutronHandler {
     protected Boolean autoRelease;
     protected Boolean advancedChannels = false;
     protected boolean useTriggerChannels = true;
+    protected String triggerChannelTypeId = "buttonTrigger";
 
     protected Map<Integer, String> componentChannelMap = new HashMap<>(50);
 
@@ -137,7 +138,7 @@ public abstract class BaseKeypadHandler extends LutronHandler {
             if (useTriggerChannels) {
                 // Physical keypad buttons are momentary events, modeled as trigger channels. An item can still be
                 // linked to them via a trigger profile (e.g. system:rawbutton-toggle-switch).
-                channelTypeUID = new ChannelTypeUID(BINDING_ID, "buttonTrigger");
+                channelTypeUID = new ChannelTypeUID(BINDING_ID, triggerChannelTypeId);
                 channel = ChannelBuilder.create(channelUID).withType(channelTypeUID).withKind(ChannelKind.TRIGGER)
                         .withLabel(component.description()).build();
             } else {

@@ -1353,13 +1353,26 @@
 	<channel-type id="buttonTrigger">
 		<kind>trigger</kind>
 		<label>Keypad Button Event</label>
-		<description>Fires PRESSED, RELEASED, LONG_PRESSED, or DOUBLE_PRESSED events for a keypad button</description>
+		<description>Fires PRESSED and RELEASED events, plus LONG_PRESSED and DOUBLE_PRESSED if the keypad and button
+			programming support them</description>
 		<event>
 			<options>
 				<option value="PRESSED">PRESSED</option>
 				<option value="RELEASED">RELEASED</option>
 				<option value="LONG_PRESSED">LONG_PRESSED</option>
 				<option value="DOUBLE_PRESSED">DOUBLE_PRESSED</option>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="picoButtonTrigger">
+		<kind>trigger</kind>
+		<label>Pico Button Event</label>
+		<description>Fires PRESSED and RELEASED events for a Pico keypad button</description>
+		<event>
+			<options>
+				<option value="PRESSED">PRESSED</option>
+				<option value="RELEASED">RELEASED</option>
 			</options>
 		</event>
 	</channel-type>
