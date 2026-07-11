@@ -127,13 +127,13 @@ public class InMemoryPersistenceService implements ModifiablePersistenceService 
 
     @Override
     public void store(Item item) {
-        internalStore(item.getName(), ZonedDateTime.now(), item.getState());
+        store(item, null);
     }
 
     @Override
     public void store(Item item, @Nullable String alias) {
-        String finalName = Objects.requireNonNullElse(alias, item.getName());
-        internalStore(finalName, ZonedDateTime.now(), item.getState());
+        ZonedDateTime lastStateUpdate = Objects.requireNonNullElse(item.getLastStateUpdate(), ZonedDateTime.now());
+        store(item, lastStateUpdate, item.getState(), alias);
     }
 
     @Override
