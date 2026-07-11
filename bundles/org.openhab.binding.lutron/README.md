@@ -278,7 +278,9 @@ This will cause the handler to create only the appropriate channels for that par
 The default is "Generic", which will cause the handler to create all possible channels, some of which will likely not be appropriate for your model.
 
 A trigger channel _button[nn]_ is created for each button, and a state channel _led[nn]_ with item type Switch and category Light is created for each button indicator LED.
-Each button channel fires the `PRESSED` and `RELEASED` events as the physical button is pressed and released, and fires `LONG_PRESSED` when the keypad reports a button hold.
+Each button channel fires the `PRESSED` and `RELEASED` events as the physical button is pressed and released.
+Buttons programmed for hold or double-tap in the Lutron software additionally fire `LONG_PRESSED` and `DOUBLE_PRESSED` events.
+Because a hold-programmed button reports a hold instead of a release, a `RELEASED` event is fired immediately after `LONG_PRESSED` so that trigger profiles do not get stuck in the pressed state.
 This lets you trigger rules directly on button events without needing an intermediate Item (see the example below).
 
 If you prefer to drive an Item from a button, link the button channel to an Item using one of the built-in trigger [profiles](https://www.openhab.org/docs/configuration/items.html#profiles), for example `system:rawbutton-toggle-switch` to toggle a Switch on each press, or `system:rawbutton-on-off-switch` to follow the button's pressed/released state.
@@ -376,6 +378,7 @@ Thing palladiomkeypad kitchenkeypad [ integrationId=16, model="4W" ]
 Pico keypads use the **pico** Thing.
 It accepts the same `integrationId` and `model` parameters and creates the same channel types as the **keypad** and **ttkeypad** things.
 The only difference is that no LED channels will be created, since Pico keypads have no indicator LEDs.
+Note that Pico keypads only report `PRESSED` and `RELEASED` events; they do not support hold or double-tap reporting.
 See the discussion above for a full discussion of configuration and use.
 
 Component numbering: For button layouts and numbering, see the Lutron Integration Protocol Guide (rev. AA) p.113 (<https://www.lutron.com/TechnicalDocumentLibrary/040249.pdf>).
@@ -680,7 +683,7 @@ The following is a summary of channels for all RadioRA 2 binding things:
 | occupancysensor     | occupancystatus   | Switch        | Occupancy sensor status                      |
 | ogroup              | groupstate        | String        | Occupancy group status                       |
 | cco                 | switchstatus      | Switch        | On/off status of the CCO                     |
-| keypads (physical)  | button*           | Trigger       | Keypad button events (PRESSED/RELEASED/LONG_PRESSED) |
+| keypads (physical)  | button*           | Trigger       | Keypad button events (PRESSED/RELEASED/LONG_PRESSED/DOUBLE_PRESSED) |
 | virtualkeypad       | button*           | Switch        | Virtual keypad button                        |
 | keypads(except pico)| led*              | Switch        | LED indicator for the associated button      |
 | vcrx                | cci*              | Contact       | Contact closure input on/off status          |

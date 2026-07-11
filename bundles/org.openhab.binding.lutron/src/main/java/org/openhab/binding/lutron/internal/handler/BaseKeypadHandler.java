@@ -138,7 +138,7 @@ public abstract class BaseKeypadHandler extends LutronHandler {
                 // Physical keypad buttons are momentary events, modeled as trigger channels. An item can still be
                 // linked to them via a trigger profile (e.g. system:rawbutton-toggle-switch).
                 channelTypeUID = new ChannelTypeUID(BINDING_ID, "buttonTrigger");
-                channel = ChannelBuilder.create(channelUID, null).withType(channelTypeUID).withKind(ChannelKind.TRIGGER)
+                channel = ChannelBuilder.create(channelUID).withType(channelTypeUID).withKind(ChannelKind.TRIGGER)
                         .withLabel(component.description()).build();
             } else {
                 // Virtual keypad buttons are bidirectional and stay Switch state channels.
@@ -419,12 +419,29 @@ public abstract class BaseKeypadHandler extends LutronHandler {
                         updateState(channelUID, OpenClosedType.OPEN);
                     }
                 } else if (DeviceCommand.ACTION_HOLD.toString().equals(parameters[1])) {
-                    if (useTriggerChannels) {
-                        // Lutron does not send a subsequent release after a hold, so fire LONG_PRESSED here.
-                        triggerChannel(channelUID, CommonTriggerEvents.LONG_PRESSED);
-                    } else {
-                        // Signal a release; Lutron does not send a subsequent release after a hold.
-                        updateState(channelUID, OnOffType.OFF);
+                    if (isButton(component)) {
+                        if (useTriggerChannels) {
+                            // A hold-programmed button reports a hold instead of a release. Fire RELEASED after
+                            // LONG_PRESSED so trigger profiles don't get stuck in the pressed state. Systems that
+                            // also report a hold release will fire a harmless duplicate RELEASED.
+                            triggerChannel(channelUID, CommonTriggerEvents.LONG_PRESSED);
+                            triggerChannel(channelUID, CommonTriggerEvents.RELEASED);
+                        } else {
+                            // Signal a release; Lutron does not send a subsequent release after a hold.
+                            updateState(channelUID, OnOffType.OFF);
+                        }
+                    }
+                } else if (DeviceCommand.ACTION_DBLTAP.toString().equals(parameters[1])) {
+                    if (isButton(component) && useTriggerChannels) {
+                        triggerChannel(channelUID, CommonTriggerEvents.DOUBLE_PRESSED);
+                    }
+                } else if (DeviceCommand.ACTION_HOLDRELEASE.toString().equals(parameters[1])) {
+                    if (isButton(component)) {
+                        if (useTriggerChannels) {
+                            triggerChannel(channelUID, CommonTriggerEvents.RELEASED);
+                        } else {
+                            updateState(channelUID, OnOffType.OFF);
+                        }
                     }
                 }
             } else {
