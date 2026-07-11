@@ -312,13 +312,14 @@ public class MongoDBPersistenceService implements ModifiablePersistenceService {
     }
 
     @Override
-    public void store(Item item, @Nullable String alias) {
-        store(item, new Date(), item.getState(), alias);
+    public void store(Item item) {
+        store(item, null);
     }
 
     @Override
-    public void store(Item item) {
-        store(item, null);
+    public void store(Item item, @Nullable String alias) {
+        ZonedDateTime lastStateUpdate = item.getLastStateUpdate();
+        store(item, (lastStateUpdate != null ? lastStateUpdate : ZonedDateTime.now()), item.getState(), alias);
     }
 
     @Override
