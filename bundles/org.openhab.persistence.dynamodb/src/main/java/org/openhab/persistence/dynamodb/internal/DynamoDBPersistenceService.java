@@ -496,7 +496,8 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
     @Override
     public void store(Item item, @Nullable String alias) {
         // Timestamp and capture state immediately as rest of the store is asynchronous (state might change in between)
-        ZonedDateTime time = ZonedDateTime.now();
+        ZonedDateTime lastStateUpdate = item.getLastStateUpdate();
+        ZonedDateTime time = (lastStateUpdate != null ? lastStateUpdate : ZonedDateTime.now());
 
         logIfManyQueuedTasks();
         if (!(item instanceof GenericItem)) {
