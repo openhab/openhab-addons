@@ -13,6 +13,7 @@
 package org.openhab.persistence.dynamodb.internal;
 
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -58,17 +59,17 @@ public class PlayerItemRewindFastForwardIntegrationTest extends AbstractTwoItemI
 
         PlayerItem item = (PlayerItem) ITEMS.get(NAME);
 
+        beforeStore = ZonedDateTime.now().truncatedTo(ChronoUnit.MILLIS);
+        Thread.sleep(1);
         item.setState(localState1);
-
-        beforeStore = ZonedDateTime.now();
         Thread.sleep(10);
         service.store(item);
-        afterStore1 = ZonedDateTime.now();
+        afterStore1 = ZonedDateTime.now().truncatedTo(ChronoUnit.MILLIS);
         Thread.sleep(10);
         item.setState(localState2);
         service.store(item);
         Thread.sleep(10);
-        afterStore2 = ZonedDateTime.now();
+        afterStore2 = ZonedDateTime.now().truncatedTo(ChronoUnit.MILLIS);
 
         LOGGER.info("Created item between {} and {}", AbstractDynamoDBItem.DATEFORMATTER.format(beforeStore),
                 AbstractDynamoDBItem.DATEFORMATTER.format(afterStore1));
