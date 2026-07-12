@@ -192,8 +192,10 @@ public class MemoryFileManager extends ForwardingJavaFileManager<JavaFileManager
         @Override
         public InputStream openInputStream() throws IOException {
             URL url = classLoader.getResource(resource);
-            InputStream is = url.openStream();
-            return is;
+            if (url == null) {
+                throw new IOException("Could not find resource " + resource);
+            }
+            return url.openStream();
         }
 
         @Override

@@ -118,9 +118,8 @@ public class JarFileManager<M extends JavaFileManager> extends ForwardingJavaFil
         if ("jar".equals(uri.getScheme())) {
             String uriString = uri.toString();
             return uriString.substring(uriString.lastIndexOf("!"));
-        } else {
-            return uri.getPath();
         }
+        return uri.getPath();
     }
 
     /**
