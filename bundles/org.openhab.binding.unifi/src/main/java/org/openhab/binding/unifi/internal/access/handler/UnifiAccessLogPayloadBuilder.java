@@ -80,6 +80,11 @@ public class UnifiAccessLogPayloadBuilder {
         if (data.source.actor != null) {
             putIfNonNull(logMap, "actorName", data.source.actor.displayName);
         }
+        if (data.source.authentication != null) {
+            putIfNonNull(logMap, "credentialProvider", data.source.authentication.credentialProvider);
+        }
+        putIfNonNull(logMap, "doorName", targetDisplayName(data, "door"));
+        putIfNonNull(logMap, "userStatus", targetDisplayName(data, "user_status"));
         return gson.toJson(logMap);
     }
 
@@ -100,8 +105,29 @@ public class UnifiAccessLogPayloadBuilder {
         }
         if (data.source.event != null) {
             putIfNonNull(accessMap, "message", data.source.event.displayMessage);
+            putIfNonNull(accessMap, "result", data.source.event.result);
+            putIfNonNull(accessMap, "published", data.source.event.published);
         }
+        putIfNonNull(accessMap, "doorName", targetDisplayName(data, "door"));
+        putIfNonNull(accessMap, "userStatus", targetDisplayName(data, "user_status"));
         return gson.toJson(accessMap);
+    }
+
+    /**
+     * Extracts the {@code displayName} of the first {@code _source.target} entry matching the given
+     * {@code type} (e.g. {@code "door"} or {@code "user_status"}). The UniFi Access log event carries
+     * these as typed references in the target array rather than as dedicated fields.
+     *
+     * @param data the log data
+     * @param type the target {@code type} to look for
+     * @return the matching non-empty display name, or {@code null} if absent
+     */
+    private static @Nullable String targetDisplayName(LogsAddData data, String type) {
+        if (data.source.target == null) {
+            return null;
+        }
+        return data.source.target.stream().filter(t -> type.equalsIgnoreCase(t.type)).map(t -> t.displayName)
+                .filter(v -> v != null && !v.isEmpty()).findFirst().orElse(null);
     }
 
     private static void putIfNonNull(Map<String, Object> map, String key, @Nullable Object value) {
