@@ -72,12 +72,7 @@ public class VerisureHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(VerisureHandlerFactory.class);
     private final HttpClient httpClient;
 
-    /**
-     * Verisure sends large WAF and JWT session cookies that together exceed Jetty's
-     * default 4 kB request buffer, causing "Request header too large" on login. Use a
-     * dedicated HTTP client with a larger request buffer. A dedicated client is also
-     * needed because {@link VerisureSession} temporarily replaces the cookie store.
-     */
+    // Verisure's WAF and JWT session cookies exceed Jetty's default 4 kB request buffer
     private static final int REQUEST_BUFFER_SIZE = 16 * 1024;
 
     @Activate
@@ -87,7 +82,7 @@ public class VerisureHandlerFactory extends BaseThingHandlerFactory {
         try {
             this.httpClient.start();
         } catch (Exception e) {
-            logger.warn("Failed to start Verisure HTTP client: {}", e.getMessage());
+            throw new IllegalStateException("Failed to start HTTP client", e);
         }
     }
 
