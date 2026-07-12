@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -38,6 +39,7 @@ import org.openhab.automation.java223.common.Java223Constants;
 import org.openhab.automation.java223.common.Java223Exception;
 import org.openhab.core.automation.Action;
 import org.openhab.core.automation.module.script.rulesupport.shared.simple.SimpleRule;
+import org.openhab.core.common.ThreadPoolManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,6 +71,8 @@ public class Java223Rule extends SimpleRule {
     private ZonedDateTime executionTimeStamp = null;
     @Nullable
     private CompletableFuture<@Nullable Void> futureAction;
+    protected final static ScheduledExecutorService scheduler = ThreadPoolManager
+            .getScheduledPool(ThreadPoolManager.THREAD_POOL_NAME_COMMON);
 
     public void setUid(String uid) {
         if (!uid.isBlank()) {
@@ -235,7 +239,7 @@ public class Java223Rule extends SimpleRule {
                     executionTimeStamp = now;
                     // execute immediately in a separate thread to avoid blocking the rule execution. The
                     // purpose of this is to debounce, so we assume the user doesn't want blocking behavior.
-                    CompletableFuture.runAsync(() -> codeToExecute.apply(module, bindings));
+                    CompletableFuture.runAsync(() -> codeToExecute.apply(module, bindings), scheduler);
                 } else {
                     logger.debug("Debounced action (first only");
                 }
@@ -262,7 +266,7 @@ public class Java223Rule extends SimpleRule {
                     futureAction = null;
                     executionTimeStamp = null;
                     codeToExecute.apply(module, bindings);
-                }, CompletableFuture.delayedExecutor(remainingDelay, TimeUnit.MILLISECONDS));
+                }, CompletableFuture.delayedExecutor(remainingDelay, TimeUnit.MILLISECONDS, scheduler));
             }
             case STABLE -> {
                 // in this case, we will wait for a stable state (rule not triggered during the wanted delay)
@@ -274,7 +278,7 @@ public class Java223Rule extends SimpleRule {
                 futureAction = CompletableFuture.runAsync(() -> {
                     futureAction = null;
                     codeToExecute.apply(module, bindings);
-                }, CompletableFuture.delayedExecutor(debounce.value(), TimeUnit.MILLISECONDS));
+                }, CompletableFuture.delayedExecutor(debounce.value(), TimeUnit.MILLISECONDS, scheduler));
             }
         }
     }
