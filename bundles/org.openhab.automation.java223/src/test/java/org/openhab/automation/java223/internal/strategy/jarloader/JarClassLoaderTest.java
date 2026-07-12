@@ -41,9 +41,10 @@ public class JarClassLoaderTest {
 
     @Test
     public void testGetResourceAsStream() throws IOException {
-        if ((tempDir == null))
+        Path localTempDir = tempDir;
+        if ((localTempDir == null))
             throw new AssertionError("Temp directory is null. Should not happen");
-        Path jarPath = tempDir.resolve("test with space.jar");
+        Path jarPath = localTempDir.resolve("test with space.jar");
         createJar(jarPath, "test with space.txt", "Hello World");
 
         JarClassLoader jarClassLoader = new JarClassLoader(getClass().getClassLoader());

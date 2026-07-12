@@ -45,10 +45,10 @@ class InjectedCodeGeneratorTest {
 
     @Mock
     @NonNullByDefault({})
-    ScriptExtensionAccessor scripExtensionAccessor;
+    ScriptExtensionAccessor scriptExtensionAccessor;
     @Mock
     @NonNullByDefault({})
-    MetadataRegistry medataRegistry;
+    MetadataRegistry metadataRegistry;
     @Mock
     @NonNullByDefault({})
     DefaultStateDescriptionFragmentProvider defaultStateDescriptionFragmentProvider;
@@ -57,16 +57,16 @@ class InjectedCodeGeneratorTest {
     void nameParseBindingsTest() {
         // given
         Map<String, Object> defaultPresets = new HashMap<>();
-        ItemRegistryImpl itemRegistry = new ItemRegistryImpl(medataRegistry, defaultStateDescriptionFragmentProvider);
+        ItemRegistryImpl itemRegistry = new ItemRegistryImpl(metadataRegistry, defaultStateDescriptionFragmentProvider);
         defaultPresets.put("ir", itemRegistry);
         defaultPresets.put("items", new ItemRegistryDelegate(itemRegistry));
         defaultPresets.put("ON", OnOffType.ON);
         defaultPresets.put("OFF", OnOffType.OFF);
 
-        Mockito.when(scripExtensionAccessor.findDefaultPresets("")).thenReturn(defaultPresets);
+        Mockito.when(scriptExtensionAccessor.findDefaultPresets("")).thenReturn(defaultPresets);
 
         // when
-        InjectedCodeGenerator injectedCodeGenerator = new InjectedCodeGenerator(scripExtensionAccessor);
+        InjectedCodeGenerator injectedCodeGenerator = new InjectedCodeGenerator(scriptExtensionAccessor);
 
         // then
         List<String> injectedFieldsDeclaration = Arrays
