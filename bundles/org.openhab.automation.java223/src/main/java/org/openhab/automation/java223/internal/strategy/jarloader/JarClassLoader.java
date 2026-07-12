@@ -87,8 +87,9 @@ public class JarClassLoader extends ClassLoader {
             return null;
         }
         try {
-            return new URI("jar:file:" + jarPath.toAbsolutePath() + "!/" + name).toURL();
-        } catch (MalformedURLException | URISyntaxException e) {
+            var uri = new URI("jar:file", "", jarPath.toAbsolutePath() + "!/" + name, null, null);
+            return uri.toURL();
+        } catch (URISyntaxException | MalformedURLException e) {
             logger.warn("Failed to create URL for resource '{}' in JAR '{}': {}", name, jarPath, e.getMessage());
             return null;
         }

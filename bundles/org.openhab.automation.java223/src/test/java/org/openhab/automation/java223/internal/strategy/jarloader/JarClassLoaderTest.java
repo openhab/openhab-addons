@@ -43,14 +43,14 @@ public class JarClassLoaderTest {
     public void testGetResourceAsStream() throws IOException {
         if ((tempDir == null))
             throw new AssertionError("Temp directory is null. Should not happen");
-        Path jarPath = tempDir.resolve("test.jar");
-        createJar(jarPath, "test.txt", "Hello World");
+        Path jarPath = tempDir.resolve("test with space.jar");
+        createJar(jarPath, "test with space.txt", "Hello World");
 
         JarClassLoader jarClassLoader = new JarClassLoader(getClass().getClassLoader());
         jarClassLoader.addJar(jarPath);
 
-        try (InputStream is = jarClassLoader.getResourceAsStream("test.txt")) {
-            assertNotNull(is, "Resource 'test.txt' should be found");
+        try (InputStream is = jarClassLoader.getResourceAsStream("test with space.txt")) {
+            assertNotNull(is, "Resource 'test with space.txt' should be found");
             String content = new String(is.readAllBytes(), StandardCharsets.UTF_8);
             assertEquals("Hello World", content);
         }
