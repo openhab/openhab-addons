@@ -41,7 +41,8 @@ public class JarClassLoaderTest {
 
     @Test
     public void testGetResourceAsStream() throws IOException {
-        assert (tempDir != null);
+        if ((tempDir == null))
+            throw new AssertionError("Temp directory is null. Should not happen");
         Path jarPath = tempDir.resolve("test.jar");
         createJar(jarPath, "test.txt", "Hello World");
 
