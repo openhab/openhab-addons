@@ -224,7 +224,7 @@ public class UnifiAccessNotificationRouter {
         // route to each referenced device (the event lists e.g. the hub and the reader)
         if (data.metadata != null && data.metadata.device != null) {
             for (Notification.BaseReference dev : data.metadata.device) {
-                String deviceId = dev.id;
+                String deviceId = dev != null ? dev.id : null;
                 if (deviceId != null) {
                     UnifiAccessDeviceHandler d = bridgeHandler.getDeviceHandler(deviceId);
                     if (d != null) {

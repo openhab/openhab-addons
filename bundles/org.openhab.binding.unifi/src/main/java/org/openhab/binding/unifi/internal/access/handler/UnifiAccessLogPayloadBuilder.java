@@ -53,9 +53,8 @@ public class UnifiAccessLogPayloadBuilder {
         putIfNonNull(insight, "doorId", doorId);
         String doorName = (data.metadata != null && data.metadata.door != null) ? data.metadata.door.displayName : null;
         putIfNonNull(insight, "doorName", doorName);
-        String deviceId = (data.metadata != null && data.metadata.device != null && !data.metadata.device.isEmpty())
-                ? data.metadata.device.get(0).id
-                : null;
+        String deviceId = (data.metadata != null && data.metadata.device != null && !data.metadata.device.isEmpty()
+                && data.metadata.device.get(0) != null) ? data.metadata.device.get(0).id : null;
         putIfNonNull(insight, "deviceId", deviceId);
         putIfNonNull(insight, "cameraId", cameraId);
         return gson.toJson(insight);
