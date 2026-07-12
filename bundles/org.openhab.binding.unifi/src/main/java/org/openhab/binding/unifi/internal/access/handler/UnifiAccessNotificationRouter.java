@@ -221,12 +221,16 @@ public class UnifiAccessNotificationRouter {
                 dh.triggerLogInsight(payload);
             }
         }
-        // route to specific device if referenced
-        String deviceId = data.metadata != null && data.metadata.device != null ? data.metadata.device.id : null;
-        if (deviceId != null) {
-            UnifiAccessDeviceHandler d = bridgeHandler.getDeviceHandler(deviceId);
-            if (d != null) {
-                d.triggerLogInsight(payload);
+        // route to each referenced device (the event lists e.g. the hub and the reader)
+        if (data.metadata != null && data.metadata.device != null) {
+            for (Notification.BaseReference dev : data.metadata.device) {
+                String deviceId = dev != null ? dev.id : null;
+                if (deviceId != null) {
+                    UnifiAccessDeviceHandler d = bridgeHandler.getDeviceHandler(deviceId);
+                    if (d != null) {
+                        d.triggerLogInsight(payload);
+                    }
+                }
             }
         }
     }
