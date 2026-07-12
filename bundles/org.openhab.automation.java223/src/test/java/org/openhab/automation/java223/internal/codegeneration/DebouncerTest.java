@@ -12,20 +12,21 @@
  */
 package org.openhab.automation.java223.internal.codegeneration;
 
-import helper.rules.Java223Rule;
-import helper.rules.annotations.Debounce;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.openhab.core.automation.Action;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
+import helper.rules.Java223Rule;
+import helper.rules.annotations.Debounce;
 
 /**
  * @author Gwendal Roulleau - Initial contribution
