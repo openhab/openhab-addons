@@ -128,15 +128,27 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private static final Duration DYNAMICS_ACTIVE_WINDOW = Duration.ofSeconds(10);
 
     /*
-     * Pre-compiled pattern matcher based on the following set of Model Id regular expressions for devices having an
-     * issue where they do not correctly handle a PUT command for the 'on' state.
+     * Pre-compiled pattern matcher based on the following set of Model Id regular expressions for devices having
+     * the issue where they do not correctly handle a PUT command for the 'off' state.
      */
-    private static final Set<String> WORK_AROUND_MODEL_IDS = Set.of( //
+    private static final Set<String> OFF_TRANSITION_WORK_AROUND_MODELS = Set.of( //
             "LK Dimmer", // LK Wiser Dimmer -- see https://techblog.vindvejr.dk/?p=455
             "^TRADFRI.*1055l$" // IKEA Tradfri 1055l bulb
     );
-    private static final Pattern WORK_AROUND_MODEL_ID_PATTERN = Pattern
-            .compile(WORK_AROUND_MODEL_IDS.stream().collect(Collectors.joining("|")), Pattern.CASE_INSENSITIVE);
+    private static final Pattern OFF_TRANSITION_WORK_AROUND_PATTERN = Pattern.compile(
+            OFF_TRANSITION_WORK_AROUND_MODELS.stream().collect(Collectors.joining("|")), Pattern.CASE_INSENSITIVE);
+
+    /*
+     * Pre-compiled pattern matcher based on the following set of Model Id regular expressions for devices having
+     * the (legacy) issue where the light operates in either 'XY' or 'CT' mode.
+     */
+    private static final Set<String> COLOR_MODE_WORK_AROUND_MODELS = Set.of( //
+            "NLG-CCT", // Neuhaus Lighting Group color temperature light
+            "RGB-CCT", // Müller Licht extended color light
+            "TS0505B" // No Brand extended color light
+    );
+    private static final Pattern COLOR_MODE_WORK_AROUND_PATTERN = Pattern
+            .compile(COLOR_MODE_WORK_AROUND_MODELS.stream().collect(Collectors.joining("|")), Pattern.CASE_INSENSITIVE);
 
     private final Logger logger = LoggerFactory.getLogger(Clip2ThingHandler.class);
 
@@ -232,11 +244,15 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private boolean updatePropertiesDone;
     private boolean updateDependenciesDone;
     private boolean applyOffTransitionWorkaround;
+    private boolean applyColorModeWorkaround;
 
     private @Nullable Future<?> alertResetTask;
     private @Nullable Future<?> dynamicsResetTask;
     private @Nullable Future<?> updateDependenciesTask;
     private @Nullable Future<?> updateServiceContributorsTask;
+
+    private @Nullable ColorXy priorColorXy = null;
+    private @Nullable ColorTemperature priorColorTemp = null;
 
     public Clip2ThingHandler(Thing thing, Clip2StateDescriptionProvider stateDescriptionProvider,
             ThingRegistry thingRegistry, ItemChannelLinkRegistry itemChannelLinkRegistry) {
@@ -443,16 +459,19 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     // fall through
                 }
                 putResource = Setters.setColorTemperaturePercent(new Resource(lightResourceType), command, cache);
+                priorColorTemp = null;
                 break;
 
             case CHANNEL_2_COLOR_TEMP_ABSOLUTE:
                 putResource = Setters.setColorTemperatureAbsolute(new Resource(lightResourceType), command, cache);
+                priorColorTemp = null;
                 break;
 
             case CHANNEL_2_COLOR:
                 putResource = new Resource(lightResourceType);
                 if (command instanceof HSBType colorCommand) {
                     putResource = Setters.setColorXy(putResource, colorCommand, cache);
+                    priorColorXy = null;
                     command = colorCommand.getBrightness();
                 }
                 // NB fall through for handling of brightness and switch related commands !!
@@ -472,11 +491,12 @@ public class Clip2ThingHandler extends BaseThingHandler {
             case CHANNEL_2_SWITCH:
                 putResource = Objects.nonNull(putResource) ? putResource : new Resource(lightResourceType);
                 putResource.setOnOff(command);
-                applyDeviceSpecificWorkArounds(command, putResource);
+                applyOffTransitionWorkAround(command, putResource);
                 break;
 
             case CHANNEL_2_COLOR_XY_ONLY:
                 putResource = Setters.setColorXy(new Resource(lightResourceType), command, cache);
+                priorColorXy = null;
                 break;
 
             case CHANNEL_2_DIMMING_ONLY:
@@ -485,7 +505,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
             case CHANNEL_2_ON_OFF_ONLY:
                 putResource = new Resource(lightResourceType).setOnOff(command);
-                applyDeviceSpecificWorkArounds(command, putResource);
+                applyOffTransitionWorkAround(command, putResource);
                 break;
 
             case CHANNEL_2_TEMPERATURE_ENABLED:
@@ -703,12 +723,12 @@ public class Clip2ThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Apply device specific work-arounds needed for given command.
+     * Apply the off transition work-around for the given command to the given resource.
      *
      * @param command the handled command.
      * @param putResource the resource that will be adjusted if needed.
      */
-    private void applyDeviceSpecificWorkArounds(Command command, Resource putResource) {
+    private void applyOffTransitionWorkAround(Command command, Resource putResource) {
         if (command == OnOffType.OFF && applyOffTransitionWorkaround) {
             putResource.setDynamicsDuration(dynamicsDuration);
         }
@@ -1106,10 +1126,48 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     updateEffectChannel(resource);
                     updateColorTemperatureAbsoluteChannel(resource);
                 }
-                updateState(CHANNEL_2_COLOR_TEMP_PERCENT, resource.getColorTemperaturePercentState(), fullUpdate);
-                updateState(CHANNEL_2_COLOR_TEMP_ABSOLUTE, resource.getColorTemperatureAbsoluteState(), fullUpdate);
-                updateState(CHANNEL_2_COLOR, resource.getColorState(), fullUpdate);
-                updateState(CHANNEL_2_COLOR_XY_ONLY, resource.getColorXyState(), fullUpdate);
+
+                State colorState = resource.getColorState();
+                State colorXyState = resource.getColorXyState();
+                State colorTemperatureState = resource.getColorTemperaturePercentState();
+                State colorTemperatureAbsoluteState = resource.getColorTemperatureAbsoluteState();
+                ColorXy colorXy = resource.getColorXy();
+                ColorTemperature colorTemp = resource.getColorTemperature();
+
+                if (applyColorModeWorkaround && !fullUpdate) {
+                    /*
+                     * For legacy work-around products update either the color xy or the color temperature channels, but
+                     * not both, depending on the "color mode". Where if the given resource contains a color temperature
+                     * field whose value is non- null and different to the prior color temperature then it is in 'CT'
+                     * mode, and if it contains a color xy field whose value is non null and different to the prior
+                     * color xy value then it is in 'XY' mode.
+                     */
+
+                    if (colorTemp != null && colorTemp.getMirek() != null && !colorTemp.equals(priorColorTemp)) {
+                        // COLOR_TEMPERATURE mode
+                        updateState(CHANNEL_2_COLOR, UnDefType.UNDEF, false);
+                        updateState(CHANNEL_2_COLOR_XY_ONLY, UnDefType.UNDEF, false);
+                        updateState(CHANNEL_2_COLOR_TEMP_PERCENT, colorTemperatureState, false);
+                        updateState(CHANNEL_2_COLOR_TEMP_ABSOLUTE, colorTemperatureAbsoluteState, false);
+                        priorColorTemp = colorTemp;
+                    } else if (colorXy != null && !colorXy.equals(priorColorXy)) {
+                        // COLOR_XY mode
+                        updateState(CHANNEL_2_COLOR, colorState, false);
+                        updateState(CHANNEL_2_COLOR_XY_ONLY, colorXyState, false);
+                        updateState(CHANNEL_2_COLOR_TEMP_PERCENT, UnDefType.UNDEF, false);
+                        updateState(CHANNEL_2_COLOR_TEMP_ABSOLUTE, UnDefType.UNDEF, false);
+                        priorColorXy = colorXy;
+                    }
+                } else {
+                    // normal products operate in a mode-less manner: always update all color channels
+                    updateState(CHANNEL_2_COLOR, colorState, fullUpdate);
+                    updateState(CHANNEL_2_COLOR_XY_ONLY, colorXyState, fullUpdate);
+                    updateState(CHANNEL_2_COLOR_TEMP_PERCENT, colorTemperatureState, fullUpdate);
+                    updateState(CHANNEL_2_COLOR_TEMP_ABSOLUTE, colorTemperatureAbsoluteState, fullUpdate);
+                    priorColorTemp = colorTemp;
+                    priorColorXy = colorXy;
+                }
+
                 updateState(CHANNEL_2_EFFECT, resource.getEffectState(), fullUpdate);
                 // fall through for dimming and on/off related channels
 
@@ -1282,7 +1340,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 updateChannelList();
                 updateChannelItemLinksFromLegacy();
                 updateEquipmentTag();
-                updateWorkaroundForChildren();
+                checkOffTransitionWorkaroundForChildren();
                 if (!hasConnectivityIssue) {
                     updateStatus(ThingStatus.ONLINE);
                 }
@@ -1428,9 +1486,14 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 Setters.putIfExists(props, PROPERTY_PRODUCT_CERTIFIED, prodData.getCertifiedAsString());
 
                 // Check device for needed work-arounds.
-                if (WORK_AROUND_MODEL_ID_PATTERN.matcher(modelId).matches()) {
+                if (OFF_TRANSITION_WORK_AROUND_PATTERN.matcher(modelId).matches()) {
                     applyOffTransitionWorkaround = true;
-                    logger.debug("{} -> enabling work-around for turning off {}", resourceId, modelId);
+                    logger.debug("{} -> enabled off transition work-around for {}", resourceId, modelId);
+                }
+
+                if (COLOR_MODE_WORK_AROUND_PATTERN.matcher(modelId).matches()) {
+                    applyColorModeWorkaround = true;
+                    logger.debug("{} -> enabled color mode work-around for {}", resourceId, modelId);
                 }
             }
 
@@ -1794,11 +1857,11 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * Recursively checks this resource and all room or zone children for (grand-) child devices whose modelId
      * requires the off-transition work-around and, if so, sets the `applyOffTransitionWorkaround` flag.
      */
-    private void updateWorkaroundForChildren() {
+    private void checkOffTransitionWorkaroundForChildren() {
         if (!disposing) {
             switch (thisResource.getType()) {
                 case ROOM, ZONE, BRIDGE_HOME:
-                    checkResourceForWorkaround(thisResource);
+                    checkOffTransitionWorkaround(thisResource);
                 default:
                     // ignore other types
             }
@@ -1816,7 +1879,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * <li>For any room or zone children => calls itself recursively on their children.</li>
      * </ul>
      */
-    private void checkResourceForWorkaround(Resource resource) {
+    private void checkOffTransitionWorkaround(Resource resource) {
         try {
             for (ResourceReference child : resource.getChildren()) {
                 Optional<Resource> optChild = getBridgeHandler().getResources(child).getResources().stream().findAny();
@@ -1828,15 +1891,15 @@ public class Clip2ThingHandler extends BaseThingHandler {
                         ProductData productData = optChild.get().getProductData();
                         if (productData != null) {
                             String modelId = productData.getModelId();
-                            if (WORK_AROUND_MODEL_ID_PATTERN.matcher(Objects.requireNonNull(modelId)).matches()) {
+                            if (OFF_TRANSITION_WORK_AROUND_PATTERN.matcher(Objects.requireNonNull(modelId)).matches()) {
                                 applyOffTransitionWorkaround = true;
-                                logger.debug("{} -> enabling work-around for turning off {}", resourceId, modelId);
+                                logger.debug("{} -> enabled off transition work-around for {}", resourceId, modelId);
                                 return; // no need to check further once we find a matching device
                             }
                         }
                         break;
                     case ROOM, ZONE:
-                        checkResourceForWorkaround(optChild.get()); // recurse into nested room/zone
+                        checkOffTransitionWorkaround(optChild.get()); // recurse into nested room/zone
                         if (applyOffTransitionWorkaround) {
                             return; // no need to check further once we find a matching device
                         }
@@ -1847,7 +1910,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } catch (ApiException | AssetNotLoadedException e) {
-            logger.warn("{} -> checkResourceForWorkaround() {}", resourceId, e.getMessage(), e);
+            logger.warn("{} -> checkOffTransitionWorkaround() {}", resourceId, e.getMessage(), e);
         }
     }
 }

@@ -53,4 +53,9 @@ public class ColorXy {
         this.xy = pairXy;
         return this;
     }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        return (xy instanceof PairXy p && obj instanceof ColorXy c) ? p.equals(c.getXY()) : false;
+    }
 }

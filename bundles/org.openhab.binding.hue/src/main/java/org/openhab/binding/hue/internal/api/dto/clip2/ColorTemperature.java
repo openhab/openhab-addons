@@ -61,4 +61,9 @@ public class ColorTemperature {
         this.mirekSchema = mirekSchema;
         return this;
     }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        return (obj instanceof ColorTemperature c && mirek instanceof Long m) ? m.equals(c.getMirek()) : false;
+    }
 }
