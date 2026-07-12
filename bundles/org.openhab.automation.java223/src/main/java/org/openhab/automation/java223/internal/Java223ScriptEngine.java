@@ -20,6 +20,7 @@ import java.lang.reflect.Modifier;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -44,6 +45,7 @@ import ch.obermuhlner.scriptengine.java.compilation.ScriptInterceptorStrategy;
 import ch.obermuhlner.scriptengine.java.name.DefaultNameStrategy;
 import ch.obermuhlner.scriptengine.java.name.NameStrategy;
 import ch.obermuhlner.scriptengine.java.packagelisting.PackageResourceListingStrategy;
+import standalone.com.sun.tools.javac.api.JavacTool;
 
 /**
  * This class adds the Invocable aspect to the JavaScriptEngine. The Invocable aspect adds the ability to be called
@@ -64,6 +66,8 @@ public class Java223ScriptEngine extends JavaScriptEngine implements Invocable {
     private final List<String> compilationOptions;
     private final NameStrategy nameStrategy = new DefaultNameStrategy();
 
+    private final JavaCompiler compiler = getJavaCompiler();
+
     public Java223ScriptEngine(Java223Strategy java223Strategy,
             PackageResourceListingStrategy osgiPackageResourceListingStrategy,
             ScriptInterceptorStrategy scriptInterceptorStrategy, List<String> compilationOptions) {
@@ -82,7 +86,6 @@ public class Java223ScriptEngine extends JavaScriptEngine implements Invocable {
             // add a wrapper if needed
             String script = scriptInterceptorStrategy.intercept(originalScript);
 
-            JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
             DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
             JavaFileManager fileManager = java223Strategy.getJavaFileManager(
                     ToolProvider.getSystemJavaCompiler().getStandardFileManager(diagnostics, null, null));
@@ -135,6 +138,11 @@ public class Java223ScriptEngine extends JavaScriptEngine implements Invocable {
         } catch (NoClassDefFoundError e) {
             throw new ScriptException("NoClassDefFoundError: " + e.getMessage());
         }
+    }
+
+    private static JavaCompiler getJavaCompiler() {
+        JavaCompiler systemJavaCompiler = ToolProvider.getSystemJavaCompiler();
+        return Objects.requireNonNullElseGet(systemJavaCompiler, JavacTool::create);
     }
 
     @Override
