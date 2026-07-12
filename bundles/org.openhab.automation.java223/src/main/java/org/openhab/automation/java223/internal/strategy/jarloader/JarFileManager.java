@@ -104,7 +104,8 @@ public class JarFileManager<M extends JavaFileManager> extends ForwardingJavaFil
     @Override
     public String inferBinaryName(@Nullable Location location, @Nullable JavaFileObject file) {
         if (file instanceof JarFileObject) {
-            return removeExtension(getPath(file.toUri()).replace("/", ".").substring(1));
+            // remove the '!', the leading slash, and the .class extension
+            return removeExtension(getPath(file.toUri()).replace("/", ".").substring(2));
         }
         return fileManager.inferBinaryName(location, file);
     }
