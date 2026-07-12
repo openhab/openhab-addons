@@ -88,6 +88,13 @@ public class InjectedCodeGenerator {
         }
     }
 
+    /**
+     * Map a binding name to what we should import and declare in the script
+     * 
+     * @param key the binding name
+     * @param clazz The related injected object
+     * @return Information about what we should insert to declare the import in the generated script
+     */
     private static Map.Entry<String, BindingsParsingResult> getEntry(String key, Class<?> clazz) {
         return new AbstractMap.SimpleEntry<>(key, getImportAndDeclaration(key, clazz));
     }
