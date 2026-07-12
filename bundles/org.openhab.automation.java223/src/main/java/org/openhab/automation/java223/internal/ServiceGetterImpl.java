@@ -15,7 +15,9 @@ package org.openhab.automation.java223.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.automation.java223.common.ServiceGetter;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -39,12 +41,21 @@ public class ServiceGetterImpl implements ServiceGetter {
 
     @Override
     @Nullable
-    public <T> T getService(Class<T> tClass) {
-        ServiceReference<T> serviceReference = bundleContext.getServiceReference(tClass);
-        if (serviceReference != null) {
-            return bundleContext.getService(serviceReference);
-        } else {
-            return null;
+    public <T> T getService(Class<T> clazz) {
+        Bundle bundle = FrameworkUtil.getBundle(clazz);
+        if (bundle != null) {
+            BundleContext bc = bundle.getBundleContext();
+            if (bc != null) {
+                ServiceReference<T> ref = bc.getServiceReference(clazz);
+                if (ref != null) {
+                    T result = bc.getService(ref);
+                    if (result != null) {
+                        bc.ungetService(ref);
+                    }
+                    return result;
+                }
+            }
         }
+        return null;
     }
 }
