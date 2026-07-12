@@ -23,7 +23,6 @@ import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.shelly.internal.handler.ShellyBaseHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

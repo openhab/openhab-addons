@@ -41,8 +41,6 @@ public class ShellyApiConfigurationTest {
     private static final String LOCAL_IP = "192.168.1.100";
     private static final String DEVICE_IP = "192.168.1.50";
 
-    // ── Auth credentials — tested via ShellyApiConfiguration getters ──────────
-
     @Test
     void credentialsThingValuesOverrideBindingDefaults() throws Exception {
         ShellyThingConfiguration thing = thingConfigWithCredentials("thingUser", "thingPass");
@@ -63,8 +61,6 @@ public class ShellyApiConfigurationTest {
         assertThat(config.getBearer(), is("bindUser:bindPass"));
     }
 
-    // ── URL construction — tested via ShellyApiConfiguration getters ──────────
-
     @Test
     void urlsAreConstructedCorrectly() {
         ShellyApiConfiguration config = new ShellyApiConfiguration(bindingConfig(), "realm", DEVICE_IP);
@@ -72,8 +68,6 @@ public class ShellyApiConfigurationTest {
         assertThat(config.getWebSocketCallback(), is("ws://" + LOCAL_IP + ":8080/shelly/wsevent"));
         assertThat(config.getEventCallbackUrl(), startsWith("http://" + LOCAL_IP + ":8080/shelly/event"));
     }
-
-    // ── Discovery constructor ─────────────────────────────────────────────────
 
     @Test
     void discoveryConstructorInitialState() {
@@ -97,8 +91,6 @@ public class ShellyApiConfigurationTest {
         assertThat(config.getEventsRoller(), is(false));
         assertThat(config.getEventsSensorReport(), is(false));
     }
-
-    // ── Thing handler constructor ─────────────────────────────────────────────
 
     @Test
     void thingConstructorGen1HonorsEventsCoIoT() {
@@ -168,8 +160,6 @@ public class ShellyApiConfigurationTest {
         assertThat(config.getDeviceHostAddress(), is(""));
     }
 
-    // ── Mutable state ─────────────────────────────────────────────────────────
-
     @Test
     void setRealmUpdatesValue() {
         ShellyApiConfiguration config = new ShellyApiConfiguration(bindingConfig(), "old-realm", DEVICE_IP);
@@ -198,8 +188,6 @@ public class ShellyApiConfigurationTest {
         assertThat(config.getPassword(), is("newPass"));
         assertThat(config.getBearer(), is("newUser:newPass"));
     }
-
-    // ── Helpers ───────────────────────────────────────────────────────────────
 
     private ShellyBindingRuntimeConfig bindingConfig() {
         ShellyBindingConfiguration raw = ShellyBindingConfiguration
@@ -252,7 +240,7 @@ public class ShellyApiConfigurationTest {
             setField(thing, "deviceIp", deviceIp);
             setField(thing, "eventsCoIoT", eventsCoIoT);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new AssertionError(e);
         }
         return thing;
     }

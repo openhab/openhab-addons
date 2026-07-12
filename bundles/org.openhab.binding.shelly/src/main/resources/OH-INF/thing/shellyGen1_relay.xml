@@ -496,10 +496,10 @@
 		</tags>
 	</channel-type>
 
-	<channel-type id="meterWatts">
+	<channel-type id="meterWatts" advanced="true">
 		<item-type unitHint="W">Number:Power</item-type>
 		<label>Power Consumption</label>
-		<description>Current Power Consumption in Watts</description>
+		<description>[deprecated] Use currentPower instead. Current power consumption in Watts</description>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -509,10 +509,10 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="meterAccuWatts" advanced="true">
+	<channel-type id="currentPower">
 		<item-type unitHint="W">Number:Power</item-type>
-		<label>Accumulated Power Consumption</label>
-		<description>Accumulated Power Consumption in Watts of the device (including all meters)</description>
+		<label>Power Consumption</label>
+		<description>Current power consumption</description>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -525,7 +525,8 @@
 	<channel-type id="meterAccuTotal" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
 		<label>Accumulated Total Energy</label>
-		<description>Accumulated total energy in kWh of the device (including all meters)</description>
+		<description>[deprecated] Use totalEnergy instead. Accumulated total energy in kWh of the device (including all
+			meters)</description>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -535,7 +536,48 @@
 		</state>
 	</channel-type>
 
+	<channel-type id="meterAccuWatts" advanced="true">
+		<item-type unitHint="W">Number:Power</item-type>
+		<label>Total Active Power</label>
+		<description>[deprecated] Use accumulatedPower instead. Total instantaneous active power across all meters of the
+			device</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="accumulatedPower" advanced="true">
+		<item-type unitHint="W">Number:Power</item-type>
+		<label>Total Active Power</label>
+		<description>Total instantaneous active power across all meters of the device</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%">
+		</state>
+	</channel-type>
+
 	<channel-type id="meterAccuReturned" advanced="true">
+		<item-type unitHint="kWh">Number:Energy</item-type>
+		<label>Accumulated Returned Energy</label>
+		<description>[deprecated] Use accumulatedReturnedEnergy instead. Accumulated returned energy in kWh of the device
+			(including all meters)</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state readOnly="true" pattern="%.3f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="accumulatedReturnedEnergy">
 		<item-type unitHint="kWh">Number:Energy</item-type>
 		<label>Accumulated Returned Energy</label>
 		<description>Accumulated returned energy in kWh of the device (including all meters)</description>
@@ -548,10 +590,11 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="totalKWH">
+	<channel-type id="totalKWH" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
 		<label>Total Energy Consumption Device</label>
-		<description>Total energy consumption of the device in kWh since the device powered up (resets on restart)</description>
+		<description>[deprecated] Use totalEnergy instead. Total energy consumption of the device in kWh since the device
+			powered up (might reset on restart depending on device and firmware)</description>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -561,35 +604,90 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="meterReactive">
+	<channel-type id="totalEnergy">
+		<item-type unitHint="kWh">Number:Energy</item-type>
+		<label>Total Energy Consumption</label>
+		<description>Total energy consumption since the device powered up (might reset on restart depending on device and
+			firmware)</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state readOnly="true" pattern="%.3f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="meterReactive" advanced="true">
 		<item-type unitHint="W">Number:Power</item-type>
 		<label>Reactive Power</label>
-		<description>Instantaneous reactive power in Watts</description>
+		<description>[deprecated] Use reactivePower instead. Instantaneous reactive power in Watts</description>
+		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Power</tag>
 		</tags>
 		<state readOnly="true" pattern="%.3f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="meterReactivePower">
+		<item-type unitHint="var">Number:Power</item-type>
+		<label>Reactive Power</label>
+		<description>Instantaneous reactive power in VAR</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="meterApparentPower" advanced="true">
+		<item-type unitHint="VA">Number:Power</item-type>
+		<label>Apparent Power</label>
+		<description>Instantaneous apparent power in VA</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="meterAccuApparent" advanced="true">
+		<item-type unitHint="VA">Number:Power</item-type>
+		<label>Accumulated Apparent Power</label>
+		<description>Accumulated apparent power in VA of the device (including all meters)</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%">
 		</state>
 	</channel-type>
 
 	<channel-type id="lastPower1" advanced="true">
 		<item-type unitHint="W">Number:Power</item-type>
 		<label>Last Minute Power</label>
-		<description>Average power consumption during the previous minute</description>
+		<description>[deprecated] Use energyAvg1Min instead. Average power consumption during the previous minute</description>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Power</tag>
 		</tags>
-		<state readOnly="true" pattern="%.3f %unit%">
+		<state readOnly="true" pattern="%.2f %unit%">
 		</state>
 	</channel-type>
 
-	<channel-type id="meterTotal">
-		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Total Energy Consumption</label>
-		<description>Total energy consumption in kWh since the device powered up (resets on restart)</description>
+	<channel-type id="energyAvg1Min">
+		<item-type unitHint="Wh">Number:Energy</item-type>
+		<label>Last Minute Energy</label>
+		<description>Energy consumed during the previous complete minute</description>
+		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
@@ -598,10 +696,37 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="meterReturned">
+	<channel-type id="meterTotal" advanced="true">
+		<item-type unitHint="kWh">Number:Energy</item-type>
+		<label>Total Energy Consumption</label>
+		<description>[deprecated] Use totalEnergy instead. Total energy consumption of the device in kWh since the device
+			powered up (might reset on restart depending on device and firmware)</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state readOnly="true" pattern="%.3f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="meterReturned" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
 		<label>Total Returned Energy</label>
-		<description>Total returned energy in kWh</description>
+		<description>[deprecated] Use returnedEnergy instead. Total returned energy in kWh</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state readOnly="true" pattern="%.3f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="meterReturnedEnergy">
+		<item-type unitHint="kWh">Number:Energy</item-type>
+		<label>Total Returned Energy</label>
+		<description>Total returned energy</description>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -620,7 +745,7 @@
 			<tag>Measurement</tag>
 			<tag>Voltage</tag>
 		</tags>
-		<state readOnly="true" pattern="%.3f %unit%">
+		<state readOnly="true" pattern="%.2f %unit%">
 		</state>
 	</channel-type>
 
@@ -641,14 +766,19 @@
 		<item-type unitHint="Hz">Number:Frequency</item-type>
 		<label>Frequency</label>
 		<description>Grid frequency in Hertz (Hz)</description>
-		<state readOnly="true" pattern="%.3f %unit%">
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Frequency</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%">
 		</state>
 	</channel-type>
 
 	<channel-type id="meterPowerFactor">
 		<item-type>Number</item-type>
 		<label>Power Factor</label>
-		<description>Power factor in percent (ratio of real to apparent power)</description>
+		<description>Power factor (ratio of real to apparent power, range -1.0 to 1.0)</description>
 		<state readOnly="true" pattern="%.3f">
 		</state>
 	</channel-type>
@@ -685,10 +815,23 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="nmTreshhold">
+	<channel-type id="nmTreshhold" advanced="true">
 		<item-type unitHint="A">Number:ElectricCurrent</item-type>
-		<label>Mismatch Treshhold</label>
-		<description>Mismatch becomes ON when treshhold is exceeded</description>
+		<label>Mismatch Threshold</label>
+		<description>[deprecated] Use nmThreshold instead. Mismatch becomes ON when threshold is exceeded</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
+		<state readOnly="true" pattern="%.3f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="nmThreshold">
+		<item-type unitHint="A">Number:ElectricCurrent</item-type>
+		<label>Mismatch Threshold</label>
+		<description>Mismatch becomes ON when threshold is exceeded</description>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -701,7 +844,7 @@
 	<channel-type id="nmismatch">
 		<item-type>Switch</item-type>
 		<label>N-Current Mismatch</label>
-		<description>ON: Sum of all signed currents of the 4 wires is greater than the configured N Current Treshhold</description>
+		<description>ON: Sum of all signed currents of the 4 wires is greater than the configured N Current Threshold</description>
 	</channel-type>
 
 	<channel-type id="timestamp">
