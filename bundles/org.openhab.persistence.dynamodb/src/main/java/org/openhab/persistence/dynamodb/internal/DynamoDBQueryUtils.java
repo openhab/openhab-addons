@@ -14,6 +14,7 @@ package org.openhab.persistence.dynamodb.internal;
 
 import java.lang.reflect.InvocationTargetException;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -201,8 +202,10 @@ public class DynamoDBQueryUtils {
                     k -> k.partitionValue(partition).sortValue(timeConverter.transformFrom(end))));
         } else if (begin != null && end != null) {
             queryBuilder.queryConditional(QueryConditional.sortBetween(
-                    k -> k.partitionValue(partition).sortValue(timeConverter.transformFrom(begin.minusNanos(1))),
-                    k -> k.partitionValue(partition).sortValue(timeConverter.transformFrom(end.plusNanos(1)))));
+                    k -> k.partitionValue(partition)
+                            .sortValue(timeConverter.transformFrom(begin.truncatedTo(ChronoUnit.MILLIS).minusNanos(1))),
+                    k -> k.partitionValue(partition)
+                            .sortValue(timeConverter.transformFrom(end.truncatedTo(ChronoUnit.MILLIS).plusNanos(1)))));
         }
     }
 
