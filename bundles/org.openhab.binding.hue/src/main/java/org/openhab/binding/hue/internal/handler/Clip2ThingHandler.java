@@ -1138,7 +1138,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 ColorXy colorXy = resource.getColorXy();
                 ColorTemperature colorTemp = resource.getColorTemperature();
 
-                if (applyColorModeWorkaround && !updateDependenciesDone) {
+                if (applyColorModeWorkaround && updateDependenciesDone) {
                     /*
                      * For legacy work-around products update either the color xy or the color temperature channels, but
                      * not both, depending on the "color mode". Where if the given resource contains a color temperature
@@ -1149,27 +1149,29 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
                     if (colorTemp != null && colorTemp.getMirek() != null && !colorTemp.equals(priorColorTemp)) {
                         // CT mode
-                        updateState(CHANNEL_2_COLOR, UnDefType.UNDEF, false);
-                        updateState(CHANNEL_2_COLOR_XY_ONLY, UnDefType.UNDEF, false);
-                        updateState(CHANNEL_2_COLOR_TEMP_PERCENT, colorTemperatureState, false);
-                        updateState(CHANNEL_2_COLOR_TEMP_ABSOLUTE, colorTemperatureAbsoluteState, false);
                         priorColorTemp = colorTemp;
+                        updateState(CHANNEL_2_COLOR, colorState, fullUpdate);
+                        updateState(CHANNEL_2_COLOR_XY_ONLY, colorXyState, fullUpdate);
+                        updateState(CHANNEL_2_COLOR_TEMP_PERCENT, colorTemperatureState, fullUpdate);
+                        updateState(CHANNEL_2_COLOR_TEMP_ABSOLUTE, colorTemperatureAbsoluteState, fullUpdate);
                     } else if (colorXy != null && !colorXy.equals(priorColorXy)) {
                         // XY mode
-                        updateState(CHANNEL_2_COLOR, colorState, false);
-                        updateState(CHANNEL_2_COLOR_XY_ONLY, colorXyState, false);
-                        updateState(CHANNEL_2_COLOR_TEMP_PERCENT, UnDefType.UNDEF, false);
-                        updateState(CHANNEL_2_COLOR_TEMP_ABSOLUTE, UnDefType.UNDEF, false);
                         priorColorXy = colorXy;
+                        updateState(CHANNEL_2_COLOR, colorState, fullUpdate);
+                        updateState(CHANNEL_2_COLOR_XY_ONLY, colorXyState, fullUpdate);
+                        updateState(CHANNEL_2_COLOR_TEMP_PERCENT, UnDefType.UNDEF, fullUpdate);
+                        updateState(CHANNEL_2_COLOR_TEMP_ABSOLUTE, UnDefType.UNDEF, fullUpdate);
                     }
                 } else {
                     // normal products operate in a mode-less manner: always update all color channels
+                    if (fullUpdate) {
+                        priorColorTemp = colorTemp;
+                        priorColorXy = colorXy;
+                    }
                     updateState(CHANNEL_2_COLOR, colorState, fullUpdate);
                     updateState(CHANNEL_2_COLOR_XY_ONLY, colorXyState, fullUpdate);
                     updateState(CHANNEL_2_COLOR_TEMP_PERCENT, colorTemperatureState, fullUpdate);
                     updateState(CHANNEL_2_COLOR_TEMP_ABSOLUTE, colorTemperatureAbsoluteState, fullUpdate);
-                    priorColorTemp = colorTemp;
-                    priorColorXy = colorXy;
                 }
 
                 updateState(CHANNEL_2_EFFECT, resource.getEffectState(), fullUpdate);

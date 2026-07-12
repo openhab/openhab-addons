@@ -23,6 +23,8 @@ public class PairXy {
     private double x;
     private double y;
 
+    private static final double DELTA = 0.0001;
+
     public double[] getXY() {
         return new double[] { x, y };
     }
@@ -35,6 +37,6 @@ public class PairXy {
 
     @Override
     public boolean equals(@Nullable Object obj) {
-        return (obj instanceof PairXy p) ? Math.abs(p.x - x) < 0.001 && Math.abs(p.y - y) < 0.001 : false;
+        return (obj instanceof PairXy p) ? Math.abs(p.x - x) < DELTA && Math.abs(p.y - y) < DELTA : false;
     }
 }
