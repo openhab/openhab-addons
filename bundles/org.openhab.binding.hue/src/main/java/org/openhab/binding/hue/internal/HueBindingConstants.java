@@ -135,6 +135,7 @@ public class HueBindingConstants {
     // I18N string references
     public static final String TEXT_OFFLINE_COMMUNICATION_ERROR = "@text/offline.communication-error";
     public static final String TEXT_OFFLINE_CONFIGURATION_ERROR_INVALID_SSL_CERIFICATE = "@text/offline.conf-error-invalid-ssl-certificate";
+    public static final String TEXT_ONLINE_BATTERY_LOW = "@text/online.battery-low";
 
     // Config status messages
     public static final String IP_ADDRESS_MISSING = "missing-ip-address-configuration";

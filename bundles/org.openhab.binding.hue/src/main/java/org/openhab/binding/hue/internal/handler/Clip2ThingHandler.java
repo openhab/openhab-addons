@@ -87,6 +87,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
@@ -1059,7 +1060,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
             case DEVICE_POWER:
                 updateState(CHANNEL_2_BATTERY_LEVEL, resource.getBatteryLevelState(), fullUpdate);
-                updateState(CHANNEL_2_BATTERY_LOW, resource.getBatteryLowState(), fullUpdate);
+                State batteryLowState = resource.getBatteryLowState();
+                updateState(CHANNEL_2_BATTERY_LOW, batteryLowState, fullUpdate);
+                updateOnlineStatusDescription(batteryLowState);
                 break;
 
             case LIGHT:
@@ -1708,5 +1711,32 @@ public class Clip2ThingHandler extends BaseThingHandler {
             // if there is no software update status preserve the caller-provided status information
         }
         super.updateStatus(thingStatus, detail, description);
+    }
+
+    /**
+     * Update thing status description based on the given battery low state. If the battery is low and the description
+     * is null, then the description is set to the respective battery low translatable text. If the battery is OK, and
+     * the description is the low battery translatable text, then the description message is cleared. If the thing is
+     * not ONLINE, or if it does not have a battery low channel then the description is not updated. NOTE: this method
+     * only updates the status description if the thing does not already have a status description for a different issue
+     * such as software update available or software installing.
+     */
+    private void updateOnlineStatusDescription(State batteryLowState) {
+        ThingStatusInfo statusInfo = thing.getStatusInfo();
+        if (statusInfo.getStatus() == ThingStatus.ONLINE && thing.getChannel(CHANNEL_2_BATTERY_LOW) != null) {
+            String description = statusInfo.getDescription();
+
+            // if battery is OK and description is the low battery text then clear the description
+            if (OnOffType.OFF.equals(batteryLowState) && TEXT_ONLINE_BATTERY_LOW.equals(description)) {
+                super.updateStatus(statusInfo.getStatus(), statusInfo.getStatusDetail());
+                return;
+            }
+
+            // if battery is low and description is null then apply the low battery text
+            if (OnOffType.ON.equals(batteryLowState) && (description == null || description.isBlank())) {
+                super.updateStatus(statusInfo.getStatus(), statusInfo.getStatusDetail(), TEXT_ONLINE_BATTERY_LOW);
+                return;
+            }
+        }
     }
 }
