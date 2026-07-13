@@ -37,6 +37,7 @@ public class PairXy {
 
     @Override
     public boolean equals(@Nullable Object obj) {
-        return (obj instanceof PairXy p) ? Math.abs(p.x - x) < DELTA && Math.abs(p.y - y) < DELTA : false;
+        return (this == obj)
+                || ((obj instanceof PairXy p) ? Math.abs(p.x - x) < DELTA && Math.abs(p.y - y) < DELTA : false);
     }
 }

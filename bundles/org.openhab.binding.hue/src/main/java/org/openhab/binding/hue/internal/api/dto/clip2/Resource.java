@@ -238,8 +238,7 @@ public class Resource {
     /**
      * Get the brightness as a PercentType. If off the brightness is 0, otherwise use dimming value.
      *
-     * @return UnDefType.NULL if the channel is not supported
-     * @return a PercentType if the value is good
+     * @return UnDefType.NULL if the channel is not supported, or a PercentType if the value is good
      * @throws CriticalFieldMissing if a critical element is missing
      */
     public State getBrightnessState() throws CriticalFieldMissing {
@@ -316,8 +315,7 @@ public class Resource {
      * on/off resp. dimming JSON elements. If off the B part is 0, otherwise it is the dimming element value. Note: this
      * method is only to be used on cached state DTOs which already have a defined color gamut.
      *
-     * @return UnDefType.NULL if the channel is not supported
-     * @return an HSBType if the value is good
+     * @return UnDefType.NULL if the channel is not supported, or an HSBType if the value is good
      * @throws CriticalFieldMissing if a critical element is missing
      */
     public State getColorState() throws CriticalFieldMissing {
@@ -350,9 +348,8 @@ public class Resource {
     /**
      * Gets the absolute color temperature as a QuantityType in Kelvin.
      * 
-     * @return UnDefType.NULL if the channel is not supported
-     * @return a QuantityType if the value is good
-     * @return UnDefType.UNDEF if the value is bad
+     * @return UnDefType.NULL if the channel is not supported, or a QuantityType if the value is good, or
+     *         UnDefType.UNDEF if the value is bad
      */
     public State getColorTemperatureAbsoluteState() {
         ColorTemperature colorTemp = colorTemperature;
@@ -370,8 +367,7 @@ public class Resource {
      * Get the colour temperature in percent. Note: this method is only to be used on cached state DTOs which already
      * have a defined mirek schema.
      *
-     * @return UnDefType.NULL if the channel is not supported
-     * @return a PercentType if the value is good
+     * @return UnDefType.NULL if the channel is not supported, or a PercentType if the value is good
      * @throws CriticalFieldMissing if a critical element is missing
      */
     public State getColorTemperaturePercentState() throws CriticalFieldMissing {
@@ -409,8 +405,7 @@ public class Resource {
     /**
      * Return an HSB where the HS part is derived from the color xy JSON element (only), so the B part is 100%
      * 
-     * @return UnDefType.NULL if the channel is not supported
-     * @return an HSBType if the value is good
+     * @return UnDefType.NULL if the channel is not supported, or an HSBType if the value is good
      * @throws CriticalFieldMissing if a critical element is missing
      */
     public State getColorXyState() throws CriticalFieldMissing {
@@ -455,8 +450,7 @@ public class Resource {
     /**
      * Return a PercentType which is derived from the dimming JSON element (only).
      *
-     * @return UnDefType.NULL if the channel is not supported
-     * @return a PercentType if the value is good
+     * @return UnDefType.NULL if the channel is not supported, or a PercentType if the value is good
      * @throws CriticalFieldMissing if a critical element is missing
      */
     public State getDimmingState() throws CriticalFieldMissing {
@@ -638,8 +632,7 @@ public class Resource {
     /**
      * Return the state of the On/Off element treating "soft off" as off.
      * 
-     * @return UnDefType.NULL if the channel is not supported
-     * @return an OnOffType if the value is good
+     * @return UnDefType.NULL if the channel is not supported, or an OnOffType if the value is good
      * @throws CriticalFieldMissing if a critical element is missing
      */
     public State getSwitchState() throws CriticalFieldMissing {
@@ -671,8 +664,7 @@ public class Resource {
     /**
      * Return the state of the On/Off element (only).
      * 
-     * @return UnDefType.NULL if the channel is not supported
-     * @return an OnOffType if the value is good
+     * @return UnDefType.NULL if the channel is not supported, or an OnOffType if the value is good
      * @throws CriticalFieldMissing if a critical element is missing
      */
     public State getOnOffState() throws CriticalFieldMissing {

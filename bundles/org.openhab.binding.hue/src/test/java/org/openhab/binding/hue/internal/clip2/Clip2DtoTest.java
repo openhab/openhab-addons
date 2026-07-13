@@ -537,7 +537,7 @@ class Clip2DtoTest {
         }
         assertEquals(OnOffType.OFF, state);
 
-        // add a 0% brightness value
+        // add a 100% brightness value
         dimming.setBrightness(100.0);
         light.setOnOff(OnOffType.OFF);
         state = light.getOnOffState();

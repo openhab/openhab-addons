@@ -109,7 +109,7 @@ class OnStateDimmingEdgeCaseTest {
     }
 
     @Test
-    void getSwitchStateWhenOnAndDimming1AndMinimumBrightnessNullReturnOff() {
+    void getSwitchStateWhenOnAndDimming1AndMinimumBrightnessNullThrows() {
         // test "soft off": evaluation lacks critical field, so error is thrown
         assertThrows(CriticalFieldMissing.class, () -> createLightResource(true, 1.0).getSwitchState());
     }
