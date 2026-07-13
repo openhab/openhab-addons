@@ -29,6 +29,7 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class ColorTemperature {
     private @Nullable Long mirek;
+    private @Nullable @SerializedName("mirek_valid") Boolean mirekValid;
     private @Nullable @SerializedName("mirek_schema") MirekSchema mirekSchema;
 
     /**
@@ -50,6 +51,11 @@ public class ColorTemperature {
 
     public @Nullable MirekSchema getMirekSchema() {
         return mirekSchema;
+    }
+
+    public boolean isMirekValid() {
+        Boolean mirekValid = this.mirekValid;
+        return mirekValid != null ? mirekValid && (mirek != null) : false;
     }
 
     public ColorTemperature setMirek(@Nullable Long mirek) {

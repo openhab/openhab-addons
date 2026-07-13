@@ -30,8 +30,8 @@ public class MirekSchema {
     private static final int MIN = 153; // ~6500K
     private static final int MAX = 500; // ~2000K
 
-    private static final int MIN_ALLOWED = 140; // ~7000K
-    private static final int MAX_ALLOWED = 555; // ~1800K
+    private static final int MIN_ALLOWED = 50; // ~20000K
+    private static final int MAX_ALLOWED = 1000; // ~1000K
 
     public static final MirekSchema DEFAULT_SCHEMA = new MirekSchema();
 

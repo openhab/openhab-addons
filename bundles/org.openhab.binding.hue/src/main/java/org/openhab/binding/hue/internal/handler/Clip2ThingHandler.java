@@ -251,8 +251,19 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private @Nullable Future<?> updateDependenciesTask;
     private @Nullable Future<?> updateServiceContributorsTask;
 
-    private volatile @Nullable ColorXy priorColorXy = null;
-    private volatile @Nullable ColorTemperature priorColorTemp = null;
+    /**
+     * The legacy color mode of the light.
+     * It is used to handle the legacy issue where some lights operate in either XY or CT mode.
+     */
+    private enum LegacyColorMode {
+        XY,
+        CT
+    }
+
+    private volatile LegacyColorMode legacyColorMode = LegacyColorMode.XY;
+    private volatile @Nullable ColorXy ctLegacyModeColor;
+    private volatile @Nullable ColorTemperature ctLegacyModeColorTemp;
+    private volatile @Nullable ColorXy xyLegacyModeColor;
 
     public Clip2ThingHandler(Thing thing, Clip2StateDescriptionProvider stateDescriptionProvider,
             ThingRegistry thingRegistry, ItemChannelLinkRegistry itemChannelLinkRegistry) {
@@ -459,20 +470,25 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     // fall through
                 }
                 putResource = Setters.setColorTemperaturePercent(new Resource(lightResourceType), command, cache);
-                priorColorTemp = null;
+                legacyColorMode = LegacyColorMode.CT;
+                ctLegacyModeColor = null;
+                ctLegacyModeColorTemp = putResource.getColorTemperature();
                 break;
 
             case CHANNEL_2_COLOR_TEMP_ABSOLUTE:
                 putResource = Setters.setColorTemperatureAbsolute(new Resource(lightResourceType), command, cache);
-                priorColorTemp = null;
+                legacyColorMode = LegacyColorMode.CT;
+                ctLegacyModeColor = null;
+                ctLegacyModeColorTemp = putResource.getColorTemperature();
                 break;
 
             case CHANNEL_2_COLOR:
                 putResource = new Resource(lightResourceType);
                 if (command instanceof HSBType colorCommand) {
                     putResource = Setters.setColorXy(putResource, colorCommand, cache);
-                    priorColorXy = null;
                     command = colorCommand.getBrightness();
+                    legacyColorMode = LegacyColorMode.XY;
+                    xyLegacyModeColor = putResource.getColorXy();
                 }
                 // NB fall through for handling of brightness and switch related commands !!
 
@@ -496,7 +512,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
             case CHANNEL_2_COLOR_XY_ONLY:
                 putResource = Setters.setColorXy(new Resource(lightResourceType), command, cache);
-                priorColorXy = null;
+                legacyColorMode = LegacyColorMode.XY;
+                xyLegacyModeColor = putResource.getColorXy();
                 break;
 
             case CHANNEL_2_DIMMING_ONLY:
@@ -786,8 +803,11 @@ public class Clip2ThingHandler extends BaseThingHandler {
         updateSceneContributorsDone = false;
         applyOffTransitionWorkaround = false;
         applyColorModeWorkaround = false;
-        priorColorXy = null;
-        priorColorTemp = null;
+
+        legacyColorMode = LegacyColorMode.XY;
+        ctLegacyModeColor = null;
+        ctLegacyModeColorTemp = null;
+        xyLegacyModeColor = null;
 
         Bridge bridge = getBridge();
         if (Objects.nonNull(bridge)) {
@@ -1129,51 +1149,71 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     updateLightCacheRequiredFields(resource);
                     updateEffectChannel(resource);
                     updateColorTemperatureAbsoluteChannel(resource);
+                    xyLegacyModeColor = resource.getColorXy(); // full updates seem to deliver the XY mode color
                 }
 
                 State colorState = resource.getColorState();
                 State colorXyState = resource.getColorXyState();
-                State colorTemperatureState = resource.getColorTemperaturePercentState();
-                State colorTemperatureAbsoluteState = resource.getColorTemperatureAbsoluteState();
+                State colorTempState = resource.getColorTemperaturePercentState();
+                State colorTempAbsState = resource.getColorTemperatureAbsoluteState();
                 ColorXy colorXy = resource.getColorXy();
                 ColorTemperature colorTemp = resource.getColorTemperature();
 
                 if (applyColorModeWorkaround && updateDependenciesDone) {
                     /*
-                     * For legacy work-around products update either the color xy or the color temperature channels, but
-                     * not both, depending on the "color mode". Where if the given resource contains a color temperature
-                     * field whose value is non- null and different to the prior color temperature then it is in 'CT'
-                     * mode, and if it contains a color xy field whose value is non null and different to the prior
-                     * color xy value then it is in 'XY' mode.
+                     * Check if we are entering CT mode. If the given resource contains a color temperature field
+                     * whose value is valid then we are explicitly in 'CT' mode. If so cache the color and color
+                     * temp so they can be substituted for any subsequent color or color temp notification while
+                     * we remain in CT mode.
                      */
+                    if (colorTemp != null && colorTemp.isMirekValid()) {
+                        legacyColorMode = LegacyColorMode.CT;
+                        ctLegacyModeColor = colorXy;
+                        ctLegacyModeColorTemp = colorTemp;
+                        logger.debug("{} -> updateChannels() entered legacy {} mode", resourceId, legacyColorMode);
+                    }
 
-                    if (colorTemp != null && colorTemp.getMirek() != null && !colorTemp.equals(priorColorTemp)) {
-                        // CT mode
-                        priorColorTemp = colorTemp;
-                        updateState(CHANNEL_2_COLOR, colorState, fullUpdate);
-                        updateState(CHANNEL_2_COLOR_XY_ONLY, colorXyState, fullUpdate);
-                        updateState(CHANNEL_2_COLOR_TEMP_PERCENT, colorTemperatureState, fullUpdate);
-                        updateState(CHANNEL_2_COLOR_TEMP_ABSOLUTE, colorTemperatureAbsoluteState, fullUpdate);
-                    } else if (colorXy != null && !colorXy.equals(priorColorXy)) {
-                        // XY mode
-                        priorColorXy = colorXy;
-                        updateState(CHANNEL_2_COLOR, colorState, fullUpdate);
-                        updateState(CHANNEL_2_COLOR_XY_ONLY, colorXyState, fullUpdate);
-                        updateState(CHANNEL_2_COLOR_TEMP_PERCENT, UnDefType.UNDEF, fullUpdate);
-                        updateState(CHANNEL_2_COLOR_TEMP_ABSOLUTE, UnDefType.UNDEF, fullUpdate);
+                    /*
+                     * Check if we are entering XY mode. If the given resource contains a color field that is different
+                     * than the (previous) CT mode color, or XY mode color then we are implicitly in XY mode. If so
+                     * cache it so it can be used in the same comparison of subsequent color notifications.
+                     */
+                    if (colorXy != null && !colorXy.equals(ctLegacyModeColor) && !colorXy.equals(xyLegacyModeColor)) {
+                        legacyColorMode = LegacyColorMode.XY;
+                        ctLegacyModeColor = null;
+                        ctLegacyModeColorTemp = null;
+                        xyLegacyModeColor = colorXy;
+                        logger.debug("{} -> updateChannels() entered legacy {} mode", resourceId, legacyColorMode);
                     }
-                } else {
-                    // normal products operate in a mode-less manner: always update all color channels
-                    if (fullUpdate) {
-                        priorColorTemp = colorTemp;
-                        priorColorXy = colorXy;
+
+                    /*
+                     * If we are in CT mode and the color is different than the cached CT mode color, then replace it
+                     * with the cached CT mode color. This is a work-around for legacy products that deliver XY mode
+                     * color updates while in CT mode. It basically ignores such updates by substituting the cached CT
+                     * mode color.
+                     */
+                    if (LegacyColorMode.CT == legacyColorMode && colorXy != null
+                            && !colorXy.equals(ctLegacyModeColor)) {
+                        State oldColorState = colorState;
+                        State oldColorTempState = colorTempState;
+
+                        Resource substituteResource = Setters.setResource(new Resource(ResourceType.LIGHT), resource);
+                        substituteResource.setColorXy(ctLegacyModeColor);
+                        substituteResource.setColorTemperature(ctLegacyModeColorTemp);
+
+                        colorState = substituteResource.getColorState();
+                        colorXyState = substituteResource.getColorXyState();
+                        colorTempState = substituteResource.getColorTemperaturePercentState();
+                        colorTempAbsState = substituteResource.getColorTemperatureAbsoluteState();
+                        logger.debug("{} -> updateChannels() work-around fixed {} -> {} and {} -> {}", resourceId,
+                                oldColorState, colorState, oldColorTempState, colorTempState);
                     }
-                    updateState(CHANNEL_2_COLOR, colorState, fullUpdate);
-                    updateState(CHANNEL_2_COLOR_XY_ONLY, colorXyState, fullUpdate);
-                    updateState(CHANNEL_2_COLOR_TEMP_PERCENT, colorTemperatureState, fullUpdate);
-                    updateState(CHANNEL_2_COLOR_TEMP_ABSOLUTE, colorTemperatureAbsoluteState, fullUpdate);
                 }
 
+                updateState(CHANNEL_2_COLOR, colorState, fullUpdate);
+                updateState(CHANNEL_2_COLOR_XY_ONLY, colorXyState, fullUpdate);
+                updateState(CHANNEL_2_COLOR_TEMP_PERCENT, colorTempState, fullUpdate);
+                updateState(CHANNEL_2_COLOR_TEMP_ABSOLUTE, colorTempAbsState, fullUpdate);
                 updateState(CHANNEL_2_EFFECT, resource.getEffectState(), fullUpdate);
                 // fall through for dimming and on/off related channels
 

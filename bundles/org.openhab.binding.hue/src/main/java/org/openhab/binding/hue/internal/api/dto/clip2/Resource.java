@@ -947,7 +947,7 @@ public class Resource {
         return this;
     }
 
-    public Resource setColorTemperature(ColorTemperature colorTemperature) {
+    public Resource setColorTemperature(@Nullable ColorTemperature colorTemperature) {
         this.colorTemperature = colorTemperature;
         return this;
     }
