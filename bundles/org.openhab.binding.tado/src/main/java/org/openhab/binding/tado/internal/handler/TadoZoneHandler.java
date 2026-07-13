@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.tado.internal.handler;
 
+import static org.openhab.binding.tado.internal.TadoBindingConstants.*;
 import static org.openhab.binding.tado.internal.api.TadoApiTypeUtils.terminationConditionTemplateToTerminationCondition;
 
 import java.io.IOException;
@@ -69,6 +70,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
 import org.openhab.core.types.StateOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -361,8 +363,9 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
                     "Could not connect to server due to " + e.getMessage());
         }
 
-        updateState(TadoBindingConstants.CHANNEL_ZONE_BATTERY_LOW_ALARM,
-                getHomeHandler().getBatteryChecker().getBatteryLowAlarm(getZoneId()));
+        State batteryLowState = getHomeHandler().getBatteryChecker().getBatteryLowAlarm(getZoneId());
+        updateOnlineStatusDescription(batteryLowState);
+        updateState(TadoBindingConstants.CHANNEL_ZONE_BATTERY_LOW_ALARM, batteryLowState);
     }
 
     /**
@@ -544,6 +547,33 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
                 logger.debug("Removing unsupported channels for {}: {}", thing.getUID(), joiner.toString());
             }
             updateThing(editThing().withoutChannels(removeList).build());
+        }
+    }
+
+    /**
+     * Update thing status description based on the given battery low state. If the battery is low and the description
+     * is null, then the description is set to the respective battery low translatable text. If the battery is OK, and
+     * the description is the low battery translatable text, then the description message is cleared. If the thing is
+     * not ONLINE, or if it does not have a battery low channel then the description is not updated. NOTE: this method
+     * only updates the status description if the thing does not already have a status description for a different
+     * issue.
+     */
+    private void updateOnlineStatusDescription(State batteryLowState) {
+        ThingStatusInfo statusInfo = thing.getStatusInfo();
+        if (statusInfo.getStatus() == ThingStatus.ONLINE && thing.getChannel(CHANNEL_ZONE_BATTERY_LOW_ALARM) != null) {
+            String description = statusInfo.getDescription();
+
+            // if battery is OK and description is the low battery text then clear the description
+            if (OnOffType.OFF.equals(batteryLowState) && TEXT_ONLINE_BATTERY_LOW.equals(description)) {
+                updateStatus(statusInfo.getStatus(), statusInfo.getStatusDetail());
+                return;
+            }
+
+            // if battery is low and description is null then apply the low battery text
+            if (OnOffType.ON.equals(batteryLowState) && (description == null || description.isBlank())) {
+                updateStatus(statusInfo.getStatus(), statusInfo.getStatusDetail(), TEXT_ONLINE_BATTERY_LOW);
+                return;
+            }
         }
     }
 }
