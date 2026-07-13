@@ -168,4 +168,75 @@ class NotificationDeserializationTest {
         assertEquals(Notification.RemoteViewChangeData.Reason.ADMIN_UNLOCK_SUCCEEDED, data.reason);
         assertEquals("call-456", data.remoteCallRequestId);
     }
+
+    // --- Full Notification with access.logs.insights.add (metadata.device is an ARRAY) ---
+
+    @Test
+    void insightsAddNotificationWithMultipleDevicesDeserialization() {
+        // Regression: the Access API sends metadata.device as an array (e.g. the hub plus the
+        // reader). It used to be modelled as a single object, so deserialization failed with
+        // "Expected BEGIN_OBJECT but was BEGIN_ARRAY at path $.metadata.device" and no insight
+        // event was ever routed.
+        String json = """
+                {
+                    "event": "access.logs.insights.add",
+                    "receiver_id": "recv-003",
+                    "event_object_id": "obj-003",
+                    "save_to_history": true,
+                    "data": {
+                        "log_key": "dashboard.access.door.unlock.success",
+                        "event_type": "access.door.unlock",
+                        "message": "Front Door unlocked",
+                        "published": 1700000000000,
+                        "result": "ACCESS",
+                        "metadata": {
+                            "actor": {
+                                "display_name": "Jane Doe"
+                            },
+                            "door": {
+                                "id": "door-1",
+                                "type": "door",
+                                "display_name": "Front Door"
+                            },
+                            "device": [
+                                {
+                                    "id": "hub-1",
+                                    "type": "UAH",
+                                    "display_name": "Front Door Hub"
+                                },
+                                {
+                                    "id": "reader-1",
+                                    "type": "UA-G2-PRO",
+                                    "display_name": "Front Door Reader"
+                                }
+                            ]
+                        }
+                    }
+                }
+                """;
+
+        Notification notification = gson.fromJson(json, Notification.class);
+
+        assertNotNull(notification);
+        assertEquals("access.logs.insights.add", notification.event);
+
+        Notification.InsightLogsAddData data = notification.dataAsInsightLogsAdd(gson);
+        assertNotNull(data);
+        assertEquals("dashboard.access.door.unlock.success", data.logKey);
+        assertEquals("access.door.unlock", data.eventType);
+        assertEquals("ACCESS", data.result);
+        assertEquals(Long.valueOf(1700000000000L), data.published);
+
+        assertNotNull(data.metadata);
+        assertNotNull(data.metadata.door);
+        assertEquals("Front Door", data.metadata.door.displayName);
+
+        // the array must deserialize into a list, preserving order
+        assertNotNull(data.metadata.device);
+        assertEquals(2, data.metadata.device.size());
+        assertEquals("hub-1", data.metadata.device.get(0).id);
+        assertEquals("UAH", data.metadata.device.get(0).type);
+        assertEquals("reader-1", data.metadata.device.get(1).id);
+        assertEquals("Front Door Reader", data.metadata.device.get(1).displayName);
+    }
 }
