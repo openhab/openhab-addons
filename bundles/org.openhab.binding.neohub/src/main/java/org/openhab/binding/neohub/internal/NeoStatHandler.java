@@ -22,6 +22,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.State;
 
 /**
  * The {@link NeoStatHandler} is the openHAB Handler for NeoStat devices Note:
@@ -79,6 +80,8 @@ public class NeoStatHandler extends NeoBaseHandler {
                         : new StringType(VAL_OFF)),
                 offline);
 
-        toOpenHabSendValueDebounced(CHAN_BATTERY_LOW_ALARM, OnOffType.from(deviceRecord.isBatteryLow()), offline);
+        State batteryLowState = OnOffType.from(deviceRecord.isBatteryLow());
+        updateOnlineStatusDescription(batteryLowState);
+        toOpenHabSendValueDebounced(CHAN_BATTERY_LOW_ALARM, batteryLowState, offline);
     }
 }

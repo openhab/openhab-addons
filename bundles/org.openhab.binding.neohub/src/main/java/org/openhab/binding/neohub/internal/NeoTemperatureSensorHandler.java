@@ -18,6 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.types.State;
 
 /**
  * The {@link NeoTemperatureSensorHandler} is the OpenHAB Handler for NeoTemperatureSensor devices
@@ -43,6 +44,8 @@ public class NeoTemperatureSensorHandler extends NeoBaseHandler {
         toOpenHabSendValueDebounced(CHAN_TEMPERATURE_SENSOR,
                 new QuantityType<>(deviceRecord.getActualTemperature(), getTemperatureUnit()), offline);
 
-        toOpenHabSendValueDebounced(CHAN_BATTERY_LOW_ALARM, OnOffType.from(deviceRecord.isBatteryLow()), offline);
+        State batteryLowState = OnOffType.from(deviceRecord.isBatteryLow());
+        updateOnlineStatusDescription(batteryLowState);
+        toOpenHabSendValueDebounced(CHAN_BATTERY_LOW_ALARM, batteryLowState, offline);
     }
 }

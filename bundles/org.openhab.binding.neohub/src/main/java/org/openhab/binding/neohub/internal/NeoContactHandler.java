@@ -19,6 +19,7 @@ import org.openhab.binding.neohub.internal.NeoHubAbstractDeviceData.AbstractReco
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.types.State;
 
 /**
  * The {@link NeoContactHandler} is the OpenHAB Handler for NeoContact devices
@@ -44,6 +45,8 @@ public class NeoContactHandler extends NeoBaseHandler {
         toOpenHabSendValueDebounced(CHAN_CONTACT_STATE,
                 deviceRecord.isWindowOpen() ? OpenClosedType.OPEN : OpenClosedType.CLOSED, offline);
 
-        toOpenHabSendValueDebounced(CHAN_BATTERY_LOW_ALARM, OnOffType.from(deviceRecord.isBatteryLow()), offline);
+        State batteryLowState = OnOffType.from(deviceRecord.isBatteryLow());
+        updateOnlineStatusDescription(batteryLowState);
+        toOpenHabSendValueDebounced(CHAN_BATTERY_LOW_ALARM, batteryLowState, offline);
     }
 }
