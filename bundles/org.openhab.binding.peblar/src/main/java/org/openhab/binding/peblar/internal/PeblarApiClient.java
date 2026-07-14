@@ -15,11 +15,14 @@ package org.openhab.binding.peblar.internal;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.HttpResponseException;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
@@ -54,10 +57,6 @@ class PeblarApiClient {
         this.apiToken = apiToken;
     }
 
-    // -------------------------------------------------------------------------
-    // GET endpoints
-    // -------------------------------------------------------------------------
-
     public PeblarMeterDTO getMeter() throws PeblarApiException {
         return get("/meter", PeblarMeterDTO.class);
     }
@@ -69,10 +68,6 @@ class PeblarApiClient {
     public PeblarSystemDTO getSystem() throws PeblarApiException {
         return get("/system", PeblarSystemDTO.class);
     }
-
-    // -------------------------------------------------------------------------
-    // PATCH endpoints
-    // -------------------------------------------------------------------------
 
     public void setChargeCurrentLimit(long milliAmps) throws PeblarApiException {
         final JsonObject body = new JsonObject();
@@ -88,39 +83,36 @@ class PeblarApiClient {
         patch("/evinterface", body);
     }
 
-    // -------------------------------------------------------------------------
-    // Internal helpers
-    // -------------------------------------------------------------------------
-
     private <T> T get(String path, Class<T> type) throws PeblarApiException {
-        final String url = baseUrl + path;
-
-        logger.debug("GET {}", url);
-        try {
-            final ContentResponse response = buildRequest(HttpMethod.GET, url).send();
-
-            checkStatus(response, url);
-            return gson.fromJson(response.getContentAsString(), type);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new PeblarApiException("Request interrupted: " + url, e);
-        } catch (ExecutionException | TimeoutException e) {
-            throw new PeblarApiException("Request failed: " + url, e);
+        logger.debug("GET {}", path);
+        Response response = send(HttpMethod.GET, path, Function.identity());
+        if (response instanceof ContentResponse cr) {
+            return gson.fromJson(cr.getContentAsString(), type);
         }
+        throw new PeblarApiException("Unable to read response: " + response.getReason());
     }
 
     private void patch(String path, JsonObject body) throws PeblarApiException {
+        logger.debug("PATCH {} body={}", path, body);
+        send(HttpMethod.PATCH, path, b -> b.content(new StringContentProvider(gson.toJson(body)), "application/json"));
+    }
+
+    private Response send(HttpMethod method, String path, Function<Request, Request> builder)
+            throws PeblarApiException {
         final String url = baseUrl + path;
-        logger.debug("PATCH {} body={}", url, body);
+
         try {
-            final ContentResponse response = buildRequest(HttpMethod.PATCH, url)
-                    .content(new StringContentProvider(gson.toJson(body)), "application/json").send();
+            final Response response = builder.apply(buildRequest(method, url)).send();
 
             checkStatus(response, url);
+            return response;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new PeblarApiException("Request interrupted: " + url, e);
         } catch (ExecutionException | TimeoutException e) {
+            if (e.getCause() instanceof HttpResponseException re) {
+                checkStatus(re.getResponse(), url);
+            }
             throw new PeblarApiException("Request failed: " + url, e);
         }
     }
@@ -130,14 +122,14 @@ class PeblarApiClient {
                 .header(HttpHeader.ACCEPT, "application/json").timeout(TIMEOUT_S, TimeUnit.SECONDS);
     }
 
-    private void checkStatus(ContentResponse response, String url) throws PeblarApiException {
+    private void checkStatus(Response response, String url) throws PeblarApiException {
         final int status = response.getStatus();
 
         if (logger.isTraceEnabled()) {
-            logger.trace("response:({}) {}", status, response.getContentAsString());
+            logger.trace("response:({}) {}", status, response.getReason());
         }
         if (status == HttpStatus.UNAUTHORIZED_401) {
-            throw new PeblarApiException("Unauthorized - check API token for " + url);
+            throw new PeblarApiAuthenticationException("@text/addon.peblar.error.authorization.failed");
         }
         if (status < HttpStatus.OK_200 || status >= HttpStatus.MULTIPLE_CHOICES_300) {
             throw new PeblarApiException("HTTP " + status + " for " + url);

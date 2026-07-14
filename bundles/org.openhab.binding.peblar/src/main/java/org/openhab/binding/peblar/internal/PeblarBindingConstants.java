@@ -32,39 +32,39 @@ class PeblarBindingConstants {
 
     // Channel group IDs
     public static final String GROUP_METER = "meter";
-    public static final String GROUP_EVINTERFACE = "evinterface";
+    public static final String GROUP_EVINTERFACE = "ev-interface";
     public static final String GROUP_SYSTEM = "system";
 
     // Meter channels
-    public static final String CHANNEL_CURRENT_PHASE1 = "meter#currentPhase1";
-    public static final String CHANNEL_CURRENT_PHASE2 = "meter#currentPhase2";
-    public static final String CHANNEL_CURRENT_PHASE3 = "meter#currentPhase3";
-    public static final String CHANNEL_VOLTAGE_PHASE1 = "meter#voltagePhase1";
-    public static final String CHANNEL_VOLTAGE_PHASE2 = "meter#voltagePhase2";
-    public static final String CHANNEL_VOLTAGE_PHASE3 = "meter#voltagePhase3";
-    public static final String CHANNEL_POWER_PHASE1 = "meter#powerPhase1";
-    public static final String CHANNEL_POWER_PHASE2 = "meter#powerPhase2";
-    public static final String CHANNEL_POWER_PHASE3 = "meter#powerPhase3";
-    public static final String CHANNEL_POWER_TOTAL = "meter#powerTotal";
-    public static final String CHANNEL_ENERGY_TOTAL = "meter#energyTotal";
-    public static final String CHANNEL_ENERGY_SESSION = "meter#energySession";
+    public static final String CHANNEL_CURRENT_PHASE1 = "meter#current-p1";
+    public static final String CHANNEL_CURRENT_PHASE2 = "meter#current-p2";
+    public static final String CHANNEL_CURRENT_PHASE3 = "meter#current-p3";
+    public static final String CHANNEL_VOLTAGE_PHASE1 = "meter#voltage-p1";
+    public static final String CHANNEL_VOLTAGE_PHASE2 = "meter#voltage-p2";
+    public static final String CHANNEL_VOLTAGE_PHASE3 = "meter#voltage-p3";
+    public static final String CHANNEL_POWER_PHASE1 = "meter#power-p1";
+    public static final String CHANNEL_POWER_PHASE2 = "meter#power-p2";
+    public static final String CHANNEL_POWER_PHASE3 = "meter#power-p3";
+    public static final String CHANNEL_POWER_TOTAL = "meter#power-total";
+    public static final String CHANNEL_ENERGY_TOTAL = "meter#energy-total";
+    public static final String CHANNEL_ENERGY_SESSION = "meter#energy-session";
 
     // EV interface channels
-    public static final String CHANNEL_CP_STATE = "evinterface#cpState";
-    public static final String CHANNEL_LOCK_STATE = "evinterface#lockState";
-    public static final String CHANNEL_CHARGE_CURRENT_LIMIT = "evinterface#chargeCurrentLimit";
-    public static final String CHANNEL_CHARGE_CURRENT_LIMIT_SOURCE = "evinterface#chargeCurrentLimitSource";
-    public static final String CHANNEL_CHARGE_CURRENT_LIMIT_ACTUAL = "evinterface#chargeCurrentLimitActual";
-    public static final String CHANNEL_FORCE_1_PHASE = "evinterface#force1Phase";
+    public static final String CHANNEL_CP_STATE = "ev-interface#cp-state";
+    public static final String CHANNEL_LOCK_STATE = "ev-interface#lock-state";
+    public static final String CHANNEL_CHARGE_CURRENT_LIMIT = "ev-interface#charge-current-limit";
+    public static final String CHANNEL_CHARGE_CURRENT_LIMIT_SOURCE = "ev-interface#charge-current-limit-source";
+    public static final String CHANNEL_CHARGE_CURRENT_LIMIT_ACTUAL = "ev-interface#charge-current-limit-actual";
+    public static final String CHANNEL_FORCE_1_PHASE = "ev-interface#force1Phase";
 
     // System channels
-    public static final String CHANNEL_PRODUCT_PN = "system#productPn";
-    public static final String CHANNEL_PRODUCT_SN = "system#productSn";
-    public static final String CHANNEL_FIRMWARE_VERSION = "system#firmwareVersion";
-    public static final String CHANNEL_WLAN_SIGNAL_STRENGTH = "system#wlanSignalStrength";
-    public static final String CHANNEL_CELLULAR_SIGNAL_STRENGTH = "system#cellularSignalStrength";
+    public static final String CHANNEL_PRODUCT_PN = "system#product-pn";
+    public static final String CHANNEL_PRODUCT_SN = "system#product-sn";
+    public static final String CHANNEL_FIRMWARE_VERSION = "system#firmware-version";
+    public static final String CHANNEL_WLAN_SIGNAL_STRENGTH = "system#wlan-signal-strength";
+    public static final String CHANNEL_CELLULAR_SIGNAL_STRENGTH = "system#cellular-signal-strength";
     public static final String CHANNEL_UPTIME = "system#uptime";
-    public static final String CHANNEL_PHASE_COUNT = "system#phaseCount";
+    public static final String CHANNEL_PHASE_COUNT = "system#phase-count";
 
     public static final List<String> CHANNELS_METER = List.of(CHANNEL_CURRENT_PHASE1, CHANNEL_CURRENT_PHASE2,
             CHANNEL_CURRENT_PHASE3, CHANNEL_VOLTAGE_PHASE1, CHANNEL_VOLTAGE_PHASE2, CHANNEL_VOLTAGE_PHASE3,

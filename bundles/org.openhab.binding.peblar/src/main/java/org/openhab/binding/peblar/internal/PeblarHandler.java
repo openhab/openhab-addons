@@ -12,32 +12,7 @@
  */
 package org.openhab.binding.peblar.internal;
 
-import static org.openhab.binding.peblar.internal.PeblarBindingConstants.CHANNELS_ALL;
-import static org.openhab.binding.peblar.internal.PeblarBindingConstants.CHANNEL_CELLULAR_SIGNAL_STRENGTH;
-import static org.openhab.binding.peblar.internal.PeblarBindingConstants.CHANNEL_CHARGE_CURRENT_LIMIT;
-import static org.openhab.binding.peblar.internal.PeblarBindingConstants.CHANNEL_CHARGE_CURRENT_LIMIT_ACTUAL;
-import static org.openhab.binding.peblar.internal.PeblarBindingConstants.CHANNEL_CHARGE_CURRENT_LIMIT_SOURCE;
-import static org.openhab.binding.peblar.internal.PeblarBindingConstants.CHANNEL_CP_STATE;
-import static org.openhab.binding.peblar.internal.PeblarBindingConstants.CHANNEL_CURRENT_PHASE1;
-import static org.openhab.binding.peblar.internal.PeblarBindingConstants.CHANNEL_CURRENT_PHASE2;
-import static org.openhab.binding.peblar.internal.PeblarBindingConstants.CHANNEL_CURRENT_PHASE3;
-import static org.openhab.binding.peblar.internal.PeblarBindingConstants.CHANNEL_ENERGY_SESSION;
-import static org.openhab.binding.peblar.internal.PeblarBindingConstants.CHANNEL_ENERGY_TOTAL;
-import static org.openhab.binding.peblar.internal.PeblarBindingConstants.CHANNEL_FIRMWARE_VERSION;
-import static org.openhab.binding.peblar.internal.PeblarBindingConstants.CHANNEL_FORCE_1_PHASE;
-import static org.openhab.binding.peblar.internal.PeblarBindingConstants.CHANNEL_LOCK_STATE;
-import static org.openhab.binding.peblar.internal.PeblarBindingConstants.CHANNEL_PHASE_COUNT;
-import static org.openhab.binding.peblar.internal.PeblarBindingConstants.CHANNEL_POWER_PHASE1;
-import static org.openhab.binding.peblar.internal.PeblarBindingConstants.CHANNEL_POWER_PHASE2;
-import static org.openhab.binding.peblar.internal.PeblarBindingConstants.CHANNEL_POWER_PHASE3;
-import static org.openhab.binding.peblar.internal.PeblarBindingConstants.CHANNEL_POWER_TOTAL;
-import static org.openhab.binding.peblar.internal.PeblarBindingConstants.CHANNEL_PRODUCT_PN;
-import static org.openhab.binding.peblar.internal.PeblarBindingConstants.CHANNEL_PRODUCT_SN;
-import static org.openhab.binding.peblar.internal.PeblarBindingConstants.CHANNEL_UPTIME;
-import static org.openhab.binding.peblar.internal.PeblarBindingConstants.CHANNEL_VOLTAGE_PHASE1;
-import static org.openhab.binding.peblar.internal.PeblarBindingConstants.CHANNEL_VOLTAGE_PHASE2;
-import static org.openhab.binding.peblar.internal.PeblarBindingConstants.CHANNEL_VOLTAGE_PHASE3;
-import static org.openhab.binding.peblar.internal.PeblarBindingConstants.CHANNEL_WLAN_SIGNAL_STRENGTH;
+import static org.openhab.binding.peblar.internal.PeblarBindingConstants.*;
 
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -94,10 +69,6 @@ class PeblarHandler extends BaseThingHandler {
         this.httpClient = httpClient;
     }
 
-    // -------------------------------------------------------------------------
-    // Lifecycle
-    // -------------------------------------------------------------------------
-
     @Override
     public void initialize() {
         final PeblarConfiguration config = getConfigAs(PeblarConfiguration.class);
@@ -132,10 +103,6 @@ class PeblarHandler extends BaseThingHandler {
         evInterfaceDTO = null;
         systemDTO = null;
     }
-
-    // -------------------------------------------------------------------------
-    // Command handling
-    // -------------------------------------------------------------------------
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
@@ -190,10 +157,6 @@ class PeblarHandler extends BaseThingHandler {
         }
     }
 
-    // -------------------------------------------------------------------------
-    // Polling
-    // -------------------------------------------------------------------------
-
     private void pollAll() {
         final PeblarApiClient client = apiClient;
 
@@ -215,39 +178,39 @@ class PeblarHandler extends BaseThingHandler {
         final @Nullable PeblarMeterDTO meterData = this.meterDTO;
         final @Nullable PeblarEvInterfaceDTO evInterfaceData = this.evInterfaceDTO;
         final @Nullable PeblarSystemDTO systemData = this.systemDTO;
-        // ── Meter ────────────────────────────────────────────────────────
         final @Nullable State state = switch (channelId) {
-            case CHANNEL_CURRENT_PHASE1 -> getIfData(meterData, d -> milliAmps(d.currentPhase1));
-            case CHANNEL_CURRENT_PHASE2 -> getIfData(meterData, d -> milliAmps(d.currentPhase2));
-            case CHANNEL_CURRENT_PHASE3 -> getIfData(meterData, d -> milliAmps(d.currentPhase3));
-            case CHANNEL_VOLTAGE_PHASE1 -> getIfData(meterData, d -> volts(d.voltagePhase1));
-            case CHANNEL_VOLTAGE_PHASE2 -> getIfData(meterData, d -> volts(d.voltagePhase2));
-            case CHANNEL_VOLTAGE_PHASE3 -> getIfData(meterData, d -> volts(d.voltagePhase3));
-            case CHANNEL_POWER_PHASE1 -> getIfData(meterData, d -> watts(d.powerPhase1));
-            case CHANNEL_POWER_PHASE2 -> getIfData(meterData, d -> watts(d.powerPhase2));
-            case CHANNEL_POWER_PHASE3 -> getIfData(meterData, d -> watts(d.powerPhase3));
-            case CHANNEL_POWER_TOTAL -> getIfData(meterData, d -> watts(d.powerTotal));
-            case CHANNEL_ENERGY_TOTAL -> getIfData(meterData, d -> wattHours(d.energyTotal));
-            case CHANNEL_ENERGY_SESSION -> getIfData(meterData, d -> wattHours(d.energySession));
+            // ── Meter ────────────────────────────────────────────────────────
+            case CHANNEL_CURRENT_PHASE1 -> dataOrUndef(meterData, d -> milliAmp(d.currentPhase1));
+            case CHANNEL_CURRENT_PHASE2 -> dataOrUndef(meterData, d -> milliAmp(d.currentPhase2));
+            case CHANNEL_CURRENT_PHASE3 -> dataOrUndef(meterData, d -> milliAmp(d.currentPhase3));
+            case CHANNEL_VOLTAGE_PHASE1 -> dataOrUndef(meterData, d -> volt(d.voltagePhase1));
+            case CHANNEL_VOLTAGE_PHASE2 -> dataOrUndef(meterData, d -> volt(d.voltagePhase2));
+            case CHANNEL_VOLTAGE_PHASE3 -> dataOrUndef(meterData, d -> volt(d.voltagePhase3));
+            case CHANNEL_POWER_PHASE1 -> dataOrUndef(meterData, d -> watt(d.powerPhase1));
+            case CHANNEL_POWER_PHASE2 -> dataOrUndef(meterData, d -> watt(d.powerPhase2));
+            case CHANNEL_POWER_PHASE3 -> dataOrUndef(meterData, d -> watt(d.powerPhase3));
+            case CHANNEL_POWER_TOTAL -> dataOrUndef(meterData, d -> watt(d.powerTotal));
+            case CHANNEL_ENERGY_TOTAL -> dataOrUndef(meterData, d -> wattHour(d.energyTotal));
+            case CHANNEL_ENERGY_SESSION -> dataOrUndef(meterData, d -> wattHour(d.energySession));
             // ── EV Interface ─────────────────────────────────────────────────
-            case CHANNEL_CP_STATE -> getIfData(evInterfaceData, d -> string(d.cpState));
-            case CHANNEL_LOCK_STATE -> getIfData(evInterfaceData, d -> onOff(d.lockState));
-            case CHANNEL_CHARGE_CURRENT_LIMIT -> getIfData(evInterfaceData, d -> milliAmps(d.chargeCurrentLimit));
+            case CHANNEL_CP_STATE -> dataOrUndef(evInterfaceData, d -> string(d.cpState));
+            case CHANNEL_LOCK_STATE -> dataOrUndef(evInterfaceData, d -> onOff(d.lockState));
+            case CHANNEL_CHARGE_CURRENT_LIMIT -> dataOrUndef(evInterfaceData, d -> milliAmp(d.chargeCurrentLimit));
             case CHANNEL_CHARGE_CURRENT_LIMIT_SOURCE ->
-                getIfData(evInterfaceData, d -> string(d.chargeCurrentLimitSource));
+                dataOrUndef(evInterfaceData, d -> string(d.chargeCurrentLimitSource));
             case CHANNEL_CHARGE_CURRENT_LIMIT_ACTUAL ->
-                getIfData(evInterfaceData, d -> milliAmps(d.chargeCurrentLimitActual));
-            case CHANNEL_FORCE_1_PHASE -> getIfData(evInterfaceData, d -> onOff(d.force1Phase));
+                dataOrUndef(evInterfaceData, d -> milliAmp(d.chargeCurrentLimitActual));
+            case CHANNEL_FORCE_1_PHASE -> dataOrUndef(evInterfaceData, d -> onOff(d.force1Phase));
             // ── System ───────────────────────────────────────────────────────
-            case CHANNEL_PRODUCT_PN -> getIfData(systemData, d -> string(d.productPn));
-            case CHANNEL_PRODUCT_SN -> getIfData(systemData, d -> string(d.productSn));
-            case CHANNEL_FIRMWARE_VERSION -> getIfData(systemData, d -> string(d.firmwareVersion));
+            case CHANNEL_PRODUCT_PN -> dataOrUndef(systemData, d -> string(d.productPn));
+            case CHANNEL_PRODUCT_SN -> dataOrUndef(systemData, d -> string(d.productSn));
+            case CHANNEL_FIRMWARE_VERSION -> dataOrUndef(systemData, d -> string(d.firmwareVersion));
             case CHANNEL_WLAN_SIGNAL_STRENGTH ->
-                getIfData(systemData, d -> quantity(d.wlanSignalStrength, Units.DECIBEL_MILLIWATTS));
+                dataOrUndef(systemData, d -> quantity(d.wlanSignalStrength, Units.DECIBEL_MILLIWATTS));
             case CHANNEL_CELLULAR_SIGNAL_STRENGTH ->
-                getIfData(systemData, d -> quantity(d.cellularSignalStrength, Units.DECIBEL_MILLIWATTS));
-            case CHANNEL_UPTIME -> getIfData(systemData, d -> quantity(d.uptime, Units.SECOND));
-            case CHANNEL_PHASE_COUNT -> getIfData(systemData, d -> decimal(d.phaseCount));
+                dataOrUndef(systemData, d -> quantity(d.cellularSignalStrength, Units.DECIBEL_MILLIWATTS));
+            case CHANNEL_UPTIME -> dataOrUndef(systemData, d -> quantity(d.uptime, Units.SECOND));
+            case CHANNEL_PHASE_COUNT -> dataOrUndef(systemData, d -> decimal(d.phaseCount));
             default -> null;
         };
 
@@ -260,49 +223,48 @@ class PeblarHandler extends BaseThingHandler {
     private synchronized void run(PeblarRunnable runner, String debugErrorMessage) {
         try {
             runner.run();
+        } catch (PeblarApiAuthenticationException e) {
+            logger.debug("{}", debugErrorMessage, e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         } catch (PeblarApiException e) {
             logger.debug("{}", debugErrorMessage, e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
-    // -------------------------------------------------------------------------
-    // State helpers
-    // -------------------------------------------------------------------------
-
-    private static <T> State getIfData(@Nullable T data, Function<T, State> function) {
-        return data == null ? UnDefType.UNDEF : function.apply(data);
-    }
-
     private static State string(@Nullable String value) {
-        return value == null ? UnDefType.UNDEF : new StringType(value);
+        return dataOrUndef(value, StringType::new);
     }
 
     private static State onOff(@Nullable Boolean value) {
-        return value == null ? UnDefType.UNDEF : OnOffType.from(value);
+        return dataOrUndef(value, OnOffType::from);
     }
 
     private static <Q extends Quantity<Q>> State quantity(@Nullable Number value, Unit<Q> unit) {
-        return value == null ? UnDefType.UNDEF : new QuantityType<>(value, unit);
+        return dataOrUndef(value, v -> new QuantityType<>(v, unit));
     }
 
     private static State decimal(@Nullable Number value) {
-        return value == null ? UnDefType.UNDEF : new DecimalType(value);
+        return dataOrUndef(value, DecimalType::new);
     }
 
-    private static State milliAmps(@Nullable Long value) {
+    private static State milliAmp(@Nullable Long value) {
         return quantity(value, MetricPrefix.MILLI(Units.AMPERE));
     }
 
-    private static State volts(@Nullable Integer value) {
+    private static State volt(@Nullable Integer value) {
         return quantity(value, Units.VOLT);
     }
 
-    private static State watts(@Nullable Long value) {
+    private static State watt(@Nullable Long value) {
         return quantity(value, Units.WATT);
     }
 
-    private static State wattHours(@Nullable Long value) {
+    private static State wattHour(@Nullable Long value) {
         return quantity(value, Units.WATT_HOUR);
+    }
+
+    private static <T> State dataOrUndef(@Nullable T data, Function<T, State> function) {
+        return data == null ? UnDefType.UNDEF : function.apply(data);
     }
 }

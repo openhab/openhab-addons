@@ -12,10 +12,11 @@
 			charger web interface.
 		</description>
 		<category>PowerOutlet</category>
+		<semantic-equipment-tag>EVSE</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="meter" typeId="meter"/>
-			<channel-group id="evinterface" typeId="evinterface"/>
+			<channel-group id="ev-interface" typeId="ev-interface"/>
 			<channel-group id="system" typeId="system"/>
 		</channel-groups>
 

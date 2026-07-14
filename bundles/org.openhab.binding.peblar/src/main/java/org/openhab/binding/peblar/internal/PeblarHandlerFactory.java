@@ -18,7 +18,6 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -38,11 +37,11 @@ public class PeblarHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_CHARGER);
 
-    private final HttpClient httpClient;
+    private final HttpClientFactory httpClientFactory;
 
     @Activate
     public PeblarHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
-        this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.httpClientFactory = httpClientFactory;
     }
 
     @Override
@@ -53,7 +52,7 @@ public class PeblarHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         if (THING_TYPE_CHARGER.equals(thing.getThingTypeUID())) {
-            return new PeblarHandler(thing, httpClient);
+            return new PeblarHandler(thing, httpClientFactory.getCommonHttpClient());
         }
         return null;
     }

@@ -5,28 +5,33 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Channel group for /api/wlac/v1/evinterface -->
-	<channel-group-type id="evinterface">
+	<channel-group-type id="ev-interface">
 		<label>EV Interface</label>
 		<description>EV charging interface state and control for the Peblar charger</description>
 		<channels>
 
-			<channel id="cpState" typeId="cpState"/>
-			<channel id="lockState" typeId="lockState"/>
-			<channel id="chargeCurrentLimit" typeId="chargeCurrentLimit"/>
-			<channel id="chargeCurrentLimitSource" typeId="chargeCurrentLimitSource"/>
-			<channel id="chargeCurrentLimitActual" typeId="chargeCurrentLimitActual"/>
-			<channel id="force1Phase" typeId="force1Phase"/>
-
+			<channel id="cp-state" typeId="cp-state"/>
+			<channel id="lock-state" typeId="lock-state"/>
+			<channel id="charge-current-limit" typeId="charge-current-limit"/>
+			<channel id="charge-current-limit-source" typeId="charge-current-limit-source"/>
+			<channel id="charge-current-limit-actual" typeId="system.electric-current">
+				<label>Actual Charge Current Limit</label>
+				<description>The actual charge current limit applied after all constraints.</description>
+			</channel>
+			<channel id="force1-phase" typeId="force1-phase"/>
 		</channels>
 	</channel-group-type>
 
 	<!-- Channel type definitions -->
 
-	<channel-type id="cpState">
+	<channel-type id="cp-state">
 		<item-type>String</item-type>
-		<label>CP State</label>
+		<label>Control Pilot State</label>
 		<description>IEC 61851 Control Pilot state (e.g. State A, State B, State C)</description>
-		<category>Energy</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="State A">No vehicle connected</option>
@@ -39,16 +44,20 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="lockState">
+	<channel-type id="lock-state">
 		<item-type>Switch</item-type>
 		<label>Lock State</label>
 		<description>Cable lock state; ON means the cable is locked</description>
 		<category>Lock</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>LockState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="chargeCurrentLimit">
-		<item-type>Number:ElectricCurrent</item-type>
+	<channel-type id="charge-current-limit">
+		<item-type unitHint="mA">Number:ElectricCurrent</item-type>
 		<label>Charge Current Limit</label>
 		<description>
 			Configured charge current limit in milliamperes.
@@ -56,14 +65,21 @@
 			EN-IEC 61851-1.
 		</description>
 		<category>Energy</category>
-		<state readOnly="false" min="0" max="32000" pattern="%.0f %unit%"/>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Current</tag>
+		</tags>
+		<state min="0" max="32000" pattern="%.0f %unit%"/>
 	</channel-type>
 
-	<channel-type id="chargeCurrentLimitSource">
+	<channel-type id="charge-current-limit-source">
 		<item-type>String</item-type>
 		<label>Charge Current Limit Source</label>
 		<description>Source that is currently limiting the charge current</description>
-		<category>Energy</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="Charging cable">Charging cable</option>
@@ -81,20 +97,15 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="chargeCurrentLimitActual">
-		<item-type>Number:ElectricCurrent</item-type>
-		<label>Actual Charge Current Limit</label>
-		<description>The actual charge current limit applied after all constraints in milliamperes</description>
-		<category>Energy</category>
-		<state readOnly="true" pattern="%.0f %unit%"/>
-	</channel-type>
-
-	<channel-type id="force1Phase">
+	<channel-type id="force1-phase">
 		<item-type>Switch</item-type>
 		<label>Force Single Phase</label>
 		<description>Force the charger to use a single phase only</description>
-		<category>Energy</category>
-		<state readOnly="false"/>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
+
 	</channel-type>
 
 </thing:thing-descriptions>
