@@ -94,8 +94,8 @@ If you have a system that supports both protocols, you must decide which you wis
 You should be aware of the following functional differences between the protocols:
 
 - Using LIP on Caseta you can’t receive notifications of occupancy group status changes (occupied/unoccupied/unknown), but using LEAP you can.
-- Conversely, LIP provides notifications of keypad key presses, while LEAP does not (as far as is currently known).
-This means that using ipbridge you can trigger rules and take actions on keypad key presses/releases, but using leapbridge you can’t.
+- Both protocols provide notifications of keypad button presses and releases, so you can trigger rules on button events using either bridge.
+On RadioRA 3 processors, LEAP also reports hold and multi-tap events, which fire the `LONG_PRESSED` and `DOUBLE_PRESSED` channel events.
 - Caseta and RA2 Select device discovery is supported via LEAP, but not via LIP.
 - The leapbridge is a bit more complicated to configure because LEAP uses an SSL connections and authenticates using certificates.
 - LIP is a publicly documented protocol, while LEAP is not. This means that Lutron could make a change that breaks LEAP support at any time.
@@ -340,7 +340,7 @@ See the **keypad** section above for a full discussion of configuration and use.
 
 To support this keypad's contact closure inputs, CCI channels named _cci1_ and _cci2_ are created with item type Contact and category Switch.
 They are marked as Advanced, so you will need to check "Show advanced" in order to see them listed in the Administration UI.
-They present ON/OFF states the same as a keypad button.
+They present OPEN/CLOSED states but do not accept commands since Contact items are read-only in openHAB.
 
 Component numbering: For button and LED layouts and numbering, see the Lutron Integration Protocol Guide (rev. AA) p.107 (<https://www.lutron.com/TechnicalDocumentLibrary/040249.pdf>).
 If you are having problems determining which channels have been created for a given keypad model, select the appropriate intlkeypad Thing under Settings/Things in the Administration UI and click on the Channels tab.
@@ -408,7 +408,7 @@ Note that this count does not include the column of 5 scene buttons always found
 
 To support the GRAFIK Eye's contact closure input, a CCI channel named _cci1_ will be created with item type Contact and category Switch.
 It is marked as Advanced, so you will need to check "Show advanced" in order to see it listed in the Administration UI.
-It presents ON/OFF states the same as a keypad button.
+It presents OPEN/CLOSED states but does not accept commands since Contact items are read-only in openHAB.
 
 Component numbering: The buttons and LEDs on the GRAFIK Eye are numbered top to bottom, starting with the 5 scene buttons in a column on the right side of the panel, and then proceeding with the columns of buttons (if any) on the left side of the panel, working left to right.
 If you are having problems determining which channels have been created for a given model setting, select the appropriate grafikeyekeypad Thing under Settings/Things in the Administration UI and click on the Channels tab.
@@ -433,7 +433,14 @@ This allows you to trigger your defined scenes via the virtual keypad buttons.
 For this to work, the optional `model` parameter must be set to `Caseta`.
 When used with Caseta, no virtual indicator LED channels are created.
 
-The behavior of this binding is the same as the other keypad bindings, with the exception that the button and LED channels created have the Advanced flag set.
+Unlike the physical keypad Things, the button channels of the **virtualkeypad** Thing are Switch state channels rather than trigger channels, because their primary use is sending ON/OFF commands from openHAB to activate the programming assigned to the integration buttons.
+
+The `autorelease` parameter is a boolean that defaults to true.
+When an ON command is sent to a button channel, the handler sends a "press" action to the device, immediately followed by a "release" action if `autorelease` is set, and the channel state then transitions back to OFF.
+This prevents the button channel from becoming stuck in the ON state, since some integration applications only generate a "pressed" event and never send a "release".
+If you wish to control press and release separately, set `autorelease` to false and send an ON command for press and an OFF command for release.
+
+The button and LED channels created have the Advanced flag set.
 This means, among other things, that you will need to check "Show advanced" in order to see them listed in the Administration UI.
 
 In most cases the integrationId parameter should be set to 1.
@@ -712,8 +719,9 @@ Appropriate channels will be created automatically by the keypad, ttkeypad, intl
 |occ. sensor|occupancystatus|OnOffType     |(_readonly_)                                           |
 |ogroup     |groupstate     |StringType    |"OCCUPIED","UNOCCUPIED","UNKNOWN" (_readonly_)         |
 |cco        |switchstatus   |OnOffType     |OnOffType, RefreshType                                 |
-|keypads    |button*        |OnOffType     |OnOffType                                              |
-|           |led*           |OnOffType     |OnOffType, RefreshType                                 |
+|keypads (physical)|button* |n/a           |(_none - trigger channels do not accept commands_)     |
+|virtualkeypad|button*      |OnOffType     |OnOffType                                              |
+|keypads    |led*           |OnOffType     |OnOffType, RefreshType                                 |
 |           |cci*           |OpenClosedType|(_readonly_)                                           |
 |shade      |shadelevel     |PercentType   |PercentType, UpDownType, StopMoveType.STOP, RefreshType|
 |blind      |blindliftlevel |PercentType   |PercentType, UpDownType, StopMoveType.STOP, RefreshType|
@@ -759,7 +767,7 @@ demo.items:
 Dimmer   LivingRm_TableLamp  "Table Lamp"      { channel="lutron:dimmer:radiora2:lrtable:lightlevel" }
 Switch   FrontYard_PathLight "Path Light"      { channel="lutron:switch:radiora2:path:switchstatus" }
 Switch   LaundryRm_Sensor    "Occ Sensor"      { channel="lutron:occupancysensor:radiora2:laundryocc:occupancystatus" }
-Switch   Entryway_Keypad_B1  "Keypad Button 1" { channel="lutron:keypad:radiora2:entrykeypad:button1" }
+Switch   Entryway_Keypad_B1  "Keypad Button 1" { channel="lutron:keypad:radiora2:entrykeypad:button1" [profile="system:rawbutton-toggle-switch"] }
 Switch   Entryway_Keypad_L1  "Keypad LED 1"    { channel="lutron:keypad:radiora2:entrykeypad:led1" }
 Contact  Vcrx1_CCI1          "Input 1"         { channel="lutron:vcrx:radiora2:vcrx1:cci1" }
 Switch   Garage_CCO1         "Garage Door"     { channel="lutron:cco:radiora2:garage1:switchstatus" }
