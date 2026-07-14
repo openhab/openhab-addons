@@ -288,11 +288,8 @@ If you prefer to drive an Item from a button, link the button channel to an Item
 For the LED channels you can monitor ON and OFF state changes and send ON and OFF commands to drive the indicator LEDs.
 Note, however, that version 11.6 or higher of the RadioRA 2 software may be required in order to drive keypad LED states, and then this may only be done on unbound buttons.
 
-> Migration note: Prior to this version each button was exposed as a Switch state channel (with an `autorelease` config parameter) rather than a trigger channel.
-> Existing button-to-Item links are preserved across the upgrade, but the linked channel is now a trigger channel and will do nothing until you either add one of the `system:rawbutton-*` profiles to the link, or move your rules to trigger on the button channel's events directly.
-> The `autorelease` parameter no longer applies to physical keypads and has been removed from these Things.
-> Sending ON/OFF commands to physical keypad button channels (to simulate a button press) is also no longer supported.
-> Where the Lutron system provides integration (phantom) buttons, the **virtualkeypad** Thing can invoke the same programming; this requires assigning the programming to an integration button in the Lutron software.
+Button channels are trigger channels and do not accept commands.
+To invoke keypad programming from openHAB where the Lutron system provides integration (phantom) buttons, use the **virtualkeypad** Thing; this requires assigning the programming to an integration button in the Lutron software.
 
 Component numbering: For button and LED layouts and numbering, see the Lutron Integration Protocol Guide (rev. AA) p.104 (<https://www.lutron.com/TechnicalDocumentLibrary/040249.pdf>).
 If you are having problems determining which channels have been created for a given keypad model, select the appropriate keypad Thing under Settings/Things in the Administration UI and click on the Channels tab.
