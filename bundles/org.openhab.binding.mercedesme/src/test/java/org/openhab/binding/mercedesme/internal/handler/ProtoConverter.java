@@ -192,6 +192,14 @@ public class ProtoConverter {
             cpv.put("max_soc", soc.getValue());
             return cpv;
         }
+        // ChargingConfigure carries max_soc as an Int32Value wrapper, same as
+        // ChargeProgramConfigure - unwrap it before returning.
+        if (cr.hasChargingConfigure()) {
+            JSONObject cc = Utils.getJsonObject(cr.getChargingConfigure().getAllFields());
+            Int32Value soc = (Int32Value) cc.get("max_soc");
+            cc.put("max_soc", soc.getValue());
+            return cc;
+        }
         return cmJson;
     }
 }
