@@ -44,7 +44,7 @@ public class Slf4jOutputStream extends OutputStream {
     public void write(int b) {
         if (b == '\n') {
             flush();
-        } else {
+        } else if (b != '\r') {
             getBuffer().write(b);
         }
     }
