@@ -12,13 +12,7 @@
  */
 package org.openhab.binding.chatgpt.internal;
 
-import static org.openhab.binding.chatgpt.internal.ChatGPTBindingConstants.DEFAULT_BASE_URL;
-import static org.openhab.binding.chatgpt.internal.ChatGPTBindingConstants.DEFAULT_MAX_TOKENS;
-import static org.openhab.binding.chatgpt.internal.ChatGPTBindingConstants.DEFAULT_MAX_TOOL_CALLS;
-import static org.openhab.binding.chatgpt.internal.ChatGPTBindingConstants.DEFAULT_MODEL;
-import static org.openhab.binding.chatgpt.internal.ChatGPTBindingConstants.DEFAULT_REQUEST_TIMEOUT;
-import static org.openhab.binding.chatgpt.internal.ChatGPTBindingConstants.DEFAULT_TEMPERATURE;
-import static org.openhab.binding.chatgpt.internal.ChatGPTBindingConstants.DEFAULT_TOP_P;
+import static org.openhab.binding.chatgpt.internal.ChatGPTBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 

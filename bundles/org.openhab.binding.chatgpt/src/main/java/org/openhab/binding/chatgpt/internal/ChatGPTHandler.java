@@ -12,11 +12,7 @@
  */
 package org.openhab.binding.chatgpt.internal;
 
-import static org.openhab.binding.chatgpt.internal.ChatGPTBindingConstants.DEFAULT_MAX_TOKENS;
-import static org.openhab.binding.chatgpt.internal.ChatGPTBindingConstants.DEFAULT_MODEL;
-import static org.openhab.binding.chatgpt.internal.ChatGPTBindingConstants.DEFAULT_SYSTEM_MESSAGE;
-import static org.openhab.binding.chatgpt.internal.ChatGPTBindingConstants.DEFAULT_TEMPERATURE;
-import static org.openhab.binding.chatgpt.internal.ChatGPTBindingConstants.DEFAULT_TOP_P;
+import static org.openhab.binding.chatgpt.internal.ChatGPTBindingConstants.*;
 
 import java.util.Collection;
 import java.util.List;
@@ -83,11 +79,11 @@ public class ChatGPTHandler extends BaseThingHandler {
 
             if (client != null) {
                 final var timeout = resolveTimeout(channelUID);
-                final ChatGPTConfiguration c = config;
-                String model = (c != null && !c.model.isBlank()) ? c.model : DEFAULT_MODEL;
-                double temp = c != null ? c.temperature : DEFAULT_TEMPERATURE;
-                double topP = c != null ? c.topP : DEFAULT_TOP_P;
-                int maxTokens = c != null ? c.maxTokens : DEFAULT_MAX_TOKENS;
+                final ChatGPTConfiguration config = this.config;
+                String model = (config != null && !config.model.isBlank()) ? config.model : DEFAULT_MODEL;
+                double temp = config != null ? config.temperature : DEFAULT_TEMPERATURE;
+                double topP = config != null ? config.topP : DEFAULT_TOP_P;
+                int maxTokens = config != null ? config.maxTokens : DEFAULT_MAX_TOKENS;
                 String systemMessage = DEFAULT_SYSTEM_MESSAGE;
 
                 ChatGPTChannelConfiguration channelConfig = channel.getConfiguration()
