@@ -53,7 +53,8 @@ public class UnifiAccessLogPayloadBuilder {
         putIfNonNull(insight, "doorId", doorId);
         String doorName = (data.metadata != null && data.metadata.door != null) ? data.metadata.door.displayName : null;
         putIfNonNull(insight, "doorName", doorName);
-        String deviceId = (data.metadata != null && data.metadata.device != null) ? data.metadata.device.id : null;
+        String deviceId = (data.metadata != null && data.metadata.device != null && !data.metadata.device.isEmpty()
+                && data.metadata.device.get(0) != null) ? data.metadata.device.get(0).id : null;
         putIfNonNull(insight, "deviceId", deviceId);
         putIfNonNull(insight, "cameraId", cameraId);
         return gson.toJson(insight);
@@ -80,6 +81,11 @@ public class UnifiAccessLogPayloadBuilder {
         if (data.source.actor != null) {
             putIfNonNull(logMap, "actorName", data.source.actor.displayName);
         }
+        if (data.source.authentication != null) {
+            putIfNonNull(logMap, "credentialProvider", data.source.authentication.credentialProvider);
+        }
+        putIfNonNull(logMap, "doorName", targetDisplayName(data, "door"));
+        putIfNonNull(logMap, "userStatus", targetDisplayName(data, "user_status"));
         return gson.toJson(logMap);
     }
 
@@ -100,8 +106,29 @@ public class UnifiAccessLogPayloadBuilder {
         }
         if (data.source.event != null) {
             putIfNonNull(accessMap, "message", data.source.event.displayMessage);
+            putIfNonNull(accessMap, "result", data.source.event.result);
+            putIfNonNull(accessMap, "published", data.source.event.published);
         }
+        putIfNonNull(accessMap, "doorName", targetDisplayName(data, "door"));
+        putIfNonNull(accessMap, "userStatus", targetDisplayName(data, "user_status"));
         return gson.toJson(accessMap);
+    }
+
+    /**
+     * Extracts the {@code displayName} of the first {@code _source.target} entry matching the given
+     * {@code type} (e.g. {@code "door"} or {@code "user_status"}). The UniFi Access log event carries
+     * these as typed references in the target array rather than as dedicated fields.
+     *
+     * @param data the log data
+     * @param type the target {@code type} to look for
+     * @return the matching non-empty display name, or {@code null} if absent
+     */
+    private static @Nullable String targetDisplayName(LogsAddData data, String type) {
+        if (data.source.target == null) {
+            return null;
+        }
+        return data.source.target.stream().filter(t -> type.equalsIgnoreCase(t.type)).map(t -> t.displayName)
+                .filter(v -> v != null && !v.isEmpty()).findFirst().orElse(null);
     }
 
     private static void putIfNonNull(Map<String, Object> map, String key, @Nullable Object value) {
