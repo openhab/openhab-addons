@@ -74,7 +74,7 @@ public final class DoorbirdAPI {
         return (GSON);
     }
 
-    public static <T> T fromJson(String json, Class<T> dataClass) {
+    public static <T> @Nullable T fromJson(String json, Class<T> dataClass) {
         return GSON.fromJson(json, dataClass);
     }
 
