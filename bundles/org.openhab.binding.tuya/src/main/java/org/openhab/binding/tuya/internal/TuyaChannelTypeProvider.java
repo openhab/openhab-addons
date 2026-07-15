@@ -305,49 +305,55 @@ public class TuyaChannelTypeProvider implements ChannelTypeProvider {
                 category = "slider";
                 configurationRef = "channel-type:tuya:dimmer";
                 tags.add(schemaDp.readOnly ? "Status" : "Control");
-                tags.add("Brightness");
-            } else if (!schemaDp.unit.isEmpty()) {
-                Unit<?> unit = schemaDp.parsedUnit;
-                if (unit == null) {
-                    unit = UnitUtils.parseUnit(schemaDp.unit);
-                    schemaDp.parsedUnit = unit;
-                }
+                tags.add("temp_value".equals(schemaDp.code) ? "ColorTemperature" : "Brightness");
 
-                if (unit != null) {
-                    String dimension = UnitUtils.getDimensionName(unit);
-                    if (dimension != null) {
-                        acceptedItemType = NUMBER + ":" + dimension;
-                        category = dimensionToCategory.getOrDefault(dimension, category);
-                        tags.add(schemaDp.readOnly ? "Measurement"
-                                : ("Time".equals(dimension) ? "Control" : "Setpoint"));
-                        String tag = dimensionToSemanticProperty.get(dimension);
-                        if (tag != null) {
-                            tags.add(tag);
-                        }
-                    } else {
-                        logger.warn("Channel {} has unit \"{}\" but openHAB doesn't know the dimension", channelTypeId,
-                                schemaDp.unit);
-
-                        tags.add(schemaDp.readOnly ? "Status" : "Setpoint");
-                    }
-                }
+                stateDescriptionFragmentBuilder = StateDescriptionFragmentBuilder.create() //
+                        .withReadOnly(schemaDp.readOnly) //
+                        .withStep(schemaDp.step);
             } else {
-                tags.add(schemaDp.readOnly ? "Status" : "Setpoint");
-            }
+                if (!schemaDp.unit.isEmpty()) {
+                    Unit<?> unit = schemaDp.parsedUnit;
+                    if (unit == null) {
+                        unit = UnitUtils.parseUnit(schemaDp.unit);
+                        schemaDp.parsedUnit = unit;
+                    }
 
-            stateDescriptionFragmentBuilder = StateDescriptionFragmentBuilder.create() //
-                    .withReadOnly(schemaDp.readOnly) //
-                    .withStep(schemaDp.step) //
-                    .withPattern("%." + schemaDp.scale + "f " + ("%".equals(schemaDp.unit) ? "%%" : "%unit%"));
+                    if (unit != null) {
+                        String dimension = UnitUtils.getDimensionName(unit);
+                        if (dimension != null) {
+                            acceptedItemType = NUMBER + ":" + dimension;
+                            category = dimensionToCategory.getOrDefault(dimension, category);
+                            tags.add(schemaDp.readOnly ? "Measurement"
+                                    : ("Time".equals(dimension) ? "Control" : "Setpoint"));
+                            String tag = dimensionToSemanticProperty.get(dimension);
+                            if (tag != null) {
+                                tags.add(tag);
+                            }
+                        } else {
+                            logger.warn("Channel {} has unit \"{}\" but openHAB doesn't know the dimension",
+                                    channelTypeId, schemaDp.unit);
 
-            Double min = schemaDp.min;
-            if (min != null) {
-                stateDescriptionFragmentBuilder.withMinimum(new BigDecimal(min));
-            }
+                            tags.add(schemaDp.readOnly ? "Status" : "Setpoint");
+                        }
+                    }
+                } else {
+                    tags.add(schemaDp.readOnly ? "Status" : "Setpoint");
+                }
 
-            Double max = schemaDp.max;
-            if (max != null) {
-                stateDescriptionFragmentBuilder.withMaximum(new BigDecimal(max));
+                stateDescriptionFragmentBuilder = StateDescriptionFragmentBuilder.create() //
+                        .withReadOnly(schemaDp.readOnly) //
+                        .withStep(schemaDp.step) //
+                        .withPattern("%." + schemaDp.scale + "f " + ("%".equals(schemaDp.unit) ? "%%" : "%unit%"));
+
+                Double min = schemaDp.min;
+                if (min != null) {
+                    stateDescriptionFragmentBuilder.withMinimum(new BigDecimal(min));
+                }
+
+                Double max = schemaDp.max;
+                if (max != null) {
+                    stateDescriptionFragmentBuilder.withMaximum(new BigDecimal(max));
+                }
             }
         } else {
             logger.warn("Don't know how to build a channel type for schema entry {} type {} - using string",
