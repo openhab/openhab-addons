@@ -216,7 +216,7 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
                         getLocalizedMessage(ERROR_KEY_TECHNICAL_PROBLEM, DEFAULT_ERROR_TECHNICAL_PROBLEM, locale));
             }
 
-            String finishReason = chatResponse.getChoices().get(0).getFinishReason();
+            String finishReason = chatResponse.getChoices().getFirst().getFinishReason();
             if ("length".equals(finishReason)) {
                 logger.warn("Token length exceeded. Increase maximum token limit to avoid the issue.");
                 throw new InterpretationException(
@@ -224,7 +224,7 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
             }
 
             @Nullable
-            ChatMessage chatResponseMessage = chatResponse.getChoices().get(0).getChatMessage();
+            ChatMessage chatResponseMessage = chatResponse.getChoices().getFirst().getChatMessage();
             if (chatResponseMessage == null) {
                 logger.warn("ChatGPT response does not contain a message.");
                 throw new InterpretationException(
