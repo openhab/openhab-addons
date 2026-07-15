@@ -12,7 +12,7 @@ The binding focuses on reporting the device status and device control.
 Initial setup and device configuration has to be performed using the Shelly Apps (Web UI or Smartphone App).
 The binding gets in sync with the next status refresh.
 
-**Check channel deprecated-channel and migration handling [Channels](#channels) section below.**
+**If you're upgrading, check the channel migration and deprecated-channel notes in the [Channels](#channels) section below.**
 
 Refer to [Advanced Users](doc/AdvancedUsers.md) for more information on openHAB Shelly integration, e.g. firmware update, network communication or log filtering.
 
@@ -363,12 +363,7 @@ Devices that measure bidirectional energy flow (3EM, EM-50, EM Mini, solar/grid-
 Single-clamp devices (EM Mini, Pro EM-50 single clamp) report the clamp's own returned-energy total; the same value doubles as the device-level total when only one clamp is present.
 Three-phase devices (Pro 3EM) report returned energy per phase and an aggregated device-level total across all phases.
 
-### Important: Deprecated channels in openHAB 5.2.1+
-
-openHAB 5.2.1 renamed several meter-related channels for naming consistency (e.g. `currentWatts` → `currentPower`, `totalKWH` → `totalEnergy`).
-Migration happens automatically, once, at Thing startup — no re-discovery is required.
-Old channel IDs stay active as deprecated, advanced channels and keep receiving updates, so existing item links and rules keep working; move to the new channel ID at your convenience since deprecated channels will be removed in a future release.
-See [Channel Migration and Deprecated Channels](#channel-migration-and-deprecated-channels) for the full old-to-new channel mapping.
+openHAB 5.2.1 renamed several meter-related channels; see [Channel Migration and Deprecated Channels](#channel-migration-and-deprecated-channels) for the full old-to-new mapping.
 
 ### Thing Status
 

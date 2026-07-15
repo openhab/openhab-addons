@@ -29,6 +29,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceS
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
+@SuppressWarnings("null")
 public class Shelly2ApiClientTest {
 
     private ShellySettingsStatus newStatusWithEmeters(int count) {

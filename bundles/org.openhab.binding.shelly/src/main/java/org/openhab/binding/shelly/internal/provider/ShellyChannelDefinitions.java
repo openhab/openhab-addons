@@ -433,7 +433,7 @@ public class ShellyChannelDefinitions {
         List<ShellySettingsRelay> relays = profile.settings.relays;
         if (relays != null) {
             ShellySettingsRelay rs = relays.get(idx);
-            addChannel(thing, add, getBool(rs.isValid), group, CHANNEL_OUTPUT);
+            addChannel(thing, add, rs.isValid == null || rs.isValid, group, CHANNEL_OUTPUT);
             addChannel(thing, add, rs.name != null, group, CHANNEL_OUTPUT_NAME);
 
             boolean timer = rs.hasTimer != null || rstatus.hasTimer != null; // Dimmer 1/2 have

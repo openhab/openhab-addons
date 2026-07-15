@@ -275,7 +275,14 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         profile.fwDate = substringBefore(substringBefore(device.fw, "/"), "-");
         profile.fwVersion = profile.status.update.oldVersion = ShellyDeviceProfile
                 .extractFwVersion(profile.settings.fw);
-        profile.status.hasUpdate = profile.status.update.hasUpdate = false;
+        // Only default to "no update" the first time; getStatus() is the authoritative source for this flag
+        // on every subsequent poll, and a settings-only refresh must not wipe its last known result.
+        if (profile.status.hasUpdate == null) {
+            profile.status.hasUpdate = false;
+        }
+        if (profile.status.update.hasUpdate == null) {
+            profile.status.update.hasUpdate = false;
+        }
 
         if (dc.eth != null) {
             profile.settings.ethernet = getBool(dc.eth.enable);
@@ -296,7 +303,8 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             // Preserve the existing relay list when the relay count is unchanged. Unconditional reset
             // would wipe ison/isValid just reported by a NotifyStatus event racing this profile refresh
             // (race condition: getDeviceProfile → onNotifyStatus → updateRelayStatus).
-            if (profile.status.relays == null || profile.status.relays.size() != profile.numRelays) {
+            if (profile.status.relays == null || profile.status.relays.size() != profile.numRelays
+                    || relayStatus.relays == null || relayStatus.relays.size() != profile.numRelays) {
                 profile.status.relays = new ArrayList<>(profile.numRelays);
                 relayStatus.relays = new ArrayList<>(profile.numRelays);
                 for (int i = 0; i < profile.numRelays; i++) {
