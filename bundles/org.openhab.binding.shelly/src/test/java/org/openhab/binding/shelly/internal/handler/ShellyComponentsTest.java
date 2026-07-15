@@ -33,6 +33,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyEMNCurre
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyEMNCurrentStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsEMeter;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsMeter;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRelay;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtAnalogInput;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtDigitalInput;
@@ -131,6 +132,44 @@ public class ShellyComponentsTest {
 
         assertThat(ShellyComponents.updateTempChannel(sensor, handler, CHANNEL_ESENSOR_TEMP1), is(false));
         verify(handler, never()).updateChannel(anyString(), anyString(), any());
+    }
+
+    @Test
+    void updateRelaySkipsOutputChannelWhenIsonNull() {
+        // Regression test: a profile refresh racing a NotifyStatus event can leave ison null for a
+        // cycle. updateRelay() must not flatten that to OFF via getOnOff(null).
+        ShellyBaseHandler handler = relayUpdateHandler();
+        ShellyComponents.updateRelay(handler, statusWithRelayIson(null), 0);
+        verify(handler, never()).updateChannel(anyString(), eq(CHANNEL_OUTPUT), any());
+    }
+
+    @Test
+    void updateRelayPushesOutputChannelWhenIsonKnown() {
+        // Companion case: a known state must still be pushed, guarding against the null-check above
+        // being accidentally inverted.
+        ShellyBaseHandler handler = relayUpdateHandler();
+        ShellyComponents.updateRelay(handler, statusWithRelayIson(true), 0);
+        verify(handler).updateChannel(anyString(), eq(CHANNEL_OUTPUT), eq(OnOffType.ON));
+    }
+
+    private static ShellyBaseHandler relayUpdateHandler() {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUS1PM);
+        profile.numRelays = 1;
+        profile.settings.relays = new ArrayList<>(List.of(new ShellySettingsRelay()));
+
+        ShellyBaseHandler handler = mock(ShellyBaseHandler.class);
+        when(handler.getProfile()).thenReturn(profile);
+        when(handler.updateChannel(anyString(), anyString(), any())).thenReturn(true);
+        return handler;
+    }
+
+    private static ShellySettingsStatus statusWithRelayIson(@Nullable Boolean ison) {
+        ShellySettingsStatus status = new ShellySettingsStatus();
+        ShellySettingsRelay relay = new ShellySettingsRelay();
+        relay.isValid = true;
+        relay.ison = ison;
+        status.relays = new ArrayList<>(List.of(relay));
+        return status;
     }
 
     @Test

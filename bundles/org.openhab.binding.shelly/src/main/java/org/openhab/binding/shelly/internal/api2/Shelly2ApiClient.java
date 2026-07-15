@@ -275,7 +275,14 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         profile.fwDate = substringBefore(substringBefore(device.fw, "/"), "-");
         profile.fwVersion = profile.status.update.oldVersion = ShellyDeviceProfile
                 .extractFwVersion(profile.settings.fw);
-        profile.status.hasUpdate = profile.status.update.hasUpdate = false;
+        // Only default to "no update" the first time; getStatus() is the authoritative source for this flag
+        // on every subsequent poll, and a settings-only refresh must not wipe its last known result.
+        if (profile.status.hasUpdate == null) {
+            profile.status.hasUpdate = false;
+        }
+        if (profile.status.update.hasUpdate == null) {
+            profile.status.update.hasUpdate = false;
+        }
 
         if (dc.eth != null) {
             profile.settings.ethernet = getBool(dc.eth.enable);
@@ -293,11 +300,17 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         }
 
         if (profile.hasRelays) {
-            profile.status.relays = new ArrayList<>(profile.numRelays);
-            relayStatus.relays = new ArrayList<>(profile.numRelays);
-            for (int i = 0; i < profile.numRelays; i++) {
-                profile.status.relays.add(new ShellySettingsRelay());
-                relayStatus.relays.add(new ShellyShortStatusRelay());
+            // Preserve the existing relay list when the relay count is unchanged. Unconditional reset
+            // would wipe ison/isValid just reported by a NotifyStatus event racing this profile refresh
+            // (race condition: getDeviceProfile → onNotifyStatus → updateRelayStatus).
+            if (profile.status.relays == null || profile.status.relays.size() != profile.numRelays
+                    || relayStatus.relays == null || relayStatus.relays.size() != profile.numRelays) {
+                profile.status.relays = new ArrayList<>(profile.numRelays);
+                relayStatus.relays = new ArrayList<>(profile.numRelays);
+                for (int i = 0; i < profile.numRelays; i++) {
+                    profile.status.relays.add(new ShellySettingsRelay());
+                    relayStatus.relays.add(new ShellyShortStatusRelay());
+                }
             }
         }
 
@@ -469,7 +482,6 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         rsettings.id = cs.id;
         rsettings.isValid = cs.id != null;
         rsettings.name = cs.name;
-        rsettings.ison = false;
         rsettings.autoOn = getBool(cs.autoOn) ? cs.autoOnDelay : 0;
         rsettings.autoOff = getBool(cs.autoOff) ? cs.autoOffDelay : 0;
         rsettings.hasTimer = false;
@@ -509,7 +521,6 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         rsettings.id = cs.id;
         rsettings.isValid = cs.id != null;
         rsettings.name = cs.name;
-        rsettings.ison = false;
         relays.add(rsettings);
     }
 
@@ -787,7 +798,10 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         return wh;
     }
 
-    private void applyEm1Data(ShellySettingsStatus status, int slotIdx, @Nullable Shelly2DeviceStatusEmData emData) {
+    /**
+     * Apply em1data:N (single-phase clamp) totals to status.emeters[slotIdx]. Package-private for unit testing.
+     */
+    static void applyEm1Data(ShellySettingsStatus status, int slotIdx, @Nullable Shelly2DeviceStatusEmData emData) {
         if (emData == null || status.emeters == null || slotIdx < 0 || slotIdx >= status.emeters.size()) {
             return;
         }
