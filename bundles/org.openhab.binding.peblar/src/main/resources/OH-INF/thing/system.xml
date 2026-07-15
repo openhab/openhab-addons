@@ -28,7 +28,7 @@
 		<label>Product Part Number</label>
 		<description>Product part number of the Peblar charger</description>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
 			<tag>Info</tag>
 		</tags>
 		<state readOnly="true"/>
@@ -39,7 +39,7 @@
 		<label>Product Serial Number</label>
 		<description>Product serial number of the Peblar charger</description>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
 			<tag>Info</tag>
 		</tags>
 		<state readOnly="true"/>
@@ -50,7 +50,7 @@
 		<label>Firmware Version</label>
 		<description>Currently installed firmware version</description>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
 			<tag>Info</tag>
 		</tags>
 		<state readOnly="true"/>
@@ -85,7 +85,7 @@
 		<label>Uptime</label>
 		<description>Device uptime in seconds since last reboot</description>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Calculation</tag>
 			<tag>Duration</tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>

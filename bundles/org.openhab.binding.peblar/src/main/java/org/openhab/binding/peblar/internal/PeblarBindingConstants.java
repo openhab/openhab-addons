@@ -55,7 +55,7 @@ class PeblarBindingConstants {
     public static final String CHANNEL_CHARGE_CURRENT_LIMIT = "ev-interface#charge-current-limit";
     public static final String CHANNEL_CHARGE_CURRENT_LIMIT_SOURCE = "ev-interface#charge-current-limit-source";
     public static final String CHANNEL_CHARGE_CURRENT_LIMIT_ACTUAL = "ev-interface#charge-current-limit-actual";
-    public static final String CHANNEL_FORCE_1_PHASE = "ev-interface#force1Phase";
+    public static final String CHANNEL_FORCE_1_PHASE = "ev-interface#force1-phase";
 
     // System channels
     public static final String CHANNEL_PRODUCT_PN = "system#product-pn";
