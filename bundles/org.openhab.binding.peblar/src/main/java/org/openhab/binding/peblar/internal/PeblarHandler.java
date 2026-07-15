@@ -108,9 +108,9 @@ class PeblarHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         final PeblarApiClient client = apiClient;
 
-        if (client == null)
+        if (client == null) {
             return;
-
+        }
         if (command instanceof RefreshType) {
             updateChannel(channelUID.getId());
             return;
