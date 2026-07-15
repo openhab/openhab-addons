@@ -40,6 +40,9 @@ public class ChatGPTLLMToolCall extends LLMToolCall {
         if (call == null) {
             throw new JsonSyntaxException("Deserialized ChatGPTLLMToolCall is null.");
         }
+        if (call.tool == null || call.params == null) {
+            throw new JsonSyntaxException("Deserialized ChatGPTLLMToolCall has null tool or params.");
+        }
         return call;
     }
 }
