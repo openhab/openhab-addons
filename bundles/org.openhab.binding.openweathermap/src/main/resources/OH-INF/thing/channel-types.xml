@@ -373,6 +373,32 @@
 		</channels>
 	</channel-group-type>
 
+	<channel-group-type id="oneCallForecast">
+		<label>One Call Forecast</label>
+		<description>Unified 5-day weather forecast TimeSeries merging One Call API 3.0 hourly data (0–48 h) with Forecast5
+			3-hourly data (48–120 h). The dew-point and uvindex channels are only populated for the 0–48 h window.</description>
+		<channels>
+			<channel id="condition" typeId="condition"/>
+			<channel id="condition-id" typeId="condition-id"/>
+			<channel id="icon" typeId="condition-icon"/>
+			<channel id="icon-id" typeId="condition-icon-id"/>
+			<channel id="temperature" typeId="system.outdoor-temperature"/>
+			<channel id="apparent-temperature" typeId="apparent-temperature"/>
+			<channel id="pressure" typeId="system.barometric-pressure"/>
+			<channel id="humidity" typeId="system.atmospheric-humidity"/>
+			<channel id="dew-point" typeId="dew-point"/>
+			<channel id="uvindex" typeId="uvindex"/>
+			<channel id="wind-speed" typeId="system.wind-speed"/>
+			<channel id="wind-direction" typeId="system.wind-direction"/>
+			<channel id="gust-speed" typeId="gust-speed"/>
+			<channel id="cloudiness" typeId="cloudiness"/>
+			<channel id="precip-probability" typeId="precip-probability"/>
+			<channel id="rain" typeId="rain"/>
+			<channel id="snow" typeId="snow"/>
+			<channel id="visibility" typeId="visibility"/>
+		</channels>
+	</channel-group-type>
+
 	<!-- Channels for OpenWeatherMap Binding -->
 	<channel-type id="station-id">
 		<item-type>String</item-type>
