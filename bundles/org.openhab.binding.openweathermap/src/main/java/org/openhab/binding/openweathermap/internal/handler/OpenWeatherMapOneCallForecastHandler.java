@@ -427,9 +427,7 @@ public class OpenWeatherMapOneCallForecastHandler extends AbstractOpenWeatherMap
                 break;
             case CHANNEL_PRECIP_PROBABILITY:
                 Double pop = slot.getPop();
-                if (pop != null) {
-                    state = getQuantityTypeState(pop * 100.0, PERCENT);
-                }
+                state = getQuantityTypeState(pop == null ? 0 : pop * 100.0, PERCENT);
                 break;
             case CHANNEL_RAIN:
                 Precipitation rain = slot.getRain();
