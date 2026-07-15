@@ -54,8 +54,6 @@ import com.google.gson.Gson;
 public class OtherDeviceHandler extends RingDeviceHandler {
     private int lastBattery = -1;
     private long lastSnapshotTimestamp = -1;
-    private long lastSnapshotCheckTime = 0;
-    private static final long SNAPSHOT_POLL_INTERVAL_MS = 10 * 60 * 1000;
     private TimeZoneProvider timeZoneProvider;
     private boolean batterySupport = false;
     private boolean openDoorSupport = false;

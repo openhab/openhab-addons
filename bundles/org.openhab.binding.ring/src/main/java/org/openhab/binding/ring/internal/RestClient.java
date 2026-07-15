@@ -171,11 +171,11 @@ public class RestClient {
             validateResponse(response);
             result = response.getContentAsString();
         } catch (ExecutionException | RejectedExecutionException e) {
-            logger.debug("HttpClient is stopped (OSGi lifecycle restart). Aborting POST request quietly.");
+            logger.debug("HttpClient is stopped (OSGi lifecycle restart). Aborting GET request quietly.");
             throw new AuthenticationException("HttpClient is stopped.");
         } catch (TimeoutException e) {
-            logger.warn("RestApi error in postRequest!", e);
-            throw new AuthenticationException("Communication error during POST request: " + e.getMessage());
+            logger.warn("RestApi error in getRequest!", e);
+            throw new AuthenticationException("Communication error during GET request: " + e.getMessage());
         } catch (InterruptedException e) {
             logger.warn("RestApi error in getRequest!", e);
             Thread.currentThread().interrupt();

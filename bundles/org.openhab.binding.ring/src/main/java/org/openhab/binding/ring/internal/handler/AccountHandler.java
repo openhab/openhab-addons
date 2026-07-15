@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -90,7 +89,6 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     private @Nullable ScheduledFuture<?> jobTokenRefresh = null;
     private @Nullable ScheduledFuture<?> eventRefresh = null;
     private @Nullable ScheduledFuture<?> fcmRetryJob = null;
-    private final Map<String, ScheduledFuture<?>> fallbackJobs = new ConcurrentHashMap<>();
     private @Nullable FcmClient fcmClient;
     private final HttpClient httpClient;
     private boolean isPolling = false;
@@ -497,7 +495,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
             logger.debug("Binding FCM Token with Ring backend...");
             restClient.subscribeToPushNotifications(creds.fcmToken(), config.hardwareId, tokens);
 
-            fcmClient = new FcmClient(this::handlePushEvent, this::onFcmStateChanged, creds);
+            fcmClient = new FcmClient(this::handlePushEvent, this::onFcmStateChanged);
             fcmClient.connect(creds.androidId(), creds.securityToken());
 
             if (registry != null && !getAllDevices().isEmpty()) {

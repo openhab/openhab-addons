@@ -127,16 +127,9 @@ public abstract class RingDeviceHandler extends AbstractRingHandler {
      * Receives instant event metadata (motion/dings) pushed down from the Account Bridge
      */
     protected void updateInstantEvent(DateTimeType createdAt, String kind, String extendedDescription) {
-        logger.info("createdAt {}, kind {}, extendedDescription {}", createdAt, kind, extendedDescription);
-        if (createdAt != null) {
-            updateState(CHANNEL_EVENT_CREATED_AT, createdAt);
-        }
-        if (kind != null && !kind.isEmpty()) {
-            updateState(CHANNEL_EVENT_KIND, new StringType(kind));
-        }
-        if (extendedDescription != null && !extendedDescription.isEmpty()) {
-            updateState(CHANNEL_EVENT_EXTENDED_DESCRIPTION, new StringType(extendedDescription));
-        }
+        updateState(CHANNEL_EVENT_CREATED_AT, createdAt);
+        updateState(CHANNEL_EVENT_KIND, new StringType(kind));
+        updateState(CHANNEL_EVENT_EXTENDED_DESCRIPTION, new StringType(extendedDescription));
     }
 
     /**

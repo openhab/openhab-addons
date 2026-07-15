@@ -59,13 +59,10 @@ public class FcmClient {
 
     private final PushEventCallback eventCallback;
     private final Consumer<Boolean> stateCallback;
-    private final FcmRegistrar.FcmCredentials credentials;
 
-    public FcmClient(PushEventCallback eventCallback, Consumer<Boolean> stateCallback,
-            FcmRegistrar.FcmCredentials credentials) {
+    public FcmClient(PushEventCallback eventCallback, Consumer<Boolean> stateCallback) {
         this.eventCallback = eventCallback;
         this.stateCallback = stateCallback;
-        this.credentials = credentials;
     }
 
     public void connect(String androidId, String securityToken) {
