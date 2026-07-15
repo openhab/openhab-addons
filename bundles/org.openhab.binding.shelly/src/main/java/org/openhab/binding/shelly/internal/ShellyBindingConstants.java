@@ -122,7 +122,6 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_EMETER_CURRENT = "current";
     public static final String CHANNEL_EMETER_FREQUENCY = "frequency";
     public static final String CHANNEL_EMETER_PFACTOR = "powerFactor";
-    public static final String CHANNEL_EMETER_RESETTOTAL = "resetTotals";
     public static final String CHANNEL_GROUP_NMETER = "nmeter";
     public static final String CHANNEL_NMETER_CURRENT = "ncurrent";
     public static final String CHANNEL_NMETER_IXSUM = "ixsum";
@@ -230,7 +229,6 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_DEVST_TOTALKWH = "totalKWH"; // deprecated (device group), use
                                                                     // CHANNEL_DEVST_TOTALENERGY
     public static final String CHANNEL_DEVST_TOTALENERGY = "totalEnergy";
-    public static final String CHANNEL_DEVST_RESETTOTAL = CHANNEL_EMETER_RESETTOTAL;
 
     public static final String CHANNEL_DEVST_CHARGER = "charger";
     public static final String CHANNEL_DEVST_UPDATE = "updateAvailable";

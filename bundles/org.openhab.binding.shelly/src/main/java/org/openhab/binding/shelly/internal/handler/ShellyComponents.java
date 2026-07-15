@@ -135,7 +135,10 @@ public class ShellyComponents {
                 thingHandler.postEvent(ALARM_TYPE_OVERPOWER, false);
             }
 
-            updated |= thingHandler.updateChannel(groupName, CHANNEL_OUTPUT, getOnOff(relay.ison));
+            if (relay.ison != null) {
+                // null means no cycle has reported the output state yet - don't flatten that to OFF
+                updated |= thingHandler.updateChannel(groupName, CHANNEL_OUTPUT, getOnOff(relay.ison));
+            }
             updated |= thingHandler.updateChannel(groupName, CHANNEL_TIMER_ACTIVE, getOnOff(relay.hasTimer));
             if (status.extSwitch != null) {
                 if (status.extSwitch.input0 != null) {

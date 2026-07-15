@@ -379,6 +379,26 @@ public class Shelly2GetDeviceProfileTest {
     }
 
     @Test
+    void initProfilePreservesRelayIsonWhenCountUnchanged() throws ShellyApiException {
+        // Regression test for the disable/enable channel-flip-to-OFF bug: a NotifyStatus event can set
+        // ison before initProfile() runs again in the same refreshStatus() cycle (refreshSettings=true).
+        // Unconditionally rebuilding the relay list would wipe ison back to null, which then gets
+        // flattened to OFF by getOnOff(null) in ShellyComponents.updateRelay().
+        Gson gson = new Gson();
+        StubApiClient client = new StubApiClient(discoveryConfig(), withSwitch0(gson));
+        ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYPLUS1PM, deviceInfo());
+        assertThat(profile.status.relays.size(), is(1));
+
+        // Simulate a NotifyStatus event reporting the relay is ON
+        profile.status.relays.get(0).ison = true;
+
+        // Second call simulates getProfile(refreshSettings=true) in the same refreshStatus() cycle
+        client.getDeviceProfile(THING_TYPE_SHELLYPLUS1PM, deviceInfo());
+
+        assertThat("relay ison preserved across profile refresh", profile.status.relays.get(0).ison, is(true));
+    }
+
+    @Test
     void emdata0TotalRetKWHDeserializedFromJson() {
         Gson gson = new Gson();
         String json = "{\"a_total_act_ret_energy\":500.0,\"b_total_act_ret_energy\":300.0,\"c_total_act_ret_energy\":200.0,"

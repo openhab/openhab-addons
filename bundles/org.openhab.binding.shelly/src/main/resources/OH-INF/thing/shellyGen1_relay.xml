@@ -783,12 +783,6 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="meterResetTotals">
-		<item-type>Switch</item-type>
-		<label>Reset Energy Measurements</label>
-		<description>Resets totals measurement data</description>
-	</channel-type>
-
 	<channel-type id="ncurrent">
 		<item-type unitHint="A">Number:ElectricCurrent</item-type>
 		<label>Neutral Current</label>
