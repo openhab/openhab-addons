@@ -14,7 +14,7 @@
 
   <properties>
     <node.version>v22.17.1</node.version>
-    <ohjs.version>v5.18.2</ohjs.version>
+    <ohjs.version>v5.20.0</ohjs.version>
   </properties>
 
   <dependencies>
