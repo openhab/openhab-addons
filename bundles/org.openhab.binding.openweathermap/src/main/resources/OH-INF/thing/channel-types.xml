@@ -373,8 +373,8 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="oneCallV3TimeSeries">
-		<label>One Call v3 TimeSeries</label>
+	<channel-group-type id="oneCallForecast">
+		<label>One Call Forecast</label>
 		<description>Unified 5-day weather forecast TimeSeries merging One Call API 3.0 hourly data (0–48 h) with Forecast5
 			3-hourly data (48–120 h). The dew-point and uvindex channels are only populated for the 0–48 h window.</description>
 		<channels>

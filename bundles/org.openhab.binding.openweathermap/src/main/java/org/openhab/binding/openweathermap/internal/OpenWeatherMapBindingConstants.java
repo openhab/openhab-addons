@@ -40,9 +40,8 @@ public class OpenWeatherMapBindingConstants {
     public static final ThingTypeUID THING_TYPE_ONECALL_WEATHER_AND_FORECAST = new ThingTypeUID(BINDING_ID, "onecall");
     // One Call API historical data
     public static final ThingTypeUID THING_TYPE_ONECALL_HISTORY = new ThingTypeUID(BINDING_ID, "onecall-history");
-    // One Call v3 TimeSeries (One Call API 3.0 hourly + Forecast5 extension)
-    public static final ThingTypeUID THING_TYPE_ONECALL_V3_TIMESERIES = new ThingTypeUID(BINDING_ID,
-            "onecall-v3-timeseries");
+    // One Call Forecast (One Call API 3.0 hourly + Forecast5 extension)
+    public static final ThingTypeUID THING_TYPE_ONECALL_FORECAST = new ThingTypeUID(BINDING_ID, "onecall-forecast");
 
     // List of all properties
     public static final String CONFIG_API_KEY = "apikey";
@@ -69,8 +68,8 @@ public class OpenWeatherMapBindingConstants {
             "oneCallCurrent");
     public static final ChannelGroupTypeUID CHANNEL_GROUP_TYPE_ONECALL_ALERTS = new ChannelGroupTypeUID(BINDING_ID,
             "oneCallAlerts");
-    public static final ChannelGroupTypeUID CHANNEL_GROUP_TYPE_ONECALL_V3_TIMESERIES = new ChannelGroupTypeUID(
-            BINDING_ID, "oneCallV3TimeSeries");
+    public static final ChannelGroupTypeUID CHANNEL_GROUP_TYPE_ONECALL_FORECAST = new ChannelGroupTypeUID(BINDING_ID,
+            "oneCallForecast");
 
     // List of all channel groups
     public static final String CHANNEL_GROUP_STATION = "station";

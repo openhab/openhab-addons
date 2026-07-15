@@ -55,13 +55,13 @@ import org.openhab.core.types.TimeSeries;
 import org.openhab.core.types.UnDefType;
 
 /**
- * Unit tests for {@link OpenWeatherMapOneCallV3TimeSeriesHandler} using real API responses
+ * Unit tests for {@link OpenWeatherMapOneCallForecastHandler} using real API responses
  * (Munich, lat=48.1374, lon=11.5755, {@code units=metric}).
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class OpenWeatherMapOneCallV3TimeSeriesHandlerTest {
+public class OpenWeatherMapOneCallForecastHandlerTest {
 
     private static final long DT_ONECALL_FIRST = 1_782_849_600L;
     private static final long DT_ONECALL_LAST = 1_783_018_800L;
@@ -96,9 +96,9 @@ public class OpenWeatherMapOneCallV3TimeSeriesHandlerTest {
         return thing;
     }
 
-    private static OpenWeatherMapOneCallV3TimeSeriesHandler createAndInitHandler(ThingHandlerCallback callback,
+    private static OpenWeatherMapOneCallForecastHandler createAndInitHandler(ThingHandlerCallback callback,
             Thing thing) {
-        OpenWeatherMapOneCallV3TimeSeriesHandler handler = spy(new OpenWeatherMapOneCallV3TimeSeriesHandler(thing));
+        OpenWeatherMapOneCallForecastHandler handler = spy(new OpenWeatherMapOneCallForecastHandler(thing));
         when(callback.isChannelLinked(any())).thenReturn(true);
         handler.setCallback(callback);
         handler.initialize();
@@ -114,7 +114,7 @@ public class OpenWeatherMapOneCallV3TimeSeriesHandlerTest {
         // Arrange
         Configuration config = createConfig();
         Thing thing = mockThing(config, CHANNEL_TEMPERATURE);
-        OpenWeatherMapOneCallV3TimeSeriesHandler handler = createAndInitHandler(callback, thing);
+        OpenWeatherMapOneCallForecastHandler handler = createAndInitHandler(callback, thing);
 
         OpenWeatherMapOneCallAPIData oneCallData = DataUtil.fromJson("onecall_v3_onecall.json",
                 OpenWeatherMapOneCallAPIData.class);
@@ -175,7 +175,7 @@ public class OpenWeatherMapOneCallV3TimeSeriesHandlerTest {
         // Arrange
         Configuration config = createConfig();
         Thing thing = mockThing(config, CHANNEL_DEW_POINT);
-        OpenWeatherMapOneCallV3TimeSeriesHandler handler = createAndInitHandler(callback, thing);
+        OpenWeatherMapOneCallForecastHandler handler = createAndInitHandler(callback, thing);
 
         OpenWeatherMapOneCallAPIData oneCallData = DataUtil.fromJson("onecall_v3_onecall.json",
                 OpenWeatherMapOneCallAPIData.class);

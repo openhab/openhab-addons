@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * The {@link OpenWeatherMapOneCallV3TimeSeriesHandler} provides a unified 5-day weather forecast
+ * The {@link OpenWeatherMapOneCallForecastHandler} provides a unified 5-day weather forecast
  * TimeSeries by merging data from two APIs:
  * <ul>
  * <li>One Call API 3.0 — current conditions + hourly forecast (0–48 h)</li>
@@ -58,30 +58,30 @@ import com.google.gson.JsonSyntaxException;
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class OpenWeatherMapOneCallV3TimeSeriesHandler extends AbstractOpenWeatherMapHandler {
+public class OpenWeatherMapOneCallForecastHandler extends AbstractOpenWeatherMapHandler {
 
     /** Maximum number of Forecast5 slots to request (40 × 3 h = 120 h). */
     private static final int FORECAST5_SLOT_COUNT = 40;
 
-    private final Logger logger = LoggerFactory.getLogger(OpenWeatherMapOneCallV3TimeSeriesHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(OpenWeatherMapOneCallForecastHandler.class);
 
     private @Nullable OpenWeatherMapOneCallAPIData oneCallData;
     private @Nullable OpenWeatherMapJsonHourlyForecastData forecast5Data;
 
-    public OpenWeatherMapOneCallV3TimeSeriesHandler(Thing thing) {
+    public OpenWeatherMapOneCallForecastHandler(Thing thing) {
         super(thing);
     }
 
     @Override
     public void initialize() {
         super.initialize();
-        logger.debug("Initialize OpenWeatherMapOneCallV3TimeSeriesHandler for thing '{}'.", getThing().getUID());
+        logger.debug("Initialize OpenWeatherMapOneCallForecastHandler for thing '{}'.", getThing().getUID());
     }
 
     @Override
     protected boolean requestData(OpenWeatherMapConnection connection)
             throws CommunicationException, ConfigurationException {
-        logger.debug("Update onecall-v3-timeseries data of thing '{}'.", getThing().getUID());
+        logger.debug("Update onecall-forecast data of thing '{}'.", getThing().getUID());
         try {
             // One Call 3.0: exclude minutely, daily and alerts — only current + hourly needed
             oneCallData = connection.getOneCallAPIData(location, true, false, true, true);
@@ -101,7 +101,7 @@ public class OpenWeatherMapOneCallV3TimeSeriesHandler extends AbstractOpenWeathe
             logger.debug("Cannot update {} as it has no GroupId", channelUID);
             return;
         }
-        logger.debug("OneCallV3TimeSeriesHandler: updateChannel {}, groupID {}", channelUID, channelGroupId);
+        logger.debug("OneCallForecastHandler: updateChannel {}, groupID {}", channelUID, channelGroupId);
         switch (channelGroupId) {
             case CHANNEL_GROUP_ONECALL_CURRENT:
                 updateCurrentChannel(channelUID);
@@ -110,7 +110,7 @@ public class OpenWeatherMapOneCallV3TimeSeriesHandler extends AbstractOpenWeathe
                 updateForecastTimeSeries(channelUID);
                 break;
             default:
-                logger.warn("Unknown channel group '{}' for onecall-v3-timeseries thing.", channelGroupId);
+                logger.warn("Unknown channel group '{}' for onecall-forecast thing.", channelGroupId);
                 break;
         }
     }
@@ -209,7 +209,7 @@ public class OpenWeatherMapOneCallV3TimeSeriesHandler extends AbstractOpenWeathe
                 state = (visState == null ? state : visState);
                 break;
             default:
-                logger.warn("Unknown channel id '{}' in onecall-v3-timeseries current data.", channelId);
+                logger.warn("Unknown channel id '{}' in onecall-forecast current data.", channelId);
                 break;
         }
         logger.debug("Update channel '{}' of group '{}' with new state '{}'.", channelId, channelGroupId, state);
@@ -344,7 +344,7 @@ public class OpenWeatherMapOneCallV3TimeSeriesHandler extends AbstractOpenWeathe
                 state = (visState == null ? state : visState);
                 break;
             default:
-                logger.warn("Unknown channel id '{}' in onecall-v3-timeseries One Call hourly data.", channelId);
+                logger.warn("Unknown channel id '{}' in onecall-forecast One Call hourly data.", channelId);
                 break;
         }
         return state;
@@ -447,7 +447,7 @@ public class OpenWeatherMapOneCallV3TimeSeriesHandler extends AbstractOpenWeathe
                 }
                 break;
             default:
-                logger.warn("Unknown channel id '{}' in onecall-v3-timeseries Forecast5 data.", channelId);
+                logger.warn("Unknown channel id '{}' in onecall-forecast Forecast5 data.", channelId);
                 break;
         }
         return state;

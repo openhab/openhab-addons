@@ -153,7 +153,7 @@
 		</parameter>
 	</config-description>
 
-	<config-description uri="thing-type:openweathermap:onecall-v3-timeseries">
+	<config-description uri="thing-type:openweathermap:onecall-forecast">
 		<parameter name="location" type="text" required="true">
 			<context>location</context>
 			<label>Location of Weather</label>
