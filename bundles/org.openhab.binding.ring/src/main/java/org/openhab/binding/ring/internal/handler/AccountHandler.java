@@ -667,7 +667,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                     if (scheduler != null && !scheduler.isShutdown()) {
                         scheduler.schedule(() -> {
                             updateChildSnapshots(deviceId, null);
-                        }, 3, java.util.concurrent.TimeUnit.SECONDS);
+                        }, 3, TimeUnit.SECONDS);
                     }
                 }
 
