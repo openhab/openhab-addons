@@ -46,6 +46,7 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketAdapter;
+import org.eclipse.jetty.websocket.api.WebSocketPingPongListener;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.unifi.internal.protect.api.pub.dto.ApiValueEnum;
@@ -508,8 +509,9 @@ public class UniFiProtectPublicClient implements Closeable {
                 upgrade.setHeader(h.getKey(), h.getValue());
             }
 
-            future.complete(wsClient.connect(new WebSocketAdapter() {
+            class WsAdapter extends WebSocketAdapter implements WebSocketPingPongListener {
                 private @Nullable ScheduledFuture<?> heartbeatTask;
+                private volatile long lastActivityMs;
 
                 @Override
                 public void onWebSocketConnect(@Nullable Session session) {
@@ -518,17 +520,28 @@ public class UniFiProtectPublicClient implements Closeable {
                         return;
                     }
                     super.onWebSocketConnect(session);
-                    // Schedule periodic ping frames as heartbeat
+                    lastActivityMs = System.currentTimeMillis();
+                    // Heartbeat: ping to keep the link warm, and - since a write-only
+                    // ping does NOT fail on a half-open socket - close the session when
+                    // no frame has been *received* within the window so onWebSocketClose
+                    // -> reconnect runs. Without this a dead socket stays "ONLINE" and
+                    // real-time updates stop indefinitely.
                     heartbeatTask = executorService.scheduleWithFixedDelay(() -> {
+                        Session s = getSession();
+                        if (s == null || !s.isOpen()) {
+                            return;
+                        }
+                        long silentMs = System.currentTimeMillis() - lastActivityMs;
+                        if (silentMs > 150_000L) {
+                            logger.debug("No WebSocket frames received in {} ms; closing to reconnect", silentMs);
+                            s.close(1001, "No data received");
+                            return;
+                        }
                         try {
-                            Session s = getSession();
-                            if (s != null && s.isOpen()) {
-                                s.getRemote().sendPing(ByteBuffer.allocate(0));
-                            }
+                            s.getRemote().sendPing(ByteBuffer.allocate(0));
                         } catch (IOException e) {
                             logger.debug("WebSocket heartbeat ping failed", e);
-                            session.close(1000, "WebSocket heartbeat ping failed");
-                            throw new IllegalStateException("WebSocket heartbeat ping failed", e);
+                            s.close(1000, "WebSocket heartbeat ping failed");
                         }
                     }, 30, 30, TimeUnit.SECONDS);
                     logger.debug("WebSocket connected: {}", wsUri);
@@ -538,6 +551,7 @@ public class UniFiProtectPublicClient implements Closeable {
 
                 @Override
                 public void onWebSocketText(@Nullable String message) {
+                    lastActivityMs = System.currentTimeMillis();
                     if (message != null) {
                         onText.accept(message);
                     }
@@ -562,7 +576,21 @@ public class UniFiProtectPublicClient implements Closeable {
                     onClosed.accept(statusCode, reason != null ? reason : "");
                     super.onWebSocketClose(statusCode, reason);
                 }
-            }, wsUri, upgrade).get());
+
+                @Override
+                public void onWebSocketPong(@Nullable ByteBuffer payload) {
+                    // Pong for our keepalive ping: proof the peer is still alive, so a
+                    // healthy-but-quiet link (the integration WS is sparse) is not
+                    // mistaken for dead by the received-frame staleness check.
+                    lastActivityMs = System.currentTimeMillis();
+                }
+
+                @Override
+                public void onWebSocketPing(@Nullable ByteBuffer payload) {
+                    // Jetty auto-replies with a pong; nothing to do here.
+                }
+            }
+            future.complete(wsClient.connect(new WsAdapter(), wsUri, upgrade).get());
         } catch (Exception e) {
             future.completeExceptionally(e);
         }

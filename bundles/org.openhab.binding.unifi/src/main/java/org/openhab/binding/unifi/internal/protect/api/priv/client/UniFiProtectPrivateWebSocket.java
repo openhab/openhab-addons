@@ -91,6 +91,10 @@ public class UniFiProtectPrivateWebSocket {
         this.wsClient = new WebSocketClient(httpClient);
         // Prevent wsClient.stop() from stopping the shared HttpClient instance
         this.wsClient.unmanage(httpClient);
+        // Detect a silently dead / half-open connection: Jetty closes the session
+        // when no frame is read within the window -> onWebSocketClose -> reconnect.
+        // Without this a dropped socket stays "ONLINE" and updates stop forever.
+        this.wsClient.setMaxIdleTimeout(150_000L);
 
         try {
             wsClient.start();
