@@ -43,6 +43,7 @@
 			<property name="host">NVR host address</property>
 			<property name="publicIp">Public IP address</property>
 			<property name="wanIp">WAN IP address</property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 		<config-description>
 			<parameter name="token" type="text" required="false">
@@ -128,6 +129,7 @@
 			<property name="firmwareVersion">Firmware version</property>
 			<property name="macAddress">MAC address</property>
 			<property name="ipAddress">IP address</property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 		<representation-property>deviceId</representation-property>
 		<config-description>
@@ -169,6 +171,7 @@
 			<property name="macAddress">MAC address</property>
 			<property name="ipAddress">IP address</property>
 			<property name="mountType">Sensor mounting type</property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 		<representation-property>deviceId</representation-property>
 		<config-description>
@@ -199,6 +202,7 @@
 			<property name="firmwareVersion">Firmware version</property>
 			<property name="macAddress">MAC address</property>
 			<property name="ipAddress">IP address</property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 		<representation-property>deviceId</representation-property>
 		<config-description>
@@ -228,6 +232,7 @@
 			<property name="firmwareVersion">Firmware version</property>
 			<property name="macAddress">MAC address</property>
 			<property name="ipAddress">IP address</property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 		<representation-property>deviceId</representation-property>
 		<config-description>
