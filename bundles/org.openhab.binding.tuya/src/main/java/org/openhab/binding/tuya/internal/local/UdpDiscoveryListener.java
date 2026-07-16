@@ -14,6 +14,7 @@ package org.openhab.binding.tuya.internal.local;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -102,7 +103,7 @@ public class UdpDiscoveryListener implements ChannelFutureListener {
                 logger.warn("Error starting Tuya UDP listener on port {}: {}", portVersion.port(), e.getMessage());
             }
             return null;
-        }).filter(channel -> channel != null).toList();
+        }).filter(Objects::nonNull).toList();
     }
 
     public void deactivate() {
