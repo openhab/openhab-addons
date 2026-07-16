@@ -105,7 +105,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
 
     // Scheduler
     protected @Nullable ScheduledFuture<?> refreshJob;
-
+    private static final long TOKEN_REFRESH_FREQUENCY_SECONDS = 2700;
     /**
      * The user profile retrieved when authenticating.
      */
@@ -744,7 +744,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                 } catch (JsonParseException e1) {
                     logger.debug("RestClient reported JsonParseException trying to get tokens: {}", e1.getMessage());
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Invalid response from api.ring.com");
+                            "@text/offline.comm-error.api-error");
                 }
             }
         }
@@ -833,7 +833,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         } catch (AuthenticationException e) {
             logger.warn("Failed to refresh Ring token. Network error or token revoked: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Token refresh failed - API Error");
+                    "@text/offline.comm-error.token-api-error");
         }
     }
 
@@ -856,7 +856,8 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         if (jobTokenRefresh != null && !jobTokenRefresh.isCancelled()) {
             jobTokenRefresh.cancel(true);
         }
-        jobTokenRefresh = scheduler.scheduleWithFixedDelay(this::refreshToken, 90, 2700, TimeUnit.SECONDS);
+        jobTokenRefresh = scheduler.scheduleWithFixedDelay(this::refreshToken, 90, TOKEN_REFRESH_FREQUENCY_SECONDS,
+                TimeUnit.SECONDS);
     }
 
     protected void stopSessionRefresh() {

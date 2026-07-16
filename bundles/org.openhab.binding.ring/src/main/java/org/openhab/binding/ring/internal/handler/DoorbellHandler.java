@@ -15,7 +15,7 @@ package org.openhab.binding.ring.internal.handler;
 import static org.openhab.binding.ring.RingBindingConstants.*;
 import static org.openhab.binding.ring.internal.ApiConstants.*;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -76,7 +76,7 @@ public class DoorbellHandler extends RingDeviceHandler {
                     ThingBuilder thingBuilder = editThing();
                     channel = ChannelBuilder.create(channelUID, CoreItemFactory.SWITCH)
                             .withLabel("Motion Detection Status")
-                            .withType(new ChannelTypeUID(BINDING_ID, "motionDetection")).build();
+                            .withType(new ChannelTypeUID(BINDING_ID, CHANNEL_MOTION_DETECTION)).build();
                     thingBuilder.withChannel(channel);
                     updateThing(thingBuilder.build());
                 }
@@ -86,7 +86,7 @@ public class DoorbellHandler extends RingDeviceHandler {
                     logger.debug("Adding channel for event date/time, on device {}", getThing().getUID());
                     ThingBuilder thingBuilder = editThing();
                     channel = ChannelBuilder.create(channelUID, CoreItemFactory.DATETIME).withLabel("Event DateTime")
-                            .withType(new ChannelTypeUID(BINDING_ID, "createdAt")).build();
+                            .withType(new ChannelTypeUID(BINDING_ID, CHANNEL_CREATED_AT)).build();
                     thingBuilder.withChannel(channel);
                     updateThing(thingBuilder.build());
                 }
@@ -96,7 +96,7 @@ public class DoorbellHandler extends RingDeviceHandler {
                     logger.debug("Adding channel for event kind, on device {}", getThing().getUID());
                     ThingBuilder thingBuilder = editThing();
                     channel = ChannelBuilder.create(channelUID, CoreItemFactory.STRING).withLabel("Event Type")
-                            .withType(new ChannelTypeUID(BINDING_ID, "kind")).build();
+                            .withType(new ChannelTypeUID(BINDING_ID, CHANNEL_KIND)).build();
                     thingBuilder.withChannel(channel);
                     updateThing(thingBuilder.build());
                 }
@@ -108,7 +108,7 @@ public class DoorbellHandler extends RingDeviceHandler {
                     ThingBuilder thingBuilder = editThing();
                     channel = ChannelBuilder.create(channelUID, CoreItemFactory.STRING)
                             .withLabel("Event Extended Description")
-                            .withType(new ChannelTypeUID(BINDING_ID, "extendedDescription")).build();
+                            .withType(new ChannelTypeUID(BINDING_ID, CHANNEL_EXTENDED_DESCRIPTION)).build();
                     thingBuilder.withChannel(channel);
                     updateThing(thingBuilder.build());
                 }
@@ -175,8 +175,7 @@ public class DoorbellHandler extends RingDeviceHandler {
                 updateState(channelUID, new RawType(getSnapshot(), "image/jpeg"));
 
                 channelUID = new ChannelUID(thing.getUID(), CHANNEL_STATUS_SNAPSHOT_TIMESTAMP);
-                updateState(channelUID, new DateTimeType(ZonedDateTime
-                        .ofInstant(java.time.Instant.ofEpochMilli(timestamp), timeZoneProvider.getTimeZone())));
+                updateState(channelUID, new DateTimeType(Instant.ofEpochMilli(timestamp)));
             } else {
                 logger.debug("No new background snapshot found during 10-minute check.");
             }
@@ -207,8 +206,7 @@ public class DoorbellHandler extends RingDeviceHandler {
             updateState(channelUID, new RawType(snapshot, "image/jpeg"));
 
             channelUID = new ChannelUID(thing.getUID(), CHANNEL_STATUS_SNAPSHOT_TIMESTAMP);
-            updateState(channelUID, new DateTimeType(ZonedDateTime
-                    .ofInstant(java.time.Instant.ofEpochMilli(lastSnapshotTimestamp), timeZoneProvider.getTimeZone())));
+            updateState(channelUID, new DateTimeType(Instant.ofEpochMilli(timestamp)));
         }
     }
 

@@ -57,6 +57,14 @@ public class RingBindingConstants {
     public static final String CHANNEL_EVENT_DOORBOT_DESCRIPTION = "event#doorbotDescription";
     public static final String CHANNEL_EVENT_EXTENDED_DESCRIPTION = "event#extendedDescription";
 
+    public static final String CHANNEL_LIGHT = "light";
+    public static final String CHANNEL_SIREN = "siren";
+    public static final String CHANNEL_MOTION_DETECTION = "motionDetection";
+    public static final String CHANNEL_CREATED_AT = "createdAt";
+    public static final String CHANNEL_KIND = "kind";
+    public static final String CHANNEL_EXTENDED_DESCRIPTION = "extendedDescription";
+    public static final String CHANNEL_OPEN_DOOR = "opendoor";
+
     public static final String SERVLET_VIDEO_PATH = "/ring/video";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ACCOUNT, THING_TYPE_DOORBELL,
