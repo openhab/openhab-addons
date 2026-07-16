@@ -14,10 +14,6 @@
 
   <name>openHAB Add-ons :: Bundles :: MyNice Binding</name>
 
-  <properties>
-    <bouncycastle.version>1.84</bouncycastle.version>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.bouncycastle</groupId>

@@ -19,7 +19,6 @@
          bcprov + bctls are unpacked into the bundle (embed-dependencies).
          Without this exclusion Karaf would try to resolve them as external deps. -->
     <bnd.importpackage>!org.bouncycastle.*,!javax.sip.*,!gov.nist.*,com.sun.nio.sctp;resolution:=optional,*</bnd.importpackage>
-    <bouncycastle.version>1.84</bouncycastle.version>
   </properties>
 
   <dependencies>
