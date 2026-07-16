@@ -60,6 +60,9 @@ public class LogRingBuffer implements LogListener {
     }
 
     public LogRingBuffer(LogReaderService logReaderService, int capacity) {
+        if (capacity <= 0) {
+            throw new IllegalArgumentException("capacity must be greater than 0");
+        }
         this.logReaderService = logReaderService;
         this.capacity = capacity;
         seed();

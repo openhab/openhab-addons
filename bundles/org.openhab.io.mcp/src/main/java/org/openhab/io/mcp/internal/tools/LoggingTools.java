@@ -137,7 +137,8 @@ public class LoggingTools {
                                 + "the response is returned oldest-first."));
 
         return McpSchema.Tool.builder().name("get_logs").description("""
-                Read recent log entries from openHAB's in-memory log buffer (up to the last 5000 entries, \
+                Read recent log entries from an in-memory log buffer kept by this server (up to the last 5000 \
+                entries, \
                 with stack traces when present). High-volume item state update/change events are excluded \
                 from the buffer — use get_item or watch_items for item state; item commands, thing status \
                 and rule events are included. Use this to diagnose problems: thing offline reasons, binding \

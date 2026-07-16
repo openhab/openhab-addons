@@ -106,6 +106,12 @@ class LogRingBufferTest {
     }
 
     @Test
+    void rejectsNonPositiveCapacity() {
+        assertThrows(IllegalArgumentException.class, () -> new LogRingBuffer(requireNonNull(logReaderService), 0));
+        assertThrows(IllegalArgumentException.class, () -> new LogRingBuffer(requireNonNull(logReaderService), -1));
+    }
+
+    @Test
     void registersAndUnregistersListener() {
         when(logReaderService.getLog()).thenReturn(Collections.emptyEnumeration());
 
