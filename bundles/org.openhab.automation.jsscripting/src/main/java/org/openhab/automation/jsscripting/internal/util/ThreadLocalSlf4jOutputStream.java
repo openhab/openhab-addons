@@ -39,7 +39,10 @@ public class ThreadLocalSlf4jOutputStream extends Slf4jOutputStream {
 
     @Override
     public void close() throws IOException {
-        super.close();
-        buffer.remove();
+        try {
+            super.close();
+        } finally {
+            buffer.remove();
+        }
     }
 }
