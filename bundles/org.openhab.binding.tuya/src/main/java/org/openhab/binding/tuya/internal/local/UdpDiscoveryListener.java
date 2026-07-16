@@ -80,30 +80,48 @@ public class UdpDiscoveryListener implements ChannelFutureListener {
                     }
                 });
 
-        ChannelFuture futureEncrypted35 = b.bind(7000).addListener(this).sync();
-        encryptedChannel35 = futureEncrypted35.channel();
-        encryptedChannel35.attr(TuyaDevice.DEVICE_ID_ATTR).set("udpListener");
-        encryptedChannel35.attr(TuyaDevice.PROTOCOL_ATTR).set(ProtocolVersion.V3_5);
-        encryptedChannel35.attr(TuyaDevice.SESSION_KEY_ATTR).set(TUYA_UDP_KEY);
+        try {
+            ChannelFuture futureEncrypted35 = b.bind(7000).addListener(this).sync();
+            encryptedChannel35 = futureEncrypted35.channel();
+            encryptedChannel35.attr(TuyaDevice.DEVICE_ID_ATTR).set("udpListener");
+            encryptedChannel35.attr(TuyaDevice.PROTOCOL_ATTR).set(ProtocolVersion.V3_5);
+            encryptedChannel35.attr(TuyaDevice.SESSION_KEY_ATTR).set(TUYA_UDP_KEY);
+        } catch (Exception e) {
+            logger.warn("Error starting Tuya UDP listener on port 7000: {}", e.getMessage());
+        }
 
-        ChannelFuture futureEncrypted = b.bind(6667).addListener(this).sync();
-        encryptedChannel = futureEncrypted.channel();
-        encryptedChannel.attr(TuyaDevice.DEVICE_ID_ATTR).set("udpListener");
-        encryptedChannel.attr(TuyaDevice.PROTOCOL_ATTR).set(ProtocolVersion.V3_1);
-        encryptedChannel.attr(TuyaDevice.SESSION_KEY_ATTR).set(TUYA_UDP_KEY);
+        try {
+            ChannelFuture futureEncrypted = b.bind(6667).addListener(this).sync();
+            encryptedChannel = futureEncrypted.channel();
+            encryptedChannel.attr(TuyaDevice.DEVICE_ID_ATTR).set("udpListener");
+            encryptedChannel.attr(TuyaDevice.PROTOCOL_ATTR).set(ProtocolVersion.V3_1);
+            encryptedChannel.attr(TuyaDevice.SESSION_KEY_ATTR).set(TUYA_UDP_KEY);
+        } catch (Exception e) {
+            logger.warn("Error starting Tuya UDP listener on port 6667: {}", e.getMessage());
+        }
 
-        ChannelFuture futureRaw = b.bind(6666).addListener(this).sync();
-        rawChannel = futureRaw.channel();
-        rawChannel.attr(TuyaDevice.DEVICE_ID_ATTR).set("udpListener");
-        rawChannel.attr(TuyaDevice.PROTOCOL_ATTR).set(ProtocolVersion.V3_1);
-        rawChannel.attr(TuyaDevice.SESSION_KEY_ATTR).set(TUYA_UDP_KEY);
+        try {
+            ChannelFuture futureRaw = b.bind(6666).addListener(this).sync();
+            rawChannel = futureRaw.channel();
+            rawChannel.attr(TuyaDevice.DEVICE_ID_ATTR).set("udpListener");
+            rawChannel.attr(TuyaDevice.PROTOCOL_ATTR).set(ProtocolVersion.V3_1);
+            rawChannel.attr(TuyaDevice.SESSION_KEY_ATTR).set(TUYA_UDP_KEY);
+        } catch (Exception e) {
+            logger.warn("Error starting Tuya UDP listener on port 6666: {}", e.getMessage());
+        }
     }
 
     public void deactivate() {
         deactivate = true;
-        encryptedChannel.close();
-        encryptedChannel35.close();
-        rawChannel.close();
+        if (encryptedChannel != null) {
+            encryptedChannel.close();
+        }
+        if (encryptedChannel35 != null) {
+            encryptedChannel35.close();
+        }
+        if (rawChannel != null) {
+            rawChannel.close();
+        }
     }
 
     public void registerListener(String deviceId, DeviceInfoSubscriber subscriber) {
