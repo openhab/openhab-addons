@@ -60,9 +60,9 @@ public class UdpDiscoveryListener implements ChannelFutureListener {
     private List<Channel> channels = List.of();
 
     private static final List<PortVersion> PORTS = List.of( //
-            new PortVersion(6666, ProtocolVersion.V3_1), //
-            new PortVersion(6667, ProtocolVersion.V3_1), //
-            new PortVersion(7000, ProtocolVersion.V3_5) //
+            new PortVersion(6666, ProtocolVersion.V3_1), // Raw channel
+            new PortVersion(6667, ProtocolVersion.V3_1), // Encrypted channel
+            new PortVersion(7000, ProtocolVersion.V3_5) // Encrypted channel V3.5
     );
 
     private final EventLoopGroup group;
