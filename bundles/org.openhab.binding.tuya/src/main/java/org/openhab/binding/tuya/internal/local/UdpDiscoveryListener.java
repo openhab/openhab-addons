@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.tuya.internal.local;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -55,9 +56,14 @@ public class UdpDiscoveryListener implements ChannelFutureListener {
     private final Map<String, DeviceInfo> deviceInfos = new ConcurrentHashMap<>();
     private final Map<String, DeviceInfoSubscriber> deviceListeners = new ConcurrentHashMap<>();
 
-    private @NonNullByDefault({}) Channel encryptedChannel;
-    private @NonNullByDefault({}) Channel encryptedChannel35;
-    private @NonNullByDefault({}) Channel rawChannel;
+    private List<Channel> channels = List.of();
+
+    private static final List<PortVersion> PORTS = List.of( //
+            new PortVersion(6666, ProtocolVersion.V3_1), //
+            new PortVersion(6667, ProtocolVersion.V3_1), //
+            new PortVersion(7000, ProtocolVersion.V3_5) //
+    );
+
     private final EventLoopGroup group;
     private boolean deactivate = false;
 
@@ -80,48 +86,28 @@ public class UdpDiscoveryListener implements ChannelFutureListener {
                     }
                 });
 
-        try {
-            ChannelFuture futureEncrypted35 = b.bind(7000).addListener(this).sync();
-            encryptedChannel35 = futureEncrypted35.channel();
-            encryptedChannel35.attr(TuyaDevice.DEVICE_ID_ATTR).set("udpListener");
-            encryptedChannel35.attr(TuyaDevice.PROTOCOL_ATTR).set(ProtocolVersion.V3_5);
-            encryptedChannel35.attr(TuyaDevice.SESSION_KEY_ATTR).set(TUYA_UDP_KEY);
-        } catch (Exception e) {
-            logger.warn("Error starting Tuya UDP listener on port 7000: {}", e.getMessage());
-        }
-
-        try {
-            ChannelFuture futureEncrypted = b.bind(6667).addListener(this).sync();
-            encryptedChannel = futureEncrypted.channel();
-            encryptedChannel.attr(TuyaDevice.DEVICE_ID_ATTR).set("udpListener");
-            encryptedChannel.attr(TuyaDevice.PROTOCOL_ATTR).set(ProtocolVersion.V3_1);
-            encryptedChannel.attr(TuyaDevice.SESSION_KEY_ATTR).set(TUYA_UDP_KEY);
-        } catch (Exception e) {
-            logger.warn("Error starting Tuya UDP listener on port 6667: {}", e.getMessage());
-        }
-
-        try {
-            ChannelFuture futureRaw = b.bind(6666).addListener(this).sync();
-            rawChannel = futureRaw.channel();
-            rawChannel.attr(TuyaDevice.DEVICE_ID_ATTR).set("udpListener");
-            rawChannel.attr(TuyaDevice.PROTOCOL_ATTR).set(ProtocolVersion.V3_1);
-            rawChannel.attr(TuyaDevice.SESSION_KEY_ATTR).set(TUYA_UDP_KEY);
-        } catch (Exception e) {
-            logger.warn("Error starting Tuya UDP listener on port 6666: {}", e.getMessage());
-        }
+        channels = PORTS.stream().map(portVersion -> {
+            try {
+                ChannelFuture future = b.bind(portVersion.port()).addListener(this).sync();
+                Channel channel = future.channel();
+                channel.attr(TuyaDevice.DEVICE_ID_ATTR).set("udpListener");
+                channel.attr(TuyaDevice.PROTOCOL_ATTR).set(portVersion.version());
+                channel.attr(TuyaDevice.SESSION_KEY_ATTR).set(TUYA_UDP_KEY);
+                return channel;
+            } catch (InterruptedException e) {
+                logger.warn("Interrupted while starting Tuya UDP listener on port {}: {}", portVersion.port(),
+                        e.getMessage());
+                Thread.currentThread().interrupt();
+            } catch (Exception e) {
+                logger.warn("Error starting Tuya UDP listener on port {}: {}", portVersion.port(), e.getMessage());
+            }
+            return null;
+        }).filter(channel -> channel != null).toList();
     }
 
     public void deactivate() {
         deactivate = true;
-        if (encryptedChannel != null) {
-            encryptedChannel.close();
-        }
-        if (encryptedChannel35 != null) {
-            encryptedChannel35.close();
-        }
-        if (rawChannel != null) {
-            rawChannel.close();
-        }
+        channels.forEach(Channel::close);
     }
 
     public void registerListener(String deviceId, DeviceInfoSubscriber subscriber) {
@@ -145,5 +131,8 @@ public class UdpDiscoveryListener implements ChannelFutureListener {
             deactivate();
             activate();
         }
+    }
+
+    private static record PortVersion(int port, ProtocolVersion version) {
     }
 }
