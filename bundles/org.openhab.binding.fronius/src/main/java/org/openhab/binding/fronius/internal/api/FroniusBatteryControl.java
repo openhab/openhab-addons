@@ -16,8 +16,10 @@ import static org.openhab.binding.fronius.internal.FroniusBindingConstants.API_T
 
 import java.io.ByteArrayInputStream;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -105,6 +107,50 @@ public class FroniusBatteryControl {
     }
 
     /**
+     * Performs a request against the inverter's config API by logging in and executing the request with the acquired
+     * authentication header.
+     *
+     * @param method the HTTP method to use
+     * @param uri the URI to request
+     * @param body the JSON request body for POST requests, or null for GET requests
+     * @return the response body
+     * @throws FroniusCommunicationException when an error occurs during communication with the inverter
+     * @throws FroniusUnauthorizedException when the login fails due to invalid credentials
+     */
+    private String authorizedRequest(HttpMethod method, URI uri, @Nullable String body)
+            throws FroniusCommunicationException, FroniusUnauthorizedException {
+        String authHeader = FroniusConfigAuthUtil.login(httpClient, firmwareVersion, baseUri, username, password,
+                method, uri.getPath(), API_TIMEOUT);
+        Properties headers = new Properties();
+        headers.put(HttpHeader.AUTHORIZATION.asString(), authHeader);
+        ByteArrayInputStream content = body == null ? null
+                : new ByteArrayInputStream(body.getBytes(StandardCharsets.UTF_8));
+        String contentType = body == null ? null : "application/json";
+        return httpUtil.executeUrl(method, uri.toString(), headers, content, contentType, API_TIMEOUT);
+    }
+
+    /**
+     * Writes configuration to the inverter's config API and verifies that the write was successful.
+     *
+     * @param uri the config API endpoint to write to
+     * @param payload the payload to serialize as JSON and write
+     * @param expectedWriteSuccess the parameters that must be reported as successfully written
+     * @throws FroniusCommunicationException when an error occurs during communication with the inverter or the write
+     *             was not successful
+     * @throws FroniusUnauthorizedException when the login fails due to invalid credentials
+     */
+    private void postConfig(URI uri, Object payload, String... expectedWriteSuccess)
+            throws FroniusCommunicationException, FroniusUnauthorizedException {
+        String responseString = authorizedRequest(HttpMethod.POST, uri, gson.toJson(payload));
+        @Nullable
+        PostConfigResponse response = gson.fromJson(responseString, PostConfigResponse.class);
+        if (response == null || !response.writeSuccess().containsAll(List.of(expectedWriteSuccess))) {
+            logger.debug("{}", responseString);
+            throw new FroniusCommunicationException("Failed to write configuration to inverter");
+        }
+    }
+
+    /**
      * Gets the time of use settings of the Fronius hybrid inverter.
      *
      * @return the time of use settings
@@ -112,14 +158,7 @@ public class FroniusBatteryControl {
      * @throws FroniusUnauthorizedException when the login fails due to invalid credentials
      */
     private TimeOfUseRecords getTimeOfUse() throws FroniusCommunicationException, FroniusUnauthorizedException {
-        // Login and get the auth header for the next request
-        String authHeader = FroniusConfigAuthUtil.login(httpClient, firmwareVersion, baseUri, username, password,
-                HttpMethod.GET, timeOfUseUri.getPath(), API_TIMEOUT);
-        Properties headers = new Properties();
-        headers.put(HttpHeader.AUTHORIZATION.asString(), authHeader);
-        // Get the time of use settings
-        String response = httpUtil.executeUrl(HttpMethod.GET, timeOfUseUri.toString(), headers, null, null,
-                API_TIMEOUT);
+        String response = authorizedRequest(HttpMethod.GET, timeOfUseUri, null);
         logger.trace("Time of Use settings read successfully");
 
         // Parse the response body
@@ -144,22 +183,7 @@ public class FroniusBatteryControl {
      */
     private void setTimeOfUse(TimeOfUseRecords records)
             throws FroniusCommunicationException, FroniusUnauthorizedException {
-        // Login and get the auth header for the next request
-        String authHeader = FroniusConfigAuthUtil.login(httpClient, firmwareVersion, baseUri, username, password,
-                HttpMethod.POST, timeOfUseUri.getPath(), API_TIMEOUT);
-        Properties headers = new Properties();
-        headers.put(HttpHeader.AUTHORIZATION.asString(), authHeader);
-
-        // Set the time of use settings
-        String json = gson.toJson(records);
-        String responseString = httpUtil.executeUrl(HttpMethod.POST, timeOfUseUri.toString(), headers,
-                new ByteArrayInputStream(json.getBytes()), "application/json", API_TIMEOUT);
-        @Nullable
-        PostConfigResponse response = gson.fromJson(responseString, PostConfigResponse.class);
-        if (response == null || !response.writeSuccess().contains("timeofuse")) {
-            logger.debug("{}", responseString);
-            throw new FroniusCommunicationException("Failed to write configuration to inverter");
-        }
+        postConfig(timeOfUseUri, records, "timeofuse");
         logger.trace("Time of Use settings set successfully");
     }
 
@@ -320,22 +344,8 @@ public class FroniusBatteryControl {
             throw new IllegalArgumentException("invalid percent value: " + percent + " (must be in [10,95])");
         }
 
-        // Login and get the auth header for the next request
-        String authHeader = FroniusConfigAuthUtil.login(httpClient, firmwareVersion, baseUri, username, password,
-                HttpMethod.POST, batteriesUri.getPath(), API_TIMEOUT);
-        Properties headers = new Properties();
-        headers.put(HttpHeader.AUTHORIZATION.asString(), authHeader);
-
-        // Set the setting
-        String json = gson.toJson(Map.of(BACKUP_RESERVED_CAPACITY_PARAMETER, percent));
-        String responseString = httpUtil.executeUrl(HttpMethod.POST, batteriesUri.toString(), headers,
-                new ByteArrayInputStream(json.getBytes()), "application/json", API_TIMEOUT);
-        @Nullable
-        PostConfigResponse response = gson.fromJson(responseString, PostConfigResponse.class);
-        if (response == null || !response.writeSuccess().contains(BACKUP_RESERVED_CAPACITY_PARAMETER)) {
-            logger.debug("{}", responseString);
-            throw new FroniusCommunicationException("Failed to write configuration to inverter");
-        }
+        postConfig(batteriesUri, Map.of(BACKUP_RESERVED_CAPACITY_PARAMETER, percent),
+                BACKUP_RESERVED_CAPACITY_PARAMETER);
         logger.trace("Backup Reserved Capacity setting set successfully");
     }
 }
