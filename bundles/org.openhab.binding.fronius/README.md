@@ -100,6 +100,20 @@ The binding has no configuration options, all configuration is done at `bridge`,
 | `powerflowinvertersoc`               | Number:Dimensionless     | Current state of charge of the battery connected to the inverter in percent.                                      |
 | `powerflowinverter1power`            | Number:Power             | Current power of inverter 1, null if not running (+ produce/export, - consume/import) - DEPRECATED                |
 | `powerflowinverter1soc`              | Number:Dimensionless     | Current state of charge of inverter 1 in percent - DEPRECATED                                                     |
+| `batterysocmin`                      | Number:Dimensionless     | Minimum state of charge of the battery in percent (writable, requires battery control)                            |
+| `batterysocmax`                      | Number:Dimensionless     | Maximum state of charge of the battery in percent (writable, requires battery control)                            |
+| `backupreservedcapacity`             | Number:Dimensionless     | Reserved battery capacity for backup power; not discharged below in normal operation (writable, requires battery control) |
+| `backupcriticalsoc`                  | Number:Dimensionless     | State of charge at which the inverter warns about the battery running low in backup power mode (writable, requires battery control) |
+| `chargefromgrid`                     | Switch                   | Whether charging the battery from the grid is allowed (writable, requires battery control)                        |
+| `batterycalibration`                 | Switch                   | Whether the battery is currently performing a calibration charge (read-only, requires battery control)            |
+| `nightpreservationlimit`             | Number:Dimensionless     | State of charge preserved over night to keep the battery system operational (read-only, requires battery control) |
+| `powerflowbackupmode`                | Switch                   | Whether the inverter is currently operating in backup power mode (island operation), read-only                    |
+| `powerflowbatterystandby`            | Switch                   | Whether the battery is currently in standby, read-only                                                            |
+
+The battery settings channels (`batterysocmin`, `batterysocmax`, `backupreservedcapacity`, `backupcriticalsoc`, `chargefromgrid`, `batterycalibration` and `nightpreservationlimit`) require the username and password to be configured in the bridge, see [Actions](#actions).
+They read from and write to the inverter's settings through its config API.
+Since reading these settings requires a login to the inverter, they are not part of the fast polling cycle, but refreshed every 5 minutes (and after each write), so changes made through the inverter's web UI show up with a delay.
+Commands sent to the writable channels are applied to the inverter immediately.
 
 ### `battery` Thing Channels
 
@@ -227,6 +241,8 @@ Once the actions instance has been retrieved, you can invoke the following metho
 - `addHoldBatteryChargeSchedule(LocalTime from, LocalTime until)`: Add a schedule to prevent the battery from discharging in the specified time range.
 - `addHoldBatteryChargeSchedule(ZonedDateTime from, ZonedDateTime until)`: Add a schedule to prevent the battery from discharging in the specified time range.
 - `forceBatteryCharging(QuantityType<Power> power)`: Force the battery to charge with the specified power (removes all battery control schedules first and applies all the time).
+- `limitBatteryCharging(QuantityType<Power> power)`: Limit the battery charging power to at most the specified power (removes all battery control schedules first and applies all the time).
+- `limitBatteryDischarging(QuantityType<Power> power)`: Limit the battery discharging power to at most the specified power (removes all battery control schedules first and applies all the time).
 - `addForcedBatteryChargingSchedule(LocalTime from, LocalTime until, QuantityType<Power> power)`: Add a schedule to force the battery to charge with the specified power in the specified time range.
 - `addForcedBatteryChargingSchedule(ZonedDateTime from, ZonedDateTime until, QuantityType<Power> power)`: Add a schedule to force the battery to charge with the specified power in the specified time range.
 - `preventBatteryCharging()`: Prevent the battery from charging (removes all battery control schedules first and applies all the time).
@@ -237,8 +253,15 @@ Once the actions instance has been retrieved, you can invoke the following metho
 - `addForcedBatteryDischargingSchedule(ZonedDateTime from, ZonedDateTime until, QuantityType<Power> power)`: Add a schedule to force the battery to discharge with the specified power in the specified time range.
 - `addSchedule(LocalTime from, LocalTime until, ScheduleType scheduleType, QuantityType<Power> power)`: Add a custom schedule with the specified type and power in the specified time range.
 - `addSchedule(ZonedDateTime from, ZonedDateTime until, ScheduleType scheduleType, QuantityType<Power> power)`: Add a custom schedule with the specified type and power in the specified time range.
+- `addBatteryChargingLimitSchedule(LocalTime from, LocalTime until, QuantityType<Power> power)`: Add a schedule to limit the battery charging power to at most the specified power in the specified time range.
+- `addBatteryChargingLimitSchedule(ZonedDateTime from, ZonedDateTime until, QuantityType<Power> power)`: Add a schedule to limit the battery charging power to at most the specified power in the specified time range.
+- `addBatteryDischargingLimitSchedule(LocalTime from, LocalTime until, QuantityType<Power> power)`: Add a schedule to limit the battery discharging power to at most the specified power in the specified time range.
+- `addBatteryDischargingLimitSchedule(ZonedDateTime from, ZonedDateTime until, QuantityType<Power> power)`: Add a schedule to limit the battery discharging power to at most the specified power in the specified time range.
 - `setBackupReservedBatteryCapacity(int percent)`: Set the reserved battery capacity for backup power.
 - `setBackupReservedBatteryCapacity(PercentType percent)`: Set the reserved battery capacity for backup power.
+
+All `add...Schedule` actions accept an optional trailing `weekdays` string parameter to restrict the schedule to specific weekdays, e.g. `addHoldBatteryChargeSchedule(from, until, "MON,TUE,SAT")`.
+Weekdays are given as a comma-separated list of three-letter English weekday abbreviations or full names (e.g. `"MON,TUE"` or `"MONDAY,TUESDAY"`); omitting the parameter or passing `null` or an empty string applies the schedule to all days.
 
 The `ScheduleType` enum has the following members:
 

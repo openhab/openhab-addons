@@ -38,6 +38,13 @@ public class FroniusBindingConstants {
     public static final ThingTypeUID THING_TYPE_BATTERY = new ThingTypeUID(BINDING_ID, "battery");
 
     // Inverter channels
+    public static final String BATTERY_SOC_MIN_CHANNEL = "batterysocmin";
+    public static final String BATTERY_SOC_MAX_CHANNEL = "batterysocmax";
+    public static final String BATTERY_BACKUP_RESERVED_CHANNEL = "backupreservedcapacity";
+    public static final String BATTERY_BACKUP_CRITICAL_SOC_CHANNEL = "backupcriticalsoc";
+    public static final String BATTERY_CHARGE_FROM_GRID_CHANNEL = "chargefromgrid";
+    public static final String BATTERY_CALIBRATION_CHANNEL = "batterycalibration";
+    public static final String BATTERY_NIGHT_PRESERVATION_LIMIT_CHANNEL = "nightpreservationlimit";
     public static final String INVERTER_DATA_CHANNEL_DAY_ENERGY = "inverterdatachanneldayenergy";
     public static final String INVERTER_DATA_CHANNEL_PAC = "inverterdatachannelpac";
     public static final String INVERTER_DATA_CHANNEL_TOTAL = "inverterdatachanneltotal";
@@ -67,6 +74,9 @@ public class FroniusBindingConstants {
 
     public static final String POWER_FLOW_INVERTER_POWER = "powerflowinverterpower";
     public static final String POWER_FLOW_INVERTER_SOC = "powerflowinvertersoc";
+
+    public static final String POWER_FLOW_BACKUP_MODE = "powerflowbackupmode";
+    public static final String POWER_FLOW_BATTERY_STANDBY = "powerflowbatterystandby";
 
     // For backwards compatibility
     public static final String POWER_FLOW_INVERTER_1_POWER = "powerflowinverter1power";

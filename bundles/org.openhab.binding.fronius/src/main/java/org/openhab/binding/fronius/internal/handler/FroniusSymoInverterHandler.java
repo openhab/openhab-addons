@@ -17,6 +17,10 @@ import static org.openhab.binding.fronius.internal.FroniusBindingConstants.API_T
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.function.UnaryOperator;
 
 import javax.measure.Unit;
 
@@ -29,8 +33,10 @@ import org.openhab.binding.fronius.internal.FroniusBindingConstants;
 import org.openhab.binding.fronius.internal.FroniusBridgeConfiguration;
 import org.openhab.binding.fronius.internal.action.FroniusSymoInverterActions;
 import org.openhab.binding.fronius.internal.api.FroniusBatteryControl;
+import org.openhab.binding.fronius.internal.api.FroniusBatteryControl.BatterySettings;
 import org.openhab.binding.fronius.internal.api.FroniusCommunicationException;
 import org.openhab.binding.fronius.internal.api.FroniusHttpUtil;
+import org.openhab.binding.fronius.internal.api.FroniusUnauthorizedException;
 import org.openhab.binding.fronius.internal.api.dto.ValueUnit;
 import org.openhab.binding.fronius.internal.api.dto.inverter.*;
 import org.openhab.binding.fronius.internal.api.dto.powerflow.PowerFlowRealtimeBody;
@@ -39,12 +45,16 @@ import org.openhab.binding.fronius.internal.api.dto.powerflow.PowerFlowRealtimeI
 import org.openhab.binding.fronius.internal.api.dto.powerflow.PowerFlowRealtimeResponse;
 import org.openhab.binding.fronius.internal.api.dto.powerflow.PowerFlowRealtimeSite;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.firmware.types.SemverVersion;
+import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,6 +76,14 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
 
+    private static final int BATTERY_SETTINGS_REFRESH_PERIOD_MINUTES = 5;
+    private static final Set<String> BATTERY_SETTINGS_CHANNELS = Set.of(FroniusBindingConstants.BATTERY_SOC_MIN_CHANNEL,
+            FroniusBindingConstants.BATTERY_SOC_MAX_CHANNEL, FroniusBindingConstants.BATTERY_BACKUP_RESERVED_CHANNEL,
+            FroniusBindingConstants.BATTERY_BACKUP_CRITICAL_SOC_CHANNEL,
+            FroniusBindingConstants.BATTERY_CHARGE_FROM_GRID_CHANNEL,
+            FroniusBindingConstants.BATTERY_CALIBRATION_CHANNEL,
+            FroniusBindingConstants.BATTERY_NIGHT_PRESERVATION_LIMIT_CHANNEL);
+
     private final Logger logger = LoggerFactory.getLogger(FroniusSymoInverterHandler.class);
     private final HttpClient httpClient;
 
@@ -74,6 +92,9 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
     private @Nullable FroniusBaseDeviceConfiguration config;
     private @Nullable InverterInfo inverterInfo;
     private @Nullable FroniusBatteryControl batteryControl;
+    private @Nullable BatterySettings lastBatterySettings;
+    private @Nullable Integer lastNightPreservationLimit;
+    private @Nullable ScheduledFuture<?> batterySettingsRefreshJob;
 
     public FroniusSymoInverterHandler(Thing thing, HttpClient httpClient) {
         super(thing);
@@ -152,6 +173,7 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
         updateProperties();
         initializeBatteryControl(bridgeHandler.getHttpUtil(), bridgeConfig.scheme, bridgeConfig.hostname,
                 bridgeConfig.username, bridgeConfig.password);
+        startBatterySettingsRefreshJob();
         super.initialize();
     }
 
@@ -181,6 +203,7 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
         updateProperties();
         initializeBatteryControl(bridgeHandler.getHttpUtil(), bridgeConfig.scheme, bridgeConfig.hostname,
                 bridgeConfig.username, bridgeConfig.password);
+        startBatterySettingsRefreshJob();
     }
 
     public @Nullable FroniusBatteryControl getBatteryControl() {
@@ -191,6 +214,168 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
         return batteryControl;
     }
 
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        String channelId = channelUID.getIdWithoutGroup();
+        if (BATTERY_SETTINGS_CHANNELS.contains(channelId)) {
+            FroniusBatteryControl control = getBatteryControl();
+            if (control == null) {
+                return;
+            }
+            try {
+                if (command instanceof RefreshType) {
+                    updateBatterySettingsChannels(control);
+                    refreshNightPreservationLimit(control);
+                    return;
+                }
+                switch (channelId) {
+                    case FroniusBindingConstants.BATTERY_CALIBRATION_CHANNEL,
+                            FroniusBindingConstants.BATTERY_NIGHT_PRESERVATION_LIMIT_CHANNEL -> {
+                        logger.warn("Channel {} is read-only, ignoring command {}", channelId, command);
+                        return;
+                    }
+                    case FroniusBindingConstants.BATTERY_CHARGE_FROM_GRID_CHANNEL -> {
+                        if (!(command instanceof OnOffType onOff)) {
+                            logger.warn("Unsupported command {} for channel {}", command, channelId);
+                            return;
+                        }
+                        boolean enabled = onOff == OnOffType.ON;
+                        control.setChargeFromGrid(enabled);
+                        applyUpdatedSettings(control, prev -> new BatterySettings(prev.minSoc(), prev.maxSoc(),
+                                prev.backupReservedCapacity(), prev.backupCriticalSoc(), enabled, prev.calibrating()));
+                    }
+                    default -> {
+                        int value;
+                        if (command instanceof QuantityType<?> quantity) {
+                            value = quantity.intValue();
+                        } else if (command instanceof DecimalType decimal) {
+                            value = decimal.intValue();
+                        } else {
+                            logger.warn("Unsupported command {} for channel {}", command, channelId);
+                            return;
+                        }
+                        switch (channelId) {
+                            case FroniusBindingConstants.BATTERY_BACKUP_RESERVED_CHANNEL -> {
+                                control.setBackupReservedCapacity(value);
+                                applyUpdatedSettings(control, prev -> new BatterySettings(prev.minSoc(), prev.maxSoc(),
+                                        value, prev.backupCriticalSoc(), prev.chargeFromGrid(), prev.calibrating()));
+                            }
+                            case FroniusBindingConstants.BATTERY_BACKUP_CRITICAL_SOC_CHANNEL -> {
+                                control.setBackupCriticalSoc(value);
+                                applyUpdatedSettings(control,
+                                        prev -> new BatterySettings(prev.minSoc(), prev.maxSoc(),
+                                                prev.backupReservedCapacity(), value, prev.chargeFromGrid(),
+                                                prev.calibrating()));
+                            }
+                            case FroniusBindingConstants.BATTERY_SOC_MIN_CHANNEL -> {
+                                BatterySettings settings = control.getBatterySettings();
+                                control.setSocLimits(value, settings.maxSoc());
+                                applyBatterySettings(new BatterySettings(value, settings.maxSoc(),
+                                        settings.backupReservedCapacity(), settings.backupCriticalSoc(),
+                                        settings.chargeFromGrid(), settings.calibrating()));
+                            }
+                            default -> {
+                                BatterySettings settings = control.getBatterySettings();
+                                control.setSocLimits(settings.minSoc(), value);
+                                applyBatterySettings(new BatterySettings(settings.minSoc(), value,
+                                        settings.backupReservedCapacity(), settings.backupCriticalSoc(),
+                                        settings.chargeFromGrid(), settings.calibrating()));
+                            }
+                        }
+                    }
+                }
+            } catch (FroniusCommunicationException | FroniusUnauthorizedException | IllegalArgumentException e) {
+                logger.warn("Failed to handle command for channel {}: {}", channelId, e.getMessage());
+            }
+            return;
+        }
+        super.handleCommand(channelUID, command);
+    }
+
+    private void updateBatterySettingsChannels(FroniusBatteryControl control)
+            throws FroniusCommunicationException, FroniusUnauthorizedException {
+        applyBatterySettings(control.getBatterySettings());
+    }
+
+    private void applyBatterySettings(BatterySettings settings) {
+        lastBatterySettings = settings;
+        updateState(FroniusBindingConstants.BATTERY_SOC_MIN_CHANNEL,
+                new QuantityType<>(settings.minSoc(), Units.PERCENT));
+        updateState(FroniusBindingConstants.BATTERY_SOC_MAX_CHANNEL,
+                new QuantityType<>(settings.maxSoc(), Units.PERCENT));
+        updateState(FroniusBindingConstants.BATTERY_BACKUP_RESERVED_CHANNEL,
+                new QuantityType<>(settings.backupReservedCapacity(), Units.PERCENT));
+        updateState(FroniusBindingConstants.BATTERY_BACKUP_CRITICAL_SOC_CHANNEL,
+                new QuantityType<>(settings.backupCriticalSoc(), Units.PERCENT));
+        updateState(FroniusBindingConstants.BATTERY_CHARGE_FROM_GRID_CHANNEL,
+                OnOffType.from(settings.chargeFromGrid()));
+        updateState(FroniusBindingConstants.BATTERY_CALIBRATION_CHANNEL, OnOffType.from(settings.calibrating()));
+    }
+
+    /**
+     * Updates the battery settings channels after a successful write: if the settings have been read before, the
+     * updated settings are derived from the known state to avoid a costly re-read from the config API; otherwise the
+     * settings are read from the inverter.
+     */
+    private void applyUpdatedSettings(FroniusBatteryControl control, UnaryOperator<BatterySettings> update)
+            throws FroniusCommunicationException, FroniusUnauthorizedException {
+        BatterySettings previous = lastBatterySettings;
+        if (previous != null) {
+            applyBatterySettings(update.apply(previous));
+        } else {
+            updateBatterySettingsChannels(control);
+        }
+    }
+
+    private void refreshNightPreservationLimit(FroniusBatteryControl control) {
+        if (!isLinked(FroniusBindingConstants.BATTERY_NIGHT_PRESERVATION_LIMIT_CHANNEL)) {
+            return;
+        }
+        try {
+            int limit = control.getNightPreservationLimit();
+            lastNightPreservationLimit = limit;
+            updateState(FroniusBindingConstants.BATTERY_NIGHT_PRESERVATION_LIMIT_CHANNEL,
+                    new QuantityType<>(limit, Units.PERCENT));
+        } catch (FroniusCommunicationException | FroniusUnauthorizedException e) {
+            logger.debug("Failed to read night preservation limit: {}", e.getMessage());
+        }
+    }
+
+    /**
+     * Periodically reads the battery settings to populate the battery settings channels, since they are not part of
+     * the cyclically polled Solar API data and reading them requires a costly login to the inverter's config API.
+     * The slow periodic refresh also picks up changes made through the inverter's web UI.
+     */
+    private void startBatterySettingsRefreshJob() {
+        cancelBatterySettingsRefreshJob();
+        batterySettingsRefreshJob = scheduler.scheduleWithFixedDelay(() -> {
+            FroniusBatteryControl control = batteryControl;
+            if (control == null || BATTERY_SETTINGS_CHANNELS.stream().noneMatch(this::isLinked)) {
+                return;
+            }
+            try {
+                updateBatterySettingsChannels(control);
+            } catch (FroniusCommunicationException | FroniusUnauthorizedException e) {
+                logger.warn("Failed to read battery settings: {}", e.getMessage());
+            }
+            refreshNightPreservationLimit(control);
+        }, 0, BATTERY_SETTINGS_REFRESH_PERIOD_MINUTES, TimeUnit.MINUTES);
+    }
+
+    private void cancelBatterySettingsRefreshJob() {
+        ScheduledFuture<?> job = batterySettingsRefreshJob;
+        if (job != null) {
+            job.cancel(false);
+            batterySettingsRefreshJob = null;
+        }
+    }
+
+    @Override
+    public void dispose() {
+        cancelBatterySettingsRefreshJob();
+        super.dispose();
+    }
+
     /**
      * Update the channel from the last data retrieved
      *
@@ -199,6 +384,30 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
      */
     @Override
     protected @Nullable State getValue(String channelId) {
+        BatterySettings settings = lastBatterySettings;
+        if (FroniusBindingConstants.BATTERY_SOC_MIN_CHANNEL.equals(channelId)) {
+            return settings == null ? null : new QuantityType<>(settings.minSoc(), Units.PERCENT);
+        }
+        if (FroniusBindingConstants.BATTERY_SOC_MAX_CHANNEL.equals(channelId)) {
+            return settings == null ? null : new QuantityType<>(settings.maxSoc(), Units.PERCENT);
+        }
+        if (FroniusBindingConstants.BATTERY_BACKUP_RESERVED_CHANNEL.equals(channelId)) {
+            return settings == null ? null : new QuantityType<>(settings.backupReservedCapacity(), Units.PERCENT);
+        }
+        if (FroniusBindingConstants.BATTERY_BACKUP_CRITICAL_SOC_CHANNEL.equals(channelId)) {
+            return settings == null ? null : new QuantityType<>(settings.backupCriticalSoc(), Units.PERCENT);
+        }
+        if (FroniusBindingConstants.BATTERY_CHARGE_FROM_GRID_CHANNEL.equals(channelId)) {
+            return settings == null ? null : OnOffType.from(settings.chargeFromGrid());
+        }
+        if (FroniusBindingConstants.BATTERY_CALIBRATION_CHANNEL.equals(channelId)) {
+            return settings == null ? null : OnOffType.from(settings.calibrating());
+        }
+        if (FroniusBindingConstants.BATTERY_NIGHT_PRESERVATION_LIMIT_CHANNEL.equals(channelId)) {
+            Integer limit = lastNightPreservationLimit;
+            return limit == null ? null : new QuantityType<>(limit, Units.PERCENT);
+        }
+
         final String[] fields = channelId.split("#");
         if (fields.length < 1) {
             return null;
@@ -287,6 +496,14 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
                 new QuantityType<>(site.getRelAutonomy(), Units.PERCENT);
             case FroniusBindingConstants.POWER_FLOW_SELF_CONSUMPTION ->
                 new QuantityType<>(site.getRelSelfConsumption(), Units.PERCENT);
+            case FroniusBindingConstants.POWER_FLOW_BACKUP_MODE -> {
+                Boolean backupMode = site.getBackupMode();
+                yield backupMode == null ? null : OnOffType.from(backupMode);
+            }
+            case FroniusBindingConstants.POWER_FLOW_BATTERY_STANDBY -> {
+                Boolean batteryStandby = site.getBatteryStandby();
+                yield batteryStandby == null ? null : OnOffType.from(batteryStandby);
+            }
             case FroniusBindingConstants.POWER_FLOW_INVERTER_POWER -> {
                 PowerFlowRealtimeInverter inverter = getInverter(config.deviceId);
                 if (inverter == null) {

@@ -17,11 +17,14 @@ import static org.openhab.binding.fronius.internal.FroniusBindingConstants.API_T
 import java.io.ByteArrayInputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.measure.quantity.Power;
 
@@ -44,6 +47,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link FroniusBatteryControl} is responsible for controlling the battery of Fronius hybrid inverters through the
@@ -55,12 +59,11 @@ import com.google.gson.JsonSyntaxException;
 public class FroniusBatteryControl {
     private static final String TIME_OF_USE_ENDPOINT = "/config/timeofuse";
     private static final String BATTERIES_ENDPOINT = "/config/batteries";
+    private static final String NIGHT_PRESERVATION_LIMIT_ENDPOINT = "/commands/GetNightPreservationLimit";
     private static final String BACKUP_RESERVED_CAPACITY_PARAMETER = "HYB_BACKUP_RESERVED";
 
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
-    private static final WeekdaysRecord ALL_WEEKDAYS_RECORD = new WeekdaysRecord(true, true, true, true, true, true,
-            true);
     private static final LocalTime BEGIN_OF_DAY = LocalTime.of(0, 0);
     private static final LocalTime END_OF_DAY = LocalTime.of(23, 59);
 
@@ -74,6 +77,7 @@ public class FroniusBatteryControl {
     private final String password;
     private final URI timeOfUseUri;
     private final URI batteriesUri;
+    private final URI nightPreservationLimitUri;
 
     /**
      * Creates a new instance of {@link FroniusBatteryControl}.
@@ -96,6 +100,7 @@ public class FroniusBatteryControl {
         this.password = password;
         this.timeOfUseUri = URI.create(baseUri + TIME_OF_USE_ENDPOINT);
         this.batteriesUri = URI.create(baseUri + BATTERIES_ENDPOINT);
+        this.nightPreservationLimitUri = URI.create(baseUri + NIGHT_PRESERVATION_LIMIT_ENDPOINT);
     }
 
     private static URI getBaseUri(SemverVersion firmwareVersion, String scheme, String hostname) {
@@ -199,6 +204,22 @@ public class FroniusBatteryControl {
      */
     public void addSchedule(LocalTime from, LocalTime until, ScheduleType scheduleType, QuantityType<Power> power)
             throws FroniusCommunicationException, FroniusUnauthorizedException {
+        addSchedule(from, until, scheduleType, power, EnumSet.allOf(DayOfWeek.class));
+    }
+
+    /**
+     * Adds a schedule to the time of use settings of the Fronius hybrid inverter, active on the given weekdays only.
+     *
+     * @param from start time of the schedule
+     * @param until end time of the schedule
+     * @param scheduleType the type of the schedule
+     * @param power the power value for the schedule
+     * @param weekdays the weekdays on which the schedule shall be active
+     * @throws FroniusCommunicationException when an error occurs during communication with the inverter
+     * @throws FroniusUnauthorizedException when the login fails due to invalid credentials
+     */
+    public void addSchedule(LocalTime from, LocalTime until, ScheduleType scheduleType, QuantityType<Power> power,
+            Set<DayOfWeek> weekdays) throws FroniusCommunicationException, FroniusUnauthorizedException {
         TimeOfUseRecords currentTimeOfUse = getTimeOfUse();
         TimeOfUseRecord[] timeOfUse = new TimeOfUseRecord[currentTimeOfUse.records().length + 1];
         System.arraycopy(currentTimeOfUse.records(), 0, timeOfUse, 0, currentTimeOfUse.records().length);
@@ -211,7 +232,11 @@ public class FroniusBatteryControl {
             throw new IllegalArgumentException("power must be non-negative");
         }
         TimeOfUseRecord holdCharge = new TimeOfUseRecord(true, powerInWatts.intValue(), scheduleType,
-                new TimeTableRecord(from.format(TIME_FORMATTER), until.format(TIME_FORMATTER)), ALL_WEEKDAYS_RECORD);
+                new TimeTableRecord(from.format(TIME_FORMATTER), until.format(TIME_FORMATTER)),
+                new WeekdaysRecord(weekdays.contains(DayOfWeek.MONDAY), weekdays.contains(DayOfWeek.TUESDAY),
+                        weekdays.contains(DayOfWeek.WEDNESDAY), weekdays.contains(DayOfWeek.THURSDAY),
+                        weekdays.contains(DayOfWeek.FRIDAY), weekdays.contains(DayOfWeek.SATURDAY),
+                        weekdays.contains(DayOfWeek.SUNDAY)));
         timeOfUse[timeOfUse.length - 1] = holdCharge;
         setTimeOfUse(new TimeOfUseRecords(timeOfUse));
     }
@@ -277,6 +302,62 @@ public class FroniusBatteryControl {
     public void addForcedBatteryChargingSchedule(LocalTime from, LocalTime until, QuantityType<Power> power)
             throws FroniusCommunicationException, FroniusUnauthorizedException {
         addSchedule(from, until, ScheduleType.CHARGE_MIN, power);
+    }
+
+    /**
+     * Limits the battery charging power right now, i.e. the battery is charged with at most the specified power.
+     *
+     * @param power the maximum power to charge the battery with
+     * @throws FroniusCommunicationException when an error occurs during communication with the inverter
+     * @throws FroniusUnauthorizedException when the login fails due to invalid credentials
+     */
+    public void limitBatteryCharging(QuantityType<Power> power)
+            throws FroniusCommunicationException, FroniusUnauthorizedException {
+        reset();
+        addBatteryChargingLimitSchedule(BEGIN_OF_DAY, END_OF_DAY, power);
+    }
+
+    /**
+     * Limits the battery charging power during a specific time period, i.e. the battery is charged with at most the
+     * specified power during that period.
+     *
+     * @param from start time of the charging limit period
+     * @param until end time of the charging limit period
+     * @param power the maximum power to charge the battery with
+     * @throws FroniusCommunicationException when an error occurs during communication with the inverter
+     * @throws FroniusUnauthorizedException when the login fails due to invalid credentials
+     */
+    public void addBatteryChargingLimitSchedule(LocalTime from, LocalTime until, QuantityType<Power> power)
+            throws FroniusCommunicationException, FroniusUnauthorizedException {
+        addSchedule(from, until, ScheduleType.CHARGE_MAX, power);
+    }
+
+    /**
+     * Limits the battery discharging power right now, i.e. the battery is discharged with at most the specified power.
+     *
+     * @param power the maximum power to discharge the battery with
+     * @throws FroniusCommunicationException when an error occurs during communication with the inverter
+     * @throws FroniusUnauthorizedException when the login fails due to invalid credentials
+     */
+    public void limitBatteryDischarging(QuantityType<Power> power)
+            throws FroniusCommunicationException, FroniusUnauthorizedException {
+        reset();
+        addBatteryDischargingLimitSchedule(BEGIN_OF_DAY, END_OF_DAY, power);
+    }
+
+    /**
+     * Limits the battery discharging power during a specific time period, i.e. the battery is discharged with at most
+     * the specified power during that period.
+     *
+     * @param from start time of the discharging limit period
+     * @param until end time of the discharging limit period
+     * @param power the maximum power to discharge the battery with
+     * @throws FroniusCommunicationException when an error occurs during communication with the inverter
+     * @throws FroniusUnauthorizedException when the login fails due to invalid credentials
+     */
+    public void addBatteryDischargingLimitSchedule(LocalTime from, LocalTime until, QuantityType<Power> power)
+            throws FroniusCommunicationException, FroniusUnauthorizedException {
+        addSchedule(from, until, ScheduleType.DISCHARGE_MAX, power);
     }
 
     /**
@@ -347,5 +428,135 @@ public class FroniusBatteryControl {
         postConfig(batteriesUri, Map.of(BACKUP_RESERVED_CAPACITY_PARAMETER, percent),
                 BACKUP_RESERVED_CAPACITY_PARAMETER);
         logger.trace("Backup Reserved Capacity setting set successfully");
+    }
+
+    /** Battery settings from the inverter's battery configuration (SoC values in percent). */
+    public record BatterySettings(int minSoc, int maxSoc, int backupReservedCapacity, int backupCriticalSoc,
+            boolean chargeFromGrid, boolean calibrating) {
+    }
+
+    private static final String SOC_MIN_PARAMETER = "BAT_M0_SOC_MIN";
+    private static final String SOC_MAX_PARAMETER = "BAT_M0_SOC_MAX";
+    private static final String BACKUP_CRITICAL_SOC_PARAMETER = "HYB_BACKUP_CRITICALSOC";
+    private static final String CHARGE_FROM_GRID_PARAMETER = "HYB_EVU_CHARGEFROMGRID";
+    private static final String CALIBRATION_PARAMETER = "BAT_CALIBRATION";
+
+    /**
+     * Gets the current battery settings (state-of-charge limits and backup reserved capacity) from the inverter.
+     *
+     * @return the current battery settings
+     * @throws FroniusCommunicationException when an error occurs during communication with the inverter
+     * @throws FroniusUnauthorizedException when the login fails due to invalid credentials
+     */
+    public BatterySettings getBatterySettings() throws FroniusCommunicationException, FroniusUnauthorizedException {
+        String responseString = authorizedRequest(HttpMethod.GET, batteriesUri, null);
+        BatteriesConfig config;
+        try {
+            config = gson.fromJson(responseString, BatteriesConfig.class);
+        } catch (JsonSyntaxException jse) {
+            throw new FroniusCommunicationException("Failed to parse battery settings", jse);
+        }
+        if (config == null) {
+            throw new FroniusCommunicationException("Battery settings response is missing expected fields");
+        }
+        Integer minSoc = config.minSoc();
+        Integer maxSoc = config.maxSoc();
+        Integer backupReservedCapacity = config.backupReservedCapacity();
+        Integer backupCriticalSoc = config.backupCriticalSoc();
+        Boolean chargeFromGrid = config.chargeFromGrid();
+        Boolean calibrating = config.calibrating();
+        if (minSoc == null || maxSoc == null || backupReservedCapacity == null || backupCriticalSoc == null
+                || chargeFromGrid == null || calibrating == null) {
+            throw new FroniusCommunicationException("Battery settings response is missing expected fields");
+        }
+        return new BatterySettings(minSoc, maxSoc, backupReservedCapacity, backupCriticalSoc, chargeFromGrid,
+                calibrating);
+    }
+
+    /** Deserialized response of the batteries config API endpoint. */
+    private record BatteriesConfig(@SerializedName(SOC_MIN_PARAMETER) @Nullable Integer minSoc,
+            @SerializedName(SOC_MAX_PARAMETER) @Nullable Integer maxSoc,
+            @SerializedName(BACKUP_RESERVED_CAPACITY_PARAMETER) @Nullable Integer backupReservedCapacity,
+            @SerializedName(BACKUP_CRITICAL_SOC_PARAMETER) @Nullable Integer backupCriticalSoc,
+            @SerializedName(CHARGE_FROM_GRID_PARAMETER) @Nullable Boolean chargeFromGrid,
+            @SerializedName(CALIBRATION_PARAMETER) @Nullable Boolean calibrating) {
+    }
+
+    /**
+     * Enables or disables charging the battery from the grid on the inverter.
+     *
+     * @param enabled whether charging the battery from the grid is allowed
+     * @throws FroniusCommunicationException when an error occurs during communication with the inverter
+     * @throws FroniusUnauthorizedException when the login fails due to invalid credentials
+     */
+    public void setChargeFromGrid(boolean enabled) throws FroniusCommunicationException, FroniusUnauthorizedException {
+        postConfig(batteriesUri, Map.of(CHARGE_FROM_GRID_PARAMETER, enabled), CHARGE_FROM_GRID_PARAMETER);
+        logger.trace("Charge from Grid setting set successfully");
+    }
+
+    /**
+     * Gets the night preservation limit from the inverter, i.e. the state of charge that is preserved over night to
+     * keep the battery system operational.
+     *
+     * @return the night preservation limit in percent
+     * @throws FroniusCommunicationException when an error occurs during communication with the inverter
+     * @throws FroniusUnauthorizedException when the login fails due to invalid credentials
+     */
+    public int getNightPreservationLimit() throws FroniusCommunicationException, FroniusUnauthorizedException {
+        String responseString = authorizedRequest(HttpMethod.GET, nightPreservationLimitUri, null);
+        NightPreservationLimitResponse response;
+        try {
+            response = gson.fromJson(responseString, NightPreservationLimitResponse.class);
+        } catch (JsonSyntaxException jse) {
+            throw new FroniusCommunicationException("Failed to parse night preservation limit", jse);
+        }
+        NightPreservationLimitResult result = response == null ? null : response.resultData();
+        Integer limit = result == null ? null : result.socMinValue();
+        if (limit == null) {
+            throw new FroniusCommunicationException("Night preservation limit response is missing expected fields");
+        }
+        return limit;
+    }
+
+    private record NightPreservationLimitResult(@Nullable Integer socMinValue) {
+    }
+
+    private record NightPreservationLimitResponse(@Nullable NightPreservationLimitResult resultData) {
+    }
+
+    /**
+     * Sets the critical state of charge for backup power on the inverter, i.e. the state of charge at which the
+     * inverter warns about the battery running low in backup power mode.
+     *
+     * @param percent the critical state of charge for backup power
+     * @throws FroniusCommunicationException when an error occurs during communication with the inverter
+     * @throws IllegalArgumentException when percent is not in [0,100]
+     * @throws FroniusUnauthorizedException when login failed due to invalid credentials
+     */
+    public void setBackupCriticalSoc(int percent) throws FroniusCommunicationException, FroniusUnauthorizedException {
+        if (percent < 0 || percent > 100) {
+            throw new IllegalArgumentException("invalid percent value: " + percent + " (must be in [0,100])");
+        }
+        postConfig(batteriesUri, Map.of(BACKUP_CRITICAL_SOC_PARAMETER, percent), BACKUP_CRITICAL_SOC_PARAMETER);
+        logger.trace("Backup Critical SoC setting set successfully");
+    }
+
+    /**
+     * Sets the battery state-of-charge limits on the inverter.
+     *
+     * @param minSoc minimum state of charge in percent
+     * @param maxSoc maximum state of charge in percent
+     * @throws FroniusCommunicationException when an error occurs during communication with the inverter
+     * @throws FroniusUnauthorizedException when the login fails due to invalid credentials
+     */
+    public void setSocLimits(int minSoc, int maxSoc)
+            throws FroniusCommunicationException, FroniusUnauthorizedException {
+        if (minSoc < 0 || maxSoc > 100 || minSoc >= maxSoc) {
+            throw new IllegalArgumentException(
+                    "invalid SoC limits: min=" + minSoc + ", max=" + maxSoc + " (required: 0 <= min < max <= 100)");
+        }
+        postConfig(batteriesUri, Map.of(SOC_MIN_PARAMETER, minSoc, SOC_MAX_PARAMETER, maxSoc), SOC_MIN_PARAMETER,
+                SOC_MAX_PARAMETER);
+        logger.trace("SoC limits set successfully");
     }
 }

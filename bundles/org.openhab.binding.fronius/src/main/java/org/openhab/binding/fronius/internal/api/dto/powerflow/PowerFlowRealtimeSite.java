@@ -43,6 +43,18 @@ public class PowerFlowRealtimeSite {
     private double eTotal;
     @SerializedName("Meter_Location")
     private String meterLocation;
+    @SerializedName("BackupMode")
+    private Boolean backupMode;
+    @SerializedName("BatteryStandby")
+    private Boolean batteryStandby;
+
+    public Boolean getBackupMode() {
+        return backupMode;
+    }
+
+    public Boolean getBatteryStandby() {
+        return batteryStandby;
+    }
 
     public String getMode() {
         if (mode == null) {

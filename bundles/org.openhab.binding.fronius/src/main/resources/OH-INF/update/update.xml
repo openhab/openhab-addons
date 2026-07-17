@@ -22,6 +22,35 @@
 				<description>Inverter 1 State of Charge - DEPRECATED. Please use inverterSoc channel instead</description>
 			</update-channel>
 		</instruction-set>
+		<instruction-set targetVersion="2">
+			<add-channel id="batterysocmin">
+				<type>fronius:batterySocMin</type>
+			</add-channel>
+			<add-channel id="batterysocmax">
+				<type>fronius:batterySocMax</type>
+			</add-channel>
+			<add-channel id="backupreservedcapacity">
+				<type>fronius:backupReservedCapacity</type>
+			</add-channel>
+			<add-channel id="backupcriticalsoc">
+				<type>fronius:backupCriticalSoc</type>
+			</add-channel>
+			<add-channel id="chargefromgrid">
+				<type>fronius:chargeFromGrid</type>
+			</add-channel>
+			<add-channel id="batterycalibration">
+				<type>fronius:batteryCalibration</type>
+			</add-channel>
+			<add-channel id="nightpreservationlimit">
+				<type>fronius:nightPreservationLimit</type>
+			</add-channel>
+			<add-channel id="powerflowbackupmode">
+				<type>fronius:backupMode</type>
+			</add-channel>
+			<add-channel id="powerflowbatterystandby">
+				<type>fronius:batteryStandby</type>
+			</add-channel>
+		</instruction-set>
 	</thing-type>
 
 </update:update-descriptions>
