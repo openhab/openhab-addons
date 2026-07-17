@@ -51,6 +51,51 @@ public class FroniusConfigAuthUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(FroniusConfigAuthUtil.class);
 
     /**
+     * How long a digest session (nonce) is reused before performing a fresh login.
+     * Kept short to avoid running into server-side nonce expiry, while still avoiding repeated logins for bursts of
+     * requests, e.g. a read-modify-write sequence triggered by a channel command.
+     */
+    private static final long SESSION_TTL_MS = 60_000;
+
+    private static final Map<URI, DigestSession> SESSIONS = new HashMap<>();
+
+    /** An established digest session whose nonce can be reused for subsequent requests. */
+    private static class DigestSession {
+        final String hashAlgorithm;
+        final String nonce;
+        final String realm;
+        final String qop;
+        final String cnonce;
+        final String username;
+        final String password;
+        final long createdAt;
+        int nc;
+
+        DigestSession(String hashAlgorithm, String nonce, String realm, String qop, String cnonce, String username,
+                String password, long createdAt, int nc) {
+            this.hashAlgorithm = hashAlgorithm;
+            this.nonce = nonce;
+            this.realm = realm;
+            this.qop = qop;
+            this.cnonce = cnonce;
+            this.username = username;
+            this.password = password;
+            this.createdAt = createdAt;
+            this.nc = nc;
+        }
+    }
+
+    /**
+     * Invalidates the cached digest session for the given base URI, e.g. because a request using it failed due to
+     * server-side nonce expiry.
+     *
+     * @param baseUri the base URI of the Fronius inverter
+     */
+    public static synchronized void invalidateSession(URI baseUri) {
+        SESSIONS.remove(baseUri);
+    }
+
+    /**
      * Sends an HTTP GET request to the given login URI and extracts the authentication parameters from the
      * authentication header.
      * This method uses a {@link Response.Listener.Adapter} to intercept the response headers and extract the
@@ -219,6 +264,25 @@ public class FroniusConfigAuthUtil {
         final URI loginUri = URI.create(baseUri + LOGIN_ENDPOINT + "?user=" + username);
         final String relativeLoginUrl = loginUri.getPath();
 
+        // Reuse an established digest session if possible to avoid the costly login handshake
+        DigestSession session = SESSIONS.get(baseUri);
+        if (session != null) {
+            if (session.username.equals(username) && session.password.equals(password)
+                    && System.currentTimeMillis() - session.createdAt < SESSION_TTL_MS) {
+                try {
+                    session.nc++;
+                    String header = createDigestHeader(session.hashAlgorithm, relativeUrl, method, username, password,
+                            session.nonce, session.realm, session.qop, session.nc, session.cnonce);
+                    LOGGER.debug("Reusing digest session for request (nc={}).", session.nc);
+                    return header;
+                } catch (NoSuchAlgorithmException | IllegalArgumentException e) {
+                    SESSIONS.remove(baseUri);
+                }
+            } else {
+                SESSIONS.remove(baseUri);
+            }
+        }
+
         // Perform request to get authentication parameters
         Map<String, String> authDetails;
 
@@ -298,6 +362,14 @@ public class FroniusConfigAuthUtil {
             throw new FroniusCommunicationException("Failed to create digest authentication header for request", e);
         }
         LOGGER.debug("Created auth header for next request.");
+
+        String nonce = authDetails.get("nonce");
+        String realm = authDetails.get("realm");
+        String qop = authDetails.get("qop");
+        if (nonce != null && realm != null && qop != null) {
+            SESSIONS.put(baseUri, new DigestSession(hashAlgorithm, nonce, realm, qop, cnonce, username, password,
+                    System.currentTimeMillis(), nc));
+        }
 
         return authHeader;
     }

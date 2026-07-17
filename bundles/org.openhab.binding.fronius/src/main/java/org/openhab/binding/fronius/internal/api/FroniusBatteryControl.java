@@ -124,6 +124,18 @@ public class FroniusBatteryControl {
      */
     private String authorizedRequest(HttpMethod method, URI uri, @Nullable String body)
             throws FroniusCommunicationException, FroniusUnauthorizedException {
+        try {
+            return executeAuthorizedRequest(method, uri, body);
+        } catch (FroniusCommunicationException e) {
+            // The cached digest session may have expired on the server side, invalidate it and retry once with a
+            // fresh login
+            FroniusConfigAuthUtil.invalidateSession(baseUri);
+            return executeAuthorizedRequest(method, uri, body);
+        }
+    }
+
+    private String executeAuthorizedRequest(HttpMethod method, URI uri, @Nullable String body)
+            throws FroniusCommunicationException, FroniusUnauthorizedException {
         String authHeader = FroniusConfigAuthUtil.login(httpClient, firmwareVersion, baseUri, username, password,
                 method, uri.getPath(), API_TIMEOUT);
         Properties headers = new Properties();
