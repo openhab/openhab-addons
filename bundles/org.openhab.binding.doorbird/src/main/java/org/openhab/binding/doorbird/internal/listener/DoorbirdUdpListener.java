@@ -52,7 +52,7 @@ public class DoorbirdUdpListener extends Thread {
     private final DoorbellHandler thingHandler;
 
     // UDP socket used to receive status events from doorbell
-    private @Nullable DatagramSocket socket;
+    private volatile @Nullable DatagramSocket socket;
 
     private byte @Nullable [] lastData;
     private int lastDataLength;
@@ -93,15 +93,20 @@ public class DoorbirdUdpListener extends Thread {
         }
 
         DatagramPacket packet = new DatagramPacket(new byte[BUFFER_SIZE], BUFFER_SIZE);
-        while (socket != null) {
+        while (true) {
+            DatagramSocket socket = this.socket;
+            if (socket == null) {
+                break;
+            }
             try {
                 socket.receive(packet);
                 processPacket(packet);
             } catch (SocketTimeoutException e) {
                 // Nothing to do on socket timeout
             } catch (IOException e) {
-                logger.debug("Listener got IOException waiting for datagram: {}", e.getMessage());
-                socket = null;
+                logger.debug("Listener got IOException waiting for datagram: {}", e.getMessage(), e);
+                socket.close();
+                this.socket = null;
             }
         }
         logger.debug("Listener exiting");
