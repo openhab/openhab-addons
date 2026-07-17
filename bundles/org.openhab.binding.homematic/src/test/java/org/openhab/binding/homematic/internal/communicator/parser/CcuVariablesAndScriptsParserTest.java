@@ -45,18 +45,26 @@ class CcuVariablesAndScriptsParserTest {
                 new HmDevice(HmDevice.ADDRESS_GATEWAY_EXTRAS, HmInterface.RF, HmDevice.TYPE_GATEWAY_EXTRAS, "ccu", "",
                         "1"));
 
-        TclScriptDataEntry entry = new TclScriptDataEntry("LongStringVariable", "Long numeric string", "12345678901",
+        TclScriptDataEntry entry = new TclScriptDataEntry("LongStringVariable", "Long numeric string", "+12345678901",
                 HmValueType.STRING.name(), false, "", "", "", "", "");
 
         TclScriptDataList resultList = mock(TclScriptDataList.class);
         when(resultList.getEntries()).thenReturn(new ArrayList<>(List.of(entry)));
 
-        new CcuVariablesAndScriptsParser(channel).parse(resultList);
+        CcuVariablesAndScriptsParser parser = new CcuVariablesAndScriptsParser(channel);
+        parser.parse(resultList);
 
         HmDatapoint dp = channel.getDatapoint(HmParamsetType.VALUES, entry.name);
         assertNotNull(dp);
         assertEquals(HmValueType.STRING, dp.getType());
         Object value = dp.getValue();
+        assertInstanceOf(String.class, value);
+        assertEquals(entry.value, value);
+
+        entry.value = "-12345678901";
+        parser.parse(resultList);
+
+        value = dp.getValue();
         assertInstanceOf(String.class, value);
         assertEquals(entry.value, value);
     }
