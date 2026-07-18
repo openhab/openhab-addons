@@ -696,6 +696,12 @@
 		</state>
 	</channel-type>
 
+	<channel-type id="meterResetTotals">
+		<item-type>Switch</item-type>
+		<label>Reset Energy Measurements</label>
+		<description>Resets the accumulated energy counters (all phases on 3EM devices)</description>
+	</channel-type>
+
 	<channel-type id="meterTotal" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
 		<label>Total Energy Consumption</label>

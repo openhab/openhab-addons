@@ -877,9 +877,23 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     @Override
     public void resetMeterTotal(int id) throws ShellyApiException {
-        apiRequest(new Shelly2RpcRequest()
-                .withMethod(getProfile().is3EM ? SHELLYRPC_METHOD_EMDATARESET : SHELLYRPC_METHOD_EM1DATARESET)
-                .withId(id));
+        apiRequest(new Shelly2RpcRequest().withMethod(resetCountersMethod(getProfile())).withId(id));
+    }
+
+    /**
+     * Selects the RPC method to reset accumulated meter counters for the component family the device
+     * profile identifies as. 3EM's emdata:0 aggregates all phases, so it is reset once at the device
+     * level rather than per meter.
+     */
+    static String resetCountersMethod(ShellyDeviceProfile profile) {
+        // isEM1 must be checked before hasRelays: Pro EM-50 exposes both a relay and em1-clamp meters,
+        // and only EM1Data.ResetCounters resets its clamp counters. isRoller must also precede
+        // hasRelays: on Gen2 hasRelays includes roller-mode devices, which have no switch component.
+        return profile.is3EM ? SHELLYRPC_METHOD_EMDATARESET
+                : profile.isEM1 ? SHELLYRPC_METHOD_EM1DATARESET
+                        : profile.isRoller ? SHELLYRPC_METHOD_COVER_RESETCOUNTERS
+                                : profile.hasRelays ? SHELLYRPC_METHOD_SWITCH_RESETCOUNTERS
+                                        : SHELLYRPC_METHOD_PM1_RESETCOUNTERS;
     }
 
     @Override

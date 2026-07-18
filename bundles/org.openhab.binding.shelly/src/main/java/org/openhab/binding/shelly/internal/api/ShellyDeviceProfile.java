@@ -112,6 +112,7 @@ public class ShellyDeviceProfile {
     public boolean isWall; // true: Shelly Wall Display
     public boolean is3EM; // true for Shelly 3EM and Pro 3EM
     public boolean isEM50; // true for Shelly Pro EM50
+    public boolean isEM1; // true for em1-clamp meter devices (Plus EM, Mini EM, Pro EM50); Pro EM50 also has a relay
 
     public int minTemp = 0; // Bulb/Duo: Min Light Temp
     public int maxTemp = 0; // Bulb/Duo: Max Light Temp
@@ -230,6 +231,7 @@ public class ShellyDeviceProfile {
         isWall = GROUP_WALLDISPLAY_THING_TYPES.contains(thingTypeUID);
         is3EM = GROUP_3EM_THING_TYPES.contains(thingTypeUID);
         isEM50 = THING_TYPE_SHELLYPROEM50.equals(thingTypeUID);
+        isEM1 = GROUP_EM1_THING_TYPES.contains(thingTypeUID);
 
         isSensor = isHT || isFlood || isDW || isSmoke || isGas || isButton || isMultiButton || isUNI || isMotion
                 || isSense || isTRV || isWall;

@@ -182,6 +182,7 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ACCURETURNEDENERGY, "accumulatedReturnedEnergy",
                         ITEMT_ENERGY))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ACCUAPPARENT, "meterAccuApparent", ITEMT_POWER))
+                .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_RESETTOTAL, "meterResetTotals", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_VOLTAGE, "supplyVoltage", ITEMT_VOLT))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_CHARGER, "charger", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_LED_STATUS_DISABLE, "ledStatusDisable", ITEMT_SWITCH))
@@ -247,6 +248,7 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_METER_TOTALENERGY, "totalEnergy", ITEMT_ENERGY))
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_METER_LASTMIN1, "lastPower1", ITEMT_POWER))
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_METER_ENERGYAVG1MIN, "energyAvg1Min", ITEMT_ENERGY))
+                .add(new ShellyChannel(m, CHGR_METER, CHANNEL_EMETER_RESETTOTAL, "meterResetTotals", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_LAST_UPDATE, "lastUpdate", ITEMT_DATETIME))
 
                 // EMeter
@@ -404,6 +406,8 @@ public class ShellyChannelDefinitions {
         boolean hasReturnedEnergy = accuChannel && (profile.is3EM || profile.isEM50);
         addChannel(thing, add, hasReturnedEnergy, CHGR_DEVST, CHANNEL_DEVST_ACCURETURNED);
         addChannel(thing, add, hasReturnedEnergy, CHGR_DEVST, CHANNEL_DEVST_ACCUAPPARENT);
+        // 3EM totals are only reset at the device level (EMData.ResetCounters covers all phases at once)
+        addChannel(thing, add, profile.is3EM, CHGR_DEVST, CHANNEL_DEVST_RESETTOTAL);
         addChannel(thing, add, status.voltage != null || profile.settings.supplyVoltage != null, CHGR_DEVST,
                 CHANNEL_DEVST_VOLTAGE);
         addChannel(thing, add,
@@ -577,6 +581,8 @@ public class ShellyChannelDefinitions {
         // receive updates so existing items linked to lastPower1 keep working without re-discovery.
         addChannel(thing, newChannels, hasCounter, group, CHANNEL_METER_LASTMIN1);
         addChannel(thing, newChannels, hasCounter, group, CHANNEL_METER_ENERGYAVG1MIN);
+        // no resetTotals here: the Gen1 /meter endpoint (relay-PM, plug, dimmer, roller) has no
+        // reset API — only /emeter devices (EM/3EM, handled in createEMeterChannels) support it
         addChannel(thing, newChannels, !newChannels.isEmpty(), group, CHANNEL_LAST_UPDATE);
         return newChannels;
     }
@@ -619,6 +625,9 @@ public class ShellyChannelDefinitions {
         boolean hasLastMinute = byMinute != null && byMinute.length > 0 && byMinute[0] != null;
         addChannel(thing, newChannels, hasLastMinute, group, CHANNEL_METER_LASTMIN1);
         addChannel(thing, newChannels, hasLastMinute, group, CHANNEL_METER_ENERGYAVG1MIN);
+        // Per-meter reset is only meaningful when each meter has its own resettable counter component
+        // (Switch/PM1/EM1Data). 3EM's emdata:0 aggregates all phases, so it resets at the device level only.
+        addChannel(thing, newChannels, !profile.is3EM, group, CHANNEL_EMETER_RESETTOTAL);
         // Only add lastUpdate if this device actually has meter channels — guards against non-PM Gen2 relay
         // devices (e.g. Plus 1) where isEMeter=true but all emeter fields are permanently null.
         addChannel(thing, newChannels, !newChannels.isEmpty(), group, CHANNEL_LAST_UPDATE);
