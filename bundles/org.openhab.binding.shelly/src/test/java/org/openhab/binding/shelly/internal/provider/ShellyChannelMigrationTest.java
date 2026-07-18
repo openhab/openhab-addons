@@ -60,14 +60,15 @@ public class ShellyChannelMigrationTest {
     }
 
     @ParameterizedTest
-    @CsvSource({ CHANNEL_METER_ENERGYAVG1MIN, CHANNEL_METER_TOTALENERGY })
+    @CsvSource({ CHANNEL_METER_ENERGYHISTMIN1, CHANNEL_METER_ENERGYHISTMIN2, CHANNEL_METER_ENERGYHISTMIN3,
+            CHANNEL_METER_ENERGYAVGLAST3MIN, CHANNEL_METER_TOTALENERGY })
     void newChannelNamesHaveNoReplacement(String channel) {
         assertNull(ShellyChannelDefinitions.getReplacementChannelName(channel));
     }
 
     @Test
     void lastPower1HasNoDualWriteMapping() {
-        // lastPower1 (W) must NOT forward to energyAvg1Min (Wh): the units are incompatible and
+        // lastPower1 (W) must NOT forward to energyHistMin1 (Wh): the units are incompatible and
         // the dual-write would post W states to Wh items on every poll. Write sites post both
         // channels explicitly; only the migration rule links the pair for channel creation.
         assertNull(ShellyChannelDefinitions.getReplacementChannelName(CHANNEL_METER_LASTMIN1));
@@ -87,14 +88,14 @@ public class ShellyChannelMigrationTest {
     @Test
     void meterGroupMinuteEnergyDefinitionsResolvableForAllIndexedGroups() {
         // meter1..meterN map to the meter-group definitions
-        assertNotNull(ShellyChannelDefinitions.getDefinition("meter#" + CHANNEL_METER_ENERGYAVG1MIN));
-        assertNotNull(ShellyChannelDefinitions.getDefinition("meter1#" + CHANNEL_METER_ENERGYAVG1MIN));
-        assertNotNull(ShellyChannelDefinitions.getDefinition("meter3#" + CHANNEL_METER_ENERGYAVG1MIN));
+        assertNotNull(ShellyChannelDefinitions.getDefinition("meter#" + CHANNEL_METER_ENERGYHISTMIN1));
+        assertNotNull(ShellyChannelDefinitions.getDefinition("meter1#" + CHANNEL_METER_ENERGYHISTMIN1));
+        assertNotNull(ShellyChannelDefinitions.getDefinition("meter3#" + CHANNEL_METER_ENERGYHISTMIN1));
     }
 
     @Test
     void minuteEnergyChannelsNotDefinedInDeviceGroup() {
         assertThrows(IllegalArgumentException.class,
-                () -> ShellyChannelDefinitions.getDefinition("device#" + CHANNEL_METER_ENERGYAVG1MIN));
+                () -> ShellyChannelDefinitions.getDefinition("device#" + CHANNEL_METER_ENERGYHISTMIN1));
     }
 }

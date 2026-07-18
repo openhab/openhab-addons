@@ -673,7 +673,7 @@
 	<channel-type id="lastPower1" advanced="true">
 		<item-type unitHint="W">Number:Power</item-type>
 		<label>Last Minute Power</label>
-		<description>[deprecated] Use energyAvg1Min instead. Average power consumption during the previous minute</description>
+		<description>[deprecated] Use energyHistMin1 instead. Average power consumption during the previous minute</description>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -683,10 +683,50 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="energyAvg1Min">
+	<channel-type id="energyHistMin1" advanced="true">
 		<item-type unitHint="Wh">Number:Energy</item-type>
-		<label>Last Minute Energy</label>
-		<description>Energy consumed during the previous complete minute</description>
+		<label>Energy - Previous Minute</label>
+		<description>Total energy consumed during the previous complete minute (minute -1), in Wh</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state readOnly="true" pattern="%.3f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="energyHistMin2" advanced="true">
+		<item-type unitHint="Wh">Number:Energy</item-type>
+		<label>Energy - 2 Minutes Ago</label>
+		<description>Total energy consumed during the complete minute 2 minutes ago (minute -2), in Wh</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state readOnly="true" pattern="%.3f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="energyHistMin3" advanced="true">
+		<item-type unitHint="Wh">Number:Energy</item-type>
+		<label>Energy - 3 Minutes Ago</label>
+		<description>Total energy consumed during the complete minute 3 minutes ago (minute -3), in Wh</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state readOnly="true" pattern="%.3f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="energyAvgLast3Min" advanced="true">
+		<item-type unitHint="Wh">Number:Energy</item-type>
+		<label>Average Energy - Last 3 Minutes</label>
+		<description>Average energy per minute over the previous 3 complete minutes, computed from energyHistMin1/2/3 (minutes
+			-1, -2 and -3), in Wh</description>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>

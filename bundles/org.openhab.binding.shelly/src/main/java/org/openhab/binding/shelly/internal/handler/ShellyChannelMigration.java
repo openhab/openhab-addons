@@ -52,8 +52,6 @@ public class ShellyChannelMigration {
                     CHANNEL_EMETER_RETURNEDENERGY, true),
             new ChannelMigrationRule(5, mkWildcardChannelId(CHANNEL_GROUP_METER, CHANNEL_EMETER_REACTWATTS),
                     CHANNEL_EMETER_REACTPOWER, false),
-            new ChannelMigrationRule(5, mkWildcardChannelId(CHANNEL_GROUP_METER, CHANNEL_METER_LASTMIN1),
-                    CHANNEL_METER_ENERGYAVG1MIN, false),
             new ChannelMigrationRule(5, mkChannelId(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCUWATTS),
                     CHANNEL_DEVST_ACCUMULATEDPOWER, true),
             new ChannelMigrationRule(5, mkChannelId(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCUTOTAL),

@@ -247,7 +247,11 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_METER_TOTALKWH, "meterTotal", ITEMT_ENERGY))
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_METER_TOTALENERGY, "totalEnergy", ITEMT_ENERGY))
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_METER_LASTMIN1, "lastPower1", ITEMT_POWER))
-                .add(new ShellyChannel(m, CHGR_METER, CHANNEL_METER_ENERGYAVG1MIN, "energyAvg1Min", ITEMT_ENERGY))
+                .add(new ShellyChannel(m, CHGR_METER, CHANNEL_METER_ENERGYHISTMIN1, "energyHistMin1", ITEMT_ENERGY))
+                .add(new ShellyChannel(m, CHGR_METER, CHANNEL_METER_ENERGYHISTMIN2, "energyHistMin2", ITEMT_ENERGY))
+                .add(new ShellyChannel(m, CHGR_METER, CHANNEL_METER_ENERGYHISTMIN3, "energyHistMin3", ITEMT_ENERGY))
+                .add(new ShellyChannel(m, CHGR_METER, CHANNEL_METER_ENERGYAVGLAST3MIN, "energyAvgLast3Min",
+                        ITEMT_ENERGY))
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_EMETER_RESETTOTAL, "meterResetTotals", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_LAST_UPDATE, "lastUpdate", ITEMT_DATETIME))
 
@@ -575,12 +579,19 @@ public class ShellyChannelDefinitions {
         Map<String, Channel> newChannels = new LinkedHashMap<>();
         Double[] counters = meter.counters;
         boolean hasCounter = counters != null && counters.length > 0 && counters[0] != null;
+        boolean hasCounter2 = counters != null && counters.length > 1 && counters[1] != null;
+        boolean hasCounter3 = counters != null && counters.length > 2 && counters[2] != null;
         addChannel(thing, newChannels, meter.power != null, group, CHANNEL_METER_CURRENTWATTS);
         addChannel(thing, newChannels, meter.total != null, group, CHANNEL_METER_TOTALKWH);
-        // lastPower1 (W, deprecated) and energyAvg1Min (Wh) are always created together. Both channels
-        // receive updates so existing items linked to lastPower1 keep working without re-discovery.
+        // lastPower1 (W, deprecated) is kept for backward compatibility (already released); energyHistMin1
+        // is its Wh-based successor. Both are created together so existing items linked to lastPower1
+        // keep working without re-discovery.
         addChannel(thing, newChannels, hasCounter, group, CHANNEL_METER_LASTMIN1);
-        addChannel(thing, newChannels, hasCounter, group, CHANNEL_METER_ENERGYAVG1MIN);
+        addChannel(thing, newChannels, hasCounter, group, CHANNEL_METER_ENERGYHISTMIN1);
+        addChannel(thing, newChannels, hasCounter2, group, CHANNEL_METER_ENERGYHISTMIN2);
+        addChannel(thing, newChannels, hasCounter3, group, CHANNEL_METER_ENERGYHISTMIN3);
+        addChannel(thing, newChannels, hasCounter && hasCounter2 && hasCounter3, group,
+                CHANNEL_METER_ENERGYAVGLAST3MIN);
         // no resetTotals here: the Gen1 /meter endpoint (relay-PM, plug, dimmer, roller) has no
         // reset API — only /emeter devices (EM/3EM, handled in createEMeterChannels) support it
         addChannel(thing, newChannels, !newChannels.isEmpty(), group, CHANNEL_LAST_UPDATE);
@@ -618,13 +629,18 @@ public class ShellyChannelDefinitions {
                 CHANNEL_EMETER_APPARENT);
         addChannel(thing, newChannels, emeter.frequency != null, group, CHANNEL_EMETER_FREQUENCY);
         addChannel(thing, newChannels, always || emeter.pf != null, group, CHANNEL_EMETER_PFACTOR);
-        // lastPower1 (W, deprecated) and energyAvg1Min (Wh) are always created together when the device
+        // lastPower1 (W, deprecated) and energyHistMin1 (Wh) are always created together when the device
         // reports last-minute energy. Non-PM Gen2 relays (e.g. Plus 1) omit aenergy entirely — both absent.
         @Nullable
         Double @Nullable [] byMinute = emeter.energyByMinute;
-        boolean hasLastMinute = byMinute != null && byMinute.length > 0 && byMinute[0] != null;
-        addChannel(thing, newChannels, hasLastMinute, group, CHANNEL_METER_LASTMIN1);
-        addChannel(thing, newChannels, hasLastMinute, group, CHANNEL_METER_ENERGYAVG1MIN);
+        boolean hasMinute1 = byMinute != null && byMinute.length > 0 && byMinute[0] != null;
+        boolean hasMinute2 = byMinute != null && byMinute.length > 1 && byMinute[1] != null;
+        boolean hasMinute3 = byMinute != null && byMinute.length > 2 && byMinute[2] != null;
+        addChannel(thing, newChannels, hasMinute1, group, CHANNEL_METER_LASTMIN1);
+        addChannel(thing, newChannels, hasMinute1, group, CHANNEL_METER_ENERGYHISTMIN1);
+        addChannel(thing, newChannels, hasMinute2, group, CHANNEL_METER_ENERGYHISTMIN2);
+        addChannel(thing, newChannels, hasMinute3, group, CHANNEL_METER_ENERGYHISTMIN3);
+        addChannel(thing, newChannels, hasMinute1 && hasMinute2 && hasMinute3, group, CHANNEL_METER_ENERGYAVGLAST3MIN);
         // Per-meter reset is only meaningful when each meter has its own resettable counter component
         // (Switch/PM1/EM1Data). 3EM's emdata:0 aggregates all phases, so it resets at the device level only.
         addChannel(thing, newChannels, !profile.is3EM, group, CHANNEL_EMETER_RESETTOTAL);
@@ -769,10 +785,10 @@ public class ShellyChannelDefinitions {
             case CHANNEL_DEVST_ACCUWATTS -> CHANNEL_DEVST_ACCUMULATEDPOWER;
             case CHANNEL_EMETER_REACTWATTS -> CHANNEL_EMETER_REACTPOWER;
             case CHANNEL_DEVST_ACCUTOTAL -> CHANNEL_DEVST_TOTALENERGY;
-            // CHANNEL_METER_LASTMIN1 (lastPower1, W) intentionally has NO entry: its replacement
-            // energyAvg1Min is Number:Energy (Wh); forwarding the W state via the dual-write would
-            // post an incompatible unit to Wh-based items on every poll ("could not be converted
-            // to the item unit" warnings). All write sites post both channels explicitly instead.
+            // CHANNEL_METER_LASTMIN1 (lastPower1, W) intentionally has NO entry: energyHistMin1
+            // is Number:Energy (Wh); forwarding the W state via the dual-write would post an
+            // incompatible unit to Wh-based items on every poll ("could not be converted to the
+            // item unit" warnings). All write sites post both channels explicitly instead.
             case CHANNEL_NMETER_MTRESHHOLD -> CHANNEL_NMETER_THRESHOLD;
             case CHANNEL_DEVST_ACCURETURNED -> CHANNEL_DEVST_ACCURETURNEDENERGY;
             default -> null;

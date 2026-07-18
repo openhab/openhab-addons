@@ -362,20 +362,35 @@ public class ShellyComponents {
                 meterUpdated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_PFACTOR,
                         getDecimal(pf != null ? pf : 0.0));
 
-                // energyByMinute[0] is Wh consumed during the previous complete minute
-                // (converted from aenergy.by_minute mWh in Shelly2ApiClient).
+                // aenergy.by_minute[N] is the independent Wh sum for the minute N+1 minutes ago (not a
+                // running average) — by_minute[0] is the previous complete minute, by_minute[1] the one
+                // before that, by_minute[2] the one before that (converted from mWh in Shelly2ApiClient).
                 // OLD channel lastPower1 (CHANNEL_METER_LASTMIN1): average power = Wh * 60 → W, kept for
-                // backward compatibility. lastPower1 has no dual-write mapping (W is incompatible with
-                // the Wh channel), so both channels are written explicitly.
+                // backward compatibility (already released). lastPower1 has no dual-write mapping (W is
+                // incompatible with the Wh channel), so it and energyHistMin1 are both written explicitly.
                 @Nullable
                 Double @Nullable [] byMinute = emeter.energyByMinute;
                 if (byMinute != null && byMinute.length > 0) {
-                    Double lastMinuteWh = byMinute[0];
-                    if (lastMinuteWh != null) {
+                    Double minute1Wh = byMinute[0];
+                    if (minute1Wh != null) {
                         thingHandler.updateChannel(groupName, CHANNEL_METER_LASTMIN1,
-                                toQuantityType(lastMinuteWh * 60.0, DIGITS_WATT, Units.WATT));
-                        meterUpdated |= thingHandler.updateChannel(groupName, CHANNEL_METER_ENERGYAVG1MIN,
-                                toQuantityType(lastMinuteWh, DIGITS_KWH, Units.WATT_HOUR));
+                                toQuantityType(minute1Wh * 60.0, DIGITS_WATT, Units.WATT));
+                        meterUpdated |= thingHandler.updateChannel(groupName, CHANNEL_METER_ENERGYHISTMIN1,
+                                toQuantityType(minute1Wh, DIGITS_KWH, Units.WATT_HOUR));
+                    }
+                    Double minute2Wh = byMinute.length > 1 ? byMinute[1] : null;
+                    if (minute2Wh != null) {
+                        meterUpdated |= thingHandler.updateChannel(groupName, CHANNEL_METER_ENERGYHISTMIN2,
+                                toQuantityType(minute2Wh, DIGITS_KWH, Units.WATT_HOUR));
+                    }
+                    Double minute3Wh = byMinute.length > 2 ? byMinute[2] : null;
+                    if (minute3Wh != null) {
+                        meterUpdated |= thingHandler.updateChannel(groupName, CHANNEL_METER_ENERGYHISTMIN3,
+                                toQuantityType(minute3Wh, DIGITS_KWH, Units.WATT_HOUR));
+                    }
+                    if (minute1Wh != null && minute2Wh != null && minute3Wh != null) {
+                        meterUpdated |= thingHandler.updateChannel(groupName, CHANNEL_METER_ENERGYAVGLAST3MIN,
+                                toQuantityType((minute1Wh + minute2Wh + minute3Wh) / 3.0, DIGITS_KWH, Units.WATT_HOUR));
                     }
                 }
 
@@ -401,7 +416,8 @@ public class ShellyComponents {
         }
         double currentWatts = 0.0;
         double totalWatts = 0.0;
-        Double lastMin1 = null;
+        @Nullable
+        Double[] lastMinutes = new @Nullable Double[3];
         long timestamp = 0L;
         String groupName = CHANNEL_GROUP_METER;
         boolean updated = false;
@@ -421,8 +437,14 @@ public class ShellyComponents {
                 currentWatts += getDouble(meter.power);
                 totalWatts += getDouble(meter.total);
                 Double[] counters = meter.counters;
-                if (counters != null && counters.length > 0 && counters[0] != null) {
-                    lastMin1 = (lastMin1 != null ? lastMin1 : 0.0) + counters[0];
+                if (counters != null) {
+                    for (int i = 0; i < lastMinutes.length && i < counters.length; i++) {
+                        Double counter = counters[i];
+                        if (counter != null) {
+                            Double sum = lastMinutes[i];
+                            lastMinutes[i] = (sum != null ? sum : 0.0) + counter;
+                        }
+                    }
                 }
                 if (getLong(meter.timestamp) > timestamp) {
                     timestamp = getLong(meter.timestamp);
@@ -434,7 +456,7 @@ public class ShellyComponents {
             return false;
         }
 
-        updated |= updateMinuteCounters(thingHandler, groupName, new @Nullable Double[] { lastMin1 });
+        updated |= updateMinuteCounters(thingHandler, groupName, lastMinutes);
         totalWatts = totalWatts / (60.0 * 1000.0); // convert Watt/Min to kWh
         updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_CURRENTWATTS,
                 toQuantityType(currentWatts, DIGITS_WATT, Units.WATT));
@@ -481,10 +503,12 @@ public class ShellyComponents {
     }
 
     /**
-     * Write the Gen1 last-minute energy counter (Watt-minutes) to the minute-energy channels.
-     * counters[0] is the energy of the previous complete minute; a W-min value numerically
-     * equals the average power in W for that minute, so lastPower1 gets the raw value while
-     * energyAvg1Min gets value / 60 (Wh).
+     * Write the Gen1 last-minute energy counters (Watt-minutes) to the minute-energy channels.
+     * counters[N] is the independent energy sum for the minute N+1 minutes ago (not a running
+     * average), mirroring Gen2's aenergy.by_minute[]; a W-min value numerically equals the average
+     * power in W for that single minute, so lastPower1 gets counters[0] raw while energyHistMin1 /
+     * energyHistMin2 / energyHistMin3 get each sample divided by 60 (Wh). energyAvgLast3Min is the
+     * binding-computed average of all three samples, only when all three are present.
      */
     private static boolean updateMinuteCounters(ShellyThingInterface thingHandler, String groupName,
             @Nullable Double @Nullable [] counters) {
@@ -492,9 +516,27 @@ public class ShellyComponents {
             return false;
         }
         double wattMin = getDouble(counters[0]);
+        double wh1 = wattMin / 60.0;
         thingHandler.updateChannel(groupName, CHANNEL_METER_LASTMIN1, toQuantityType(wattMin, DIGITS_WATT, Units.WATT));
-        return thingHandler.updateChannel(groupName, CHANNEL_METER_ENERGYAVG1MIN,
-                toQuantityType(wattMin / 60.0, DIGITS_KWH, Units.WATT_HOUR));
+        boolean updated = thingHandler.updateChannel(groupName, CHANNEL_METER_ENERGYHISTMIN1,
+                toQuantityType(wh1, DIGITS_KWH, Units.WATT_HOUR));
+        Double wh2 = null;
+        Double wh3 = null;
+        if (counters.length > 1 && counters[1] != null) {
+            wh2 = getDouble(counters[1]) / 60.0;
+            updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_ENERGYHISTMIN2,
+                    toQuantityType(wh2, DIGITS_KWH, Units.WATT_HOUR));
+        }
+        if (counters.length > 2 && counters[2] != null) {
+            wh3 = getDouble(counters[2]) / 60.0;
+            updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_ENERGYHISTMIN3,
+                    toQuantityType(wh3, DIGITS_KWH, Units.WATT_HOUR));
+        }
+        if (wh2 != null && wh3 != null) {
+            updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_ENERGYAVGLAST3MIN,
+                    toQuantityType((wh1 + wh2 + wh3) / 3.0, DIGITS_KWH, Units.WATT_HOUR));
+        }
+        return updated;
     }
 
     private static @Nullable Double computePF(ShellySettingsEMeter emeter) {

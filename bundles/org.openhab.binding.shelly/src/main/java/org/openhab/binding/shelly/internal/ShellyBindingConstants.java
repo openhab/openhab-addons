@@ -109,8 +109,12 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_METER_CURRENTWATTS = "currentWatts";
     public static final String CHANNEL_METER_CURRENTPOWER = "currentPower";
     public static final String CHANNEL_METER_LASTMIN = "lastPower";
-    public static final String CHANNEL_METER_LASTMIN1 = CHANNEL_METER_LASTMIN + "1"; // deprecated, use ENERGYAVG1MIN
-    public static final String CHANNEL_METER_ENERGYAVG1MIN = "energyAvg1Min";
+    public static final String CHANNEL_METER_LASTMIN1 = CHANNEL_METER_LASTMIN + "1"; // deprecated, use ENERGYHISTMIN1
+    public static final String CHANNEL_METER_ENERGYHISTMIN1 = "energyHistMin1"; // energy of the previous minute
+    public static final String CHANNEL_METER_ENERGYHISTMIN2 = "energyHistMin2"; // energy 2 minutes ago
+    public static final String CHANNEL_METER_ENERGYHISTMIN3 = "energyHistMin3"; // energy 3 minutes ago
+    // average of energyHistMin1/2/3 (Wh/minute), i.e. NOT a raw by_minute[] sample like the channels above
+    public static final String CHANNEL_METER_ENERGYAVGLAST3MIN = "energyAvgLast3Min";
     public static final String CHANNEL_METER_TOTALKWH = "totalKWH";
     public static final String CHANNEL_METER_TOTALENERGY = "totalEnergy";
     public static final String CHANNEL_EMETER_TOTALRET = "returnedKWH";
