@@ -27,9 +27,11 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.ValveConfigurationAndControlCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.ValveConfigurationAndControlCluster.FeatureMap;
+import org.openhab.binding.matter.internal.client.dto.cluster.gen.ValveConfigurationAndControlCluster.ValveFaultBitmap;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.ValveConfigurationAndControlCluster.ValveStateEnum;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.Path;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
@@ -43,7 +45,7 @@ import org.openhab.core.types.UnDefType;
 /**
  * Test class for ValveConfigurationAndControlConverter
  *
- * @author Dan Cunningham - Initial contribution
+ * @author Jason Hubbard - Initial contribution
  */
 @NonNullByDefault
 class ValveConfigurationAndControlConverterTest extends BaseMatterConverterTest {
@@ -65,10 +67,12 @@ class ValveConfigurationAndControlConverterTest extends BaseMatterConverterTest 
     void testCreateChannels() {
         ChannelGroupUID channelGroupUID = new ChannelGroupUID("matter:node:test:12345:1");
         Map<Channel, @Nullable StateDescription> channels = converter.createChannels(channelGroupUID);
-        // state, duration, remaining-duration, fault -- no level channel without the Level feature
-        assertEquals(4, channels.size());
+        // state, current-state, duration, remaining-duration, fault -- no level channel without the Level feature
+        assertEquals(5, channels.size());
         assertTrue(channels.keySet().stream()
                 .anyMatch(c -> "matter:node:test:12345:1#valve-state".equals(c.getUID().toString())));
+        assertTrue(channels.keySet().stream()
+                .anyMatch(c -> "matter:node:test:12345:1#valve-current-state".equals(c.getUID().toString())));
         assertTrue(channels.keySet().stream()
                 .anyMatch(c -> "matter:node:test:12345:1#valve-remaining-duration".equals(c.getUID().toString())));
         assertTrue(channels.keySet().stream()
@@ -82,7 +86,7 @@ class ValveConfigurationAndControlConverterTest extends BaseMatterConverterTest 
                 mockHandler, 1, "TestLabel");
         ChannelGroupUID channelGroupUID = new ChannelGroupUID("matter:node:test:12345:1");
         Map<Channel, @Nullable StateDescription> channels = levelConverter.createChannels(channelGroupUID);
-        assertEquals(5, channels.size());
+        assertEquals(6, channels.size());
         Channel levelChannel = channels.keySet().stream()
                 .filter(c -> "matter:node:test:12345:1#valve-level".equals(c.getUID().toString())).findFirst()
                 .orElseThrow();
@@ -152,6 +156,40 @@ class ValveConfigurationAndControlConverterTest extends BaseMatterConverterTest 
         message.value = ValveStateEnum.OPEN;
         converter.onEvent(message);
         verify(mockHandler, times(1)).updateState(eq(1), eq("valve-state"), eq(OnOffType.ON));
+    }
+
+    @Test
+    void testOnEventCurrentStateExposesEnumValue() {
+        AttributeChangedMessage message = new AttributeChangedMessage();
+        message.path = new Path();
+        message.path.attributeName = ValveConfigurationAndControlCluster.ATTRIBUTE_CURRENT_STATE;
+        message.value = ValveStateEnum.OPEN;
+        converter.onEvent(message);
+        verify(mockHandler, times(1)).updateState(eq(1), eq("valve-current-state"), eq(new DecimalType(1)));
+    }
+
+    @Test
+    void testOnEventCurrentStateTransitioning() {
+        AttributeChangedMessage message = new AttributeChangedMessage();
+        message.path = new Path();
+        message.path.attributeName = ValveConfigurationAndControlCluster.ATTRIBUTE_CURRENT_STATE;
+        message.value = ValveStateEnum.TRANSITIONING;
+        converter.onEvent(message);
+        // The current-state channel exposes TRANSITIONING; the switch keeps its last stable value (no update).
+        verify(mockHandler, times(1)).updateState(eq(1), eq("valve-current-state"), eq(new DecimalType(2)));
+        verify(mockHandler, times(0)).updateState(eq(1), eq("valve-state"), eq(OnOffType.ON));
+        verify(mockHandler, times(0)).updateState(eq(1), eq("valve-state"), eq(OnOffType.OFF));
+    }
+
+    @Test
+    void testOnEventValveFaultFiresOneEventPerBit() {
+        AttributeChangedMessage message = new AttributeChangedMessage();
+        message.path = new Path();
+        message.path.attributeName = ValveConfigurationAndControlCluster.ATTRIBUTE_VALVE_FAULT;
+        message.value = new ValveFaultBitmap(false, true, true, false, false, false);
+        converter.onEvent(message);
+        verify(mockHandler, times(1)).triggerChannel(eq(1), eq("valve-fault"), eq("blocked"));
+        verify(mockHandler, times(1)).triggerChannel(eq(1), eq("valve-fault"), eq("leaking"));
     }
 
     @Test

@@ -14,9 +14,7 @@ package org.openhab.binding.matter.internal.controller.devices.converter;
 
 import static org.openhab.binding.matter.internal.MatterBindingConstants.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -48,7 +46,7 @@ import org.openhab.core.types.UnDefType;
  * A converter for translating {@link ValveConfigurationAndControlCluster} events and attributes to openHAB channels and
  * back again.
  *
- * @author Dan Cunningham - Initial contribution
+ * @author Jason Hubbard - Initial contribution
  */
 @NonNullByDefault
 public class ValveConfigurationAndControlConverter extends GenericConverter<ValveConfigurationAndControlCluster> {
@@ -69,6 +67,11 @@ public class ValveConfigurationAndControlConverter extends GenericConverter<Valv
                 .create(new ChannelUID(channelGroupUID, CHANNEL_ID_VALVE_STATE), CoreItemFactory.SWITCH)
                 .withType(CHANNEL_VALVE_STATE).build();
         channels.put(stateChannel, null);
+
+        Channel currentStateChannel = ChannelBuilder
+                .create(new ChannelUID(channelGroupUID, CHANNEL_ID_VALVE_CURRENT_STATE), CoreItemFactory.NUMBER)
+                .withType(CHANNEL_VALVE_CURRENT_STATE).build();
+        channels.put(currentStateChannel, null);
 
         if (levelSupported) {
             Channel levelChannel = ChannelBuilder
@@ -207,8 +210,11 @@ public class ValveConfigurationAndControlConverter extends GenericConverter<Valv
     private void updateValveState(@Nullable ValveStateEnum valveState) {
         if (valveState == null) {
             updateState(CHANNEL_ID_VALVE_STATE, UnDefType.UNDEF);
+            updateState(CHANNEL_ID_VALVE_CURRENT_STATE, UnDefType.UNDEF);
             return;
         }
+        // The read-only current-state channel exposes all states, including TRANSITIONING, for notifications.
+        updateState(CHANNEL_ID_VALVE_CURRENT_STATE, new DecimalType(valveState.getValue()));
         switch (valveState) {
             case OPEN:
                 updateState(CHANNEL_ID_VALVE_STATE, OnOffType.ON);
@@ -218,6 +224,7 @@ public class ValveConfigurationAndControlConverter extends GenericConverter<Valv
                 break;
             case TRANSITIONING:
             default:
+                // Keep the switch at its last stable value rather than flipping mid-move.
                 break;
         }
     }
@@ -239,31 +246,31 @@ public class ValveConfigurationAndControlConverter extends GenericConverter<Valv
         return null;
     }
 
+    /**
+     * Fires one trigger event per set fault bit, so each payload is a single fault name that rules can match
+     * directly, rather than a combined comma-separated payload.
+     */
     private void triggerFault(@Nullable ValveFaultBitmap fault) {
         if (fault == null) {
             return;
         }
-        List<String> faults = new ArrayList<>();
         if (fault.generalFault) {
-            faults.add("generalFault");
+            triggerChannel(CHANNEL_ID_VALVE_FAULT, "generalFault");
         }
         if (fault.blocked) {
-            faults.add("blocked");
+            triggerChannel(CHANNEL_ID_VALVE_FAULT, "blocked");
         }
         if (fault.leaking) {
-            faults.add("leaking");
+            triggerChannel(CHANNEL_ID_VALVE_FAULT, "leaking");
         }
         if (fault.notConnected) {
-            faults.add("notConnected");
+            triggerChannel(CHANNEL_ID_VALVE_FAULT, "notConnected");
         }
         if (fault.shortCircuit) {
-            faults.add("shortCircuit");
+            triggerChannel(CHANNEL_ID_VALVE_FAULT, "shortCircuit");
         }
         if (fault.currentExceeded) {
-            faults.add("currentExceeded");
-        }
-        if (!faults.isEmpty()) {
-            triggerChannel(CHANNEL_ID_VALVE_FAULT, String.join(",", faults));
+            triggerChannel(CHANNEL_ID_VALVE_FAULT, "currentExceeded");
         }
     }
 }
