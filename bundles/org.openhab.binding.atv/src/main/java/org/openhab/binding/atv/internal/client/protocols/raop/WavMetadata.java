@@ -75,7 +75,9 @@ public final class WavMetadata {
         }
     }
 
-    /** Convenience overload with the default data-skip limit. */
+    /**
+     * Convenience overload with the default data-skip limit.
+     */
     public static MediaMetadata parse(InputStream in) {
         return parse(in, MAX_DATA_SKIP);
     }

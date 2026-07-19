@@ -23,6 +23,7 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.atv.internal.client.exceptions.NotSupportedError;
 
 /**
@@ -70,10 +71,15 @@ public final class JavaSoundAudioSource implements AudioSource {
      */
     public static JavaSoundAudioSource open(File file, int sampleRate, int channels, int sampleSize)
             throws IOException {
+        @Nullable
+        ClassLoader previous = Thread.currentThread().getContextClassLoader();
+        Thread.currentThread().setContextClassLoader(JavaSoundAudioSource.class.getClassLoader());
         try {
             return open(AudioSystem.getAudioInputStream(file), sampleRate, channels, sampleSize);
         } catch (UnsupportedAudioFileException e) {
             throw new NotSupportedError("unsupported audio file: " + file, e);
+        } finally {
+            Thread.currentThread().setContextClassLoader(previous);
         }
     }
 
@@ -86,14 +92,21 @@ public final class JavaSoundAudioSource implements AudioSource {
     public static JavaSoundAudioSource open(InputStream stream, int sampleRate, int channels, int sampleSize)
             throws IOException {
         InputStream marked = stream.markSupported() ? stream : new BufferedInputStream(stream);
+        @Nullable
+        ClassLoader previous = Thread.currentThread().getContextClassLoader();
+        Thread.currentThread().setContextClassLoader(JavaSoundAudioSource.class.getClassLoader());
         try {
             return open(AudioSystem.getAudioInputStream(marked), sampleRate, channels, sampleSize);
         } catch (UnsupportedAudioFileException e) {
             throw new NotSupportedError("unsupported audio stream", e);
+        } finally {
+            Thread.currentThread().setContextClassLoader(previous);
         }
     }
 
-    /** Converts an already-open {@link AudioInputStream} to the requested format. */
+    /**
+     * Converts an already-open {@link AudioInputStream} to the requested format.
+     */
     public static JavaSoundAudioSource open(AudioInputStream input, int sampleRate, int channels, int sampleSize) {
         // Big-endian target so no byte swapping is needed in readFrames
         AudioFormat target = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, sampleRate, sampleSize * 8, channels,

@@ -60,12 +60,16 @@ public final class ControlServer implements AutoCloseable {
     private final Thread receiverThread;
     private volatile @Nullable RetransmitListener listener;
 
-    /** Creates a control server on an ephemeral port bound to the wildcard address. */
+    /**
+     * Creates a control server on an ephemeral port bound to the wildcard address.
+     */
     public ControlServer(PacketFifo<byte[]> packetBacklog) throws IOException {
         this(packetBacklog, 0, null);
     }
 
-    /** Creates a control server on an ephemeral port bound to the given local address. */
+    /**
+     * Creates a control server on an ephemeral port bound to the given local address.
+     */
     public ControlServer(PacketFifo<byte[]> packetBacklog, InetAddress bindAddress) throws IOException {
         this(packetBacklog, 0, bindAddress);
     }
@@ -81,17 +85,23 @@ public final class ControlServer implements AutoCloseable {
         this.receiverThread = Thread.ofVirtual().name("raop-control-server").start(this::receiveLoop);
     }
 
-    /** Returns the local port this control endpoint listens on. */
+    /**
+     * Returns the local port this control endpoint listens on.
+     */
     public int port() {
         return socket.getLocalPort();
     }
 
-    /** Returns the backlog of recently sent audio packets used for retransmission. */
+    /**
+     * Returns the backlog of recently sent audio packets used for retransmission.
+     */
     public PacketFifo<byte[]> packetBacklog() {
         return packetBacklog;
     }
 
-    /** Sets a listener notified of incoming retransmit requests (may be {@code null}). */
+    /**
+     * Sets a listener notified of incoming retransmit requests (may be {@code null}).
+     */
     public void setRetransmitListener(@Nullable RetransmitListener listener) {
         this.listener = listener;
     }
@@ -119,7 +129,9 @@ public final class ControlServer implements AutoCloseable {
         socket.send(new DatagramPacket(encoded, encoded.length, dest));
     }
 
-    /** Closes the control server and stops the receive loop. */
+    /**
+     * Closes the control server and stops the receive loop.
+     */
     @Override
     public void close() {
         socket.close();

@@ -14,6 +14,7 @@ package org.openhab.binding.atv.internal.handler;
 
 import static org.openhab.binding.atv.internal.AtvBindingConstants.*;
 
+import java.io.InputStream;
 import java.time.Clock;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -38,6 +39,7 @@ import org.openhab.binding.atv.internal.client.DeviceListener;
 import org.openhab.binding.atv.internal.client.PairingHandler;
 import org.openhab.binding.atv.internal.client.capability.PushListener;
 import org.openhab.binding.atv.internal.client.capability.PushUpdater;
+import org.openhab.binding.atv.internal.client.capability.Stream;
 import org.openhab.binding.atv.internal.client.conf.AtvConfig;
 import org.openhab.binding.atv.internal.client.conf.BaseService;
 import org.openhab.binding.atv.internal.client.core.AtvRuntime;
@@ -241,6 +243,51 @@ public class AtvHandler extends BaseThingHandler {
         }
     }
 
+    /**
+     * Streams an audio stream to the device via RAOP at the given volume, blocking until playback
+     * finishes.
+     *
+     * @param stream the audio stream to play
+     * @param volumePercent the playback volume in percent (0-100)
+     */
+    public void streamAudio(InputStream stream, double volumePercent) {
+        AppleTV atv = appleTV;
+        if (atv == null) {
+            logger.warn("Cannot stream audio to {}: not connected", config.macAddress);
+            return;
+        }
+        try {
+            await(atv.stream().streamFile(stream, null, Map.<String, Object> of(Stream.OPTION_VOLUME, volumePercent)));
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } catch (ExecutionException | TimeoutException e) {
+            logger.warn("Failed to stream audio to {}", config.macAddress, e);
+        }
+    }
+
+    /**
+     * Stops any audio the sink is currently playing.
+     */
+    public void stopAudio() {
+        AppleTV atv = appleTV;
+        if (atv != null) {
+            try {
+                atv.remoteControl().stop();
+            } catch (RuntimeException e) {
+                logger.debug("Failed to stop audio", e);
+            }
+        }
+    }
+
+    /**
+     * Returns the configured default audio-sink volume in percent (0-100).
+     *
+     * @return the default audio-sink volume
+     */
+    public int getNotificationVolume() {
+        return Math.max(0, Math.min(100, config.notificationVolume));
+    }
+
     private synchronized void connect() {
         try {
             AtvConfig device = scanForDevice();
@@ -263,6 +310,7 @@ public class AtvHandler extends BaseThingHandler {
             registerListeners(atv);
             pruneUnsupportedChannels(atv);
             updateStatus(ThingStatus.ONLINE);
+            clearPins();
             refreshAll();
             refreshDynamicOptions(atv);
             startPolling();
@@ -298,6 +346,9 @@ public class AtvHandler extends BaseThingHandler {
         }
         if (!config.raopCredentials.isBlank()) {
             device.setCredentials(Protocol.RAOP, config.raopCredentials);
+        } else if (!config.airplayCredentials.isBlank()) {
+            // AirPlay 2 devices (e.g. Apple TV) authorize RAOP audio with the AirPlay credentials
+            device.setCredentials(Protocol.RAOP, config.airplayCredentials);
         }
     }
 
@@ -726,6 +777,19 @@ public class AtvHandler extends BaseThingHandler {
             case RAOP -> CONFIG_RAOP_PIN;
             default -> CONFIG_AIRPLAY_PIN;
         };
+    }
+
+    /** Clears the pairing PIN fields once the device is fully paired and online; they are spent by then. */
+    private void clearPins() {
+        if (config.airplayPin.isBlank() && config.companionPin.isBlank() && config.raopPin.isBlank()) {
+            return;
+        }
+        Configuration updated = editConfiguration();
+        updated.put(CONFIG_AIRPLAY_PIN, "");
+        updated.put(CONFIG_COMPANION_PIN, "");
+        updated.put(CONFIG_RAOP_PIN, "");
+        updateConfiguration(updated);
+        config = getConfigAs(AtvConfiguration.class);
     }
 
     private State powerToState(PowerState state) {

@@ -84,17 +84,23 @@ public final class SrpServer {
         return new SrpServer(SrpContext.legacyAirPlay(), username, password, salt, privateSupplier);
     }
 
-    /** The server public value {@code B} as minimal big-endian bytes. */
+    /**
+     * The server public value {@code B} as minimal big-endian bytes.
+     */
     public byte[] publicKey() {
         return SrpContext.intToBytes(serverPublic);
     }
 
-    /** The salt bytes. */
+    /**
+     * The salt bytes.
+     */
     public byte[] salt() {
         return salt.clone();
     }
 
-    /** The password verifier {@code v} as minimal big-endian bytes. */
+    /**
+     * The password verifier {@code v} as minimal big-endian bytes.
+     */
     public byte[] verifier() {
         return SrpContext.intToBytes(verifier);
     }
@@ -125,12 +131,16 @@ public final class SrpServer {
         return Arrays.equals(clientProof, expectedClientProof);
     }
 
-    /** The server proof {@code M2 = H(A || M1 || K)}. */
+    /**
+     * The server proof {@code M2 = H(A || M1 || K)}.
+     */
     public byte[] proof() {
         return Objects.requireNonNull(serverProof, "process() must be called first").clone();
     }
 
-    /** The negotiated session key {@code K}. */
+    /**
+     * The negotiated session key {@code K}.
+     */
     public byte[] sessionKey() {
         return Objects.requireNonNull(sessionKey, "process() must be called first").clone();
     }

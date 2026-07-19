@@ -69,29 +69,39 @@ public final class RaopTiming {
         return (seconds + NTP_EPOCH_OFFSET) << 32 | (long) ((double) (frac << 32) / 1_000_000.0);
     }
 
-    /** Splits NTP time into seconds and fraction, returned as {@code [seconds, fraction]}. */
+    /**
+     * Splits NTP time into seconds and fraction, returned as {@code [seconds, fraction]}.
+     */
     public static long[] ntp2parts(long ntp) {
         return new long[] { ntp >>> 32, ntp & 0xFFFFFFFFL };
     }
 
-    /** Converts NTP time into an audio timestamp at the given sample rate. */
+    /**
+     * Converts NTP time into an audio timestamp at the given sample rate.
+     */
     public static long ntp2ts(long ntp, int rate) {
         return ((ntp >>> 16) * rate) >>> 16;
     }
 
-    /** Converts an audio timestamp at the given sample rate into NTP time. */
+    /**
+     * Converts an audio timestamp at the given sample rate into NTP time.
+     */
     public static long ts2ntp(long timestamp, int rate) {
         // timestamp << 16 stays exact as a double for all realistic timestamps
         // (fits in 53 bits after the multiply by 2^16 of values < 2^37).
         return ((long) ((double) timestamp * 65536.0 / rate)) << 16;
     }
 
-    /** Converts NTP time to milliseconds. */
+    /**
+     * Converts NTP time to milliseconds.
+     */
     public static long ntp2ms(long ntp) {
         return ((ntp >>> 10) * 1000) >>> 22;
     }
 
-    /** Converts an audio timestamp at the given sample rate to milliseconds. */
+    /**
+     * Converts an audio timestamp at the given sample rate to milliseconds.
+     */
     public static long ts2ms(long timestamp, int rate) {
         return ntp2ms(ts2ntp(timestamp, rate));
     }

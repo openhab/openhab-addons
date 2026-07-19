@@ -33,6 +33,7 @@ Apple computers also advertise AirPlay but are not controllable media devices, s
 | companionPin         | text    | PIN shown on the Apple TV for the Companion pairing step (a new PIN after AirPlay pairs). | N/A     | no       | no       |
 | airplayCredentials   | text    | Credentials obtained by pairing AirPlay. Populated automatically after pairing.           | N/A     | no       | yes      |
 | companionCredentials | text    | Credentials obtained by pairing Companion. Populated automatically after pairing.         | N/A     | no       | yes      |
+| notificationVolume   | integer | Default volume (0-100) for audio played to this device as an openHAB audio sink.          | 50      | no       | yes      |
 | refreshInterval      | integer | Fallback polling interval in seconds (0 disables; live push updates are used otherwise).  | 30      | no       | yes      |
 
 ### `speaker`
@@ -47,6 +48,7 @@ Apple computers also advertise AirPlay but are not controllable media devices, s
 | raopPin            | text    | PIN shown on the speaker for the RAOP audio pairing step (for devices that require pairing). | N/A     | no       | no       |
 | airplayCredentials | text    | Credentials obtained by pairing AirPlay. Populated automatically after pairing.              | N/A     | no       | yes      |
 | raopCredentials    | text    | Credentials obtained by pairing RAOP audio. Populated automatically after pairing.           | N/A     | no       | yes      |
+| notificationVolume | integer | Default volume (0-100) for audio played to this device as an openHAB audio sink.             | 50      | no       | yes      |
 | refreshInterval    | integer | Fallback polling interval in seconds (0 disables; live push updates are used otherwise).     | 30      | no       | yes      |
 
 ## Pairing
@@ -68,6 +70,7 @@ To support this, the `appletv` Thing has two separate PIN configuration fields: 
 
 If a PIN is wrong or has expired, only that field is cleared, the Apple TV shows a fresh PIN, and you re-enter it in the same field.
 Credentials from a successful pairing are stored in the Thing's advanced credential fields and reused across restarts, so pairing is normally a one-time step.
+Once both protocols are paired and the Thing comes online, the PIN fields are cleared automatically.
 
 > **If a PIN Code Does Not Show:** An Apple TV will often suppress or ignore repeated pairing requests.
 > If this happens, pause the Apple TV Thing and restart the Apple TV, either from it's system menu or by manually power cycling.
@@ -140,9 +143,18 @@ Password-protected speakers use the separate **Password** field instead of a PIN
 The binding can push media to a device through two channels:
 
 - `play-url` (AirPlay): send an `http(s)://` media URL (audio or video) to play it on the device, or a path to a local file on the openHAB server, which the binding serves over HTTP for the device to fetch.
-- `stream-url` (RAOP): send a path to a local audio file on the openHAB server; the binding decodes and streams it. Only uncompressed WAV/PCM is supported out of the box - HTTP URLs and compressed formats such as MP3 are not, as no additional audio decoders are bundled.
+- `stream-url` (RAOP): send a path to a local audio file on the openHAB server; the binding decodes and streams it. WAV and MP3 are supported; HTTP URLs are not (use `play-url` for a URL the device fetches itself).
 
 Paths for both channels are resolved on the openHAB server, so for a containerised install use the container path (for example `/openhab/conf/sounds/chime.wav`).
+
+## Audio Sink
+
+Each Thing is also registered as an openHAB audio sink, so it can be used as an output for text-to-speech, `playSound` and notifications (selectable as a sink by the Thing's UID).
+
+Audio is streamed to the device over RAOP (AirPlay audio) - both Apple TVs and speakers are RAOP receivers. The stream is decoded locally to PCM; **WAV and MP3** are supported (an MP3 decoder is bundled).
+
+Playback uses the Thing's **Audio Sink Volume** setting (advanced config, default 50%) by default; a volume passed to a `playSound`/`say` call overrides it for that playback.
+Playback is synchronous - a `say` or `playSound` call blocks until the device finishes playing.
 
 ## Third-party Content
 

@@ -93,6 +93,14 @@
 				<description>Credentials obtained by pairing Companion. Populated automatically after pairing.</description>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="notificationVolume" type="integer" min="0" max="100" unit="%">
+				<label>Audio Sink Volume</label>
+				<description>Default volume (0-100) for audio played to this device as an openHAB audio sink
+					(text-to-speech,
+					playSound, notifications).</description>
+				<default>50</default>
+				<advanced>true</advanced>
+			</parameter>
 			<parameter name="refreshInterval" type="integer" unit="s" min="0">
 				<label>Refresh Interval</label>
 				<description>Fallback polling interval in seconds (0 disables; live push updates are used otherwise).</description>
@@ -167,6 +175,14 @@
 				<context>password</context>
 				<label>RAOP Credentials</label>
 				<description>Credentials obtained by pairing RAOP audio. Populated automatically after pairing.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="notificationVolume" type="integer" min="0" max="100" unit="%">
+				<label>Audio Sink Volume</label>
+				<description>Default volume (0-100) for audio played to this device as an openHAB audio sink
+					(text-to-speech,
+					playSound, notifications).</description>
+				<default>50</default>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" unit="s" min="0">

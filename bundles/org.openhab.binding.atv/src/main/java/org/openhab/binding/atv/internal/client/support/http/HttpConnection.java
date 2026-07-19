@@ -166,12 +166,16 @@ public final class HttpConnection implements AutoCloseable {
         Thread.startVirtualThread(this::readerLoop);
     }
 
-    /** Returns the IP address of the local interface. */
+    /**
+     * Returns the IP address of the local interface.
+     */
     public String localIp() {
         return localIp;
     }
 
-    /** Returns the IP address of the remote instance. */
+    /**
+     * Returns the IP address of the remote instance.
+     */
     public String remoteIp() {
         return remoteIp;
     }
@@ -217,7 +221,9 @@ public final class HttpConnection implements AutoCloseable {
         this.connectionLostListener = listener;
     }
 
-    /** Returns true while the connection is open. */
+    /**
+     * Returns true while the connection is open.
+     */
     public boolean isConnected() {
         return !closed && !socket.isClosed();
     }

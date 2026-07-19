@@ -84,22 +84,30 @@ public final class PlayerStateManager {
             update(player);
         }
 
-        /** Identifier of the player (empty when unknown). */
+        /**
+         * Identifier of the player (empty when unknown).
+         */
         public String identifier() {
             return identifier;
         }
 
-        /** Display name of the player, or {@code null} if never received. */
+        /**
+         * Display name of the player, or {@code null} if never received.
+         */
         public @Nullable String displayName() {
             return displayName;
         }
 
-        /** Owning client, or {@code null} once the player has been removed. */
+        /**
+         * Owning client, or {@code null} once the player has been removed.
+         */
         public @Nullable Client parent() {
             return parent;
         }
 
-        /** Returns if the player has a valid identifier. */
+        /**
+         * Returns if the player has a valid identifier.
+         */
         public boolean isValid() {
             return identifier != null && !identifier.isEmpty();
         }
@@ -168,7 +176,9 @@ public final class PlayerStateManager {
             return null;
         }
 
-        /** Queue location of the currently playing item. */
+        /**
+         * Queue location of the currently playing item.
+         */
         public int location() {
             return location;
         }
@@ -265,7 +275,9 @@ public final class PlayerStateManager {
             }
         }
 
-        /** Equality is based on identifier. */
+        /**
+         * Equality is based on identifier.
+         */
         @Override
         public boolean equals(@Nullable Object other) {
             return other instanceof PlayerState that && Objects.equals(identifier, that.identifier);
@@ -291,22 +303,30 @@ public final class PlayerStateManager {
             update(client);
         }
 
-        /** Bundle identifier of the client. */
+        /**
+         * Bundle identifier of the client.
+         */
         public String bundleIdentifier() {
             return bundleIdentifier;
         }
 
-        /** Display name of the client, or {@code null} if never received. */
+        /**
+         * Display name of the client, or {@code null} if never received.
+         */
         public @Nullable String displayName() {
             return displayName;
         }
 
-        /** Default supported commands of the client. */
+        /**
+         * Default supported commands of the client.
+         */
         public List<CommandInfo> supportedCommands() {
             return supportedCommands;
         }
 
-        /** Players known for this client, keyed by identifier. */
+        /**
+         * Players known for this client, keyed by identifier.
+         */
         public Map<String, PlayerState> players() {
             return players;
         }
@@ -402,17 +422,23 @@ public final class PlayerStateManager {
         return getClient(playerPath.getClient()).getPlayer(playerPath.getPlayer());
     }
 
-    /** Returns the current listener, or {@code null}. */
+    /**
+     * Returns the current listener, or {@code null}.
+     */
     public @Nullable Listener listener() {
         return listener;
     }
 
-    /** Changes the current listener ({@code null} to remove). */
+    /**
+     * Changes the current listener ({@code null} to remove).
+     */
     public void setListener(@Nullable Listener listener) {
         this.listener = listener;
     }
 
-    /** Returns the currently active client, or {@code null}. */
+    /**
+     * Returns the currently active client, or {@code null}.
+     */
     public @Nullable Client client() {
         return activeClient;
     }

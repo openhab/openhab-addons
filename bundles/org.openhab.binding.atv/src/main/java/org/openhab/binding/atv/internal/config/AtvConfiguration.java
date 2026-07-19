@@ -39,6 +39,8 @@ public class AtvConfiguration {
     public String raopCredentials = "";
     /** Password for password-protected AirPlay speakers. */
     public String password = "";
+    /** Default volume (0-100) for audio played to this device as an openHAB audio sink. */
+    public int notificationVolume = 50;
     /** Fallback polling interval in seconds; 0 disables polling. */
     public int refreshInterval = 30;
 }
