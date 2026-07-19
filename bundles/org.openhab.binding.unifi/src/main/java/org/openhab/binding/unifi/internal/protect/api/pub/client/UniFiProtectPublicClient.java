@@ -587,7 +587,11 @@ public class UniFiProtectPublicClient implements Closeable {
 
                 @Override
                 public void onWebSocketPing(@Nullable ByteBuffer payload) {
-                    // Jetty auto-replies with a pong; nothing to do here.
+                    // An inbound ping is a received frame - proof the peer is alive - so
+                    // count it as activity too (mirrors onWebSocketPong), so a quiet-but-
+                    // alive peer is not mistaken for dead by the staleness check. Jetty
+                    // still auto-replies with the pong itself.
+                    lastActivityMs = System.currentTimeMillis();
                 }
             }
             future.complete(wsClient.connect(new WsAdapter(), wsUri, upgrade).get());
