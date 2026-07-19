@@ -497,9 +497,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                         currentPlayMode = OppoStatusCodes.PLAYBACK_STATUS.getOrDefault(updateData, updateData);
 
                         // if playback has stopped, we have to zero out Time, Title and Track info and so on manually
-                        if (NO_DISC.equals(currentPlayMode) || LOADING.equals(currentPlayMode)
-                                || OPEN.equals(currentPlayMode) || CLOSE.equals(currentPlayMode)
-                                || STOP.equals(currentPlayMode) || HOME_MENU.equals(currentPlayMode)) {
+                        if (STOPPED_STATES.contains(currentPlayMode)) {
                             clearStatusChannels(false);
                             isStopped = true;
                             currentChapter = BLANK;

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.oppo.internal;
 
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
@@ -122,13 +124,19 @@ public class OppoBindingConstants {
     public static final String SVM = "SVM";
 
     public static final String UNKNOW_DISC = "UNKNOW-DISC";
+    public static final String SETUP = "SETUP";
     public static final String HOME_MENU = "HOME MENU";
+    public static final String MEDIA_CENTER = "MEDIA CENTER";
+    public static final String SCREEN_SAVER = "SCREEN SAVER";
     public static final String NO_DISC = "NO DISC";
     public static final String LOADING = "LOADING";
     public static final String OPEN = "OPEN";
     public static final String CLOSE = "CLOSE";
     public static final String STOP = "STOP";
     public static final String PLAY = "PLAY";
+
+    public static final Set<String> STOPPED_STATES = Set.of(SETUP, HOME_MENU, MEDIA_CENTER, SCREEN_SAVER, NO_DISC,
+            LOADING, OPEN, CLOSE, STOP);
 
     public static final String T = "T";
     public static final String X = "X";
