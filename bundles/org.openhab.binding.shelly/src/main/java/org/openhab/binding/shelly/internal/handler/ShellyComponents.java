@@ -517,8 +517,9 @@ public class ShellyComponents {
         }
         double wattMin = getDouble(counters[0]);
         double wh1 = wattMin / 60.0;
-        thingHandler.updateChannel(groupName, CHANNEL_METER_LASTMIN1, toQuantityType(wattMin, DIGITS_WATT, Units.WATT));
-        boolean updated = thingHandler.updateChannel(groupName, CHANNEL_METER_ENERGYHISTMIN1,
+        boolean updated = thingHandler.updateChannel(groupName, CHANNEL_METER_LASTMIN1,
+                toQuantityType(wattMin, DIGITS_WATT, Units.WATT));
+        updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_ENERGYHISTMIN1,
                 toQuantityType(wh1, DIGITS_KWH, Units.WATT_HOUR));
         Double wh2 = null;
         Double wh3 = null;
