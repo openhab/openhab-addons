@@ -1605,6 +1605,104 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 |       | autoOff     | Number | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
 |       | timerActive | Switch | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
 
+### Shelly Plus RGBW PM (thing-type: shellyplusrgbwpm)
+
+The active device profile (`rgbw`, `rgb` or `light`) is selected in the Shelly App/device settings and determines which channel groups below are populated.
+Changing the profile requires deleting and re-discovering the Thing.
+
+In `rgbw` or `rgb` profile (color mode):
+
+| Group   | Channel       | Type     | read-only | Description                                                             |
+| ------- | ------------- | -------- | --------- | ----------------------------------------------------------------------- |
+| control | power         | Switch   | r/w       | Switch light ON/OFF                                                     |
+|         | autoOn        | Number   | r/w       | Sets a  timer to turn the device ON after every OFF command; in seconds |
+|         | autoOff       | Number   | r/w       | Sets a  timer to turn the device OFF after every ON command; in seconds |
+|         | timerActive   | Switch   | yes       | ON: An auto-on/off timer is active                                      |
+| color   | hsb           | HSB      | r/w       | Represents the color picker (HSBType); control r/g/b, not white         |
+|         | full          | String   | r/w       | Set Red / Green / Blue / Yellow / White mode and switch mode            |
+|         |               |          | r/w       | Valid settings: "red", "green", "blue", "yellow", "white" or "r,g,b,w"  |
+|         | red           | Dimmer   | r/w       | Red brightness: 0..100% or 0..255 (control only the red channel)        |
+|         | green         | Dimmer   | r/w       | Green brightness: 0..100% or 0..255 (control only the green channel)    |
+|         | blue          | Dimmer   | r/w       | Blue brightness: 0..100% or 0..255 (control only the blue channel)      |
+|         | white         | Dimmer   | r/w       | White brightness: 0..100% or 0..255 (control only the white channel)    |
+| meter   | currentPower  | Number   | yes       | Current power consumption in Watts                                      |
+|         | energyAvg1Min | Number   | yes       | Energy consumed in the previous minute (Wh)                             |
+|         | totalEnergy   | Number   | yes       | Total energy consumption in kWh                                         |
+|         | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                       |
+
+In `light` profile (white mode), each of the 4 LED output channels is exposed as its own group:
+
+| Group    | Channel     | Type   | read-only | Description                                                             |
+| -------- | ----------- | ------ | --------- | ----------------------------------------------------------------------- |
+| channel1 | brightness  | Dimmer | r/w       | Channel 1: Brightness: 0..100, control power state with ON/OFF          |
+|          | autoOn      | Number | r/w       | Sets a  timer to turn the device ON after every OFF command; in seconds |
+|          | autoOff     | Number | r/w       | Sets a  timer to turn the device OFF after every ON command; in seconds |
+|          | timerActive | Switch | yes       | ON: An auto-on/off timer is active                                      |
+| channel2 |             |        |           | Same for LED channel 2                                                  |
+| channel3 |             |        |           | Same for LED channel 3                                                  |
+| channel4 |             |        |           | Same for LED channel 4                                                  |
+| meter    |             |        |           | Same as color mode, see above                                           |
+
+`Note`:
+totalEnergy might reset on restart depending on device type and firmware version
+
+### Shelly Pro RGBWW PM (thing-type: shellyprorgbwwpm)
+
+The active device profile (`light`, `rgbcct`, `cctx2` or `rgbx2light`) is selected in the Shelly App/device settings and determines which channel groups below are populated.
+Changing the profile requires deleting and re-discovering the Thing.
+
+In `rgbcct` or `rgbx2light` profile (color mode):
+
+| Group   | Channel       | Type     | read-only | Description                                                             |
+| ------- | ------------- | -------- | --------- | ----------------------------------------------------------------------- |
+| control | power         | Switch   | r/w       | Switch light ON/OFF                                                     |
+|         | autoOn        | Number   | r/w       | Sets a  timer to turn the device ON after every OFF command; in seconds |
+|         | autoOff       | Number   | r/w       | Sets a  timer to turn the device OFF after every ON command; in seconds |
+|         | timerActive   | Switch   | yes       | ON: An auto-on/off timer is active                                      |
+| color   | hsb           | HSB      | r/w       | Represents the color picker (HSBType); control r/g/b, not white         |
+|         | full          | String   | r/w       | Set Red / Green / Blue / Yellow / White mode and switch mode            |
+|         |               |          | r/w       | Valid settings: "red", "green", "blue", "yellow", "white" or "r,g,b,w"  |
+|         | red           | Dimmer   | r/w       | Red brightness: 0..100% or 0..255 (control only the red channel)        |
+|         | green         | Dimmer   | r/w       | Green brightness: 0..100% or 0..255 (control only the green channel)    |
+|         | blue          | Dimmer   | r/w       | Blue brightness: 0..100% or 0..255 (control only the blue channel)      |
+|         | white         | Dimmer   | r/w       | White brightness: 0..100% or 0..255 (control only the white channel)    |
+| meter   | currentPower  | Number   | yes       | Current power consumption in Watts                                      |
+|         | energyAvg1Min | Number   | yes       | Energy consumed in the previous minute (Wh)                             |
+|         | totalEnergy   | Number   | yes       | Total energy consumption in kWh                                         |
+|         | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                       |
+
+`Note`:
+`rgbcct` and `rgbx2light` combine an RGB component with additional CCT/Light components on the device.
+Only the RGB portion is currently exposed as channels; the CCT/extra Light components are not yet mapped.
+
+In `light` profile (white mode), each of the 5 LED output channels is exposed as its own group:
+
+| Group    | Channel     | Type   | read-only | Description                                                             |
+| -------- | ----------- | ------ | --------- | ----------------------------------------------------------------------- |
+| channel1 | brightness  | Dimmer | r/w       | Channel 1: Brightness: 0..100, control power state with ON/OFF          |
+|          | autoOn      | Number | r/w       | Sets a  timer to turn the device ON after every OFF command; in seconds |
+|          | autoOff     | Number | r/w       | Sets a  timer to turn the device OFF after every ON command; in seconds |
+|          | timerActive | Switch | yes       | ON: An auto-on/off timer is active                                      |
+| channel2 |             |        |           | Same for LED channel 2                                                  |
+| channel3 |             |        |           | Same for LED channel 3                                                  |
+| channel4 |             |        |           | Same for LED channel 4                                                  |
+| channel5 |             |        |           | Same for LED channel 5                                                  |
+| meter    |             |        |           | Same as color mode, see above                                           |
+
+In `cctx2` profile (dual color-temperature white mode), the warm-white and cool-white channels are each exposed as their own group:
+
+| Group    | Channel     | Type   | read-only | Description                                                             |
+| -------- | ----------- | ------ | --------- | ----------------------------------------------------------------------- |
+| channel1 | brightness  | Dimmer | r/w       | Warm-white channel: Brightness: 0..100, control power state with ON/OFF |
+|          | autoOn      | Number | r/w       | Sets a  timer to turn the device ON after every OFF command; in seconds |
+|          | autoOff     | Number | r/w       | Sets a  timer to turn the device OFF after every ON command; in seconds |
+|          | timerActive | Switch | yes       | ON: An auto-on/off timer is active                                      |
+| channel2 |             |        |           | Same for the cool-white channel                                         |
+| meter    |             |        |           | Same as color mode, see above                                           |
+
+`Note`:
+totalEnergy might reset on restart depending on device type and firmware version
+
 ## Shelly Plus Mini Series
 
 ### Shelly Plus 1 Mini (thing-type: shelly1mini)
