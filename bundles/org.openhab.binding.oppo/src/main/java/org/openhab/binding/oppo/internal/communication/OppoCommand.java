@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.oppo.internal.communication;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -54,6 +52,7 @@ public enum OppoCommand {
     QUERY_REPEAT_MODE("QRP"),
     QUERY_ZOOM_MODE("QZM"),
     QUERY_INPUT_SOURCE("QIS"),
+    QUERY_3D_STATUS("Q3D"),
     SET_VERBOSE_MODE("SVM"),
     SET_HDMI_MODE("SHD"),
     SET_HDR_MODE("SHR"),
@@ -68,10 +67,9 @@ public enum OppoCommand {
 
     private final String value;
 
-    public static final Set<OppoCommand> QUERY_COMMANDS = new HashSet<>(
-            Arrays.asList(QUERY_VOLUME, QUERY_HDMI_RESOLUTION, QUERY_HDR_SETTING, QUERY_PLAYBACK_STATUS,
-                    QUERY_DISC_TYPE, QUERY_AUDIO_TYPE, QUERY_SUBTITLE_SHIFT, QUERY_OSD_POSITION, QUERY_REPEAT_MODE,
-                    QUERY_ZOOM_MODE, QUERY_INPUT_SOURCE, QUERY_FIRMWARE_VERSION));
+    public static final Set<OppoCommand> QUERY_COMMANDS = Set.of(QUERY_PLAYBACK_STATUS, QUERY_INPUT_SOURCE,
+            QUERY_VOLUME, QUERY_HDMI_RESOLUTION, QUERY_DISC_TYPE, QUERY_AUDIO_TYPE, QUERY_SUBTITLE_SHIFT,
+            QUERY_OSD_POSITION, QUERY_REPEAT_MODE, QUERY_ZOOM_MODE, QUERY_3D_STATUS, QUERY_HDR_SETTING);
 
     OppoCommand(String value) {
         this.value = value;

@@ -247,7 +247,7 @@ public class OppoDiscoveryService extends AbstractDiscoveryService {
                     model = MODEL103;
                     displayName = DISPLAY_NAME_103;
                 }
-            } else if (BDP20X_PORT.toString().equals(port)) {
+            } else if (UDP20X_PORT.toString().equals(port)) {
                 if (displayName != null && displayName.contains(Integer.toString(MODEL203))) {
                     model = MODEL203;
                 } else if (displayName != null && displayName.contains(Integer.toString(MODEL205))) {

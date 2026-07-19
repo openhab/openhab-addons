@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.oppo.internal.communication;
 
+import static org.openhab.binding.oppo.internal.OppoBindingConstants.*;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -52,6 +54,10 @@ public class OppoIpConnector extends OppoConnector {
         this.address = address;
         this.port = port;
         this.uid = uid;
+
+        if (port == BDP83_PORT || port == BDP10X_PORT) {
+            super.setOverrideCmdPreamble();
+        }
     }
 
     @Override

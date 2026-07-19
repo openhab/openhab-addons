@@ -36,7 +36,7 @@ public class OppoBindingConstants {
 
     public static final Integer BDP83_PORT = 19999;
     public static final Integer BDP10X_PORT = 48360;
-    public static final Integer BDP20X_PORT = 23;
+    public static final Integer UDP20X_PORT = 23;
 
     // List of all Channels
     public static final String CHANNEL_POWER = "power";
@@ -82,6 +82,7 @@ public class OppoBindingConstants {
     public static final String MUT = "MUT";
     public static final String UMT = "UMT";
     public static final String CDDA = "CDDA";
+    public static final String SACD = "SACD";
 
     public static final String NOP = "NOP";
     public static final String UTC = "UTC";
@@ -113,12 +114,15 @@ public class OppoBindingConstants {
     public static final String UAR = "UAR";
     public static final String UVO = "UVO";
     public static final String U3D = "U3D";
+    public static final String Q3D = "Q3D";
     public static final String QSH = "QSH";
     public static final String QOP = "QOP";
     public static final String QHD = "QHD";
     public static final String QHR = "QHR";
+    public static final String SVM = "SVM";
 
     public static final String UNKNOW_DISC = "UNKNOW-DISC";
+    public static final String HOME_MENU = "HOME MENU";
     public static final String NO_DISC = "NO DISC";
     public static final String LOADING = "LOADING";
     public static final String OPEN = "OPEN";
