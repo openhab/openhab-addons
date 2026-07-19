@@ -24,6 +24,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
+/**
+ * Tests {@link ShellyChannelDefinitions#getReplacementChannelName} and the deprecated-channel
+ * detection helpers used by {@link ShellyChannelMigration}.
+ *
+ * @author Markus Michels - Initial contribution
+ */
 @NonNullByDefault
 public class ShellyChannelMigrationTest {
 
