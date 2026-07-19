@@ -115,6 +115,8 @@ See section [Discovery](#discovery) for details.
 | shellyplusdimmer     | Shelly Plus Dimmer Gen 3                                 | S3DM-0A101WWL                                                             |
 | shellyprodm2pm       | Shelly Pro Dimmer 2PM                                    | SPDM-002PE01EU                                                            |
 | shellyplusrgbwpm     | Shelly Plus RGBW PM                                      | SNDC-0D4P10WW                                                             |
+| shellyplusduobulb    | Shelly Duo Bulb E27 Gen3                                 | S3BL-D010009AEU                                                           |
+| shellypluscolorbulb  | Shelly Multicolor Bulb E27 Gen3                          | S3BL-C010007AEU                                                           |
 | shellywalldisplay    | Shelly Plus Wall Display                                 | SAWD-0A1XX10EU1                                                           |
 | shellyblugw          | Shelly BLU Gateway                                       | SNGW-BT01                                                                 |
 | shellyblugw3         | Shelly BLU Gateway 3                                     | S3GW-1DBT001                                                              |
@@ -1114,6 +1116,39 @@ This means that the brightness channel has 2 functions
 Sending brightness 0 will automatically turn off the channel if it's currently on.
 Sending brightness > 0 will automatically turn on the channel if it's currently off.
 You can define 2 items (1 Switch, 1 Number) mapping to the same channel, see example rules.
+
+### Shelly Duo Bulb E27 Gen3 (thing-type: shellyplusduobulb)
+
+| Group   | Channel     | Type   | read-only | Description                                                             |
+| ------- | ----------- | ------ | --------- | ----------------------------------------------------------------------- |
+| control | autoOn      | Number | r/w       | Sets a  timer to turn the device ON after every OFF command; in seconds |
+|         | autoOff     | Number | r/w       | Sets a  timer to turn the device OFF after every ON command; in seconds |
+|         | timerActive | Switch | yes       | ON: An auto-on/off timer is active                                      |
+| white   | temperature | Number | r/w       | Color temperature (K): 0..100% or 2700..6500                            |
+|         | brightness  | Dimmer | r/w       | Brightness: 0..100% or 0..100; also controls power (ON/OFF)             |
+
+The Duo Bulb Gen3 is a tunable-white (CCT) bulb, like the Gen1 Shelly Duo.
+There is no separate power channel: sending brightness 0 turns the bulb off, sending brightness > 0 turns it on.
+
+### Shelly Multicolor Bulb E27 Gen3 (thing-type: shellypluscolorbulb)
+
+| Group   | Channel     | Type   | read-only | Description                                                             |
+| ------- | ----------- | ------ | --------- | ----------------------------------------------------------------------- |
+| control | autoOn      | Number | r/w       | Sets a  timer to turn the device ON after every OFF command; in seconds |
+|         | autoOff     | Number | r/w       | Sets a  timer to turn the device OFF after every ON command; in seconds |
+|         | timerActive | Switch | yes       | ON: An auto-on/off timer is active                                      |
+| color   | hsb         | HSB    | r/w       | Represents the color picker (HSBType), control r/g/b, but not white     |
+|         | full        | String | r/w       | Set Red / Green / Blue / White and switch mode                          |
+|         |             |        |           | Valid settings: "red", "green", "blue", "white" or "r,g,b,w"            |
+|         | red         | Dimmer | r/w       | Red brightness: 0..100% or 0..255 (control only the red channel)        |
+|         | green       | Dimmer | r/w       | Green brightness: 0..100% or 0..255 (control only the green channel)    |
+|         | blue        | Dimmer | r/w       | Blue brightness: 0..100% or 0..255 (control only the blue channel)      |
+|         | white       | Dimmer | r/w       | White brightness: 0..100% or 0..255 (control only the white channel)    |
+| white   | temperature | Number | r/w       | Color temperature (K): 0..100% or 3000..6500                            |
+|         | brightness  | Dimmer | r/w       | Brightness: 0..100% or 0..100; also controls power (ON/OFF)             |
+
+Unlike the Duo Color Bulb and RGBW2, the Multicolor Bulb Gen3 has no exclusive color/white mode switch.
+The `color` and `white` channel groups are both always active and can be controlled independently at the same time.
 
 ### Shelly H&T (thing-type: shellyht)
 

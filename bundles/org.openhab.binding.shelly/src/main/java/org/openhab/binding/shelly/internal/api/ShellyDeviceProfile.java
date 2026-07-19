@@ -94,6 +94,8 @@ public class ShellyDeviceProfile {
     public boolean isBulb; // true only if it is a Bulb
     public boolean isDuo; // true only if it is a Duo
     public boolean isRGBW2; // true only if it a RGBW2
+    public boolean isRGBBulb; // true for Gen3 Multicolor Bulb (rgb:0 component, RGB+CCT)
+    public boolean isRGBCCT; // true for Gen3 Duo Bulb with rgbcct:0 component (RGB + CCT mode switching)
     public boolean inColor; // true if bulb/rgbw2 is in color mode
 
     public boolean isSensor; // true for HT & Smoke
@@ -207,6 +209,7 @@ public class ShellyDeviceProfile {
         isBulb = THING_TYPE_SHELLYBULB.equals(thingTypeUID);
         isDuo = GROUP_DUO_THING_TYPES.contains(thingTypeUID);
         isRGBW2 = GROUP_RGBW2_THING_TYPES.contains(thingTypeUID);
+        isRGBBulb = GROUP_RGB_BULB_THING_TYPES.contains(thingTypeUID);
         isLight = GROUP_LIGHT_THING_TYPES.contains(thingTypeUID);
         if (isLight) {
             minTemp = isBulb ? MIN_COLOR_TEMP_BULB : MIN_COLOR_TEMP_DUO;

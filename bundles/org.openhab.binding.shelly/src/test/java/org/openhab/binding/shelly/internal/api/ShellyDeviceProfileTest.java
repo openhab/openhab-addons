@@ -144,8 +144,30 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYPRO3EM63, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPRO3EM400, true, false), //
 
+                // Shelly Gen3 Bulb series
+                Arguments.of(THING_TYPE_SHELLYPLUSDUOBULB, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUSCOLORBULB, true, false), //
+
                 Arguments.of(THING_TYPE_SHELLYPROTECTED, false, false), // password protected device
                 Arguments.of(THING_TYPE_SHELLYUNKNOWN, false, false)); // unknown device
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForGen3BulbFlags")
+    void gen3BulbProfileFlags(ThingTypeUID thingTypeUID, boolean expectedIsDuo, boolean expectedIsRGBBulb) {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(thingTypeUID);
+        assertThat(profile.isDuo, is(expectedIsDuo));
+        assertThat(profile.isRGBBulb, is(expectedIsRGBBulb));
+        // isRGBCCT is always false at init-time: it requires runtime detection from Shelly.GetConfig
+        assertThat(profile.isRGBCCT, is(false));
+        assertThat(profile.isLight, is(true));
+        assertThat(profile.isGen2, is(true));
+    }
+
+    private static Stream<Arguments> provideTestCasesForGen3BulbFlags() {
+        return Stream.of( //
+                Arguments.of(THING_TYPE_SHELLYPLUSDUOBULB, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUSCOLORBULB, false, true));
     }
 
     @ParameterizedTest
