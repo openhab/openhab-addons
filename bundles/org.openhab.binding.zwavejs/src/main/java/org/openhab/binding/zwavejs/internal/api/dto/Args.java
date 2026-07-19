@@ -22,6 +22,9 @@ public class Args {
     public int endpoint;
     public Object newValue;
     public Object prevValue;
+    // "value notification" events (stateless CC values, e.g. Central Scene or Scene Activation)
+    // carry the datum here instead of in newValue
+    public Object value;
     public String propertyName;
     public Object propertyKey;
 

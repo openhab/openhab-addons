@@ -31,6 +31,7 @@ import org.openhab.binding.zwavejs.internal.api.dto.commands.NodeSetValueCommand
 import org.openhab.binding.zwavejs.internal.api.dto.messages.EventMessage;
 import org.openhab.binding.zwavejs.internal.handler.mock.ZwaveJSNodeHandlerMock;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -297,6 +298,25 @@ public class ZwaveJSNodeHandlerTest {
                     argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
             verify(callback, times(1)).stateUpdated(eq(channelIdDimmer), eq(new PercentType(52)));
             verify(callback, times(1)).stateUpdated(eq(channelIdRollerShutter), eq(new PercentType(52)));
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @Test
+    public void testNode37CentralSceneValueNotificationUpdate() throws IOException {
+        final Thing thing = ZwaveJSNodeHandlerMock.mockThing(37);
+        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        final ZwaveJSNodeHandlerMock handler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing,
+                "store_4.json");
+
+        EventMessage eventMessage = DataUtil.fromJson("event_node_37_central_scene_notification.json",
+                EventMessage.class);
+        handler.onNodeStateChanged(ZwaveJSBridgeHandler.normalizeValueNotification(eventMessage.event));
+
+        ChannelUID channelId = new ChannelUID("zwavejs:test-bridge:test-thing:central-scene-scene-001");
+        try {
+            verify(callback, times(1)).stateUpdated(eq(channelId), eq(new DecimalType(2)));
         } finally {
             handler.dispose();
         }
