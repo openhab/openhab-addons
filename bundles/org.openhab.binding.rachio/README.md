@@ -150,6 +150,7 @@ Most duration channels use `Number:Time`; plain numeric commands are interpreted
 | Forecast      | `forecast-summary`, `forecast-today-high`, `forecast-today-low`, `forecast-precipitation`, `forecast-precipitation-probability`, `forecast-wind`, `forecast-updated` |
 | Schedule Info | `schedule-name`, `schedule-info`, `schedule-start`, `schedule-end` |
 
+`active-zone-number` is `0` when no zone is active; `active-zone-name` and `active-zone-id` remain `NULL` while idle.
 `run-zones` is a comma-separated list of zone numbers for the next controller-level `run` command.
 An empty value means all zones.
 

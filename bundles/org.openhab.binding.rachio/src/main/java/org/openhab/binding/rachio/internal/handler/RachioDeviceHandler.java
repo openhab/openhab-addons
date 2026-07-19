@@ -166,6 +166,12 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
         return handler.getDevByThing(getThing());
     }
 
+    @Nullable
+    String getBoundControllerId() {
+        RachioDevice device = dev;
+        return device != null ? device.id : null;
+    }
+
     boolean rebindToCurrentModel(RachioDevice currentDevice, String reason) {
         RachioDevice previousDevice = dev;
         boolean changed = !Objects.equals(previousDevice, currentDevice)
@@ -334,14 +340,14 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
             updateChannel(RachioBindingConstants.CHANNEL_DEVICE_RAIN_SENSOR_TRIPPED,
                     d.rainSensorTripped ? OnOffType.ON : OnOffType.OFF);
             updateChannel(CHANNEL_DEVICE_ACTIVE_ZONE_NUMBER,
-                    d.activeZoneNumber > 0 ? new DecimalType(d.activeZoneNumber) : UnDefType.NULL);
-            updateChannel(CHANNEL_DEVICE_ACTIVE_ZONE_NAME, stringOrNull(d.activeZoneName));
-            updateChannel(CHANNEL_DEVICE_ACTIVE_ZONE_ID, stringOrNull(d.activeZoneId));
-            updateChannel(CHANNEL_CURRENT_SCHEDULE_ID, stringOrUndef(d.currentScheduleId));
-            updateChannel(CHANNEL_CURRENT_SCHEDULE_NAME, stringOrUndef(d.currentScheduleName));
-            updateChannel(CHANNEL_CURRENT_SCHEDULE_TYPE, stringOrUndef(d.currentScheduleType));
-            updateChannel(CHANNEL_CURRENT_SCHEDULE_START, dateTimeOrUndef(d.currentScheduleStartTime));
-            updateChannel(CHANNEL_CURRENT_SCHEDULE_END, dateTimeOrUndef(d.currentScheduleEndTime));
+                    d.activeZoneNumber > 0 ? new DecimalType(d.activeZoneNumber) : new DecimalType(0));
+            updateChannel(CHANNEL_DEVICE_ACTIVE_ZONE_NAME, optionalStringState(d.activeZoneName));
+            updateChannel(CHANNEL_DEVICE_ACTIVE_ZONE_ID, optionalStringState(d.activeZoneId));
+            updateChannel(CHANNEL_CURRENT_SCHEDULE_ID, optionalStringState(d.currentScheduleId));
+            updateChannel(CHANNEL_CURRENT_SCHEDULE_NAME, optionalStringState(d.currentScheduleName));
+            updateChannel(CHANNEL_CURRENT_SCHEDULE_TYPE, optionalStringState(d.currentScheduleType));
+            updateChannel(CHANNEL_CURRENT_SCHEDULE_START, optionalDateTimeState(d.currentScheduleStartTime));
+            updateChannel(CHANNEL_CURRENT_SCHEDULE_END, optionalDateTimeState(d.currentScheduleEndTime));
             updateChannel(CHANNEL_CURRENT_SCHEDULE_DURATION, RachioQuantityTypes.seconds(d.currentScheduleDuration));
             updateChannel(CHANNEL_CURRENT_SCHEDULE_RUNNING, d.currentScheduleRunning ? OnOffType.ON : OnOffType.OFF);
             updateChannel(CHANNEL_LAST_API_EVENT_TYPE, stringOrUndef(d.lastApiEventType));
@@ -351,10 +357,10 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
                 RachioBridgeHandler handler = cloudHandler;
                 updateForecastChannels(d, handler != null ? handler.getForecastUnits() : DEFAULT_FORECAST_UNITS);
             }
-            updateChannel(CHANNEL_LAST_SKIP_TYPE, stringOrUndef(d.lastSkipType));
-            updateChannel(CHANNEL_LAST_SKIP_SCHEDULE_ID, stringOrUndef(d.lastSkipScheduleId));
-            updateChannel(CHANNEL_LAST_SKIP_START, dateTimeOrUndef(d.lastSkipStartTime));
-            updateChannel(CHANNEL_LAST_SKIP_REASON, stringOrUndef(d.lastSkipReason));
+            updateChannel(CHANNEL_LAST_SKIP_TYPE, optionalStringState(d.lastSkipType));
+            updateChannel(CHANNEL_LAST_SKIP_SCHEDULE_ID, optionalStringState(d.lastSkipScheduleId));
+            updateChannel(CHANNEL_LAST_SKIP_START, optionalDateTimeState(d.lastSkipStartTime));
+            updateChannel(CHANNEL_LAST_SKIP_REASON, optionalStringState(d.lastSkipReason));
             updateChannel(RachioBindingConstants.CHANNEL_LAST_EVENT, new StringType(d.getEvent()));
             DateTimeType ts = d.getEventTime();
             updateChannel(RachioBindingConstants.CHANNEL_LAST_EVENTTS, ts != null ? ts : UnDefType.UNDEF);
@@ -475,7 +481,8 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
         try {
             String forecastUnits = handler.getForecastUnits();
             RachioForecastResponse forecast = handler.getDeviceForecast(d.id, forecastUnits);
-            boolean usefulForecast = d.applyForecast(forecast, forecastUnits, Instant.ofEpochMilli(now).toString());
+            Instant retrievedAt = Instant.ofEpochMilli(now);
+            boolean usefulForecast = d.applyForecast(forecast, forecastUnits, retrievedAt.toString(), retrievedAt);
             logger.debug("{}: Forecast response for controller '{}' using {} units parsed: {}", thingId, d.id,
                     forecastUnits, forecast.parsedFieldSummary());
             logger.trace("{}: Forecast response shape for controller '{}': {}", thingId, d.id, forecast.shapeSummary());
@@ -748,14 +755,10 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
                     d.applySkipEvent(event.eventType.isBlank() ? event.subType : event.eventType, event.scheduleId,
                             event.startTime, event.summary);
                 }
-                updateChannel(CHANNEL_SCHED_NAME, new StringType(event.scheduleName));
-                updateChannel(CHANNEL_SCHED_INFO, new StringType(event.summary));
-                if (!event.startTime.isEmpty()) {
-                    updateChannel(CHANNEL_SCHED_START, new DateTimeType(event.startTime));
-                }
-                if (!event.endTime.isEmpty()) {
-                    updateChannel(CHANNEL_SCHED_END, new DateTimeType(event.endTime));
-                }
+                updateChannel(CHANNEL_SCHED_NAME, optionalStringState(event.scheduleName));
+                updateChannel(CHANNEL_SCHED_INFO, optionalStringState(event.summary));
+                updateChannel(CHANNEL_SCHED_START, optionalDateTimeState(event.startTime));
+                updateChannel(CHANNEL_SCHED_END, optionalDateTimeState(event.endTime));
             } else if (isLegacyRefreshOnlyEvent(etype, event.subType)) {
                 logger.debug(
                         "{}: Legacy webhook event {}.{} is intentionally handled by reconciliation refresh; no direct state update was applied",
@@ -1365,14 +1368,22 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
         return value.isBlank() ? UnDefType.UNDEF : new StringType(value);
     }
 
-    private State stringOrNull(String value) {
+    private State optionalStringState(String value) {
         return value.isBlank() ? UnDefType.NULL : new StringType(value);
+    }
+
+    private State optionalDateTimeState(String value) {
+        return value.isBlank() ? UnDefType.NULL : parseDateTimeState(value);
     }
 
     private State dateTimeOrUndef(String value) {
         if (value.isBlank()) {
             return UnDefType.UNDEF;
         }
+        return parseDateTimeState(value);
+    }
+
+    private State parseDateTimeState(String value) {
         try {
             if (value.chars().allMatch(Character::isDigit)) {
                 long epoch = Long.parseLong(value);

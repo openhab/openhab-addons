@@ -181,7 +181,7 @@
 	<channel-type id="device-active-zone-number">
 		<item-type>Number</item-type>
 		<label>Active Zone Number</label>
-		<description>Zone number of the currently active watering run, populated from webhook zone run events.</description>
+		<description>Zone number of the currently active watering run; 0 when no zone is active.</description>
 		<tags>
 			<tag>Status</tag>
 		</tags>

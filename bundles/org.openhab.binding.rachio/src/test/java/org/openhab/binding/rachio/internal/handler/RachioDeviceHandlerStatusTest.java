@@ -23,6 +23,16 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_CURRENT_SCHEDULE_DURATION;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_CURRENT_SCHEDULE_END;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_CURRENT_SCHEDULE_ID;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_CURRENT_SCHEDULE_NAME;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_CURRENT_SCHEDULE_RUNNING;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_CURRENT_SCHEDULE_START;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_CURRENT_SCHEDULE_TYPE;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_DEVICE_ACTIVE_ZONE_ID;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_DEVICE_ACTIVE_ZONE_NAME;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_DEVICE_ACTIVE_ZONE_NUMBER;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_DEVICE_ONLINE;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_DEVICE_RAIN_SENSOR_TRIPPED;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_FORECAST_PRECIPITATION;
@@ -32,6 +42,14 @@ import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_FORECAST_TODAY_LOW;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_FORECAST_UPDATED;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_FORECAST_WIND;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_LAST_SKIP_REASON;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_LAST_SKIP_SCHEDULE_ID;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_LAST_SKIP_START;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_LAST_SKIP_TYPE;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_SCHED_END;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_SCHED_INFO;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_SCHED_NAME;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_SCHED_START;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.PROPERTY_DEV_ID;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_TYPE_DEVICE;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_TYPE_FLEX_SCHEDULE;
@@ -67,7 +85,10 @@ import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager.PRIORITY
 import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager.RateLimitThrottleException;
 import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager.RequestPurpose;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -75,6 +96,8 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 
 import com.google.gson.Gson;
 
@@ -434,6 +457,114 @@ class RachioDeviceHandlerStatusTest {
     }
 
     @Test
+    void idleOptionalControllerChannelsPublishZeroActiveZoneNumberAndNullOptionalStates() {
+        Thing thing = thing();
+        RachioDevice device = device("ONLINE");
+        PollingDeviceHandler handler = new PollingDeviceHandler(thing, bridgeHandler(thing, device), device);
+
+        handler.postChannelData();
+
+        assertChannelState(handler, CHANNEL_DEVICE_ACTIVE_ZONE_NUMBER, new DecimalType(0));
+        assertChannelState(handler, CHANNEL_DEVICE_ACTIVE_ZONE_NAME, UnDefType.NULL);
+        assertChannelState(handler, CHANNEL_DEVICE_ACTIVE_ZONE_ID, UnDefType.NULL);
+        assertChannelState(handler, CHANNEL_CURRENT_SCHEDULE_ID, UnDefType.NULL);
+        assertChannelState(handler, CHANNEL_CURRENT_SCHEDULE_NAME, UnDefType.NULL);
+        assertChannelState(handler, CHANNEL_CURRENT_SCHEDULE_TYPE, UnDefType.NULL);
+        assertChannelState(handler, CHANNEL_CURRENT_SCHEDULE_START, UnDefType.NULL);
+        assertChannelState(handler, CHANNEL_CURRENT_SCHEDULE_END, UnDefType.NULL);
+        assertChannelState(handler, CHANNEL_CURRENT_SCHEDULE_DURATION, RachioQuantityTypes.seconds(0));
+        assertChannelState(handler, CHANNEL_CURRENT_SCHEDULE_RUNNING, OnOffType.OFF);
+        assertChannelState(handler, CHANNEL_LAST_SKIP_TYPE, UnDefType.NULL);
+        assertChannelState(handler, CHANNEL_LAST_SKIP_SCHEDULE_ID, UnDefType.NULL);
+        assertChannelState(handler, CHANNEL_LAST_SKIP_START, UnDefType.NULL);
+        assertChannelState(handler, CHANNEL_LAST_SKIP_REASON, UnDefType.NULL);
+    }
+
+    @Test
+    void activeOptionalControllerChannelsPublishActualValues() {
+        Thing thing = thing();
+        RachioDevice device = device("ONLINE");
+        device.activeZoneNumber = 7;
+        device.activeZoneName = "Front lawn";
+        device.activeZoneId = "zone-id";
+        device.currentScheduleId = "schedule-id";
+        device.currentScheduleName = "Morning Lawn";
+        device.currentScheduleType = "FIXED";
+        device.currentScheduleStartTime = "2026-06-16T10:00:00Z";
+        device.currentScheduleEndTime = "2026-06-16T10:10:00Z";
+        device.currentScheduleDuration = 600;
+        device.currentScheduleRunning = true;
+        device.lastSkipType = "RAIN_SKIP";
+        device.lastSkipScheduleId = "schedule-id";
+        device.lastSkipStartTime = "2026-06-15T10:00:00Z";
+        device.lastSkipReason = "Rain observed";
+        PollingDeviceHandler handler = new PollingDeviceHandler(thing, bridgeHandler(thing, device), device);
+
+        handler.postChannelData();
+
+        assertChannelState(handler, CHANNEL_DEVICE_ACTIVE_ZONE_NUMBER, new DecimalType(7));
+        assertChannelState(handler, CHANNEL_DEVICE_ACTIVE_ZONE_NAME, new StringType("Front lawn"));
+        assertChannelState(handler, CHANNEL_DEVICE_ACTIVE_ZONE_ID, new StringType("zone-id"));
+        assertChannelState(handler, CHANNEL_CURRENT_SCHEDULE_ID, new StringType("schedule-id"));
+        assertChannelState(handler, CHANNEL_CURRENT_SCHEDULE_NAME, new StringType("Morning Lawn"));
+        assertChannelState(handler, CHANNEL_CURRENT_SCHEDULE_TYPE, new StringType("FIXED"));
+        assertChannelState(handler, CHANNEL_CURRENT_SCHEDULE_START, new DateTimeType("2026-06-16T10:00:00Z"));
+        assertChannelState(handler, CHANNEL_CURRENT_SCHEDULE_END, new DateTimeType("2026-06-16T10:10:00Z"));
+        assertChannelState(handler, CHANNEL_CURRENT_SCHEDULE_DURATION, RachioQuantityTypes.seconds(600));
+        assertChannelState(handler, CHANNEL_CURRENT_SCHEDULE_RUNNING, OnOffType.ON);
+        assertChannelState(handler, CHANNEL_LAST_SKIP_TYPE, new StringType("RAIN_SKIP"));
+        assertChannelState(handler, CHANNEL_LAST_SKIP_SCHEDULE_ID, new StringType("schedule-id"));
+        assertChannelState(handler, CHANNEL_LAST_SKIP_START, new DateTimeType("2026-06-15T10:00:00Z"));
+        assertChannelState(handler, CHANNEL_LAST_SKIP_REASON, new StringType("Rain observed"));
+    }
+
+    @Test
+    void optionalControllerDateTimesUseNullForBlankAndUndefForInvalidNonblankValues() {
+        Thing thing = thing();
+        RachioDevice device = device("ONLINE");
+        device.currentScheduleStartTime = "not-a-date";
+        device.currentScheduleEndTime = "";
+        device.lastSkipStartTime = "bad-timestamp";
+        PollingDeviceHandler handler = new PollingDeviceHandler(thing, bridgeHandler(thing, device), device);
+
+        handler.postChannelData();
+
+        assertChannelState(handler, CHANNEL_CURRENT_SCHEDULE_START, UnDefType.UNDEF);
+        assertChannelState(handler, CHANNEL_CURRENT_SCHEDULE_END, UnDefType.NULL);
+        assertChannelState(handler, CHANNEL_LAST_SKIP_START, UnDefType.UNDEF);
+    }
+
+    @Test
+    void blankLegacyScheduleSummaryPayloadPublishesNullStates() {
+        Thing thing = thing();
+        RachioDevice device = device("ONLINE");
+        PollingDeviceHandler handler = new PollingDeviceHandler(thing, bridgeHandler(thing, device), device);
+        RachioEventGsonDTO event = legacyControllerEvent("SCHEDULE_STATUS", "SCHEDULE_STARTED");
+
+        assertThat(handler.webhookEvent(event), is(true));
+
+        assertChannelState(handler, CHANNEL_SCHED_NAME, UnDefType.NULL);
+        assertChannelState(handler, CHANNEL_SCHED_INFO, UnDefType.NULL);
+        assertChannelState(handler, CHANNEL_SCHED_START, UnDefType.NULL);
+        assertChannelState(handler, CHANNEL_SCHED_END, UnDefType.NULL);
+    }
+
+    @Test
+    void invalidLegacyScheduleSummaryTimestampPublishesUndefState() {
+        Thing thing = thing();
+        RachioDevice device = device("ONLINE");
+        PollingDeviceHandler handler = new PollingDeviceHandler(thing, bridgeHandler(thing, device), device);
+        RachioEventGsonDTO event = legacyControllerEvent("SCHEDULE_STATUS", "SCHEDULE_STARTED");
+        event.startTime = "not-a-date";
+        event.endTime = "";
+
+        assertThat(handler.webhookEvent(event), is(true));
+
+        assertChannelState(handler, CHANNEL_SCHED_START, UnDefType.UNDEF);
+        assertChannelState(handler, CHANNEL_SCHED_END, UnDefType.NULL);
+    }
+
+    @Test
     void currentScheduleRefreshRunsEveryPollWhileOptionalEnrichmentKeepsLongerCadence() throws Exception {
         Thing thing = thing();
         RachioDevice device = device("ONLINE");
@@ -598,15 +729,61 @@ class RachioDeviceHandlerStatusTest {
     }
 
     @Test
+    void forecastUpdatedFallbackUsesRetrievalTimestampNotSelectedEntryTime() throws Exception {
+        Thing thing = thing();
+        RachioDevice device = device("ONLINE");
+        RachioBridgeHandler bridgeHandler = bridgeHandler(thing, device);
+        RachioForecastResponse forecast = numericForecast(Double.NaN, 0);
+        RachioForecastEntry today = Objects.requireNonNull(forecast.today);
+        today.date = "2026-06-16";
+        today.time = "2026-06-16T00:00:00Z";
+        when(bridgeHandler.getCurrentSchedule(DEVICE_ID, RequestPurpose.CORE_STATUS_POLL))
+                .thenReturn(new RachioCurrentScheduleResponse());
+        when(bridgeHandler.getDeviceForecast(DEVICE_ID, "US")).thenReturn(forecast);
+        when(bridgeHandler.getEventHistoryLookbackHours()).thenReturn(0);
+        PollingDeviceHandler handler = new PollingDeviceHandler(thing, bridgeHandler, device);
+        handler.setCallback(Mockito.mock(ThingHandlerCallback.class));
+
+        handler.refreshSmartIrrigationReadExtensions(false, RequestPurpose.CORE_STATUS_POLL);
+
+        assertThat(device.forecastSummary, is("61-82 \u00B0F, precipitation chance 0%, wind 8.5 mph"));
+        assertThat(device.forecastUpdated, is("2026-06-16T10:00:00Z"));
+    }
+
+    @Test
+    void forecastSelectionUsesControllerUtcOffsetForLocalDate() {
+        RachioDevice device = device("ONLINE");
+        device.utcOffset = -25_200_000;
+        RachioForecastResponse forecast = RachioForecastResponse.fromJson("""
+                {
+                  "dailyForecasts": [
+                    {
+                      "date": "2026-06-30",
+                      "weatherSummary": "Controller-local today",
+                      "temperatureMax": 82.0
+                    }
+                  ]
+                }
+                """);
+
+        boolean applied = device.applyForecast(forecast, "US", "2026-07-01T01:00:00Z",
+                Instant.parse("2026-07-01T01:00:00Z"));
+
+        assertThat(applied, is(true));
+        assertThat(device.forecastSummary, is("Controller-local today"));
+        assertThat(device.forecastTodayHigh, is(82.0));
+    }
+
+    @Test
     void generatedForecastSummariesUseConfiguredDisplayUnits() {
         RachioForecastResponse metricForecast = numericForecast(2.5, 0);
         RachioForecastEntry metricToday = Objects.requireNonNull(metricForecast.today);
         metricToday.lowTemperature = 18;
         metricToday.highTemperature = 30;
-        metricToday.windSpeed = 4;
+        metricToday.windSpeed = 20;
 
         assertThat(metricForecast.buildSummary("METRIC"),
-                is("18-30 \u00B0C, precipitation chance 0%, precipitation 2.5 mm, wind 14.4 km/h"));
+                is("18-30 \u00B0C, precipitation chance 0%, precipitation 2.5 mm, wind 20 km/h"));
 
         RachioForecastResponse usForecast = numericForecast(0.25, 0);
         assertThat(usForecast.buildSummary("US"),
@@ -669,6 +846,10 @@ class RachioDeviceHandlerStatusTest {
         for (String channel : FORECAST_CHANNELS) {
             verify(callback, never()).stateUpdated(eq(new ChannelUID(thing.getUID(), channel)), any());
         }
+    }
+
+    private void assertChannelState(RachioDeviceHandler handler, String channel, State expectedState) {
+        assertThat(handler.channelData.get(channel), is(expectedState));
     }
 
     @Test
