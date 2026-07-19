@@ -120,7 +120,9 @@ public final class CompanionConnection {
         this.listener = listener;
     }
 
-    /** Whether a connection is open. */
+    /**
+     * Whether a connection is open.
+     */
     public boolean isConnected() {
         Socket current = socket;
         return current != null && !current.isClosed();
@@ -148,7 +150,9 @@ public final class CompanionConnection {
         readerThread = Thread.ofVirtual().name("companion-reader-" + host + ":" + port).start(this::readLoop);
     }
 
-    /** Closes the connection to the device. */
+    /**
+     * Closes the connection to the device.
+     */
     public void close() {
         LOGGER.debug("Closing connection");
         closed.set(true);

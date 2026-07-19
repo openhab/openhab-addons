@@ -75,7 +75,9 @@ public final class HapPairVerify implements PairVerifyProcedure {
         this.verifyPublic = CryptoKeys.x25519PublicKey(verifyPrivate);
     }
 
-    /** Our X25519 session public key sent in M1. */
+    /**
+     * Our X25519 session public key sent in M1.
+     */
     public byte[] publicKey() {
         return verifyPublic.clone();
     }

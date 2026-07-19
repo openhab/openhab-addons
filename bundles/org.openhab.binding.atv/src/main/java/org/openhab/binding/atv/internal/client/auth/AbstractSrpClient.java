@@ -55,7 +55,9 @@ public abstract class AbstractSrpClient {
         this.privateSupplier = privateSupplier;
     }
 
-    /** Default supplier: 32 secure-random bytes. */
+    /**
+     * Default supplier: 32 secure-random bytes.
+     */
     protected static Supplier<byte[]> secureRandomSupplier() {
         SecureRandom random = new SecureRandom();
         return () -> {
@@ -65,7 +67,9 @@ public abstract class AbstractSrpClient {
         };
     }
 
-    /** Begins a session: fixes the username/password and computes the client public {@code A}. */
+    /**
+     * Begins a session: fixes the username/password and computes the client public {@code A}.
+     */
     protected void begin(String username, String password) {
         this.username = username;
         this.password = password;
@@ -98,17 +102,23 @@ public abstract class AbstractSrpClient {
         this.expectedServerProof = context.serverProof(localSessionKey, localClientProof, localClientPublic);
     }
 
-    /** The client public value {@code A} as minimal big-endian bytes. */
+    /**
+     * The client public value {@code A} as minimal big-endian bytes.
+     */
     public byte[] publicKey() {
         return SrpContext.intToBytes(Objects.requireNonNull(clientPublic, "begin() must be called first"));
     }
 
-    /** The client proof {@code M1}. */
+    /**
+     * The client proof {@code M1}.
+     */
     public byte[] proof() {
         return Objects.requireNonNull(clientProof, "process() must be called first").clone();
     }
 
-    /** The negotiated session key {@code K}. */
+    /**
+     * The negotiated session key {@code K}.
+     */
     public byte[] sessionKey() {
         return Objects.requireNonNull(sessionKey, "process() must be called first").clone();
     }

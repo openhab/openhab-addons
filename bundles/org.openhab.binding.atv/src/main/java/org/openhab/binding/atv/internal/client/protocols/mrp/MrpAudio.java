@@ -113,17 +113,23 @@ public final class MrpAudio implements Audio, CapabilitySource {
         return clusterId.isEmpty() ? inner.getDeviceUID() : clusterId;
     }
 
-    /** Returns if audio controls are available. */
+    /**
+     * Returns if audio controls are available.
+     */
     public boolean isAvailable() {
         return volumeControlsAvailable && deviceUid() != null;
     }
 
-    /** Returns if absolute volume control is available. */
+    /**
+     * Returns if absolute volume control is available.
+     */
     public boolean isVolumeAbsolute() {
         return volumeControlsAbsolute;
     }
 
-    /** Returns if relative volume control is available. */
+    /**
+     * Returns if relative volume control is available.
+     */
     public boolean isVolumeRelative() {
         return volumeControlsRelative;
     }

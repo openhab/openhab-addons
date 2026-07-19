@@ -72,7 +72,9 @@ public final class RaopAudio implements Audio, CapabilitySource {
         playbackManager.context().volume = RaopVolume.pctToDbfs(volume);
     }
 
-    /** Returns whether the volume has changed from the default or not. */
+    /**
+     * Returns whether the volume has changed from the default or not.
+     */
     public boolean hasChangedVolume() {
         return playbackManager.context().volume != null;
     }

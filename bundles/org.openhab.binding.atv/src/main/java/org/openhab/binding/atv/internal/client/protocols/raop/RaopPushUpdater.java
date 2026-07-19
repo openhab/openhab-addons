@@ -90,7 +90,9 @@ public final class RaopPushUpdater implements PushUpdater {
         listeners.remove(listener);
     }
 
-    /** State was updated, call listeners. */
+    /**
+     * State was updated, call listeners.
+     */
     public void stateUpdated() {
         try {
             Playing playing = metadata.playing().join();

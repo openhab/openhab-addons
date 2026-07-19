@@ -43,7 +43,9 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public final class MrpPower implements Power, CapabilitySource {
 
-    /** Delay between the home hold and the select press. */
+    /**
+     * Delay between the home hold and the select press.
+     */
     public static final Duration DELAY_BETWEEN_COMMANDS = Duration.ofMillis(100);
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MrpPower.class);

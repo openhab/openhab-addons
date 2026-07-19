@@ -30,6 +30,14 @@ import org.openhab.binding.atv.internal.client.exceptions.NotSupportedError;
 public interface Stream {
 
     /**
+     * {@code streamFile} option ({@link Double}, percent 0-100) requesting a fixed playback volume.
+     * When set, it takes priority over the receiver's reported volume and is applied once streaming
+     * has started, so it overrides both the receiver's initial volume and any volume the receiver
+     * announces during setup. Used by the openHAB audio sink to guarantee an audible level.
+     */
+    String OPTION_VOLUME = "volume";
+
+    /**
      * Closes the connection and releases allocated resources.
      *
      * @throws NotSupportedError if not supported

@@ -68,7 +68,9 @@ public final class CompanionProtocol implements CompanionConnection.FrameListene
             this.value = value;
         }
 
-        /** Numeric value used on the wire. */
+        /**
+         * Numeric value used on the wire.
+         */
         public int value() {
             return value;
         }
@@ -86,7 +88,9 @@ public final class CompanionProtocol implements CompanionConnection.FrameListene
         void eventReceived(String eventName, Map<String, Object> data);
     }
 
-    /** Default exchange timeout. */
+    /**
+     * Default exchange timeout.
+     */
     public static final Duration DEFAULT_TIMEOUT = Duration.ofSeconds(5);
 
     static final String SRP_SALT = "";
@@ -155,7 +159,9 @@ public final class CompanionProtocol implements CompanionConnection.FrameListene
         }
     }
 
-    /** Disconnects from the device. */
+    /**
+     * Disconnects from the device.
+     */
     public void stop() {
         queues.clear();
         connection.close();

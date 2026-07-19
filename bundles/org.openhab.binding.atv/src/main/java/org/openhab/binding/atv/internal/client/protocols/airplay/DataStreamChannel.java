@@ -57,13 +57,19 @@ public final class DataStreamChannel extends HapChannel {
     /** Padding value used in all sent messages ({@code DATA_HEADER_PADDING}). */
     public static final int DATA_HEADER_PADDING = 0x00000000;
 
-    /** Message type of requests ({@code b"sync" + 8 * b"\x00"}). */
+    /**
+     * Message type of requests ({@code b"sync" + 8 * b"\x00"}).
+     */
     public static final byte[] MESSAGE_TYPE_SYNC = messageType("sync");
 
-    /** Message type of replies ({@code b"rply" + 8 * b"\x00"}). */
+    /**
+     * Message type of replies ({@code b"rply" + 8 * b"\x00"}).
+     */
     public static final byte[] MESSAGE_TYPE_REPLY = messageType("rply");
 
-    /** Command used when sending protobuf messages ({@code b"comm"}). */
+    /**
+     * Command used when sending protobuf messages ({@code b"comm"}).
+     */
     public static final byte[] COMMAND_COMM = "comm".getBytes(StandardCharsets.UTF_8);
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DataStreamChannel.class);
@@ -153,7 +159,9 @@ public final class DataStreamChannel extends HapChannel {
         this.listener = listener;
     }
 
-    /** The sequence number stamped on outgoing requests. */
+    /**
+     * The sequence number stamped on outgoing requests.
+     */
     public long sendSeqno() {
         return sendSeqno;
     }

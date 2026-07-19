@@ -154,7 +154,7 @@ public final class RaopStream implements Stream, CapabilitySource {
                         streamMetadata = metadata;
                     }
 
-                    Double volume = prepareVolume(client, context);
+                    Double volume = prepareVolume(client, context, options);
                     client.sendAudio(audioFile, streamMetadata, volume);
                 } finally {
                     takeoverRelease.run();
@@ -182,7 +182,18 @@ public final class RaopStream implements Stream, CapabilitySource {
      *
      * @return the volume in percent to set after streaming started, or {@code null}
      */
-    private @Nullable Double prepareVolume(RaopStreamClient client, StreamContext context) {
+    private @Nullable Double prepareVolume(RaopStreamClient client, StreamContext context,
+            Map<String, Object> options) {
+        // A host-requested playback volume (e.g. the openHAB audio sink) takes priority over the
+        // receiver's reported volume. It is returned as a deferred set so it is applied once
+        // streaming has started, overriding both the receiver's initial volume and any volume the
+        // receiver announces during setup. Deviation from pyatv, which always adopts the receiver's
+        // initialVolume for fire-and-forget playback.
+        if (options.get(OPTION_VOLUME) instanceof Number requested) {
+            double pct = requested.doubleValue();
+            context.volume = RaopVolume.pctToDbfs(pct);
+            return pct;
+        }
         if (!audio.hasChangedVolume() && client.info().containsKey("initialVolume")) {
             Object initialVolume = client.info().get("initialVolume");
             if (!(initialVolume instanceof Double dbfs)) {

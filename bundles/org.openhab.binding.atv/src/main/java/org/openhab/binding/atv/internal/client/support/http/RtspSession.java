@@ -150,27 +150,37 @@ public final class RtspSession {
         return new SecureRandom().nextLong();
     }
 
-    /** Returns the underlying connection. */
+    /**
+     * Returns the underlying connection.
+     */
     public HttpConnection connection() {
         return connection;
     }
 
-    /** Returns the session id (random unsigned 32-bit). */
+    /**
+     * Returns the session id (random unsigned 32-bit).
+     */
     public long sessionId() {
         return sessionId;
     }
 
-    /** Returns the DACP-ID header value (uppercase hex). */
+    /**
+     * Returns the DACP-ID header value (uppercase hex).
+     */
     public String dacpId() {
         return dacpId;
     }
 
-    /** Returns the Active-Remote header value (unsigned 32-bit). */
+    /**
+     * Returns the Active-Remote header value (unsigned 32-bit).
+     */
     public long activeRemote() {
         return activeRemote;
     }
 
-    /** Returns the current digest authentication info, or {@code null} when not authenticating. */
+    /**
+     * Returns the current digest authentication info, or {@code null} when not authenticating.
+     */
     public @Nullable DigestInfo digestInfo() {
         return digestInfo;
     }

@@ -65,13 +65,17 @@ public final class SrpContext {
         this.multiplier = hashInt(concat(intToBytes(group.prime()), pad(group.generator())));
     }
 
-    /** A HAP context: 3072-bit group, SHA-512, K = H(S). */
+    /**
+     * A HAP context: 3072-bit group, SHA-512, K = H(S).
+     */
     public static SrpContext hap() {
         return new SrpContext(SrpGroup.RFC5054_3072, "SHA-512",
                 s -> hashRaw(SrpContext.staticDigest("SHA-512"), SrpContext.intToBytesStatic(s)));
     }
 
-    /** A legacy AirPlay context: 2048-bit group, SHA-1, K = H(S||00000000) || H(S||00000001). */
+    /**
+     * A legacy AirPlay context: 2048-bit group, SHA-1, K = H(S||00000000) || H(S||00000001).
+     */
     public static SrpContext legacyAirPlay() {
         return new SrpContext(SrpGroup.RFC5054_2048, "SHA-1", s -> {
             byte[] sBytes = intToBytesStatic(s);
@@ -85,44 +89,60 @@ public final class SrpContext {
         });
     }
 
-    /** Returns the group. */
+    /**
+     * Returns the group.
+     */
     public SrpGroup group() {
         return group;
     }
 
-    /** Returns the multiplier {@code k = H(N | PAD(g))}. */
+    /**
+     * Returns the multiplier {@code k = H(N | PAD(g))}.
+     */
     public BigInteger multiplier() {
         return multiplier;
     }
 
-    /** x = H(salt | H(I ":" P)). */
+    /**
+     * x = H(salt | H(I ":" P)).
+     */
     public BigInteger passwordHash(byte[] salt, String username, String password) {
         byte[] inner = digest((username + ":" + password).getBytes(StandardCharsets.UTF_8));
         return hashInt(concat(salt, inner));
     }
 
-    /** v = g^x % N. */
+    /**
+     * v = g^x % N.
+     */
     public BigInteger verifier(BigInteger passwordHash) {
         return group.generator().modPow(passwordHash, group.prime());
     }
 
-    /** A = g^a % N. */
+    /**
+     * A = g^a % N.
+     */
     public BigInteger clientPublic(BigInteger clientPrivate) {
         return group.generator().modPow(clientPrivate, group.prime());
     }
 
-    /** B = (k*v + g^b) % N. */
+    /**
+     * B = (k*v + g^b) % N.
+     */
     public BigInteger serverPublic(BigInteger verifier, BigInteger serverPrivate) {
         return multiplier.multiply(verifier).add(group.generator().modPow(serverPrivate, group.prime()))
                 .mod(group.prime());
     }
 
-    /** u = H(PAD(A) | PAD(B)). */
+    /**
+     * u = H(PAD(A) | PAD(B)).
+     */
     public BigInteger commonSecret(BigInteger clientPublic, BigInteger serverPublic) {
         return hashInt(concat(pad(clientPublic), pad(serverPublic)));
     }
 
-    /** S = (B - (k * g^x)) ^ (a + (u * x)) % N. */
+    /**
+     * S = (B - (k * g^x)) ^ (a + (u * x)) % N.
+     */
     public BigInteger clientPremaster(BigInteger passwordHash, BigInteger serverPublic, BigInteger clientPrivate,
             BigInteger commonSecret) {
         BigInteger v = verifier(passwordHash);
@@ -131,18 +151,24 @@ public final class SrpContext {
         return base.modPow(exp, group.prime());
     }
 
-    /** S = (A * v^u) ^ b % N. */
+    /**
+     * S = (A * v^u) ^ b % N.
+     */
     public BigInteger serverPremaster(BigInteger verifier, BigInteger serverPrivate, BigInteger clientPublic,
             BigInteger commonSecret) {
         return clientPublic.multiply(verifier.modPow(commonSecret, group.prime())).modPow(serverPrivate, group.prime());
     }
 
-    /** K = f(S). */
+    /**
+     * K = f(S).
+     */
     public byte[] sessionKey(BigInteger premaster) {
         return sessionKeyFn.apply(premaster);
     }
 
-    /** M1 = H((H(N) xor H(g)) | H(I) | salt | A | B | K). */
+    /**
+     * M1 = H((H(N) xor H(g)) | H(I) | salt | A | B | K).
+     */
     public byte[] clientProof(byte[] sessionKey, byte[] salt, BigInteger serverPublic, BigInteger clientPublic,
             String username) {
         BigInteger hn = hashInt(intToBytes(group.prime()));
@@ -152,12 +178,16 @@ public final class SrpContext {
                 intToBytes(serverPublic), sessionKey));
     }
 
-    /** M2 = H(A | M1 | K). */
+    /**
+     * M2 = H(A | M1 | K).
+     */
     public byte[] serverProof(byte[] sessionKey, byte[] clientProof, BigInteger clientPublic) {
         return digest(concat(intToBytes(clientPublic), clientProof, sessionKey));
     }
 
-    /** PAD(v): minimal big-endian bytes of v, left-padded with zeros to the byte length of N. */
+    /**
+     * PAD(v): minimal big-endian bytes of v, left-padded with zeros to the byte length of N.
+     */
     public byte[] pad(BigInteger value) {
         int width = intToBytes(group.prime()).length;
         byte[] raw = intToBytes(value);

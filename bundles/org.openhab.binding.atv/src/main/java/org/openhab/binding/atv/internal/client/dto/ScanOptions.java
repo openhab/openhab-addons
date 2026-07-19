@@ -46,7 +46,9 @@ import org.openhab.binding.atv.internal.client.settings.Storage;
 public record ScanOptions(Duration timeout, Set<String> identifiers, Set<Protocol> protocols, List<String> hosts,
         AtvRuntime runtime, Storage storage, Scanner scanner) {
 
-    /** Default scan timeout. */
+    /**
+     * Default scan timeout.
+     */
     public static final Duration DEFAULT_TIMEOUT = Duration.ofSeconds(5);
 
     /**

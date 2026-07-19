@@ -37,7 +37,9 @@ public final class PcmStreamAudioSource implements AudioSource {
     private final long totalFrames;
     private boolean exhausted;
 
-    /** Creates a source with unknown length. */
+    /**
+     * Creates a source with unknown length.
+     */
     public PcmStreamAudioSource(InputStream stream, int sampleRate, int channels, int sampleSize) {
         this(stream, sampleRate, channels, sampleSize, -1);
     }

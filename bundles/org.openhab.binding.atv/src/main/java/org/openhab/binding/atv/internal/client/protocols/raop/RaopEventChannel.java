@@ -70,7 +70,9 @@ final class RaopEventChannel implements AutoCloseable {
         LOGGER.debug("Event channel connected to {}:{}", address, port);
     }
 
-    /** Closes the channel. */
+    /**
+     * Closes the channel.
+     */
     @Override
     public void close() {
         closed = true;

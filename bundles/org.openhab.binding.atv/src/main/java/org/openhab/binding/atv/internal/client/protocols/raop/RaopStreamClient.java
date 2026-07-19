@@ -65,10 +65,14 @@ public final class RaopStreamClient {
     /** Number of packets stored in case retransmission is requested. */
     public static final int PACKET_BACKLOG_SIZE = 1000;
 
-    /** Metadata instance used when there is no metadata. */
+    /**
+     * Metadata instance used when there is no metadata.
+     */
     public static final MediaMetadata EMPTY_METADATA = new MediaMetadata(null, null, null, null, null);
 
-    /** Metadata shown to the receiver when nothing else is available. */
+    /**
+     * Metadata shown to the receiver when nothing else is available.
+     */
     public static final MediaMetadata MISSING_METADATA = new MediaMetadata("Streaming with openHAB", "openHAB",
             "AirPlay", null, null);
 
@@ -118,28 +122,38 @@ public final class RaopStreamClient {
         this.rng = rng;
     }
 
-    /** Sets the listener notified about playback state changes (may be {@code null}). */
+    /**
+     * Sets the listener notified about playback state changes (may be {@code null}).
+     */
     public void setListener(@Nullable RaopListener listener) {
         this.listener = listener;
     }
 
-    /** Returns the current playback information. */
+    /**
+     * Returns the current playback information.
+     */
     public PlaybackInfo playbackInfo() {
         MediaMetadata current = EMPTY_METADATA.equals(metadata) ? MISSING_METADATA : metadata;
         return new PlaybackInfo(current, context.position());
     }
 
-    /** Returns value mappings for the receiver's {@code /info} values. */
+    /**
+     * Returns value mappings for the receiver's {@code /info} values.
+     */
     public Map<String, Object> info() {
         return info;
     }
 
-    /** Returns the shared stream context. */
+    /**
+     * Returns the shared stream context.
+     */
     public StreamContext context() {
         return context;
     }
 
-    /** Closes the session and frees up resources. */
+    /**
+     * Closes the session and frees up resources.
+     */
     public void close() {
         protocol.teardown();
         stopSync();
@@ -215,7 +229,9 @@ public final class RaopStreamClient {
         return encryptionTypes.contains(EncryptionType.MFISAP) && modelName.startsWith("AirPort");
     }
 
-    /** Stops what is currently playing. */
+    /**
+     * Stops what is currently playing.
+     */
     public void stop() {
         LOGGER.debug("Stopping audio playback");
         isPlaying = false;

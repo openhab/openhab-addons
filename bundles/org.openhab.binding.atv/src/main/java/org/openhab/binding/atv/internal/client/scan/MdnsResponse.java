@@ -29,6 +29,8 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public record MdnsResponse(List<MdnsService> services, boolean deepSleep, @Nullable String model) {
 
-    /** An empty response. */
+    /**
+     * An empty response.
+     */
     public static final MdnsResponse EMPTY = new MdnsResponse(List.of(), false, null);
 }

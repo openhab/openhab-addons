@@ -41,7 +41,9 @@ public enum MediaControlCommand {
         this.value = value;
     }
 
-    /** Numeric value used on the wire. */
+    /**
+     * Numeric value used on the wire.
+     */
     public int value() {
         return value;
     }

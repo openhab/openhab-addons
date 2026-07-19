@@ -95,7 +95,9 @@ public final class CompanionApi implements CompanionProtocol.Listener {
         this.core = core;
     }
 
-    /** The current session identifier (0 before {@code _sessionStart}). */
+    /**
+     * The current session identifier (0 before {@code _sessionStart}).
+     */
     public long sid() {
         return sid;
     }

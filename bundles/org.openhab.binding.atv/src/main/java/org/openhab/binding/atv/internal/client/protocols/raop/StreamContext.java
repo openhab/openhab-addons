@@ -98,23 +98,31 @@ public final class StreamContext {
         paddingSent = 0;
     }
 
-    /** Returns the current RTP time with latency. */
+    /**
+     * Returns the current RTP time with latency.
+     */
     public long rtptime() {
         return headTs - (startTs - latency);
     }
 
-    /** Returns the current position in the stream in seconds (with fraction). */
+    /**
+     * Returns the current position in the stream in seconds (with fraction).
+     */
     public double position() {
         // Do not consider latency here (so do not use rtptime)
         return RaopTiming.ts2ms(headTs - startTs, sampleRate) / 1000.0;
     }
 
-    /** Returns the size of a single audio frame in bytes. */
+    /**
+     * Returns the size of a single audio frame in bytes.
+     */
     public int frameSize() {
         return channels * bytesPerChannel;
     }
 
-    /** Returns the size of a full audio packet payload in bytes. */
+    /**
+     * Returns the size of a full audio packet payload in bytes.
+     */
     public int packetSize() {
         return AudioSource.FRAMES_PER_PACKET * frameSize();
     }

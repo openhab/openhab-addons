@@ -48,10 +48,14 @@ public record HapCredentials(byte[] ltpk, byte[] ltsk, byte[] atvId, byte[] clie
     private static final byte[] EMPTY = new byte[0];
     private static final byte[] TRANSIENT_MARKER = "transient".getBytes(StandardCharsets.UTF_8);
 
-    /** No credentials at all. */
+    /**
+     * No credentials at all.
+     */
     public static final HapCredentials NO_CREDENTIALS = new HapCredentials(EMPTY, EMPTY, EMPTY, EMPTY);
 
-    /** Sentinel credentials selecting transient pairing. */
+    /**
+     * Sentinel credentials selecting transient pairing.
+     */
     public static final HapCredentials TRANSIENT_CREDENTIALS = new HapCredentials(TRANSIENT_MARKER, EMPTY, EMPTY,
             EMPTY);
 
@@ -171,7 +175,9 @@ public record HapCredentials(byte[] ltpk, byte[] ltsk, byte[] atvId, byte[] clie
                 Arrays.hashCode(clientId));
     }
 
-    /** String representation: the four fields hex-encoded and colon-joined. */
+    /**
+     * String representation: the four fields hex-encoded and colon-joined.
+     */
     @Override
     public String toString() {
         HexFormat hex = HexFormat.of();
