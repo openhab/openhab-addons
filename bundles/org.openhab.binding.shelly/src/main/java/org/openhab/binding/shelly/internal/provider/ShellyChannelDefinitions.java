@@ -583,9 +583,7 @@ public class ShellyChannelDefinitions {
         boolean hasCounter3 = counters != null && counters.length > 2 && counters[2] != null;
         addChannel(thing, newChannels, meter.power != null, group, CHANNEL_METER_CURRENTWATTS);
         addChannel(thing, newChannels, meter.total != null, group, CHANNEL_METER_TOTALKWH);
-        // lastPower1 (deprecated) and its successor energyHistMin1 are created together so existing
-        // items linked to lastPower1 keep working without re-discovery.
-        addChannel(thing, newChannels, hasCounter, group, CHANNEL_METER_LASTMIN1);
+        // lastPower1 is deprecated; this path only runs for new devices, so it's never (re-)created here.
         addChannel(thing, newChannels, hasCounter, group, CHANNEL_METER_ENERGYHISTMIN1);
         addChannel(thing, newChannels, hasCounter2, group, CHANNEL_METER_ENERGYHISTMIN2);
         addChannel(thing, newChannels, hasCounter3, group, CHANNEL_METER_ENERGYHISTMIN3);
@@ -628,14 +626,13 @@ public class ShellyChannelDefinitions {
                 CHANNEL_EMETER_APPARENT);
         addChannel(thing, newChannels, emeter.frequency != null, group, CHANNEL_EMETER_FREQUENCY);
         addChannel(thing, newChannels, always || emeter.pf != null, group, CHANNEL_EMETER_PFACTOR);
-        // lastPower1 (W, deprecated) and energyHistMin1 (Wh) are always created together when the device
-        // reports last-minute energy. Non-PM Gen2 relays (e.g. Plus 1) omit aenergy entirely — both absent.
+        // lastPower1 is deprecated; this path only runs for new devices, so it's never (re-)created here.
+        // Non-PM Gen2 relays (e.g. Plus 1) omit aenergy entirely, so energyHistMin1 stays absent too.
         @Nullable
         Double @Nullable [] byMinute = emeter.energyByMinute;
         boolean hasMinute1 = byMinute != null && byMinute.length > 0 && byMinute[0] != null;
         boolean hasMinute2 = byMinute != null && byMinute.length > 1 && byMinute[1] != null;
         boolean hasMinute3 = byMinute != null && byMinute.length > 2 && byMinute[2] != null;
-        addChannel(thing, newChannels, hasMinute1, group, CHANNEL_METER_LASTMIN1);
         addChannel(thing, newChannels, hasMinute1, group, CHANNEL_METER_ENERGYHISTMIN1);
         addChannel(thing, newChannels, hasMinute2, group, CHANNEL_METER_ENERGYHISTMIN2);
         addChannel(thing, newChannels, hasMinute3, group, CHANNEL_METER_ENERGYHISTMIN3);
@@ -833,7 +830,11 @@ public class ShellyChannelDefinitions {
         }
         if (!channelDef.label.isEmpty()) {
             char grseq = lastChar(group);
-            char chseq = lastChar(channelName);
+            // Only genuinely indexed names get a digit suffix — same allowlist as getDefinition() uses.
+            boolean chIndexed = channelName.startsWith(CHANNEL_INPUT) || channelName.startsWith(CHANNEL_BUTTON_TRIGGER)
+                    || channelName.startsWith(CHANNEL_STATUS_EVENTTYPE)
+                    || channelName.startsWith(CHANNEL_STATUS_EVENTCOUNT);
+            char chseq = chIndexed ? lastChar(channelName) : ' ';
             char sequence = isDigit(chseq) ? chseq : grseq;
             String label = !isDigit(sequence) ? channelDef.label : channelDef.label + " " + sequence;
             builder.withLabel(label);

@@ -15,14 +15,25 @@ package org.openhab.binding.shelly.internal.provider;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
+import static org.openhab.binding.shelly.internal.ShellyDevices.*;
+import static org.openhab.binding.shelly.internal.util.ShellyUtils.mkChannelId;
+
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsEMeter;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsMeter;
+import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingUID;
 
 /**
  * Tests {@link ShellyChannelDefinitions#getReplacementChannelName} and the deprecated-channel
@@ -103,5 +114,59 @@ public class ShellyChannelMigrationTest {
     void minuteEnergyChannelsNotDefinedInDeviceGroup() {
         assertThrows(IllegalArgumentException.class,
                 () -> ShellyChannelDefinitions.getDefinition("device#" + CHANNEL_METER_ENERGYHISTMIN1));
+    }
+
+    @Test
+    void createMeterChannelsOmitsDeprecatedLastPower1ForNewDevices() {
+        Thing thing = mock(Thing.class);
+        when(thing.getUID()).thenReturn(new ThingUID("shelly", "shelly1pm", "test"));
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLY1PM);
+        ShellySettingsMeter meter = new ShellySettingsMeter();
+        meter.counters = new Double[] { 60.0, 120.0, 180.0 };
+
+        Map<String, Channel> created = ShellyChannelDefinitions.createMeterChannels(thing, profile, meter,
+                CHANNEL_GROUP_METER);
+
+        assertFalse(created.containsKey(mkChannelId(CHANNEL_GROUP_METER, CHANNEL_METER_LASTMIN1)));
+        assertTrue(created.containsKey(mkChannelId(CHANNEL_GROUP_METER, CHANNEL_METER_ENERGYHISTMIN1)));
+    }
+
+    @Test
+    void createEMeterChannelsOmitsDeprecatedLastPower1ForNewDevices() {
+        Thing thing = mock(Thing.class);
+        when(thing.getUID()).thenReturn(new ThingUID("shelly", "shellyplus1pm", "test"));
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUS1PM);
+        ShellySettingsEMeter emeter = new ShellySettingsEMeter();
+        emeter.energyByMinute = new Double[] { 50.0, 75.0, 100.0 };
+
+        Map<String, Channel> created = ShellyChannelDefinitions.createEMeterChannels(thing, profile, emeter,
+                CHANNEL_GROUP_METER);
+
+        assertFalse(created.containsKey(mkChannelId(CHANNEL_GROUP_METER, CHANNEL_METER_LASTMIN1)));
+        assertTrue(created.containsKey(mkChannelId(CHANNEL_GROUP_METER, CHANNEL_METER_ENERGYHISTMIN1)));
+    }
+
+    @Test
+    void energyHistMinLabelHasNoTrailingDigitSuffix() {
+        // Regression: createChannel() used to append a digit to any label whose channel NAME ended in a
+        // digit, even when that digit is part of the channel's fixed identity, not a group index.
+        ShellyTranslationProvider messages = mock(ShellyTranslationProvider.class);
+        when(messages.get(anyString(), any(Object[].class))).thenAnswer(i -> i.getArgument(0));
+        when(messages.get(eq(ShellyChannelDefinitions.PREFIX_CHANNEL + "energyHistMin1.label"), any(Object[].class)))
+                .thenReturn("Energy - Previous Minute");
+        new ShellyChannelDefinitions(messages);
+
+        Thing thing = mock(Thing.class);
+        when(thing.getUID()).thenReturn(new ThingUID("shelly", "shelly1pm", "test"));
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLY1PM);
+        ShellySettingsMeter meter = new ShellySettingsMeter();
+        meter.counters = new Double[] { 60.0 };
+
+        Map<String, Channel> created = ShellyChannelDefinitions.createMeterChannels(thing, profile, meter,
+                CHANNEL_GROUP_METER);
+
+        Channel channel = created.get(mkChannelId(CHANNEL_GROUP_METER, CHANNEL_METER_ENERGYHISTMIN1));
+        assertNotNull(channel);
+        assertEquals("Energy - Previous Minute", channel.getLabel());
     }
 }
