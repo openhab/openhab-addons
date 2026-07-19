@@ -73,6 +73,7 @@
     <module>org.openhab.binding.atlona</module>
     <module>org.openhab.binding.atmofrance</module>
     <module>org.openhab.binding.autelis</module>
+    <module>org.openhab.binding.autoblind</module>
     <module>org.openhab.binding.automower</module>
     <module>org.openhab.binding.avmfritz</module>
     <module>org.openhab.binding.awattar</module>
@@ -534,65 +535,11 @@
     <module>org.openhab.voice.whisperstt</module>
   </modules>
 
-  <properties>
-    <m2e.jdt.annotationpath>target/dependency</m2e.jdt.annotationpath>
-    <dep.noembedding/>
-    <markdownlint.skip>false</markdownlint.skip>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.lastnpe.eea</groupId>
       <artifactId>eea-all</artifactId>
       <version>${eea.version}</version>
-    </dependency>
-    <!-- openHAB core -->
-    <dependency>
-      <groupId>org.openhab.core.bom</groupId>
-      <artifactId>org.openhab.core.bom.compile</artifactId>
-      <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.openhab.core.bom</groupId>
-      <artifactId>org.openhab.core.bom.openhab-core</artifactId>
-      <type>pom</type>
-      <scope>provided</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>commons-net</groupId>
-          <artifactId>commons-net</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.openhab.core.bom</groupId>
-      <artifactId>org.openhab.core.bom.test</artifactId>
-      <type>pom</type>
-      <scope>test</scope>
-    </dependency>
-    <!-- Distribution -->
-    <dependency>
-      <groupId>org.apache.karaf.features</groupId>
-      <artifactId>framework</artifactId>
-      <version>${karaf.version}</version>
-      <type>kar</type>
-      <optional>true</optional>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <!-- Repositories -->
-    <dependency>
-      <groupId>org.apache.karaf.features</groupId>
-      <artifactId>standard</artifactId>
-      <version>${karaf.version}</version>
-      <classifier>features</classifier>
-      <type>xml</type>
-      <scope>provided</scope>
     </dependency>
   </dependencies>
 
@@ -609,60 +556,6 @@
             <skipIfEmpty>true</skipIfEmpty>
           </configuration>
         </plugin>
-        <plugin>
-          <groupId>org.apache.karaf.tooling</groupId>
-          <artifactId>karaf-maven-plugin</artifactId>
-          <version>${karaf.version}</version>
-          <extensions>true</extensions>
-          <configuration>
-            <startLevel>80</startLevel>
-            <aggregateFeatures>true</aggregateFeatures>
-            <checkDependencyChange>true</checkDependencyChange>
-            <failOnDependencyChange>false</failOnDependencyChange>
-            <logDependencyChanges>true</logDependencyChanges>
-            <overwriteChangedDependencies>true</overwriteChangedDependencies>
-          </configuration>
-          <executions>
-            <execution>
-              <id>compile</id>
-              <goals>
-                <goal>features-generate-descriptor</goal>
-              </goals>
-              <phase>generate-resources</phase>
-              <configuration>
-                <inputFile>${feature.directory}</inputFile>
-              </configuration>
-            </execution>
-            <execution>
-              <id>karaf-feature-verification</id>
-              <goals>
-                <goal>verify</goal>
-              </goals>
-              <phase>verify</phase>
-              <configuration>
-                <descriptors combine.children="append">
-                  <!-- Apache Karaf -->
-                  <descriptor>mvn:org.apache.karaf.features/framework/${karaf.version}/xml/features</descriptor>
-                  <descriptor>mvn:org.apache.karaf.features/standard/${karaf.version}/xml/features</descriptor>
-                  <descriptor>mvn:org.apache.karaf.features/specs/${karaf.version}/xml/features</descriptor>
-                  <!-- Current feature under verification -->
-                  <descriptor>file:${project.build.directory}/feature/feature.xml</descriptor>
-                </descriptors>
-                <distribution>org.apache.karaf.features:framework</distribution>
-                <javase>${oh.java.version}</javase>
-                <framework>
-                  <feature>framework</feature>
-                </framework>
-                <features>
-                  <feature>openhab-*</feature>
-                </features>
-                <verifyTransitive>false</verifyTransitive>
-                <ignoreMissingConditions>true</ignoreMissingConditions>
-                <fail>first</fail>
-              </configuration>
-            </execution>
-          </executions>
-        </plugin>
       </plugins>
     </pluginManagement>
 
@@ -671,23 +564,6 @@
         <groupId>biz.aQute.bnd</groupId>
         <artifactId>bnd-maven-plugin</artifactId>
       </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-source-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>attach-sources</id>
-            <goals>
-              <goal>jar-no-fork</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.karaf.tooling</groupId>
-        <artifactId>karaf-maven-plugin</artifactId>
-      </plugin>
-      <!-- embed compile time dependencies by unpacking -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
@@ -704,7 +580,7 @@
               <excludes>**/module-info.class</excludes>
               <excludeGroupIds>javax.activation,org.apache.karaf.features,org.lastnpe.eea</excludeGroupIds>
               <excludeArtifactIds>${dep.noembedding}</excludeArtifactIds>
-              <outputDirectory>${project.build.directory}/classes</outputDirectory>
+              <outputDirectory>${project.build.target}/classes</outputDirectory>
               <overWriteReleases>true</overWriteReleases>
               <overWriteSnapshots>true</overWriteSnapshots>
               <excludeTransitive>true</excludeTransitive>
@@ -729,161 +605,7 @@
           </execution>
         </executions>
       </plugin>
-      <!-- 1. Download XSD -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <version>3.2.0</version>
-        <inherited>false</inherited>
-        <executions>
-          <!-- 1. Download XSD -->
-          <execution>
-            <id>download-xsd</id>
-            <goals>
-              <goal>run</goal>
-            </goals>
-            <phase>generate-resources</phase>
-            <configuration>
-              <target>
-                <mkdir dir="${maven.multiModuleProjectDirectory}/target/schemas"/>
-                <get dest="${maven.multiModuleProjectDirectory}/target/schemas/thing-description-1.0.0.xsd" src="https://openhab.org/schemas/thing-description-1.0.0.xsd" usetimestamp="true"/>
-              </target>
-            </configuration>
-          </execution>
-
-          <!-- 2. Generate catalog dynamically -->
-          <execution>
-            <id>generate-catalog</id>
-            <goals>
-              <goal>run</goal>
-            </goals>
-            <phase>generate-resources</phase>
-            <configuration>
-              <target>
-                <mkdir dir="${maven.multiModuleProjectDirectory}/target/schemas"/>
-                <echo file="${maven.multiModuleProjectDirectory}/target/schemas/thing-type-xml-validation-catalog.xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
-<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
-    <uri name="https://openhab.org/schemas/thing-description-1.0.0.xsd"
-         uri="file:///${maven.multiModuleProjectDirectory}/target/schemas/thing-description-1.0.0.xsd"/>
-</catalog>]]></echo>
-              </target>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
-      <!-- 3. XML validation plugin -->
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>xml-maven-plugin</artifactId>
-        <version>1.2.1</version>
-        <configuration>
-          <validationSets>
-            <validationSet>
-              <dir>.</dir>
-              <includes>**/src/main/resources/OH-INF/thing/*.xml</includes>
-            </validationSet>
-          </validationSets>
-          <catalogs>
-            <catalog>file:///${maven.multiModuleProjectDirectory}/target/schemas/thing-type-xml-validation-catalog.xml</catalog>
-          </catalogs>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>validate</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
-      <!-- 4. Run markdownlint -->
-      <plugin>
-        <groupId>com.github.eirslett</groupId>
-        <artifactId>frontend-maven-plugin</artifactId>
-        <version>2.0.1</version>
-
-        <configuration>
-          <!-- Central toolchain for markdownlint (Node 24) -->
-          <installDirectory>${maven.multiModuleProjectDirectory}/target/.mvn/node-markdownlint</installDirectory>
-          <nodeVersion>v24.12.0</nodeVersion>
-
-          <!-- Recommended: pin npm too for reproducibility -->
-          <npmVersion>11.6.2</npmVersion>
-        </configuration>
-
-        <executions>
-          <execution>
-            <id>install-node-and-npm</id>
-            <goals>
-              <goal>install-node-and-npm</goal>
-            </goals>
-            <phase>validate</phase>
-            <configuration>
-              <skip>${markdownlint.skip}</skip>
-            </configuration>
-          </execution>
-
-          <execution>
-            <id>markdownlint</id>
-            <goals>
-              <goal>npm</goal>
-            </goals>
-            <phase>validate</phase>
-            <configuration>
-              <skip>${markdownlint.skip}</skip>
-              <workingDirectory>${project.basedir}</workingDirectory>
-              <arguments>exec --yes markdownlint-cli2 -- **/*.md !**/target/** !**/node_modules/** --config ${maven.multiModuleProjectDirectory}/.github/markdownlint.yaml</arguments>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
     </plugins>
   </build>
-
-  <profiles>
-    <profile>
-      <id>skipXmlValidation</id>
-      <activation>
-        <file>
-          <exists>skipXmlValidation.marker</exists>
-        </file>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>xml-maven-plugin</artifactId>
-            <configuration>
-              <skip>true</skip>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-    <!-- suppress embedding of dependencies -->
-    <profile>
-      <id>no-embed-dependencies</id>
-      <activation>
-        <file>
-          <exists>noEmbedDependencies.profile</exists>
-        </file>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-dependency-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>embed-dependencies</id>
-                <phase>none</phase>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
 
 </project>

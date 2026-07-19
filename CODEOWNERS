@@ -368,6 +368,7 @@
 /bundles/org.openhab.binding.sensorcommunity/ @weymann
 /bundles/org.openhab.binding.serial/ @MikeJMajor
 /bundles/org.openhab.binding.serialbutton/ @kaikreuzer
+/bundles/org.openhab.binding.shadeauto/ @BiloxiGeek
 /bundles/org.openhab.binding.shelly/ @markus7017
 /bundles/org.openhab.binding.siemenshvac/ @lo92fr
 /bundles/org.openhab.binding.siemensrds/ @andrewfg
