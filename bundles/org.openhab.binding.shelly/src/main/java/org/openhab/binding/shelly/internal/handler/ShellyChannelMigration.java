@@ -69,9 +69,8 @@ public class ShellyChannelMigration {
             new ChannelMigrationRule(5, mkChannelId(CHANNEL_GROUP_NMETER, CHANNEL_NMETER_MTRESHHOLD),
                     CHANNEL_NMETER_THRESHOLD, false),
             new ChannelMigrationRule(5, mkWildcardChannelId(CHANNEL_GROUP_RELAY_CONTROL, CHANNEL_OUTPUT), null, true),
-            // Schema 6: energyHistMin1/2/3 (raw per-minute samples) and energyAvgLast3Min (their average),
-            // plus resetTotals, are new channels created as siblings of an already-existing anchor
-            // channel, so already-discovered Things pick them all up without re-discovery.
+            // Schema 6: energyHistMin1/2/3, energyAvgLast3Min and resetTotals are created as siblings
+            // of an existing anchor channel, so already-discovered Things pick them up automatically.
             new ChannelMigrationRule(6, mkWildcardChannelId(CHANNEL_GROUP_METER, CHANNEL_METER_CURRENTPOWER),
                     CHANNEL_METER_ENERGYHISTMIN1, false, ShellyChannelMigration::hasMinuteEnergyHistory),
             new ChannelMigrationRule(6, mkWildcardChannelId(CHANNEL_GROUP_METER, CHANNEL_METER_CURRENTPOWER),
@@ -86,19 +85,13 @@ public class ShellyChannelMigration {
             new ChannelMigrationRule(6, mkChannelId(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCUMULATEDPOWER),
                     CHANNEL_DEVST_RESETTOTAL, false, profile -> profile.is3EM));
 
-    /**
-     * Per-minute energy history exists only where the device reports it: Gen2 switch/cover/pm1
-     * components carry aenergy.by_minute (EM/EM1/3EM components do not), Gen1 /meter devices carry
-     * counters[] (the /emeter EM/3EM devices do not).
-     */
+    // Gen2 switch/cover/pm1 report aenergy.by_minute; Gen1 /meter devices report counters[].
+    // EM/EM1/3EM (Gen2) and /emeter EM/3EM (Gen1) report neither.
     private static boolean hasMinuteEnergyHistory(ShellyDeviceProfile profile) {
         return profile.isGen2 ? !profile.is3EM && !profile.isEM1 : !profile.isEMeter;
     }
 
-    /**
-     * All Gen2 meter components support ResetCounters, but on Gen1 only the /emeter devices (EM)
-     * expose a reset API; 3EM resets once at the device level instead of per meter.
-     */
+    // Gen1: only /emeter devices (EM) expose a reset API. 3EM resets at the device level, not per meter.
     private static boolean supportsPerMeterReset(ShellyDeviceProfile profile) {
         return !profile.is3EM && (profile.isGen2 || profile.isEMeter);
     }

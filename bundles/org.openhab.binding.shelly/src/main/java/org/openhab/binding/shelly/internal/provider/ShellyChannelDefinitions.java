@@ -583,9 +583,8 @@ public class ShellyChannelDefinitions {
         boolean hasCounter3 = counters != null && counters.length > 2 && counters[2] != null;
         addChannel(thing, newChannels, meter.power != null, group, CHANNEL_METER_CURRENTWATTS);
         addChannel(thing, newChannels, meter.total != null, group, CHANNEL_METER_TOTALKWH);
-        // lastPower1 (W, deprecated) is kept for backward compatibility (already released); energyHistMin1
-        // is its Wh-based successor. Both are created together so existing items linked to lastPower1
-        // keep working without re-discovery.
+        // lastPower1 (deprecated) and its successor energyHistMin1 are created together so existing
+        // items linked to lastPower1 keep working without re-discovery.
         addChannel(thing, newChannels, hasCounter, group, CHANNEL_METER_LASTMIN1);
         addChannel(thing, newChannels, hasCounter, group, CHANNEL_METER_ENERGYHISTMIN1);
         addChannel(thing, newChannels, hasCounter2, group, CHANNEL_METER_ENERGYHISTMIN2);

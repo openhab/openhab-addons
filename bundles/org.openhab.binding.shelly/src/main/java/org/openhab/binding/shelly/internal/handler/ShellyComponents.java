@@ -362,12 +362,9 @@ public class ShellyComponents {
                 meterUpdated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_PFACTOR,
                         getDecimal(pf != null ? pf : 0.0));
 
-                // aenergy.by_minute[N] is the independent Wh sum for the minute N+1 minutes ago (not a
-                // running average) — by_minute[0] is the previous complete minute, by_minute[1] the one
-                // before that, by_minute[2] the one before that (converted from mWh in Shelly2ApiClient).
-                // OLD channel lastPower1 (CHANNEL_METER_LASTMIN1): average power = Wh * 60 → W, kept for
-                // backward compatibility (already released). lastPower1 has no dual-write mapping (W is
-                // incompatible with the Wh channel), so it and energyHistMin1 are both written explicitly.
+                // by_minute[N] is the independent Wh sum for minute N+1 minutes ago, not a running average.
+                // lastPower1 (W, deprecated) has no dual-write mapping to energyHistMin1 (Wh incompatible
+                // unit), so both are written explicitly here.
                 @Nullable
                 Double @Nullable [] byMinute = emeter.energyByMinute;
                 if (byMinute != null && byMinute.length > 0) {
@@ -503,12 +500,8 @@ public class ShellyComponents {
     }
 
     /**
-     * Write the Gen1 last-minute energy counters (Watt-minutes) to the minute-energy channels.
-     * counters[N] is the independent energy sum for the minute N+1 minutes ago (not a running
-     * average), mirroring Gen2's aenergy.by_minute[]; a W-min value numerically equals the average
-     * power in W for that single minute, so lastPower1 gets counters[0] raw while energyHistMin1 /
-     * energyHistMin2 / energyHistMin3 get each sample divided by 60 (Wh). energyAvgLast3Min is the
-     * binding-computed average of all three samples, only when all three are present.
+     * Write Gen1 counters[] (W-min, independent per-minute sums like Gen2's by_minute[]) to
+     * lastPower1/energyHistMin1-3, plus their average once all three are present.
      */
     private static boolean updateMinuteCounters(ShellyThingInterface thingHandler, String groupName,
             @Nullable Double @Nullable [] counters) {

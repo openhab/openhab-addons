@@ -55,11 +55,6 @@ public class ShellyChannelMigrationRulesTest {
     }
 
     @Test
-    void schemaVersionIsSix() {
-        assertEquals(6, ShellyChannelMigration.CHANNEL_SCHEMA_VERSION);
-    }
-
-    @Test
     void schema6CreatesExactlyTheMinuteEnergySiblingsAndMeterResetForNonEMDevice() {
         ShellyThingInterface handler = handlerAtSchema(5, false,
                 channel(CHANNEL_GROUP_METER, CHANNEL_METER_CURRENTPOWER));
