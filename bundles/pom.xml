@@ -33,6 +33,7 @@
     <module>org.openhab.io.metrics</module>
     <module>org.openhab.io.neeo</module>
     <module>org.openhab.io.openhabcloud</module>
+    <module>org.openhab.io.opentelemetry</module>
     <module>org.openhab.io.yamlcomposer</module>
     <!-- transformations -->
     <module>org.openhab.transform.basicprofiles</module>
