@@ -553,7 +553,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                         }
                         logger.debug("{}: Reset meter totals for group {}", thingName, group);
                         api.resetMeterTotal(idx);
-                        updateChannel(group, CHANNEL_EMETER_RESETTOTAL, OnOffType.OFF);
+                        // force: republish OFF even if the cache already holds OFF from a previous reset
+                        updateChannel(mkChannelId(group, CHANNEL_EMETER_RESETTOTAL), OnOffType.OFF, true);
                     }
                     break;
                 default:
