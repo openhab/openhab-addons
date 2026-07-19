@@ -1,0 +1,89 @@
+syntax = "proto2";
+option java_package = "org.openhab.binding.atv.internal.client.protocols.mrp.dto";
+
+import "atv/mrp/protobuf/ProtocolMessage.proto";
+
+extend ProtocolMessage {
+  optional KeyboardMessage keyboardMessage = 28;
+}
+
+message KeyboardState {
+  enum Enum {
+    Unknown = 0;
+    NotEditing = 1;
+    DidBeginEditing = 2;
+    Editing = 3;
+    TextDidChange = 4;
+    DidEndEditing = 5;
+    Response = 6;
+  }
+}
+
+message AutocapitalizationType {
+  enum Enum {
+    None = 0;
+    Words = 1;
+    Sentences = 2;
+    AllCharacters = 3;
+  }
+}
+
+message KeyboardType {
+  enum Enum {
+    Default = 0;
+    ASCII_Capable = 1;
+    NumbersAndPunctuation = 2;
+    URL = 3;
+    NumberPad = 4;
+    PhonePad = 5;
+    NamePhonePad = 6;
+    EmailAddress = 7;
+    DecimalPad = 8;
+    Twitter = 9;
+    WebSearch = 10;
+    Alphanet = 11;
+    PasscodePad = 12;
+  }
+}
+
+message ReturnKeyType {
+  enum Enum {
+    Default = 0;
+    Go = 1;
+    Google = 2;
+    Join = 3;
+    Next = 4;
+    Route = 5;
+    Search = 6;
+    Send = 7;
+    Yahoo = 8;
+    Done = 9;
+    EmergencyCall = 10;
+    Continue = 11;
+  }
+}
+
+message TextInputTraits {
+  optional AutocapitalizationType.Enum autocapitalizationType = 1;
+  optional KeyboardType.Enum keyboardType = 2;
+  optional ReturnKeyType.Enum returnKeyType = 3;
+  optional bool autocorrection = 4;
+  optional bool spellchecking = 5;
+  optional bool enablesReturnKeyAutomatically = 6;
+  optional bool secureTextEntry = 7;
+  optional uint64 validTextRangeLocation = 8;
+  optional uint64 validTextRangeLength = 9;
+  repeated uint64 pINEntrySeparatorIndexes = 10;
+}
+
+message TextEditingAttributes {
+  optional string title = 1;
+  optional string prompt = 2;
+  optional TextInputTraits inputTraits = 3;
+}
+
+message KeyboardMessage {
+  optional KeyboardState.Enum state = 1;
+  optional TextEditingAttributes attributes = 3;
+  optional bytes encryptedTextCyphertext = 4;
+}

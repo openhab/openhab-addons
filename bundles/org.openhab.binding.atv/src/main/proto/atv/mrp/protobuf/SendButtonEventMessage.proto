@@ -1,0 +1,14 @@
+syntax = "proto2";
+option java_package = "org.openhab.binding.atv.internal.client.protocols.mrp.dto";
+
+import "atv/mrp/protobuf/ProtocolMessage.proto";
+
+extend ProtocolMessage {
+  optional SendButtonEventMessage sendButtonEventMessage = 43;
+}
+
+message SendButtonEventMessage {
+  optional uint32 usagePage = 1;
+  optional uint32 usage = 2;
+  optional bool buttonDown = 3;
+}

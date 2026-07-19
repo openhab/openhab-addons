@@ -1,0 +1,80 @@
+syntax = "proto2";
+option java_package = "org.openhab.binding.atv.internal.client.protocols.mrp.dto";
+
+message RepeatMode {
+  enum Enum {
+    Unknown = 0;
+    Off = 1;
+    One = 2;
+    All = 3;
+  }
+}
+
+message ShuffleMode {
+  enum Enum {
+    Unknown = 0;
+    Off = 1;
+    Albums = 2;
+    Songs = 3;
+  }
+}
+
+message DeviceClass {
+  enum Enum {
+    Invalid = 0;
+    iPhone = 1;
+    iPod = 2;
+    iPad = 3;
+    AppleTV = 4;
+    iFPGA = 5;
+    Watch = 6;
+    Accessory = 7;
+    Bridge = 8;
+    Mac = 9;
+  }
+}
+
+message DeviceType {
+  enum Enum {
+    Unknown = 0;
+    AirPlay = 1;
+    Bluetooth = 2;
+    CarPlay = 3;
+    BuiltIn = 4;
+    Wired = 5;
+  }
+}
+
+message DeviceSubType {
+  enum Enum {
+    Default = 0;
+    Speaker = 1;
+    Headphones = 2;
+    Headset = 3;
+    Receiver = 4;
+    LineOut = 5;
+    USB = 6;
+    DisplayPort = 7;
+    HDMI = 8;
+    LowEnergy = 9;
+    SPDIF = 10;
+    TV = 11;
+    HomePod = 12;
+    AppleTV = 13;
+    Vehicle = 14;
+    Cluster = 15;
+    SetTopBox = 16;
+    TVStick = 17;
+  }
+}
+
+message PlaybackState {
+  enum Enum {
+    Unknown = 0;
+    Playing = 1;
+    Paused = 2;
+    Stopped = 3;
+    Interrupted = 4;
+    Seeking = 5;
+  }
+}

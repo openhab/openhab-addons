@@ -1,0 +1,12 @@
+syntax = "proto2";
+option java_package = "org.openhab.binding.atv.internal.client.protocols.mrp.dto";
+
+import "atv/mrp/protobuf/TransactionKey.proto";
+
+message TransactionPacket {
+    optional TransactionKey key = 1;
+    optional bytes packetData = 2;
+    optional string identifier = 3;
+    optional uint64 totalLength = 4;
+    optional uint64 totalWritePosition = 5;
+}

@@ -1,0 +1,214 @@
+syntax = "proto2";
+option java_package = "org.openhab.binding.atv.internal.client.protocols.mrp.dto";
+
+message AudioRouteType {
+  enum Enum {
+    Unknown = 0;
+    DevicesSpeaker = 1;
+    LineOut = 2;
+    Headphones = 3;
+    BluetoothHeadphones = 4;
+    BluetoothSpeaker = 5;
+    USBAudio = 6;
+    CarAudio = 7;
+    HDMI = 8;
+    AirPlay = 9;
+  }
+}
+
+message AudioRoute {
+  optional AudioRouteType type = 1;
+  optional string name = 2;
+  optional bool supportsSpatialization = 3; 
+}
+
+message AudioTier {
+  enum Enum {
+    LowBandwidthStereo = 1;
+    HighQualityStereo = 2;
+    Lossless = 3;
+    HighResolutionLossless = 4;
+    Spatial = 5;
+  }
+}
+
+message SongTraits {
+  enum Enum {
+    None = 0;
+    AppleDigitialMaster = 1;
+    Lossless = 2;
+    HighResolutionLossless = 4;
+    Spatial = 8;
+    Atmos = 16;
+    Surround = 32;
+  }
+}
+
+message AlbumTraits {
+  enum Enum {
+    None = 0;
+    AppleDigitialMaster = 1;
+    Lossless = 2;
+    HighResolutionLossless = 4;
+    Spatial = 8;
+    Atmos = 16;
+    Surround = 32;
+  }
+}
+
+message PlaylistTraits {
+  enum Enum {
+    None = 0;
+    Spatial = 8;
+    Atmos = 16;
+    Surround = 32;
+  }
+}
+
+message ActiveFormatJustification {
+  enum Enum {
+    Unknown = 0;
+    Unavailable = 1;
+    UserPreference = 100;
+    UserDownload = 101;
+    RouteIncompatible = 500;
+    RouteUnknownCompatibility = 501;
+    BandwidthInsufficient = 1000;
+  }
+}
+
+message FormatTier {
+  enum Enum {
+    LowBandwidthStereo = 1;
+    HighQualityStereo = 2;
+    Lossless = 4;
+    HighResolutionLossless = 8;
+    Spatial = 16;
+  }
+}
+
+message AudioFormat {
+  optional AudioTier.Enum tier = 1;
+  optional int64 bitrate = 2;
+  optional int64 sampleRate = 3;
+  optional int64 bitDepth = 4;
+  optional uint32 codec = 5;
+  optional bool spatialized = 6;
+  optional bool multiChannel = 7;
+  optional uint32 channelLayout = 8;
+  optional string audioChannelLayoutDescription = 9;
+  optional string groupID = 10;
+  optional string stableVariantID = 11;
+}
+
+message ContentItemMetadata {
+    enum MediaType {
+      UnknownMediaType = 0;
+      Audio = 1;
+      Video = 2;
+    }
+    enum MediaSubType {
+      UnknownMediaSubType = 0;
+      Music = 1;
+      Podcast = 4;
+      AudioBook = 5;
+      ITunesU = 6;
+    }
+    optional string title = 1;
+    optional string subtitle = 2;
+    optional bool isContainer = 3;
+    optional bool isPlayable = 4;
+    optional float playbackProgress = 5;
+    optional string albumName = 6;
+    optional string trackArtistName = 7;
+    optional string albumArtistName = 8;
+    optional string directorName = 9;
+    optional int32 seasonNumber = 10;
+    optional int32 episodeNumber = 11;
+    optional double releaseDate = 12;
+    optional int32 playCount = 13;
+    optional double duration = 14;
+    optional string localizedContentRating = 15;
+    optional bool isExplicitItem = 16;
+    optional int32 playlistType = 17;
+    optional int32 radioStationType = 18;
+    optional bool artworkAvailable = 19;
+
+    optional bool infoAvailable = 21;
+    optional bool languageOptionsAvailable = 22;
+    optional int32 numberOfSections = 23;
+    optional bool lyricsAvailable = 24;
+    optional int32 editingStyleFlags = 25;
+    optional bool isStreamingContent = 26;
+    optional bool isCurrentlyPlaying = 27;
+    optional string collectionIdentifier = 28;
+    optional string profileIdentifier = 29;
+    optional double startTime = 30;
+    optional string artworkMIMEType = 31;
+    optional string assetURLString = 32;
+    optional string composer = 33;
+    optional int32 discNumber = 34;
+    optional double elapsedTime = 35;
+    optional string genre = 36;
+    optional bool isAlwaysLive = 37;
+
+    optional float playbackRate = 39;
+    optional int32 chapterCount = 40;
+    optional int32 totalDiscCount = 41;
+    optional int32 totalTrackCount = 42;
+    optional int32 trackNumber = 43;
+    optional string contentIdentifier = 44;
+
+    optional bool isSharable = 46;
+
+    optional bool isLiked = 48;
+    optional bool isInWishList = 49;
+    optional int64 radioStationIdentifier = 50;
+
+    optional string radioStationName = 52;
+    optional string radioStationString = 53;
+    optional int64 iTunesStoreIdentifier = 54;
+    optional int64 iTunesStoreSubscriptionIdentifier = 55;
+    optional int64 iTunesStoreArtistIdentifier = 56;
+    optional int64 iTunesStoreAlbumIdentifier = 57;
+    optional bytes purchaseInfoData = 58;
+    optional float defaultPlaybackRate = 59;
+    optional int32 downloadState = 60;
+    optional float downloadProgress = 61;
+    optional bytes appMetricsData = 62;
+    optional string seriesName = 63;
+    optional MediaType mediaType = 64;
+    optional MediaSubType mediaSubType = 65;
+
+    optional bytes nowPlayingInfoData = 67;
+    optional bytes userInfoData = 68;
+    optional bool isSteerable = 69;
+    optional string artworkURL = 70;
+    optional string lyricsURL = 71;
+    optional bytes deviceSpecificUserInfoData = 72;
+    optional bytes collectionInfoData = 73;
+    optional double elapsedTimeTimestamp = 74;
+    optional double inferredTimestamp = 75;
+    optional string serviceIdentifier = 76;
+    optional int32 artworkDataWidth = 77;
+    optional int32 artworkDataHeight = 78;
+    optional bytes currentPlaybackDateData = 79;
+    optional string artworkIdentifier = 80;
+    optional bool isLoading = 81;
+    optional bytes artworkURLTemplatesData = 82;
+    optional int64 legacyUniqueIdentifier = 83;
+    optional int32 episodeType = 84;
+    optional string artworkFileURL = 85;
+    optional string brandIdentifier = 86;
+    optional string localizedDurationString = 87;
+    optional string albumYear = 88;
+    optional SongTraits.Enum songTraits = 89;
+    optional AlbumTraits.Enum albumTraits = 90;
+    optional PlaylistTraits.Enum playlistTraits = 91;
+    optional AudioFormat preferredFormat = 92;
+    optional AudioFormat activeFormat = 93;
+    optional ActiveFormatJustification.Enum activeFormatJustification = 94;
+    optional FormatTier.Enum formatTierPreference = 95;
+    optional AudioRoute audioRoute = 96;
+    repeated AudioFormat alternativeFormats = 97;
+}

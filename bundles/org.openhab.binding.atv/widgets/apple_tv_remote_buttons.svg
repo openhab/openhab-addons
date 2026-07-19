@@ -1,0 +1,555 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   viewBox="0 0 250.94 601.13995"
+   width="250.94"
+   height="601.13995"
+   font-family="'-apple-system', Helvetica, Arial, sans-serif"
+   version="1.1"
+   id="svg42"
+   sodipodi:docname="apple_tv_remote_buttons.svg"
+   inkscape:version="1.4.2 (ebf0e940, 2025-05-08)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview42"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="1.596519"
+     inkscape:cx="122.45391"
+     inkscape:cy="296.58276"
+     inkscape:window-width="976"
+     inkscape:window-height="1186"
+     inkscape:window-x="402"
+     inkscape:window-y="45"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg42" />
+  <defs
+     id="defs23">
+    <linearGradient
+       id="body"
+       gradientUnits="userSpaceOnUse"
+       x1="0"
+       y1="20"
+       x2="0"
+       y2="938">
+      <stop
+         offset="0"
+         stop-color="#f2f3f4"
+         id="stop1" />
+      <stop
+         offset="0.25"
+         stop-color="#e6e7e9"
+         id="stop2" />
+      <stop
+         offset="0.55"
+         stop-color="#d4d6d9"
+         id="stop3" />
+      <stop
+         offset="1"
+         stop-color="#b3b5b9"
+         id="stop4" />
+    </linearGradient>
+    <linearGradient
+       id="bodyShade"
+       gradientUnits="userSpaceOnUse"
+       x1="30"
+       y1="0"
+       x2="270"
+       y2="0"
+       gradientTransform="translate(-27.36,-19.5)">
+      <stop
+         offset="0"
+         stop-color="#000000"
+         stop-opacity="0.16"
+         id="stop5" />
+      <stop
+         offset="0.12"
+         stop-color="#000000"
+         stop-opacity="0"
+         id="stop6" />
+      <stop
+         offset="0.5"
+         stop-color="#ffffff"
+         stop-opacity="0.35"
+         id="stop7" />
+      <stop
+         offset="0.88"
+         stop-color="#000000"
+         stop-opacity="0"
+         id="stop8" />
+      <stop
+         offset="1"
+         stop-color="#000000"
+         stop-opacity="0.18"
+         id="stop9" />
+    </linearGradient>
+    <radialGradient
+       id="clickpad"
+       cx="-16.640003"
+       cy="-29.119997"
+       r="156"
+       fx="-16.640003"
+       fy="-29.119997"
+       gradientUnits="userSpaceOnUse">
+      <stop
+         offset="0"
+         stop-color="#3a3a3d"
+         id="stop10" />
+      <stop
+         offset="0.45"
+         stop-color="#1a1a1c"
+         id="stop11" />
+      <stop
+         offset="1"
+         stop-color="#040405"
+         id="stop12" />
+    </radialGradient>
+    <radialGradient
+       id="clickInner"
+       cx="-10.400002"
+       cy="-19.500001"
+       r="104"
+       fx="-10.400002"
+       fy="-19.500001"
+       gradientUnits="userSpaceOnUse">
+      <stop
+         offset="0"
+         stop-color="#2e2e31"
+         id="stop13" />
+      <stop
+         offset="0.6"
+         stop-color="#161618"
+         id="stop14" />
+      <stop
+         offset="1"
+         stop-color="#0a0a0b"
+         id="stop15" />
+    </radialGradient>
+    <radialGradient
+       id="btn"
+       cx="0.40000001"
+       cy="0.31999999"
+       r="0.85000002">
+      <stop
+         offset="0"
+         stop-color="#303032"
+         id="stop16" />
+      <stop
+         offset="0.55"
+         stop-color="#161618"
+         id="stop17" />
+      <stop
+         offset="1"
+         stop-color="#060607"
+         id="stop18" />
+    </radialGradient>
+    <linearGradient
+       id="btnPill"
+       x1="-43.749286"
+       y1="-43.749286"
+       x2="-43.749286"
+       y2="43.749286"
+       gradientTransform="scale(0.75429803,1.3257359)"
+       gradientUnits="userSpaceOnUse">
+      <stop
+         offset="0"
+         stop-color="#28282a"
+         id="stop19" />
+      <stop
+         offset="0.5"
+         stop-color="#151517"
+         id="stop20" />
+      <stop
+         offset="1"
+         stop-color="#08080a"
+         id="stop21" />
+    </linearGradient>
+    <linearGradient
+       id="side"
+       x1="405.94926"
+       y1="132.97078"
+       x2="428.42502"
+       y2="132.97078"
+       gradientTransform="matrix(0.64958858,0,0,1.5394359,-27.36,-19.5)"
+       gradientUnits="userSpaceOnUse">
+      <stop
+         offset="0"
+         stop-color="#c9cbce"
+         id="stop22" />
+      <stop
+         offset="1"
+         stop-color="#eef0f2"
+         id="stop23" />
+    </linearGradient>
+    <filter
+       id="soft"
+       x="-0.011"
+       y="-0.0044444445"
+       width="1.022"
+       height="1.0088889">
+      <feGaussianBlur
+         stdDeviation="1.1"
+         id="feGaussianBlur23" />
+    </filter>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#body"
+       id="linearGradient42"
+       gradientUnits="userSpaceOnUse"
+       x1="0"
+       y1="20"
+       x2="0"
+       y2="938"
+       gradientTransform="translate(-27.36,-19.5)" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#body"
+       id="linearGradient43"
+       gradientUnits="userSpaceOnUse"
+       x1="0"
+       y1="20"
+       x2="0"
+       y2="938" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#btn"
+       id="radialGradient43"
+       cx="-8.0999995"
+       cy="-14.580001"
+       r="68.850002"
+       fx="-8.0999995"
+       fy="-14.580001"
+       gradientUnits="userSpaceOnUse" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#btn"
+       id="radialGradient44"
+       cx="-8.0999995"
+       cy="-14.580001"
+       r="68.850002"
+       fx="-8.0999995"
+       fy="-14.580001"
+       gradientUnits="userSpaceOnUse" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#btn"
+       id="radialGradient45"
+       cx="-8.0999995"
+       cy="-14.580001"
+       r="68.850002"
+       fx="-8.0999995"
+       fy="-14.580001"
+       gradientUnits="userSpaceOnUse" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#btn"
+       id="radialGradient46"
+       cx="-8.0999995"
+       cy="-14.580001"
+       r="68.850002"
+       fx="-8.0999995"
+       fy="-14.580001"
+       gradientUnits="userSpaceOnUse" />
+  </defs>
+  <!-- ===================== BODY (buttons only, flat cut below mute) ===================== -->
+  <rect
+     x="236.64"
+     y="185.5"
+     width="14"
+     height="34"
+     rx="7"
+     fill="url(#side)"
+     stroke="#a7a9ac"
+     stroke-width="0.6"
+     id="rect23"
+     style="fill:url(#side)" />
+  <path
+     d="m 2.64,598.5 v -532 a 62,62 0 0 1 62,-62 h 116 a 62,62 0 0 1 62,62 v 532 z"
+     fill="#000000"
+     opacity="0.1"
+     filter="url(#soft)"
+     id="path23" />
+  <path
+     d="m 2.64,595.5 v -533 a 62,62 0 0 1 62,-62 h 116 a 62,62 0 0 1 62,62 v 533 z"
+     fill="url(#body)"
+     stroke="#a9abae"
+     stroke-width="1"
+     id="path24"
+     style="fill:url(#linearGradient42)" />
+  <path
+     d="m 2.64,595.5 v -533 a 62,62 0 0 1 62,-62 h 116 a 62,62 0 0 1 62,62 v 533 z"
+     fill="url(#bodyShade)"
+     id="path25"
+     style="fill:url(#bodyShade)" />
+  <!-- ===================== TOP ROW ===================== -->
+  <rect
+     x="114.64"
+     y="27.5"
+     width="14"
+     height="4.5"
+     rx="2.25"
+     fill="#8f9195"
+     id="rect25" />
+  <g
+     transform="translate(189.14,34.5)"
+     id="g26">
+    <circle
+       r="17"
+       fill="none"
+       stroke="#7c7e82"
+       stroke-width="2.4"
+       id="circle25"
+       cx="0"
+       cy="0" />
+    <rect
+       x="-3.2"
+       y="-19"
+       width="6.4000001"
+       height="7"
+       fill="url(#body)"
+       id="rect26"
+       style="fill:url(#linearGradient43)" />
+    <line
+       x1="0"
+       y1="-18"
+       x2="0"
+       y2="-4"
+       stroke="#7c7e82"
+       stroke-width="2.6"
+       stroke-linecap="round"
+       id="line26" />
+  </g>
+  <!-- ===================== CLICKPAD ===================== -->
+  <g
+     transform="translate(122.64,172.5)"
+     id="g33">
+    <circle
+       r="104"
+       fill="url(#clickpad)"
+       id="circle26"
+       cx="0"
+       cy="0"
+       style="fill:url(#clickpad)" />
+    <circle
+       r="104"
+       fill="none"
+       stroke="#000000"
+       stroke-opacity="0.5"
+       stroke-width="1"
+       id="circle27"
+       cx="0"
+       cy="0" />
+    <circle
+       r="65"
+       fill="url(#clickInner)"
+       id="circle28"
+       cx="0"
+       cy="0"
+       style="fill:url(#clickInner)" />
+    <circle
+       r="65"
+       fill="none"
+       stroke="#ffffff"
+       stroke-opacity="0.05"
+       stroke-width="1"
+       id="circle29"
+       cx="0"
+       cy="0" />
+    <circle
+       cx="0"
+       cy="-84"
+       r="2.4000001"
+       fill="#d7d7d9"
+       opacity="0.85"
+       id="circle30" />
+    <circle
+       cx="0"
+       cy="84"
+       r="2.4000001"
+       fill="#d7d7d9"
+       opacity="0.85"
+       id="circle31" />
+    <circle
+       cx="-84"
+       cy="0"
+       r="2.4000001"
+       fill="#d7d7d9"
+       opacity="0.85"
+       id="circle32" />
+    <circle
+       cx="84"
+       cy="0"
+       r="2.4000001"
+       fill="#d7d7d9"
+       opacity="0.85"
+       id="circle33" />
+  </g>
+  <!-- ===================== BUTTONS ===================== -->
+  <!-- Back -->
+  <g
+     transform="translate(64.64,333.5)"
+     id="g34">
+    <circle
+       r="40.5"
+       fill="url(#btn)"
+       id="circle34"
+       cx="0"
+       cy="0"
+       style="fill:url(#radialGradient43)" />
+    <path
+       d="M 7,-15 -11,0 7,15"
+       fill="none"
+       stroke="#e9e9ea"
+       stroke-width="4.4"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       id="path34" />
+  </g>
+  <!-- TV / Home -->
+  <g
+     transform="translate(177.64,333.5)"
+     id="g35">
+    <circle
+       r="40.5"
+       fill="url(#btn)"
+       id="circle35"
+       cx="0"
+       cy="0"
+       style="fill:url(#radialGradient44)" />
+    <rect
+       x="-16"
+       y="-13"
+       width="32"
+       height="22"
+       rx="4.5"
+       fill="none"
+       stroke="#e9e9ea"
+       stroke-width="4"
+       id="rect35" />
+    <line
+       x1="-7"
+       y1="15"
+       x2="7"
+       y2="15"
+       stroke="#e9e9ea"
+       stroke-width="4"
+       stroke-linecap="round"
+       id="line35" />
+  </g>
+  <!-- Play / Pause -->
+  <g
+     transform="translate(64.64,432.5)"
+     id="g38">
+    <circle
+       r="40.5"
+       fill="url(#btn)"
+       id="circle36"
+       cx="0"
+       cy="0"
+       style="fill:url(#radialGradient45)" />
+    <g
+       transform="translate(-4)"
+       id="g37">
+      <path
+         d="M -12,-12 V 12 L 6,0 Z"
+         fill="#e9e9ea"
+         id="path36" />
+      <rect
+         x="9"
+         y="-12"
+         width="4.1999998"
+         height="24"
+         rx="1.6"
+         fill="#e9e9ea"
+         id="rect36" />
+      <rect
+         x="16.5"
+         y="-12"
+         width="4.1999998"
+         height="24"
+         rx="1.6"
+         fill="#e9e9ea"
+         id="rect37" />
+    </g>
+  </g>
+  <!-- Mute -->
+  <g
+     transform="translate(64.64,531.5)"
+     id="g40">
+    <circle
+       r="40.5"
+       fill="url(#btn)"
+       id="circle38"
+       cx="0"
+       cy="0"
+       style="fill:url(#radialGradient46)" />
+    <g
+       transform="translate(2)"
+       id="g39">
+      <path
+         transform="translate(6.5)"
+         d="m -18,-6 h 9 L 1,-14 V 14 L -9,6 h -9 z"
+         fill="#e9e9ea"
+         id="path38" />
+      <line
+         x1="-16"
+         y1="-13"
+         x2="14"
+         y2="13"
+         stroke="#e9e9ea"
+         stroke-width="3.4"
+         stroke-linecap="round"
+         id="line38" />
+    </g>
+  </g>
+  <!-- Volume rocker -->
+  <g
+     transform="translate(178.64,482.5)"
+     id="g42">
+    <rect
+       x="-33"
+       y="-58"
+       width="66"
+       height="116"
+       rx="33"
+       fill="url(#btnPill)"
+       id="rect40"
+       style="fill:url(#btnPill)" />
+    <g
+       transform="translate(0,-29)"
+       stroke="#e9e9ea"
+       stroke-width="4.4"
+       stroke-linecap="round"
+       id="g41">
+      <line
+         x1="-11"
+         y1="0"
+         x2="11"
+         y2="0"
+         id="line40" />
+      <line
+         x1="0"
+         y1="-11"
+         x2="0"
+         y2="11"
+         id="line41" />
+    </g>
+    <line
+       x1="-11"
+       y1="29"
+       x2="11"
+       y2="29"
+       stroke="#e9e9ea"
+       stroke-width="4.4"
+       stroke-linecap="round"
+       id="line42" />
+  </g>
+</svg>

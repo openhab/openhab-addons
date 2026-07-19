@@ -1,0 +1,89 @@
+syntax = "proto2";
+option java_package = "org.openhab.binding.atv.internal.client.protocols.mrp.dto";
+
+import "atv/mrp/protobuf/ProtocolMessage.proto";
+import "atv/mrp/protobuf/Common.proto";
+
+
+extend ProtocolMessage {
+  optional UpdateOutputDeviceMessage updateOutputDeviceMessage = 69;
+}
+
+message AVOutputDeviceSourceInfo {
+  optional string routingContextUID = 1;
+  optional bool multipleBuiltInDevices = 2;
+}
+
+message AVOutputDeviceDescriptor {
+  optional string name = 1;
+  optional string uniqueIdentifier = 2;
+  optional string groupID = 3;
+  optional string modelID = 4;
+  optional bytes macAddress = 5;
+  optional bool canAccessRemoteAssets = 6;
+  optional bool isRemoteControllable = 7;
+  optional bool isGroupLeader = 8;
+  optional bool isGroupable = 9;
+  optional DeviceType.Enum deviceType = 10;
+  optional DeviceSubType.Enum deviceSubType = 11;
+  optional bytes modelSpecificInfoData = 12;
+  optional float batteryLevel = 13;
+  optional bool isLocalDevice = 14;
+  optional bool supportsExternalScreen = 15;
+  optional bool requiresAuthorization = 16;
+  optional bool shouldForceRemoteControlabillity = 17;
+  optional AVOutputDeviceSourceInfo sourceInfo = 18;
+  optional bool isDeviceGroupable = 19;
+  optional bool canRelayCommunicationChannel = 20;
+  optional string logicalDeviceID = 21;
+  optional bool isProxyGroupPlayer = 22;
+  optional string firmwareVersion = 23;
+  optional float volume = 24;
+  optional bool isVolumeControlAvailable = 25;
+  optional bool canAccessAppleMusic = 26;
+  optional bool canAccessiCloudMusicLibrary = 27;
+  optional bool groupContainsGroupLeader = 28;
+  optional bool supportsBufferedAirPlay = 29;
+  optional bool canPlayEncryptedProgressiveDownloadAssets = 30;
+  optional bool canFetchMediaDataFromSender = 31;
+  optional bool resentsOptimizedUserInterfaceWhenPlayingFetchedAudioOnlyAssets = 32;
+  optional bool isAirPlayReceiverSessionActive = 33;
+  optional string parentGroupIdentifier = 34;
+  optional bool parentGroupContainsDiscoverableLeader = 35;
+  optional bool isAddedToHomeKit = 36;
+  optional int32 volumeCapabilities = 37;
+  optional string bluetoothID = 38;
+  optional bool supportsHAP = 39;
+  optional bool usingJSONProtocol = 40;
+  repeated AVOutputDeviceDescriptor clusterCompositions = 41;
+  optional uint32 clusterType = 42;
+  optional string primaryUID = 43;
+  optional uint32 configuredClusterSize = 44;
+  optional bool supportsRapportRemoteControlTransport = 45;
+  optional string currentBluetoothListeningMode = 46;
+  repeated string availableBluetoothListeningModes = 47;
+  repeated bool supportsMultiplayer = 48;
+  optional bool producesLowFidelityAudio = 49;
+  optional int32 hostDeviceClass = 50;
+  optional string airPlayGroupID = 51;
+  optional bool supportsSharePlayHandoff = 52;
+  optional float distance = 53;
+  optional bool discoveredOnSameInfra = 54;
+  repeated AVOutputDeviceDescriptor activatedClusterMembers = 55;
+  repeated bool pickable = 56;
+  optional int32 transportType = 57;
+  optional string clusterID = 58;
+  optional bool isClusterLeader = 59;
+  optional bool isAppleAccessory = 60;
+  optional string parentUniqueIdentifier = 61;
+  optional string roomID = 62;
+  optional string roomName = 63;
+  repeated AVOutputDeviceDescriptor allClusterMembers = 64;
+  optional bool engageOnClusterActivate = 67;
+}
+
+message UpdateOutputDeviceMessage {
+  repeated AVOutputDeviceDescriptor outputDevices = 1;
+  optional string endpointUID = 2;
+  repeated AVOutputDeviceDescriptor clusterAwareOutputDevices = 3;
+}

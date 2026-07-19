@@ -1,0 +1,13 @@
+syntax = "proto2";
+option java_package = "org.openhab.binding.atv.internal.client.protocols.mrp.dto";
+
+message NowPlayingClient {
+  optional int32 processIdentifier = 1;
+  optional string bundleIdentifier = 2;
+  optional string parentApplicationBundleIdentifier = 3;
+  optional int32 processUserIdentifier = 4;
+  optional int32 nowPlayingVisibility = 5;
+//    optional TintColor tintColor = 6;
+  optional string displayName = 7;
+  repeated string bundleIdentifierHierarchys = 8;
+}

@@ -1,0 +1,70 @@
+syntax = "proto2";
+option java_package = "org.openhab.binding.atv.internal.client.protocols.mrp.dto";
+
+import "atv/mrp/protobuf/ProtocolMessage.proto";
+import "atv/mrp/protobuf/Common.proto";
+
+extend ProtocolMessage {
+  optional DeviceInfoMessage deviceInfoMessage = 20;
+}
+
+message PreferredEncoding {
+  enum Enum {
+    Default = 0;
+    JSON = 1;
+  }
+}
+
+message DeviceInfoMessage {
+  optional string uniqueIdentifier = 1; // Example: B8D8678C-9DA9-4D29-9338-5D6B827B8063
+  required string name = 2; // Example: Jean's iPhone
+  optional string localizedModelName = 3; // Example: iPhone
+  optional string systemBuildVersion = 4; // Example: 13F69
+  optional string applicationBundleIdentifier = 5; // Example: com.example.myremote
+  optional string applicationBundleVersion = 6; // Example: 107
+  optional int32 protocolVersion = 7; // Example: 1
+  optional uint32 lastSupportedMessageType = 8;
+  optional bool supportsSystemPairing = 9;
+  optional bool allowsPairing = 10;
+  optional bool connected = 11;
+  optional string systemMediaApplication = 12;
+  optional bool supportsACL = 13;
+  optional bool supportsSharedQueue = 14;
+  optional bool supportsExtendedMotion = 15;
+  optional bytes bluetoothAddress = 16;
+  optional uint32 sharedQueueVersion = 17;
+  optional string deviceUID = 19;
+  optional string managedConfigDeviceID = 20;
+  optional DeviceClass.Enum deviceClass = 21;
+  optional uint32 logicalDeviceCount = 22;
+  optional bool tightlySyncedGroup = 23;
+  optional bool isProxyGroupPlayer = 24;
+  optional string tightSyncUID = 25;
+  optional string groupUID = 26;
+  optional string groupName = 27;
+  repeated DeviceInfoMessage groupedDevices = 28;
+  optional bool isGroupLeader = 29;
+  optional bool isAirplayActive = 30;
+  optional string systemPodcastApplication = 31;
+  optional string senderDefaultGroupUID = 32;
+  repeated string airplayReceivers = 33;
+  optional string linkAgent = 34;
+  optional string clusterID = 35;
+  optional string clusterLeaderID = 36;
+  optional uint32 clusterType = 37;
+  optional bool isClusterAware = 38;
+  optional string modelID = 39;
+  optional bool supportsMultiplayer = 40;
+  optional string routingContextID = 41; // Example: 577E1BCA-2D9B-41C2-A8F8-C515CE8072D4
+  optional string airPlayGroupID = 42; // Example: 6E0ED14E-0BA4-4A84-AF30-9EB080E7AA73
+  optional string systemBooksApplication = 43; // Example: com.apple.iBooks
+  repeated DeviceInfoMessage clusteredDevices = 44;
+  optional uint32 parentGroupContainsDiscoverableGroupLeader = 45;
+  optional uint32 groupContainsDiscoverableGroupLeader = 46;
+  optional uint32 lastKnownClusterType = 47;
+  // repeated ... allClusteredDevices = 48;
+  optional bool supportsOutputContextSync = 49;
+  optional string computerName = 50;
+  optional uint32 configuredClusterSize = 51;
+  optional PreferredEncoding.Enum preferredEncoding = 52;
+}

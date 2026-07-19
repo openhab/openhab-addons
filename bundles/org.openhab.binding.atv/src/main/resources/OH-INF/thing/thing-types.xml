@@ -1,0 +1,517 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="atv" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="appletv">
+		<label>Apple TV</label>
+		<description>An Apple TV (tvOS) controlled over AirPlay and Companion, including the MediaRemote tunnel.</description>
+		<semantic-equipment-tag>MediaPlayer</semantic-equipment-tag>
+
+		<channels>
+			<!-- control -->
+			<channel id="power" typeId="system.power"/>
+			<channel id="media-control" typeId="system.media-control"/>
+			<channel id="remote-key" typeId="remote-key"/>
+			<!-- now playing -->
+			<channel id="title" typeId="title"/>
+			<channel id="artist" typeId="artist"/>
+			<channel id="album" typeId="album"/>
+			<channel id="genre" typeId="genre"/>
+			<channel id="media-type" typeId="media-type"/>
+			<channel id="playback-state" typeId="playback-state"/>
+			<channel id="position" typeId="position"/>
+			<channel id="duration" typeId="duration"/>
+			<channel id="progress" typeId="progress"/>
+			<channel id="shuffle" typeId="shuffle"/>
+			<channel id="repeat" typeId="repeat"/>
+			<channel id="series-name" typeId="series-name"/>
+			<channel id="season-number" typeId="season-number"/>
+			<channel id="episode-number" typeId="episode-number"/>
+			<channel id="content-id" typeId="content-id"/>
+			<channel id="itunes-id" typeId="itunes-id"/>
+			<channel id="artwork" typeId="artwork"/>
+			<!-- apps / accounts -->
+			<channel id="app" typeId="app"/>
+			<channel id="app-name" typeId="app-name"/>
+			<channel id="account" typeId="account"/>
+			<!-- audio -->
+			<channel id="volume" typeId="system.volume"/>
+			<channel id="output-devices" typeId="output-devices"/>
+			<channel id="output-device-volume" typeId="output-device-volume"/>
+			<!-- keyboard -->
+			<channel id="keyboard-input" typeId="keyboard-input"/>
+			<channel id="keyboard-focus" typeId="keyboard-focus"/>
+			<!-- touch -->
+			<channel id="touch-gesture" typeId="touch-gesture"/>
+			<!-- streaming -->
+			<channel id="play-url" typeId="play-url"/>
+			<channel id="stream-url" typeId="stream-url"/>
+		</channels>
+
+		<representation-property>macAddress</representation-property>
+
+		<config-description>
+			<parameter name="macAddress" type="text" required="true">
+				<context>mac-address</context>
+				<label>Identifier</label>
+				<description>Unique device identifier (MAC). Set automatically by discovery.</description>
+			</parameter>
+			<parameter name="host" type="text">
+				<context>network-address</context>
+				<label>Host</label>
+				<description>IP address of the Apple TV. Populated and kept current by discovery; set manually only for
+					a static IP
+					or a device on a different subnet.</description>
+			</parameter>
+			<parameter name="name" type="text">
+				<label>Name</label>
+				<description>Friendly name presented to the device while pairing.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="airplayPin" type="text">
+				<label>AirPlay Pairing PIN</label>
+				<description>PIN shown on the Apple TV for the AirPlay pairing step. Enter it to pair AirPlay (now-playing
+					metadata
+					and streaming).</description>
+			</parameter>
+			<parameter name="companionPin" type="text">
+				<label>Companion Pairing PIN</label>
+				<description>PIN shown on the Apple TV for the Companion pairing step. After AirPlay is paired the device
+					shows a
+					new, different PIN; enter it to pair Companion (remote, power and apps).</description>
+			</parameter>
+			<parameter name="airplayCredentials" type="text">
+				<context>password</context>
+				<label>AirPlay Credentials</label>
+				<description>Credentials obtained by pairing AirPlay. Populated automatically after pairing.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="companionCredentials" type="text">
+				<context>password</context>
+				<label>Companion Credentials</label>
+				<description>Credentials obtained by pairing Companion. Populated automatically after pairing.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="0">
+				<label>Refresh Interval</label>
+				<description>Fallback polling interval in seconds (0 disables; live push updates are used otherwise).</description>
+				<default>30</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="speaker">
+		<label>AirPlay Speaker</label>
+		<description>An AirPlay/RAOP audio device such as a HomePod or third-party AirPlay speaker.</description>
+		<semantic-equipment-tag>Speaker</semantic-equipment-tag>
+
+		<channels>
+			<channel id="volume" typeId="system.volume"/>
+			<channel id="media-control" typeId="system.media-control"/>
+			<channel id="title" typeId="title"/>
+			<channel id="artist" typeId="artist"/>
+			<channel id="album" typeId="album"/>
+			<channel id="playback-state" typeId="playback-state"/>
+			<channel id="position" typeId="position"/>
+			<channel id="duration" typeId="duration"/>
+			<channel id="progress" typeId="progress"/>
+			<channel id="artwork" typeId="artwork"/>
+			<channel id="stream-url" typeId="stream-url"/>
+			<channel id="output-devices" typeId="output-devices"/>
+			<channel id="output-device-volume" typeId="output-device-volume"/>
+		</channels>
+
+		<representation-property>macAddress</representation-property>
+
+		<config-description>
+			<parameter name="macAddress" type="text" required="true">
+				<context>mac-address</context>
+				<label>Identifier</label>
+				<description>Unique device identifier (MAC). Set automatically by discovery.</description>
+			</parameter>
+			<parameter name="host" type="text">
+				<context>network-address</context>
+				<label>Host</label>
+				<description>IP address of the speaker. Populated and kept current by discovery; set manually only for
+					a static IP or
+					a device on a different subnet.</description>
+			</parameter>
+			<parameter name="name" type="text">
+				<label>Name</label>
+				<description>Friendly name presented to the device while pairing.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="password" type="text">
+				<context>password</context>
+				<label>Password</label>
+				<description>Password for password-protected AirPlay speakers.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="airplayPin" type="text">
+				<label>AirPlay Pairing PIN</label>
+				<description>PIN shown on the speaker for the AirPlay pairing step (for devices that require pairing).</description>
+			</parameter>
+			<parameter name="raopPin" type="text">
+				<label>RAOP Pairing PIN</label>
+				<description>PIN shown on the speaker for the RAOP audio pairing step (for devices that require pairing).</description>
+			</parameter>
+			<parameter name="airplayCredentials" type="text">
+				<context>password</context>
+				<label>AirPlay Credentials</label>
+				<description>Credentials obtained by pairing AirPlay. Populated automatically after pairing.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="raopCredentials" type="text">
+				<context>password</context>
+				<label>RAOP Credentials</label>
+				<description>Credentials obtained by pairing RAOP audio. Populated automatically after pairing.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="0">
+				<label>Refresh Interval</label>
+				<description>Fallback polling interval in seconds (0 disables; live push updates are used otherwise).</description>
+				<default>30</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="remote-key">
+		<item-type>String</item-type>
+		<label>Remote Key</label>
+		<description>Sends a remote-control button press.</description>
+		<category>Player</category>
+		<tags>
+			<tag>Control</tag>
+		</tags>
+		<command>
+			<options>
+				<option value="Up">Up</option>
+				<option value="Down">Down</option>
+				<option value="Left">Left</option>
+				<option value="Right">Right</option>
+				<option value="Select">Select</option>
+				<option value="Menu">Menu</option>
+				<option value="Home">Home</option>
+				<option value="HomeHold">Home (Hold)</option>
+				<option value="TopMenu">Top Menu</option>
+				<option value="Play">Play</option>
+				<option value="PlayPause">Play/Pause</option>
+				<option value="Pause">Pause</option>
+				<option value="Stop">Stop</option>
+				<option value="Next">Next</option>
+				<option value="Previous">Previous</option>
+				<option value="SkipForward">Skip Forward</option>
+				<option value="SkipBackward">Skip Backward</option>
+				<option value="ChannelUp">Channel Up</option>
+				<option value="ChannelDown">Channel Down</option>
+				<option value="Screensaver">Screensaver</option>
+				<option value="Guide">Guide</option>
+				<option value="ControlCenter">Control Center</option>
+			</options>
+		</command>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="title">
+		<item-type>String</item-type>
+		<label>Title</label>
+		<description>Title of the media currently playing.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="artist">
+		<item-type>String</item-type>
+		<label>Artist</label>
+		<description>Artist of the media currently playing.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="album">
+		<item-type>String</item-type>
+		<label>Album</label>
+		<description>Album of the media currently playing.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="genre">
+		<item-type>String</item-type>
+		<label>Genre</label>
+		<description>Genre of the media currently playing.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="media-type">
+		<item-type>String</item-type>
+		<label>Media Type</label>
+		<description>Type of the media currently playing.</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="Unknown">Unknown</option>
+				<option value="Video">Video</option>
+				<option value="Music">Music</option>
+				<option value="TV">TV</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="playback-state">
+		<item-type>String</item-type>
+		<label>Playback State</label>
+		<description>Current playback state.</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="Idle">Idle</option>
+				<option value="Loading">Loading</option>
+				<option value="Paused">Paused</option>
+				<option value="Playing">Playing</option>
+				<option value="Stopped">Stopped</option>
+				<option value="Seeking">Seeking</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="position">
+		<item-type>Number:Time</item-type>
+		<label>Position</label>
+		<description>Playback position of the current media. Send a value to seek.</description>
+		<category>Time</category>
+		<tags>
+			<tag>Control</tag>
+		</tags>
+		<state pattern="%d s"/>
+	</channel-type>
+
+	<channel-type id="duration">
+		<item-type>Number:Time</item-type>
+		<label>Duration</label>
+		<description>Total length of the current media.</description>
+		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state pattern="%d s" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="progress">
+		<item-type>Dimmer</item-type>
+		<label>Progress</label>
+		<description>Playback progress as a percentage.</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state pattern="%d %%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="shuffle">
+		<item-type>String</item-type>
+		<label>Shuffle</label>
+		<description>Shuffle mode.</description>
+		<tags>
+			<tag>Control</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="Off">Off</option>
+				<option value="Albums">Albums</option>
+				<option value="Songs">Songs</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="repeat">
+		<item-type>String</item-type>
+		<label>Repeat</label>
+		<description>Repeat mode.</description>
+		<tags>
+			<tag>Control</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="Off">Off</option>
+				<option value="Track">Track</option>
+				<option value="All">All</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="series-name">
+		<item-type>String</item-type>
+		<label>Series Name</label>
+		<description>Name of the TV series currently playing.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="season-number">
+		<item-type>Number</item-type>
+		<label>Season Number</label>
+		<description>Season number of the TV series currently playing.</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="episode-number">
+		<item-type>Number</item-type>
+		<label>Episode Number</label>
+		<description>Episode number of the TV series currently playing.</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="content-id" advanced="true">
+		<item-type>String</item-type>
+		<label>Content Identifier</label>
+		<description>Identifier of the content currently playing.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="itunes-id" advanced="true">
+		<item-type>Number</item-type>
+		<label>iTunes Store Identifier</label>
+		<description>iTunes Store identifier of the content currently playing.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="artwork">
+		<item-type>Image</item-type>
+		<label>Artwork</label>
+		<description>Artwork of the media currently playing.</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="app">
+		<item-type>String</item-type>
+		<label>App</label>
+		<description>Bundle identifier of the foreground app. Send a value to launch an app.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>App</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="app-name">
+		<item-type>String</item-type>
+		<label>App Name</label>
+		<description>Name of the foreground app.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="account" advanced="true">
+		<item-type>String</item-type>
+		<label>User Account</label>
+		<description>Switches the active user account.</description>
+		<tags>
+			<tag>Control</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="output-devices" advanced="true">
+		<item-type>String</item-type>
+		<label>Output Devices</label>
+		<description>Comma-separated identifiers of the active AirPlay output devices. Send a list to set them.</description>
+		<tags>
+			<tag>Control</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="output-device-volume" advanced="true">
+		<item-type>String</item-type>
+		<label>Output Device Volume</label>
+		<description>Sets the volume of a single output device, formatted as "identifier=level" (level 0-100).</description>
+		<tags>
+			<tag>Control</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="keyboard-input">
+		<item-type>String</item-type>
+		<label>Keyboard Input</label>
+		<description>Text of the focused input field. Send a value to set the text (empty clears it).</description>
+		<tags>
+			<tag>Control</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="keyboard-focus" advanced="true">
+		<item-type>String</item-type>
+		<label>Keyboard Focus</label>
+		<description>Whether a text input field is currently focused.</description>
+		<state readOnly="true">
+			<options>
+				<option value="Unknown">Unknown</option>
+				<option value="Unfocused">Unfocused</option>
+				<option value="Focused">Focused</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="touch-gesture" advanced="true">
+		<item-type>String</item-type>
+		<label>Touch Gesture</label>
+		<description>Performs a trackpad gesture. Formats: "click", "swipe:x1,y1,x2,y2,ms", "action:x,y,mode".</description>
+		<tags>
+			<tag>Control</tag>
+		</tags>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="play-url">
+		<item-type>String</item-type>
+		<label>Play URL</label>
+		<description>Streams a video URL to the device via AirPlay.</description>
+		<tags>
+			<tag>Control</tag>
+		</tags>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="stream-url">
+		<item-type>String</item-type>
+		<label>Stream URL</label>
+		<description>Streams an audio URL or file to the device via AirPlay/RAOP.</description>
+		<tags>
+			<tag>Control</tag>
+		</tags>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+</thing:thing-descriptions>

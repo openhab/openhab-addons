@@ -1,0 +1,118 @@
+syntax = "proto2";
+option java_package = "org.openhab.binding.atv.internal.client.protocols.mrp.dto";
+
+import "atv/mrp/protobuf/Common.proto";
+
+enum Command {
+  Unknown = 0;
+  Play = 1;
+  Pause = 2;
+  TogglePlayPause = 3;
+  Stop = 4;
+  NextTrack = 5;
+  PreviousTrack = 6;
+  AdvanceShuffleMode = 7;
+  AdvanceRepeatMode = 8;
+  BeginFastForward = 9;
+  EndFastForward = 10;
+  BeginRewind = 11;
+  EndRewind = 12;
+  Rewind15Seconds = 13;
+  FastForward15Seconds = 14;
+  Rewind30Seconds = 15;
+  FastForward30Seconds = 16;
+  SkipForward = 18;
+  SkipBackward = 19;
+  ChangePlaybackRate = 20;
+  RateTrack = 21;
+  LikeTrack = 22;
+  DislikeTrack = 23;
+  BookmarkTrack = 24;
+  SeekToPlaybackPosition = 45;
+  ChangeRepeatMode = 46;
+  ChangeShuffleMode = 47;
+  EnableLanguageOption = 53;
+  DisableLanguageOption = 54;
+  NextChapter = 25;
+  PreviousChapter = 26;
+  NextAlbum = 27;
+  PreviousAlbum = 28;
+  NextPlaylist = 29;
+  PreviousPlaylist = 30;
+  BanTrack = 31;
+  AddTrackToWishList = 32;
+  RemoveTrackFromWishList = 33;
+  NextInContext = 34;
+  PreviousInContext = 35;
+  ResetPlaybackTimeout = 41;
+  SetPlaybackQueue = 48;
+  AddNowPlayingItemToLibrary = 49;
+  CreateRadioStation = 50;
+  AddItemToLibrary = 51;
+  InsertIntoPlaybackQueue = 52;
+  ReorderPlaybackQueue = 55;
+  RemoveFromPlaybackQueue = 56;
+  PlayItemInPlaybackQueue = 57;
+  PrepareForSetQueue = 58;
+  SetPlaybackSession = 59;
+  PreloadedPlaybackSession = 60;
+  SetPriorityForPlaybackSession = 61;
+  DiscardPlaybackSession = 62;
+  Reshuffle = 63;
+  ChangeQueueEndAction = 135;
+}
+
+message QueueEndAction {
+  enum Enum {
+    ClearAction = 0;
+    None = 1;
+    Reset = 2;
+    AutoPlay = 3;
+  }
+}
+
+message DisableReason {
+  enum Enum {
+    Unknown = 0;
+    AdPlayback = 1;
+    SkipLimitReached = 2;
+  }
+}
+
+message PreloadedPlaybackSessionInfo {
+  optional string playbackSessionIdentifier = 1;
+  optional string playbackSessionRevision = 2;
+  optional int32 playbackSessionPriority = 3;
+}
+
+message CommandInfo {
+  optional Command command = 1;
+  optional bool enabled = 2;
+  optional bool active = 3;
+  repeated double preferredIntervals = 4;
+  optional string localizedTitle = 5;
+  optional float minimumRating = 6;
+  optional float maximumRating = 7;
+  repeated float supportedRates = 8;
+  optional string localizedShortTitle = 9;
+  optional RepeatMode.Enum repeatMode = 10;
+  optional ShuffleMode.Enum shuffleMode = 11;
+  optional int32 presentationStyle = 12;
+  optional int32 skipInterval = 13;
+  optional int32 numAvailableSkips = 14;
+  optional int32 skipFrequency = 15;
+  optional int32 canScrub = 16;
+  repeated int32 supportedPlaybackQueueTypes = 17;
+  repeated string supportedCustomQueueIdentifiers = 18;
+  repeated int32 supportedInsertionPositions = 19;
+  optional bool supportsSharedQueue = 20;
+  optional int32 upNextItemCount = 21;
+  optional float preferredPlaybackRate = 22;
+  repeated string supportedPlaybackSessionTypes = 23;
+  repeated string currentPlaybackSessionTypes = 24;
+  optional string playbackSessionIdentifier = 25;
+  optional QueueEndAction.Enum currentQueueEndAction = 26;
+  repeated QueueEndAction.Enum supportedEndQueueActions = 27;
+  optional DisableReason.Enum disableReason = 28;
+  repeated PreloadedPlaybackSessionInfo supportedPlaybackSessionIdentifiers = 29;
+}

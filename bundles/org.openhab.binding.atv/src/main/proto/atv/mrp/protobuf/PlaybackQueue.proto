@@ -1,0 +1,16 @@
+syntax = "proto2";
+option java_package = "org.openhab.binding.atv.internal.client.protocols.mrp.dto";
+
+import "atv/mrp/protobuf/ContentItem.proto";
+import "atv/mrp/protobuf/PlaybackQueueContext.proto";
+import "atv/mrp/protobuf/PlayerPath.proto";
+
+message PlaybackQueue {
+  optional int32 location = 1;
+  repeated ContentItem contentItems = 2;
+  optional PlaybackQueueContext context = 3;
+  optional string requestId = 4;
+  optional PlayerPath resolvedPlayerPath = 5;
+  optional bool sendingPlaybackQueueTransaction = 6;
+  optional string queueIdentifier = 7;
+}

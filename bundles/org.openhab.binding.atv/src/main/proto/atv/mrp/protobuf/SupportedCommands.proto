@@ -1,0 +1,8 @@
+syntax = "proto2";
+option java_package = "org.openhab.binding.atv.internal.client.protocols.mrp.dto";
+
+import "atv/mrp/protobuf/CommandInfo.proto";
+
+message SupportedCommands {
+  repeated CommandInfo supportedCommands = 1;
+}
