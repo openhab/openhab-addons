@@ -80,7 +80,7 @@ public class FroniusHandlerFactory extends BaseThingHandlerFactory {
         if (thingTypeUID.equals(THING_TYPE_INVERTER)) {
             return new FroniusSymoInverterHandler(thing, httpClientFactory.getCommonHttpClient());
         } else if (thingTypeUID.equals(THING_TYPE_BRIDGE)) {
-            return new FroniusBridgeHandler((Bridge) thing);
+            return new FroniusBridgeHandler((Bridge) thing, httpClientFactory.getCommonHttpClient());
         } else if (thingTypeUID.equals(THING_TYPE_METER)) {
             return new FroniusMeterHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_OHMPILOT)) {

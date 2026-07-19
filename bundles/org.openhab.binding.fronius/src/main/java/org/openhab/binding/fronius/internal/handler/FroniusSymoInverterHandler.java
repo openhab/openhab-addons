@@ -117,7 +117,7 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
         updateChannels();
     }
 
-    private void initializeBatteryControl(FroniusHttpUtil httpUtil, String scheme, String hostname,
+    private void initializeBatteryControl(FroniusBridgeHandler bridgeHandler, String scheme, String hostname,
             @Nullable String username, @Nullable String password) {
         if (username == null || password == null) {
             logger.info(
@@ -133,8 +133,8 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
                 int hyphenIndex = firmwareVersion.indexOf('-');
                 String versionString = (hyphenIndex > 0) ? firmwareVersion.substring(0, hyphenIndex) : firmwareVersion;
                 SemverVersion version = SemverVersion.fromString(versionString);
-                batteryControl = new FroniusBatteryControl(httpUtil, httpClient, version, scheme, hostname, username,
-                        password);
+                batteryControl = new FroniusBatteryControl(bridgeHandler.getConfigApiClient(), version, scheme,
+                        hostname, username, password);
                 return;
             }
         }
@@ -171,8 +171,8 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
         FroniusBridgeConfiguration bridgeConfig = bridge.getConfiguration().as(FroniusBridgeConfiguration.class);
         inverterInfo = getInverterInfo(bridgeConfig.scheme, bridgeConfig.hostname, config.deviceId);
         updateProperties();
-        initializeBatteryControl(bridgeHandler.getHttpUtil(), bridgeConfig.scheme, bridgeConfig.hostname,
-                bridgeConfig.username, bridgeConfig.password);
+        initializeBatteryControl(bridgeHandler, bridgeConfig.scheme, bridgeConfig.hostname, bridgeConfig.username,
+                bridgeConfig.password);
         startBatterySettingsRefreshJob();
         super.initialize();
     }
@@ -201,8 +201,8 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
         FroniusBridgeConfiguration bridgeConfig = bridge.getConfiguration().as(FroniusBridgeConfiguration.class);
         inverterInfo = getInverterInfo(bridgeConfig.scheme, bridgeConfig.hostname, config.deviceId);
         updateProperties();
-        initializeBatteryControl(bridgeHandler.getHttpUtil(), bridgeConfig.scheme, bridgeConfig.hostname,
-                bridgeConfig.username, bridgeConfig.password);
+        initializeBatteryControl(bridgeHandler, bridgeConfig.scheme, bridgeConfig.hostname, bridgeConfig.username,
+                bridgeConfig.password);
         startBatterySettingsRefreshJob();
     }
 

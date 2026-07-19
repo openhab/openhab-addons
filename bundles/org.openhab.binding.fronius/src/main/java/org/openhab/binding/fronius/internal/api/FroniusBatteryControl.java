@@ -12,26 +12,19 @@
  */
 package org.openhab.binding.fronius.internal.api;
 
-import static org.openhab.binding.fronius.internal.FroniusBindingConstants.API_TIMEOUT;
-
-import java.io.ByteArrayInputStream;
 import java.net.URI;
-import java.nio.charset.StandardCharsets;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 
 import javax.measure.quantity.Power;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.fronius.internal.api.dto.inverter.PostConfigResponse;
 import org.openhab.binding.fronius.internal.api.dto.inverter.batterycontrol.ScheduleType;
@@ -69,12 +62,8 @@ public class FroniusBatteryControl {
 
     private final Logger logger = LoggerFactory.getLogger(FroniusBatteryControl.class);
     private final Gson gson = new Gson();
-    private final FroniusHttpUtil httpUtil;
-    private final HttpClient httpClient;
-    private final SemverVersion firmwareVersion;
-    private final URI baseUri;
-    private final String username;
-    private final String password;
+    private final FroniusConfigApiClient configApiClient;
+    private final FroniusConfigApiEndpoint endpoint;
     private final URI timeOfUseUri;
     private final URI batteriesUri;
     private final URI nightPreservationLimitUri;
@@ -82,22 +71,18 @@ public class FroniusBatteryControl {
     /**
      * Creates a new instance of {@link FroniusBatteryControl}.
      *
-     * @param httpUtil the HTTP utility to use for bridge-scoped request coordination
-     * @param httpClient the HTTP client to use
+     * @param configApiClient the client to use for the requests against the inverter's config API
      * @param firmwareVersion the firmware version of the inverter
      * @param scheme http or https
      * @param hostname the hostname or IP address of the inverter
      * @param username the username for the inverter Web UI
      * @param password the password for the inverter Web UI
      */
-    public FroniusBatteryControl(FroniusHttpUtil httpUtil, HttpClient httpClient, SemverVersion firmwareVersion,
-            String scheme, String hostname, String username, String password) {
-        this.httpUtil = httpUtil;
-        this.httpClient = httpClient;
-        this.firmwareVersion = firmwareVersion;
-        this.baseUri = getBaseUri(firmwareVersion, scheme, hostname);
-        this.username = username;
-        this.password = password;
+    public FroniusBatteryControl(FroniusConfigApiClient configApiClient, SemverVersion firmwareVersion, String scheme,
+            String hostname, String username, String password) {
+        this.configApiClient = configApiClient;
+        URI baseUri = getBaseUri(firmwareVersion, scheme, hostname);
+        this.endpoint = new FroniusConfigApiEndpoint(baseUri, firmwareVersion, username, password);
         this.timeOfUseUri = URI.create(baseUri + TIME_OF_USE_ENDPOINT);
         this.batteriesUri = URI.create(baseUri + BATTERIES_ENDPOINT);
         this.nightPreservationLimitUri = URI.create(baseUri + NIGHT_PRESERVATION_LIMIT_ENDPOINT);
@@ -112,41 +97,6 @@ public class FroniusBatteryControl {
     }
 
     /**
-     * Performs a request against the inverter's config API by logging in and executing the request with the acquired
-     * authentication header.
-     *
-     * @param method the HTTP method to use
-     * @param uri the URI to request
-     * @param body the JSON request body for POST requests, or null for GET requests
-     * @return the response body
-     * @throws FroniusCommunicationException when an error occurs during communication with the inverter
-     * @throws FroniusUnauthorizedException when the login fails due to invalid credentials
-     */
-    private String authorizedRequest(HttpMethod method, URI uri, @Nullable String body)
-            throws FroniusCommunicationException, FroniusUnauthorizedException {
-        try {
-            return executeAuthorizedRequest(method, uri, body);
-        } catch (FroniusCommunicationException e) {
-            // The cached digest session may have expired on the server side, invalidate it and retry once with a
-            // fresh login
-            FroniusConfigAuthUtil.invalidateSession(baseUri);
-            return executeAuthorizedRequest(method, uri, body);
-        }
-    }
-
-    private String executeAuthorizedRequest(HttpMethod method, URI uri, @Nullable String body)
-            throws FroniusCommunicationException, FroniusUnauthorizedException {
-        String authHeader = FroniusConfigAuthUtil.login(httpClient, firmwareVersion, baseUri, username, password,
-                method, uri.getPath(), API_TIMEOUT);
-        Properties headers = new Properties();
-        headers.put(HttpHeader.AUTHORIZATION.asString(), authHeader);
-        ByteArrayInputStream content = body == null ? null
-                : new ByteArrayInputStream(body.getBytes(StandardCharsets.UTF_8));
-        String contentType = body == null ? null : "application/json";
-        return httpUtil.executeUrl(method, uri.toString(), headers, content, contentType, API_TIMEOUT);
-    }
-
-    /**
      * Writes configuration to the inverter's config API and verifies that the write was successful.
      *
      * @param uri the config API endpoint to write to
@@ -158,7 +108,7 @@ public class FroniusBatteryControl {
      */
     private void postConfig(URI uri, Object payload, String... expectedWriteSuccess)
             throws FroniusCommunicationException, FroniusUnauthorizedException {
-        String responseString = authorizedRequest(HttpMethod.POST, uri, gson.toJson(payload));
+        String responseString = configApiClient.executeRequest(endpoint, HttpMethod.POST, uri, gson.toJson(payload));
         @Nullable
         PostConfigResponse response = gson.fromJson(responseString, PostConfigResponse.class);
         if (response == null || !response.writeSuccess().containsAll(List.of(expectedWriteSuccess))) {
@@ -175,7 +125,7 @@ public class FroniusBatteryControl {
      * @throws FroniusUnauthorizedException when the login fails due to invalid credentials
      */
     private TimeOfUseRecords getTimeOfUse() throws FroniusCommunicationException, FroniusUnauthorizedException {
-        String response = authorizedRequest(HttpMethod.GET, timeOfUseUri, null);
+        String response = configApiClient.executeRequest(endpoint, HttpMethod.GET, timeOfUseUri, null);
         logger.trace("Time of Use settings read successfully");
 
         // Parse the response body
@@ -461,7 +411,7 @@ public class FroniusBatteryControl {
      * @throws FroniusUnauthorizedException when the login fails due to invalid credentials
      */
     public BatterySettings getBatterySettings() throws FroniusCommunicationException, FroniusUnauthorizedException {
-        String responseString = authorizedRequest(HttpMethod.GET, batteriesUri, null);
+        String responseString = configApiClient.executeRequest(endpoint, HttpMethod.GET, batteriesUri, null);
         BatteriesConfig config;
         try {
             config = gson.fromJson(responseString, BatteriesConfig.class);
@@ -515,7 +465,8 @@ public class FroniusBatteryControl {
      * @throws FroniusUnauthorizedException when the login fails due to invalid credentials
      */
     public int getNightPreservationLimit() throws FroniusCommunicationException, FroniusUnauthorizedException {
-        String responseString = authorizedRequest(HttpMethod.GET, nightPreservationLimitUri, null);
+        String responseString = configApiClient.executeRequest(endpoint, HttpMethod.GET, nightPreservationLimitUri,
+                null);
         NightPreservationLimitResponse response;
         try {
             response = gson.fromJson(responseString, NightPreservationLimitResponse.class);

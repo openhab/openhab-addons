@@ -24,9 +24,11 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.fronius.internal.FroniusBridgeConfiguration;
 import org.openhab.binding.fronius.internal.api.FroniusCommunicationException;
+import org.openhab.binding.fronius.internal.api.FroniusConfigApiClient;
 import org.openhab.binding.fronius.internal.api.FroniusHttpUtil;
 import org.openhab.binding.fronius.internal.api.FroniusPollingSkipException;
 import org.openhab.binding.fronius.internal.api.FroniusTlsTrustManagerProvider;
@@ -59,12 +61,14 @@ public class FroniusBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(FroniusBridgeHandler.class);
     private final FroniusHttpUtil httpUtil = new FroniusHttpUtil();
+    private final FroniusConfigApiClient configApiClient;
     private final Set<FroniusBaseThingHandler> services = new HashSet<>();
     private @Nullable ScheduledFuture<?> refreshJob;
     private @Nullable ServiceRegistration<?> tlsProviderService;
 
-    public FroniusBridgeHandler(Bridge bridge) {
+    public FroniusBridgeHandler(Bridge bridge, HttpClient httpClient) {
         super(bridge);
+        this.configApiClient = new FroniusConfigApiClient(httpUtil, httpClient);
     }
 
     private void setupTlsTrustManager(String host) throws CertificateException, IOException {
@@ -130,6 +134,10 @@ public class FroniusBridgeHandler extends BaseBridgeHandler {
 
     FroniusHttpUtil getHttpUtil() {
         return httpUtil;
+    }
+
+    FroniusConfigApiClient getConfigApiClient() {
+        return configApiClient;
     }
 
     @Override

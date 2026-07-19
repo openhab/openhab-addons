@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
@@ -49,51 +50,6 @@ public class FroniusConfigAuthUtil {
     private static final String LOGIN_ENDPOINT = "/commands/Login";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FroniusConfigAuthUtil.class);
-
-    /**
-     * How long a digest session (nonce) is reused before performing a fresh login.
-     * Kept short to avoid running into server-side nonce expiry, while still avoiding repeated logins for bursts of
-     * requests, e.g. a read-modify-write sequence triggered by a channel command.
-     */
-    private static final long SESSION_TTL_MS = 60_000;
-
-    private static final Map<URI, DigestSession> SESSIONS = new HashMap<>();
-
-    /** An established digest session whose nonce can be reused for subsequent requests. */
-    private static class DigestSession {
-        final String hashAlgorithm;
-        final String nonce;
-        final String realm;
-        final String qop;
-        final String cnonce;
-        final String username;
-        final String password;
-        final long createdAt;
-        int nc;
-
-        DigestSession(String hashAlgorithm, String nonce, String realm, String qop, String cnonce, String username,
-                String password, long createdAt, int nc) {
-            this.hashAlgorithm = hashAlgorithm;
-            this.nonce = nonce;
-            this.realm = realm;
-            this.qop = qop;
-            this.cnonce = cnonce;
-            this.username = username;
-            this.password = password;
-            this.createdAt = createdAt;
-            this.nc = nc;
-        }
-    }
-
-    /**
-     * Invalidates the cached digest session for the given base URI, e.g. because a request using it failed due to
-     * server-side nonce expiry.
-     *
-     * @param baseUri the base URI of the Fronius inverter
-     */
-    public static synchronized void invalidateSession(URI baseUri) {
-        SESSIONS.remove(baseUri);
-    }
 
     /**
      * Sends an HTTP GET request to the given login URI and extracts the authentication parameters from the
@@ -164,7 +120,7 @@ public class FroniusConfigAuthUtil {
      * @throws IllegalArgumentException when authentication parameters are missing
      * @throws NoSuchAlgorithmException when no hash algorithm with the given name is available
      */
-    private static String createDigestHeader(String hashAlgorithm, String uri, HttpMethod method, String username,
+    static String createDigestHeader(String hashAlgorithm, String uri, HttpMethod method, String username,
             String password, @Nullable String nonce, @Nullable String realm, @Nullable String qop, int nc,
             @Nullable String cnonce) throws IllegalArgumentException, NoSuchAlgorithmException {
         if (nonce == null || realm == null || qop == null || cnonce == null) {
@@ -241,47 +197,24 @@ public class FroniusConfigAuthUtil {
     }
 
     /**
-     * Logs in to the Fronius inverter settings, retries on failure and returns the authentication header for the next
-     * request.
+     * Logs in to the Fronius inverter settings, retries on failure and returns the established digest session, whose
+     * nonce can be used to authenticate subsequent requests.
      *
      * @param httpClient the {@link HttpClient} to use for the request
-     * @param baseUri the base URI of the Fronius inverter, MUST NOT end with a slash
-     * @param username the username to use for the login
-     * @param password the password to use for the login
-     * @param method the {@link HttpMethod} to be used by the next request
-     * @param relativeUrl the relative URL to be accessed with the next request
+     * @param endpoint the endpoint to log in to
      * @param timeout the timeout in milliseconds for the login requests
-     * @return the authentication header for the next request
+     * @return the established {@link FroniusDigestSession}
      * @throws FroniusCommunicationException when the login failed or interrupted
      * @throws FroniusUnauthorizedException when the login failed due to invalid credentials
      */
-    public static synchronized String login(HttpClient httpClient, SemverVersion firmwareVersion, URI baseUri,
-            String username, String password, HttpMethod method, String relativeUrl, int timeout)
+    static FroniusDigestSession login(HttpClient httpClient, FroniusConfigApiEndpoint endpoint, int timeout)
             throws FroniusCommunicationException, FroniusUnauthorizedException {
-        final String hashAlgorithm = firmwareVersion.isGreaterThanOrEqualTo(SemverVersion.fromString("1.38.6"))
-                ? "SHA-256"
-                : "MD5";
-        final URI loginUri = URI.create(baseUri + LOGIN_ENDPOINT + "?user=" + username);
+        final String username = endpoint.username();
+        final String password = endpoint.password();
+        final String hashAlgorithm = endpoint.firmwareVersion()
+                .isGreaterThanOrEqualTo(SemverVersion.fromString("1.38.6")) ? "SHA-256" : "MD5";
+        final URI loginUri = URI.create(endpoint.baseUri() + LOGIN_ENDPOINT + "?user=" + username);
         final String relativeLoginUrl = loginUri.getPath();
-
-        // Reuse an established digest session if possible to avoid the costly login handshake
-        DigestSession session = SESSIONS.get(baseUri);
-        if (session != null) {
-            if (session.username.equals(username) && session.password.equals(password)
-                    && System.currentTimeMillis() - session.createdAt < SESSION_TTL_MS) {
-                try {
-                    session.nc++;
-                    String header = createDigestHeader(session.hashAlgorithm, relativeUrl, method, username, password,
-                            session.nonce, session.realm, session.qop, session.nc, session.cnonce);
-                    LOGGER.debug("Reusing digest session for request (nc={}).", session.nc);
-                    return header;
-                } catch (NoSuchAlgorithmException | IllegalArgumentException e) {
-                    SESSIONS.remove(baseUri);
-                }
-            } else {
-                SESSIONS.remove(baseUri);
-            }
-        }
 
         // Perform request to get authentication parameters
         Map<String, String> authDetails;
@@ -352,26 +285,14 @@ public class FroniusConfigAuthUtil {
             throw new FroniusCommunicationException("Interrupted", e);
         }
 
-        // Create new auth header for next request
-        LOGGER.debug("Creating auth header for next request ...");
-        nc++;
-        try {
-            authHeader = createDigestHeader(hashAlgorithm, relativeUrl, method, username, password,
-                    authDetails.get("nonce"), authDetails.get("realm"), authDetails.get("qop"), nc, cnonce);
-        } catch (NoSuchAlgorithmException e) {
-            throw new FroniusCommunicationException("Failed to create digest authentication header for request", e);
-        }
-        LOGGER.debug("Created auth header for next request.");
-
         String nonce = authDetails.get("nonce");
         String realm = authDetails.get("realm");
         String qop = authDetails.get("qop");
-        if (nonce != null && realm != null && qop != null) {
-            SESSIONS.put(baseUri, new DigestSession(hashAlgorithm, nonce, realm, qop, cnonce, username, password,
-                    System.currentTimeMillis(), nc));
+        if (nonce == null || realm == null || qop == null) {
+            throw new FroniusCommunicationException("Missing authentication parameters in authentication challenge");
         }
 
-        return authHeader;
+        return new FroniusDigestSession(endpoint, hashAlgorithm, nonce, realm, qop, cnonce, Instant.now(), nc);
     }
 
     /**
