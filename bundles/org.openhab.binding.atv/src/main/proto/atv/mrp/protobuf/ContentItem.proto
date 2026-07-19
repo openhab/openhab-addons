@@ -1,0 +1,28 @@
+syntax = "proto2";
+option java_package = "org.openhab.binding.atv.internal.client.protocols.mrp.dto";
+
+import "atv/mrp/protobuf/ContentItemMetadata.proto";
+import "atv/mrp/protobuf/LanguageOption.proto";
+
+message LanguageOptionGroup {
+  optional bool allowEmptySelection = 1;
+  optional LanguageOption defaultLanguageOption = 2;
+  repeated LanguageOption languageOptions = 3;
+}
+
+message ContentItem {
+  optional string identifier = 1;
+  optional ContentItemMetadata metadata = 2;
+  optional bytes artworkData = 3;
+  optional string info = 4;
+  repeated LanguageOptionGroup availableLanguageOptions = 5;
+  repeated LanguageOption currentLanguageOptions = 6;
+//  optional Lyrics lyrics = 7;
+//  repeated Sections sections = 8;
+  optional string parentIdentifier = 9;
+  optional string ancestorIdentifier = 10;
+  optional string queueIdentifier = 11;
+  optional string requestIdentifier = 12;
+  optional int32 artworkDataWidth = 13;
+  optional int32 artworkDataHeight = 14;
+}

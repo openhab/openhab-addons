@@ -1,0 +1,12 @@
+syntax = "proto2";
+option java_package = "org.openhab.binding.atv.internal.client.protocols.mrp.dto";
+
+import "atv/mrp/protobuf/Origin.proto";
+import "atv/mrp/protobuf/NowPlayingClient.proto";
+import "atv/mrp/protobuf/NowPlayingPlayer.proto";
+
+message PlayerPath {
+  optional Origin origin = 1;
+  optional NowPlayingClient client = 2;
+  optional NowPlayingPlayer player = 3;
+}

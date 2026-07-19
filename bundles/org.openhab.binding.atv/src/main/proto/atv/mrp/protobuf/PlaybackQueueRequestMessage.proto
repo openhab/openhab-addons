@@ -1,0 +1,30 @@
+syntax = "proto2";
+option java_package = "org.openhab.binding.atv.internal.client.protocols.mrp.dto";
+
+import "atv/mrp/protobuf/ProtocolMessage.proto";
+import "atv/mrp/protobuf/PlaybackQueueContext.proto";
+import "atv/mrp/protobuf/PlayerPath.proto";
+
+extend ProtocolMessage {
+  optional PlaybackQueueRequestMessage playbackQueueRequestMessage = 37;
+}
+
+message PlaybackQueueRequestMessage {
+  optional int32 location = 1;
+  optional int32 length = 2;
+  optional bool includeMetadata = 3;
+  optional double artworkWidth = 4;
+  optional double artworkHeight = 5;
+  optional bool includeLyrics = 6;
+  optional bool includeSections = 7;
+  optional bool includeInfo = 8;
+  optional bool includeLanguageOptions = 9;
+  optional PlaybackQueueContext context = 10;
+  optional string requestID = 11;
+  repeated string contentItemIdentifiers = 12;
+  optional bool returnContentItemAssetsInUserCompletion = 13;
+  optional PlayerPath playerPath = 14;
+  optional int32 cachingPolicy = 15;
+  optional string label = 16;
+  optional bool isLegacyNowPlayingInfoRequest = 17;
+}

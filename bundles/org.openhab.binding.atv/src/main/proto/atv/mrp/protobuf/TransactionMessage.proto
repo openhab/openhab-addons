@@ -1,0 +1,16 @@
+syntax = "proto2";
+option java_package = "org.openhab.binding.atv.internal.client.protocols.mrp.dto";
+
+import "atv/mrp/protobuf/TransactionPackets.proto";
+import "atv/mrp/protobuf/ProtocolMessage.proto";
+import "atv/mrp/protobuf/PlayerPath.proto";
+
+extend ProtocolMessage {
+  optional TransactionMessage transactionMessage = 38;
+}
+
+message TransactionMessage {
+    optional uint64 name = 1;
+    optional TransactionPackets packets = 2;
+    optional PlayerPath playerPath = 3;
+}

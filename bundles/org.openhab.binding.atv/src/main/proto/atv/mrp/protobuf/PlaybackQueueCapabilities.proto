@@ -1,0 +1,8 @@
+syntax = "proto2";
+option java_package = "org.openhab.binding.atv.internal.client.protocols.mrp.dto";
+
+message PlaybackQueueCapabilities {
+  optional bool requestByRange = 1;
+  optional bool requestByIdentifiers = 2;
+  optional bool requestByRequest = 3;
+}

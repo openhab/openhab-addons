@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.openhab.addons.bundles</groupId>
+    <artifactId>org.openhab.addons.reactor.bundles</artifactId>
+    <version>5.3.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>org.openhab.binding.atv</artifactId>
+
+  <name>openHAB Add-ons :: Bundles :: atv Binding</name>
+
+  <properties>
+    <protobuf.version>4.35.0</protobuf.version>
+    <!-- sun.misc is referenced defensively by protobuf-java; it is a JDK package not exported as an OSGi
+         bundle, so import it optionally. The openHAB runtime provides it through the JVM. -->
+    <bnd.importpackage>sun.misc;resolution:=optional</bnd.importpackage>
+  </properties>
+
+  <dependencies>
+    <!-- Embedded Apple TV client dependencies (jmDNS and SLF4J are provided by the openHAB runtime). -->
+    <dependency>
+      <groupId>com.google.protobuf</groupId>
+      <artifactId>protobuf-java</artifactId>
+      <version>${protobuf.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcprov-jdk18on</artifactId>
+      <version>1.80</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <!-- The generated MRP protobuf sources live under src/gen/java. That directory is not scanned by the
+           static-analysis tools (Checkstyle, PMD, SpotBugs), so the generated code needs no null annotations
+           or author tags; it only carries the EPL header. -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>src/gen/java</source>
+              </sources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- Keep the generated MRP protobuf sources out of the compiler warning stream. -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <compilerArgs combine.children="append">
+            <arg>-nowarn:[${project.basedir}/src/gen]</arg>
+          </compilerArgs>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <profiles>
+    <!-- Opt-in: regenerate the committed MRP protobuf sources with "mvn -Pcode-gen generate-sources". -->
+    <profile>
+      <id>code-gen</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>io.github.ascopes</groupId>
+            <artifactId>protobuf-maven-plugin</artifactId>
+            <version>3.1.0</version>
+            <configuration>
+              <protocVersion>${protobuf.version}</protocVersion>
+              <sourceDirectories>
+                <sourceDirectory>${project.basedir}/src/main/proto</sourceDirectory>
+              </sourceDirectories>
+              <outputDirectory>${project.basedir}/src/gen/java</outputDirectory>
+              <cleanOutputDirectories>false</cleanOutputDirectories>
+            </configuration>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>generate</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <!-- protoc does not emit a license header, so stamp the EPL header onto the generated sources. -->
+          <plugin>
+            <groupId>com.mycila</groupId>
+            <artifactId>license-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>stamp-generated-header</id>
+                <goals>
+                  <goal>format</goal>
+                </goals>
+                <phase>process-sources</phase>
+                <configuration>
+                  <licenseSets combine.self="override">
+                    <licenseSet>
+                      <header>licenses/epl-2.0/header.txt</header>
+                      <includes>
+                        <include>src/gen/java/**/*.java</include>
+                      </includes>
+                    </licenseSet>
+                  </licenseSets>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
+</project>

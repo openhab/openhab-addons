@@ -1,0 +1,12 @@
+syntax = "proto2";
+option java_package = "org.openhab.binding.atv.internal.client.protocols.mrp.dto";
+
+message NowPlayingPlayer {
+  optional string identifier = 1;
+  optional string displayName = 2;
+  optional bool isDefaultPlayer = 3;
+  optional int32 audioSessionType = 4;
+  optional int64 mxSessionIDs = 5;
+  optional uint32 audioSessionID = 6;
+  optional string iconURL = 7;
+}

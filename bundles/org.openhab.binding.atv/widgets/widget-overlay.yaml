@@ -1,0 +1,376 @@
+version: 1
+widgets:
+  apple-tv-remote-bak:
+    tags: []
+    props:
+      parameters:
+        - context: item
+          default: AppleTV_Remote_Key
+          description: Item commanded when Up is pressed
+          label: Up — Item
+          name: itemUp
+          required: false
+          type: TEXT
+          groupName: dpad
+        - default: Up
+          label: Up — Command
+          name: cmdUp
+          required: false
+          type: TEXT
+          groupName: dpad
+        - context: item
+          default: AppleTV_Remote_Key
+          label: Down — Item
+          name: itemDown
+          required: false
+          type: TEXT
+          groupName: dpad
+        - default: Down
+          label: Down — Command
+          name: cmdDown
+          required: false
+          type: TEXT
+          groupName: dpad
+        - context: item
+          default: AppleTV_Remote_Key
+          label: Left — Item
+          name: itemLeft
+          required: false
+          type: TEXT
+          groupName: dpad
+        - default: Left
+          label: Left — Command
+          name: cmdLeft
+          required: false
+          type: TEXT
+          groupName: dpad
+        - context: item
+          default: AppleTV_Remote_Key
+          label: Right — Item
+          name: itemRight
+          required: false
+          type: TEXT
+          groupName: dpad
+        - default: Right
+          label: Right — Command
+          name: cmdRight
+          required: false
+          type: TEXT
+          groupName: dpad
+        - context: item
+          default: AppleTV_Remote_Key
+          label: Select — Item
+          name: itemSelect
+          required: false
+          type: TEXT
+          groupName: dpad
+        - default: Select
+          label: Select — Command
+          name: cmdSelect
+          required: false
+          type: TEXT
+          groupName: dpad
+        - context: item
+          default: AppleTV_Remote_Key
+          label: Menu / Home — Item
+          name: itemMenu
+          required: false
+          type: TEXT
+          groupName: transport
+        - default: Home
+          label: Menu / Home — Command
+          name: cmdMenu
+          required: false
+          type: TEXT
+          groupName: transport
+        - context: item
+          default: AppleTV_Remote_Key
+          label: Back — Item
+          name: itemBack
+          required: false
+          type: TEXT
+          groupName: transport
+        - default: Menu
+          label: Back — Command
+          name: cmdBack
+          required: false
+          type: TEXT
+          groupName: transport
+        - context: item
+          default: AppleTV_Remote_Key
+          label: Play/Pause — Item
+          name: itemPlayPause
+          required: false
+          type: TEXT
+          groupName: transport
+        - default: PlayPause
+          label: Play/Pause — Command
+          name: cmdPlayPause
+          required: false
+          type: TEXT
+          groupName: transport
+        - context: item
+          default: AppleTV_Volume
+          label: Volume Up — Item
+          name: itemVolumeUp
+          required: false
+          type: TEXT
+          groupName: volume
+        - default: INCREASE
+          label: Volume Up — Command
+          name: cmdVolumeUp
+          required: false
+          type: TEXT
+          groupName: volume
+        - context: item
+          default: AppleTV_Volume
+          label: Volume Down — Item
+          name: itemVolumeDown
+          required: false
+          type: TEXT
+          groupName: volume
+        - default: DECREASE
+          label: Volume Down — Command
+          name: cmdVolumeDown
+          required: false
+          type: TEXT
+          groupName: volume
+        - context: item
+          label: Mute — Item
+          name: itemMute
+          required: false
+          type: TEXT
+          groupName: volume
+        - default: ON
+          label: Mute — Command
+          name: cmdMute
+          required: false
+          type: TEXT
+          groupName: volume
+        - context: item
+          default: AppleTV_Power
+          label: Power — Item
+          name: itemPower
+          required: false
+          type: TEXT
+          groupName: system
+        - default: ON
+          label: Power — Command
+          name: cmdPower
+          required: false
+          type: TEXT
+          groupName: system
+        - default: 260px
+          description: e.g. 220px, 300px, 100%
+          label: Width (CSS)
+          name: width
+          required: false
+          type: TEXT
+          groupName: appearance
+      parameterGroups:
+        - name: dpad
+          label: D-Pad & Select
+        - name: transport
+          label: Transport & Navigation
+        - name: volume
+          label: Volume
+        - name: system
+          label: System
+        - name: appearance
+          label: Appearance
+    component: div
+    config:
+      style:
+        aspect-ratio: 250.94 / 601.14
+        background-image: url(/static/widgets/apple-tv-remote.svg)
+        background-repeat: no-repeat
+        background-size: 100% 100%
+        margin: 0 auto
+        max-width: 100%
+        position: relative
+        touch-action: manipulation
+        user-select: none
+        width: =props.width || '260px'
+    slots:
+      default:
+        - component: oh-link
+          config:
+            action: command
+            actionCommand: =props.cmdSelect || 'ON'
+            actionItem: =props.itemSelect
+            style:
+              border-radius: 50%
+              cursor: pointer
+              height: 20.63%
+              left: 24.16%
+              position: absolute
+              top: 18.38%
+              width: 49.41%
+              z-index: "3"
+            visible: =!!props.itemSelect
+        - component: oh-link
+          config:
+            action: command
+            actionCommand: =props.cmdUp || 'ON'
+            actionItem: =props.itemUp
+            style:
+              border-radius: 50%
+              cursor: pointer
+              height: 12.64%
+              left: 33.73%
+              position: absolute
+              top: 8.40%
+              width: 30.29%
+              z-index: "4"
+            visible: =!!props.itemUp
+        - component: oh-link
+          config:
+            action: command
+            actionCommand: =props.cmdDown || 'ON'
+            actionItem: =props.itemDown
+            style:
+              border-radius: 50%
+              cursor: pointer
+              height: 12.64%
+              left: 33.73%
+              position: absolute
+              top: 36.35%
+              width: 30.29%
+              z-index: "4"
+            visible: =!!props.itemDown
+        - component: oh-link
+          config:
+            action: command
+            actionCommand: =props.cmdLeft || 'ON'
+            actionItem: =props.itemLeft
+            style:
+              border-radius: 50%
+              cursor: pointer
+              height: 12.64%
+              left: 0.26%
+              position: absolute
+              top: 22.37%
+              width: 30.29%
+              z-index: "4"
+            visible: =!!props.itemLeft
+        - component: oh-link
+          config:
+            action: command
+            actionCommand: =props.cmdRight || 'ON'
+            actionItem: =props.itemRight
+            style:
+              border-radius: 50%
+              cursor: pointer
+              height: 12.64%
+              left: 67.20%
+              position: absolute
+              top: 22.37%
+              width: 30.29%
+              z-index: "4"
+            visible: =!!props.itemRight
+        - component: oh-link
+          config:
+            action: toggle
+            actionCommand: =props.cmdPower || 'ON'
+            actionItem: =props.itemPower
+            style:
+              border-radius: 50%
+              cursor: pointer
+              height: 5.66%
+              left: 68.60%
+              position: absolute
+              top: 2.91%
+              width: 13.55%
+              z-index: "2"
+            visible: =!!props.itemPower
+            actionCommandAlt: OFF
+        - component: oh-link
+          config:
+            action: command
+            actionCommand: =props.cmdBack || 'ON'
+            actionItem: =props.itemBack
+            style:
+              border-radius: 50%
+              cursor: pointer
+              height: 13.47%
+              left: 9.62%
+              position: absolute
+              top: 48.74%
+              width: 32.28%
+              z-index: "2"
+            visible: =!!props.itemBack
+        - component: oh-link
+          config:
+            action: command
+            actionCommand: =props.cmdMenu || 'ON'
+            actionItem: =props.itemMenu
+            style:
+              border-radius: 50%
+              cursor: pointer
+              height: 13.47%
+              left: 54.65%
+              position: absolute
+              top: 48.74%
+              width: 32.28%
+              z-index: "2"
+            visible: =!!props.itemMenu
+        - component: oh-link
+          config:
+            action: command
+            actionCommand: =props.cmdPlayPause || 'ON'
+            actionItem: =props.itemPlayPause
+            style:
+              border-radius: 50%
+              cursor: pointer
+              height: 13.47%
+              left: 9.62%
+              position: absolute
+              top: 65.21%
+              width: 32.28%
+              z-index: "2"
+            visible: =!!props.itemPlayPause
+        - component: oh-link
+          config:
+            action: command
+            actionCommand: =props.cmdMute || 'ON'
+            actionItem: =props.itemMute
+            style:
+              border-radius: 50%
+              cursor: pointer
+              height: 13.47%
+              left: 9.62%
+              position: absolute
+              top: 81.68%
+              width: 32.28%
+              z-index: "2"
+            visible: =!!props.itemMute
+        - component: oh-link
+          config:
+            action: command
+            actionCommand: =props.cmdVolumeUp || 'ON'
+            actionItem: =props.itemVolumeUp
+            style:
+              border-radius: 30px 30px 6px 6px
+              cursor: pointer
+              height: 9.65%
+              left: 58.04%
+              position: absolute
+              top: 70.62%
+              width: 26.31%
+              z-index: "2"
+            visible: =!!props.itemVolumeUp
+        - component: oh-link
+          config:
+            action: command
+            actionCommand: =props.cmdVolumeDown || 'ON'
+            actionItem: =props.itemVolumeDown
+            style:
+              border-radius: 6px 6px 30px 30px
+              cursor: pointer
+              height: 9.65%
+              left: 58.04%
+              position: absolute
+              top: 80.26%
+              width: 26.31%
+              z-index: "2"
+            visible: =!!props.itemVolumeDown
