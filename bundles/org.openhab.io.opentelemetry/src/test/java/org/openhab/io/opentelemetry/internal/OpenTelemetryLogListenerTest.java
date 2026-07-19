@@ -155,4 +155,20 @@ public class OpenTelemetryLogListenerTest {
         assertEquals("java.lang.RuntimeException", attributes.get(AttributeKey.stringKey("exception.type")));
         assertEquals("java.lang.RuntimeException", attributes.get(AttributeKey.stringKey("exception.message")));
     }
+
+    @Test
+    public void testOpenTelemetryInternalLoggingIgnored() {
+        OpenTelemetryLogListener listener = new OpenTelemetryLogListener(otelLogger);
+
+        LogEntry logEntry = mock(LogEntry.class);
+        when(logEntry.getLoggerName()).thenReturn("io.opentelemetry.exporter.internal.http.HttpExporter");
+        when(logEntry.getLogLevel()).thenReturn(LogLevel.ERROR);
+        when(logEntry.getMessage()).thenReturn("Failed to export logs");
+        when(logEntry.getTime()).thenReturn(System.currentTimeMillis());
+
+        listener.logged(logEntry);
+
+        // Verify that the listener returns early and does not call any methods on the OTel Logger
+        verifyNoInteractions(otelLogger);
+    }
 }

@@ -43,6 +43,13 @@ public class OpenTelemetryLogListener implements LogListener {
 
     @Override
     public void logged(@NonNullByDefault({}) LogEntry logEntry) {
+        String loggerName = logEntry.getLoggerName();
+
+        // Prevent logging loop
+        if (loggerName.startsWith("io.opentelemetry.")) {
+            return;
+        }
+
         Severity severity = mapSeverity(logEntry.getLogLevel());
 
         var logRecordBuilder = otelLogger.logRecordBuilder().setTimestamp(Instant.ofEpochMilli(logEntry.getTime())) //
@@ -52,7 +59,7 @@ public class OpenTelemetryLogListener implements LogListener {
                 .setBody(logEntry.getMessage());
 
         AttributesBuilder attributesBuilder = Attributes.builder() //
-                .put("log.logger.name", logEntry.getLoggerName()) //
+                .put("log.logger.name", loggerName) //
                 .put("thread.name", logEntry.getThreadInfo());
 
         @Nullable
