@@ -102,14 +102,14 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
     private String currentTimeMode = T;
     private String currentPlayMode = BLANK;
     private String currentDiscType = BLANK;
-    private boolean isPowerOn = false;
-    private boolean powerCmdDebounce = false;
-    private boolean isStopped = true;
+    private volatile boolean isPowerOn = false;
+    private volatile boolean powerCmdDebounce = false;
+    private volatile boolean isStopped = true;
     private boolean isUDP20X = false;
     private boolean isBdpIP = false;
-    private boolean isVbModeSet = false;
-    private boolean isInitialQuery = false;
-    private boolean isFirmwareSet = false;
+    private volatile boolean isVbModeSet = false;
+    private volatile boolean isInitialQuery = false;
+    private volatile boolean isFirmwareSet = false;
     private Object sequenceLock = new Object();
 
     /**
@@ -179,7 +179,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
         if (serialPort != null) {
             connector = new OppoSerialConnector(serialPortManager, serialPort, getThing().getUID().getAsString());
         } else if (port != null) {
-            connector = new OppoIpConnector(host, port, getThing().getUID().getAsString());
+            connector = new OppoIpConnector(host, port, isBdpIP, getThing().getUID().getAsString());
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Either Serial port or Host & Port must be specifed");

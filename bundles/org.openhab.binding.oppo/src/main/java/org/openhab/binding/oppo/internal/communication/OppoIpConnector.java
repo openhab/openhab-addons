@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.oppo.internal.communication;
 
-import static org.openhab.binding.oppo.internal.OppoBindingConstants.*;
-
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -48,14 +46,15 @@ public class OppoIpConnector extends OppoConnector {
      *
      * @param address the IP address of the player or serial over ip adapter
      * @param port the TCP port to be used
+     * @param isBdpIP indicates if the BDP series direct IP connection protocol should be used
      * @param uid the thing uid string
      */
-    public OppoIpConnector(@Nullable String address, int port, String uid) {
+    public OppoIpConnector(@Nullable String address, int port, boolean isBdpIP, String uid) {
         this.address = address;
         this.port = port;
         this.uid = uid;
 
-        if (port == BDP83_PORT || port == BDP10X_PORT) {
+        if (isBdpIP) {
             super.setOverrideCmdPreamble();
         }
     }
