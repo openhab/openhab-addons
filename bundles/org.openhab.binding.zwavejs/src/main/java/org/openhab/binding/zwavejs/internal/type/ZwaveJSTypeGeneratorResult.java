@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.zwavejs.internal.conversion.ChannelMetadata;
 import org.openhab.binding.zwavejs.internal.type.capabilities.ColorCapability;
 import org.openhab.binding.zwavejs.internal.type.capabilities.RollerShutterCapability;
 import org.openhab.core.thing.Channel;
@@ -33,6 +34,7 @@ public class ZwaveJSTypeGeneratorResult {
 
     public Map<String, Channel> channels = new HashMap<>();
     public Map<String, Object> values = new HashMap<>();
+    public Map<String, ChannelMetadata> channelMetadata = new HashMap<>();
     public Map<Integer, ColorCapability> colorCapabilities = new HashMap<>();
     public Map<Integer, RollerShutterCapability> rollerShutterCapabilities = new HashMap<>();
     public String location = "";

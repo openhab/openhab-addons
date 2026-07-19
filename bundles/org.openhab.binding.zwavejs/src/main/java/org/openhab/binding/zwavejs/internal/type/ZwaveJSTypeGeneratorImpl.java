@@ -254,6 +254,7 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
                     .build();
 
             result.channels.put(details.id, channel);
+            result.channelMetadata.put(details.id, details);
         }
     }
 
@@ -374,6 +375,7 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
         }
 
         result.channels.put(details.id, builder.build());
+        result.channelMetadata.put(details.id, details);
 
         // if necessary add or update the entry in our ZwaveJSTypeGeneratorResult's map of ColorCapabilities
         updateColorCapabilities(thingUID, details, result);
@@ -798,6 +800,7 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
                     .build();
 
             result.channels.put(details.id, channel);
+            result.channelMetadata.put(details.id, details);
             Object dimmerValue = result.values.get(rollerShutterCapability.dimmerChannel.getId());
             if (dimmerValue != null) {
                 result.values.put(details.id, dimmerValue);
@@ -851,6 +854,7 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
                     .build();
 
             result.channels.put(details.id, channel);
+            result.channelMetadata.put(details.id, details);
             colorCapability.colorTempChannel = channel.getUID();
         });
     }
