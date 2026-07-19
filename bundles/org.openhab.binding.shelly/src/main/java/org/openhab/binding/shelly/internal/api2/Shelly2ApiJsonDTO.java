@@ -62,6 +62,7 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLYRPC_METHOD_RGBW_SET = "RGBW.Set";
     public static final String SHELLYRPC_METHOD_RGB_STATUS = "RGB.GetStatus";
     public static final String SHELLYRPC_METHOD_RGB_SET = "RGB.Set";
+    public static final String SHELLYRPC_METHOD_RGB_SETCONFIG = "RGB.SetConfig";
     public static final String SHELLYRPC_METHOD_CCT_STATUS = "CCT.GetStatus";
     public static final String SHELLYRPC_METHOD_CCT_SET = "CCT.Set";
     public static final String SHELLYRPC_METHOD_CCT_SETCONFIG = "CCT.SetConfig";

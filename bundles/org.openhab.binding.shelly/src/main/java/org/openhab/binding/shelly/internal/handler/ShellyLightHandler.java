@@ -385,7 +385,8 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                 updated |= updateChannel(colorGroup, CHANNEL_COLOR_PICKER, col.toHSB());
             }
 
-            if ((!profile.inColor && !profile.isGen2) || profile.isBulb || (profile.isDuo && profile.isGen2)) {
+            if ((!profile.inColor && !profile.isGen2) || profile.isBulb || (profile.isDuo && profile.isGen2)
+                    || profile.isRGBBulb) {
                 String whiteGroup = buildWhiteGroupName(profile, channelId);
                 col.setBrightness(getInteger(light.brightness));
                 updated |= updateChannel(whiteGroup, CHANNEL_BRIGHTNESS + "$Switch", col.power);
@@ -393,7 +394,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                         toQuantityType(col.power == OnOffType.ON ? col.percentBrightness.doubleValue() : 0, DIGITS_NONE,
                                 Units.PERCENT));
 
-                if ((profile.isBulb || profile.isDuo) && (light.temp != null)) {
+                if ((profile.isBulb || profile.isDuo || profile.isRGBBulb) && (light.temp != null)) {
                     col.setTemp(getInteger(light.temp));
                     updated |= updateChannel(whiteGroup, CHANNEL_COLOR_TEMP, col.percentTemp);
                 }

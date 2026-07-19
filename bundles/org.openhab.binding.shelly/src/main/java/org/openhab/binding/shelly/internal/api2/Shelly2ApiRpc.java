@@ -841,7 +841,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     public ShellyShortLightStatus getLightStatus(int index) throws ShellyApiException {
         ShellyDeviceProfile profile = getProfile();
         ShellyShortLightStatus status = new ShellyShortLightStatus();
-        if (profile.isDuo) {
+        if (profile.isDuo || profile.isRGBBulb) {
             ShellyStatusLight full = getLightStatus();
             status.ison = full.ison;
             if (!full.lights.isEmpty()) {
@@ -869,8 +869,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         params.id = id;
         params.brightness = brightness;
         params.on = brightness > 0;
-        String method = duoMethod(profile, SHELLYRPC_METHOD_CCT_SET, SHELLYRPC_METHOD_RGBCCT_SET,
-                SHELLYRPC_METHOD_LIGHT_SET);
+        String method = lightSetMethod(profile, SHELLYRPC_METHOD_CCT_SET, SHELLYRPC_METHOD_RGBCCT_SET,
+                SHELLYRPC_METHOD_RGB_SET, SHELLYRPC_METHOD_LIGHT_SET);
         apiRequest(method, params, String.class);
     }
 
@@ -880,8 +880,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         Shelly2RpcRequestParams params = new Shelly2RpcRequestParams();
         params.id = id;
         params.on = turnMode.equals(SHELLY_API_ON);
-        String method = duoMethod(profile, SHELLYRPC_METHOD_CCT_SET, SHELLYRPC_METHOD_RGBCCT_SET,
-                SHELLYRPC_METHOD_LIGHT_SET);
+        String method = lightSetMethod(profile, SHELLYRPC_METHOD_CCT_SET, SHELLYRPC_METHOD_RGBCCT_SET,
+                SHELLYRPC_METHOD_RGB_SET, SHELLYRPC_METHOD_LIGHT_SET);
         apiRequest(method, params, String.class);
         return getLightStatus(id);
     }
@@ -894,27 +894,10 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     @Override
     public void setAutoTimer(int index, String timerName, double value) throws ShellyApiException {
         ShellyDeviceProfile profile = getProfile();
-        boolean isLight = profile.isLight || profile.isDimmer;
-        String method;
-        String component;
-        if (profile.isDuo) {
-            if (profile.isRGBCCT) {
-                method = SHELLYRPC_METHOD_RGBCCT_SETCONFIG;
-                component = "RGBCCT";
-            } else {
-                method = SHELLYRPC_METHOD_CCT_SETCONFIG;
-                component = "CCT";
-            }
-        } else if (isLight) {
-            method = SHELLYRPC_METHOD_LIGHT_SETCONFIG;
-            component = "Light";
-        } else {
-            method = SHELLYRPC_METHOD_SWITCH_SETCONFIG;
-            component = "Switch";
-        }
-        Shelly2RpcRequest req = new Shelly2RpcRequest().withMethod(method).withId(index);
+        AutoTimerTarget target = autoTimerTarget(profile);
+        Shelly2RpcRequest req = new Shelly2RpcRequest().withMethod(target.method()).withId(index);
         req.params.withConfig();
-        req.params.config.name = component + index;
+        req.params.config.name = target.component() + index;
         if (timerName.equals(SHELLY_TIMER_AUTOON)) {
             req.params.config.autoOn = value > 0;
             req.params.config.autoOnDelay = value;
@@ -1065,12 +1048,35 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         throw new ShellyApiException("API call not implemented");
     }
 
-    // Returns the correct RPC method for Duo: CCT-only → cctMethod, RGBCCT → rgbcctMethod, other → fallback
-    private String duoMethod(ShellyDeviceProfile profile, String cctMethod, String rgbcctMethod, String fallback) {
+    // Returns the correct RPC method for the light's Set call: RGB bulb → rgbMethod,
+    // Duo CCT-only → cctMethod, Duo RGBCCT → rgbcctMethod, other → fallback
+    static String lightSetMethod(ShellyDeviceProfile profile, String cctMethod, String rgbcctMethod, String rgbMethod,
+            String fallback) {
+        if (profile.isRGBBulb) {
+            return rgbMethod;
+        }
         if (profile.isDuo) {
             return profile.isRGBCCT ? rgbcctMethod : cctMethod;
         }
         return fallback;
+    }
+
+    record AutoTimerTarget(String method, String component) {
+    }
+
+    static AutoTimerTarget autoTimerTarget(ShellyDeviceProfile profile) {
+        boolean isLight = profile.isLight || profile.isDimmer;
+        if (profile.isRGBBulb) {
+            return new AutoTimerTarget(SHELLYRPC_METHOD_RGB_SETCONFIG, "RGB");
+        }
+        if (profile.isDuo) {
+            return profile.isRGBCCT ? new AutoTimerTarget(SHELLYRPC_METHOD_RGBCCT_SETCONFIG, "RGBCCT")
+                    : new AutoTimerTarget(SHELLYRPC_METHOD_CCT_SETCONFIG, "CCT");
+        }
+        if (isLight) {
+            return new AutoTimerTarget(SHELLYRPC_METHOD_LIGHT_SETCONFIG, "Light");
+        }
+        return new AutoTimerTarget(SHELLYRPC_METHOD_SWITCH_SETCONFIG, "Switch");
     }
 
     private ShellyStatusLight buildSingleLightStatus(ShellyStatusLightChannel channel, @Nullable Boolean ison) {
@@ -1081,7 +1087,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         return status;
     }
 
-    private void applyRgbArray(ShellyStatusLightChannel channel, @Nullable Integer[] rgb) {
+    private void applyRgbArray(ShellyStatusLightChannel channel, @Nullable Integer @Nullable [] rgb) {
         if (rgb != null && rgb.length >= 3) {
             channel.red = rgb[0];
             channel.green = rgb[1];
