@@ -139,7 +139,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
         this.isUDP20X = (model == MODEL203 || model == MODEL205);
 
         // Check configuration settings
-        if (model == null) {
+        if (model == 0) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Player model must be specified");
             return;
         }
