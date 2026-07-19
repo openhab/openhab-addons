@@ -6,7 +6,7 @@
 
 	<thing-type id="shellyplusduobulb">
 		<label>Shelly Duo Bulb E27</label>
-		<description>Shelly Duo Bulb E27 - Dimmable Tunable White Bulb with Power Meter</description>
+		<description>Shelly Duo Bulb E27 - Dimmable Tunable White Bulb</description>
 		<category>ColorLight</category>
 		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 		<channel-groups>
@@ -23,12 +23,13 @@
 
 	<thing-type id="shellypluscolorbulb">
 		<label>Shelly Multicolor Bulb E27</label>
-		<description>Shelly Multicolor Bulb E27 - Dimmable RGB+CCT Bulb with Power Meter</description>
+		<description>Shelly Multicolor Bulb E27 - Dimmable RGB+CCT Bulb</description>
 		<category>ColorLight</category>
 		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="control" typeId="rgbwpmColorControl"/>
 			<channel-group id="color" typeId="colorSettingsRGBWpm"/>
+			<channel-group id="white" typeId="whiteSettings"/>
 			<channel-group id="meter" typeId="meter"/>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
