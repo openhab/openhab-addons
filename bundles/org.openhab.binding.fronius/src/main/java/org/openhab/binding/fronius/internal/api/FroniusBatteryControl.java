@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.fronius.internal.api;
 
+import static org.openhab.binding.fronius.internal.api.dto.inverter.batterycontrol.BatteriesConfig.*;
+
 import java.net.URI;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
@@ -27,6 +29,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.fronius.internal.api.dto.inverter.PostConfigResponse;
+import org.openhab.binding.fronius.internal.api.dto.inverter.batterycontrol.BatteriesConfig;
 import org.openhab.binding.fronius.internal.api.dto.inverter.batterycontrol.ScheduleType;
 import org.openhab.binding.fronius.internal.api.dto.inverter.batterycontrol.TimeOfUseRecord;
 import org.openhab.binding.fronius.internal.api.dto.inverter.batterycontrol.TimeOfUseRecords;
@@ -40,20 +43,20 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link FroniusBatteryControl} is responsible for controlling the battery of Fronius hybrid inverters through the
  * battery management's time-dependent battery control settings.
  *
  * @author Florian Hotze - Initial contribution
+ * @author Christian Jonak-Möchel - Add limit battery (dis)charging power methods, Extend battery settings, Add night
+ *         preservation limit getter
  */
 @NonNullByDefault
 public class FroniusBatteryControl {
     private static final String TIME_OF_USE_ENDPOINT = "/config/timeofuse";
     private static final String BATTERIES_ENDPOINT = "/config/batteries";
     private static final String NIGHT_PRESERVATION_LIMIT_ENDPOINT = "/commands/GetNightPreservationLimit";
-    private static final String BACKUP_RESERVED_CAPACITY_PARAMETER = "HYB_BACKUP_RESERVED";
 
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
@@ -382,36 +385,6 @@ public class FroniusBatteryControl {
     }
 
     /**
-     * Sets the reserved battery capacity for backup power.
-     *
-     * @param percent the reserved battery capacity for backup power
-     * @throws FroniusCommunicationException when an error occurs during communication with the inverter
-     * @throws IllegalArgumentException when percent is not in [10,95]
-     * @throws FroniusUnauthorizedException when login failed due to invalid credentials
-     */
-    public void setBackupReservedCapacity(int percent)
-            throws FroniusCommunicationException, FroniusUnauthorizedException {
-        if (percent < 10 || percent > 95) {
-            throw new IllegalArgumentException("invalid percent value: " + percent + " (must be in [10,95])");
-        }
-
-        postConfig(batteriesUri, Map.of(BACKUP_RESERVED_CAPACITY_PARAMETER, percent),
-                BACKUP_RESERVED_CAPACITY_PARAMETER);
-        logger.trace("Backup Reserved Capacity setting set successfully");
-    }
-
-    /** Battery settings from the inverter's battery configuration (SoC values in percent). */
-    public record BatterySettings(int minSoc, int maxSoc, int backupReservedCapacity, int backupCriticalSoc,
-            boolean chargeFromGrid, boolean calibrating) {
-    }
-
-    private static final String SOC_MIN_PARAMETER = "BAT_M0_SOC_MIN";
-    private static final String SOC_MAX_PARAMETER = "BAT_M0_SOC_MAX";
-    private static final String BACKUP_CRITICAL_SOC_PARAMETER = "HYB_BACKUP_CRITICALSOC";
-    private static final String CHARGE_FROM_GRID_PARAMETER = "HYB_EVU_CHARGEFROMGRID";
-    private static final String CALIBRATION_PARAMETER = "BAT_CALIBRATION";
-
-    /**
      * Gets the current battery settings (state-of-charge limits and backup reserved capacity) from the inverter.
      *
      * @return the current battery settings
@@ -443,13 +416,23 @@ public class FroniusBatteryControl {
                 calibrating);
     }
 
-    /** Deserialized response of the batteries config API endpoint. */
-    private record BatteriesConfig(@SerializedName(SOC_MIN_PARAMETER) @Nullable Integer minSoc,
-            @SerializedName(SOC_MAX_PARAMETER) @Nullable Integer maxSoc,
-            @SerializedName(BACKUP_RESERVED_CAPACITY_PARAMETER) @Nullable Integer backupReservedCapacity,
-            @SerializedName(BACKUP_CRITICAL_SOC_PARAMETER) @Nullable Integer backupCriticalSoc,
-            @SerializedName(CHARGE_FROM_GRID_PARAMETER) @Nullable Boolean chargeFromGrid,
-            @SerializedName(CALIBRATION_PARAMETER) @Nullable Boolean calibrating) {
+    /**
+     * Sets the reserved battery capacity for backup power.
+     *
+     * @param percent the reserved battery capacity for backup power
+     * @throws FroniusCommunicationException when an error occurs during communication with the inverter
+     * @throws IllegalArgumentException when percent is not in [10,95]
+     * @throws FroniusUnauthorizedException when login failed due to invalid credentials
+     */
+    public void setBackupReservedCapacity(int percent)
+            throws FroniusCommunicationException, FroniusUnauthorizedException {
+        if (percent < 10 || percent > 95) {
+            throw new IllegalArgumentException("invalid percent value: " + percent + " (must be in [10,95])");
+        }
+
+        postConfig(batteriesUri, Map.of(BACKUP_RESERVED_CAPACITY_PARAMETER, percent),
+                BACKUP_RESERVED_CAPACITY_PARAMETER);
+        logger.trace("Backup Reserved Capacity setting set successfully");
     }
 
     /**
@@ -462,37 +445,6 @@ public class FroniusBatteryControl {
     public void setChargeFromGrid(boolean enabled) throws FroniusCommunicationException, FroniusUnauthorizedException {
         postConfig(batteriesUri, Map.of(CHARGE_FROM_GRID_PARAMETER, enabled), CHARGE_FROM_GRID_PARAMETER);
         logger.trace("Charge from Grid setting set successfully");
-    }
-
-    /**
-     * Gets the night preservation limit from the inverter, i.e. the state of charge that is preserved over night to
-     * keep the battery system operational.
-     *
-     * @return the night preservation limit in percent
-     * @throws FroniusCommunicationException when an error occurs during communication with the inverter
-     * @throws FroniusUnauthorizedException when the login fails due to invalid credentials
-     */
-    public int getNightPreservationLimit() throws FroniusCommunicationException, FroniusUnauthorizedException {
-        String responseString = configApiClient.executeRequest(endpoint, HttpMethod.GET, nightPreservationLimitUri,
-                null);
-        NightPreservationLimitResponse response;
-        try {
-            response = gson.fromJson(responseString, NightPreservationLimitResponse.class);
-        } catch (JsonSyntaxException jse) {
-            throw new FroniusCommunicationException("Failed to parse night preservation limit", jse);
-        }
-        NightPreservationLimitResult result = response == null ? null : response.resultData();
-        Integer limit = result == null ? null : result.socMinValue();
-        if (limit == null) {
-            throw new FroniusCommunicationException("Night preservation limit response is missing expected fields");
-        }
-        return limit;
-    }
-
-    private record NightPreservationLimitResult(@Nullable Integer socMinValue) {
-    }
-
-    private record NightPreservationLimitResponse(@Nullable NightPreservationLimitResult resultData) {
     }
 
     /**
@@ -529,5 +481,41 @@ public class FroniusBatteryControl {
         postConfig(batteriesUri, Map.of(SOC_MIN_PARAMETER, minSoc, SOC_MAX_PARAMETER, maxSoc), SOC_MIN_PARAMETER,
                 SOC_MAX_PARAMETER);
         logger.trace("SoC limits set successfully");
+    }
+
+    /**
+     * Gets the night preservation limit from the inverter, i.e. the state of charge that is preserved over night to
+     * keep the battery system operational.
+     *
+     * @return the night preservation limit in percent
+     * @throws FroniusCommunicationException when an error occurs during communication with the inverter
+     * @throws FroniusUnauthorizedException when the login fails due to invalid credentials
+     */
+    public int getNightPreservationLimit() throws FroniusCommunicationException, FroniusUnauthorizedException {
+        String responseString = configApiClient.executeRequest(endpoint, HttpMethod.GET, nightPreservationLimitUri,
+                null);
+        NightPreservationLimitResponse response;
+        try {
+            response = gson.fromJson(responseString, NightPreservationLimitResponse.class);
+        } catch (JsonSyntaxException jse) {
+            throw new FroniusCommunicationException("Failed to parse night preservation limit", jse);
+        }
+        NightPreservationLimitResult result = response == null ? null : response.resultData();
+        Integer limit = result == null ? null : result.socMinValue();
+        if (limit == null) {
+            throw new FroniusCommunicationException("Night preservation limit response is missing expected fields");
+        }
+        return limit;
+    }
+
+    private record NightPreservationLimitResult(@Nullable Integer socMinValue) {
+    }
+
+    private record NightPreservationLimitResponse(@Nullable NightPreservationLimitResult resultData) {
+    }
+
+    /** Battery settings from the inverter's battery configuration (SoC values in percent). */
+    public record BatterySettings(int minSoc, int maxSoc, int backupReservedCapacity, int backupCriticalSoc,
+            boolean chargeFromGrid, boolean calibrating) {
     }
 }
