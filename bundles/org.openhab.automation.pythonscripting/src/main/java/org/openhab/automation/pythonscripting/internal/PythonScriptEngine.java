@@ -29,6 +29,7 @@ import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -291,7 +292,7 @@ public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine
                 getBindings(ScriptContext.ENGINE_SCOPE).put(ScriptExtensionModuleProvider.IMPORT_PROXY_NAME,
                         wrapImportFn);
                 try {
-                    if (!isScriptFile() && !isScriptModule() && !isTransformation()) {
+                    if (!isScriptFile() && !isScriptModule() && !isTransformation() && !isCLI()) {
                         logger.warn(
                                 "Unknown script environment detected for engine '{}': Neither script file, script module nor transformation.",
                                 engineIdentifier);
@@ -540,6 +541,20 @@ public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine
         return engineIdentifier.startsWith(OPENHAB_TRANSFORMATION_SCRIPT);
     }
 
+    /**
+     * Tests if the script is a transformation script, i.e. created from the script transformation service.
+     *
+     * @return true if it is a transformation script, false otherwise
+     */
+    private boolean isCLI() {
+        ScriptContext ctx = getContext();
+        if (ctx == null) {
+            logger.warn("Failed to retrieve script context from engine '{}'.", engineIdentifier);
+            return false;
+        }
+        return this.engineIdentifier.startsWith("pythonscripting-cli");
+    }
+
     private static Set<String> transformArrayToSet(Value value) {
         try {
             Set<String> set = new HashSet<>();
@@ -589,5 +604,9 @@ public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine
                 + (!value.hasMember("tzinfo") || value.getMember("tzinfo").isNull()
                         ? OffsetDateTime.now().getOffset().getId()
                         : ""));
+    }
+
+    public Map<String, Object> getScope() {
+        return scriptExtensionModuleProvider.getScope();
     }
 }
