@@ -16,9 +16,9 @@ import static org.openhab.binding.fronius.internal.FroniusBindingConstants.API_T
 
 import java.io.IOException;
 import java.security.cert.CertificateException;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -62,7 +62,7 @@ public class FroniusBridgeHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(FroniusBridgeHandler.class);
     private final FroniusHttpUtil httpUtil = new FroniusHttpUtil();
     private final FroniusConfigApiClient configApiClient;
-    private final Set<FroniusBaseThingHandler> services = new HashSet<>();
+    private final Set<FroniusBaseThingHandler> services = new CopyOnWriteArraySet<>();
     private @Nullable ScheduledFuture<?> refreshJob;
     private @Nullable ServiceRegistration<?> tlsProviderService;
 
