@@ -15,11 +15,11 @@ package org.openhab.binding.fronius.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link FroniusSymoInverterConfiguration} is the class used to match the powerinverter thing configuration.
+ * The {@link FroniusBatteryConfiguration} is the class used to match the battery thing configuration.
  *
  * @author Christian Jonak-Möchel - Initial contribution
  */
 @NonNullByDefault
-public class FroniusSymoInverterConfiguration extends FroniusBaseDeviceConfiguration {
+public class FroniusBatteryConfiguration extends FroniusBaseDeviceConfiguration {
     public int batterySettingsRefreshInterval = 5;
 }

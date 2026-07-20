@@ -27,7 +27,7 @@ import org.openhab.binding.fronius.internal.api.FroniusBatteryControl;
 import org.openhab.binding.fronius.internal.api.FroniusCommunicationException;
 import org.openhab.binding.fronius.internal.api.FroniusUnauthorizedException;
 import org.openhab.binding.fronius.internal.api.dto.inverter.batterycontrol.ScheduleType;
-import org.openhab.binding.fronius.internal.handler.FroniusSymoInverterHandler;
+import org.openhab.binding.fronius.internal.handler.FroniusBatteryHandler;
 import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.ActionOutput;
 import org.openhab.core.automation.annotation.RuleAction;
@@ -53,32 +53,32 @@ import org.slf4j.LoggerFactory;
  *         three-letter English weekday abbreviations or full names (e.g. "MON,TUE" or "MONDAY,TUESDAY"). Omitting it or
  *         passing null applies the schedule to all days.
  */
-@Component(scope = ServiceScope.PROTOTYPE, service = FroniusSymoInverterActions.class)
+@Component(scope = ServiceScope.PROTOTYPE, service = FroniusBatteryActions.class)
 @ThingActionsScope(name = "fronius")
 @NonNullByDefault
-public class FroniusSymoInverterActions implements ThingActions {
-    private final Logger logger = LoggerFactory.getLogger(FroniusSymoInverterActions.class);
-    private @Nullable FroniusSymoInverterHandler handler;
+public class FroniusBatteryActions implements ThingActions {
+    private final Logger logger = LoggerFactory.getLogger(FroniusBatteryActions.class);
+    private @Nullable FroniusBatteryHandler handler;
 
-    private static FroniusSymoInverterActions toFroniusSymoInverterActions(ThingActions actions) {
-        if (actions instanceof FroniusSymoInverterActions froniusSymoInverterActions) {
+    private static FroniusBatteryActions toFroniusBatteryActions(ThingActions actions) {
+        if (actions instanceof FroniusBatteryActions froniusSymoInverterActions) {
             return froniusSymoInverterActions;
         }
-        throw new IllegalArgumentException("The 'actions' argument is not an instance of FroniusSymoInverterActions");
+        throw new IllegalArgumentException("The 'actions' argument is not an instance of FroniusBatteryActions");
     }
 
     public static boolean resetBatteryControl(ThingActions actions) {
-        return toFroniusSymoInverterActions(actions).resetBatteryControl();
+        return toFroniusBatteryActions(actions).resetBatteryControl();
     }
 
     public static boolean addSchedule(ThingActions actions, LocalTime from, LocalTime until, ScheduleType scheduleType,
             QuantityType<Power> power) {
-        return toFroniusSymoInverterActions(actions).addSchedule(from, until, scheduleType, power);
+        return toFroniusBatteryActions(actions).addSchedule(from, until, scheduleType, power);
     }
 
     public static boolean addSchedule(ThingActions actions, LocalTime from, LocalTime until, ScheduleType scheduleType,
             QuantityType<Power> power, @Nullable String weekdays) {
-        return toFroniusSymoInverterActions(actions).addSchedule(from, until, scheduleType, power, weekdays);
+        return toFroniusBatteryActions(actions).addSchedule(from, until, scheduleType, power, weekdays);
     }
 
     public static boolean addSchedule(ThingActions actions, LocalTime from, LocalTime until, String scheduleType,
@@ -113,16 +113,16 @@ public class FroniusSymoInverterActions implements ThingActions {
     }
 
     public static boolean holdBatteryCharge(ThingActions actions) {
-        return toFroniusSymoInverterActions(actions).holdBatteryCharge();
+        return toFroniusBatteryActions(actions).holdBatteryCharge();
     }
 
     public static boolean addHoldBatteryChargeSchedule(ThingActions actions, LocalTime from, LocalTime until) {
-        return toFroniusSymoInverterActions(actions).addHoldBatteryChargeSchedule(from, until);
+        return toFroniusBatteryActions(actions).addHoldBatteryChargeSchedule(from, until);
     }
 
     public static boolean addHoldBatteryChargeSchedule(ThingActions actions, LocalTime from, LocalTime until,
             @Nullable String weekdays) {
-        return toFroniusSymoInverterActions(actions).addHoldBatteryChargeSchedule(from, until, weekdays);
+        return toFroniusBatteryActions(actions).addHoldBatteryChargeSchedule(from, until, weekdays);
     }
 
     public static boolean addHoldBatteryChargeSchedule(ThingActions actions, ZonedDateTime from, ZonedDateTime until) {
@@ -135,17 +135,17 @@ public class FroniusSymoInverterActions implements ThingActions {
     }
 
     public static boolean forceBatteryCharging(ThingActions actions, QuantityType<Power> power) {
-        return toFroniusSymoInverterActions(actions).forceBatteryCharging(power);
+        return toFroniusBatteryActions(actions).forceBatteryCharging(power);
     }
 
     public static boolean addForcedBatteryChargingSchedule(ThingActions actions, LocalTime from, LocalTime until,
             QuantityType<Power> power) {
-        return toFroniusSymoInverterActions(actions).addForcedBatteryChargingSchedule(from, until, power);
+        return toFroniusBatteryActions(actions).addForcedBatteryChargingSchedule(from, until, power);
     }
 
     public static boolean addForcedBatteryChargingSchedule(ThingActions actions, LocalTime from, LocalTime until,
             QuantityType<Power> power, @Nullable String weekdays) {
-        return toFroniusSymoInverterActions(actions).addForcedBatteryChargingSchedule(from, until, power, weekdays);
+        return toFroniusBatteryActions(actions).addForcedBatteryChargingSchedule(from, until, power, weekdays);
     }
 
     public static boolean addForcedBatteryChargingSchedule(ThingActions actions, ZonedDateTime from,
@@ -159,17 +159,17 @@ public class FroniusSymoInverterActions implements ThingActions {
     }
 
     public static boolean limitBatteryCharging(ThingActions actions, QuantityType<Power> power) {
-        return toFroniusSymoInverterActions(actions).limitBatteryCharging(power);
+        return toFroniusBatteryActions(actions).limitBatteryCharging(power);
     }
 
     public static boolean addBatteryChargingLimitSchedule(ThingActions actions, LocalTime from, LocalTime until,
             QuantityType<Power> power) {
-        return toFroniusSymoInverterActions(actions).addBatteryChargingLimitSchedule(from, until, power);
+        return toFroniusBatteryActions(actions).addBatteryChargingLimitSchedule(from, until, power);
     }
 
     public static boolean addBatteryChargingLimitSchedule(ThingActions actions, LocalTime from, LocalTime until,
             QuantityType<Power> power, @Nullable String weekdays) {
-        return toFroniusSymoInverterActions(actions).addBatteryChargingLimitSchedule(from, until, power, weekdays);
+        return toFroniusBatteryActions(actions).addBatteryChargingLimitSchedule(from, until, power, weekdays);
     }
 
     public static boolean addBatteryChargingLimitSchedule(ThingActions actions, ZonedDateTime from, ZonedDateTime until,
@@ -183,16 +183,16 @@ public class FroniusSymoInverterActions implements ThingActions {
     }
 
     public static boolean preventBatteryCharging(ThingActions actions) {
-        return toFroniusSymoInverterActions(actions).preventBatteryCharging();
+        return toFroniusBatteryActions(actions).preventBatteryCharging();
     }
 
     public static boolean addPreventBatteryChargingSchedule(ThingActions actions, LocalTime from, LocalTime until) {
-        return toFroniusSymoInverterActions(actions).addPreventBatteryChargingSchedule(from, until);
+        return toFroniusBatteryActions(actions).addPreventBatteryChargingSchedule(from, until);
     }
 
     public static boolean addPreventBatteryChargingSchedule(ThingActions actions, LocalTime from, LocalTime until,
             @Nullable String weekdays) {
-        return toFroniusSymoInverterActions(actions).addPreventBatteryChargingSchedule(from, until, weekdays);
+        return toFroniusBatteryActions(actions).addPreventBatteryChargingSchedule(from, until, weekdays);
     }
 
     public static boolean addPreventBatteryChargingSchedule(ThingActions actions, ZonedDateTime from,
@@ -206,17 +206,17 @@ public class FroniusSymoInverterActions implements ThingActions {
     }
 
     public static boolean forceBatteryDischarging(ThingActions actions, QuantityType<Power> power) {
-        return toFroniusSymoInverterActions(actions).forceBatteryDischarging(power);
+        return toFroniusBatteryActions(actions).forceBatteryDischarging(power);
     }
 
     public static boolean addForcedBatteryDischargingSchedule(ThingActions actions, LocalTime from, LocalTime until,
             QuantityType<Power> power) {
-        return toFroniusSymoInverterActions(actions).addForcedBatteryDischargingSchedule(from, until, power);
+        return toFroniusBatteryActions(actions).addForcedBatteryDischargingSchedule(from, until, power);
     }
 
     public static boolean addForcedBatteryDischargingSchedule(ThingActions actions, LocalTime from, LocalTime until,
             QuantityType<Power> power, @Nullable String weekdays) {
-        return toFroniusSymoInverterActions(actions).addForcedBatteryDischargingSchedule(from, until, power, weekdays);
+        return toFroniusBatteryActions(actions).addForcedBatteryDischargingSchedule(from, until, power, weekdays);
     }
 
     public static boolean addForcedBatteryDischargingSchedule(ThingActions actions, ZonedDateTime from,
@@ -230,17 +230,17 @@ public class FroniusSymoInverterActions implements ThingActions {
     }
 
     public static boolean limitBatteryDischarging(ThingActions actions, QuantityType<Power> power) {
-        return toFroniusSymoInverterActions(actions).limitBatteryDischarging(power);
+        return toFroniusBatteryActions(actions).limitBatteryDischarging(power);
     }
 
     public static boolean addBatteryDischargingLimitSchedule(ThingActions actions, LocalTime from, LocalTime until,
             QuantityType<Power> power) {
-        return toFroniusSymoInverterActions(actions).addBatteryDischargingLimitSchedule(from, until, power);
+        return toFroniusBatteryActions(actions).addBatteryDischargingLimitSchedule(from, until, power);
     }
 
     public static boolean addBatteryDischargingLimitSchedule(ThingActions actions, LocalTime from, LocalTime until,
             QuantityType<Power> power, @Nullable String weekdays) {
-        return toFroniusSymoInverterActions(actions).addBatteryDischargingLimitSchedule(from, until, power, weekdays);
+        return toFroniusBatteryActions(actions).addBatteryDischargingLimitSchedule(from, until, power, weekdays);
     }
 
     public static boolean addBatteryDischargingLimitSchedule(ThingActions actions, ZonedDateTime from,
@@ -254,16 +254,16 @@ public class FroniusSymoInverterActions implements ThingActions {
     }
 
     public static boolean setBackupReservedBatteryCapacity(ThingActions actions, int percent) {
-        return toFroniusSymoInverterActions(actions).setBackupReservedBatteryCapacity(percent);
+        return toFroniusBatteryActions(actions).setBackupReservedBatteryCapacity(percent);
     }
 
     public static boolean setBackupReservedBatteryCapacity(ThingActions actions, PercentType percent) {
-        return toFroniusSymoInverterActions(actions).setBackupReservedBatteryCapacity(percent);
+        return toFroniusBatteryActions(actions).setBackupReservedBatteryCapacity(percent);
     }
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        this.handler = (FroniusSymoInverterHandler) handler;
+        this.handler = (FroniusBatteryHandler) handler;
     }
 
     @Override
@@ -586,7 +586,7 @@ public class FroniusSymoInverterActions implements ThingActions {
     }
 
     private @Nullable FroniusBatteryControl getBatteryControl() {
-        FroniusSymoInverterHandler handler = this.handler;
+        FroniusBatteryHandler handler = this.handler;
         if (handler != null) {
             return handler.getBatteryControl();
         }

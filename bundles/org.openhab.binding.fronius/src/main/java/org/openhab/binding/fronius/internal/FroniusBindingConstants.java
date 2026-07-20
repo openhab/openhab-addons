@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.fronius.internal;
 
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
@@ -38,13 +40,6 @@ public class FroniusBindingConstants {
     public static final ThingTypeUID THING_TYPE_BATTERY = new ThingTypeUID(BINDING_ID, "battery");
 
     // Inverter channels
-    public static final String BATTERY_SOC_MIN_CHANNEL = "batterysocmin";
-    public static final String BATTERY_SOC_MAX_CHANNEL = "batterysocmax";
-    public static final String BATTERY_BACKUP_RESERVED_CHANNEL = "backupreservedcapacity";
-    public static final String BATTERY_BACKUP_CRITICAL_SOC_CHANNEL = "backupcriticalsoc";
-    public static final String BATTERY_CHARGE_FROM_GRID_CHANNEL = "chargefromgrid";
-    public static final String BATTERY_CALIBRATION_CHANNEL = "batterycalibration";
-    public static final String BATTERY_NIGHT_PRESERVATION_LIMIT_CHANNEL = "nightpreservationlimit";
     public static final String INVERTER_DATA_CHANNEL_DAY_ENERGY = "inverterdatachanneldayenergy";
     public static final String INVERTER_DATA_CHANNEL_PAC = "inverterdatachannelpac";
     public static final String INVERTER_DATA_CHANNEL_TOTAL = "inverterdatachanneltotal";
@@ -118,6 +113,18 @@ public class FroniusBindingConstants {
     public static final String BATTERY_ENABLE = "enable";
     public static final String BATTERY_TEMPERATURE_CELL = "temperature";
     public static final String BATTERY_TIMESTAMP = "timestamp";
+
+    // Battery settings channels, provided through the inverter's config API
+    public static final String BATTERY_SOC_MIN_CHANNEL = "socMin";
+    public static final String BATTERY_SOC_MAX_CHANNEL = "socMax";
+    public static final String BATTERY_BACKUP_RESERVED_CHANNEL = "backupReservedCapacity";
+    public static final String BATTERY_BACKUP_CRITICAL_SOC_CHANNEL = "backupCriticalSoc";
+    public static final String BATTERY_CHARGE_FROM_GRID_CHANNEL = "chargeFromGrid";
+    public static final String BATTERY_CALIBRATION_CHANNEL = "calibration";
+    public static final String BATTERY_NIGHT_PRESERVATION_LIMIT_CHANNEL = "nightPreservationLimit";
+    public static final Set<String> BATTERY_SETTINGS_CHANNELS = Set.of(BATTERY_SOC_MIN_CHANNEL, BATTERY_SOC_MAX_CHANNEL,
+            BATTERY_BACKUP_RESERVED_CHANNEL, BATTERY_BACKUP_CRITICAL_SOC_CHANNEL, BATTERY_CHARGE_FROM_GRID_CHANNEL,
+            BATTERY_CALIBRATION_CHANNEL, BATTERY_NIGHT_PRESERVATION_LIMIT_CHANNEL);
 
     // List of all Urls
     public static final String INVERTER_REALTIME_DATA_URL = "%SCHEME%://%IP%/solar_api/v1/GetInverterRealtimeData.cgi?Scope=Device&DeviceId=%DEVICEID%&DataCollection=CommonInverterData";

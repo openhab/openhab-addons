@@ -44,13 +44,6 @@
 			<channel id="powerflowinvertersoc" typeId="inverterSoc"/>
 			<channel id="powerflowinverter1power" typeId="inverter1Power"/>
 			<channel id="powerflowinverter1soc" typeId="inverter1Soc"/>
-			<channel id="batterysocmin" typeId="batterySocMin"/>
-			<channel id="batterysocmax" typeId="batterySocMax"/>
-			<channel id="backupreservedcapacity" typeId="backupReservedCapacity"/>
-			<channel id="backupcriticalsoc" typeId="backupCriticalSoc"/>
-			<channel id="chargefromgrid" typeId="chargeFromGrid"/>
-			<channel id="batterycalibration" typeId="batteryCalibration"/>
-			<channel id="nightpreservationlimit" typeId="nightPreservationLimit"/>
 		</channels>
 
 		<properties>
@@ -62,14 +55,6 @@
 				<label>Device ID</label>
 				<description>Specific device identifier</description>
 				<default>1</default>
-			</parameter>
-			<parameter name="batterySettingsRefreshInterval" type="integer" min="1" unit="min">
-				<label>Battery Settings Refresh Interval</label>
-				<description>Specifies the interval in minutes at which the battery settings channels are read from the
-					inverter's
-					config API. Reading them requires a login, therefore the interval should be kept high.</description>
-				<default>5</default>
-				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -111,13 +96,38 @@
 			<channel id="timestamp" typeId="batteryTimestamp">
 				<label>Timestamp</label>
 			</channel>
+			<channel id="socMin" typeId="batterySocMin">
+				<label>SoC Minimum</label>
+			</channel>
+			<channel id="socMax" typeId="batterySocMax">
+				<label>SoC Maximum</label>
+			</channel>
+			<channel id="backupReservedCapacity" typeId="backupReservedCapacity"/>
+			<channel id="backupCriticalSoc" typeId="backupCriticalSoc"/>
+			<channel id="chargeFromGrid" typeId="chargeFromGrid"/>
+			<channel id="calibration" typeId="batteryCalibration">
+				<label>Calibration</label>
+			</channel>
+			<channel id="nightPreservationLimit" typeId="nightPreservationLimit"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description>
 			<parameter name="deviceId" type="integer">
 				<label>Device ID</label>
 				<description>Specific device identifier</description>
 				<default>0</default>
+			</parameter>
+			<parameter name="batterySettingsRefreshInterval" type="integer" min="1" unit="min">
+				<label>Battery Settings Refresh Interval</label>
+				<description>Specifies the interval in minutes at which the battery settings channels are read from the
+					inverter's
+					config API. Reading them requires a login, therefore the interval should be kept high.</description>
+				<default>5</default>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</thing-type>
