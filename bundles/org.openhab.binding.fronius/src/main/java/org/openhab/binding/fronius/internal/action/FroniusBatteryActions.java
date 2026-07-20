@@ -45,13 +45,13 @@ import org.slf4j.LoggerFactory;
 /**
  * Implementation of the {@link ThingActions} interface used for controlling battery charging and discharging for
  * Fronius hybrid inverters.
+ * <p>
+ * All schedule actions accept an optional trailing weekdays parameter, given as a comma-separated list of three-letter
+ * English weekday abbreviations or full names (e.g. "MON,TUE" or "MONDAY,TUESDAY"). Omitting it or passing null applies
+ * the schedule to all days.
  *
  * @author Florian Hotze - Initial contribution
  * @author Christian Jonak-Möchel - Add battery charging/discharging limit actions and weekdays parameter
- *
- *         All schedule actions accept an optional trailing weekdays parameter, given as a comma-separated list of
- *         three-letter English weekday abbreviations or full names (e.g. "MON,TUE" or "MONDAY,TUESDAY"). Omitting it or
- *         passing null applies the schedule to all days.
  */
 @Component(scope = ServiceScope.PROTOTYPE, service = FroniusBatteryActions.class)
 @ThingActionsScope(name = "fronius")
@@ -579,7 +579,14 @@ public class FroniusBatteryActions implements ThingActions {
                 case "FRI" -> result.add(DayOfWeek.FRIDAY);
                 case "SAT" -> result.add(DayOfWeek.SATURDAY);
                 case "SUN" -> result.add(DayOfWeek.SUNDAY);
-                default -> result.add(DayOfWeek.valueOf(day));
+                default -> {
+                    try {
+                        result.add(DayOfWeek.valueOf(day));
+                    } catch (IllegalArgumentException e) {
+                        throw new IllegalArgumentException("Invalid weekday '" + token.strip()
+                                + "', use three-letter abbreviations or full English weekday names, e.g. \"MON,TUE\" or \"MONDAY,TUESDAY\"");
+                    }
+                }
             }
         }
         return result;

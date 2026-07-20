@@ -53,7 +53,7 @@ The binding has no configuration options, all configuration is done at `bridge`,
 | Parameter                        | Description                                                                                                                                                                                    |
 |----------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `deviceId`                       | The identifier of your battery device (Default: 0)                                                                                                                                             |
-| `batterySettingsRefreshInterval` | The interval in minutes at which the battery settings channels are read from the inverter's config API. Reading them requires a login, therefore the interval should be kept high. (Default: 5) |
+| `batterySettingsRefreshInterval` | The interval in minutes at which the battery settings channels are read from the inverter's config API. Reading them requires a login, therefore the interval should be kept high. Set to 0 to disable reading the battery settings from the inverter. (Default: 5) |
 
 ### Meter Thing Configuration
 

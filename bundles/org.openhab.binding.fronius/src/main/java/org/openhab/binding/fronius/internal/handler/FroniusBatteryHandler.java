@@ -301,6 +301,10 @@ public class FroniusBatteryHandler extends FroniusBaseThingHandler {
      */
     private void startBatterySettingsRefreshJob(FroniusBatteryConfiguration config) {
         cancelBatterySettingsRefreshJob();
+        if (config.batterySettingsRefreshInterval <= 0) {
+            logger.debug("Battery settings refresh is disabled for Thing '{}'.", thing.getUID());
+            return;
+        }
         batterySettingsRefreshJob = scheduler.scheduleWithFixedDelay(() -> {
             FroniusBatteryControl control = batteryControl;
             if (control == null
@@ -309,8 +313,11 @@ public class FroniusBatteryHandler extends FroniusBaseThingHandler {
             }
             try {
                 updateBatterySettingsChannels(control);
-            } catch (FroniusCommunicationException | FroniusUnauthorizedException e) {
+            } catch (FroniusUnauthorizedException e) {
                 logger.warn("Failed to read battery settings: {}", e.getMessage());
+            } catch (FroniusCommunicationException e) {
+                // Expected to happen from time to time, e.g. when the inverter is unreachable, so only log at debug
+                logger.debug("Failed to read battery settings: {}", e.getMessage());
             }
             refreshNightPreservationLimit(control);
         }, 0, config.batterySettingsRefreshInterval, TimeUnit.MINUTES);
