@@ -41,6 +41,7 @@ import io.opentelemetry.api.logs.Severity;
  * The {@link OpenTelemetryLogListenerTest} class contains tests for logging mapping logic.
  *
  * @author Florian Hotze - Initial contribution
+ * @author Florian Lettner - Add unit tests
  */
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -50,6 +51,37 @@ public class OpenTelemetryLogListenerTest {
 
     private @Mock @NonNullByDefault({}) Logger otelLogger;
     private @Mock(answer = Answers.RETURNS_SELF) @NonNullByDefault({}) LogRecordBuilder logRecordBuilder;
+
+    @Test
+    public void testOwnLoggerSuppression() {
+        OpenTelemetryLogListener listener = new OpenTelemetryLogListener(otelLogger);
+
+        // Our bundle logger — must be suppressed
+        LogEntry bundleEntry = mock(LogEntry.class);
+        when(bundleEntry.getLogLevel()).thenReturn(LogLevel.WARN);
+        when(bundleEntry.getLoggerName()).thenReturn("org.openhab.io.opentelemetry.internal.OpenTelemetryService");
+        listener.logged(bundleEntry);
+
+        // OTel exporter logger — must also be suppressed
+        LogEntry exporterEntry = mock(LogEntry.class);
+        when(exporterEntry.getLogLevel()).thenReturn(LogLevel.WARN);
+        when(exporterEntry.getLoggerName()).thenReturn("io.opentelemetry.exporter.internal.otlp.OtlpHttpExporter");
+        listener.logged(exporterEntry);
+
+        verify(otelLogger, never()).logRecordBuilder();
+
+        // Unrelated logger — must pass through
+        when(otelLogger.logRecordBuilder()).thenReturn(logRecordBuilder);
+        LogEntry otherEntry = mock(LogEntry.class);
+        when(otherEntry.getLogLevel()).thenReturn(LogLevel.INFO);
+        when(otherEntry.getTime()).thenReturn(0L);
+        when(otherEntry.getMessage()).thenReturn("test");
+        when(otherEntry.getLoggerName()).thenReturn("org.openhab.core.something");
+        when(otherEntry.getThreadInfo()).thenReturn("main");
+        when(otherEntry.getException()).thenReturn(null);
+        listener.logged(otherEntry);
+        verify(otelLogger, times(1)).logRecordBuilder();
+    }
 
     @Test
     public void testLoggedBasic() {
