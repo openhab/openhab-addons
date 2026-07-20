@@ -372,23 +372,11 @@ public class ShellyComponents {
                     if (minute1Wh != null) {
                         thingHandler.updateChannel(groupName, CHANNEL_METER_LASTMIN1,
                                 toQuantityType(minute1Wh * 60.0, DIGITS_WATT, Units.WATT));
-                        meterUpdated |= thingHandler.updateChannel(groupName, CHANNEL_METER_ENERGYHISTMIN1,
-                                toQuantityType(minute1Wh, DIGITS_KWH, Units.WATT_HOUR));
                     }
                     Double minute2Wh = byMinute.length > 1 ? byMinute[1] : null;
-                    if (minute2Wh != null) {
-                        meterUpdated |= thingHandler.updateChannel(groupName, CHANNEL_METER_ENERGYHISTMIN2,
-                                toQuantityType(minute2Wh, DIGITS_KWH, Units.WATT_HOUR));
-                    }
                     Double minute3Wh = byMinute.length > 2 ? byMinute[2] : null;
-                    if (minute3Wh != null) {
-                        meterUpdated |= thingHandler.updateChannel(groupName, CHANNEL_METER_ENERGYHISTMIN3,
-                                toQuantityType(minute3Wh, DIGITS_KWH, Units.WATT_HOUR));
-                    }
-                    if (minute1Wh != null && minute2Wh != null && minute3Wh != null) {
-                        meterUpdated |= thingHandler.updateChannel(groupName, CHANNEL_METER_ENERGYAVGLAST3MIN,
-                                toQuantityType((minute1Wh + minute2Wh + minute3Wh) / 3.0, DIGITS_KWH, Units.WATT_HOUR));
-                    }
+                    meterUpdated |= writeMinuteHistoryChannels(thingHandler, groupName, minute1Wh, minute2Wh,
+                            minute3Wh);
                 }
 
                 if (emeter.power != null) {
@@ -509,24 +497,35 @@ public class ShellyComponents {
             return false;
         }
         double wattMin = getDouble(counters[0]);
-        double wh1 = wattMin / 60.0;
+        Double wh1 = wattMin / 60.0;
         boolean updated = thingHandler.updateChannel(groupName, CHANNEL_METER_LASTMIN1,
                 toQuantityType(wattMin, DIGITS_WATT, Units.WATT));
-        updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_ENERGYHISTMIN1,
-                toQuantityType(wh1, DIGITS_KWH, Units.WATT_HOUR));
-        Double wh2 = null;
-        Double wh3 = null;
-        if (counters.length > 1 && counters[1] != null) {
-            wh2 = getDouble(counters[1]) / 60.0;
+        Double wh2 = counters.length > 1 && counters[1] != null ? getDouble(counters[1]) / 60.0 : null;
+        Double wh3 = counters.length > 2 && counters[2] != null ? getDouble(counters[2]) / 60.0 : null;
+        return updated | writeMinuteHistoryChannels(thingHandler, groupName, wh1, wh2, wh3);
+    }
+
+    /**
+     * Write up to 3 independent per-minute energy sums (Wh) to energyHistMin1-3, plus their
+     * average to energyAvgLast3Min once all three are present. Shared by Gen1's counters[] and
+     * Gen2's by_minute[] handling.
+     */
+    private static boolean writeMinuteHistoryChannels(ShellyThingInterface thingHandler, String groupName,
+            @Nullable Double wh1, @Nullable Double wh2, @Nullable Double wh3) {
+        boolean updated = false;
+        if (wh1 != null) {
+            updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_ENERGYHISTMIN1,
+                    toQuantityType(wh1, DIGITS_KWH, Units.WATT_HOUR));
+        }
+        if (wh2 != null) {
             updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_ENERGYHISTMIN2,
                     toQuantityType(wh2, DIGITS_KWH, Units.WATT_HOUR));
         }
-        if (counters.length > 2 && counters[2] != null) {
-            wh3 = getDouble(counters[2]) / 60.0;
+        if (wh3 != null) {
             updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_ENERGYHISTMIN3,
                     toQuantityType(wh3, DIGITS_KWH, Units.WATT_HOUR));
         }
-        if (wh2 != null && wh3 != null) {
+        if (wh1 != null && wh2 != null && wh3 != null) {
             updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_ENERGYAVGLAST3MIN,
                     toQuantityType((wh1 + wh2 + wh3) / 3.0, DIGITS_KWH, Units.WATT_HOUR));
         }
