@@ -23,7 +23,7 @@ import org.eclipse.jetty.http.HttpMethod;
  * The {@link FroniusDigestSession} holds the authentication parameters of a successful login to a Fronius inverter's
  * <code>/config</code> HTTP endpoints. Its nonce can be reused to authenticate subsequent requests until it expires on
  * the inverter.
- * <br>
+ * <p>
  * Instances are not thread-safe: creating an authentication header increments the nonce count, and the inverter
  * expects the nonce counts to arrive in ascending order. Callers therefore have to create the header and send the
  * request while holding a lock, which is what {@link FroniusConfigApiClient} does.
@@ -33,7 +33,6 @@ import org.eclipse.jetty.http.HttpMethod;
 @NonNullByDefault
 class FroniusDigestSession {
     private final FroniusConfigApiEndpoint endpoint;
-    private final String hashAlgorithm;
     private final String nonce;
     private final String realm;
     private final String qop;
@@ -41,10 +40,9 @@ class FroniusDigestSession {
     private final Instant createdAt;
     private int nc;
 
-    FroniusDigestSession(FroniusConfigApiEndpoint endpoint, String hashAlgorithm, String nonce, String realm,
-            String qop, String cnonce, Instant createdAt, int nc) {
+    FroniusDigestSession(FroniusConfigApiEndpoint endpoint, String nonce, String realm, String qop, String cnonce,
+            Instant createdAt, int nc) {
         this.endpoint = endpoint;
-        this.hashAlgorithm = hashAlgorithm;
         this.nonce = nonce;
         this.realm = realm;
         this.qop = qop;
@@ -75,8 +73,8 @@ class FroniusDigestSession {
     String createAuthHeader(HttpMethod method, String relativeUrl) throws FroniusCommunicationException {
         nc++;
         try {
-            return FroniusConfigAuthUtil.createDigestHeader(hashAlgorithm, relativeUrl, method, endpoint.username(),
-                    endpoint.password(), nonce, realm, qop, nc, cnonce);
+            return FroniusConfigAuthUtil.createDigestHeader(endpoint, relativeUrl, method, nonce, realm, qop, nc,
+                    cnonce);
         } catch (NoSuchAlgorithmException | IllegalArgumentException e) {
             throw new FroniusCommunicationException("Failed to create digest authentication header for request", e);
         }
