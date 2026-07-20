@@ -194,7 +194,15 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
 
     @Override
     public void resetMeterTotal(int id) throws ShellyApiException {
-        callApi(SHELLY_URL_STATUS_EMETER + "/" + id + "?reset_totals=true", ShellyStatusRelay.class);
+        if (profile.is3EM) {
+            // 3EM exposes a single device-level reset switch, but the Gen1 API resets one phase per
+            // call, so iterate all phases
+            for (int phase = 0; phase < profile.numMeters; phase++) {
+                callApi(SHELLY_URL_STATUS_EMETER + "/" + phase + "?reset_totals=true", ShellyStatusRelay.class);
+            }
+        } else {
+            callApi(SHELLY_URL_STATUS_EMETER + "/" + id + "?reset_totals=true", ShellyStatusRelay.class);
+        }
     }
 
     @Override

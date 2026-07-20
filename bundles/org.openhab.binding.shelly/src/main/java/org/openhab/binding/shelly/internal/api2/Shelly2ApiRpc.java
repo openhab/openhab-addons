@@ -877,9 +877,17 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     @Override
     public void resetMeterTotal(int id) throws ShellyApiException {
-        apiRequest(new Shelly2RpcRequest()
-                .withMethod(getProfile().is3EM ? SHELLYRPC_METHOD_EMDATARESET : SHELLYRPC_METHOD_EM1DATARESET)
-                .withId(id));
+        apiRequest(new Shelly2RpcRequest().withMethod(resetCountersMethod(getProfile())).withId(id));
+    }
+
+    // Order matters: Pro EM-50 has isEM1 + hasRelays, and roller-mode 2PM has isRoller + hasRelays —
+    // both must be checked before the generic hasRelays fallback.
+    static String resetCountersMethod(ShellyDeviceProfile profile) {
+        return profile.is3EM ? SHELLYRPC_METHOD_EMDATARESET
+                : profile.isEM1 ? SHELLYRPC_METHOD_EM1DATARESET
+                        : profile.isRoller ? SHELLYRPC_METHOD_COVER_RESETCOUNTERS
+                                : profile.hasRelays ? SHELLYRPC_METHOD_SWITCH_RESETCOUNTERS
+                                        : SHELLYRPC_METHOD_PM1_RESETCOUNTERS;
     }
 
     @Override
