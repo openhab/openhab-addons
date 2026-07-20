@@ -443,8 +443,8 @@ public class ShellyComponents {
                             getOnOff(getInteger(t.boostMinutes) > 0));
                     updated |= thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_BTIMER,
                             toQuantityType((double) bminutes, DIGITS_NONE, Units.MINUTE));
-                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_MODE, getStringType(
-                            getBool(t.targetTemp.enabled) ? SHELLY_TRV_MODE_AUTO : SHELLY_TRV_MODE_MANUAL));
+                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_MODE,
+                            getStringType(getBool(t.schedule) ? SHELLY_TRV_MODE_AUTO : SHELLY_TRV_MODE_MANUAL));
 
                     int pid = getBool(t.schedule) ? getInteger(t.profile) : 0;
                     updated |= thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_SCHEDULE,
