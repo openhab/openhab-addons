@@ -54,7 +54,7 @@ public class GetParamsetParser extends CommonRpcParser<Object[], @Nullable Void>
             HmDatapointInfo dpInfo = new HmDatapointInfo(paramsetType, channel, dpName);
             HmDatapoint dp = channel.getDatapoint(dpInfo);
             if (dp != null) {
-                dp.setValue(convertToType(dp, mapMessage.get(dpName)));
+                dp.setValue(convertToType(dp.getType(), mapMessage.get(dpName)));
                 adjustRssiValue(dp);
             } else {
                 // should never happen, but in case ...
