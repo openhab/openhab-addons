@@ -272,7 +272,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                         }
                         break;
                     case CHANNEL_SOURCE:
-                        if (command instanceof DecimalType decimalCommand) {
+                        if (command instanceof DecimalType) {
                             connector.sendCommand(OppoCommand.SET_INPUT_SOURCE, commandStr);
                         }
                         break;
@@ -300,12 +300,12 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                         }
                         break;
                     case CHANNEL_SUB_SHIFT:
-                        if (command instanceof DecimalType decimalCommand) {
+                        if (command instanceof DecimalType) {
                             connector.sendCommand(OppoCommand.SET_SUBTITLE_SHIFT, commandStr);
                         }
                         break;
                     case CHANNEL_OSD_POSITION:
-                        if (command instanceof DecimalType decimalCommand) {
+                        if (command instanceof DecimalType) {
                             connector.sendCommand(OppoCommand.SET_OSD_POSITION, commandStr);
                         }
                         break;
