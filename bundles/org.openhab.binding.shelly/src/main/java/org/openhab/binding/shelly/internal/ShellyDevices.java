@@ -365,6 +365,10 @@ public class ShellyDevices {
             THING_TYPE_SHELLY3EM, THING_TYPE_SHELLYPLUS3EM63, //
             THING_TYPE_SHELLYPRO3EM, THING_TYPE_SHELLYPRO3EM63, THING_TYPE_SHELLYPRO3EM400);
 
+    // em1-clamp meter devices, single or dual clamp; Pro EM-50 additionally exposes a dry-contact relay
+    public static final Set<ThingTypeUID> GROUP_EM1_THING_TYPES = Set.of( //
+            THING_TYPE_SHELLYPLUSEM, THING_TYPE_SHELLYMINI_EM, THING_TYPE_SHELLYPROEM50);
+
     // Mini Devices
     public static final Set<ThingTypeUID> GROUP_MINI_THING_TYPES = Set.of(THING_TYPE_SHELLYMINI_1,
             THING_TYPE_SHELLYMINI_PM, THING_TYPE_SHELLYMINI_1PM, THING_TYPE_SHELLYMINI_EM);

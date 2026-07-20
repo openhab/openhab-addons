@@ -50,6 +50,9 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLYRPC_METHOD_SWITCH_STATUS = "Switch.GetStatus";
     public static final String SHELLYRPC_METHOD_SWITCH_SET = "Switch.Set";
     public static final String SHELLYRPC_METHOD_SWITCH_SETCONFIG = "Switch.SetConfig";
+    public static final String SHELLYRPC_METHOD_SWITCH_RESETCOUNTERS = "Switch.ResetCounters";
+    public static final String SHELLYRPC_METHOD_PM1_RESETCOUNTERS = "PM1.ResetCounters";
+    public static final String SHELLYRPC_METHOD_COVER_RESETCOUNTERS = "Cover.ResetCounters";
     public static final String SHELLYRPC_METHOD_CB_SET = "CB.Set";
     public static final String SHELLYRPC_METHOD_COVER_SETPOS = "Cover.GoToPosition";
     public static final String SHELLY2_COVER_CMD_OPEN = "Open";
@@ -71,8 +74,8 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLYRPC_METHOD_CLOUDSET = "Cloud.SetConfig";
     public static final String SHELLYRPC_METHOD_WSGETCONFIG = "WS.GetConfig";
     public static final String SHELLYRPC_METHOD_WSSETCONFIG = "WS.SetConfig";
-    public static final String SHELLYRPC_METHOD_EMDATARESET = "EMData.DeleteAllData";
-    public static final String SHELLYRPC_METHOD_EM1DATARESET = "EM1Data.DeleteAllData";
+    public static final String SHELLYRPC_METHOD_EMDATARESET = "EMData.ResetCounters";
+    public static final String SHELLYRPC_METHOD_EM1DATARESET = "EM1Data.ResetCounters";
     public static final String SHELLYRPC_METHOD_SMOKE_SETCONFIG = "Smoke.SetConfig";
     public static final String SHELLYRPC_METHOD_SMOKE_MUTE = "Smoke.Mute";
     public static final String SHELLYRPC_METHOD_SCRIPT_LIST = "Script.List";
