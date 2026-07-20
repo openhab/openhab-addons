@@ -63,6 +63,14 @@
 				<description>Specific device identifier</description>
 				<default>1</default>
 			</parameter>
+			<parameter name="batterySettingsRefreshInterval" type="integer" min="1" unit="min">
+				<label>Battery Settings Refresh Interval</label>
+				<description>Specifies the interval in minutes at which the battery settings channels are read from the
+					inverter's
+					config API. Reading them requires a login, therefore the interval should be kept high.</description>
+				<default>5</default>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 	</thing-type>
 

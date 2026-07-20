@@ -31,6 +31,7 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.fronius.internal.FroniusBaseDeviceConfiguration;
 import org.openhab.binding.fronius.internal.FroniusBindingConstants;
 import org.openhab.binding.fronius.internal.FroniusBridgeConfiguration;
+import org.openhab.binding.fronius.internal.FroniusSymoInverterConfiguration;
 import org.openhab.binding.fronius.internal.action.FroniusSymoInverterActions;
 import org.openhab.binding.fronius.internal.api.FroniusBatteryControl;
 import org.openhab.binding.fronius.internal.api.FroniusBatteryControl.BatterySettings;
@@ -76,7 +77,6 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
 
-    private static final int BATTERY_SETTINGS_REFRESH_PERIOD_MINUTES = 5;
     private static final Set<String> BATTERY_SETTINGS_CHANNELS = Set.of(FroniusBindingConstants.BATTERY_SOC_MIN_CHANNEL,
             FroniusBindingConstants.BATTERY_SOC_MAX_CHANNEL, FroniusBindingConstants.BATTERY_BACKUP_RESERVED_CHANNEL,
             FroniusBindingConstants.BATTERY_BACKUP_CRITICAL_SOC_CHANNEL,
@@ -89,7 +89,7 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
 
     private @Nullable InverterRealtimeResponse inverterRealtimeResponse;
     private @Nullable PowerFlowRealtimeResponse powerFlowResponse;
-    private @Nullable FroniusBaseDeviceConfiguration config;
+    private @Nullable FroniusSymoInverterConfiguration config;
     private @Nullable InverterInfo inverterInfo;
     private @Nullable FroniusBatteryControl batteryControl;
     private @Nullable BatterySettings lastBatterySettings;
@@ -108,7 +108,7 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
 
     @Override
     protected void handleRefresh(FroniusBridgeConfiguration bridgeConfiguration) throws FroniusCommunicationException {
-        FroniusBaseDeviceConfiguration config = this.config;
+        FroniusSymoInverterConfiguration config = this.config;
         if (config == null) {
             logger.warn("config is null in handleRefresh(), this is a bug, please report it.");
             return;
@@ -160,7 +160,7 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
 
     @Override
     public void initialize() {
-        FroniusBaseDeviceConfiguration config = this.config = getConfigAs(FroniusBaseDeviceConfiguration.class);
+        FroniusSymoInverterConfiguration config = this.config = getConfigAs(FroniusSymoInverterConfiguration.class);
         FroniusBridgeHandler bridgeHandler = getFroniusBridgeHandler();
         Bridge bridge = getBridge();
         if (bridge == null || bridgeHandler == null) {
@@ -173,7 +173,7 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
         updateProperties();
         initializeBatteryControl(bridgeHandler, bridgeConfig.scheme, bridgeConfig.hostname, bridgeConfig.username,
                 bridgeConfig.password);
-        startBatterySettingsRefreshJob();
+        startBatterySettingsRefreshJob(config);
         super.initialize();
     }
 
@@ -187,7 +187,7 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
         super.handleBridgeConfigurationUpdate(configurationParameters);
         Bridge bridge = getBridge();
         FroniusBridgeHandler bridgeHandler = getFroniusBridgeHandler();
-        FroniusBaseDeviceConfiguration config = this.config;
+        FroniusSymoInverterConfiguration config = this.config;
         if (bridge == null || bridgeHandler == null) {
             logger.warn(
                     "bridge ({}) or bridgeHandler ({}) is null in handleBridgeConfigurationUpdate(), this is a bug, please report it.",
@@ -203,7 +203,7 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
         updateProperties();
         initializeBatteryControl(bridgeHandler, bridgeConfig.scheme, bridgeConfig.hostname, bridgeConfig.username,
                 bridgeConfig.password);
-        startBatterySettingsRefreshJob();
+        startBatterySettingsRefreshJob(config);
     }
 
     public @Nullable FroniusBatteryControl getBatteryControl() {
@@ -346,7 +346,7 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
      * the cyclically polled Solar API data and reading them requires a costly login to the inverter's config API.
      * The slow periodic refresh also picks up changes made through the inverter's web UI.
      */
-    private void startBatterySettingsRefreshJob() {
+    private void startBatterySettingsRefreshJob(FroniusSymoInverterConfiguration config) {
         cancelBatterySettingsRefreshJob();
         batterySettingsRefreshJob = scheduler.scheduleWithFixedDelay(() -> {
             FroniusBatteryControl control = batteryControl;
@@ -359,7 +359,7 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
                 logger.warn("Failed to read battery settings: {}", e.getMessage());
             }
             refreshNightPreservationLimit(control);
-        }, 0, BATTERY_SETTINGS_REFRESH_PERIOD_MINUTES, TimeUnit.MINUTES);
+        }, 0, config.batterySettingsRefreshInterval, TimeUnit.MINUTES);
     }
 
     private void cancelBatterySettingsRefreshJob() {
@@ -419,7 +419,7 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
             return null;
         }
 
-        FroniusBaseDeviceConfiguration config = this.config;
+        FroniusSymoInverterConfiguration config = this.config;
         if (config == null) {
             logger.warn("config is null in getValue(String channelId), this is a bug, please report it.");
             return null;

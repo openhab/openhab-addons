@@ -44,9 +44,10 @@ The binding has no configuration options, all configuration is done at `bridge`,
 
 ### Powerinverter Thing Configuration
 
-| Parameter  | Description                                |
-|------------|--------------------------------------------|
-| `deviceId` | The identifier of your device (Default: 1) |
+| Parameter                        | Description                                                                                                                                                                                    |
+|----------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `deviceId`                       | The identifier of your device (Default: 1)                                                                                                                                                     |
+| `batterySettingsRefreshInterval` | The interval in minutes at which the battery settings channels are read from the inverter's config API. Reading them requires a login, therefore the interval should be kept high. (Default: 5) |
 
 ### Battery Thing Configuration
 
