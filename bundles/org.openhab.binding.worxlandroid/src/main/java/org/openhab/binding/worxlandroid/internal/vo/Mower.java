@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.worxlandroid.internal.api.dto.Commands.ZoneMeterCommand;
 import org.openhab.binding.worxlandroid.internal.api.dto.LastStatus;
 import org.openhab.binding.worxlandroid.internal.api.dto.Payload;

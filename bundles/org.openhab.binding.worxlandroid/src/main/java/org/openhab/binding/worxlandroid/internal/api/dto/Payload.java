@@ -18,6 +18,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.worxlandroid.internal.codes.WorxLandroidErrorCodes;
 import org.openhab.binding.worxlandroid.internal.codes.WorxLandroidStatusCodes;
 
