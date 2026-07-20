@@ -15,26 +15,26 @@ package org.openhab.binding.fronius.internal.api;
 import java.net.URI;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.thing.firmware.types.SemverVersion;
 
 /**
  * The {@link FroniusConfigApiEndpoint} identifies the <code>/config</code> HTTP endpoints of a Fronius inverter and the
  * credentials to access them.
  *
- * @param baseUri the base URI of the inverter, MUST NOT end with a slash
- * @param firmwareVersion the firmware version of the inverter, which determines the hash algorithm to use
+ * @param baseUri the base URI of the inverter (MUST NOT end with a slash)
+ * @param hashAlgorithm the hash algorithm to use for digest header authentication (e.g. <code>MD5</code>,
+ *            <code>SHA-256</code>)
  * @param username the username for the inverter Web UI
  * @param password the password for the inverter Web UI
  *
  * @author Christian Jonak-Möchel - Initial contribution
  */
 @NonNullByDefault
-public record FroniusConfigApiEndpoint(URI baseUri, SemverVersion firmwareVersion, String username, String password) {
+public record FroniusConfigApiEndpoint(URI baseUri, String hashAlgorithm, String username, String password) {
 
     @Override
     public String toString() {
         // Do not expose the password, as this is used for logging
-        return "FroniusConfigApiEndpoint[baseUri=" + baseUri + ", firmwareVersion=" + firmwareVersion + ", username="
-                + username + "]";
+        return "FroniusConfigApiEndpoint[baseUri=" + baseUri + ", hashAlgorithm=" + hashAlgorithm + ", username="
+                + username + ", password =" + "*".repeat(password.length()) + "]";
     }
 }

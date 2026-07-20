@@ -29,7 +29,6 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
-import org.openhab.core.thing.firmware.types.SemverVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -210,9 +209,7 @@ public class FroniusConfigAuthUtil {
     static FroniusDigestSession login(HttpClient httpClient, FroniusConfigApiEndpoint endpoint, int timeout)
             throws FroniusCommunicationException, FroniusUnauthorizedException {
         final String username = endpoint.username();
-        final String password = endpoint.password();
-        final String hashAlgorithm = endpoint.firmwareVersion()
-                .isGreaterThanOrEqualTo(SemverVersion.fromString("1.38.6")) ? "SHA-256" : "MD5";
+        final String hashAlgorithm = endpoint.hashAlgorithm();
         final URI loginUri = URI.create(endpoint.baseUri() + LOGIN_ENDPOINT + "?user=" + username);
         final String relativeLoginUrl = loginUri.getPath();
 

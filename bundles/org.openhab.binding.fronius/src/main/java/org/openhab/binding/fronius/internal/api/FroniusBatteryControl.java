@@ -82,7 +82,7 @@ public class FroniusBatteryControl {
             String hostname, String username, String password) {
         this.configApiClient = configApiClient;
         URI baseUri = getBaseUri(firmwareVersion, scheme, hostname);
-        this.endpoint = new FroniusConfigApiEndpoint(baseUri, firmwareVersion, username, password);
+        this.endpoint = new FroniusConfigApiEndpoint(baseUri, getHashAlgorithm(firmwareVersion), username, password);
         this.timeOfUseUri = URI.create(baseUri + TIME_OF_USE_ENDPOINT);
         this.batteriesUri = URI.create(baseUri + BATTERIES_ENDPOINT);
         this.nightPreservationLimitUri = URI.create(baseUri + NIGHT_PRESERVATION_LIMIT_ENDPOINT);
@@ -94,6 +94,14 @@ public class FroniusBatteryControl {
             apiPrefix = "/api";
         }
         return URI.create(String.format("%s://%s%s", scheme, hostname, apiPrefix));
+    }
+
+    private static String getHashAlgorithm(SemverVersion firmwareVersion) {
+        if (firmwareVersion.isGreaterThanOrEqualTo(SemverVersion.fromString("1.36.0"))) {
+            return "SHA-256";
+        } else {
+            return "MD5";
+        }
     }
 
     /**
