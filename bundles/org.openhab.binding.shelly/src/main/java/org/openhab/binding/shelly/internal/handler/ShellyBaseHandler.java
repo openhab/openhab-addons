@@ -544,6 +544,19 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                         updateChannel(getString(channelUID.getGroupId()), CHANNEL_SENSOR_MUTE, OnOffType.OFF);
                     }
                     break;
+                case CHANNEL_EMETER_RESETTOTAL:
+                    if (command == OnOffType.ON) {
+                        String group = getString(channelUID.getGroupId());
+                        int idx = 0;
+                        if (group.startsWith(CHANNEL_GROUP_METER) && group.length() > CHANNEL_GROUP_METER.length()) {
+                            idx = Integer.parseInt(substringAfter(group, CHANNEL_GROUP_METER)) - 1;
+                        }
+                        logger.debug("{}: Reset meter totals for group {}", thingName, group);
+                        api.resetMeterTotal(idx);
+                        // force: republish OFF even if the cache already holds OFF from a previous reset
+                        updateChannel(mkChannelId(group, CHANNEL_EMETER_RESETTOTAL), OnOffType.OFF, true);
+                    }
+                    break;
                 default:
                     update = handleDeviceCommand(channelUID, command);
                     break;
