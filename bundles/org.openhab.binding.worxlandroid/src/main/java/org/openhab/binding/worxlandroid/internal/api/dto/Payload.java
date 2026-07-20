@@ -18,7 +18,6 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.worxlandroid.internal.codes.WorxLandroidErrorCodes;
 import org.openhab.binding.worxlandroid.internal.codes.WorxLandroidStatusCodes;
 
@@ -128,7 +127,7 @@ public class Payload {
         public int tq;
         public Modules modules;
 
-        public @NonNull ZonedDateTime getDateTime(ZoneId timeZone) {
+        public ZonedDateTime getDateTime(ZoneId timeZone) {
             if (dt.isEmpty() || tm.isEmpty()) {
                 return null;
             }
