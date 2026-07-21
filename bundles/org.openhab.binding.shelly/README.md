@@ -2162,9 +2162,7 @@ See notes on discovery of Shelly BLU devices above.
 | device  | gatewayDevice | String               | yes       | Shelly forwarded last status update (BLU gateway), could vary from packet to packet |
 |         | firmware      | String               | yes       | Firmware version (may be empty — not all firmware versions report it)               |
 
-Known limitations:
-
-- The rain sensor latches `rainStatus` ON for a while after it has actually stopped raining, a hardware behavior of the WS90's piezo rain sensor rather than a binding issue.
+The `rainStatus` channel latches ON for a while after it has actually stopped raining, a hardware behavior of the WS90's piezo rain sensor rather than a binding issue.
 
 ## Shelly Wall Displays
 
