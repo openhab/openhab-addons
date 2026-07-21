@@ -258,7 +258,71 @@ public class FroniusBatteryControl {
                         weekdays.contains(DayOfWeek.FRIDAY), weekdays.contains(DayOfWeek.SATURDAY),
                         weekdays.contains(DayOfWeek.SUNDAY)));
         timeOfUse[timeOfUse.length - 1] = holdCharge;
+        warnAboutConflicts(currentTimeOfUse.records(), holdCharge);
         setTimeOfUse(new TimeOfUseRecords(timeOfUse));
+    }
+
+    /**
+     * Warns when the new schedule entry conflicts with existing entries. The inverter accepts such entries through
+     * its config API, but its web UI marks them as invalid and refuses to save the settings: entries of the same type
+     * must not overlap, and where a minimum and a maximum entry of charging or discharging overlap, the minimum power
+     * must be smaller than the maximum power.
+     *
+     * @param existing the existing time of use entries
+     * @param added the entry being added
+     */
+    private void warnAboutConflicts(TimeOfUseRecord[] existing, TimeOfUseRecord added) {
+        for (TimeOfUseRecord record : existing) {
+            if (!record.active() || !overlaps(record, added)) {
+                continue;
+            }
+            if (record.scheduleType() == added.scheduleType()) {
+                logger.warn(
+                        "The new schedule ({} {}-{}) overlaps an existing schedule of the same type ({}-{}). The inverter web UI will report the time of use settings as invalid.",
+                        added.scheduleType(), added.timeTable().start(), added.timeTable().end(),
+                        record.timeTable().start(), record.timeTable().end());
+            } else if (isContradiction(record, added)) {
+                logger.warn(
+                        "The new schedule ({} {} W {}-{}) contradicts an existing {} schedule ({} W {}-{}): the minimum power must be smaller than the maximum power. The inverter web UI will report the time of use settings as invalid.",
+                        added.scheduleType(), added.power(), added.timeTable().start(), added.timeTable().end(),
+                        record.scheduleType(), record.power(), record.timeTable().start(), record.timeTable().end());
+            }
+        }
+    }
+
+    private static boolean overlaps(TimeOfUseRecord a, TimeOfUseRecord b) {
+        WeekdaysRecord wa = a.weekdays();
+        WeekdaysRecord wb = b.weekdays();
+        boolean sharedWeekday = (wa.monday() && wb.monday()) || (wa.tuesday() && wb.tuesday())
+                || (wa.wednesday() && wb.wednesday()) || (wa.thursday() && wb.thursday())
+                || (wa.friday() && wb.friday()) || (wa.saturday() && wb.saturday()) || (wa.sunday() && wb.sunday());
+        if (!sharedWeekday) {
+            return false;
+        }
+        LocalTime aStart = LocalTime.parse(a.timeTable().start(), TIME_FORMATTER);
+        LocalTime aEnd = LocalTime.parse(a.timeTable().end(), TIME_FORMATTER);
+        LocalTime bStart = LocalTime.parse(b.timeTable().start(), TIME_FORMATTER);
+        LocalTime bEnd = LocalTime.parse(b.timeTable().end(), TIME_FORMATTER);
+        return !aEnd.isBefore(bStart) && !bEnd.isBefore(aStart);
+    }
+
+    private static boolean isContradiction(TimeOfUseRecord a, TimeOfUseRecord b) {
+        TimeOfUseRecord min = null;
+        TimeOfUseRecord max = null;
+        for (TimeOfUseRecord record : new TimeOfUseRecord[] { a, b }) {
+            switch (record.scheduleType()) {
+                case CHARGE_MIN, DISCHARGE_MIN -> min = record;
+                case CHARGE_MAX, DISCHARGE_MAX -> max = record;
+            }
+        }
+        if (min == null || max == null) {
+            return false;
+        }
+        boolean charging = min.scheduleType() == ScheduleType.CHARGE_MIN
+                && max.scheduleType() == ScheduleType.CHARGE_MAX;
+        boolean discharging = min.scheduleType() == ScheduleType.DISCHARGE_MIN
+                && max.scheduleType() == ScheduleType.DISCHARGE_MAX;
+        return (charging || discharging) && min.power() >= max.power();
     }
 
     /**
