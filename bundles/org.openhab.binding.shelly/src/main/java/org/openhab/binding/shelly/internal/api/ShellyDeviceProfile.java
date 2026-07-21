@@ -113,6 +113,7 @@ public class ShellyDeviceProfile {
     public boolean is3EM; // true for Shelly 3EM and Pro 3EM
     public boolean isEM50; // true for Shelly Pro EM50
     public boolean isEM1; // true for em1-clamp meter devices (Plus EM, Mini EM, Pro EM50); Pro EM50 also has a relay
+    public boolean isWS90; // true for Ecowitt WS90
 
     public int minTemp = 0; // Bulb/Duo: Min Light Temp
     public int maxTemp = 0; // Bulb/Duo: Max Light Temp
@@ -232,9 +233,10 @@ public class ShellyDeviceProfile {
         is3EM = GROUP_3EM_THING_TYPES.contains(thingTypeUID);
         isEM50 = THING_TYPE_SHELLYPROEM50.equals(thingTypeUID);
         isEM1 = GROUP_EM1_THING_TYPES.contains(thingTypeUID);
+        isWS90 = THING_TYPE_SHELLYBLUWS90.equals(thingTypeUID);
 
         isSensor = isHT || isFlood || isDW || isSmoke || isGas || isButton || isMultiButton || isUNI || isMotion
-                || isSense || isTRV || isWall;
+                || isSense || isTRV || isWall || isWS90;
         hasBattery = isHT || isFlood || isDW || isSmoke || isButton || isMotion || isTRV || isBlu;
         alwaysOn = !hasBattery || (isMotion && !isBlu) || isSense; // true means: device is reachable all the time (no
                                                                    // sleep mode)
