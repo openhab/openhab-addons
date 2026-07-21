@@ -64,7 +64,6 @@ import org.slf4j.LoggerFactory;
 public class FroniusSymoInverterActions implements ThingActions {
     private final Logger logger = LoggerFactory.getLogger(FroniusSymoInverterActions.class);
     private @Nullable FroniusSymoInverterHandler handler;
-    private boolean deprecationWarned;
 
     private static FroniusSymoInverterActions toFroniusSymoInverterActions(ThingActions actions) {
         if (actions instanceof FroniusSymoInverterActions froniusBatteryActions) {
@@ -457,11 +456,8 @@ public class FroniusSymoInverterActions implements ThingActions {
     private @Nullable FroniusBatteryControl getBatteryControl() {
         FroniusSymoInverterHandler handler = this.handler;
         if (handler != null) {
-            if (!deprecationWarned) {
-                deprecationWarned = true;
-                logger.warn(
-                        "Using the battery control actions through the powerinverter thing is deprecated, please retrieve them through the battery thing instead.");
-            }
+            logger.warn(
+                    "Using the battery control actions through the powerinverter thing is deprecated, please retrieve them through the battery thing instead.");
             return handler.getBatteryControl();
         }
         return null;
