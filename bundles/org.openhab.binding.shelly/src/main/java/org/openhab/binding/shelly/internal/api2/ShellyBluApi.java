@@ -380,6 +380,14 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                         ShellyComponents.updateDeviceStatus(t, deviceStatus);
                         ShellyComponents.updateSensors(getThing(), deviceStatus);
                         break;
+                    case SHELLY2_EVENT_BLUALARM:
+                        String alarmCode = blu != null ? blu.alarmCode : null;
+                        if (blu == null || blu.addr == null || alarmCode == null) {
+                            logger.debug("{}: Inconsistent BLU alarm ignored: {}", thingName, gson.toJson(message));
+                            break;
+                        }
+                        t.postEvent(alarmCode, false);
+                        break;
                     default:
                         super.onNotifyEvent(eventJSON);
                 }

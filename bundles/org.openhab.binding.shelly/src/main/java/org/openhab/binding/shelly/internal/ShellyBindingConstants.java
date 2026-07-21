@@ -285,6 +285,8 @@ public class ShellyBindingConstants {
     public static final String ALARM_TYPE_SENSOR_ERROR = "SENSOR_ERROR";
     public static final String ALARM_TYPE_LOW_BATTERY = "LOW_BATTERY";
     public static final String ALARM_TYPE_VALVE_ERROR = "VALVE_ERROR";
+    public static final String ALARM_TYPE_BTH_ENCRYPTED = "BTH_ENCRYPTED";
+    public static final String ALARM_TYPE_BTH_UNKNOWN_TYPE = "BTH_UNKNOWN_TYPE";
     public static final String EVENT_TYPE_VIBRATION = "VIBRATION";
 
     // Event types
