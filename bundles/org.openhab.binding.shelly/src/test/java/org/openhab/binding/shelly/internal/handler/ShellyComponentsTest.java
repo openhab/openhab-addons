@@ -544,8 +544,8 @@ public class ShellyComponentsTest {
 
         ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
 
-        verify(handler).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_WINDSP), argThat(
-                s -> s instanceof QuantityType<?> && Math.abs(((QuantityType<?>) s).doubleValue() - 3.5) < 0.01));
+        verify(handler).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_WINDSP),
+                argThat(s -> closeTo(s, 3.5)));
     }
 
     @Test
@@ -571,8 +571,8 @@ public class ShellyComponentsTest {
 
         ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
 
-        verify(handler).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_LUX), argThat(
-                s -> s instanceof QuantityType<?> && Math.abs(((QuantityType<?>) s).doubleValue() - 12345.0) < 0.01));
+        verify(handler).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_LUX),
+                argThat(s -> closeTo(s, 12345.0)));
         verify(handler).updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ILLUM, new StringType("dark"));
     }
 
@@ -588,6 +588,40 @@ public class ShellyComponentsTest {
         verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_WINDDIR), any());
         verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_GUSTSP), any());
         verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_RAINST), any());
+    }
+
+    @Test
+    void updateSensorsWs90PressurePublishesQuantityTypeInHectoPascal() throws Exception {
+        ShellyStatusSensor sdata = new ShellyStatusSensor();
+        sdata.pressure = 1013.25;
+        ShellyThingInterface handler = ws90HandlerWith(sdata);
+
+        ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
+
+        verify(handler).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_PRESSURE),
+                argThat(s -> s instanceof QuantityType<?> qt && "hPa".equals(qt.getUnit().toString())
+                        && Math.abs(qt.doubleValue() - 1013.25) < 0.01));
+    }
+
+    @Test
+    void updateSensorsWs90RemainingFieldsPublishQuantityTypes() throws Exception {
+        ShellyStatusSensor sdata = new ShellyStatusSensor();
+        sdata.windDirection = 270.0;
+        sdata.gustSpeed = 7.2;
+        sdata.dewPoint = 12.5;
+        sdata.precipitation = 2.1;
+        ShellyThingInterface handler = ws90HandlerWith(sdata);
+
+        ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
+
+        verify(handler).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_WINDDIR),
+                argThat(s -> closeTo(s, 270.0)));
+        verify(handler).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_GUSTSP),
+                argThat(s -> closeTo(s, 7.2)));
+        verify(handler).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_DEWPOINT),
+                argThat(s -> closeTo(s, 12.5)));
+        verify(handler).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_PRECIPITATION),
+                argThat(s -> closeTo(s, 2.1)));
     }
 
     @Test
@@ -613,6 +647,29 @@ public class ShellyComponentsTest {
     }
 
     @Test
+    void createSensorChannelsWs90WithoutDataStillCreatesAllWs90DataChannels() {
+        ThingUID thingUID = new ThingUID(THING_TYPE_SHELLYBLUWS90, "test");
+        Thing thing = mock(Thing.class);
+        when(thing.getUID()).thenReturn(thingUID);
+
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYBLUWS90);
+        profile.isWS90 = true;
+        // no packet has arrived yet: the "ws90 ||" gate must still create every WS90 data
+        // channel up front, since creation can't wait for a specific packet to show up first
+        ShellyStatusSensor sdata = new ShellyStatusSensor();
+
+        Map<String, Channel> channels = ShellyChannelDefinitions.createSensorChannels(thing, profile, sdata);
+
+        for (String channelId : new String[] { CHANNEL_SENSOR_TEMP, CHANNEL_SENSOR_HUM, CHANNEL_SENSOR_RAINST,
+                CHANNEL_SENSOR_WINDSP, CHANNEL_SENSOR_WINDDIR, CHANNEL_SENSOR_GUSTSP, CHANNEL_SENSOR_UV,
+                CHANNEL_SENSOR_PRESSURE, CHANNEL_SENSOR_DEWPOINT, CHANNEL_SENSOR_PRECIPITATION }) {
+            assertThat(channelId + " channel created",
+                    channels.containsKey(CHANNEL_GROUP_SENSOR + ChannelUID.CHANNEL_GROUP_SEPARATOR + channelId),
+                    is(true));
+        }
+    }
+
+    @Test
     void createSensorChannelsWs90WithLuxValueCreatesLuxButNotIllumination() {
         ThingUID thingUID = new ThingUID(THING_TYPE_SHELLYBLUWS90, "test");
         Thing thing = mock(Thing.class);
@@ -634,6 +691,10 @@ public class ShellyComponentsTest {
         assertThat("illumination channel created",
                 channels.containsKey(CHANNEL_GROUP_SENSOR + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_SENSOR_ILLUM),
                 is(false));
+    }
+
+    private static boolean closeTo(State state, double expected) {
+        return state instanceof QuantityType<?> qt && Math.abs(qt.doubleValue() - expected) < 0.01;
     }
 
     private static ShellyThingInterface ws90HandlerWith(ShellyStatusSensor sdata) throws ShellyApiException {

@@ -652,7 +652,7 @@
 	<channel-type id="sensorRain">
 		<item-type>Switch</item-type>
 		<label>Rain Status</label>
-		<description>ON when it is raining, OFF when dry</description>
+		<description>ON when rain is detected; stays ON briefly after rain stops (WS90 piezo sensor hardware behavior)</description>
 		<category>Rain</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -722,7 +722,7 @@
 			<tag>Measurement</tag>
 			<tag>Pressure</tag>
 		</tags>
-		<state readOnly="true" pattern="%.1f %unit%">
+		<state readOnly="true" pattern="%.2f %unit%">
 		</state>
 	</channel-type>
 
