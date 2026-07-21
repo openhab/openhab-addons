@@ -23,37 +23,220 @@
 			</update-channel>
 		</instruction-set>
 		<instruction-set targetVersion="2">
-			<add-channel id="powerflowbackupmode">
-				<type>fronius:backupMode</type>
+			<add-channel id="backup-mode">
+				<type>fronius:backup-mode</type>
 			</add-channel>
-			<add-channel id="powerflowbatterystandby">
-				<type>fronius:batteryStandby</type>
+			<add-channel id="battery-standby">
+				<type>fronius:battery-standby</type>
+			</add-channel>
+		</instruction-set>
+		<instruction-set targetVersion="3">
+			<add-channel id="ac-power">
+				<type>fronius:ac-power</type>
+			</add-channel>
+			<add-channel id="dc-power">
+				<type>fronius:dc-power</type>
+			</add-channel>
+			<add-channel id="dc-power-2">
+				<type>fronius:dc-power-2</type>
+			</add-channel>
+			<add-channel id="dc-power-3">
+				<type>fronius:dc-power-3</type>
+			</add-channel>
+			<add-channel id="day-energy">
+				<type>fronius:day-energy</type>
+			</add-channel>
+			<add-channel id="total-energy">
+				<type>fronius:total-energy</type>
+			</add-channel>
+			<add-channel id="year-energy">
+				<type>fronius:year-energy</type>
+			</add-channel>
+			<add-channel id="ac-frequency">
+				<type>fronius:ac-frequency</type>
+			</add-channel>
+			<add-channel id="ac-current">
+				<type>fronius:ac-current</type>
+			</add-channel>
+			<add-channel id="dc-current">
+				<type>fronius:dc-current</type>
+			</add-channel>
+			<add-channel id="dc-current-2">
+				<type>fronius:dc-current-2</type>
+			</add-channel>
+			<add-channel id="dc-current-3">
+				<type>fronius:dc-current-3</type>
+			</add-channel>
+			<add-channel id="ac-voltage">
+				<type>fronius:ac-voltage</type>
+			</add-channel>
+			<add-channel id="dc-voltage">
+				<type>fronius:dc-voltage</type>
+			</add-channel>
+			<add-channel id="dc-voltage-2">
+				<type>fronius:dc-voltage-2</type>
+			</add-channel>
+			<add-channel id="dc-voltage-3">
+				<type>fronius:dc-voltage-3</type>
+			</add-channel>
+			<add-channel id="error-code">
+				<type>fronius:error-code</type>
+			</add-channel>
+			<add-channel id="status-code">
+				<type>fronius:status-code</type>
+			</add-channel>
+			<add-channel id="grid-power">
+				<type>fronius:grid-power</type>
+			</add-channel>
+			<add-channel id="load-power">
+				<type>fronius:load-power</type>
+			</add-channel>
+			<add-channel id="battery-power">
+				<type>fronius:battery-power</type>
+			</add-channel>
+			<add-channel id="solar-power">
+				<type>fronius:solar-power</type>
+			</add-channel>
+			<add-channel id="autonomy">
+				<type>fronius:autonomy</type>
+			</add-channel>
+			<add-channel id="self-consumption">
+				<type>fronius:self-consumption</type>
+			</add-channel>
+			<add-channel id="inverter-power">
+				<type>fronius:inverter-power</type>
+			</add-channel>
+			<add-channel id="battery-soc">
+				<type>fronius:battery-soc</type>
 			</add-channel>
 		</instruction-set>
 	</thing-type>
 
 	<thing-type uid="fronius:battery">
 		<instruction-set targetVersion="1">
-			<add-channel id="socMin">
-				<type>fronius:batterySocMin</type>
+			<add-channel id="soc-min">
+				<type>fronius:soc-min</type>
 			</add-channel>
-			<add-channel id="socMax">
-				<type>fronius:batterySocMax</type>
+			<add-channel id="soc-max">
+				<type>fronius:soc-max</type>
 			</add-channel>
-			<add-channel id="backupReservedCapacity">
-				<type>fronius:backupReservedCapacity</type>
+			<add-channel id="backup-reserved-capacity">
+				<type>fronius:backup-reserved-capacity</type>
 			</add-channel>
-			<add-channel id="backupCriticalSoc">
-				<type>fronius:backupCriticalSoc</type>
+			<add-channel id="backup-critical-soc">
+				<type>fronius:backup-critical-soc</type>
 			</add-channel>
-			<add-channel id="chargeFromGrid">
-				<type>fronius:chargeFromGrid</type>
+			<add-channel id="charge-from-grid">
+				<type>fronius:charge-from-grid</type>
 			</add-channel>
 			<add-channel id="calibration">
-				<type>fronius:batteryCalibration</type>
+				<type>fronius:calibration</type>
 			</add-channel>
-			<add-channel id="nightPreservationLimit">
-				<type>fronius:nightPreservationLimit</type>
+			<add-channel id="night-preservation-limit">
+				<type>fronius:night-preservation-limit</type>
+			</add-channel>
+		</instruction-set>
+		<instruction-set targetVersion="2">
+			<add-channel id="maximum-capacity">
+				<type>fronius:maximum-capacity</type>
+				<label>Maximum Capacity</label>
+			</add-channel>
+			<add-channel id="designed-capacity">
+				<type>fronius:designed-capacity</type>
+				<label>Designed Capacity</label>
+			</add-channel>
+			<add-channel id="dc-current">
+				<type>fronius:dc-current</type>
+				<label>DC Current</label>
+			</add-channel>
+			<add-channel id="dc-voltage">
+				<type>fronius:dc-voltage</type>
+				<label>DC Voltage</label>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="fronius:meter">
+		<instruction-set targetVersion="1">
+			<add-channel id="ac-current-phase-1">
+				<type>fronius:meter-ac-current</type>
+				<label>AC Current Phase 1</label>
+			</add-channel>
+			<add-channel id="ac-current-phase-2">
+				<type>fronius:meter-ac-current</type>
+				<label>AC Current Phase 2</label>
+			</add-channel>
+			<add-channel id="ac-current-phase-3">
+				<type>fronius:meter-ac-current</type>
+				<label>AC Current Phase 3</label>
+			</add-channel>
+			<add-channel id="ac-voltage-phase-1">
+				<type>fronius:meter-ac-voltage</type>
+				<label>AC Voltage Phase 1</label>
+			</add-channel>
+			<add-channel id="ac-voltage-phase-2">
+				<type>fronius:meter-ac-voltage</type>
+				<label>AC Voltage Phase 2</label>
+			</add-channel>
+			<add-channel id="ac-voltage-phase-3">
+				<type>fronius:meter-ac-voltage</type>
+				<label>AC Voltage Phase 3</label>
+			</add-channel>
+			<add-channel id="real-power-phase-1">
+				<type>fronius:meter-real-power</type>
+				<label>Real Power Phase 1</label>
+			</add-channel>
+			<add-channel id="real-power-phase-2">
+				<type>fronius:meter-real-power</type>
+				<label>Real Power Phase 2</label>
+			</add-channel>
+			<add-channel id="real-power-phase-3">
+				<type>fronius:meter-real-power</type>
+				<label>Real Power Phase 3</label>
+			</add-channel>
+			<add-channel id="real-power-sum">
+				<type>fronius:meter-real-power</type>
+				<label>Real Power Sum</label>
+			</add-channel>
+			<add-channel id="power-factor-phase-1">
+				<type>fronius:meter-power-factor</type>
+				<label>Power Factor Phase 1</label>
+			</add-channel>
+			<add-channel id="power-factor-phase-2">
+				<type>fronius:meter-power-factor</type>
+				<label>Power Factor Phase 2</label>
+			</add-channel>
+			<add-channel id="power-factor-phase-3">
+				<type>fronius:meter-power-factor</type>
+				<label>Power Factor Phase 3</label>
+			</add-channel>
+			<add-channel id="real-energy-consumed">
+				<type>fronius:meter-real-energy</type>
+				<label>Real Energy Consumed</label>
+			</add-channel>
+			<add-channel id="real-energy-produced">
+				<type>fronius:meter-real-energy</type>
+				<label>Real Energy Produced</label>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="fronius:ohmpilot">
+		<instruction-set targetVersion="1">
+			<add-channel id="real-power-sum">
+				<type>fronius:ohmpilot-real-power</type>
+			</add-channel>
+			<add-channel id="real-energy-consumed">
+				<type>fronius:ohmpilot-real-energy</type>
+			</add-channel>
+			<add-channel id="temperature-1">
+				<type>fronius:ohmpilot-temperature</type>
+			</add-channel>
+			<add-channel id="status-code">
+				<type>fronius:status-code</type>
+			</add-channel>
+			<add-channel id="error-code">
+				<type>fronius:error-code</type>
 			</add-channel>
 		</instruction-set>
 	</thing-type>
