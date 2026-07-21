@@ -67,6 +67,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceS
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2RGBWStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusSys.Shelly2DeviceStatusSysAvlUpdate;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2NotifyEvent;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2NotifyEventData;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcBaseMessage;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcNotifyEvent;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcNotifyStatus;
@@ -514,14 +515,22 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         getThing().incProtMessages();
         getThing().restartWatchdog();
 
-        for (Shelly2NotifyEvent e : message.params.events) {
-            switch (e.event) {
+        Shelly2NotifyEventData params = message.params;
+        ArrayList<Shelly2NotifyEvent> events = params != null ? params.events : null;
+        if (events == null) {
+            logger.debug("{}: Malformed event data: {}", thingName, eventJSON);
+            return;
+        }
+        for (Shelly2NotifyEvent e : events) {
+            String event = getString(e.event);
+            int id = getInteger(e.id);
+            switch (event) {
                 case SHELLY2_EVENT_BTNUP:
                 case SHELLY2_EVENT_BTNDOWN:
-                    String bgroup = getProfile().getInputGroup(e.id);
-                    updateChannel(bgroup, CHANNEL_INPUT + profile.getInputSuffix(e.id),
-                            getOnOff(SHELLY2_EVENT_BTNDOWN.equals(getString(e.event))));
-                    getThing().triggerButton(profile.getInputGroup(e.id), e.id, mapValue(MAP_INPUT_EVENT_ID, e.event));
+                    String bgroup = getProfile().getInputGroup(id);
+                    updateChannel(bgroup, CHANNEL_INPUT + profile.getInputSuffix(id),
+                            getOnOff(SHELLY2_EVENT_BTNDOWN.equals(event)));
+                    getThing().triggerButton(profile.getInputGroup(id), id, mapValue(MAP_INPUT_EVENT_ID, event));
                     break;
 
                 case SHELLY2_EVENT_1PUSH:
@@ -530,23 +539,22 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 case SHELLY2_EVENT_LPUSH:
                 case SHELLY2_EVENT_SLPUSH:
                 case SHELLY2_EVENT_LSPUSH:
-                    if (e.id < profile.numInputs && e.id < relayStatus.inputs.size()) {
-                        ShellyInputState input = relayStatus.inputs.get(e.id);
-                        input.event = getString(MAP_INPUT_EVENT_TYPE.get(e.event));
+                    if (id < profile.numInputs && id < relayStatus.inputs.size()) {
+                        ShellyInputState input = relayStatus.inputs.get(id);
+                        input.event = getString(MAP_INPUT_EVENT_TYPE.get(event));
                         input.eventCount = getInteger(input.eventCount) + 1;
-                        relayStatus.inputs.set(e.id, input);
+                        relayStatus.inputs.set(id, input);
                         List<@Nullable ShellyInputState> statusInputs = profile.status.inputs;
-                        if (statusInputs != null && e.id < statusInputs.size()) {
-                            statusInputs.set(e.id, input);
+                        if (statusInputs != null && id < statusInputs.size()) {
+                            statusInputs.set(id, input);
                         }
 
-                        String group = getProfile().getInputGroup(e.id);
-                        updateChannel(group, CHANNEL_STATUS_EVENTTYPE + profile.getInputSuffix(e.id),
+                        String group = getProfile().getInputGroup(id);
+                        updateChannel(group, CHANNEL_STATUS_EVENTTYPE + profile.getInputSuffix(id),
                                 getStringType(input.event));
-                        updateChannel(group, CHANNEL_STATUS_EVENTCOUNT + profile.getInputSuffix(e.id),
+                        updateChannel(group, CHANNEL_STATUS_EVENTCOUNT + profile.getInputSuffix(id),
                                 getDecimal(input.eventCount));
-                        getThing().triggerButton(profile.getInputGroup(e.id), e.id,
-                                mapValue(MAP_INPUT_EVENT_ID, e.event));
+                        getThing().triggerButton(profile.getInputGroup(id), id, mapValue(MAP_INPUT_EVENT_ID, event));
                     }
                     break;
                 case SHELLY2_EVENT_CFGCHANGED:
@@ -578,11 +586,11 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                     break;
                 case SHELLY2_EVENT_WIFICONNFAILED:
                     logger.debug("{}: WiFi connect failed, check setup, reason {}", thingName, getInteger(e.reason));
-                    getThing().postEvent(e.event, false);
+                    getThing().postEvent(event, false);
                     break;
                 case SHELLY2_EVENT_WIFIDISCONNECTED:
                     logger.debug("{}: WiFi disconnected, reason {}", thingName, getInteger(e.reason));
-                    getThing().postEvent(e.event, false);
+                    getThing().postEvent(event, false);
                     break;
                 default:
                     logger.debug("{}: Event {} was not handled", thingName, e.event);

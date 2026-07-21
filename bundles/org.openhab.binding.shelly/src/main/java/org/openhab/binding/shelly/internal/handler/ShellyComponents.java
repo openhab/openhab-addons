@@ -707,7 +707,7 @@ public class ShellyComponents {
             // WS90
             if (sdata.rain != null) {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_RAINST,
-                        OnOffType.from(sdata.rain));
+                        OnOffType.from(getBool(sdata.rain)));
             }
             if (sdata.windSpeed != null) {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_WINDSP,
@@ -724,7 +724,7 @@ public class ShellyComponents {
             if (sdata.pressure != null) {
                 Unit<Pressure> hpa = MetricPrefix.HECTO(SIUnits.PASCAL).asType(Pressure.class);
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_PRESSURE,
-                        new QuantityType<>(sdata.pressure, hpa));
+                        new QuantityType<>(getDouble(sdata.pressure), hpa));
             }
             if (sdata.precipitation != null) {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_PRECIPITATION,

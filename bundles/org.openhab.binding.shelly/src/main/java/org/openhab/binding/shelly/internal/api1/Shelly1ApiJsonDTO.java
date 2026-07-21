@@ -1218,14 +1218,14 @@ public class Shelly1ApiJsonDTO {
         public Double distance;
 
         // WS90 (powered by Shelly)
-        public Boolean rain;
-        public Double windSpeed;
-        public Double windDirection;
-        public Double gustSpeed;
-        public Double uvIndex;
-        public Double pressure;
-        public Double dewPoint;
-        public Double precipitation;
+        public @Nullable Boolean rain;
+        public @Nullable Double windSpeed;
+        public @Nullable Double windDirection;
+        public @Nullable Double gustSpeed;
+        public @Nullable Double uvIndex;
+        public @Nullable Double pressure;
+        public @Nullable Double dewPoint;
+        public @Nullable Double precipitation;
     }
 
     public static class ShellySettingsSmoke {
