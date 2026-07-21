@@ -69,4 +69,6 @@ Fragment-Host: org.openhab.persistence.mapdb
 	org.openhab.persistence.mapdb.tests;version='[5.3.0,5.3.1)',\
 	biz.aQute.tester.junit-platform;version='[7.3.0,7.3.1)',\
 	org.osgi.service.cm;version='[1.6.1,1.6.2)',\
-	jakarta.annotation-api;version='[2.1.1,2.1.2)'
+	jakarta.annotation-api;version='[2.1.1,2.1.2)',\
+	com.google.guava;version='[33.6.0,33.6.1)',\
+	com.google.guava.failureaccess;version='[1.0.3,1.0.4)'
