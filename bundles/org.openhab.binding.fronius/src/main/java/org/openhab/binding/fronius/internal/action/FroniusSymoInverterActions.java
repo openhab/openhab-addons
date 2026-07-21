@@ -27,7 +27,7 @@ import org.openhab.binding.fronius.internal.api.FroniusBatteryControl;
 import org.openhab.binding.fronius.internal.api.FroniusCommunicationException;
 import org.openhab.binding.fronius.internal.api.FroniusUnauthorizedException;
 import org.openhab.binding.fronius.internal.api.dto.inverter.batterycontrol.ScheduleType;
-import org.openhab.binding.fronius.internal.handler.FroniusBatteryHandler;
+import org.openhab.binding.fronius.internal.handler.FroniusSymoInverterHandler;
 import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.ActionOutput;
 import org.openhab.core.automation.annotation.RuleAction;
@@ -43,8 +43,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Implementation of the {@link ThingActions} interface used for controlling battery charging and discharging for
- * Fronius hybrid inverters.
+ * Deprecated variant of {@link FroniusBatteryActions} bound to the powerinverter thing, kept so that existing scripts
+ * retrieving the battery control actions through the powerinverter thing keep working. The action labels are marked
+ * DEPRECATED and a warning is logged on usage - please retrieve the actions through the battery thing instead.
  * <p>
  * All schedule actions accept an optional trailing weekdays parameter, given as a comma-separated list of three-letter
  * English weekday abbreviations or full names (e.g. "MON,TUE" or "MONDAY,TUESDAY"). Omitting it or passing null applies
@@ -52,33 +53,36 @@ import org.slf4j.LoggerFactory;
  *
  * @author Florian Hotze - Initial contribution
  * @author Christian Jonak-Möchel - Add battery charging/discharging limit actions and weekdays parameter
+ * @deprecated retrieve the actions through the battery thing instead
  */
-@Component(scope = ServiceScope.PROTOTYPE, service = FroniusBatteryActions.class)
+@Deprecated
+@Component(scope = ServiceScope.PROTOTYPE, service = FroniusSymoInverterActions.class)
 @ThingActionsScope(name = "fronius")
 @NonNullByDefault
-public class FroniusBatteryActions implements ThingActions {
-    private final Logger logger = LoggerFactory.getLogger(FroniusBatteryActions.class);
-    private @Nullable FroniusBatteryHandler handler;
+public class FroniusSymoInverterActions implements ThingActions {
+    private final Logger logger = LoggerFactory.getLogger(FroniusSymoInverterActions.class);
+    private @Nullable FroniusSymoInverterHandler handler;
+    private boolean deprecationWarned;
 
-    private static FroniusBatteryActions toFroniusBatteryActions(ThingActions actions) {
-        if (actions instanceof FroniusBatteryActions froniusBatteryActions) {
+    private static FroniusSymoInverterActions toFroniusSymoInverterActions(ThingActions actions) {
+        if (actions instanceof FroniusSymoInverterActions froniusBatteryActions) {
             return froniusBatteryActions;
         }
-        throw new IllegalArgumentException("The 'actions' argument is not an instance of FroniusBatteryActions");
+        throw new IllegalArgumentException("The 'actions' argument is not an instance of FroniusSymoInverterActions");
     }
 
     public static boolean resetBatteryControl(ThingActions actions) {
-        return toFroniusBatteryActions(actions).resetBatteryControl();
+        return toFroniusSymoInverterActions(actions).resetBatteryControl();
     }
 
     public static boolean addSchedule(ThingActions actions, LocalTime from, LocalTime until, ScheduleType scheduleType,
             QuantityType<Power> power) {
-        return toFroniusBatteryActions(actions).addSchedule(from, until, scheduleType, power);
+        return toFroniusSymoInverterActions(actions).addSchedule(from, until, scheduleType, power);
     }
 
     public static boolean addSchedule(ThingActions actions, LocalTime from, LocalTime until, ScheduleType scheduleType,
             QuantityType<Power> power, @Nullable String weekdays) {
-        return toFroniusBatteryActions(actions).addSchedule(from, until, scheduleType, power, weekdays);
+        return toFroniusSymoInverterActions(actions).addSchedule(from, until, scheduleType, power, weekdays);
     }
 
     public static boolean addSchedule(ThingActions actions, LocalTime from, LocalTime until, String scheduleType,
@@ -113,16 +117,16 @@ public class FroniusBatteryActions implements ThingActions {
     }
 
     public static boolean holdBatteryCharge(ThingActions actions) {
-        return toFroniusBatteryActions(actions).holdBatteryCharge();
+        return toFroniusSymoInverterActions(actions).holdBatteryCharge();
     }
 
     public static boolean addHoldBatteryChargeSchedule(ThingActions actions, LocalTime from, LocalTime until) {
-        return toFroniusBatteryActions(actions).addHoldBatteryChargeSchedule(from, until);
+        return toFroniusSymoInverterActions(actions).addHoldBatteryChargeSchedule(from, until);
     }
 
     public static boolean addHoldBatteryChargeSchedule(ThingActions actions, LocalTime from, LocalTime until,
             @Nullable String weekdays) {
-        return toFroniusBatteryActions(actions).addHoldBatteryChargeSchedule(from, until, weekdays);
+        return toFroniusSymoInverterActions(actions).addHoldBatteryChargeSchedule(from, until, weekdays);
     }
 
     public static boolean addHoldBatteryChargeSchedule(ThingActions actions, ZonedDateTime from, ZonedDateTime until) {
@@ -135,17 +139,17 @@ public class FroniusBatteryActions implements ThingActions {
     }
 
     public static boolean forceBatteryCharging(ThingActions actions, QuantityType<Power> power) {
-        return toFroniusBatteryActions(actions).forceBatteryCharging(power);
+        return toFroniusSymoInverterActions(actions).forceBatteryCharging(power);
     }
 
     public static boolean addForcedBatteryChargingSchedule(ThingActions actions, LocalTime from, LocalTime until,
             QuantityType<Power> power) {
-        return toFroniusBatteryActions(actions).addForcedBatteryChargingSchedule(from, until, power);
+        return toFroniusSymoInverterActions(actions).addForcedBatteryChargingSchedule(from, until, power);
     }
 
     public static boolean addForcedBatteryChargingSchedule(ThingActions actions, LocalTime from, LocalTime until,
             QuantityType<Power> power, @Nullable String weekdays) {
-        return toFroniusBatteryActions(actions).addForcedBatteryChargingSchedule(from, until, power, weekdays);
+        return toFroniusSymoInverterActions(actions).addForcedBatteryChargingSchedule(from, until, power, weekdays);
     }
 
     public static boolean addForcedBatteryChargingSchedule(ThingActions actions, ZonedDateTime from,
@@ -159,17 +163,17 @@ public class FroniusBatteryActions implements ThingActions {
     }
 
     public static boolean limitBatteryCharging(ThingActions actions, QuantityType<Power> power) {
-        return toFroniusBatteryActions(actions).limitBatteryCharging(power);
+        return toFroniusSymoInverterActions(actions).limitBatteryCharging(power);
     }
 
     public static boolean addBatteryChargingLimitSchedule(ThingActions actions, LocalTime from, LocalTime until,
             QuantityType<Power> power) {
-        return toFroniusBatteryActions(actions).addBatteryChargingLimitSchedule(from, until, power);
+        return toFroniusSymoInverterActions(actions).addBatteryChargingLimitSchedule(from, until, power);
     }
 
     public static boolean addBatteryChargingLimitSchedule(ThingActions actions, LocalTime from, LocalTime until,
             QuantityType<Power> power, @Nullable String weekdays) {
-        return toFroniusBatteryActions(actions).addBatteryChargingLimitSchedule(from, until, power, weekdays);
+        return toFroniusSymoInverterActions(actions).addBatteryChargingLimitSchedule(from, until, power, weekdays);
     }
 
     public static boolean addBatteryChargingLimitSchedule(ThingActions actions, ZonedDateTime from, ZonedDateTime until,
@@ -183,16 +187,16 @@ public class FroniusBatteryActions implements ThingActions {
     }
 
     public static boolean preventBatteryCharging(ThingActions actions) {
-        return toFroniusBatteryActions(actions).preventBatteryCharging();
+        return toFroniusSymoInverterActions(actions).preventBatteryCharging();
     }
 
     public static boolean addPreventBatteryChargingSchedule(ThingActions actions, LocalTime from, LocalTime until) {
-        return toFroniusBatteryActions(actions).addPreventBatteryChargingSchedule(from, until);
+        return toFroniusSymoInverterActions(actions).addPreventBatteryChargingSchedule(from, until);
     }
 
     public static boolean addPreventBatteryChargingSchedule(ThingActions actions, LocalTime from, LocalTime until,
             @Nullable String weekdays) {
-        return toFroniusBatteryActions(actions).addPreventBatteryChargingSchedule(from, until, weekdays);
+        return toFroniusSymoInverterActions(actions).addPreventBatteryChargingSchedule(from, until, weekdays);
     }
 
     public static boolean addPreventBatteryChargingSchedule(ThingActions actions, ZonedDateTime from,
@@ -206,17 +210,17 @@ public class FroniusBatteryActions implements ThingActions {
     }
 
     public static boolean forceBatteryDischarging(ThingActions actions, QuantityType<Power> power) {
-        return toFroniusBatteryActions(actions).forceBatteryDischarging(power);
+        return toFroniusSymoInverterActions(actions).forceBatteryDischarging(power);
     }
 
     public static boolean addForcedBatteryDischargingSchedule(ThingActions actions, LocalTime from, LocalTime until,
             QuantityType<Power> power) {
-        return toFroniusBatteryActions(actions).addForcedBatteryDischargingSchedule(from, until, power);
+        return toFroniusSymoInverterActions(actions).addForcedBatteryDischargingSchedule(from, until, power);
     }
 
     public static boolean addForcedBatteryDischargingSchedule(ThingActions actions, LocalTime from, LocalTime until,
             QuantityType<Power> power, @Nullable String weekdays) {
-        return toFroniusBatteryActions(actions).addForcedBatteryDischargingSchedule(from, until, power, weekdays);
+        return toFroniusSymoInverterActions(actions).addForcedBatteryDischargingSchedule(from, until, power, weekdays);
     }
 
     public static boolean addForcedBatteryDischargingSchedule(ThingActions actions, ZonedDateTime from,
@@ -230,17 +234,17 @@ public class FroniusBatteryActions implements ThingActions {
     }
 
     public static boolean limitBatteryDischarging(ThingActions actions, QuantityType<Power> power) {
-        return toFroniusBatteryActions(actions).limitBatteryDischarging(power);
+        return toFroniusSymoInverterActions(actions).limitBatteryDischarging(power);
     }
 
     public static boolean addBatteryDischargingLimitSchedule(ThingActions actions, LocalTime from, LocalTime until,
             QuantityType<Power> power) {
-        return toFroniusBatteryActions(actions).addBatteryDischargingLimitSchedule(from, until, power);
+        return toFroniusSymoInverterActions(actions).addBatteryDischargingLimitSchedule(from, until, power);
     }
 
     public static boolean addBatteryDischargingLimitSchedule(ThingActions actions, LocalTime from, LocalTime until,
             QuantityType<Power> power, @Nullable String weekdays) {
-        return toFroniusBatteryActions(actions).addBatteryDischargingLimitSchedule(from, until, power, weekdays);
+        return toFroniusSymoInverterActions(actions).addBatteryDischargingLimitSchedule(from, until, power, weekdays);
     }
 
     public static boolean addBatteryDischargingLimitSchedule(ThingActions actions, ZonedDateTime from,
@@ -254,16 +258,16 @@ public class FroniusBatteryActions implements ThingActions {
     }
 
     public static boolean setBackupReservedBatteryCapacity(ThingActions actions, int percent) {
-        return toFroniusBatteryActions(actions).setBackupReservedBatteryCapacity(percent);
+        return toFroniusSymoInverterActions(actions).setBackupReservedBatteryCapacity(percent);
     }
 
     public static boolean setBackupReservedBatteryCapacity(ThingActions actions, PercentType percent) {
-        return toFroniusBatteryActions(actions).setBackupReservedBatteryCapacity(percent);
+        return toFroniusSymoInverterActions(actions).setBackupReservedBatteryCapacity(percent);
     }
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        this.handler = (FroniusBatteryHandler) handler;
+        this.handler = (FroniusSymoInverterHandler) handler;
     }
 
     @Override
@@ -271,7 +275,7 @@ public class FroniusBatteryActions implements ThingActions {
         return handler;
     }
 
-    @RuleAction(label = "@text/actions.reset-battery-control.label", description = "@text/actions.reset-battery-control.description")
+    @RuleAction(label = "@text/actions.deprecated.reset-battery-control.label", description = "@text/actions.reset-battery-control.description")
     public @ActionOutput(type = "boolean", label = "Success") boolean resetBatteryControl() {
         FroniusBatteryControl batteryControl = getBatteryControl();
         if (batteryControl != null) {
@@ -299,13 +303,13 @@ public class FroniusBatteryActions implements ThingActions {
         return false;
     }
 
-    @RuleAction(label = "@text/actions.add-schedule.label", description = "@text/actions.add-schedule.description")
+    @RuleAction(label = "@text/actions.deprecated.add-schedule.label", description = "@text/actions.add-schedule.description")
     public @ActionOutput(type = "boolean", label = "Success") boolean addSchedule(
-            @ActionInput(name = "from", label = "@text/actions.from.label", description = "@text/actions.from.description", required = true) LocalTime from,
-            @ActionInput(name = "until", label = "@text/actions.until.label", description = "@text/actions.until.description", required = true) LocalTime until,
-            @ActionInput(name = "scheduleType", label = "@text/actions.schedule-type.label", description = "@text/actions.schedule-type.description", required = true) String scheduleType,
-            @ActionInput(name = "power", label = "@text/actions.power.label", description = "@text/actions.power.description", type = "QuantityType<Power>", required = true) QuantityType<Power> power,
-            @ActionInput(name = "weekdays", label = "@text/actions.weekdays.label", description = "@text/actions.weekdays.description", type = "java.lang.String", required = false) @Nullable String weekdays) {
+            @ActionInput(name = "from", label = "@text/actions.deprecated.from.label", description = "@text/actions.from.description", required = true) LocalTime from,
+            @ActionInput(name = "until", label = "@text/actions.deprecated.until.label", description = "@text/actions.until.description", required = true) LocalTime until,
+            @ActionInput(name = "scheduleType", label = "@text/actions.deprecated.schedule-type.label", description = "@text/actions.schedule-type.description", required = true) String scheduleType,
+            @ActionInput(name = "power", label = "@text/actions.deprecated.power.label", description = "@text/actions.power.description", type = "QuantityType<Power>", required = true) QuantityType<Power> power,
+            @ActionInput(name = "weekdays", label = "@text/actions.deprecated.weekdays.label", description = "@text/actions.weekdays.description", type = "java.lang.String", required = false) @Nullable String weekdays) {
         return addSchedule(from, until, ScheduleType.valueOf(scheduleType), power, weekdays);
     }
 
@@ -334,7 +338,7 @@ public class FroniusBatteryActions implements ThingActions {
                 weekdays);
     }
 
-    @RuleAction(label = "@text/actions.hold-battery-charge.label", description = "@text/actions.hold-battery-charge.description")
+    @RuleAction(label = "@text/actions.deprecated.hold-battery-charge.label", description = "@text/actions.hold-battery-charge.description")
     public @ActionOutput(type = "boolean", label = "Success") boolean holdBatteryCharge() {
         FroniusBatteryControl batteryControl = getBatteryControl();
         if (batteryControl != null) {
@@ -346,11 +350,11 @@ public class FroniusBatteryActions implements ThingActions {
         return false;
     }
 
-    @RuleAction(label = "@text/actions.add-hold-battery-charge-schedule.label", description = "@text/actions.add-hold-battery-charge-schedule.description")
+    @RuleAction(label = "@text/actions.deprecated.add-hold-battery-charge-schedule.label", description = "@text/actions.add-hold-battery-charge-schedule.description")
     public @ActionOutput(type = "boolean", label = "Success") boolean addHoldBatteryChargeSchedule(
-            @ActionInput(name = "from", label = "@text/actions.from.label", description = "@text/actions.from.description", required = true) LocalTime from,
-            @ActionInput(name = "until", label = "@text/actions.until.label", description = "@text/actions.until.description", required = true) LocalTime until,
-            @ActionInput(name = "weekdays", label = "@text/actions.weekdays.label", description = "@text/actions.weekdays.description", type = "java.lang.String", required = false) @Nullable String weekdays) {
+            @ActionInput(name = "from", label = "@text/actions.deprecated.from.label", description = "@text/actions.from.description", required = true) LocalTime from,
+            @ActionInput(name = "until", label = "@text/actions.deprecated.until.label", description = "@text/actions.until.description", required = true) LocalTime until,
+            @ActionInput(name = "weekdays", label = "@text/actions.deprecated.weekdays.label", description = "@text/actions.weekdays.description", type = "java.lang.String", required = false) @Nullable String weekdays) {
         return addSchedule(from, until, ScheduleType.DISCHARGE_MAX, new QuantityType<>(0, Units.WATT), weekdays);
     }
 
@@ -366,9 +370,9 @@ public class FroniusBatteryActions implements ThingActions {
         return addHoldBatteryChargeSchedule(from.toLocalTime(), until.toLocalTime(), weekdays);
     }
 
-    @RuleAction(label = "@text/actions.force-battery-charging.label", description = "@text/actions.force-battery-charging.description")
+    @RuleAction(label = "@text/actions.deprecated.force-battery-charging.label", description = "@text/actions.force-battery-charging.description")
     public @ActionOutput(type = "boolean", label = "Success") boolean forceBatteryCharging(
-            @ActionInput(name = "power", label = "@text/actions.power.label", description = "@text/actions.power.description", type = "QuantityType<Power>", required = true) QuantityType<Power> power) {
+            @ActionInput(name = "power", label = "@text/actions.deprecated.power.label", description = "@text/actions.power.description", type = "QuantityType<Power>", required = true) QuantityType<Power> power) {
         FroniusBatteryControl batteryControl = getBatteryControl();
         if (batteryControl != null) {
             return executeBatteryControlAction(() -> {
@@ -379,12 +383,12 @@ public class FroniusBatteryActions implements ThingActions {
         return false;
     }
 
-    @RuleAction(label = "@text/actions.add-forced-battery-charging-schedule.label", description = "@text/actions.add-forced-battery-charging-schedule.description")
+    @RuleAction(label = "@text/actions.deprecated.add-forced-battery-charging-schedule.label", description = "@text/actions.add-forced-battery-charging-schedule.description")
     public @ActionOutput(type = "boolean", label = "Success") boolean addForcedBatteryChargingSchedule(
-            @ActionInput(name = "from", label = "@text/actions.from.label", description = "@text/actions.from.description", required = true) LocalTime from,
-            @ActionInput(name = "until", label = "@text/actions.until.label", description = "@text/actions.until.description", required = true) LocalTime until,
-            @ActionInput(name = "power", label = "@text/actions.power.label", description = "@text/actions.power.description", type = "QuantityType<Power>", required = true) QuantityType<Power> power,
-            @ActionInput(name = "weekdays", label = "@text/actions.weekdays.label", description = "@text/actions.weekdays.description", type = "java.lang.String", required = false) @Nullable String weekdays) {
+            @ActionInput(name = "from", label = "@text/actions.deprecated.from.label", description = "@text/actions.from.description", required = true) LocalTime from,
+            @ActionInput(name = "until", label = "@text/actions.deprecated.until.label", description = "@text/actions.until.description", required = true) LocalTime until,
+            @ActionInput(name = "power", label = "@text/actions.deprecated.power.label", description = "@text/actions.power.description", type = "QuantityType<Power>", required = true) QuantityType<Power> power,
+            @ActionInput(name = "weekdays", label = "@text/actions.deprecated.weekdays.label", description = "@text/actions.weekdays.description", type = "java.lang.String", required = false) @Nullable String weekdays) {
         return addSchedule(from, until, ScheduleType.CHARGE_MIN, power, weekdays);
     }
 
@@ -402,9 +406,9 @@ public class FroniusBatteryActions implements ThingActions {
         return addForcedBatteryChargingSchedule(from.toLocalTime(), until.toLocalTime(), power, weekdays);
     }
 
-    @RuleAction(label = "@text/actions.limit-battery-charging.label", description = "@text/actions.limit-battery-charging.description")
+    @RuleAction(label = "@text/actions.deprecated.limit-battery-charging.label", description = "@text/actions.limit-battery-charging.description")
     public @ActionOutput(type = "boolean", label = "Success") boolean limitBatteryCharging(
-            @ActionInput(name = "power", label = "@text/actions.power.label", description = "@text/actions.power.description", type = "QuantityType<Power>", required = true) QuantityType<Power> power) {
+            @ActionInput(name = "power", label = "@text/actions.deprecated.power.label", description = "@text/actions.power.description", type = "QuantityType<Power>", required = true) QuantityType<Power> power) {
         FroniusBatteryControl batteryControl = getBatteryControl();
         if (batteryControl != null) {
             return executeBatteryControlAction(() -> {
@@ -415,12 +419,12 @@ public class FroniusBatteryActions implements ThingActions {
         return false;
     }
 
-    @RuleAction(label = "@text/actions.add-battery-charging-limit-schedule.label", description = "@text/actions.add-battery-charging-limit-schedule.description")
+    @RuleAction(label = "@text/actions.deprecated.add-battery-charging-limit-schedule.label", description = "@text/actions.add-battery-charging-limit-schedule.description")
     public @ActionOutput(type = "boolean", label = "Success") boolean addBatteryChargingLimitSchedule(
-            @ActionInput(name = "from", label = "@text/actions.from.label", description = "@text/actions.from.description", required = true) LocalTime from,
-            @ActionInput(name = "until", label = "@text/actions.until.label", description = "@text/actions.until.description", required = true) LocalTime until,
-            @ActionInput(name = "power", label = "@text/actions.power.label", description = "@text/actions.power.description", type = "QuantityType<Power>", required = true) QuantityType<Power> power,
-            @ActionInput(name = "weekdays", label = "@text/actions.weekdays.label", description = "@text/actions.weekdays.description", type = "java.lang.String", required = false) @Nullable String weekdays) {
+            @ActionInput(name = "from", label = "@text/actions.deprecated.from.label", description = "@text/actions.from.description", required = true) LocalTime from,
+            @ActionInput(name = "until", label = "@text/actions.deprecated.until.label", description = "@text/actions.until.description", required = true) LocalTime until,
+            @ActionInput(name = "power", label = "@text/actions.deprecated.power.label", description = "@text/actions.power.description", type = "QuantityType<Power>", required = true) QuantityType<Power> power,
+            @ActionInput(name = "weekdays", label = "@text/actions.deprecated.weekdays.label", description = "@text/actions.weekdays.description", type = "java.lang.String", required = false) @Nullable String weekdays) {
         return addSchedule(from, until, ScheduleType.CHARGE_MAX, power, weekdays);
     }
 
@@ -437,7 +441,7 @@ public class FroniusBatteryActions implements ThingActions {
         return addBatteryChargingLimitSchedule(from.toLocalTime(), until.toLocalTime(), power, weekdays);
     }
 
-    @RuleAction(label = "@text/actions.prevent-battery-charging.label", description = "@text/actions.prevent-battery-charging.description")
+    @RuleAction(label = "@text/actions.deprecated.prevent-battery-charging.label", description = "@text/actions.prevent-battery-charging.description")
     public @ActionOutput(type = "boolean", label = "Success") boolean preventBatteryCharging() {
         FroniusBatteryControl batteryControl = getBatteryControl();
         if (batteryControl != null) {
@@ -449,11 +453,11 @@ public class FroniusBatteryActions implements ThingActions {
         return false;
     }
 
-    @RuleAction(label = "@text/actions.add-prevent-battery-charging-schedule.label", description = "@text/actions.add-prevent-battery-charging-schedule.description")
+    @RuleAction(label = "@text/actions.deprecated.add-prevent-battery-charging-schedule.label", description = "@text/actions.add-prevent-battery-charging-schedule.description")
     public @ActionOutput(type = "boolean", label = "Success") boolean addPreventBatteryChargingSchedule(
-            @ActionInput(name = "from", label = "@text/actions.from.label", description = "@text/actions.from.description", required = true) LocalTime from,
-            @ActionInput(name = "until", label = "@text/actions.until.label", description = "@text/actions.until.description", required = true) LocalTime until,
-            @ActionInput(name = "weekdays", label = "@text/actions.weekdays.label", description = "@text/actions.weekdays.description", type = "java.lang.String", required = false) @Nullable String weekdays) {
+            @ActionInput(name = "from", label = "@text/actions.deprecated.from.label", description = "@text/actions.from.description", required = true) LocalTime from,
+            @ActionInput(name = "until", label = "@text/actions.deprecated.until.label", description = "@text/actions.until.description", required = true) LocalTime until,
+            @ActionInput(name = "weekdays", label = "@text/actions.deprecated.weekdays.label", description = "@text/actions.weekdays.description", type = "java.lang.String", required = false) @Nullable String weekdays) {
         return addSchedule(from, until, ScheduleType.CHARGE_MAX, new QuantityType<>(0, Units.WATT), weekdays);
     }
 
@@ -470,9 +474,9 @@ public class FroniusBatteryActions implements ThingActions {
         return addPreventBatteryChargingSchedule(from.toLocalTime(), until.toLocalTime(), weekdays);
     }
 
-    @RuleAction(label = "@text/actions.force-battery-discharging.label", description = "@text/actions.force-battery-discharging.description")
+    @RuleAction(label = "@text/actions.deprecated.force-battery-discharging.label", description = "@text/actions.force-battery-discharging.description")
     public @ActionOutput(type = "boolean", label = "Success") boolean forceBatteryDischarging(
-            @ActionInput(name = "power", label = "@text/actions.power.label", description = "@text/actions.power.description", type = "QuantityType<Power>", required = true) QuantityType<Power> power) {
+            @ActionInput(name = "power", label = "@text/actions.deprecated.power.label", description = "@text/actions.power.description", type = "QuantityType<Power>", required = true) QuantityType<Power> power) {
         FroniusBatteryControl batteryControl = getBatteryControl();
         if (batteryControl != null) {
             return executeBatteryControlAction(() -> {
@@ -483,12 +487,12 @@ public class FroniusBatteryActions implements ThingActions {
         return false;
     }
 
-    @RuleAction(label = "@text/actions.add-forced-battery-discharging-schedule.label", description = "@text/actions.add-forced-battery-discharging-schedule.description")
+    @RuleAction(label = "@text/actions.deprecated.add-forced-battery-discharging-schedule.label", description = "@text/actions.add-forced-battery-discharging-schedule.description")
     public @ActionOutput(type = "boolean", label = "Success") boolean addForcedBatteryDischargingSchedule(
-            @ActionInput(name = "from", label = "@text/actions.from.label", description = "@text/actions.from.description", required = true) LocalTime from,
-            @ActionInput(name = "until", label = "@text/actions.until.label", description = "@text/actions.until.description", required = true) LocalTime until,
-            @ActionInput(name = "power", label = "@text/actions.power.label", description = "@text/actions.power.description", type = "QuantityType<Power>", required = true) QuantityType<Power> power,
-            @ActionInput(name = "weekdays", label = "@text/actions.weekdays.label", description = "@text/actions.weekdays.description", type = "java.lang.String", required = false) @Nullable String weekdays) {
+            @ActionInput(name = "from", label = "@text/actions.deprecated.from.label", description = "@text/actions.from.description", required = true) LocalTime from,
+            @ActionInput(name = "until", label = "@text/actions.deprecated.until.label", description = "@text/actions.until.description", required = true) LocalTime until,
+            @ActionInput(name = "power", label = "@text/actions.deprecated.power.label", description = "@text/actions.power.description", type = "QuantityType<Power>", required = true) QuantityType<Power> power,
+            @ActionInput(name = "weekdays", label = "@text/actions.deprecated.weekdays.label", description = "@text/actions.weekdays.description", type = "java.lang.String", required = false) @Nullable String weekdays) {
         return addSchedule(from, until, ScheduleType.DISCHARGE_MIN, power, weekdays);
     }
 
@@ -506,9 +510,9 @@ public class FroniusBatteryActions implements ThingActions {
         return addForcedBatteryDischargingSchedule(from.toLocalTime(), until.toLocalTime(), power, weekdays);
     }
 
-    @RuleAction(label = "@text/actions.limit-battery-discharging.label", description = "@text/actions.limit-battery-discharging.description")
+    @RuleAction(label = "@text/actions.deprecated.limit-battery-discharging.label", description = "@text/actions.limit-battery-discharging.description")
     public @ActionOutput(type = "boolean", label = "Success") boolean limitBatteryDischarging(
-            @ActionInput(name = "power", label = "@text/actions.power.label", description = "@text/actions.power.description", type = "QuantityType<Power>", required = true) QuantityType<Power> power) {
+            @ActionInput(name = "power", label = "@text/actions.deprecated.power.label", description = "@text/actions.power.description", type = "QuantityType<Power>", required = true) QuantityType<Power> power) {
         FroniusBatteryControl batteryControl = getBatteryControl();
         if (batteryControl != null) {
             return executeBatteryControlAction(() -> {
@@ -519,12 +523,12 @@ public class FroniusBatteryActions implements ThingActions {
         return false;
     }
 
-    @RuleAction(label = "@text/actions.add-battery-discharging-limit-schedule.label", description = "@text/actions.add-battery-discharging-limit-schedule.description")
+    @RuleAction(label = "@text/actions.deprecated.add-battery-discharging-limit-schedule.label", description = "@text/actions.add-battery-discharging-limit-schedule.description")
     public @ActionOutput(type = "boolean", label = "Success") boolean addBatteryDischargingLimitSchedule(
-            @ActionInput(name = "from", label = "@text/actions.from.label", description = "@text/actions.from.description", required = true) LocalTime from,
-            @ActionInput(name = "until", label = "@text/actions.until.label", description = "@text/actions.until.description", required = true) LocalTime until,
-            @ActionInput(name = "power", label = "@text/actions.power.label", description = "@text/actions.power.description", type = "QuantityType<Power>", required = true) QuantityType<Power> power,
-            @ActionInput(name = "weekdays", label = "@text/actions.weekdays.label", description = "@text/actions.weekdays.description", type = "java.lang.String", required = false) @Nullable String weekdays) {
+            @ActionInput(name = "from", label = "@text/actions.deprecated.from.label", description = "@text/actions.from.description", required = true) LocalTime from,
+            @ActionInput(name = "until", label = "@text/actions.deprecated.until.label", description = "@text/actions.until.description", required = true) LocalTime until,
+            @ActionInput(name = "power", label = "@text/actions.deprecated.power.label", description = "@text/actions.power.description", type = "QuantityType<Power>", required = true) QuantityType<Power> power,
+            @ActionInput(name = "weekdays", label = "@text/actions.deprecated.weekdays.label", description = "@text/actions.weekdays.description", type = "java.lang.String", required = false) @Nullable String weekdays) {
         return addSchedule(from, until, ScheduleType.DISCHARGE_MAX, power, weekdays);
     }
 
@@ -542,9 +546,9 @@ public class FroniusBatteryActions implements ThingActions {
         return addBatteryDischargingLimitSchedule(from.toLocalTime(), until.toLocalTime(), power, weekdays);
     }
 
-    @RuleAction(label = "@text/actions.backup-reserved-battery-capacity.label", description = "@text/actions.backup-reserved-battery-capacity.description")
+    @RuleAction(label = "@text/actions.deprecated.backup-reserved-battery-capacity.label", description = "@text/actions.backup-reserved-battery-capacity.description")
     public @ActionOutput(type = "boolean", label = "Success") boolean setBackupReservedBatteryCapacity(
-            @ActionInput(name = "percent", label = "@text/actions.soc.label", description = "@text/actions.soc.description", required = true) int percent) {
+            @ActionInput(name = "percent", label = "@text/actions.deprecated.soc.label", description = "@text/actions.soc.description", required = true) int percent) {
         FroniusBatteryControl batteryControl = getBatteryControl();
         if (batteryControl != null) {
             return executeBatteryControlAction(() -> {
@@ -593,8 +597,13 @@ public class FroniusBatteryActions implements ThingActions {
     }
 
     private @Nullable FroniusBatteryControl getBatteryControl() {
-        FroniusBatteryHandler handler = this.handler;
+        FroniusSymoInverterHandler handler = this.handler;
         if (handler != null) {
+            if (!deprecationWarned) {
+                deprecationWarned = true;
+                logger.warn(
+                        "Using the battery control actions through the powerinverter thing is deprecated, please retrieve them through the battery thing instead.");
+            }
             return handler.getBatteryControl();
         }
         return null;
