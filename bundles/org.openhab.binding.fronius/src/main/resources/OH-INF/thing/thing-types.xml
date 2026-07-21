@@ -1197,6 +1197,7 @@
 			<tag>Power</tag>
 		</tags>
 		<state pattern="%.0f W"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="max-charge-power">
 		<item-type>Number:Power</item-type>
@@ -1208,6 +1209,7 @@
 			<tag>Power</tag>
 		</tags>
 		<state pattern="%.0f W"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="min-discharge-power">
 		<item-type>Number:Power</item-type>
@@ -1219,6 +1221,7 @@
 			<tag>Power</tag>
 		</tags>
 		<state pattern="%.0f W"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="max-discharge-power">
 		<item-type>Number:Power</item-type>
@@ -1230,6 +1233,7 @@
 			<tag>Power</tag>
 		</tags>
 		<state pattern="%.0f W"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 </thing:thing-descriptions>
