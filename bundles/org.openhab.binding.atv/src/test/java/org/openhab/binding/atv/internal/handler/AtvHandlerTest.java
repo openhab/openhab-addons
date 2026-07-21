@@ -20,6 +20,8 @@ import static org.openhab.binding.atv.internal.AtvBindingConstants.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.ScheduledFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,6 +31,7 @@ import org.openhab.binding.atv.internal.client.capability.Audio;
 import org.openhab.binding.atv.internal.client.capability.Power;
 import org.openhab.binding.atv.internal.client.capability.RemoteControl;
 import org.openhab.binding.atv.internal.client.dto.PowerState;
+import org.openhab.binding.atv.internal.client.dto.Protocol;
 import org.openhab.core.library.types.NextPreviousType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -192,6 +195,52 @@ public class AtvHandlerTest {
     }
 
     @Test
+    public void testPowerOnWhileOfflineRequestsWake() throws Exception {
+        injectAppleTV(null);
+        handler.handleCommand(channel(CHANNEL_POWER), OnOffType.ON);
+        try {
+            assertThat(booleanField("pendingWake"), is(true));
+            assertThat(field("reconnectJob"), is(notNullValue()));
+        } finally {
+            cancelReconnectJob();
+        }
+    }
+
+    @Test
+    public void testPowerOffWhileOfflineDoesNotRequestWake() throws Exception {
+        injectAppleTV(null);
+        handler.handleCommand(channel(CHANNEL_POWER), OnOffType.OFF);
+        assertThat(booleanField("pendingWake"), is(false));
+        assertThat(field("reconnectJob"), is(nullValue()));
+    }
+
+    @Test
+    public void testNonPowerCommandWhileOfflineDoesNotRequestWake() throws Exception {
+        injectAppleTV(null);
+        handler.handleCommand(channel(CHANNEL_REMOTE_KEY), new StringType("up"));
+        assertThat(booleanField("pendingWake"), is(false));
+        assertThat(field("reconnectJob"), is(nullValue()));
+    }
+
+    @Test
+    public void testDegradedConnectionDetection() throws Exception {
+        when(appleTV.connectedProtocols()).thenReturn(Set.of(Protocol.Companion));
+        assertThat(isDegradedConnection(), is(true));
+
+        when(appleTV.connectedProtocols()).thenReturn(Set.of(Protocol.Companion, Protocol.MRP));
+        assertThat(isDegradedConnection(), is(false));
+
+        when(appleTV.connectedProtocols()).thenReturn(Set.of(Protocol.AirPlay, Protocol.RAOP));
+        assertThat(isDegradedConnection(), is(false));
+    }
+
+    @Test
+    public void testDegradedConnectionFalseWhenNotConnected() throws Exception {
+        injectAppleTV(null);
+        assertThat(isDegradedConnection(), is(false));
+    }
+
+    @Test
     public void testPowerToStateMapping() throws Exception {
         assertThat(powerToState(PowerState.On), is(OnOffType.ON));
         assertThat(powerToState(PowerState.Off), is(OnOffType.OFF));
@@ -202,5 +251,30 @@ public class AtvHandlerTest {
         Method method = AtvHandler.class.getDeclaredMethod("powerToState", PowerState.class);
         method.setAccessible(true);
         return Objects.requireNonNull((State) method.invoke(handler, state));
+    }
+
+    private boolean isDegradedConnection() throws Exception {
+        Method method = AtvHandler.class.getDeclaredMethod("isDegradedConnection");
+        method.setAccessible(true);
+        return (boolean) Objects.requireNonNull(method.invoke(handler));
+    }
+
+    private boolean booleanField(String name) throws Exception {
+        Field field = AtvHandler.class.getDeclaredField(name);
+        field.setAccessible(true);
+        return field.getBoolean(handler);
+    }
+
+    private @org.eclipse.jdt.annotation.Nullable Object field(String name) throws Exception {
+        Field field = AtvHandler.class.getDeclaredField(name);
+        field.setAccessible(true);
+        return field.get(handler);
+    }
+
+    private void cancelReconnectJob() throws Exception {
+        Object job = field("reconnectJob");
+        if (job instanceof ScheduledFuture) {
+            ((ScheduledFuture<?>) job).cancel(true);
+        }
     }
 }

@@ -52,7 +52,7 @@ public final class MetadataRelay extends BaseRelay<Metadata> implements Metadata
     }
 
     @Override
-    public String artworkId() {
+    public @Nullable String artworkId() {
         guard.requireNotBlocked("artworkId");
         return relayer.relay(Capability.METADATA_ARTWORK_ID).artworkId();
     }

@@ -118,7 +118,7 @@ public final class CompanionPower implements Power, CapabilitySource {
             powerState = systemStatusToPowerState(SystemStatus.fromValue(stateValue.intValue()));
             updatePowerState(oldState, powerState);
         } catch (Exception e) {
-            LOGGER.warn("Got invalid SystemStatus: {}", data, e);
+            LOGGER.debug("Got invalid SystemStatus: {}", data, e);
         }
     }
 

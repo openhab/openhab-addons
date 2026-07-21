@@ -284,7 +284,7 @@ public class MrpProtocol extends MessageDispatcher<ProtocolMessage.Type, Protoco
      */
     public void stop() {
         if (!outstanding.isEmpty()) {
-            LOGGER.warn("There were {} outstanding requests", outstanding.size());
+            LOGGER.debug("There were {} outstanding requests", outstanding.size());
         }
         @Nullable
         Heartbeater beater = heartbeater;

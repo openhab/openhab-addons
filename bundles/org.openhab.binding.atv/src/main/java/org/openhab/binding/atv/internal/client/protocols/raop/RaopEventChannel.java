@@ -106,7 +106,7 @@ final class RaopEventChannel implements AutoCloseable {
                 LOGGER.debug("Event channel connection lost: {}", e.toString());
             }
         } catch (RuntimeException e) {
-            LOGGER.warn("Failed to handle message on event channel", e);
+            LOGGER.debug("Failed to handle message on event channel", e);
         }
         LOGGER.debug("Event channel closed");
     }

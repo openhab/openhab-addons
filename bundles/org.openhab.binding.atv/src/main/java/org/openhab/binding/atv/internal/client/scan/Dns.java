@@ -91,7 +91,7 @@ public final class Dns {
                 encodedLabel = truncatedLabel.getBytes(StandardCharsets.UTF_8);
             }
             if (truncated) {
-                LOGGER.warn("A label ({}) is being truncated (to {}) in the DNS name '{}' "
+                LOGGER.debug("A label ({}) is being truncated (to {}) in the DNS name '{}' "
                         + "as it is over 63 bytes long.", label, truncatedLabel, name);
             }
             encoded.write(encodedLabel.length);

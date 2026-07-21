@@ -73,10 +73,10 @@ public interface Metadata {
     /**
      * Returns a unique identifier for the current artwork.
      *
-     * @return artwork identifier
+     * @return artwork identifier, or {@code null} when nothing is playing or the current item has no artwork
      * @throws NotSupportedError if not supported
      */
-    default String artworkId() {
+    default @Nullable String artworkId() {
         throw new NotSupportedError("artworkId is not supported");
     }
 

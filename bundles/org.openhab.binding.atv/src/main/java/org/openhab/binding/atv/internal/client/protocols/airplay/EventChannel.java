@@ -82,7 +82,7 @@ public final class EventChannel extends HapChannel {
                         new HttpResponse(request.protocol(), request.version(), 200, "OK", headers, new byte[0])));
             } catch (RuntimeException e) {
                 // Breaking here avoids spinning on a buffer that can never be parsed
-                LOGGER.warn("Failed to handle message on event channel", e);
+                LOGGER.debug("Failed to handle message on event channel", e);
                 break;
             }
         }

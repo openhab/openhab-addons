@@ -407,7 +407,7 @@ public final class HttpConnection implements AutoCloseable {
                 LOGGER.debug("Connection error", e);
             }
         } catch (RuntimeException e) {
-            LOGGER.warn("Failed to process incoming data, closing connection", e);
+            LOGGER.debug("Failed to process incoming data, closing connection", e);
             lostByRemote = !closed;
         }
 
@@ -464,21 +464,21 @@ public final class HttpConnection implements AutoCloseable {
         if (pending != null) {
             pending.future.complete(response);
         } else {
-            LOGGER.warn("Got response without having a request: {}", response);
+            LOGGER.debug("Got response without having a request: {}", response);
         }
     }
 
     private void dispatchRequest(HttpRequest request) {
         Function<HttpRequest, HttpResponse> handler = requestHandler;
         if (handler == null) {
-            LOGGER.warn("Got request without a request handler: {}", request);
+            LOGGER.debug("Got request without a request handler: {}", request);
             return;
         }
         HttpResponse response;
         try {
             response = handler.apply(request);
         } catch (RuntimeException e) {
-            LOGGER.warn("Request handler failed for {}", request, e);
+            LOGGER.debug("Request handler failed for {}", request, e);
             return;
         }
         if (response != null) {

@@ -158,7 +158,7 @@ public abstract class ScanOrchestrator {
         for (MdnsService service : response.services()) {
             ServiceTypeEntry entry = serviceTypes.get(service.type());
             if (entry == null) {
-                LOGGER.warn("Discovered unsupported service {} for device {}", service.name(), service.type());
+                LOGGER.debug("Discovered unsupported service {} for device {}", service.name(), service.type());
                 continue;
             }
             try {

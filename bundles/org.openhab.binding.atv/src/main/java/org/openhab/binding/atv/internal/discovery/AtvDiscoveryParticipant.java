@@ -15,6 +15,8 @@ package org.openhab.binding.atv.internal.discovery;
 import static org.openhab.binding.atv.internal.AtvBindingConstants.*;
 
 import java.net.Inet4Address;
+import java.net.Inet6Address;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -85,13 +87,16 @@ public class AtvDiscoveryParticipant implements MDNSDiscoveryParticipant {
     public @Nullable DiscoveryResult createResult(ServiceInfo service) {
         ThingUID uid = getThingUID(service);
         if (uid == null) {
+            logger.trace("Ignoring AirPlay service {}: no '{}' TXT record (addresses={}, server={})", service.getName(),
+                    TXT_DEVICE_ID, Arrays.toString(service.getHostAddresses()), service.getServer());
             return null;
         }
-        Inet4Address[] addresses = service.getInet4Addresses();
-        if (addresses.length == 0) {
+        String host = hostAddress(service);
+        if (host.isBlank()) {
+            logger.trace("Ignoring AirPlay device {} ({}): no resolved address (server={})", service.getName(),
+                    deviceId(service), service.getServer());
             return null;
         }
-        String host = addresses[0].getHostAddress();
         String mac = deviceId(service);
         String name = service.getName();
         String model = service.getPropertyString(TXT_MODEL);
@@ -126,5 +131,29 @@ public class AtvDiscoveryParticipant implements MDNSDiscoveryParticipant {
     private String deviceId(ServiceInfo service) {
         String id = service.getPropertyString(TXT_DEVICE_ID);
         return id != null ? id : "";
+    }
+
+    /**
+     * Resolves a connectable host for the service. jmDNS often resolves Apple devices to IPv6 only (or
+     * to just the hostname), so an IPv4-only lookup silently drops them; prefer IPv4, then a routable
+     * IPv6 address, then the advertised hostname.
+     */
+    private static String hostAddress(ServiceInfo service) {
+        Inet4Address[] ipv4 = service.getInet4Addresses();
+        if (ipv4.length > 0) {
+            return ipv4[0].getHostAddress();
+        }
+        for (Inet6Address ipv6 : service.getInet6Addresses()) {
+            if (!ipv6.isLinkLocalAddress()) {
+                String address = ipv6.getHostAddress();
+                int scope = address.indexOf('%');
+                return scope >= 0 ? address.substring(0, scope) : address;
+            }
+        }
+        String server = service.getServer();
+        if (server != null && !server.isBlank()) {
+            return server.endsWith(".") ? server.substring(0, server.length() - 1) : server;
+        }
+        return "";
     }
 }

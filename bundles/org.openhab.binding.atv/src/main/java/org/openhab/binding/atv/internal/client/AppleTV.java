@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.atv.internal.client;
 
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -28,6 +29,7 @@ import org.openhab.binding.atv.internal.client.capability.TouchGestures;
 import org.openhab.binding.atv.internal.client.capability.UserAccounts;
 import org.openhab.binding.atv.internal.client.conf.BaseService;
 import org.openhab.binding.atv.internal.client.dto.DeviceInfo;
+import org.openhab.binding.atv.internal.client.dto.Protocol;
 import org.openhab.binding.atv.internal.client.settings.Settings;
 
 /**
@@ -54,6 +56,20 @@ public interface AppleTV {
      * @return future completing when all resources have been released
      */
     CompletableFuture<Void> close();
+
+    /**
+     * Returns the protocols that are currently connected.
+     *
+     * <p>
+     * A connection can be partial: when a device is asleep it may only keep some protocols (typically
+     * Companion) reachable, so a connect can succeed with fewer protocols than the device advertises.
+     * Callers can use this to detect a degraded connection and reconnect once the device is awake again.
+     *
+     * @return the set of connected protocols; empty when not connected
+     */
+    default Set<Protocol> connectedProtocols() {
+        return Set.of();
+    }
 
     /**
      * Returns device settings used by the library.

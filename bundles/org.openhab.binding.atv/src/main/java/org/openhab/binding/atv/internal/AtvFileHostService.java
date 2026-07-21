@@ -73,7 +73,7 @@ public class AtvFileHostService implements FileHostService {
             httpService.registerServlet(ALIAS, new MediaServlet(hostedFiles), null,
                     httpService.createDefaultHttpContext());
         } catch (ServletException | NamespaceException e) {
-            logger.warn("Registering media servlet failed", e);
+            logger.debug("Registering media servlet failed", e);
         }
     }
 

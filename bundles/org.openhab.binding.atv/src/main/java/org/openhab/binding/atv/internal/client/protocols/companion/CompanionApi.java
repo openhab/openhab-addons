@@ -132,7 +132,7 @@ public final class CompanionApi implements CompanionProtocol.Listener {
                 try {
                     listener.accept(data);
                 } catch (RuntimeException e) {
-                    LOGGER.warn("Error dispatching event {}", event, e);
+                    LOGGER.debug("Error dispatching event {}", event, e);
                 }
             }));
         }

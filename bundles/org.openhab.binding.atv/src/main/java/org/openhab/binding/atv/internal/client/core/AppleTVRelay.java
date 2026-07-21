@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -175,17 +176,35 @@ public final class AppleTVRelay implements AppleTV, DeviceListener {
         Map<String, Object> devinfo = new LinkedHashMap<>();
         CompletableFuture<Void> chain = CompletableFuture.completedFuture(null);
         for (SetupData setupData : toSetup) {
-            chain = chain.thenCompose(ignore -> setUpProtocol(setupData, devinfo));
+            // A protocol failing to connect is tolerated: a sleeping device often keeps only some
+            // protocols (typically Companion) reachable, so the connect proceeds with whatever set up.
+            // The failure is swallowed here so later protocols still get a chance.
+            chain = chain.thenCompose(ignore -> setUpProtocol(setupData, devinfo).handle((done, error) -> {
+                if (error != null) {
+                    Throwable cause = error.getCause();
+                    LOGGER.debug("Protocol {} failed to connect: {}", setupData.protocol(),
+                            cause != null ? cause.getMessage() : error.getMessage());
+                }
+                return done;
+            }));
         }
-        return chain.thenRun(() -> {
+        return chain.thenCompose(ignore -> {
+            synchronized (this) {
+                if (protocolHandlers.isEmpty()) {
+                    // Nothing connected at all; tear down and report failure so the caller can retry.
+                    return close().handle((closed, closeError) -> null).thenCompose(closed -> CompletableFuture
+                            .<Void> failedFuture(new NoServiceError("no protocol could be connected")));
+                }
+            }
             deviceInfo = buildDeviceInfo(devinfo);
             wirePowerListener();
-        }).exceptionallyCompose(error -> {
-            // Tear down any protocols that already connected so their connections and heartbeat
-            // loops do not leak when a later protocol fails to set up.
-            return close().handle((ignore, closeError) -> null)
-                    .thenCompose(ignore -> CompletableFuture.<Void> failedFuture(error));
+            return CompletableFuture.completedFuture(null);
         });
+    }
+
+    @Override
+    public synchronized Set<Protocol> connectedProtocols() {
+        return Set.copyOf(protocolHandlers.keySet());
     }
 
     private CompletableFuture<Void> setUpProtocol(SetupData setupData, Map<String, Object> devinfo) {
@@ -244,7 +263,7 @@ public final class AppleTVRelay implements AppleTV, DeviceListener {
             try {
                 setupData.close().run();
             } catch (RuntimeException e) {
-                LOGGER.warn("Error closing protocol {}", setupData.protocol(), e);
+                LOGGER.debug("Error closing protocol {}", setupData.protocol(), e);
             }
         }
 

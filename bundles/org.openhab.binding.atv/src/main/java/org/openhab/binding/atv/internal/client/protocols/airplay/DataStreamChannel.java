@@ -288,7 +288,7 @@ public final class DataStreamChannel extends HapChannel {
     public static @Nullable Object decodePayload(byte[] payload) {
         Object data = AirPlayUtils.decodePlistBody(payload);
         if (data == null) {
-            LOGGER.warn("failed to process data frame");
+            LOGGER.debug("failed to process data frame");
         }
         return data;
     }
@@ -333,7 +333,7 @@ public final class DataStreamChannel extends HapChannel {
                     Variant.Result length = Variant.readVariant(data);
                     byte[] raw = Arrays.copyOfRange(data, length.consumed(), data.length);
                     if (raw.length < length.value()) {
-                        LOGGER.warn("Expected {} bytes, got {}", length.value(), raw.length);
+                        LOGGER.debug("Expected {} bytes, got {}", length.value(), raw.length);
                         break;
                     }
                     message = Arrays.copyOfRange(raw, 0, (int) length.value());
@@ -345,7 +345,7 @@ public final class DataStreamChannel extends HapChannel {
                 messages.add(ProtocolMessage.parseFrom(message, MrpExtensions.EXTENSION_REGISTRY));
             }
         } catch (Exception e) {
-            LOGGER.warn("failed to process data frame", e);
+            LOGGER.debug("failed to process data frame", e);
         }
         return messages;
     }

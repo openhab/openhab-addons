@@ -155,7 +155,7 @@ public final class ControlServer implements AutoCloseable {
                 }
                 return;
             } catch (RuntimeException e) {
-                LOGGER.warn("Failed to handle control data", e);
+                LOGGER.debug("Failed to handle control data", e);
             }
         }
     }
