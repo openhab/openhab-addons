@@ -803,7 +803,7 @@
         <groupId>com.github.eirslett</groupId>
         <artifactId>frontend-maven-plugin</artifactId>
         <version>2.0.1</version>
-
+        <inherited>false</inherited>
         <configuration>
           <!-- Central toolchain for markdownlint (Node 24) -->
           <installDirectory>${maven.multiModuleProjectDirectory}/target/.mvn/node-markdownlint</installDirectory>
@@ -879,6 +879,59 @@
               <execution>
                 <id>embed-dependencies</id>
                 <phase>none</phase>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>markdownlint</id>
+
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.github.eirslett</groupId>
+            <artifactId>frontend-maven-plugin</artifactId>
+            <version>2.0.1</version>
+
+            <!-- Explicitly inherited by child bindings -->
+            <inherited>true</inherited>
+
+            <configuration>
+              <!-- Local to the individual module -->
+              <installDirectory>${project.build.directory}/node-markdownlint</installDirectory>
+              <nodeVersion>v24.12.0</nodeVersion>
+              <npmVersion>11.6.2</npmVersion>
+            </configuration>
+
+            <executions>
+              <execution>
+                <id>install-node-and-npm</id>
+                <goals>
+                  <goal>install-node-and-npm</goal>
+                </goals>
+                <phase>validate</phase>
+                <configuration>
+                  <skip>${markdownlint.skip}</skip>
+                </configuration>
+              </execution>
+
+              <execution>
+                <id>markdownlint</id>
+                <goals>
+                  <goal>npm</goal>
+                </goals>
+                <phase>validate</phase>
+                <configuration>
+                  <skip>${markdownlint.skip}</skip>
+                  <workingDirectory>${project.basedir}</workingDirectory>
+                  <arguments>exec --yes markdownlint-cli2 -- **/*.md
+                !**/target/**
+                !**/node_modules/**
+                --config ${maven.multiModuleProjectDirectory}/.github/markdownlint.yaml</arguments>
+                </configuration>
               </execution>
             </executions>
           </plugin>
