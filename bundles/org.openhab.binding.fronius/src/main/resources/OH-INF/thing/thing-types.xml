@@ -405,6 +405,10 @@
 				<option value="8">Standby</option>
 				<option value="9">Bootloading</option>
 				<option value="10">Error</option>
+				<option value="11">Idle</option>
+				<option value="12">Ready</option>
+				<option value="13">Sleeping</option>
+				<option value="255">Unknown</option>
 			</options>
 		</state>
 	</channel-type>
