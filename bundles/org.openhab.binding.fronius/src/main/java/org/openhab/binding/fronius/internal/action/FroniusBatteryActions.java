@@ -263,7 +263,11 @@ public class FroniusBatteryActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        this.handler = (FroniusBatteryHandler) handler;
+        if (handler instanceof FroniusBatteryHandler h) {
+            this.handler = h;
+        } else if (handler != null) {
+            throw new IllegalArgumentException("The 'handler' argument is not an instance of FroniusBatteryHandler");
+        }
     }
 
     @Override

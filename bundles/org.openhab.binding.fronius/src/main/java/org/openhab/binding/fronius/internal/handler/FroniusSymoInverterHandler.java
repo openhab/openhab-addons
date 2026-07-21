@@ -118,9 +118,6 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
         InverterInfo localInverterInfo = inverterInfo;
         String firmwareVersion = localInverterInfo == null ? null : localInverterInfo.firmware();
         if (firmwareVersion == null) {
-            firmwareVersion = getFirmwareVersion(bridgeConfig.scheme, bridgeConfig.hostname);
-        }
-        if (firmwareVersion == null) {
             logger.warn(
                     "The firmware version of the Fronius inverter could not be determined. Battery control is not available for Thing '{}'.",
                     thing.getUID());
@@ -129,9 +126,8 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
         int hyphenIndex = firmwareVersion.indexOf('-');
         String versionString = (hyphenIndex > 0) ? firmwareVersion.substring(0, hyphenIndex) : firmwareVersion;
         SemverVersion version = SemverVersion.fromString(versionString);
-        control = new FroniusBatteryControl(bridgeHandler.getConfigApiClient(), version, bridgeConfig.scheme,
-                bridgeConfig.hostname, username, password);
-        batteryControl = control;
+        batteryControl = control = new FroniusBatteryControl(bridgeHandler.getConfigApiClient(), version,
+                bridgeConfig.scheme, bridgeConfig.hostname, username, password);
         return control;
     }
 

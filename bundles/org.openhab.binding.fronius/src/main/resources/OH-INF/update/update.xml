@@ -36,11 +36,9 @@
 		<instruction-set targetVersion="1">
 			<add-channel id="socMin">
 				<type>fronius:batterySocMin</type>
-				<label>SoC Minimum</label>
 			</add-channel>
 			<add-channel id="socMax">
 				<type>fronius:batterySocMax</type>
-				<label>SoC Maximum</label>
 			</add-channel>
 			<add-channel id="backupReservedCapacity">
 				<type>fronius:backupReservedCapacity</type>
@@ -53,7 +51,6 @@
 			</add-channel>
 			<add-channel id="calibration">
 				<type>fronius:batteryCalibration</type>
-				<label>Calibration</label>
 			</add-channel>
 			<add-channel id="nightPreservationLimit">
 				<type>fronius:nightPreservationLimit</type>

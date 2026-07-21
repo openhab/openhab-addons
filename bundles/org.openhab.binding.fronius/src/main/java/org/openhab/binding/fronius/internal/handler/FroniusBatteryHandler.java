@@ -184,7 +184,7 @@ public class FroniusBatteryHandler extends FroniusBaseThingHandler {
                 switch (channelId) {
                     case FroniusBindingConstants.BATTERY_CALIBRATION_CHANNEL,
                             FroniusBindingConstants.BATTERY_NIGHT_PRESERVATION_LIMIT_CHANNEL -> {
-                        logger.warn("Channel {} is read-only, ignoring command {}", channelId, command);
+                        logger.debug("Channel {} is read-only, ignoring command {}", channelId, command);
                         return;
                     }
                     case FroniusBindingConstants.BATTERY_CHARGE_FROM_GRID_CHANNEL -> {
@@ -197,10 +197,18 @@ public class FroniusBatteryHandler extends FroniusBaseThingHandler {
                         applyUpdatedSettings(control, prev -> new BatterySettings(prev.minSoc(), prev.maxSoc(),
                                 prev.backupReservedCapacity(), prev.backupCriticalSoc(), enabled, prev.calibrating()));
                     }
-                    default -> {
+                    case FroniusBindingConstants.BATTERY_BACKUP_RESERVED_CHANNEL,
+                            FroniusBindingConstants.BATTERY_BACKUP_CRITICAL_SOC_CHANNEL,
+                            FroniusBindingConstants.BATTERY_SOC_MIN_CHANNEL,
+                            FroniusBindingConstants.BATTERY_SOC_MAX_CHANNEL -> {
                         int value;
                         if (command instanceof QuantityType<?> quantity) {
-                            value = quantity.intValue();
+                            QuantityType<?> percent = quantity.toUnit("%");
+                            if (percent == null) {
+                                logger.warn("Unsupported command {} for channel {}", command, channelId);
+                                return;
+                            }
+                            value = percent.intValue();
                         } else if (command instanceof DecimalType decimal) {
                             value = decimal.intValue();
                         } else {
@@ -227,7 +235,7 @@ public class FroniusBatteryHandler extends FroniusBaseThingHandler {
                                         settings.backupReservedCapacity(), settings.backupCriticalSoc(),
                                         settings.chargeFromGrid(), settings.calibrating()));
                             }
-                            default -> {
+                            case FroniusBindingConstants.BATTERY_SOC_MAX_CHANNEL -> {
                                 BatterySettings settings = control.getBatterySettings();
                                 control.setSocLimits(settings.minSoc(), value);
                                 applyBatterySettings(new BatterySettings(settings.minSoc(), value,

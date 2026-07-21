@@ -191,7 +191,9 @@ public abstract class FroniusBaseThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Get the firmware version of the inverter from its <code>/status/version</code> endpoint.
+     * Get the firmware version of the inverter from its <code>/api/status/version</code> or
+     * <code>/status/version</code>
+     * endpoint.
      *
      * @param scheme http or https
      * @param hostname the hostname or IP address of the inverter
