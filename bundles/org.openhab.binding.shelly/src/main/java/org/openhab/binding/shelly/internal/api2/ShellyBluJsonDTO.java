@@ -34,6 +34,7 @@ public class ShellyBluJsonDTO {
     public static final String SHELLY2_EVENT_BLUPREFIX = "oh-blu.";
     public static final String SHELLY2_EVENT_BLUSCAN = SHELLY2_EVENT_BLUPREFIX + "scan_result";
     public static final String SHELLY2_EVENT_BLUDATA = SHELLY2_EVENT_BLUPREFIX + "data";
+    public static final String SHELLY2_EVENT_BLUALARM = SHELLY2_EVENT_BLUPREFIX + "alarm";
 
     // BTHome samples
     // BLU Button 1
@@ -82,6 +83,8 @@ public class ShellyBluJsonDTO {
         public @Nullable String addr;
         public @Nullable String name;
         public @Nullable Boolean encryption;
+        @SerializedName("code") // oh-blu.alarm: BTH_ENCRYPTED, BTH_UNKNOWN_TYPE
+        public @Nullable String alarmCode;
         @SerializedName("BTHome_version")
         public @Nullable Integer bthVersion;
         public @Nullable Integer pid;
