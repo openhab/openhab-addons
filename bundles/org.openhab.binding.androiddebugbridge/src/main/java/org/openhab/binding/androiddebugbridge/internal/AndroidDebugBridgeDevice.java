@@ -33,6 +33,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -752,6 +753,7 @@ public class AndroidDebugBridgeDevice {
         if (adb == null) {
             throw new AndroidDebugBridgeDeviceException("Device not connected");
         }
+        AtomicReference<@Nullable Exception> streamError = new AtomicReference<>();
         try {
             commandLock.lock();
             var commandFuture = scheduler.submit(() -> {
@@ -764,13 +766,23 @@ public class AndroidDebugBridgeDevice {
                     } while (!stream.isClosed());
                 } catch (IllegalStateException | IOException e) {
                     if (!"Stream closed".equals(e.getMessage())) {
-                        throw e;
+                        // Capture rather than throw: letting it escape the scheduled task makes openHAB's
+                        // WrappedScheduledExecutorService log a noisy "Scheduled runnable ended with an
+                        // exception" stacktrace for an expected condition (a standby adbd rejecting the
+                        // shell stream). It is re-surfaced as a typed exception on the calling thread below.
+                        streamError.set(e);
                     }
                 }
                 return byteArrayOutputStream.toString(StandardCharsets.US_ASCII);
             });
             this.commandFuture = commandFuture;
-            return commandFuture.get(commandTimeout, TimeUnit.SECONDS);
+            String result = commandFuture.get(commandTimeout, TimeUnit.SECONDS);
+            Exception error = streamError.get();
+            if (error != null) {
+                throw new AndroidDebugBridgeDeviceException(
+                        "Error opening adb shell stream " + ip + ":" + port + ": " + error.getMessage());
+            }
+            return result;
         } finally {
             var commandFuture = this.commandFuture;
             if (commandFuture != null) {
