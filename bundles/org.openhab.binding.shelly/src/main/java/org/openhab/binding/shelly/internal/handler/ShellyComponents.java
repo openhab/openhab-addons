@@ -51,7 +51,6 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSe
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyThermnostat;
 import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
@@ -724,11 +723,11 @@ public class ShellyComponents {
             if (sdata.pressure != null) {
                 Unit<Pressure> hpa = MetricPrefix.HECTO(SIUnits.PASCAL).asType(Pressure.class);
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_PRESSURE,
-                        new QuantityType<>(getDouble(sdata.pressure), hpa));
+                        toQuantityType(getDouble(sdata.pressure), DIGITS_PRESSURE, hpa));
             }
             if (sdata.precipitation != null) {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_PRECIPITATION,
-                        toQuantityType(getDouble(sdata.precipitation), DIGITS_SPEED,
+                        toQuantityType(getDouble(sdata.precipitation), DIGITS_PRECIPITATION,
                                 MetricPrefix.MILLI(SIUnits.METRE)));
             }
             if (sdata.dewPoint != null) {
