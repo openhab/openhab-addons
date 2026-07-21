@@ -288,6 +288,11 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
     }
 
     @Override
+    public void store(Item item) {
+        store(item, null);
+    }
+
+    @Override
     public void store(final Item item, @Nullable final String alias) {
         if (!active) {
             logger.warn("Tried to store {} but service is not yet ready (or shutting down).", item);
@@ -331,12 +336,13 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
             return;
         }
 
-        long now = System.currentTimeMillis() / 1000;
-        Double oldValue = storageMap.put(new Key(now, name), value);
+        long lastStateUpdate = Objects.requireNonNullElse(item.getLastStateUpdate(), ZonedDateTime.now())
+                .toEpochSecond();
+        Double oldValue = storageMap.put(new Key(lastStateUpdate, name), value);
         if (oldValue != null && !oldValue.equals(value)) {
             logger.debug(
                     "Discarding value {} for item {} with timestamp {} because a new value ({}) arrived with the same timestamp.",
-                    oldValue, item.getName(), now, value);
+                    oldValue, item.getName(), lastStateUpdate, value);
         }
     }
 
@@ -405,11 +411,6 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         } catch (IOException e) {
             logger.debug("Error closing rrd4j database: {}", e.getMessage());
         }
-    }
-
-    @Override
-    public void store(Item item) {
-        store(item, null);
     }
 
     @Override

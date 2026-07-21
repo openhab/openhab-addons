@@ -14,6 +14,7 @@ package org.openhab.persistence.dynamodb.internal;
 
 import java.lang.reflect.InvocationTargetException;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -194,15 +195,17 @@ public class DynamoDBQueryUtils {
             // No need to place time filter, but we do filter by partition
             queryBuilder.queryConditional(QueryConditional.keyEqualTo(k -> k.partitionValue(partition)));
         } else if (begin != null && end == null) {
-            queryBuilder.queryConditional(QueryConditional
-                    .sortGreaterThan(k -> k.partitionValue(partition).sortValue(timeConverter.transformFrom(begin))));
+            queryBuilder.queryConditional(QueryConditional.sortGreaterThanOrEqualTo(
+                    k -> k.partitionValue(partition).sortValue(timeConverter.transformFrom(begin))));
         } else if (begin == null && end != null) {
-            queryBuilder.queryConditional(QueryConditional
-                    .sortLessThan(k -> k.partitionValue(partition).sortValue(timeConverter.transformFrom(end))));
+            queryBuilder.queryConditional(QueryConditional.sortLessThanOrEqualTo(
+                    k -> k.partitionValue(partition).sortValue(timeConverter.transformFrom(end))));
         } else if (begin != null && end != null) {
             queryBuilder.queryConditional(QueryConditional.sortBetween(
-                    k -> k.partitionValue(partition).sortValue(timeConverter.transformFrom(begin)),
-                    k -> k.partitionValue(partition).sortValue(timeConverter.transformFrom(end))));
+                    k -> k.partitionValue(partition)
+                            .sortValue(timeConverter.transformFrom(begin.truncatedTo(ChronoUnit.MILLIS).minusNanos(1))),
+                    k -> k.partitionValue(partition)
+                            .sortValue(timeConverter.transformFrom(end.truncatedTo(ChronoUnit.MILLIS).plusNanos(1)))));
         }
     }
 

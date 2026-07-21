@@ -14,6 +14,7 @@ package org.openhab.persistence.dynamodb.internal;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -47,17 +48,17 @@ public class DateTimeItemIntegrationTest extends AbstractTwoItemIntegrationTest 
     public static void storeData() throws InterruptedException {
         DateTimeItem item = (DateTimeItem) ITEMS.get(NAME);
 
+        beforeStore = ZonedDateTime.now().truncatedTo(ChronoUnit.MILLIS);
+        Thread.sleep(1);
         item.setState(STATE1);
-
-        beforeStore = ZonedDateTime.now();
         Thread.sleep(10);
         service.store(item);
-        afterStore1 = ZonedDateTime.now();
+        afterStore1 = ZonedDateTime.now().truncatedTo(ChronoUnit.MILLIS);
         Thread.sleep(10);
         item.setState(STATE2);
         service.store(item);
         Thread.sleep(10);
-        afterStore2 = ZonedDateTime.now();
+        afterStore2 = ZonedDateTime.now().truncatedTo(ChronoUnit.MILLIS);
         LOGGER.info("Created item between {} and {}", AbstractDynamoDBItem.DATEFORMATTER.format(beforeStore),
                 AbstractDynamoDBItem.DATEFORMATTER.format(afterStore1));
     }

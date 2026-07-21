@@ -12,6 +12,7 @@
  */
 package org.openhab.persistence.jpa.internal;
 
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -153,7 +154,8 @@ public class JpaPersistenceService implements QueryablePersistenceService {
         }
         pItem.setName(name);
         pItem.setRealName(item.getName());
-        pItem.setTimestamp(new Date());
+        ZonedDateTime lastStateUpdate = item.getLastStateUpdate();
+        pItem.setTimestamp(lastStateUpdate != null ? Date.from(lastStateUpdate.toInstant()) : new Date());
 
         EntityManager em = getEntityManagerFactory().createEntityManager();
         try {
