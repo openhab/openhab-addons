@@ -22,9 +22,9 @@ public interface CommonVehicleStatus {
 
     boolean doorLock();
 
-    DoorStatus doorOpen();
+    IDoorStatus doorOpen();
 
-    DoorStatus windowOpen();
+    IDoorStatus windowOpen();
 
     boolean trunkOpen();
 

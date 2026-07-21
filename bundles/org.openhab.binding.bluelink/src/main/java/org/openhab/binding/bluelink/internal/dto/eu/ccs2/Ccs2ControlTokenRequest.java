@@ -10,14 +10,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bluelink.internal.dto;
+package org.openhab.binding.bluelink.internal.dto.eu.ccs2;
 
-import com.google.gson.annotations.SerializedName;
+import java.util.UUID;
 
 /**
- * 12V battery status.
+ * CCU/CCS2 control_token request.
  *
- * @author Marcus Better - Initial contribution
+ * @author Florian Hotze - Initial contribution
  */
-public record BatteryStatus(@SerializedName("batSoc") double stateOfCharge) {
+public record Ccs2ControlTokenRequest(UUID deviceId, String pin) {
 }
