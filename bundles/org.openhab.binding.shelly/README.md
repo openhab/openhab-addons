@@ -2152,6 +2152,7 @@ See notes on discovery of Shelly BLU devices above.
 |         | windSpeed     | Number:Speed         | yes       | Wind speed in m/s                                                                   |
 |         | windDirection | Number:Angle         | yes       | Wind direction in degrees (0-360)                                                   |
 |         | gustSpeed     | Number:Speed         | yes       | Wind gust speed in m/s                                                              |
+|         | gustDirection | Number:Angle         | yes       | Wind gust direction in degrees (0-360)                                              |
 |         | pressure      | Number:Pressure      | yes       | Atmospheric pressure in hPa                                                         |
 |         | dewPoint      | Number:Temperature   | yes       | Dew point in degrees Celsius                                                        |
 |         | rainStatus    | Switch               | yes       | ON: It's raining, OFF: It's not raining                                             |
@@ -2163,6 +2164,8 @@ See notes on discovery of Shelly BLU devices above.
 |         | firmware      | String               | yes       | Firmware version (may be empty — not all firmware versions report it)               |
 
 The `rainStatus` channel latches ON for a while after it has actually stopped raining, a hardware behavior of the WS90's piezo rain sensor rather than a binding issue.
+
+The WS90 hardware reports a single wind direction value per packet, so `gustDirection` always mirrors `windDirection`.
 
 ## Shelly Wall Displays
 

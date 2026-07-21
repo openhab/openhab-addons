@@ -298,6 +298,7 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_WINDSP, "sensorWindSpeed", ITEMT_SPEED))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_WINDDIR, "sensorWindDirection", ITEMT_ANGLE))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_GUSTSP, "sensorGustSpeed", ITEMT_SPEED))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_GUSTDIR, "sensorGustDirection", ITEMT_ANGLE))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_UV, "sensorUvIndex", ITEMT_NUMBER))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_PRESSURE, "sensorPressure", ITEMT_PRESSURE))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_DEWPOINT, "sensorDewPoint", ITEMT_TEMP))
@@ -760,6 +761,8 @@ public class ShellyChannelDefinitions {
         addChannel(thing, newChannels, ws90 || sdata.windDirection != null, CHANNEL_GROUP_SENSOR,
                 CHANNEL_SENSOR_WINDDIR);
         addChannel(thing, newChannels, ws90 || sdata.gustSpeed != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_GUSTSP);
+        addChannel(thing, newChannels, ws90 || sdata.windDirection != null, CHANNEL_GROUP_SENSOR,
+                CHANNEL_SENSOR_GUSTDIR);
         addChannel(thing, newChannels, ws90 || sdata.uvIndex != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_UV);
         addChannel(thing, newChannels, ws90 || sdata.pressure != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_PRESSURE);
         addChannel(thing, newChannels, ws90 || sdata.dewPoint != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_DEWPOINT);
