@@ -25,6 +25,7 @@ import org.assertj.core.groups.Tuple;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.fineoffsetweatherstation.internal.domain.Sensor;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.SensorGatewayBinding;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.MeasuredValue;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.SensorDevice;
@@ -160,6 +161,19 @@ class EcowittDataParserTest {
         Assertions.assertThat(parser.parseFirmwareVersion(version)).isEqualTo("GW1200A_V1.4.7");
         Assertions.assertThat(parser.parseSensorPageCount(version)).isEqualTo(4);
         Assertions.assertThat(parser.isEcowittPlatform(version)).isTrue();
+    }
+
+    @Test
+    void httpMeasurandsCarrySensorTag() {
+        // ch_soil uses CHANNEL keying: each element has a "channel" field and the field name "humidity" holds the value
+        // common_list uses CODE keying: each element has "id" and "val" (plus optional "unit")
+        String json = "{\"ch_soil\":[{\"channel\":\"1\",\"humidity\":\"50\"}],"
+                + "\"common_list\":[{\"id\":\"0x02\",\"val\":\"21.0\",\"unit\":\"C\"}]}";
+        List<MeasuredValue> data = parser.parseLiveData(json);
+        Assertions.assertThat(data).filteredOn(value -> "moisture-soil-channel-1".equals(value.getChannelId()))
+                .singleElement().satisfies(value -> Assertions.assertThat(value.getSensor()).isEqualTo(Sensor.WH51));
+        Assertions.assertThat(data).filteredOn(value -> "temperature-outdoor".equals(value.getChannelId()))
+                .singleElement().satisfies(value -> Assertions.assertThat(value.getSensor()).isNull());
     }
 
     private static Map<String, String> stateByChannel(List<MeasuredValue> values) {

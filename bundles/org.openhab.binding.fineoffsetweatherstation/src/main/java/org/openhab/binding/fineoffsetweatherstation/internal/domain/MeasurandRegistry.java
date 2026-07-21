@@ -106,7 +106,7 @@ public class MeasurandRegistry {
         b.add(0x01,
                 measurand("temperature-indoor", "Indoor Temperature", MeasureType.TEMPERATURE)
                         .channelType(DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_TYPE_UID_INDOOR_TEMPERATURE)
-                        .http(HttpGroup.WH25, "intemp"));
+                        .http(HttpGroup.WH25, "intemp").sensor(Sensor.WH25));
         b.add(0x02,
                 measurand("temperature-outdoor", "Outdoor Temperature", MeasureType.TEMPERATURE)
                         .channelType(DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_TYPE_UID_OUTDOOR_TEMPERATURE)
@@ -117,18 +117,18 @@ public class MeasurandRegistry {
                 measurand("temperature-wind-chill", "Wind chill", MeasureType.TEMPERATURE).http(HttpGroup.COMMON_LIST));
         b.add(0x05,
                 measurand("temperature-heat-index", "Heat index", MeasureType.TEMPERATURE).http(HttpGroup.COMMON_LIST));
-        b.add(0x06,
-                measurand("humidity-indoor", "Indoor Humidity", MeasureType.PERCENTAGE).http(HttpGroup.WH25, "inhumi"));
+        b.add(0x06, measurand("humidity-indoor", "Indoor Humidity", MeasureType.PERCENTAGE)
+                .http(HttpGroup.WH25, "inhumi").sensor(Sensor.WH25));
         b.add(0x07,
                 measurand("humidity-outdoor", "Outdoor Humidity", MeasureType.PERCENTAGE)
                         .channelType(DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_TYPE_UID_ATMOSPHERIC_HUMIDITY)
                         .http(HttpGroup.COMMON_LIST));
-        b.add(0x08, measurand("pressure-absolute", "Absolutely pressure", MeasureType.PRESSURE).http(HttpGroup.WH25,
-                "abs"));
+        b.add(0x08, measurand("pressure-absolute", "Absolutely pressure", MeasureType.PRESSURE)
+                .http(HttpGroup.WH25, "abs").sensor(Sensor.WH25));
         b.add(0x09,
                 measurand("pressure-relative", "Relative pressure", MeasureType.PRESSURE)
                         .channelType(DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_TYPE_UID_BAROMETRIC_PRESSURE)
-                        .http(HttpGroup.WH25, "rel"));
+                        .http(HttpGroup.WH25, "rel").sensor(Sensor.WH25));
         b.add(0x0A,
                 measurand("direction-wind", "Wind Direction", MeasureType.DEGREE)
                         .channelType(DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_TYPE_UID_WIND_DIRECTION)
@@ -167,35 +167,39 @@ public class MeasurandRegistry {
         b.add(0X19, measurand("wind-max-day", "Day max wind", MeasureType.SPEED)
                 .channelType(CHANNEL_TYPE_MAX_WIND_SPEED).http(HttpGroup.COMMON_LIST));
         b.addChannels(new int[] { 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F, 0x20, 0x21 },
-                measurand("temperature-channel", "Temperature", MeasureType.TEMPERATURE).http(HttpGroup.CH_AISLE,
-                        "temp"));
+                measurand("temperature-channel", "Temperature", MeasureType.TEMPERATURE)
+                        .http(HttpGroup.CH_AISLE, "temp").sensor(Sensor.WH31));
         b.addChannels(new int[] { 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29 },
-                measurand("humidity-channel", "Humidity", MeasureType.PERCENTAGE).http(HttpGroup.CH_AISLE, "humidity"));
-        b.addChannels(new int[] { 0x2B, 0x2D, 0x2F, 0x31, 0x33, 0x35, 0x37, 0x39, 0x3B, 0x3D, 0x3F, 0x41, 0x43, 0x45,
-                0x47, 0x49 }, measurand("temperature-soil-channel", "Soil Temperature", MeasureType.TEMPERATURE));
+                measurand("humidity-channel", "Humidity", MeasureType.PERCENTAGE).http(HttpGroup.CH_AISLE, "humidity")
+                        .sensor(Sensor.WH31));
+        b.addChannels(
+                new int[] { 0x2B, 0x2D, 0x2F, 0x31, 0x33, 0x35, 0x37, 0x39, 0x3B, 0x3D, 0x3F, 0x41, 0x43, 0x45, 0x47,
+                        0x49 },
+                measurand("temperature-soil-channel", "Soil Temperature", MeasureType.TEMPERATURE).sensor(Sensor.WH51));
         b.addChannels(
                 new int[] { 0x2C, 0x2E, 0x30, 0x32, 0x34, 0x36, 0x38, 0x3A, 0x3C, 0x3E, 0x40, 0x42, 0x44, 0x46, 0x48,
                         0x4A },
                 measurand("moisture-soil-channel", "Soil Moisture", MeasureType.PERCENTAGE)
-                        .channelType(CHANNEL_TYPE_MOISTURE).http(HttpGroup.CH_SOIL, "humidity"));
+                        .channelType(CHANNEL_TYPE_MOISTURE).http(HttpGroup.CH_SOIL, "humidity").sensor(Sensor.WH51));
         b.skip(0x4C, 1);
-        b.addChannels(new int[] { 0x4D, 0x4E, 0x4F, 0x50 }, measurand("air-quality-24-hour-average-channel",
-                "PM2.5 Air Quality 24 hour average", MeasureType.PM25));
+        b.addChannels(new int[] { 0x4D, 0x4E, 0x4F, 0x50 },
+                measurand("air-quality-24-hour-average-channel", "PM2.5 Air Quality 24 hour average", MeasureType.PM25)
+                        .sensor(Sensor.WH41));
         b.addChannels(new int[] { 0x2A, 0x51, 0x52, 0x53 },
-                measurand("air-quality-channel", "PM2.5 Air Quality", MeasureType.PM25).http(HttpGroup.CH_PM25,
-                        "PM25"));
+                measurand("air-quality-channel", "PM2.5 Air Quality", MeasureType.PM25).http(HttpGroup.CH_PM25, "PM25")
+                        .sensor(Sensor.WH41));
         b.addChannels(new int[] { 0x58, 0x59, 0x5A, 0x5B },
-                measurand("water-leak-channel", "Leak", MeasureType.WATER_LEAK_DETECTION).http(HttpGroup.CH_LEAK,
-                        "status"));
+                measurand("water-leak-channel", "Leak", MeasureType.WATER_LEAK_DETECTION)
+                        .http(HttpGroup.CH_LEAK, "status").sensor(Sensor.WH55));
         b.add(0x60, measurand("lightning-distance", "Lightning distance 1~40KM", MeasureType.LIGHTNING_DISTANCE)
-                .http(HttpGroup.LIGHTNING, "distance"));
+                .http(HttpGroup.LIGHTNING, "distance").sensor(Sensor.WH57));
         b.add(0x61, measurand("lightning-time", "Lightning happened time", MeasureType.LIGHTNING_TIME)
-                .http(HttpGroup.LIGHTNING, "date"));
+                .http(HttpGroup.LIGHTNING, "date").sensor(Sensor.WH57));
         b.add(0x62, measurand("lightning-counter", "lightning counter for the day", MeasureType.LIGHTNING_COUNTER)
-                .http(HttpGroup.LIGHTNING, "count"));
+                .http(HttpGroup.LIGHTNING, "count").sensor(Sensor.WH57));
         b.addChannels(new int[] { 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x6A },
                 measurand("temperature-external-channel", "Soil or Water temperature", MeasureType.TEMPERATURE)
-                        .http(HttpGroup.CH_TEMP, "temp"),
+                        .http(HttpGroup.CH_TEMP, "temp").sensor(Sensor.WH34),
                 // skip battery-level, since it is read via Command.CMD_READ_SENSOR_ID_NEW
                 skip(1));
         b.addGroup(0x6B,
@@ -229,21 +233,23 @@ public class MeasurandRegistry {
                 measurand("direction-wind-avg-10min", "Wind Direction (10-minute average)", MeasureType.DEGREE)
                         .channelType(DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_TYPE_UID_WIND_DIRECTION)
                         .http(HttpGroup.COMMON_LIST));
-        b.addGroup(0x70, measurand("sensor-co2-temperature", "Temperature (CO₂-Sensor)", MeasureType.TEMPERATURE),
-                measurand("sensor-co2-humidity", "Humidity (CO₂-Sensor)", MeasureType.PERCENTAGE),
-                measurand("sensor-co2-pm10", "PM10 Air Quality (CO₂-Sensor)", MeasureType.PM10),
+        b.addGroup(0x70,
+                measurand("sensor-co2-temperature", "Temperature (CO₂-Sensor)", MeasureType.TEMPERATURE)
+                        .sensor(Sensor.WH45),
+                measurand("sensor-co2-humidity", "Humidity (CO₂-Sensor)", MeasureType.PERCENTAGE).sensor(Sensor.WH45),
+                measurand("sensor-co2-pm10", "PM10 Air Quality (CO₂-Sensor)", MeasureType.PM10).sensor(Sensor.WH45),
                 measurand("sensor-co2-pm10-24-hour-average", "PM10 Air Quality 24 hour average (CO₂-Sensor)",
-                        MeasureType.PM10),
-                measurand("sensor-co2-pm25", "PM2.5 Air Quality (CO₂-Sensor)", MeasureType.PM25),
+                        MeasureType.PM10).sensor(Sensor.WH45),
+                measurand("sensor-co2-pm25", "PM2.5 Air Quality (CO₂-Sensor)", MeasureType.PM25).sensor(Sensor.WH45),
                 measurand("sensor-co2-pm25-24-hour-average", "PM2.5 Air Quality 24 hour average (CO₂-Sensor)",
-                        MeasureType.PM25),
-                measurand("sensor-co2-co2", "CO₂", MeasureType.CO2),
-                measurand("sensor-co2-co2-24-hour-average", "CO₂ 24 hour average", MeasureType.CO2),
+                        MeasureType.PM25).sensor(Sensor.WH45),
+                measurand("sensor-co2-co2", "CO₂", MeasureType.CO2).sensor(Sensor.WH45),
+                measurand("sensor-co2-co2-24-hour-average", "CO₂ 24 hour average", MeasureType.CO2).sensor(Sensor.WH45),
                 // skip battery-level, since it is read via Command.CMD_READ_SENSOR_ID_NEW
                 skip(1));
         b.addChannels(new int[] { 0x72, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78, 0x79 },
                 measurand("leaf-wetness-channel", "Leaf Moisture", MeasureType.PERCENTAGE)
-                        .channelType(CHANNEL_TYPE_MOISTURE).http(HttpGroup.CH_LEAF, "humidity"));
+                        .channelType(CHANNEL_TYPE_MOISTURE).http(HttpGroup.CH_LEAF, "humidity").sensor(Sensor.WH35));
         b.skip(0x7a, 1);
         b.skip(0x7b, 1);
         b.add(0x80, measurand("piezo-rain-rate", "Rain Rate", MeasureType.HEIGHT_PER_HOUR).http(HttpGroup.PIEZO_RAIN,
