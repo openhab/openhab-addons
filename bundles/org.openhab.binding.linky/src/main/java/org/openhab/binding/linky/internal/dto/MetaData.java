@@ -23,4 +23,9 @@ public class MetaData {
     public Contact contact;
     public Contract contract;
     public UsagePoint usagePoint;
+
+    public Alimentation alimentation;
+    public ContractState contractState;
+    public ContractSynth contractSynth;
+    public GeneralData generalData;
 }

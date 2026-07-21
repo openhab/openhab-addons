@@ -168,6 +168,9 @@ public abstract class BridgeRemoteBaseHandler extends BaseBridgeHandler {
 
     public abstract String getBaseUrl();
 
+    // ====================
+    // = endpoint < 2026
+    // ====================
     public abstract String getContactUrl();
 
     public abstract String getContractUrl();
@@ -178,11 +181,31 @@ public abstract class BridgeRemoteBaseHandler extends BaseBridgeHandler {
 
     public abstract String getDailyConsumptionUrl();
 
-    public abstract String getDailyIndexUrl();
+    public abstract String getDailyProductionUrl();
+
+    public abstract String getIndexConsumptionUrl();
+
+    public abstract String getIndexProductionUrl();
+
+    public abstract String getLoadCurveConsumptionUrl();
+
+    public abstract String getLoadCurveProductionUrl();
 
     public abstract String getMaxPowerUrl();
 
-    public abstract String getLoadCurveUrl();
+    // ====================
+    // = endpoint >= 2026
+    // ====================
+
+    public abstract String getSubsribeServiceUrl();
+
+    public abstract String getGeneralDataUrl();
+
+    public abstract String getContractSynthUrl();
+
+    public abstract String getContractStateUrl();
+
+    public abstract String getAlimentationUrl();
 
     public abstract String getTempoUrl();
 
