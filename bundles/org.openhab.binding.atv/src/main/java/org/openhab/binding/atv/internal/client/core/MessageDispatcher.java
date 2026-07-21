@@ -119,7 +119,7 @@ public class MessageDispatcher<T extends Enum<T>, M> {
             try {
                 matches = entry.filter().test(message);
             } catch (RuntimeException e) {
-                LOGGER.warn("Error in dispatch filter for type {}", type, e);
+                LOGGER.debug("Error in dispatch filter for type {}", type, e);
                 continue;
             }
             if (!matches) {
@@ -130,7 +130,7 @@ public class MessageDispatcher<T extends Enum<T>, M> {
                 try {
                     entry.listener().accept(message);
                 } catch (RuntimeException e) {
-                    LOGGER.warn("Error during dispatch of type {}", type, e);
+                    LOGGER.debug("Error during dispatch of type {}", type, e);
                 }
             }));
         }

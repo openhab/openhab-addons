@@ -19,6 +19,7 @@ import static org.mockito.Mockito.*;
 import static org.openhab.binding.atv.internal.AtvBindingConstants.*;
 
 import java.net.Inet4Address;
+import java.net.Inet6Address;
 import java.net.InetAddress;
 
 import javax.jmdns.ServiceInfo;
@@ -187,10 +188,50 @@ public class AtvDiscoveryParticipantTest {
     }
 
     @Test
-    public void testCreateResultReturnsNullWhenNoIPv4Address() {
+    public void testCreateResultReturnsNullWhenNoAddressAtAll() {
         when(serviceInfo.getPropertyString("model")).thenReturn("AppleTV14,1");
         when(serviceInfo.getPropertyString("deviceid")).thenReturn(MAC);
         when(serviceInfo.getInet4Addresses()).thenReturn(new Inet4Address[] {});
+        when(serviceInfo.getInet6Addresses()).thenReturn(new Inet6Address[] {});
+
+        assertThat(participant.createResult(serviceInfo), is(nullValue()));
+    }
+
+    @Test
+    public void testCreateResultFallsBackToIPv6WhenNoIPv4() throws Exception {
+        Inet6Address ipv6 = (Inet6Address) InetAddress.getByName("2001:db8::42");
+        when(serviceInfo.getPropertyString("model")).thenReturn("AppleTV14,1");
+        when(serviceInfo.getPropertyString("deviceid")).thenReturn(MAC);
+        when(serviceInfo.getName()).thenReturn("Living Room");
+        when(serviceInfo.getInet4Addresses()).thenReturn(new Inet4Address[] {});
+        when(serviceInfo.getInet6Addresses()).thenReturn(new Inet6Address[] { ipv6 });
+
+        DiscoveryResult result = requireNonNull(participant.createResult(serviceInfo));
+
+        assertThat(result.getProperties(), hasEntry(CONFIG_HOST, ipv6.getHostAddress()));
+    }
+
+    @Test
+    public void testCreateResultFallsBackToHostnameWhenNoAddress() {
+        when(serviceInfo.getPropertyString("model")).thenReturn("AppleTV14,1");
+        when(serviceInfo.getPropertyString("deviceid")).thenReturn(MAC);
+        when(serviceInfo.getName()).thenReturn("Living Room");
+        when(serviceInfo.getInet4Addresses()).thenReturn(new Inet4Address[] {});
+        when(serviceInfo.getInet6Addresses()).thenReturn(new Inet6Address[] {});
+        when(serviceInfo.getServer()).thenReturn("TV.local.");
+
+        DiscoveryResult result = requireNonNull(participant.createResult(serviceInfo));
+
+        assertThat(result.getProperties(), hasEntry(CONFIG_HOST, "TV.local"));
+    }
+
+    @Test
+    public void testCreateResultSkipsLinkLocalIPv6WithoutServer() throws Exception {
+        Inet6Address linkLocal = (Inet6Address) InetAddress.getByName("fe80::1");
+        when(serviceInfo.getPropertyString("model")).thenReturn("AppleTV14,1");
+        when(serviceInfo.getPropertyString("deviceid")).thenReturn(MAC);
+        when(serviceInfo.getInet4Addresses()).thenReturn(new Inet4Address[] {});
+        when(serviceInfo.getInet6Addresses()).thenReturn(new Inet6Address[] { linkLocal });
 
         assertThat(participant.createResult(serviceInfo), is(nullValue()));
     }

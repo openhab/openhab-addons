@@ -286,7 +286,7 @@ public final class CompanionConnection {
                 currentListener.frameReceived(FrameType.fromValue(header[0] & 0xFF), data);
             }
         } catch (Exception e) {
-            LOGGER.warn("failed to handle frame", e);
+            LOGGER.debug("failed to handle frame", e);
         }
     }
 }

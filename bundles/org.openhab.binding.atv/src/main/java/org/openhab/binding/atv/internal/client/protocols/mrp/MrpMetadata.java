@@ -118,7 +118,7 @@ public final class MrpMetadata implements Metadata, CapabilitySource {
     }
 
     @Override
-    public String artworkId() {
+    public @Nullable String artworkId() {
         return onLoop(() -> artworkIdFor(psm.playing()));
     }
 
@@ -187,7 +187,7 @@ public final class MrpMetadata implements Metadata, CapabilitySource {
         try {
             artwork = fetchArtwork(snapshot, width == null ? 0 : width, height == null ? -1 : height);
         } catch (Exception e) {
-            LOGGER.warn("Artwork not present in response");
+            LOGGER.debug("Artwork not present in response");
             LOGGER.debug("Artwork fetch failed", e);
             return null;
         }

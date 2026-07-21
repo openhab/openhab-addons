@@ -108,7 +108,7 @@ public final class MrpConnection implements AbstractMrpConnection {
                 try {
                     newSocket.setKeepAlive(true);
                 } catch (IOException e) {
-                    LOGGER.warn("Keep-alive not supported: {}", e.toString());
+                    LOGGER.debug("Keep-alive not supported: {}", e.toString());
                 }
                 newSocket.setTcpNoDelay(true);
                 this.out = newSocket.getOutputStream();
@@ -256,7 +256,7 @@ public final class MrpConnection implements AbstractMrpConnection {
             try {
                 handleMessage(data);
             } catch (Exception e) {
-                LOGGER.warn("Failed to handle message", e);
+                LOGGER.debug("Failed to handle message", e);
             }
         }
         return compactRemaining(buffer);

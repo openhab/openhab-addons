@@ -77,7 +77,7 @@ public final class CompanionAudio implements Audio, CapabilitySource {
             LOGGER.debug("Volume control changed, updating volume");
             api.mediaControlCommand(MediaControlCommand.GetVolume, null).whenComplete((response, error) -> {
                 if (error != null) {
-                    LOGGER.warn("Failed to fetch volume", error);
+                    LOGGER.debug("Failed to fetch volume", error);
                     return;
                 }
                 Map<String, Object> content = CompanionApi.content(response);

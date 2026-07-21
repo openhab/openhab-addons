@@ -159,9 +159,9 @@ public final class AirPlayV1 implements StreamProtocol {
             } catch (InterruptedException e) {
                 break;
             } catch (ProtocolError e) {
-                LOGGER.warn("feedback failed", e);
+                LOGGER.debug("feedback failed", e);
             } catch (RuntimeException e) {
-                LOGGER.warn("feedback failed", e);
+                LOGGER.debug("feedback failed", e);
             }
         }
         LOGGER.debug("Feedback task finished");

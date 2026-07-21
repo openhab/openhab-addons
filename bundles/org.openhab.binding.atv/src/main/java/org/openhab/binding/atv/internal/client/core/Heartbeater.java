@@ -202,7 +202,7 @@ public final class Heartbeater {
             try {
                 failureAction.run();
             } catch (RuntimeException e) {
-                LOGGER.warn("Heartbeat failure action threw ({})", name, e);
+                LOGGER.debug("Heartbeat failure action threw ({})", name, e);
             }
         }
     }

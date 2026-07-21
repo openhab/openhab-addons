@@ -23,6 +23,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
@@ -97,6 +98,9 @@ public class AtvHandler extends BaseThingHandler {
     private static final Duration SCAN_TIMEOUT = Duration.ofSeconds(8);
     private static final long OP_TIMEOUT_SECONDS = 30;
     private static final long RECONNECT_SECONDS = 30;
+    // Fast retry used when a connection was lost gracefully (device asleep) or a partial connection
+    // needs to be upgraded once the device wakes - the device is expected to be reachable shortly.
+    private static final long RECONNECT_NOW_SECONDS = 3;
 
     /**
      * Maps each channel id to the feature that backs it. Channels absent from this map (e.g.
@@ -133,6 +137,12 @@ public class AtvHandler extends BaseThingHandler {
     private @Nullable ScheduledFuture<?> pollJob;
     private @Nullable AtvStateDescriptionProvider stateDescriptionProvider;
     private @Nullable String lastArtworkId;
+
+    // Last known power state, used to tell a graceful sleep (expected) apart from a real
+    // communication failure, and to detect when the device wakes from a partial connection.
+    private volatile PowerState lastPowerState = PowerState.Unknown;
+    // Set when the user commands power ON while offline; honored once a connection is (re)established.
+    private volatile boolean pendingWake;
 
     // pairing state kept alive between showing the PIN and the user entering it
     private @Nullable PairingHandler pendingPairing;
@@ -197,6 +207,11 @@ public class AtvHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         AppleTV atv = appleTV;
         if (atv == null) {
+            // Offline: a power ON is likely an attempt to wake a sleeping device. Reconnect (a sleeping
+            // Apple TV keeps Companion reachable) and send the wake once connected.
+            if (CHANNEL_POWER.equals(channelUID.getIdWithoutGroup()) && command == OnOffType.ON) {
+                requestWake();
+            }
             return;
         }
         if (command instanceof RefreshType) {
@@ -253,7 +268,7 @@ public class AtvHandler extends BaseThingHandler {
     public void streamAudio(InputStream stream, double volumePercent) {
         AppleTV atv = appleTV;
         if (atv == null) {
-            logger.warn("Cannot stream audio to {}: not connected", config.macAddress);
+            logger.debug("Cannot stream audio to {}: not connected", config.macAddress);
             return;
         }
         try {
@@ -261,7 +276,7 @@ public class AtvHandler extends BaseThingHandler {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } catch (ExecutionException | TimeoutException e) {
-            logger.warn("Failed to stream audio to {}", config.macAddress, e);
+            logger.debug("Failed to stream audio to {}", config.macAddress, e);
         }
     }
 
@@ -289,10 +304,17 @@ public class AtvHandler extends BaseThingHandler {
     }
 
     private synchronized void connect() {
+        // Discard any prior connection first so a reconnect (e.g. to upgrade a partial connection once
+        // the device wakes) does not leak the old protocol connections and heartbeat loops.
+        AppleTV existing = appleTV;
+        if (existing != null) {
+            appleTV = null;
+            existing.close();
+        }
         try {
             AtvConfig device = scanForDevice();
             if (device == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.not-found");
+                setDisconnectedStatus("@text/offline.not-found");
                 scheduleReconnect();
                 return;
             }
@@ -314,14 +336,18 @@ public class AtvHandler extends BaseThingHandler {
             refreshAll();
             refreshDynamicOptions(atv);
             startPolling();
+            if (pendingWake) {
+                pendingWake = false;
+                wake(atv);
+            }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             logger.debug("Connection to {} failed", config.macAddress, e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            setDisconnectedStatus(e.getMessage());
             scheduleReconnect();
         } catch (ExecutionException | TimeoutException e) {
             logger.debug("Connection to {} failed", config.macAddress, e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            setDisconnectedStatus(e.getMessage());
             scheduleReconnect();
         }
     }
@@ -431,13 +457,16 @@ public class AtvHandler extends BaseThingHandler {
         atv.addListener(new DeviceListener() {
             @Override
             public void connectionLost(@Nullable Exception exception) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        exception != null ? exception.getMessage() : null);
-                scheduleReconnect();
+                appleTV = null;
+                setDisconnectedStatus(exception != null ? exception.getMessage() : null);
+                // The device was reachable a moment ago (e.g. it just went to sleep), so retry quickly:
+                // a sleeping Apple TV still answers Companion, which is enough to come back online and wake it.
+                reconnectNow();
             }
 
             @Override
             public void connectionClosed() {
+                appleTV = null;
                 updateStatus(ThingStatus.OFFLINE);
             }
         });
@@ -458,7 +487,17 @@ public class AtvHandler extends BaseThingHandler {
         });
         push.start();
 
-        atv.power().addListener((oldState, newState) -> updateState(CHANNEL_POWER, powerToState(newState)));
+        atv.power().addListener((oldState, newState) -> {
+            lastPowerState = newState;
+            updateState(CHANNEL_POWER, powerToState(newState));
+            // The device just woke, but the connection may be partial (only Companion survived sleep).
+            // Reconnect to pull back the richer protocols (metadata, push, remote control).
+            if (newState == PowerState.On && oldState != PowerState.On && isDegradedConnection()) {
+                logger.debug("Device {} woke with a partial connection; reconnecting to restore all protocols",
+                        config.macAddress);
+                reconnectNow();
+            }
+        });
         atv.audio().addListener(new org.openhab.binding.atv.internal.client.capability.AudioListener() {
             @Override
             public void volumeUpdate(double oldLevel, double newLevel) {
@@ -483,7 +522,8 @@ public class AtvHandler extends BaseThingHandler {
             return;
         }
         atv.metadata().playing().thenAccept(this::updatePlaying);
-        updateState(CHANNEL_POWER, powerToState(atv.power().powerState()));
+        lastPowerState = atv.power().powerState();
+        updateState(CHANNEL_POWER, powerToState(lastPowerState));
         if (atv.features().inState(FeatureState.Available, FeatureName.Volume)) {
             updateState(CHANNEL_VOLUME, new PercentType((int) Math.round(atv.audio().volume())));
         }
@@ -636,8 +676,9 @@ public class AtvHandler extends BaseThingHandler {
         }
         // Skip the (potentially large) fetch when the artwork has not changed since the last update.
         try {
+            @Nullable
             String artworkId = atv.metadata().artworkId();
-            if (artworkId.equals(lastArtworkId)) {
+            if (Objects.equals(artworkId, lastArtworkId)) {
                 return;
             }
             lastArtworkId = artworkId;
@@ -646,8 +687,9 @@ public class AtvHandler extends BaseThingHandler {
             logger.trace("Artwork identifier unavailable, fetching unconditionally", e);
         }
         atv.metadata().artwork().thenAccept(artwork -> {
+            @Nullable
             ArtworkInfo info = artwork;
-            if (info.bytes().length > 0) {
+            if (info != null && info.bytes().length > 0) {
                 updateState(CHANNEL_ARTWORK, new org.openhab.core.library.types.RawType(info.bytes(), info.mimetype()));
             }
         }).exceptionally(e -> {
@@ -806,6 +848,45 @@ public class AtvHandler extends BaseThingHandler {
 
     private State decimalOrUndef(Optional<Integer> value) {
         return value.isPresent() ? new org.openhab.core.library.types.DecimalType(value.get()) : UnDefType.UNDEF;
+    }
+
+    private void setDisconnectedStatus(@Nullable String communicationError) {
+        if (lastPowerState == PowerState.Off) {
+            // A graceful power-off/sleep is expected behavior, not a communication failure.
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.asleep");
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, communicationError);
+        }
+    }
+
+    private boolean isDegradedConnection() {
+        AppleTV atv = appleTV;
+        if (atv == null) {
+            return false;
+        }
+        // The richer capabilities (metadata, push updates, remote control) come from MRP or AirPlay;
+        // a connection with neither is degraded and worth upgrading once the device is awake.
+        Set<Protocol> connected = atv.connectedProtocols();
+        return !connected.contains(Protocol.MRP) && !connected.contains(Protocol.AirPlay);
+    }
+
+    private void requestWake() {
+        logger.debug("Power ON requested while offline; reconnecting to wake {}", config.macAddress);
+        pendingWake = true;
+        reconnectNow();
+    }
+
+    private void wake(AppleTV atv) {
+        try {
+            atv.power().turnOn();
+        } catch (RuntimeException e) {
+            logger.debug("Failed to wake {}", config.macAddress, e);
+        }
+    }
+
+    private void reconnectNow() {
+        cancel(reconnectJob);
+        reconnectJob = scheduler.schedule(this::connect, RECONNECT_NOW_SECONDS, TimeUnit.SECONDS);
     }
 
     private void scheduleReconnect() {

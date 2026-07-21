@@ -300,7 +300,7 @@ public final class CompanionProtocol implements CompanionConnection.FrameListene
                 handleOpack(frameType, message);
             }
         } catch (Exception e) {
-            LOGGER.warn("failed to process frame", e);
+            LOGGER.debug("failed to process frame", e);
         }
     }
 
@@ -310,7 +310,7 @@ public final class CompanionProtocol implements CompanionConnection.FrameListene
         if (shared != null) {
             shared.complete(opackData);
         } else {
-            LOGGER.warn("No receiver for auth frame {}", frameType);
+            LOGGER.debug("No receiver for auth frame {}", frameType);
         }
     }
 
@@ -340,7 +340,7 @@ public final class CompanionProtocol implements CompanionConnection.FrameListene
                 LOGGER.debug("No receiver for XID {}", responseXid);
             }
         } else {
-            LOGGER.warn("Got OPACK frame with unsupported type: {}", messageType);
+            LOGGER.debug("Got OPACK frame with unsupported type: {}", messageType);
         }
     }
 

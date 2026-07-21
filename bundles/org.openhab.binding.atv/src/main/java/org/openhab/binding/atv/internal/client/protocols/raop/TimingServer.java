@@ -107,7 +107,7 @@ public final class TimingServer implements AutoCloseable {
                 }
                 return;
             } catch (RuntimeException e) {
-                LOGGER.warn("Failed to handle timing request", e);
+                LOGGER.debug("Failed to handle timing request", e);
             }
         }
     }

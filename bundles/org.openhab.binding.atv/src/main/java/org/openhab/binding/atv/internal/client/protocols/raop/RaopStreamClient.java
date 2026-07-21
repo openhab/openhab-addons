@@ -457,7 +457,7 @@ public final class RaopStreamClient {
                 }
 
                 if (numberSlowSeqno >= SLOW_WARNING_THRESHOLD) {
-                    LOGGER.warn("Too slow to keep up for seqno {} ({} vs {} => {})", currentSeqno, absTimeStream,
+                    LOGGER.debug("Too slow to keep up for seqno {} ({} vs {} => {})", currentSeqno, absTimeStream,
                             relToStart, diff);
                 } else {
                     LOGGER.debug("Too slow to keep up for seqno {} ({} vs {} => {})", currentSeqno, absTimeStream,
@@ -499,7 +499,7 @@ public final class RaopStreamClient {
                 rtsp.sessionId()).encode();
 
         if (socket.isClosed()) {
-            LOGGER.warn("Connection closed while streaming audio");
+            LOGGER.debug("Connection closed while streaming audio");
             return 0;
         }
 
