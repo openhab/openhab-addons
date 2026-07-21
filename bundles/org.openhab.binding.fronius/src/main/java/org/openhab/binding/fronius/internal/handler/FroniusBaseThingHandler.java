@@ -19,6 +19,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpMethod;
+import org.openhab.binding.fronius.internal.FroniusBindingConstants;
 import org.openhab.binding.fronius.internal.FroniusBridgeConfiguration;
 import org.openhab.binding.fronius.internal.api.FroniusCommunicationException;
 import org.openhab.binding.fronius.internal.api.FroniusHttpUtil;
@@ -79,6 +80,7 @@ public abstract class FroniusBaseThingHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.debug("Initializing {} Service", serviceDescription);
+        warnAboutLinkedDeprecatedChannels();
         // this is important so FroniusBridgeHandler::childHandlerInitialized gets called
         Bridge bridge = getBridge();
         if (bridge == null || bridge.getHandler() == null) {
@@ -87,6 +89,22 @@ public abstract class FroniusBaseThingHandler extends BaseThingHandler {
             updateStatus(ThingStatus.UNKNOWN);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        }
+    }
+
+    /**
+     * Warns about linked deprecated channels, so that users notice they should migrate their links to the channels
+     * replacing them.
+     */
+    private void warnAboutLinkedDeprecatedChannels() {
+        for (Channel channel : getThing().getChannels()) {
+            String channelId = channel.getUID().getId();
+            String replacement = FroniusBindingConstants.DEPRECATED_CHANNEL_IDS.get(channelId);
+            if (replacement != null && isLinked(channelId)) {
+                logger.warn(
+                        "Channel '{}' of Thing '{}' is deprecated, please link your items to the '{}' channel instead.",
+                        channelId, getThing().getUID(), replacement);
+            }
         }
     }
 
@@ -117,7 +135,8 @@ public abstract class FroniusBaseThingHandler extends BaseThingHandler {
             return;
         }
 
-        State state = getValue(channelId);
+        // Deprecated channels provide the same value as the channel replacing them
+        State state = getValue(FroniusBindingConstants.DEPRECATED_CHANNEL_IDS.getOrDefault(channelId, channelId));
         if (state == null) {
             state = UnDefType.NULL;
         }
@@ -192,8 +211,7 @@ public abstract class FroniusBaseThingHandler extends BaseThingHandler {
 
     /**
      * Get the firmware version of the inverter from its <code>/api/status/version</code> or
-     * <code>/status/version</code>
-     * endpoint.
+     * <code>/status/version</code> endpoint.
      *
      * @param scheme http or https
      * @param hostname the hostname or IP address of the inverter
