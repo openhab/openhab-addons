@@ -153,6 +153,18 @@
 				<type>fronius:dc-voltage</type>
 				<label>DC Voltage</label>
 			</add-channel>
+			<add-channel id="min-charge-power">
+				<type>fronius:min-charge-power</type>
+			</add-channel>
+			<add-channel id="max-charge-power">
+				<type>fronius:max-charge-power</type>
+			</add-channel>
+			<add-channel id="min-discharge-power">
+				<type>fronius:min-discharge-power</type>
+			</add-channel>
+			<add-channel id="max-discharge-power">
+				<type>fronius:max-discharge-power</type>
+			</add-channel>
 		</instruction-set>
 	</thing-type>
 
