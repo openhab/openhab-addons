@@ -1,155 +1,254 @@
-# Samsung Smartthings Binding
+# Samsung SmartThings Binding
 
-This binding integrates the Samsung Smartthings Hub into openHAB.
+This binding integrates devices and scenes from the Samsung SmartThings Cloud into openHAB.
+It communicates with SmartThings through the public SmartThings API and represents each SmartThings account as an openHAB bridge.
+Devices such as lights, sensors, TVs and appliances are then added as Things below that account bridge.
+
+A physical SmartThings hub is not required.
+Devices that are already connected to SmartThings through Wi-Fi or another SmartThings-supported connection can be used as long as they are available in the SmartThings account.
 
 ## Supported Things
 
-This binding supports most of the SmartThings devices that are defined in the [SmartThings Capabilities list](https://developer.smartthings.com/docs/devices/capabilities/capabilities-reference/).
-If you find a device that doesn't work [follow these instructions](doc/Troubleshooting.md) to collect the required data so it can be added in a future release.
+The binding provides a `smartthings:account` bridge type for one SmartThings user account.
+Multiple account bridges can be configured when different SmartThings user accounts should be integrated into the same openHAB instance.
+
+The following static Thing types are included:
+
+| Thing Type UID | Description |
+|----------------|-------------|
+| `smartthings:generic-color-light-bulb` | SmartThings color light bulb with power, brightness, color and color temperature channels |
+| `smartthings:generic-light-bulb` | SmartThings light bulb with power and brightness channels |
+| `smartthings:generic-light-sensor` | SmartThings illuminance/light sensor |
+| `smartthings:generic-presence-sensor` | SmartThings presence sensor or mobile phone presence state |
+| `smartthings:generic-scene` | SmartThings scene trigger |
+| `smartthings:generic-television` | Samsung TV connected through SmartThings |
+| `smartthings:generic-washer` | Samsung washing machine connected through SmartThings |
+| `smartthings:Samsung_Oven` | Samsung oven connected through SmartThings |
+| `smartthings:Samsung_Room_A_C` | Samsung room air conditioner |
+| `smartthings:Samsung_Soundbar` | Samsung soundbar connected through SmartThings |
+| `smartthings:Samsung_The_Frame` | Samsung The Frame TV connected through SmartThings |
+
+The binding can also create dynamic Thing types from device capabilities.
+Dynamic discovery is an advanced option and is mainly useful for unsupported devices or while improving the binding.
 
 ## Discovery
 
-Discovery allows openHAB to examine a binding and automatically find the Things available on that binding.
-Discovery is supported by the SmartThings binding and is run automatically on startup.
+Discovery requires an authorized `smartthings:account` bridge.
+After the account is online, start a scan from the Inbox to discover devices and scenes from the SmartThings account.
 
-## SmartThings Configuration
+By default, discovery maps supported SmartThings device categories to the included static Thing definitions.
+Unsupported device categories are skipped unless dynamic Thing discovery is enabled.
+If the bridge option `useDynamicThings` is enabled, the binding also registers dynamic Thing types and channels from the capabilities reported by SmartThings.
+Dynamic Thing types can expose more device-specific channels, but they are less stable than static Thing definitions.
 
-Prior to running the binding the SmartThings hub must have the required openHAB software installed. [Follow these instructions](doc/SmartthingsInstallation.md)
+## Thing Configuration
 
-**The binding will not work until this part has been completed, do not skip this part of the setup.**
+### `account` Bridge Configuration
 
-## openHAB Configuration
+Create one `smartthings:account` bridge for each SmartThings user account.
+Leave `appName`, `clientId` and `clientSecret` empty during first setup; the binding fills them automatically during authorization.
 
-This binding is an openHAB binding and uses the Bridge / Thing design with the SmartThings Hub being the Bridge and the controlled modules being the Things.
-The following definitions are specified in the .things file.
+| Name | Type | Description | Default | Required | Advanced |
+|------|------|-------------|---------|----------|----------|
+| `appName` | text | SmartThings app name created for this bridge | N/A | no | yes |
+| `clientId` | text | OAuth client ID of the SmartThings app | N/A | no | yes |
+| `clientSecret` | text | OAuth client secret of the SmartThings app | N/A | no | yes |
+| `callbackUrl` | text | Public HTTPS URL for SmartThings event callbacks; filled automatically when openHAB Cloud webhooks are available | N/A | no | no |
+| `pollingTime` | integer | Polling interval in seconds; `-1` disables polling | `-1` | no | yes |
+| `useDynamicThings` | boolean | Create dynamic Thing types from SmartThings capabilities | `false` | no | yes |
 
-### Bridge Configuration
+### Authorization
 
-The bridge requires the IP address and port used to connect the openHAB server to the SmartThings Hub.
+The binding uses OAuth to authorize each SmartThings account bridge.
+After creating the bridge, open the authorization link shown in the bridge status.
+The link uses the bridge UID as path, for example `/smartthings/home` for `smartthings:account:home`.
 
-```java
-Bridge smartthings:smartthings:Home    [ smartthingsIp="192.168.1.12", smartthingsPort=39500 ] {
+During authorization, the binding creates or updates the SmartThings API app that belongs to the bridge and stores the OAuth client values in the bridge configuration.
+When the flow completes, the bridge should become online and devices can be discovered from the Inbox.
+
+The binding first tries to register a SmartThings SSE subscription for device state updates.
+If SSE registration is not available, it tries callback subscriptions.
+Callback subscriptions require a public HTTPS URL.
+Polling can be enabled as a fallback when neither event mechanism is available.
+The following modes only describe how device state updates are received after authorization.
+They do not change the initial app bootstrap described below.
+
+| Mode | Configuration | Notes |
+|------|---------------|-------|
+| SSE subscription | No additional bridge setting | Tried automatically before callback registration |
+| Public openHAB URL | Set `callbackUrl` to your public HTTPS callback endpoint, for example `https://openhab.example.org/smartthings/home/cb` | Requires a reverse proxy or port forwarding that reaches openHAB from the internet |
+| openHAB Cloud webhook | Install and connect the openHAB Cloud Connector add-on, then leave `callbackUrl` empty | The binding requests a cloud webhook and fills `callbackUrl` automatically |
+| Polling | Set `pollingTime` to a positive value | Works without public callbacks, but state updates can be delayed |
+
+#### Initial App Bootstrap Redirect
+
+During first authorization, the binding creates a bridge-specific SmartThings app through the fixed SmartThings CLI OAuth client.
+That client always redirects to `http://localhost:61973/finish`, and the binding temporarily listens on port `61973` on the openHAB server.
+This bootstrap is the same for public openHAB URLs, openHAB Cloud webhooks and polling when no `clientId` and `clientSecret` are stored yet.
+
+If the browser runs on another machine, replace only `localhost` with the openHAB server host name or IP address when the redirect appears.
+Keep the port, path and query string unchanged:
+
+```text
+http://localhost:61973/finish?code=...&state=...
+http://openhab-server:61973/finish?code=...&state=...
 ```
 
-where:
+The browser must be able to reach the openHAB server on TCP port `61973` while the authorization window is open.
+This temporary redirect is only used for the app bootstrap; it is independent of SmartThings event callbacks, openHAB Cloud webhooks and HTTPS.
+After the app has been created, the binding stores the generated `clientId` and `clientSecret` in the bridge configuration.
+If a later authorization step also redirects to `localhost:61973`, repeat the same replacement.
 
-- **smartthings:smartthings:Home** identifies this is a SmartThings hub named Home.
-    The first two segments must be smartthings:smartthings.
-    You can choose any unique name for the last segment.
-    The last segment is used when you identify items connected to this hubthingTypeId.
-- **smartthingsIp** is the IP address of the SmartThings Hub.
-    Your router should be configured such that the SmartThings Hub is always assigned to this IP address.
-- **smartthingsPort** is the port the SmartThings hub listens on. 39500 is the port assigned by SmartThings so it should be used unless you have a good reason for using another port.
+### Device Thing Configuration
 
-**Warning** This binding only supports one Bridge.
-If you try to configure a second bridge it will be ignored.
+Static device Things require the SmartThings device ID.
+The device ID is the SmartThings UUID of the device.
+It can be obtained through discovery, the SmartThings API or the SmartThings CLI.
 
-### Thing Configuration
+| Name | Type | Description | Default | Required | Advanced |
+|------|------|-------------|---------|----------|----------|
+| `deviceId` | text | SmartThings device UUID | N/A | yes | no |
 
-Each attached Thing must specify the type of device and its SmartThings device name. The format of the Thing description is:
+### Scene Thing Configuration
 
-```java
-Thing <thingTypeId> name [ smartthingsName="<deviceName>", {smartthingsTimeout=<timeout>} ]
-```
+Scene Things trigger SmartThings scenes.
 
-where:
+| Name | Type | Description | Default | Required | Advanced |
+|------|------|-------------|---------|----------|----------|
+| `sceneId` | text | SmartThings scene UUID | N/A | yes | no |
+| `locationId` | text | SmartThings location UUID; needed only when the account has multiple locations | N/A | no | no |
 
-- **[thingTypeId](https://developer-preview.smartthings.com/docs/devices/capabilities/capabilities-reference/)** corresponds to the "Preferences Reference" in the SmartThings Capabilities document but without the capability.prefix. i.e. A dimmer switch in the Capabilities document has a Preferences reference of capability.switchLevel, therefore the &lt;thingTypeId&gt; is switchLevel.
-- **name** is what you want to call this Thing and is used in defining the items that use this Thing.
-- **deviceName** is the name you assigned to the device when you discovered and connected to it in the SmartThings App
-- Optional: **timeout** is how long openHAB will wait for a response to the request before throwing a timeout exception. The default is 3 seconds.
+## Channels
 
-#### Example
+Static Thing types define channel groups such as `main`, `control`, `picture`, or `remote`.
+Item links therefore use the channel format `smartthings:<thingTypeId>:<bridgeId>:<thingId>:<group>#<channelId>`.
 
-```java
-Bridge smartthings:smartthings:Home    [ smartthingsIp="192.168.1.12", smartthingsPort=39500 ] {
-    Thing switchLevel              KitchenLights           [ smartthingsName="Kitchen lights" ]
-    Thing contactSensor            MainGarageDoor          [ smartthingsName="Garage Door Open Sensor" ]
-    Thing temperatureMeasurement   MainGarageTemp          [ smartthingsName="Garage Door Open Sensor" ]
-    Thing battery                  MainGarageBattery       [ smartthingsName="Garage Door Open Sensor" ]
-    Thing switch                   OfficeLight             [ smartthingsName="Office Light", smartthingsTimeout=7 ]
-    Thing valve                    SimulatedValve          [ smartthingsName="Simulated Valve" ]
-}
-```
+### Light Channels
 
-## Items
+| Thing Type UID | Channel | Type | Read/Write | Description |
+|----------------|---------|------|------------|-------------|
+| `generic-light-bulb` | `main#switch` | Switch | RW | Switches the light on or off |
+| `generic-light-bulb` | `main#level` | Dimmer | RW | Brightness level |
+| `generic-color-light-bulb` | `main#switch` | Switch | RW | Switches the light on or off |
+| `generic-color-light-bulb` | `main#level` | Dimmer | RW | Brightness level |
+| `generic-color-light-bulb` | `main#color` | Color | RW | Light color |
+| `generic-color-light-bulb` | `main#color_temperature` | Dimmer | RW | Color temperature |
 
-These are specified in the .items file. This section describes the specifics related to this binding.
-Please see the [Items documentation](https://www.openhab.org/docs/configuration/items.html) for a full explanation of configuring items.
+### Sensor and Scene Channels
 
-The most important Thing is getting the **channel** specification correct. The general format is:
+| Thing Type UID | Channel | Type | Read/Write | Description |
+|----------------|---------|------|------------|-------------|
+| `generic-light-sensor` | `main#illuminance` | Number:Illuminance | R | Measured illuminance |
+| `generic-light-sensor` | `main#brightnessLevel` | Number | R | Relative brightness level |
+| `generic-presence-sensor` | `main#presence` | Switch | R | Presence state |
+| `generic-scene` | `main#trigger` | Switch | W | Sends `ON` to execute the scene |
 
-```java
-{ channel="smartthings:<thingTypeId>:<hubName>:<thingName>:<channelId>" }
-```
+### Appliance Channels
 
-The parts (separated by :) are defined as:
+| Thing Type UID | Channel | Type | Read/Write | Description |
+|----------------|---------|------|------------|-------------|
+| `Samsung_Room_A_C` | `control#switch` | Switch | RW | Switches the air conditioner on or off |
+| `Samsung_Oven` | `status#completion-time` | DateTime | R | Current completion time |
+| `Samsung_Oven` | `status#operating-state` | String | R | Current operating state |
+| `Samsung_Oven` | `status#progress` | Number:Dimensionless | R | Current cooking progress |
+| `Samsung_Oven` | `status#oven-job-state` | String | R | Current oven job state |
+| `Samsung_Oven` | `status#operation-time` | DateTime | R | Current operation time |
+| `Samsung_Soundbar` | `control#switch` | Switch | RW | Switches the soundbar on or off |
+| `Samsung_Soundbar` | `control#volume` | Number | RW | Soundbar volume |
+| `Samsung_Soundbar` | `control#mute` | Switch | RW | Soundbar mute state |
+| `Samsung_Soundbar` | `control#input-source` | String | RW | Active soundbar input source |
+| `Samsung_Soundbar` | `control#playback` | Player | W | Media playback control for play, pause, and stop |
+| `generic-television`, `Samsung_The_Frame` | `control#switch` | Switch | RW | Switches the TV on or off |
+| `generic-television`, `Samsung_The_Frame` | `control#volume` | Number | RW | TV volume |
+| `generic-television`, `Samsung_The_Frame` | `control#mute` | Switch | RW | TV mute state |
+| `generic-television`, `Samsung_The_Frame` | `control#input-source` | String | RW | Active input source |
+| `generic-television`, `Samsung_The_Frame` | `control#channel` | String | RW | Current TV channel |
+| `generic-television`, `Samsung_The_Frame` | `control#playback` | Player | RW | Media playback control |
+| `generic-television`, `Samsung_The_Frame` | `picture#picture-mode` | String | RW | TV picture mode |
+| `generic-television`, `Samsung_The_Frame` | `picture#sound-mode` | String | RW | TV sound mode |
+| `generic-television`, `Samsung_The_Frame` | `remote#channel-up` | Switch | W | Sends `ON` to select the next channel |
+| `generic-television`, `Samsung_The_Frame` | `remote#channel-down` | Switch | W | Sends `ON` to select the previous channel |
+| `Samsung_The_Frame` | `control#art-mode` | Switch | W | Sends `ON` to activate art mode |
+| `generic-washer` | `main#switch` | Switch | RW | Switches the washer on or off |
+| `generic-washer` | `main#machineState` | String | RW | Overall machine state |
+| `generic-washer` | `main#jobState` | String | R | Current wash cycle phase |
+| `generic-washer` | `main#completionTime` | DateTime | R | Expected finish time |
+| `generic-washer` | `main#running` | Switch | R | Indicates whether the washer is running |
+| `generic-washer` | `main#remaining` | Number | R | Remaining minutes |
+| `generic-washer` | `main#power` | Switch | RW | Washer power control |
+| `generic-washer` | `main#remoteEnabled` | Switch | R | Remote-control availability |
+| `generic-washer` | `main#mode` | String | RW | Active wash program |
+| `generic-washer` | `main#rinseMode` | String | RW | Rinse mode |
+| `generic-washer` | `main#spinSpeed` | String | RW | Spin speed |
+| `generic-washer` | `main#temperature` | String | RW | Water temperature |
+| `generic-washer` | `main#bubbleSoak` | Switch | RW | Bubble soak mode |
+| `generic-washer` | `main#volume` | Number | RW | Buzzer volume |
+| `generic-washer` | `main#extraCare` | String | RW | Extra care mode |
+| `generic-washer` | `main#extraCareLocation` | String | RW | Extra care location |
+| `generic-washer` | `main#watt` | Number:Power | R | Current power draw |
+| `generic-washer` | `main#kwh` | Number:Energy | R | Accumulated energy usage |
+| `generic-washer` | `main#waterLiters` | Number | R | Water consumption |
+| `generic-washer` | `main#kidsLock` | Switch | R | Child lock state |
+| `generic-washer` | `main#currentCycle` | String | R | Active program code |
+| `generic-washer` | `main#operatingState` | String | R | Operating state |
+| `generic-washer` | `main#progress` | Number | R | Cycle progress |
+| `generic-washer` | `main#detergentRemaining` | Number | R | Remaining detergent amount |
+| `generic-washer` | `main#softenerRemaining` | Number | R | Remaining fabric softener amount |
+| `generic-washer` | `main#delayEnd` | Number | R | Remaining delayed-start time |
+| `generic-washer` | `main#supportedCourses` | String | R | Available wash program codes |
+| `generic-washer` | `main#remainingTimeStr` | String | R | Remaining cycle time as text |
+| `generic-washer` | `main#operationTime` | Number:Time | R | Total selected cycle time |
+| `generic-washer` | `main#updateAvailable` | Switch | R | Firmware update availability |
 
-1. **smartthings** to specify this is a SmartThings device
-1. **thingTypeId** specifies the type of the Thing  you are connecting to. This is the same as described in the last section.
-1. **hubName** identifies the name of the hub specified above. This corresponds to the third segment in the **Bridge** definition.
-1. **thingName** identifies the Thing this is attached to and is the "name" you specified in the **Thing** definition.
-1. **channelId** corresponds to the attribute in the [SmartThings Capabilities list](https://docs.smartthings.com/en/latest/capabilities-reference.html). For switch it would be "switch".
-
-### Example
-
-```java
-Dimmer  KitchenLights        "Kitchen lights level"     <slider>          { channel="smartthings:switchLevel:Home:KitchenLights:level" }
-Switch  KitchenLightSwitch   "Kitchen lights switch"    <light>           { channel="smartthings:switchLevel:Home:KitchenLights:switch" }
-Contact MainGarageDoor       "Garage door status [%s]" <garagedoor>       { channel="smartthings:contactSensor:Home:MainGarageDoor:contact" }
-Number  MainGarageTemp       "Garage temperature [%.0f]"  <temperature>   { channel="smartthings:temperatureMeasurement:Home:MainGarageTemp:temperature" }
-Number  MainGarageBattery    "Garage battery [%.0f]"  <battery>           { channel="smartthings:battery:Home:MainGarageBattery:battery" }
-Switch  OfficeLight          "Office light"    <light>                    { channel="smartthings:switch:Home:OfficeLight:switch" }
-String  SimulatedValve       "Simulated valve"                            { channel="smartthings:valve:Home:SimulatedValve:valve" }
-```
-
-**Special note about Valves**
-SmartThings includes a **valve** which can be Open or Closed but openHAB does not include a Valve item type.
-Therefore, the valve is defined as having an item type of String.
-And, therefore the item needs to be defined with an item type of string.
-It can be controlled in the sitemap by specifying the Element type of Switch and providing a mapping of: mappings=[open="Open", closed="Close"]. Such as:
-
-```java
-Switch item=SimulatedValve mappings=[open="Open", closed="Close"]
-```
-
-**RGB Bulb example**
-Here is a sample configuration for a RGB bulb, such as a Sengled model E11-N1EA bulb. Currently this binding does not have a RGB specific bulb therefore a Thing is required for each part of the bulb.
+Dynamic Thing types expose channels based on the capabilities returned by SmartThings.
+Check the generated Thing in the openHAB UI for the exact channel list.
 
 ## Full Example
 
-### Things File
+### Thing Configuration
 
 ```java
-colorControl            SengledColorControl         [ smartthingsName="Sengled Bulb"]
-colorTemperature        SengledColorTemperature     [ smartthingsName="Sengled Bulb"]
-switch                  SengledSwitch               [ smartthingsName="Sengled Bulb"]
-switchLevel             SengledSwitchLevel          [ smartthingsName="Sengled Bulb"]
-```
-
-### Items File
-
-```java
-Color  SengledColorControl    "Sengled bulb color"   <colorpicker>   {channel="smartthings:colorControl:Home:SengledColorControl:color"}
-Number SengledTemperature     "Sengled bulb color temperature"       {channel="smartthings:colorTemperature:Home:SengledColorTemperature:colorTemperature"}
-Switch SengledSwitch          "Sengled bulb switch"   <switch>       {channel="smartthings:switch:Home:SengledSwitch:switch"}
-Dimmer SengledDimmer          "Sengled bulb dimmer"   <slider>       {channel="smartthings:switchLevel:Home:SengledSwitchLevel:level"}
-```
-
-### Sitemap File
-
-```perl
-Frame label="Sengled RGBW Bulb" {
-    Switch item=SengledSwitch label="Switch"
-    Slider  item=SengledDimmer label="Level [%d]"
-    Text item=SengledTemperature label="Color Temperature [%d]"
-    Colorpicker item=SengledColorControl label="Color [%s]"  icon="colorwheel"
+Bridge smartthings:account:home [ callbackUrl="https://openhab.example.org/smartthings/home/cb", pollingTime=60 ] {
+    Thing generic-color-light-bulb living_room_lamp [ deviceId="11111111-2222-3333-4444-555555555555" ]
+    Thing generic-light-sensor hallway_sensor [ deviceId="22222222-3333-4444-5555-666666666666" ]
+    Thing generic-scene good_night [ sceneId="33333333-4444-5555-6666-777777777777" ]
 }
 ```
 
+### Item Configuration
+
+```java
+Switch LivingRoomLampPower "Living room lamp" { channel="smartthings:generic-color-light-bulb:home:living_room_lamp:main#switch" }
+Dimmer LivingRoomLampLevel "Living room lamp brightness" { channel="smartthings:generic-color-light-bulb:home:living_room_lamp:main#level" }
+Color LivingRoomLampColor "Living room lamp color" { channel="smartthings:generic-color-light-bulb:home:living_room_lamp:main#color" }
+Number:Illuminance HallwayIlluminance "Hallway illuminance" { channel="smartthings:generic-light-sensor:home:hallway_sensor:main#illuminance" }
+Switch GoodNightScene "Good night" { channel="smartthings:generic-scene:home:good_night:main#trigger" }
+```
+
+### Sitemap Configuration
+
+```perl
+sitemap smartthings label="SmartThings" {
+    Frame label="Living Room" {
+        Switch item=LivingRoomLampPower
+        Slider item=LivingRoomLampLevel
+        Colorpicker item=LivingRoomLampColor
+    }
+    Frame label="Scenes" {
+        Switch item=GoodNightScene mappings=[ON="Run"]
+    }
+}
+```
+
+## Troubleshooting
+
+If the account bridge stays offline, open the authorization link from the bridge status and complete the SmartThings authorization flow again.
+If callbacks cannot be registered, make sure `callbackUrl` is a public HTTPS URL, install and connect the openHAB Cloud Connector add-on so the binding can fill `callbackUrl`, or enable polling with `pollingTime`.
+If a discovered device is not matched to a useful static Thing type, enable the advanced `useDynamicThings` bridge option and scan again.
+
 ## References
 
-1. [openHAB configuration documentation](https://openhab.org/docs/configuration/index.html)
-1. [SmartThings Capabilities Reference](https://docs.smartthings.com/en/latest/capabilities-reference.html)
-1. [SmartThings Developers Documentation](https://docs.smartthings.com/en/latest/index.html)
-1. [SmartThings Development Environment](https://graph.api.smartthings.com/)
+- [SmartThings API Documentation](https://developer.smartthings.com/docs/api/public)
+- [SmartThings Capabilities Reference](https://developer.smartthings.com/docs/devices/capabilities/capabilities-reference/)
+- [openHAB Thing Documentation](https://www.openhab.org/docs/concepts/things.html)
+- [openHAB Items Documentation](https://www.openhab.org/docs/configuration/items.html)

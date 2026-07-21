@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Authorize openHAB binding for SmartThings</title>
+<base href="${assetBaseUri}/">
+<link rel="stylesheet" href="img/auth.css">
+</head>
+<body class="auth-page">
+    <main class="auth-card">
+        <div class="auth-accent"></div>
+        <div class="auth-body">
+            <div class="brand-row">
+                <div class="logo-pair">
+                    <img class="openhab-logo" src="img/openhab-logo.svg" alt="openHAB logo">
+                    <span class="logo-connector" aria-hidden="true"></span>
+                    <img class="smartthings-logo" src="img/smartthings-logo.svg" alt="SmartThings logo">
+                </div>
+                <div class="brand-copy">
+                    <strong>openHAB SmartThings Binding</strong>
+                    <span>Account authorization</span>
+                </div>
+            </div>
+
+            <div class="status-icon success" aria-hidden="true">&#10003;</div>
+            <p class="kicker">Authorization complete</p>
+            <h1>SmartThings connected</h1>
+            <p class="lead">openHAB can now discover SmartThings devices and show them in your inbox.</p>
+
+            ${error}
+
+            <section class="result-grid">
+                <div>
+                    <div class="result-label">Location</div>
+                    <div class="result-value">${location}</div>
+                </div>
+                <div>
+                    <div class="result-label">Devices found</div>
+                    <div class="result-value">${devicesCount}</div>
+                </div>
+            </section>
+
+            <p class="footnote">You can now close this window and continue in openHAB.</p>
+        </div>
+    </main>
+</body>
+</html>

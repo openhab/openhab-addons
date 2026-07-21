@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="smartthings"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+
+	<!-- ═══════════════════════════════════════════════════════════════════ -->
+	<!-- Scene -->
+	<!-- ═══════════════════════════════════════════════════════════════════ -->
+
+	<thing-type id="generic-scene">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+		<label>SmartThings Scene</label>
+		<description>Executes a SmartThings scene. Send ON to the trigger channel to run the scene.</description>
+
+		<channel-groups>
+			<channel-group typeId="main-group-type-generic-scene" id="main"/>
+		</channel-groups>
+
+		<config-description>
+			<parameter name="sceneId" type="text" required="true">
+				<label>Scene ID</label>
+				<description>SmartThings scene UUID. Find it via the SmartThings CLI: smartthings scenes</description>
+			</parameter>
+			<parameter name="locationId" type="text">
+				<label>Location ID (Optional)</label>
+				<description>SmartThings location UUID. Required only when the account has multiple locations.</description>
+				<default></default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-group-type id="main-group-type-generic-scene">
+		<label>Main group type Generic Scene</label>
+		<channels>
+			<channel id="trigger" typeId="sceneTrigger">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">switch</property>
+					<property name="attribute">switch</property>
+				</properties>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="sceneTrigger">
+		<item-type>Switch</item-type>
+		<label>Trigger</label>
+		<description>Send ON to execute the scene. Automatically resets to OFF after triggering.</description>
+	</channel-type>
+
+</thing:thing-descriptions>

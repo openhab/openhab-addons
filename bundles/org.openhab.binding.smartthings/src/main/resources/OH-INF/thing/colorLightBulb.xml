@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="smartthings"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+
+	<!-- ═══════════════════════════════════════════════════════════════════
+		Light Sensor thing type
+		═══════════════════════════════════════════════════════════════════ -->
+
+	<thing-type id="generic-color-light-bulb">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+		<label>SmartThings Color Light Bulb</label>
+		<description>A SmartThings color light bulb.</description>
+
+		<channel-groups>
+			<channel-group typeId="main-group-type-generic-light-color-bulb" id="main"/>
+		</channel-groups>
+
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device ID</label>
+				<description>SmartThings device UUID. Find it via GET https://api.smartthings.com/v1/devices.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-group-type id="main-group-type-generic-light-color-bulb">
+		<label>Main group type Color Light Bulb</label>
+		<channels>
+			<channel id="switch" typeId="system.power">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">switch</property>
+					<property name="attribute">switch</property>
+				</properties>
+			</channel>
+			<channel id="level" typeId="system.brightness">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">switchLevel</property>
+					<property name="attribute">level</property>
+				</properties>
+			</channel>
+			<channel id="color" typeId="system.color">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">colorControl</property>
+					<property name="attribute">color</property>
+				</properties>
+			</channel>
+			<channel id="color_temperature" typeId="system.color-temperature">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">colorTemperature</property>
+					<property name="attribute">colorTemperature</property>
+				</properties>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+
+
+</thing:thing-descriptions>

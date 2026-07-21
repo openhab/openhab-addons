@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="smartthings"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+
+	<!-- ═══════════════════════════════════════════════════════════════════
+		Light Sensor thing type
+		═══════════════════════════════════════════════════════════════════ -->
+
+	<thing-type id="generic-light-sensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+		<label>SmartThings Light Sensor</label>
+		<description>A SmartThings illuminance/light sensor reporting lux and brightness level.</description>
+
+		<channel-groups>
+			<channel-group typeId="main-group-type-generic-light-sensor" id="main"/>
+		</channel-groups>
+
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device ID</label>
+				<description>SmartThings device UUID. Find it via GET https://api.smartthings.com/v1/devices.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-group-type id="main-group-type-generic-light-sensor">
+		<label>Main group type Generic Light Sensor</label>
+		<channels>
+			<channel id="illuminance" typeId="illuminance">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">switch</property>
+					<property name="attribute">switch</property>
+				</properties>
+			</channel>
+			<channel id="brightnessLevel" typeId="brightnessLevel">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">switch</property>
+					<property name="attribute">switch</property>
+				</properties>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="illuminance">
+		<item-type>Number:Illuminance</item-type>
+		<label>Illuminance</label>
+		<description>Measured illuminance in lux</description>
+		<state readOnly="true" pattern="%.0f lx"/>
+	</channel-type>
+
+	<channel-type id="brightnessLevel">
+		<item-type>Number</item-type>
+		<label>Brightness Level</label>
+		<description>Relative brightness intensity level (1–5)</description>
+		<state readOnly="true" pattern="%.0f" min="1" max="5"/>
+	</channel-type>
+
+</thing:thing-descriptions>
