@@ -147,12 +147,14 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
             // user id, key, devAuth are already stored
         } else if (MODE_ROUTER.equalsIgnoreCase(connectionTypeString)) {
             useNAT = false;
+            ip = config.getMulticastAddress();
             if (ip.isEmpty()) {
                 ip = KNXBindingConstants.DEFAULT_MULTICAST_IP;
             }
             ipConnectionType = IPClient.IpConnectionType.ROUTER;
         } else if (MODE_SECURE_ROUTER.equalsIgnoreCase(connectionTypeString)) {
             useNAT = false;
+            ip = config.getMulticastAddress();
             if (ip.isEmpty()) {
                 ip = KNXBindingConstants.DEFAULT_MULTICAST_IP;
             }
