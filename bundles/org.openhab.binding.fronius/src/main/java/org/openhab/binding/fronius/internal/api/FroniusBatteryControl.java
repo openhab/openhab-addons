@@ -19,7 +19,6 @@ import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
@@ -185,12 +184,32 @@ public class FroniusBatteryControl {
         if (powerInWatts.intValue() < 0) {
             throw new IllegalArgumentException("power must be non-negative");
         }
-        List<TimeOfUseRecord> records = new ArrayList<>(
-                Arrays.stream(getTimeOfUse().records()).filter(r -> r.scheduleType() != scheduleType).toList());
+        List<TimeOfUseRecord> records = new ArrayList<>();
+        for (TimeOfUseRecord record : getTimeOfUse().records()) {
+            if (record.scheduleType() != scheduleType) {
+                records.add(record);
+            } else if (!isAllTimeEntry(record)) {
+                // The inverter web UI rejects overlapping entries of the same type, so an all-time entry cannot
+                // coexist with other entries of its type, and replacing them would destroy the user's schedules
+                throw new IllegalArgumentException("There are existing time of use schedules of type " + scheduleType
+                        + ", please manage them through the battery control actions instead");
+            }
+        }
         records.add(new TimeOfUseRecord(true, powerInWatts.intValue(), scheduleType,
                 new TimeTableRecord(BEGIN_OF_DAY.format(TIME_FORMATTER), END_OF_DAY.format(TIME_FORMATTER)),
                 new WeekdaysRecord(true, true, true, true, true, true, true)));
         setTimeOfUse(new TimeOfUseRecords(records.toArray(TimeOfUseRecord[]::new)));
+    }
+
+    /**
+     * @return whether the record is an all-day, all-week entry as written by {@link #setAllTimeSchedule}
+     */
+    private static boolean isAllTimeEntry(TimeOfUseRecord record) {
+        WeekdaysRecord weekdays = record.weekdays();
+        return BEGIN_OF_DAY.format(TIME_FORMATTER).equals(record.timeTable().start())
+                && END_OF_DAY.format(TIME_FORMATTER).equals(record.timeTable().end()) && weekdays.monday()
+                && weekdays.tuesday() && weekdays.wednesday() && weekdays.thursday() && weekdays.friday()
+                && weekdays.saturday() && weekdays.sunday();
     }
 
     /**
