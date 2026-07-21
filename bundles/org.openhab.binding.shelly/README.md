@@ -163,7 +163,7 @@ See section [Discovery](#discovery) for details.
 | shellyblumotion      | Shelly BLU Motion ZB                                   | SBMO-103Z               |
 | shellybludistance    | Shelly BLU Distance                                    | SBDI-003E               |
 | shellybluremote      | Shelly BLU Remote Control                              | SBRC-005B               |
-| shellybluws90        | Ecowitt WS90 (powered by Shelly)                       | SBWS-90CM               |
+| shellybluws90        | Ecowitt WS90 Weather Station (Shelly BLU)              | SBWS-90CM               |
 
 ### Special Thing Types
 
@@ -2139,7 +2139,7 @@ See notes on discovery of Shelly BLU devices above.
 |         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                                                           |
 | device  | gatewayDevice | String   | yes       | Shelly forwarded last status update (BLU gateway), could vary from packet to packet |
 
-### Ecowitt WS90 - powered by Shelly (thing-type: shellybluws90)
+### Ecowitt WS90 Weather Station (Shelly BLU) (thing-type: shellybluws90)
 
 See notes on discovery of Shelly BLU devices above.
 
@@ -2148,7 +2148,7 @@ See notes on discovery of Shelly BLU devices above.
 | sensors | temperature   | Number:Temperature   | yes       | Temperature in degrees Celsius                                                      |
 |         | humidity      | Number:Dimensionless | yes       | Relative humidity in %                                                              |
 |         | uvIndex       | Number               | yes       | UV Index (dimensionless, 0-11+)                                                     |
-|         | lux           | Number               | yes       | Brightness in Lux (created once the device reports a value)                         |
+|         | lux           | Number:Illuminance   | yes       | Brightness in Lux (created once the device reports a value)                         |
 |         | windSpeed     | Number:Speed         | yes       | Wind speed in m/s                                                                   |
 |         | windDirection | Number:Angle         | yes       | Wind direction in degrees (0-360)                                                   |
 |         | gustSpeed     | Number:Speed         | yes       | Wind gust speed in m/s                                                              |

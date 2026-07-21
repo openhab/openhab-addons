@@ -108,7 +108,7 @@
 	</channel-type>
 
 	<channel-type id="sensorPrecipitation">
-		<item-type>Number:Length</item-type>
+		<item-type unitHint="mm">Number:Length</item-type>
 		<label>Precipitation</label>
 		<description>Accumulated precipitation in mm (monotonic total since sensor reset)</description>
 		<category>Rain</category>
@@ -116,7 +116,7 @@
 			<tag>Measurement</tag>
 			<tag>Rain</tag>
 		</tags>
-		<state readOnly="true" pattern="%.1f mm">
+		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
 	</channel-type>
 
