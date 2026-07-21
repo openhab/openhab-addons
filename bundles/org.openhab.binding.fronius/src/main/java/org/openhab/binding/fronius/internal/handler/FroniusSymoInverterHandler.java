@@ -244,15 +244,19 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
                 return calculatePower(inverterData.getUdc2(), inverterData.getIdc2());
             case FroniusBindingConstants.INVERTER_DATA_CHANNEL_PDC3:
                 return calculatePower(inverterData.getUdc3(), inverterData.getIdc3());
-            case FroniusBindingConstants.INVERTER_DATA_CHANNEL_DAY_ENERGY:
+            case FroniusBindingConstants.INVERTER_DATA_CHANNEL_DAY_ENERGY: {
                 // Convert the unit to kWh for backwards compatibility with non-quantity type
-                return getQuantityOrZero(inverterData.getDayEnergy(), Units.KILOWATT_HOUR).toUnit("kWh");
+                QuantityType<?> dayEnergy = getQuantityOrNull(inverterData.getDayEnergy(), Units.KILOWATT_HOUR);
+                return dayEnergy == null ? null : dayEnergy.toUnit("kWh");
+            }
             case FroniusBindingConstants.INVERTER_DATA_CHANNEL_TOTAL:
                 // Convert the unit to MWh for backwards compatibility with non-quantity type
                 return getQuantityOrZero(inverterData.getTotalEnergy(), Units.MEGAWATT_HOUR).toUnit("MWh");
-            case FroniusBindingConstants.INVERTER_DATA_CHANNEL_YEAR:
+            case FroniusBindingConstants.INVERTER_DATA_CHANNEL_YEAR: {
                 // Convert the unit to MWh for backwards compatibility with non-quantity type
-                return getQuantityOrZero(inverterData.getYearEnergy(), Units.MEGAWATT_HOUR).toUnit("MWh");
+                QuantityType<?> yearEnergy = getQuantityOrNull(inverterData.getYearEnergy(), Units.MEGAWATT_HOUR);
+                return yearEnergy == null ? null : yearEnergy.toUnit("MWh");
+            }
             case FroniusBindingConstants.INVERTER_DATA_CHANNEL_DEVICE_STATUS_ERROR_CODE:
                 deviceStatus = inverterData.getDeviceStatus();
                 if (deviceStatus == null) {
@@ -369,6 +373,14 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
      * @param unit The default unit to use when value is null
      * @return a QuantityType from the given value
      */
+    /**
+     * Converts the given value to a {@link QuantityType} with the given unit, or null if the inverter does not provide
+     * the value, e.g. GEN24/Tauro/Verto do not provide the day and year energy.
+     */
+    private @Nullable QuantityType<?> getQuantityOrNull(@Nullable ValueUnit value, Unit<?> unit) {
+        return value == null || !value.hasValue() ? null : value.asQuantityType().toUnit(unit);
+    }
+
     private QuantityType<?> getQuantityOrZero(@Nullable ValueUnit value, Unit<?> unit) {
         QuantityType<?> val = null;
         if (value != null) {
