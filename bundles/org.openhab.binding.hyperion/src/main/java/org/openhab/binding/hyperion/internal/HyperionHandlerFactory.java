@@ -45,7 +45,9 @@ public class HyperionHandlerFactory extends BaseThingHandlerFactory {
         if (thingTypeUID.equals(HyperionBindingConstants.THING_TYPE_SERVER_V1)) {
             return new HyperionHandler(thing);
         } else if (thingTypeUID.equals(HyperionBindingConstants.THING_TYPE_SERVER_NG)) {
-            return new HyperionNgHandler(thing, stateDescriptionProvider);
+            return new HyperionNgHandler(thing, stateDescriptionProvider, false);
+        } else if (thingTypeUID.equals(HyperionBindingConstants.THING_TYPE_SERVER_HDR)) {
+            return new HyperionNgHandler(thing, stateDescriptionProvider, true);
         }
 
         return null;

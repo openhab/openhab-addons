@@ -92,6 +92,7 @@ public class HyperionNgHandler extends BaseThingHandler {
     private int refreshInterval;
     private int priority;
     private String origin;
+    private boolean hdr;
     private HyperionStateDescriptionProvider stateDescriptionProvider;
 
     private Runnable refreshJob = new Runnable() {
@@ -127,9 +128,10 @@ public class HyperionNgHandler extends BaseThingHandler {
         }
     };
 
-    public HyperionNgHandler(Thing thing, HyperionStateDescriptionProvider stateDescriptionProvider) {
+    public HyperionNgHandler(Thing thing, HyperionStateDescriptionProvider stateDescriptionProvider, boolean hdr) {
         super(thing);
         this.stateDescriptionProvider = stateDescriptionProvider;
+        this.hdr = hdr;
     }
 
     @Override
@@ -297,6 +299,10 @@ public class HyperionNgHandler extends BaseThingHandler {
                 case COMPONENT_LEDDEVICE:
                     updateState(CHANNEL_LEDDEVICE, componentState);
                     break;
+                case COMPONENT_HDR:
+                    if (hdr)
+                        updateState(CHANNEL_HDR, componentState);
+                    break;
                 case COMPONENT_ALL:
                     updateState(CHANNEL_HYPERION_ENABLED, componentState);
                     break;
@@ -356,6 +362,8 @@ public class HyperionNgHandler extends BaseThingHandler {
                 handleComponentEnabled(channelUID.getId(), command);
             } else if (CHANNEL_LEDDEVICE.equals(channelUID.getId())) {
                 handleComponentEnabled(channelUID.getId(), command);
+            } else if (hdr && CHANNEL_HDR.equals(channelUID.getId())) {
+                handleComponentEnabled(channelUID.getId(), command);
             }
         } catch (IOException e) {
             updateOnlineStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -395,6 +403,10 @@ public class HyperionNgHandler extends BaseThingHandler {
                     break;
                 case CHANNEL_LEDDEVICE:
                     componentState.setComponent(COMPONENT_LEDDEVICE);
+                    break;
+                case CHANNEL_HDR:
+                    if (hdr)
+                        componentState.setComponent(COMPONENT_HDR);
                     break;
             }
 
