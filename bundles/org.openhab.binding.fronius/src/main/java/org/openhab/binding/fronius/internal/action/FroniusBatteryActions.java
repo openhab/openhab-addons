@@ -27,7 +27,9 @@ import org.openhab.binding.fronius.internal.api.FroniusBatteryControl;
 import org.openhab.binding.fronius.internal.api.FroniusCommunicationException;
 import org.openhab.binding.fronius.internal.api.FroniusUnauthorizedException;
 import org.openhab.binding.fronius.internal.api.dto.inverter.batterycontrol.ScheduleType;
+import org.openhab.binding.fronius.internal.handler.FroniusBaseThingHandler;
 import org.openhab.binding.fronius.internal.handler.FroniusBatteryHandler;
+import org.openhab.binding.fronius.internal.handler.FroniusSymoInverterHandler;
 import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.ActionOutput;
 import org.openhab.core.automation.annotation.RuleAction;
@@ -58,11 +60,12 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class FroniusBatteryActions implements ThingActions {
     private final Logger logger = LoggerFactory.getLogger(FroniusBatteryActions.class);
-    private @Nullable FroniusBatteryHandler handler;
+    private @Nullable FroniusBaseThingHandler handler;
+    private boolean deprecationWarned;
 
     private static FroniusBatteryActions toFroniusBatteryActions(ThingActions actions) {
-        if (actions instanceof FroniusBatteryActions froniusSymoInverterActions) {
-            return froniusSymoInverterActions;
+        if (actions instanceof FroniusBatteryActions froniusBatteryActions) {
+            return froniusBatteryActions;
         }
         throw new IllegalArgumentException("The 'actions' argument is not an instance of FroniusBatteryActions");
     }
@@ -263,7 +266,9 @@ public class FroniusBatteryActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        this.handler = (FroniusBatteryHandler) handler;
+        if (handler instanceof FroniusBatteryHandler || handler instanceof FroniusSymoInverterHandler) {
+            this.handler = (FroniusBaseThingHandler) handler;
+        }
     }
 
     @Override
@@ -593,9 +598,17 @@ public class FroniusBatteryActions implements ThingActions {
     }
 
     private @Nullable FroniusBatteryControl getBatteryControl() {
-        FroniusBatteryHandler handler = this.handler;
-        if (handler != null) {
-            return handler.getBatteryControl();
+        FroniusBaseThingHandler handler = this.handler;
+        if (handler instanceof FroniusBatteryHandler batteryHandler) {
+            return batteryHandler.getBatteryControl();
+        }
+        if (handler instanceof FroniusSymoInverterHandler inverterHandler) {
+            if (!deprecationWarned) {
+                deprecationWarned = true;
+                logger.warn(
+                        "Retrieving the battery control actions through the powerinverter thing is deprecated, please retrieve them through the battery thing instead.");
+            }
+            return inverterHandler.getBatteryControl();
         }
         return null;
     }

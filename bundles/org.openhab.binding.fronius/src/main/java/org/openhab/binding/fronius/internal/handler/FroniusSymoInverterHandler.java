@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.fronius.internal.handler;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import javax.measure.Unit;
@@ -21,6 +23,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.fronius.internal.FroniusBaseDeviceConfiguration;
 import org.openhab.binding.fronius.internal.FroniusBindingConstants;
 import org.openhab.binding.fronius.internal.FroniusBridgeConfiguration;
+import org.openhab.binding.fronius.internal.action.FroniusBatteryActions;
+import org.openhab.binding.fronius.internal.api.FroniusBatteryControl;
 import org.openhab.binding.fronius.internal.api.FroniusCommunicationException;
 import org.openhab.binding.fronius.internal.api.dto.ValueUnit;
 import org.openhab.binding.fronius.internal.api.dto.inverter.InverterDeviceStatus;
@@ -41,6 +45,8 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.binding.ThingHandlerService;
+import org.openhab.core.thing.firmware.types.SemverVersion;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,6 +70,7 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
     private @Nullable PowerFlowRealtimeResponse powerFlowResponse;
     private @Nullable FroniusBaseDeviceConfiguration config;
     private @Nullable InverterInfo inverterInfo;
+    private @Nullable FroniusBatteryControl batteryControl;
 
     public FroniusSymoInverterHandler(Thing thing) {
         super(thing);
@@ -72,6 +79,60 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
     @Override
     protected String getDescription() {
         return "Fronius Symo Inverter";
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return List.of(FroniusBatteryActions.class);
+    }
+
+    /**
+     * Provides the battery control for the deprecated battery control actions on this thing. The actions have moved to
+     * the battery thing, but are kept available here so that existing scripts keep working.
+     * Unlike the battery thing, this thing does not have battery settings channels, therefore the battery control is
+     * only created when an action is actually used.
+     *
+     * @return the battery control, or null if it is not available
+     * @deprecated retrieve the actions through the battery thing instead
+     */
+    @Deprecated
+    public @Nullable FroniusBatteryControl getBatteryControl() {
+        FroniusBatteryControl control = batteryControl;
+        if (control != null) {
+            return control;
+        }
+        FroniusBridgeHandler bridgeHandler = getFroniusBridgeHandler();
+        Bridge bridge = getBridge();
+        if (bridge == null || bridgeHandler == null) {
+            return null;
+        }
+        FroniusBridgeConfiguration bridgeConfig = bridge.getConfiguration().as(FroniusBridgeConfiguration.class);
+        String username = bridgeConfig.username;
+        String password = bridgeConfig.password;
+        if (username == null || password == null) {
+            logger.warn(
+                    "Credentials are not configured in the bridge. Battery control is not available for Thing '{}'.",
+                    thing.getUID());
+            return null;
+        }
+        InverterInfo localInverterInfo = inverterInfo;
+        String firmwareVersion = localInverterInfo == null ? null : localInverterInfo.firmware();
+        if (firmwareVersion == null) {
+            firmwareVersion = getFirmwareVersion(bridgeConfig.scheme, bridgeConfig.hostname);
+        }
+        if (firmwareVersion == null) {
+            logger.warn(
+                    "The firmware version of the Fronius inverter could not be determined. Battery control is not available for Thing '{}'.",
+                    thing.getUID());
+            return null;
+        }
+        int hyphenIndex = firmwareVersion.indexOf('-');
+        String versionString = (hyphenIndex > 0) ? firmwareVersion.substring(0, hyphenIndex) : firmwareVersion;
+        SemverVersion version = SemverVersion.fromString(versionString);
+        control = new FroniusBatteryControl(bridgeHandler.getConfigApiClient(), version, bridgeConfig.scheme,
+                bridgeConfig.hostname, username, password);
+        batteryControl = control;
+        return control;
     }
 
     @Override
@@ -130,6 +191,8 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
         FroniusBridgeConfiguration bridgeConfig = bridge.getConfiguration().as(FroniusBridgeConfiguration.class);
         inverterInfo = getInverterInfo(bridgeConfig.scheme, bridgeConfig.hostname, config.deviceId);
         updateProperties();
+        // Recreate the battery control for the deprecated actions on the next use, as the bridge configuration changed
+        batteryControl = null;
     }
 
     /**

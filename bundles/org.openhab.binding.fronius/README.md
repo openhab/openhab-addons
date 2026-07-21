@@ -196,6 +196,8 @@ Please note that user-specified time of use plans cannot be used together with b
 The `battery` Thing provides actions to control the battery charging and discharging behaviour of hybrid inverters, such as Symo Gen24 Plus, if username and password are provided in the bridge configuration.
 The inverter must have the battery time of use plan settings available in the web interface.
 
+For backward compatibility, the actions can also be retrieved through the `powerinverter` Thing, but this is deprecated - please retrieve them through the `battery` Thing instead.
+
 You can retrieve the actions as follows:
 
 :::: tabs
