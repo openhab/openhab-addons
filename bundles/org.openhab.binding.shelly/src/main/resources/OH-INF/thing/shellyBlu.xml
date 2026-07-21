@@ -144,7 +144,7 @@
 	</thing-type>
 
 	<thing-type id="shellybluws90">
-		<label>Ecowitt WS90 (Shelly BLU)</label>
+		<label>Ecowitt WS90 Weather Station (Shelly BLU)</label>
 		<description>Ecowitt WS90 weather station connected via Shelly BLU gateway (wind, rain, pressure, UV, temperature,
 			humidity)</description>
 		<semantic-equipment-tag>WeatherStation</semantic-equipment-tag>
