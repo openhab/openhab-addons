@@ -321,6 +321,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                         if (blu.rain != null) {
                             sensorData.rain = getDouble(blu.rain) > 0;
                         }
+                        // BTHome sends the WS90's Speed object twice per packet: average speed, then gust speed
                         Double[] speeds = blu.speeds;
                         if (speeds != null && speeds.length >= 1) {
                             sensorData.windSpeed = speeds[0];

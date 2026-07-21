@@ -2148,6 +2148,7 @@ See notes on discovery of Shelly BLU devices above.
 | sensors | temperature   | Number:Temperature   | yes       | Temperature in degrees Celsius                                                      |
 |         | humidity      | Number:Dimensionless | yes       | Relative humidity in %                                                              |
 |         | uvIndex       | Number               | yes       | UV Index (dimensionless, 0-11+)                                                     |
+|         | lux           | Number               | yes       | Brightness in Lux (created once the device reports a value)                         |
 |         | windSpeed     | Number:Speed         | yes       | Wind speed in m/s                                                                   |
 |         | windDirection | Number:Angle         | yes       | Wind direction in degrees (0-360)                                                   |
 |         | gustSpeed     | Number:Speed         | yes       | Wind gust speed in m/s                                                              |

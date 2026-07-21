@@ -591,15 +591,15 @@ public class ShellyComponentsTest {
     }
 
     @Test
-    void createSensorChannelsWs90NeverCreatesLuxOrIllumination() {
+    void createSensorChannelsWs90WithoutDataCreatesNeitherLuxNorIllumination() {
         ThingUID thingUID = new ThingUID(THING_TYPE_SHELLYBLUWS90, "test");
         Thing thing = mock(Thing.class);
         when(thing.getUID()).thenReturn(thingUID);
 
         ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYBLUWS90);
         profile.isWS90 = true;
-        // WS90 never reports lux/illumination (no such BTHome field in its payload), unlike
-        // temperature/humidity which WS90 always reports and creates unconditionally
+        // unlike temperature/humidity, lux/illumination are not created unconditionally for WS90:
+        // whether the lux value shows up depends on the device having sent a BTHome 0x05 packet yet
         ShellyStatusSensor sdata = new ShellyStatusSensor();
 
         Map<String, Channel> channels = ShellyChannelDefinitions.createSensorChannels(thing, profile, sdata);
@@ -607,6 +607,30 @@ public class ShellyComponentsTest {
         assertThat("lux channel created",
                 channels.containsKey(CHANNEL_GROUP_SENSOR + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_SENSOR_LUX),
                 is(false));
+        assertThat("illumination channel created",
+                channels.containsKey(CHANNEL_GROUP_SENSOR + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_SENSOR_ILLUM),
+                is(false));
+    }
+
+    @Test
+    void createSensorChannelsWs90WithLuxValueCreatesLuxButNotIllumination() {
+        ThingUID thingUID = new ThingUID(THING_TYPE_SHELLYBLUWS90, "test");
+        Thing thing = mock(Thing.class);
+        when(thing.getUID()).thenReturn(thingUID);
+
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYBLUWS90);
+        profile.isWS90 = true;
+        // WS90 reports the numeric Lux value (BTHome 0x05) but never the dark/bright
+        // "illumination" classification the BLU H&T Display sends
+        ShellyStatusSensor sdata = new ShellyStatusSensor();
+        sdata.lux = new ShellyStatusSensor.ShellySensorLux();
+        sdata.lux.value = 123.0;
+
+        Map<String, Channel> channels = ShellyChannelDefinitions.createSensorChannels(thing, profile, sdata);
+
+        assertThat("lux channel created",
+                channels.containsKey(CHANNEL_GROUP_SENSOR + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_SENSOR_LUX),
+                is(true));
         assertThat("illumination channel created",
                 channels.containsKey(CHANNEL_GROUP_SENSOR + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_SENSOR_ILLUM),
                 is(false));

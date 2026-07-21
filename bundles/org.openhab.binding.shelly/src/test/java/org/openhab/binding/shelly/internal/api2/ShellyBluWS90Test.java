@@ -14,14 +14,11 @@ package org.openhab.binding.shelly.internal.api2;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.openhab.binding.shelly.internal.api2.ShellyBluJsonDTO.Shelly2NotifyBluEventData;
 
 import com.google.gson.Gson;
@@ -112,68 +109,6 @@ public class ShellyBluWS90Test {
         assertThat("temperatures should be null for wind-only packet", data.temperatures, is(nullValue()));
         assertThat("humidity should be null for wind-only packet", data.humidity, is(nullValue()));
         assertThat("pressure should be null for wind-only packet", data.pressure, is(nullValue()));
-    }
-
-    @ParameterizedTest
-    @CsvSource({ "0.0, false", "0.001, true", "1.0, true", "5.5, true" })
-    void rainValueMapsToRainStatus(double rainValue, boolean expectedRaining) {
-        boolean raining = rainValue > 0;
-        assertThat("rain=" + rainValue + " should map to raining=" + expectedRaining, raining,
-                is(equalTo(expectedRaining)));
-    }
-
-    @Test
-    void speedsArrayWithTwoElementsMapsBothWindAndGust() {
-        Shelly2NotifyBluEventData data = new Shelly2NotifyBluEventData();
-        data.speeds = new Double[] { 3.5, 7.2 };
-
-        Double windSpeed = null;
-        Double gustSpeed = null;
-        if (data.speeds != null && data.speeds.length >= 1) {
-            windSpeed = data.speeds[0];
-            if (data.speeds.length >= 2) {
-                gustSpeed = data.speeds[1];
-            }
-        }
-
-        assertThat("windSpeed", windSpeed, is(equalTo(3.5)));
-        assertThat("gustSpeed", gustSpeed, is(equalTo(7.2)));
-    }
-
-    @Test
-    void speedsArrayWithOneElementMapsWindSpeedOnly() {
-        Shelly2NotifyBluEventData data = new Shelly2NotifyBluEventData();
-        data.speeds = new Double[] { 3.5 };
-
-        Double windSpeed = null;
-        Double gustSpeed = null;
-        if (data.speeds != null && data.speeds.length >= 1) {
-            windSpeed = data.speeds[0];
-            if (data.speeds.length >= 2) {
-                gustSpeed = data.speeds[1];
-            }
-        }
-
-        assertThat("windSpeed", windSpeed, is(equalTo(3.5)));
-        assertThat("gustSpeed should be null when only one speed element present", gustSpeed, is(nullValue()));
-    }
-
-    @Test
-    void emptySpeedsArrayDoesNotThrow() {
-        Shelly2NotifyBluEventData data = new Shelly2NotifyBluEventData();
-        data.speeds = new Double[] {};
-
-        Double windSpeed = null;
-        Double gustSpeed = null;
-        assertDoesNotThrow(() -> {
-            if (data.speeds != null && data.speeds.length >= 1) {
-                @SuppressWarnings("unused")
-                Double ws = data.speeds[0];
-            }
-        });
-
-        assertThat("windSpeed should be null for empty speeds array", windSpeed, is(nullValue()));
-        assertThat("gustSpeed should be null for empty speeds array", gustSpeed, is(nullValue()));
     }
 
     @Test
