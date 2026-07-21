@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="shelly"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="sensorRain">
+		<item-type>Switch</item-type>
+		<label>Rain Status</label>
+		<description>ON when rain is detected; stays ON briefly after rain stops (WS90 piezo sensor hardware behavior)</description>
+		<category>Rain</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Rain</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="sensorWindSpeed">
+		<item-type>Number:Speed</item-type>
+		<label>Wind Speed</label>
+		<description>Wind speed in m/s</description>
+		<category>Wind</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Speed</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="sensorWindDirection">
+		<item-type>Number:Angle</item-type>
+		<label>Wind Direction</label>
+		<description>Wind direction in degrees (0-360)</description>
+		<category>Wind</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Wind</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="sensorGustSpeed">
+		<item-type>Number:Speed</item-type>
+		<label>Gust Speed</label>
+		<description>Wind gust speed in m/s</description>
+		<category>Wind</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Speed</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="sensorUvIndex">
+		<item-type>Number</item-type>
+		<label>UV Index</label>
+		<description>Ultraviolet radiation index (0-11+)</description>
+		<category>Sun</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Ultraviolet</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f">
+		</state>
+	</channel-type>
+
+	<channel-type id="sensorPressure">
+		<item-type>Number:Pressure</item-type>
+		<label>Atmospheric Pressure</label>
+		<description>Atmospheric pressure in hPa</description>
+		<category>Pressure</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="sensorDewPoint">
+		<item-type>Number:Temperature</item-type>
+		<label>Dew Point</label>
+		<description>Dew point temperature</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="sensorPrecipitation">
+		<item-type>Number:Length</item-type>
+		<label>Precipitation</label>
+		<description>Accumulated precipitation in mm (monotonic total since sensor reset)</description>
+		<category>Rain</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Rain</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f mm">
+		</state>
+	</channel-type>
+
+</thing:thing-descriptions>
