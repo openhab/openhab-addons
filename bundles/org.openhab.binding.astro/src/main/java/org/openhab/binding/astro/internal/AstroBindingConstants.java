@@ -49,6 +49,11 @@ public final class AstroBindingConstants {
     public static final String EVENT_PHASE_FULL = "FULL";
     public static final String EVENT_PHASE_NEW = "NEW";
 
+    public static final String GROUP_ZODIAC = "zodiac";
+    public static final String CHANNEL_START = "start";
+    public static final String CHANNEL_END = "end";
+    public static final String CHANNEL_SIGN = "sign";
+
     // regular channelIds
 
     // Common to SUN and MOON

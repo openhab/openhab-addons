@@ -17,6 +17,8 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Locale;
@@ -39,6 +41,7 @@ import org.openhab.binding.astro.internal.model.ZodiacSign;
  */
 @NonNullByDefault
 public class SunZodiacCalcTest {
+    private static final Instant REFERENCE_INSTANT = Instant.parse("2025-08-05T12:00:00Z");
 
     private static Stream<Arguments> zodiacAngles() {
         return Stream.of(arguments(Math.toRadians(0), ZodiacSign.ARIES),
@@ -51,70 +54,57 @@ public class SunZodiacCalcTest {
     @ParameterizedTest
     @MethodSource("zodiacAngles")
     public void testCalcZodiacSignFromLongitude(double longitude, ZodiacSign expected) {
-        assertEquals(expected, ZodiacCalc.calculate(longitude, null).getSign());
+        assertEquals(expected, ZodiacCalc.calculate(longitude, REFERENCE_INSTANT).sign());
     }
 
     @Test
     public void testCalcZodiacCreatesSunZodiacWithRangeFromInstant() {
-        Instant referenceInstant = Instant.parse("2025-08-05T12:00:00Z");
-        Zodiac zodiac = ZodiacCalc.calculate(Math.toRadians(120), referenceInstant);
-        assertEquals(ZodiacSign.LEO, zodiac.getSign());
+        Zodiac zodiac = ZodiacCalc.calculate(Math.toRadians(120), REFERENCE_INSTANT);
+        assertEquals(ZodiacSign.LEO, zodiac.sign());
         var start = zodiac.getStart();
         var end = zodiac.getEnd();
         assertNotNull(start);
         assertNotNull(end);
-        assertFalse(start.isAfter(referenceInstant));
-        assertTrue(end.isAfter(referenceInstant));
+        assertFalse(start.isAfter(REFERENCE_INSTANT));
+        assertTrue(end.isAfter(REFERENCE_INSTANT));
 
         Duration length = Duration.between(start, end);
         assertTrue(length.toDays() >= 29 && length.toDays() <= 32);
     }
 
     private static Stream<Arguments> sunZodiacCalcComparison() {
-        double offset = ZodiacSign.getRadiansPerSign() / 2;
-        return Stream.of(
-                arguments(ZodiacSign.ARIES, newCalendar(2025, Calendar.APRIL, 5),
-                        offset + 0 * ZodiacSign.getRadiansPerSign()),
-                arguments(ZodiacSign.TAURUS, newCalendar(2025, Calendar.MAY, 5),
-                        offset + 1 * ZodiacSign.getRadiansPerSign()),
-                arguments(ZodiacSign.GEMINI, newCalendar(2025, Calendar.JUNE, 5),
-                        offset + 2 * ZodiacSign.getRadiansPerSign()),
-                arguments(ZodiacSign.CANCER, newCalendar(2025, Calendar.JULY, 5),
-                        offset + 3 * ZodiacSign.getRadiansPerSign()),
-                arguments(ZodiacSign.LEO, newCalendar(2025, Calendar.AUGUST, 5),
-                        offset + 4 * ZodiacSign.getRadiansPerSign()),
-                arguments(ZodiacSign.VIRGO, newCalendar(2025, Calendar.SEPTEMBER, 5),
-                        offset + 5 * ZodiacSign.getRadiansPerSign()),
-                arguments(ZodiacSign.LIBRA, newCalendar(2025, Calendar.OCTOBER, 5),
-                        offset + 6 * ZodiacSign.getRadiansPerSign()),
-                arguments(ZodiacSign.SCORPIO, newCalendar(2025, Calendar.NOVEMBER, 5),
-                        offset + 7 * ZodiacSign.getRadiansPerSign()),
-                arguments(ZodiacSign.SAGITTARIUS, newCalendar(2025, Calendar.DECEMBER, 5),
-                        offset + 8 * ZodiacSign.getRadiansPerSign()),
-                arguments(ZodiacSign.CAPRICORN, newCalendar(2025, Calendar.JANUARY, 10),
-                        offset + 9 * ZodiacSign.getRadiansPerSign()),
-                arguments(ZodiacSign.AQUARIUS, newCalendar(2025, Calendar.FEBRUARY, 5),
-                        offset + 10 * ZodiacSign.getRadiansPerSign()),
-                arguments(ZodiacSign.PISCES, newCalendar(2025, Calendar.MARCH, 5),
-                        offset + 11 * ZodiacSign.getRadiansPerSign()));
+        double radiansPerSign = ZodiacSign.getRadiansPerSign();
+        double offset = radiansPerSign / 2;
+        return Stream.of(arguments(ZodiacSign.ARIES, "2025-04-05T12:00:00Z", offset + 0 * radiansPerSign),
+                arguments(ZodiacSign.TAURUS, "2025-05-05T12:00:00Z", offset + 1 * radiansPerSign),
+                arguments(ZodiacSign.GEMINI, "2025-06-05T12:00:00Z", offset + 2 * radiansPerSign),
+                arguments(ZodiacSign.CANCER, "2025-07-05T12:00:00Z", offset + 3 * radiansPerSign),
+                arguments(ZodiacSign.LEO, "2025-08-05T12:00:00Z", offset + 4 * radiansPerSign),
+                arguments(ZodiacSign.VIRGO, "2025-09-05T12:00:00Z", offset + 5 * radiansPerSign),
+                arguments(ZodiacSign.LIBRA, "2025-10-05T12:00:00Z", offset + 6 * radiansPerSign),
+                arguments(ZodiacSign.SCORPIO, "2025-11-05T12:00:00Z", offset + 7 * radiansPerSign),
+                arguments(ZodiacSign.SAGITTARIUS, "2025-12-05T12:00:00Z", offset + 8 * radiansPerSign),
+                arguments(ZodiacSign.CAPRICORN, "2025-01-10T12:00:00Z", offset + 9 * radiansPerSign),
+                arguments(ZodiacSign.AQUARIUS, "2025-02-05T12:00:00Z", offset + 10 * radiansPerSign),
+                arguments(ZodiacSign.PISCES, "2025-03-05T12:00:00Z", offset + 11 * radiansPerSign));
     }
 
     @ParameterizedTest
     @MethodSource("sunZodiacCalcComparison")
-    public void testPositionBasedResultMatchesDateBased(ZodiacSign expectedSign, Calendar date, double longitude) {
-        OldSunZodiacCalc dateCalc = new OldSunZodiacCalc(TimeZone.getTimeZone("UTC"), Locale.ROOT);
+    public void testPositionBasedResultMatchesDateBased(ZodiacSign expectedSign, Instant moment, double longitude) {
+        var utc = TimeZone.getTimeZone("UTC");
+        OldSunZodiacCalc dateCalc = new OldSunZodiacCalc(utc, Locale.ROOT);
 
-        ZodiacSign dateBasedSign = dateCalc.getZodiac(date).map(SunZodiac::getSign).orElseThrow();
-        ZodiacSign positionBasedSign = ZodiacCalc.calculate(longitude, null).getSign();
+        ZodiacSign dateBasedSign = dateCalc.getZodiac(toCalendar(moment, utc.toZoneId())).map(SunZodiac::getSign)
+                .orElseThrow();
+        ZodiacSign positionBasedSign = ZodiacCalc.calculate(longitude, Instant.EPOCH).sign();
 
         assertEquals(expectedSign, dateBasedSign);
         assertEquals(expectedSign, positionBasedSign);
     }
 
-    private static Calendar newCalendar(int year, int month, int day) {
-        Calendar cal = new GregorianCalendar(TimeZone.getTimeZone("UTC"), Locale.ROOT);
-        cal.set(year, month, day, 12, 0, 0);
-        cal.set(Calendar.MILLISECOND, 0);
-        return cal;
+    private static Calendar toCalendar(Instant instant, ZoneId zoneId) {
+        ZonedDateTime zdt = ZonedDateTime.ofInstant(instant, zoneId);
+        return GregorianCalendar.from(zdt);
     }
 }
