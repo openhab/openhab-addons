@@ -103,10 +103,14 @@
 			<channel id="chargeFromGrid" typeId="chargeFromGrid"/>
 			<channel id="calibration" typeId="batteryCalibration"/>
 			<channel id="nightPreservationLimit" typeId="nightPreservationLimit"/>
+			<channel id="min-charge-power" typeId="min-charge-power"/>
+			<channel id="max-charge-power" typeId="max-charge-power"/>
+			<channel id="min-discharge-power" typeId="min-discharge-power"/>
+			<channel id="max-discharge-power" typeId="max-discharge-power"/>
 		</channels>
 
 		<properties>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<config-description>
@@ -703,6 +707,51 @@
 			<tag>Temperature</tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="min-charge-power">
+		<item-type>Number:Power</item-type>
+		<label>Minimum Charge Power</label>
+		<description>Minimum battery charging power currently in effect, derived from the active time of use entry. Writing
+			replaces all CHARGE_MIN time of use entries with an all-time entry (writable, requires battery control)</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f W"/>
+	</channel-type>
+	<channel-type id="max-charge-power">
+		<item-type>Number:Power</item-type>
+		<label>Maximum Charge Power</label>
+		<description>Maximum battery charging power currently in effect, derived from the active time of use entry. Writing
+			replaces all CHARGE_MAX time of use entries with an all-time entry (writable, requires battery control)</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f W"/>
+	</channel-type>
+	<channel-type id="min-discharge-power">
+		<item-type>Number:Power</item-type>
+		<label>Minimum Discharge Power</label>
+		<description>Minimum battery discharging power currently in effect, derived from the active time of use entry. Writing
+			replaces all DISCHARGE_MIN time of use entries with an all-time entry (writable, requires battery control)</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f W"/>
+	</channel-type>
+	<channel-type id="max-discharge-power">
+		<item-type>Number:Power</item-type>
+		<label>Maximum Discharge Power</label>
+		<description>Maximum battery discharging power currently in effect, derived from the active time of use entry. Writing
+			replaces all DISCHARGE_MAX time of use entries with an all-time entry (writable, requires battery control)</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f W"/>
 	</channel-type>
 
 </thing:thing-descriptions>
