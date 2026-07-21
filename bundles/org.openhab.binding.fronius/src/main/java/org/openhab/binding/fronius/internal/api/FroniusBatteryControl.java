@@ -18,6 +18,8 @@ import java.net.URI;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
@@ -135,7 +137,7 @@ public class FroniusBatteryControl {
      * @throws FroniusCommunicationException if an error occurs during communication with the inverter
      * @throws FroniusUnauthorizedException when the login fails due to invalid credentials
      */
-    private TimeOfUseRecords getTimeOfUse() throws FroniusCommunicationException, FroniusUnauthorizedException {
+    public TimeOfUseRecords getTimeOfUse() throws FroniusCommunicationException, FroniusUnauthorizedException {
         String response = configApiClient.executeRequest(endpoint, HttpMethod.GET, timeOfUseUri, null);
         logger.trace("Time of Use settings read successfully");
 
@@ -163,6 +165,32 @@ public class FroniusBatteryControl {
             throws FroniusCommunicationException, FroniusUnauthorizedException {
         postConfig(timeOfUseUri, records, "timeofuse");
         logger.trace("Time of Use settings set successfully");
+    }
+
+    /**
+     * Sets an all-day, all-week schedule entry for the given schedule type, replacing all existing entries of that
+     * type. Entries of other schedule types are preserved, unlike with the reset based battery control methods.
+     *
+     * @param scheduleType the type of the schedule
+     * @param power the power value for the schedule
+     * @throws FroniusCommunicationException when an error occurs during communication with the inverter
+     * @throws FroniusUnauthorizedException when the login fails due to invalid credentials
+     */
+    public void setAllTimeSchedule(ScheduleType scheduleType, QuantityType<Power> power)
+            throws FroniusCommunicationException, FroniusUnauthorizedException {
+        QuantityType<Power> powerInWatts = power.toUnit(Units.WATT);
+        if (powerInWatts == null) {
+            throw new IllegalArgumentException("power must be convertible to Watt unit");
+        }
+        if (powerInWatts.intValue() < 0) {
+            throw new IllegalArgumentException("power must be non-negative");
+        }
+        List<TimeOfUseRecord> records = new ArrayList<>(
+                Arrays.stream(getTimeOfUse().records()).filter(r -> r.scheduleType() != scheduleType).toList());
+        records.add(new TimeOfUseRecord(true, powerInWatts.intValue(), scheduleType,
+                new TimeTableRecord(BEGIN_OF_DAY.format(TIME_FORMATTER), END_OF_DAY.format(TIME_FORMATTER)),
+                new WeekdaysRecord(true, true, true, true, true, true, true)));
+        setTimeOfUse(new TimeOfUseRecords(records.toArray(TimeOfUseRecord[]::new)));
     }
 
     /**

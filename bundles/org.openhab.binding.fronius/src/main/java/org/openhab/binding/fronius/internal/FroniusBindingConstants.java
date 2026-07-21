@@ -123,6 +123,12 @@ public class FroniusBindingConstants {
     public static final String BATTERY_CHARGE_FROM_GRID_CHANNEL = "charge-from-grid";
     public static final String BATTERY_CALIBRATION_CHANNEL = "calibration";
     public static final String BATTERY_NIGHT_PRESERVATION_LIMIT_CHANNEL = "night-preservation-limit";
+    public static final String BATTERY_MIN_CHARGE_POWER_CHANNEL = "min-charge-power";
+    public static final String BATTERY_MAX_CHARGE_POWER_CHANNEL = "max-charge-power";
+    public static final String BATTERY_MIN_DISCHARGE_POWER_CHANNEL = "min-discharge-power";
+    public static final String BATTERY_MAX_DISCHARGE_POWER_CHANNEL = "max-discharge-power";
+    public static final Set<String> BATTERY_TIME_OF_USE_CHANNELS = Set.of(BATTERY_MIN_CHARGE_POWER_CHANNEL,
+            BATTERY_MAX_CHARGE_POWER_CHANNEL, BATTERY_MIN_DISCHARGE_POWER_CHANNEL, BATTERY_MAX_DISCHARGE_POWER_CHANNEL);
     public static final Set<String> BATTERY_SETTINGS_CHANNELS = Set.of(BATTERY_SOC_MIN_CHANNEL, BATTERY_SOC_MAX_CHANNEL,
             BATTERY_BACKUP_RESERVED_CHANNEL, BATTERY_BACKUP_CRITICAL_SOC_CHANNEL, BATTERY_CHARGE_FROM_GRID_CHANNEL,
             BATTERY_CALIBRATION_CHANNEL, BATTERY_NIGHT_PRESERVATION_LIMIT_CHANNEL);
