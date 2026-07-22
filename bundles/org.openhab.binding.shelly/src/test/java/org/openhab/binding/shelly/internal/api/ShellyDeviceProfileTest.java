@@ -381,43 +381,36 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYBLUHT, -1, -1, false, false, 0, false, 0, 0, false, 0)); //
     }
 
-    @Test
-    void gen2DimmerProfileFlags() throws Exception {
-        for (ThingTypeUID thingTypeUID : new ThingTypeUID[] { //
-                THING_TYPE_SHELLYPLUSDIMMER, THING_TYPE_SHELLYPLUSDIMMERUS, //
-                THING_TYPE_SHELLYPLUSDIMMER10V, THING_TYPE_SHELLYPLUSDALIDIMMER, //
-                THING_TYPE_SHELLYPRODIMMER1PM, THING_TYPE_SHELLYPRODIMMER2PM, THING_TYPE_SHELLYPRODIMMER10V }) {
-            ShellyDeviceProfile deviceProfile = new ShellyDeviceProfile(thingTypeUID);
-            ShellySettingsGlobal settingsGlobal = new ShellySettingsGlobal();
-            ShellySettingsDevice settingsDevice = new ShellySettingsDevice();
-            settingsGlobal.relays = new ArrayList<>();
-            ArrayList<ShellySettingsDimmer> dimmers = new ArrayList<>();
-            settingsGlobal.dimmers = dimmers;
-            dimmers.add(new ShellySettingsDimmer());
-            deviceProfile.initialize(thingTypeUID, gson.toJson(settingsGlobal), settingsDevice);
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForDimmerProfileFlags")
+    void dimmerProfileFlags(ThingTypeUID thingTypeUID) throws Exception {
+        ShellyDeviceProfile deviceProfile = new ShellyDeviceProfile(thingTypeUID);
+        ShellySettingsGlobal settingsGlobal = new ShellySettingsGlobal();
+        ShellySettingsDevice settingsDevice = new ShellySettingsDevice();
+        settingsGlobal.relays = new ArrayList<>();
+        ArrayList<ShellySettingsDimmer> dimmers = new ArrayList<>();
+        dimmers.add(new ShellySettingsDimmer());
+        settingsGlobal.dimmers = dimmers;
+        deviceProfile.initialize(thingTypeUID, gson.toJson(settingsGlobal), settingsDevice);
 
-            assertThat("isDimmer for " + thingTypeUID, deviceProfile.isDimmer, is(true));
-            assertThat("hasRelays for " + thingTypeUID, deviceProfile.hasRelays, is(true));
-            assertThat("numRelays for " + thingTypeUID, deviceProfile.numRelays, is(equalTo(0)));
-        }
+        assertThat("isDimmer for " + thingTypeUID, deviceProfile.isDimmer, is(true));
+        assertThat("hasRelays for " + thingTypeUID, deviceProfile.hasRelays, is(true));
+        assertThat("numRelays for " + thingTypeUID, deviceProfile.numRelays, is(equalTo(0)));
     }
 
-    @Test
-    void gen1DimmerProfileFlags() throws Exception {
-        for (ThingTypeUID thingTypeUID : new ThingTypeUID[] { THING_TYPE_SHELLYDIMMER, THING_TYPE_SHELLYDIMMER2 }) {
-            ShellyDeviceProfile deviceProfile = new ShellyDeviceProfile(thingTypeUID);
-            ShellySettingsGlobal settingsGlobal = new ShellySettingsGlobal();
-            ShellySettingsDevice settingsDevice = new ShellySettingsDevice();
-            settingsGlobal.relays = new ArrayList<>();
-            ArrayList<ShellySettingsDimmer> dimmers = new ArrayList<>();
-            settingsGlobal.dimmers = dimmers;
-            dimmers.add(new ShellySettingsDimmer());
-            deviceProfile.initialize(thingTypeUID, gson.toJson(settingsGlobal), settingsDevice);
-
-            assertThat("isDimmer for " + thingTypeUID, deviceProfile.isDimmer, is(true));
-            assertThat("hasRelays for " + thingTypeUID, deviceProfile.hasRelays, is(true));
-            assertThat("numRelays for " + thingTypeUID, deviceProfile.numRelays, is(equalTo(0)));
-        }
+    private static Stream<Arguments> provideTestCasesForDimmerProfileFlags() {
+        return Stream.of( //
+                // Gen1 dimmers
+                Arguments.of(THING_TYPE_SHELLYDIMMER), //
+                Arguments.of(THING_TYPE_SHELLYDIMMER2), //
+                // Gen2/3/4 Plus/Pro dimmers
+                Arguments.of(THING_TYPE_SHELLYPLUSDIMMER), //
+                Arguments.of(THING_TYPE_SHELLYPLUSDIMMERUS), //
+                Arguments.of(THING_TYPE_SHELLYPLUSDIMMER10V), //
+                Arguments.of(THING_TYPE_SHELLYPLUSDALIDIMMER), //
+                Arguments.of(THING_TYPE_SHELLYPRODIMMER1PM), //
+                Arguments.of(THING_TYPE_SHELLYPRODIMMER2PM), //
+                Arguments.of(THING_TYPE_SHELLYPRODIMMER10V)); //
     }
 
     @ParameterizedTest
