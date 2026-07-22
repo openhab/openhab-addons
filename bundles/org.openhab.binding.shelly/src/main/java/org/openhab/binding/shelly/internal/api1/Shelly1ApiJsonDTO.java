@@ -15,6 +15,7 @@ package org.openhab.binding.shelly.internal.api1;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyMotionSettings;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2APClientList;
@@ -154,7 +155,6 @@ public class Shelly1ApiJsonDTO {
     // API Error Codes
     public static final String SHELLY_APIERR_UNAUTHORIZED = "Unauthorized";
     public static final String SHELLY_APIERR_TIMEOUT = "Timeout";
-    public static final String SHELLY_APIERR_NOT_CALIBRATED = "Not calibrated!";
 
     // API device types / properties
     public static final String SHELLY_CLASS_RELAY = "relay"; // Relay: relay mode
@@ -782,7 +782,7 @@ public class Shelly1ApiJsonDTO {
         public Double voltage; // Shelly 2.5
         public Integer input; // RGBW2 has no JSON array
         public ArrayList<ShellyInputState> inputs;
-        public ArrayList<ShellyShortLightStatus> dimmers;
+        public @Nullable ArrayList<@NonNull ShellyShortLightStatus> dimmers;
         public ArrayList<ShellyRollerStatus> rollers;
         public ArrayList<ShellySettingsLight> lights;
         public ArrayList<ShellySettingsMeter> meters;

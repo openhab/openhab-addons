@@ -835,8 +835,12 @@ public class ShellyComponents {
                     ? fromJson(gson, Shelly1ApiJsonDTO.fixDimmerJson(orgStatus.json), ShellySettingsStatus.class)
                     : orgStatus;
 
+            List<ShellyShortLightStatus> statusDimmers = dstatus.dimmers;
+            if (statusDimmers == null) {
+                return updated;
+            }
             int l = 0;
-            for (ShellyShortLightStatus dimmer : dstatus.dimmers) {
+            for (ShellyShortLightStatus dimmer : statusDimmers) {
                 String groupName = profile.getControlGroup(l);
 
                 if (!thingHandler.areChannelsCreated()) {
@@ -845,16 +849,16 @@ public class ShellyComponents {
                 }
 
                 List<ShellySettingsDimmer> dimmers = profile.settings.dimmers;
-                if (dimmers != null) {
+                if (dimmers != null && l < dimmers.size()) {
                     ShellySettingsDimmer ds = dimmers.get(l);
                     if (ds.name != null) {
                         updated |= thingHandler.updateChannel(groupName, CHANNEL_OUTPUT_NAME, getStringType(ds.name));
                     }
                 }
 
-                // On a status update we map a dimmer.ison = false to brightness 0 rather than the device's brightness
-                // and send an OFF status to the same channel.
-                // When the device's brightness is > 0 we send the new value to the channel and an ON command
+                // Map ison=false to brightness 0 (off); ison=true to device-reported brightness.
+                // $Switch tracks on/off separately from $Value (brightness level) so deduplication
+                // works correctly when only one of the two aspects changes.
                 if (dimmer.ison != null) {
                     if (dimmer.ison) {
                         updated |= thingHandler.updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Switch", OnOffType.ON);
@@ -866,8 +870,11 @@ public class ShellyComponents {
                                 toQuantityType(0.0, DIGITS_NONE, Units.PERCENT));
                     }
                 }
+                if (dimmer.hasTimer != null) {
+                    updated |= thingHandler.updateChannel(groupName, CHANNEL_TIMER_ACTIVE, getOnOff(dimmer.hasTimer));
+                }
 
-                if (dimmers != null) {
+                if (dimmers != null && l < dimmers.size()) {
                     ShellySettingsDimmer dsettings = dimmers.get(l);
                     updated |= thingHandler.updateChannel(groupName, CHANNEL_TIMER_AUTOON,
                             toQuantityType(getDouble(dsettings.autoOn), Units.SECOND));
