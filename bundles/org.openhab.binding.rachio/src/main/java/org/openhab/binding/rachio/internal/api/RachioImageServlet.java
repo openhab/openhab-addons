@@ -176,6 +176,8 @@ public class RachioImageServlet extends HttpServlet {
         logger.debug("RachioImage: {} image '{}'", request.getMethod(), uri);
         URL url = URI.create(imageUrl).toURL();
         URLConnection conn = url.openConnection();
+        conn.setConnectTimeout(HTTP_TIMEOUT_MS);
+        conn.setReadTimeout(HTTP_TIMEOUT_MS);
         conn.setDoInput(true);
         try (InputStream reader = conn.getInputStream()) {
             OutputStream writer = resp.getOutputStream();

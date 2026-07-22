@@ -42,14 +42,14 @@ public class RachioZoneGsonDTO {
         public int runtime = 0; // "runtime":627
         // public String wateringAdjustmentRuntimes[] = new String[0]; // {"1":941,"2":784,"3":627,"4":470,"5":314},
 
-        // public RachioCustomeNozzle customNozzle;
+        // public RachioCustomNozzle customNozzle;
         // public RachioCustomSoil customSoil;
         // public RachioCustomSlope customSlope;
         // public RachioCustomCrop customCrop;
         // public RachioCustomCrop customShade;
     }
 
-    public static class RachioCustomeNozzle {
+    public static class RachioCustomNozzle {
         public String name = ""; // "name":"FIXED_SPRAY_HEAD",
         public Double inchesPerHour = 0.0; // "inchesPerHour":1.5
     }

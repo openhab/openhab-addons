@@ -56,6 +56,7 @@ import com.google.gson.JsonSyntaxException;
 public class RachioWebHookServlet extends HttpServlet {
     private static final long serialVersionUID = -4654253998990066051L;
     private static final String WEBHOOK_SIGNATURE_HEADER = "x-signature";
+    private static final int MAX_WEBHOOK_PAYLOAD_BYTES = 256 * 1024;
     private final Logger logger = LoggerFactory.getLogger(RachioWebHookServlet.class);
     private final Gson gson = new Gson();
     private final RachioWebhookDuplicateEventCache duplicateEventCache = new RachioWebhookDuplicateEventCache();
@@ -178,7 +179,13 @@ public class RachioWebHookServlet extends HttpServlet {
             return;
         }
 
-        byte[] rawBody = request.getInputStream().readAllBytes();
+        byte[] rawBody = request.getInputStream().readNBytes(MAX_WEBHOOK_PAYLOAD_BYTES + 1);
+        if (rawBody.length > MAX_WEBHOOK_PAYLOAD_BYTES) {
+            logger.warn("RachioWebHook: Rejecting webhook request from {} because payload size exceeds limit {} bytes",
+                    ipAddress, MAX_WEBHOOK_PAYLOAD_BYTES);
+            resp.sendError(HttpServletResponse.SC_REQUEST_ENTITY_TOO_LARGE);
+            return;
+        }
         String data = new String(rawBody, StandardCharsets.UTF_8);
         RachioEventGsonDTO event = null;
         try {

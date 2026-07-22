@@ -147,6 +147,7 @@ public class RachioHttp {
             }
             request.setRequestMethod(method);
             request.setConnectTimeout(HTTP_TIMEOUT_MS);
+            request.setReadTimeout(HTTP_TIMEOUT_MS);
             request.setRequestProperty("User-Agent", SERVLET_WEBHOOK_USER_AGENT);
             request.setRequestProperty("Content-Type", SERVLET_WEBHOOK_APPLICATION_JSON);
             logger.trace("RachioHttp[Call #{}]: Call Rachio cloud service: {} '{}'", apiCalls,
