@@ -698,35 +698,35 @@ totalEnergy might reset on restart depending on device type and firmware version
 
 ### Shelly EM (thing-type: shellyem)
 
-| Group  | Channel           | Type         | read-only | Description                                                                                        |
-| ------ | ----------------- | ------------ | --------- | -------------------------------------------------------------------------------------------------- |
-| relay  | output            | Switch       | r/w       | Controls the relay's output channel (on/off)                                                       |
-|        | outputName        | String       | yes       | Logical name of this relay output as configured in the Shelly App                                  |
-|        | input             | Switch       | yes       | ON: Input/Button is powered, see general notes on channels                                         |
-|        | button            | Trigger      | yes       | Event trigger, see section Button Events                                                           |
-|        | lastEvent         | String       | yes       | Last event type (S/SS/SSS/L)                                                                       |
-|        | eventCount        | Number       | yes       | Counter gets incremented every time the device issues a button event.                              |
-|        | autoOn            | Number       | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds                  |
-|        | autoOff           | Number       | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds                  |
-|        | timerActive       | Switch       | yes       | Relay #1: ON: An auto-on/off timer is active                                                       |
-| meter1 | currentPower      | Number       | yes       | Current power consumption in Watts                                                                 |
-|        | totalEnergy       | Number       | yes       | Total energy consumption in kWh                                                                    |
-|        | returnedEnergy    | Number       | yes       | Total returned energy, kWh                                                                         |
-|        | reactivePower     | Number:Power | yes       | Instantaneous reactive power (VAR)                                                                 |
-|        | apparentPower     | Number:Power | yes       | Instantaneous apparent power (VA)                                                                  |
-|        | voltage           | Number       | yes       | RMS voltage, Volts                                                                                 |
-|        | powerFactor       | Number       | yes       | Power factor (-1.0 to 1.0)                                                                         |
-|        | resetTotals       | Switch       | r/w       | Send ON to reset the accumulated energy counters for this meter                                    |
-|        | lastUpdate        | DateTime     | yes       | Timestamp of the last measurement                                                                  |
-| meter2 | currentPower      | Number       | yes       | Current power consumption in Watts                                                                 |
-|        | totalEnergy       | Number       | yes       | Total energy consumption in kWh                                                                    |
-|        | returnedEnergy    | Number       | yes       | Total returned energy, kWh                                                                         |
-|        | reactivePower     | Number:Power | yes       | Instantaneous reactive power (VAR)                                                                 |
-|        | apparentPower     | Number:Power | yes       | Instantaneous apparent power (VA)                                                                  |
-|        | voltage           | Number       | yes       | RMS voltage, Volts                                                                                 |
-|        | powerFactor       | Number       | yes       | Power factor (-1.0 to 1.0)                                                                         |
-|        | resetTotals       | Switch       | r/w       | Send ON to reset the accumulated energy counters for this meter                                    |
-|        | lastUpdate        | DateTime     | yes       | Timestamp of the last measurement                                                                  |
+| Group  | Channel        | Type         | read-only | Description                                                                       |
+| ------ | -------------- | ------------ | --------- | --------------------------------------------------------------------------------- |
+| relay  | output         | Switch       | r/w       | Controls the relay's output channel (on/off)                                      |
+|        | outputName     | String       | yes       | Logical name of this relay output as configured in the Shelly App                 |
+|        | input          | Switch       | yes       | ON: Input/Button is powered, see general notes on channels                        |
+|        | button         | Trigger      | yes       | Event trigger, see section Button Events                                          |
+|        | lastEvent      | String       | yes       | Last event type (S/SS/SSS/L)                                                      |
+|        | eventCount     | Number       | yes       | Counter gets incremented every time the device issues a button event.             |
+|        | autoOn         | Number       | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
+|        | autoOff        | Number       | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
+|        | timerActive    | Switch       | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
+| meter1 | currentPower   | Number       | yes       | Current power consumption in Watts                                                |
+|        | totalEnergy    | Number       | yes       | Total energy consumption in kWh                                                   |
+|        | returnedEnergy | Number       | yes       | Total returned energy, kWh                                                        |
+|        | reactivePower  | Number:Power | yes       | Instantaneous reactive power (VAR)                                                |
+|        | apparentPower  | Number:Power | yes       | Instantaneous apparent power (VA)                                                 |
+|        | voltage        | Number       | yes       | RMS voltage, Volts                                                                |
+|        | powerFactor    | Number       | yes       | Power factor (-1.0 to 1.0)                                                        |
+|        | resetTotals    | Switch       | r/w       | Send ON to reset the accumulated energy counters for this meter                   |
+|        | lastUpdate     | DateTime     | yes       | Timestamp of the last measurement                                                 |
+| meter2 | currentPower   | Number       | yes       | Current power consumption in Watts                                                |
+|        | totalEnergy    | Number       | yes       | Total energy consumption in kWh                                                   |
+|        | returnedEnergy | Number       | yes       | Total returned energy, kWh                                                        |
+|        | reactivePower  | Number:Power | yes       | Instantaneous reactive power (VAR)                                                |
+|        | apparentPower  | Number:Power | yes       | Instantaneous apparent power (VA)                                                 |
+|        | voltage        | Number       | yes       | RMS voltage, Volts                                                                |
+|        | powerFactor    | Number       | yes       | Power factor (-1.0 to 1.0)                                                        |
+|        | resetTotals    | Switch       | r/w       | Send ON to reset the accumulated energy counters for this meter                   |
+|        | lastUpdate     | DateTime     | yes       | Timestamp of the last measurement                                                 |
 
 `Note`:
 totalEnergy might reset on restart depending on device type and firmware version
@@ -737,48 +737,48 @@ totalEnergy might reset on restart depending on device type and firmware version
 The product is called Shelly 3EM whereas the device propagates the service under shellyem3.
 The Thing id is derived from the service name, so that's the reason why the Thing is named shelly**em3** and not shelly3em.
 
-| Group  | Channel           | Type         | read-only | Description                                                                                        |
-| ------ | ----------------- | ------------ | --------- | -------------------------------------------------------------------------------------------------- |
-| relay  | output            | Switch       | r/w       | Controls the relay's output channel (on/off)                                                       |
-|        | outputName        | String       | yes       | Logical name of this relay output as configured in the Shelly App                                  |
-|        | input             | Switch       | yes       | ON: Input/Button is powered, see general notes on channels                                         |
-|        | button            | Trigger      | yes       | Event trigger, see section Button Events                                                           |
-|        | lastEvent         | String       | yes       | Last event type (S/SS/SSS/L)                                                                       |
-|        | eventCount        | Number       | yes       | Counter gets incremented every time the device issues a button event.                              |
-|        | autoOn            | Number       | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds                  |
-|        | autoOff           | Number       | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds                  |
-|        | timerActive       | Switch       | yes       | Relay #1: ON: An auto-on/off timer is active                                                       |
-| meter1 | currentPower      | Number       | yes       | Current power consumption in Watts                                                                 |
-|        | totalEnergy       | Number       | yes       | Total energy consumption in kWh                                                                    |
-|        | returnedEnergy    | Number       | yes       | Total returned energy, kWh                                                                         |
-|        | reactivePower     | Number:Power | yes       | Instantaneous reactive power (VAR)                                                                 |
-|        | apparentPower     | Number:Power | yes       | Instantaneous apparent power (VA)                                                                  |
-|        | voltage           | Number       | yes       | RMS voltage, Volts                                                                                 |
-|        | current           | Number       | yes       | Current in A                                                                                       |
-|        | powerFactor       | Number       | yes       | Power factor (-1.0 to 1.0)                                                                         |
-|        | lastUpdate        | DateTime     | yes       | Timestamp of the last measurement                                                                  |
-| meter2 | currentPower      | Number       | yes       | Current power consumption in Watts                                                                 |
-|        | totalEnergy       | Number       | yes       | Total energy consumption in kWh                                                                    |
-|        | returnedEnergy    | Number       | yes       | Total returned energy, kWh                                                                         |
-|        | reactivePower     | Number:Power | yes       | Instantaneous reactive power (VAR)                                                                 |
-|        | apparentPower     | Number:Power | yes       | Instantaneous apparent power (VA)                                                                  |
-|        | voltage           | Number       | yes       | RMS voltage, Volts                                                                                 |
-|        | current           | Number       | yes       | Current in A                                                                                       |
-|        | powerFactor       | Number       | yes       | Power factor (-1.0 to 1.0)                                                                         |
-|        | lastUpdate        | DateTime     | yes       | Timestamp of the last measurement                                                                  |
-| meter3 | currentPower      | Number       | yes       | Current power consumption in Watts                                                                 |
-|        | totalEnergy       | Number       | yes       | Total energy consumption in kWh                                                                    |
-|        | returnedEnergy    | Number       | yes       | Total returned energy, kWh                                                                         |
-|        | reactivePower     | Number:Power | yes       | Instantaneous reactive power (VAR)                                                                 |
-|        | apparentPower     | Number:Power | yes       | Instantaneous apparent power (VA)                                                                  |
-|        | voltage           | Number       | yes       | RMS voltage, Volts                                                                                 |
-|        | current           | Number       | yes       | Current in A                                                                                       |
-|        | powerFactor       | Number       | yes       | Power factor (-1.0 to 1.0)                                                                         |
-|        | lastUpdate        | DateTime     | yes       | Timestamp of the last measurement                                                                  |
-| nmeter | ncurrent          | Number       | yes       | Neutral current based on N clamp (requires calibration)                                            |
-|        | ixsum             | Number       | yes       | Measured current over all phases                                                                   |
-|        | nmismatch         | Switch       | yes       | ON: abs(ncurrent-ixsum) is greater than nmThreshold                                                |
-|        | nmThreshold       | Number       | yes       | Threshold (delta) before nMismatch goes ON                                                         |
+| Group  | Channel        | Type         | read-only | Description                                                                       |
+| ------ | -------------- | ------------ | --------- | --------------------------------------------------------------------------------- |
+| relay  | output         | Switch       | r/w       | Controls the relay's output channel (on/off)                                      |
+|        | outputName     | String       | yes       | Logical name of this relay output as configured in the Shelly App                 |
+|        | input          | Switch       | yes       | ON: Input/Button is powered, see general notes on channels                        |
+|        | button         | Trigger      | yes       | Event trigger, see section Button Events                                          |
+|        | lastEvent      | String       | yes       | Last event type (S/SS/SSS/L)                                                      |
+|        | eventCount     | Number       | yes       | Counter gets incremented every time the device issues a button event.             |
+|        | autoOn         | Number       | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
+|        | autoOff        | Number       | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
+|        | timerActive    | Switch       | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
+| meter1 | currentPower   | Number       | yes       | Current power consumption in Watts                                                |
+|        | totalEnergy    | Number       | yes       | Total energy consumption in kWh                                                   |
+|        | returnedEnergy | Number       | yes       | Total returned energy, kWh                                                        |
+|        | reactivePower  | Number:Power | yes       | Instantaneous reactive power (VAR)                                                |
+|        | apparentPower  | Number:Power | yes       | Instantaneous apparent power (VA)                                                 |
+|        | voltage        | Number       | yes       | RMS voltage, Volts                                                                |
+|        | current        | Number       | yes       | Current in A                                                                      |
+|        | powerFactor    | Number       | yes       | Power factor (-1.0 to 1.0)                                                        |
+|        | lastUpdate     | DateTime     | yes       | Timestamp of the last measurement                                                 |
+| meter2 | currentPower   | Number       | yes       | Current power consumption in Watts                                                |
+|        | totalEnergy    | Number       | yes       | Total energy consumption in kWh                                                   |
+|        | returnedEnergy | Number       | yes       | Total returned energy, kWh                                                        |
+|        | reactivePower  | Number:Power | yes       | Instantaneous reactive power (VAR)                                                |
+|        | apparentPower  | Number:Power | yes       | Instantaneous apparent power (VA)                                                 |
+|        | voltage        | Number       | yes       | RMS voltage, Volts                                                                |
+|        | current        | Number       | yes       | Current in A                                                                      |
+|        | powerFactor    | Number       | yes       | Power factor (-1.0 to 1.0)                                                        |
+|        | lastUpdate     | DateTime     | yes       | Timestamp of the last measurement                                                 |
+| meter3 | currentPower   | Number       | yes       | Current power consumption in Watts                                                |
+|        | totalEnergy    | Number       | yes       | Total energy consumption in kWh                                                   |
+|        | returnedEnergy | Number       | yes       | Total returned energy, kWh                                                        |
+|        | reactivePower  | Number:Power | yes       | Instantaneous reactive power (VAR)                                                |
+|        | apparentPower  | Number:Power | yes       | Instantaneous apparent power (VA)                                                 |
+|        | voltage        | Number       | yes       | RMS voltage, Volts                                                                |
+|        | current        | Number       | yes       | Current in A                                                                      |
+|        | powerFactor    | Number       | yes       | Power factor (-1.0 to 1.0)                                                        |
+|        | lastUpdate     | DateTime     | yes       | Timestamp of the last measurement                                                 |
+| nmeter | ncurrent       | Number       | yes       | Neutral current based on N clamp (requires calibration)                           |
+|        | ixsum          | Number       | yes       | Measured current over all phases                                                  |
+|        | nmismatch      | Switch       | yes       | ON: abs(ncurrent-ixsum) is greater than nmThreshold                               |
+|        | nmThreshold    | Number       | yes       | Threshold (delta) before nMismatch goes ON                                        |
 
 `Note:`
 
@@ -1511,107 +1511,107 @@ totalEnergy might reset on restart depending on device type and firmware version
 
 ### Shelly Plus EM (thing-type: shellyplusem)
 
-| Group  | Channel           | Type         | read-only | Description                                                                                        |
-| ------ | ----------------- | ------------ | --------- | -------------------------------------------------------------------------------------------------- |
-| relay  | output            | Switch       | r/w       | Controls the relay's output channel (on/off)                                                       |
-|        | outputName        | String       | yes       | Logical name of this relay output as configured in the Shelly App                                  |
-|        | input             | Switch       | yes       | ON: Input/Button is powered, see general notes on channels                                         |
-|        | button            | Trigger      | yes       | Event trigger, see section Button Events                                                           |
-|        | lastEvent         | String       | yes       | Last event type (S/SS/SSS/L)                                                                       |
-|        | eventCount        | Number       | yes       | Counter gets incremented every time the device issues a button event.                              |
-|        | autoOn            | Number       | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds                  |
-|        | autoOff           | Number       | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds                  |
-|        | timerActive       | Switch       | yes       | Relay #1: ON: An auto-on/off timer is active                                                       |
-| meter1 | currentPower      | Number       | yes       | Current power consumption in Watts                                                                 |
-|        | totalEnergy       | Number       | yes       | Total energy consumption in kWh                                                                    |
-|        | returnedEnergy    | Number       | yes       | Total returned energy, kWh                                                                         |
-|        | reactivePower     | Number:Power | yes       | Instantaneous reactive power (VAR)                                                                 |
-|        | apparentPower     | Number:Power | yes       | Instantaneous apparent power (VA)                                                                  |
-|        | voltage           | Number       | yes       | RMS voltage, Volts                                                                                 |
-|        | powerFactor       | Number       | yes       | Power factor (-1.0 to 1.0)                                                                         |
-|        | resetTotals       | Switch       | r/w       | Send ON to reset the accumulated energy counters for this meter                                    |
-|        | lastUpdate        | DateTime     | yes       | Timestamp of the last measurement                                                                  |
-| meter2 | currentPower      | Number       | yes       | Current power consumption in Watts                                                                 |
-|        | totalEnergy       | Number       | yes       | Total energy consumption in kWh                                                                    |
-|        | returnedEnergy    | Number       | yes       | Total returned energy, kWh                                                                         |
-|        | reactivePower     | Number:Power | yes       | Instantaneous reactive power (VAR)                                                                 |
-|        | apparentPower     | Number:Power | yes       | Instantaneous apparent power (VA)                                                                  |
-|        | voltage           | Number       | yes       | RMS voltage, Volts                                                                                 |
-|        | powerFactor       | Number       | yes       | Power factor (-1.0 to 1.0)                                                                         |
-|        | resetTotals       | Switch       | r/w       | Send ON to reset the accumulated energy counters for this meter                                    |
-|        | lastUpdate        | DateTime     | yes       | Timestamp of the last measurement                                                                  |
+| Group  | Channel        | Type         | read-only | Description                                                                       |
+| ------ | -------------- | ------------ | --------- | --------------------------------------------------------------------------------- |
+| relay  | output         | Switch       | r/w       | Controls the relay's output channel (on/off)                                      |
+|        | outputName     | String       | yes       | Logical name of this relay output as configured in the Shelly App                 |
+|        | input          | Switch       | yes       | ON: Input/Button is powered, see general notes on channels                        |
+|        | button         | Trigger      | yes       | Event trigger, see section Button Events                                          |
+|        | lastEvent      | String       | yes       | Last event type (S/SS/SSS/L)                                                      |
+|        | eventCount     | Number       | yes       | Counter gets incremented every time the device issues a button event.             |
+|        | autoOn         | Number       | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
+|        | autoOff        | Number       | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
+|        | timerActive    | Switch       | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
+| meter1 | currentPower   | Number       | yes       | Current power consumption in Watts                                                |
+|        | totalEnergy    | Number       | yes       | Total energy consumption in kWh                                                   |
+|        | returnedEnergy | Number       | yes       | Total returned energy, kWh                                                        |
+|        | reactivePower  | Number:Power | yes       | Instantaneous reactive power (VAR)                                                |
+|        | apparentPower  | Number:Power | yes       | Instantaneous apparent power (VA)                                                 |
+|        | voltage        | Number       | yes       | RMS voltage, Volts                                                                |
+|        | powerFactor    | Number       | yes       | Power factor (-1.0 to 1.0)                                                        |
+|        | resetTotals    | Switch       | r/w       | Send ON to reset the accumulated energy counters for this meter                   |
+|        | lastUpdate     | DateTime     | yes       | Timestamp of the last measurement                                                 |
+| meter2 | currentPower   | Number       | yes       | Current power consumption in Watts                                                |
+|        | totalEnergy    | Number       | yes       | Total energy consumption in kWh                                                   |
+|        | returnedEnergy | Number       | yes       | Total returned energy, kWh                                                        |
+|        | reactivePower  | Number:Power | yes       | Instantaneous reactive power (VAR)                                                |
+|        | apparentPower  | Number:Power | yes       | Instantaneous apparent power (VA)                                                 |
+|        | voltage        | Number       | yes       | RMS voltage, Volts                                                                |
+|        | powerFactor    | Number       | yes       | Power factor (-1.0 to 1.0)                                                        |
+|        | resetTotals    | Switch       | r/w       | Send ON to reset the accumulated energy counters for this meter                   |
+|        | lastUpdate     | DateTime     | yes       | Timestamp of the last measurement                                                 |
 
 `Note`:
 totalEnergy might reset on restart depending on device type and firmware version
 
 ### Shelly Plus 3EM-63 (thing-type: shellyplus3em63)
 
-| Group  | Channel           | Type         | read-only | Description                                                                                        |
-| ------ | ----------------- | ------------ | --------- | -------------------------------------------------------------------------------------------------- |
-| relay  | output            | Switch       | r/w       | Controls the relay's output channel (on/off)                                                       |
-|        | outputName        | String       | yes       | Logical name of this relay output as configured in the Shelly App                                  |
-|        | input             | Switch       | yes       | ON: Input/Button is powered, see general notes on channels                                         |
-|        | button            | Trigger      | yes       | Event trigger, see section Button Events                                                           |
-|        | lastEvent         | String       | yes       | Last event type (S/SS/SSS/L)                                                                       |
-|        | eventCount        | Number       | yes       | Counter gets incremented every time the device issues a button event.                              |
-|        | autoOn            | Number       | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds                  |
-|        | autoOff           | Number       | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds                  |
-|        | timerActive       | Switch       | yes       | Relay #1: ON: An auto-on/off timer is active                                                       |
-| meter1 | currentPower      | Number       | yes       | Current power consumption in Watts                                                                 |
-|        | totalEnergy       | Number       | yes       | Total energy consumption in kWh                                                                    |
-|        | returnedEnergy    | Number       | yes       | Total returned energy, kWh                                                                         |
-|        | reactivePower     | Number:Power | yes       | Instantaneous reactive power (VAR)                                                                 |
-|        | apparentPower     | Number:Power | yes       | Instantaneous apparent power (VA)                                                                  |
-|        | voltage           | Number       | yes       | RMS voltage, Volts                                                                                 |
-|        | current           | Number       | yes       | Current in A                                                                                       |
-|        | powerFactor       | Number       | yes       | Power factor (-1.0 to 1.0)                                                                         |
-|        | lastUpdate        | DateTime     | yes       | Timestamp of the last measurement                                                                  |
-| meter2 | currentPower      | Number       | yes       | Current power consumption in Watts                                                                 |
-|        | totalEnergy       | Number       | yes       | Total energy consumption in kWh                                                                    |
-|        | returnedEnergy    | Number       | yes       | Total returned energy, kWh                                                                         |
-|        | reactivePower     | Number:Power | yes       | Instantaneous reactive power (VAR)                                                                 |
-|        | apparentPower     | Number:Power | yes       | Instantaneous apparent power (VA)                                                                  |
-|        | voltage           | Number       | yes       | RMS voltage, Volts                                                                                 |
-|        | current           | Number       | yes       | Current in A                                                                                       |
-|        | powerFactor       | Number       | yes       | Power factor (-1.0 to 1.0)                                                                         |
-|        | lastUpdate        | DateTime     | yes       | Timestamp of the last measurement                                                                  |
-| meter3 | currentPower      | Number       | yes       | Current power consumption in Watts                                                                 |
-|        | totalEnergy       | Number       | yes       | Total energy consumption in kWh                                                                    |
-|        | returnedEnergy    | Number       | yes       | Total returned energy, kWh                                                                         |
-|        | reactivePower     | Number:Power | yes       | Instantaneous reactive power (VAR)                                                                 |
-|        | apparentPower     | Number:Power | yes       | Instantaneous apparent power (VA)                                                                  |
-|        | voltage           | Number       | yes       | RMS voltage, Volts                                                                                 |
-|        | current           | Number       | yes       | Current in A                                                                                       |
-|        | powerFactor       | Number       | yes       | Power factor (-1.0 to 1.0)                                                                         |
-|        | lastUpdate        | DateTime     | yes       | Timestamp of the last measurement                                                                  |
-| nmeter | ncurrent          | Number       | yes       | Neutral current based on N clamp (requires calibration)                                            |
-|        | ixsum             | Number       | yes       | Measured current over all phases                                                                   |
-|        | nmismatch         | Switch       | yes       | ON: abs(ncurrent-ixsum) is greater than nmThreshold                                                |
-|        | nmThreshold       | Number       | yes       | Threshold (delta) before nMismatch goes ON                                                         |
+| Group  | Channel        | Type         | read-only | Description                                                                       |
+| ------ | -------------- | ------------ | --------- | --------------------------------------------------------------------------------- |
+| relay  | output         | Switch       | r/w       | Controls the relay's output channel (on/off)                                      |
+|        | outputName     | String       | yes       | Logical name of this relay output as configured in the Shelly App                 |
+|        | input          | Switch       | yes       | ON: Input/Button is powered, see general notes on channels                        |
+|        | button         | Trigger      | yes       | Event trigger, see section Button Events                                          |
+|        | lastEvent      | String       | yes       | Last event type (S/SS/SSS/L)                                                      |
+|        | eventCount     | Number       | yes       | Counter gets incremented every time the device issues a button event.             |
+|        | autoOn         | Number       | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
+|        | autoOff        | Number       | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
+|        | timerActive    | Switch       | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
+| meter1 | currentPower   | Number       | yes       | Current power consumption in Watts                                                |
+|        | totalEnergy    | Number       | yes       | Total energy consumption in kWh                                                   |
+|        | returnedEnergy | Number       | yes       | Total returned energy, kWh                                                        |
+|        | reactivePower  | Number:Power | yes       | Instantaneous reactive power (VAR)                                                |
+|        | apparentPower  | Number:Power | yes       | Instantaneous apparent power (VA)                                                 |
+|        | voltage        | Number       | yes       | RMS voltage, Volts                                                                |
+|        | current        | Number       | yes       | Current in A                                                                      |
+|        | powerFactor    | Number       | yes       | Power factor (-1.0 to 1.0)                                                        |
+|        | lastUpdate     | DateTime     | yes       | Timestamp of the last measurement                                                 |
+| meter2 | currentPower   | Number       | yes       | Current power consumption in Watts                                                |
+|        | totalEnergy    | Number       | yes       | Total energy consumption in kWh                                                   |
+|        | returnedEnergy | Number       | yes       | Total returned energy, kWh                                                        |
+|        | reactivePower  | Number:Power | yes       | Instantaneous reactive power (VAR)                                                |
+|        | apparentPower  | Number:Power | yes       | Instantaneous apparent power (VA)                                                 |
+|        | voltage        | Number       | yes       | RMS voltage, Volts                                                                |
+|        | current        | Number       | yes       | Current in A                                                                      |
+|        | powerFactor    | Number       | yes       | Power factor (-1.0 to 1.0)                                                        |
+|        | lastUpdate     | DateTime     | yes       | Timestamp of the last measurement                                                 |
+| meter3 | currentPower   | Number       | yes       | Current power consumption in Watts                                                |
+|        | totalEnergy    | Number       | yes       | Total energy consumption in kWh                                                   |
+|        | returnedEnergy | Number       | yes       | Total returned energy, kWh                                                        |
+|        | reactivePower  | Number:Power | yes       | Instantaneous reactive power (VAR)                                                |
+|        | apparentPower  | Number:Power | yes       | Instantaneous apparent power (VA)                                                 |
+|        | voltage        | Number       | yes       | RMS voltage, Volts                                                                |
+|        | current        | Number       | yes       | Current in A                                                                      |
+|        | powerFactor    | Number       | yes       | Power factor (-1.0 to 1.0)                                                        |
+|        | lastUpdate     | DateTime     | yes       | Timestamp of the last measurement                                                 |
+| nmeter | ncurrent       | Number       | yes       | Neutral current based on N clamp (requires calibration)                           |
+|        | ixsum          | Number       | yes       | Measured current over all phases                                                  |
+|        | nmismatch      | Switch       | yes       | ON: abs(ncurrent-ixsum) is greater than nmThreshold                               |
+|        | nmThreshold    | Number       | yes       | Threshold (delta) before nMismatch goes ON                                        |
 
 `Note`:
 totalEnergy might reset on restart depending on device type and firmware version
 
-### Shelly Plus Dimmer / 10V (thing-type: shellyplusdimmer, shellyplus10v)
+### Shelly Plus Dimmer / 10V / DALI Dimmer (thing-type: shellyplusdimmer, shellyplus10v, shellyplusdalidimmer)
 
-| Group | Channel           | Type     | read-only | Description                                                                                        |
-| ----- | ----------------- | -------- | --------- | -------------------------------------------------------------------------------------------------- |
-| relay | brightness        | Dimmer   | r/w       | Currently selected brightness.                                                                     |
-|       | outputName        | String   | yes       | Logical name of this relay output as configured in the Shelly App                                  |
-|       | input1            | Switch   | yes       | ON: Input/Button for input 1 is powered, see general notes on channels                             |
-|       | button1           | Trigger  | yes       | Event trigger, see section Button Events                                                           |
-|       | lastEvent1        | String   | yes       | Last event type (S/SS/SSS/L) for input 1                                                           |
-|       | eventCount1       | Number   | yes       | Counter gets incremented every time the device issues a button event.                              |
-|       | input2            | Switch   | yes       | ON: Input/Button for channel 2 is powered, see general notes on channels                           |
-|       | button2           | Trigger  | yes       | Event trigger, see section Button Events                                                           |
-|       | lastEvent2        | String   | yes       | Last event type (S/SS/SSS/L) for input 2                                                           |
-|       | eventCount2       | Number   | yes       | Counter gets incremented every time the device issues a button event.                              |
-|       | autoOn            | Number   | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds                  |
-|       | autoOff           | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds                  |
-|       | timerActive       | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                                       |
-| meter | currentPower      | Number   | yes       | Current power consumption in Watts                                                                 |
-|       | totalEnergy       | Number   | yes       | Total energy consumption in kWh                                                                    |
-|       | lastUpdate        | DateTime | yes       | Timestamp of the last measurement                                                                  |
+| Group | Channel      | Type     | read-only | Description                                                                       |
+| ----- | ------------ | -------- | --------- | --------------------------------------------------------------------------------- |
+| relay | brightness   | Dimmer   | r/w       | Currently selected brightness.                                                    |
+|       | outputName   | String   | yes       | Logical name of this relay output as configured in the Shelly App                 |
+|       | input1       | Switch   | yes       | ON: Input/Button for input 1 is powered, see general notes on channels            |
+|       | button1      | Trigger  | yes       | Event trigger, see section Button Events                                          |
+|       | lastEvent1   | String   | yes       | Last event type (S/SS/SSS/L) for input 1                                          |
+|       | eventCount1  | Number   | yes       | Counter gets incremented every time the device issues a button event.             |
+|       | input2       | Switch   | yes       | ON: Input/Button for channel 2 is powered, see general notes on channels          |
+|       | button2      | Trigger  | yes       | Event trigger, see section Button Events                                          |
+|       | lastEvent2   | String   | yes       | Last event type (S/SS/SSS/L) for input 2                                          |
+|       | eventCount2  | Number   | yes       | Counter gets incremented every time the device issues a button event.             |
+|       | autoOn       | Number   | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
+|       | autoOff      | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
+|       | timerActive  | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
+| meter | currentPower | Number   | yes       | Current power consumption in Watts                                                |
+|       | totalEnergy  | Number   | yes       | Total energy consumption in kWh                                                   |
+|       | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
 
 `Note:`
 The Dimmer should be calibrated using the device Web UI or Shelly App.
@@ -1832,37 +1832,37 @@ totalEnergy might reset on restart depending on device type and firmware version
 
 ### Shelly EM Mini (thing-type: shellyemmini)
 
-| Group  | Channel           | Type         | read-only | Description                                                                                        |
-| ------ | ----------------- | ------------ | --------- | -------------------------------------------------------------------------------------------------- |
-| relay  | output            | Switch       | r/w       | Controls the relay's output channel (on/off)                                                       |
-|        | outputName        | String       | yes       | Logical name of this relay output as configured in the Shelly App                                  |
-|        | input             | Switch       | yes       | ON: Input/Button is powered, see general notes on channels                                         |
-|        | button            | Trigger      | yes       | Event trigger, see section Button Events                                                           |
-|        | lastEvent         | String       | yes       | Last event type (S/SS/SSS/L)                                                                       |
-|        | eventCount        | Number       | yes       | Counter gets incremented every time the device issues a button event.                              |
-|        | autoOn            | Number       | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds                  |
-|        | autoOff           | Number       | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds                  |
-|        | timerActive       | Switch       | yes       | Relay #1: ON: An auto-on/off timer is active                                                       |
-| meter1 | currentPower      | Number       | yes       | Current power consumption in Watts                                                                 |
-|        | totalEnergy       | Number       | yes       | Total energy consumption in kWh since the device powered up (resets on restart)                    |
-|        | returnedEnergy    | Number       | yes       | Total returned energy, kWh                                                                         |
-|        | reactivePower     | Number:Power | yes       | Instantaneous reactive power (VAR)                                                                 |
-|        | apparentPower     | Number:Power | yes       | Instantaneous apparent power (VA)                                                                  |
-|        | voltage           | Number       | yes       | RMS voltage, Volts                                                                                 |
-|        | powerFactor       | Number       | yes       | Power factor (-1.0 to 1.0)                                                                         |
-|        | resetTotals       | Switch       | r/w       | Send ON to reset the accumulated energy counters for this meter                                    |
-|        | frequency         | Number       | yes       | Grid frequency (Hz)                                                                                |
-|        | lastUpdate        | DateTime     | yes       | Timestamp of the last measurement                                                                  |
-| meter2 | currentPower      | Number       | yes       | Current power consumption in Watts                                                                 |
-|        | totalEnergy       | Number       | yes       | Total energy consumption in kWh since the device powered up (resets on restart)                    |
-|        | returnedEnergy    | Number       | yes       | Total returned energy, kWh                                                                         |
-|        | reactivePower     | Number:Power | yes       | Instantaneous reactive power (VAR)                                                                 |
-|        | apparentPower     | Number:Power | yes       | Instantaneous apparent power (VA)                                                                  |
-|        | voltage           | Number       | yes       | RMS voltage, Volts                                                                                 |
-|        | powerFactor       | Number       | yes       | Power factor (-1.0 to 1.0)                                                                         |
-|        | resetTotals       | Switch       | r/w       | Send ON to reset the accumulated energy counters for this meter                                    |
-|        | frequency         | Number       | yes       | Grid frequency (Hz)                                                                                |
-|        | lastUpdate        | DateTime     | yes       | Timestamp of the last measurement                                                                  |
+| Group  | Channel        | Type         | read-only | Description                                                                       |
+| ------ | -------------- | ------------ | --------- | --------------------------------------------------------------------------------- |
+| relay  | output         | Switch       | r/w       | Controls the relay's output channel (on/off)                                      |
+|        | outputName     | String       | yes       | Logical name of this relay output as configured in the Shelly App                 |
+|        | input          | Switch       | yes       | ON: Input/Button is powered, see general notes on channels                        |
+|        | button         | Trigger      | yes       | Event trigger, see section Button Events                                          |
+|        | lastEvent      | String       | yes       | Last event type (S/SS/SSS/L)                                                      |
+|        | eventCount     | Number       | yes       | Counter gets incremented every time the device issues a button event.             |
+|        | autoOn         | Number       | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
+|        | autoOff        | Number       | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
+|        | timerActive    | Switch       | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
+| meter1 | currentPower   | Number       | yes       | Current power consumption in Watts                                                |
+|        | totalEnergy    | Number       | yes       | Total energy consumption in kWh since the device powered up (resets on restart)   |
+|        | returnedEnergy | Number       | yes       | Total returned energy, kWh                                                        |
+|        | reactivePower  | Number:Power | yes       | Instantaneous reactive power (VAR)                                                |
+|        | apparentPower  | Number:Power | yes       | Instantaneous apparent power (VA)                                                 |
+|        | voltage        | Number       | yes       | RMS voltage, Volts                                                                |
+|        | powerFactor    | Number       | yes       | Power factor (-1.0 to 1.0)                                                        |
+|        | resetTotals    | Switch       | r/w       | Send ON to reset the accumulated energy counters for this meter                   |
+|        | frequency      | Number       | yes       | Grid frequency (Hz)                                                               |
+|        | lastUpdate     | DateTime     | yes       | Timestamp of the last measurement                                                 |
+| meter2 | currentPower   | Number       | yes       | Current power consumption in Watts                                                |
+|        | totalEnergy    | Number       | yes       | Total energy consumption in kWh since the device powered up (resets on restart)   |
+|        | returnedEnergy | Number       | yes       | Total returned energy, kWh                                                        |
+|        | reactivePower  | Number:Power | yes       | Instantaneous reactive power (VAR)                                                |
+|        | apparentPower  | Number:Power | yes       | Instantaneous apparent power (VA)                                                 |
+|        | voltage        | Number       | yes       | RMS voltage, Volts                                                                |
+|        | powerFactor    | Number       | yes       | Power factor (-1.0 to 1.0)                                                        |
+|        | resetTotals    | Switch       | r/w       | Send ON to reset the accumulated energy counters for this meter                   |
+|        | frequency      | Number       | yes       | Grid frequency (Hz)                                                               |
+|        | lastUpdate     | DateTime     | yes       | Timestamp of the last measurement                                                 |
 
 ## Shelly Pro Series
 
@@ -2025,67 +2025,67 @@ totalEnergy might reset on restart depending on device type and firmware version
 
 ### Shelly Pro 3EM (thing-type: shellypro3em)
 
-| Group  | Channel           | Type         | read-only | Description                                                                                        |
-| ------ | ----------------- | ------------ | --------- | -------------------------------------------------------------------------------------------------- |
-| meter1 | currentPower      | Number       | yes       | Current power consumption in Watts                                                                 |
-|        | totalEnergy       | Number       | yes       | Total energy consumption in kWh                                                                    |
-|        | returnedEnergy    | Number       | yes       | Total returned energy, kWh                                                                         |
-|        | reactivePower     | Number:Power | yes       | Instantaneous reactive power (VAR)                                                                 |
-|        | apparentPower     | Number:Power | yes       | Instantaneous apparent power (VA)                                                                  |
-|        | voltage           | Number       | yes       | RMS voltage, Volts                                                                                 |
-|        | current           | Number       | yes       | Current in A                                                                                       |
-|        | powerFactor       | Number       | yes       | Power factor (-1.0 to 1.0)                                                                         |
-|        | lastUpdate        | DateTime     | yes       | Timestamp of the last measurement                                                                  |
-| meter2 | currentPower      | Number       | yes       | Current power consumption in Watts                                                                 |
-|        | totalEnergy       | Number       | yes       | Total energy consumption in kWh                                                                    |
-|        | returnedEnergy    | Number       | yes       | Total returned energy, kWh                                                                         |
-|        | reactivePower     | Number:Power | yes       | Instantaneous reactive power (VAR)                                                                 |
-|        | apparentPower     | Number:Power | yes       | Instantaneous apparent power (VA)                                                                  |
-|        | voltage           | Number       | yes       | RMS voltage, Volts                                                                                 |
-|        | current           | Number       | yes       | Current in A                                                                                       |
-|        | powerFactor       | Number       | yes       | Power factor (-1.0 to 1.0)                                                                         |
-|        | lastUpdate        | DateTime     | yes       | Timestamp of the last measurement                                                                  |
-| meter3 | currentPower      | Number       | yes       | Current power consumption in Watts                                                                 |
-|        | totalEnergy       | Number       | yes       | Total energy consumption in kWh                                                                    |
-|        | returnedEnergy    | Number       | yes       | Total returned energy, kWh                                                                         |
-|        | reactivePower     | Number:Power | yes       | Instantaneous reactive power (VAR)                                                                 |
-|        | apparentPower     | Number:Power | yes       | Instantaneous apparent power (VA)                                                                  |
-|        | voltage           | Number       | yes       | RMS voltage, Volts                                                                                 |
-|        | current           | Number       | yes       | Current in A                                                                                       |
-|        | powerFactor       | Number       | yes       | Power factor (-1.0 to 1.0)                                                                         |
-|        | lastUpdate        | DateTime     | yes       | Timestamp of the last measurement                                                                  |
+| Group  | Channel        | Type         | read-only | Description                        |
+| ------ | -------------- | ------------ | --------- | ---------------------------------- |
+| meter1 | currentPower   | Number       | yes       | Current power consumption in Watts |
+|        | totalEnergy    | Number       | yes       | Total energy consumption in kWh    |
+|        | returnedEnergy | Number       | yes       | Total returned energy, kWh         |
+|        | reactivePower  | Number:Power | yes       | Instantaneous reactive power (VAR) |
+|        | apparentPower  | Number:Power | yes       | Instantaneous apparent power (VA)  |
+|        | voltage        | Number       | yes       | RMS voltage, Volts                 |
+|        | current        | Number       | yes       | Current in A                       |
+|        | powerFactor    | Number       | yes       | Power factor (-1.0 to 1.0)         |
+|        | lastUpdate     | DateTime     | yes       | Timestamp of the last measurement  |
+| meter2 | currentPower   | Number       | yes       | Current power consumption in Watts |
+|        | totalEnergy    | Number       | yes       | Total energy consumption in kWh    |
+|        | returnedEnergy | Number       | yes       | Total returned energy, kWh         |
+|        | reactivePower  | Number:Power | yes       | Instantaneous reactive power (VAR) |
+|        | apparentPower  | Number:Power | yes       | Instantaneous apparent power (VA)  |
+|        | voltage        | Number       | yes       | RMS voltage, Volts                 |
+|        | current        | Number       | yes       | Current in A                       |
+|        | powerFactor    | Number       | yes       | Power factor (-1.0 to 1.0)         |
+|        | lastUpdate     | DateTime     | yes       | Timestamp of the last measurement  |
+| meter3 | currentPower   | Number       | yes       | Current power consumption in Watts |
+|        | totalEnergy    | Number       | yes       | Total energy consumption in kWh    |
+|        | returnedEnergy | Number       | yes       | Total returned energy, kWh         |
+|        | reactivePower  | Number:Power | yes       | Instantaneous reactive power (VAR) |
+|        | apparentPower  | Number:Power | yes       | Instantaneous apparent power (VA)  |
+|        | voltage        | Number       | yes       | RMS voltage, Volts                 |
+|        | current        | Number       | yes       | Current in A                       |
+|        | powerFactor    | Number       | yes       | Power factor (-1.0 to 1.0)         |
+|        | lastUpdate     | DateTime     | yes       | Timestamp of the last measurement  |
 
 ### Shelly Pro EM-50 (thing-type: shellyproem50)
 
-| Group  | Channel           | Type         | read-only | Description                                                                                        |
-| ------ | ----------------- | ------------ | --------- | -------------------------------------------------------------------------------------------------- |
-| meter1 | currentPower      | Number       | yes       | Current power consumption in Watts                                                                 |
-|        | totalEnergy       | Number       | yes       | Total energy consumption in kWh                                                                    |
-|        | returnedEnergy    | Number       | yes       | Total returned energy, kWh                                                                         |
-|        | reactivePower     | Number:Power | yes       | Instantaneous reactive power (VAR)                                                                 |
-|        | apparentPower     | Number:Power | yes       | Instantaneous apparent power (VA)                                                                  |
-|        | voltage           | Number       | yes       | RMS voltage, Volts                                                                                 |
-|        | current           | Number       | yes       | Current in A                                                                                       |
-|        | powerFactor       | Number       | yes       | Power factor (-1.0 to 1.0)                                                                         |
-|        | resetTotals       | Switch       | r/w       | Send ON to reset the accumulated energy counters for this meter                                    |
-|        | lastUpdate        | DateTime     | yes       | Timestamp of the last measurement                                                                  |
-| meter2 | currentPower      | Number       | yes       | Current power consumption in Watts                                                                 |
-|        | totalEnergy       | Number       | yes       | Total energy consumption in kWh                                                                    |
-|        | returnedEnergy    | Number       | yes       | Total returned energy, kWh                                                                         |
-|        | reactivePower     | Number:Power | yes       | Instantaneous reactive power (VAR)                                                                 |
-|        | apparentPower     | Number:Power | yes       | Instantaneous apparent power (VA)                                                                  |
-|        | voltage           | Number       | yes       | RMS voltage, Volts                                                                                 |
-|        | current           | Number       | yes       | Current in A                                                                                       |
-|        | powerFactor       | Number       | yes       | Power factor (-1.0 to 1.0)                                                                         |
-|        | resetTotals       | Switch       | r/w       | Send ON to reset the accumulated energy counters for this meter                                    |
-|        | lastUpdate        | DateTime     | yes       | Timestamp of the last measurement                                                                  |
-| relay  | output            | Switch       | r/w       | Relay #1: Controls the relay's output channel (on/off)                                             |
-|        | outputName        | String       | yes       | Logical name of this relay output as configured in the Shelly App                                  |
-|        | input             | Switch       | yes       | ON: Input/Button is powered, see General Notes on Channels                                         |
-|        | autoOn            | Number       | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds                  |
-|        | autoOff           | Number       | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds                  |
-|        | timerActive       | Switch       | yes       | Relay #1: ON: An auto-on/off timer is active                                                       |
-|        | button            | Trigger      | yes       | Event trigger, see section Button Events                                                           |
+| Group  | Channel        | Type         | read-only | Description                                                                       |
+| ------ | -------------- | ------------ | --------- | --------------------------------------------------------------------------------- |
+| meter1 | currentPower   | Number       | yes       | Current power consumption in Watts                                                |
+|        | totalEnergy    | Number       | yes       | Total energy consumption in kWh                                                   |
+|        | returnedEnergy | Number       | yes       | Total returned energy, kWh                                                        |
+|        | reactivePower  | Number:Power | yes       | Instantaneous reactive power (VAR)                                                |
+|        | apparentPower  | Number:Power | yes       | Instantaneous apparent power (VA)                                                 |
+|        | voltage        | Number       | yes       | RMS voltage, Volts                                                                |
+|        | current        | Number       | yes       | Current in A                                                                      |
+|        | powerFactor    | Number       | yes       | Power factor (-1.0 to 1.0)                                                        |
+|        | resetTotals    | Switch       | r/w       | Send ON to reset the accumulated energy counters for this meter                   |
+|        | lastUpdate     | DateTime     | yes       | Timestamp of the last measurement                                                 |
+| meter2 | currentPower   | Number       | yes       | Current power consumption in Watts                                                |
+|        | totalEnergy    | Number       | yes       | Total energy consumption in kWh                                                   |
+|        | returnedEnergy | Number       | yes       | Total returned energy, kWh                                                        |
+|        | reactivePower  | Number:Power | yes       | Instantaneous reactive power (VAR)                                                |
+|        | apparentPower  | Number:Power | yes       | Instantaneous apparent power (VA)                                                 |
+|        | voltage        | Number       | yes       | RMS voltage, Volts                                                                |
+|        | current        | Number       | yes       | Current in A                                                                      |
+|        | powerFactor    | Number       | yes       | Power factor (-1.0 to 1.0)                                                        |
+|        | resetTotals    | Switch       | r/w       | Send ON to reset the accumulated energy counters for this meter                   |
+|        | lastUpdate     | DateTime     | yes       | Timestamp of the last measurement                                                 |
+| relay  | output         | Switch       | r/w       | Relay #1: Controls the relay's output channel (on/off)                            |
+|        | outputName     | String       | yes       | Logical name of this relay output as configured in the Shelly App                 |
+|        | input          | Switch       | yes       | ON: Input/Button is powered, see General Notes on Channels                        |
+|        | autoOn         | Number       | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
+|        | autoOff        | Number       | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
+|        | timerActive    | Switch       | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
+|        | button         | Trigger      | yes       | Event trigger, see section Button Events                                          |
 
 `Note`:
 totalEnergy might reset on restart depending on device type and firmware version
