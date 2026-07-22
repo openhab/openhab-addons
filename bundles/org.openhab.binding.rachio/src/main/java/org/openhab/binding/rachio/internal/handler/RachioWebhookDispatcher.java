@@ -22,7 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Routes validated WebhookService events to resource-family handlers.
+ * Routes validated modern webhook events to resource-family handlers.
  *
  * @author openHAB Contributors - Initial contribution
  */

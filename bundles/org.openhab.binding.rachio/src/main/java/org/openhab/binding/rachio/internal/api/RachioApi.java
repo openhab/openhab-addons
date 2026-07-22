@@ -1212,7 +1212,10 @@ public class RachioApi {
                 return;
             }
         } catch (RuntimeException e) {
-            logger.debug("Deleting WebHook(s) failed: {}", webhookRegistrationExceptionDiagnostic(e, registrationUrl));
+            logger.debug("Unable to verify existing webhooks for target '{}'; createWebhook skipped: {}",
+                    target.describe(), webhookRegistrationExceptionDiagnostic(e, registrationUrl));
+            throw new RachioApiException("Unable to verify existing webhook registrations for target '"
+                    + target.describe() + "'; createWebhook skipped to avoid duplicate registration.");
         }
 
         try {

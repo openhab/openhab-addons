@@ -17,6 +17,7 @@ import static org.openhab.binding.rachio.internal.RachioBindingConstants.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Objects;
@@ -173,7 +174,7 @@ public class RachioImageServlet extends HttpServlet {
 
         String imageUrl = SERVLET_IMAGE_URL_BASE + uri;
         logger.debug("RachioImage: {} image '{}'", request.getMethod(), uri);
-        URL url = new URL(imageUrl);
+        URL url = URI.create(imageUrl).toURL();
         URLConnection conn = url.openConnection();
         conn.setDoInput(true);
         try (InputStream reader = conn.getInputStream()) {

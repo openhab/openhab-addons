@@ -27,10 +27,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -64,7 +66,6 @@ import org.openhab.binding.rachio.internal.handler.RachioCloudWebhookRegistry.Cl
 import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager.PRIORITY;
 import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager.RequestPurpose;
 import org.openhab.core.config.core.status.ConfigStatusMessage;
-import org.openhab.core.io.rest.WebhookService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -88,10 +89,15 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
     private static final long MIN_CLOUD_WEBHOOK_REFRESH_DELAY_SECONDS = 60;
     private static final long NO_CLOUD_WEBHOOK_GENERATION = -1;
     private static final Duration CLOUD_WEBHOOK_REFRESH_SAFETY_WINDOW = Duration.ofHours(1);
+    private static final String CLOUD_WEBHOOK_SERVICE_UNAVAILABLE = "WebhookServiceUnavailable";
+    private static final String CLOUD_WEBHOOK_SERVICE_UNAVAILABLE_STATE = "cloud WebhookService unavailable";
+    private static final String CLOUD_WEBHOOK_SERVICE_UNAVAILABLE_MESSAGE = "RachioCloud: openHAB core WebhookService is not available; automatic openHAB Cloud webhook URL acquisition is disabled on this runtime";
+    private static final String MODERN_WEBHOOK_VERIFICATION_DEFERRED_STATE = "registered; verification deferred";
 
     private final Logger logger = LoggerFactory.getLogger(RachioBridgeHandler.class);
     private final RachioApi rachioApi;
     private final RachioCloudWebhookRegistry cloudWebhookRegistry;
+    private final Map<String, String> knownModernIrrigationWebhookRegistrations = new ConcurrentHashMap<>();
     private RachioConfiguration thingConfig = new RachioConfiguration();
     private String personId = "";
     private final Set<RachioDiscoveryService> discoveryServices = new CopyOnWriteArraySet<>();
@@ -122,7 +128,7 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
         this(bridge, () -> null);
     }
 
-    public RachioBridgeHandler(final Bridge bridge, Supplier<@Nullable WebhookService> webhookServiceSupplier) {
+    public RachioBridgeHandler(final Bridge bridge, Supplier<@Nullable Object> webhookServiceSupplier) {
         this(bridge, new RachioCloudWebhookRegistry(webhookServiceSupplier));
     }
 
@@ -903,14 +909,42 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
             case WEBHOOK_SERVICE:
                 String webhookUrl = getModernWebhookUrlForRegistration();
                 if (webhookUrl.isBlank()) {
+                    if (!getCallbackUrl().isBlank()) {
+                        logger.debug(
+                                "RachioCloud: Modern controller webhook URL is unavailable; using configured legacy NotificationService callback.");
+                        updateWebhookMode("legacy");
+                        updateWebhookRegistrationAttempt();
+                        rachioApi.registerLegacyNotificationWebHook(deviceId, getCallbackUrl(), getCallbackUsername(),
+                                getCallbackPassword(), getExternalId(), getClearAllCallbacks(), requestPurpose);
+                        updateWebhookRegistrationState("registered");
+                        return;
+                    }
+                    if (deferKnownModernWebhookVerificationBecauseUrlIsUnavailable(deviceId)) {
+                        return;
+                    }
                     logger.debug(
                             "RachioCloud: Modern controller webhook registration is enabled but no public webhook URL is available; polling remains active.");
                     return;
                 }
+                @Nullable
+                String externalId = getExternalId();
                 updateWebhookRegistrationAttempt();
-                rachioApi.registerWebHook(deviceId, webhookUrl, "", "", getExternalId(), getClearAllCallbacks(),
-                        requestPurpose);
-                updateWebhookRegistrationState("registered");
+                try {
+                    rachioApi.registerWebHook(deviceId, webhookUrl, "", "", externalId, getClearAllCallbacks(),
+                            requestPurpose);
+                    recordSuccessfulModernWebhookRegistration(deviceId, webhookUrl, externalId);
+                    updateWebhookRegistrationState("registered");
+                } catch (RachioApiThrottledException e) {
+                    throw e;
+                } catch (RachioApiException e) {
+                    if (!deferKnownModernWebhookVerificationFailure(deviceId, webhookUrl, externalId, e)) {
+                        throw e;
+                    }
+                } catch (RuntimeException e) {
+                    if (!deferKnownModernWebhookVerificationFailure(deviceId, webhookUrl, externalId, e)) {
+                        throw e;
+                    }
+                }
                 break;
             case DISABLED:
                 logger.debug("RachioCloud: Controller webhook registration disabled; polling remains active.");
@@ -1028,7 +1062,7 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
         }
     }
 
-    public void onWebhookServiceChanged() {
+    public void onCloudWebhookProviderChanged() {
         if (disposed) {
             return;
         }
@@ -1073,31 +1107,45 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
             return;
         }
 
-        HashMap<String, RachioDevice> devices = getDevices();
-        if (devices == null || devices.isEmpty()) {
-            updateWebhookRegistrationState("waiting for controller resources");
+        Set<String> configuredControllerIds = getConfiguredControllerThingIds();
+        if (configuredControllerIds.isEmpty()) {
+            updateWebhookRegistrationState("waiting for configured controller things");
             return;
         }
 
-        for (RachioDevice device : devices.values()) {
+        for (String deviceId : configuredControllerIds) {
             try {
-                registerWebHook(device.id, requestPurpose);
+                registerWebHook(deviceId, requestPurpose);
             } catch (RachioApiThrottledException e) {
                 updateWebhookRegistrationState("deferred by local API budget guard");
                 logger.info(
                         "Modern webhook registration for controller '{}' deferred because the local Rachio API budget guard is active; polling remains active.",
-                        device.id);
+                        deviceId);
                 return;
             } catch (RachioApiException e) {
                 updateWebhookRegistrationState("registration failed: " + e.getClass().getSimpleName());
                 logger.warn("Modern webhook registration for controller '{}' failed; polling remains active, cause={}",
-                        device.id, e.getClass().getSimpleName());
+                        deviceId, e.getClass().getSimpleName());
             } catch (RuntimeException e) {
                 updateWebhookRegistrationState("registration failed: " + e.getClass().getSimpleName());
                 logger.warn("Modern webhook registration for controller '{}' failed; polling remains active, cause={}",
-                        device.id, e.getClass().getSimpleName());
+                        deviceId, e.getClass().getSimpleName());
             }
         }
+    }
+
+    private Set<String> getConfiguredControllerThingIds() {
+        Set<String> controllerIds = new LinkedHashSet<>();
+        for (RachioStatusListener listener : rachioStatusListeners) {
+            if (listener instanceof RachioDeviceHandler deviceHandler) {
+                @Nullable
+                String controllerId = deviceHandler.getBoundControllerId();
+                if (controllerId != null && !controllerId.isBlank()) {
+                    controllerIds.add(controllerId);
+                }
+            }
+        }
+        return controllerIds;
     }
 
     String getModernWebhookUrlForRegistration() {
@@ -1107,14 +1155,14 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
             updateWebhookRegistrationState("disabled");
             return "";
         }
-        if (thingConfig.useCloudWebhook) {
-            updateWebhookMode("cloud");
-            return getCloudWebhookUrlForRegistration();
-        }
         if (!thingConfig.publicWebhookUrl.isBlank()) {
             releaseCloudWebhookUrl("manual webhook URL configured");
             updateWebhookMode("manual");
             return getManualWebhookUrlForRegistration();
+        }
+        if (thingConfig.useCloudWebhook) {
+            updateWebhookMode("cloud");
+            return getCloudWebhookUrlForRegistration();
         }
 
         releaseCloudWebhookUrl("no public webhook URL configured");
@@ -1165,6 +1213,12 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
             logger.warn("Unable to request openHAB Cloud webhook URL for Rachio; polling remains active, cause={}",
                     e.getClass().getSimpleName());
         } catch (CloudWebhookException e) {
+            if (CLOUD_WEBHOOK_SERVICE_UNAVAILABLE.equals(e.diagnosticCause())) {
+                if (updateWebhookRegistrationState(CLOUD_WEBHOOK_SERVICE_UNAVAILABLE_STATE)) {
+                    logger.warn(CLOUD_WEBHOOK_SERVICE_UNAVAILABLE_MESSAGE);
+                }
+                return "";
+            }
             updateWebhookRegistrationState("cloud webhook URL unavailable: " + e.diagnosticCause());
             logger.warn("Unable to request openHAB Cloud webhook URL for Rachio; polling remains active, cause={}",
                     e.diagnosticCause());
@@ -1199,7 +1253,8 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
         long delaySeconds = Duration.between(Instant.now(), expiresAt.minus(CLOUD_WEBHOOK_REFRESH_SAFETY_WINDOW))
                 .getSeconds();
         delaySeconds = Math.max(MIN_CLOUD_WEBHOOK_REFRESH_DELAY_SECONDS, delaySeconds);
-        cloudWebhookRefreshJob = scheduler.schedule(this::onWebhookServiceChanged, delaySeconds, TimeUnit.SECONDS);
+        cloudWebhookRefreshJob = scheduler.schedule(this::onCloudWebhookProviderChanged, delaySeconds,
+                TimeUnit.SECONDS);
         logger.debug("RachioCloud: Scheduled openHAB Cloud webhook URL refresh in {} seconds", delaySeconds);
     }
 
@@ -1248,12 +1303,46 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
         updateProperties();
     }
 
-    private void updateWebhookRegistrationState(String state) {
+    private boolean updateWebhookRegistrationState(String state) {
         if (webhookRegistrationState.equals(state)) {
-            return;
+            return false;
         }
         webhookRegistrationState = state;
         updateProperties();
+        return true;
+    }
+
+    private void recordSuccessfulModernWebhookRegistration(String deviceId, String webhookUrl,
+            @Nullable String externalId) {
+        knownModernIrrigationWebhookRegistrations.put(deviceId, modernWebhookRegistrationKey(webhookUrl, externalId));
+    }
+
+    private boolean deferKnownModernWebhookVerificationBecauseUrlIsUnavailable(String deviceId) {
+        if (!knownModernIrrigationWebhookRegistrations.containsKey(deviceId)) {
+            return false;
+        }
+        updateWebhookRegistrationState(MODERN_WEBHOOK_VERIFICATION_DEFERRED_STATE);
+        logger.debug(
+                "Modern webhook verification for controller '{}' deferred because no public webhook URL is currently available; an existing registration may still be active and polling remains fallback.",
+                deviceId);
+        return true;
+    }
+
+    private boolean deferKnownModernWebhookVerificationFailure(String deviceId, String webhookUrl,
+            @Nullable String externalId, Throwable e) {
+        String knownRegistrationKey = knownModernIrrigationWebhookRegistrations.get(deviceId);
+        if (!modernWebhookRegistrationKey(webhookUrl, externalId).equals(knownRegistrationKey)) {
+            return false;
+        }
+        updateWebhookRegistrationState(MODERN_WEBHOOK_VERIFICATION_DEFERRED_STATE);
+        logger.info(
+                "Modern webhook verification for controller '{}' failed after a previous successful registration; existing registration may still be active and polling remains fallback, cause={}",
+                deviceId, e.getClass().getSimpleName());
+        return true;
+    }
+
+    private String modernWebhookRegistrationKey(String webhookUrl, @Nullable String externalId) {
+        return webhookUrl + "\n" + (externalId != null ? externalId : "");
     }
 
     private void recordWebhookEvent(RachioEventGsonDTO event) {

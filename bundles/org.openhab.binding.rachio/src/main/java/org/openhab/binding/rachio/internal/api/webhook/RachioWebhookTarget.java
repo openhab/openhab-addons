@@ -26,7 +26,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.rachio.internal.api.json.RachioApiGsonDTO.RachioApiWebHookEntry;
 
 /**
- * Describes one desired modern WebhookService registration target.
+ * Describes one desired modern webhook registration target.
  *
  * @author openHAB Contributors - Initial contribution
  */

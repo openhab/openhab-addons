@@ -13,8 +13,10 @@
 package org.openhab.binding.rachio.internal.handler;
 
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.*;
+import static org.openhab.binding.rachio.internal.RachioUtils.exceptionMessage;
 import static org.openhab.binding.rachio.internal.RachioUtils.getTimestamp;
 
+import java.util.Objects;
 import java.util.OptionalDouble;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -113,21 +115,29 @@ public class RachioScheduleHandler extends AbstractRachioThingHandler {
                 updateChannel(CHANNEL_SCHEDULE_SKIP_FORWARD_ZONE_RUN, OnOffType.OFF);
             }
         } catch (RachioApiException e) {
-            logger.debug("{}: Schedule command failed: {}", thingId, e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            String message = exceptionMessage(e);
+            logger.debug("{}: Schedule command failed: {}", thingId, message);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
         }
     }
 
-    private synchronized boolean loadScheduleRuleForRefreshIfCacheMissing(String channel) {
-        if (scheduleRuleLoaded) {
-            logger.trace("{}: Serving schedule channel '{}' REFRESH from cached rule '{}'", thingId, channel,
-                    scheduleRuleId);
-            postCachedChannelData(channel);
-            return false;
+    private boolean loadScheduleRuleForRefreshIfCacheMissing(String channel) {
+        boolean loadMissingCache = false;
+        synchronized (this) {
+            if (!scheduleRuleLoaded) {
+                logger.debug("{}: Schedule rule cache is empty; loading rule '{}' for channel '{}' REFRESH", thingId,
+                        scheduleRuleId, channel);
+                loadMissingCache = true;
+            } else {
+                logger.trace("{}: Serving schedule channel '{}' REFRESH from cached rule '{}'", thingId, channel,
+                        scheduleRuleId);
+            }
         }
-        logger.debug("{}: Schedule rule cache is empty; loading rule '{}' for channel '{}' REFRESH", thingId,
-                scheduleRuleId, channel);
-        return refreshScheduleRule();
+        if (loadMissingCache) {
+            return refreshScheduleRule();
+        }
+        postCachedChannelData(channel);
+        return false;
     }
 
     @Override
@@ -137,37 +147,57 @@ public class RachioScheduleHandler extends AbstractRachioThingHandler {
         }
     }
 
-    protected synchronized boolean refreshScheduleRule() {
-        RachioBridgeHandler handler = cloudHandler;
+    protected boolean refreshScheduleRule() {
+        RachioBridgeHandler handler;
+        String requestedScheduleRuleId;
+        synchronized (this) {
+            handler = cloudHandler;
+            requestedScheduleRuleId = scheduleRuleId;
+        }
         if (handler == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             return false;
         }
         try {
-            scheduleRule = loadScheduleRule();
-            scheduleRuleLoaded = true;
-            logger.debug("{}: Loaded schedule rule '{}'", thingId, scheduleRuleId);
+            RachioScheduleRuleResponse loadedScheduleRule = loadScheduleRule(handler, requestedScheduleRuleId);
+            if (!applyLoadedScheduleRule(handler, requestedScheduleRuleId, loadedScheduleRule)) {
+                logger.debug("{}: Ignoring stale schedule rule '{}' refresh after bridge or rule id changed", thingId,
+                        requestedScheduleRuleId);
+                return false;
+            }
+            logger.debug("{}: Loaded schedule rule '{}'", thingId, requestedScheduleRuleId);
             postChannelData();
             updateChannel(CHANNEL_LAST_UPDATE, getTimestamp());
             if (resetLocalThrottleRetry()) {
                 logger.debug("{}: Deferred initialization succeeded for schedule rule '{}'; Thing is ONLINE.", thingId,
-                        scheduleRuleId);
+                        requestedScheduleRuleId);
             }
             return true;
         } catch (RachioApiThrottledException e) {
-            long delaySeconds = scheduleInitializationThrottleRetry("loading schedule rule '" + scheduleRuleId + "'",
-                    this::goOnline, e);
+            long delaySeconds = scheduleInitializationThrottleRetry(
+                    "loading schedule rule '" + requestedScheduleRuleId + "'", this::goOnline, e);
             if (delaySeconds > 0) {
                 logger.debug(
                         "{}: Deferring initialization REST request for schedule rule '{}' due to local API bootstrap pacing; retry scheduled in {} seconds.",
-                        thingId, scheduleRuleId, delaySeconds);
+                        thingId, requestedScheduleRuleId, delaySeconds);
             }
             return false;
         } catch (RachioApiException e) {
-            logger.debug("{}: Unable to load schedule rule '{}': {}", thingId, scheduleRuleId, e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            String message = exceptionMessage(e);
+            logger.debug("{}: Unable to load schedule rule '{}': {}", thingId, requestedScheduleRuleId, message);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
             return false;
         }
+    }
+
+    private synchronized boolean applyLoadedScheduleRule(RachioBridgeHandler handler, String requestedScheduleRuleId,
+            RachioScheduleRuleResponse loadedScheduleRule) {
+        if (!Objects.equals(handler, cloudHandler) || !scheduleRuleId.equals(requestedScheduleRuleId)) {
+            return false;
+        }
+        scheduleRule = loadedScheduleRule;
+        scheduleRuleLoaded = true;
+        return true;
     }
 
     private void postCachedChannelData(String channel) {
@@ -178,12 +208,9 @@ public class RachioScheduleHandler extends AbstractRachioThingHandler {
         }
     }
 
-    protected RachioScheduleRuleResponse loadScheduleRule() throws RachioApiException {
-        RachioBridgeHandler handler = cloudHandler;
-        if (handler == null) {
-            throw new RachioApiException("Bridge handler is not initialized.");
-        }
-        return handler.getScheduleRuleForInitialization(scheduleRuleId);
+    protected RachioScheduleRuleResponse loadScheduleRule(RachioBridgeHandler handler, String requestedScheduleRuleId)
+            throws RachioApiException {
+        return handler.getScheduleRuleForInitialization(requestedScheduleRuleId);
     }
 
     @Override

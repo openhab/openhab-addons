@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
@@ -135,12 +136,7 @@ public class RachioHttp {
         try {
             apiCalls++;
 
-            URL location = null;
-            if (urlParameters != null) {
-                location = new URL(url + "?" + urlParameters);
-            } else {
-                location = new URL(url);
-            }
+            URL location = URI.create(urlParameters != null ? url + "?" + urlParameters : url).toURL();
             result.requestMethod = method;
             result.url = location.toString();
             result.apiCalls = apiCalls;

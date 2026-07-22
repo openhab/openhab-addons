@@ -13,8 +13,10 @@
 package org.openhab.binding.rachio.internal.handler;
 
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.*;
+import static org.openhab.binding.rachio.internal.RachioUtils.exceptionMessage;
 import static org.openhab.binding.rachio.internal.RachioUtils.getTimestamp;
 
+import java.util.Objects;
 import java.util.OptionalDouble;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -114,21 +116,29 @@ public class RachioFlexScheduleHandler extends AbstractRachioThingHandler {
                 updateChannel(CHANNEL_FLEX_SCHEDULE_SKIP_FORWARD_ZONE_RUN, OnOffType.OFF);
             }
         } catch (RachioApiException e) {
-            logger.debug("{}: Flex schedule command failed: {}", thingId, e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            String message = exceptionMessage(e);
+            logger.debug("{}: Flex schedule command failed: {}", thingId, message);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
         }
     }
 
-    private synchronized boolean loadFlexScheduleRuleForRefreshIfCacheMissing(String channel) {
-        if (scheduleRuleLoaded) {
-            logger.trace("{}: Serving flex schedule channel '{}' REFRESH from cached rule '{}'", thingId, channel,
-                    flexScheduleRuleId);
-            postCachedChannelData(channel);
-            return false;
+    private boolean loadFlexScheduleRuleForRefreshIfCacheMissing(String channel) {
+        boolean loadMissingCache = false;
+        synchronized (this) {
+            if (!scheduleRuleLoaded) {
+                logger.debug("{}: Flex schedule rule cache is empty; loading rule '{}' for channel '{}' REFRESH",
+                        thingId, flexScheduleRuleId, channel);
+                loadMissingCache = true;
+            } else {
+                logger.trace("{}: Serving flex schedule channel '{}' REFRESH from cached rule '{}'", thingId, channel,
+                        flexScheduleRuleId);
+            }
         }
-        logger.debug("{}: Flex schedule rule cache is empty; loading rule '{}' for channel '{}' REFRESH", thingId,
-                flexScheduleRuleId, channel);
-        return refreshFlexScheduleRule();
+        if (loadMissingCache) {
+            return refreshFlexScheduleRule();
+        }
+        postCachedChannelData(channel);
+        return false;
     }
 
     @Override
@@ -138,37 +148,59 @@ public class RachioFlexScheduleHandler extends AbstractRachioThingHandler {
         }
     }
 
-    protected synchronized boolean refreshFlexScheduleRule() {
-        RachioBridgeHandler handler = cloudHandler;
+    protected boolean refreshFlexScheduleRule() {
+        RachioBridgeHandler handler;
+        String requestedFlexScheduleRuleId;
+        synchronized (this) {
+            handler = cloudHandler;
+            requestedFlexScheduleRuleId = flexScheduleRuleId;
+        }
         if (handler == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             return false;
         }
         try {
-            scheduleRule = loadFlexScheduleRule();
-            scheduleRuleLoaded = true;
-            logger.debug("{}: Loaded flex schedule rule '{}'", thingId, flexScheduleRuleId);
+            RachioFlexScheduleRuleResponse loadedScheduleRule = loadFlexScheduleRule(handler,
+                    requestedFlexScheduleRuleId);
+            if (!applyLoadedFlexScheduleRule(handler, requestedFlexScheduleRuleId, loadedScheduleRule)) {
+                logger.debug("{}: Ignoring stale flex schedule rule '{}' refresh after bridge or rule id changed",
+                        thingId, requestedFlexScheduleRuleId);
+                return false;
+            }
+            logger.debug("{}: Loaded flex schedule rule '{}'", thingId, requestedFlexScheduleRuleId);
             postChannelData();
             updateChannel(CHANNEL_FLEX_SCHEDULE_LAST_UPDATE, getTimestamp());
             if (resetLocalThrottleRetry()) {
                 logger.debug("{}: Deferred initialization succeeded for flex schedule rule '{}'; Thing is ONLINE.",
-                        thingId, flexScheduleRuleId);
+                        thingId, requestedFlexScheduleRuleId);
             }
             return true;
         } catch (RachioApiThrottledException e) {
             long delaySeconds = scheduleInitializationThrottleRetry(
-                    "loading flex schedule rule '" + flexScheduleRuleId + "'", this::goOnline, e);
+                    "loading flex schedule rule '" + requestedFlexScheduleRuleId + "'", this::goOnline, e);
             if (delaySeconds > 0) {
                 logger.debug(
                         "{}: Deferring initialization REST request for flex schedule rule '{}' due to local API bootstrap pacing; retry scheduled in {} seconds.",
-                        thingId, flexScheduleRuleId, delaySeconds);
+                        thingId, requestedFlexScheduleRuleId, delaySeconds);
             }
             return false;
         } catch (RachioApiException e) {
-            logger.debug("{}: Unable to load flex schedule rule '{}': {}", thingId, flexScheduleRuleId, e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            String message = exceptionMessage(e);
+            logger.debug("{}: Unable to load flex schedule rule '{}': {}", thingId, requestedFlexScheduleRuleId,
+                    message);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
             return false;
         }
+    }
+
+    private synchronized boolean applyLoadedFlexScheduleRule(RachioBridgeHandler handler,
+            String requestedFlexScheduleRuleId, RachioFlexScheduleRuleResponse loadedScheduleRule) {
+        if (!Objects.equals(handler, cloudHandler) || !flexScheduleRuleId.equals(requestedFlexScheduleRuleId)) {
+            return false;
+        }
+        scheduleRule = loadedScheduleRule;
+        scheduleRuleLoaded = true;
+        return true;
     }
 
     private void postCachedChannelData(String channel) {
@@ -179,12 +211,9 @@ public class RachioFlexScheduleHandler extends AbstractRachioThingHandler {
         }
     }
 
-    protected RachioFlexScheduleRuleResponse loadFlexScheduleRule() throws RachioApiException {
-        RachioBridgeHandler handler = cloudHandler;
-        if (handler == null) {
-            throw new RachioApiException("Bridge handler is not initialized.");
-        }
-        return handler.getFlexScheduleRuleForInitialization(flexScheduleRuleId);
+    protected RachioFlexScheduleRuleResponse loadFlexScheduleRule(RachioBridgeHandler handler,
+            String requestedFlexScheduleRuleId) throws RachioApiException {
+        return handler.getFlexScheduleRuleForInitialization(requestedFlexScheduleRuleId);
     }
 
     @Override

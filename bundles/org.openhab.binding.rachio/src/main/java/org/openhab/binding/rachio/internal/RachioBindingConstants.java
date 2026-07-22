@@ -276,7 +276,7 @@ public class RachioBindingConstants {
     public static final String APIURL_DEV_DELETE_WEBHOOK = "notification/webhook"; // deprecated
     public static final String APIURL_DEV_WEBHOOK_EVENT_TYPES = "notification/webhook_event_type"; // deprecated
 
-    // New WebhookService endpoints (cloud-rest.rach.io)
+    // Modern webhook endpoints (cloud-rest.rach.io)
     public static final String WEBHOOK_QUERY_CONTROLLER_ID = "resource_id.irrigation_controller_id";
     public static final String WEBHOOK_QUERY_VALVE_ID = "resource_id.valve_id";
     public static final String WEBHOOK_QUERY_PROGRAM_ID = "resource_id.program_id";

@@ -122,7 +122,7 @@ final class RachioQuantityTypes {
     }
 
     static State windSpeedOrUndef(double value, String forecastUnits) {
-        Unit<Speed> unit = isUsForecast(forecastUnits) ? ImperialUnits.MILES_PER_HOUR : Units.METRE_PER_SECOND;
+        Unit<Speed> unit = isUsForecast(forecastUnits) ? ImperialUnits.MILES_PER_HOUR : SIUnits.KILOMETRE_PER_HOUR;
         return quantityOr(value, unit, UnDefType.UNDEF);
     }
 

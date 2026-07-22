@@ -33,6 +33,11 @@ public class RachioUtils {
         return value != null ? value : "";
     }
 
+    public static String exceptionMessage(Throwable e) {
+        String message = e.getMessage();
+        return message != null && !message.isBlank() ? message : e.toString();
+    }
+
     public static String substringBefore(@Nullable String string, String pattern) {
         if (string != null) {
             int pos = string.indexOf(pattern);

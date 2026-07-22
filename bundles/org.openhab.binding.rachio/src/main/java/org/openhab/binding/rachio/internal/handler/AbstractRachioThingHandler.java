@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.rachio.internal.handler;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -46,7 +46,7 @@ public abstract class AbstractRachioThingHandler extends BaseThingHandler implem
     private final Logger logger = LoggerFactory.getLogger(AbstractRachioThingHandler.class);
 
     protected String thingId = "";
-    protected final Map<String, State> channelData = new HashMap<>();
+    protected final Map<String, State> channelData = new ConcurrentHashMap<>();
 
     protected @Nullable Bridge bridge;
 

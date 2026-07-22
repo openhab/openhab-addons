@@ -13,6 +13,7 @@
 package org.openhab.binding.rachio.internal.handler;
 
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.*;
+import static org.openhab.binding.rachio.internal.RachioUtils.exceptionMessage;
 import static org.openhab.binding.rachio.internal.RachioUtils.getTimestamp;
 
 import java.time.Instant;
@@ -172,8 +173,7 @@ public class RachioValveHandler extends AbstractRachioThingHandler {
         } catch (RachioApiException e) {
             errorMessage = e.toString();
         } catch (RuntimeException e) {
-            String message = e.getMessage();
-            errorMessage = message != null ? message : e.toString();
+            errorMessage = exceptionMessage(e);
         } finally {
             if (!errorMessage.isEmpty()) {
                 logger.debug("{}: {}", thingId, errorMessage);
@@ -244,13 +244,15 @@ public class RachioValveHandler extends AbstractRachioThingHandler {
             }
             return false;
         } catch (RachioApiException e) {
-            String message = "Unable to load Rachio Valve '" + valveId + "': " + e.getMessage();
-            logger.debug("{}: {}", thingId, message);
+            String reason = exceptionMessage(e);
+            String message = "Unable to load Rachio Valve '" + valveId + "': " + reason;
+            logger.debug("{}: Unable to load Rachio Valve '{}': {}", thingId, valveId, reason);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
             return false;
         } catch (RuntimeException e) {
-            String message = "Unable to initialize Rachio Valve '" + valveId + "': " + e.getMessage();
-            logger.debug("{}: {}", thingId, message, e);
+            String reason = exceptionMessage(e);
+            String message = "Unable to initialize Rachio Valve '" + valveId + "': " + reason;
+            logger.debug("{}: Unable to initialize Rachio Valve '{}': {}", thingId, valveId, reason, e);
             updateStatus(ThingStatus.OFFLINE,
                     initialLoad ? ThingStatusDetail.CONFIGURATION_ERROR : ThingStatusDetail.COMMUNICATION_ERROR,
                     message);
@@ -278,10 +280,10 @@ public class RachioValveHandler extends AbstractRachioThingHandler {
         } catch (RachioApiThrottledException e) {
             logger.debug(
                     "{}: Skipping Smart Hose Timer summary refresh for valve '{}' because the local API budget guard is active: {}",
-                    thingId, valveId, e.getMessage());
+                    thingId, valveId, exceptionMessage(e));
         } catch (RachioApiException e) {
             logger.debug("{}: Unable to load Smart Hose Timer summary for valve '{}': {}; retaining last known values",
-                    thingId, valveId, e.getMessage());
+                    thingId, valveId, exceptionMessage(e));
         }
     }
 

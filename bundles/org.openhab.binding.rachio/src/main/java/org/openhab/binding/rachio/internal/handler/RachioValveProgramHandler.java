@@ -13,6 +13,7 @@
 package org.openhab.binding.rachio.internal.handler;
 
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.*;
+import static org.openhab.binding.rachio.internal.RachioUtils.exceptionMessage;
 import static org.openhab.binding.rachio.internal.RachioUtils.getTimestamp;
 
 import java.time.Instant;
@@ -126,8 +127,7 @@ public class RachioValveProgramHandler extends AbstractRachioThingHandler {
         } catch (RachioApiException e) {
             errorMessage = e.toString();
         } catch (RuntimeException e) {
-            String message = e.getMessage();
-            errorMessage = message != null ? message : e.toString();
+            errorMessage = exceptionMessage(e);
         } finally {
             if (!errorMessage.isEmpty()) {
                 logger.debug("{}: {}", thingId, errorMessage);
@@ -187,13 +187,15 @@ public class RachioValveProgramHandler extends AbstractRachioThingHandler {
             }
             return false;
         } catch (RachioApiException e) {
-            String message = "Unable to load Rachio Valve Program '" + programId + "': " + e.getMessage();
-            logger.debug("{}: {}", thingId, message);
+            String reason = exceptionMessage(e);
+            String message = "Unable to load Rachio Valve Program '" + programId + "': " + reason;
+            logger.debug("{}: Unable to load Rachio Valve Program '{}': {}", thingId, programId, reason);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
             return false;
         } catch (RuntimeException e) {
-            String message = "Unable to initialize Rachio Valve Program '" + programId + "': " + e.getMessage();
-            logger.debug("{}: {}", thingId, message, e);
+            String reason = exceptionMessage(e);
+            String message = "Unable to initialize Rachio Valve Program '" + programId + "': " + reason;
+            logger.debug("{}: Unable to initialize Rachio Valve Program '{}': {}", thingId, programId, reason, e);
             updateStatus(ThingStatus.OFFLINE,
                     initialLoad ? ThingStatusDetail.CONFIGURATION_ERROR : ThingStatusDetail.COMMUNICATION_ERROR,
                     message);
@@ -241,10 +243,10 @@ public class RachioValveProgramHandler extends AbstractRachioThingHandler {
         } catch (RachioApiThrottledException e) {
             logger.debug(
                     "{}: Skipping Smart Hose Timer Program summary refresh for program '{}' because the local API budget guard is active: {}",
-                    thingId, currentProgram.id, e.getMessage());
+                    thingId, currentProgram.id, exceptionMessage(e));
         } catch (RachioApiException e) {
             logger.debug("{}: Unable to load Smart Hose Timer Program summary for program '{}': {}; retaining values",
-                    thingId, currentProgram.id, e.getMessage());
+                    thingId, currentProgram.id, exceptionMessage(e));
         }
     }
 

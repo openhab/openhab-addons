@@ -19,7 +19,7 @@ import java.util.Locale;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Resource categories supported by the modern Rachio WebhookService.
+ * Resource categories supported by the modern Rachio webhook API.
  *
  * @author openHAB Contributors - Initial contribution
  */

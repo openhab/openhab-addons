@@ -13,11 +13,21 @@
 package org.openhab.binding.rachio.internal.api.json;
 
 import java.math.BigDecimal;
+import java.time.DateTimeException;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -193,6 +203,8 @@ public class RachioSmartIrrigationGsonDTO {
     }
 
     public static class RachioForecastResponse {
+        private final Logger logger = LoggerFactory.getLogger(RachioForecastResponse.class);
+
         public String summary = "";
         public String updated = "";
         public String updatedAt = "";
@@ -219,17 +231,26 @@ public class RachioSmartIrrigationGsonDTO {
         }
 
         public String getSummary() {
-            RachioForecastEntry todayForecast = getTodayForecast();
-            return firstNonBlank(summary, todayForecast != null ? todayForecast.summary : "");
+            ZoneId zoneId = ZoneId.systemDefault();
+            return getSummary(LocalDate.now(zoneId), zoneId);
+        }
+
+        public String getSummary(LocalDate currentDate, ZoneId zoneId) {
+            ForecastSelection selection = selectTodayForecast(currentDate, zoneId);
+            return getSummary(selection, currentDate, zoneId);
         }
 
         public String getUpdated() {
-            RachioForecastEntry todayForecast = getTodayForecast();
-            return firstNonBlank(updated, updatedAt, todayForecast != null ? todayForecast.time : "");
+            return firstNonBlank(updated, updatedAt);
         }
 
         public String buildSummary(String forecastUnits) {
-            RachioForecastEntry todayForecast = getTodayForecast();
+            ZoneId zoneId = ZoneId.systemDefault();
+            return buildSummary(forecastUnits, LocalDate.now(zoneId), zoneId);
+        }
+
+        public String buildSummary(String forecastUnits, LocalDate currentDate, ZoneId zoneId) {
+            RachioForecastEntry todayForecast = getTodayForecast(currentDate, zoneId);
             if (todayForecast == null) {
                 return "";
             }
@@ -255,37 +276,43 @@ public class RachioSmartIrrigationGsonDTO {
             }
             double wind = todayForecast.getWind();
             if (!Double.isNaN(wind)) {
-                double displayWind = usUnits ? wind : Math.round(wind * 36) / 10.0;
                 String windUnit = usUnits ? "mph" : "km/h";
-                parts.add("wind " + formatForecastNumber(displayWind) + " " + windUnit);
+                parts.add("wind " + formatForecastNumber(wind) + " " + windUnit);
             }
             return String.join(", ", parts);
         }
 
         public @Nullable RachioForecastEntry getTodayForecast() {
-            if (today != null) {
-                return today;
-            }
-            if (!forecast.isEmpty()) {
-                return forecast.get(0);
-            }
-            if (!forecasts.isEmpty()) {
-                return forecasts.get(0);
-            }
-            if (!dailyForecasts.isEmpty()) {
-                return dailyForecasts.get(0);
-            }
-            return null;
+            ZoneId zoneId = ZoneId.systemDefault();
+            return getTodayForecast(LocalDate.now(zoneId), zoneId);
+        }
+
+        public @Nullable RachioForecastEntry getTodayForecast(LocalDate currentDate, ZoneId zoneId) {
+            return selectTodayForecast(currentDate, zoneId).entry;
         }
 
         public boolean hasUsefulData() {
-            RachioForecastEntry todayForecast = getTodayForecast();
-            return !getSummary().isBlank() || (todayForecast != null && todayForecast.hasUsefulData());
+            ZoneId zoneId = ZoneId.systemDefault();
+            return hasUsefulData(LocalDate.now(zoneId), zoneId);
+        }
+
+        public boolean hasUsefulData(LocalDate currentDate, ZoneId zoneId) {
+            ForecastSelection selection = selectTodayForecast(currentDate, zoneId);
+            RachioForecastEntry todayForecast = selection.entry;
+            return !getSummary(selection, currentDate, zoneId).isBlank()
+                    || (todayForecast != null && todayForecast.hasUsefulData());
         }
 
         public String parsedFieldSummary() {
-            RachioForecastEntry todayForecast = getTodayForecast();
-            return "todayFound=" + (todayForecast != null) + ", summary=" + !getSummary().isBlank() + ", high="
+            ZoneId zoneId = ZoneId.systemDefault();
+            return parsedFieldSummary(LocalDate.now(zoneId), zoneId);
+        }
+
+        public String parsedFieldSummary(LocalDate currentDate, ZoneId zoneId) {
+            ForecastSelection selection = selectTodayForecast(currentDate, zoneId);
+            RachioForecastEntry todayForecast = selection.entry;
+            return "todayFound=" + (todayForecast != null) + ", summary="
+                    + !getSummary(selection, currentDate, zoneId).isBlank() + ", high="
                     + (todayForecast != null && !Double.isNaN(todayForecast.getHighTemperature())) + ", low="
                     + (todayForecast != null && !Double.isNaN(todayForecast.getLowTemperature())) + ", precipitation="
                     + (todayForecast != null && !Double.isNaN(todayForecast.precipitation)) + ", probability="
@@ -295,7 +322,12 @@ public class RachioSmartIrrigationGsonDTO {
         }
 
         public String shapeSummary() {
-            RachioForecastEntry todayForecast = getTodayForecast();
+            ZoneId zoneId = ZoneId.systemDefault();
+            return shapeSummary(LocalDate.now(zoneId), zoneId);
+        }
+
+        public String shapeSummary(LocalDate currentDate, ZoneId zoneId) {
+            RachioForecastEntry todayForecast = getTodayForecast(currentDate, zoneId);
             List<String> aliases = new ArrayList<>(matchedAliases);
             if (todayForecast != null) {
                 aliases.addAll(todayForecast.matchedAliases);
@@ -303,6 +335,110 @@ public class RachioSmartIrrigationGsonDTO {
             return "topLevelKeys=" + String.join(",", topLevelFieldNames) + ", selectedEntryKeys="
                     + (todayForecast != null ? String.join(",", todayForecast.sourceFieldNames) : "")
                     + ", matchedAliases=" + String.join(",", aliases);
+        }
+
+        private String getSummary(ForecastSelection selection, LocalDate currentDate, ZoneId zoneId) {
+            RachioForecastEntry todayForecast = selection.entry;
+            if (summaryBelongsToIgnoredDatedTopLevelEntry(todayForecast, currentDate, zoneId)
+                    || (todayForecast == null && selection.foundParsedDate)) {
+                return todayForecast != null ? todayForecast.summary : "";
+            }
+            return firstNonBlank(summary, todayForecast != null ? todayForecast.summary : "");
+        }
+
+        private boolean summaryBelongsToIgnoredDatedTopLevelEntry(@Nullable RachioForecastEntry selectedForecast,
+                LocalDate currentDate, ZoneId zoneId) {
+            @Nullable
+            RachioForecastEntry topLevelEntry = today;
+            if (topLevelEntry == null || Objects.equals(topLevelEntry, selectedForecast) || summary.isBlank()
+                    || !summary.equals(topLevelEntry.summary)) {
+                return false;
+            }
+            LocalDate topLevelDate = topLevelEntry.getForecastDate(zoneId);
+            return topLevelDate != null && !topLevelDate.equals(currentDate);
+        }
+
+        private ForecastSelection selectTodayForecast(LocalDate currentDate, ZoneId zoneId) {
+            ArrayList<ForecastCandidate> candidates = new ArrayList<>();
+            @Nullable
+            RachioForecastEntry todayEntry = today;
+            if (todayEntry != null) {
+                candidates.add(new ForecastCandidate(todayEntry, "today", true));
+            }
+            addForecastCandidates(candidates, forecast, "forecast");
+            addForecastCandidates(candidates, forecasts, "forecasts");
+            addForecastCandidates(candidates, dailyForecasts, "dailyForecasts");
+
+            @Nullable
+            RachioForecastEntry firstUsefulFallback = null;
+            @Nullable
+            RachioForecastEntry firstUndatedFallback = null;
+            boolean foundParsedDate = false;
+
+            for (ForecastCandidate candidate : candidates) {
+                RachioForecastEntry entry = candidate.entry;
+                if (!entry.hasUsefulData()) {
+                    continue;
+                }
+                if (firstUsefulFallback == null) {
+                    firstUsefulFallback = entry;
+                }
+
+                LocalDate entryDate = entry.getForecastDate(zoneId);
+                if (entryDate != null) {
+                    foundParsedDate = true;
+                    if (entryDate.equals(currentDate)) {
+                        logger.debug("Selected today forecast by matching local date {} from {} entry date/time '{}'",
+                                currentDate, candidate.source, entry.getForecastDateTimeForLog());
+                        return new ForecastSelection(entry, true);
+                    }
+                    logger.trace(
+                            "Ignored dated forecast entry from {} with date/time '{}' because date {} is not controller-local today {}",
+                            candidate.source, entry.getForecastDateTimeForLog(), entryDate, currentDate);
+                    continue;
+                }
+
+                if (!entry.hasForecastDateTimeValue()) {
+                    if (candidate.explicitToday) {
+                        logger.trace("Selected explicit today forecast without date/time for local date {}",
+                                currentDate);
+                        return new ForecastSelection(entry, foundParsedDate);
+                    }
+                    if (firstUndatedFallback == null) {
+                        firstUndatedFallback = entry;
+                    }
+                }
+            }
+
+            if (foundParsedDate) {
+                if (firstUndatedFallback != null) {
+                    logger.trace(
+                            "Selected undated forecast entry because no dated entry matched controller-local date {}",
+                            currentDate);
+                    return new ForecastSelection(firstUndatedFallback, true);
+                }
+                logger.debug("No dated today forecast entry found for local date {}; retaining previous values",
+                        currentDate);
+                return new ForecastSelection(null, true);
+            }
+
+            if (firstUsefulFallback != null) {
+                logger.trace("Selected first useful forecast entry because no forecast date/time could be parsed");
+            }
+            return new ForecastSelection(firstUsefulFallback, false);
+        }
+
+        private static void addForecastCandidates(List<ForecastCandidate> candidates, List<RachioForecastEntry> entries,
+                String source) {
+            for (RachioForecastEntry entry : entries) {
+                candidates.add(new ForecastCandidate(entry, source, false));
+            }
+        }
+
+        private record ForecastCandidate(RachioForecastEntry entry, String source, boolean explicitToday) {
+        }
+
+        private record ForecastSelection(@Nullable RachioForecastEntry entry, boolean foundParsedDate) {
         }
 
         private static void parseForecastObject(RachioForecastResponse response, JsonObject object) {
@@ -447,6 +583,84 @@ public class RachioSmartIrrigationGsonDTO {
             return !summary.isBlank() || !Double.isNaN(getHighTemperature()) || !Double.isNaN(getLowTemperature())
                     || !Double.isNaN(precipitation) || !Double.isNaN(precipitationProbability)
                     || !Double.isNaN(getWind());
+        }
+
+        private boolean hasForecastDateTimeValue() {
+            return !date.isBlank() || !time.isBlank();
+        }
+
+        private String getForecastDateTimeForLog() {
+            return firstNonBlank(date, time);
+        }
+
+        private @Nullable LocalDate getForecastDate(ZoneId zoneId) {
+            LocalDate parsedDate = parseForecastDate(date, zoneId);
+            return parsedDate != null ? parsedDate : parseForecastDate(time, zoneId);
+        }
+
+        private static @Nullable LocalDate parseForecastDate(String value, ZoneId zoneId) {
+            String trimmed = value.trim();
+            if (trimmed.isBlank()) {
+                return null;
+            }
+
+            LocalDate numericDate = parseNumericForecastDate(trimmed, zoneId);
+            if (numericDate != null) {
+                return numericDate;
+            }
+            try {
+                return Instant.parse(trimmed).atZone(zoneId).toLocalDate();
+            } catch (DateTimeException e) {
+                // Try the next supported timestamp shape.
+            }
+            try {
+                return OffsetDateTime.parse(trimmed).atZoneSameInstant(zoneId).toLocalDate();
+            } catch (DateTimeException e) {
+                // Try the next supported timestamp shape.
+            }
+            try {
+                return ZonedDateTime.parse(trimmed).withZoneSameInstant(zoneId).toLocalDate();
+            } catch (DateTimeException e) {
+                // Try the next supported timestamp shape.
+            }
+            try {
+                return LocalDateTime.parse(trimmed).toLocalDate();
+            } catch (DateTimeException e) {
+                // Try the next supported timestamp shape.
+            }
+            if (trimmed.contains(" ")) {
+                try {
+                    return LocalDateTime.parse(trimmed.replace(' ', 'T')).toLocalDate();
+                } catch (DateTimeException e) {
+                    // Try the next supported timestamp shape.
+                }
+            }
+            try {
+                return LocalDate.parse(trimmed);
+            } catch (DateTimeException e) {
+                // Try the date prefix as a final compatibility fallback.
+            }
+            if (trimmed.length() >= 10) {
+                try {
+                    return LocalDate.parse(trimmed.substring(0, 10));
+                } catch (DateTimeException e) {
+                    return null;
+                }
+            }
+            return null;
+        }
+
+        private static @Nullable LocalDate parseNumericForecastDate(String value, ZoneId zoneId) {
+            if (!value.matches("-?\\d+")) {
+                return null;
+            }
+            try {
+                long epoch = Long.parseLong(value);
+                long epochMillis = Math.abs(epoch) < 10_000_000_000L ? epoch * 1000 : epoch;
+                return Instant.ofEpochMilli(epochMillis).atZone(zoneId).toLocalDate();
+            } catch (DateTimeException | NumberFormatException e) {
+                return null;
+            }
         }
     }
 
