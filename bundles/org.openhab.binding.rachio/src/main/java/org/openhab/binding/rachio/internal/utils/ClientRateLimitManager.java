@@ -36,11 +36,11 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class ClientRateLimitManager {
 
-    public enum PRIORITY {
+    public enum Priority {
         VERY_LOW,
         LOW,
-        MED,
-        HI;
+        MEDIUM,
+        HIGH;
     }
 
     public enum RequestPurpose {
@@ -89,7 +89,7 @@ public class ClientRateLimitManager {
         logRequest();
     }
 
-    public boolean shouldThrottle(PRIORITY priority) {
+    public boolean shouldThrottle(Priority priority) {
         try {
             tryThrottle(priority);
         } catch (RateLimitThrottleException e) {
@@ -98,12 +98,12 @@ public class ClientRateLimitManager {
         return false;
     }
 
-    public void tryThrottle(PRIORITY priority) throws RateLimitThrottleException {
+    public void tryThrottle(Priority priority) throws RateLimitThrottleException {
         tryThrottle(priority, RequestPurpose.BACKGROUND_REFRESH);
     }
 
-    public void tryThrottle(PRIORITY priority, RequestPurpose requestPurpose) throws RateLimitThrottleException {
-        if (priority == PRIORITY.HI || !rateLimitKnown
+    public void tryThrottle(Priority priority, RequestPurpose requestPurpose) throws RateLimitThrottleException {
+        if (priority == Priority.HIGH || !rateLimitKnown
                 || (rateResetTime != Instant.MAX && System.currentTimeMillis() >= rateResetTime.toEpochMilli())) {
             return;
         }
@@ -116,9 +116,9 @@ public class ClientRateLimitManager {
             if (rateRemaining <= RACHIO_RATE_LIMIT_CRITICAL) {
                 throw new RateLimitThrottleException(priority, requestPurpose, budgetRate(), currentRate());
             }
-            // Only the minimal MED-priority person/current_schedule polling path may bypass the local average.
+            // Only the minimal medium-priority person/current_schedule polling path may bypass the local average.
             // Optional enrichments remain LOW/BACKGROUND_REFRESH and are still throttled normally.
-            if (priority == PRIORITY.MED && rateRemaining >= RACHIO_RATE_LIMIT_WARNING) {
+            if (priority == Priority.MEDIUM && rateRemaining >= RACHIO_RATE_LIMIT_WARNING) {
                 return;
             }
         }
@@ -132,10 +132,10 @@ public class ClientRateLimitManager {
 
         boolean throttle;
         switch (priority) {
-            case HI:
+            case HIGH:
                 throttle = currentRate > budgetRate * 1.1;
                 break;
-            case MED:
+            case MEDIUM:
                 throttle = currentRate > budgetRate * 0.9;
                 break;
             case LOW:
@@ -277,17 +277,17 @@ public class ClientRateLimitManager {
     public static class RateLimitThrottleException extends Exception {
         private static final long serialVersionUID = 1L;
 
-        public final PRIORITY priority;
+        public final Priority priority;
         public final RequestPurpose requestPurpose;
         public final double budgetRate;
         public final double currentRate;
         public final Duration suggestedRetryDelay;
 
-        public RateLimitThrottleException(PRIORITY priority, double budgetRate, double currentRate) {
+        public RateLimitThrottleException(Priority priority, double budgetRate, double currentRate) {
             this(priority, RequestPurpose.BACKGROUND_REFRESH, budgetRate, currentRate);
         }
 
-        public RateLimitThrottleException(PRIORITY priority, RequestPurpose requestPurpose, double budgetRate,
+        public RateLimitThrottleException(Priority priority, RequestPurpose requestPurpose, double budgetRate,
                 double currentRate) {
             super();
             this.priority = priority;
@@ -297,7 +297,7 @@ public class ClientRateLimitManager {
             this.suggestedRetryDelay = calculateSuggestedRetryDelay(priority, requestPurpose, budgetRate);
         }
 
-        private Duration calculateSuggestedRetryDelay(PRIORITY priority, RequestPurpose requestPurpose,
+        private Duration calculateSuggestedRetryDelay(Priority priority, RequestPurpose requestPurpose,
                 double budgetRate) {
             if (requestPurpose == RequestPurpose.INITIALIZATION) {
                 return budgetRate <= 0 ? Duration.ofSeconds(30) : Duration.ofSeconds(10);
@@ -305,8 +305,8 @@ public class ClientRateLimitManager {
             return switch (priority) {
                 case VERY_LOW -> Duration.ofSeconds(60);
                 case LOW -> Duration.ofSeconds(30);
-                case MED -> Duration.ofSeconds(15);
-                case HI -> Duration.ZERO;
+                case MEDIUM -> Duration.ofSeconds(15);
+                case HIGH -> Duration.ZERO;
             };
         }
 

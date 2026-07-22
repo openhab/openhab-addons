@@ -15,7 +15,7 @@ package org.openhab.binding.rachio.internal.api;
 import java.time.Duration;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager.PRIORITY;
+import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager.Priority;
 import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager.RateLimitThrottleException;
 import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager.RequestPurpose;
 
@@ -28,7 +28,7 @@ import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager.RequestP
 public class RachioApiThrottledException extends RachioApiException {
     private static final long serialVersionUID = 1L;
 
-    private final PRIORITY priority;
+    private final Priority priority;
     private final RequestPurpose requestPurpose;
     private final double budgetRate;
     private final double currentRate;
@@ -43,7 +43,7 @@ public class RachioApiThrottledException extends RachioApiException {
         this.suggestedRetryDelay = throttle.suggestedRetryDelay;
     }
 
-    public PRIORITY getPriority() {
+    public Priority getPriority() {
         return priority;
     }
 

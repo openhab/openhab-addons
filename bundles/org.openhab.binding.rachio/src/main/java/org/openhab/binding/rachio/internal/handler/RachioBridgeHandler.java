@@ -63,7 +63,7 @@ import org.openhab.binding.rachio.internal.api.webhook.RachioWebhookTarget;
 import org.openhab.binding.rachio.internal.discovery.RachioDiscoveryService;
 import org.openhab.binding.rachio.internal.handler.RachioCloudWebhookRegistry.CloudWebhookException;
 import org.openhab.binding.rachio.internal.handler.RachioCloudWebhookRegistry.CloudWebhookLease;
-import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager.PRIORITY;
+import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager.Priority;
 import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager.RequestPurpose;
 import org.openhab.core.config.core.status.ConfigStatusMessage;
 import org.openhab.core.thing.Bridge;
@@ -419,14 +419,14 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
         personId = api.getPersonId();
     }
 
-    PRIORITY getRefreshPriority(RefreshReason refreshReason) {
+    Priority getRefreshPriority(RefreshReason refreshReason) {
         switch (refreshReason) {
             case SCHEDULED_POLL:
             case WEBHOOK_RECONCILIATION:
             case INITIALIZATION:
             case MANUAL:
             default:
-                return PRIORITY.MED;
+                return Priority.MEDIUM;
         }
     }
 

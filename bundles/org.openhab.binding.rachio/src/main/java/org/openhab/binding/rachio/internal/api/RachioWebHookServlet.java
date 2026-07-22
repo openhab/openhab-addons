@@ -266,7 +266,7 @@ public class RachioWebHookServlet extends HttpServlet {
     }
 
     private String getClientIpAddress(HttpServletRequest request) {
-        String ipAddress = request.getHeader("HTTP_X_FORWARDED_FOR");
+        String ipAddress = request.getHeader("X-Forwarded-For");
         if (ipAddress == null) {
             ipAddress = request.getRemoteAddr();
         }

@@ -82,7 +82,7 @@ import org.openhab.binding.rachio.internal.api.json.RachioSmartIrrigationGsonDTO
 import org.openhab.binding.rachio.internal.api.webhook.RachioWebhookResourceType;
 import org.openhab.binding.rachio.internal.api.webhook.RachioWebhookTarget;
 import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager;
-import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager.PRIORITY;
+import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager.Priority;
 import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager.RateLimitThrottleException;
 import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager.RequestPurpose;
 import org.openhab.core.thing.Thing;
@@ -136,7 +136,7 @@ public class RachioApi {
         lastApiResult = result;
     }
 
-    private void throttleIfNeeded(PRIORITY priority, RequestPurpose requestPurpose) throws RachioApiException {
+    private void throttleIfNeeded(Priority priority, RequestPurpose requestPurpose) throws RachioApiException {
         try {
             rateLimitManager.tryThrottle(priority, requestPurpose);
         } catch (RateLimitThrottleException e) {
@@ -164,15 +164,15 @@ public class RachioApi {
         lastApiResult = result;
     }
 
-    private PRIORITY readPriority(RequestPurpose requestPurpose) {
-        return requestPurpose == RequestPurpose.INITIALIZATION ? PRIORITY.MED : PRIORITY.LOW;
+    private Priority readPriority(RequestPurpose requestPurpose) {
+        return requestPurpose == RequestPurpose.INITIALIZATION ? Priority.MEDIUM : Priority.LOW;
     }
 
-    private RachioApiResult httpGet(String url, @Nullable String params, PRIORITY priority) throws RachioApiException {
+    private RachioApiResult httpGet(String url, @Nullable String params, Priority priority) throws RachioApiException {
         return httpGet(url, params, priority, RequestPurpose.BACKGROUND_REFRESH);
     }
 
-    private RachioApiResult httpGet(String url, @Nullable String params, PRIORITY priority,
+    private RachioApiResult httpGet(String url, @Nullable String params, Priority priority,
             RequestPurpose requestPurpose) throws RachioApiException {
         throttleIfNeeded(priority, requestPurpose);
         try {
@@ -183,7 +183,7 @@ public class RachioApi {
         }
     }
 
-    private RachioApiResult httpPut(String url, String data, PRIORITY priority) throws RachioApiException {
+    private RachioApiResult httpPut(String url, String data, Priority priority) throws RachioApiException {
         throttleIfNeeded(priority, RequestPurpose.USER_COMMAND);
         try {
             return recordApiResult(httpApi.httpPut(url, data));
@@ -193,11 +193,11 @@ public class RachioApi {
         }
     }
 
-    private RachioApiResult httpPost(String url, String data, PRIORITY priority) throws RachioApiException {
+    private RachioApiResult httpPost(String url, String data, Priority priority) throws RachioApiException {
         return httpPost(url, data, priority, RequestPurpose.BACKGROUND_REFRESH);
     }
 
-    private RachioApiResult httpPost(String url, String data, PRIORITY priority, RequestPurpose requestPurpose)
+    private RachioApiResult httpPost(String url, String data, Priority priority, RequestPurpose requestPurpose)
             throws RachioApiException {
         throttleIfNeeded(priority, requestPurpose);
         try {
@@ -208,12 +208,12 @@ public class RachioApi {
         }
     }
 
-    private RachioApiResult httpDelete(String url, @Nullable String params, PRIORITY priority)
+    private RachioApiResult httpDelete(String url, @Nullable String params, Priority priority)
             throws RachioApiException {
         return httpDelete(url, params, priority, RequestPurpose.USER_COMMAND);
     }
 
-    private RachioApiResult httpDelete(String url, @Nullable String params, PRIORITY priority,
+    private RachioApiResult httpDelete(String url, @Nullable String params, Priority priority,
             RequestPurpose requestPurpose) throws RachioApiException {
         throttleIfNeeded(priority, requestPurpose);
         try {
@@ -252,14 +252,14 @@ public class RachioApi {
     }
 
     public void initialize(String apikey, ThingUID bridgeUID) throws RachioApiException {
-        initialize(apikey, bridgeUID, PRIORITY.MED, RequestPurpose.INITIALIZATION);
+        initialize(apikey, bridgeUID, Priority.MEDIUM, RequestPurpose.INITIALIZATION);
     }
 
-    public void initialize(String apikey, ThingUID bridgeUID, PRIORITY priority) throws RachioApiException {
+    public void initialize(String apikey, ThingUID bridgeUID, Priority priority) throws RachioApiException {
         initialize(apikey, bridgeUID, priority, RequestPurpose.BACKGROUND_REFRESH);
     }
 
-    public void initialize(String apikey, ThingUID bridgeUID, PRIORITY priority, RequestPurpose requestPurpose)
+    public void initialize(String apikey, ThingUID bridgeUID, Priority priority, RequestPurpose requestPurpose)
             throws RachioApiException {
         this.apikey = apikey;
         this.bridgeUID = bridgeUID;
@@ -559,7 +559,7 @@ public class RachioApi {
                 || expectedUID.getAsString().equalsIgnoreCase(requestedUID.getAsString());
     }
 
-    private Boolean initializePersonId(PRIORITY priority, RequestPurpose requestPurpose) throws RachioApiException {
+    private Boolean initializePersonId(Priority priority, RequestPurpose requestPurpose) throws RachioApiException {
         if (!personId.isEmpty()) {
             logger.trace("Using cached Rachio person ID.");
             return true;
@@ -586,34 +586,34 @@ public class RachioApi {
 
     public void stopWatering(String deviceId) throws RachioApiException {
         logger.debug("Stop watering for device '{}'", deviceId);
-        httpPut(APIURL_BASE + APIURL_DEV_PUT_STOP, "{ \"id\" : \"" + deviceId + "\" }", PRIORITY.HI);
+        httpPut(APIURL_BASE + APIURL_DEV_PUT_STOP, "{ \"id\" : \"" + deviceId + "\" }", Priority.HIGH);
     }
 
     public void enableDevice(String deviceId) throws RachioApiException {
         logger.debug("Enable device '{}'.", deviceId);
-        httpPut(APIURL_BASE + APIURL_DEV_PUT_ON, "{ \"id\" : \"" + deviceId + "\" }", PRIORITY.HI);
+        httpPut(APIURL_BASE + APIURL_DEV_PUT_ON, "{ \"id\" : \"" + deviceId + "\" }", Priority.HIGH);
     }
 
     public void disableDevice(String deviceId) throws RachioApiException {
         logger.debug("Disable device '{}'.", deviceId);
-        httpPut(APIURL_BASE + APIURL_DEV_PUT_OFF, "{ \"id\" : \"" + deviceId + "\" }", PRIORITY.HI);
+        httpPut(APIURL_BASE + APIURL_DEV_PUT_OFF, "{ \"id\" : \"" + deviceId + "\" }", Priority.HIGH);
     }
 
     public void rainDelay(String deviceId, Integer delay) throws RachioApiException {
         logger.debug("Start rain delay for device '{}'.", deviceId);
         httpPut(APIURL_BASE + APIURL_DEV_PUT_RAIN_DELAY,
-                "{ \"id\" : \"" + deviceId + "\", \"duration\" : " + delay + " }", PRIORITY.HI);
+                "{ \"id\" : \"" + deviceId + "\", \"duration\" : " + delay + " }", Priority.HIGH);
     }
 
     public void pauseZoneRun(String deviceId, int duration) throws RachioApiException {
         logger.debug("Pause active zone run for device '{}' for {} sec.", deviceId, duration);
         httpPut(APIURL_BASE + APIURL_DEV_PUT_PAUSE_ZONE_RUN,
-                "{ \"id\" : \"" + deviceId + "\", \"duration\" : " + duration + " }", PRIORITY.HI);
+                "{ \"id\" : \"" + deviceId + "\", \"duration\" : " + duration + " }", Priority.HIGH);
     }
 
     public void resumeZoneRun(String deviceId) throws RachioApiException {
         logger.debug("Resume active zone run for device '{}'.", deviceId);
-        httpPut(APIURL_BASE + APIURL_DEV_PUT_RESUME_ZONE_RUN, "{ \"id\" : \"" + deviceId + "\" }", PRIORITY.HI);
+        httpPut(APIURL_BASE + APIURL_DEV_PUT_RESUME_ZONE_RUN, "{ \"id\" : \"" + deviceId + "\" }", Priority.HIGH);
     }
 
     public void runMultipleZones(String zoneListJson) throws RachioApiException {
@@ -623,7 +623,7 @@ public class RachioApi {
         } else {
             logger.debug("Start multiple zones: zoneCount=unknown, requestLength={}.", zoneListJson.length());
         }
-        httpPut(APIURL_BASE + APIURL_ZONE_PUT_MULTIPLE_START, zoneListJson, PRIORITY.HI);
+        httpPut(APIURL_BASE + APIURL_ZONE_PUT_MULTIPLE_START, zoneListJson, Priority.HIGH);
     }
 
     private int countStartMultipleZoneEntries(String zoneListJson) {
@@ -644,17 +644,17 @@ public class RachioApi {
     public void runZone(String zoneId, int duration) throws RachioApiException {
         logger.debug("Start zone '{}' for {} sec.", zoneId, duration);
         httpPut(APIURL_BASE + APIURL_ZONE_PUT_START, "{ \"id\" : \"" + zoneId + "\", \"duration\" : " + duration + " }",
-                PRIORITY.HI);
+                Priority.HIGH);
     }
 
     public void enableZone(String zoneId) throws RachioApiException {
         logger.debug("Enable zone '{}'.", zoneId);
-        httpPut(APIURL_BASE + APIURL_ZONE_PUT_ENABLE, "{ \"id\" : \"" + zoneId + "\" }", PRIORITY.HI);
+        httpPut(APIURL_BASE + APIURL_ZONE_PUT_ENABLE, "{ \"id\" : \"" + zoneId + "\" }", Priority.HIGH);
     }
 
     public void disableZone(String zoneId) throws RachioApiException {
         logger.debug("Disable zone '{}'.", zoneId);
-        httpPut(APIURL_BASE + APIURL_ZONE_PUT_DISABLE, "{ \"id\" : \"" + zoneId + "\" }", PRIORITY.HI);
+        httpPut(APIURL_BASE + APIURL_ZONE_PUT_DISABLE, "{ \"id\" : \"" + zoneId + "\" }", Priority.HIGH);
     }
 
     public RachioCurrentScheduleResponse getCurrentSchedule(String deviceId) throws RachioApiException {
@@ -666,7 +666,7 @@ public class RachioApi {
         logger.debug("Load current schedule for device '{}'.", deviceId);
         String json = httpGet(
                 APIURL_BASE + APIURL_GET_DEVICE + "/" + deviceId + "/" + APIURL_GET_DEVICE_CURRENT_SCHEDULE, null,
-                PRIORITY.MED, requestPurpose).resultString;
+                Priority.MEDIUM, requestPurpose).resultString;
         RachioCurrentScheduleResponse response = new Gson().fromJson(json, RachioCurrentScheduleResponse.class);
         return response != null ? response : new RachioCurrentScheduleResponse();
     }
@@ -676,7 +676,7 @@ public class RachioApi {
         logger.debug("Load device events for device '{}' from {} to {}.", deviceId, startTime, endTime);
         String params = "startTime=" + startTime + "&endTime=" + endTime;
         String json = httpGet(APIURL_BASE + APIURL_GET_DEVICE + "/" + deviceId + "/" + APIURL_GET_DEVICE_EVENT, params,
-                PRIORITY.LOW).resultString;
+                Priority.LOW).resultString;
         RachioDeviceEventListResponse response = RachioDeviceEventListResponse.fromJson(json);
         logger.debug("Loaded {} device events for device '{}'.", response.events.size(), deviceId);
         return response;
@@ -686,14 +686,14 @@ public class RachioApi {
         String normalizedUnits = "US".equalsIgnoreCase(units) ? "US" : "METRIC";
         logger.debug("Load forecast for device '{}' using {} units.", deviceId, normalizedUnits);
         String json = httpGet(APIURL_BASE + APIURL_GET_DEVICE + "/" + deviceId + "/" + APIURL_GET_DEVICE_FORECAST,
-                "units=" + urlEncode(normalizedUnits), PRIORITY.LOW).resultString;
+                "units=" + urlEncode(normalizedUnits), Priority.LOW).resultString;
         return RachioForecastResponse.fromJson(json);
     }
 
     public List<RachioProperty> listProperties(String userId) throws RachioApiException {
         logger.debug("Load Rachio properties for user '{}'.", userId);
         String json = httpGet(APIURL_CLOUD_REST_BASE + PROPERTY_LIST + urlEncode(userId), null,
-                PRIORITY.LOW).resultString;
+                Priority.LOW).resultString;
         RachioPropertyListResponse response = RachioPropertyListResponse.fromJson(json);
         logger.debug("Loaded {} Rachio properties for user '{}'.", response.properties.size(), userId);
         return response.properties;
@@ -702,7 +702,7 @@ public class RachioApi {
     public RachioProperty getProperty(String propertyId) throws RachioApiException {
         logger.debug("Load Rachio property '{}'.", propertyId);
         String json = httpGet(APIURL_CLOUD_REST_BASE + PROPERTY_GET + urlEncode(propertyId), null,
-                PRIORITY.LOW).resultString;
+                Priority.LOW).resultString;
         RachioProperty property = RachioPropertyGsonDTO.parseProperty(json);
         return property != null ? property : new RachioProperty();
     }
@@ -710,7 +710,7 @@ public class RachioApi {
     public Optional<RachioProperty> findPropertyByEntity(String entityId, String entityType) throws RachioApiException {
         String query = buildPropertyEntityQuery(entityId, entityType);
         logger.debug("Find Rachio property by entity type '{}'.", entityType);
-        String json = httpGet(APIURL_CLOUD_REST_BASE + PROPERTY_FIND_BY_ENTITY, query, PRIORITY.LOW).resultString;
+        String json = httpGet(APIURL_CLOUD_REST_BASE + PROPERTY_FIND_BY_ENTITY, query, Priority.LOW).resultString;
         RachioPropertyEntityLookupResponse response = RachioPropertyEntityLookupResponse.fromJson(json);
         return Optional.ofNullable(response.getProperty());
     }
@@ -730,7 +730,7 @@ public class RachioApi {
     public List<RachioBaseStation> listBaseStations(String userId) throws RachioApiException {
         logger.debug("Load Rachio Smart Hose Timer base stations for user '{}'.", userId);
         String json = httpGet(APIURL_CLOUD_REST_BASE + VALVE_LIST_BASE_STATIONS + urlEncode(userId), null,
-                PRIORITY.LOW).resultString;
+                Priority.LOW).resultString;
         RachioBaseStationListResponse response = RachioBaseStationListResponse.fromJson(json);
         logger.debug("Loaded {} Rachio Smart Hose Timer base stations for user '{}'.", response.baseStations.size(),
                 userId);
@@ -752,7 +752,7 @@ public class RachioApi {
     public List<RachioValve> listValves(String baseStationId) throws RachioApiException {
         logger.debug("Load Rachio Smart Hose Timer valves for base station '{}'.", baseStationId);
         String json = httpGet(APIURL_CLOUD_REST_BASE + VALVE_LIST_VALVES + urlEncode(baseStationId), null,
-                PRIORITY.LOW).resultString;
+                Priority.LOW).resultString;
         RachioValveListResponse response = RachioValveListResponse.fromJson(json);
         logger.debug("Loaded {} Rachio Smart Hose Timer valves for base station '{}'.", response.valves.size(),
                 baseStationId);
@@ -776,7 +776,7 @@ public class RachioApi {
         }
         logger.debug("Set Smart Hose Timer valve '{}' default runtime to {} sec.", valveId, defaultRuntimeSeconds);
         httpPut(APIURL_CLOUD_REST_BASE + VALVE_SET_DEFAULT_RUNTIME,
-                buildValveDefaultRuntimePayload(valveId, defaultRuntimeSeconds), PRIORITY.HI);
+                buildValveDefaultRuntimePayload(valveId, defaultRuntimeSeconds), Priority.HIGH);
     }
 
     public void startValveWatering(String valveId, int durationSeconds) throws RachioApiException {
@@ -785,18 +785,18 @@ public class RachioApi {
         }
         logger.debug("Start Smart Hose Timer valve '{}' for {} sec.", valveId, durationSeconds);
         httpPut(APIURL_CLOUD_REST_BASE + VALVE_START_WATERING, buildValveStartWateringPayload(valveId, durationSeconds),
-                PRIORITY.HI);
+                Priority.HIGH);
     }
 
     public void stopValveWatering(String valveId) throws RachioApiException {
         logger.debug("Stop Smart Hose Timer valve '{}'.", valveId);
-        httpPut(APIURL_CLOUD_REST_BASE + VALVE_STOP_WATERING, buildValveStopWateringPayload(valveId), PRIORITY.HI);
+        httpPut(APIURL_CLOUD_REST_BASE + VALVE_STOP_WATERING, buildValveStopWateringPayload(valveId), Priority.HIGH);
     }
 
     public List<RachioValveProgram> listValveProgramsV2ByBaseStation(String baseStationId) throws RachioApiException {
         logger.debug("Load Smart Hose Timer programs for base station '{}'.", baseStationId);
         String json = httpGet(APIURL_CLOUD_REST_BASE + PROGRAM_LIST_PROGRAMS_V2,
-                PROGRAM_QUERY_BASE_STATION_ID + "=" + urlEncode(baseStationId), PRIORITY.LOW).resultString;
+                PROGRAM_QUERY_BASE_STATION_ID + "=" + urlEncode(baseStationId), Priority.LOW).resultString;
         RachioValveProgramListResponse response = RachioValveProgramListResponse.fromJson(json);
         logger.debug("Loaded {} Smart Hose Timer programs for base station '{}'.", response.programs.size(),
                 baseStationId);
@@ -806,7 +806,7 @@ public class RachioApi {
     public List<RachioValveProgram> listValveProgramsV2ByValve(String valveId) throws RachioApiException {
         logger.debug("Load Smart Hose Timer programs for valve '{}'.", valveId);
         String json = httpGet(APIURL_CLOUD_REST_BASE + PROGRAM_LIST_PROGRAMS_V2,
-                PROGRAM_QUERY_VALVE_ID + "=" + urlEncode(valveId), PRIORITY.LOW).resultString;
+                PROGRAM_QUERY_VALVE_ID + "=" + urlEncode(valveId), Priority.LOW).resultString;
         RachioValveProgramListResponse response = RachioValveProgramListResponse.fromJson(json);
         logger.debug("Loaded {} Smart Hose Timer programs for valve '{}'.", response.programs.size(), valveId);
         return response.programs;
@@ -815,7 +815,7 @@ public class RachioApi {
     public List<RachioValveProgram> listValvePrograms(String entityId) throws RachioApiException {
         logger.debug("Load legacy Smart Hose Timer programs for entity '{}'.", entityId);
         String json = httpGet(APIURL_CLOUD_REST_BASE + PROGRAM_LIST_PROGRAMS + urlEncode(entityId), null,
-                PRIORITY.LOW).resultString;
+                Priority.LOW).resultString;
         RachioValveProgramListResponse response = RachioValveProgramListResponse.fromJson(json);
         return response.programs;
     }
@@ -847,59 +847,59 @@ public class RachioApi {
     public RachioValveProgram createValveProgramV2(RachioValveProgram program) throws RachioApiException {
         logger.debug("Create Smart Hose Timer Program V2 '{}'.", program.getThingName());
         String json = httpPost(APIURL_CLOUD_REST_BASE + PROGRAM_CREATE_PROGRAM_V2, new Gson().toJson(program),
-                PRIORITY.HI).resultString;
+                Priority.HIGH).resultString;
         return RachioSmartHoseTimerGsonDTO.parseValveProgram(json);
     }
 
     public RachioValveProgram updateValveProgramV2(RachioValveProgram program) throws RachioApiException {
         logger.debug("Update Smart Hose Timer Program V2 '{}'.", program.id);
         String json = httpPut(APIURL_CLOUD_REST_BASE + PROGRAM_UPDATE_PROGRAM_V2, new Gson().toJson(program),
-                PRIORITY.HI).resultString;
+                Priority.HIGH).resultString;
         return RachioSmartHoseTimerGsonDTO.parseValveProgram(json);
     }
 
     public void deleteValveProgram(String programId) throws RachioApiException {
         logger.debug("Delete Smart Hose Timer Program '{}'.", programId);
-        httpDelete(APIURL_CLOUD_REST_BASE + PROGRAM_DELETE_PROGRAM + urlEncode(programId), null, PRIORITY.HI);
+        httpDelete(APIURL_CLOUD_REST_BASE + PROGRAM_DELETE_PROGRAM + urlEncode(programId), null, Priority.HIGH);
     }
 
     public RachioValveDayViewsResponse getValveDayViews(String valveId, LocalDate start, LocalDate end)
             throws RachioApiException {
         logger.debug("Load Smart Hose Timer summary for valve '{}' from {} to {}.", valveId, start, end);
         String json = httpPost(APIURL_CLOUD_REST_BASE + SUMMARY_GET_VALVE_DAY_VIEWS,
-                buildValveDayViewsPayload(valveId, start, end), PRIORITY.LOW).resultString;
+                buildValveDayViewsPayload(valveId, start, end), Priority.LOW).resultString;
         return RachioValveDayViewsResponse.fromJson(json);
     }
 
     public void createSkipOverride(String programId, String timestamp) throws RachioApiException {
         logger.debug("Create Smart Hose Timer skip override for program '{}' at '{}'.", programId, timestamp);
         httpPost(APIURL_CLOUD_REST_BASE + PROGRAM_CREATE_SKIP_OVERRIDES,
-                buildProgramSkipOverridePayload(programId, timestamp), PRIORITY.HI);
+                buildProgramSkipOverridePayload(programId, timestamp), Priority.HIGH);
     }
 
     public void deleteSkipOverride(String programId, String timestamp) throws RachioApiException {
         logger.debug("Delete Smart Hose Timer skip override for program '{}' at '{}'.", programId, timestamp);
         httpPost(APIURL_CLOUD_REST_BASE + PROGRAM_DELETE_SKIP_OVERRIDES,
-                buildProgramSkipOverridePayload(programId, timestamp), PRIORITY.HI);
+                buildProgramSkipOverridePayload(programId, timestamp), Priority.HIGH);
     }
 
     public void createPlannedRunSkipOverride(String plannedRunId, String date) throws RachioApiException {
         logger.debug("Create Smart Hose Timer planned-run skip override for plannedRun '{}' on '{}'.", plannedRunId,
                 date);
         httpPost(APIURL_CLOUD_REST_BASE + PROGRAM_CREATE_PLANNED_RUN_SKIP_OVERRIDES,
-                buildPlannedRunSkipOverridePayload(plannedRunId, date), PRIORITY.HI);
+                buildPlannedRunSkipOverridePayload(plannedRunId, date), Priority.HIGH);
     }
 
     public void deletePlannedRunSkipOverride(String plannedRunId, String date) throws RachioApiException {
         logger.debug("Delete Smart Hose Timer planned-run skip override for plannedRun '{}' on '{}'.", plannedRunId,
                 date);
         httpPost(APIURL_CLOUD_REST_BASE + PROGRAM_DELETE_PLANNED_RUN_SKIP_OVERRIDES,
-                buildPlannedRunSkipOverridePayload(plannedRunId, date), PRIORITY.HI);
+                buildPlannedRunSkipOverridePayload(plannedRunId, date), Priority.HIGH);
     }
 
     public void setZoneMoistureLevel(String zoneId, double level) throws RachioApiException {
         logger.debug("Update zone moisture level for zone '{}' to {}.", zoneId, level);
-        httpPut(APIURL_BASE + APIURL_ZONE_PUT_MOISTURE_LEVEL, buildMoistureLevelPayload(zoneId, level), PRIORITY.HI);
+        httpPut(APIURL_BASE + APIURL_ZONE_PUT_MOISTURE_LEVEL, buildMoistureLevelPayload(zoneId, level), Priority.HIGH);
     }
 
     public void setZoneMoisturePercent(String zoneId, double percent) throws RachioApiException {
@@ -908,7 +908,7 @@ public class RachioApi {
         }
         logger.debug("Update zone moisture percent for zone '{}' to {}.", zoneId, percent);
         httpPut(APIURL_BASE + APIURL_ZONE_PUT_MOISTURE_PERCENT, buildMoisturePercentPayload(zoneId, percent),
-                PRIORITY.HI);
+                Priority.HIGH);
     }
 
     public RachioScheduleRuleResponse getScheduleRule(String scheduleRuleId) throws RachioApiException {
@@ -941,25 +941,25 @@ public class RachioApi {
     public void startScheduleRule(String scheduleRuleId) throws RachioApiException {
         logger.debug("Start schedule rule '{}'.", scheduleRuleId);
         httpPut(APIURL_BASE + APIURL_SCHEDULE_RULE_PUT_START, buildScheduleRuleCommandPayload(scheduleRuleId),
-                PRIORITY.HI);
+                Priority.HIGH);
     }
 
     public void skipScheduleRule(String scheduleRuleId) throws RachioApiException {
         logger.debug("Skip schedule rule '{}'.", scheduleRuleId);
         httpPut(APIURL_BASE + APIURL_SCHEDULE_RULE_PUT_SKIP, buildScheduleRuleCommandPayload(scheduleRuleId),
-                PRIORITY.HI);
+                Priority.HIGH);
     }
 
     public void setScheduleRuleSeasonalAdjustment(String scheduleRuleId, double adjustment) throws RachioApiException {
         logger.debug("Set seasonal adjustment for schedule rule '{}' to {}.", scheduleRuleId, adjustment);
         httpPut(APIURL_BASE + APIURL_SCHEDULE_RULE_PUT_SEASONAL_ADJUSTMENT,
-                buildSeasonalAdjustmentPayload(scheduleRuleId, adjustment), PRIORITY.HI);
+                buildSeasonalAdjustmentPayload(scheduleRuleId, adjustment), Priority.HIGH);
     }
 
     public void skipForwardZoneRun(String id) throws RachioApiException {
         logger.debug("Skip forward zone run for '{}'.", id);
         httpPut(APIURL_BASE + APIURL_SCHEDULE_RULE_PUT_SKIP_FORWARD_ZONE_RUN, buildScheduleRuleCommandPayload(id),
-                PRIORITY.HI);
+                Priority.HIGH);
     }
 
     static String buildMoistureLevelPayload(String zoneId, double level) {
@@ -1033,7 +1033,7 @@ public class RachioApi {
     }
 
     public void getDeviceInfo(String deviceId) throws RachioApiException {
-        httpGet(APIURL_BASE + APIURL_GET_DEVICE + "/" + deviceId, null, PRIORITY.MED);
+        httpGet(APIURL_BASE + APIURL_GET_DEVICE + "/" + deviceId, null, Priority.MEDIUM);
     }
 
     public List<RachioApiLegacyWebHookEventType> listLegacyNotificationEventTypes() throws RachioApiException {
@@ -1042,7 +1042,7 @@ public class RachioApi {
 
     public List<RachioApiLegacyWebHookEventType> listLegacyNotificationEventTypes(RequestPurpose requestPurpose)
             throws RachioApiException {
-        String json = httpGet(APIURL_BASE + APIURL_DEV_WEBHOOK_EVENT_TYPES, null, PRIORITY.MED,
+        String json = httpGet(APIURL_BASE + APIURL_DEV_WEBHOOK_EVENT_TYPES, null, Priority.MEDIUM,
                 requestPurpose).resultString;
         return parseLegacyNotificationEventTypes(json);
     }
@@ -1077,14 +1077,14 @@ public class RachioApi {
 
     public List<RachioApiWebHookEntry> listLegacyNotificationWebHooks(String deviceId, RequestPurpose requestPurpose)
             throws RachioApiException {
-        String json = httpGet(APIURL_BASE + APIURL_DEV_QUERY_WEBHOOK + "/" + deviceId + "/webhook", null, PRIORITY.MED,
-                requestPurpose).resultString;
+        String json = httpGet(APIURL_BASE + APIURL_DEV_QUERY_WEBHOOK + "/" + deviceId + "/webhook", null,
+                Priority.MEDIUM, requestPurpose).resultString;
         return parseWebHookList(json);
     }
 
     public void deleteLegacyNotificationWebHook(String hookId, RequestPurpose requestPurpose)
             throws RachioApiException {
-        httpDelete(APIURL_BASE + APIURL_DEV_DELETE_WEBHOOK + "/" + hookId, null, PRIORITY.MED, requestPurpose);
+        httpDelete(APIURL_BASE + APIURL_DEV_DELETE_WEBHOOK + "/" + hookId, null, Priority.MEDIUM, requestPurpose);
     }
 
     public void registerLegacyNotificationWebHook(String deviceId, String callbackUrl, String callbackUsername,
@@ -1112,7 +1112,7 @@ public class RachioApi {
         Map<String, Object> createPayload = Map.of("device", Map.of("id", deviceId), "externalId", expectedExternalId,
                 "url", registrationUrl, "eventTypes", eventTypes);
         try {
-            httpPost(APIURL_BASE + APIURL_DEV_POST_WEBHOOK, new Gson().toJson(createPayload), PRIORITY.HI,
+            httpPost(APIURL_BASE + APIURL_DEV_POST_WEBHOOK, new Gson().toJson(createPayload), Priority.HIGH,
                     requestPurpose);
         } catch (RachioApiException e) {
             throw sanitizeWebhookRegistrationException(e, registrationUrl);
@@ -1202,7 +1202,7 @@ public class RachioApi {
         String expectedExternalId = externalId != null ? externalId : "";
         logger.debug("Register WebHook for target '{}'", target.describe());
         try {
-            String json = httpGet(APIURL_CLOUD_REST_BASE + WEBHOOK_LIST, target.buildListQuery(), PRIORITY.MED,
+            String json = httpGet(APIURL_CLOUD_REST_BASE + WEBHOOK_LIST, target.buildListQuery(), Priority.MEDIUM,
                     requestPurpose).resultString;
             boolean matchingWebhookExists = reconcileExistingWebHooks(json, target, registrationUrl, expectedExternalId,
                     getKnownExternalIds(externalId), clearAllCallbacks, requestPurpose);
@@ -1227,7 +1227,7 @@ public class RachioApi {
                     target.getResourceType().getApiValue(), target.getEventTypes(), target.getResourceId(),
                     !expectedExternalId.isBlank(), webhookUrlContainsUserInfo(payloadUrl),
                     callbackUrlLogReference(payloadUrl));
-            httpPost(APIURL_CLOUD_REST_BASE + WEBHOOK_CREATE, new Gson().toJson(createPayload), PRIORITY.HI,
+            httpPost(APIURL_CLOUD_REST_BASE + WEBHOOK_CREATE, new Gson().toJson(createPayload), Priority.HIGH,
                     requestPurpose);
         } catch (RachioApiException e) {
             throw sanitizeWebhookRegistrationException(e, registrationUrl);
@@ -1483,7 +1483,7 @@ public class RachioApi {
 
     public Map<RachioWebhookResourceType, Set<String>> listWebhookEventTypeMap(RequestPurpose requestPurpose)
             throws RachioApiException {
-        String json = httpGet(APIURL_CLOUD_REST_BASE + WEBHOOK_LIST_EVENT_TYPES, null, PRIORITY.MED,
+        String json = httpGet(APIURL_CLOUD_REST_BASE + WEBHOOK_LIST_EVENT_TYPES, null, Priority.MEDIUM,
                 requestPurpose).resultString;
         Map<RachioWebhookResourceType, Set<String>> eventTypesByResourceType = parseWebhookEventTypeMap(json);
         logger.debug("Loaded Rachio webhook event types: {}", formatWebhookEventTypeCounts(eventTypesByResourceType));
@@ -1566,7 +1566,7 @@ public class RachioApi {
                 try {
                     logger.debug("Delete existing webhook '{}' for target '{}' because clearAllCallbacks=true", whe.id,
                             target.describe());
-                    httpDelete(APIURL_CLOUD_REST_BASE + WEBHOOK_DELETE + whe.id, null, PRIORITY.MED, requestPurpose);
+                    httpDelete(APIURL_CLOUD_REST_BASE + WEBHOOK_DELETE + whe.id, null, Priority.MEDIUM, requestPurpose);
                 } catch (RachioApiException e) {
                     logger.debug("Deleting WebHook '{}' failed: {}", whe.id,
                             webhookRegistrationExceptionDiagnostic(e, whe.url));
@@ -1579,7 +1579,7 @@ public class RachioApi {
                     logger.debug(
                             "Delete stale or duplicate webhook '{}' for target '{}' because it matches this binding instance",
                             whe.id, target.describe());
-                    httpDelete(APIURL_CLOUD_REST_BASE + WEBHOOK_DELETE + whe.id, null, PRIORITY.MED, requestPurpose);
+                    httpDelete(APIURL_CLOUD_REST_BASE + WEBHOOK_DELETE + whe.id, null, Priority.MEDIUM, requestPurpose);
                 } catch (RachioApiException e) {
                     logger.debug("Deleting WebHook '{}' failed: {}", whe.id,
                             webhookRegistrationExceptionDiagnostic(e, whe.url));
@@ -1707,7 +1707,7 @@ public class RachioApi {
         }
     }
 
-    private Boolean initializeDevices(ThingUID BridgeUID, PRIORITY priority, RequestPurpose requestPurpose)
+    private Boolean initializeDevices(ThingUID BridgeUID, Priority priority, RequestPurpose requestPurpose)
             throws RachioApiException {
         String json = httpGet(APIURL_BASE + APIURL_GET_PERSONID + "/" + personId, null, priority,
                 requestPurpose).resultString;
