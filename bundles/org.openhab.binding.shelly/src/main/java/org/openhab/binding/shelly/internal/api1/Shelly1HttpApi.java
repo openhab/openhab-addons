@@ -286,12 +286,7 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
 
     @Override
     public void setValveMode(int valveId, boolean auto) throws ShellyApiException {
-        String uri = "/settings/thermostat/" + valveId + "?target_t_enabled=" + (auto ? "1" : "0");
-        List<ShellyThermnostat> thermostats = profile.settings.thermostats;
-        if (auto && thermostats != null) {
-            uri = uri + "&target_t=" + getDouble(thermostats.get(0).targetTemp.value);
-        }
-        httpRequest(uri); // percentage to open the valve
+        httpRequest("/settings/thermostat/" + valveId + "?schedule=" + (auto ? "1" : "0"));
     }
 
     @Override
