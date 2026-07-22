@@ -31,10 +31,12 @@ import org.mockito.ArgumentCaptor;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyEMNCurrentSettings;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyEMNCurrentStatus;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDimmer;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsEMeter;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsMeter;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRelay;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortLightStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtAnalogInput;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtDigitalInput;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtHumidity;
@@ -170,6 +172,25 @@ public class ShellyComponentsTest {
         relay.ison = ison;
         status.relays = new ArrayList<>(List.of(relay));
         return status;
+    }
+
+    @Test
+    void updateDimmersPushesTimerActiveChannel() throws Exception {
+        // Regression test: updateDimmers() created the timerActive channel via
+        // createDimmerChannels() but never actually pushed a value to it.
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYDIMMER);
+        profile.isGen2 = true; // skip the Gen1 JSON reparse, use the status object directly
+        profile.settings.dimmers = new ArrayList<>(List.of(new ShellySettingsDimmer()));
+
+        ShellyShortLightStatus dimmerStatus = new ShellyShortLightStatus();
+        dimmerStatus.hasTimer = true;
+        ShellySettingsStatus status = new ShellySettingsStatus();
+        status.dimmers = new ArrayList<>(List.of(dimmerStatus));
+
+        ShellyThingInterface handler = mockHandler(profile);
+        ShellyComponents.updateDimmers(handler, status);
+
+        verify(handler).updateChannel(anyString(), eq(CHANNEL_TIMER_ACTIVE), eq(OnOffType.ON));
     }
 
     @Test
