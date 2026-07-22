@@ -581,9 +581,61 @@
 		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
 	</thing-type>
 
+	<thing-type id="shellyprodimmer1pm">
+		<label>Shelly Pro Dimmer 1PM</label>
+		<description>DIN-rail mountable single-channel smart dimmer with power monitoring</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="relay" typeId="dimmerChannel"/>
+			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:dimmer-gen2"/>
+	</thing-type>
+
+	<thing-type id="shellyprodimmer2pm">
+		<label>Shelly Pro Dimmer 2PM</label>
+		<description>DIN-rail mountable dual-channel smart dimmer with power monitoring</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="relay1" typeId="dimmerChannel">
+				<label>Dimmer 1</label>
+			</channel-group>
+			<channel-group id="meter1" typeId="meter">
+				<label>Power Meter 1</label>
+			</channel-group>
+			<channel-group id="relay2" typeId="dimmerChannel">
+				<label>Dimmer 2</label>
+			</channel-group>
+			<channel-group id="meter2" typeId="meter">
+				<label>Power Meter 2</label>
+			</channel-group>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:dimmer-gen2"/>
+	</thing-type>
+
+	<thing-type id="shellyprodimmer10v">
+		<label>Shelly Pro Dimmer 0/1-10V</label>
+		<description>DIN-rail mountable 0/1-10V smart dimmer with power monitoring</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="relay" typeId="dimmerChannel"/>
+			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:dimmer-gen2"/>
+	</thing-type>
+
 	<thing-type id="shellypluswdus">
 		<label>Shelly Plus Dimmer US</label>
-		<description>Shelly Wall Dimmer US Device</description>
+		<description>Shelly Plus Wall Dimmer US</description>
 		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="relay" typeId="dimmerChannel"/>
@@ -596,8 +648,37 @@
 	</thing-type>
 
 	<thing-type id="shellyplus10v">
-		<label>Shelly Plus Dimmer 10V</label>
-		<description>Shelly Plus Dimmer 10V</description>
+		<label>Shelly Plus 0/1-10V Dimmer</label>
+		<description>Shelly Plus 0/1-10V Dimmer - analog interface dimmer controller for compatible LED drivers and ballasts
+			(Gen2/Gen3/Gen4)</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="relay" typeId="dimmerChannel"/>
+			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:dimmer-gen2"/>
+	</thing-type>
+
+	<thing-type id="shellyplusdimmer">
+		<label>Shelly Plus Dimmer</label>
+		<description>Single-channel smart dimming controller for dimmable lights and dimming drivers</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="relay" typeId="dimmerChannel"/>
+			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:dimmer-gen2"/>
+	</thing-type>
+
+	<thing-type id="shellyplusdalidimmer">
+		<label>Shelly Plus DALI Dimmer</label>
+		<description>DALI bus single-master dimmer controller for direct or indirect DALI control gear</description>
 		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="relay" typeId="dimmerChannel"/>
@@ -629,44 +710,6 @@
 		<config-description-ref uri="thing-type:shelly:relay"/>
 	</thing-type>
 
-	<thing-type id="shellyplusdimmer">
-		<label>Shelly Plus Dimmer</label>
-		<description>Shelly Plus Dimmer</description>
-		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
-		<channel-groups>
-			<channel-group id="relay" typeId="dimmerChannel"/>
-			<channel-group id="meter" typeId="meter"/>
-			<channel-group id="device" typeId="deviceStatus"/>
-		</channel-groups>
-
-		<representation-property>serviceName</representation-property>
-		<config-description-ref uri="thing-type:shelly:dimmer-gen2"/>
-	</thing-type>
-
-	<thing-type id="shellyprodm2pm">
-		<label>Shelly Pro Dimmer 2PM</label>
-		<description>Shelly Pro Dimmer 2PM - provides 2 dimmable lights and a relay</description>
-		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
-		<channel-groups>
-			<channel-group id="relay1" typeId="dimmerChannel">
-				<label>Dimmer 1</label>
-			</channel-group>
-			<channel-group id="meter1" typeId="meter">
-				<label>Power Meter 1</label>
-			</channel-group>
-			<channel-group id="relay2" typeId="dimmerChannel">
-				<label>Dimmer 2</label>
-			</channel-group>
-			<channel-group id="meter2" typeId="meter">
-				<label>Power Meter 2</label>
-			</channel-group>
-			<channel-group id="device" typeId="deviceStatus"/>
-		</channel-groups>
-
-		<representation-property>serviceName</representation-property>
-		<config-description-ref uri="thing-type:shelly:dimmer-gen2"/>
-	</thing-type>
-
 	<thing-type id="shellyplus3em63">
 		<label>Shelly Plus 3EM-63</label>
 		<description>Shelly Plus 3EM-63 - 3 Phase Power Meter, 63 Amp</description>
@@ -688,5 +731,4 @@
 		<representation-property>serviceName</representation-property>
 		<config-description-ref uri="thing-type:shelly:relay"/>
 	</thing-type>
-
 </thing:thing-descriptions>
