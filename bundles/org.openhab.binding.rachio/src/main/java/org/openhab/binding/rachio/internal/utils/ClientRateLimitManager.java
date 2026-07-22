@@ -71,7 +71,7 @@ public class ClientRateLimitManager {
         this.buckets = new int[numBuckets];
     }
 
-    public void updateRateLimit(int rateLimitCap, int rateRemaining, @Nullable String rateReset) {
+    public synchronized void updateRateLimit(int rateLimitCap, int rateRemaining, @Nullable String rateReset) {
         if (rateLimitCap > 0 && rateRemaining >= 0) {
             Instant updatedResetTime = parseRateReset(rateReset);
             boolean resetWindowChanged = !updatedResetTime.equals(rateResetTime);
@@ -89,7 +89,7 @@ public class ClientRateLimitManager {
         logRequest();
     }
 
-    public boolean shouldThrottle(Priority priority) {
+    public synchronized boolean shouldThrottle(Priority priority) {
         try {
             tryThrottle(priority);
         } catch (RateLimitThrottleException e) {
@@ -98,11 +98,12 @@ public class ClientRateLimitManager {
         return false;
     }
 
-    public void tryThrottle(Priority priority) throws RateLimitThrottleException {
+    public synchronized void tryThrottle(Priority priority) throws RateLimitThrottleException {
         tryThrottle(priority, RequestPurpose.BACKGROUND_REFRESH);
     }
 
-    public void tryThrottle(Priority priority, RequestPurpose requestPurpose) throws RateLimitThrottleException {
+    public synchronized void tryThrottle(Priority priority, RequestPurpose requestPurpose)
+            throws RateLimitThrottleException {
         if (priority == Priority.HIGH || !rateLimitKnown
                 || (rateResetTime != Instant.MAX && System.currentTimeMillis() >= rateResetTime.toEpochMilli())) {
             return;
@@ -154,19 +155,19 @@ public class ClientRateLimitManager {
         }
     }
 
-    public int getRateLimitCap() {
+    public synchronized int getRateLimitCap() {
         return rateLimitCap;
     }
 
-    public int getRateRemaining() {
+    public synchronized int getRateRemaining() {
         return rateRemaining;
     }
 
-    public String getRateResetAsString() {
+    public synchronized String getRateResetAsString() {
         return rateResetTime == Instant.MAX ? "" : rateResetTime.toString();
     }
 
-    public int getInitializationBootstrapRemaining() {
+    public synchronized int getInitializationBootstrapRemaining() {
         return initializationBootstrapRemaining;
     }
 
