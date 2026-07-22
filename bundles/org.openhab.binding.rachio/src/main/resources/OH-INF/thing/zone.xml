@@ -182,7 +182,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="zone-yard-area-square-feet">
-		<item-type unitHint="ft²">Number:Area</item-type>
+		<item-type unitHint="ft2">Number:Area</item-type>
 		<label>Yard Area</label>
 		<description>Yard area in square feet as returned by Rachio for this zone.</description>
 		<tags>

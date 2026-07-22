@@ -25,7 +25,7 @@ import org.openhab.binding.rachio.internal.api.RachioZone;
 
 @NonNullByDefault
 public interface RachioStatusListener {
-    public boolean onThingStateChanged(@Nullable RachioDevice updatedDev, @Nullable RachioZone updatedZone);
+    boolean onThingStateChanged(@Nullable RachioDevice updatedDev, @Nullable RachioZone updatedZone);
 
-    public void onConfigurationUpdated();
+    void onConfigurationUpdated();
 }
