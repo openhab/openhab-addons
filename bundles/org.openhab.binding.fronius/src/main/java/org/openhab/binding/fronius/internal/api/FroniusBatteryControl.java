@@ -195,9 +195,11 @@ public class FroniusBatteryControl {
                         + ", please manage them through the battery control actions instead");
             }
         }
-        records.add(new TimeOfUseRecord(true, powerInWatts.intValue(), scheduleType,
+        TimeOfUseRecord allTimeEntry = new TimeOfUseRecord(true, powerInWatts.intValue(), scheduleType,
                 new TimeTableRecord(BEGIN_OF_DAY.format(TIME_FORMATTER), END_OF_DAY.format(TIME_FORMATTER)),
-                new WeekdaysRecord(true, true, true, true, true, true, true)));
+                new WeekdaysRecord(true, true, true, true, true, true, true));
+        warnAboutConflicts(records.toArray(TimeOfUseRecord[]::new), allTimeEntry);
+        records.add(allTimeEntry);
         setTimeOfUse(new TimeOfUseRecords(records.toArray(TimeOfUseRecord[]::new)));
     }
 
@@ -265,8 +267,10 @@ public class FroniusBatteryControl {
     /**
      * Warns when the new schedule entry conflicts with existing entries. The inverter accepts such entries through
      * its config API, but its web UI marks them as invalid and refuses to save the settings: entries of the same type
-     * must not overlap, and where a minimum and a maximum entry of charging or discharging overlap, the minimum power
-     * must be smaller than the maximum power.
+     * must not overlap, charging entries must not overlap discharging entries unless both are maximum power limits,
+     * and where a minimum and a maximum entry of charging or discharging overlap, the minimum power must be smaller
+     * than the maximum power. Entries that only touch (one ends exactly when the other starts) do not count as
+     * overlapping.
      *
      * @param existing the existing time of use entries
      * @param added the entry being added
@@ -280,6 +284,12 @@ public class FroniusBatteryControl {
                 logger.warn(
                         "The new schedule ({} {}-{}) overlaps an existing schedule of the same type ({}-{}). The inverter web UI will report the time of use settings as invalid.",
                         added.scheduleType(), added.timeTable().start(), added.timeTable().end(),
+                        record.timeTable().start(), record.timeTable().end());
+            } else if (isChargeRule(record.scheduleType()) != isChargeRule(added.scheduleType())
+                    && !(isMaximumLimit(record.scheduleType()) && isMaximumLimit(added.scheduleType()))) {
+                logger.warn(
+                        "The new schedule ({} {}-{}) overlaps an existing {} schedule ({}-{}): discharge rules must not overlap with charge rules unless both are maximum power limits. The inverter web UI will report the time of use settings as invalid.",
+                        added.scheduleType(), added.timeTable().start(), added.timeTable().end(), record.scheduleType(),
                         record.timeTable().start(), record.timeTable().end());
             } else if (isContradiction(record, added)) {
                 logger.warn(
@@ -303,7 +313,16 @@ public class FroniusBatteryControl {
         LocalTime aEnd = LocalTime.parse(a.timeTable().end(), TIME_FORMATTER);
         LocalTime bStart = LocalTime.parse(b.timeTable().start(), TIME_FORMATTER);
         LocalTime bEnd = LocalTime.parse(b.timeTable().end(), TIME_FORMATTER);
-        return !aEnd.isBefore(bStart) && !bEnd.isBefore(aStart);
+        // schedules that only touch (one ends exactly when the other starts) are valid in the inverter web UI
+        return aEnd.isAfter(bStart) && bEnd.isAfter(aStart);
+    }
+
+    private static boolean isChargeRule(ScheduleType type) {
+        return type == ScheduleType.CHARGE_MIN || type == ScheduleType.CHARGE_MAX;
+    }
+
+    private static boolean isMaximumLimit(ScheduleType type) {
+        return type == ScheduleType.CHARGE_MAX || type == ScheduleType.DISCHARGE_MAX;
     }
 
     private static boolean isContradiction(TimeOfUseRecord a, TimeOfUseRecord b) {
