@@ -15,6 +15,7 @@ package org.openhab.binding.rachio.internal.handler;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -40,7 +41,7 @@ final class RachioScheduleDateTime {
         String unparseableField = "";
         for (int i = 0; i + 1 < fieldNamesAndValues.length; i += 2) {
             String fieldName = fieldNamesAndValues[i];
-            String value = fieldNamesAndValues[i + 1].trim();
+            String value = Objects.toString(fieldNamesAndValues[i + 1], "").trim();
             if (value.isBlank()) {
                 continue;
             }

@@ -279,11 +279,6 @@ public class RachioFlexScheduleHandler extends AbstractRachioThingHandler {
             logger.debug("{}: Resolved flexScheduleRuleId '{}' from Thing properties", thingId, resolvedId);
             return resolvedId;
         }
-        String uidFallbackId = getThing().getUID().getId().trim();
-        if (!uidFallbackId.isBlank()) {
-            logger.debug("{}: Resolved flexScheduleRuleId '{}' from Thing UID fallback", thingId, uidFallbackId);
-            return uidFallbackId;
-        }
         return "";
     }
 
