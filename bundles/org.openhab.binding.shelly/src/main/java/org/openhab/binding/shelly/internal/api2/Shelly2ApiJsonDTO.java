@@ -617,7 +617,7 @@ public class Shelly2ApiJsonDTO {
         }
 
         public static class Shelly2DeviceStatusLight {
-            public Integer id;
+            public @Nullable Integer id;
             public String source;
             public Boolean output;
             public Double brightness;
@@ -625,6 +625,10 @@ public class Shelly2ApiJsonDTO {
             public Double timerStartedAt;
             @SerializedName("timer_duration")
             public Double timerDuration;
+            public @Nullable Double apower;
+            public @Nullable Double voltage;
+            public @Nullable Double current;
+            public @Nullable Shelly2DeviceStatusTemp temperature;
         }
 
         public static class Shelly2DeviceStatusResult {
