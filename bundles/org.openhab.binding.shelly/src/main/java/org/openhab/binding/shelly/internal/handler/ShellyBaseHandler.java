@@ -443,6 +443,11 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        // Capture the channel value before any command handling runs an optimistic update, so a
+        // failed API call can restore the true previous state rather than the already-overwritten one.
+        String group = getString(channelUID.getGroupId());
+        String channel = getString(channelUID.getIdWithoutGroup());
+        State oldValue = getChannelValue(group, channel);
         try {
             if (command instanceof RefreshType) {
                 String channelId = channelUID.getId();
@@ -546,7 +551,6 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                     break;
                 case CHANNEL_EMETER_RESETTOTAL:
                     if (command == OnOffType.ON) {
-                        String group = getString(channelUID.getGroupId());
                         int idx = 0;
                         if (group.startsWith(CHANNEL_GROUP_METER) && group.length() > CHANNEL_GROUP_METER.length()) {
                             idx = Integer.parseInt(substringAfter(group, CHANNEL_GROUP_METER)) - 1;
@@ -579,9 +583,6 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                         e.toString());
             }
 
-            String group = getString(channelUID.getGroupId());
-            String channel = getString(channelUID.getIdWithoutGroup());
-            State oldValue = getChannelValue(group, channel);
             if (oldValue != UnDefType.NULL) {
                 logger.info("{}: Restore channel value to {}", thingName, oldValue);
                 updateChannel(group, channel, oldValue);
