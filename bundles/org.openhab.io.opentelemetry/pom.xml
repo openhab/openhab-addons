@@ -16,8 +16,12 @@
 
   <properties>
     <opentelemetry.version>1.63.0</opentelemetry.version>
-    <bnd.exportpackage>!io.opentelemetry.*</bnd.exportpackage>
-    <bnd.importpackage>io.grpc*;resolution:=optional,io.opentelemetry.api.incubator*;resolution:=optional,io.opentelemetry.sdk.autoconfigure*;resolution:=optional,org.jspecify.annotations*;resolution:=optional,*</bnd.importpackage>
+    <micrometer.version>1.16.3</micrometer.version>
+    <!-- Export proto packages so micrometer-registry-otlp (a separate bundle) can wire to them;
+         embed protobuf-java privately so the exported proto classes can load their runtime deps.
+         All other io.opentelemetry.* and io.micrometer.* packages stay private (not exported). -->
+    <bnd.exportpackage>io.opentelemetry.proto.*;-noimport:=true,!io.opentelemetry.*,!io.micrometer.*,!com.google.protobuf.*</bnd.exportpackage>
+    <bnd.importpackage>io.grpc*;resolution:=optional,io.opentelemetry.api.incubator*;resolution:=optional,io.opentelemetry.sdk.autoconfigure*;resolution:=optional,org.jspecify.annotations*;resolution:=optional,io.micrometer.core.lang*;resolution:=optional,*</bnd.importpackage>
   </properties>
 
   <dependencies>
@@ -90,6 +94,40 @@
       <groupId>io.opentelemetry</groupId>
       <artifactId>opentelemetry-exporter-otlp-common</artifactId>
       <version>${opentelemetry.version}</version>
+    </dependency>
+
+    <!-- Micrometer OTLP registry for metrics export -->
+    <dependency>
+      <groupId>io.micrometer</groupId>
+      <artifactId>micrometer-registry-otlp</artifactId>
+      <version>${micrometer.version}</version>
+    </dependency>
+    <!-- OTel proto classes required by micrometer-registry-otlp; embedded and exported so
+         micrometer-registry-otlp (a separate OSGi bundle) can wire its proto import to us -->
+    <dependency>
+      <groupId>io.opentelemetry.proto</groupId>
+      <artifactId>opentelemetry-proto</artifactId>
+      <version>1.8.0-alpha</version>
+    </dependency>
+    <!-- protobuf runtime embedded privately: required by the embedded opentelemetry-proto classes -->
+    <dependency>
+      <groupId>com.google.protobuf</groupId>
+      <artifactId>protobuf-java</artifactId>
+      <version>4.32.0</version>
+    </dependency>
+    <!-- micrometer-core is provided by openhab.core.io.monitor -->
+    <dependency>
+      <groupId>io.micrometer</groupId>
+      <artifactId>micrometer-core</artifactId>
+      <version>${micrometer.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <!-- openHAB core monitor bundle for MeterRegistryProvider -->
+    <dependency>
+      <groupId>org.openhab.core.bundles</groupId>
+      <artifactId>org.openhab.core.io.monitor</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
     </dependency>
 
     <!-- OSGi Logging Service -->

@@ -5,7 +5,7 @@
 
 	<type>misc</type>
 	<name>OpenTelemetry Service</name>
-	<description>Forwards openHAB logs to an OpenTelemetry collector.</description>
+	<description>Forwards openHAB logs, metrics and traces to an OpenTelemetry collector.</description>
 	<connection>local</connection>
 
 	<service-id>org.openhab.opentelemetry</service-id>
