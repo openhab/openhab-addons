@@ -119,13 +119,13 @@ The following channels are available:
 
 ```java
 // direct IP connection
-oppo:player:myoppo "Oppo Blu-ray" [ host="192.168.0.10", model=203, verboseMode=true]
+oppo:player:myoppo "Oppo Blu-ray" [ host="192.168.0.10", model=203, verboseMode=true ]
 
 // direct serial connection
-oppo:player:myoppo "Oppo Blu-ray" [ serialPort="COM5", model=103, verboseMode=true]
+oppo:player:myoppo "Oppo Blu-ray" [ serialPort="COM5", model=103, verboseMode=true ]
 
 // serial over IP connection
-oppo:player:myoppo "Oppo Blu-ray" [ host="192.168.0.9", port=4444, model=103, verboseMode=true]
+oppo:player:myoppo "Oppo Blu-ray" [ host="192.168.0.9", port=4444, model=103, verboseMode=true ]
 
 ```
 
@@ -139,7 +139,7 @@ Number oppo_source "Source Input [%s]" { channel="oppo:player:myoppo:source" }
 String oppo_play_mode "Play Mode [%s]" { channel="oppo:player:myoppo:play_mode" }
 Player oppo_control "Control" { channel="oppo:player:myoppo:control" }
 String oppo_time_mode "Time Mode [%s]" { channel="oppo:player:myoppo:time_mode" }
-Number:Time oppo_time_display "Time [%s]" { channel="oppo:player:myoppo:time_display" }
+Number:Time oppo_time_display "Time [%1$tT]" { channel="oppo:player:myoppo:time_display" }
 Number oppo_current_title "Current Title/Track [%s]" { channel="oppo:player:myoppo:current_title" }
 Number oppo_total_title "Total Title/Track [%s]" { channel="oppo:player:myoppo:total_title" }
 Number oppo_current_chapter "Current Chapter [%s]" { channel="oppo:player:myoppo:current_chapter" }
