@@ -654,7 +654,7 @@ public class Shelly1ApiJsonDTO {
 
         public @Nullable ArrayList<ShellySettingsRelay> relays;
         public @Nullable ArrayList<ShellySettingsInput> inputs; // ix3
-        public @Nullable ArrayList<ShellySettingsDimmer> dimmers;
+        public @Nullable ArrayList<@NonNull ShellySettingsDimmer> dimmers;
         public @Nullable ArrayList<ShellySettingsRoller> rollers;
         public @Nullable ArrayList<ShellySettingsRgbwLight> lights;
         public @Nullable ArrayList<ShellySettingsEMeter> emeters;

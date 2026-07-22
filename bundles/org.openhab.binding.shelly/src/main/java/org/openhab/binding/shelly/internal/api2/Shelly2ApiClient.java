@@ -365,7 +365,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             // A dimmer exposes one light component per dimming channel (light:0, light:1, ...).
             // Multi-channel dimmers like the Pro Dimmer 2PM report more than one light component.
             int numDimmers = Math.max(1, countDimmers(dc));
-            ArrayList<@Nullable ShellySettingsDimmer> dimmers = new ArrayList<>();
+            ArrayList<ShellySettingsDimmer> dimmers = new ArrayList<>();
             ArrayList<ShellyShortLightStatus> statusDimmers = new ArrayList<>();
             for (int i = 0; i < numDimmers; i++) {
                 dimmers.add(new ShellySettingsDimmer());
@@ -1180,7 +1180,6 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
 
         if (status.emeters != null && dimId < status.emeters.size()) {
             ShellySettingsEMeter emeter = status.emeters.get(dimId);
-            emeter.isValid = true;
             if (value.voltage != null) {
                 emeter.voltage = value.voltage;
             }
@@ -1190,7 +1189,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             if (value.apower != null) {
                 emeter.power = value.apower;
             }
-            status.emeters.set(dimId, emeter);
+            updateMeter(status, dimId, emeter, channelUpdate);
         }
 
         updateDeviceInnerTemp(status, value.temperature);
