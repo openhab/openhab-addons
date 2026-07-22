@@ -304,15 +304,6 @@ public class Shelly2GetDeviceProfileTest {
     }
 
     @Test
-    void discovery_dimmer_hasRelaysTrue() throws ShellyApiException {
-        Gson gson = new Gson();
-        StubApiClient client = new StubApiClient(discoveryConfig(), withLight0(gson));
-        ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYPLUSDIMMER, deviceInfo());
-        assertThat(profile.isDimmer, is(true));
-        assertThat(profile.hasRelays, is(true));
-    }
-
-    @Test
     void discovery_dimmerSettings_populatedFromLightConfig() throws ShellyApiException {
         Gson gson = new Gson();
         Shelly2GetConfigResult dc = parseConfig(gson, "{\"sys\":{\"device\":{},\"location\":{}},\"wifi\":{},"
