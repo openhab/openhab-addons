@@ -28,10 +28,19 @@
 			<channel id="location" typeId="system.location"/>
 			<channel id="locationupdated" typeId="locationupdated"/>
 			<channel id="locked" typeId="locked"/>
+			<channel id="soclevelmin" typeId="soc-level">
+				<label>Minimum Charge Level</label>
+				<description>The minimum charge level at which a warning should be given</description>
+			</channel>
+			<channel id="soclevelmax" typeId="soc-level">
+				<label>Maximum Charge Level</label>
+				<description>The maximum level the car should be charged</description>
+			</channel>
+			<channel id="soclevelupdated" typeId="soc-level-updated"/>
 		</channels>
 
 		<properties>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<config-description>
@@ -270,6 +279,30 @@
 			<tag>LockState</tag>
 		</tags>
 		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="soc-level">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>State of Charge Level</label>
+		<description>The State of Charge level</description>
+		<category></category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>StateOfCharge</tag>
+		</tags>
+		<state min="0" max="100" step="1"/>
+	</channel-type>
+
+	<channel-type id="soc-level-updated">
+		<item-type>DateTime</item-type>
+		<label>State of Charge Update</label>
+		<description>Timestamp of the last State of Charge update</description>
+		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state pattern="%1$tH:%1$tM %1$td.%1$tm.%1$tY" readOnly="true"></state>
 	</channel-type>
 
 </thing:thing-descriptions>

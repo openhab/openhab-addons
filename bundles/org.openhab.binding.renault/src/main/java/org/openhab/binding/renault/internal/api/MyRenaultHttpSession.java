@@ -50,12 +50,41 @@ import com.google.gson.JsonParser;
  * https://github.com/hacf-fr/renault-api
  *
  * @author Doug Culnane - Initial contribution
+ * @author Hilbrand Bouwkamp - Added SoC level channels
  */
 @NonNullByDefault
 public class MyRenaultHttpSession {
 
+    private enum EndpointDefinitions {
+        // state end points
+        BATTERY_STATUS(CAR_ADAPTER_V2 + "battery-status"),
+        COCKPIT(CAR_ADAPTER_V1 + "cockpit"),
+        HVAC_STATUS(CAR_ADAPTER_V1 + "hvac-status"),
+        LOCATION(CAR_ADAPTER_V1 + "location"),
+        LOCK_STATUS(CAR_ADAPTER_V1 + "lock-status"),
+        SOC_LEVELS("/kcm/v1/vehicles/%s/ev/soc-levels"),
+        // action end points
+        ACTIONS_CHARGE_MODE(CAR_ADAPTER_V1 + "actions/charge-mode"),
+        ACTIONS_HVAC_START(CAR_ADAPTER_V1 + "actions/hvac-start"),
+        CHARGE_PAUSE_RESUME("/kcm/v1/vehicles/%s/charge/pause-resume");
+
+        private String endPoint;
+
+        EndpointDefinitions(String endPoint) {
+            this.endPoint = endPoint;
+        }
+
+        public String getEndPoint(String vin) {
+            return endPoint.formatted(vin);
+        }
+    }
+
     private static final int REQUEST_TIMEOUT_MS = 10_000;
     private static final String NOT_BE_THERE = "you should not be there but well done for the effort";
+    private static final String ACCOUNTS_ROOT = "/commerce/v1/accounts/%s";
+    private static final String KAMEREON = "/kamereon";
+    private static final String CAR_ADAPTER_V1 = "/kca/car-adapter/v1/cars/%s/";
+    private static final String CAR_ADAPTER_V2 = "/kca/car-adapter/v2/cars/%s/";
 
     private final Logger logger = LoggerFactory.getLogger(MyRenaultHttpSession.class);
     // Use a expiring cache to not login again if initSession is called within 3
@@ -66,11 +95,13 @@ public class MyRenaultHttpSession {
     private RenaultConfiguration config;
     private HttpClient httpClient;
     private Constants constants;
-    private @Nullable String kamereonaccountId;
     private @Nullable String cookieValue;
     private @Nullable String personId;
     private @Nullable String gigyaDataCenter;
     private @Nullable String jwt;
+
+    private @Nullable String accountsEndpointRoot;
+    private @Nullable String kamereonEndpointRoot;
 
     public MyRenaultHttpSession(RenaultConfiguration config, HttpClient httpClient) {
         this.config = config;
@@ -210,97 +241,98 @@ public class MyRenaultHttpSession {
     }
 
     private void getAccountID() throws RenaultException {
-        final JsonObject responseJson = getKamereonResponse(
-                "/commerce/v1/persons/" + personId + "?country=" + getCountry(config));
-        if (responseJson != null) {
-            JsonArray accounts = responseJson.getAsJsonArray("accounts");
-            for (int i = 0; i < accounts.size(); i++) {
-                if (accounts.get(i).getAsJsonObject().get("accountType").getAsString().equals(config.accountType)) {
-                    kamereonaccountId = accounts.get(i).getAsJsonObject().get("accountId").getAsString();
-                    break;
-                }
-            }
-        }
-        if (kamereonaccountId == null) {
+        getKamereonResponse("/commerce/v1/persons/" + personId + "?country=" + getCountry(config))
+                .ifPresent(responseJson -> {
+                    JsonArray accounts = responseJson.getAsJsonArray("accounts");
+                    for (int i = 0; i < accounts.size(); i++) {
+                        if (accounts.get(i).getAsJsonObject().get("accountType").getAsString()
+                                .equals(config.accountType)) {
+                            accountsEndpointRoot = ACCOUNTS_ROOT
+                                    .formatted(accounts.get(i).getAsJsonObject().get("accountId").getAsString());
+                            kamereonEndpointRoot = accountsEndpointRoot + KAMEREON;
+                            break;
+                        }
+                    }
+                });
+        if (accountsEndpointRoot == null) {
             throw new RenaultException(String.format("@text/error.renault.session.kamereon_cant_get_account_id[\"%s\"]",
                     config.accountType));
         }
     }
 
     public void getVehicle(Car car) throws RenaultException {
-        final JsonObject responseJson = getKamereonResponse("/commerce/v1/accounts/" + kamereonaccountId + "/vehicles/"
-                + config.vin + "/details?country=" + getCountry(config));
-        if (responseJson != null) {
-            car.setDetails(responseJson);
-        }
+        getKamereonResponse(accountsEndpointRoot + "/vehicles/" + config.vin + "/details?country=" + getCountry(config))
+                .ifPresent(responseJson -> car.setDetails(responseJson));
     }
 
     public void getBatteryStatus(Car car) throws RenaultException {
-        final JsonObject responseJson = getKamereonResponse(kcav2() + "battery-status?country=" + getCountry(config));
-        if (responseJson != null) {
-            car.setBatteryStatus(responseJson);
-        }
+        getKamereonResponse(EndpointDefinitions.BATTERY_STATUS)
+                .ifPresent(responseJson -> car.setBatteryStatus(responseJson));
     }
 
     public void getHvacStatus(Car car) throws RenaultException {
-        final JsonObject responseJson = getKamereonResponse(kcav1() + "hvac-status?country=" + getCountry(config));
-        if (responseJson != null) {
-            car.setHVACStatus(responseJson);
-        }
+        getKamereonResponse(EndpointDefinitions.HVAC_STATUS).ifPresent(responseJson -> car.setHVACStatus(responseJson));
     }
 
     public void getCockpit(Car car) throws RenaultException {
-        final JsonObject responseJson = getKamereonResponse(kcav1() + "cockpit?country=" + getCountry(config));
-        if (responseJson != null) {
-            car.setCockpit(responseJson);
-        }
+        getKamereonResponse(EndpointDefinitions.COCKPIT).ifPresent(responseJson -> car.setCockpit(responseJson));
     }
 
     public void getLocation(Car car) throws RenaultException {
-        final JsonObject responseJson = getKamereonResponse(kcav1() + "location?country=" + getCountry(config));
-        if (responseJson != null) {
-            car.setLocation(responseJson);
-        }
+        getKamereonResponse(EndpointDefinitions.LOCATION).ifPresent(responseJson -> car.setLocation(responseJson));
     }
 
     public void getLockStatus(Car car) throws RenaultException {
-        final JsonObject responseJson = getKamereonResponse(kcav1() + "lock-status?country=" + getCountry(config));
-        if (responseJson != null) {
-            car.setLockStatus(responseJson);
-        }
+        getKamereonResponse(EndpointDefinitions.LOCK_STATUS).ifPresent(responseJson -> car.setLockStatus(responseJson));
+    }
+
+    public void getSocLevels(Car car) throws RenaultException {
+        getKamereonResponse(EndpointDefinitions.SOC_LEVELS).ifPresent(responseJson -> car.setSoc(responseJson));
     }
 
     public void actionHvacOn(double hvacTargetTemperature) throws RenaultException {
-        final String path = kcav1() + "actions/hvac-start?country=" + getCountry(config);
-        postKamereonRequest(path,
+        postKamereonRequest(EndpointDefinitions.ACTIONS_HVAC_START,
                 "{\"data\":{\"type\":\"HvacStart\",\"attributes\":{\"action\":\"start\",\"targetTemperature\":"
                         + hvacTargetTemperature + "}}}");
     }
 
     public void actionChargeMode(ChargingMode mode) throws RenaultException {
         final String apiMode = mode.name().toLowerCase(Locale.ROOT);
-        final String path = kcav1() + "actions/charge-mode?country=" + getCountry(config);
-        postKamereonRequest(path,
+        postKamereonRequest(EndpointDefinitions.ACTIONS_CHARGE_MODE,
                 "{\"data\":{\"type\":\"ChargeMode\",\"attributes\":{\"action\":\"" + apiMode + "\"}}}");
     }
 
     public void actionPause(boolean mode) throws RenaultException {
         final String apiMode = mode ? "pause" : "resume";
-        final String path = "/commerce/v1/accounts/" + kamereonaccountId + "/kamereon/kcm/v1/vehicles/" + config.vin
-                + "/charge/pause-resume?country=" + getCountry(config);
-        postKamereonRequest(path,
+        postKamereonRequest(EndpointDefinitions.CHARGE_PAUSE_RESUME,
                 "{\"data\":{\"type\":\"ChargePauseResume\",\"attributes\":{\"action\":\"" + apiMode + "\"}}}");
     }
 
-    private void postKamereonRequest(final String path, final String content) throws RenaultException {
-        requestKamereonResponse(HttpMethod.POST, path, new StringContentProvider(content, "utf-8"));
+    public void actionSetSocLevels(Car car, int socMin, int socTarget) throws RenaultException {
+        postKamereonRequest(EndpointDefinitions.SOC_LEVELS,
+                "{\"socMin\": %d, \"socTarget\": %d}".formatted(socMin, socTarget));
     }
 
-    private @Nullable JsonObject getKamereonResponse(String path) throws RenaultException {
+    private String kamereonUrl(EndpointDefinitions endpointDefinition) {
+        return String.format("%s%s?country=%s", kamereonEndpointRoot, endpointDefinition.getEndPoint(config.vin),
+                getCountry(config));
+    }
+
+    private void postKamereonRequest(final EndpointDefinitions endpointDefinition, final String content)
+            throws RenaultException {
+        requestKamereonResponse(HttpMethod.POST, kamereonUrl(endpointDefinition),
+                new StringContentProvider(content, "utf-8"));
+    }
+
+    private Optional<JsonObject> getKamereonResponse(EndpointDefinitions endpointDefinition) throws RenaultException {
+        return getKamereonResponse(kamereonUrl(endpointDefinition));
+    }
+
+    private Optional<JsonObject> getKamereonResponse(String path) throws RenaultException {
         return requestKamereonResponse(HttpMethod.GET, path, null);
     }
 
-    private @Nullable JsonObject requestKamereonResponse(HttpMethod httpMethod, String path,
+    private Optional<JsonObject> requestKamereonResponse(HttpMethod httpMethod, String path,
             @Nullable StringContentProvider content) throws RenaultException {
         Request request = httpClient.newRequest(this.constants.getKamereonRootUrl() + path).method(httpMethod)
                 .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).header("Content-type", "application/vnd.api+json")
@@ -308,39 +340,14 @@ public class MyRenaultHttpSession {
         try {
             ContentResponse response = request.send();
             logKamereonCall(request, response);
-            if (httpMethod == HttpMethod.GET) {
-                if (HttpStatus.OK_200 == response.getStatus()) {
-                    final JsonObject json = JsonParser.parseString(response.getContentAsString()).getAsJsonObject();
-                    checkNotSupported(json);
-                    return json;
-                }
-            }
-            checkResponse(response);
+            return checkResponse(response);
         } catch (InterruptedException e) {
             logger.warn("Kamereon Request: {} threw exception: {} ", request.getURI().toString(), e.getMessage());
             Thread.currentThread().interrupt();
         } catch (JsonParseException | TimeoutException | ExecutionException e) {
             throw new RenaultUpdateException(e.toString());
         }
-        return null;
-    }
-
-    private String kcav1() {
-        return String.format("/commerce/v1/accounts/%s/kamereon/kca/car-adapter/v1/cars/%s/", kamereonaccountId,
-                config.vin);
-    }
-
-    private String kcav2() {
-        return String.format("/commerce/v1/accounts/%s/kamereon/kca/car-adapter/v2/cars/%s/", kamereonaccountId,
-                config.vin);
-    }
-
-    private void checkNotSupported(JsonObject json) throws RenaultNotImplementedException {
-        if (Optional.ofNullable(json.get("message")).map(JsonElement::getAsString).filter(NOT_BE_THERE::equals)
-                .isPresent()) {
-            logger.debug("Kamereon response indicates unsupported operation: {}", NOT_BE_THERE);
-            throw new RenaultNotImplementedException("@text/error.renault.session.kamereon_request_not_implemented");
-        }
+        return Optional.empty();
     }
 
     private void logKamereonCall(Request request, ContentResponse response) {
@@ -355,12 +362,23 @@ public class MyRenaultHttpSession {
         }
     }
 
-    private void checkResponse(ContentResponse response)
+    private Optional<JsonObject> checkResponse(ContentResponse response)
             throws RenaultForbiddenException, RenaultNotImplementedException, RenaultAPIGatewayException {
-        switch (response.getStatus()) {
-            case HttpStatus.FORBIDDEN_403:
+        return switch (response.getStatus()) {
+            case HttpStatus.OK_200 -> {
+                final JsonObject json = JsonParser.parseString(response.getContentAsString()).getAsJsonObject();
+                if (Optional.ofNullable(json.get("message")).map(JsonElement::getAsString).filter(NOT_BE_THERE::equals)
+                        .isPresent()) {
+                    logger.debug("Kamereon response indicates unsupported operation: {}", NOT_BE_THERE);
+                    throw new RenaultNotImplementedException(
+                            "@text/error.renault.session.kamereon_request_not_implemented");
+                }
+                yield Optional.ofNullable(json);
+            }
+            case HttpStatus.FORBIDDEN_403 -> {
                 try {
-                    final JsonObject json = JsonParser.parseString(response.getContentAsString()).getAsJsonObject();
+                    final @Nullable JsonObject json = Optional.ofNullable(response.getContentAsString())
+                            .map(JsonParser::parseString).map(JsonElement::getAsJsonObject).orElse(null);
                     if ("err.func.privacy.on".equals(getErrorCode(json))) {
                         throw new RenaultForbiddenException("@text/error.renault.session.kamereon_privacy_on");
                     }
@@ -368,18 +386,17 @@ public class MyRenaultHttpSession {
                     logger.debug("Could not parse 403 message: {}", response.getContentAsString());
                 }
                 throw new RenaultForbiddenException("@text/error.renault.session.kamereon_request_forbidden");
-            case HttpStatus.NOT_FOUND_404:
+            }
+            case HttpStatus.NOT_FOUND_404 ->
                 throw new RenaultNotImplementedException("@text/error.renault.session.kamereon_service_not_found");
-            case HttpStatus.TOO_MANY_REQUESTS_429:
+            case HttpStatus.TOO_MANY_REQUESTS_429 ->
                 throw new RenaultAPIGatewayException("@text/error.renault.session.kamereon_quota_limit_exceeded");
-            case HttpStatus.NOT_IMPLEMENTED_501:
-                throw new RenaultNotImplementedException(
-                        "@text/error.renault.session.kamereon_request_not_implemented");
-            case HttpStatus.BAD_GATEWAY_502:
+            case HttpStatus.NOT_IMPLEMENTED_501 -> throw new RenaultNotImplementedException(
+                    "@text/error.renault.session.kamereon_request_not_implemented");
+            case HttpStatus.BAD_GATEWAY_502 ->
                 throw new RenaultAPIGatewayException("@text/error.renault.session.kamereon_request_failed");
-            default:
-                break;
-        }
+            default -> Optional.empty();
+        };
     }
 
     private String getCountry(RenaultConfiguration config) {
@@ -390,9 +407,10 @@ public class MyRenaultHttpSession {
         return country;
     }
 
-    private static String getErrorCode(JsonObject responseJson) {
+    private static String getErrorCode(@Nullable JsonObject responseJson) {
         // @formatter:off
-        final @Nullable String errorCode = Optional.ofNullable(responseJson.get("messages"))
+        final @Nullable String errorCode = Optional.ofNullable(responseJson)
+            .map(m -> m.get("messages"))
             .map(m -> m.getAsJsonArray())
             .map(m -> m.asList())
             .map(m -> m.get(0))
