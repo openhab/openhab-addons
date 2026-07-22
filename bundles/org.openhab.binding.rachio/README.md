@@ -214,7 +214,7 @@ When Rachio has not supplied those identifiers, the command is ignored and logge
 
 ## Item Examples
 
-```java
+```text
 Switch Rachio_Controller_Stop "Stop Watering" {
     channel="rachio:device:home:controller:stop"
 }

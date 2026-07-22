@@ -154,10 +154,10 @@ public class RachioHttp {
                     request.getRequestMethod(), sanitizeForLogging(result.url));
             if (method.equals(HTTP_METHOD_PUT) || method.equals(HTTP_METHOD_POST)) {
                 request.setDoOutput(true);
-                DataOutputStream wr = new DataOutputStream(request.getOutputStream());
-                wr.write(reqDatas != null ? reqDatas.getBytes(StandardCharsets.UTF_8) : new byte[0]);
-                wr.flush();
-                wr.close();
+                try (DataOutputStream wr = new DataOutputStream(request.getOutputStream())) {
+                    wr.write(reqDatas != null ? reqDatas.getBytes(StandardCharsets.UTF_8) : new byte[0]);
+                    wr.flush();
+                }
             }
             StringBuilder response = new StringBuilder();
 
