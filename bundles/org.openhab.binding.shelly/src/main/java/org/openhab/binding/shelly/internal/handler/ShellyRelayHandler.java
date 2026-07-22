@@ -182,13 +182,14 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
     }
 
     private void updateBrightnessChannel(int lightId, OnOffType power, int brightness) throws ShellyApiException {
-        updateChannel(CHANNEL_COLOR_WHITE, CHANNEL_BRIGHTNESS + "$Switch", power);
+        String group = profile.getControlGroup(lightId);
+        updateChannel(group, CHANNEL_BRIGHTNESS + "$Switch", power);
         if (brightness > 0) {
             api.setBrightness(lightId, brightness, config.getBrightnessAutoOn());
         } else {
             api.setLightTurn(lightId, power == OnOffType.ON ? SHELLY_API_ON : SHELLY_API_OFF);
             if (brightness >= 0) { // ignore -1
-                updateChannel(CHANNEL_COLOR_WHITE, CHANNEL_BRIGHTNESS + "$Value",
+                updateChannel(group, CHANNEL_BRIGHTNESS + "$Value",
                         toQuantityType((double) (power == OnOffType.ON ? brightness : 0), DIGITS_NONE, Units.PERCENT));
             }
         }
@@ -333,6 +334,9 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
             }
 
             if (!profile.isRoller) {
+                if (status.relays == null) {
+                    return updated;
+                }
                 logger.trace("{}: Updating {} relay(s)", thingName, profile.numRelays);
                 for (int i = 0; i < status.relays.size(); i++) {
                     createRelayChannels(status.relays.get(i), i);
@@ -340,6 +344,9 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                 }
             } else {
                 // Check for Relay in Roller Mode
+                if (status.rollers == null) {
+                    return updated;
+                }
                 logger.trace("{}: Updating {} rollers", thingName, profile.numRollers);
                 for (int i = 0; i < profile.numRollers; i++) {
                     ShellyRollerStatus roller = status.rollers.get(i);

@@ -491,13 +491,16 @@ public class ShellyChannelDefinitions {
         addChannel(thing, add, profile.isDimmer, group, CHANNEL_BRIGHTNESS);
 
         List<ShellySettingsDimmer> dimmers = profile.settings.dimmers;
-        if (dimmers != null) {
+        if (dimmers != null && idx < dimmers.size()) {
             ShellySettingsDimmer ds = dimmers.get(idx);
             addChannel(thing, add, ds.name != null, group, CHANNEL_OUTPUT_NAME);
             addChannel(thing, add, ds.autoOn != null, group, CHANNEL_TIMER_AUTOON);
             addChannel(thing, add, ds.autoOff != null, group, CHANNEL_TIMER_AUTOOFF);
-            ShellyShortLightStatus dss = dstatus.dimmers.get(idx);
-            addChannel(thing, add, dss != null && dss.hasTimer != null, group, CHANNEL_TIMER_ACTIVE);
+            List<ShellyShortLightStatus> statusDimmers = dstatus.dimmers;
+            if (statusDimmers != null) {
+                ShellyShortLightStatus dss = statusDimmers.size() > idx ? statusDimmers.get(idx) : null;
+                addChannel(thing, add, dss != null && dss.hasTimer != null, group, CHANNEL_TIMER_ACTIVE);
+            }
         }
         return add;
     }

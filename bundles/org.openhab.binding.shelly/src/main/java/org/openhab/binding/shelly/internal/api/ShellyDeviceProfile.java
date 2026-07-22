@@ -349,19 +349,38 @@ public class ShellyDeviceProfile {
             return CHANNEL_GROUP_STATUS;
         } else if (isRoller) {
             return numRelays <= 2 ? CHANNEL_GROUP_ROL_CONTROL : CHANNEL_GROUP_ROL_CONTROL + idx;
-        } else {
-            // Device has 1 input per relay: 0=off, 1+2 depend on switch mode
-            return numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL : CHANNEL_GROUP_RELAY_CONTROL + idx;
+        } else if (isDimmer) {
+            List<ShellySettingsDimmer> dimmers = settings.dimmers;
+            if (dimmers != null) {
+                int numDimmer = dimmers.size();
+                if (numDimmer <= 1) {
+                    return CHANNEL_GROUP_RELAY_CONTROL;
+                }
+                int numChannels = numInputs / numDimmer; // Device has more than 1 dimmer
+                if (numChannels == 0) {
+                    return CHANNEL_GROUP_RELAY_CONTROL;
+                }
+                return CHANNEL_GROUP_RELAY_CONTROL + (1 + (i / numChannels));
+            }
         }
+        // Device has 1 input per relay: 0=off, 1+2 depend on switch mode
+        return numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL : CHANNEL_GROUP_RELAY_CONTROL + idx;
     }
 
     public String getInputSuffix(int i) {
         int idx = i + 1; // channel names are 1-based
         if (isRGBW2 || isIX || isMultiButton) {
             return ""; // RGBW2 has only 1 channel
-        } else if (isRoller || isDimmer) {
+        } else if (isRoller) {
             // Roller has 2 relays, but it will be mapped to 1 roller with 2 inputs
-            // Dimmer has up to 2 inputs to control light
+            return String.valueOf(idx);
+        } else if (isDimmer) {
+            List<ShellySettingsDimmer> dimmers = settings.dimmers;
+            if (dimmers != null) {
+                int numDimmer = dimmers.size();
+                return String.valueOf(numDimmer <= 1 ? idx : (i % numDimmer) + 1);
+            }
+            // Dimmer has up to 2 inputs to control light (Gen1 fallback, no dimmers list)
             return String.valueOf(idx);
         } else if (hasRelays) {
             return numRelays == 1 && numInputs >= 2 ? String.valueOf(idx) : "";
@@ -385,8 +404,8 @@ public class ShellyDeviceProfile {
             ShellySettingsInput input = inputs.get(idx);
             btnType = getString(input.btnType);
         } else if (isDimmer) {
-            if (dimmers != null) {
-                ShellySettingsDimmer dimmer = dimmers.get(0);
+            if (dimmers != null && !dimmers.isEmpty()) {
+                ShellySettingsDimmer dimmer = dimmers.get(Math.min(idx, dimmers.size() - 1));
                 btnType = getString(dimmer.btnType);
             }
         } else if (relays != null) {
