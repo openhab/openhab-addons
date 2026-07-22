@@ -49,8 +49,6 @@ public final class RachioCloudWebhookRegistry {
     }
 
     synchronized CloudWebhookLease acquire(String consumerId) throws CloudWebhookException, InterruptedException {
-        activeConsumers.add(consumerId);
-
         Object webhookService = webhookServiceSupplier.get();
         if (webhookService == null) {
             throw new CloudWebhookException("WebhookServiceUnavailable");
@@ -58,26 +56,36 @@ public final class RachioCloudWebhookRegistry {
 
         Object webhook = cachedWebhook;
         if (webhook != null && webhookService.equals(cachedWebhookProvider)) {
-            return webhookLease(webhook, cachedWebhookGeneration);
+            CloudWebhookLease lease = webhookLease(webhook, cachedWebhookGeneration);
+            activeConsumers.add(consumerId);
+            return lease;
         }
 
         cachedWebhook = null;
         cachedWebhookProvider = webhookService;
 
         CompletableFuture<?> webhookFuture = requestWebhook(webhookService);
+        boolean consumerAdded = false;
         try {
             webhook = requireNonNull(webhookFuture.get(CLOUD_WEBHOOK_REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS),
                     "requestWebhook");
             CloudWebhookLease lease = webhookLease(webhook, cachedWebhookGeneration + 1);
             cachedWebhook = webhook;
             cachedWebhookGeneration++;
+            consumerAdded = activeConsumers.add(consumerId);
             logger.debug("RachioCloud: openHAB Cloud webhook URL is available for {} active bridge(s)",
                     activeConsumers.size());
             return lease;
         } catch (InterruptedException e) {
+            if (consumerAdded) {
+                activeConsumers.remove(consumerId);
+            }
             webhookFuture.cancel(true);
             throw e;
         } catch (CloudWebhookException | ExecutionException | TimeoutException | RuntimeException e) {
+            if (consumerAdded) {
+                activeConsumers.remove(consumerId);
+            }
             webhookFuture.cancel(true);
             if (e instanceof CloudWebhookException cloudWebhookException) {
                 throw cloudWebhookException;

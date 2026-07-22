@@ -14,7 +14,7 @@
 		</properties>
 
 		<config-description>
-			<parameter name="apikey" type="text">
+			<parameter name="apikey" type="text" required="true">
 				<label>Rachio API Key</label>
 				<description>Visit the Rachio Web App account settings to create an API key.</description>
 				<context>password</context>
