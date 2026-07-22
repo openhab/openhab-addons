@@ -56,6 +56,7 @@ public class ClientRateLimitManager {
 
     private final int numBuckets;
     private final long bucketSizeMillis;
+    // Mutable rate limit state is guarded by the synchronized public methods.
     private int rateLimitCap;
     private int rateRemaining;
     private Instant rateResetTime = Instant.MAX;
