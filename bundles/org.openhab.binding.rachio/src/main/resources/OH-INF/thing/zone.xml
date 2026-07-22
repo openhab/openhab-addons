@@ -119,11 +119,13 @@
 			<tag>Measurement</tag>
 			<tag>Duration</tag>
 		</tags>
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="zone-image-url">
 		<item-type>String</item-type>
 		<label>Image URL</label>
 		<description>URL for the zone picture/image.</description>
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="zone-image">
 		<item-type>Image</item-type>
@@ -132,6 +134,7 @@
 		<tags>
 			<tag>Status</tag>
 		</tags>
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="zone-depth-of-water">
 		<item-type unitHint="in">Number:Length</item-type>

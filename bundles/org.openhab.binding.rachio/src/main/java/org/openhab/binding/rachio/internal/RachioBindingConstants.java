@@ -95,7 +95,7 @@ public class RachioBindingConstants {
     public static final String PROPERTY_VALVE_PROGRAM_ID = "programId";
     public static final String PROPERTY_VALVE_PROGRAM_API_VERSION = "programApiVersion";
     public static final String PROPERTY_PERSON_ID = "personId";
-    public static final String PROPERTY_PERSON_USER = "accounUserName";
+    public static final String PROPERTY_PERSON_USER = "accountUserName";
     public static final String PROPERTY_PERSON_NAME = "accountFullName";
     public static final String PROPERTY_PERSON_EMAIL = "accountEMail";
     public static final String PROPERTY_WEBHOOK_MODE = "webhookMode";
