@@ -170,7 +170,7 @@ public class RachioZone extends RachioCloudZone {
         return startRunTime;
     }
 
-    public boolean isEnable() {
+    public boolean isEnabled() {
         return enabled;
     }
 

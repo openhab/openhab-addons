@@ -49,15 +49,26 @@ public class RachioApiResult {
     }
 
     public void setRateLimit(@Nullable String rateLimit, @Nullable String rateRemaining, @Nullable String rateReset) {
-        if (rateLimit != null) {
-            this.rateLimit = Integer.parseInt(rateLimit);
+        @Nullable
+        Integer parsedRateLimit = parseRateLimitHeader(rateLimit, RACHIO_JSON_RATE_LIMIT);
+        if (parsedRateLimit != null) {
+            this.rateLimit = parsedRateLimit;
+        } else if (rateLimit != null) {
+            this.rateLimit = 0;
         }
-        if (rateRemaining != null) {
-            this.rateRemaining = Integer.parseInt(rateRemaining);
+
+        @Nullable
+        Integer parsedRateRemaining = parseRateLimitHeader(rateRemaining, RACHIO_JSON_RATE_REMAINING);
+        if (parsedRateRemaining != null) {
+            this.rateRemaining = parsedRateRemaining;
             this.rateRemainingKnown = true;
         } else {
+            if (rateRemaining != null) {
+                this.rateRemaining = 0;
+            }
             this.rateRemainingKnown = false;
         }
+
         if (rateReset != null) {
             this.rateReset = rateReset;
         }
@@ -68,17 +79,29 @@ public class RachioApiResult {
 
         if (isRateLimitCritical()) {
             logger.warn("Remaining number of API calls is getting critical: limit={}, remaining={}, reset at {}",
-                    rateLimit, rateRemaining, rateReset);
+                    this.rateLimit, this.rateRemaining, this.rateReset);
             return;
         }
         if (isRateLimitWarning()) {
-            logger.warn("Remaining number of API calls is low: limit={}, remaining={}, reset at {}", rateLimit,
-                    rateRemaining, rateReset);
+            logger.warn("Remaining number of API calls is low: limit={}, remaining={}, reset at {}", this.rateLimit,
+                    this.rateRemaining, this.rateReset);
             return;
         }
 
-        logger.trace("API rate limit: remaining={}, limit={}, reset at {}", this.rateRemaining, rateLimit,
+        logger.trace("API rate limit: remaining={}, limit={}, reset at {}", this.rateRemaining, this.rateLimit,
                 this.rateReset);
+    }
+
+    private @Nullable Integer parseRateLimitHeader(@Nullable String value, String headerName) {
+        if (value == null) {
+            return null;
+        }
+        try {
+            return Integer.parseInt(value.trim());
+        } catch (NumberFormatException e) {
+            logger.debug("Invalid Rachio {} header '{}'; ignoring rate limit value.", headerName, value);
+            return null;
+        }
     }
 
     boolean hasKnownRateRemaining() {

@@ -87,11 +87,11 @@ public class RachioHttp {
     }
 
     /**
-     * Given a URL and a set parameters, send a HTTP POST request to the URL location created by the URL and parameters.
+     * Given a URL, send a HTTP PUT request to the URL.
      *
-     * @param url The URL to send a POST request to.
-     * @param urlParameters List of parameters to use in the URL for the POST request. Null if no parameters.
-     * @return RachioApiResult including GET response, http code etc.
+     * @param url The URL to send a PUT request to.
+     * @param putData Request body to send with the PUT request.
+     * @return RachioApiResult including PUT response, http code etc.
      * @throws Exception
      */
     public RachioApiResult httpPut(String url, String putData) throws RachioApiException {

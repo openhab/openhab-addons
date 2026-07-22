@@ -191,7 +191,6 @@ public final class RachioCloudWebhookRegistry {
     private @Nullable Object invokeMethod(Object target, String methodName, Object... args)
             throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         Method method = target.getClass().getMethod(methodName, parameterTypes(args));
-        method.setAccessible(true);
         return method.invoke(target, args);
     }
 
