@@ -372,17 +372,22 @@ public class FroniusBatteryHandler extends FroniusBaseThingHandler {
         }
         LocalTime now = LocalTime.now();
         DayOfWeek today = LocalDate.now().getDayOfWeek();
+        // when multiple entries of the same type are active (which the inverter web UI rejects, but its config API
+        // accepts), the inverter applies the most restrictive one: the smallest maximum resp. the largest minimum
+        boolean maximumLimit = type == ScheduleType.CHARGE_MAX || type == ScheduleType.DISCHARGE_MAX;
+        Integer limit = null;
         for (TimeOfUseRecord record : records.records()) {
             if (!record.active() || record.scheduleType() != type || !isActiveOn(record.weekdays(), today)) {
                 continue;
             }
             LocalTime start = LocalTime.parse(record.timeTable().start(), TIME_FORMATTER);
             LocalTime end = LocalTime.parse(record.timeTable().end(), TIME_FORMATTER);
-            if (!now.isBefore(start) && !now.isAfter(end)) {
-                return new QuantityType<>(record.power(), Units.WATT);
+            if (!now.isBefore(start) && !now.isAfter(end)
+                    && (limit == null || (maximumLimit ? record.power() < limit : record.power() > limit))) {
+                limit = record.power();
             }
         }
-        return UnDefType.UNDEF;
+        return limit == null ? UnDefType.UNDEF : new QuantityType<>(limit, Units.WATT);
     }
 
     private static boolean isActiveOn(WeekdaysRecord weekdays, DayOfWeek day) {
