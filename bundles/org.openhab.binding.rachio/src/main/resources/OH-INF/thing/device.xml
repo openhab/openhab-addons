@@ -402,7 +402,7 @@
 	<channel-type id="last-event">
 		<item-type>String</item-type>
 		<label>Last Event</label>
-		<description>Events can be received when callback is configured.</description>
+		<description>Most recent event processed by the binding, from polling or webhooks.</description>
 		<tags>
 			<tag>Status</tag>
 		</tags>
@@ -410,7 +410,7 @@
 	<channel-type id="last-event-time">
 		<item-type>DateTime</item-type>
 		<label>Last Event Time</label>
-		<description>Timestamp of last status update.</description>
+		<description>Timestamp when the last event was processed.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Timestamp</tag>

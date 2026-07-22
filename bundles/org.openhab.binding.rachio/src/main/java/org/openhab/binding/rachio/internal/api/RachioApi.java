@@ -263,7 +263,7 @@ public class RachioApi {
             throws RachioApiException {
         this.apikey = apikey;
         this.bridgeUID = bridgeUID;
-        this.rateLimitManager = Objects.requireNonNull(RATE_LIMIT_MANAGERS.computeIfAbsent(apikey,
+        this.rateLimitManager = Objects.requireNonNull(RATE_LIMIT_MANAGERS.computeIfAbsent(getMD5Hash(apikey),
                 key -> new ClientRateLimitManager(10, Duration.ofSeconds(30))));
         httpApi = new RachioHttp(this.apikey);
         if (!initializePersonId(priority, requestPurpose) || !initializeDevices(bridgeUID, priority, requestPurpose)

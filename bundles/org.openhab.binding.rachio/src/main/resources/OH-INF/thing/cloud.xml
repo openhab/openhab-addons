@@ -18,30 +18,25 @@
 				<label>Rachio API Key</label>
 				<description>Visit the Rachio Web App account settings to create an API key.</description>
 				<context>password</context>
-				<required>false</required>
 			</parameter>
 			<parameter name="pollingInterval" type="integer" min="30" step="30">
 				<label>Polling/Refresh Interval</label>
 				<description>Seconds between fetching values from the cloud service</description>
-				<required>false</required>
 				<default>120</default>
 			</parameter>
 			<parameter name="defaultRuntime" type="integer" min="30" step="30">
 				<label>Default Runtime</label>
 				<description>Number of seconds to run a zone if no runtime is specified (=0)</description>
-				<required>false</required>
 				<default>120</default>
 			</parameter>
 			<parameter name="eventHistoryLookbackHours" type="integer" min="0" step="1">
 				<label>Event History Lookback</label>
 				<description>Hours of recent controller event history to retrieve. Set to 0 to disable event history polling.</description>
-				<required>false</required>
 				<default>24</default>
 			</parameter>
 			<parameter name="forecastUnits" type="text">
 				<label>Forecast Units</label>
 				<description>Units for Rachio forecast reads.</description>
-				<required>false</required>
 				<default>METRIC</default>
 				<options>
 					<option value="METRIC">Metric</option>
@@ -51,13 +46,11 @@
 			<parameter name="hoseSummaryLookbackDays" type="integer" min="0" max="31" step="1">
 				<label>Hose Timer Summary Lookback</label>
 				<description>Days of recent Smart Hose Timer summary data to retrieve.</description>
-				<required>false</required>
 				<default>2</default>
 			</parameter>
 			<parameter name="hoseSummaryLookaheadDays" type="integer" min="0" max="31" step="1">
 				<label>Hose Timer Summary Lookahead</label>
 				<description>Days of upcoming Smart Hose Timer summary data to retrieve.</description>
-				<required>false</required>
 				<default>7</default>
 			</parameter>
 			<parameter name="callbackUrl" type="text">
@@ -66,14 +59,12 @@
 					/rachio/webhook. Legacy
 					callbacks are validated by externalId and controller identity.</description>
 				<context>url</context>
-				<required>false</required>
 			</parameter>
 			<parameter name="callbackUsername" type="text">
 				<label>Callback Username</label>
 				<description>Optional legacy callback URL username. Leave empty unless the public endpoint explicitly
 					supports URL
 					userinfo for callbacks.</description>
-				<required>false</required>
 			</parameter>
 			<parameter name="callbackPassword" type="text">
 				<label>Callback Password</label>
@@ -81,12 +72,10 @@
 					supports URL
 					userinfo for callbacks.</description>
 				<context>password</context>
-				<required>false</required>
 			</parameter>
 			<parameter name="clearAllCallbacks" type="boolean">
 				<label>Clear Callbacks</label>
 				<description>If true, existing callbacks for this binding instance are cleared during registration.</description>
-				<required>false</required>
 				<default>false</default>
 			</parameter>
 			<parameter name="autoConfigureWebhooks" type="boolean">
@@ -94,7 +83,6 @@
 				<description>Register modern Rachio WebhookService callbacks for irrigation controllers. This is optional and
 					off by
 					default.</description>
-				<required>false</required>
 				<default>false</default>
 			</parameter>
 			<parameter name="autoConfigureHoseTimerWebhooks" type="boolean">
@@ -102,7 +90,6 @@
 				<description>Also register modern Rachio WebhookService callbacks for Smart Hose Timer valves and
 					programs. Requires
 					Auto Configure Webhooks and is off by default.</description>
-				<required>false</required>
 				<default>false</default>
 			</parameter>
 			<parameter name="useCloudWebhook" type="boolean">
@@ -110,7 +97,6 @@
 				<description>Request the public callback URL from the openHAB core WebhookService, typically provided by the
 					openHAB
 					Cloud Connector.</description>
-				<required>false</required>
 				<default>false</default>
 			</parameter>
 			<parameter name="publicWebhookUrl" type="text">
@@ -119,7 +105,6 @@
 					is
 					disabled.</description>
 				<context>url</context>
-				<required>false</required>
 			</parameter>
 		</config-description>
 	</bridge-type>
