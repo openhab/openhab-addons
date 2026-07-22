@@ -17,6 +17,7 @@
 			<parameter name="apikey" type="text">
 				<label>Rachio API Key</label>
 				<description>Visit the Rachio Web App account settings to create an API key.</description>
+				<context>password</context>
 				<required>false</required>
 			</parameter>
 			<parameter name="pollingInterval" type="integer" min="30" step="30">

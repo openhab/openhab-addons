@@ -154,9 +154,10 @@ public class RachioConfiguration {
             if (parameterName.equals(PARAM_APIKEY)) {
                 apikey = value;
             } else if (parameterName.equals(PARAM_POLLING_INTERVAL)) {
-                this.pollingInterval = Integer.parseInt(value);
+                this.pollingInterval = parsePositiveSeconds(value, DEFAULT_POLLING_INTERVAL_SEC,
+                        PARAM_POLLING_INTERVAL);
             } else if (parameterName.equals(PARAM_DEFAULT_RUNTIME)) {
-                this.defaultRuntime = Integer.parseInt(value);
+                this.defaultRuntime = parsePositiveSeconds(value, DEFAULT_ZONE_RUNTIME_SEC, PARAM_DEFAULT_RUNTIME);
             } else if (parameterName.equals(PARAM_CALLBACK_URL)) {
                 this.callbackUrl = value;
             } else if (parameterName.equals(PARAM_CALLBACK_USERNAME)) {
@@ -199,6 +200,20 @@ public class RachioConfiguration {
             }
         }
         return null;
+    }
+
+    private int parsePositiveSeconds(String value, int defaultValue, String parameterName) {
+        try {
+            int seconds = Integer.parseInt(value.trim());
+            if (seconds <= 0) {
+                logger.warn("Invalid Rachio {} '{}'; using default {}.", parameterName, value, defaultValue);
+                return defaultValue;
+            }
+            return seconds;
+        } catch (NumberFormatException e) {
+            logger.warn("Invalid Rachio {} '{}'; using default {}.", parameterName, value, defaultValue);
+            return defaultValue;
+        }
     }
 
     private int parseEventHistoryLookbackHours(String value) {
