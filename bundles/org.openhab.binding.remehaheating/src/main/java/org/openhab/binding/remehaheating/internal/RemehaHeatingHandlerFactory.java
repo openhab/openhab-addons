@@ -19,6 +19,7 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.WWWAuthenticationProtocolHandler;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -31,11 +32,11 @@ import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link RemehaHeatingHandlerFactory} is responsible for creating things and thing handlers.
- * 
+ *
  * This factory creates handlers for supported Remeha heating system things.
  * It implements the OSGi component pattern and is automatically registered
  * as a ThingHandlerFactory service.
- * 
+ *
  * Currently supports:
  * - Remeha boiler things (THING_TYPE_BOILER)
  *
@@ -55,7 +56,7 @@ public class RemehaHeatingHandlerFactory extends BaseThingHandlerFactory {
 
     /**
      * Checks if this factory supports the given thing type.
-     * 
+     *
      * @param thingTypeUID The thing type UID to check
      * @return true if the thing type is supported, false otherwise
      */
@@ -66,7 +67,11 @@ public class RemehaHeatingHandlerFactory extends BaseThingHandlerFactory {
 
     /**
      * Creates a thing handler for the given thing.
-     * 
+     *
+     * A dedicated HttpClient is created per thing instance because the Remeha OAuth2 flow
+     * requires custom buffer sizes (16384 bytes) to handle large Azure B2C responses.
+     * The HttpClient lifecycle is managed by the handler's dispose method.
+     *
      * @param thing The thing for which to create a handler
      * @return A new handler instance or null if the thing type is not supported
      */
@@ -80,7 +85,18 @@ public class RemehaHeatingHandlerFactory extends BaseThingHandlerFactory {
             httpClient.setResponseBufferSize(16384);
             try {
                 httpClient.start();
+                // The Remeha API returns HTTP 401 without a WWW-Authenticate header, which violates
+                // RFC 7235. Jetty's WWWAuthenticationProtocolHandler throws an exception in this case.
+                // Removing it allows the 401 response to be handled normally by the API client.
+                if (httpClient.getProtocolHandlers() != null) {
+                    httpClient.getProtocolHandlers().remove(WWWAuthenticationProtocolHandler.NAME);
+                }
             } catch (Exception e) {
+                try {
+                    httpClient.stop();
+                } catch (Exception stopEx) {
+                    // ignore cleanup failure
+                }
                 throw new IllegalStateException("Failed to start HTTP client", e);
             }
             return new RemehaHeatingHandler(thing, httpClient);
