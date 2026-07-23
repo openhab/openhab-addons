@@ -88,12 +88,12 @@ public class FroniusSymoInverterActions implements ThingActions {
 
     public static boolean addSchedule(ThingActions actions, LocalTime from, LocalTime until, String scheduleType,
             QuantityType<Power> power) {
-        return addSchedule(actions, from, until, ScheduleType.valueOf(scheduleType), power);
+        return addSchedule(actions, from, until, ScheduleType.parse(scheduleType), power);
     }
 
     public static boolean addSchedule(ThingActions actions, LocalTime from, LocalTime until, String scheduleType,
             QuantityType<Power> power, @Nullable String weekdays) {
-        return addSchedule(actions, from, until, ScheduleType.valueOf(scheduleType), power, weekdays);
+        return addSchedule(actions, from, until, ScheduleType.parse(scheduleType), power, weekdays);
     }
 
     public static boolean addSchedule(ThingActions actions, ZonedDateTime from, ZonedDateTime until,
@@ -108,12 +108,12 @@ public class FroniusSymoInverterActions implements ThingActions {
 
     public static boolean addSchedule(ThingActions actions, ZonedDateTime from, ZonedDateTime until,
             String scheduleType, QuantityType<Power> power) {
-        return addSchedule(actions, from.toLocalTime(), until.toLocalTime(), ScheduleType.valueOf(scheduleType), power);
+        return addSchedule(actions, from.toLocalTime(), until.toLocalTime(), ScheduleType.parse(scheduleType), power);
     }
 
     public static boolean addSchedule(ThingActions actions, ZonedDateTime from, ZonedDateTime until,
             String scheduleType, QuantityType<Power> power, @Nullable String weekdays) {
-        return addSchedule(actions, from.toLocalTime(), until.toLocalTime(), ScheduleType.valueOf(scheduleType), power,
+        return addSchedule(actions, from.toLocalTime(), until.toLocalTime(), ScheduleType.parse(scheduleType), power,
                 weekdays);
     }
 
@@ -262,11 +262,11 @@ public class FroniusSymoInverterActions implements ThingActions {
 
     public boolean addSchedule(LocalTime from, LocalTime until, String scheduleType, QuantityType<Power> power,
             @Nullable String weekdays) {
-        return addSchedule(from, until, ScheduleType.valueOf(scheduleType), power, weekdays);
+        return addSchedule(from, until, ScheduleType.parse(scheduleType), power, weekdays);
     }
 
     public boolean addSchedule(LocalTime from, LocalTime until, String scheduleType, QuantityType<Power> power) {
-        return addSchedule(from, until, ScheduleType.valueOf(scheduleType), power);
+        return addSchedule(from, until, ScheduleType.parse(scheduleType), power);
     }
 
     public boolean addSchedule(ZonedDateTime from, ZonedDateTime until, ScheduleType scheduleType,
@@ -281,13 +281,12 @@ public class FroniusSymoInverterActions implements ThingActions {
 
     public boolean addSchedule(ZonedDateTime from, ZonedDateTime until, String scheduleType,
             QuantityType<Power> power) {
-        return addSchedule(from.toLocalTime(), until.toLocalTime(), ScheduleType.valueOf(scheduleType), power);
+        return addSchedule(from.toLocalTime(), until.toLocalTime(), ScheduleType.parse(scheduleType), power);
     }
 
     public boolean addSchedule(ZonedDateTime from, ZonedDateTime until, String scheduleType, QuantityType<Power> power,
             @Nullable String weekdays) {
-        return addSchedule(from.toLocalTime(), until.toLocalTime(), ScheduleType.valueOf(scheduleType), power,
-                weekdays);
+        return addSchedule(from.toLocalTime(), until.toLocalTime(), ScheduleType.parse(scheduleType), power, weekdays);
     }
 
     public boolean holdBatteryCharge() {

@@ -151,6 +151,8 @@ public class FroniusBatteryHandler extends FroniusBaseThingHandler {
 
     private void initializeBatteryControl(FroniusBridgeHandler bridgeHandler, String scheme, String hostname,
             @Nullable String username, @Nullable String password) {
+        // do not keep a previous instance with outdated credentials when re-initializing after a config change
+        batteryControl = null;
         if (username == null || password == null) {
             logger.info(
                     "Credentials are not configured in the bridge. Battery control is not available for Thing '{}'.",

@@ -1176,17 +1176,6 @@
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 
-
-
-
-
-
-
-
-
-
-
-
 	<channel-type id="min-charge-power">
 		<item-type>Number:Power</item-type>
 		<label>Minimum Charge Power</label>
