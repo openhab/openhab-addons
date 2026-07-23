@@ -16,9 +16,11 @@ import static org.openhab.binding.fronius.internal.api.dto.inverter.batterycontr
 
 import java.net.URI;
 import java.time.DayOfWeek;
+import java.time.Duration;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
@@ -63,6 +65,13 @@ public class FroniusBatteryControl {
 
     private static final LocalTime BEGIN_OF_DAY = LocalTime.of(0, 0);
     private static final LocalTime END_OF_DAY = LocalTime.of(23, 59);
+
+    /**
+     * How often written time of use settings are read back for verification before giving up. Measured on a GEN24
+     * (firmware 1.41.10-1), reads returned the previous settings for up to roughly 200 ms after a write.
+     */
+    private static final int WRITE_VERIFY_ATTEMPTS = 3;
+    private static final Duration WRITE_VERIFY_RETRY_DELAY = Duration.ofMillis(500);
 
     private final Logger logger = LoggerFactory.getLogger(FroniusBatteryControl.class);
     private final Gson gson = new Gson();
@@ -157,16 +166,50 @@ public class FroniusBatteryControl {
     }
 
     /**
-     * Sets the time of use settings of the Fronius hybrid inverter.
+     * Sets the time of use settings of the Fronius hybrid inverter and verifies that they became effective.
      *
      * @param records the time of use settings
-     * @throws FroniusCommunicationException if an error occurs during communication with the inverter
+     * @throws FroniusCommunicationException if an error occurs during communication with the inverter or the inverter
+     *             does not confirm the written settings
      * @throws FroniusUnauthorizedException when the login fails due to invalid credentials
      */
     private void setTimeOfUse(TimeOfUseRecords records)
             throws FroniusCommunicationException, FroniusUnauthorizedException {
         postConfig(timeOfUseUri, records, "timeofuse");
         logger.trace("Time of Use settings set successfully");
+        verifyTimeOfUse(records);
+    }
+
+    /**
+     * Verifies that the written time of use settings became effective by reading them back until they match. The
+     * inverter accepts a write and reports success, but reads shortly afterwards can still return the previous
+     * settings. Without this check, a subsequent read-modify-write (e.g. the next addSchedule call) can be based on
+     * the stale settings and silently undo the write.
+     *
+     * @param expected the previously written time of use settings
+     * @throws FroniusCommunicationException when the read settings still differ from the written ones after the last
+     *             attempt, e.g. because a concurrent change overwrote them
+     * @throws FroniusUnauthorizedException when the login fails due to invalid credentials
+     */
+    private void verifyTimeOfUse(TimeOfUseRecords expected)
+            throws FroniusCommunicationException, FroniusUnauthorizedException {
+        for (int attempt = 1; attempt <= WRITE_VERIFY_ATTEMPTS; attempt++) {
+            if (Arrays.equals(getTimeOfUse().records(), expected.records())) {
+                return;
+            }
+            logger.debug("The inverter did not confirm the written time of use settings yet (attempt {}/{})", attempt,
+                    WRITE_VERIFY_ATTEMPTS);
+            if (attempt < WRITE_VERIFY_ATTEMPTS) {
+                try {
+                    Thread.sleep(WRITE_VERIFY_RETRY_DELAY.toMillis());
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    throw new FroniusCommunicationException("Interrupted while verifying the time of use settings", e);
+                }
+            }
+        }
+        throw new FroniusCommunicationException(
+                "The inverter did not confirm the written time of use settings, they may have been overwritten by a concurrent change");
     }
 
     /**
