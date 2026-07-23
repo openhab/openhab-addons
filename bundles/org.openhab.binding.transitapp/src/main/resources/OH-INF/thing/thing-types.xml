@@ -50,11 +50,26 @@
 			<channel id="routeLongName" typeId="routeLongName"/>
 			<channel id="routeShortName" typeId="routeShortName"/>
 			<channel id="agencyName" typeId="agencyName"/>
+			<channel id="routeColor" typeId="routeColor"/>
 		</channels>
 		<config-description>
 			<parameter name="routeId" type="text" required="true">
 				<label>Route ID</label>
 				<description>The unique identifier for the route.</description>
+			</parameter>
+			<parameter name="includeNextDeparture" type="boolean" required="false">
+				<label>Include Next Departure</label>
+				<description>If set to true, makes the stop list include the next departure for each stop.</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="stopDetailed" type="boolean" required="false">
+				<label>Stop Detailed</label>
+				<description>When true, stop objects are returned as StopDetailed.</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="locale" type="text" required="false">
+				<label>Locale</label>
+				<description>Language locale for names and strings.</description>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" min="30">
 				<label>Refresh Interval</label>
@@ -73,11 +88,21 @@
 		<channels>
 			<channel id="tripHeadsign" typeId="tripHeadsign"/>
 			<channel id="tripStatus" typeId="tripStatus"/>
+			<channel id="rtTripId" typeId="rtTripId"/>
 		</channels>
 		<config-description>
 			<parameter name="tripId" type="text" required="true">
 				<label>Trip ID</label>
 				<description>The unique identifier for the trip.</description>
+			</parameter>
+			<parameter name="includeContinuation" type="boolean" required="false">
+				<label>Include Continuation</label>
+				<description>Appends immediate next trip stops if vehicle continues in-seat.</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="locale" type="text" required="false">
+				<label>Locale</label>
+				<description>Language locale for translated strings.</description>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" min="30">
 				<label>Refresh Interval</label>
@@ -126,6 +151,18 @@
 	<channel-type id="isCancelled">
 		<item-type>Switch</item-type>
 		<label>Is Cancelled</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="rtTripId">
+		<item-type>String</item-type>
+		<label>Real-Time Trip ID</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="routeColor">
+		<item-type>String</item-type>
+		<label>Route Color</label>
 		<state readOnly="true"/>
 	</channel-type>
 
