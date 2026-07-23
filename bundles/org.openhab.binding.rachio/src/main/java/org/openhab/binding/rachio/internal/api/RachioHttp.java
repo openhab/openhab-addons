@@ -68,7 +68,6 @@ public class RachioHttp {
      * Constructor for the Rachio API class to create a connection to the Rachio cloud service.
      *
      * @param key Rachio API Access token (see Web UI)
-     * @throws Exception
      */
     public RachioHttp(final String key) {
         apikey = key;
@@ -80,7 +79,7 @@ public class RachioHttp {
      * @param url The URL to send a GET request to.
      * @param urlParameters List of parameters to use in the URL for the GET request. Null if no parameters.
      * @return RachioApiResult including GET response, http code etc.
-     * @throws Exception
+     * @throws RachioApiException if something went wrong (e.g. unable to connect)
      */
     public RachioApiResult httpGet(String url, @Nullable String urlParameters) throws RachioApiException {
         return httpRequest(HTTP_METHOD_GET, url, urlParameters, null);
@@ -92,7 +91,7 @@ public class RachioHttp {
      * @param url The URL to send a PUT request to.
      * @param putData Request body to send with the PUT request.
      * @return RachioApiResult including PUT response, http code etc.
-     * @throws Exception
+     * @throws RachioApiException if something went wrong (e.g. unable to connect)
      */
     public RachioApiResult httpPut(String url, String putData) throws RachioApiException {
         return httpRequest(HTTP_METHOD_PUT, url, null, putData);
@@ -104,7 +103,7 @@ public class RachioHttp {
      * @param url The URL to send a POST request to.
      * @param postData List of parameters to use in the URL for the POST request. Null if no parameters.
      * @return RachioApiResult including GET response, http code etc.
-     * @throws Exception
+     * @throws RachioApiException if something went wrong (e.g. unable to connect)
      */
     public RachioApiResult httpPost(String url, String postData) throws RachioApiException {
         return httpRequest(HTTP_METHOD_POST, url, null, postData);
@@ -116,7 +115,7 @@ public class RachioHttp {
      * @param url The URL to send a GET request to.
      * @param urlParameters List of parameters to use in the URL for the GET request. Null if no parameters.
      * @return RachioApiResult including GET response, http code etc.
-     * @throws Exception if something went wrong (e.g. unable to connect)
+     * @throws RachioApiException if something went wrong (e.g. unable to connect)
      */
     public RachioApiResult httpDelete(String url, @Nullable String urlParameters) throws RachioApiException {
         return httpRequest(HTTP_METHOD_DELETE, url, urlParameters, null);
@@ -128,7 +127,7 @@ public class RachioHttp {
      * @param url The URL to send a GET request to.
      * @param urlParameters List of parameters to use in the URL for the GET request. Null if no parameters.
      * @return RachioApiResult including GET response, http code etc.
-     * @throws Exception
+     * @throws RachioApiException if something went wrong (e.g. unable to connect)
      */
     protected RachioApiResult httpRequest(String method, String url, @Nullable String urlParameters,
             @Nullable String reqDatas) throws RachioApiException {

@@ -47,7 +47,7 @@ public class RachioApiException extends Exception {
     }
 
     public RachioApiException(String message, RachioApiResult result, Throwable throwable) {
-        super(message);
+        super(message, throwable);
         apiResult = result;
         e = throwable;
     }
