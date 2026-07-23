@@ -65,6 +65,7 @@ import org.openhab.binding.hue.internal.api.dto.clip2.enums.SmartSceneRecallActi
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.SoundValue;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.UpdateStatusV2;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ZigbeeStatus;
+import org.openhab.binding.hue.internal.api.dto.clip2.helper.ColorModeWorkAroundLightState;
 import org.openhab.binding.hue.internal.api.dto.clip2.helper.Setters;
 import org.openhab.binding.hue.internal.config.Clip2ThingConfig;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
@@ -244,27 +245,13 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private boolean updatePropertiesDone;
     private boolean updateDependenciesDone;
     private boolean applyOffTransitionWorkaround;
-    private boolean applyColorModeWorkaround;
+
+    private @Nullable ColorModeWorkAroundLightState workAroundLightState;
 
     private @Nullable Future<?> alertResetTask;
     private @Nullable Future<?> dynamicsResetTask;
     private @Nullable Future<?> updateDependenciesTask;
     private @Nullable Future<?> updateServiceContributorsTask;
-
-    /**
-     * The legacy bi-stable operating mode of the light.
-     * It is used to handle the legacy issue where some lights operate bi-stable in either XY or CT mode.
-     */
-    private enum LegacyBistableOperatingMode {
-        XY,
-        CT
-    }
-
-    // cached state machine values for legacy lights operating bi-stable in either XY or CT mode
-    private volatile LegacyBistableOperatingMode legacyMode = LegacyBistableOperatingMode.XY;
-    private volatile @Nullable Long ctModeCachedMirek;
-    private volatile @Nullable PairXy ctModeCachedXY;
-    private volatile @Nullable PairXy xyModeCachedXY;
 
     public Clip2ThingHandler(Thing thing, Clip2StateDescriptionProvider stateDescriptionProvider,
             ThingRegistry thingRegistry, ItemChannelLinkRegistry itemChannelLinkRegistry) {
@@ -471,16 +458,16 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     // fall through
                 }
                 putResource = Setters.setColorTemperaturePercent(new Resource(lightResourceType), command, cache);
-                legacyMode = LegacyBistableOperatingMode.CT;
-                ctModeCachedMirek = Objects.requireNonNull(putResource.getColorTemperature()).getMirek();
-                ctModeCachedXY = null;
+                if (workAroundLightState instanceof ColorModeWorkAroundLightState lightState) {
+                    lightState.setValues(Objects.requireNonNull(putResource.getColorTemperature()).getMirek(), null);
+                }
                 break;
 
             case CHANNEL_2_COLOR_TEMP_ABSOLUTE:
                 putResource = Setters.setColorTemperatureAbsolute(new Resource(lightResourceType), command, cache);
-                legacyMode = LegacyBistableOperatingMode.CT;
-                ctModeCachedMirek = Objects.requireNonNull(putResource.getColorTemperature()).getMirek();
-                ctModeCachedXY = null;
+                if (workAroundLightState instanceof ColorModeWorkAroundLightState lightState) {
+                    lightState.setValues(Objects.requireNonNull(putResource.getColorTemperature()).getMirek(), null);
+                }
                 break;
 
             case CHANNEL_2_COLOR:
@@ -488,8 +475,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 if (command instanceof HSBType colorCommand) {
                     putResource = Setters.setColorXy(putResource, colorCommand, cache);
                     command = colorCommand.getBrightness();
-                    legacyMode = LegacyBistableOperatingMode.XY;
-                    xyModeCachedXY = Objects.requireNonNull(putResource.getColorXy()).getXY();
+                    if (workAroundLightState instanceof ColorModeWorkAroundLightState lightState) {
+                        lightState.setValues(null, Objects.requireNonNull(putResource.getColorXy()).getXY());
+                    }
                 }
                 // NB fall through for handling of brightness and switch related commands !!
 
@@ -514,8 +502,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
             case CHANNEL_2_COLOR_XY_ONLY:
                 putResource = Setters.setColorXy(new Resource(lightResourceType), command, cache);
-                legacyMode = LegacyBistableOperatingMode.XY;
-                xyModeCachedXY = Objects.requireNonNull(putResource.getColorXy()).getXY();
+                if (workAroundLightState instanceof ColorModeWorkAroundLightState lightState) {
+                    lightState.setValues(null, Objects.requireNonNull(putResource.getColorXy()).getXY());
+                }
                 break;
 
             case CHANNEL_2_DIMMING_ONLY:
@@ -804,12 +793,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
         updateLightCacheRequiredFieldsDone = false;
         updateSceneContributorsDone = false;
         applyOffTransitionWorkaround = false;
-        applyColorModeWorkaround = false;
-
-        legacyMode = LegacyBistableOperatingMode.XY;
-        ctModeCachedXY = null;
-        ctModeCachedMirek = null;
-        xyModeCachedXY = null;
+        workAroundLightState = null;
 
         Bridge bridge = getBridge();
         if (Objects.nonNull(bridge)) {
@@ -1147,15 +1131,22 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
             case LIGHT:
                 ColorXy color = resource.getColorXy();
+                ColorTemperature colorTemp = resource.getColorTemperature();
+
                 if (fullUpdate) {
                     updateLightProperties(resource);
                     updateLightCacheRequiredFields(resource);
                     updateEffectChannel(resource);
                     updateColorTemperatureAbsoluteChannel(resource);
-                    if (color == null) {
-                        logger.debug("{} -> updateChannels() [fullUpdate] color field unexpectedly null", resourceId);
-                    } else {
-                        xyModeCachedXY = color.getXY(); // full updates seem to deliver XY mode color
+                    if (workAroundLightState instanceof ColorModeWorkAroundLightState lightState) {
+                        Long mirek = colorTemp instanceof ColorTemperature ct ? ct.getMirek() : null;
+                        PairXy xy = color instanceof ColorXy cx ? cx.getXY() : null;
+                        if (xy == null) {
+                            logger.debug("{} -> updateChannels() work-around '{}' color field null", resourceId,
+                                    lightState);
+                        } else {
+                            lightState.setValues(mirek, xy);
+                        }
                     }
                 }
 
@@ -1163,62 +1154,23 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 State colorXyState = resource.getColorXyState();
                 State colorTempState = resource.getColorTemperaturePercentState();
                 State colorTempAbsState = resource.getColorTemperatureAbsoluteState();
-                ColorTemperature colorTemp = resource.getColorTemperature();
 
-                if (applyColorModeWorkaround && updateDependenciesDone) {
-                    /*
-                     * Check if we are entering CT mode. If the given resource contains a color temperature field
-                     * whose value is valid then we are explicitly in 'CT' mode. If so cache the color and color
-                     * temp so they can be substituted for any subsequent color or color temp notification while
-                     * we remain in CT mode.
-                     */
-                    if (colorTemp != null && colorTemp.isMirekValid()) {
-                        legacyMode = LegacyBistableOperatingMode.CT;
-                        logger.debug("{} -> updateChannels() entered legacy {} mode", resourceId, legacyMode);
-                        ctModeCachedMirek = colorTemp.getMirek();
-                        if (color == null) {
-                            logger.debug("{} -> updateChannels() [legacy] color field unexpectedly null", resourceId);
-                        } else {
-                            ctModeCachedXY = color.getXY();
-                        }
-                    }
-
-                    /*
-                     * Check if we are entering XY mode. If the given resource contains a color field that is different
-                     * than the (previous) CT mode color, or XY mode color then we are implicitly in XY mode. If so
-                     * cache it so it can be used in the same comparison of subsequent color notifications.
-                     */
-                    if (color != null && color.getXY() instanceof PairXy xy && !xy.equals(ctModeCachedXY)
-                            && !xy.equals(xyModeCachedXY)) {
-                        legacyMode = LegacyBistableOperatingMode.XY;
-                        logger.debug("{} -> updateChannels() entered legacy {} mode", resourceId, legacyMode);
-                        xyModeCachedXY = xy;
-                        ctModeCachedXY = null;
-                        ctModeCachedMirek = null;
-                    }
-
-                    /*
-                     * If we are in CT mode and the color is different than the cached CT mode color, then replace it
-                     * with the cached CT mode color. This is a work-around for legacy products that deliver XY mode
-                     * color updates while in CT mode. It basically ignores such updates by substituting the cached CT
-                     * mode color.
-                     */
-                    if (LegacyBistableOperatingMode.CT == legacyMode && color != null
-                            && color.getXY() instanceof PairXy xy && !xy.equals(ctModeCachedXY)) {
+                if (updateDependenciesDone
+                        && workAroundLightState instanceof ColorModeWorkAroundLightState lightState) {
+                    if (colorTemp != null && color != null) {
+                        lightState.setValues(colorTemp.getMirek(), color.getXY());
+                        color.setXY(lightState.getXY());
+                        colorTemp.setMirek(lightState.getMirek());
                         State oldColorState = colorState;
                         State oldColorTempState = colorTempState;
-                        color.setXY(ctModeCachedXY);
-                        if (colorTemp == null) {
-                            logger.debug("{} -> updateChannels() color temp field unexpectedly null", resourceId);
-                        } else {
-                            colorTemp.setMirek(ctModeCachedMirek);
-                        }
                         colorState = resource.getColorState();
                         colorXyState = resource.getColorXyState();
                         colorTempState = resource.getColorTemperaturePercentState();
                         colorTempAbsState = resource.getColorTemperatureAbsoluteState();
-                        logger.debug("{} -> updateChannels() work-around fixed {} -> {} and {} -> {}", resourceId,
-                                oldColorState, colorState, oldColorTempState, colorTempState);
+                        logger.debug("{} -> updateChannels() work-around '{}' produced {} -> {} and {} -> {}",
+                                resourceId, lightState, oldColorState, colorState, oldColorTempState, colorTempState);
+                    } else {
+                        logger.debug("{} -> updateChannels() color temp or color field unexpectedly null", resourceId);
                     }
                 }
 
@@ -1336,7 +1288,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
             default:
                 return false;
         }
-        if (thisResource.getType() == ResourceType.DEVICE) {
+        if (thisResource.getType() == ResourceType.DEVICE)
+
+        {
             updateState(CHANNEL_2_LAST_UPDATED, new DateTimeType(), fullUpdate);
         }
         return true;
@@ -1550,7 +1504,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 }
 
                 if (COLOR_MODE_WORK_AROUND_PATTERN.matcher(modelId).matches()) {
-                    applyColorModeWorkaround = true;
+                    workAroundLightState = new ColorModeWorkAroundLightState();
                     logger.debug("{} -> enabled color mode work-around for {}", resourceId, modelId);
                 }
             }
