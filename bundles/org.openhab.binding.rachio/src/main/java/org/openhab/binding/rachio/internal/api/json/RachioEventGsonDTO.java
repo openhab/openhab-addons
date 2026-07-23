@@ -314,8 +314,8 @@ public class RachioEventGsonDTO {
         return normalizeZoneRunState(subType);
     }
 
-    private String normalizeZoneRunState(String candidate) {
-        String normalizedCandidate = candidate.trim().toUpperCase(Locale.ROOT);
+    private String normalizeZoneRunState(@Nullable String candidate) {
+        String normalizedCandidate = (candidate == null ? "" : candidate).trim().toUpperCase(Locale.ROOT);
         return switch (normalizedCandidate) {
             case "STARTED" -> "ZONE_STARTED";
             case "STOPPED" -> "ZONE_STOPPED";

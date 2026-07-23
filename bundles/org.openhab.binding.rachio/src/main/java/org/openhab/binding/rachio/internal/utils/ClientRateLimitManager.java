@@ -81,15 +81,16 @@ public class ClientRateLimitManager {
 
     public synchronized void updateRateLimit(int rateLimitCap, int rateRemaining, @Nullable String rateReset) {
         if (rateLimitCap > 0 && rateRemaining >= 0) {
-            Instant updatedResetTime = parseRateReset(rateReset);
-            boolean resetWindowChanged = !updatedResetTime.equals(rateResetTime);
+            boolean resetWindowChanged = false;
+            if (rateReset != null && !rateReset.isBlank()) {
+                Instant updatedResetTime = parseRateReset(rateReset);
+                resetWindowChanged = !updatedResetTime.equals(rateResetTime);
+                this.rateResetTime = updatedResetTime;
+            }
             boolean remainingIncreased = this.rateRemaining >= 0 && rateRemaining > this.rateRemaining;
             this.rateLimitCap = rateLimitCap;
             this.rateRemaining = rateRemaining;
             rateLimitKnown = true;
-            if (rateReset != null && !rateReset.isBlank()) {
-                this.rateResetTime = updatedResetTime;
-            }
             if (resetWindowChanged || remainingIncreased) {
                 initializationBootstrapRemaining = calculateInitializationBootstrapAllowance();
             }
