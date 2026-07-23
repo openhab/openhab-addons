@@ -30,7 +30,6 @@ import org.eclipse.jdt.annotation.Nullable;
 public class RachioApiException extends Exception {
     private static final long serialVersionUID = -2579498702258574787L;
     private RachioApiResult apiResult = new RachioApiResult();
-    private @Nullable Throwable e = null;
 
     public RachioApiException(String message) {
         super(message);
@@ -38,7 +37,6 @@ public class RachioApiException extends Exception {
 
     public RachioApiException(String message, Throwable throwable) {
         super(message, throwable);
-        e = throwable;
     }
 
     public RachioApiException(String message, RachioApiResult result) {
@@ -49,7 +47,6 @@ public class RachioApiException extends Exception {
     public RachioApiException(String message, RachioApiResult result, Throwable throwable) {
         super(message, throwable);
         apiResult = result;
-        e = throwable;
     }
 
     public RachioApiResult getApiResult() {
@@ -65,7 +62,7 @@ public class RachioApiException extends Exception {
     public String toString() {
         String detail = super.getMessage();
         String message = detail != null ? RachioHttp.sanitizeForLogging(detail) : "";
-        Throwable ex = e;
+        Throwable ex = getCause();
         if (ex != null) {
             if (ex instanceof UnknownHostException) {
                 String host = ex.getMessage();
