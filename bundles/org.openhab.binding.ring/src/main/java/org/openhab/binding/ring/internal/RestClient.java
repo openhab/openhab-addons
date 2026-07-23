@@ -12,13 +12,12 @@
  */
 package org.openhab.binding.ring.internal;
 
+import static org.openhab.binding.ring.RingBindingConstants.*;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -29,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -37,6 +37,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.api.Response;
+import org.eclipse.jetty.client.util.InputStreamResponseListener;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
@@ -54,6 +56,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
@@ -87,7 +90,7 @@ public class RestClient {
     private void validateResponse(ContentResponse response) throws AuthenticationException {
         int responseCode = response.getStatus();
         switch (responseCode) {
-            case HttpStatus.OK_200, HttpStatus.CREATED_201:
+            case HttpStatus.OK_200, HttpStatus.CREATED_201, HttpStatus.NO_CONTENT_204:
                 return; // Success
             case HttpStatus.BAD_REQUEST_400:
                 throw new AuthenticationException("Bad request");
@@ -137,7 +140,10 @@ public class RestClient {
             ContentResponse response = request.send();
             validateResponse(response);
             result = response.getContentAsString();
-        } catch (ExecutionException | TimeoutException e) {
+        } catch (ExecutionException | RejectedExecutionException e) {
+            logger.debug("HttpClient is stopped (OSGi lifecycle restart). Aborting POST request quietly.");
+            throw new AuthenticationException("HttpClient is stopped.");
+        } catch (TimeoutException e) {
             logger.warn("RestApi error in postRequest!", e);
             throw new AuthenticationException("Communication error during POST request: " + e.getMessage());
         } catch (InterruptedException e) {
@@ -164,7 +170,10 @@ public class RestClient {
             ContentResponse response = request.send();
             validateResponse(response);
             result = response.getContentAsString();
-        } catch (ExecutionException | TimeoutException e) {
+        } catch (ExecutionException | RejectedExecutionException e) {
+            logger.debug("HttpClient is stopped (OSGi lifecycle restart). Aborting GET request quietly.");
+            throw new AuthenticationException("HttpClient is stopped.");
+        } catch (TimeoutException e) {
             logger.warn("RestApi error in getRequest!", e);
             throw new AuthenticationException("Communication error during GET request: " + e.getMessage());
         } catch (InterruptedException e) {
@@ -218,16 +227,17 @@ public class RestClient {
         pb.add("device[os]", "android");
         pb.add("device[hardware_id]", hardwareId);
         pb.add("device[app_brand]", "ring");
-        pb.add("device[metadata][device_model]", "VirtualBox");
-        pb.add("device[metadata][resolution]", "600x800");
-        pb.add("device[metadata][app_version]", "1.7.29");
+        pb.add("device[metadata][device_model]", "openHAB Ring Binding");
+        pb.add("device[metadata][resolution]", "1080x2400");
+        pb.add("device[metadata][app_version]", "3.67.0");
         pb.add("device[metadata][app_installation_date]", "");
-        pb.add("device[metadata][os_version]", "4.4.4");
-        pb.add("device[metadata][manufacturer]", "innotek GmbH");
-        pb.add("device[metadata][is_tablet]", "true");
+        pb.add("device[metadata][os_version]", "13");
+        pb.add("device[metadata][manufacturer]", "Google");
+        pb.add("device[metadata][is_tablet]", "false");
         pb.add("device[metadata][linphone_initialized]", "true");
         pb.add("device[metadata][language]", "en");
         pb.add("api_version", "" + ApiConstants.API_VERSION);
+
         String jsonResult = postRequest(ApiConstants.URL_SESSION, pb.toString(), Map.of(), tokens);
         SessionTO session = Objects.requireNonNull(gson.fromJson(jsonResult, SessionTO.class));
         return session.profile;
@@ -334,7 +344,6 @@ public class RestClient {
                 }
 
                 String fullfilepath = targetPath.toString();
-                logger.debug("fullfilepath = {}", fullfilepath);
 
                 // Reassign 'path' to the secure target for the rest of the method
                 path = targetPath;
@@ -351,26 +360,30 @@ public class RestClient {
                             String jsonResult = getRequest(vidUrl.toString(), Map.of(), tokens);
                             JsonObject obj = JsonParser.parseString(jsonResult).getAsJsonObject();
 
-                            if (obj.get("url").getAsString().startsWith("http")) {
-                                URL url = new URI(obj.get("url").getAsString()).toURL();
+                            JsonElement urlElement = obj.get("url");
+                            if (urlElement != null && urlElement.isJsonPrimitive()
+                                    && urlElement.getAsJsonPrimitive().isString()) {
+                                String videoUrl = urlElement.getAsString();
+                                if (videoUrl.startsWith("http")) {
+                                    InputStreamResponseListener listener = new InputStreamResponseListener();
+                                    httpClient.newRequest(videoUrl).timeout(30, TimeUnit.SECONDS).send(listener);
 
-                                // Explicit connection with timeouts to prevent thread starvation
-                                java.net.URLConnection connection = url.openConnection();
-                                connection.setConnectTimeout(10000); // 10 seconds
-                                connection.setReadTimeout(30000); // 30 seconds
+                                    Response response = listener.get(10, TimeUnit.SECONDS);
+                                    if (response.getStatus() == HttpStatus.OK_200) {
+                                        try (InputStream in = listener.getInputStream()) {
+                                            Files.copy(in, path, StandardCopyOption.REPLACE_EXISTING);
+                                        }
 
-                                try (InputStream in = connection.getInputStream()) {
-                                    Files.copy(in, path, StandardCopyOption.REPLACE_EXISTING);
-                                }
-
-                                if (Files.exists(path)) {
-                                    urlFound = true;
-                                    break; // Success: instantly exit the loop
+                                        if (Files.exists(path)) {
+                                            urlFound = true;
+                                            break; // Success: instantly exit the loop
+                                        }
+                                    }
                                 }
                             }
-                        } catch (AuthenticationException | URISyntaxException | IOException e) {
-                            // Catching IOException here ensures timeouts trigger a retry, not a total abort
-                            logger.debug("RingVideo: Error downloading file on attempt {}: {}", i + 1, e.getMessage());
+                        } catch (AuthenticationException | ExecutionException | TimeoutException | IOException e) {
+                            logger.debug("RingVideo: Error downloading file on attempt {}: {}", i + 1, e.getMessage(),
+                                    e);
                         }
 
                         // Sleep only if the download failed and we are going to retry
@@ -417,12 +430,19 @@ public class RestClient {
         }
     }
 
-    public void sendCommand(String endpoint, Tokens tokens) throws AuthenticationException {
-        sendCommand(endpoint, HttpMethod.PUT, null, tokens);
-    }
-
     public void sendCommand(String endpoint, HttpMethod httpMethod, @Nullable String payload, Tokens tokens)
             throws AuthenticationException {
+        // Delegate to the new main method with an empty header map
+        sendCommand(endpoint, httpMethod, payload, Map.of(), tokens);
+    }
+
+    public void sendCommand(String endpoint, Tokens tokens) throws AuthenticationException {
+        // Delegate to the main method with an empty header map
+        sendCommand(endpoint, HttpMethod.PUT, null, Map.of(), tokens);
+    }
+
+    public void sendCommand(String endpoint, HttpMethod httpMethod, @Nullable String payload,
+            Map<String, String> additionalHeaders, Tokens tokens) throws AuthenticationException {
         try {
             Request request = httpClient.newRequest(endpoint);
             request.method(httpMethod);
@@ -430,16 +450,99 @@ public class RestClient {
             request.agent(ApiConstants.API_USER_AGENT);
             request.header(HttpHeader.AUTHORIZATION.asString(), "Bearer " + tokens.accessToken());
 
+            // Add any custom headers (like hardware_id)
+            additionalHeaders.forEach(request::header);
+
             if (payload != null) {
                 request.content(new StringContentProvider(payload), "application/json");
             }
+
             ContentResponse response = request.send();
             validateResponse(response);
+
         } catch (InterruptedException e) {
-            logger.warn("RestApi error in sendCommand!", e);
             Thread.currentThread().interrupt();
+            throw new AuthenticationException("Communication error during sendCommand: " + e.getMessage());
+        } catch (ExecutionException | TimeoutException | RejectedExecutionException e) {
+            throw new AuthenticationException("Communication error during sendCommand: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Subscribes the provided FCM token to Ring's push notification events.
+     */
+    public void subscribeToPushNotifications(String fcmToken, String hardwareId, Tokens tokens)
+            throws AuthenticationException {
+
+        String apiVersion = String.valueOf(ApiConstants.API_VERSION);
+        JsonObject metadata = new JsonObject();
+        metadata.addProperty("api_version", apiVersion);
+        metadata.addProperty("device_model", "Pixel 6");
+        metadata.addProperty("pn_dict_version", "2.0.0");
+        metadata.addProperty("pn_service", "fcm");
+        JsonObject device = new JsonObject();
+        device.addProperty("os", "android");
+        device.addProperty("push_notification_token", fcmToken);
+        device.add("metadata", metadata);
+        JsonObject root = new JsonObject();
+        root.add("device", device);
+        String payload = gson.toJson(root);
+
+        Map<String, String> headers = Map.of("hardware_id", hardwareId, "Accept",
+                "application.vnd.api.v" + apiVersion + "+json");
+        sendCommand(ApiConstants.API_BASE + "/clients_api/device", HttpMethod.PATCH, payload, headers, tokens);
+    }
+
+    /**
+     * Subscribes an individual camera to doorbell rings and motion events.
+     */
+    public void subscribeDeviceToPush(String deviceId, String kind, String hardwareId, Tokens tokens) {
+        Map<String, String> headers = new HashMap<>();
+        headers.put("hardware_id", hardwareId);
+
+        // 1. Subscribe to Doorbell Rings
+        if (BUTTON_KINDS.contains(kind)) {
+            try {
+                sendCommand(ApiConstants.API_BASE + "/clients_api/doorbots/" + deviceId + "/subscribe", HttpMethod.POST,
+                        null, headers, tokens);
+                logger.debug("Successfully subscribed device {} to ding events.", deviceId);
+            } catch (AuthenticationException e) {
+                logger.warn("Failed to subscribe device {} to rings: {}", deviceId, e.getMessage());
+            }
+        }
+        // 2. Subscribe to Motion Events
+        if (MOTION_DETECTION_KINDS.contains(kind)) {
+            try {
+                sendCommand(ApiConstants.API_BASE + "/clients_api/doorbots/" + deviceId + "/motions_subscribe",
+                        HttpMethod.POST, null, headers, tokens);
+                logger.debug("Successfully subscribed device {} to motion events.", deviceId);
+            } catch (AuthenticationException e) {
+                logger.warn("Failed to subscribe device {} to motions: {}", deviceId, e.getMessage());
+            }
+        }
+    }
+
+    /**
+     * Downloads an image directly from a push notification UUID via the Ring API
+     */
+    public byte[] downloadDirectSnapshot(String uuidUrl, Tokens tokens) throws AuthenticationException {
+        logger.debug("Downloading notification snapshot via UUID: {}", uuidUrl);
+        try {
+            ContentResponse response = httpClient.newRequest(uuidUrl).timeout(10000, TimeUnit.MILLISECONDS)
+                    .agent(ApiConstants.API_USER_AGENT)
+                    .header(HttpHeader.AUTHORIZATION.asString(), "Bearer " + tokens.accessToken()).send();
+
+            if (response.getStatus() == 200) {
+                return response.getContent();
+            } else {
+                throw new AuthenticationException("Failed to download UUID snapshot. HTTP " + response.getStatus());
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new AuthenticationException("Failed to download UUID snapshot: request interrupted.");
         } catch (ExecutionException | TimeoutException e) {
-            logger.warn("RestApi error in sendCommand!", e);
+            throw new AuthenticationException(
+                    "Failed to download UUID snapshot due to network error: " + e.getMessage());
         }
     }
 }
