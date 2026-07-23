@@ -165,11 +165,10 @@ public final class RachioCloudWebhookRegistry {
     private CloudWebhookLease webhookLease(Object webhook, long generation) throws CloudWebhookException {
         try {
             Object url = requireNonNull(invokeMethod(webhook, "url"), "url");
-            @Nullable
-            Object externalForm = invokeMethod(url, "toExternalForm");
-            if (!(externalForm instanceof String urlString)) {
-                throw new CloudWebhookException("ClassCastException",
-                        new ClassCastException("url().toExternalForm() did not return String"));
+            String urlString = url.toString();
+            if (urlString.isBlank()) {
+                throw new CloudWebhookException("IllegalArgumentException",
+                        new IllegalArgumentException("url().toString() returned blank"));
             }
 
             @Nullable

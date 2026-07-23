@@ -26,9 +26,10 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class RachioEventStringDTO {
+    private static final Gson GSON = new Gson();
+
     private @Nullable GenericEvent gEvent;
     private @Nullable ZoneEvent zEvent;
-    private Gson gson = new Gson();
 
     @SuppressWarnings("unused")
     private class GenericEvent {
@@ -89,6 +90,6 @@ public class RachioEventStringDTO {
     }
 
     public @Nullable String toJson() {
-        return zEvent != null ? gson.toJson(zEvent) : gson.toJson(gEvent);
+        return zEvent != null ? GSON.toJson(zEvent) : GSON.toJson(gEvent);
     }
 }
