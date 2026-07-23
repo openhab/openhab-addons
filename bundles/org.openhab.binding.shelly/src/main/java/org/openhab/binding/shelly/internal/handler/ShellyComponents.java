@@ -866,6 +866,9 @@ public class ShellyComponents {
                                 toQuantityType(0.0, DIGITS_NONE, Units.PERCENT));
                     }
                 }
+                if (dimmer.hasTimer != null) {
+                    updated |= thingHandler.updateChannel(groupName, CHANNEL_TIMER_ACTIVE, getOnOff(dimmer.hasTimer));
+                }
 
                 if (dimmers != null) {
                     ShellySettingsDimmer dsettings = dimmers.get(l);
