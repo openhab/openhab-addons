@@ -35,32 +35,32 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link TransitAppStopHandler} is responsible for handling commands and polling
- * real-time stop departures from the Transit API at configured intervals.
+ * The {@link TransitAppTripDetailsHandler} is responsible for polling trip details
+ * from the Transit API at configured intervals.
  *
  * @author Initial contribution - Initial contribution
  */
 @NonNullByDefault
-public class TransitAppStopHandler extends BaseThingHandler {
+public class TransitAppTripDetailsHandler extends BaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(TransitAppStopHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(TransitAppTripDetailsHandler.class);
     private final HttpClient httpClient = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(10)).build();
 
     private @Nullable ScheduledFuture<?> refreshJob;
 
-    public TransitAppStopHandler(Thing thing) {
+    public TransitAppTripDetailsHandler(Thing thing) {
         super(thing);
     }
 
     @Override
     public void initialize() {
-        logger.debug("Initializing TransitAppStopHandler for thing: {}", getThing().getUID());
+        logger.debug("Initializing TransitAppTripDetailsHandler for thing: {}", getThing().getUID());
 
         // Read refresh interval configuration with fallback to 60 seconds
         Number refreshIntervalNum = (Number) getThing().getConfiguration().get("refreshInterval");
         long refreshInterval = refreshIntervalNum != null ? refreshIntervalNum.longValue() : 60L;
 
-        logger.info("Scheduling stop refresh job for {} with interval: {} seconds", getThing().getUID(),
+        logger.info("Scheduling trip details refresh job for {} with interval: {} seconds", getThing().getUID(),
                 refreshInterval);
 
         // Schedule periodic background polling job
@@ -79,18 +79,18 @@ public class TransitAppStopHandler extends BaseThingHandler {
     }
 
     private void pollTransitApi() {
-        logger.trace("TRACE: Starting background poll for stop thing {}", getThing().getUID());
+        logger.trace("TRACE: Starting background poll for trip details thing {}", getThing().getUID());
 
-        String globalStopId = (String) getThing().getConfiguration().get("globalStopId");
-        if (globalStopId == null || globalStopId.isEmpty()) {
-            logger.error("ERROR: globalStopId is not configured for thing {}", getThing().getUID());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Global Stop ID is missing");
+        String tripId = (String) getThing().getConfiguration().get("tripId");
+        if (tripId == null || tripId.isEmpty()) {
+            logger.error("ERROR: tripId is not configured for thing {}", getThing().getUID());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Trip ID is missing");
             return;
         }
 
         Bridge bridge = getBridge();
         if (bridge == null) {
-            logger.error("ERROR: Stop thing {} is not attached to a Bridge!", getThing().getUID());
+            logger.error("ERROR: Trip details thing {} is not attached to a Bridge!", getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Bridge not found");
             return;
         }
@@ -103,8 +103,8 @@ public class TransitAppStopHandler extends BaseThingHandler {
         }
 
         try {
-            String urlStr = "https://external.transitapp.com/v4/public/stop_departures?global_stop_id=" + globalStopId;
-            logger.debug("DEBUG: Building HTTP request for Stop URL: {}", urlStr);
+            String urlStr = "https://external.transitapp.com/v4/public/trip_details?trip_search_key=" + tripId;
+            logger.debug("DEBUG: Building HTTP request for Trip Details URL: {}", urlStr);
 
             HttpRequest request = HttpRequest.newBuilder().uri(URI.create(urlStr)).header("apiKey", apiKey).GET()
                     .build();
@@ -114,28 +114,28 @@ public class TransitAppStopHandler extends BaseThingHandler {
                 String jsonBody = response.body();
 
                 if (statusCode == 200) {
-                    logger.info("INFO: Successfully polled stop departures for stop ID {}", globalStopId);
-                    logger.debug("DEBUG: Full JSON response for stop {}:\n{}", globalStopId, jsonBody);
+                    logger.info("INFO: Successfully polled trip details for trip ID {}", tripId);
+                    logger.debug("DEBUG: Full JSON response for trip {}:\n{}", tripId, jsonBody);
                     updateStatus(ThingStatus.ONLINE);
 
-                    updateState("routeLongName-1", new StringType("Live Stop Data"));
+                    updateState("tripHeadsign", new StringType("Live Trip Data"));
                 } else {
-                    logger.warn("WARN: Transit API returned status code {} for stop {}. Response body: {}", statusCode,
-                            globalStopId, jsonBody);
+                    logger.warn("WARN: Transit API returned status code {} for trip {}. Response body: {}", statusCode,
+                            tripId, jsonBody);
                 }
             }).exceptionally(ex -> {
-                logger.error("ERROR: Exception occurred while polling Transit API for stop {}: {}", globalStopId,
+                logger.error("ERROR: Exception occurred while polling Transit API for trip {}: {}", tripId,
                         ex.getMessage(), ex);
                 return null;
             });
         } catch (Exception e) {
-            logger.error("ERROR: Failed to create HTTP request for stop {}: {}", globalStopId, e.getMessage(), e);
+            logger.error("ERROR: Failed to create HTTP request for trip {}: {}", tripId, e.getMessage(), e);
         }
     }
 
     @Override
     public void dispose() {
-        logger.debug("Disposing TransitAppStopHandler for thing: {}", getThing().getUID());
+        logger.debug("Disposing TransitAppTripDetailsHandler for thing: {}", getThing().getUID());
         if (refreshJob != null) {
             refreshJob.cancel(true);
         }

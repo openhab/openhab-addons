@@ -1,107 +1,51 @@
 # TransitApp Binding
 
-This binding integrates public transit data from the [Transit API](https://transitapp.com/partners/apis) into openHAB, allowing you to monitor real-time vehicle departures, schedules, and active transit service alerts for specific stops.
-
----
-
-## Attribution & Requirements
-
-According to the Transit API partnership guidelines, you must visibly display the **“Powered by Transit”** branding/logo within your user interface or service when utilizing this data.
-
----
+This binding integrates public transit information and real-time departure details from the Transit API (v4) into openHAB.
 
 ## Supported Things
 
-### Bridge (`bridge`)
+1. **TransitApp Bridge (`bridge`)**
+   - Connects to the Transit API using your personal API key.
+   - Validates the API key upon initialization.
 
-The bridge acts as the primary connection point to the Transit API. It manages global HTTP settings and validates your API key against the server.
+1. **Transit Stop (`stop`)**
+   - Polls real-time stop departures based on a global stop ID (e.g., `VVSDE:2298`).
+   - Channels: Route Long Name, Route Short Name, Departure Time, Is Cancelled.
 
-### Stop (`stop`)
+1. **Transit Route Details (`routedetails`)**
+   - Retrieves route details and itineraries based on a global route ID (e.g., `VVSDE:247174`).
+   - Channels: Route Long Name, Route Short Name, Agency Name.
 
-The stop thing represents a specific public transit stop. It queries upcoming departures dynamically based on your configuration parameters and creates corresponding departure channels.
+1. **Transit Trip Details (`tripdetails`)**
+   - Retrieves specific trip details based on a trip search key.
+   - Channels: Trip Headsign, Trip Status.
 
----
+## Configuration
 
-## Discovery
+### Bridge Configuration
 
-Automatic discovery is not supported. Both the **Bridge** and **Stop** things must be added manually through the openHAB UI or via a `.things` configuration file.
+- `apiKey`: Your personal Transit API key.
 
----
+### Thing Configurations
 
-## Getting an API Key
+- `refreshInterval`: Polling interval in seconds (default: 60s for stops/trips, 300s for route details).
+- `globalStopId`: Global stop identifier (for Stop things).
+- `routeId`: Global route identifier (for Route Details things).
+- `tripId`: Trip search key (for Trip Details things).
 
-To use this binding, you need a valid API key for the Transit API:
+## Finding Parameters (Stop ID, Route ID, Trip ID)
 
-1. Visit the [Transit API Partner Portal](https://transitapp.com/partners/apis).
-1. Request or register for an API key according to their developer partnership guidelines.
-1. Use the obtained API key in the Bridge configuration.
+To find the correct IDs for your configuration:
 
----
+1. **Global Stop ID (`globalStopId`)**: Use the GTFS / operator stop code (e.g., `VVSDE:2298` for Charlottenplatz in Stuttgart).
+1. **Global Route ID (`routeId`)**: Found in the JSON response of a stop under the field `"global_route_id"` (e.g., `VVSDE:247174`).
+1. **Trip Search Key (`tripId`)**: Found in the JSON response of stop departures under the schedule items as `"trip_search_key"` (e.g., `VVSDE:52245421:47:2:22`).
 
-## Bridge Configuration
+## Logging & Debugging
 
-| Parameter | Type | Required | Default | Description |
-|-----------|------|----------|---------|-------------|
-| `apiKey` | Text | **Yes** | — | Your personal API key obtained from the [Transit API Partner Portal](https://transitapp.com/partners/apis). |
-| `refreshInterval` | Integer | No | `60` | Polling interval in seconds to update departures. |
+To enable full TRACE and DEBUG logging (including raw JSON responses) in the Karaf console:
 
----
-
-## Stop Configuration
-
-| Parameter | Type | Required | Default | Description |
-|-----------|------|----------|---------|-------------|
-| `globalStopId` | Text | **Yes** | — | The global stop ID provided by the Transit feed (e.g., `VVSDE:2298`). |
-| `time` | Integer | **Yes** | `0` | UNIX timestamp representing the time for departures (`0` uses current time). |
-| `removeCancelled` | Boolean | **Yes** | `false` | Remove cancelled schedule items from the results. |
-| `locale` | Text | **Yes** | `en` | Language locale for translated names and strings. |
-| `shouldUpdateRealtime` | Boolean | **Yes** | `true` | Tells the system whether to fetch real-time updates or schedule info only. |
-| `maxNumDepartures` | Integer | **Yes** | `3` | Number of departures to return per merged itinerary (1-10). Determines how many departure channels get updated. |
-| `includeStopsAndShapes` | Boolean | **Yes** | `false` | Control whether intermediate stops and shape polylines are included. |
-| `stopDetailed` | Boolean | **Yes** | `false` | When true, returns detailed stop objects. Only applies if `includeStopsAndShapes=true`. |
-
----
-
-## Channels
-
-The Stop thing provides general information channels as well as indexed departure channels generated up to 10 times based on the `maxNumDepartures` parameter (using the naming convention `name#number`, e.g. `#1` to `#10`).
-
-| Channel ID | Type | Description |
-|------------|------|-------------|
-| `jsonResponse` | String | Raw JSON response payload returned by the API. |
-| `stopName` | String | Name of the transit stop parsed directly from the API response. |
-| `routeLongName#X` | String | Long display name of the route for departure #X (where X is 1 to 10). |
-| `routeShortName#X` | String | Short display name or route number for departure #X. |
-| `departureTime#X` | DateTime | Scheduled or real-time departure time for departure #X. |
-| `isCancelled#X` | Switch | Indicates whether departure #X is cancelled (`ON` / `OFF`). |
-
----
-
-## Full Example
-
-### `transitapp.things`
-
-```transit
-Bridge transitapp:bridge:myBridge "TransitApp Bridge" [ apiKey="YOUR_API_KEY_HERE", refreshInterval=60 ] {
-    thing stop mystop "Charlottenplatz Stop" [
-        globalStopId="VVSDE:2298",
-        time=0,
-        removeCancelled=false,
-        locale="en",
-        shouldUpdateRealtime=true,
-        maxNumDepartures=3,
-        includeStopsAndShapes=false,
-        stopDetailed=false
-    ]
-}
-```
-
-### `transitapp.items`
-
-```items
-String Transit_RawJson        "Raw JSON Response [%s]"        { channel="transitapp:stop:myBridge:mystop:jsonResponse" }
-String Transit_StopName       "Stop Name [%s]"                { channel="transitapp:stop:myBridge:mystop:stopName" }
-String Transit_Route1         "Next Route Name [%s]"          { channel="transitapp:stop:myBridge:mystop:routeLongName#1" }
-DateTime Transit_Time1         "Next Departure [%1$tH:%1$tM]"  { channel="transitapp:stop:myBridge:mystop:departureTime#1" }
-Switch Transit_Cancelled1     "Trip Cancelled [%s]"           { channel="transitapp:stop:myBridge:mystop:isCancelled#1" }
+```bash
+log:set DEBUG org.openhab.binding.transitapp
+log:set TRACE org.openhab.binding.transitapp
 ```

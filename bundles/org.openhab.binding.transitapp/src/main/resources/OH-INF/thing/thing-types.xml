@@ -5,17 +5,12 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="bridge">
-		<label>TransitApp Bridge</label>
-		<description>Bridge to connect to Transit API</description>
+		<label>@text/thing-type.transitapp.bridge.label</label>
+		<description>@text/thing-type.transitapp.bridge.description</description>
 		<config-description>
 			<parameter name="apiKey" type="text" required="true">
 				<label>API Key</label>
-				<description>API Key for Transit API.</description>
-			</parameter>
-			<parameter name="refreshInterval" type="integer">
-				<label>Refresh Interval</label>
-				<description>Polling interval in seconds.</description>
-				<default>60</default>
+				<description>Your Transit API key.</description>
 			</parameter>
 		</config-description>
 	</bridge-type>
@@ -24,134 +19,113 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
-		<label>Transit Stop</label>
-		<description>Transit Stop Thing</description>
+		<label>@text/thing-type.transitapp.stop.label</label>
+		<description>@text/thing-type.transitapp.stop.description</description>
 		<channels>
-			<channel id="jsonResponse" typeId="jsonResponse"/>
-			<channel id="stopName" typeId="stopName"/>
-			<channel id="routeLongName#1" typeId="routeLongName"/>
-			<channel id="routeShortName#1" typeId="routeShortName"/>
-			<channel id="departureTime#1" typeId="departureTime"/>
-			<channel id="isCancelled#1" typeId="isCancelled"/>
-			<channel id="routeLongName#2" typeId="routeLongName"/>
-			<channel id="routeShortName#2" typeId="routeShortName"/>
-			<channel id="departureTime#2" typeId="departureTime"/>
-			<channel id="isCancelled#2" typeId="isCancelled"/>
-			<channel id="routeLongName#3" typeId="routeLongName"/>
-			<channel id="routeShortName#3" typeId="routeShortName"/>
-			<channel id="departureTime#3" typeId="departureTime"/>
-			<channel id="isCancelled#3" typeId="isCancelled"/>
-			<channel id="routeLongName#4" typeId="routeLongName"/>
-			<channel id="routeShortName#4" typeId="routeShortName"/>
-			<channel id="departureTime#4" typeId="departureTime"/>
-			<channel id="isCancelled#4" typeId="isCancelled"/>
-			<channel id="routeLongName#5" typeId="routeLongName"/>
-			<channel id="routeShortName#5" typeId="routeShortName"/>
-			<channel id="departureTime#5" typeId="departureTime"/>
-			<channel id="isCancelled#5" typeId="isCancelled"/>
-			<channel id="routeLongName#6" typeId="routeLongName"/>
-			<channel id="routeShortName#6" typeId="routeShortName"/>
-			<channel id="departureTime#6" typeId="departureTime"/>
-			<channel id="isCancelled#6" typeId="isCancelled"/>
-			<channel id="routeLongName#7" typeId="routeLongName"/>
-			<channel id="routeShortName#7" typeId="routeShortName"/>
-			<channel id="departureTime#7" typeId="departureTime"/>
-			<channel id="isCancelled#7" typeId="isCancelled"/>
-			<channel id="routeLongName#8" typeId="routeLongName"/>
-			<channel id="routeShortName#8" typeId="routeShortName"/>
-			<channel id="departureTime#8" typeId="departureTime"/>
-			<channel id="isCancelled#8" typeId="isCancelled"/>
-			<channel id="routeLongName#9" typeId="routeLongName"/>
-			<channel id="routeShortName#9" typeId="routeShortName"/>
-			<channel id="departureTime#9" typeId="departureTime"/>
-			<channel id="isCancelled#9" typeId="isCancelled"/>
-			<channel id="routeLongName#10" typeId="routeLongName"/>
-			<channel id="routeShortName#10" typeId="routeShortName"/>
-			<channel id="departureTime#10" typeId="departureTime"/>
-			<channel id="isCancelled#10" typeId="isCancelled"/>
+			<channel id="routeLongName-1" typeId="routeLongName"/>
+			<channel id="routeShortName-1" typeId="routeShortName"/>
+			<channel id="departureTime-1" typeId="departureTime"/>
+			<channel id="isCancelled-1" typeId="isCancelled"/>
 		</channels>
 		<config-description>
 			<parameter name="globalStopId" type="text" required="true">
 				<label>Global Stop ID</label>
-				<description>Comma-separated list of global stop IDs or single stop ID.</description>
+				<description>The global stop ID for Transit API.</description>
 			</parameter>
-			<parameter name="time" type="integer" required="true">
-				<label>Time</label>
-				<description>UNIX timestamp representing the time for departures.</description>
-				<default>0</default>
-			</parameter>
-			<parameter name="removeCancelled" type="boolean" required="true">
-				<label>Remove Cancelled</label>
-				<description>Remove cancelled schedule items from results.</description>
-				<default>false</default>
-			</parameter>
-			<parameter name="locale" type="text" required="true">
-				<label>Locale</label>
-				<description>Language locale for strings.</description>
-				<default>en</default>
-			</parameter>
-			<parameter name="shouldUpdateRealtime" type="boolean" required="true">
-				<label>Should Update Realtime</label>
-				<description>Tell system if it should update real time.</description>
-				<default>true</default>
-			</parameter>
-			<parameter name="maxNumDepartures" type="integer" required="true">
-				<label>Max Num Departures</label>
-				<description>Number of departures to return per merged itinerary (1-10).</description>
-				<default>3</default>
-			</parameter>
-			<parameter name="includeStopsAndShapes" type="boolean" required="true">
-				<label>Include Stops and Shapes</label>
-				<description>Control whether stops and shapes are included.</description>
-				<default>false</default>
-			</parameter>
-			<parameter name="stopDetailed" type="boolean" required="true">
-				<label>Stop Detailed</label>
-				<description>Return stop objects as StopDetailed.</description>
-				<default>false</default>
+			<parameter name="refreshInterval" type="integer" min="30">
+				<label>Refresh Interval</label>
+				<description>Polling interval in seconds.</description>
+				<default>60</default>
 			</parameter>
 		</config-description>
 	</thing-type>
 
-	<channel-type id="jsonResponse">
-		<item-type>String</item-type>
-		<label>JSON Response</label>
-		<description>Raw JSON response from the API</description>
-		<state readOnly="true"/>
-	</channel-type>
+	<thing-type id="routedetails">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+		<label>@text/thing-type.transitapp.routedetails.label</label>
+		<description>@text/thing-type.transitapp.routedetails.description</description>
+		<channels>
+			<channel id="routeLongName" typeId="routeLongName"/>
+			<channel id="routeShortName" typeId="routeShortName"/>
+			<channel id="agencyName" typeId="agencyName"/>
+		</channels>
+		<config-description>
+			<parameter name="routeId" type="text" required="true">
+				<label>Route ID</label>
+				<description>The unique identifier for the route.</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" min="30">
+				<label>Refresh Interval</label>
+				<description>Time in seconds between updates.</description>
+				<default>300</default>
+			</parameter>
+		</config-description>
+	</thing-type>
 
-	<channel-type id="stopName">
-		<item-type>String</item-type>
-		<label>Stop Name</label>
-		<description>Name of the transit stop</description>
-		<state readOnly="true"/>
-	</channel-type>
+	<thing-type id="tripdetails">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+		<label>@text/thing-type.transitapp.tripdetails.label</label>
+		<description>@text/thing-type.transitapp.tripdetails.description</description>
+		<channels>
+			<channel id="tripHeadsign" typeId="tripHeadsign"/>
+			<channel id="tripStatus" typeId="tripStatus"/>
+		</channels>
+		<config-description>
+			<parameter name="tripId" type="text" required="true">
+				<label>Trip ID</label>
+				<description>The unique identifier for the trip.</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" min="30">
+				<label>Refresh Interval</label>
+				<description>Time in seconds between updates.</description>
+				<default>60</default>
+			</parameter>
+		</config-description>
+	</thing-type>
 
 	<channel-type id="routeLongName">
 		<item-type>String</item-type>
-		<label>Route Long Name</label>
-		<description>Long name of the route</description>
+		<label>@text/channel.routeLongName.label</label>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="routeShortName">
 		<item-type>String</item-type>
-		<label>Route Short Name</label>
-		<description>Short name of the route</description>
+		<label>@text/channel.routeShortName.label</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="agencyName">
+		<item-type>String</item-type>
+		<label>@text/channel.agencyName.label</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="tripHeadsign">
+		<item-type>String</item-type>
+		<label>@text/channel.tripHeadsign.label</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="tripStatus">
+		<item-type>String</item-type>
+		<label>@text/channel.tripStatus.label</label>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="departureTime">
 		<item-type>DateTime</item-type>
-		<label>Next Departure Time</label>
-		<description>Departure time of the next trip</description>
+		<label>Departure Time</label>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="isCancelled">
 		<item-type>Switch</item-type>
 		<label>Is Cancelled</label>
-		<description>Indicates if the next trip is cancelled</description>
 		<state readOnly="true"/>
 	</channel-type>
 
