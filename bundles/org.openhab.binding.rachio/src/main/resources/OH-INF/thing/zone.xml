@@ -72,8 +72,7 @@
 		<tags>
 			<tag>Status</tag>
 		</tags>
-		<state readOnly="true" pattern="%d">
-		</state>
+		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="zone-enabled">
 		<item-type>Switch</item-type>
