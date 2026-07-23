@@ -121,6 +121,7 @@ public class FroniusBatteryControl {
     private void postConfig(URI uri, Object payload, String... expectedWriteSuccess)
             throws FroniusCommunicationException, FroniusUnauthorizedException {
         String responseString = configApiClient.executeRequest(endpoint, HttpMethod.POST, uri, gson.toJson(payload));
+        logger.trace("Config write response: {}", responseString);
         @Nullable
         PostConfigResponse response = gson.fromJson(responseString, PostConfigResponse.class);
         if (response == null || !response.writeSuccess().containsAll(List.of(expectedWriteSuccess))) {
@@ -145,9 +146,11 @@ public class FroniusBatteryControl {
         try {
             records = gson.fromJson(response, TimeOfUseRecords.class);
         } catch (JsonSyntaxException jse) {
+            logger.debug("{}", response);
             throw new FroniusCommunicationException("Failed to parse Time of Use settings", jse);
         }
         if (records == null) {
+            logger.debug("{}", response);
             throw new FroniusCommunicationException("Failed to parse Time of Use settings");
         }
         return records;
