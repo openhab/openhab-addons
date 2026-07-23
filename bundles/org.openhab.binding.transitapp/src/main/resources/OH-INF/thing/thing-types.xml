@@ -51,6 +51,10 @@
 			<channel id="routeShortName" typeId="routeShortName"/>
 			<channel id="agencyName" typeId="agencyName"/>
 			<channel id="routeColor" typeId="routeColor"/>
+			<channel id="routeTextColor" typeId="routeTextColor"/>
+			<channel id="routeNetworkName" typeId="routeNetworkName"/>
+			<channel id="modeName" typeId="modeName"/>
+			<channel id="vehicleName" typeId="vehicleName"/>
 		</channels>
 		<config-description>
 			<parameter name="routeId" type="text" required="true">
@@ -89,6 +93,11 @@
 			<channel id="tripHeadsign" typeId="tripHeadsign"/>
 			<channel id="tripStatus" typeId="tripStatus"/>
 			<channel id="rtTripId" typeId="rtTripId"/>
+			<channel id="routeLongName" typeId="routeLongName"/>
+			<channel id="routeShortName" typeId="routeShortName"/>
+			<channel id="routeColor" typeId="routeColor"/>
+			<channel id="modeName" typeId="modeName"/>
+			<channel id="vehicleName" typeId="vehicleName"/>
 		</channels>
 		<config-description>
 			<parameter name="tripId" type="text" required="true">
@@ -154,15 +163,39 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="rtTripId">
-		<item-type>String</item-type>
-		<label>Real-Time Trip ID</label>
-		<state readOnly="true"/>
-	</channel-type>
-
 	<channel-type id="routeColor">
 		<item-type>String</item-type>
 		<label>Route Color</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="routeTextColor">
+		<item-type>String</item-type>
+		<label>Route Text Color</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="routeNetworkName">
+		<item-type>String</item-type>
+		<label>Route Network Name</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="modeName">
+		<item-type>String</item-type>
+		<label>Mode Name</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="vehicleName">
+		<item-type>String</item-type>
+		<label>Vehicle Name</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="rtTripId">
+		<item-type>String</item-type>
+		<label>Real-Time Trip ID</label>
 		<state readOnly="true"/>
 	</channel-type>
 
