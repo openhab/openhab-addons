@@ -19,7 +19,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link SolarEdgeBindingConstants} class defines common constants, which are
+ * The {@link SolarEdgeBindingConstants} class defines common constants, which
+ * are
  * used across the whole binding.
  *
  * @author Alexander Friese - Initial contribution
@@ -62,10 +63,11 @@ public class SolarEdgeBindingConstants {
 
     // PRIVATE API CONSTANTS
     // URLs
-    public static final String PRIVATE_DATA_API_URL = "https://monitoring.solaredge.com/solaredge-apigw/api/site/";
-    public static final String PRIVATE_DATA_API_URL_AGGREGATE_DATA_DAY_WEEK_SUFFIX = "/powerDashboardChart";
-    public static final String PRIVATE_DATA_API_URL_AGGREGATE_DATA_MONTH_YEAR_SUFFIX = "/energyDashboardChart";
-    public static final String PRIVATE_DATA_API_URL_LIVE_DATA_SUFFIX = "/currentPowerFlow.json";
+    public static final String PRIVATE_DATA_API_URL = "https://monitoring.solaredge.com/services/dashboard/power-flow/v2/sites/";
+    public static final String PRIVATE_DATA_API_URL_AGGREGATE = "https://monitoring.solaredge.com/services/dashboard/energy/sites/";
+    public static final String PRIVATE_DATA_API_URL_AGGREGATE_DATA_DAY_WEEK_SUFFIX = "?chart-time-unit=days&measurement-types=production&measurement-types=yield&measurement-types=average-power-factor&measurement-types=performance-ratio&measurement-types=site-availability&measurement-types=consumption&measurement-types=production-distribution-with-storage&measurement-types=consumption-distribution-with-storage&measurement-types=import&measurement-types=export&isCniViewer=true";
+    public static final String PRIVATE_DATA_API_URL_AGGREGATE_DATA_MONTH_YEAR_SUFFIX = "?chart-time-unit=months&measurement-types=production&measurement-types=yield&measurement-types=average-power-factor&measurement-types=performance-ratio&measurement-types=site-availability&measurement-types=consumption&measurement-types=production-distribution-with-storage&measurement-types=consumption-distribution-with-storage&measurement-types=import&measurement-types=export&isCniViewer=true";
+    public static final String PRIVATE_DATA_API_URL_LIVE_DATA_SUFFIX = "?components=grid&components=consumption&components=dc-storage";
 
     // field names
     public static final String PRIVATE_API_TOKEN_COOKIE_NAME = "SPRING_SECURITY_REMEMBER_ME_COOKIE";
@@ -75,7 +77,7 @@ public class SolarEdgeBindingConstants {
 
     //
     //
-    // PRIVATE API CONSTANTS
+    // PUBLIC API CONSTANTS
     // URLs
     public static final String PUBLIC_DATA_API_URL = "https://monitoringapi.solaredge.com/site/";
     public static final String PUBLIC_DATA_API_URL_AGGREGATE_DATA_SUFFIX = "/energyDetails";
