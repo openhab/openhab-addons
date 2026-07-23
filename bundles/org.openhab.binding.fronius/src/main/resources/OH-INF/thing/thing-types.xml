@@ -14,6 +14,35 @@
 		<semantic-equipment-tag>Inverter</semantic-equipment-tag>
 
 		<channels>
+			<channel id="ac-power" typeId="ac-power"/>
+			<channel id="dc-power" typeId="dc-power"/>
+			<channel id="dc-power-2" typeId="dc-power-2"/>
+			<channel id="dc-power-3" typeId="dc-power-3"/>
+			<channel id="day-energy" typeId="day-energy"/>
+			<channel id="total-energy" typeId="total-energy"/>
+			<channel id="year-energy" typeId="year-energy"/>
+			<channel id="ac-frequency" typeId="ac-frequency"/>
+			<channel id="ac-current" typeId="ac-current"/>
+			<channel id="dc-current" typeId="dc-current"/>
+			<channel id="dc-current-2" typeId="dc-current-2"/>
+			<channel id="dc-current-3" typeId="dc-current-3"/>
+			<channel id="ac-voltage" typeId="ac-voltage"/>
+			<channel id="dc-voltage" typeId="dc-voltage"/>
+			<channel id="dc-voltage-2" typeId="dc-voltage-2"/>
+			<channel id="dc-voltage-3" typeId="dc-voltage-3"/>
+			<channel id="error-code" typeId="error-code"/>
+			<channel id="status-code" typeId="status-code"/>
+			<channel id="grid-power" typeId="grid-power"/>
+			<channel id="load-power" typeId="load-power"/>
+			<channel id="battery-power" typeId="battery-power"/>
+			<channel id="solar-power" typeId="solar-power"/>
+			<channel id="autonomy" typeId="autonomy"/>
+			<channel id="self-consumption" typeId="self-consumption"/>
+			<channel id="backup-mode" typeId="backup-mode"/>
+			<channel id="battery-standby" typeId="battery-standby"/>
+			<channel id="inverter-power" typeId="inverter-power"/>
+			<channel id="battery-soc" typeId="battery-soc"/>
+			<!-- Deprecated channels, replaced by the channels above -->
 			<channel id="inverterdatachannelpac" typeId="pac"/>
 			<channel id="inverterdatachannelpdc" typeId="pdc"/>
 			<channel id="inverterdatachannelpdc2" typeId="pdc2"/>
@@ -45,7 +74,7 @@
 		</channels>
 
 		<properties>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">3</property>
 		</properties>
 
 		<config-description>
@@ -67,16 +96,16 @@
 		<semantic-equipment-tag>Battery</semantic-equipment-tag>
 
 		<channels>
-			<channel id="maximumCapacity" typeId="batteryMaximumCapacity">
+			<channel id="maximum-capacity" typeId="maximum-capacity">
 				<label>Maximum Capacity</label>
 			</channel>
-			<channel id="designedCapacity" typeId="batteryDesignedCapacity">
+			<channel id="designed-capacity" typeId="designed-capacity">
 				<label>Designed Capacity</label>
 			</channel>
-			<channel id="currentDc" typeId="idc">
+			<channel id="dc-current" typeId="dc-current">
 				<label>DC Current</label>
 			</channel>
-			<channel id="voltageDc" typeId="udc">
+			<channel id="dc-voltage" typeId="dc-voltage">
 				<label>DC Voltage</label>
 			</channel>
 			<channel id="soc" typeId="batterySoc">
@@ -94,13 +123,51 @@
 			<channel id="timestamp" typeId="batteryTimestamp">
 				<label>Timestamp</label>
 			</channel>
+			<channel id="soc-min" typeId="soc-min"/>
+			<channel id="soc-max" typeId="soc-max"/>
+			<channel id="backup-reserved-capacity" typeId="backup-reserved-capacity"/>
+			<channel id="backup-critical-soc" typeId="backup-critical-soc"/>
+			<channel id="charge-from-grid" typeId="charge-from-grid"/>
+			<channel id="calibration" typeId="calibration"/>
+			<channel id="night-preservation-limit" typeId="night-preservation-limit"/>
+			<channel id="min-charge-power" typeId="min-charge-power"/>
+			<channel id="max-charge-power" typeId="max-charge-power"/>
+			<channel id="min-discharge-power" typeId="min-discharge-power"/>
+			<channel id="max-discharge-power" typeId="max-discharge-power"/>
+			<!-- Deprecated channels, replaced by the channels above -->
+			<channel id="maximumCapacity" typeId="batteryMaximumCapacity">
+				<label>Maximum Capacity (DEPRECATED)</label>
+			</channel>
+			<channel id="designedCapacity" typeId="batteryDesignedCapacity">
+				<label>Designed Capacity (DEPRECATED)</label>
+			</channel>
+			<channel id="currentDc" typeId="idc">
+				<label>DC Current (DEPRECATED)</label>
+			</channel>
+			<channel id="voltageDc" typeId="udc">
+				<label>DC Voltage (DEPRECATED)</label>
+			</channel>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">2</property>
+		</properties>
 
 		<config-description>
 			<parameter name="deviceId" type="integer">
 				<label>Device ID</label>
 				<description>Specific device identifier</description>
 				<default>0</default>
+			</parameter>
+			<parameter name="batterySettingsRefreshInterval" type="integer" min="0" unit="min">
+				<label>Battery Settings Refresh Interval</label>
+				<description>Specifies the interval in minutes at which the battery settings channels are read from the
+					inverter's
+					config API. Reading them requires a login, therefore the interval should be kept high. Set to 0 to disable
+					reading
+					the battery settings from the inverter.</description>
+				<default>5</default>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -117,52 +184,102 @@
 		<channels>
 			<channel id="enable" typeId="meter_enable"/>
 			<channel id="location" typeId="meter_location"/>
-			<channel id="currentacphase1" typeId="meter_ac_current">
+			<channel id="ac-current-phase-1" typeId="meter-ac-current">
 				<label>AC Current Phase 1</label>
 			</channel>
-			<channel id="currentacphase2" typeId="meter_ac_current">
+			<channel id="ac-current-phase-2" typeId="meter-ac-current">
 				<label>AC Current Phase 2</label>
 			</channel>
-			<channel id="currentacphase3" typeId="meter_ac_current">
+			<channel id="ac-current-phase-3" typeId="meter-ac-current">
 				<label>AC Current Phase 3</label>
 			</channel>
-			<channel id="voltageacphase1" typeId="meter_ac_voltage">
+			<channel id="ac-voltage-phase-1" typeId="meter-ac-voltage">
 				<label>AC Voltage Phase 1</label>
 			</channel>
-			<channel id="voltageacphase2" typeId="meter_ac_voltage">
+			<channel id="ac-voltage-phase-2" typeId="meter-ac-voltage">
 				<label>AC Voltage Phase 2</label>
 			</channel>
-			<channel id="voltageacphase3" typeId="meter_ac_voltage">
+			<channel id="ac-voltage-phase-3" typeId="meter-ac-voltage">
 				<label>AC Voltage Phase 3</label>
 			</channel>
-			<channel id="powerrealphase1" typeId="meter_powerreal">
+			<channel id="real-power-phase-1" typeId="meter-real-power">
 				<label>Real Power Phase 1</label>
 			</channel>
-			<channel id="powerrealphase2" typeId="meter_powerreal">
+			<channel id="real-power-phase-2" typeId="meter-real-power">
 				<label>Real Power Phase 2</label>
 			</channel>
-			<channel id="powerrealphase3" typeId="meter_powerreal">
+			<channel id="real-power-phase-3" typeId="meter-real-power">
 				<label>Real Power Phase 3</label>
 			</channel>
-			<channel id="powerrealsum" typeId="meter_powerreal">
+			<channel id="real-power-sum" typeId="meter-real-power">
 				<label>Real Power Sum</label>
 			</channel>
-			<channel id="powerfactorphase1" typeId="meter_powerfactor">
+			<channel id="power-factor-phase-1" typeId="meter-power-factor">
 				<label>Power Factor Phase 1</label>
 			</channel>
-			<channel id="powerfactorphase2" typeId="meter_powerfactor">
+			<channel id="power-factor-phase-2" typeId="meter-power-factor">
 				<label>Power Factor Phase 2</label>
 			</channel>
-			<channel id="powerfactorphase3" typeId="meter_powerfactor">
+			<channel id="power-factor-phase-3" typeId="meter-power-factor">
 				<label>Power Factor Phase 3</label>
 			</channel>
-			<channel id="energyrealsumconsumed" typeId="meter_energy">
+			<channel id="real-energy-consumed" typeId="meter-real-energy">
 				<label>Real Energy Consumed</label>
 			</channel>
-			<channel id="energyrealsumproduced" typeId="meter_energy">
+			<channel id="real-energy-produced" typeId="meter-real-energy">
 				<label>Real Energy Produced</label>
 			</channel>
+			<!-- Deprecated channels, replaced by the channels above -->
+			<channel id="currentacphase1" typeId="meter_ac_current">
+				<label>AC Current Phase 1 (DEPRECATED)</label>
+			</channel>
+			<channel id="currentacphase2" typeId="meter_ac_current">
+				<label>AC Current Phase 2 (DEPRECATED)</label>
+			</channel>
+			<channel id="currentacphase3" typeId="meter_ac_current">
+				<label>AC Current Phase 3 (DEPRECATED)</label>
+			</channel>
+			<channel id="voltageacphase1" typeId="meter_ac_voltage">
+				<label>AC Voltage Phase 1 (DEPRECATED)</label>
+			</channel>
+			<channel id="voltageacphase2" typeId="meter_ac_voltage">
+				<label>AC Voltage Phase 2 (DEPRECATED)</label>
+			</channel>
+			<channel id="voltageacphase3" typeId="meter_ac_voltage">
+				<label>AC Voltage Phase 3 (DEPRECATED)</label>
+			</channel>
+			<channel id="powerrealphase1" typeId="meter_powerreal">
+				<label>Real Power Phase 1 (DEPRECATED)</label>
+			</channel>
+			<channel id="powerrealphase2" typeId="meter_powerreal">
+				<label>Real Power Phase 2 (DEPRECATED)</label>
+			</channel>
+			<channel id="powerrealphase3" typeId="meter_powerreal">
+				<label>Real Power Phase 3 (DEPRECATED)</label>
+			</channel>
+			<channel id="powerrealsum" typeId="meter_powerreal">
+				<label>Real Power Sum (DEPRECATED)</label>
+			</channel>
+			<channel id="powerfactorphase1" typeId="meter_powerfactor">
+				<label>Power Factor Phase 1 (DEPRECATED)</label>
+			</channel>
+			<channel id="powerfactorphase2" typeId="meter_powerfactor">
+				<label>Power Factor Phase 2 (DEPRECATED)</label>
+			</channel>
+			<channel id="powerfactorphase3" typeId="meter_powerfactor">
+				<label>Power Factor Phase 3 (DEPRECATED)</label>
+			</channel>
+			<channel id="energyrealsumconsumed" typeId="meter_energy">
+				<label>Real Energy Consumed (DEPRECATED)</label>
+			</channel>
+			<channel id="energyrealsumproduced" typeId="meter_energy">
+				<label>Real Energy Produced (DEPRECATED)</label>
+			</channel>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description>
 			<parameter name="deviceId" type="integer">
@@ -182,12 +299,22 @@
 		<description>Fronius Ohmpilot</description>
 
 		<channels>
+			<channel id="real-power-sum" typeId="ohmpilot-real-power"/>
+			<channel id="real-energy-consumed" typeId="ohmpilot-real-energy"/>
+			<channel id="temperature-1" typeId="ohmpilot-temperature"/>
+			<channel id="status-code" typeId="status-code"/>
+			<channel id="error-code" typeId="error-code"/>
+			<!-- Deprecated channels, replaced by the channels above -->
 			<channel id="powerrealsum" typeId="ohmpilot_powerreal"/>
 			<channel id="energyrealsumconsumed" typeId="ohmpilot_energy"/>
 			<channel id="temperaturechannel1" typeId="ohmpilot_temperature"/>
 			<channel id="statecode" typeId="devicestatus_statuscode"/>
 			<channel id="errorcode" typeId="devicestatus_errorcode"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description>
 			<parameter name="deviceId" type="integer">
@@ -198,7 +325,7 @@
 		</config-description>
 	</thing-type>
 
-	<channel-type id="day_energy">
+	<channel-type id="day-energy">
 		<item-type>Number:Energy</item-type>
 		<label>Day Energy</label>
 		<description>Energy generated on current day</description>
@@ -208,7 +335,17 @@
 		</tags>
 		<state pattern="%.2f kWh" readOnly="true"></state>
 	</channel-type>
-	<channel-type id="pac">
+	<channel-type id="day_energy" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Day Energy (DEPRECATED)</label>
+		<description>Energy generated on current day - DEPRECATED, please use the `day-energy` channel instead.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%.2f kWh" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="ac-power">
 		<item-type>Number:Power</item-type>
 		<label>AC Power</label>
 		<description>AC power generated by the inverter</description>
@@ -218,7 +355,17 @@
 		</tags>
 		<state pattern="%f W" readOnly="true"></state>
 	</channel-type>
-	<channel-type id="pdc">
+	<channel-type id="pac" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>AC Power (DEPRECATED)</label>
+		<description>AC power generated by the inverter - DEPRECATED, please use the `ac-power` channel instead.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%f W" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="dc-power">
 		<item-type>Number:Power</item-type>
 		<label>DC Power</label>
 		<description>DC power generated by the inverter</description>
@@ -228,7 +375,17 @@
 		</tags>
 		<state pattern="%f W" readOnly="true"></state>
 	</channel-type>
-	<channel-type id="pdc2">
+	<channel-type id="pdc" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>DC Power (DEPRECATED)</label>
+		<description>DC power generated by the inverter - DEPRECATED, please use the `dc-power` channel instead.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%f W" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="dc-power-2">
 		<item-type>Number:Power</item-type>
 		<label>DC Power 2</label>
 		<description>DC power generated by MPPT tracker 2</description>
@@ -238,7 +395,17 @@
 		</tags>
 		<state pattern="%f W" readOnly="true"></state>
 	</channel-type>
-	<channel-type id="pdc3">
+	<channel-type id="pdc2" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>DC Power 2 (DEPRECATED)</label>
+		<description>DC power generated by MPPT tracker 2 - DEPRECATED, please use the `dc-power-2` channel instead.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%f W" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="dc-power-3">
 		<item-type>Number:Power</item-type>
 		<label>DC Power 3</label>
 		<description>DC power generated by MPPT tracker 3</description>
@@ -248,7 +415,17 @@
 		</tags>
 		<state pattern="%f W" readOnly="true"></state>
 	</channel-type>
-	<channel-type id="total_energy">
+	<channel-type id="pdc3" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>DC Power 3 (DEPRECATED)</label>
+		<description>DC power generated by MPPT tracker 3 - DEPRECATED, please use the `dc-power-3` channel instead.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%f W" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="total-energy">
 		<item-type>Number:Energy</item-type>
 		<label>Total Energy</label>
 		<description>Energy generated overall</description>
@@ -258,7 +435,17 @@
 		</tags>
 		<state pattern="%.3f MWh" readOnly="true"></state>
 	</channel-type>
-	<channel-type id="year_energy">
+	<channel-type id="total_energy" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Total Energy (DEPRECATED)</label>
+		<description>Energy generated overall - DEPRECATED, please use the `total-energy` channel instead.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%.3f MWh" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="year-energy">
 		<item-type>Number:Energy</item-type>
 		<label>Year Energy</label>
 		<description>Energy generated in current year</description>
@@ -268,8 +455,18 @@
 		</tags>
 		<state pattern="%.3f MWh" readOnly="true"></state>
 	</channel-type>
+	<channel-type id="year_energy" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Year Energy (DEPRECATED)</label>
+		<description>Energy generated in current year - DEPRECATED, please use the `year-energy` channel instead.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%.3f MWh" readOnly="true"></state>
+	</channel-type>
 
-	<channel-type id="fac">
+	<channel-type id="ac-frequency">
 		<item-type>Number:Frequency</item-type>
 		<label>AC Frequency</label>
 		<tags>
@@ -278,8 +475,18 @@
 		</tags>
 		<state pattern="%.2f Hz" readOnly="true"></state>
 	</channel-type>
+	<channel-type id="fac" advanced="true">
+		<item-type>Number:Frequency</item-type>
+		<label>AC Frequency (DEPRECATED)</label>
+		<description>DEPRECATED, please use the `ac-frequency` channel instead.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Frequency</tag>
+		</tags>
+		<state pattern="%.2f Hz" readOnly="true"></state>
+	</channel-type>
 
-	<channel-type id="iac">
+	<channel-type id="ac-current">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>AC Current</label>
 		<tags>
@@ -288,8 +495,18 @@
 		</tags>
 		<state pattern="%.2f A" readOnly="true"></state>
 	</channel-type>
+	<channel-type id="iac" advanced="true">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>AC Current (DEPRECATED)</label>
+		<description>DEPRECATED, please use the `ac-current` channel instead.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
+		<state pattern="%.2f A" readOnly="true"></state>
+	</channel-type>
 
-	<channel-type id="idc">
+	<channel-type id="dc-current">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>DC Current</label>
 		<tags>
@@ -298,7 +515,17 @@
 		</tags>
 		<state pattern="%.2f A" readOnly="true"></state>
 	</channel-type>
-	<channel-type id="idc2">
+	<channel-type id="idc" advanced="true">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>DC Current (DEPRECATED)</label>
+		<description>DEPRECATED, please use the `dc-current` channel instead.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
+		<state pattern="%.2f A" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="dc-current-2">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>DC Current 2</label>
 		<description>DC current of MPPT tracker 2</description>
@@ -308,7 +535,17 @@
 		</tags>
 		<state pattern="%.2f A" readOnly="true"></state>
 	</channel-type>
-	<channel-type id="idc3">
+	<channel-type id="idc2" advanced="true">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>DC Current 2 (DEPRECATED)</label>
+		<description>DC current of MPPT tracker 2 - DEPRECATED, please use the `dc-current-2` channel instead.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
+		<state pattern="%.2f A" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="dc-current-3">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>DC Current 3</label>
 		<description>DC current of MPPT tracker 3</description>
@@ -318,7 +555,17 @@
 		</tags>
 		<state pattern="%.2f A" readOnly="true"></state>
 	</channel-type>
-	<channel-type id="uac">
+	<channel-type id="idc3" advanced="true">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>DC Current 3 (DEPRECATED)</label>
+		<description>DC current of MPPT tracker 3 - DEPRECATED, please use the `dc-current-3` channel instead.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
+		<state pattern="%.2f A" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="ac-voltage">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>AC Voltage</label>
 		<description>AC voltage</description>
@@ -328,7 +575,17 @@
 		</tags>
 		<state pattern="%.1f V" readOnly="true"></state>
 	</channel-type>
-	<channel-type id="udc">
+	<channel-type id="uac" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>AC Voltage (DEPRECATED)</label>
+		<description>AC voltage - DEPRECATED, please use the `ac-voltage` channel instead.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
+		<state pattern="%.1f V" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="dc-voltage">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>DC Voltage</label>
 		<description>DC voltage</description>
@@ -338,7 +595,17 @@
 		</tags>
 		<state pattern="%.1f V" readOnly="true"></state>
 	</channel-type>
-	<channel-type id="udc2">
+	<channel-type id="udc" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>DC Voltage (DEPRECATED)</label>
+		<description>DC voltage - DEPRECATED, please use the `dc-voltage` channel instead.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
+		<state pattern="%.1f V" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="dc-voltage-2">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>DC Voltage 2</label>
 		<description>DC voltage of MPPT tracker 2</description>
@@ -348,7 +615,17 @@
 		</tags>
 		<state pattern="%.1f V" readOnly="true"></state>
 	</channel-type>
-	<channel-type id="udc3">
+	<channel-type id="udc2" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>DC Voltage 2 (DEPRECATED)</label>
+		<description>DC voltage of MPPT tracker 2 - DEPRECATED, please use the `dc-voltage-2` channel instead.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
+		<state pattern="%.1f V" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="dc-voltage-3">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>DC Voltage 3</label>
 		<description>DC voltage of MPPT tracker 3</description>
@@ -358,21 +635,79 @@
 		</tags>
 		<state pattern="%.1f V" readOnly="true"></state>
 	</channel-type>
+	<channel-type id="udc3" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>DC Voltage 3 (DEPRECATED)</label>
+		<description>DC voltage of MPPT tracker 3 - DEPRECATED, please use the `dc-voltage-3` channel instead.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
+		<state pattern="%.1f V" readOnly="true"></state>
+	</channel-type>
 
-	<channel-type id="devicestatus_errorcode">
+	<channel-type id="error-code">
 		<item-type>Number</item-type>
 		<label>Error Code</label>
 		<description>Current device error code</description>
 		<state pattern="%d" readOnly="true"></state>
 	</channel-type>
-	<channel-type id="devicestatus_statuscode">
+	<channel-type id="devicestatus_errorcode" advanced="true">
+		<item-type>Number</item-type>
+		<label>Error Code (DEPRECATED)</label>
+		<description>Current device error code - DEPRECATED, please use the `error-code` channel instead.</description>
+		<state pattern="%d" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="status-code">
 		<item-type>Number</item-type>
 		<label>Status Code</label>
 		<description>Current device status code</description>
-		<state pattern="%d" readOnly="true"></state>
+		<state pattern="%d" readOnly="true">
+			<options>
+				<option value="0">Startup</option>
+				<option value="1">Startup</option>
+				<option value="2">Startup</option>
+				<option value="3">Startup</option>
+				<option value="4">Startup</option>
+				<option value="5">Startup</option>
+				<option value="6">Startup</option>
+				<option value="7">Running</option>
+				<option value="8">Standby</option>
+				<option value="9">Bootloading</option>
+				<option value="10">Error</option>
+				<option value="11">Idle</option>
+				<option value="12">Ready</option>
+				<option value="13">Sleeping</option>
+				<option value="255">Unknown</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="devicestatus_statuscode" advanced="true">
+		<item-type>Number</item-type>
+		<label>Status Code (DEPRECATED)</label>
+		<description>Current device status code - DEPRECATED, please use the `status-code` channel instead.</description>
+		<state pattern="%d" readOnly="true">
+			<options>
+				<option value="0">Startup</option>
+				<option value="1">Startup</option>
+				<option value="2">Startup</option>
+				<option value="3">Startup</option>
+				<option value="4">Startup</option>
+				<option value="5">Startup</option>
+				<option value="6">Startup</option>
+				<option value="7">Running</option>
+				<option value="8">Standby</option>
+				<option value="9">Bootloading</option>
+				<option value="10">Error</option>
+				<option value="11">Idle</option>
+				<option value="12">Ready</option>
+				<option value="13">Sleeping</option>
+				<option value="255">Unknown</option>
+			</options>
+		</state>
 	</channel-type>
 
-	<channel-type id="pGrid">
+	<channel-type id="grid-power">
 		<item-type>Number:Power</item-type>
 		<label>Grid Power</label>
 		<description>Grid Power ( + from grid, - to grid )</description>
@@ -382,7 +717,17 @@
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
-	<channel-type id="pLoad">
+	<channel-type id="pGrid" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>Grid Power (DEPRECATED)</label>
+		<description>Grid Power ( + from grid, - to grid ) - DEPRECATED, please use the `grid-power` channel instead.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="load-power">
 		<item-type>Number:Power</item-type>
 		<label>Load Power</label>
 		<description>Power from load ( + generator, - consumer )</description>
@@ -392,7 +737,17 @@
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
-	<channel-type id="pAkku">
+	<channel-type id="pLoad" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>Load Power (DEPRECATED)</label>
+		<description>Power from load ( + generator, - consumer ) - DEPRECATED, please use the `load-power` channel instead.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="battery-power">
 		<item-type>Number:Power</item-type>
 		<label>Battery Power</label>
 		<description>Power from battery ( + discharge, - charge )</description>
@@ -402,7 +757,18 @@
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
-	<channel-type id="pPv">
+	<channel-type id="pAkku" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>Battery Power (DEPRECATED)</label>
+		<description>Power from battery ( + discharge, - charge ) - DEPRECATED, please use the `battery-power` channel
+			instead.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="solar-power">
 		<item-type>Number:Power</item-type>
 		<label>Solar Plant Power</label>
 		<description>Power from solar plant</description>
@@ -412,7 +778,17 @@
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
-	<channel-type id="powerflow_rel_autonomy">
+	<channel-type id="pPv" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>Solar Plant Power (DEPRECATED)</label>
+		<description>Power from solar plant - DEPRECATED, please use the `solar-power` channel instead.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="autonomy">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Autonomy</label>
 		<description>The current relative autonomy in %, NULL if no smart meter is connected</description>
@@ -422,7 +798,18 @@
 		</tags>
 		<state pattern="%.1f %%" readOnly="true"></state>
 	</channel-type>
-	<channel-type id="powerflow_rel_selfconsumption">
+	<channel-type id="powerflow_rel_autonomy" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Autonomy (DEPRECATED)</label>
+		<description>The current relative autonomy in %, NULL if no smart meter is connected - DEPRECATED, please use the
+			`autonomy` channel instead.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.1f %%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="self-consumption">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Self Consumption</label>
 		<description>The current relative self consumption in %, NULL if no smart meter is connected</description>
@@ -432,7 +819,18 @@
 		</tags>
 		<state pattern="%.1f %%" readOnly="true"></state>
 	</channel-type>
-	<channel-type id="inverterPower">
+	<channel-type id="powerflow_rel_selfconsumption" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Self Consumption (DEPRECATED)</label>
+		<description>The current relative self consumption in %, NULL if no smart meter is connected - DEPRECATED, please use
+			the `self-consumption` channel instead.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.1f %%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="inverter-power">
 		<item-type>Number:Power</item-type>
 		<label>Inverter Power</label>
 		<description>Current power of the inverter, `NULL` if not running (+ produce/export, - consume/import)</description>
@@ -442,10 +840,32 @@
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
-	<channel-type id="inverterSoc">
+	<channel-type id="inverterPower" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>Inverter Power (DEPRECATED)</label>
+		<description>Current power of the inverter, `NULL` if not running (+ produce/export, - consume/import) - DEPRECATED,
+			please use the `inverter-power` channel instead.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="battery-soc">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Battery State of Charge</label>
 		<description>Current state of charge of the battery connected to the inverter in percent</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>StateOfCharge</tag>
+		</tags>
+		<state pattern="%.1f %%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="inverterSoc" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Battery State of Charge (DEPRECATED)</label>
+		<description>Current state of charge of the battery connected to the inverter in percent - DEPRECATED, please use the
+			`battery-soc` channel instead.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>StateOfCharge</tag>
@@ -464,9 +884,21 @@
 		<description>Inverter 1 State of Charge - DEPRECATED. Please use inverterSoc channel instead</description>
 		<state pattern="%.1f %%" readOnly="true"></state>
 	</channel-type>
+	<channel-type id="backup-mode">
+		<item-type>Switch</item-type>
+		<label>Backup Mode</label>
+		<description>Whether the inverter is currently operating in backup power mode (island operation)</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="battery-standby">
+		<item-type>Switch</item-type>
+		<label>Battery Standby</label>
+		<description>Whether the battery is currently in standby</description>
+		<state readOnly="true"/>
+	</channel-type>
 
 	<!-- Battery specific channel-types -->
-	<channel-type id="batteryMaximumCapacity">
+	<channel-type id="maximum-capacity">
 		<item-type>Number:Energy</item-type>
 		<label>Current Maximum Battery Capacity</label>
 		<description>Current maximum battery capacity in Wh</description>
@@ -476,10 +908,26 @@
 		</tags>
 		<state pattern="%.0f Wh" readOnly="true"></state>
 	</channel-type>
-	<channel-type id="batteryDesignedCapacity">
+	<channel-type id="batteryMaximumCapacity" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Current Maximum Battery Capacity (DEPRECATED)</label>
+		<description>Current maximum battery capacity in Wh - DEPRECATED, please use the `maximum-capacity` channel instead.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%.0f Wh" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="designed-capacity">
 		<item-type>Number:Energy</item-type>
 		<label>Designed Battery Capacity</label>
 		<description>Designed battery capacity in Wh</description>
+		<state pattern="%.0f Wh" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="batteryDesignedCapacity" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Designed Battery Capacity (DEPRECATED)</label>
+		<description>Designed battery capacity in Wh - DEPRECATED, please use the `designed-capacity` channel instead.</description>
 		<state pattern="%.0f Wh" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="batterySoc">
@@ -520,6 +968,52 @@
 		<description>Enable flag for the battery controller</description>
 		<state readOnly="true"></state>
 	</channel-type>
+	<channel-type id="soc-min">
+		<item-type>Number:Dimensionless</item-type>
+		<label>SoC Minimum</label>
+		<description>Minimum state of charge of the battery (writable, requires battery control)</description>
+		<state pattern="%d %%" min="0" max="100" step="1"/>
+	</channel-type>
+	<channel-type id="soc-max">
+		<item-type>Number:Dimensionless</item-type>
+		<label>SoC Maximum</label>
+		<description>Maximum state of charge of the battery (writable, requires battery control)</description>
+		<state pattern="%d %%" min="0" max="100" step="1"/>
+	</channel-type>
+	<channel-type id="backup-reserved-capacity">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Backup Reserved Capacity</label>
+		<description>Reserved battery capacity for backup power. The battery is not discharged below this state of
+			charge
+			during normal operation (writable, requires battery control)</description>
+		<state pattern="%d %%" min="10" max="95" step="1"/>
+	</channel-type>
+	<channel-type id="backup-critical-soc">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Backup Critical SoC</label>
+		<description>State of charge at which the inverter warns about the battery running low in backup power mode
+			(writable,
+			requires battery control)</description>
+		<state pattern="%d %%" min="0" max="100" step="1"/>
+	</channel-type>
+	<channel-type id="charge-from-grid">
+		<item-type>Switch</item-type>
+		<label>Charge from Grid</label>
+		<description>Whether charging the battery from the grid is allowed (writable, requires battery control)</description>
+	</channel-type>
+	<channel-type id="calibration">
+		<item-type>Switch</item-type>
+		<label>Calibration</label>
+		<description>Whether the battery is currently performing a calibration charge (requires battery control)</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="night-preservation-limit">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Night Preservation Limit</label>
+		<description>State of charge preserved over night to keep the battery system operational (requires battery
+			control)</description>
+		<state pattern="%d %%" readOnly="true"/>
+	</channel-type>
 
 
 	<channel-type id="meter_enable" advanced="true">
@@ -533,7 +1027,7 @@
 		<description>Meter Location Code</description>
 		<state readOnly="true"></state>
 	</channel-type>
-	<channel-type id="meter_ac_current">
+	<channel-type id="meter-ac-current">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>AC Current</label>
 		<tags>
@@ -542,7 +1036,17 @@
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
-	<channel-type id="meter_ac_voltage">
+	<channel-type id="meter_ac_current" advanced="true">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>AC Current (DEPRECATED)</label>
+		<description>DEPRECATED, please use the `ac-current-phase-*` channel instead.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="meter-ac-voltage">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>AC Voltage</label>
 		<tags>
@@ -551,7 +1055,17 @@
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
-	<channel-type id="meter_powerreal">
+	<channel-type id="meter_ac_voltage" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>AC Voltage (DEPRECATED)</label>
+		<description>DEPRECATED, please use the `ac-voltage-phase-*` channel instead.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="meter-real-power">
 		<item-type>Number:Power</item-type>
 		<label>Power</label>
 		<tags>
@@ -560,12 +1074,28 @@
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
-	<channel-type id="meter_powerfactor">
+	<channel-type id="meter_powerreal" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>Power (DEPRECATED)</label>
+		<description>DEPRECATED, please use the `real-power-*` channel instead.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="meter-power-factor">
 		<item-type>Number</item-type>
 		<label>Power Factor</label>
 		<state pattern="%.2f" readOnly="true"></state>
 	</channel-type>
-	<channel-type id="meter_energy">
+	<channel-type id="meter_powerfactor" advanced="true">
+		<item-type>Number</item-type>
+		<label>Power Factor (DEPRECATED)</label>
+		<description>DEPRECATED, please use the `power-factor-phase-*` channel instead.</description>
+		<state pattern="%.2f" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="meter-real-energy">
 		<item-type>Number:Energy</item-type>
 		<label>Energy</label>
 		<tags>
@@ -574,8 +1104,18 @@
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
+	<channel-type id="meter_energy" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy (DEPRECATED)</label>
+		<description>DEPRECATED, please use the `real-energy-*` channel instead.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
+	</channel-type>
 
-	<channel-type id="ohmpilot_powerreal">
+	<channel-type id="ohmpilot-real-power">
 		<item-type>Number:Power</item-type>
 		<label>Real Power Sum</label>
 		<description>Actual power consumption [W]</description>
@@ -585,7 +1125,17 @@
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
-	<channel-type id="ohmpilot_energy">
+	<channel-type id="ohmpilot_powerreal" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>Real Power Sum (DEPRECATED)</label>
+		<description>Actual power consumption [W] - DEPRECATED, please use the `real-power-sum` channel instead.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="ohmpilot-real-energy">
 		<item-type>Number:Energy</item-type>
 		<label>Real Energy Consumed</label>
 		<description>Total consumed energy [Wh]</description>
@@ -595,7 +1145,17 @@
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
-	<channel-type id="ohmpilot_temperature">
+	<channel-type id="ohmpilot_energy" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Real Energy Consumed (DEPRECATED)</label>
+		<description>Total consumed energy [Wh] - DEPRECATED, please use the `real-energy-consumed` channel instead.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="ohmpilot-temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>Temperature of the PT1000</description>
@@ -605,6 +1165,64 @@
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
+	<channel-type id="ohmpilot_temperature" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature (DEPRECATED)</label>
+		<description>Temperature of the PT1000 - DEPRECATED, please use the `temperature-1` channel instead.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
+	</channel-type>
 
+	<channel-type id="min-charge-power">
+		<item-type>Number:Power</item-type>
+		<label>Minimum Charge Power</label>
+		<description>Minimum battery charging power currently in effect, derived from the active time of use entry. Writing
+			replaces all CHARGE_MIN time of use entries with an all-time entry (writable, requires battery control)</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f W"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="max-charge-power">
+		<item-type>Number:Power</item-type>
+		<label>Maximum Charge Power</label>
+		<description>Maximum battery charging power currently in effect, derived from the active time of use entry. Writing
+			replaces all CHARGE_MAX time of use entries with an all-time entry (writable, requires battery control)</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f W"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="min-discharge-power">
+		<item-type>Number:Power</item-type>
+		<label>Minimum Discharge Power</label>
+		<description>Minimum battery discharging power currently in effect, derived from the active time of use entry. Writing
+			replaces all DISCHARGE_MIN time of use entries with an all-time entry (writable, requires battery control)</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f W"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="max-discharge-power">
+		<item-type>Number:Power</item-type>
+		<label>Maximum Discharge Power</label>
+		<description>Maximum battery discharging power currently in effect, derived from the active time of use entry. Writing
+			replaces all DISCHARGE_MAX time of use entries with an all-time entry (writable, requires battery control)</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f W"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
 
 </thing:thing-descriptions>

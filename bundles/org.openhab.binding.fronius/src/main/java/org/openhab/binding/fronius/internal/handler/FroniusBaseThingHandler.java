@@ -19,6 +19,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpMethod;
+import org.openhab.binding.fronius.internal.FroniusBindingConstants;
 import org.openhab.binding.fronius.internal.FroniusBridgeConfiguration;
 import org.openhab.binding.fronius.internal.api.FroniusCommunicationException;
 import org.openhab.binding.fronius.internal.api.FroniusHttpUtil;
@@ -42,6 +43,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
 /**
@@ -77,6 +80,7 @@ public abstract class FroniusBaseThingHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.debug("Initializing {} Service", serviceDescription);
+        warnAboutLinkedDeprecatedChannels();
         // this is important so FroniusBridgeHandler::childHandlerInitialized gets called
         Bridge bridge = getBridge();
         if (bridge == null || bridge.getHandler() == null) {
@@ -85,6 +89,22 @@ public abstract class FroniusBaseThingHandler extends BaseThingHandler {
             updateStatus(ThingStatus.UNKNOWN);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        }
+    }
+
+    /**
+     * Warns about linked deprecated channels, so that users notice they should migrate their links to the channels
+     * replacing them.
+     */
+    private void warnAboutLinkedDeprecatedChannels() {
+        for (Channel channel : getThing().getChannels()) {
+            String channelId = channel.getUID().getId();
+            String replacement = FroniusBindingConstants.DEPRECATED_CHANNEL_IDS.get(channelId);
+            if (replacement != null && isLinked(channelId)) {
+                logger.warn(
+                        "Channel '{}' of Thing '{}' is deprecated, please link your items to the '{}' channel instead.",
+                        channelId, getThing().getUID(), replacement);
+            }
         }
     }
 
@@ -115,7 +135,8 @@ public abstract class FroniusBaseThingHandler extends BaseThingHandler {
             return;
         }
 
-        State state = getValue(channelId);
+        // Deprecated channels provide the same value as the channel replacing them
+        State state = getValue(FroniusBindingConstants.DEPRECATED_CHANNEL_IDS.getOrDefault(channelId, channelId));
         if (state == null) {
             state = UnDefType.NULL;
         }
@@ -186,6 +207,59 @@ public abstract class FroniusBaseThingHandler extends BaseThingHandler {
             throw new FroniusCommunicationException("Bridge handler is not available");
         }
         return bridgeHandler.getHttpUtil();
+    }
+
+    /**
+     * Get the firmware version of the inverter from its <code>/api/status/version</code> or
+     * <code>/status/version</code> endpoint.
+     *
+     * @param scheme http or https
+     * @param hostname the hostname or IP address of the inverter
+     * @return the firmware version, or null if it could not be determined
+     */
+    protected @Nullable String getFirmwareVersion(String scheme, String hostname) {
+        final String host = scheme + "://" + hostname;
+        final String versionPath = "/status/version";
+        FroniusHttpUtil httpUtil;
+        try {
+            httpUtil = getHttpUtil();
+        } catch (FroniusCommunicationException e) {
+            logger.warn("Failed to get bridge HTTP utility for Fronius inverter at {}: {}", hostname, e.getMessage());
+            return null;
+        }
+
+        String url = host + "/api" + versionPath; // try the new API path first
+        String response;
+        try {
+            response = httpUtil.executeUrl(HttpMethod.GET, url, API_TIMEOUT);
+        } catch (FroniusCommunicationException e) {
+            url = host + versionPath; // fallback to the old API path
+            try {
+                response = httpUtil.executeUrl(HttpMethod.GET, url, API_TIMEOUT);
+            } catch (FroniusCommunicationException ex) {
+                logger.debug("Failed to get version info from Fronius inverter at {}: {}", hostname, ex.getMessage());
+                return null;
+            }
+        }
+        try {
+            JsonElement jsonElement = JsonParser.parseString(response);
+            if (!jsonElement.isJsonObject()) {
+                logger.debug("Invalid JSON response for version info from Fronius inverter at {}: {}", hostname,
+                        response);
+                return null;
+            }
+            try {
+                return jsonElement.getAsJsonObject().get("swrevisions").getAsJsonObject().get("GEN24").getAsString();
+            } catch (IllegalStateException | UnsupportedOperationException e) {
+                logger.debug("Failed to parse version info from Fronius inverter at {}: {}", hostname, e.getMessage());
+                return null;
+            }
+        } catch (JsonSyntaxException e) {
+            // 404 errors go here, as the response is not valid JSON
+            logger.debug("Invalid JSON response for version info from Fronius inverter at {}: {}", hostname, response,
+                    e);
+        }
+        return null;
     }
 
     /**
