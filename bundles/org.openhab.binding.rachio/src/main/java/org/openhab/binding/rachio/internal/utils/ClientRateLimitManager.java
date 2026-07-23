@@ -67,8 +67,15 @@ public class ClientRateLimitManager {
     private boolean rateLimitKnown = false;
 
     public ClientRateLimitManager(int numBuckets, Duration bucketSize) {
+        if (numBuckets <= 0) {
+            throw new IllegalArgumentException("numBuckets must be positive");
+        }
+        long bucketSizeMillis = bucketSize.toMillis();
+        if (bucketSizeMillis <= 0) {
+            throw new IllegalArgumentException("bucketSize must be positive");
+        }
         this.numBuckets = numBuckets;
-        this.bucketSizeMillis = bucketSize.toMillis();
+        this.bucketSizeMillis = bucketSizeMillis;
         this.buckets = new int[numBuckets];
     }
 
