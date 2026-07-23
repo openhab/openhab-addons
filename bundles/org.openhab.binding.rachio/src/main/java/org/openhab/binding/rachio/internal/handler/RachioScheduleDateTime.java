@@ -15,7 +15,6 @@ package org.openhab.binding.rachio.internal.handler;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -40,8 +39,8 @@ final class RachioScheduleDateTime {
             String... fieldNamesAndValues) {
         String unparseableField = "";
         for (int i = 0; i + 1 < fieldNamesAndValues.length; i += 2) {
-            String fieldName = fieldNamesAndValues[i];
-            String value = Objects.toString(fieldNamesAndValues[i + 1], "").trim();
+            String fieldName = nullToEmpty(fieldNamesAndValues[i]);
+            String value = nullToEmpty(fieldNamesAndValues[i + 1]).trim();
             if (value.isBlank()) {
                 continue;
             }
@@ -72,7 +71,7 @@ final class RachioScheduleDateTime {
     }
 
     private static ParseResult parse(String value) {
-        if (value.matches("[+-]?\\d+")) {
+        if (isIntegerValue(value)) {
             try {
                 long epoch = Long.parseLong(value);
                 long epochMillis = Math.abs(epoch) < EPOCH_SECONDS_THRESHOLD ? Math.multiplyExact(epoch, 1000L) : epoch;
@@ -89,6 +88,25 @@ final class RachioScheduleDateTime {
         } catch (RuntimeException e) {
             return new ParseResult(null, "unparseable");
         }
+    }
+
+    private static boolean isIntegerValue(String value) {
+        int length = value.length();
+        int start = length > 0 && (value.charAt(0) == '+' || value.charAt(0) == '-') ? 1 : 0;
+        if (start == length) {
+            return false;
+        }
+        for (int i = start; i < length; i++) {
+            char ch = value.charAt(i);
+            if (ch < '0' || ch > '9') {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static String nullToEmpty(@Nullable String value) {
+        return value != null ? value : "";
     }
 
     private static class ParseResult {

@@ -110,7 +110,14 @@ public abstract class AbstractRachioBridgeHandler extends ConfigStatusBridgeHand
     }
 
     protected void notifyThingStateChanged(@Nullable RachioDevice device, @Nullable RachioZone zone) {
-        rachioStatusListeners.stream().forEach(l -> l.onThingStateChanged(device, zone));
+        for (RachioStatusListener listener : rachioStatusListeners) {
+            try {
+                listener.onThingStateChanged(device, zone);
+            } catch (RuntimeException e) {
+                logger.debug("RachioCloud: Status listener update failed (listener={})",
+                        listener.getClass().getSimpleName(), e);
+            }
+        }
     }
 
     protected abstract int getPollingIntervalSeconds();
