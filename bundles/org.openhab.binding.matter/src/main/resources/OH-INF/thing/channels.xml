@@ -291,6 +291,67 @@
 		<category>Blinds</category>
 	</channel-type>
 
+	<channel-type id="valve-state">
+		<item-type>Switch</item-type>
+		<label>Valve State</label>
+		<description>Opens and closes the valve and reflects its current state</description>
+		<category>Flow</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>OpenState</tag>
+		</tags>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="valve-current-state">
+		<item-type>Number</item-type>
+		<label>Valve Current State</label>
+		<description>The current state of the valve, including the transitioning state while it is opening or closing</description>
+		<category>Flow</category>
+		<state readOnly="true">
+			<options>
+				<option value="0">Closed</option>
+				<option value="1">Open</option>
+				<option value="2">Transitioning</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="valve-level">
+		<item-type>Dimmer</item-type>
+		<label>Valve Level</label>
+		<description>Sets and reflects the valve level as a percentage, for valves that support level control</description>
+		<category>Flow</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
+		<state min="0" max="100" pattern="%.0f %%"/>
+	</channel-type>
+
+	<channel-type id="valve-duration">
+		<item-type>Number:Time</item-type>
+		<label>Valve Open Duration</label>
+		<description>The default duration the valve remains open before automatically closing. Set to 0 to remain open until
+			closed.</description>
+		<category>Time</category>
+		<state pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="valve-remaining-duration">
+		<item-type>Number:Time</item-type>
+		<label>Valve Remaining Duration</label>
+		<description>The remaining time until the valve automatically closes</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="valve-fault">
+		<kind>trigger</kind>
+		<label>Valve Fault</label>
+		<description>Event that fires when the valve registers a fault, with a payload containing the fault name</description>
+	</channel-type>
+
 	<channel-type id="fancontrol-fanmode">
 		<item-type>Number</item-type>
 		<label>Fan Mode</label>

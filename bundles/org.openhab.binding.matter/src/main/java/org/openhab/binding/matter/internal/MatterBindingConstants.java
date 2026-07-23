@@ -211,6 +211,21 @@ public class MatterBindingConstants {
     public static final String CHANNEL_ID_WINDOWCOVERING_LIFT = "windowcovering-lift";
     public static final ChannelTypeUID CHANNEL_WINDOWCOVERING_LIFT = new ChannelTypeUID(BINDING_ID,
             CHANNEL_ID_WINDOWCOVERING_LIFT);
+    public static final String CHANNEL_ID_VALVE_STATE = "valve-state";
+    public static final ChannelTypeUID CHANNEL_VALVE_STATE = new ChannelTypeUID(BINDING_ID, CHANNEL_ID_VALVE_STATE);
+    public static final String CHANNEL_ID_VALVE_CURRENT_STATE = "valve-current-state";
+    public static final ChannelTypeUID CHANNEL_VALVE_CURRENT_STATE = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_VALVE_CURRENT_STATE);
+    public static final String CHANNEL_ID_VALVE_LEVEL = "valve-level";
+    public static final ChannelTypeUID CHANNEL_VALVE_LEVEL = new ChannelTypeUID(BINDING_ID, CHANNEL_ID_VALVE_LEVEL);
+    public static final String CHANNEL_ID_VALVE_DURATION = "valve-duration";
+    public static final ChannelTypeUID CHANNEL_VALVE_DURATION = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_VALVE_DURATION);
+    public static final String CHANNEL_ID_VALVE_REMAINING_DURATION = "valve-remaining-duration";
+    public static final ChannelTypeUID CHANNEL_VALVE_REMAINING_DURATION = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_VALVE_REMAINING_DURATION);
+    public static final String CHANNEL_ID_VALVE_FAULT = "valve-fault";
+    public static final ChannelTypeUID CHANNEL_VALVE_FAULT = new ChannelTypeUID(BINDING_ID, CHANNEL_ID_VALVE_FAULT);
     public static final String CHANNEL_ID_FANCONTROL_PERCENT = "fancontrol-percent";
     public static final ChannelTypeUID CHANNEL_FANCONTROL_PERCENT = new ChannelTypeUID(BINDING_ID,
             CHANNEL_ID_FANCONTROL_PERCENT);
