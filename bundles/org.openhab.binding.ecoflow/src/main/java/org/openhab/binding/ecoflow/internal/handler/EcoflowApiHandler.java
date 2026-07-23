@@ -226,7 +226,9 @@ public class EcoflowApiHandler extends BaseBridgeHandler {
         if (oldConnection != null) {
             try {
                 oldConnection.disconnect().get();
-            } catch (InterruptedException | ExecutionException e) {
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            } catch (ExecutionException e) {
                 logger.debug("Could not discard MQTT connection", e);
             }
         }
@@ -272,7 +274,9 @@ public class EcoflowApiHandler extends BaseBridgeHandler {
                     data.subscribed = true;
                     data.handler.handleMqttConnected();
                 }
-            } catch (ExecutionException | InterruptedException | TimeoutException e) {
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            } catch (ExecutionException | TimeoutException e) {
                 logger.debug("Could not subscribe for MQTT updates for device {}:", data.serialNumber, e);
             }
         }
@@ -370,7 +374,7 @@ public class EcoflowApiHandler extends BaseBridgeHandler {
         }
 
         CompletableFuture<Void> subscribeForDevice(String serialNumber, Consumer<@Nullable Mqtt3Publish> quotaHandler,
-                Consumer<@Nullable Mqtt3Publish> statusHandler) throws ExecutionException, InterruptedException {
+                Consumer<@Nullable Mqtt3Publish> statusHandler) {
             String deviceTopicBase = topicBase + serialNumber + "/";
             var quotaSubFuture = client.subscribeWith().topicFilter(deviceTopicBase + "quota").callback(quotaHandler)
                     .send();
