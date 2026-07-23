@@ -12,6 +12,12 @@
 				<type>oppo:time_display</type>
 			</update-channel>
 		</instruction-set>
+
+		<instruction-set targetVersion="2">
+			<update-channel id="time_display">
+				<type>oppo:time_display</type>
+			</update-channel>
+		</instruction-set>
 	</thing-type>
 
 </update:update-descriptions>

@@ -22,8 +22,8 @@ It has the `player` id.
 
 ## Discovery
 
-Manually initiated Auto-discovery is supported if the player is accessible on the same IP subnet of the openHAB server.
-In the Inbox, select Search For Things and then choose the Oppo Blu-ray Player Binding to initiate discovery.
+Manually initiated Auto-discovery is supported if the player is connected via Ethernet and accessible on the same IP subnet of the openHAB server.
+When adding a Thing, choose the Oppo Blu-ray Player Binding and then press the Scan button to initiate discovery.
 
 ## Binding Configuration
 
@@ -37,32 +37,29 @@ The Thing has the following configuration parameters:
 | Parameter Label  | Parameter ID | Description                                                                                                                      | Accepted values           |
 |------------------|--------------|----------------------------------------------------------------------------------------------------------------------------------|---------------------------|
 | Player Model     | model        | Specifies what model of player is to be controlled by the binding (required).                                                    | 83, 103, 105, 203, or 205 |
-| Address          | host         | Host name or IP address of the Oppo player or serial over IP device.                                                             | host name or ip           |
-| Port             | port         | Communication port for using serial over IP. Leave blank if using direct IP connection to the player.                            | ip port number            |
+| Address          | host         | Host name or IP address of the Oppo player or serial over IP device.                                                             | host name or IP           |
+| Port             | port         | Communication port for using serial over IP. Leave blank if using direct IP connection to the player.                            | IP port number            |
 | Serial Port      | serialPort   | Serial port to use for directly connecting to the Oppo player                                                                    | a comm port name          |
 | Verbose Mode     | verboseMode  | (Optional) If true, the player will send time updates every second. If set false, the binding polls the player every 10 seconds. | Boolean; default false    |
 
 Some notes:
 
-- If using direct IP connection on the BDP series (83/93/95/103/105), verbose mode is not supported.
-- For some reason on these models, the unsolicited status update messages are not generated over the IP socket.
-- If fast updates are required on these models, a direct serial or serial over IP connection to the player is required.
+- Using the direct IP connection on the BDP series (83/93/95/103/105) is not recommended; use of serial or serial over IP connections is preferred.
+- If using the direct IP connection on the BDP series any channels besides `remote_button` that sends a parameter (Volume, Source Input, all mode channels, etc.) only works as read-only.
+- Verbose mode is also not supported while using the direct IP connection on the BDP series.
 - The UDP-20x series should be fully functional over direct IP connection but this was not able to be tested by the developer.
 - As previously noted, when using verbose mode, the player will send time code messages once per second while playback is ongoing.
-- Be aware that this could cause performance impacts to your openHAB system.
 - In non-verbose (the default), the binding will poll the player every 10 seconds to update play time, track and chapter information instead.
 - In order for the direct IP connection to work while the player is turned off, the Standby Mode setting must be set to "Quick Start" in the Device Setup menu.
-- Likewise if the player is turned off, it may not be discoverable by the Binding's discovery scan.
-- If the player is switched off when the binding first starts up or if power to the player is ever interrupted, up to 30 seconds may elapse before the binding begins to update when the player is switched on.
-- If you experience any issues using the binding, first ensure that the player's firmware is up to date with the latest available version (especially on the older models).
-- For the older models, some of the features in the control API were added after the players were shipped.
+- Likewise, if the player is turned off, it may not be discoverable by the Binding's discovery scan.
+- Prior to using the binding, ensure that the player's firmware is up to date with the latest available version.
 - Available HDMI modes for BDP-83 & BDP-9x: AUTO, SRC, 1080P, 1080I, 720P, SDP, SDI
 - Available HDMI modes for BDP-10x: AUTO, SRC, 4K2K, 1080P, 1080I, 720P, SDP, SDI
 - Available HDMI modes for UDP-20x: AUTO, SRC, UHD_AUTO, UHD24, UHD50, UHD60, 1080P_AUTO, 1080P24, 1080P50, 1080P60, 1080I50, 1080I60, 720P50, 720P60, 576P, 576I, 480P, 480I
 
 - On Linux, you may get an error stating the serial port cannot be opened when the Oppo binding tries to load.
 - You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
-- Also on Linux you may have issues with the USB if using two serial USB devices e.g. Oppo and RFXcom.
+- Also, on Linux you may have issues with the USB if using two serial USB devices e.g. Oppo and RFXcom.
 - See the [general documentation about serial port configuration](/docs/administration/serial.html) for more on symlinking the USB ports.
 - Here is an example of ser2net.conf (for ser2net version < 4) you can use to share your serial port /dev/ttyUSB0 on IP port 4444 using [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) (take care, the baud rate is specific to the Oppo player):
 
@@ -122,13 +119,13 @@ The following channels are available:
 
 ```java
 // direct IP connection
-oppo:player:myoppo "Oppo Blu-ray" [ host="192.168.0.10", model=103, verboseMode=false]
+oppo:player:myoppo "Oppo Blu-ray" [ host="192.168.0.10", model=203, verboseMode=true ]
 
 // direct serial connection
-oppo:player:myoppo "Oppo Blu-ray" [ serialPort="COM5", model=103, verboseMode=true]
+oppo:player:myoppo "Oppo Blu-ray" [ serialPort="COM5", model=103, verboseMode=true ]
 
 // serial over IP connection
-oppo:player:myoppo "Oppo Blu-ray" [ host="192.168.0.9", port=4444, model=103, verboseMode=true]
+oppo:player:myoppo "Oppo Blu-ray" [ host="192.168.0.9", port=4444, model=103, verboseMode=true ]
 
 ```
 
@@ -142,7 +139,7 @@ Number oppo_source "Source Input [%s]" { channel="oppo:player:myoppo:source" }
 String oppo_play_mode "Play Mode [%s]" { channel="oppo:player:myoppo:play_mode" }
 Player oppo_control "Control" { channel="oppo:player:myoppo:control" }
 String oppo_time_mode "Time Mode [%s]" { channel="oppo:player:myoppo:time_mode" }
-Number:Time oppo_time_display "Time [%s]" { channel="oppo:player:myoppo:time_display" }
+Number:Time oppo_time_display "Time [%1$tT]" { channel="oppo:player:myoppo:time_display" }
 Number oppo_current_title "Current Title/Track [%s]" { channel="oppo:player:myoppo:current_title" }
 Number oppo_total_title "Total Title/Track [%s]" { channel="oppo:player:myoppo:total_title" }
 Number oppo_current_chapter "Current Chapter [%s]" { channel="oppo:player:myoppo:current_chapter" }
