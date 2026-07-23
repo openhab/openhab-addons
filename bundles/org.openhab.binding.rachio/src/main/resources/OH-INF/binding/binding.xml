@@ -4,5 +4,5 @@
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
 	<name>Rachio Binding</name>
-	<description>This is the binding for Rachio Sprinkler Controller.</description>
+	<description>Integrates Rachio irrigation controllers and Smart Hose Timer resources through the Rachio Cloud APIs.</description>
 </binding:binding>

@@ -5,6 +5,6 @@
 
 	<type>binding</type>
 	<name>Rachio Binding</name>
-	<description>This is the binding for Rachio Sprinkler Controller.</description>
+	<description>Integrates Rachio irrigation controllers and Smart Hose Timer resources through the Rachio Cloud APIs.</description>
 
 </addon:addon>
