@@ -69,6 +69,7 @@
     <ohc.version>5.3.0-SNAPSHOT</ohc.version>
     <asm.version>9.9.1</asm.version>
     <bnd.version>7.3.0</bnd.version>
+    <bouncycastle.version>1.85</bouncycastle.version>
     <commons.codec.version>1.17.1</commons.codec.version>
     <commons.net.version>3.9.0</commons.net.version>
     <eea.version>2.4.0</eea.version>
@@ -444,7 +445,7 @@ Import-Package: \
         <plugin>
           <groupId>com.mycila</groupId>
           <artifactId>license-maven-plugin</artifactId>
-          <version>5.0.0</version>
+          <version>5.1.1</version>
           <configuration>
             <basedir>${basedir}</basedir>
             <quiet>false</quiet>

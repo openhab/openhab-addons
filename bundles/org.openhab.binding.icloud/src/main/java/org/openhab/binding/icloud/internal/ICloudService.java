@@ -135,8 +135,22 @@ public class ICloudService {
         List<Pair<String, String>> headers = ListUtil.replaceEntries(getAuthHeaders(),
                 List.of(Pair.of("Accept", "application/json")));
         addSessionHeaders(headers);
+        String responseBody;
+        try {
+            responseBody = session.get(AUTH_ENDPOINT, headers);
+        } catch (ICloudApiAuthenticationException ex) {
+            // Apple responds with HTTP 409 (2FA_REQUIRED) here as part of the normal 2-FA
+            // challenge flow; the body already contains the phoneNumberVerification data we
+            // need. Without this, the exception propagates and canRequestSmsCode()/
+            // requestSmsCode() below is never reached, so 2-FA accounts can never authenticate.
+            if (ex.getStatusCode() == 409) {
+                responseBody = ex.body;
+            } else {
+                throw ex;
+            }
+        }
         @Nullable
-        Map<String, Object> localSessionData = JsonUtils.toMap(session.get(AUTH_ENDPOINT, headers));
+        Map<String, Object> localSessionData = JsonUtils.toMap(responseBody);
         if (localSessionData != null) {
             data = localSessionData;
         }
@@ -226,7 +240,15 @@ public class ICloudService {
                 List.of(Pair.of("Accept", "application/json")));
         addSessionHeaders(headers);
 
-        session.put(AUTH_ENDPOINT + "/verify/phone", JsonUtils.toJson(requestBody), headers);
+        try {
+            session.put(AUTH_ENDPOINT + "/verify/phone", JsonUtils.toJson(requestBody), headers);
+        } catch (ICloudApiAuthenticationException ex) {
+            // Apple responds with HTTP 409 here too even though the SMS/iMessage code is actually
+            // sent (verified empirically). Treat 409 as expected here, same as in getMfaAuthOptions().
+            if (ex.getStatusCode() != 409) {
+                throw ex;
+            }
+        }
 
         // Cache the phone payload for later validation
         cachedSmsPhoneNumber = phonePayload;

@@ -31,9 +31,12 @@ import org.mockito.ArgumentCaptor;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyEMNCurrentSettings;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyEMNCurrentStatus;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDimmer;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsEMeter;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsMeter;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRelay;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortLightStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtAnalogInput;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtDigitalInput;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtHumidity;
@@ -131,6 +134,63 @@ public class ShellyComponentsTest {
 
         assertThat(ShellyComponents.updateTempChannel(sensor, handler, CHANNEL_ESENSOR_TEMP1), is(false));
         verify(handler, never()).updateChannel(anyString(), anyString(), any());
+    }
+
+    @Test
+    void updateRelaySkipsOutputChannelWhenIsonNull() {
+        // Regression test: a profile refresh racing a NotifyStatus event can leave ison null for a
+        // cycle. updateRelay() must not flatten that to OFF via getOnOff(null).
+        ShellyBaseHandler handler = relayUpdateHandler();
+        ShellyComponents.updateRelay(handler, statusWithRelayIson(null), 0);
+        verify(handler, never()).updateChannel(anyString(), eq(CHANNEL_OUTPUT), any());
+    }
+
+    @Test
+    void updateRelayPushesOutputChannelWhenIsonKnown() {
+        // Companion case: a known state must still be pushed, guarding against the null-check above
+        // being accidentally inverted.
+        ShellyBaseHandler handler = relayUpdateHandler();
+        ShellyComponents.updateRelay(handler, statusWithRelayIson(true), 0);
+        verify(handler).updateChannel(anyString(), eq(CHANNEL_OUTPUT), eq(OnOffType.ON));
+    }
+
+    private static ShellyBaseHandler relayUpdateHandler() {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUS1PM);
+        profile.numRelays = 1;
+        profile.settings.relays = new ArrayList<>(List.of(new ShellySettingsRelay()));
+
+        ShellyBaseHandler handler = mock(ShellyBaseHandler.class);
+        when(handler.getProfile()).thenReturn(profile);
+        when(handler.updateChannel(anyString(), anyString(), any())).thenReturn(true);
+        return handler;
+    }
+
+    private static ShellySettingsStatus statusWithRelayIson(@Nullable Boolean ison) {
+        ShellySettingsStatus status = new ShellySettingsStatus();
+        ShellySettingsRelay relay = new ShellySettingsRelay();
+        relay.isValid = true;
+        relay.ison = ison;
+        status.relays = new ArrayList<>(List.of(relay));
+        return status;
+    }
+
+    @Test
+    void updateDimmersPushesTimerActiveChannel() throws Exception {
+        // Regression test: updateDimmers() created the timerActive channel via
+        // createDimmerChannels() but never actually pushed a value to it.
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYDIMMER);
+        profile.isGen2 = true; // skip the Gen1 JSON reparse, use the status object directly
+        profile.settings.dimmers = new ArrayList<>(List.of(new ShellySettingsDimmer()));
+
+        ShellyShortLightStatus dimmerStatus = new ShellyShortLightStatus();
+        dimmerStatus.hasTimer = true;
+        ShellySettingsStatus status = new ShellySettingsStatus();
+        status.dimmers = new ArrayList<>(List.of(dimmerStatus));
+
+        ShellyThingInterface handler = mockHandler(profile);
+        ShellyComponents.updateDimmers(handler, status);
+
+        verify(handler).updateChannel(anyString(), eq(CHANNEL_TIMER_ACTIVE), eq(OnOffType.ON));
     }
 
     @Test
@@ -807,13 +867,14 @@ public class ShellyComponentsTest {
 
     @Test
     void gen2RelayPmLastMinuteChannelsBothWrittenWithCorrectUnits() {
-        // energyByMinute[0]=3.0 Wh → lastPower1 (LASTMIN1)=180.0 W (Wh×60), energyAvg1Min=3.0 Wh
+        // energyByMinute[0]=3.0 Wh → lastPower1 (LASTMIN1)=180.0 W (Wh×60), energyHistMin1=3.0 Wh
         ShellyDeviceProfile profile = emeterProfile(false, 1);
         ShellyThingInterface handler = mockHandler(profile);
         ShellyComponents.updateMeters(handler, statusWithEMeters(emeterWithByMinute(50.0, 3.0)));
 
         assertEquals(180.0, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_LASTMIN1).doubleValue(), 0.1);
-        assertEquals(3.0, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_ENERGYAVG1MIN).doubleValue(), 0.001);
+        assertEquals(3.0, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_ENERGYHISTMIN1).doubleValue(),
+                0.001);
     }
 
     @Test
@@ -823,7 +884,7 @@ public class ShellyComponentsTest {
         ShellyComponents.updateMeters(handler, statusWithEMeters(emeter(50.0)));
 
         verify(handler, never()).updateChannel(anyString(), eq(CHANNEL_METER_LASTMIN1), any(State.class));
-        verify(handler, never()).updateChannel(anyString(), eq(CHANNEL_METER_ENERGYAVG1MIN), any(State.class));
+        verify(handler, never()).updateChannel(anyString(), eq(CHANNEL_METER_ENERGYHISTMIN1), any(State.class));
     }
 
     @Test
@@ -836,7 +897,7 @@ public class ShellyComponentsTest {
                 statusWithEMeters(emeterWithByMinute(428.5, 7.148092, 7.160587, 6.429836)));
 
         assertEquals(428.9, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_LASTMIN1).doubleValue(), 0.1);
-        assertEquals(7.148, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_ENERGYAVG1MIN).doubleValue(),
+        assertEquals(7.148, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_ENERGYHISTMIN1).doubleValue(),
                 0.001);
     }
 
@@ -853,12 +914,64 @@ public class ShellyComponentsTest {
         ShellyComponents.updateMeters(handler, statusWithMeters(m0));
 
         assertEquals(60.0, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_LASTMIN1).doubleValue(), 0.1);
-        assertEquals(1.0, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_ENERGYAVG1MIN).doubleValue(), 0.001);
+        assertEquals(1.0, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_ENERGYHISTMIN1).doubleValue(),
+                0.001);
+    }
+
+    @Test
+    void gen1SimpleMeterEnergyHistMinConvertedFromWattMinutes() {
+        // counters[0]=60 W-min=1.0 Wh, counters[1]=120 W-min=2.0 Wh, counters[2]=180 W-min=3.0 Wh
+        // each is an independent per-minute sum (not an average); energyAvgLast3Min = mean(1.0, 2.0, 3.0) = 2.0 Wh
+        ShellyDeviceProfile profile = simpleRelayProfile(1);
+        ShellySettingsMeter m0 = new ShellySettingsMeter();
+        m0.isValid = true;
+        m0.power = 60.0;
+        m0.counters = new Double[] { 60.0, 120.0, 180.0 };
+
+        ShellyThingInterface handler = mockHandler(profile);
+        ShellyComponents.updateMeters(handler, statusWithMeters(m0));
+
+        assertEquals(2.0, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_ENERGYHISTMIN2).doubleValue(),
+                0.001);
+        assertEquals(3.0, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_ENERGYHISTMIN3).doubleValue(),
+                0.001);
+        assertEquals(2.0, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_ENERGYAVGLAST3MIN).doubleValue(),
+                0.001);
+    }
+
+    @Test
+    void gen2EMetersEnergyHistMinChannelsWrittenWhenPresent() {
+        // byMinute Wh = [3.0, 4.5, 6.0], each an independent per-minute sum (not an average);
+        // energyAvgLast3Min = mean(3.0, 4.5, 6.0) = 4.5
+        ShellyDeviceProfile profile = emeterProfile(false, 1);
+        ShellyThingInterface handler = mockHandler(profile);
+        ShellyComponents.updateMeters(handler, statusWithEMeters(emeterWithByMinute(50.0, 3.0, 4.5, 6.0)));
+
+        assertEquals(4.5, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_ENERGYHISTMIN2).doubleValue(),
+                0.001);
+        assertEquals(6.0, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_ENERGYHISTMIN3).doubleValue(),
+                0.001);
+        assertEquals(4.5, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_ENERGYAVGLAST3MIN).doubleValue(),
+                0.001);
+    }
+
+    @Test
+    void gen2EMetersEnergyHistMinSkippedWhenAbsent() {
+        // Non-PM Gen2 relays / short by_minute arrays omit slots 1/2 — must not be written, while
+        // slot 0 (present) still updates energyHistMin1 as usual
+        ShellyDeviceProfile profile = emeterProfile(false, 1);
+        ShellyThingInterface handler = mockHandler(profile);
+        ShellyComponents.updateMeters(handler, statusWithEMeters(emeterWithByMinute(50.0, 3.0)));
+
+        verify(handler, atLeastOnce()).updateChannel(anyString(), eq(CHANNEL_METER_ENERGYHISTMIN1), any(State.class));
+        verify(handler, never()).updateChannel(anyString(), eq(CHANNEL_METER_ENERGYHISTMIN2), any(State.class));
+        verify(handler, never()).updateChannel(anyString(), eq(CHANNEL_METER_ENERGYHISTMIN3), any(State.class));
+        verify(handler, never()).updateChannel(anyString(), eq(CHANNEL_METER_ENERGYAVGLAST3MIN), any(State.class));
     }
 
     @Test
     void gen1AggregatedMeterSumsMinuteCountersAcrossMeters() {
-        // Roller with 2 motor meters: counters[0] is summed before conversion
+        // Roller with 2 motor meters: each counters[] slot is summed across meters before conversion
         ShellyDeviceProfile profile = gen1RollerProfile();
         ShellySettingsMeter m0 = new ShellySettingsMeter();
         m0.isValid = true;
@@ -873,7 +986,32 @@ public class ShellyComponentsTest {
         ShellyComponents.updateMeters(handler, statusWithMeters(m0, m1));
 
         assertEquals(60.0, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_LASTMIN1).doubleValue(), 0.1);
-        assertEquals(1.0, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_ENERGYAVG1MIN).doubleValue(), 0.001);
+        assertEquals(1.0, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_ENERGYHISTMIN1).doubleValue(),
+                0.001);
+        assertEquals(2.0, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_ENERGYHISTMIN2).doubleValue(),
+                0.001);
+        assertEquals(3.0, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_ENERGYHISTMIN3).doubleValue(),
+                0.001);
+        assertEquals(2.0, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_ENERGYAVGLAST3MIN).doubleValue(),
+                0.001);
+    }
+
+    @Test
+    void gen1AggregatedMeterMissingLaterSlotsSkipsTheirChannels() {
+        // Only counters[0] present: energyHistMin2/3 and the average must not be written
+        ShellyDeviceProfile profile = gen1RollerProfile();
+        ShellySettingsMeter m0 = new ShellySettingsMeter();
+        m0.isValid = true;
+        m0.power = 100.0;
+        m0.counters = new Double[] { 30.0 };
+
+        ShellyThingInterface handler = mockHandler(profile);
+        ShellyComponents.updateMeters(handler, statusWithMeters(m0));
+
+        verify(handler, atLeastOnce()).updateChannel(anyString(), eq(CHANNEL_METER_ENERGYHISTMIN1), any(State.class));
+        verify(handler, never()).updateChannel(anyString(), eq(CHANNEL_METER_ENERGYHISTMIN2), any(State.class));
+        verify(handler, never()).updateChannel(anyString(), eq(CHANNEL_METER_ENERGYHISTMIN3), any(State.class));
+        verify(handler, never()).updateChannel(anyString(), eq(CHANNEL_METER_ENERGYAVGLAST3MIN), any(State.class));
     }
 
     @Test

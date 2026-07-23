@@ -153,7 +153,7 @@ public class ShellyChannelDefinitions {
          * String group = profile.getControlGroup(idx); // "relay1", "relay2", ...
          *
          * // Only add a channel if the device actually reports the field
-         * addChannel(thing, add, rs.ison != null, group, CHANNEL_OUTPUT);
+         * addChannel(thing, add, getBool(rs.isValid), group, CHANNEL_OUTPUT);
          * addChannel(thing, add, rs.autoOn != null, group, CHANNEL_TIMER_AUTOON);
          * addChannel(thing, add, rs.autoOff != null, group, CHANNEL_TIMER_AUTOOFF);
          * ...
@@ -182,6 +182,7 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ACCURETURNEDENERGY, "accumulatedReturnedEnergy",
                         ITEMT_ENERGY))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ACCUAPPARENT, "meterAccuApparent", ITEMT_POWER))
+                .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_RESETTOTAL, "meterResetTotals", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_VOLTAGE, "supplyVoltage", ITEMT_VOLT))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_CHARGER, "charger", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_LED_STATUS_DISABLE, "ledStatusDisable", ITEMT_SWITCH))
@@ -246,7 +247,12 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_METER_TOTALKWH, "meterTotal", ITEMT_ENERGY))
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_METER_TOTALENERGY, "totalEnergy", ITEMT_ENERGY))
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_METER_LASTMIN1, "lastPower1", ITEMT_POWER))
-                .add(new ShellyChannel(m, CHGR_METER, CHANNEL_METER_ENERGYAVG1MIN, "energyAvg1Min", ITEMT_ENERGY))
+                .add(new ShellyChannel(m, CHGR_METER, CHANNEL_METER_ENERGYHISTMIN1, "energyHistMin1", ITEMT_ENERGY))
+                .add(new ShellyChannel(m, CHGR_METER, CHANNEL_METER_ENERGYHISTMIN2, "energyHistMin2", ITEMT_ENERGY))
+                .add(new ShellyChannel(m, CHGR_METER, CHANNEL_METER_ENERGYHISTMIN3, "energyHistMin3", ITEMT_ENERGY))
+                .add(new ShellyChannel(m, CHGR_METER, CHANNEL_METER_ENERGYAVGLAST3MIN, "energyAvgLast3Min",
+                        ITEMT_ENERGY))
+                .add(new ShellyChannel(m, CHGR_METER, CHANNEL_EMETER_RESETTOTAL, "meterResetTotals", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_LAST_UPDATE, "lastUpdate", ITEMT_DATETIME))
 
                 // EMeter
@@ -404,6 +410,8 @@ public class ShellyChannelDefinitions {
         boolean hasReturnedEnergy = accuChannel && (profile.is3EM || profile.isEM50);
         addChannel(thing, add, hasReturnedEnergy, CHGR_DEVST, CHANNEL_DEVST_ACCURETURNED);
         addChannel(thing, add, hasReturnedEnergy, CHGR_DEVST, CHANNEL_DEVST_ACCUAPPARENT);
+        // 3EM totals are only reset at the device level (EMData.ResetCounters covers all phases at once)
+        addChannel(thing, add, profile.is3EM, CHGR_DEVST, CHANNEL_DEVST_RESETTOTAL);
         addChannel(thing, add, status.voltage != null || profile.settings.supplyVoltage != null, CHGR_DEVST,
                 CHANNEL_DEVST_VOLTAGE);
         addChannel(thing, add,
@@ -433,7 +441,7 @@ public class ShellyChannelDefinitions {
         List<ShellySettingsRelay> relays = profile.settings.relays;
         if (relays != null) {
             ShellySettingsRelay rs = relays.get(idx);
-            addChannel(thing, add, rs.ison != null, group, CHANNEL_OUTPUT);
+            addChannel(thing, add, rs.isValid == null || rs.isValid, group, CHANNEL_OUTPUT);
             addChannel(thing, add, rs.name != null, group, CHANNEL_OUTPUT_NAME);
 
             boolean timer = rs.hasTimer != null || rstatus.hasTimer != null; // Dimmer 1/2 have
@@ -571,12 +579,18 @@ public class ShellyChannelDefinitions {
         Map<String, Channel> newChannels = new LinkedHashMap<>();
         Double[] counters = meter.counters;
         boolean hasCounter = counters != null && counters.length > 0 && counters[0] != null;
+        boolean hasCounter2 = counters != null && counters.length > 1 && counters[1] != null;
+        boolean hasCounter3 = counters != null && counters.length > 2 && counters[2] != null;
         addChannel(thing, newChannels, meter.power != null, group, CHANNEL_METER_CURRENTWATTS);
         addChannel(thing, newChannels, meter.total != null, group, CHANNEL_METER_TOTALKWH);
-        // lastPower1 (W, deprecated) and energyAvg1Min (Wh) are always created together. Both channels
-        // receive updates so existing items linked to lastPower1 keep working without re-discovery.
-        addChannel(thing, newChannels, hasCounter, group, CHANNEL_METER_LASTMIN1);
-        addChannel(thing, newChannels, hasCounter, group, CHANNEL_METER_ENERGYAVG1MIN);
+        // lastPower1 is deprecated; this path only runs for new devices, so it's never (re-)created here.
+        addChannel(thing, newChannels, hasCounter, group, CHANNEL_METER_ENERGYHISTMIN1);
+        addChannel(thing, newChannels, hasCounter2, group, CHANNEL_METER_ENERGYHISTMIN2);
+        addChannel(thing, newChannels, hasCounter3, group, CHANNEL_METER_ENERGYHISTMIN3);
+        addChannel(thing, newChannels, hasCounter && hasCounter2 && hasCounter3, group,
+                CHANNEL_METER_ENERGYAVGLAST3MIN);
+        // no resetTotals here: the Gen1 /meter endpoint (relay-PM, plug, dimmer, roller) has no
+        // reset API — only /emeter devices (EM/3EM, handled in createEMeterChannels) support it
         addChannel(thing, newChannels, !newChannels.isEmpty(), group, CHANNEL_LAST_UPDATE);
         return newChannels;
     }
@@ -612,13 +626,20 @@ public class ShellyChannelDefinitions {
                 CHANNEL_EMETER_APPARENT);
         addChannel(thing, newChannels, emeter.frequency != null, group, CHANNEL_EMETER_FREQUENCY);
         addChannel(thing, newChannels, always || emeter.pf != null, group, CHANNEL_EMETER_PFACTOR);
-        // lastPower1 (W, deprecated) and energyAvg1Min (Wh) are always created together when the device
-        // reports last-minute energy. Non-PM Gen2 relays (e.g. Plus 1) omit aenergy entirely — both absent.
+        // lastPower1 is deprecated; this path only runs for new devices, so it's never (re-)created here.
+        // Non-PM Gen2 relays (e.g. Plus 1) omit aenergy entirely, so energyHistMin1 stays absent too.
         @Nullable
         Double @Nullable [] byMinute = emeter.energyByMinute;
-        boolean hasLastMinute = byMinute != null && byMinute.length > 0 && byMinute[0] != null;
-        addChannel(thing, newChannels, hasLastMinute, group, CHANNEL_METER_LASTMIN1);
-        addChannel(thing, newChannels, hasLastMinute, group, CHANNEL_METER_ENERGYAVG1MIN);
+        boolean hasMinute1 = byMinute != null && byMinute.length > 0 && byMinute[0] != null;
+        boolean hasMinute2 = byMinute != null && byMinute.length > 1 && byMinute[1] != null;
+        boolean hasMinute3 = byMinute != null && byMinute.length > 2 && byMinute[2] != null;
+        addChannel(thing, newChannels, hasMinute1, group, CHANNEL_METER_ENERGYHISTMIN1);
+        addChannel(thing, newChannels, hasMinute2, group, CHANNEL_METER_ENERGYHISTMIN2);
+        addChannel(thing, newChannels, hasMinute3, group, CHANNEL_METER_ENERGYHISTMIN3);
+        addChannel(thing, newChannels, hasMinute1 && hasMinute2 && hasMinute3, group, CHANNEL_METER_ENERGYAVGLAST3MIN);
+        // Per-meter reset is only meaningful when each meter has its own resettable counter component
+        // (Switch/PM1/EM1Data). 3EM's emdata:0 aggregates all phases, so it resets at the device level only.
+        addChannel(thing, newChannels, !profile.is3EM, group, CHANNEL_EMETER_RESETTOTAL);
         // Only add lastUpdate if this device actually has meter channels — guards against non-PM Gen2 relay
         // devices (e.g. Plus 1) where isEMeter=true but all emeter fields are permanently null.
         addChannel(thing, newChannels, !newChannels.isEmpty(), group, CHANNEL_LAST_UPDATE);
@@ -760,10 +781,10 @@ public class ShellyChannelDefinitions {
             case CHANNEL_DEVST_ACCUWATTS -> CHANNEL_DEVST_ACCUMULATEDPOWER;
             case CHANNEL_EMETER_REACTWATTS -> CHANNEL_EMETER_REACTPOWER;
             case CHANNEL_DEVST_ACCUTOTAL -> CHANNEL_DEVST_TOTALENERGY;
-            // CHANNEL_METER_LASTMIN1 (lastPower1, W) intentionally has NO entry: its replacement
-            // energyAvg1Min is Number:Energy (Wh); forwarding the W state via the dual-write would
-            // post an incompatible unit to Wh-based items on every poll ("could not be converted
-            // to the item unit" warnings). All write sites post both channels explicitly instead.
+            // CHANNEL_METER_LASTMIN1 (lastPower1, W) intentionally has NO entry: energyHistMin1
+            // is Number:Energy (Wh); forwarding the W state via the dual-write would post an
+            // incompatible unit to Wh-based items on every poll ("could not be converted to the
+            // item unit" warnings). All write sites post both channels explicitly instead.
             case CHANNEL_NMETER_MTRESHHOLD -> CHANNEL_NMETER_THRESHOLD;
             case CHANNEL_DEVST_ACCURETURNED -> CHANNEL_DEVST_ACCURETURNEDENERGY;
             default -> null;
@@ -809,7 +830,11 @@ public class ShellyChannelDefinitions {
         }
         if (!channelDef.label.isEmpty()) {
             char grseq = lastChar(group);
-            char chseq = lastChar(channelName);
+            // Only genuinely indexed names get a digit suffix — same allowlist as getDefinition() uses.
+            boolean chIndexed = channelName.startsWith(CHANNEL_INPUT) || channelName.startsWith(CHANNEL_BUTTON_TRIGGER)
+                    || channelName.startsWith(CHANNEL_STATUS_EVENTTYPE)
+                    || channelName.startsWith(CHANNEL_STATUS_EVENTCOUNT);
+            char chseq = chIndexed ? lastChar(channelName) : ' ';
             char sequence = isDigit(chseq) ? chseq : grseq;
             String label = !isDigit(sequence) ? channelDef.label : channelDef.label + " " + sequence;
             builder.withLabel(label);

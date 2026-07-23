@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
+		https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="io:opentelemetry">
+		<parameter-group name="logs">
+			<label>OpenTelemetry Logging</label>
+		</parameter-group>
+
+		<parameter name="otlpURL" type="text">
+			<label>OpenTelemetry Collector URL</label>
+			<description>The URL of the OpenTelemetry Collector instance (using HTTP transport)</description>
+			<default>http://localhost:4318</default>
+			<context>network-address</context>
+		</parameter>
+		<parameter name="otlpHeaders" type="text">
+			<label>OTLP Headers</label>
+			<description>
+				<![CDATA[
+				Optional headers for authentication (e.g., <code>Authorization=Bearer token</code>)
+				]]>
+			</description>
+			<context>password</context>
+		</parameter>
+
+		<parameter name="logsEnabled" type="boolean" groupName="logs">
+			<label>Export Logs</label>
+			<description>Enable exporting openHAB logs to OpenTelemetry.</description>
+			<default>false</default>
+		</parameter>
+		<parameter name="logsEndpoint" type="text" groupName="logs">
+			<label>Log Endpoint</label>
+			<description>The endpoint to send logs to.</description>
+			<default>/v1/logs</default>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>

@@ -420,7 +420,7 @@ public class McpService {
 
         LoggingTools lt = loggingTools;
         if (lt != null) {
-            lt.cancelPendingReverts();
+            lt.dispose();
             loggingTools = null;
         }
 
