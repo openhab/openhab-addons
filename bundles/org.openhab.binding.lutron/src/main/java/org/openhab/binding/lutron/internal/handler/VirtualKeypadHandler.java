@@ -101,6 +101,7 @@ public class VirtualKeypadHandler extends BaseKeypadHandler {
         super(thing);
         // Mark all channels "Advanced" since most are unlikely to be used in any particular config
         advancedChannels = true;
+        useTriggerChannels = false; // Virtual buttons are bidirectional: openHAB sends ON to trigger Lutron scenes
         commandTargetType = TargetType.VIRTUALKEYPAD; // For the LEAP bridge
     }
 }
