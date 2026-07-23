@@ -705,15 +705,4 @@
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 
-
-
-
-
-
-
-
-
-
-
-
 </thing:thing-descriptions>
