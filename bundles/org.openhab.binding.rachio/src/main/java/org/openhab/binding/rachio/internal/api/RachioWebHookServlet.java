@@ -243,7 +243,8 @@ public class RachioWebHookServlet extends HttpServlet {
             if (rachioHandlerFactory.webHookEvent(ipAddress, event)) {
                 markEventProcessed(event);
             } else {
-                logger.debug("RachioWebHook: Unable to route validated webhook event; event remains retryable ({})",
+                logger.debug(
+                        "RachioWebHook: Unable to route validated webhook event; acknowledging without processing ({})",
                         describeEvent(event));
             }
             resp.setStatus(HttpServletResponse.SC_OK);

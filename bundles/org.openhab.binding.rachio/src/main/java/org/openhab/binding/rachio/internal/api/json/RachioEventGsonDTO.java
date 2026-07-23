@@ -136,11 +136,11 @@ public class RachioEventGsonDTO {
     // ZONE_STATUS
     public @Nullable Integer zoneNumber = 0;
     public String zoneName = "";
-    public Integer zoneCurrent = 0;
+    public int zoneCurrent = 0;
     public String zoneRunState = "";
-    public Integer duration = 0;
-    public Integer durationInMinutes = 0;
-    public Integer flowVolume = 0;
+    public int duration = 0;
+    public int durationInMinutes = 0;
+    public int flowVolume = 0;
     public @Nullable RachioZoneStatus zoneRunStatus;
     public @Nullable RachioWebhookPayload payload;
 
