@@ -24,12 +24,12 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
-import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -50,6 +50,7 @@ import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -67,6 +68,7 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author Doug Culnane - Initial contribution
+ * @author Hilbrand Bouwkamp - Added SoC level channels
  */
 @NonNullByDefault
 public class RenaultHandler extends BaseThingHandler {
@@ -80,6 +82,10 @@ public class RenaultHandler extends BaseThingHandler {
     }
 
     private static final Duration CACHE_INVALIDATION_TIMEOUT_SECONDS = Duration.ofSeconds(10);
+    private static final BiFunction<Integer, Number, Integer> TAKE_CURRENT_VALUE_FUNCTION = (current,
+            commandValue) -> current;
+    private static final BiFunction<Integer, Number, Integer> TAKE_COMMAND_VALUE_FUNCTION = (current,
+            commandValue) -> commandValue.intValue();
 
     private final Logger logger = LoggerFactory.getLogger(RenaultHandler.class);
 
@@ -165,7 +171,7 @@ public class RenaultHandler extends BaseThingHandler {
                         if (command instanceof DecimalType decimalCommand) {
                             car.setHvacTargetTemperature(decimalCommand.doubleValue());
                         } else if (command instanceof QuantityType) {
-                            Optional.ofNullable(((QuantityType<Temperature>) command).toUnit(SIUnits.CELSIUS))
+                            Optional.ofNullable(((QuantityType<?>) command).toUnit(SIUnits.CELSIUS))
                                     .ifPresent(celsius -> car.setHvacTargetTemperature(celsius.doubleValue()));
                         }
                     }
@@ -218,6 +224,12 @@ public class RenaultHandler extends BaseThingHandler {
                         }
                     }
                     break;
+                case RenaultBindingConstants.CHANNEL_SOC_LEVEL_MIN:
+                    actionSocLevels(httpSession, car, command, TAKE_COMMAND_VALUE_FUNCTION,
+                            TAKE_CURRENT_VALUE_FUNCTION);
+                case RenaultBindingConstants.CHANNEL_SOC_LEVEL_MAX:
+                    actionSocLevels(httpSession, car, command, TAKE_CURRENT_VALUE_FUNCTION,
+                            TAKE_COMMAND_VALUE_FUNCTION);
             }
         }
     }
@@ -230,6 +242,26 @@ public class RenaultHandler extends BaseThingHandler {
             pollingJob = null;
         }
         super.dispose();
+    }
+
+    private void actionSocLevels(MyRenaultHttpSession httpSession, Car car, Command command,
+            BiFunction<Integer, Number, Integer> minFunction, BiFunction<Integer, Number, Integer> maxFunction) {
+        if (command instanceof Number number) {
+            if (run(() -> {
+                final Integer carSocMin = car.getSocMin();
+                final Integer carSocTarget = car.getSocTarget();
+                if (carSocMin == null || carSocTarget == null) {
+                    logger.info(
+                            "Could not set new soc level because not both min and max are known yet, and both are required to set.");
+                    return;
+                }
+                httpSession.initSesssion();
+                httpSession.actionSetSocLevels(car, minFunction.apply(carSocMin, number),
+                        maxFunction.apply(carSocTarget, number));
+            }, "Error during action set SoC levels.", false)) {
+                refresSocLevels(car);
+            }
+        }
     }
 
     private void refreshBattery(Car car) {
@@ -246,25 +278,37 @@ public class RenaultHandler extends BaseThingHandler {
         }, "HVAC.");
     }
 
+    private void refresSocLevels(Car car) {
+        runWithHttpSession(httpSession -> {
+            updateSocLevels(httpSession, car);
+            SOC_LEVEL_CHANNELS.forEach(c -> updateChannel(c, car));
+        }, "SoC Level");
+    }
+
     private Car refreshCar(Car car) {
         synchronized (lockObject) {
-            runWithHttpSession(httpSession -> {
-                httpSession.initSesssion();
-                // Only get vehicle image once. Not other data from Vehicle is used.
-                runIfNotDisabled(car.isDisableVehicle() || car.getImageURL() != null, () -> httpSession.getVehicle(car),
-                        () -> car.setDisableVehicle(true), "imageURL");
-                updateHvac(httpSession, car);
-                runIfNotDisabled(car.isDisableLocation(), () -> httpSession.getLocation(car),
-                        () -> car.setDisableLocation(true), "location");
-                runIfNotDisabled(car.isDisableCockpit(), () -> httpSession.getCockpit(car),
-                        () -> car.setDisableCockpit(true), "cockpit");
-                updateBattery(httpSession, car);
-                runIfNotDisabled(car.isDisableLockStatus(), () -> httpSession.getLockStatus(car),
-                        () -> car.setDisableLockStatus(true), "lock");
-
-                ALL_CHANNELS.forEach(c -> updateChannel(c, car));
-                updateStatus(car);
-            }, "all");
+            try {
+                runWithHttpSession(httpSession -> {
+                    httpSession.initSesssion();
+                    // Only get vehicle image once. Not other data from Vehicle is used.
+                    runIfNotDisabled(car.isDisableVehicle() || car.getImageURL() != null,
+                            () -> httpSession.getVehicle(car), () -> car.setDisableVehicle(true), "imageURL");
+                    updateHvac(httpSession, car);
+                    runIfNotDisabled(car.isDisableLocation(), () -> httpSession.getLocation(car),
+                            () -> car.setDisableLocation(true), "location");
+                    runIfNotDisabled(car.isDisableCockpit(), () -> httpSession.getCockpit(car),
+                            () -> car.setDisableCockpit(true), "cockpit");
+                    updateBattery(httpSession, car);
+                    runIfNotDisabled(car.isDisableLockStatus(), () -> httpSession.getLockStatus(car),
+                            () -> car.setDisableLockStatus(true), "lock");
+                    updateSocLevels(httpSession, car);
+                    ALL_CHANNELS.forEach(c -> updateChannel(c, car));
+                    updateStatus(car);
+                }, "all");
+            } catch (RuntimeException e) {
+                logger.warn("Runtime exception during refresh car", e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            }
             return car;
         }
     }
@@ -286,6 +330,11 @@ public class RenaultHandler extends BaseThingHandler {
     private void updateBattery(final MyRenaultHttpSession httpSession, Car car) {
         runIfNotDisabled(car.isDisableBattery(), () -> httpSession.getBatteryStatus(car),
                 () -> car.setDisableBattery(true), "battery");
+    }
+
+    private void updateSocLevels(final MyRenaultHttpSession httpSession, Car car) {
+        runIfNotDisabled(car.isDisableSocLevels(), () -> httpSession.getSocLevels(car),
+                () -> car.setDisableSocLevels(true), "soc-levels");
     }
 
     private void updateStatus(Car car) {
@@ -312,7 +361,7 @@ public class RenaultHandler extends BaseThingHandler {
             // ── Cockpit ──────────────────────────────────────────────────────────
             case CHANNEL_ODOMETER ->
                 getIfNotDisabled(car.isDisableCockpit(), () -> quantity(car.getOdometer(), KILO(METRE)));
-            // ── Lock ──────────────────────────────────────────────────────────
+            // ── Lock ─────────────────────────────────────────────────────────────
             case CHANNEL_LOCKED -> getIfNotDisabled(car.isDisableLockStatus(), () -> lock(car.getLockStatus()));
             // ── HVAC ─────────────────────────────────────────────────────────────
             case CHANNEL_HVAC_STATUS -> getIfNotDisabled(car.isDisableHvac(), () -> hvacStatus(car.getHvacstatus()));
@@ -337,6 +386,13 @@ public class RenaultHandler extends BaseThingHandler {
                 getIfNotDisabled(car.isDisableBattery(), () -> dateTime(car.getBatteryStatusUpdated()));
             case CHANNEL_CHARGING_MODE ->
                 getIfNotDisabled(car.isDisableChargeMode(), () -> stringEnum(car.getChargingMode()));
+            // ── SOC Levels ───────────────────────────────────────────────────────
+            case CHANNEL_SOC_LEVEL_UPDATED ->
+                getIfNotDisabled(car.isDisableSocLevels(), () -> dateTime(car.getSocUpdated()));
+            case CHANNEL_SOC_LEVEL_MIN ->
+                getIfNotDisabled(car.isDisableSocLevels(), () -> quantity(car.getSocMin(), Units.PERCENT));
+            case CHANNEL_SOC_LEVEL_MAX ->
+                getIfNotDisabled(car.isDisableSocLevels(), () -> quantity(car.getSocTarget(), Units.PERCENT));
             default -> null;
         };
         if (state == null) {
