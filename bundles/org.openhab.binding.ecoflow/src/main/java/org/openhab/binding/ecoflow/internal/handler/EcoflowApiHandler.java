@@ -140,6 +140,8 @@ public class EcoflowApiHandler extends BaseBridgeHandler {
                 if (mqttConnection != null) {
                     subscribeTask.cancel();
                     subscribeTask.submit();
+                } else {
+                    mqttConnectTask.submit();
                 }
             }
         }
