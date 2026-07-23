@@ -83,12 +83,12 @@ public class FroniusBatteryActions implements ThingActions {
 
     public static boolean addSchedule(ThingActions actions, LocalTime from, LocalTime until, String scheduleType,
             QuantityType<Power> power) {
-        return addSchedule(actions, from, until, ScheduleType.valueOf(scheduleType), power);
+        return addSchedule(actions, from, until, ScheduleType.parse(scheduleType), power);
     }
 
     public static boolean addSchedule(ThingActions actions, LocalTime from, LocalTime until, String scheduleType,
             QuantityType<Power> power, @Nullable String weekdays) {
-        return addSchedule(actions, from, until, ScheduleType.valueOf(scheduleType), power, weekdays);
+        return addSchedule(actions, from, until, ScheduleType.parse(scheduleType), power, weekdays);
     }
 
     public static boolean addSchedule(ThingActions actions, ZonedDateTime from, ZonedDateTime until,
@@ -103,12 +103,12 @@ public class FroniusBatteryActions implements ThingActions {
 
     public static boolean addSchedule(ThingActions actions, ZonedDateTime from, ZonedDateTime until,
             String scheduleType, QuantityType<Power> power) {
-        return addSchedule(actions, from.toLocalTime(), until.toLocalTime(), ScheduleType.valueOf(scheduleType), power);
+        return addSchedule(actions, from.toLocalTime(), until.toLocalTime(), ScheduleType.parse(scheduleType), power);
     }
 
     public static boolean addSchedule(ThingActions actions, ZonedDateTime from, ZonedDateTime until,
             String scheduleType, QuantityType<Power> power, @Nullable String weekdays) {
-        return addSchedule(actions, from.toLocalTime(), until.toLocalTime(), ScheduleType.valueOf(scheduleType), power,
+        return addSchedule(actions, from.toLocalTime(), until.toLocalTime(), ScheduleType.parse(scheduleType), power,
                 weekdays);
     }
 
@@ -310,11 +310,11 @@ public class FroniusBatteryActions implements ThingActions {
             @ActionInput(name = "scheduleType", label = "@text/actions.schedule-type.label", description = "@text/actions.schedule-type.description", required = true) String scheduleType,
             @ActionInput(name = "power", label = "@text/actions.power.label", description = "@text/actions.power.description", type = "QuantityType<Power>", required = true) QuantityType<Power> power,
             @ActionInput(name = "weekdays", label = "@text/actions.weekdays.label", description = "@text/actions.weekdays.description", type = "java.lang.String", required = false) @Nullable String weekdays) {
-        return addSchedule(from, until, ScheduleType.valueOf(scheduleType), power, weekdays);
+        return addSchedule(from, until, ScheduleType.parse(scheduleType), power, weekdays);
     }
 
     public boolean addSchedule(LocalTime from, LocalTime until, String scheduleType, QuantityType<Power> power) {
-        return addSchedule(from, until, ScheduleType.valueOf(scheduleType), power);
+        return addSchedule(from, until, ScheduleType.parse(scheduleType), power);
     }
 
     public boolean addSchedule(ZonedDateTime from, ZonedDateTime until, ScheduleType scheduleType,
@@ -329,13 +329,12 @@ public class FroniusBatteryActions implements ThingActions {
 
     public boolean addSchedule(ZonedDateTime from, ZonedDateTime until, String scheduleType,
             QuantityType<Power> power) {
-        return addSchedule(from.toLocalTime(), until.toLocalTime(), ScheduleType.valueOf(scheduleType), power);
+        return addSchedule(from.toLocalTime(), until.toLocalTime(), ScheduleType.parse(scheduleType), power);
     }
 
     public boolean addSchedule(ZonedDateTime from, ZonedDateTime until, String scheduleType, QuantityType<Power> power,
             @Nullable String weekdays) {
-        return addSchedule(from.toLocalTime(), until.toLocalTime(), ScheduleType.valueOf(scheduleType), power,
-                weekdays);
+        return addSchedule(from.toLocalTime(), until.toLocalTime(), ScheduleType.parse(scheduleType), power, weekdays);
     }
 
     @RuleAction(label = "@text/actions.hold-battery-charge.label", description = "@text/actions.hold-battery-charge.description")
