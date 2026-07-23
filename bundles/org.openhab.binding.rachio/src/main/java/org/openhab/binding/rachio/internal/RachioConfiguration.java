@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link RachioConfiguration} contains the Rachio Cloud Connector Thing configuration and default values. The field
  * names represent the configuration names, do not rename them if you don't intend to break the configuration interface.
- * 
+ *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault

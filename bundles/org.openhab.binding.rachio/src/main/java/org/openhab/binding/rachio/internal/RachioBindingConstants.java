@@ -22,7 +22,7 @@ import org.openhab.core.thing.ThingTypeUID;
 /**
  * The {@link RachioBindingConstants} class defines common constants, which are
  * used across the whole binding.
- * 
+ *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault

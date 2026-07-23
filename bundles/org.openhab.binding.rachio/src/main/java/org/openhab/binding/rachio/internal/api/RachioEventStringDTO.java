@@ -32,7 +32,7 @@ public class RachioEventStringDTO {
     private @Nullable ZoneEvent zEvent;
 
     @SuppressWarnings("unused")
-    private class GenericEvent {
+    private static class GenericEvent {
         private final String timestamp;
         private final String summary;
         private final String topic;
@@ -49,7 +49,7 @@ public class RachioEventStringDTO {
     }
 
     @SuppressWarnings("unused")
-    private class ZoneEvent {
+    private static class ZoneEvent {
         private final String timestamp;
         private final String summary;
         private final String type;

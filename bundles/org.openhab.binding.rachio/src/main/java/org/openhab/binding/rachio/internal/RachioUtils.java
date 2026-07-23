@@ -24,7 +24,7 @@ import org.openhab.core.library.types.DateTimeType;
 
 /**
  * {@link RachioUtils} provides some helper functions
- * 
+ *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault

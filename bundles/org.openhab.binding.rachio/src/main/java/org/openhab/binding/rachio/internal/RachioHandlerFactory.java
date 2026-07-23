@@ -55,7 +55,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link RachioHandlerFactory} is responsible for creating things and thing
  * handlers.
- * 
+ *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
