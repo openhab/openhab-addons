@@ -34,6 +34,7 @@ public class ShellyBluJsonDTO {
     public static final String SHELLY2_EVENT_BLUPREFIX = "oh-blu.";
     public static final String SHELLY2_EVENT_BLUSCAN = SHELLY2_EVENT_BLUPREFIX + "scan_result";
     public static final String SHELLY2_EVENT_BLUDATA = SHELLY2_EVENT_BLUPREFIX + "data";
+    public static final String SHELLY2_EVENT_BLUALARM = SHELLY2_EVENT_BLUPREFIX + "alarm";
 
     // BTHome samples
     // BLU Button 1
@@ -74,53 +75,70 @@ public class ShellyBluJsonDTO {
 
     public static class Shelly2NotifyBluEventData {
         public static class Shelly2NotifyBluEventDimmer {
-            public Integer direction;
-            public Integer steps;
+            public @Nullable Integer direction;
+            public @Nullable Integer steps;
         }
 
-        public String packet;
-        public String addr;
-        public String name;
-        public Boolean encryption;
+        public @Nullable String packet;
+        public @Nullable String addr;
+        public @Nullable String name;
+        public @Nullable Boolean encryption;
+        @SerializedName("code") // oh-blu.alarm: BTH_ENCRYPTED, BTH_UNKNOWN_TYPE
+        public @Nullable String alarmCode;
         @SerializedName("BTHome_version")
-        public Integer bthVersion;
-        public Integer pid;
+        public @Nullable Integer bthVersion;
+        public @Nullable Integer pid;
         @SerializedName("Battery")
-        public Integer battery;
+        public @Nullable Integer battery;
         @JsonAdapter(IntegerArrayAdapter.class)
         @SerializedName("Button")
-        public Integer[] buttons;
+        public @Nullable Integer[] buttons;
         @SerializedName("Illuminance")
-        public Integer illuminance;
+        public @Nullable Integer illuminance;
         @SerializedName("Window")
-        public Integer windowState;
+        public @Nullable Integer windowState;
         @SerializedName("Motion")
-        public Integer motionState;
+        public @Nullable Integer motionState;
         @JsonAdapter(DoubleArrayAdapter.class)
         @SerializedName("Temperature")
-        public Double[] temperatures;
+        public @Nullable Double[] temperatures;
         @SerializedName("Humidity")
-        public Double humidity;
+        public @Nullable Double humidity;
         @SerializedName("Vibration") // BLU Distance
-        public Integer vibration;
+        public @Nullable Integer vibration;
         @SerializedName("Distance_mm") // BLU Distance
-        public Double distance;
+        public @Nullable Double distance;
         @SerializedName("Channel") // BLU Remote
-        public Integer channel;
+        public @Nullable Integer channel;
         @JsonAdapter(DoubleArrayAdapter.class)
         @SerializedName("Rotation") // BLU Remote
-        public Double[] rotations;
+        public @Nullable Double[] rotations;
         @SerializedName("Dimmer") // BLU Remote
-        public Shelly2NotifyBluEventDimmer dimmer;
+        public @Nullable Shelly2NotifyBluEventDimmer dimmer;
+        @SerializedName("Moisture") // WS90 rain detection (BTHome 0x20)
+        public @Nullable Double rain;
+        @SerializedName("Speed") // WS90
+        public @Nullable Double[] speeds;
+        @SerializedName("UVIndex") // WS90
+        public @Nullable Double uvIndex;
+        @SerializedName("Pressure") // WS90
+        public @Nullable Double pressure;
+        @SerializedName("Dewpoint") // WS90
+        public @Nullable Double dewPoint;
+        @SerializedName("Precipitation") // WS90
+        public @Nullable Double precipitation;
+        @SerializedName("Direction") // WS90
+        public @Nullable Double direction;
+
         @SerializedName("Firmware32")
-        public Long firmware32;
+        public @Nullable Long firmware32;
         @SerializedName("LightLevel") // BLU ZB: 0=dark, 1=twilight, 2=bright
         public @Nullable Integer lightLevel;
         @SerializedName("BatteryLow") // BLU H&T Display ZB: 1=battery below 15%
         public @Nullable Integer batteryLow;
 
-        public Integer rssi;
+        public @Nullable Integer rssi;
         @SerializedName("tx_power")
-        public Integer txPower;
+        public @Nullable Integer txPower;
     }
 }

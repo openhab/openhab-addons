@@ -162,6 +162,15 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_SENSOR_STEPS = "steps"; // BLU Remote
     public static final String CHANNEL_SENSOR_DIRECTION = "direction"; // BLU Remote
     public static final String CHANNEL_SENSOR_DISTANCE = "distance"; // BLU DIstance
+    public static final String CHANNEL_SENSOR_RAINST = "rainStatus"; // BLU Weather
+    public static final String CHANNEL_SENSOR_WINDSP = "windSpeed"; // BLU Weather
+    public static final String CHANNEL_SENSOR_WINDDIR = "windDirection"; // BLU Weather
+    public static final String CHANNEL_SENSOR_GUSTSP = "gustSpeed"; // BLU Weather
+    public static final String CHANNEL_SENSOR_GUSTDIR = "gustDirection"; // BLU Weather
+    public static final String CHANNEL_SENSOR_UV = "uvIndex"; // BLU Weather
+    public static final String CHANNEL_SENSOR_PRESSURE = "pressure"; // BLU Weather
+    public static final String CHANNEL_SENSOR_DEWPOINT = "dewPoint"; // BLU Weather
+    public static final String CHANNEL_SENSOR_PRECIPITATION = "precipitation"; // BLU Weather
 
     // TRV
     public static final String CHANNEL_CONTROL_SETTEMP = "targetTemp";
@@ -277,6 +286,8 @@ public class ShellyBindingConstants {
     public static final String ALARM_TYPE_SENSOR_ERROR = "SENSOR_ERROR";
     public static final String ALARM_TYPE_LOW_BATTERY = "LOW_BATTERY";
     public static final String ALARM_TYPE_VALVE_ERROR = "VALVE_ERROR";
+    public static final String ALARM_TYPE_BTH_ENCRYPTED = "BTH_ENCRYPTED";
+    public static final String ALARM_TYPE_BTH_UNKNOWN_TYPE = "BTH_UNKNOWN_TYPE";
     public static final String EVENT_TYPE_VIBRATION = "VIBRATION";
 
     // Event types
@@ -304,6 +315,9 @@ public class ShellyBindingConstants {
     public static final int DIGITS_PERCENT = 1;
     public static final int DIGITS_ROTATION = 1;
     public static final int DIGITS_DISTANCE = 0;
+    public static final int DIGITS_WIND = 2; // BTHome 0x44 Speed has 0.01 m/s resolution
+    public static final int DIGITS_PRECIPITATION = 1;
+    public static final int DIGITS_PRESSURE = 2; // BTHome 0x04 Pressure has 0.01 hPa resolution
 
     public static final int SHELLY_API_TIMEOUT_MS = 10000;
     public static final int UPDATE_STATUS_INTERVAL_SECONDS = 3; // check for updates every x sec

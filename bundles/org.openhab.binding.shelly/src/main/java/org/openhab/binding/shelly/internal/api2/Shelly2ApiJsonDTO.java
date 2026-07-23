@@ -1258,26 +1258,26 @@ public class Shelly2ApiJsonDTO {
     }
 
     public class Shelly2NotifyEvent {
-        public Integer id;
-        public Double ts;
-        public String component;
-        public String event;
+        public @Nullable Integer id;
+        public @Nullable Double ts;
+        public @Nullable String component;
+        public @Nullable String event;
         @SerializedName("data")
-        public Shelly2NotifyBluEventData blu;
-        public String msg;
-        public Integer reason;
+        public @Nullable Shelly2NotifyBluEventData blu;
+        public @Nullable String msg;
+        public @Nullable Integer reason;
         @SerializedName("cfg_rev")
-        public Integer cfgRev;
+        public @Nullable Integer cfgRev;
     }
 
     public class Shelly2NotifyEventData {
-        public Double ts;
-        public ArrayList<Shelly2NotifyEvent> events;
+        public @Nullable Double ts;
+        public @Nullable ArrayList<Shelly2NotifyEvent> events;
     }
 
     public static class Shelly2RpcNotifyEvent {
-        public String src;
-        public Double ts;
-        public Shelly2NotifyEventData params;
+        public @Nullable String src;
+        public @Nullable Double ts;
+        public @Nullable Shelly2NotifyEventData params;
     }
 }

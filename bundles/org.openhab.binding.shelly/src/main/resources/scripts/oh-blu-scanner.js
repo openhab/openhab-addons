@@ -8,7 +8,7 @@
  * @author Igor Jasan - Sensor parameter fixing, decoding of dimmer
  */
 
-let ALLTERCO_DEVICE_NAME_PREFIX = ["SBBT", "SBDW", "SBMO", "SBHT", "SBDI", "SBRC"];
+let ALLTERCO_DEVICE_NAME_PREFIX = ["SBBT", "SBDW", "SBMO", "SBHT", "SBDI", "SBRC", "SBWS"];
 let ALLTERCO_MFD_ID_STR = "0ba9";
 let BTHOME_SVC_ID_STR = "fcd2";
 
@@ -63,7 +63,7 @@ BTH[0x1c] = { n: "Gas", t: uint8 };                                           //
 BTH[0x1d] = { n: "Heat", t: uint8 };                                          // Heat normal/hot status (boolean)
 BTH[0x1e] = { n: "Light", t: uint8 };                                         // Light no light/light detected status (boolean)
 BTH[0x1f] = { n: "Lock", t: uint8 };                                          // Lock locked/unlocked status (boolean)
-BTH[0x20] = { n: "Moisture", t: uint8 };                                      // Moisture dry/wet status (boolean)
+BTH[0x20] = { n: "Moisture", t: uint8 };                                      // Moisture/Rain detection boolean
 BTH[0x21] = { n: "Motion", t: uint8 };                                        // Motion clear/detected status (boolean)
 BTH[0x22] = { n: "Moving", t: uint8 };                                        // Moving not moving/moving status (boolean)
 BTH[0x23] = { n: "Occupancy", t: uint8 };                                     // Occupancy clear/detected status (boolean)
@@ -183,8 +183,12 @@ let BTHomeDecoder = {
     let _dib = buffer.at(0); // Device Info Byte
     result["encryption"] = _dib & 0x1 ? true : false;
     result["BTHome_version"] = _dib >> 5;
-    if (result["encryption"]) return result; // Can not handle encrypted data
-    if (result["BTHome_version"] !== 2) return null; // Can not handle BT version != 2    
+    if (result["encryption"]) {
+      console.log("BTH: encrypted payload, cannot decode");
+      result["alarmCode"] = "BTH_ENCRYPTED";
+      return result; // Can not handle encrypted data
+    }
+    if (result["BTHome_version"] !== 2) return null; // Can not handle BT version != 2
     
     buffer = buffer.slice(1); // Remove header byte
 
@@ -197,6 +201,7 @@ let BTHomeDecoder = {
       let _bth = BTH[bthIdx];
       if (typeof _bth === "undefined") {
         console.log("BTH: unknown type", bthIdx);
+        result["alarmCode"] = "BTH_UNKNOWN_TYPE";
         break;
       }
 
@@ -300,7 +305,12 @@ function scanCB(ev, res) {
     console.log("Failed to parse BTH data");
     return;
   }
- 
+
+  if (BTHparsed.alarmCode) {
+    console.log("BLU alarm:", BTHparsed.alarmCode, "addr=", res.addr);
+    Shelly.emitEvent("oh-blu.alarm", {"addr":res.addr, "code":BTHparsed.alarmCode});
+  }
+
   // skip, we are deduping results
   if (typeof LAST_PID[res.addr] === 'undefined' || BTHparsed.pid !== LAST_PID[res.addr]) {
     console.log('Parsed BTH data from device ', res.local_name, ': ', JSON.stringify(BTHparsed));

@@ -147,22 +147,23 @@ See section [Discovery](#discovery) for details.
 
 ### Shelly BLU
 
-| thing-type           | Model                                 | Vendor ID   |
-| -------------------- | ------------------------------------- | ----------- |
-| shellyblubutton      | Shelly BLU Button 1, Shelly BLU Tough | SBBT-002C   |
-| shellyblubutton      | Shelly BLU Tough ZB                   | SBBT-102C   |
-| shellybluwallswitch4 | Shelly BLU Wallswitch 4               | SBBT-EU5027 |
-| shellyblurcbutton4   | Shelly BLU RC Button 4                | SBBT-004CUS |
-| shellyblurcbutton4   | Shelly BLU RC Button 4 ZB             | SBBT-104CUS |
-| shellybluht          | Shelly BLU H&T                        | SBHT-003C   |
-| shellybluht          | Shelly BLU H&T ZB                     | SBHT-203C   |
-| shellybluht          | Shelly BLU H&T Display ZB             | SBHT-103C   |
-| shellybludw          | Shelly BLU Door/Windows               | SBDW-002C   |
-| shellybludw          | Shelly BLU Door/Window ZB             | SBDW-103C   |
-| shellyblumotion      | Shelly BLU Motion                     | SBMO-003Z   |
-| shellyblumotion      | Shelly BLU Motion ZB                  | SBMO-103Z   |
-| shellybludistance    | Shelly BLU Distance                   | SBDI-003E   |
-| shellybluremote      | Shelly BLU Remote Control             | SBRC-005B   |
+| thing-type           | Model                                                  | Vendor ID               |
+| -------------------- | ------------------------------------------------------ | ----------------------- |
+| shellyblubutton      | Shelly BLU Button 1, Shelly BLU Tough                  | SBBT-002C               |
+| shellyblubutton      | Shelly BLU Tough ZB                                    | SBBT-102C               |
+| shellybluwallswitch4 | Shelly BLU Wallswitch 4                                | SBBT-EU5027             |
+| shellyblurcbutton4   | Shelly BLU RC Button 4                                 | SBBT-004CUS             |
+| shellyblurcbutton4   | Shelly BLU RC Button 4 ZB                              | SBBT-104CUS             |
+| shellybluht          | Shelly BLU H&T                                         | SBHT-003C               |
+| shellybluht          | Shelly BLU H&T ZB                                      | SBHT-203C               |
+| shellybluht          | Shelly BLU H&T Display ZB                              | SBHT-103C               |
+| shellybludw          | Shelly BLU Door/Windows                                | SBDW-002C               |
+| shellybludw          | Shelly BLU Door/Window ZB                              | SBDW-103C               |
+| shellyblumotion      | Shelly BLU Motion                                      | SBMO-003Z               |
+| shellyblumotion      | Shelly BLU Motion ZB                                   | SBMO-103Z               |
+| shellybludistance    | Shelly BLU Distance                                    | SBDI-003E               |
+| shellybluremote      | Shelly BLU Remote Control                              | SBRC-005B               |
+| shellybluws90        | Ecowitt WS90 Weather Station (Shelly BLU)              | SBWS-90CM               |
 
 ### Special Thing Types
 
@@ -251,6 +252,8 @@ Follow these steps to add the Shelly BLU Device to openHAB:
 
 - During initialization the script 'oh-blu-scanner.js' gets installed and activated on the Shelly Gateway device.
 - Shelly BLU Motion: It may take some time until channels like Lux show up.
+- Ecowitt WS90: The WS90 is solar-powered and broadcasts continuously — no button press is required to add it to the Inbox.
+  It will appear automatically once it is within range of a configured BLU gateway.
 
 Try moving the device to force status updates.
 
@@ -2135,6 +2138,34 @@ See notes on discovery of Shelly BLU devices above.
 | battery | batteryLevel  | Number   | yes       | Battery Level in %                                                                  |
 |         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                                                           |
 | device  | gatewayDevice | String   | yes       | Shelly forwarded last status update (BLU gateway), could vary from packet to packet |
+
+### Ecowitt WS90 Weather Station (Shelly BLU) (thing-type: shellybluws90)
+
+See notes on discovery of Shelly BLU devices above.
+
+| Group   | Channel       | Type                 | read-only | Description                                                                         |
+| ------- | ------------- | -------------------- | --------- | ----------------------------------------------------------------------------------- |
+| sensors | temperature   | Number:Temperature   | yes       | Temperature in degrees Celsius                                                      |
+|         | humidity      | Number:Dimensionless | yes       | Relative humidity in %                                                              |
+|         | uvIndex       | Number               | yes       | UV Index (dimensionless, 0-11+)                                                     |
+|         | lux           | Number               | yes       | Brightness in Lux (created once the device reports a value)                         |
+|         | windSpeed     | Number:Speed         | yes       | Wind speed in m/s                                                                   |
+|         | windDirection | Number:Angle         | yes       | Wind direction in degrees (0-360)                                                   |
+|         | gustSpeed     | Number:Speed         | yes       | Wind gust speed in m/s                                                              |
+|         | gustDirection | Number:Angle         | yes       | Wind gust direction in degrees (0-360)                                              |
+|         | pressure      | Number:Pressure      | yes       | Atmospheric pressure in hPa                                                         |
+|         | dewPoint      | Number:Temperature   | yes       | Dew point in degrees Celsius                                                        |
+|         | rainStatus    | Switch               | yes       | ON: It's raining, OFF: It's not raining                                             |
+|         | precipitation | Number:Length        | yes       | Accumulated rainfall in mm (monotonic total since sensor reset)                     |
+|         | lastUpdate    | DateTime             | yes       | Timestamp of the last update (any sensor value changed)                             |
+| battery | batteryLevel  | Number               | yes       | Battery Level in %                                                                  |
+|         | lowBattery    | Switch               | yes       | Low battery alert (< 20%)                                                           |
+| device  | gatewayDevice | String               | yes       | Shelly forwarded last status update (BLU gateway), could vary from packet to packet |
+|         | firmware      | String               | yes       | Firmware version (may be empty — not all firmware versions report it)               |
+
+The `rainStatus` channel latches ON for a while after it has actually stopped raining, a hardware behavior of the WS90's piezo rain sensor rather than a binding issue.
+
+The WS90 hardware reports a single wind direction value per packet, so `gustDirection` always mirrors `windDirection`.
 
 ## Shelly Wall Displays
 
