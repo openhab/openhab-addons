@@ -47,17 +47,17 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * {@link RachioWebHookServlet} implements the callback for the Rachio Cloud event API.
+ * {@link RachioWebhookServlet} implements the callback for the Rachio Cloud event API.
  *
  * @author Markus Michels - Initial contribution
  */
 @Component(service = {}, configurationPolicy = ConfigurationPolicy.OPTIONAL, immediate = true)
 @NonNullByDefault
-public class RachioWebHookServlet extends HttpServlet {
+public class RachioWebhookServlet extends HttpServlet {
     private static final long serialVersionUID = -4654253998990066051L;
     private static final String WEBHOOK_SIGNATURE_HEADER = "x-signature";
     private static final int MAX_WEBHOOK_PAYLOAD_BYTES = 256 * 1024;
-    private final Logger logger = LoggerFactory.getLogger(RachioWebHookServlet.class);
+    private final Logger logger = LoggerFactory.getLogger(RachioWebhookServlet.class);
     private final Gson gson = new Gson();
     private final RachioWebhookDuplicateEventCache duplicateEventCache = new RachioWebhookDuplicateEventCache();
 
@@ -70,7 +70,7 @@ public class RachioWebHookServlet extends HttpServlet {
      * OSGi activation callback.
      */
     @Activate
-    public RachioWebHookServlet(@Reference RachioHandlerFactory rachioHandlerFactory) {
+    public RachioWebhookServlet(@Reference RachioHandlerFactory rachioHandlerFactory) {
         this.rachioHandlerFactory = rachioHandlerFactory;
     }
 
@@ -83,7 +83,7 @@ public class RachioWebHookServlet extends HttpServlet {
     protected void bindHttpService(HttpService httpService) {
         synchronized (registrationLock) {
             if (Objects.equals(this.httpService, httpService) && servletRegistered) {
-                logger.debug("RachioWebHook: Webhook servlet already registered at {}, skipping duplicate bind",
+                logger.debug("RachioWebhook: Webhook servlet already registered at {}, skipping duplicate bind",
                         SERVLET_WEBHOOK_PATH);
                 return;
             }
@@ -99,7 +99,7 @@ public class RachioWebHookServlet extends HttpServlet {
     protected void unbindHttpService(HttpService httpService) {
         synchronized (registrationLock) {
             if (!Objects.equals(this.httpService, httpService)) {
-                logger.debug("RachioWebHook: Ignoring HttpService unbind for non-current service");
+                logger.debug("RachioWebhook: Ignoring HttpService unbind for non-current service");
                 return;
             }
 
@@ -121,12 +121,12 @@ public class RachioWebHookServlet extends HttpServlet {
 
     private void registerServletLocked(HttpService httpService) {
         try {
-            logger.debug("RachioWebHook: Registering webhook servlet alias {}", SERVLET_WEBHOOK_PATH);
+            logger.debug("RachioWebhook: Registering webhook servlet alias {}", SERVLET_WEBHOOK_PATH);
             httpService.registerServlet(SERVLET_WEBHOOK_PATH, this, null, httpService.createDefaultHttpContext());
             servletRegistered = true;
         } catch (ServletException | NamespaceException e) {
             servletRegistered = false;
-            logger.warn("RachioWebHook: Could not register webhook servlet alias {}: {}", SERVLET_WEBHOOK_PATH,
+            logger.warn("RachioWebhook: Could not register webhook servlet alias {}: {}", SERVLET_WEBHOOK_PATH,
                     e.getMessage());
         }
     }
@@ -138,10 +138,10 @@ public class RachioWebHookServlet extends HttpServlet {
         }
 
         try {
-            logger.debug("RachioWebHook: Unregistering webhook servlet alias {}", SERVLET_WEBHOOK_PATH);
+            logger.debug("RachioWebhook: Unregistering webhook servlet alias {}", SERVLET_WEBHOOK_PATH);
             currentHttpService.unregister(SERVLET_WEBHOOK_PATH);
         } catch (IllegalArgumentException e) {
-            logger.debug("RachioWebHook: Webhook servlet alias {} was already unregistered", SERVLET_WEBHOOK_PATH);
+            logger.debug("RachioWebhook: Webhook servlet alias {} was already unregistered", SERVLET_WEBHOOK_PATH);
         } finally {
             servletRegistered = false;
         }
@@ -162,7 +162,7 @@ public class RachioWebHookServlet extends HttpServlet {
                 request.getRemoteHost(), request.getServerPort(), request.getProtocol());
 
         if (!SERVLET_WEBHOOK_PATH.equalsIgnoreCase(path)) {
-            logger.debug("RachioWebHook: Invalid request received - path = {}", path);
+            logger.debug("RachioWebhook: Invalid request received - path = {}", path);
             resp.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
@@ -173,7 +173,7 @@ public class RachioWebHookServlet extends HttpServlet {
         }
 
         if (!"POST".equalsIgnoreCase(request.getMethod())) {
-            logger.debug("RachioWebHook: Invalid request received - method = {}", request.getMethod());
+            logger.debug("RachioWebhook: Invalid request received - method = {}", request.getMethod());
             resp.setHeader("Allow", "POST, OPTIONS");
             resp.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
             return;
@@ -181,7 +181,7 @@ public class RachioWebHookServlet extends HttpServlet {
 
         byte[] rawBody = request.getInputStream().readNBytes(MAX_WEBHOOK_PAYLOAD_BYTES + 1);
         if (rawBody.length > MAX_WEBHOOK_PAYLOAD_BYTES) {
-            logger.warn("RachioWebHook: Rejecting webhook request from {} because payload size exceeds limit {} bytes",
+            logger.warn("RachioWebhook: Rejecting webhook request from {} because payload size exceeds limit {} bytes",
                     ipAddress, MAX_WEBHOOK_PAYLOAD_BYTES);
             resp.sendError(HttpServletResponse.SC_REQUEST_ENTITY_TOO_LARGE);
             return;
@@ -189,16 +189,16 @@ public class RachioWebHookServlet extends HttpServlet {
         String data = new String(rawBody, StandardCharsets.UTF_8);
         RachioEventGsonDTO event = null;
         try {
-            logger.trace("RachioWebHook: Received {} byte webhook payload", rawBody.length);
+            logger.trace("RachioWebhook: Received {} byte webhook payload", rawBody.length);
             event = parseEvent(data);
             String signature = request.getHeader(WEBHOOK_SIGNATURE_HEADER);
             boolean modernWebhookShape = signature != null || event.hasStrongModernWebhookMarkers();
             if (!modernWebhookShape && event.isLegacyNotificationEvent()) {
                 event.normalizeLegacyNotificationEvent();
-                logger.trace("RachioWebHook: Processing legacy NotificationService event ({})", describeEvent(event));
+                logger.trace("RachioWebhook: Processing legacy NotificationService event ({})", describeEvent(event));
                 if (isBlank(event.subType)) {
                     logger.debug(
-                            "RachioWebHook: Legacy NotificationService event has no subtype; processing recognized type '{}'",
+                            "RachioWebhook: Legacy NotificationService event has no subtype; processing recognized type '{}'",
                             event.type);
                 }
                 if (!rachioHandlerFactory.legacyWebHookEvent(ipAddress, event)) {
@@ -211,16 +211,16 @@ public class RachioWebHookServlet extends HttpServlet {
             }
 
             if (signature == null || signature.isBlank()) {
-                logger.warn("RachioWebHook: Payload classification summary: {}", describeLegacyClassification(event));
+                logger.warn("RachioWebhook: Payload classification summary: {}", describeLegacyClassification(event));
                 logger.warn(
-                        "RachioWebHook: Rejecting webhook request from {} because the x-signature header is missing",
+                        "RachioWebhook: Rejecting webhook request from {} because the x-signature header is missing",
                         ipAddress);
                 resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
                 return;
             }
 
             if (!rachioHandlerFactory.isValidWebHookSignature(signature, rawBody, event)) {
-                logger.warn("RachioWebHook: Rejecting webhook request from {} because signature validation failed",
+                logger.warn("RachioWebhook: Rejecting webhook request from {} because signature validation failed",
                         ipAddress);
                 resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
                 return;
@@ -239,28 +239,28 @@ public class RachioWebHookServlet extends HttpServlet {
                 return;
             }
 
-            logger.trace("RachioWebHook: Processing validated webhook event ({})", describeEvent(event));
+            logger.trace("RachioWebhook: Processing validated webhook event ({})", describeEvent(event));
             if (rachioHandlerFactory.webHookEvent(ipAddress, event)) {
                 markEventProcessed(event);
             } else {
                 logger.debug(
-                        "RachioWebHook: Unable to route validated webhook event; acknowledging without processing ({})",
+                        "RachioWebhook: Unable to route validated webhook event; acknowledging without processing ({})",
                         describeEvent(event));
             }
             resp.setStatus(HttpServletResponse.SC_OK);
             resp.getWriter().write("");
         } catch (JsonSyntaxException e) {
-            logger.warn("RachioWebHook: Rejecting webhook request from {} because JSON parsing failed: {}", ipAddress,
+            logger.warn("RachioWebhook: Rejecting webhook request from {} because JSON parsing failed: {}", ipAddress,
                     e.getMessage());
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
         } catch (RuntimeException e) {
             RachioEventGsonDTO failedEvent = event;
             if (failedEvent != null) {
                 logger.debug(
-                        "RachioWebHook: Exception processing validated webhook event; event remains retryable ({}): {}",
+                        "RachioWebhook: Exception processing validated webhook event; event remains retryable ({}): {}",
                         describeEvent(failedEvent), e.getMessage(), e);
             } else {
-                logger.debug("RachioWebHook: Exception processing validated webhook callback: {}", e.getMessage(), e);
+                logger.debug("RachioWebhook: Exception processing validated webhook callback: {}", e.getMessage(), e);
             }
             resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
@@ -282,7 +282,7 @@ public class RachioWebHookServlet extends HttpServlet {
             if (legacyData == null) {
                 throw e;
             }
-            logger.debug("RachioWebHook: Attempting legacy malformed webhook parser after direct JSON parsing failed");
+            logger.debug("RachioWebhook: Attempting legacy malformed webhook parser after direct JSON parsing failed");
             return parseEventDirectly(legacyData);
         }
     }
@@ -370,12 +370,12 @@ public class RachioWebHookServlet extends HttpServlet {
 
     private boolean isDuplicateEvent(RachioEventGsonDTO event) {
         if (isBlank(event.eventId)) {
-            logger.trace("RachioWebHook: Validated webhook event has no eventId; duplicate detection skipped ({})",
+            logger.trace("RachioWebhook: Validated webhook event has no eventId; duplicate detection skipped ({})",
                     describeEvent(event));
             return false;
         }
         if (duplicateEventCache.isProcessed(event.eventId)) {
-            logger.debug("RachioWebHook: Skipping duplicate processed webhook event ({})", describeEvent(event));
+            logger.debug("RachioWebhook: Skipping duplicate processed webhook event ({})", describeEvent(event));
             return true;
         }
         return false;
@@ -383,12 +383,12 @@ public class RachioWebHookServlet extends HttpServlet {
 
     private void markEventProcessed(RachioEventGsonDTO event) {
         if (isBlank(event.eventId)) {
-            logger.trace("RachioWebHook: Processed webhook event has no eventId; duplicate cache not updated ({})",
+            logger.trace("RachioWebhook: Processed webhook event has no eventId; duplicate cache not updated ({})",
                     describeEvent(event));
             return;
         }
         duplicateEventCache.markProcessed(event.eventId);
-        logger.trace("RachioWebHook: Marked webhook event as processed ({})", describeEvent(event));
+        logger.trace("RachioWebhook: Marked webhook event as processed ({})", describeEvent(event));
     }
 
     static String describeEvent(RachioEventGsonDTO event) {

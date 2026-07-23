@@ -244,9 +244,7 @@
 	<channel-type id="zone-moisture-level">
 		<item-type unitHint="mm">Number:Length</item-type>
 		<label>Moisture Level</label>
-		<description>Command-only soil moisture adjustment input for zone/setMoistureLevel, in millimeters. Rachio does
-			not
-			return this value as readable zone state, so it may be UNDEF until a command is sent.</description>
+		<description>Command-only zone/setMoistureLevel input in mm; Rachio does not return it as readable state.</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>Water</tag>
@@ -255,9 +253,7 @@
 	<channel-type id="zone-moisture-percent">
 		<item-type unitHint="one">Number:Dimensionless</item-type>
 		<label>Moisture Percent</label>
-		<description>Command-only soil moisture adjustment input for zone/setMoisturePercent. Valid range is 0 to 1.
-			Rachio
-			does not return this value as readable zone state, so it may be UNDEF until a command is sent.</description>
+		<description>Command-only zone/setMoisturePercent input (0-1); Rachio does not return it as readable state.</description>
 		<tags>
 			<tag>Control</tag>
 		</tags>

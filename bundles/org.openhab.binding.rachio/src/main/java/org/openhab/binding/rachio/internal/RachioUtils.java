@@ -97,7 +97,7 @@ public class RachioUtils {
         return URLEncoder.encode(input, StandardCharsets.UTF_8);
     }
 
-    public static Long now() {
+    public static long now() {
         return System.currentTimeMillis() / 1000L;
     }
 
