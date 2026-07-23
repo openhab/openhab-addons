@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.fronius.internal;
 
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
@@ -68,6 +70,9 @@ public class FroniusBindingConstants {
     public static final String POWER_FLOW_INVERTER_POWER = "powerflowinverterpower";
     public static final String POWER_FLOW_INVERTER_SOC = "powerflowinvertersoc";
 
+    public static final String POWER_FLOW_BACKUP_MODE = "powerflowbackupmode";
+    public static final String POWER_FLOW_BATTERY_STANDBY = "powerflowbatterystandby";
+
     // For backwards compatibility
     public static final String POWER_FLOW_INVERTER_1_POWER = "powerflowinverter1power";
     public static final String POWER_FLOW_INVERTER_1_SOC = "powerflowinverter1soc";
@@ -108,6 +113,18 @@ public class FroniusBindingConstants {
     public static final String BATTERY_ENABLE = "enable";
     public static final String BATTERY_TEMPERATURE_CELL = "temperature";
     public static final String BATTERY_TIMESTAMP = "timestamp";
+
+    // Battery settings channels, provided through the inverter's config API
+    public static final String BATTERY_SOC_MIN_CHANNEL = "socMin";
+    public static final String BATTERY_SOC_MAX_CHANNEL = "socMax";
+    public static final String BATTERY_BACKUP_RESERVED_CHANNEL = "backupReservedCapacity";
+    public static final String BATTERY_BACKUP_CRITICAL_SOC_CHANNEL = "backupCriticalSoc";
+    public static final String BATTERY_CHARGE_FROM_GRID_CHANNEL = "chargeFromGrid";
+    public static final String BATTERY_CALIBRATION_CHANNEL = "calibration";
+    public static final String BATTERY_NIGHT_PRESERVATION_LIMIT_CHANNEL = "nightPreservationLimit";
+    public static final Set<String> BATTERY_SETTINGS_CHANNELS = Set.of(BATTERY_SOC_MIN_CHANNEL, BATTERY_SOC_MAX_CHANNEL,
+            BATTERY_BACKUP_RESERVED_CHANNEL, BATTERY_BACKUP_CRITICAL_SOC_CHANNEL, BATTERY_CHARGE_FROM_GRID_CHANNEL,
+            BATTERY_CALIBRATION_CHANNEL, BATTERY_NIGHT_PRESERVATION_LIMIT_CHANNEL);
 
     // List of all Urls
     public static final String INVERTER_REALTIME_DATA_URL = "%SCHEME%://%IP%/solar_api/v1/GetInverterRealtimeData.cgi?Scope=Device&DeviceId=%DEVICEID%&DataCollection=CommonInverterData";
