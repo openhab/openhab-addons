@@ -244,7 +244,7 @@ public class RachioBindingConstants {
 
     // Default for config options / thing settings
     public static final int DEFAULT_POLLING_INTERVAL_SEC = 120;
-    public static final int DEFAULT_ZONE_RUNTIME_SEC = 300;
+    public static final int DEFAULT_ZONE_RUNTIME_SEC = 120;
     public static final int DEFAULT_EVENT_HISTORY_LOOKBACK_HOURS = 24;
     public static final int MAX_EVENT_HISTORY_LOOKBACK_HOURS = 168;
     public static final int DEFAULT_HOSE_SUMMARY_LOOKBACK_DAYS = 2;

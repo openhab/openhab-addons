@@ -152,7 +152,7 @@ public class RachioEventGsonDTO {
     public String deviceName = ""; // "deviceName" : "My
                                    // Rachio",
     public @Nullable RachioCloudNetworkSettings network; // "network" : {}
-    String pin = "";
+    public String pin = "";
 
     public RachioApiResult apiResult = new RachioApiResult();
 
