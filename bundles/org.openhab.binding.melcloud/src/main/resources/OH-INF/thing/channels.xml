@@ -321,4 +321,164 @@
 		</state>
 	</channel-type>
 
+	<!-- MELCloud Home ATA/ATW unit channels (ADR-003) -->
+	<channel-type id="ataOperationModeString-channel">
+		<item-type>String</item-type>
+		<label>Operation Mode</label>
+		<description>Operation mode</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="Heat">Heat</option>
+				<option value="Cool">Cool</option>
+				<option value="Automatic">Automatic</option>
+				<option value="Dry">Dry</option>
+				<option value="Fan">Fan</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="zoneOperationMode-channel">
+		<item-type>String</item-type>
+		<label>Zone Operation Mode</label>
+		<description>Configured heating/cooling strategy for a zone</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="HeatRoomTemperature">Heat Room Temperature</option>
+				<option value="HeatFlowTemperature">Heat Flow Temperature</option>
+				<option value="HeatCurve">Heat Curve</option>
+				<option value="CoolRoomTemperature">Cool Room Temperature</option>
+				<option value="CoolFlowTemperature">Cool Flow Temperature</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="operationStatus-channel">
+		<item-type>String</item-type>
+		<label>Operation Status</label>
+		<description>What the unit is doing right now (e.g. Stop, HotWater, a zone mode)</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="outdoorTemperature-channel">
+		<item-type>Number:Temperature</item-type>
+		<label>Outdoor Temperature</label>
+		<description>Outdoor temperature reported by the unit</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="energyConsumed-channel">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Consumed</label>
+		<description>Cumulative energy consumed</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="energyProduced-channel">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Produced</label>
+		<description>Cumulative energy produced</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="cop-channel">
+		<item-type>Number</item-type>
+		<label>Coefficient Of Performance</label>
+		<description>Ratio of energy produced to energy consumed over the polling window</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f"/>
+	</channel-type>
+
+	<channel-type id="rssi-channel">
+		<item-type>Number</item-type>
+		<label>Wi-Fi Signal Strength</label>
+		<description>Wi-Fi signal strength reported by the unit</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>RSSI</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="isInError-channel">
+		<item-type>Switch</item-type>
+		<label>Is In Error</label>
+		<description>Whether the unit is currently reporting an error</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="errorCode-channel">
+		<item-type>String</item-type>
+		<label>Error Code</label>
+		<description>The unit's current error code, if any</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="inStandbyMode-channel">
+		<item-type>Switch</item-type>
+		<label>In Standby Mode</label>
+		<description>Whether the unit is currently in standby mode</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="holidayMode-channel">
+		<item-type>Switch</item-type>
+		<label>Holiday Mode</label>
+		<description>Whether holiday mode is currently enabled</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="frostProtection-channel">
+		<item-type>Switch</item-type>
+		<label>Frost Protection</label>
+		<description>Whether frost protection is currently enabled</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
 </thing:thing-descriptions>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="melcloud"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="melcloudhomeataunit">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="melcloudhomeaccount"/>
+		</supported-bridge-type-refs>
+		<label>MELCloud Home Air-to-Air Unit (Experimental)</label>
+		<description>An Air-to-Air (A.C.) unit on the MELCloud Home cloud platform. See ADR-003.</description>
+		<semantic-equipment-tag>AirConditioner</semantic-equipment-tag>
+		<channels>
+			<channel id="power" typeId="power-channel"/>
+			<channel id="operationModeString" typeId="ataOperationModeString-channel"/>
+			<channel id="setTemperature" typeId="setTemperature-channel"/>
+			<channel id="roomTemperature" typeId="roomTemperature-channel"/>
+			<channel id="fanSpeed" typeId="fanSpeed-channel"/>
+			<channel id="vaneHorizontal" typeId="vaneHorizontal-channel"/>
+			<channel id="vaneVertical" typeId="vaneVertical-channel"/>
+			<channel id="outdoorTemperature" typeId="outdoorTemperature-channel"/>
+			<channel id="energyConsumed" typeId="energyConsumed-channel"/>
+			<channel id="rssi" typeId="rssi-channel"/>
+			<channel id="isInError" typeId="isInError-channel"/>
+			<channel id="errorCode" typeId="errorCode-channel"/>
+			<channel id="inStandbyMode" typeId="inStandbyMode-channel"/>
+		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
+		<representation-property>unitId</representation-property>
+
+		<config-description>
+			<parameter name="unitId" type="text" required="true">
+				<label>Unit ID</label>
+				<description>The unit's identifier, as returned by the MELCloud Home API.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>

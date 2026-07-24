@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="melcloud"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="melcloudhomeaccount">
+		<label>MELCloud Home Account (Experimental)</label>
+		<description>Account bridge for the newer MELCloud Home cloud platform (auth.melcloudhome.com). See ADR-002:
+			logs in
+			with your MELCloud Home email and password, running the full OAuth 2.0 Authorization Code + PKCE
+			flow (including the
+			AWS Cognito-federated credential submission) entirely in the background, and keeps
+			the resulting access token
+			refreshed for use by ATA/ATW unit Things (see ADR-003).</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
+
+		<config-description>
+			<parameter name="username" type="text" required="true">
+				<label>Email</label>
+				<description>The email address used to sign in to the MELCloud Home app.</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<context>password</context>
+				<label>Password</label>
+				<description>The password used to sign in to the MELCloud Home app.</description>
+			</parameter>
+		</config-description>
+	</bridge-type>
+</thing:thing-descriptions>

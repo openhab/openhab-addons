@@ -27,6 +27,8 @@ import org.openhab.core.thing.ThingTypeUID;
  * @author Luca Calcaterra - Initial contribution
  * @author Wietse van Buitenen - Added heatpump device
  * @author Alessio Galliazzo - Added heatpump functionalities for flow temperature and temperature control
+ * @author Bernd Weymann - Added MELCloud Home bridge skeleton
+ * @author Bernd Weymann - Added MELCloud Home ATA/ATW unit Things (ADR-003)
  */
 @NonNullByDefault
 public class MelCloudBindingConstants {
@@ -36,6 +38,14 @@ public class MelCloudBindingConstants {
     // List of Bridge Type UIDs
     public static final ThingTypeUID THING_TYPE_MELCLOUD_ACCOUNT = new ThingTypeUID(BINDING_ID, "melcloudaccount");
     public static final ThingTypeUID THING_TYPE_HEATPUMPDEVICE = new ThingTypeUID(BINDING_ID, "heatpumpdevice");
+    // Skeleton bridge for the newer MELCloud Home platform (auth.melcloudhome.com); see ADR-001/ADR-002.
+    public static final ThingTypeUID THING_TYPE_MELCLOUD_HOME_ACCOUNT = new ThingTypeUID(BINDING_ID,
+            "melcloudhomeaccount");
+    // MELCloud Home unit Things; see ADR-003.
+    public static final ThingTypeUID THING_TYPE_MELCLOUD_HOME_ATA_UNIT = new ThingTypeUID(BINDING_ID,
+            "melcloudhomeataunit");
+    public static final ThingTypeUID THING_TYPE_MELCLOUD_HOME_ATW_UNIT = new ThingTypeUID(BINDING_ID,
+            "melcloudhomeatwunit");
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_ACDEVICE = new ThingTypeUID(BINDING_ID, "acdevice");
@@ -68,10 +78,31 @@ public class MelCloudBindingConstants {
     public static final String CHANNEL_HAS_PENDING_COMMAND = "hasPendingCommand";
     public static final String CHANNEL_OFFLINE = "offline";
 
+    // MELCloud Home ATA/ATW unit channels (ADR-003); several channels above (power, setTemperature,
+    // roomTemperature, fanSpeed, vaneHorizontal, vaneVertical, setTemperatureZone1/2, roomTemperatureZone1/2,
+    // forcedHotWaterMode, tankWaterTemperature, tankTargetWaterTemperature) are reused as-is.
+    public static final String CHANNEL_OUTDOOR_TEMPERATURE = "outdoorTemperature";
+    public static final String CHANNEL_ENERGY_CONSUMED = "energyConsumed";
+    public static final String CHANNEL_ENERGY_PRODUCED = "energyProduced";
+    public static final String CHANNEL_COP = "cop";
+    public static final String CHANNEL_RSSI = "rssi";
+    public static final String CHANNEL_IS_IN_ERROR = "isInError";
+    public static final String CHANNEL_ERROR_CODE = "errorCode";
+    public static final String CHANNEL_IN_STANDBY_MODE = "inStandbyMode";
+    public static final String CHANNEL_OPERATION_STATUS = "operationStatus";
+    public static final String CHANNEL_ZONE1_OPERATION_MODE = "zone1OperationMode";
+    public static final String CHANNEL_ZONE2_OPERATION_MODE = "zone2OperationMode";
+    public static final String CHANNEL_HOLIDAY_MODE = "holidayMode";
+    public static final String CHANNEL_FROST_PROTECTION = "frostProtection";
+
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Collections
-            .unmodifiableSet(Stream.of(THING_TYPE_MELCLOUD_ACCOUNT, THING_TYPE_ACDEVICE, THING_TYPE_HEATPUMPDEVICE)
-                    .collect(Collectors.toSet()));
+            .unmodifiableSet(Stream.of(THING_TYPE_MELCLOUD_ACCOUNT, THING_TYPE_ACDEVICE, THING_TYPE_HEATPUMPDEVICE,
+                    THING_TYPE_MELCLOUD_HOME_ACCOUNT, THING_TYPE_MELCLOUD_HOME_ATA_UNIT,
+                    THING_TYPE_MELCLOUD_HOME_ATW_UNIT).collect(Collectors.toSet()));
 
     public static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPE_UIDS = Collections
             .unmodifiableSet(Stream.of(THING_TYPE_ACDEVICE, THING_TYPE_HEATPUMPDEVICE).collect(Collectors.toSet()));
+
+    public static final Set<ThingTypeUID> HOME_DISCOVERABLE_THING_TYPE_UIDS = Collections.unmodifiableSet(Stream
+            .of(THING_TYPE_MELCLOUD_HOME_ATA_UNIT, THING_TYPE_MELCLOUD_HOME_ATW_UNIT).collect(Collectors.toSet()));
 }
