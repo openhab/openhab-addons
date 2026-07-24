@@ -99,8 +99,8 @@ public interface ThingHandlerHelper {
         updateIfActive(group, channelId, new DateTimeType(timestamp));
     }
 
-    public default void updateChannelDateTime(String group, String channelId, ZonedDateTime timestamp) {
-        updateIfActive(group, channelId, new DateTimeType(timestamp));
+    public default void updateChannelDateTime(String group, String channelId, @Nullable ZonedDateTime timestamp) {
+        updateIfActive(group, channelId, timestamp == null ? UnDefType.NULL : new DateTimeType(timestamp));
     }
 
     public default void updateChannelString(String group, String channelId, @Nullable String value) {
