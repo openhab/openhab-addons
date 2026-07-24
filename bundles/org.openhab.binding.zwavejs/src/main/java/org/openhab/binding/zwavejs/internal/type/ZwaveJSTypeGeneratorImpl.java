@@ -15,6 +15,7 @@ package org.openhab.binding.zwavejs.internal.type;
 import static org.openhab.binding.zwavejs.internal.BindingConstants.*;
 import static org.openhab.binding.zwavejs.internal.CommandClassConstants.COMMAND_CLASS_ALARM;
 import static org.openhab.binding.zwavejs.internal.CommandClassConstants.COMMAND_CLASS_DOOR_LOCK;
+import static org.openhab.binding.zwavejs.internal.CommandClassConstants.COMMAND_CLASS_SCENE_ACTIVATION;
 import static org.openhab.binding.zwavejs.internal.CommandClassConstants.COMMAND_CLASS_SWITCH_COLOR;
 
 import java.net.URI;
@@ -187,6 +188,9 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
         // add raw notification channel if necessary
         addRawNotificationChannel(thingUID, node, result);
 
+        // add Scene Activation (CC 0x2B) channels if necessary
+        addSceneActivationChannels(thingUID, node, result);
+
         logger.debug("Node {}. Generated {} channels and {} configDescriptions with URI {}", node.nodeId,
                 result.channels.size(), configDescriptions.size(), uri);
 
@@ -255,6 +259,67 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
 
             result.channels.put(details.id, channel);
         }
+    }
+
+    /**
+     * Synthesize a Scene Activation channel for every endpoint that supports CC 0x2B.
+     *
+     * Scene Activation is a stateless command class: zwave-js does not surface it in the static
+     * {@code node.values} snapshot, so the value-driven generator never creates a channel for it.
+     * Without a channel, the runtime "value notification" events that carry the activated scene id
+     * are silently dropped by {@code ZwaveJSNodeHandler.onNodeStateChanged}. We pre-create the
+     * channel here so those events have a destination.
+     *
+     * @param thingUID the ThingUID
+     * @param node the Node
+     * @param result the ZwaveJSTypeGeneratorResult that receives the channels
+     */
+    private void addSceneActivationChannels(ThingUID thingUID, Node node, ZwaveJSTypeGeneratorResult result) {
+        if (node.endpoints == null) {
+            return;
+        }
+        node.endpoints.stream().filter(ep -> ep.commandClasses != null
+                && ep.commandClasses.stream().anyMatch(cc -> cc != null && COMMAND_CLASS_SCENE_ACTIVATION == cc.id))
+                .forEach(ep -> {
+                    Channel channel = createSceneActivationChannel(thingUID, node.nodeId, ep.index);
+                    if (!result.channels.containsKey(channel.getUID().getId())) {
+                        result.channels.put(channel.getUID().getId(), channel);
+                    }
+                });
+    }
+
+    @Override
+    public Channel createSceneActivationChannel(ThingUID thingUID, int nodeId, int endpoint) {
+        Value value = new Value();
+        value.endpoint = endpoint;
+        value.commandClass = COMMAND_CLASS_SCENE_ACTIVATION;
+        value.commandClassName = SCENE_ACTIVATION_CHANNEL_COMMAND_CLASS_NAME;
+        value.property = SCENE_ACTIVATION_CHANNEL_PROPERTY_NAME;
+        value.propertyName = SCENE_ACTIVATION_CHANNEL_PROPERTY_NAME;
+        value.metadata = new Metadata();
+        value.metadata.type = MetadataType.NUMBER;
+        value.metadata.writeable = false;
+        value.metadata.readable = true;
+        value.metadata.label = "Scene Activation";
+        value.metadata.description = "Last received scene id (CC 0x2B Scene Activation)";
+
+        ChannelMetadata details = new ChannelMetadata(nodeId, value);
+        logger.trace("Node {} building Scene Activation channel with Id: {}", details.nodeId, details.id);
+
+        ChannelTypeUID channelTypeUID = generateChannelTypeUID(details);
+        ChannelType type = Objects.requireNonNull(getOrGenerate(channelTypeUID, details),
+                "Scene Activation ChannelType could not be generated");
+        Configuration config = buildChannelConfiguration(details);
+
+        return ChannelBuilder.create(new ChannelUID(thingUID, details.id), CoreItemFactory.NUMBER)
+                .withType(type.getUID()) //
+                .withDefaultTags(type.getTags()) //
+                .withKind(type.getKind()) //
+                .withLabel(details.label) //
+                .withDescription(Objects.requireNonNull(details.description)) //
+                .withAutoUpdatePolicy(type.getAutoUpdatePolicy()) //
+                .withConfiguration(config) //
+                .build();
     }
 
     private ConfigDescriptionParameter createConfigDescription(ConfigMetadata details) {
