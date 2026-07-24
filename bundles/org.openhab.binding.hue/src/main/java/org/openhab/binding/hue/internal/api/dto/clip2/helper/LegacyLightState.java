@@ -104,8 +104,12 @@ public class LegacyLightState {
 
     @Override
     public String toString() {
-        return "mode=%s, mirek=%d, colorTempXY=%s, fullColorXY=%s".formatted(mode, mirek, toString(colorTempXY),
-                toString(fullColorXY));
+        return "mode=%s, mirek=%s, colorTempXY=%s, fullColorXY=%s".formatted(mode, toString(mirek),
+                toString(colorTempXY), toString(fullColorXY));
+    }
+
+    private static String toString(@Nullable Long mirek) {
+        return mirek == null ? "null" : "%d".formatted(mirek);
     }
 
     private static String toString(@Nullable PairXy xy) {

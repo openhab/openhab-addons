@@ -142,7 +142,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
     /*
      * Pre-compiled pattern matcher based on the following set of Model Id regular expressions for devices having
-     * the (legacy) issue where the light operates in either 'XY' or 'CT' mode.
+     * the (legacy) issue where the light operates in either 'FULL_COLOR' or 'COLOR_TEMP' mode.
      */
     private static final Set<String> OPERATING_MODE_WORK_AROUND_MODELS = Set.of( //
             "RGB-CCT", // Müller Licht extended color light
@@ -1269,9 +1269,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
             default:
                 return false;
         }
-        if (thisResource.getType() == ResourceType.DEVICE)
 
-        {
+        if (thisResource.getType() == ResourceType.DEVICE) {
             updateState(CHANNEL_2_LAST_UPDATED, new DateTimeType(), fullUpdate);
         }
         return true;

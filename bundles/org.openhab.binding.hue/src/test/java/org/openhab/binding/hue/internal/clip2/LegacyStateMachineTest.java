@@ -45,6 +45,7 @@ class LegacyStateMachineTest {
         assertEquals(new PairXy().setXY(xy), test.getXY());
     }
 
+    @Test
     void testFullColorModeIsSet() {
         LegacyLightState test = new LegacyLightState();
         double[] xy = { 0.1, 0.1 };

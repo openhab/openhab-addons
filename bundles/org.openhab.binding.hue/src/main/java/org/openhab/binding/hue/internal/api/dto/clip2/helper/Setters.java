@@ -394,7 +394,7 @@ public class Setters {
     }
 
     /**
-     * Put a key-value pair into the given map only if the value is not null.
+     * Add a key-value pair to the given map only if the value is not null.
      */
     public static void putIfExists(Map<String, String> map, String key, @Nullable String value) {
         if (value != null) {
