@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.ntfy.internal.action;
+package org.openhab.binding.ntfy.action;
 
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -92,10 +92,10 @@ public class NtfyActions implements ThingActions {
      * actions instance to allow fluent chaining in automation rules.
      *
      * @param message the message content to set
-     * @return this {@link ThingActions} builder instance
+     * @return this {@link NtfyActions} builder instance
      */
     @RuleAction(label = "set the message", description = "Set the message content for the builder.")
-    public @ActionOutput(label = "Ntfy Actions", type = "org.openhab.core.thing.binding.ThingActions") ThingActions withMessage(
+    public @ActionOutput(label = "Ntfy Actions", type = "org.openhab.core.thing.binding.ThingActions") NtfyActions withMessage(
             @ActionInput(name = "message") String message) {
         ntfyMessage.setMessage(message);
         return this;
@@ -106,9 +106,9 @@ public class NtfyActions implements ThingActions {
      *
      * @param actions the ThingActions instance
      * @param message the message content
-     * @return the modified ThingActions builder instance
+     * @return the modified {@link NtfyActions} builder instance
      */
-    public static ThingActions withMessage(ThingActions actions, String message) {
+    public static NtfyActions withMessage(ThingActions actions, String message) {
         return ((NtfyActions) actions).withMessage(message);
     }
 
@@ -116,10 +116,10 @@ public class NtfyActions implements ThingActions {
      * Sets the numeric priority for the message builder (1..5).
      *
      * @param priority the priority value
-     * @return this {@link ThingActions} builder instance
+     * @return this {@link NtfyActions} builder instance
      */
     @RuleAction(label = "set the priority of the message", description = "Set the priority of the content for the builder.")
-    public @ActionOutput(label = "Ntfy Actions", type = "org.openhab.core.thing.binding.ThingActions") ThingActions withPriority(
+    public @ActionOutput(label = "Ntfy Actions", type = "org.openhab.core.thing.binding.ThingActions") NtfyActions withPriority(
             @ActionInput(name = "priority") int priority) {
         ntfyMessage.setPriority(priority);
         return this;
@@ -130,9 +130,9 @@ public class NtfyActions implements ThingActions {
      *
      * @param actions the ThingActions instance
      * @param priority the priority value
-     * @return the modified ThingActions builder instance
+     * @return the modified {@link NtfyActions} builder instance
      */
-    public static ThingActions withPriority(ThingActions actions, int priority) {
+    public static NtfyActions withPriority(ThingActions actions, int priority) {
         return ((NtfyActions) actions).withPriority(priority);
     }
 
@@ -140,10 +140,10 @@ public class NtfyActions implements ThingActions {
      * Adds a tag to the internal message builder.
      *
      * @param tag the tag to add
-     * @return this {@link ThingActions} builder instance
+     * @return this {@link NtfyActions} builder instance
      */
     @RuleAction(label = "add a tag to the message", description = "Add a tag to the content for the builder.")
-    public @ActionOutput(label = "Ntfy Actions", type = "org.openhab.core.thing.binding.ThingActions") ThingActions withTag(
+    public @ActionOutput(label = "Ntfy Actions", type = "org.openhab.core.thing.binding.ThingActions") NtfyActions withTag(
             @ActionInput(name = "tag") String tag) {
         ntfyMessage.addTag(tag);
         return this;
@@ -154,9 +154,9 @@ public class NtfyActions implements ThingActions {
      *
      * @param actions the ThingActions instance
      * @param tag the tag to add
-     * @return the modified ThingActions builder instance
+     * @return the modified {@link NtfyActions} builder instance
      */
-    public static ThingActions withTag(ThingActions actions, String tag) {
+    public static NtfyActions withTag(ThingActions actions, String tag) {
         return ((NtfyActions) actions).withTag(tag);
     }
 
@@ -164,11 +164,11 @@ public class NtfyActions implements ThingActions {
      * Sets an icon URL on the internal message builder.
      *
      * @param url the icon URL
-     * @return this {@link ThingActions} builder instance
+     * @return this {@link NtfyActions} builder instance
      * @throws URISyntaxException when the provided URL cannot be parsed
      */
     @RuleAction(label = "add an icon to the message", description = "Add an icon to the content for the builder.")
-    public @ActionOutput(label = "Ntfy Actions", type = "org.openhab.core.thing.binding.ThingActions") ThingActions withIcon(
+    public @ActionOutput(label = "Ntfy Actions", type = "org.openhab.core.thing.binding.ThingActions") NtfyActions withIcon(
             @ActionInput(name = "url") String url) throws URISyntaxException {
         ntfyMessage.setIcon(url);
         return this;
@@ -179,10 +179,10 @@ public class NtfyActions implements ThingActions {
      *
      * @param actions the ThingActions instance
      * @param url the icon URL
-     * @return the modified ThingActions builder instance
+     * @return the modified {@link NtfyActions} builder instance
      * @throws URISyntaxException when the provided URL cannot be parsed
      */
-    public static ThingActions withIcon(ThingActions actions, String url) throws URISyntaxException {
+    public static NtfyActions withIcon(ThingActions actions, String url) throws URISyntaxException {
         return ((NtfyActions) actions).withIcon(url);
     }
 
@@ -191,11 +191,11 @@ public class NtfyActions implements ThingActions {
      *
      * @param url the attachment URL
      * @param filename optional filename to present to recipients
-     * @return this {@link ThingActions} builder instance
+     * @return this {@link NtfyActions} builder instance
      * @throws URISyntaxException when the provided URL cannot be parsed
      */
     @RuleAction(label = "add an attachment to the message", description = "Add an attachment to the content for the builder.")
-    public @ActionOutput(label = "Ntfy Actions", type = "org.openhab.core.thing.binding.ThingActions") ThingActions withAttachment(
+    public @ActionOutput(label = "Ntfy Actions", type = "org.openhab.core.thing.binding.ThingActions") NtfyActions withAttachment(
             @ActionInput(name = "url") String url, @ActionInput(name = "filename") @Nullable String filename)
             throws URISyntaxException {
         ntfyMessage.setAttachment(url, filename);
@@ -208,10 +208,10 @@ public class NtfyActions implements ThingActions {
      * @param actions the ThingActions instance
      * @param url the attachment URL
      * @param filename optional filename
-     * @return the modified ThingActions builder instance
+     * @return the modified {@link NtfyActions} builder instance
      * @throws URISyntaxException when the provided URL cannot be parsed
      */
-    public static ThingActions withAttachment(ThingActions actions, String url, @Nullable String filename)
+    public static NtfyActions withAttachment(ThingActions actions, String url, @Nullable String filename)
             throws URISyntaxException {
         return ((NtfyActions) actions).withAttachment(url, filename);
     }
@@ -222,11 +222,11 @@ public class NtfyActions implements ThingActions {
      * @param label the label for the action
      * @param clearNotification whether the notification should be cleared when the action is executed
      * @param url the URL to open
-     * @return this {@link ThingActions} builder instance
+     * @return this {@link NtfyActions} builder instance
      * @throws MalformedURLException when the provided URL is not valid
      */
     @RuleAction(label = "add a view action to the message", description = "Add a view action to the content for the builder.")
-    public @ActionOutput(label = "Ntfy Actions", type = "org.openhab.core.thing.binding.ThingActions") ThingActions withViewAction(
+    public @ActionOutput(label = "Ntfy Actions", type = "org.openhab.core.thing.binding.ThingActions") NtfyActions withViewAction(
             @ActionInput(name = "label") String label,
             @ActionInput(name = "clearNotification") Boolean clearNotification, @ActionInput(name = "url") String url)
             throws MalformedURLException {
@@ -241,10 +241,10 @@ public class NtfyActions implements ThingActions {
      * @param label the action label
      * @param clearNotification whether to clear notification
      * @param url the URL to open
-     * @return the modified ThingActions builder instance
+     * @return the modified {@link NtfyActions} builder instance
      * @throws MalformedURLException when the provided URL is not valid
      */
-    public static ThingActions withViewAction(ThingActions actions, String label, Boolean clearNotification, String url)
+    public static NtfyActions withViewAction(ThingActions actions, String label, Boolean clearNotification, String url)
             throws MalformedURLException {
         return ((NtfyActions) actions).withViewAction(label, clearNotification, url);
     }
@@ -255,10 +255,10 @@ public class NtfyActions implements ThingActions {
      * @param label the label for the action
      * @param clearNotification whether the notification should be cleared when the action is executed
      * @param value the value to copy
-     * @return this {@link ThingActions} builder instance
+     * @return this {@link NtfyActions} builder instance
      */
     @RuleAction(label = "add a copy action to the message", description = "Add a copy action to the content for the builder.")
-    public @ActionOutput(label = "Ntfy Actions", type = "org.openhab.core.thing.binding.ThingActions") ThingActions withCopyAction(
+    public @ActionOutput(label = "Ntfy Actions", type = "org.openhab.core.thing.binding.ThingActions") NtfyActions withCopyAction(
             @ActionInput(name = "label") String label,
             @ActionInput(name = "clearNotification") Boolean clearNotification,
             @ActionInput(name = "value") String value) {
@@ -273,10 +273,10 @@ public class NtfyActions implements ThingActions {
      * @param label the action label
      * @param clearNotification whether to clear the notification
      * @param value the value to copy
-     * @return the modified ThingActions builder instance
+     * @return the modified {@link NtfyActions} builder instance
      * @throws MalformedURLException never thrown by this wrapper but declared for API compatibility
      */
-    public static ThingActions withCopyAction(ThingActions actions, String label, Boolean clearNotification,
+    public static NtfyActions withCopyAction(ThingActions actions, String label, Boolean clearNotification,
             String value) throws MalformedURLException {
         return ((NtfyActions) actions).withCopyAction(label, clearNotification, value);
     }
@@ -290,11 +290,11 @@ public class NtfyActions implements ThingActions {
      * @param method optional HTTP method
      * @param headers optional headers
      * @param body optional request body
-     * @return this {@link ThingActions} builder instance
+     * @return this {@link NtfyActions} builder instance
      * @throws MalformedURLException when the provided URL is not valid
      */
     @RuleAction(label = "add a HTTP action to the message", description = "Add a HTTP action to the content for the builder.")
-    public @ActionOutput(label = "Ntfy Actions", type = "org.openhab.core.thing.binding.ThingActions") ThingActions withHttpAction(
+    public @ActionOutput(label = "Ntfy Actions", type = "org.openhab.core.thing.binding.ThingActions") NtfyActions withHttpAction(
             @ActionInput(name = "label") String label,
             @ActionInput(name = "clearNotification") Boolean clearNotification, @ActionInput(name = "url") String url,
             @ActionInput(name = "method") @Nullable String method,
@@ -314,10 +314,10 @@ public class NtfyActions implements ThingActions {
      * @param method optional method
      * @param headers optional headers
      * @param body optional body
-     * @return the modified ThingActions builder instance
+     * @return the modified {@link NtfyActions} builder instance
      * @throws MalformedURLException when the provided URL is not valid
      */
-    public static ThingActions withHttpAction(ThingActions actions, String label, Boolean clearNotification, String url,
+    public static NtfyActions withHttpAction(ThingActions actions, String label, Boolean clearNotification, String url,
             @Nullable String method, @Nullable String headers, @Nullable String body) throws MalformedURLException {
         return ((NtfyActions) actions).withHttpAction(label, clearNotification, url, method, headers, body);
     }
@@ -328,10 +328,10 @@ public class NtfyActions implements ThingActions {
      * @param label the action label
      * @param clearNotification whether the notification should be cleared when the action is executed
      * @param params parameters passed to the broadcast action
-     * @return this {@link ThingActions} builder instance
+     * @return this {@link NtfyActions} builder instance
      */
     @RuleAction(label = "add a broadcast action to the message", description = "Add a broadcast action to the content for the builder.")
-    public @ActionOutput(label = "Ntfy Actions", type = "org.openhab.core.thing.binding.ThingActions") ThingActions withBroadcastAction(
+    public @ActionOutput(label = "Ntfy Actions", type = "org.openhab.core.thing.binding.ThingActions") NtfyActions withBroadcastAction(
             @ActionInput(name = "label") String label,
             @ActionInput(name = "clearNotification") Boolean clearNotification,
             @ActionInput(name = "params") @Nullable String params) {
@@ -346,10 +346,10 @@ public class NtfyActions implements ThingActions {
      * @param label the action label
      * @param clearNotification whether to clear the notification
      * @param params parameters for the broadcast
-     * @return the modified ThingActions builder instance
+     * @return the modified {@link NtfyActions} builder instance
      * @throws MalformedURLException never thrown by this wrapper but declared for API compatibility
      */
-    public static ThingActions withBroadcastAction(ThingActions actions, String label, Boolean clearNotification,
+    public static NtfyActions withBroadcastAction(ThingActions actions, String label, Boolean clearNotification,
             @Nullable String params) throws MalformedURLException {
         return ((NtfyActions) actions).withBroadcastAction(label, clearNotification, params);
     }
@@ -359,10 +359,10 @@ public class NtfyActions implements ThingActions {
      * message is published.
      *
      * @param delay the provider-specific delay string (may be null)
-     * @return this {@link ThingActions} builder instance
+     * @return this {@link NtfyActions} builder instance
      */
     @RuleAction(label = "add a delay to the message", description = "Add a delay for the content for the builder.")
-    public @ActionOutput(label = "Ntfy Actions", type = "org.openhab.core.thing.binding.ThingActions") ThingActions withDelay(
+    public @ActionOutput(label = "Ntfy Actions", type = "org.openhab.core.thing.binding.ThingActions") NtfyActions withDelay(
             @ActionInput(name = "delay") @Nullable String delay) {
         ntfyMessage.setDelay(delay);
         return this;
@@ -373,9 +373,9 @@ public class NtfyActions implements ThingActions {
      *
      * @param actions the ThingActions instance
      * @param delay the provider-specific delay string (may be null)
-     * @return the modified ThingActions builder instance
+     * @return the modified {@link NtfyActions} builder instance
      */
-    public static ThingActions withDelay(ThingActions actions, @Nullable String delay) {
+    public static NtfyActions withDelay(ThingActions actions, @Nullable String delay) {
         return ((NtfyActions) actions).withDelay(delay);
     }
 
@@ -384,10 +384,10 @@ public class NtfyActions implements ThingActions {
      * delete the message on the server.
      *
      * @param sequenceId the sequence id or {@code null}
-     * @return this {@link ThingActions} builder instance
+     * @return this {@link NtfyActions} builder instance
      */
     @RuleAction(label = "add a sequence ID to the message", description = "Add a sequence ID to the content for the builder.")
-    public @ActionOutput(label = "Ntfy Actions", type = "org.openhab.core.thing.binding.ThingActions") ThingActions withSequenceId(
+    public @ActionOutput(label = "Ntfy Actions", type = "org.openhab.core.thing.binding.ThingActions") NtfyActions withSequenceId(
             @ActionInput(name = "sequenceId") @Nullable String sequenceId) {
         ntfyMessage.setSequenceId(sequenceId);
         return this;
@@ -398,9 +398,9 @@ public class NtfyActions implements ThingActions {
      *
      * @param actions the ThingActions instance
      * @param sequenceId the sequence id
-     * @return the modified ThingActions builder instance
+     * @return the modified {@link NtfyActions} builder instance
      */
-    public static ThingActions withSequenceId(ThingActions actions, @Nullable String sequenceId) {
+    public static NtfyActions withSequenceId(ThingActions actions, @Nullable String sequenceId) {
         return ((NtfyActions) actions).withSequenceId(sequenceId);
     }
 
@@ -408,10 +408,10 @@ public class NtfyActions implements ThingActions {
      * Adds a title to the internal message builder.
      *
      * @param title the title
-     * @return this {@link ThingActions} builder instance
+     * @return this {@link NtfyActions} builder instance
      */
     @RuleAction(label = "add a title to the message", description = "Add a title to the content for the builder.")
-    public @ActionOutput(label = "Ntfy Actions", type = "org.openhab.core.thing.binding.ThingActions") ThingActions withTitle(
+    public @ActionOutput(label = "Ntfy Actions", type = "org.openhab.core.thing.binding.ThingActions") NtfyActions withTitle(
             @ActionInput(name = "title") String title) {
         ntfyMessage.setTitle(title);
         return this;
@@ -422,9 +422,9 @@ public class NtfyActions implements ThingActions {
      *
      * @param actions the ThingActions instance
      * @param title the title
-     * @return the modified ThingActions builder instance
+     * @return the modified {@link NtfyActions} builder instance
      */
-    public static ThingActions withTitle(ThingActions actions, String title) {
+    public static NtfyActions withTitle(ThingActions actions, String title) {
         return ((NtfyActions) actions).withTitle(title);
     }
 
