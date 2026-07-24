@@ -134,9 +134,8 @@ public class AtvDiscoveryParticipant implements MDNSDiscoveryParticipant {
     }
 
     /**
-     * Resolves a connectable host for the service. jmDNS often resolves Apple devices to IPv6 only (or
-     * to just the hostname), so an IPv4-only lookup silently drops them; prefer IPv4, then a routable
-     * IPv6 address, then the advertised hostname.
+     * Resolves a connectable host, preferring IPv4, then a routable IPv6 address, then the hostname.
+     * jmDNS often resolves Apple devices to IPv6 only, so requiring IPv4 would silently drop them.
      */
     private static String hostAddress(ServiceInfo service) {
         Inet4Address[] ipv4 = service.getInet4Addresses();

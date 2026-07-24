@@ -176,9 +176,8 @@ public final class AppleTVRelay implements AppleTV, DeviceListener {
         Map<String, Object> devinfo = new LinkedHashMap<>();
         CompletableFuture<Void> chain = CompletableFuture.completedFuture(null);
         for (SetupData setupData : toSetup) {
-            // A protocol failing to connect is tolerated: a sleeping device often keeps only some
-            // protocols (typically Companion) reachable, so the connect proceeds with whatever set up.
-            // The failure is swallowed here so later protocols still get a chance.
+            // Tolerate a protocol failing to connect: a sleeping device may keep only some protocols
+            // (typically Companion) reachable, so connect proceeds with whatever set up.
             chain = chain.thenCompose(ignore -> setUpProtocol(setupData, devinfo).handle((done, error) -> {
                 if (error != null) {
                     Throwable cause = error.getCause();
@@ -191,7 +190,7 @@ public final class AppleTVRelay implements AppleTV, DeviceListener {
         return chain.thenCompose(ignore -> {
             synchronized (this) {
                 if (protocolHandlers.isEmpty()) {
-                    // Nothing connected at all; tear down and report failure so the caller can retry.
+                    // Nothing connected; tear down and fail so the caller retries.
                     return close().handle((closed, closeError) -> null).thenCompose(closed -> CompletableFuture
                             .<Void> failedFuture(new NoServiceError("no protocol could be connected")));
                 }
