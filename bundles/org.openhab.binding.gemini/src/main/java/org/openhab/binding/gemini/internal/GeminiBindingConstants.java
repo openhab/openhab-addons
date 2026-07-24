@@ -34,7 +34,7 @@ public class GeminiBindingConstants {
     public static final ChannelTypeUID CHANNEL_TYPE_UID_CHAT = new ChannelTypeUID(BINDING_ID, CHANNEL_CHAT);
 
     // Default values for configuration parameters
-    public static final String DEFAULT_MODEL = "gemini-2.5-flash";
+    public static final String DEFAULT_MODEL = "gemini-3.1-flash-lite";
     public static final double DEFAULT_TEMPERATURE = 1.0;
     public static final double DEFAULT_TOP_P = 1.0;
     public static final int DEFAULT_MAX_OUTPUT_TOKENS = 2048;
