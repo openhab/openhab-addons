@@ -26,6 +26,7 @@ import java.util.concurrent.ScheduledFuture;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.atv.internal.AtvStateDescriptionProvider;
 import org.openhab.binding.atv.internal.client.AppleTV;
 import org.openhab.binding.atv.internal.client.capability.Audio;
 import org.openhab.binding.atv.internal.client.capability.Power;
@@ -71,7 +72,7 @@ public class AtvHandlerTest {
         when(thing.getUID()).thenReturn(thingUID);
         when(thing.getThingTypeUID()).thenReturn(THING_TYPE_APPLETV);
 
-        handler = new AtvHandler(thing, null);
+        handler = new AtvHandler(thing, null, mock(AtvStateDescriptionProvider.class));
 
         appleTV = mock(AppleTV.class);
         remoteControl = mock(RemoteControl.class);

@@ -44,10 +44,13 @@ public class AtvHandlerFactory extends BaseThingHandlerFactory {
 
     private final Map<String, ServiceRegistration<AudioSink>> audioSinkRegistrations = new ConcurrentHashMap<>();
     private final FileHostService fileHostService;
+    private final AtvStateDescriptionProvider stateDescriptionProvider;
 
     @Activate
-    public AtvHandlerFactory(@Reference FileHostService fileHostService) {
+    public AtvHandlerFactory(@Reference FileHostService fileHostService,
+            @Reference AtvStateDescriptionProvider stateDescriptionProvider) {
         this.fileHostService = fileHostService;
+        this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
     @Override
@@ -60,7 +63,7 @@ public class AtvHandlerFactory extends BaseThingHandlerFactory {
         if (!SUPPORTED_THING_TYPES_UIDS.contains(thing.getThingTypeUID())) {
             return null;
         }
-        AtvHandler handler = new AtvHandler(thing, fileHostService);
+        AtvHandler handler = new AtvHandler(thing, fileHostService, stateDescriptionProvider);
         AtvAudioSink sink = new AtvAudioSink(handler);
         ServiceRegistration<AudioSink> registration = bundleContext.registerService(AudioSink.class, sink, null);
         audioSinkRegistrations.put(thing.getUID().toString(), registration);

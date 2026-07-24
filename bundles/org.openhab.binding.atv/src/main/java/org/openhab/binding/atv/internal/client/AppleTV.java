@@ -61,9 +61,8 @@ public interface AppleTV {
      * Returns the protocols that are currently connected.
      *
      * <p>
-     * A connection can be partial: when a device is asleep it may only keep some protocols (typically
-     * Companion) reachable, so a connect can succeed with fewer protocols than the device advertises.
-     * Callers can use this to detect a degraded connection and reconnect once the device is awake again.
+     * A connect can be partial (an asleep device may keep only some protocols, typically Companion,
+     * reachable), so this can hold fewer protocols than the device advertises.
      *
      * @return the set of connected protocols; empty when not connected
      */

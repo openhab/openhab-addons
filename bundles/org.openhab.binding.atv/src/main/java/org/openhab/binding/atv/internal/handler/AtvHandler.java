@@ -76,13 +76,11 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.CommandOption;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.StateOption;
 import org.openhab.core.types.UnDefType;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,8 +96,7 @@ public class AtvHandler extends BaseThingHandler {
     private static final Duration SCAN_TIMEOUT = Duration.ofSeconds(8);
     private static final long OP_TIMEOUT_SECONDS = 30;
     private static final long RECONNECT_SECONDS = 30;
-    // Fast retry used when a connection was lost gracefully (device asleep) or a partial connection
-    // needs to be upgraded once the device wakes - the device is expected to be reachable shortly.
+    // Fast retry after a graceful drop (sleep) or to upgrade a partial connection once the device wakes.
     private static final long RECONNECT_NOW_SECONDS = 3;
 
     /**
@@ -129,28 +126,31 @@ public class AtvHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(AtvHandler.class);
     private final @Nullable FileHostService fileHostService;
+    private final AtvStateDescriptionProvider stateDescriptionProvider;
 
     private AtvConfiguration config = new AtvConfiguration();
     private @Nullable AtvRuntime runtime;
     private @Nullable AppleTV appleTV;
     private @Nullable ScheduledFuture<?> reconnectJob;
     private @Nullable ScheduledFuture<?> pollJob;
-    private @Nullable AtvStateDescriptionProvider stateDescriptionProvider;
     private @Nullable String lastArtworkId;
+    // Forces the first artwork evaluation after connect, so restored state is cleared even when the id is null.
+    private boolean artworkEvaluated;
 
-    // Last known power state, used to tell a graceful sleep (expected) apart from a real
-    // communication failure, and to detect when the device wakes from a partial connection.
+    // Tells a graceful sleep apart from a real failure, and detects wake from a partial connection.
     private volatile PowerState lastPowerState = PowerState.Unknown;
-    // Set when the user commands power ON while offline; honored once a connection is (re)established.
+    // Set when power ON is commanded while offline; honored once a connection is (re)established.
     private volatile boolean pendingWake;
 
     // pairing state kept alive between showing the PIN and the user entering it
     private @Nullable PairingHandler pendingPairing;
     private @Nullable Protocol pendingProtocol;
 
-    public AtvHandler(Thing thing, @Nullable FileHostService fileHostService) {
+    public AtvHandler(Thing thing, @Nullable FileHostService fileHostService,
+            AtvStateDescriptionProvider stateDescriptionProvider) {
         super(thing);
         this.fileHostService = fileHostService;
+        this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
     @Override
@@ -161,7 +161,6 @@ public class AtvHandler extends BaseThingHandler {
             return;
         }
         updateStatus(ThingStatus.UNKNOWN);
-        stateDescriptionProvider = lookupStateDescriptionProvider();
         runtime = new AtvRuntime(scheduler, Clock.systemUTC(), fileHostService);
         scheduler.execute(this::connect);
     }
@@ -207,8 +206,7 @@ public class AtvHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         AppleTV atv = appleTV;
         if (atv == null) {
-            // Offline: a power ON is likely an attempt to wake a sleeping device. Reconnect (a sleeping
-            // Apple TV keeps Companion reachable) and send the wake once connected.
+            // A power ON while offline is a wake request; reconnect and send it once connected.
             if (CHANNEL_POWER.equals(channelUID.getIdWithoutGroup()) && command == OnOffType.ON) {
                 requestWake();
             }
@@ -258,6 +256,21 @@ public class AtvHandler extends BaseThingHandler {
         }
     }
 
+    @Override
+    public void channelLinked(ChannelUID channelUID) {
+        AppleTV atv = appleTV;
+        if (atv == null) {
+            return;
+        }
+        // Refresh the app/account option lists so they appear when the item is linked after connect.
+        String id = channelUID.getIdWithoutGroup();
+        if (CHANNEL_APP.equals(id) || CHANNEL_ACCOUNT.equals(id)) {
+            refreshDynamicOptions(atv);
+        }
+        // Populate the newly linked item with current state instead of waiting for the next update.
+        refreshAll();
+    }
+
     /**
      * Streams an audio stream to the device via RAOP at the given volume, blocking until playback
      * finishes.
@@ -304,8 +317,7 @@ public class AtvHandler extends BaseThingHandler {
     }
 
     private synchronized void connect() {
-        // Discard any prior connection first so a reconnect (e.g. to upgrade a partial connection once
-        // the device wakes) does not leak the old protocol connections and heartbeat loops.
+        // Discard any prior connection first so a reconnect does not leak its protocols and heartbeats.
         AppleTV existing = appleTV;
         if (existing != null) {
             appleTV = null;
@@ -459,8 +471,7 @@ public class AtvHandler extends BaseThingHandler {
             public void connectionLost(@Nullable Exception exception) {
                 appleTV = null;
                 setDisconnectedStatus(exception != null ? exception.getMessage() : null);
-                // The device was reachable a moment ago (e.g. it just went to sleep), so retry quickly:
-                // a sleeping Apple TV still answers Companion, which is enough to come back online and wake it.
+                // Reachable moments ago (likely asleep), so retry quickly - Companion usually still answers.
                 reconnectNow();
             }
 
@@ -490,8 +501,7 @@ public class AtvHandler extends BaseThingHandler {
         atv.power().addListener((oldState, newState) -> {
             lastPowerState = newState;
             updateState(CHANNEL_POWER, powerToState(newState));
-            // The device just woke, but the connection may be partial (only Companion survived sleep).
-            // Reconnect to pull back the richer protocols (metadata, push, remote control).
+            // Woke on a partial (Companion-only) connection; reconnect to restore the richer protocols.
             if (newState == PowerState.On && oldState != PowerState.On && isDegradedConnection()) {
                 logger.debug("Device {} woke with a partial connection; reconnecting to restore all protocols",
                         config.macAddress);
@@ -522,8 +532,11 @@ public class AtvHandler extends BaseThingHandler {
             return;
         }
         atv.metadata().playing().thenAccept(this::updatePlaying);
-        lastPowerState = atv.power().powerState();
-        updateState(CHANNEL_POWER, powerToState(lastPowerState));
+        // Speakers do not support power management; calling powerState() there throws NotSupportedError.
+        if (!atv.features().inState(FeatureState.Unsupported, FeatureName.PowerState)) {
+            lastPowerState = atv.power().powerState();
+            updateState(CHANNEL_POWER, powerToState(lastPowerState));
+        }
         if (atv.features().inState(FeatureState.Available, FeatureName.Volume)) {
             updateState(CHANNEL_VOLUME, new PercentType((int) Math.round(atv.audio().volume())));
         }
@@ -540,8 +553,10 @@ public class AtvHandler extends BaseThingHandler {
         updateState(CHANNEL_SEASON_NUMBER, decimalOrUndef(p.seasonNumber()));
         updateState(CHANNEL_EPISODE_NUMBER, decimalOrUndef(p.episodeNumber()));
         updateState(CHANNEL_CONTENT_ID, stringOrUndef(p.contentIdentifier()));
-        p.shuffle().ifPresent(s -> updateState(CHANNEL_SHUFFLE, new StringType(s.name())));
-        p.repeat().ifPresent(r -> updateState(CHANNEL_REPEAT, new StringType(r.name())));
+        Optional<ShuffleState> shuffle = p.shuffle();
+        updateState(CHANNEL_SHUFFLE, shuffle.isPresent() ? new StringType(shuffle.get().name()) : UnDefType.UNDEF);
+        Optional<RepeatState> repeat = p.repeat();
+        updateState(CHANNEL_REPEAT, repeat.isPresent() ? new StringType(repeat.get().name()) : UnDefType.UNDEF);
 
         Optional<Integer> position = p.position();
         Optional<Integer> total = p.totalTime();
@@ -552,6 +567,8 @@ public class AtvHandler extends BaseThingHandler {
         if (position.isPresent() && total.isPresent() && total.get() > 0) {
             updateState(CHANNEL_PROGRESS,
                     new PercentType((int) Math.min(100, Math.round(100.0 * position.get() / total.get()))));
+        } else {
+            updateState(CHANNEL_PROGRESS, UnDefType.UNDEF);
         }
 
         switch (p.deviceState()) {
@@ -562,7 +579,8 @@ public class AtvHandler extends BaseThingHandler {
         }
 
         AppleTV atv = appleTV;
-        if (atv != null && atv.features().inState(FeatureState.Available, FeatureName.App)) {
+        // Not-unsupported rather than available, so an idle Apple TV clears the channel; speakers are skipped.
+        if (atv != null && !atv.features().inState(FeatureState.Unsupported, FeatureName.App)) {
             atv.metadata().app().ifPresentOrElse(app -> {
                 updateState(CHANNEL_APP, new StringType(app.identifier()));
                 updateState(CHANNEL_APP_NAME, new StringType(app.name()));
@@ -678,10 +696,16 @@ public class AtvHandler extends BaseThingHandler {
         try {
             @Nullable
             String artworkId = atv.metadata().artworkId();
-            if (Objects.equals(artworkId, lastArtworkId)) {
+            if (artworkEvaluated && Objects.equals(artworkId, lastArtworkId)) {
                 return;
             }
+            artworkEvaluated = true;
             lastArtworkId = artworkId;
+            if (artworkId == null) {
+                // No artwork; clear any stale image.
+                updateState(CHANNEL_ARTWORK, UnDefType.UNDEF);
+                return;
+            }
         } catch (RuntimeException e) {
             // artworkId is unsupported by this protocol; fall through and always fetch
             logger.trace("Artwork identifier unavailable, fetching unconditionally", e);
@@ -691,6 +715,8 @@ public class AtvHandler extends BaseThingHandler {
             ArtworkInfo info = artwork;
             if (info != null && info.bytes().length > 0) {
                 updateState(CHANNEL_ARTWORK, new org.openhab.core.library.types.RawType(info.bytes(), info.mimetype()));
+            } else {
+                updateState(CHANNEL_ARTWORK, UnDefType.UNDEF);
             }
         }).exceptionally(e -> {
             // reset so the next now-playing update retries the fetch
@@ -723,38 +749,43 @@ public class AtvHandler extends BaseThingHandler {
 
     private void refreshDynamicOptions(AppleTV atv) {
         AtvStateDescriptionProvider provider = stateDescriptionProvider;
-        if (provider == null) {
-            return;
-        }
         if (isLinked(CHANNEL_APP) && atv.features().inState(
                 List.of(FeatureState.Available, FeatureState.Unknown, FeatureState.Unavailable), FeatureName.AppList)) {
-            atv.apps().appList()
-                    .thenAccept(apps -> provider.setStateOptions(new ChannelUID(thing.getUID(), CHANNEL_APP),
-                            apps.stream().map(this::appOption).toList()))
-                    .exceptionally(e -> {
-                        logger.debug("Fetching app list failed", e);
-                        return null;
-                    });
+            ChannelUID appChannel = new ChannelUID(thing.getUID(), CHANNEL_APP);
+            atv.apps().appList().thenAccept(apps -> {
+                // Command options let a UI offer the apps as sendable launch commands; the matching state
+                // options give the current app a friendly display label.
+                provider.setCommandOptions(appChannel,
+                        apps.stream().map(app -> new CommandOption(app.identifier(), appLabel(app))).toList());
+                provider.setStateOptions(appChannel,
+                        apps.stream().map(app -> new StateOption(app.identifier(), appLabel(app))).toList());
+            }).exceptionally(e -> {
+                logger.debug("Fetching app list failed", e);
+                return null;
+            });
         }
         if (isLinked(CHANNEL_ACCOUNT) && atv.features().inState(
                 List.of(FeatureState.Available, FeatureState.Unknown, FeatureState.Unavailable),
                 FeatureName.AccountList)) {
-            atv.userAccounts().accountList()
-                    .thenAccept(accounts -> provider.setStateOptions(new ChannelUID(thing.getUID(), CHANNEL_ACCOUNT),
-                            accounts.stream().map(this::accountOption).toList()))
-                    .exceptionally(e -> {
-                        logger.debug("Fetching account list failed", e);
-                        return null;
-                    });
+            ChannelUID accountChannel = new ChannelUID(thing.getUID(), CHANNEL_ACCOUNT);
+            atv.userAccounts().accountList().thenAccept(accounts -> {
+                provider.setCommandOptions(accountChannel, accounts.stream()
+                        .map(account -> new CommandOption(account.identifier(), accountLabel(account))).toList());
+                provider.setStateOptions(accountChannel, accounts.stream()
+                        .map(account -> new StateOption(account.identifier(), accountLabel(account))).toList());
+            }).exceptionally(e -> {
+                logger.debug("Fetching account list failed", e);
+                return null;
+            });
         }
     }
 
-    private StateOption appOption(App app) {
-        return new StateOption(app.identifier(), labelOrId(app.name(), app.identifier()));
+    private String appLabel(App app) {
+        return labelOrId(app.name(), app.identifier());
     }
 
-    private StateOption accountOption(UserAccount account) {
-        return new StateOption(account.identifier(), labelOrId(account.name(), account.identifier()));
+    private String accountLabel(UserAccount account) {
+        return labelOrId(account.name(), account.identifier());
     }
 
     private String labelOrId(@Nullable String label, String identifier) {
@@ -762,23 +793,12 @@ public class AtvHandler extends BaseThingHandler {
     }
 
     private void clearDynamicOptions() {
-        AtvStateDescriptionProvider provider = stateDescriptionProvider;
-        if (provider != null) {
-            provider.removeStateOptions(new ChannelUID(thing.getUID(), CHANNEL_APP));
-            provider.removeStateOptions(new ChannelUID(thing.getUID(), CHANNEL_ACCOUNT));
-        }
-    }
-
-    private @Nullable AtvStateDescriptionProvider lookupStateDescriptionProvider() {
-        try {
-            BundleContext context = FrameworkUtil.getBundle(AtvHandler.class).getBundleContext();
-            ServiceReference<AtvStateDescriptionProvider> reference = context
-                    .getServiceReference(AtvStateDescriptionProvider.class);
-            return reference != null ? context.getService(reference) : null;
-        } catch (RuntimeException e) {
-            logger.debug("State description provider unavailable; dynamic options disabled", e);
-            return null;
-        }
+        ChannelUID appChannel = new ChannelUID(thing.getUID(), CHANNEL_APP);
+        ChannelUID accountChannel = new ChannelUID(thing.getUID(), CHANNEL_ACCOUNT);
+        stateDescriptionProvider.removeStateOptions(appChannel);
+        stateDescriptionProvider.removeCommandOptions(appChannel);
+        stateDescriptionProvider.removeStateOptions(accountChannel);
+        stateDescriptionProvider.removeCommandOptions(accountChannel);
     }
 
     private void updateDeviceProperties(AtvConfig device) {
@@ -864,8 +884,7 @@ public class AtvHandler extends BaseThingHandler {
         if (atv == null) {
             return false;
         }
-        // The richer capabilities (metadata, push updates, remote control) come from MRP or AirPlay;
-        // a connection with neither is degraded and worth upgrading once the device is awake.
+        // Degraded = neither MRP nor AirPlay (the sources of metadata/push/remote), e.g. Companion-only.
         Set<Protocol> connected = atv.connectedProtocols();
         return !connected.contains(Protocol.MRP) && !connected.contains(Protocol.AirPlay);
     }
