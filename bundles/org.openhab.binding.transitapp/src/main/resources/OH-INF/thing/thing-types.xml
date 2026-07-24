@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="transitapp"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="bridge">
+		<label>@text/thing-type.transitapp.bridge.label</label>
+		<description>@text/thing-type.transitapp.bridge.description</description>
+		<config-description>
+			<parameter name="apiKey" type="text" required="true">
+				<label>API Key</label>
+				<description>Your Transit API key.</description>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="stop">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+		<label>@text/thing-type.transitapp.stop.label</label>
+		<description>@text/thing-type.transitapp.stop.description</description>
+		<channels>
+			<channel id="routeLongName-1" typeId="routeLongName"/>
+			<channel id="routeShortName-1" typeId="routeShortName"/>
+			<channel id="departureTime-1" typeId="departureTime"/>
+			<channel id="isCancelled-1" typeId="isCancelled"/>
+		</channels>
+		<config-description>
+			<parameter name="globalStopId" type="text" required="true">
+				<label>Global Stop ID</label>
+				<description>The global stop ID for Transit API.</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" min="30">
+				<label>Refresh Interval</label>
+				<description>Polling interval in seconds.</description>
+				<default>60</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="routedetails">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+		<label>@text/thing-type.transitapp.routedetails.label</label>
+		<description>@text/thing-type.transitapp.routedetails.description</description>
+		<channels>
+			<channel id="routeLongName" typeId="routeLongName"/>
+			<channel id="routeShortName" typeId="routeShortName"/>
+			<channel id="agencyName" typeId="agencyName"/>
+			<channel id="routeColor" typeId="routeColor"/>
+			<channel id="routeTextColor" typeId="routeTextColor"/>
+			<channel id="routeNetworkName" typeId="routeNetworkName"/>
+			<channel id="modeName" typeId="modeName"/>
+			<channel id="vehicleName" typeId="vehicleName"/>
+		</channels>
+		<config-description>
+			<parameter name="routeId" type="text" required="true">
+				<label>Route ID</label>
+				<description>The unique identifier for the route.</description>
+			</parameter>
+			<parameter name="includeNextDeparture" type="boolean" required="false">
+				<label>Include Next Departure</label>
+				<description>If set to true, makes the stop list include the next departure for each stop.</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="stopDetailed" type="boolean" required="false">
+				<label>Stop Detailed</label>
+				<description>When true, stop objects are returned as StopDetailed.</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="locale" type="text" required="false">
+				<label>Locale</label>
+				<description>Language locale for names and strings.</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" min="30">
+				<label>Refresh Interval</label>
+				<description>Time in seconds between updates.</description>
+				<default>300</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="tripdetails">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+		<label>@text/thing-type.transitapp.tripdetails.label</label>
+		<description>@text/thing-type.transitapp.tripdetails.description</description>
+		<channels>
+			<channel id="tripHeadsign" typeId="tripHeadsign"/>
+			<channel id="tripStatus" typeId="tripStatus"/>
+			<channel id="rtTripId" typeId="rtTripId"/>
+			<channel id="routeLongName" typeId="routeLongName"/>
+			<channel id="routeShortName" typeId="routeShortName"/>
+			<channel id="routeColor" typeId="routeColor"/>
+			<channel id="modeName" typeId="modeName"/>
+			<channel id="vehicleName" typeId="vehicleName"/>
+		</channels>
+		<config-description>
+			<parameter name="tripId" type="text" required="true">
+				<label>Trip ID</label>
+				<description>The unique identifier for the trip.</description>
+			</parameter>
+			<parameter name="includeContinuation" type="boolean" required="false">
+				<label>Include Continuation</label>
+				<description>Appends immediate next trip stops if vehicle continues in-seat.</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="locale" type="text" required="false">
+				<label>Locale</label>
+				<description>Language locale for translated strings.</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" min="30">
+				<label>Refresh Interval</label>
+				<description>Time in seconds between updates.</description>
+				<default>60</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="routeLongName">
+		<item-type>String</item-type>
+		<label>@text/channel.routeLongName.label</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="routeShortName">
+		<item-type>String</item-type>
+		<label>@text/channel.routeShortName.label</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="agencyName">
+		<item-type>String</item-type>
+		<label>@text/channel.agencyName.label</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="tripHeadsign">
+		<item-type>String</item-type>
+		<label>@text/channel.tripHeadsign.label</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="tripStatus">
+		<item-type>String</item-type>
+		<label>@text/channel.tripStatus.label</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="departureTime">
+		<item-type>DateTime</item-type>
+		<label>Departure Time</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="isCancelled">
+		<item-type>Switch</item-type>
+		<label>Is Cancelled</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="routeColor">
+		<item-type>String</item-type>
+		<label>Route Color</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="routeTextColor">
+		<item-type>String</item-type>
+		<label>Route Text Color</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="routeNetworkName">
+		<item-type>String</item-type>
+		<label>Route Network Name</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="modeName">
+		<item-type>String</item-type>
+		<label>Mode Name</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="vehicleName">
+		<item-type>String</item-type>
+		<label>Vehicle Name</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="rtTripId">
+		<item-type>String</item-type>
+		<label>Real-Time Trip ID</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>
