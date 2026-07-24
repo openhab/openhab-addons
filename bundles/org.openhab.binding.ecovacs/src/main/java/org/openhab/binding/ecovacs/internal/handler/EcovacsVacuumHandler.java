@@ -29,7 +29,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ecovacs.internal.EcovacsDynamicStateDescriptionProvider;
 import org.openhab.binding.ecovacs.internal.action.EcovacsVacuumActions;
-import org.openhab.binding.ecovacs.internal.api.EcovacsApi;
 import org.openhab.binding.ecovacs.internal.api.EcovacsApiException;
 import org.openhab.binding.ecovacs.internal.api.EcovacsDevice;
 import org.openhab.binding.ecovacs.internal.api.commands.AbstractNoResponseCommand;
@@ -76,11 +75,8 @@ import org.openhab.binding.ecovacs.internal.api.model.DeviceCapability;
 import org.openhab.binding.ecovacs.internal.api.model.MoppingWaterAmount;
 import org.openhab.binding.ecovacs.internal.api.model.NetworkInfo;
 import org.openhab.binding.ecovacs.internal.api.model.SuctionPower;
-import org.openhab.binding.ecovacs.internal.api.util.SchedulerTask;
-import org.openhab.binding.ecovacs.internal.config.EcovacsVacuumConfiguration;
 import org.openhab.binding.ecovacs.internal.util.StateOptionEntry;
 import org.openhab.binding.ecovacs.internal.util.StateOptionMapping;
-import org.openhab.core.i18n.ConfigurationException;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.DateTimeType;
@@ -92,24 +88,17 @@ import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
-import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.StateOption;
 import org.openhab.core.types.UnDefType;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link EcovacsVacuumHandler} is responsible for handling data and commands from/to vacuum cleaners.
@@ -117,44 +106,34 @@ import org.slf4j.LoggerFactory;
  * @author Danny Baumann - Initial contribution
  */
 @NonNullByDefault
-public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDevice.EventListener {
+public class EcovacsVacuumHandler extends AbstractEcovacsDeviceHandler implements EcovacsDevice.EventListener {
 
-    private final Logger logger = LoggerFactory.getLogger(EcovacsVacuumHandler.class);
-
-    private final TranslationProvider i18Provider;
-    private final LocaleProvider localeProvider;
     private final EcovacsDynamicStateDescriptionProvider stateDescriptionProvider;
-    private final Bundle bundle;
 
-    private final SchedulerTask initTask;
-    private final SchedulerTask reconnectTask;
-    private final SchedulerTask pollTask;
-    private @Nullable EcovacsDevice device;
-
-    private @Nullable Boolean lastWasCharging;
-    private @Nullable CleanMode lastCleanMode;
     private @Nullable CleanMode lastActiveCleanMode;
     private Optional<String> lastDownloadedCleanMapUrl = Optional.empty();
-    private long lastSuccessfulPollTimestamp;
     private int lastDefaultCleaningPasses = 1;
-    private String serialNumber = "<unset>";
 
     public EcovacsVacuumHandler(Thing thing, TranslationProvider i18Provider, LocaleProvider localeProvider,
             EcovacsDynamicStateDescriptionProvider stateDescriptionProvider) {
-        super(thing);
-        this.i18Provider = i18Provider;
-        this.localeProvider = localeProvider;
+        super(thing, i18Provider, localeProvider);
         this.stateDescriptionProvider = stateDescriptionProvider;
-        bundle = FrameworkUtil.getBundle(getClass());
+    }
 
-        initTask = new SchedulerTask(scheduler, logger, "Init", this::initDevice);
-        reconnectTask = new SchedulerTask(scheduler, logger, "Connection", this::connectToDevice);
-        pollTask = new SchedulerTask(scheduler, logger, "Poll", this::pollData);
+    @Override
+    protected String getLogPrefix() {
+        return "vacuum";
     }
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Set.of(EcovacsVacuumActions.class);
+    }
+
+    @Override
+    protected void afterDeviceFound(EcovacsDevice device) {
+        updateStateOptions(device);
+        removeUnsupportedChannels(device);
     }
 
     @Override
@@ -209,7 +188,7 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
             } else if (channel.equals(CHANNEL_ID_CLEANING_PASSES) && command instanceof DecimalType type) {
                 int passes = type.intValue();
                 device.sendCommand(new SetDefaultCleanPassesCommand(passes));
-                lastDefaultCleaningPasses = passes; // if we get here, the command was executed successfully
+                lastDefaultCleaningPasses = passes;
                 return;
             }
             logger.debug("{}: Ignoring unsupported device command {} for channel {}", serialNumber, command, channel);
@@ -218,28 +197,6 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
         } catch (EcovacsApiException e) {
             logger.debug("{}: Handling device command {} failed", serialNumber, command, e);
         }
-    }
-
-    @Override
-    public void initialize() {
-        serialNumber = getConfigAs(EcovacsVacuumConfiguration.class).serialNumber;
-        if (serialNumber.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.config-error-no-serial");
-        } else {
-            logger.debug("{}: Initializing handler", serialNumber);
-            updateStatus(ThingStatus.UNKNOWN);
-            initTask.setNamePrefix(serialNumber);
-            reconnectTask.setNamePrefix(serialNumber);
-            pollTask.setNamePrefix(serialNumber);
-            initTask.submit();
-        }
-    }
-
-    @Override
-    public void dispose() {
-        logger.debug("{}: Disposing handler", serialNumber);
-        teardown(false);
     }
 
     @Override
@@ -266,7 +223,7 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
                 case CHANNEL_ID_ERROR_DESCRIPTION:
                     fetchInitialErrorCode(device);
                 default:
-                    scheduleNextPoll(5); // add some delay in case multiple channels are linked at once
+                    scheduleNextPoll(5);
                     break;
             }
         } catch (InterruptedException e) {
@@ -276,23 +233,7 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
         }
     }
 
-    @Override
-    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        logger.debug("{}: Bridge status changed to {}", serialNumber, bridgeStatusInfo);
-        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
-            initTask.submit();
-        } else if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
-            teardown(false);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-        }
-    }
-
-    @Override
-    public void onBatteryLevelUpdated(EcovacsDevice device, int newLevelPercent) {
-        // Some devices report weird values (> 100%), so better clamp to supported range
-        int actualPercent = Math.max(0, Math.min(newLevelPercent, 100));
-        updateState(CHANNEL_ID_BATTERY_LEVEL, new DecimalType(actualPercent));
-    }
+    // --- EcovacsDevice.EventListener callbacks ---
 
     @Override
     public void onChargingStateUpdated(EcovacsDevice device, boolean charging) {
@@ -311,7 +252,6 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
         updateStateAndCommandChannels();
         Optional<State> areaDefState = areaDefinition.map(def -> {
             if (newMode == CleanMode.SPOT_AREA) {
-                // Map indices back to letters as shown in the app
                 def = Arrays.stream(def.split(",")).map(item -> {
                     try {
                         int index = Integer.parseInt(item);
@@ -321,7 +261,6 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
                     }
                 }).collect(Collectors.joining(";"));
             } else if (newMode == CleanMode.CUSTOM_AREA) {
-                // Map the separator from comma to semicolon to allow using the output as command input
                 def = def.replace(',', ';');
             }
             return new StringType(def);
@@ -342,6 +281,10 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
     }
 
     @Override
+    public void onMowingStatsUpdated(EcovacsDevice device, int mowedAreaSqCm, int timeSeconds) {
+    }
+
+    @Override
     public void onWaterSystemPresentUpdated(EcovacsDevice device, boolean present) {
         updateState(CHANNEL_ID_WATER_PLATE_PRESENT, OnOffType.from(present));
     }
@@ -358,15 +301,10 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
     }
 
     @Override
-    public void onEventStreamFailure(final EcovacsDevice device, Throwable error) {
-        logger.debug("{}: Device connection failed, reconnecting", serialNumber, error);
-        teardownAndScheduleReconnection();
+    public void onMowingSessionFinished(EcovacsDevice device, long startTimestamp, int durationSeconds, int areaSqCm) {
     }
 
-    @Override
-    public void onFirmwareVersionChanged(EcovacsDevice device, String fwVersion) {
-        updateProperty(Thing.PROPERTY_FIRMWARE_VERSION, fwVersion);
-    }
+    // --- playSound action ---
 
     public void playSound(PlaySoundCommand command) {
         doWithDevice(device -> {
@@ -377,6 +315,51 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
             }
         });
     }
+
+    // --- doWithDevice override with auth failure handling ---
+
+    @Override
+    protected void doWithDevice(DeviceAction action) {
+        EcovacsDevice device = this.device;
+        if (device == null) {
+            return;
+        }
+        try {
+            action.run(device);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } catch (EcovacsApiException e) {
+            logger.debug("{}: Failed communicating to device, reconnecting", serialNumber, e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            if (e.isAuthFailure) {
+                EcovacsApiHandler apiHandler = getApiHandler();
+                if (apiHandler != null) {
+                    apiHandler.onLoginExpired();
+                }
+                device.disconnect(scheduler);
+                this.device = null;
+            }
+            teardownAndScheduleReconnection();
+        }
+    }
+
+    // --- Connectivity ---
+
+    @Override
+    protected void connectToDevice() {
+        doWithDevice(device -> {
+            device.connect(this, scheduler);
+            fetchInitialBatteryStatus(device);
+            fetchInitialStateAndCommandValues(device);
+            fetchInitialWaterSystemPresentState(device);
+            fetchInitialErrorCode(device);
+            scheduleNextPoll(-1);
+            logger.debug("{}: Device connected", serialNumber);
+            updateStatus(ThingStatus.ONLINE);
+        });
+    }
+
+    // --- Fetch methods ---
 
     private void fetchInitialBatteryStatus(EcovacsDevice device) throws EcovacsApiException, InterruptedException {
         Integer batteryPercent = device.sendCommand(new GetBatteryInfoCommand());
@@ -410,183 +393,10 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
         }
     }
 
-    private void removeUnsupportedChannels(EcovacsDevice device) {
-        ThingBuilder builder = editThing();
-        boolean hasChanges = false;
+    // --- Polling ---
 
-        if (!device.hasCapability(DeviceCapability.MOPPING_SYSTEM)) {
-            hasChanges |= removeUnsupportedChannel(builder, CHANNEL_ID_WATER_AMOUNT);
-            hasChanges |= removeUnsupportedChannel(builder, CHANNEL_ID_WATER_AMOUNT_PERCENT);
-            hasChanges |= removeUnsupportedChannel(builder, CHANNEL_ID_WATER_PLATE_PRESENT);
-        } else if (device.hasCapability(DeviceCapability.CUSTOM_WATER_AMOUNT)) {
-            hasChanges |= removeUnsupportedChannel(builder, CHANNEL_ID_WATER_AMOUNT);
-        } else {
-            hasChanges |= removeUnsupportedChannel(builder, CHANNEL_ID_WATER_AMOUNT_PERCENT);
-        }
-        if (!device.hasCapability(DeviceCapability.CLEAN_SPEED_CONTROL)) {
-            hasChanges |= removeUnsupportedChannel(builder, CHANNEL_ID_SUCTION_POWER);
-        }
-        if (!device.hasCapability(DeviceCapability.MAIN_BRUSH)) {
-            hasChanges |= removeUnsupportedChannel(builder, CHANNEL_ID_MAIN_BRUSH_LIFETIME);
-        }
-        if (!device.hasCapability(DeviceCapability.VOICE_REPORTING)) {
-            hasChanges |= removeUnsupportedChannel(builder, CHANNEL_ID_VOICE_VOLUME);
-        }
-        if (!device.hasCapability(DeviceCapability.EXTENDED_CLEAN_LOG_RECORD)) {
-            hasChanges |= removeUnsupportedChannel(builder, CHANNEL_ID_LAST_CLEAN_MODE);
-        }
-        if (!device.hasCapability(DeviceCapability.MAPPING)
-                || !device.hasCapability(DeviceCapability.EXTENDED_CLEAN_LOG_RECORD)) {
-            hasChanges |= removeUnsupportedChannel(builder, CHANNEL_ID_LAST_CLEAN_MAP);
-        }
-        if (!device.hasCapability(DeviceCapability.READ_NETWORK_INFO)) {
-            hasChanges |= removeUnsupportedChannel(builder, CHANNEL_ID_WIFI_RSSI);
-        }
-        if (!device.hasCapability(DeviceCapability.AUTO_EMPTY_STATION)) {
-            hasChanges |= removeUnsupportedChannel(builder, CHANNEL_ID_AUTO_EMPTY);
-        }
-        if (!device.hasCapability(DeviceCapability.TRUE_DETECT_3D)) {
-            hasChanges |= removeUnsupportedChannel(builder, CHANNEL_ID_TRUE_DETECT_3D);
-        }
-        if (!device.hasCapability(DeviceCapability.DEFAULT_CLEAN_COUNT_SETTING)) {
-            hasChanges |= removeUnsupportedChannel(builder, CHANNEL_ID_CLEANING_PASSES);
-        }
-        if (!device.hasCapability(DeviceCapability.UNIT_CARE_LIFESPAN)) {
-            hasChanges |= removeUnsupportedChannel(builder, CHANNEL_ID_OTHER_COMPONENT_LIFETIME);
-        }
-        if (!device.hasCapability(DeviceCapability.ROUND_MOP_LIFESPAN)) {
-            hasChanges |= removeUnsupportedChannel(builder, CHANNEL_ID_ROUND_MOP_LIFETIME);
-        }
-
-        if (hasChanges) {
-            updateThing(builder.build());
-        }
-    }
-
-    private boolean removeUnsupportedChannel(ThingBuilder builder, String channelId) {
-        ChannelUID channelUID = new ChannelUID(getThing().getUID(), channelId);
-        if (getThing().getChannel(channelUID) == null) {
-            return false;
-        }
-        logger.debug("{}: Removing unsupported channel {}", serialNumber, channelId);
-        builder.withoutChannel(channelUID);
-        return true;
-    }
-
-    private void updateStateOptions(EcovacsDevice device) {
-        List<StateOption> modeChannelOptions = createChannelOptions(device, CleanMode.values(), CLEAN_MODE_MAPPING,
-                m -> m.enumValue.isActive());
-        ThingUID thingUID = getThing().getUID();
-
-        stateDescriptionProvider.setStateOptions(new ChannelUID(thingUID, CHANNEL_ID_CLEANING_MODE),
-                modeChannelOptions);
-        stateDescriptionProvider.setStateOptions(new ChannelUID(thingUID, CHANNEL_ID_LAST_CLEAN_MODE),
-                modeChannelOptions);
-        stateDescriptionProvider.setStateOptions(new ChannelUID(thingUID, CHANNEL_ID_SUCTION_POWER),
-                createChannelOptions(device, SuctionPower.values(), SUCTION_POWER_MAPPING, null));
-        stateDescriptionProvider.setStateOptions(new ChannelUID(thingUID, CHANNEL_ID_WATER_AMOUNT),
-                createChannelOptions(device, MoppingWaterAmount.values(), WATER_AMOUNT_MAPPING, null));
-    }
-
-    private <T extends Enum<T>> List<StateOption> createChannelOptions(EcovacsDevice device, T[] values,
-            StateOptionMapping<T> mapping, @Nullable Predicate<StateOptionEntry<T>> filter) {
-        return Arrays.stream(values).map(v -> Optional.ofNullable(mapping.get(v)))
-                // ensure we have a mapping (should always be the case)
-                .filter(Optional::isPresent).map(opt -> opt.get())
-                // apply supplied filter
-                .filter(mv -> filter == null || filter.test(mv))
-                // apply capability filter
-                .filter(mv -> mv.capability.isEmpty() || device.hasCapability(mv.capability.get()))
-                // map to actual option
-                .map(mv -> new StateOption(mv.value, mv.value)).collect(Collectors.toList());
-    }
-
-    private synchronized void scheduleNextPoll(long initialDelaySeconds) {
-        final EcovacsVacuumConfiguration config = getConfigAs(EcovacsVacuumConfiguration.class);
-        final long delayUntilNextPoll;
-        if (initialDelaySeconds < 0) {
-            long intervalSeconds = config.refresh * 60;
-            long secondsSinceLastPoll = (System.currentTimeMillis() - lastSuccessfulPollTimestamp) / 1000;
-            long deltaRemaining = intervalSeconds - secondsSinceLastPoll;
-            delayUntilNextPoll = Math.max(0, deltaRemaining);
-        } else {
-            delayUntilNextPoll = initialDelaySeconds;
-        }
-        logger.debug("{}: Scheduling next poll in {}s, refresh interval {}min", serialNumber, delayUntilNextPoll,
-                config.refresh);
-        pollTask.cancel();
-        pollTask.schedule(delayUntilNextPoll);
-    }
-
-    private void initDevice() {
-        final EcovacsApiHandler handler = getApiHandler();
-        if (handler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
-            return;
-        }
-
-        try {
-            final EcovacsApi api = handler.createApiForDevice(serialNumber);
-            api.loginAndGetAccessToken();
-            Optional<EcovacsDevice> deviceOpt = api.getDevices().stream()
-                    .filter(d -> serialNumber.equals(d.getSerialNumber())).findFirst();
-            if (deviceOpt.isPresent()) {
-                EcovacsDevice device = deviceOpt.get();
-                this.device = device;
-                updateProperty(Thing.PROPERTY_MODEL_ID, device.getModelName());
-                updateProperty(Thing.PROPERTY_SERIAL_NUMBER, device.getSerialNumber());
-                updateStateOptions(device);
-                removeUnsupportedChannels(device);
-                connectToDevice();
-            } else {
-                logger.info("{}: Device not found in device list, setting offline", serialNumber);
-                updateStatus(ThingStatus.OFFLINE);
-            }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        } catch (ConfigurationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getRawMessage());
-        } catch (EcovacsApiException e) {
-            logger.debug("API Exception: {}", e.getMessage(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        }
-    }
-
-    private void teardownAndScheduleReconnection() {
-        teardown(true);
-    }
-
-    private synchronized void teardown(boolean scheduleReconnection) {
-        EcovacsDevice device = this.device;
-        if (device != null) {
-            device.disconnect(scheduler);
-        }
-
-        pollTask.cancel();
-
-        reconnectTask.cancel();
-        initTask.cancel();
-
-        if (scheduleReconnection) {
-            SchedulerTask connectTask = device != null ? reconnectTask : initTask;
-            connectTask.schedule(5);
-        }
-    }
-
-    private void connectToDevice() {
-        doWithDevice(device -> {
-            device.connect(this, scheduler);
-            fetchInitialBatteryStatus(device);
-            fetchInitialStateAndCommandValues(device);
-            fetchInitialWaterSystemPresentState(device); // nop if unsupported
-            fetchInitialErrorCode(device);
-            scheduleNextPoll(-1);
-            logger.debug("{}: Device connected", serialNumber);
-            updateStatus(ThingStatus.ONLINE);
-        });
-    }
-
-    private void pollData() {
+    @Override
+    protected void pollData() {
         logger.debug("{}: Polling data", serialNumber);
         doWithDevice(device -> {
             TotalStats totalStats = device.sendCommand(new GetTotalStatsCommand());
@@ -683,6 +493,8 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
         logger.debug("{}: Data polling completed", serialNumber);
     }
 
+    // --- State and command channel helpers ---
+
     private void updateStateAndCommandChannels() {
         Boolean charging = this.lastWasCharging;
         CleanMode cleanMode = this.lastCleanMode;
@@ -698,9 +510,6 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
 
     private String determineStateChannelValue(boolean charging, CleanMode cleanMode) {
         if (charging) {
-            // Some devices already report charging state while returning to charging station, make sure to not report
-            // charging in that case. The same applies for models with pad washing/drying station, as those states imply
-            // the device being charging.
             if (cleanMode != CleanMode.RETURNING && cleanMode != CleanMode.WASHING && cleanMode != CleanMode.DRYING
                     && cleanMode != CleanMode.EMPTYING) {
                 return "charging";
@@ -766,7 +575,6 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
                 int passes = splitted.length == 3 && "x2".equals(splitted[2]) ? 2 : lastDefaultCleaningPasses;
                 List<String> roomIds = new ArrayList<>();
                 for (String id : splitted[1].split(";")) {
-                    // We let the user pass in letters as in Ecovacs' app, but the API wants indices
                     if (id.length() == 1 && id.charAt(0) >= 'A' && id.charAt(0) <= 'Z') {
                         roomIds.add(String.valueOf(id.charAt(0) - 'A'));
                     } else {
@@ -799,7 +607,6 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
             String[] splitted = command.split(":");
             if (splitted.length == 2) {
                 String scenarioId = splitted[1];
-                // Setting passes > 1 does not seem to have any effect (tested on T30).
                 return new SceneCleaningCommand(scenarioId, 1);
             }
             logger.warn("{}: {} command needs to have the form {}:<scenarioId>", serialNumber, CMD_SCENE_CLEAN,
@@ -809,38 +616,83 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
         return null;
     }
 
-    private interface WithDeviceAction {
-        void run(EcovacsDevice device) throws EcovacsApiException, InterruptedException;
+    // --- State options ---
+
+    private void updateStateOptions(EcovacsDevice device) {
+        List<StateOption> modeChannelOptions = createChannelOptions(device, CleanMode.values(), CLEAN_MODE_MAPPING,
+                m -> m.enumValue.isActive());
+        ThingUID thingUID = getThing().getUID();
+
+        stateDescriptionProvider.setStateOptions(new ChannelUID(thingUID, CHANNEL_ID_CLEANING_MODE),
+                modeChannelOptions);
+        stateDescriptionProvider.setStateOptions(new ChannelUID(thingUID, CHANNEL_ID_LAST_CLEAN_MODE),
+                modeChannelOptions);
+        stateDescriptionProvider.setStateOptions(new ChannelUID(thingUID, CHANNEL_ID_SUCTION_POWER),
+                createChannelOptions(device, SuctionPower.values(), SUCTION_POWER_MAPPING, null));
+        stateDescriptionProvider.setStateOptions(new ChannelUID(thingUID, CHANNEL_ID_WATER_AMOUNT),
+                createChannelOptions(device, MoppingWaterAmount.values(), WATER_AMOUNT_MAPPING, null));
     }
 
-    private void doWithDevice(WithDeviceAction action) {
-        EcovacsDevice device = this.device;
-        if (device == null) {
-            return;
-        }
-        try {
-            action.run(device);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        } catch (EcovacsApiException e) {
-            logger.debug("{}: Failed communicating to device, reconnecting", serialNumber, e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            if (e.isAuthFailure) {
-                EcovacsApiHandler apiHandler = getApiHandler();
-                if (apiHandler != null) {
-                    apiHandler.onLoginExpired();
-                }
-                // Drop our device instance to make sure we run a full init cycle,
-                // including an API re-login, on reconnection
-                device.disconnect(scheduler);
-                this.device = null;
-            }
-            teardownAndScheduleReconnection();
-        }
+    private <T extends Enum<T>> List<StateOption> createChannelOptions(EcovacsDevice device, T[] values,
+            StateOptionMapping<T> mapping, @Nullable Predicate<StateOptionEntry<T>> filter) {
+        return Arrays.stream(values).map(v -> Optional.ofNullable(mapping.get(v))).filter(Optional::isPresent)
+                .map(opt -> opt.get()).filter(mv -> filter == null || filter.test(mv))
+                .filter(mv -> mv.capability.isEmpty() || device.hasCapability(mv.capability.get()))
+                .map(mv -> new StateOption(mv.value, mv.value)).collect(Collectors.toList());
     }
 
-    private @Nullable EcovacsApiHandler getApiHandler() {
-        final Bridge bridge = getBridge();
-        return bridge != null ? (EcovacsApiHandler) bridge.getHandler() : null;
+    // --- Channel management ---
+
+    private void removeUnsupportedChannels(EcovacsDevice device) {
+        ThingBuilder builder = editThing();
+        boolean hasChanges = false;
+
+        if (!device.hasCapability(DeviceCapability.MOPPING_SYSTEM)) {
+            hasChanges |= removeChannel(builder, CHANNEL_ID_WATER_AMOUNT);
+            hasChanges |= removeChannel(builder, CHANNEL_ID_WATER_AMOUNT_PERCENT);
+            hasChanges |= removeChannel(builder, CHANNEL_ID_WATER_PLATE_PRESENT);
+        } else if (device.hasCapability(DeviceCapability.CUSTOM_WATER_AMOUNT)) {
+            hasChanges |= removeChannel(builder, CHANNEL_ID_WATER_AMOUNT);
+        } else {
+            hasChanges |= removeChannel(builder, CHANNEL_ID_WATER_AMOUNT_PERCENT);
+        }
+        if (!device.hasCapability(DeviceCapability.CLEAN_SPEED_CONTROL)) {
+            hasChanges |= removeChannel(builder, CHANNEL_ID_SUCTION_POWER);
+        }
+        if (!device.hasCapability(DeviceCapability.MAIN_BRUSH)) {
+            hasChanges |= removeChannel(builder, CHANNEL_ID_MAIN_BRUSH_LIFETIME);
+        }
+        if (!device.hasCapability(DeviceCapability.VOICE_REPORTING)) {
+            hasChanges |= removeChannel(builder, CHANNEL_ID_VOICE_VOLUME);
+        }
+        if (!device.hasCapability(DeviceCapability.EXTENDED_CLEAN_LOG_RECORD)) {
+            hasChanges |= removeChannel(builder, CHANNEL_ID_LAST_CLEAN_MODE);
+        }
+        if (!device.hasCapability(DeviceCapability.MAPPING)
+                || !device.hasCapability(DeviceCapability.EXTENDED_CLEAN_LOG_RECORD)) {
+            hasChanges |= removeChannel(builder, CHANNEL_ID_LAST_CLEAN_MAP);
+        }
+        if (!device.hasCapability(DeviceCapability.READ_NETWORK_INFO)) {
+            hasChanges |= removeChannel(builder, CHANNEL_ID_WIFI_RSSI);
+        }
+        if (!device.hasCapability(DeviceCapability.AUTO_EMPTY_STATION)) {
+            hasChanges |= removeChannel(builder, CHANNEL_ID_AUTO_EMPTY);
+        }
+        if (!device.hasCapability(DeviceCapability.TRUE_DETECT_3D)) {
+            hasChanges |= removeChannel(builder, CHANNEL_ID_TRUE_DETECT_3D);
+        }
+        if (!device.hasCapability(DeviceCapability.DEFAULT_CLEAN_COUNT_SETTING)) {
+            hasChanges |= removeChannel(builder, CHANNEL_ID_CLEANING_PASSES);
+        }
+        if (!device.hasCapability(DeviceCapability.UNIT_CARE_LIFESPAN)) {
+            hasChanges |= removeChannel(builder, CHANNEL_ID_OTHER_COMPONENT_LIFETIME);
+        }
+        if (!device.hasCapability(DeviceCapability.ROUND_MOP_LIFESPAN)) {
+            hasChanges |= removeChannel(builder, CHANNEL_ID_ROUND_MOP_LIFETIME);
+        }
+
+        if (hasChanges) {
+            updateThing(builder.build());
+        }
     }
 }

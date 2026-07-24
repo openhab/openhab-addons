@@ -34,6 +34,7 @@ import org.jivesoftware.smackx.disco.provider.DiscoverInfoProvider;
 import org.jivesoftware.smackx.disco.provider.DiscoverItemsProvider;
 import org.jivesoftware.smackx.xdata.provider.DataFormProvider;
 import org.openhab.binding.ecovacs.internal.handler.EcovacsApiHandler;
+import org.openhab.binding.ecovacs.internal.handler.EcovacsMowerHandler;
 import org.openhab.binding.ecovacs.internal.handler.EcovacsVacuumHandler;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
@@ -62,7 +63,8 @@ public class EcovacsHandlerFactory extends BaseThingHandlerFactory {
     private final TranslationProvider i18Provider;
     private final EcovacsDynamicStateDescriptionProvider stateDescriptionProvider;
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_API, THING_TYPE_VACUUM);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_API, THING_TYPE_VACUUM,
+            THING_TYPE_MOWER);
 
     @Activate
     public EcovacsHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
@@ -98,6 +100,8 @@ public class EcovacsHandlerFactory extends BaseThingHandlerFactory {
 
         if (THING_TYPE_API.equals(thingTypeUID)) {
             return new EcovacsApiHandler((Bridge) thing, httpClientFactory.getCommonHttpClient(), localeProvider);
+        } else if (THING_TYPE_MOWER.equals(thingTypeUID)) {
+            return new EcovacsMowerHandler(thing, i18Provider, localeProvider);
         } else {
             return new EcovacsVacuumHandler(thing, i18Provider, localeProvider, stateDescriptionProvider);
         }

@@ -61,6 +61,7 @@ import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.PortalI
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.PortalLoginResponse;
 import org.openhab.binding.ecovacs.internal.api.model.CleanLogRecord;
 import org.openhab.binding.ecovacs.internal.api.model.DeviceCapability;
+import org.openhab.binding.ecovacs.internal.api.model.DeviceType;
 import org.openhab.binding.ecovacs.internal.api.util.DataParsingException;
 import org.openhab.binding.ecovacs.internal.api.util.SchedulerTask;
 import org.openhab.binding.ecovacs.internal.api.util.XPathUtils;
@@ -102,6 +103,11 @@ public class EcovacsXmppDevice implements EcovacsDevice {
     @Override
     public String getModelName() {
         return desc.modelName;
+    }
+
+    @Override
+    public DeviceType getDeviceType() {
+        return desc.deviceType;
     }
 
     @Override

@@ -38,6 +38,7 @@ import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.PortalC
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.PortalLoginResponse;
 import org.openhab.binding.ecovacs.internal.api.model.CleanLogRecord;
 import org.openhab.binding.ecovacs.internal.api.model.DeviceCapability;
+import org.openhab.binding.ecovacs.internal.api.model.DeviceType;
 import org.openhab.core.io.net.http.TrustAllTrustManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,6 +86,11 @@ public class EcovacsIotMqDevice implements EcovacsDevice {
     @Override
     public String getModelName() {
         return desc.modelName;
+    }
+
+    @Override
+    public DeviceType getDeviceType() {
+        return desc.deviceType;
     }
 
     @Override
