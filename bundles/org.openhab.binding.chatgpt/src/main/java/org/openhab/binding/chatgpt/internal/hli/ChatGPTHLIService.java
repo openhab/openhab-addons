@@ -12,16 +12,9 @@
  */
 package org.openhab.binding.chatgpt.internal.hli;
 
+import static org.openhab.binding.chatgpt.internal.ChatGPTBindingConstants.DEFAULT_SYSTEM_MESSAGE;
 import static org.openhab.binding.chatgpt.internal.hli.ChatGPTHLIConstants.SERVICE_ID;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -32,105 +25,75 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.chatgpt.internal.ChatGPTConfiguration;
 import org.openhab.binding.chatgpt.internal.ChatGPTHandler;
-import org.openhab.binding.chatgpt.internal.dto.ChatFunction;
-import org.openhab.binding.chatgpt.internal.dto.ChatFunctionCall;
-import org.openhab.binding.chatgpt.internal.dto.ChatMessage;
-import org.openhab.binding.chatgpt.internal.dto.ChatRequestBody;
-import org.openhab.binding.chatgpt.internal.dto.ChatResponse;
-import org.openhab.binding.chatgpt.internal.dto.ChatToolCalls;
-import org.openhab.binding.chatgpt.internal.dto.ChatTools;
-import org.openhab.binding.chatgpt.internal.dto.ToolChoice;
-import org.openhab.binding.chatgpt.internal.dto.functions.ItemsControl;
-import org.openhab.core.events.EventPublisher;
-import org.openhab.core.items.Item;
-import org.openhab.core.items.ItemNotFoundException;
-import org.openhab.core.items.ItemRegistry;
-import org.openhab.core.items.events.ItemEventFactory;
-import org.openhab.core.library.items.RollershutterItem;
-import org.openhab.core.library.items.SwitchItem;
-import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.UpDownType;
-import org.openhab.core.model.script.actions.Semantics;
+import org.openhab.binding.chatgpt.internal.api.ChatGPTApiClient;
+import org.openhab.binding.chatgpt.internal.api.ChatGPTApiException;
+import org.openhab.binding.chatgpt.internal.api.ChatGPTLLMToolCall;
+import org.openhab.binding.chatgpt.internal.api.dto.ChatFunctionCall;
+import org.openhab.binding.chatgpt.internal.api.dto.ChatMessage;
+import org.openhab.binding.chatgpt.internal.api.dto.ChatResponse;
+import org.openhab.binding.chatgpt.internal.api.dto.ChatToolCalls;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
-import org.openhab.core.types.Command;
-import org.openhab.core.types.CommandDescription;
-import org.openhab.core.types.CommandOption;
-import org.openhab.core.types.TypeParser;
 import org.openhab.core.voice.text.HumanLanguageInterpreter;
+import org.openhab.core.voice.text.InterpretationException;
+import org.openhab.core.voice.text.InterpreterContext;
+import org.openhab.core.voice.text.conversation.Conversation;
+import org.openhab.core.voice.text.conversation.ConversationException;
+import org.openhab.core.voice.text.conversation.ConversationRole;
+import org.openhab.core.voice.text.interpreter.llm.LLMTool;
+import org.openhab.core.voice.text.interpreter.llm.LLMToolException;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
 
 /**
  * The {@link ChatGPTHLIService} is responsible for handling the human language interpretation using ChatGPT.
- * 
+ *
  * @author Artur Fedjukevits - Initial contribution
+ * @author Florian Hotze - Simplified using ChatGPTApiClient & added localized messages
  */
 @Component(service = { ChatGPTHLIService.class, HumanLanguageInterpreter.class })
 @NonNullByDefault
 public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInterpreter {
+    private static final String ERROR_KEY_MISSING_CONFIG = "hli.error.missing-configuration";
+    private static final String ERROR_KEY_TECHNICAL_PROBLEM = "hli.error.technical-problem";
+    private static final String DEFAULT_ERROR_MISSING_CONFIG = "Cannot interpret due to missing configuration.";
+    private static final String DEFAULT_ERROR_TECHNICAL_PROBLEM = "Cannot interpret due to a technical problem.";
 
-    private @Nullable ThingHandler thingHandler;
-    private List<ChatMessage> messages = new ArrayList<>();
-
-    private LocalTime lastMessageTime = LocalTime.now();
-    private List<ChatTools> tools = new ArrayList<>();
     private final Logger logger = LoggerFactory.getLogger(ChatGPTHLIService.class);
-    private final Map<String, ChatFunction> functions = new HashMap<>();
-    private @Nullable ItemRegistry itemRegistry;
-    private @Nullable EventPublisher eventPublisher;
-    private @Nullable ChatGPTConfiguration config;
+    private final TranslationProvider i18nProvider;
+    private final Bundle bundle;
+
+    private @Nullable ChatGPTHandler handler;
 
     @Activate
-    public ChatGPTHLIService(@Reference ItemRegistry itemRegistry, @Reference EventPublisher eventPublisher) {
-        this.itemRegistry = itemRegistry;
-        this.eventPublisher = eventPublisher;
-
-        try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("/json/tools.json");
-                InputStreamReader reader = new InputStreamReader(is, StandardCharsets.UTF_8)) {
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode node = mapper.readTree(reader);
-
-            try {
-                this.tools = Arrays.asList(mapper.treeToValue(node, ChatTools[].class));
-            } catch (JsonProcessingException e) {
-                logger.debug("Error processing tools.json", e);
-            }
-        } catch (IOException e) {
-            logger.error("Error reading tools.json", e);
-        }
-
-        for (ChatTools tool : tools) {
-            logger.debug("Loaded tool: {}", tool.getFunction().getName());
-        }
-
-        functions.clear();
-        functions.putAll(tools.stream().collect(HashMap::new, (map, tool) -> {
-            ChatFunction function = tool.getFunction();
-            String functionName = function.getName();
-
-            map.put(functionName, function);
-        }, HashMap::putAll));
-
-        ChatFunction itemControlFunction = functions.get("items_control");
-        if (itemControlFunction != null) {
-            itemControlFunction.setParametersClass(ItemsControl.class);
-
-            itemControlFunction.setExecutor(p -> {
-                ItemsControl parameters = (ItemsControl) p;
-                return sendCommand(parameters.getName(), parameters.getState());
-            });
-        }
+    public ChatGPTHLIService(final @Reference TranslationProvider i18nProvider, BundleContext context) {
+        this.i18nProvider = i18nProvider;
+        this.bundle = context.getBundle();
         logger.debug("ChatGPTHLIService activated");
+    }
+
+    @Override
+    public void setThingHandler(@Nullable ThingHandler handler) {
+        if (handler instanceof ChatGPTHandler chatGPTHandler) {
+            this.handler = chatGPTHandler;
+        } else {
+            this.handler = null;
+        }
+    }
+
+    @Override
+    public @Nullable ThingHandler getThingHandler() {
+        return handler;
     }
 
     @Override
@@ -139,22 +102,8 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
     }
 
     @Override
-    public Set<String> getSupportedGrammarFormats() {
-        return Set.of();
-    }
-
-    @Override
-    public String interpret(Locale locale, String text) {
-        String requestBody = prepareRequestBody(text);
-        if (requestBody == null) {
-            return "Failed to prepare request body";
-        }
-
-        if (thingHandler instanceof ChatGPTHandler chatGPTHandler) {
-            String response = chatGPTHandler.sendPrompt(requestBody);
-            return processChatResponse(response);
-        }
-        return "Failed to interpret text";
+    public String getLabel(@Nullable Locale locale) {
+        return "ChatGPT Human Language Interpreter";
     }
 
     @Override
@@ -163,263 +112,207 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
     }
 
     @Override
-    public String getLabel(@Nullable Locale locale) {
-        return "ChatGPT Human Language Interpreter";
+    public Set<String> getSupportedGrammarFormats() {
+        return Set.of();
     }
 
     @Override
-    @Nullable
-    public String getGrammar(Locale locale, String format) {
-        return "null";
+    public @Nullable String getGrammar(Locale locale, String format) {
+        return null;
+    }
+
+    private String getLocalizedMessage(String key, String defaultText, Locale locale) {
+        String message = i18nProvider.getText(bundle, key, defaultText, locale);
+        return message != null ? message : defaultText;
     }
 
     @Override
-    public void setThingHandler(ThingHandler handler) {
-        this.thingHandler = handler;
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return thingHandler;
-    }
-
-    @Override
-    public void activate() {
-    }
-
-    private String processChatResponse(@Nullable String response) {
-        if (response == null || response.isEmpty()) {
-            return "";
+    public String interpret(Locale locale, String text) throws InterpretationException {
+        ChatGPTHandler handler = this.handler;
+        if (handler == null) {
+            logger.warn("Cannot interpret: ChatGPTHandler is not initialized");
+            throw new InterpretationException(
+                    getLocalizedMessage(ERROR_KEY_MISSING_CONFIG, DEFAULT_ERROR_MISSING_CONFIG, locale));
         }
-
-        logger.trace("Received response: {}", response);
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        ChatResponse chatResponse;
+        ChatGPTApiClient client = handler.getApiClient();
+        ChatGPTConfiguration config = handler.getConfigAs();
+        if (client == null || config == null) {
+            throw new InterpretationException(
+                    getLocalizedMessage(ERROR_KEY_MISSING_CONFIG, DEFAULT_ERROR_MISSING_CONFIG, locale));
+        }
         try {
-            chatResponse = objectMapper.readValue(response, ChatResponse.class);
-        } catch (JsonProcessingException e) {
-            logger.debug("Failed to parse ChatGPT response: {}", e.getMessage(), e);
-            return "";
-        }
-
-        if (chatResponse == null) {
-            logger.warn("Didn't receive any response from ChatGPT - this is unexpected.");
-            return "";
-        }
-
-        this.lastMessageTime = LocalTime.now();
-
-        if (chatResponse.getUsage().getTotalTokens() > this.config.contextThreshold) {
-            Integer lastUserMessageIndex = null;
-            for (int i = messages.size() - 1; i >= 0; i--) {
-                if (messages.get(i).getRole().equals(ChatMessage.Role.USER.value())) {
-                    lastUserMessageIndex = i;
-                    break;
+            ChatResponse response = client.sendPrompt(config.model, text, DEFAULT_SYSTEM_MESSAGE, config.temperature,
+                    config.topP, config.maxTokens, config.requestTimeout);
+            if (response.getChoices() != null && !response.getChoices().isEmpty()) {
+                ChatMessage responseMessage = response.getChoices().getFirst().getChatMessage();
+                if (responseMessage != null && responseMessage.getContent() != null) {
+                    return responseMessage.getContent();
                 }
             }
-
-            if (lastUserMessageIndex != null) {
-                messages.subList(1, lastUserMessageIndex).clear();
-                messages.set(0, generateSystemMessage());
-            }
+        } catch (ChatGPTApiException e) {
+            logger.debug("Request to OpenAI failed: {}", e.getMessage(), e);
+            throw new InterpretationException(
+                    getLocalizedMessage(ERROR_KEY_TECHNICAL_PROBLEM, DEFAULT_ERROR_TECHNICAL_PROBLEM, locale));
         }
-
-        String finishReason = chatResponse.getChoices().get(0).getFinishReason();
-
-        if ("length".equals(finishReason)) {
-            logger.warn("Token length exceeded. Increase the maximum token limit to avoid the issue.");
-            return "";
-        }
-
-        @Nullable
-        ChatMessage chatResponseMessage = chatResponse.getChoices().get(0).getChatMessage();
-
-        if (chatResponseMessage == null) {
-            logger.debug("ChatGPT response does not contain a message.");
-            return "";
-        }
-
-        this.messages.add(chatResponseMessage);
-
-        if ("tool_calls".equals(finishReason)) {
-            executeToolCalls(chatResponseMessage.getToolCalls());
-            return "";
-        } else {
-            return (chatResponseMessage.getContent() == null) ? "" : chatResponseMessage.getContent();
-        }
+        throw new InterpretationException(
+                getLocalizedMessage(ERROR_KEY_TECHNICAL_PROBLEM, DEFAULT_ERROR_TECHNICAL_PROBLEM, locale));
     }
 
-    private void executeToolCalls(@Nullable List<ChatToolCalls> toolCalls) {
-        toolCalls.forEach(tool -> {
-            if (tool.getType().equals("function")) {
-                ChatFunctionCall functionCall = tool.getFunction();
-                if (functionCall != null) {
-                    String functionName = functionCall.getName();
-                    ChatFunction function = functions.get(functionName);
-                    if (function != null) {
-                        ObjectMapper objectMapper = new ObjectMapper();
-                        String arguments = functionCall.getArguments();
-                        Object argumentsObject;
+    @Override
+    public String interpret(Locale locale, InterpreterContext interpreterContext) throws InterpretationException {
+        ChatGPTHandler chatGPTHandler = this.handler;
+        if (chatGPTHandler == null) {
+            logger.warn("Cannot interpret: ChatGPTHandler is not initialized");
+            throw new InterpretationException(
+                    getLocalizedMessage(ERROR_KEY_MISSING_CONFIG, DEFAULT_ERROR_MISSING_CONFIG, locale));
+        }
+        ChatGPTConfiguration config = chatGPTHandler.getConfigAs();
+        ChatGPTApiClient client = chatGPTHandler.getApiClient();
+        if (config == null || client == null) {
+            logger.warn("Cannot interpret: ChatGPT configuration or API client is not available");
+            throw new InterpretationException(
+                    getLocalizedMessage(ERROR_KEY_MISSING_CONFIG, DEFAULT_ERROR_MISSING_CONFIG, locale));
+        }
 
-                        logger.debug("Function '{}' with arguments: {}", functionName, arguments);
-                        JsonNode argumentsNode;
-                        try {
-                            argumentsNode = objectMapper.readTree(arguments);
-                            Class<?> parametersClass = function.getParametersClass();
-                            argumentsObject = objectMapper.treeToValue(argumentsNode, parametersClass);
-                        } catch (JsonProcessingException e) {
-                            logger.debug("Failed to parse arguments: {}", e.getMessage(), e);
-                            return;
+        Conversation conversation = interpreterContext.conversation();
+        List<LLMTool> tools = interpreterContext.tools();
+
+        String systemMessage = interpreterContext.systemPrompt();
+        if (systemMessage == null || systemMessage.isBlank()) {
+            logger.warn("Cannot interpret: System prompt is missing or empty");
+            throw new InterpretationException(
+                    getLocalizedMessage(ERROR_KEY_MISSING_CONFIG, DEFAULT_ERROR_MISSING_CONFIG, locale));
+        }
+        String locationItem = interpreterContext.locationItem();
+        if (locationItem != null && !locationItem.isBlank()) {
+            systemMessage = systemMessage.trim() + "\n\n" + "Your location (item name): " + locationItem;
+        }
+
+        int loopCount = 0;
+        int maxLoops = config.maxToolCalls;
+        while (true) {
+            if (loopCount >= maxLoops) {
+                logger.warn("Cannot interpret: Tool execution loop limit exceeded (max {} iterations)", maxLoops);
+                throw new InterpretationException(
+                        getLocalizedMessage(ERROR_KEY_TECHNICAL_PROBLEM, DEFAULT_ERROR_TECHNICAL_PROBLEM, locale));
+            }
+            loopCount++;
+
+            ChatResponse chatResponse;
+            try {
+                chatResponse = client.sendPrompt(config.model, conversation.getMessages(), tools, systemMessage,
+                        config.temperature, config.topP, config.maxTokens, config.requestTimeout);
+            } catch (ChatGPTApiException e) {
+                logger.warn("Request to OpenAI failed: {}", e.getMessage(), e);
+                var ex = new InterpretationException(
+                        getLocalizedMessage(ERROR_KEY_TECHNICAL_PROBLEM, DEFAULT_ERROR_TECHNICAL_PROBLEM, locale));
+                ex.initCause(e);
+                throw ex;
+            }
+
+            if (chatResponse.getChoices() == null || chatResponse.getChoices().isEmpty()) {
+                logger.warn("Cannot interpret: No valid response received");
+                throw new InterpretationException(
+                        getLocalizedMessage(ERROR_KEY_TECHNICAL_PROBLEM, DEFAULT_ERROR_TECHNICAL_PROBLEM, locale));
+            }
+
+            String finishReason = chatResponse.getChoices().getFirst().getFinishReason();
+            if ("length".equals(finishReason)) {
+                logger.warn("Token length exceeded. Increase maximum token limit to avoid the issue.");
+                throw new InterpretationException(
+                        getLocalizedMessage(ERROR_KEY_TECHNICAL_PROBLEM, DEFAULT_ERROR_TECHNICAL_PROBLEM, locale));
+            }
+
+            @Nullable
+            ChatMessage chatResponseMessage = chatResponse.getChoices().getFirst().getChatMessage();
+            if (chatResponseMessage == null) {
+                logger.warn("ChatGPT response does not contain a message.");
+                throw new InterpretationException(
+                        getLocalizedMessage(ERROR_KEY_TECHNICAL_PROBLEM, DEFAULT_ERROR_TECHNICAL_PROBLEM, locale));
+            }
+
+            if ("tool_calls".equals(finishReason)) {
+                List<ChatToolCalls> toolCalls = chatResponseMessage.getToolCalls();
+                if (toolCalls == null || toolCalls.isEmpty()) {
+                    logger.warn("Finish reason is tool_calls but no tool calls found");
+                    throw new InterpretationException(
+                            getLocalizedMessage(ERROR_KEY_TECHNICAL_PROBLEM, DEFAULT_ERROR_TECHNICAL_PROBLEM, locale));
+                }
+
+                ObjectMapper objectMapper = new ObjectMapper();
+                for (ChatToolCalls toolCall : toolCalls) {
+                    if ("function".equals(toolCall.getType())) {
+                        ChatFunctionCall fc = toolCall.getFunction();
+                        if (fc != null) {
+                            String toolName = fc.getName();
+                            String arguments = fc.getArguments();
+                            Map<String, Object> args = new HashMap<>();
+                            if (arguments != null && !arguments.isEmpty()) {
+                                try {
+                                    args = objectMapper.readValue(arguments, new TypeReference<Map<String, Object>>() {
+                                    });
+                                } catch (JsonProcessingException e) {
+                                    logger.warn("Failed to parse tool call arguments: {}", e.getMessage(), e);
+                                }
+                            }
+
+                            ChatGPTLLMToolCall llmToolCall = new ChatGPTLLMToolCall(toolName != null ? toolName : "",
+                                    args, toolCall.getId());
+
+                            try {
+                                conversation.addMessage(ConversationRole.TOOL_CALL, llmToolCall.toJson());
+                            } catch (ConversationException e) {
+                                logger.warn("Cannot interpret: Failed to add TOOL_CALL to conversation", e);
+                                var ex = new InterpretationException(getLocalizedMessage(ERROR_KEY_TECHNICAL_PROBLEM,
+                                        DEFAULT_ERROR_TECHNICAL_PROBLEM, locale));
+                                ex.initCause(e);
+                                throw ex;
+                            }
+
+                            String result = executeTool(tools, toolName, args, locale);
+
+                            try {
+                                conversation.addMessage(ConversationRole.TOOL_RETURN, result);
+                            } catch (ConversationException e) {
+                                logger.warn("Cannot interpret: Failed to add TOOL_RETURN to conversation", e);
+                                var ex = new InterpretationException(getLocalizedMessage(ERROR_KEY_TECHNICAL_PROBLEM,
+                                        DEFAULT_ERROR_TECHNICAL_PROBLEM, locale));
+                                ex.initCause(e);
+                                throw ex;
+                            }
                         }
-                        Object result = function.getExecutor().apply(argumentsObject);
-                        String resultString = String.valueOf(result);
-                        ChatMessage message = new ChatMessage();
-                        message.setRole(ChatMessage.Role.TOOL.value());
-                        message.setName(functionName);
-                        message.setToolCallId(tool.getId());
-                        message.setContent(resultString);
-                        messages.add(message);
-                    } else {
-                        logger.debug("Function '{}' not found", functionName);
                     }
                 }
-            }
-        });
-    }
-
-    private @Nullable String prepareRequestBody(String message) {
-        if (this.config == null) {
-            if (thingHandler instanceof ChatGPTHandler chatGPTHandler) {
-                this.config = chatGPTHandler.getConfigAs();
-            }
-        }
-
-        if (this.config == null) {
-            logger.debug("Could not get configuration");
-            return null;
-        }
-
-        LocalTime currentTime = LocalTime.now();
-        if (currentTime.isAfter(this.lastMessageTime.plusMinutes(config.keepContext))) {
-            this.messages.clear();
-        }
-        if (this.messages.isEmpty()) {
-            ChatMessage systemMessage = generateSystemMessage();
-            this.messages.add(systemMessage);
-        }
-
-        this.lastMessageTime = currentTime;
-        ChatMessage userMessage = new ChatMessage();
-        userMessage.setRole(ChatMessage.Role.USER.value());
-        userMessage.setContent(message);
-        this.messages.add(userMessage);
-        ChatRequestBody chatRequestBody = new ChatRequestBody();
-
-        if (this.config.model == null || this.config.model.isEmpty()) {
-            logger.debug("Model is not set");
-            return null;
-        }
-
-        chatRequestBody.setModel(this.config.model);
-        chatRequestBody.setTemperature(this.config.temperature);
-        chatRequestBody.setMaxTokens(this.config.maxTokens);
-        chatRequestBody.setTopP(this.config.topP);
-        chatRequestBody.setToolChoice(ToolChoice.AUTO.value());
-        chatRequestBody.setTools(this.tools);
-        chatRequestBody.setMessages(this.messages);
-
-        ObjectMapper objectMapper = JsonMapper.builder().serializationInclusion(Include.NON_NULL).build();
-
-        try {
-            return objectMapper.writeValueAsString(chatRequestBody);
-        } catch (JsonProcessingException e) {
-            logger.debug("Failed to serialize ChatGPT request: {}", e.getMessage(), e);
-            return null;
-        }
-    }
-
-    private ChatMessage generateSystemMessage() {
-        ChatMessage systemMessage = new ChatMessage();
-        systemMessage.setRole(ChatMessage.Role.SYSTEM.value());
-        StringBuilder content = new StringBuilder();
-        content.append(this.config.systemMessage);
-
-        Collection<Item> openaiItems = itemRegistry.getItemsByTag("ChatGPT");
-
-        if (!openaiItems.isEmpty()) {
-            openaiItems.forEach(item -> {
-                String location = "";
-                String itemType = item.getType();
-                CommandDescription description = item.getCommandDescription();
-                List<CommandOption> options = new ArrayList<>();
-
-                if (description != null) {
-                    options = description.getCommandOptions();
-                }
-
-                content.append("name: \"").append(item.getName()).append("\", type: \"").append(itemType);
-
-                if (config.useSemanticModel) {
-                    Item locationItem = Semantics.getLocation(item);
-                    if (locationItem != null) {
-                        location = locationItem.getName();
-                    }
-                } else {
-                    String[] nameParts = item.getName().split("_");
-                    location = nameParts[0];
-                }
-
-                if (!location.isEmpty()) {
-                    content.append("\", location: \"").append(location);
-                }
-
-                if (!options.isEmpty()) {
-                    content.append("\", accepted commands: \"");
-                    options.forEach(option -> {
-                        content.append(option.getCommand()).append(", ");
-                    });
-                    content.delete(content.length() - 2, content.length());
-                    content.append("\"").append(System.lineSeparator());
-                }
-
-                content.append("\", description: \"").append(item.getLabel()).append("\", state: \"")
-                        .append(item.getState().toString()).append("\"").append(System.lineSeparator());
-            });
-        }
-
-        systemMessage.setContent(content.toString());
-        return systemMessage;
-    }
-
-    public String sendCommand(String itemName, String commandString) {
-        try {
-            Item item = itemRegistry.getItem(itemName);
-            Command command = null;
-            if ("toggle".equalsIgnoreCase(commandString)
-                    && (item instanceof SwitchItem || item instanceof RollershutterItem)) {
-                if (OnOffType.ON.equals(item.getStateAs(OnOffType.class))) {
-                    command = OnOffType.OFF;
-                } else if (OnOffType.OFF.equals(item.getStateAs(OnOffType.class))) {
-                    command = OnOffType.ON;
-                } else if (UpDownType.UP.equals(item.getStateAs(UpDownType.class))) {
-                    command = UpDownType.DOWN;
-                } else if (UpDownType.DOWN.equals(item.getStateAs(UpDownType.class))) {
-                    command = UpDownType.UP;
-                }
             } else {
-                command = TypeParser.parseCommand(item.getAcceptedCommandTypes(), commandString);
+                String finalResponse = chatResponseMessage.getContent() != null ? chatResponseMessage.getContent() : "";
+                try {
+                    conversation.addMessage(ConversationRole.OPENHAB, finalResponse);
+                } catch (ConversationException e) {
+                    logger.warn("Cannot interpret: Failed to add OPENHAB message to conversation", e);
+                    var ex = new InterpretationException(
+                            getLocalizedMessage(ERROR_KEY_TECHNICAL_PROBLEM, DEFAULT_ERROR_TECHNICAL_PROBLEM, locale));
+                    ex.initCause(e);
+                    throw ex;
+                }
+                return finalResponse;
             }
-            if (command != null) {
-                logger.debug("Received command '{}' for item '{}'", commandString, itemName);
-                eventPublisher.post(ItemEventFactory.createCommandEvent(itemName, command));
-                return "Done";
-            } else {
-                return "Invalid command";
-            }
-        } catch (ItemNotFoundException e) {
-            logger.warn("Received command '{}' for a non-existent item '{}'", commandString, itemName);
-            return "Item not found";
+        }
+    }
+
+    private String executeTool(List<LLMTool> tools, @Nullable String toolName, @Nullable Map<String, Object> args,
+            Locale locale) {
+        if (toolName == null) {
+            return "Error: Tool name is null";
+        }
+        LLMTool tool = tools.stream().filter(t -> t.getUID().replaceAll("[^a-zA-Z0-9_-]", "_").equals(toolName))
+                .findFirst().orElse(null);
+        if (tool == null) {
+            return "Error: Tool " + toolName + " not found";
+        }
+        try {
+            return tool.call(args != null ? args : new HashMap<>(), locale);
+        } catch (LLMToolException e) {
+            return "Error: " + e.getMessage();
         }
     }
 }
