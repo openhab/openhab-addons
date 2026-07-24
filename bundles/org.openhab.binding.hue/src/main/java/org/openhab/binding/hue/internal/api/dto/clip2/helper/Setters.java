@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.hue.internal.api.dto.clip2.helper;
 
-import java.math.BigDecimal;
+import static org.openhab.binding.hue.internal.HueBindingConstants.LIGHT_TYPES;
+
 import java.time.Duration;
 import java.util.Collection;
 import java.util.HashMap;
@@ -20,7 +21,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -37,8 +37,10 @@ import org.openhab.binding.hue.internal.api.dto.clip2.TimedEffects;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ActionType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.EffectType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ResourceType;
+import org.openhab.binding.hue.internal.exceptions.CriticalFieldMissing;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -55,8 +57,6 @@ import org.openhab.core.util.ColorUtil.Gamut;
  */
 @NonNullByDefault
 public class Setters {
-
-    private static final Set<ResourceType> LIGHT_TYPES = Set.of(ResourceType.LIGHT, ResourceType.GROUPED_LIGHT);
 
     /**
      * Setter for Alert field:
@@ -110,7 +110,7 @@ public class Setters {
             double min = schema.getMirekMinimum();
             double max = schema.getMirekMaximum();
             double val = Math.max(min, Math.min(max, mirekQuantity.doubleValue()));
-            target.setColorTemperature(colorTemperature.setMirek(val));
+            target.setColorTemperature(colorTemperature.setMirek(Math.round(val)));
         }
         return target;
     }
@@ -136,7 +136,7 @@ public class Setters {
             double min = schema.getMirekMinimum();
             double max = schema.getMirekMaximum();
             double val = min + ((max - min) * mirek.doubleValue() / 100f);
-            target.setColorTemperature(colorTemperature.setMirek(val));
+            target.setColorTemperature(colorTemperature.setMirek(Math.round(val)));
         }
         return target;
     }
@@ -157,34 +157,10 @@ public class Setters {
         if (command instanceof HSBType hsb) {
             hsb = new HSBType(hsb.getHue(), hsb.getSaturation(), PercentType.HUNDRED);
             ColorXy color = target.getColorXy();
-            target.setColorXy((Objects.nonNull(color) ? color : new ColorXy()).setXY(ColorUtil.hsbToXY(hsb)));
-        }
-        return target;
-    }
-
-    /**
-     * Setter for Dimming field:
-     * Use the given command value to set the target resource DTO value based on the attributes of the source resource
-     * (if any).
-     *
-     * @param target the target resource.
-     * @param command the new state command should be a PercentType with the new dimming parameter.
-     * @param source another resource containing the minimum dimming level.
-     *
-     * @return the target resource.
-     */
-    public static Resource setDimming(Resource target, Command command, @Nullable Resource source) {
-        if (command instanceof PercentType brightness) {
-            Double min = target.getMinimumDimmingLevel();
-            min = Objects.nonNull(min) ? min : Objects.nonNull(source) ? source.getMinimumDimmingLevel() : null;
-            min = Objects.nonNull(min) ? min : Dimming.DEFAULT_MINIMUM_DIMMIMG_LEVEL;
-            if (brightness.doubleValue() < min.doubleValue()) {
-                brightness = new PercentType(new BigDecimal(min, Resource.PERCENT_MATH_CONTEXT));
-            }
-            Dimming dimming = target.getDimming();
-            dimming = Objects.nonNull(dimming) ? dimming : new Dimming();
-            dimming.setBrightness(brightness.doubleValue());
-            target.setDimming(dimming);
+            Gamut gamut = target.getGamut();
+            gamut = Objects.nonNull(gamut) ? gamut : Objects.nonNull(source) ? source.getGamut() : null;
+            gamut = Objects.nonNull(gamut) ? gamut : ColorUtil.DEFAULT_GAMUT;
+            target.setColorXy((Objects.nonNull(color) ? color : new ColorXy()).setXY(ColorUtil.hsbToXY(hsb, gamut)));
         }
         return target;
     }
@@ -245,9 +221,10 @@ public class Setters {
         }
 
         // minimum dimming level
-        if (Objects.nonNull(targetDimming)) {
-            Double sourceMinDimLevel = Objects.isNull(sourceDimming) ? null : sourceDimming.getMinimumDimmingLevel();
-            if (Objects.nonNull(sourceMinDimLevel)) {
+        if (Objects.nonNull(targetDimming) && Objects.nonNull(sourceDimming)) {
+            Double targetMinDimLevel = targetDimming.getMinimumDimmingLevel();
+            Double sourceMinDimLevel = sourceDimming.getMinimumDimmingLevel();
+            if (Objects.isNull(targetMinDimLevel) && Objects.nonNull(sourceMinDimLevel)) {
                 targetDimming.setMinimumDimmingLevel(sourceMinDimLevel);
             }
         }
@@ -261,9 +238,12 @@ public class Setters {
         }
 
         // color gamut
-        Gamut sourceGamut = Objects.isNull(sourceColor) ? null : sourceColor.getGamut();
-        if (Objects.nonNull(targetColor) && Objects.nonNull(sourceGamut)) {
-            targetColor.setGamut(sourceGamut);
+        if (Objects.nonNull(sourceColor) && Objects.nonNull(targetColor)) {
+            Gamut targetGamut = targetColor.getGamut();
+            Gamut sourceGamut = sourceColor.getGamut();
+            if (Objects.isNull(targetGamut) && Objects.nonNull(sourceGamut)) {
+                targetColor.setGamut(sourceGamut);
+            }
         }
 
         // color temperature
@@ -275,9 +255,10 @@ public class Setters {
         }
 
         // mirek schema
-        if (Objects.nonNull(targetColorTemp)) {
-            MirekSchema sourceMirekSchema = Objects.isNull(sourceColorTemp) ? null : sourceColorTemp.getMirekSchema();
-            if (Objects.nonNull(sourceMirekSchema)) {
+        if (Objects.nonNull(targetColorTemp) && Objects.nonNull(sourceColorTemp)) {
+            MirekSchema targetMirekSchema = targetColorTemp.getMirekSchema();
+            MirekSchema sourceMirekSchema = sourceColorTemp.getMirekSchema();
+            if (Objects.isNull(targetMirekSchema) && Objects.nonNull(sourceMirekSchema)) {
                 targetColorTemp.setMirekSchema(sourceMirekSchema);
             }
         }
@@ -382,5 +363,42 @@ public class Setters {
         }
 
         return resources;
+    }
+
+    /**
+     * Create an OnOffType command based on the given brightness or delta value, considering the minimum dimming level
+     * from the cache if available. The purpose is to send a "hard" ON if the lamp is definitely ON and a hard "OFF" if
+     * it is definitely OFF, and thus avoiding sending "soft off" commands to the light. Note the minimum dimming level
+     * is applied on lights only and not on grouped lights.
+     * 
+     * @param brightnessValue the target brightness or the delta to be added to the prior cached value.
+     * @param valueIsAbsolute true if the brightnessValue is an absolute value, false if it is a delta.
+     * @param source the cached resource to get the minimum dimming level from (may be null).
+     * @return the OnOffType command to be sent.
+     * @throws CriticalFieldMissing if there is not enough data to create the command.
+     */
+    public static OnOffType getHardOnOff(Resource target, Double brightnessValue, boolean valueIsAbsolute,
+            @Nullable Resource source) throws CriticalFieldMissing {
+        Double bri;
+        if (valueIsAbsolute) {
+            bri = brightnessValue;
+        } else if (source != null && source.getDimmingValue() instanceof Double dim) {
+            bri = dim + brightnessValue;
+        } else {
+            throw new CriticalFieldMissing("Not enough data to create hard on/off command");
+        }
+        Double min = target.getMinimumDimmingLevel();
+        min = min != null ? min : source != null ? source.getMinimumDimmingLevel() : null;
+        min = min != null ? min : ResourceType.LIGHT == target.getType() ? Dimming.DEFAULT_MINIMUM_DIMMING_LEVEL : 0.0;
+        return OnOffType.from(bri >= Math.max(0.01, min));
+    }
+
+    /**
+     * Add a key-value pair to the given map only if the value is not null.
+     */
+    public static void putIfExists(Map<String, String> map, String key, @Nullable String value) {
+        if (value != null) {
+            map.put(key, value);
+        }
     }
 }

@@ -33,7 +33,6 @@ import org.openhab.binding.hue.internal.api.dto.clip2.Resource;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ContentType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ResourceType;
 import org.openhab.binding.hue.internal.api.dto.clip2.helper.Setters;
-import org.openhab.binding.hue.internal.exceptions.DTOPresentButEmptyException;
 
 /**
  * Tests for {@link Setters}.
@@ -52,13 +51,10 @@ public class SettersTest {
      *
      * Expected output:
      * - Resource 1: type=light/grouped_light, sparse, id=1, on=on, dimming=50
-     *
-     * @throws DTOPresentButEmptyException
      */
     @ParameterizedTest
     @MethodSource("provideLightResourceTypes")
-    void mergeLightResourcesMergeOnStateAndDimmingWhenSparseAndSameId(ResourceType resourceType)
-            throws DTOPresentButEmptyException {
+    void mergeLightResourcesMergeOnStateAndDimmingWhenSparseAndSameId(ResourceType resourceType) {
         List<Resource> resources = new ArrayList<>();
 
         Resource resource1 = createResource(resourceType, "1");
@@ -79,7 +75,7 @@ public class SettersTest {
         OnState actualOnState = mergedResource.getOnState();
         assertThat(actualOnState, is(notNullValue()));
         if (actualOnState != null) {
-            assertThat(actualOnState.isOn(), is(true));
+            assertThat(actualOnState.getOn(), is(true));
         }
         Dimming actualDimming = mergedResource.getDimming();
         assertThat(actualDimming, is(notNullValue()));
@@ -101,11 +97,9 @@ public class SettersTest {
      *
      * Expected output:
      * - Resource 1: type=light, sparse, id=1, dimming=50
-     *
-     * @throws DTOPresentButEmptyException
      */
     @Test
-    void mergeLightResourcesMergeDimmingToLatestValueWhenSparseAndSameId() throws DTOPresentButEmptyException {
+    void mergeLightResourcesMergeDimmingToLatestValueWhenSparseAndSameId() {
         List<Resource> resources = new ArrayList<>();
 
         Resource resource1 = createResource(ResourceType.LIGHT, "1");
@@ -138,11 +132,9 @@ public class SettersTest {
      * Expected output:
      * - Resource 1: type=light, sparse, id=1, on=on, dimming=50
      * - Resource 2: type=light, sparse, id=1, effect=xxx
-     *
-     * @throws DTOPresentButEmptyException
      */
     @Test
-    void mergeLightResourcesMergeHSBFieldsDoNotRemoveResourceWithEffect() throws DTOPresentButEmptyException {
+    void mergeLightResourcesMergeHSBFieldsDoNotRemoveResourceWithEffect() {
         List<Resource> resources = new ArrayList<>();
 
         Resource resource1 = createResource(ResourceType.LIGHT, "1");
@@ -163,7 +155,7 @@ public class SettersTest {
         OnState actualOnState = mergedResource.getOnState();
         assertThat(actualOnState, is(notNullValue()));
         if (actualOnState != null) {
-            assertThat(actualOnState.isOn(), is(true));
+            assertThat(actualOnState.getOn(), is(true));
         }
         Dimming actualDimming = mergedResource.getDimming();
         assertThat(actualDimming, is(notNullValue()));
@@ -186,11 +178,9 @@ public class SettersTest {
      * Expected output:
      * - Resource 1: type=light, sparse, id=1, on=on
      * - Resource 2: type=light, sparse, id=2, dimming=50
-     *
-     * @throws DTOPresentButEmptyException
      */
     @Test
-    void mergeLightResourcesDoNotMergeOnStateAndDimmingWhenSparseAndDifferentId() throws DTOPresentButEmptyException {
+    void mergeLightResourcesDoNotMergeOnStateAndDimmingWhenSparseAndDifferentId() {
         List<Resource> resources = new ArrayList<>();
 
         Resource resource1 = createResource(ResourceType.LIGHT, "1");
@@ -208,7 +198,7 @@ public class SettersTest {
         OnState actualOnState = firstResource.getOnState();
         assertThat(actualOnState, is(notNullValue()));
         if (actualOnState != null) {
-            assertThat(actualOnState.isOn(), is(true));
+            assertThat(actualOnState.getOn(), is(true));
         }
         assertThat(firstResource.getDimming(), is(nullValue()));
 
@@ -229,11 +219,9 @@ public class SettersTest {
      *
      * Expected output:
      * - Exception thrown, full state is not supported/expected.
-     *
-     * @throws DTOPresentButEmptyException
      */
     @Test
-    void mergeLightResourcesMergeOnStateAndDimmingWhenFullStateFirstAndSameId() throws DTOPresentButEmptyException {
+    void mergeLightResourcesMergeOnStateAndDimmingWhenFullStateFirstAndSameId() {
         List<Resource> resources = new ArrayList<>();
 
         Resource resource = new Resource(ResourceType.LIGHT);
@@ -255,12 +243,9 @@ public class SettersTest {
      * Expected output:
      * - Resource 1: type=light, sparse, id=1, on=on
      * - Resource 2: type=light, sparse, id=1, color temperature=370 mirek
-     *
-     * @throws DTOPresentButEmptyException
      */
     @Test
-    void mergeLightResourcesDoNotMergeOnStateAndColorTemperatureWhenSparseAndSameId()
-            throws DTOPresentButEmptyException {
+    void mergeLightResourcesDoNotMergeOnStateAndColorTemperatureWhenSparseAndSameId() {
         List<Resource> resources = new ArrayList<>();
 
         Resource resource1 = createResource(ResourceType.LIGHT, "1");
@@ -268,7 +253,7 @@ public class SettersTest {
         resources.add(resource1);
 
         Resource resource2 = createResource(ResourceType.LIGHT, "1");
-        resource2.setColorTemperature(createColorTemperature(370));
+        resource2.setColorTemperature(createColorTemperature(370L));
         resources.add(resource2);
 
         Setters.mergeLightResources(resources);
@@ -278,7 +263,7 @@ public class SettersTest {
         OnState actualOnState = firstResource.getOnState();
         assertThat(actualOnState, is(notNullValue()));
         if (actualOnState != null) {
-            assertThat(actualOnState.isOn(), is(true));
+            assertThat(actualOnState.getOn(), is(true));
         }
         assertThat(firstResource.getColorTemperature(), is(nullValue()));
 
@@ -302,12 +287,9 @@ public class SettersTest {
      * Expected output:
      * - Resource 1: type=light, sparse, id=1, on=on, dimming=50
      * - Resource 2: type=light, sparse, id=1, color temperature=370 mirek
-     *
-     * @throws DTOPresentButEmptyException
      */
     @Test
-    void mergeLightResourcesMergeOnStateAndDimmingButNotColorTemperatureWhenSparseAndSameId()
-            throws DTOPresentButEmptyException {
+    void mergeLightResourcesMergeOnStateAndDimmingButNotColorTemperatureWhenSparseAndSameId() {
         List<Resource> resources = new ArrayList<>();
 
         Resource resource1 = createResource(ResourceType.LIGHT, "1");
@@ -316,7 +298,7 @@ public class SettersTest {
 
         Resource resource2 = createResource(ResourceType.LIGHT, "1");
         resource2.setDimming(createDimming(50));
-        resource2.setColorTemperature(createColorTemperature(370));
+        resource2.setColorTemperature(createColorTemperature(370L));
         resources.add(resource2);
 
         Setters.mergeLightResources(resources);
@@ -326,7 +308,7 @@ public class SettersTest {
         OnState actualOnState = firstResource.getOnState();
         assertThat(actualOnState, is(notNullValue()));
         if (actualOnState != null) {
-            assertThat(actualOnState.isOn(), is(true));
+            assertThat(actualOnState.getOn(), is(true));
         }
         Dimming actualDimming = firstResource.getDimming();
         assertThat(actualDimming, is(notNullValue()));
@@ -353,16 +335,14 @@ public class SettersTest {
      *
      * Expected output:
      * - Resource 1: type=light, sparse, id=1, on=on, color temperature=370
-     *
-     * @throws DTOPresentButEmptyException
      */
     @Test
-    void mergeLightResourcesSeparateOnStateAndColorTemperatureWhenSparseAndSameId() throws DTOPresentButEmptyException {
+    void mergeLightResourcesSeparateOnStateAndColorTemperatureWhenSparseAndSameId() {
         List<Resource> resources = new ArrayList<>();
 
         Resource resource = createResource(ResourceType.LIGHT, "1");
         resource.setOnState(createOnState(true));
-        resource.setColorTemperature(createColorTemperature(370));
+        resource.setColorTemperature(createColorTemperature(370L));
         resources.add(resource);
 
         Setters.mergeLightResources(resources);
@@ -373,7 +353,7 @@ public class SettersTest {
         OnState actualOnState = firstResource.getOnState();
         assertThat(actualOnState, is(notNullValue()));
         if (actualOnState != null) {
-            assertThat(actualOnState.isOn(), is(true));
+            assertThat(actualOnState.getOn(), is(true));
         }
         ColorTemperature actualColorTemperature = firstResource.getColorTemperature();
         assertThat(actualColorTemperature, is(notNullValue()));
@@ -390,11 +370,9 @@ public class SettersTest {
      *
      * Expected output:
      * - Resource 1: type=motion, sparse, id=1
-     *
-     * @throws DTOPresentButEmptyException
      */
     @Test
-    void mergeLightResourcesNonLightResourceShouldNotThrow() throws DTOPresentButEmptyException {
+    void mergeLightResourcesNonLightResourceShouldNotThrow() {
         List<Resource> resources = new ArrayList<>();
 
         Resource resource = createResource(ResourceType.MOTION, "1");
@@ -422,7 +400,7 @@ public class SettersTest {
         return dimming;
     }
 
-    private ColorTemperature createColorTemperature(double mirek) {
+    private ColorTemperature createColorTemperature(Long mirek) {
         ColorTemperature colorTemperature = new ColorTemperature();
         colorTemperature.setMirek(mirek);
 

@@ -35,6 +35,10 @@ public class MetaData {
         return Archetype.of(archetype);
     }
 
+    public String getArchetypeAsString() {
+        return getArchetype().toString();
+    }
+
     public @Nullable String getName() {
         return name;
     }

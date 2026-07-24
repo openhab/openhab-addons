@@ -14,8 +14,7 @@ package org.openhab.binding.hue.internal.clip2;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-
-import java.math.BigDecimal;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -24,6 +23,8 @@ import org.openhab.binding.hue.internal.api.dto.clip2.Dimming;
 import org.openhab.binding.hue.internal.api.dto.clip2.OnState;
 import org.openhab.binding.hue.internal.api.dto.clip2.Resource;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ResourceType;
+import org.openhab.binding.hue.internal.exceptions.CriticalFieldMissing;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.types.UnDefType;
 
@@ -36,57 +37,81 @@ import org.openhab.core.types.UnDefType;
 class OnStateDimmingEdgeCaseTest {
 
     @Test
-    void getBrightnessStateWhenDimmingMissingReturnNull() {
+    void getBrightnessStateWhenDimmingMissingReturnNull() throws CriticalFieldMissing {
         assertThat(createLightResource(true, null).getBrightnessState(), is(equalTo(UnDefType.NULL)));
     }
 
     @Test
-    void getBrightnessStateWhenOnAndDimming75ReturnBrightness75() {
+    void getBrightnessStateWhenOnAndDimming75ReturnBrightness75() throws CriticalFieldMissing {
         assertThat(createLightResource(true, 75.0).getBrightnessState(), is(equalTo(new PercentType(75))));
     }
 
     @Test
-    void getBrightnessStateWhenOnAndDimming125ReturnBrightness100() {
+    void getBrightnessStateWhenOnAndDimming125ReturnBrightness100() throws CriticalFieldMissing {
         assertThat(createLightResource(true, 125.0).getBrightnessState(), is(equalTo(new PercentType(100))));
     }
 
     @Test
-    void getBrightnessStateWhenOffAndDimming100ReturnBrightness0() {
+    void getBrightnessStateWhenOffAndDimming100ReturnBrightness0() throws CriticalFieldMissing {
         assertThat(createLightResource(false, 100.0).getBrightnessState(), is(equalTo(new PercentType(0))));
     }
 
     @Test
-    void getBrightnessStateWhenOnStateMissingAndDimming0ReturnMinimumBrightness0() {
-        assertThat(createLightResource(null, 0.0).getBrightnessState(),
-                is(equalTo(new PercentType(new BigDecimal(Dimming.DEFAULT_MINIMUM_DIMMIMG_LEVEL)))));
+    void getBrightnessStateWhenOnStateMissingAndDimming0Return0() throws CriticalFieldMissing {
+        assertThat(createLightResource(null, 0.0).getBrightnessState(), is(equalTo(PercentType.ZERO)));
     }
 
     @Test
-    void getBrightnessStateWhenOnStateMissingAndDimming100ReturnBrightness100() {
+    void getBrightnessStateWhenOnStateMissingAndDimming100ReturnBrightness100() throws CriticalFieldMissing {
         assertThat(createLightResource(null, 100.0).getBrightnessState(), is(equalTo(new PercentType(100))));
     }
 
     @Test
-    void getBrightnessStateWhenOnStateMissingAndDimmingMinus1ReturnMinimumBrightness() {
-        assertThat(createLightResource(null, -1.0).getBrightnessState(),
-                is(equalTo(new PercentType(new BigDecimal(Dimming.DEFAULT_MINIMUM_DIMMIMG_LEVEL)))));
+    void getBrightnessStateWhenOnStateMissingAndDimmingMinus1Return0() throws CriticalFieldMissing {
+        assertThat(createLightResource(null, -1.0).getBrightnessState(), is(equalTo(PercentType.ZERO)));
     }
 
     @Test
-    void getBrightnessStateWhenOnAndDimmingMinus1ReturnMinimumBrightness() {
-        assertThat(createLightResource(true, -1.0).getBrightnessState(),
-                is(equalTo(new PercentType(new BigDecimal(Dimming.DEFAULT_MINIMUM_DIMMIMG_LEVEL)))));
+    void getBrightnessStateWhenOnAndDimmingMinus1Return0() throws CriticalFieldMissing {
+        assertThat(createLightResource(true, -1.0).getBrightnessState(), is(equalTo(PercentType.ZERO)));
     }
 
     @Test
-    void getBrightnessStateWhenOnAndDimming0ReturnMinimumBrightness() {
-        assertThat(createLightResource(true, 0.0).getBrightnessState(),
-                is(equalTo(new PercentType(new BigDecimal(Dimming.DEFAULT_MINIMUM_DIMMIMG_LEVEL)))));
+    void getBrightnessStateWhenOnAndDimming0Return0() throws CriticalFieldMissing {
+        assertThat(createLightResource(true, 0.0).getBrightnessState(), is(equalTo(PercentType.ZERO)));
     }
 
     @Test
-    void getBrightnessStateWhenOnAndDimming0ReturnCustomMinimumBrightness() {
-        assertThat(createLightResource(true, 0.0, 2.0).getBrightnessState(), is(equalTo(new PercentType(2))));
+    void getBrightnessStateWhenOnAndDimming0AndCustomMinimumBrightnessReturn0() throws CriticalFieldMissing {
+        assertThat(createLightResource(true, 0.0, 2.0).getBrightnessState(), is(equalTo(PercentType.ZERO)));
+    }
+
+    @Test
+    void getTwoStatesWhenOnAndDimming3AndMinimumBrightness2ReturnOn() throws CriticalFieldMissing {
+        // test "soft off": evaluation yields OnOffType.ON state and brightness verbatim
+        Resource res = createLightResource(true, 3.0, 2.0);
+        assertThat(res.getBrightnessState(), is(equalTo(new PercentType(3))));
+        assertThat(res.getSwitchState(), is(equalTo(OnOffType.ON)));
+    }
+
+    @Test
+    void getTwoStatesWhenOnAndDimming1AndMinimumBrightness2ReturnOff() throws CriticalFieldMissing {
+        // test "soft off": evaluation yields OnOffType.OFF state and brightness verbatim
+        Resource res = createLightResource(true, 1.0, 2.0);
+        assertThat(res.getBrightnessState(), is(equalTo(new PercentType(1))));
+        assertThat(res.getSwitchState(), is(equalTo(OnOffType.OFF)));
+    }
+
+    @Test
+    void getSwitchStateWhenOnAndDimming3AndMinimumBrightnessNullThrowsError() {
+        // test "soft off": evaluation lacks critical field, so error is thrown
+        assertThrows(CriticalFieldMissing.class, () -> createLightResource(true, 3.0).getSwitchState());
+    }
+
+    @Test
+    void getSwitchStateWhenOnAndDimming1AndMinimumBrightnessNullThrows() {
+        // test "soft off": evaluation lacks critical field, so error is thrown
+        assertThrows(CriticalFieldMissing.class, () -> createLightResource(true, 1.0).getSwitchState());
     }
 
     private Resource createLightResource(@Nullable Boolean on, @Nullable Double brightness) {
