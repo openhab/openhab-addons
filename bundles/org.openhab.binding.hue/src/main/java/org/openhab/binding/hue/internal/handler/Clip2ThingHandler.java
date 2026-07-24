@@ -678,8 +678,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
      */
     private void loopBackNotify(Resource resource) {
         scheduler.submit(() -> {
-            logger.debug("{} -> loopBackNotify() resource {}", resourceId, resource);
-            onResource(resource);
+            logger.debug("{} -> loopBackNotify() with resource {}", resourceId, resource);
+            onResource(resource.setContentType(ContentType.UPDATE));
         });
     }
 
