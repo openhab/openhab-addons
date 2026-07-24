@@ -65,7 +65,7 @@ import org.openhab.binding.hue.internal.api.dto.clip2.enums.SmartSceneRecallActi
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.SoundValue;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.UpdateStatusV2;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ZigbeeStatus;
-import org.openhab.binding.hue.internal.api.dto.clip2.helper.ColorModeWorkAroundLightState;
+import org.openhab.binding.hue.internal.api.dto.clip2.helper.LegacyLightState;
 import org.openhab.binding.hue.internal.api.dto.clip2.helper.Setters;
 import org.openhab.binding.hue.internal.config.Clip2ThingConfig;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
@@ -144,12 +144,12 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * Pre-compiled pattern matcher based on the following set of Model Id regular expressions for devices having
      * the (legacy) issue where the light operates in either 'XY' or 'CT' mode.
      */
-    private static final Set<String> COLOR_MODE_WORK_AROUND_MODELS = Set.of( //
+    private static final Set<String> OPERATING_MODE_WORK_AROUND_MODELS = Set.of( //
             "RGB-CCT", // Müller Licht extended color light
             "TS0505B" // No Brand extended color light
     );
-    private static final Pattern COLOR_MODE_WORK_AROUND_PATTERN = Pattern
-            .compile(COLOR_MODE_WORK_AROUND_MODELS.stream().collect(Collectors.joining("|")), Pattern.CASE_INSENSITIVE);
+    private static final Pattern OPERATING_MODE_WORK_AROUND_PATTERN = Pattern.compile(
+            OPERATING_MODE_WORK_AROUND_MODELS.stream().collect(Collectors.joining("|")), Pattern.CASE_INSENSITIVE);
 
     private final Logger logger = LoggerFactory.getLogger(Clip2ThingHandler.class);
 
@@ -246,7 +246,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private boolean updateDependenciesDone;
     private boolean applyOffTransitionWorkaround;
 
-    private @Nullable ColorModeWorkAroundLightState workAroundLightState;
+    private @Nullable LegacyLightState legacyLightState;
 
     private @Nullable Future<?> alertResetTask;
     private @Nullable Future<?> dynamicsResetTask;
@@ -458,16 +458,10 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     // fall through
                 }
                 putResource = Setters.setColorTemperaturePercent(new Resource(lightResourceType), command, cache);
-                if (workAroundLightState instanceof ColorModeWorkAroundLightState lightState) {
-                    lightState.setValues(Objects.requireNonNull(putResource.getColorTemperature()).getMirek(), null);
-                }
                 break;
 
             case CHANNEL_2_COLOR_TEMP_ABSOLUTE:
                 putResource = Setters.setColorTemperatureAbsolute(new Resource(lightResourceType), command, cache);
-                if (workAroundLightState instanceof ColorModeWorkAroundLightState lightState) {
-                    lightState.setValues(Objects.requireNonNull(putResource.getColorTemperature()).getMirek(), null);
-                }
                 break;
 
             case CHANNEL_2_COLOR:
@@ -475,9 +469,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 if (command instanceof HSBType colorCommand) {
                     putResource = Setters.setColorXy(putResource, colorCommand, cache);
                     command = colorCommand.getBrightness();
-                    if (workAroundLightState instanceof ColorModeWorkAroundLightState lightState) {
-                        lightState.setValues(null, Objects.requireNonNull(putResource.getColorXy()).getXY());
-                    }
                 }
                 // NB fall through for handling of brightness and switch related commands !!
 
@@ -502,9 +493,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
             case CHANNEL_2_COLOR_XY_ONLY:
                 putResource = Setters.setColorXy(new Resource(lightResourceType), command, cache);
-                if (workAroundLightState instanceof ColorModeWorkAroundLightState lightState) {
-                    lightState.setValues(null, Objects.requireNonNull(putResource.getColorXy()).getXY());
-                }
                 break;
 
             case CHANNEL_2_DIMMING_ONLY:
@@ -793,7 +781,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
         updateLightCacheRequiredFieldsDone = false;
         updateSceneContributorsDone = false;
         applyOffTransitionWorkaround = false;
-        workAroundLightState = null;
+        legacyLightState = null;
 
         Bridge bridge = getBridge();
         if (Objects.nonNull(bridge)) {
@@ -1132,21 +1120,18 @@ public class Clip2ThingHandler extends BaseThingHandler {
             case LIGHT:
                 ColorXy color = resource.getColorXy();
                 ColorTemperature colorTemp = resource.getColorTemperature();
+                LegacyLightState legacyState = legacyLightState;
+                PairXy legacyColor = legacyState != null && colorTemp != null && color != null ? color.getXY() : null;
 
                 if (fullUpdate) {
                     updateLightProperties(resource);
                     updateLightCacheRequiredFields(resource);
                     updateEffectChannel(resource);
                     updateColorTemperatureAbsoluteChannel(resource);
-                    if (workAroundLightState instanceof ColorModeWorkAroundLightState lightState) {
-                        Long mirek = colorTemp instanceof ColorTemperature ct ? ct.getMirek() : null;
-                        PairXy xy = color instanceof ColorXy cx ? cx.getXY() : null;
-                        if (xy == null) {
-                            logger.debug("{} -> updateChannels() work-around '{}' color field null", resourceId,
-                                    lightState);
-                        } else {
-                            lightState.setValues(mirek, xy);
-                        }
+                    if (legacyState != null && legacyColor != null && colorTemp != null) {
+                        legacyState.setParameters(legacyColor, colorTemp.getMirek());
+                        logger.debug("{} -> updateChannels() initialised operating mode work-around legacy state {}",
+                                resourceId, legacyState);
                     }
                 }
 
@@ -1155,23 +1140,19 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 State colorTempState = resource.getColorTemperaturePercentState();
                 State colorTempAbsState = resource.getColorTemperatureAbsoluteState();
 
-                if (updateDependenciesDone
-                        && workAroundLightState instanceof ColorModeWorkAroundLightState lightState) {
-                    if (colorTemp != null && color != null) {
-                        lightState.setValues(colorTemp.getMirek(), color.getXY());
-                        color.setXY(lightState.getXY());
-                        colorTemp.setMirek(lightState.getMirek());
-                        State oldColorState = colorState;
-                        State oldColorTempState = colorTempState;
-                        colorState = resource.getColorState();
-                        colorXyState = resource.getColorXyState();
-                        colorTempState = resource.getColorTemperaturePercentState();
-                        colorTempAbsState = resource.getColorTemperatureAbsoluteState();
-                        logger.debug("{} -> updateChannels() work-around '{}' produced {} -> {} and {} -> {}",
-                                resourceId, lightState, oldColorState, colorState, oldColorTempState, colorTempState);
-                    } else {
-                        logger.debug("{} -> updateChannels() color temp or color field unexpectedly null", resourceId);
-                    }
+                if (legacyState != null && legacyColor != null && colorTemp != null && color != null) {
+                    State colorPrior = colorState;
+                    State colorTempPrior = colorTempState;
+                    legacyState.setParameters(legacyColor, colorTemp.getMirek());
+                    color.setXY(legacyState.getXY());
+                    colorTemp.setMirek(legacyState.getMirek());
+                    colorState = resource.getColorState();
+                    colorXyState = resource.getColorXyState();
+                    colorTempState = resource.getColorTemperaturePercentState();
+                    colorTempAbsState = resource.getColorTemperatureAbsoluteState();
+                    logger.debug(
+                            "{} -> updateChannels() operating mode work-around legacy state {} transformed ({}) to ({}) and {} to {}",
+                            resourceId, legacyState, colorPrior, colorState, colorTempPrior, colorTempState);
                 }
 
                 updateState(CHANNEL_2_COLOR, colorState, fullUpdate);
@@ -1503,9 +1484,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     logger.debug("{} -> enabled off transition work-around for {}", resourceId, modelId);
                 }
 
-                if (COLOR_MODE_WORK_AROUND_PATTERN.matcher(modelId).matches()) {
-                    workAroundLightState = new ColorModeWorkAroundLightState();
-                    logger.debug("{} -> enabled color mode work-around for {}", resourceId, modelId);
+                if (OPERATING_MODE_WORK_AROUND_PATTERN.matcher(modelId).matches()) {
+                    legacyLightState = new LegacyLightState();
+                    logger.debug("{} -> enabled operating mode work-around for {}", resourceId, modelId);
                 }
             }
 

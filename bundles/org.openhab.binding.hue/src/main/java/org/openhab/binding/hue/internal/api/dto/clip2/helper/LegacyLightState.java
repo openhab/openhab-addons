@@ -23,7 +23,11 @@ import org.openhab.binding.hue.internal.api.dto.clip2.PairXy;
  * @author Andrew Fiddian-Green - Initial contribution.
  */
 @NonNullByDefault
-public class ColorModeWorkAroundLightState {
+public class LegacyLightState {
+
+    /**
+     * The light operating mode, either FULL_COLOR or COLOR_TEMP.
+     */
     public enum Mode {
         FULL_COLOR,
         COLOR_TEMP
@@ -38,7 +42,15 @@ public class ColorModeWorkAroundLightState {
         return a != null && a.equals(b);
     }
 
-    public void setValues(@Nullable Long mirekArg, @Nullable PairXy colorXY) throws IllegalArgumentException {
+    /**
+     * Set the parameters for the light state. If a mirek value is provided, the light will switch to COLOR_TEMP
+     * mode. If no mirek value is provided, the light will remain in its current mode unless the colorXY value is
+     * different from the current colorTempXY or fullColorXY values.
+     *
+     * @param colorXY The color XY value to set.
+     * @param mirekArg The mirek value to set, or null if not applicable.
+     */
+    public void setParameters(PairXy colorXY, @Nullable Long mirekArg) {
         // if there is a mirek value, definitely switch to COLOR_TEMP mode
         if (mirekArg != null) {
             mode = Mode.COLOR_TEMP;
@@ -46,10 +58,6 @@ public class ColorModeWorkAroundLightState {
             colorTempXY = colorXY;
             fullColorXY = null;
             return;
-        }
-
-        if (colorXY == null) {
-            throw new IllegalArgumentException("if mirek is null then colorXY must be non null");
         }
 
         switch (mode) {
@@ -101,6 +109,6 @@ public class ColorModeWorkAroundLightState {
     }
 
     private static String toString(@Nullable PairXy xy) {
-        return xy == null ? "null" : "(%.4f, %.4f)".formatted(xy.getXY()[0], xy.getXY()[1]);
+        return xy == null ? "null" : "(%.4f,%.4f)".formatted(xy.getXY()[0], xy.getXY()[1]);
     }
 }
