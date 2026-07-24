@@ -19,6 +19,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -67,18 +69,32 @@ public class EcoflowApiHandler extends BaseBridgeHandler {
     private @Nullable EcoflowDeviceDiscoveryService discoveryService = null;
     private final SchedulerTask initTask;
     private final SchedulerTask mqttConnectTask;
+    private final SchedulerTask subscribeTask;
     private final HttpClient httpClient;
     private @Nullable EcoflowApi api;
-    private @Nullable MqttConnection mqttConnection;
 
     private final Object mqttConnectionLock = new Object();
-    private final Map<String, AbstractEcoflowHandler> activeChildHandlers = new HashMap<>();
+    private @Nullable MqttConnection mqttConnection;
+
+    private class HandlerData {
+        private final AbstractEcoflowHandler handler;
+        private final String serialNumber;
+        private boolean subscribed = false;
+
+        public HandlerData(AbstractEcoflowHandler handler) {
+            this.handler = handler;
+            this.serialNumber = handler.getSerialNumber();
+        }
+    }
+
+    private final Map<String, HandlerData> activeChildHandlers = new HashMap<>();
 
     public EcoflowApiHandler(Bridge bridge, HttpClient httpClient) {
         super(bridge);
         this.httpClient = httpClient;
         this.initTask = new SchedulerTask(scheduler, logger, "API Init", this::initApi);
         this.mqttConnectTask = new SchedulerTask(scheduler, logger, "MQTT Connection", this::establishMqttConnection);
+        this.subscribeTask = new SchedulerTask(scheduler, logger, "MQTT Subscription", this::updateSubscriptions);
     }
 
     public void setDiscoveryService(EcoflowDeviceDiscoveryService discoveryService) {
@@ -120,20 +136,13 @@ public class EcoflowApiHandler extends BaseBridgeHandler {
     @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
         super.childHandlerInitialized(childHandler, childThing);
-        logger.debug("child handler {} initialized", childHandler);
         if (childHandler instanceof AbstractEcoflowHandler deviceHandler) {
             synchronized (mqttConnectionLock) {
-                MqttConnection connection = mqttConnection;
-                activeChildHandlers.put(deviceHandler.getSerialNumber(), deviceHandler);
-                if (connection != null) {
-                    try {
-                        subscribeForDeviceLocked(connection, deviceHandler.getSerialNumber());
-                        deviceHandler.handleMqttConnected();
-                    } catch (EcoflowApiException e) {
-                        logger.debug("{}: Could not subscribe for MQTT updates, re-scheduling connection",
-                                deviceHandler.getSerialNumber());
-                        mqttConnectTask.schedule(5);
-                    }
+                String serialNumber = deviceHandler.getSerialNumber();
+                activeChildHandlers.put(serialNumber, new HandlerData(deviceHandler));
+                if (mqttConnection != null) {
+                    subscribeTask.cancel();
+                    subscribeTask.submit();
                 } else {
                     mqttConnectTask.submit();
                 }
@@ -144,15 +153,19 @@ public class EcoflowApiHandler extends BaseBridgeHandler {
     @Override
     public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
         super.childHandlerDisposed(childHandler, childThing);
-        logger.debug("child handler {} disposed", childHandler);
         if (childHandler instanceof AbstractEcoflowHandler deviceHandler) {
+            final MqttConnection connectionToTearDown;
             synchronized (mqttConnectionLock) {
-                final MqttConnection connection = mqttConnection;
                 activeChildHandlers.remove(deviceHandler.getSerialNumber());
-                if (activeChildHandlers.isEmpty() && connection != null) {
-                    connection.disconnect();
+                if (activeChildHandlers.isEmpty()) {
+                    connectionToTearDown = mqttConnection;
                     mqttConnection = null;
+                } else {
+                    connectionToTearDown = null;
                 }
+            }
+            if (connectionToTearDown != null) {
+                connectionToTearDown.disconnect();
             }
         }
     }
@@ -212,47 +225,74 @@ public class EcoflowApiHandler extends BaseBridgeHandler {
             return;
         }
 
+        final MqttConnection oldConnection;
         synchronized (mqttConnectionLock) {
-            MqttConnection oldConnection = mqttConnection;
-            if (oldConnection != null) {
-                try {
-                    oldConnection.disconnect().get();
-                } catch (InterruptedException | ExecutionException e) {
-                    logger.debug("Could not discard MQTT connection", e);
-                }
-            }
-
+            oldConnection = mqttConnection;
             mqttConnection = null;
-
+        }
+        if (oldConnection != null) {
             try {
-                MqttConnectionData connectData = api.createMqttLogin();
-                Mqtt3AsyncClient client = establishMqttConnection(connectData);
-
-                MqttConnection connection = new MqttConnection(client, connectData.userName);
-                for (String serialNumber : activeChildHandlers.keySet()) {
-                    subscribeForDeviceLocked(connection, serialNumber);
-                }
-
-                mqttConnection = connection;
-
-                for (AbstractEcoflowHandler handler : activeChildHandlers.values()) {
-                    handler.handleMqttConnected();
-                }
+                oldConnection.disconnect().get();
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-            } catch (EcoflowApiException e) {
-                logger.debug("Could not establish MQTT connection", e);
-                mqttConnectTask.schedule(5);
+            } catch (ExecutionException e) {
+                logger.debug("Could not discard MQTT connection", e);
             }
+        }
+
+        try {
+            MqttConnectionData connectData = api.createMqttLogin();
+            Mqtt3AsyncClient client = establishMqttConnection(connectData);
+
+            MqttConnection connection = new MqttConnection(client, connectData.userName);
+            synchronized (mqttConnectionLock) {
+                subscribeTask.cancel();
+                activeChildHandlers.values().forEach(data -> data.subscribed = false);
+                mqttConnection = connection;
+                subscribeTask.submit();
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } catch (EcoflowApiException e) {
+            logger.debug("Could not establish MQTT connection", e);
+            mqttConnectTask.schedule(5);
         }
     }
 
-    private void subscribeForDeviceLocked(MqttConnection connection, String serialNumber) throws EcoflowApiException {
-        try {
-            logger.debug("Subscribing for updates from {}", serialNumber);
-            connection.subscribeForDevice(serialNumber, this::handleQuotaMessage, this::handleStatusMessage);
-        } catch (ExecutionException | InterruptedException e) {
-            throw new EcoflowApiException(e);
+    private void updateSubscriptions() {
+        final MqttConnection connection;
+        final List<HandlerData> handlersToBeSubscribed;
+
+        synchronized (mqttConnectionLock) {
+            connection = mqttConnection;
+            handlersToBeSubscribed = activeChildHandlers.values().stream().filter(data -> !data.subscribed).toList();
+        }
+        if (connection == null) {
+            logger.trace("MQTT not connected, postponing subscription");
+            return;
+        }
+
+        for (HandlerData data : handlersToBeSubscribed) {
+            try {
+                logger.debug("Subscribing for updates from {}", data.serialNumber);
+                connection.subscribeForDevice(data.serialNumber, this::handleQuotaMessage, this::handleStatusMessage)
+                        .get(2, TimeUnit.SECONDS);
+                synchronized (mqttConnectionLock) {
+                    data.subscribed = true;
+                    data.handler.handleMqttConnected();
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            } catch (ExecutionException | TimeoutException e) {
+                logger.debug("Could not subscribe for MQTT updates for device {}:", data.serialNumber, e);
+            }
+        }
+
+        synchronized (mqttConnectionLock) {
+            if (activeChildHandlers.values().stream().anyMatch(data -> !data.subscribed)) {
+                logger.debug("Not all devices subscribed yet, retrying");
+                subscribeTask.submit();
+            }
         }
     }
 
@@ -265,7 +305,10 @@ public class EcoflowApiHandler extends BaseBridgeHandler {
         final MqttClientDisconnectedListener disconnectListener = ctx -> {
             boolean expectedShutdown = ctx.getSource() == MqttDisconnectSource.USER
                     && ctx.getCause() instanceof Mqtt3DisconnectException;
-            mqttConnection = null;
+            synchronized (mqttConnectionLock) {
+                mqttConnection = null;
+                subscribeTask.cancel();
+            }
             if (!expectedShutdown) {
                 logger.debug("MQTT disconnected (source {}): {}", ctx.getSource(), ctx.getCause().getMessage());
                 mqttConnectTask.schedule(5);
@@ -319,7 +362,8 @@ public class EcoflowApiHandler extends BaseBridgeHandler {
             throw new IllegalStateException("Unexpected topic " + topic);
         }
         synchronized (mqttConnectionLock) {
-            return activeChildHandlers.get(levels.get(3));
+            var data = activeChildHandlers.get(levels.get(3));
+            return data != null ? data.handler : null;
         }
     }
 
@@ -336,11 +380,14 @@ public class EcoflowApiHandler extends BaseBridgeHandler {
             topicBase = String.format("/open/%s/", userName);
         }
 
-        void subscribeForDevice(String serialNumber, Consumer<@Nullable Mqtt3Publish> quotaHandler,
-                Consumer<@Nullable Mqtt3Publish> statusHandler) throws ExecutionException, InterruptedException {
+        CompletableFuture<Void> subscribeForDevice(String serialNumber, Consumer<@Nullable Mqtt3Publish> quotaHandler,
+                Consumer<@Nullable Mqtt3Publish> statusHandler) {
             String deviceTopicBase = topicBase + serialNumber + "/";
-            client.subscribeWith().topicFilter(deviceTopicBase + "quota").callback(quotaHandler).send().get();
-            client.subscribeWith().topicFilter(deviceTopicBase + "status").callback(statusHandler).send().get();
+            var quotaSubFuture = client.subscribeWith().topicFilter(deviceTopicBase + "quota").callback(quotaHandler)
+                    .send();
+            var statusSubFuture = client.subscribeWith().topicFilter(deviceTopicBase + "status").callback(statusHandler)
+                    .send();
+            return CompletableFuture.allOf(quotaSubFuture, statusSubFuture);
         }
 
         CompletableFuture<Void> disconnect() {
