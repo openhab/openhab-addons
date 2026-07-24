@@ -255,7 +255,7 @@ public class WorxLandroidMowerHandler extends AWSClientThingHandler {
                             : new ScheduleDaysCommand(theMower.getTimeExtension(), theMower.getScheduleArray1()));
         } else if (CHANNEL_DELAY.equals(channelId)) {
             int delaySec = commandToInt(command, Units.SECOND);
-            sendCommand(theMower, new SetRainDelay(delaySec));
+            sendCommand(theMower, new SetRainDelay(delaySec / 60));
         } else if (CHANNEL_BLADE_TIME.equals(channelId) || CHANNEL_CHARGE_CYCLES.equals(channelId)) {
             resetStat(channelId, theMower.getSerialNumber());
         } else {
