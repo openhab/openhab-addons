@@ -43,7 +43,8 @@ import org.openhab.core.types.State;
  * transforms the private API http response into the openhab datamodel
  * (instances of State)
  *
- * @author Georg Kunz Initial - contribution
+ * @author Georg Kunz - Initial contribution
+ * @author Ronny Grun - Add battery handling
  */
 @NonNullByDefault
 public class LiveDataResponseTransformerPrivateApi extends AbstractDataResponseTransformer {
@@ -63,7 +64,7 @@ public class LiveDataResponseTransformerPrivateApi extends AbstractDataResponseT
             putPowerType(result, channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_PRODUCTION),
                     solarProduction.currentPower, "kW");
             putStringType(result, channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_PV_STATUS),
-                    solarProduction.isActive ? "active" : "idle");
+                    Boolean.TRUE.equals(solarProduction.isActive) ? "active" : "idle");
         }
 
         Consumption consumption = response.consumption;
@@ -71,17 +72,7 @@ public class LiveDataResponseTransformerPrivateApi extends AbstractDataResponseT
             putPowerType(result, channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_CONSUMPTION),
                     consumption.currentPower, "kW");
             putStringType(result, channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_LOAD_STATUS),
-                    consumption.isActive ? "active" : "idle");
-        }
-
-        DcStorage dcStorage = response.dcStorage;
-        if (dcStorage != null) {
-            putStringType(result, channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_BATTERY_STATUS),
-                    dcStorage.isActive ? "active" : "idle");
-            putStringType(result, channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_BATTERY_CRITICAL),
-                    dcStorage.status);
-            putPercentType(result, channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_BATTERY_LEVEL),
-                    dcStorage.chargeLevel);
+                    Boolean.TRUE.equals(consumption.isActive) ? "active" : "idle");
         }
 
         // init fields with zero
@@ -94,14 +85,42 @@ public class LiveDataResponseTransformerPrivateApi extends AbstractDataResponseT
         putPowerType(result, channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_BATTERY_CHARGE_DISCHARGE),
                 ZERO_POWER, "kW");
 
+        DcStorage dcStorage = response.dcStorage;
+        if (dcStorage != null) {
+            putStringType(result, channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_BATTERY_STATUS),
+                    dcStorage.status);
+            putPercentType(result, channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_BATTERY_LEVEL),
+                    dcStorage.chargeLevel);
+
+            // battery_critical does not exist in new PrivateApi
+            putStringType(result, channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_BATTERY_CRITICAL),
+                    Boolean.TRUE.equals(dcStorage.isActive) ? "active" : "idle");
+
+            Double currentPower = dcStorage.currentPower;
+            currentPower = currentPower != null ? currentPower : 0;
+            if ("charging".equalsIgnoreCase(dcStorage.status)) {
+                putPowerType(result, channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_BATTERY_CHARGE),
+                        currentPower, "kW");
+                putPowerType(result,
+                        channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_BATTERY_CHARGE_DISCHARGE),
+                        currentPower, "kW");
+            } else if ("discharging".equalsIgnoreCase(dcStorage.status)) {
+                putPowerType(result, channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_BATTERY_DISCHARGE),
+                        currentPower, "kW");
+                putPowerType(result,
+                        channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_BATTERY_CHARGE_DISCHARGE),
+                        -1 * currentPower, "kW");
+            }
+        }
+
         Grid grid = response.grid;
         if (grid != null) {
             putStringType(result, channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_GRID_STATUS),
-                    grid.isActive ? "active" : "idle");
-            if (grid.status.equalsIgnoreCase("import")) {
+                    Boolean.TRUE.equals(grid.isActive) ? "active" : "idle");
+            if ("import".equalsIgnoreCase(grid.status)) {
                 putPowerType(result, channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_IMPORT),
                         grid.currentPower, "kW");
-            } else if (grid.status.equalsIgnoreCase("import")) {
+            } else if ("export".equalsIgnoreCase(grid.status)) {
                 putPowerType(result, channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_EXPORT),
                         grid.currentPower, "kW");
             }
