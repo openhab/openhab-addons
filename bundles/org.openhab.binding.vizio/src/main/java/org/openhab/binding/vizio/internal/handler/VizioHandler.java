@@ -95,9 +95,6 @@ public class VizioHandler extends BaseThingHandler {
     private Long currentVolumeHash = 0L;
     private String currentApp = EMPTY;
     private String currentInput = EMPTY;
-    // Maps each input's display name (the Source channel command/option value) to the device CNAME.
-    // Newer Vizio firmware only accepts the CNAME in a current_input MODIFY; older firmware accepts
-    // either. Rebuilt on every refreshVizioMetadata().
     private Map<String, String> inputCnameByName = new HashMap<>();
     private boolean currentMute = false;
     private int currentVolume = -1;
@@ -477,12 +474,10 @@ public class VizioHandler extends BaseThingHandler {
                             // Newer Vizio firmware requires the input CNAME ("hdmi1"); the display name
                             // ("HDMI-1") is rejected with RESULT: FAILURE. Older firmware accepts either, so
                             // the CNAME is safe for both. Fall back to the raw command if the input list has
-                            // not been fetched yet, or if the mapped CNAME is missing/blank.
-                            String mappedCname = inputCnameByName.get(command.toString());
-                            String sourceCname = (mappedCname != null && !mappedCname.isBlank()) ? mappedCname
-                                    : command.toString();
-                            communicator.changeInput(
-                                    String.format(MODIFY_STRING_SETTING_JSON, sourceCname, currentInputHash));
+                            // not been fetched yet, or the CNAME is missing.
+                            String sourceCname = inputCnameByName.get(command.toString());
+                            communicator.changeInput(String.format(MODIFY_STRING_SETTING_JSON,
+                                    sourceCname != null ? sourceCname : command, currentInputHash));
                             currentInputHash = 0L;
                         } catch (VizioException e) {
                             logger.warn("Unable to set current source on the Vizio TV, source: {}, Exception: {}",
