@@ -16,7 +16,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -65,7 +64,7 @@ public class EcoflowApiHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(EcoflowApiHandler.class);
     private static final long RETRY_INTERVAL_SECONDS = 120;
 
-    private Optional<EcoflowDeviceDiscoveryService> discoveryService = Optional.empty();
+    private @Nullable EcoflowDeviceDiscoveryService discoveryService = null;
     private final SchedulerTask initTask;
     private final SchedulerTask mqttConnectTask;
     private final HttpClient httpClient;
@@ -83,7 +82,7 @@ public class EcoflowApiHandler extends BaseBridgeHandler {
     }
 
     public void setDiscoveryService(EcoflowDeviceDiscoveryService discoveryService) {
-        this.discoveryService = Optional.of(discoveryService);
+        this.discoveryService = discoveryService;
     }
 
     @Override
@@ -95,9 +94,13 @@ public class EcoflowApiHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
+        final EcoflowDeviceDiscoveryService discoveryService = this.discoveryService;
+
         super.dispose();
         api = null;
-        discoveryService.ifPresent(ds -> ds.stopScan());
+        if (discoveryService != null) {
+            discoveryService.stopScan();
+        }
         initTask.cancel();
     }
 
@@ -178,7 +181,11 @@ public class EcoflowApiHandler extends BaseBridgeHandler {
                 synchronized (this) {
                     this.api = api;
                     updateStatus(ThingStatus.ONLINE);
-                    discoveryService.ifPresent(ds -> ds.startScanningWithApi(api));
+
+                    final EcoflowDeviceDiscoveryService discoveryService = this.discoveryService;
+                    if (discoveryService != null) {
+                        discoveryService.startScanningWithApi(api);
+                    }
                 }
                 logger.debug("Ecoflow API initialized");
                 if (!activeChildHandlers.isEmpty()) {
