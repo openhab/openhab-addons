@@ -27,6 +27,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -172,6 +173,19 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      */
     private int bridgeGeneration;
 
+    /**
+     * Lock to ensure exclusive access to bridge communication during update operations. It allows multiple
+     * threads to communicate concurrently if they each have acquired the read lock, but it allows only one
+     * thread to acquire the write lock to run a software update operation.
+     */
+    private final ReentrantReadWriteLock exclusiveCommunicationLock = new ReentrantReadWriteLock();
+
+    /**
+     * Flag to indicate if an update operation is in progress. This is used to prevent other threads from
+     * trying to communicate with the bridge while an update is in progress.
+     */
+    private volatile boolean updateInProgress = false;
+
     public Clip2BridgeHandler(Bridge bridge, HttpClientFactory httpClientFactory, ThingRegistry thingRegistry,
             LocaleProvider localeProvider, TranslationProvider i18nProvider) {
         super(bridge);
@@ -253,7 +267,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                         "@text/offline.api2.conf-error.not-authorized");
             }
         } catch (ApiException e) {
-            if (isUpdatingOwnFirmware()) {
+            if (updateInProgress) {
                 // suppress stack trace and thing error status if offline due to a firmware update
                 logger.debug("checkConnection() {}", e.getMessage());
             } else {
@@ -274,8 +288,8 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             // short delay used during attempts to create or validate an application key
             milliSeconds = FAST_SCHEDULE_MILLI_SECONDS;
             applKeyRetriesRemaining--;
-        } else if (isUpdatingOwnFirmware()) {
-            // medium delay if already offline due to a firmware update which can take a few minutes
+        } else if (updateInProgress) {
+            // medium delay if offline due to a firmware update which can take a few minutes
             milliSeconds = UPDATE_DURATION_SECONDS * 1000;
         } else {
             // default delay, set via configuration parameter, used as heart-beat 'just-in-case'
@@ -317,6 +331,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
+        updateInProgress = false;
         if (assetsLoaded) {
             disposeAssets();
         }
@@ -469,9 +484,18 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      */
     public Resources getResources(ResourceReference reference)
             throws ApiException, AssetNotLoadedException, InterruptedException {
-        logger.debug("getResources() {}", reference);
-        checkAssetsLoaded();
-        return getClip2Bridge().getResources(reference);
+        if (updateInProgress) {
+            throw new ApiException("Aborting bridge request: update in progress");
+        }
+        // read lock allows multiple threads to communicate concurrently, but blocks if an update is in progress
+        exclusiveCommunicationLock.readLock().lock();
+        try {
+            logger.debug("getResources() {}", reference);
+            checkAssetsLoaded();
+            return getClip2Bridge().getResources(reference);
+        } finally {
+            exclusiveCommunicationLock.readLock().unlock();
+        }
     }
 
     /**
@@ -490,7 +514,16 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (CHANNEL_GROUP_AUTOMATION.equals(channelUID.getGroupId())) {
+        if (!CHANNEL_GROUP_AUTOMATION.equals(channelUID.getGroupId())) {
+            return;
+        }
+        if (updateInProgress) {
+            logger.debug("handleCommand({}, {}) ignored: update in progress", channelUID, command);
+            return;
+        }
+        // read lock allows multiple threads to communicate concurrently, but blocks if an update is in progress
+        exclusiveCommunicationLock.readLock().lock();
+        try {
             try {
                 if (RefreshType.REFRESH.equals(command)) {
                     updateAutomationChannelsNow();
@@ -508,6 +541,8 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                         logger.isDebugEnabled() ? e : null);
             } catch (InterruptedException e) {
             }
+        } finally {
+            exclusiveCommunicationLock.readLock().unlock();
         }
     }
 
@@ -652,9 +687,18 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      * @throws InterruptedException
      */
     public Resources putResource(Resource resource) throws ApiException, AssetNotLoadedException, InterruptedException {
-        logger.debug("putResource() {}", resource);
-        checkAssetsLoaded();
-        return getClip2Bridge().putResource(resource);
+        if (updateInProgress) {
+            throw new ApiException("Aborting bridge request: update in progress");
+        }
+        // read lock allows multiple threads to communicate concurrently, but blocks if an update is in progress
+        exclusiveCommunicationLock.readLock().lock();
+        try {
+            logger.debug("putResource() {}", resource);
+            checkAssetsLoaded();
+            return getClip2Bridge().putResource(resource);
+        } finally {
+            exclusiveCommunicationLock.readLock().unlock();
+        }
     }
 
     /**
@@ -698,6 +742,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     private void updateOnlineState() {
         if (assetsLoaded && (thing.getStatus() != ThingStatus.ONLINE)) {
             logger.debug("updateOnlineState()");
+            updateInProgress = false;
             connectRetriesRemaining = RECONNECT_MAX_TRIES;
             updateStatus(ThingStatus.ONLINE);
             loadAutomationScriptIds();
@@ -718,55 +763,64 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      * @throws InterruptedException
      */
     private void updateProperties() throws ApiException, AssetNotLoadedException, InterruptedException {
-        logger.debug("updateProperties()");
-        Map<String, String> properties = new HashMap<>(thing.getProperties());
-
-        for (Resource bridge : getClip2Bridge().getResources(BRIDGE).getResources()) {
-            // set the serial number
-            String bridgeId = bridge.getBridgeId();
-            if (Objects.nonNull(bridgeId)) {
-                properties.put(Thing.PROPERTY_SERIAL_NUMBER, bridgeId);
-            }
-            break;
+        if (updateInProgress) {
+            return;
         }
+        // read lock allows multiple threads to communicate concurrently, but blocks if an update is in progress
+        exclusiveCommunicationLock.readLock().lock();
+        try {
+            logger.debug("updateProperties()");
+            Map<String, String> properties = new HashMap<>(thing.getProperties());
 
-        for (Resource device : getClip2Bridge().getResources(DEVICE).getResources()) {
-            MetaData metaData = device.getMetaData();
-            if (Objects.nonNull(metaData) && Archetype.BRIDGES.contains(metaData.getArchetype())) {
-                // set resource properties
-                properties.put(PROPERTY_RESOURCE_ID, device.getId());
-                properties.put(PROPERTY_RESOURCE_TYPE, device.getType().toString());
-
-                // set metadata properties
-                String metaDataName = metaData.getName();
-                if (Objects.nonNull(metaDataName)) {
-                    properties.put(PROPERTY_RESOURCE_NAME, metaDataName);
+            for (Resource bridge : getClip2Bridge().getResources(BRIDGE).getResources()) {
+                // set the serial number
+                String bridgeId = bridge.getBridgeId();
+                if (Objects.nonNull(bridgeId)) {
+                    properties.put(Thing.PROPERTY_SERIAL_NUMBER, bridgeId);
                 }
-                properties.put(PROPERTY_RESOURCE_ARCHETYPE, metaData.getArchetype().toString());
+                break;
+            }
 
-                // set product data properties
-                ProductData productData = device.getProductData();
-                if (Objects.nonNull(productData)) {
-                    // set generic thing properties
-                    properties.put(Thing.PROPERTY_MODEL_ID, productData.getModelId());
-                    properties.put(Thing.PROPERTY_VENDOR, productData.getManufacturerName());
-                    properties.put(Thing.PROPERTY_FIRMWARE_VERSION, productData.getSoftwareVersion());
-                    String hardwarePlatformType = productData.getHardwarePlatformType();
-                    if (Objects.nonNull(hardwarePlatformType)) {
-                        properties.put(Thing.PROPERTY_HARDWARE_VERSION, hardwarePlatformType);
+            for (Resource device : getClip2Bridge().getResources(DEVICE).getResources()) {
+                MetaData metaData = device.getMetaData();
+                if (Objects.nonNull(metaData) && Archetype.BRIDGES.contains(metaData.getArchetype())) {
+                    // set resource properties
+                    properties.put(PROPERTY_RESOURCE_ID, device.getId());
+                    properties.put(PROPERTY_RESOURCE_TYPE, device.getType().toString());
+
+                    // set metadata properties
+                    String metaDataName = metaData.getName();
+                    if (Objects.nonNull(metaDataName)) {
+                        properties.put(PROPERTY_RESOURCE_NAME, metaDataName);
                     }
+                    properties.put(PROPERTY_RESOURCE_ARCHETYPE, metaData.getArchetype().toString());
 
-                    // set hue specific properties
-                    properties.put(PROPERTY_PRODUCT_NAME, productData.getProductName());
-                    properties.put(PROPERTY_PRODUCT_ARCHETYPE, productData.getProductArchetype().toString());
-                    properties.put(PROPERTY_PRODUCT_CERTIFIED, productData.getCertified().toString());
+                    // set product data properties
+                    ProductData productData = device.getProductData();
+                    if (Objects.nonNull(productData)) {
+                        // set generic thing properties
+                        properties.put(Thing.PROPERTY_MODEL_ID, productData.getModelId());
+                        properties.put(Thing.PROPERTY_VENDOR, productData.getManufacturerName());
+                        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, productData.getSoftwareVersion());
+                        String hardwarePlatformType = productData.getHardwarePlatformType();
+                        if (Objects.nonNull(hardwarePlatformType)) {
+                            properties.put(Thing.PROPERTY_HARDWARE_VERSION, hardwarePlatformType);
+                        }
 
-                    bridgeGeneration = HueBridgeModel.getGeneration(productData.getModelId());
+                        // set hue specific properties
+                        properties.put(PROPERTY_PRODUCT_NAME, productData.getProductName());
+                        properties.put(PROPERTY_PRODUCT_ARCHETYPE, productData.getProductArchetype().toString());
+                        properties.put(PROPERTY_PRODUCT_CERTIFIED, productData.getCertified().toString());
+
+                        bridgeGeneration = HueBridgeModel.getGeneration(productData.getModelId());
+                    }
+                    break; // we only needed the BRIDGE_V2 or BRIDGE_V3 resource
                 }
-                break; // we only needed the BRIDGE_V2 or BRIDGE_V3 resource
             }
+            thing.setProperties(properties);
+        } finally {
+            exclusiveCommunicationLock.readLock().unlock();
         }
-        thing.setProperties(properties);
     }
 
     /**
@@ -910,14 +964,23 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      * @return the overall maximum update enum value of the bridge and all devices, or null if it cannot be read.
      */
     private @Nullable UpdateStatusV2 getCombinedSoftwareStatus() {
-        try {
-            Map<String, @Nullable UpdateStatusV2> statusMap = getClip2Bridge().getUpdateStatusMap();
-            statusMap.entrySet().forEach(e -> putSoftwareStatus(e.getKey(), e.getValue()));
-            return refreshSoftwareStatusUI(); // call this anyway to refresh the UI even if the map is empty
-        } catch (AssetNotLoadedException e) {
-            logger.debug("getCombinedSoftwareStatus() error: {}", e.getMessage());
+        if (updateInProgress) {
+            return null;
         }
-        return null;
+        // read lock allows multiple threads to communicate concurrently, but blocks if an update is in progress
+        exclusiveCommunicationLock.readLock().lock();
+        try {
+            try {
+                Map<String, @Nullable UpdateStatusV2> statusMap = getClip2Bridge().getUpdateStatusMap();
+                statusMap.entrySet().forEach(e -> putSoftwareStatus(e.getKey(), e.getValue()));
+                return refreshSoftwareStatusUI(); // call this anyway to refresh the UI even if the map is empty
+            } catch (AssetNotLoadedException e) {
+                logger.debug("getCombinedSoftwareStatus() error: {}", e.getMessage());
+            }
+            return null;
+        } finally {
+            exclusiveCommunicationLock.readLock().unlock();
+        }
     }
 
     /**
@@ -982,17 +1045,26 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      * Load the set of automation script ids.
      */
     private void loadAutomationScriptIds() {
+        if (updateInProgress) {
+            return;
+        }
+        // read lock allows multiple threads to communicate concurrently, but blocks if an update is in progress
+        exclusiveCommunicationLock.readLock().lock();
         try {
-            synchronized (automationScriptIds) {
-                automationScriptIds.clear();
-                automationScriptIds.addAll(getClip2Bridge().getResources(SCRIPT).getResources().stream()
-                        .filter(r -> CategoryType.AUTOMATION == r.getCategory()).map(r -> r.getId())
-                        .collect(Collectors.toSet()));
+            try {
+                synchronized (automationScriptIds) {
+                    automationScriptIds.clear();
+                    automationScriptIds.addAll(getClip2Bridge().getResources(SCRIPT).getResources().stream()
+                            .filter(r -> CategoryType.AUTOMATION == r.getCategory()).map(r -> r.getId())
+                            .collect(Collectors.toSet()));
+                }
+            } catch (ApiException | AssetNotLoadedException e) {
+                logger.warn("loadAutomationScriptIds() unexpected exception {}", e.getMessage(),
+                        logger.isDebugEnabled() ? e : null);
+            } catch (InterruptedException e) {
             }
-        } catch (ApiException | AssetNotLoadedException e) {
-            logger.warn("loadAutomationScriptIds() unexpected exception {}", e.getMessage(),
-                    logger.isDebugEnabled() ? e : null);
-        } catch (InterruptedException e) {
+        } finally {
+            exclusiveCommunicationLock.readLock().unlock();
         }
     }
 
@@ -1000,35 +1072,44 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      * Create resp. update the automation channels
      */
     private void updateAutomationChannels() {
-        List<Resource> automations;
-        try {
-            automations = getClip2Bridge().getResources(BEHAVIOR).getResources().stream()
-                    .filter(r -> automationScriptIds.contains(r.getScriptId())).toList();
-        } catch (ApiException | AssetNotLoadedException e) {
-            logger.warn("Unexpected exception '{}' while updating channels.", e.getMessage(),
-                    logger.isDebugEnabled() ? e : null);
-            return;
-        } catch (InterruptedException e) {
+        if (updateInProgress) {
             return;
         }
-
-        if (automations.size() != automationsCache.size() || automations.stream().anyMatch(automation -> {
-            Resource cachedAutomation = automationsCache.get(automation.getId());
-            return Objects.isNull(cachedAutomation) || !automation.getName().equals(cachedAutomation.getName());
-        })) {
-            synchronized (automationsCache) {
-                automationsCache.clear();
-                automationsCache.putAll(automations.stream().collect(Collectors.toMap(a -> a.getId(), a -> a)));
+        // read lock allows multiple threads to communicate concurrently, but blocks if an update is in progress
+        exclusiveCommunicationLock.readLock().lock();
+        try {
+            List<Resource> automations;
+            try {
+                automations = getClip2Bridge().getResources(BEHAVIOR).getResources().stream()
+                        .filter(r -> automationScriptIds.contains(r.getScriptId())).toList();
+            } catch (ApiException | AssetNotLoadedException e) {
+                logger.warn("Unexpected exception '{}' while updating channels.", e.getMessage(),
+                        logger.isDebugEnabled() ? e : null);
+                return;
+            } catch (InterruptedException e) {
+                return;
             }
 
-            Stream<Channel> newChannels = automations.stream().map(a -> createAutomationChannel(a));
-            Stream<Channel> oldchannels = thing.getChannels().stream()
-                    .filter(c -> !CHANNEL_TYPE_AUTOMATION.equals(c.getChannelTypeUID()));
+            if (automations.size() != automationsCache.size() || automations.stream().anyMatch(automation -> {
+                Resource cachedAutomation = automationsCache.get(automation.getId());
+                return Objects.isNull(cachedAutomation) || !automation.getName().equals(cachedAutomation.getName());
+            })) {
+                synchronized (automationsCache) {
+                    automationsCache.clear();
+                    automationsCache.putAll(automations.stream().collect(Collectors.toMap(a -> a.getId(), a -> a)));
+                }
 
-            updateThing(editThing().withChannels(Stream.concat(oldchannels, newChannels).toList()).build());
-            onResources(automations);
+                Stream<Channel> newChannels = automations.stream().map(a -> createAutomationChannel(a));
+                Stream<Channel> oldchannels = thing.getChannels().stream()
+                        .filter(c -> !CHANNEL_TYPE_AUTOMATION.equals(c.getChannelTypeUID()));
 
-            logger.debug("Bridge created {} automation channels", automations.size());
+                updateThing(editThing().withChannels(Stream.concat(oldchannels, newChannels).toList()).build());
+                onResources(automations);
+
+                logger.debug("Bridge created {} automation channels", automations.size());
+            }
+        } finally {
+            exclusiveCommunicationLock.readLock().unlock();
         }
     }
 
@@ -1131,71 +1212,79 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      * @return a either an error message or a message of successful start of the update process.
      */
     public String installUpdate() {
+        if (updateInProgress) {
+            logger.warn("installUpdate() aborted: an update is already in progress.");
+            return getText("install.update.error.already-in-progress");
+        }
+
         if (thing.getStatus() != ThingStatus.ONLINE) {
             logger.warn("installUpdate() cannot be executed: offline");
             return getText("install.update.error.offline");
         }
-        UpdateStatusV2 status = getCombinedSoftwareStatus();
-        if (status == null) {
-            logger.warn("installUpdate() cannot be executed: state unknown");
-            return getText("install.update.error.state-unknown");
-        }
-        if (status != UpdateStatusV2.READY_TO_INSTALL) {
-            logger.warn("installUpdate() cannot be executed: not ready");
-            return getText("install.update.error.not-ready");
-        }
 
-        // bridge goes offline if it is updating itself; whereas if ONLY updating devices it stays online
-        UpdateStatusV2 installingStatus = UpdateStatusV2.INSTALLING;
-        String installingKey = installingStatus.i18nKey();
-        boolean doBridge = softwareStatusMap.get(BridgeConfig.V1_BRIDGE) == UpdateStatusV2.READY_TO_INSTALL;
-        if (doBridge) {
-            putSoftwareStatus(BridgeConfig.V1_BRIDGE, installingStatus);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING, installingKey);
-        }
-
-        boolean doDevices = softwareStatusMap.get(BridgeConfig.V1_ANY_DEVICE) == UpdateStatusV2.READY_TO_INSTALL;
-        if (doDevices) {
-            putSoftwareStatus(BridgeConfig.V1_ANY_DEVICE, installingStatus);
-            if (!doBridge) {
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.FIRMWARE_UPDATING, installingKey);
+        // try to acquire exclusive communication lock; waits for ongoing traffic to clear
+        try {
+            if (!exclusiveCommunicationLock.writeLock().tryLock(Clip2Bridge.TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
+                logger.warn("installUpdate() aborted: timed out bridge busy");
+                return getText("install.update.error.bridge-busy");
             }
+        } catch (InterruptedException e) {
+            logger.warn("installUpdate() interrupted while waiting for lock");
+            Thread.currentThread().interrupt();
+            return getText("install.update.error.interrupted");
         }
-
-        // update the UI to give feedback to the user that an update is starting
-        refreshSoftwareStatusUI();
 
         try {
-            getClip2Bridge().installUpdate();
-        } catch (IOException | AssetNotLoadedException e) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("installUpdate() error: {}", e.getMessage(), e);
-            } else {
-                logger.warn("installUpdate() error: {}", e.getMessage());
+            // double-check to prevent any race window
+            if (updateInProgress) {
+                return getText("install.update.error.already-in-progress");
             }
-            return getText("install.update.error.install-failed");
-        }
 
-        cancelTask(afterUpdateTask, false);
-        if (doBridge) {
+            UpdateStatusV2 status = getCombinedSoftwareStatus();
+            if (status == null) {
+                logger.warn("installUpdate() cannot be executed: state unknown");
+                return getText("install.update.error.state-unknown");
+            }
+            if (status != UpdateStatusV2.READY_TO_INSTALL) {
+                logger.warn("installUpdate() cannot be executed: not ready");
+                return getText("install.update.error.not-ready");
+            }
+
+            updateInProgress = true;
+
+            UpdateStatusV2 installingStatus = UpdateStatusV2.INSTALLING;
+            String installingKey = installingStatus.i18nKey();
+
+            if (softwareStatusMap.get(BridgeConfig.V1_BRIDGE) == UpdateStatusV2.READY_TO_INSTALL) {
+                putSoftwareStatus(BridgeConfig.V1_BRIDGE, installingStatus);
+            }
+            if (softwareStatusMap.get(BridgeConfig.V1_ANY_DEVICE) == UpdateStatusV2.READY_TO_INSTALL) {
+                putSoftwareStatus(BridgeConfig.V1_ANY_DEVICE, installingStatus);
+            }
+
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING, installingKey);
+            refreshSoftwareStatusUI();
+
+            try {
+                getClip2Bridge().installUpdate();
+            } catch (IOException | AssetNotLoadedException e) {
+                updateInProgress = false;
+                logger.error("installUpdate() transport error: {}", e.getMessage());
+                return getText("install.update.error.install-failed");
+            }
+
+            cancelTask(afterUpdateTask, false);
+
+            // don't interrupt the update; wait full UPDATE_DURATION_SECONDS whether updating bridge or a device only
             afterUpdateTask = scheduler.schedule(() -> {
-                /*
-                 * Schedule a first check after a delay to give the bridge time to go offline and update itself.
-                 * Note: checkConnection() loops every minute thereafter until the bridge comes back online
-                 */
+                logger.debug("Firmware update timer elapsed. Re-initiating connection.");
                 checkConnection();
             }, UPDATE_DURATION_SECONDS, TimeUnit.SECONDS);
-        } else if (doDevices) {
-            afterUpdateTask = scheduler.schedule(() -> {
-                /*
-                 * Schedule a task to clear the v1 'any' device update status after a delay to give actual devices
-                 * time to notify their own update status via v2 SSE events and thus quickly update the UI.
-                 */
-                putSoftwareStatus(BridgeConfig.V1_ANY_DEVICE, null);
-                refreshSoftwareStatusUI();
-            }, 5, TimeUnit.SECONDS);
+
+            return getText("install.update.success");
+        } finally {
+            exclusiveCommunicationLock.writeLock().unlock();
         }
-        return getText("install.update.success");
     }
 
     /**
@@ -1210,10 +1299,9 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Returns true if the bridge is in process of updating its own firmware (self update).
+     * Returns true if the bridge is in process of updating firmware.
      */
-    public boolean isUpdatingOwnFirmware() {
-        return thing.getStatus() == ThingStatus.OFFLINE
-                && thing.getStatusInfo().getStatusDetail() == ThingStatusDetail.FIRMWARE_UPDATING;
+    public boolean isUpdateInProgress() {
+        return updateInProgress;
     }
 }
