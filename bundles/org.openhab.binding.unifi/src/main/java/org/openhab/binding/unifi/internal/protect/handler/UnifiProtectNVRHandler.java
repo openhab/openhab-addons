@@ -47,10 +47,15 @@ import org.openhab.binding.unifi.internal.protect.api.priv.dto.system.Bootstrap;
 import org.openhab.binding.unifi.internal.protect.api.priv.dto.system.Event;
 import org.openhab.binding.unifi.internal.protect.api.priv.dto.system.Nvr;
 import org.openhab.binding.unifi.internal.protect.api.priv.dto.types.ModelType;
+import org.openhab.binding.unifi.internal.protect.api.priv.dto.types.SmartDetectObjectType;
 import org.openhab.binding.unifi.internal.protect.api.priv.exception.AuthenticationException;
 import org.openhab.binding.unifi.internal.protect.api.priv.exception.ThrottledException;
 import org.openhab.binding.unifi.internal.protect.api.pub.dto.DeviceState;
+import org.openhab.binding.unifi.internal.protect.api.pub.dto.ObjectType;
 import org.openhab.binding.unifi.internal.protect.api.pub.dto.events.BaseEvent;
+import org.openhab.binding.unifi.internal.protect.api.pub.dto.events.CameraMotionEvent;
+import org.openhab.binding.unifi.internal.protect.api.pub.dto.events.CameraSmartDetectLineEvent;
+import org.openhab.binding.unifi.internal.protect.api.pub.dto.events.CameraSmartDetectZoneEvent;
 import org.openhab.binding.unifi.internal.protect.api.pub.dto.events.EventType;
 import org.openhab.binding.unifi.internal.protect.api.pub.dto.gson.DeviceTypeAdapterFactory;
 import org.openhab.binding.unifi.internal.protect.api.pub.dto.gson.EventTypeAdapterFactory;
@@ -113,6 +118,10 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
     private int throttledReconnectAttempt = 0;
     private final Map<String, PendingUpdate> pendingEventUpdates = new ConcurrentHashMap<>();
     private final Map<String, ScheduledFuture<?>> childRefreshRetryTasks = new ConcurrentHashMap<>();
+    // De-dup events that can arrive on BOTH the public integration WS and the private
+    // updates WS fallback path — dispatch each (eventId, ADD|UPDATE) exactly once.
+    private final Map<String, Long> dispatchedEventKeys = new ConcurrentHashMap<>();
+    private static final long EVENT_DEDUP_TTL_MS = 120_000;
 
     private static final class PendingUpdate {
         @Nullable
@@ -660,6 +669,12 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
         if (event.device == null) {
             return;
         }
+        // The same detection can arrive on the public integration WS and, as a fallback,
+        // on the private updates WS; dispatch each event once per ADD/UPDATE phase.
+        String dedupId = event.id;
+        if (dedupId != null && !markEventDispatched(dedupId + ":" + eventType)) {
+            return;
+        }
         String deviceId = event.device;
         EventType et = event.type;
         switch (et) {
@@ -699,6 +714,66 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
             default:
                 break;
         }
+    }
+
+    private boolean markEventDispatched(String key) {
+        long now = System.currentTimeMillis();
+        dispatchedEventKeys.values().removeIf(ts -> now - ts > EVENT_DEDUP_TTL_MS);
+        return dispatchedEventKeys.putIfAbsent(key, now) == null;
+    }
+
+    /**
+     * Convert a private-API {@link Event} into the matching public camera event so the
+     * standard {@link #routePublicApiEvent} dispatch (channels + contacts) can be reused.
+     * Returns {@code null} for events that are not camera motion / smart-detect zone / line
+     * (audio and ring stay on the public integration path only).
+     */
+    private @Nullable BaseEvent toPublicCameraEvent(Event event) {
+        var type = event.type;
+        String cameraId = event.cameraId;
+        if (type == null || cameraId == null) {
+            return null;
+        }
+        BaseEvent pub;
+        switch (type) {
+            case MOTION:
+                pub = new CameraMotionEvent();
+                pub.type = EventType.CAMERA_MOTION;
+                break;
+            case SMART_DETECT:
+                CameraSmartDetectZoneEvent zone = new CameraSmartDetectZoneEvent();
+                zone.smartDetectTypes = toObjectTypes(event.smartDetectTypes);
+                pub = zone;
+                pub.type = EventType.SMART_DETECT_ZONE;
+                break;
+            case SMART_DETECT_LINE:
+                CameraSmartDetectLineEvent line = new CameraSmartDetectLineEvent();
+                line.smartDetectTypes = toObjectTypes(event.smartDetectTypes);
+                pub = line;
+                pub.type = EventType.SMART_DETECT_LINE;
+                break;
+            default:
+                return null;
+        }
+        pub.device = cameraId;
+        pub.start = event.start != null ? event.start.toEpochMilli() : null;
+        pub.end = event.end != null ? event.end.toEpochMilli() : null;
+        return pub;
+    }
+
+    private List<ObjectType> toObjectTypes(@Nullable List<SmartDetectObjectType> types) {
+        List<ObjectType> out = new ArrayList<>();
+        if (types == null) {
+            return out;
+        }
+        for (SmartDetectObjectType type : types) {
+            try {
+                out.add(ObjectType.valueOf(type.name()));
+            } catch (IllegalArgumentException ignored) {
+                // an audio object type in a smart-detect list — not a camera object type
+            }
+        }
+        return out;
     }
 
     private void routePrivateApiUpdate(WebSocketUpdate update) {
@@ -787,11 +862,20 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
                     }
                     break;
                 case EVENT:
-                    // Thumbnail/heatmap IDs arrive on event UPDATE messages (not add), as the NVR
-                    // generates them asynchronously after the event starts.
-                    if ("update".equals(update.action)) {
-                        Event event = gson.fromJson(update.data, Event.class);
-                        if (event != null && event.cameraId != null
+                    Event event = gson.fromJson(update.data, Event.class);
+                    if (event != null) {
+                        // Fallback dispatch: smart-detect / motion events also arrive on the private
+                        // updates WS. Route them to the camera channels so detections keep working even
+                        // when the public integration events WS connects but silently delivers nothing.
+                        BaseEvent pubEvent = toPublicCameraEvent(event);
+                        if (pubEvent != null) {
+                            pubEvent.id = update.id;
+                            routePublicApiEvent(pubEvent,
+                                    "add".equals(update.action) ? WSEventType.ADD : WSEventType.UPDATE);
+                        }
+                        // Thumbnail/heatmap IDs arrive on event UPDATE messages (not add), as the NVR
+                        // generates them asynchronously after the event starts.
+                        if ("update".equals(update.action) && event.cameraId != null
                                 && (event.thumbnailId != null || event.heatmapId != null)) {
                             UnifiProtectCameraHandler camHandler = findChildHandler(event.cameraId,
                                     UnifiProtectCameraHandler.class);
