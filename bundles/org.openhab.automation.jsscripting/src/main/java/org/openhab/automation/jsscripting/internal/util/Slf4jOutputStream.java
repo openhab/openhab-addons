@@ -15,6 +15,7 @@ package org.openhab.automation.jsscripting.internal.util;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
@@ -44,7 +45,7 @@ public class Slf4jOutputStream extends OutputStream {
     public void write(int b) {
         if (b == '\n') {
             flush();
-        } else {
+        } else if (b != '\r') {
             getBuffer().write(b);
         }
     }
@@ -53,7 +54,7 @@ public class Slf4jOutputStream extends OutputStream {
     public void flush() {
         var buffer = getBuffer();
         if (buffer.size() > 0) {
-            logger.atLevel(level).log(buffer.toString());
+            logger.atLevel(level).log(buffer.toString(StandardCharsets.UTF_8));
             buffer.reset();
         }
     }
