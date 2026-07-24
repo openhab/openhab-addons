@@ -477,8 +477,10 @@ public class VizioHandler extends BaseThingHandler {
                             // Newer Vizio firmware requires the input CNAME ("hdmi1"); the display name
                             // ("HDMI-1") is rejected with RESULT: FAILURE. Older firmware accepts either, so
                             // the CNAME is safe for both. Fall back to the raw command if the input list has
-                            // not been fetched yet.
-                            String sourceCname = inputCnameByName.getOrDefault(command.toString(), command.toString());
+                            // not been fetched yet, or if the mapped CNAME is missing/blank.
+                            String mappedCname = inputCnameByName.get(command.toString());
+                            String sourceCname = (mappedCname != null && !mappedCname.isBlank()) ? mappedCname
+                                    : command.toString();
                             communicator.changeInput(
                                     String.format(MODIFY_STRING_SETTING_JSON, sourceCname, currentInputHash));
                             currentInputHash = 0L;
