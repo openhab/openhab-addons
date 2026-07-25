@@ -54,7 +54,7 @@ public class RachioDevice extends RachioCloudDevice {
 
     // extensions to cloud attributes
     public String runList = "";
-    public Integer runTime = 0;
+    public int runTime = 0;
     public String lastEvent = "";
     public @Nullable DateTimeType lastEventTime;
     public boolean paused = false;
@@ -64,7 +64,7 @@ public class RachioDevice extends RachioCloudDevice {
 
     public @Nullable ThingUID bridgeUID;
     public @Nullable ThingUID devUID;
-    private HashMap<String, RachioZone> zoneList = new HashMap<String, RachioZone>();
+    private Map<String, RachioZone> zoneList = new HashMap<>();
     private @Nullable RachioDeviceHandler thingHandler = null;
     public @Nullable RachioCloudNetworkSettings network;
     public String scheduleName = "";
@@ -101,7 +101,7 @@ public class RachioDevice extends RachioCloudDevice {
             logger.trace("Adding device '{}' (id='{}', model='{}', on={}, status={}, deleted={})", device.name,
                     device.id, device.model, device.on, device.status, device.deleted);
             if (!device.deleted) {
-                zoneList = new HashMap<String, RachioZone>(); // discard current list
+                zoneList = new HashMap<>(); // discard current list
                 for (int i = 0; i < device.zones.size(); i++) {
                     RachioCloudZone zone = device.zones.get(i);
                     if (true /* zone.enabled */) {
@@ -630,7 +630,7 @@ public class RachioDevice extends RachioCloudDevice {
 
         String list = runList + ","; // make sure last entry is terminated by ','
         String json = "{ \"zones\" : [";
-        for (HashMap.Entry<String, RachioZone> ze : zoneList.entrySet()) {
+        for (Map.Entry<String, RachioZone> ze : zoneList.entrySet()) {
             RachioZone zone = ze.getValue();
             if (flAll || (list.contains(zone.zoneNumber + ",") && (zone.getEnabled() == OnOffType.ON))) {
                 if (resolvedDurations.length() > 0) {
@@ -651,14 +651,14 @@ public class RachioDevice extends RachioCloudDevice {
     /**
      * Get a list of all zones belonging to this controller
      *
-     * @return Zone list (HashMap)
+     * @return Zone list
      */
-    public HashMap<String, RachioZone> getZones() {
+    public Map<String, RachioZone> getZones() {
         return zoneList;
     }
 
     public @Nullable RachioZone getZoneByNumber(int zoneNumber) {
-        for (HashMap.Entry<String, RachioZone> ze : zoneList.entrySet()) {
+        for (Map.Entry<String, RachioZone> ze : zoneList.entrySet()) {
             RachioZone zone = ze.getValue();
             if (zone.zoneNumber == zoneNumber) {
                 return zone;
@@ -668,7 +668,7 @@ public class RachioDevice extends RachioCloudDevice {
     }
 
     public @Nullable RachioZone getZoneById(String zoneId) {
-        for (HashMap.Entry<String, RachioZone> ze : zoneList.entrySet()) {
+        for (Map.Entry<String, RachioZone> ze : zoneList.entrySet()) {
             RachioZone zone = ze.getValue();
             if (zone.id.equals(zoneId)) {
                 return zone;

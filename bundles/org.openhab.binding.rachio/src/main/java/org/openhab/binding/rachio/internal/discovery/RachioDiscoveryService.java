@@ -161,7 +161,7 @@ public class RachioDiscoveryService extends AbstractDiscoveryService implements 
                 return;
             }
 
-            HashMap<String, RachioDevice> deviceList = null;
+            Map<String, RachioDevice> deviceList = null;
             ThingUID bridgeUID;
             deviceList = handler.getDevices();
             bridgeUID = handler.getThing().getUID();
@@ -173,7 +173,7 @@ public class RachioDiscoveryService extends AbstractDiscoveryService implements 
             DiscoveryCounts counts = new DiscoveryCounts();
             logger.debug("RachioDiscovery: {} discovered {} irrigation controller device(s).", source,
                     deviceList.size());
-            for (HashMap.Entry<String, RachioDevice> de : deviceList.entrySet()) {
+            for (Map.Entry<String, RachioDevice> de : deviceList.entrySet()) {
                 RachioDevice dev = de.getValue();
                 logger.debug("Check Rachio device with ID '{}'", dev.id);
 
@@ -191,9 +191,9 @@ public class RachioDiscoveryService extends AbstractDiscoveryService implements 
                 thingDiscovered(discoveryResult);
                 counts.controllers++;
 
-                HashMap<String, RachioZone> zoneList = dev.getZones();
+                Map<String, RachioZone> zoneList = dev.getZones();
                 logger.debug("Found {} zones for this device.", zoneList.size());
-                for (HashMap.Entry<String, RachioZone> ze : zoneList.entrySet()) {
+                for (Map.Entry<String, RachioZone> ze : zoneList.entrySet()) {
                     RachioZone zone = ze.getValue();
                     logger.debug("Checking zone with ID '{}'", zone.id);
 

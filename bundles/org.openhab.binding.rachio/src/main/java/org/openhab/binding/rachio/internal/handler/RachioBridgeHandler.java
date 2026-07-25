@@ -157,17 +157,17 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
 
             // Pass BridgeUID to device, RachioDeviceHandler will fill DeviceUID
             Bridge bridgeThing = this.getThing();
-            HashMap<String, RachioDevice> deviceList = getDevices();
+            Map<String, RachioDevice> deviceList = getDevices();
             if (deviceList == null) {
                 throw new RachioApiException("RachioCloud: Device list is unavailable after cloud initialization.");
             }
-            for (HashMap.Entry<String, RachioDevice> de : deviceList.entrySet()) {
+            for (Map.Entry<String, RachioDevice> de : deviceList.entrySet()) {
                 RachioDevice dev = de.getValue();
                 ThingUID devThingUID = new ThingUID(THING_TYPE_DEVICE, bridgeThing.getUID(), dev.getThingID());
                 dev.setUID(this.getThing().getUID(), devThingUID);
                 // Set DeviceUID for all zones
-                HashMap<String, RachioZone> zoneList = dev.getZones();
-                for (HashMap.Entry<String, RachioZone> ze : zoneList.entrySet()) {
+                Map<String, RachioZone> zoneList = dev.getZones();
+                for (Map.Entry<String, RachioZone> ze : zoneList.entrySet()) {
                     RachioZone zone = ze.getValue();
                     ThingUID zoneThingUID = new ThingUID(THING_TYPE_ZONE, bridgeThing.getUID(), zone.getThingID());
                     zone.setUID(dev.getUID(), zoneThingUID);
@@ -286,7 +286,7 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
                 return;
             }
 
-            HashMap<String, RachioDevice> deviceList = getDevices();
+            Map<String, RachioDevice> deviceList = getDevices();
             if (deviceList == null) {
                 logger.debug("RachioCloud: Cloud access not initialized yet!");
                 return;
@@ -310,8 +310,8 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
                 updateStatus(ThingStatus.ONLINE);
             }
 
-            HashMap<String, RachioDevice> checkDevList = checkApi.getDevices();
-            for (HashMap.Entry<String, RachioDevice> de : checkDevList.entrySet()) {
+            Map<String, RachioDevice> checkDevList = checkApi.getDevices();
+            for (Map.Entry<String, RachioDevice> de : checkDevList.entrySet()) {
                 RachioDevice checkDev = de.getValue();
                 RachioDevice dev = deviceList.get(checkDev.id);
                 if (dev == null) {
@@ -351,9 +351,9 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
             }
         }
 
-        HashMap<String, RachioZone> zoneList = dev.getZones();
-        HashMap<String, RachioZone> checkZoneList = checkDev.getZones();
-        for (HashMap.Entry<String, RachioZone> ze : checkZoneList.entrySet()) {
+        Map<String, RachioZone> zoneList = dev.getZones();
+        Map<String, RachioZone> checkZoneList = checkDev.getZones();
+        for (Map.Entry<String, RachioZone> ze : checkZoneList.entrySet()) {
             RachioZone checkZone = ze.getValue();
             RachioZone zone = zoneList.get(checkZone.id);
             if (zone == null) {
@@ -377,7 +377,7 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
 
         // Sync the zoneList with the new state
         zoneList.keySet().retainAll(checkZoneList.keySet());
-        for (HashMap.Entry<String, RachioZone> entry : checkZoneList.entrySet()) {
+        for (Map.Entry<String, RachioZone> entry : checkZoneList.entrySet()) {
             if (!zoneList.containsKey(entry.getKey())) {
                 zoneList.put(entry.getKey(), entry.getValue());
             }
@@ -816,9 +816,9 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
     /**
      * Get the list of discovered devices (those retrieved from the Rachio Cloud)
      *
-     * @return HashMap of RachioDevice
+     * @return map of RachioDevice
      */
-    public @Nullable HashMap<String, RachioDevice> getDevices() {
+    public @Nullable Map<String, RachioDevice> getDevices() {
         try {
             return rachioApi.getDevices();
         } catch (RuntimeException e) {
@@ -832,7 +832,7 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
         if (controllerId.isBlank()) {
             return null;
         }
-        HashMap<String, RachioDevice> devices = getDevices();
+        Map<String, RachioDevice> devices = getDevices();
         if (devices == null) {
             return null;
         }

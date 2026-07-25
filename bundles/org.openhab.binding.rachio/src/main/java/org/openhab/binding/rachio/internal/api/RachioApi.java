@@ -121,7 +121,7 @@ public class RachioApi {
     private static final Map<String, ClientRateLimitManager> RATE_LIMIT_MANAGERS = new ConcurrentHashMap<>();
     private ClientRateLimitManager rateLimitManager = new ClientRateLimitManager(10, Duration.ofSeconds(30));
 
-    private HashMap<String, RachioDevice> deviceList = new HashMap<String, RachioDevice>();
+    private Map<String, RachioDevice> deviceList = new HashMap<>();
     private RachioHttp httpApi = new RachioHttp("");
 
     public RachioApi(String personId) {
@@ -272,7 +272,7 @@ public class RachioApi {
         }
     }
 
-    public HashMap<String, RachioDevice> getDevices() {
+    public Map<String, RachioDevice> getDevices() {
         return deviceList;
     }
 
@@ -368,7 +368,7 @@ public class RachioApi {
             return null;
         }
 
-        for (HashMap.Entry<String, RachioDevice> entry : deviceList.entrySet()) {
+        for (Map.Entry<String, RachioDevice> entry : deviceList.entrySet()) {
             RachioDevice dev = entry.getValue();
             String matchedProperty = getMatchingDeviceProperty(dev, properties);
             if (matchedProperty != null) {
@@ -380,7 +380,7 @@ public class RachioApi {
             }
         }
 
-        for (HashMap.Entry<String, RachioDevice> entry : deviceList.entrySet()) {
+        for (Map.Entry<String, RachioDevice> entry : deviceList.entrySet()) {
             RachioDevice dev = entry.getValue();
             ThingUID expectedUID = buildExpectedThingUID(THING_TYPE_DEVICE, bridgeUID, dev.getThingID());
             logger.trace("getDevByUID: requested bridge={}, requested device={}, cached bridge={}, cached device={}, "
@@ -429,7 +429,7 @@ public class RachioApi {
             return null;
         }
 
-        for (HashMap.Entry<String, RachioDevice> de : deviceList.entrySet()) {
+        for (Map.Entry<String, RachioDevice> de : deviceList.entrySet()) {
             RachioDevice dev = de.getValue();
             ThingUID expectedDevUID = buildExpectedThingUID(THING_TYPE_DEVICE, bridgeUID, dev.getThingID());
             if (expectedDevUID == null) {
@@ -437,8 +437,8 @@ public class RachioApi {
                 continue;
             }
 
-            HashMap<String, RachioZone> zoneList = dev.getZones();
-            for (HashMap.Entry<String, RachioZone> ze : zoneList.entrySet()) {
+            Map<String, RachioZone> zoneList = dev.getZones();
+            for (Map.Entry<String, RachioZone> ze : zoneList.entrySet()) {
                 RachioZone zone = ze.getValue();
                 String matchedProperty = getMatchingZoneProperty(zone, properties);
                 if (matchedProperty != null) {
@@ -451,7 +451,7 @@ public class RachioApi {
             }
         }
 
-        for (HashMap.Entry<String, RachioDevice> de : deviceList.entrySet()) {
+        for (Map.Entry<String, RachioDevice> de : deviceList.entrySet()) {
             RachioDevice dev = de.getValue();
             ThingUID expectedDevUID = buildExpectedThingUID(THING_TYPE_DEVICE, bridgeUID, dev.getThingID());
             if (expectedDevUID == null) {
@@ -459,8 +459,8 @@ public class RachioApi {
                 continue;
             }
 
-            HashMap<String, RachioZone> zoneList = dev.getZones();
-            for (HashMap.Entry<String, RachioZone> ze : zoneList.entrySet()) {
+            Map<String, RachioZone> zoneList = dev.getZones();
+            for (Map.Entry<String, RachioZone> ze : zoneList.entrySet()) {
                 RachioZone zone = ze.getValue();
                 ThingUID expectedZoneUID = buildExpectedThingUID(THING_TYPE_ZONE, bridgeUID, zone.getThingID());
                 logger.trace(
@@ -1718,7 +1718,7 @@ public class RachioApi {
         fullName = cloudStatus.fullName;
         email = cloudStatus.email;
 
-        deviceList = new HashMap<String, RachioDevice>(); // discard current list
+        deviceList = new HashMap<>(); // discard current list
         for (int i = 0; i < cloudStatus.devices.size(); i++) {
             RachioCloudDevice device = cloudStatus.devices.get(i);
             if (!device.deleted) {

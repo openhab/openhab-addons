@@ -17,6 +17,7 @@ import static org.openhab.binding.rachio.internal.RachioUtils.urlEncode;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -34,7 +35,7 @@ import org.openhab.binding.rachio.internal.api.json.RachioApiGsonDTO.RachioApiWe
 public class RachioWebhookTarget {
     private final String resourceId;
     private final RachioWebhookResourceType resourceType;
-    private final LinkedHashSet<String> eventTypes;
+    private final Set<String> eventTypes;
 
     public RachioWebhookTarget(String resourceId, RachioWebhookResourceType resourceType,
             Collection<String> eventTypes) {
@@ -63,7 +64,7 @@ public class RachioWebhookTarget {
         return Set.copyOf(eventTypes);
     }
 
-    public ArrayList<String> getEventTypeList() {
+    public List<String> getEventTypeList() {
         return new ArrayList<>(eventTypes);
     }
 
@@ -94,13 +95,13 @@ public class RachioWebhookTarget {
     }
 
     public Set<String> getUnsupportedEventTypes(Collection<String> supportedEventTypes) {
-        LinkedHashSet<String> unsupportedEventTypes = new LinkedHashSet<>(eventTypes);
+        Set<String> unsupportedEventTypes = new LinkedHashSet<>(eventTypes);
         unsupportedEventTypes.removeAll(supportedEventTypes);
         return unsupportedEventTypes;
     }
 
     public RachioWebhookTarget filterEventTypes(Collection<String> supportedEventTypes) {
-        LinkedHashSet<String> filteredEventTypes = new LinkedHashSet<>(eventTypes);
+        Set<String> filteredEventTypes = new LinkedHashSet<>(eventTypes);
         filteredEventTypes.retainAll(supportedEventTypes);
         return withEventTypes(filteredEventTypes);
     }

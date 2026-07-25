@@ -42,8 +42,8 @@ public class RachioPropertyGsonDTO {
         public String timeZone = "";
         public String latitude = "";
         public String longitude = "";
-        public ArrayList<RachioPropertyEntity> entities = new ArrayList<>();
-        public ArrayList<RachioPropertyEntity> resources = new ArrayList<>();
+        public List<RachioPropertyEntity> entities = new ArrayList<>();
+        public List<RachioPropertyEntity> resources = new ArrayList<>();
         public @Nullable JsonObject address;
         public @Nullable JsonObject resourceId;
 
@@ -67,7 +67,7 @@ public class RachioPropertyGsonDTO {
     }
 
     public static class RachioPropertyListResponse {
-        public ArrayList<RachioProperty> properties = new ArrayList<>();
+        public List<RachioProperty> properties = new ArrayList<>();
 
         public static RachioPropertyListResponse fromJson(String json) {
             RachioPropertyListResponse response = new RachioPropertyListResponse();
@@ -107,7 +107,7 @@ public class RachioPropertyGsonDTO {
     }
 
     public static class RachioPropertyEntityLookupResponse {
-        public ArrayList<RachioProperty> properties = new ArrayList<>();
+        public List<RachioProperty> properties = new ArrayList<>();
         public @Nullable RachioProperty property;
 
         public static RachioPropertyEntityLookupResponse fromJson(String json) {
