@@ -342,7 +342,7 @@ public class SourceGenerator {
         context.put("lastName", tmmLastName);
         // we add a method to the context for the template to use. This method capitalizes the first letter of a string
         @SuppressWarnings("unchecked")
-        TemplateMethodModelEx tmmCapitalize = (args) -> capitalize(
+        TemplateMethodModelEx tmmCapitalize = (args) -> capitalizeAndSanitize(
                 ((List<freemarker.template.SimpleScalar>) args).getFirst().getAsString());
         context.put("camelCase", tmmCapitalize);
         context.put("actionsByScope", actionsByScope);
@@ -564,8 +564,9 @@ public class SourceGenerator {
         return null;
     }
 
-    private static String capitalize(String minusString) {
-        return minusString.substring(0, 1).toUpperCase(Locale.FRANCE) + minusString.substring(1);
+    private static String capitalizeAndSanitize(String minusString) {
+        return minusString.substring(0, 1).toUpperCase(Locale.ENGLISH)
+                + minusString.substring(1).replaceAll("[^a-zA-Z0-9_]", "_");
     }
 
     private static String escapeName(String textToEscape) {

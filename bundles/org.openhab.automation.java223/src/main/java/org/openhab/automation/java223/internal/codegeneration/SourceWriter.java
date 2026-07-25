@@ -22,6 +22,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -124,6 +126,8 @@ public class SourceWriter {
      * @return The full package name
      */
     public static String getPackageName(String... packagePath) {
-        return HELPER_PACKAGE + "." + String.join(".", packagePath);
+        String sanitizedPath = Stream.of(packagePath).map(part -> part.replaceAll("[^a-zA-Z0-9_]", "_"))
+                .collect(Collectors.joining("."));
+        return HELPER_PACKAGE + "." + sanitizedPath;
     }
 }
