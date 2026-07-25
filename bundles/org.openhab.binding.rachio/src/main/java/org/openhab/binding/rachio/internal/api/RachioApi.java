@@ -1470,7 +1470,7 @@ public class RachioApi {
 
     public List<String> listWebhookEventTypes(RequestPurpose requestPurpose) throws RachioApiException {
         Map<RachioWebhookResourceType, Set<String>> eventTypesByResourceType = listWebhookEventTypeMap(requestPurpose);
-        LinkedHashSet<String> eventTypes = new LinkedHashSet<>();
+        Set<String> eventTypes = new LinkedHashSet<>();
         for (Set<String> resourceEventTypes : eventTypesByResourceType.values()) {
             eventTypes.addAll(resourceEventTypes);
         }
@@ -1491,7 +1491,7 @@ public class RachioApi {
     }
 
     static List<String> parseWebhookEventTypeList(String json) {
-        LinkedHashSet<String> eventTypes = new LinkedHashSet<>();
+        Set<String> eventTypes = new LinkedHashSet<>();
         for (Set<String> resourceEventTypes : parseWebhookEventTypeMap(json).values()) {
             eventTypes.addAll(resourceEventTypes);
         }
@@ -1841,12 +1841,11 @@ public class RachioApi {
                         f.setAccessible(true);
                         t.setAccessible(true);
                         t.set(toObj, d != null ? d.clone() : null);
-                    } else if (t.getType() == java.util.ArrayList.class) {
-                        // dates are not immutable, so clone non-null dates into the destination object
-                        ArrayList a = (ArrayList) f.get(fromObj);
+                    } else if (List.class.isAssignableFrom(t.getType())) {
+                        List<?> values = (List<?>) f.get(fromObj);
                         f.setAccessible(true);
                         t.setAccessible(true);
-                        t.set(toObj, a != null ? a.clone() : null);
+                        t.set(toObj, values != null ? new ArrayList<>(values) : null);
                     }
                 }
             } catch (NoSuchFieldException ex) {

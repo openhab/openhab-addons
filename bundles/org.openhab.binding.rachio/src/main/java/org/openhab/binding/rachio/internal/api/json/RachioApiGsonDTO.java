@@ -44,7 +44,7 @@ public class RachioApiGsonDTO {
         public String username = ""; // "username":"openhab",
         public String fullName = ""; // "fullName":"openHAB user",
         public String email = ""; // "email":info@openhab.info",
-        public ArrayList<RachioCloudDevice> devices = new ArrayList<>(); // "devices":[]
+        public List<RachioCloudDevice> devices = new ArrayList<>(); // "devices":[]
         public boolean deleted = false; // "deleted":false
     }
 
@@ -55,11 +55,11 @@ public class RachioApiGsonDTO {
         public String url = "";
         public String externalId = "";
         public RachioApiWebHookResourceId resourceId = new RachioApiWebHookResourceId();
-        public ArrayList<String> eventTypes = new ArrayList<>();
+        public List<String> eventTypes = new ArrayList<>();
     }
 
     public static class RachioApiWebHookList {
-        public ArrayList<RachioApiWebHookEntry> webhooks = new ArrayList<>();
+        public List<RachioApiWebHookEntry> webhooks = new ArrayList<>();
     }
 
     public static class RachioApiLegacyWebHookEventType {
@@ -101,7 +101,7 @@ public class RachioApiGsonDTO {
     }
 
     public static class RachioApiWebhookEventTypesResponse {
-        public ArrayList<RachioApiWebhookEventTypeGroup> eventTypes = new ArrayList<>();
+        public List<RachioApiWebhookEventTypeGroup> eventTypes = new ArrayList<>();
 
         public static RachioApiWebhookEventTypesResponse fromJson(String json) {
             RachioApiWebhookEventTypesResponse response = new RachioApiWebhookEventTypesResponse();
@@ -181,7 +181,7 @@ public class RachioApiGsonDTO {
 
     public static class RachioApiWebhookEventTypeGroup {
         public String resourceType = "";
-        public ArrayList<String> eventTypes = new ArrayList<>();
+        public List<String> eventTypes = new ArrayList<>();
     }
 
     public static class RachioEventProperty {

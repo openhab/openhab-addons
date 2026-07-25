@@ -44,7 +44,7 @@ public class RachioSmartHoseTimerGsonDTO {
     private static final Gson GSON = new Gson();
 
     public static class RachioBaseStationListResponse {
-        public ArrayList<RachioBaseStation> baseStations = new ArrayList<>();
+        public List<RachioBaseStation> baseStations = new ArrayList<>();
 
         public static RachioBaseStationListResponse fromJson(String json) {
             RachioBaseStationListResponse response = new RachioBaseStationListResponse();
@@ -55,7 +55,7 @@ public class RachioSmartHoseTimerGsonDTO {
     }
 
     public static class RachioValveListResponse {
-        public ArrayList<RachioValve> valves = new ArrayList<>();
+        public List<RachioValve> valves = new ArrayList<>();
 
         public static RachioValveListResponse fromJson(String json) {
             RachioValveListResponse response = new RachioValveListResponse();
@@ -266,7 +266,7 @@ public class RachioSmartHoseTimerGsonDTO {
     }
 
     public static class RachioValveProgramListResponse {
-        public ArrayList<RachioValveProgram> programs = new ArrayList<>();
+        public List<RachioValveProgram> programs = new ArrayList<>();
 
         public static RachioValveProgramListResponse fromJson(String json) {
             RachioValveProgramListResponse response = new RachioValveProgramListResponse();
@@ -286,7 +286,7 @@ public class RachioSmartHoseTimerGsonDTO {
         public @Nullable Boolean enabled;
         public String baseStationId = "";
         public String valveId = "";
-        public ArrayList<String> valveIds = new ArrayList<>();
+        public List<String> valveIds = new ArrayList<>();
         public @Nullable RachioResourceId resourceId;
         public String startTime = "";
         public String nextRunTime = "";
@@ -298,7 +298,7 @@ public class RachioSmartHoseTimerGsonDTO {
         public int intervalDays = 0;
         public double seasonalAdjustment = Double.NaN;
         public @Nullable JsonElement daysOfWeek;
-        public ArrayList<RachioValveDayRun> plannedRuns = new ArrayList<>();
+        public List<RachioValveDayRun> plannedRuns = new ArrayList<>();
 
         public String getThingID() {
             return firstNonBlank(id, getThingName());
@@ -384,7 +384,7 @@ public class RachioSmartHoseTimerGsonDTO {
     }
 
     public static class RachioValveDayViewsResponse {
-        public ArrayList<RachioValveDayView> dayViews = new ArrayList<>();
+        public List<RachioValveDayView> dayViews = new ArrayList<>();
 
         public static RachioValveDayViewsResponse fromJson(String json) {
             RachioValveDayViewsResponse response = new RachioValveDayViewsResponse();
@@ -394,7 +394,7 @@ public class RachioSmartHoseTimerGsonDTO {
         }
 
         public List<RachioValveDayRun> getRuns() {
-            ArrayList<RachioValveDayRun> runs = new ArrayList<>();
+            List<RachioValveDayRun> runs = new ArrayList<>();
             for (RachioValveDayView dayView : dayViews) {
                 runs.addAll(dayView.getRuns());
             }
@@ -423,13 +423,13 @@ public class RachioSmartHoseTimerGsonDTO {
 
     public static class RachioValveDayView {
         public String date = "";
-        public ArrayList<RachioValveDayRun> runs = new ArrayList<>();
-        public ArrayList<RachioValveDayRun> valveRuns = new ArrayList<>();
-        public ArrayList<RachioValveDayRun> plannedRuns = new ArrayList<>();
-        public ArrayList<RachioValveDayRun> completedRuns = new ArrayList<>();
+        public List<RachioValveDayRun> runs = new ArrayList<>();
+        public List<RachioValveDayRun> valveRuns = new ArrayList<>();
+        public List<RachioValveDayRun> plannedRuns = new ArrayList<>();
+        public List<RachioValveDayRun> completedRuns = new ArrayList<>();
 
         public List<RachioValveDayRun> getRuns() {
-            ArrayList<RachioValveDayRun> allRuns = new ArrayList<>();
+            List<RachioValveDayRun> allRuns = new ArrayList<>();
             allRuns.addAll(runs);
             allRuns.addAll(valveRuns);
             allRuns.addAll(plannedRuns);

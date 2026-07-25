@@ -13,6 +13,7 @@
 package org.openhab.binding.rachio.internal.api.json;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.rachio.internal.api.json.RachioZoneGsonDTO.RachioCloudZone;
@@ -28,16 +29,16 @@ public class RachioDeviceGsonDTO {
         public long createDate = -1; // "createDate":1494626927000,
         public String id = ""; // "id":"xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxx",
         public String status = ""; // "status":"ONLINE",
-        public ArrayList<RachioCloudZone> zones = new ArrayList<>();
+        public List<RachioCloudZone> zones = new ArrayList<>();
         public double latitude = 0.0; // "latitude":24.928539276123,
         public double longitude = 0.0; // "longitude":-62.3335037231445,
         public String name = ""; // "name":"My Rachio"
-        public ArrayList<RachioCloudScheduleRule> scheduleRules = new ArrayList<>(); // "scheduleRules":[]
+        public List<RachioCloudScheduleRule> scheduleRules = new ArrayList<>(); // "scheduleRules":[]
         public String serialNumber = ""; // "serialNumber":"VR0549999",
         public String macAddress = ""; // "macAddress":"XXXXXXXXXXXX",
         public long rainDelayExpirationDate = 0; // "rainDelayExpirationDate":0,
         public boolean on = true; // "on":true,
-        public ArrayList<RachioCloudScheduleRule> flexScheduleRules = new ArrayList<>(); // "flexScheduleRules":[],
+        public List<RachioCloudScheduleRule> flexScheduleRules = new ArrayList<>(); // "flexScheduleRules":[],
         public String model = ""; // "model":"GENERATION2_8ZONE",
         public String scheduleModeType = ""; // "scheduleModeType":"MANUAL",
         public boolean deleted = false; // "deleted":false,
@@ -48,8 +49,8 @@ public class RachioDeviceGsonDTO {
 
     public static class RachioCloudScheduleRule {
         public String id = ""; // "id":"xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxx",
-        public ArrayList<RachioCloudScheduleRuleZone> zones = new ArrayList<>(); // "zones":[]
-        public ArrayList<String> scheduleJobTypes = new ArrayList<>(); // "scheduleJobTypes":["DAY_OF_WEEK_6","DAY_OF_WEEK_1","DAY_OF_WEEK_4"],
+        public List<RachioCloudScheduleRuleZone> zones = new ArrayList<>(); // "zones":[]
+        public List<String> scheduleJobTypes = new ArrayList<>(); // "scheduleJobTypes":["DAY_OF_WEEK_6","DAY_OF_WEEK_1","DAY_OF_WEEK_4"],
         public int startHour = 0; // "startHour":2,
         public int startMinute = 0; // "startMinute":0,
         public String operator = ""; // "operator":"AFTER",

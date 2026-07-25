@@ -113,7 +113,7 @@ public class RachioSmartIrrigationGsonDTO {
     }
 
     public static class RachioDeviceEventListResponse {
-        public ArrayList<RachioDeviceEvent> events = new ArrayList<>();
+        public List<RachioDeviceEvent> events = new ArrayList<>();
 
         public static RachioDeviceEventListResponse fromJson(String json) {
             RachioDeviceEventListResponse response = new RachioDeviceEventListResponse();
@@ -208,12 +208,12 @@ public class RachioSmartIrrigationGsonDTO {
         public String summary = "";
         public String updated = "";
         public String updatedAt = "";
-        public ArrayList<RachioForecastEntry> forecast = new ArrayList<>();
-        public ArrayList<RachioForecastEntry> forecasts = new ArrayList<>();
-        public ArrayList<RachioForecastEntry> dailyForecasts = new ArrayList<>();
+        public List<RachioForecastEntry> forecast = new ArrayList<>();
+        public List<RachioForecastEntry> forecasts = new ArrayList<>();
+        public List<RachioForecastEntry> dailyForecasts = new ArrayList<>();
         public @Nullable RachioForecastEntry today;
-        public ArrayList<String> topLevelFieldNames = new ArrayList<>();
-        public ArrayList<String> matchedAliases = new ArrayList<>();
+        public List<String> topLevelFieldNames = new ArrayList<>();
+        public List<String> matchedAliases = new ArrayList<>();
 
         public static RachioForecastResponse fromJson(String json) {
             RachioForecastResponse response = new RachioForecastResponse();
@@ -359,7 +359,7 @@ public class RachioSmartIrrigationGsonDTO {
         }
 
         private ForecastSelection selectTodayForecast(LocalDate currentDate, ZoneId zoneId) {
-            ArrayList<ForecastCandidate> candidates = new ArrayList<>();
+            List<ForecastCandidate> candidates = new ArrayList<>();
             @Nullable
             RachioForecastEntry todayEntry = today;
             if (todayEntry != null) {
@@ -564,8 +564,8 @@ public class RachioSmartIrrigationGsonDTO {
         public double precipitationProbability = Double.NaN;
         public double wind = Double.NaN;
         public double windSpeed = Double.NaN;
-        public ArrayList<String> sourceFieldNames = new ArrayList<>();
-        public ArrayList<String> matchedAliases = new ArrayList<>();
+        public List<String> sourceFieldNames = new ArrayList<>();
+        public List<String> matchedAliases = new ArrayList<>();
 
         public double getHighTemperature() {
             return Double.isNaN(highTemperature) ? high : highTemperature;
@@ -683,7 +683,7 @@ public class RachioSmartIrrigationGsonDTO {
         public String nextScheduledRun = "";
         public String nextScheduledStart = "";
         public double seasonalAdjustment = 0;
-        public ArrayList<RachioScheduleRuleZone> zones = new ArrayList<>();
+        public List<RachioScheduleRuleZone> zones = new ArrayList<>();
 
         public String getZoneSummary() {
             List<String> zoneIds = new ArrayList<>();

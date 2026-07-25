@@ -16,7 +16,6 @@ import static org.openhab.binding.rachio.internal.RachioBindingConstants.*;
 
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -157,8 +156,8 @@ public class RachioEventGsonDTO {
     public RachioApiResult apiResult = new RachioApiResult();
 
     // public JsonArray eventDatas;
-    public @Nullable HashMap<String, String> eventParms;
-    public @Nullable HashMap<String, RachioEventProperty> deltaProperties;
+    public @Nullable Map<String, String> eventParms;
+    public @Nullable Map<String, RachioEventProperty> deltaProperties;
 
     public RachioEventGsonDTO() {
     }
