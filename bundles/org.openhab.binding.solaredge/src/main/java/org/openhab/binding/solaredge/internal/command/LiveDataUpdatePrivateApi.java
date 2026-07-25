@@ -42,7 +42,7 @@ public class LiveDataUpdatePrivateApi extends AbstractCommand implements SolarEd
     public LiveDataUpdatePrivateApi(SolarEdgeHandler handler, StatusUpdateListener listener) {
         super(handler.getConfiguration(), listener);
         this.handler = handler;
-        this.transformer = new LiveDataResponseTransformerPrivateApi(handler);
+        this.transformer = new LiveDataResponseTransformerPrivateApi(handler, config);
     }
 
     @Override

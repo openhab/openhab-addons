@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.solaredge.internal.config.SolarEdgeConfiguration;
 import org.openhab.binding.solaredge.internal.handler.ChannelProvider;
 import org.openhab.binding.solaredge.internal.model.LiveDataResponsePrivateApi.Consumption;
 import org.openhab.binding.solaredge.internal.model.LiveDataResponsePrivateApi.DcStorage;
@@ -51,9 +52,11 @@ public class LiveDataResponseTransformerPrivateApi extends AbstractDataResponseT
     private static final Double ZERO_POWER = 0.0;
 
     private final ChannelProvider channelProvider;
+    private final SolarEdgeConfiguration config;
 
-    public LiveDataResponseTransformerPrivateApi(ChannelProvider channelProvider) {
+    public LiveDataResponseTransformerPrivateApi(ChannelProvider channelProvider, SolarEdgeConfiguration config) {
         this.channelProvider = channelProvider;
+        this.config = config;
     }
 
     public Map<Channel, State> transform(LiveDataResponsePrivateApi response) {
@@ -89,12 +92,13 @@ public class LiveDataResponseTransformerPrivateApi extends AbstractDataResponseT
         if (dcStorage != null) {
             putStringType(result, channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_BATTERY_STATUS),
                     dcStorage.status);
+            Double chargeLevel = dcStorage.chargeLevel;
             putPercentType(result, channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_BATTERY_LEVEL),
-                    dcStorage.chargeLevel);
+                    chargeLevel);
 
-            // battery_critical does not exist in new PrivateApi
+            // battery_critical does not exist in the private API, so derive it from the configured threshold
             putStringType(result, channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_BATTERY_CRITICAL),
-                    Boolean.TRUE.equals(dcStorage.isActive) ? "Active" : "Idle");
+                    chargeLevel != null && chargeLevel < config.getBatteryCriticalLevel() ? "true" : "false");
 
             Double currentPower = dcStorage.currentPower;
             currentPower = currentPower != null ? currentPower : 0;
