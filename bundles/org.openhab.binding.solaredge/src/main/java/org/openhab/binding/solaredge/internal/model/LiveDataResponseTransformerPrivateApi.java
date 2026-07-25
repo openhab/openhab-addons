@@ -64,7 +64,7 @@ public class LiveDataResponseTransformerPrivateApi extends AbstractDataResponseT
             putPowerType(result, channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_PRODUCTION),
                     solarProduction.currentPower, "kW");
             putStringType(result, channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_PV_STATUS),
-                    Boolean.TRUE.equals(solarProduction.isActive) ? "active" : "idle");
+                    Boolean.TRUE.equals(solarProduction.isActive) ? "Active" : "Idle");
         }
 
         Consumption consumption = response.consumption;
@@ -72,7 +72,7 @@ public class LiveDataResponseTransformerPrivateApi extends AbstractDataResponseT
             putPowerType(result, channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_CONSUMPTION),
                     consumption.currentPower, "kW");
             putStringType(result, channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_LOAD_STATUS),
-                    Boolean.TRUE.equals(consumption.isActive) ? "active" : "idle");
+                    Boolean.TRUE.equals(consumption.isActive) ? "Active" : "Idle");
         }
 
         // init fields with zero
@@ -94,7 +94,7 @@ public class LiveDataResponseTransformerPrivateApi extends AbstractDataResponseT
 
             // battery_critical does not exist in new PrivateApi
             putStringType(result, channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_BATTERY_CRITICAL),
-                    Boolean.TRUE.equals(dcStorage.isActive) ? "active" : "idle");
+                    Boolean.TRUE.equals(dcStorage.isActive) ? "Active" : "Idle");
 
             Double currentPower = dcStorage.currentPower;
             currentPower = currentPower != null ? currentPower : 0;
