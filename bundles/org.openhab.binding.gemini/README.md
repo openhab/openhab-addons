@@ -23,14 +23,14 @@ Things must be added manually.
 The `account` thing requires the API key that allows accessing the account.
 API keys can be created and managed under Google AI Studio: <https://aistudio.google.com/app/apikey>.
 
-| Name            | Type    | Description                                                                                                                              | Default          | Required | Advanced |
-|-----------------|---------|------------------------------------------------------------------------------------------------------------------------------------------|------------------|----------|----------|
-| apiKey          | text    | The API key to authenticate against the Gemini API.                                                                                      | N/A              | yes      | no       |
-| requestTimeout  | integer | Timeout in seconds for chat API requests.                                                                                                | 30               | no       | yes      |
-| model           | text    | The model to be used ([Models](https://ai.google.dev/gemini-api/docs/models), [Pricing](https://ai.google.dev/gemini-api/docs/pricing)). | gemini-2.5-flash | no       | no       |
-| temperature     | decimal | A value between 0.0 and 1.0, where higher values make the output more random and lower values make it more focused and deterministic.    | 1.0              | no       | yes      |
-| topP            | decimal | A value between 0.0 and 1.0 for nucleus sampling, where the model considers the results of the tokens with topP probability mass.        | 1.0              | no       | yes      |
-| maxOutputTokens | integer | The maximum number of tokens to include in a candidate.                                                                                  | 2048             | no       | yes      |
+| Name            | Type    | Description                                                                                                                              | Default               | Required | Advanced |
+|-----------------|---------|------------------------------------------------------------------------------------------------------------------------------------------|-----------------------|----------|----------|
+| apiKey          | text    | The API key to authenticate against the Gemini API.                                                                                      | N/A                   | yes      | no       |
+| requestTimeout  | integer | Timeout in seconds for chat API requests.                                                                                                | 30                    | no       | yes      |
+| model           | text    | The model to be used ([Models](https://ai.google.dev/gemini-api/docs/models), [Pricing](https://ai.google.dev/gemini-api/docs/pricing)). | gemini-3.1-flash-lite | no       | no       |
+| temperature     | decimal | A value between 0.0 and 1.0, where higher values make the output more random and lower values make it more focused and deterministic.    | 1.0                   | no       | yes      |
+| topP            | decimal | A value between 0.0 and 1.0 for nucleus sampling, where the model considers the results of the tokens with topP probability mass.        | 1.0                   | no       | yes      |
+| maxOutputTokens | integer | The maximum number of tokens to include in a candidate.                                                                                  | 2048                  | no       | yes      |
 
 It is generally recommended to either alter temperature or topP, but not both.
 For Gemini 3.x models, Google recommends keeping both values at their default.
@@ -103,13 +103,13 @@ val response1 = geminiActions.sendMessage("What is the capital of France?")
 logInfo("Gemini", "Response 1: " + response1)
 
 // 2. sendMessage with model override
-val response2 = geminiActions.sendMessage("Write a poem about openHAB.", "gemini-2.5-flash")
+val response2 = geminiActions.sendMessage("Write a poem about openHAB.", "gemini-3.1-flash-lite")
 logInfo("Gemini", "Response 2: " + response2)
 
 // 3. sendMessage with custom parameters (use null for default values)
 val response3 = geminiActions.sendMessage(
     "How does electricity work?",
-    "gemini-2.5-flash",
+    "gemini-3.1-flash-lite",
     "Explain it to a 5-year-old.", // system message
     0.7,  // temperature
     null, // topP (default)
@@ -131,13 +131,13 @@ const response1 = geminiActions.sendMessage("What is the capital of France?");
 console.info("Gemini Response 1: " + response1);
 
 // 2. sendMessage with model override
-const response2 = geminiActions.sendMessage("Write a poem about openHAB.", "gemini-2.5-flash");
+const response2 = geminiActions.sendMessage("Write a poem about openHAB.", "gemini-3.1-flash-lite");
 console.info("Gemini Response 2: " + response2);
 
 // 3. sendMessage with custom parameters (use null for default values)
 const response3 = geminiActions.sendMessage(
     "How does electricity work?",
-    "gemini-2.5-flash",
+    "gemini-3.1-flash-lite",
     "Explain it to a 5-year-old.", // system message
     0.7,  // temperature
     null, // topP (default)
@@ -167,9 +167,9 @@ For more information on human language interpreters, refer to the [Voice documen
 ### Thing Configuration
 
 ```java
-Thing gemini:account:myaccount [apiKey="xxx-yyy-zzz", model="gemini-2.5-flash", temperature=1.0, topP=1.0, maxOutputTokens=2048, requestTimeout=30] {
+Thing gemini:account:myaccount [apiKey="xxx-yyy-zzz", model="gemini-3.1-flash-lite", temperature=1.0, topP=1.0, maxOutputTokens=2048, requestTimeout=30] {
   Channels:
-    Type chat : chat "Chat" [model="gemini-2.5-flash", temperature=1.0, topP=1.0, maxOutputTokens=2048, systemMessage="You are a helpful assistant."]
+    Type chat : chat "Chat" [model="gemini-3.1-flash-lite", temperature=1.0, topP=1.0, maxOutputTokens=2048, systemMessage="You are a helpful assistant."]
 }
 ```
 
