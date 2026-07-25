@@ -580,6 +580,7 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
         for (int attempt = 1; attempt <= WS_CONNECT_MAX_RETRIES; attempt++) {
             try {
                 apiClient.getPublicClient().subscribeEvents(add -> {
+                    logger.debug("Public events WS event add, id={}, type={}", add.item.id, add.item.type);
                     routePublicApiEvent(add.item, WSEventType.ADD);
                 }, update -> {
                     handleUpdateEvent(update.item);
@@ -669,10 +670,14 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
         if (event.device == null) {
             return;
         }
-        // The same detection can arrive on the public integration WS and, as a fallback,
-        // on the private updates WS; dispatch each event once per ADD/UPDATE phase.
+        // The same detection ADD can arrive on both the public integration WS and, as a
+        // fallback, on the private updates WS, so de-dup ADD to fire each detection once.
+        // UPDATEs are intentionally repeated over an event's lifetime (and coalesced by
+        // handleUpdateEvent's debounce), so they are not de-duped here -- otherwise the
+        // repeated sensor/ring UPDATEs, which only ever use the public WS, would be dropped
+        // for the whole dedup TTL after their first delivery.
         String dedupId = event.id;
-        if (dedupId != null && !markEventDispatched(dedupId + ":" + eventType)) {
+        if (eventType == WSEventType.ADD && dedupId != null && !markEventDispatched(dedupId)) {
             return;
         }
         String deviceId = event.device;
@@ -864,14 +869,24 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
                 case EVENT:
                     Event event = gson.fromJson(update.data, Event.class);
                     if (event != null) {
+                        logger.debug("Private updates WS event {}, id={}, type={}", update.action, update.id,
+                                event.type);
                         // Fallback dispatch: smart-detect / motion events also arrive on the private
                         // updates WS. Route them to the camera channels so detections keep working even
                         // when the public integration events WS connects but silently delivers nothing.
                         BaseEvent pubEvent = toPublicCameraEvent(event);
                         if (pubEvent != null) {
                             pubEvent.id = update.id;
-                            routePublicApiEvent(pubEvent,
-                                    "add".equals(update.action) ? WSEventType.ADD : WSEventType.UPDATE);
+                            // Mirror the public events WS: an "add" dispatches immediately; an
+                            // "update" goes through the same debounce as public updates, so a
+                            // private update coalesces with (and never beats) the settled public
+                            // one. Any other action -- notably "remove" for a deleted event --
+                            // must not fire a detection.
+                            if ("add".equals(update.action)) {
+                                routePublicApiEvent(pubEvent, WSEventType.ADD);
+                            } else if ("update".equals(update.action)) {
+                                handleUpdateEvent(pubEvent);
+                            }
                         }
                         // Thumbnail/heatmap IDs arrive on event UPDATE messages (not add), as the NVR
                         // generates them asynchronously after the event starts.
