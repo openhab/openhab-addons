@@ -117,6 +117,7 @@ public class ShellyBluJsonDTO {
         public @Nullable Shelly2NotifyBluEventDimmer dimmer;
         @SerializedName("Moisture") // WS90 rain detection (BTHome 0x20)
         public @Nullable Double rain;
+        @JsonAdapter(DoubleArrayAdapter.class)
         @SerializedName("Speed") // WS90
         public @Nullable Double[] speeds;
         @SerializedName("UVIndex") // WS90

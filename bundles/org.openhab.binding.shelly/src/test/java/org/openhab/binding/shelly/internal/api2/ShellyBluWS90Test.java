@@ -112,6 +112,18 @@ public class ShellyBluWS90Test {
     }
 
     @Test
+    void ws90DtoWithScalarSpeedDeserializesAsSingleElementArray() {
+        String json = """
+                {"Speed": 3.5, "Direction": 90.0, "addr": "aa:bb:cc:dd:ee:ff"}
+                """;
+        Shelly2NotifyBluEventData data = Objects.requireNonNull(GSON.fromJson(json, Shelly2NotifyBluEventData.class));
+
+        assertThat("speeds", data.speeds, is(not(nullValue())));
+        assertThat("speeds length", data.speeds.length, is(equalTo(1)));
+        assertThat("windSpeed (speeds[0])", data.speeds[0], is(equalTo(3.5)));
+    }
+
+    @Test
     void ws90DtoWithNoRainDeserializesRainAsNull() {
         String json = """
                 {"Speed": [2.0, 4.0], "Direction": 180.0, "UVIndex": 1.2, "addr": "aa:bb:cc:dd:ee:ff"}
