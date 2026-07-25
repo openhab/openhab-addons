@@ -1222,6 +1222,7 @@ public class Shelly1ApiJsonDTO {
         public @Nullable Double windSpeed;
         public @Nullable Double windDirection;
         public @Nullable Double gustSpeed;
+        public @Nullable Double gustDirection;
         public @Nullable Double uvIndex;
         public @Nullable Double pressure;
         public @Nullable Double dewPoint;

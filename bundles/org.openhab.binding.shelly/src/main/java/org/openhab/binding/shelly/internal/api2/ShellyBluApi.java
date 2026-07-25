@@ -329,8 +329,14 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                                 sensorData.gustSpeed = speeds[1];
                             }
                         }
-                        if (blu.direction != null) {
-                            sensorData.windDirection = blu.direction;
+                        // BTHome sends the WS90's Direction object twice per packet: wind direction, then gust
+                        // direction
+                        Double[] directions = blu.directions;
+                        if (directions != null && directions.length >= 1) {
+                            sensorData.windDirection = directions[0];
+                            if (directions.length >= 2) {
+                                sensorData.gustDirection = directions[1];
+                            }
                         }
                         if (blu.uvIndex != null) {
                             sensorData.uvIndex = blu.uvIndex;

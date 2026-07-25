@@ -37,7 +37,7 @@ public class ShellyBluWS90Test {
             {
               "Moisture": 1.0,
               "Speed": [3.5, 7.2],
-              "Direction": 270.0,
+              "Direction": [270.0, 290.0],
               "UVIndex": 5.3,
               "Pressure": 1013.25,
               "Dewpoint": 12.5,
@@ -60,7 +60,10 @@ public class ShellyBluWS90Test {
         assertThat("speeds length", data.speeds.length, is(equalTo(2)));
         assertThat("windSpeed (speeds[0])", data.speeds[0], is(equalTo(3.5)));
         assertThat("gustSpeed (speeds[1])", data.speeds[1], is(equalTo(7.2)));
-        assertThat("direction", data.direction, is(equalTo(270.0)));
+        assertThat("directions", data.directions, is(not(nullValue())));
+        assertThat("directions length", data.directions.length, is(equalTo(2)));
+        assertThat("windDirection (directions[0])", data.directions[0], is(equalTo(270.0)));
+        assertThat("gustDirection (directions[1])", data.directions[1], is(equalTo(290.0)));
         assertThat("uvIndex", data.uvIndex, is(equalTo(5.3)));
         assertThat("pressure", data.pressure, is(equalTo(1013.25)));
         assertThat("dewPoint", data.dewPoint, is(equalTo(12.5)));
@@ -86,7 +89,7 @@ public class ShellyBluWS90Test {
         assertThat("pressure", data.pressure, is(equalTo(1008.5)));
         assertThat("dewPoint", data.dewPoint, is(equalTo(13.2)));
         assertThat("speeds should be null for atmospheric-only packet", data.speeds, is(nullValue()));
-        assertThat("direction should be null for atmospheric-only packet", data.direction, is(nullValue()));
+        assertThat("directions should be null for atmospheric-only packet", data.directions, is(nullValue()));
         assertThat("uvIndex should be null for atmospheric-only packet", data.uvIndex, is(nullValue()));
         assertThat("rain should be null when Moisture key absent", data.rain, is(nullValue()));
     }
@@ -94,7 +97,7 @@ public class ShellyBluWS90Test {
     @Test
     void ws90WindPacketDeserializesWithoutAtmosphericFields() {
         String json = """
-                {"Moisture": 0.0, "Speed": [4.2, 8.1], "Direction": 135.0, "UVIndex": 3.7,
+                {"Moisture": 0.0, "Speed": [4.2, 8.1], "Direction": [135.0, 150.0], "UVIndex": 3.7,
                  "Precipitation": 0.5, "addr": "aa:bb:cc:dd:ee:ff"}
                 """;
         Shelly2NotifyBluEventData data = Objects.requireNonNull(GSON.fromJson(json, Shelly2NotifyBluEventData.class));
@@ -103,7 +106,9 @@ public class ShellyBluWS90Test {
         assertThat("speeds", data.speeds, is(not(nullValue())));
         assertThat("windSpeed", Objects.requireNonNull(data.speeds)[0], is(equalTo(4.2)));
         assertThat("gustSpeed", data.speeds[1], is(equalTo(8.1)));
-        assertThat("direction", data.direction, is(equalTo(135.0)));
+        assertThat("directions", data.directions, is(not(nullValue())));
+        assertThat("windDirection", Objects.requireNonNull(data.directions)[0], is(equalTo(135.0)));
+        assertThat("gustDirection", data.directions[1], is(equalTo(150.0)));
         assertThat("uvIndex", data.uvIndex, is(equalTo(3.7)));
         assertThat("precipitation", data.precipitation, is(equalTo(0.5)));
         assertThat("temperatures should be null for wind-only packet", data.temperatures, is(nullValue()));
@@ -121,6 +126,9 @@ public class ShellyBluWS90Test {
         assertThat("speeds", data.speeds, is(not(nullValue())));
         assertThat("speeds length", data.speeds.length, is(equalTo(1)));
         assertThat("windSpeed (speeds[0])", data.speeds[0], is(equalTo(3.5)));
+        assertThat("directions", data.directions, is(not(nullValue())));
+        assertThat("directions length", data.directions.length, is(equalTo(1)));
+        assertThat("windDirection (directions[0])", data.directions[0], is(equalTo(90.0)));
     }
 
     @Test

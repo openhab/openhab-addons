@@ -128,8 +128,9 @@ public class ShellyBluJsonDTO {
         public @Nullable Double dewPoint;
         @SerializedName("Precipitation") // WS90
         public @Nullable Double precipitation;
+        @JsonAdapter(DoubleArrayAdapter.class)
         @SerializedName("Direction") // WS90
-        public @Nullable Double direction;
+        public @Nullable Double[] directions;
 
         @SerializedName("Firmware32")
         public @Nullable Long firmware32;

@@ -2152,6 +2152,7 @@ See notes on discovery of Shelly BLU devices above.
 |         | windSpeed     | Number:Speed         | yes       | Wind speed in m/s                                                                   |
 |         | windDirection | Number:Angle         | yes       | Wind direction in degrees (0-360)                                                   |
 |         | gustSpeed     | Number:Speed         | yes       | Wind gust speed in m/s                                                              |
+|         | gustDirection | Number:Angle         | yes       | Wind gust direction in degrees (0-360)                                              |
 |         | pressure      | Number:Pressure      | yes       | Atmospheric pressure in hPa                                                         |
 |         | dewPoint      | Number:Temperature   | yes       | Dew point in degrees Celsius                                                        |
 |         | rainStatus    | Switch               | yes       | ON: It's raining, OFF: It's not raining                                             |
