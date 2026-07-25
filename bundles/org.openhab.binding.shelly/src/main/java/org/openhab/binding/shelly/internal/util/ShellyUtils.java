@@ -235,6 +235,11 @@ public class ShellyUtils {
         return new DecimalType((value != null ? value : 0));
     }
 
+    public static DecimalType getDecimal(@Nullable Double value, int digits) {
+        BigDecimal bd = BigDecimal.valueOf(value != null ? value : 0);
+        return new DecimalType(bd.setScale(digits, RoundingMode.HALF_UP));
+    }
+
     public static DecimalType getDecimal(@Nullable Integer value) {
         return new DecimalType((value != null ? value : 0));
     }

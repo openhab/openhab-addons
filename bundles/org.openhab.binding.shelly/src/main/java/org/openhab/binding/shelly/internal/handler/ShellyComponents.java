@@ -739,7 +739,7 @@ public class ShellyComponents {
             }
             if (sdata.uvIndex != null) {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_UV,
-                        getDecimal(sdata.uvIndex));
+                        getDecimal(sdata.uvIndex, DIGITS_UV));
             }
 
             boolean charger = (getInteger(profile.settings.externalPower) == 1) || getBool(sdata.charger);
