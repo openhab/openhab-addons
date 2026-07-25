@@ -779,7 +779,7 @@ public class AndroidDebugBridgeDevice {
             String result = commandFuture.get(commandTimeout, TimeUnit.SECONDS);
             Exception error = streamError.get();
             if (error != null) {
-                throw new AndroidDebugBridgeDeviceException(
+                throw new AndroidDebugBridgeDeviceStreamRejectedException(
                         "Error opening adb shell stream " + ip + ":" + port + ": " + error.getMessage());
             }
             return result;

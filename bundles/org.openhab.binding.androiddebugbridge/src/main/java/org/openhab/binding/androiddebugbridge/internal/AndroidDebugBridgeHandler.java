@@ -97,7 +97,21 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
                 // try reconnect
                 adbConnection.connect();
             }
-            handleCommandInternal(channelUID, command);
+            try {
+                handleCommandInternal(channelUID, command);
+            } catch (AndroidDebugBridgeDeviceStreamRejectedException e) {
+                // Socket.isConnected() only records that a connection was once established; it stays
+                // true after the device stops serving the socket, so the check above cannot notice a
+                // device that went into standby and the shell stream open is refused instead. The
+                // command provably never ran, so reconnect and run it once more rather than dropping
+                // it -- otherwise the first command after standby (typically the KEYCODE_WAKEUP meant
+                // to end it) is always lost.
+                logger.debug("{} - shell stream rejected, reconnecting and retrying command: {}", currentConfig.ip,
+                        e.getMessage());
+                adbConnection.disconnect();
+                adbConnection.connect();
+                handleCommandInternal(channelUID, command);
+            }
         } catch (InterruptedException ignored) {
         } catch (AndroidDebugBridgeDeviceException | ExecutionException e) {
             if (!(e.getCause() instanceof InterruptedException)) {
