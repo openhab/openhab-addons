@@ -45,7 +45,7 @@
 					The Google Gemini model to use (<a href="https://ai.google.dev/gemini-api/docs/models">Models</a>, <a href="https://ai.google.dev/gemini-api/docs/pricing">Pricing</a>).
 					]]>
 				</description>
-				<default>gemini-2.5-flash</default>
+				<default>gemini-3.1-flash-lite</default>
 			</parameter>
 			<parameter name="temperature" type="decimal" groupName="hli" min="0.0" max="1.0">
 				<label>Temperature</label>
