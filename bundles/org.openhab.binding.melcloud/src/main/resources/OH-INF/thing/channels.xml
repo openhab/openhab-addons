@@ -433,17 +433,6 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="outdoorTemperature-channel">
-		<item-type>Number:Temperature</item-type>
-		<label>Outdoor Temperature</label>
-		<description>Outdoor temperature reported by the unit</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-
 	<channel-type id="energyConsumed-channel">
 		<item-type>Number:Energy</item-type>
 		<label>Energy Consumed</label>

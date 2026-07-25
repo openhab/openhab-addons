@@ -141,14 +141,14 @@ public class MelCloudHomeAtwUnitHandler extends BaseThingHandler implements MelC
             case CHANNEL_POWER:
                 request.power = command == OnOffType.ON;
                 break;
-            case CHANNEL_SET_TEMPERATURE_ZONE1:
+            case CHANNEL_HOME_SET_TEMPERATURE_ZONE1:
                 Double zone1Temperature = toCelsius(command);
                 if (zone1Temperature == null) {
                     return;
                 }
                 request.setTemperatureZone1 = zone1Temperature;
                 break;
-            case CHANNEL_SET_TEMPERATURE_ZONE2:
+            case CHANNEL_HOME_SET_TEMPERATURE_ZONE2:
                 Double zone2Temperature = toCelsius(command);
                 if (zone2Temperature == null) {
                     return;
@@ -161,14 +161,14 @@ public class MelCloudHomeAtwUnitHandler extends BaseThingHandler implements MelC
             case CHANNEL_ZONE2_OPERATION_MODE:
                 request.operationModeZone2 = command.toString();
                 break;
-            case CHANNEL_TANK_TARGET_WATER_TEMPERATURE:
+            case CHANNEL_HOME_TANK_TARGET_WATER_TEMPERATURE:
                 Double tankTemperature = toCelsius(command);
                 if (tankTemperature == null) {
                     return;
                 }
                 request.setTankWaterTemperature = tankTemperature;
                 break;
-            case CHANNEL_FORCED_HOTWATERMODE:
+            case CHANNEL_HOME_FORCED_HOTWATERMODE:
                 request.forcedHotWaterMode = command == OnOffType.ON;
                 break;
             default:
@@ -190,22 +190,22 @@ public class MelCloudHomeAtwUnitHandler extends BaseThingHandler implements MelC
         updateState(CHANNEL_OPERATION_STATUS, new StringType(unit.getOperationStatus()));
         updateState(CHANNEL_ZONE1_OPERATION_MODE, new StringType(unit.getOperationModeZone1()));
         unit.getSetTemperatureZone1().ifPresent(
-                value -> updateState(CHANNEL_SET_TEMPERATURE_ZONE1, new QuantityType<>(value, SIUnits.CELSIUS)));
+                value -> updateState(CHANNEL_HOME_SET_TEMPERATURE_ZONE1, new QuantityType<>(value, SIUnits.CELSIUS)));
         unit.getRoomTemperatureZone1().ifPresent(
-                value -> updateState(CHANNEL_ROOM_TEMPERATURE_ZONE1, new QuantityType<>(value, SIUnits.CELSIUS)));
+                value -> updateState(CHANNEL_HOME_ROOM_TEMPERATURE_ZONE1, new QuantityType<>(value, SIUnits.CELSIUS)));
         if (unit.hasZone2()) {
             unit.getOperationModeZone2()
                     .ifPresent(value -> updateState(CHANNEL_ZONE2_OPERATION_MODE, new StringType(value)));
-            unit.getSetTemperatureZone2().ifPresent(
-                    value -> updateState(CHANNEL_SET_TEMPERATURE_ZONE2, new QuantityType<>(value, SIUnits.CELSIUS)));
-            unit.getRoomTemperatureZone2().ifPresent(
-                    value -> updateState(CHANNEL_ROOM_TEMPERATURE_ZONE2, new QuantityType<>(value, SIUnits.CELSIUS)));
+            unit.getSetTemperatureZone2().ifPresent(value -> updateState(CHANNEL_HOME_SET_TEMPERATURE_ZONE2,
+                    new QuantityType<>(value, SIUnits.CELSIUS)));
+            unit.getRoomTemperatureZone2().ifPresent(value -> updateState(CHANNEL_HOME_ROOM_TEMPERATURE_ZONE2,
+                    new QuantityType<>(value, SIUnits.CELSIUS)));
         }
-        unit.getSetTankWaterTemperature().ifPresent(value -> updateState(CHANNEL_TANK_TARGET_WATER_TEMPERATURE,
+        unit.getSetTankWaterTemperature().ifPresent(value -> updateState(CHANNEL_HOME_TANK_TARGET_WATER_TEMPERATURE,
                 new QuantityType<>(value, SIUnits.CELSIUS)));
         unit.getTankWaterTemperature().ifPresent(
-                value -> updateState(CHANNEL_TANKWATERTEMPERATURE, new QuantityType<>(value, SIUnits.CELSIUS)));
-        updateState(CHANNEL_FORCED_HOTWATERMODE, OnOffType.from(unit.isForcedHotWaterMode()));
+                value -> updateState(CHANNEL_HOME_TANK_WATER_TEMPERATURE, new QuantityType<>(value, SIUnits.CELSIUS)));
+        updateState(CHANNEL_HOME_FORCED_HOTWATERMODE, OnOffType.from(unit.isForcedHotWaterMode()));
         unit.getOutdoorTemperature().ifPresent(
                 value -> updateState(CHANNEL_OUTDOOR_TEMPERATURE, new QuantityType<>(value, SIUnits.CELSIUS)));
         updateState(CHANNEL_IN_STANDBY_MODE, OnOffType.from(unit.isInStandbyMode()));

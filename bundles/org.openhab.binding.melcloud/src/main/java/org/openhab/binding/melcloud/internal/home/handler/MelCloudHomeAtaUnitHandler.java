@@ -179,7 +179,7 @@ public class MelCloudHomeAtaUnitHandler extends BaseThingHandler implements MelC
             case CHANNEL_POWER:
                 request.power = command == OnOffType.ON;
                 break;
-            case CHANNEL_OPERATION_MODE:
+            case CHANNEL_HOME_OPERATION_MODE:
                 Integer operationModeCode = toInt(command);
                 String operationModeWord = operationModeCode == null ? null
                         : OPERATION_MODE_CODE_TO_WORD.get(operationModeCode);
@@ -189,14 +189,14 @@ public class MelCloudHomeAtaUnitHandler extends BaseThingHandler implements MelC
                 }
                 request.operationMode = operationModeWord;
                 break;
-            case CHANNEL_SET_TEMPERATURE:
+            case CHANNEL_HOME_SET_TEMPERATURE:
                 Double temperature = toCelsius(command);
                 if (temperature == null) {
                     return;
                 }
                 request.setTemperature = temperature;
                 break;
-            case CHANNEL_FAN_SPEED:
+            case CHANNEL_HOME_FAN_SPEED:
                 Integer fanSpeedCode = toInt(command);
                 String fanSpeedWord = fanSpeedCode == null ? null : FAN_SPEED_CODE_TO_WORD.get(fanSpeedCode);
                 if (fanSpeedWord == null) {
@@ -205,7 +205,7 @@ public class MelCloudHomeAtaUnitHandler extends BaseThingHandler implements MelC
                 }
                 request.setFanSpeed = fanSpeedWord;
                 break;
-            case CHANNEL_VANE_HORIZONTAL:
+            case CHANNEL_HOME_VANE_HORIZONTAL:
                 Integer vaneHorizontalCode = toInt(command);
                 String vaneHorizontalWord = vaneHorizontalCode == null ? null
                         : VANE_HORIZONTAL_CODE_TO_WORD.get(vaneHorizontalCode);
@@ -215,7 +215,7 @@ public class MelCloudHomeAtaUnitHandler extends BaseThingHandler implements MelC
                 }
                 request.vaneHorizontalDirection = vaneHorizontalWord;
                 break;
-            case CHANNEL_VANE_VERTICAL:
+            case CHANNEL_HOME_VANE_VERTICAL:
                 Integer vaneVerticalCode = toInt(command);
                 String vaneVerticalWord = vaneVerticalCode == null ? null
                         : VANE_VERTICAL_CODE_TO_WORD.get(vaneVerticalCode);
@@ -243,18 +243,18 @@ public class MelCloudHomeAtaUnitHandler extends BaseThingHandler implements MelC
         updateState(CHANNEL_POWER, OnOffType.from(unit.isPower()));
         Integer operationModeCode = OPERATION_MODE_WORD_TO_CODE.get(unit.getOperationMode());
         if (operationModeCode != null) {
-            updateState(CHANNEL_OPERATION_MODE, new DecimalType(operationModeCode));
+            updateState(CHANNEL_HOME_OPERATION_MODE, new DecimalType(operationModeCode));
         } else {
             logger.debug("Unknown operation mode word '{}', skipping channel update", unit.getOperationMode());
         }
-        unit.getSetTemperature()
-                .ifPresent(value -> updateState(CHANNEL_SET_TEMPERATURE, new QuantityType<>(value, SIUnits.CELSIUS)));
-        unit.getRoomTemperature()
-                .ifPresent(value -> updateState(CHANNEL_ROOM_TEMPERATURE, new QuantityType<>(value, SIUnits.CELSIUS)));
+        unit.getSetTemperature().ifPresent(
+                value -> updateState(CHANNEL_HOME_SET_TEMPERATURE, new QuantityType<>(value, SIUnits.CELSIUS)));
+        unit.getRoomTemperature().ifPresent(
+                value -> updateState(CHANNEL_HOME_ROOM_TEMPERATURE, new QuantityType<>(value, SIUnits.CELSIUS)));
         unit.getFanSpeed().ifPresent(value -> {
             Integer code = FAN_SPEED_WORD_TO_CODE.get(value);
             if (code != null) {
-                updateState(CHANNEL_FAN_SPEED, new DecimalType(code));
+                updateState(CHANNEL_HOME_FAN_SPEED, new DecimalType(code));
             } else {
                 logger.debug("Unknown fan speed word '{}', skipping channel update", value);
             }
@@ -262,7 +262,7 @@ public class MelCloudHomeAtaUnitHandler extends BaseThingHandler implements MelC
         unit.getVaneHorizontalDirection().ifPresent(value -> {
             Integer code = VANE_HORIZONTAL_WORD_TO_CODE.get(value);
             if (code != null) {
-                updateState(CHANNEL_VANE_HORIZONTAL, new DecimalType(code));
+                updateState(CHANNEL_HOME_VANE_HORIZONTAL, new DecimalType(code));
             } else {
                 logger.debug("Unknown vane horizontal word '{}', skipping channel update", value);
             }
@@ -270,7 +270,7 @@ public class MelCloudHomeAtaUnitHandler extends BaseThingHandler implements MelC
         unit.getVaneVerticalDirection().ifPresent(value -> {
             Integer code = VANE_VERTICAL_WORD_TO_CODE.get(value);
             if (code != null) {
-                updateState(CHANNEL_VANE_VERTICAL, new DecimalType(code));
+                updateState(CHANNEL_HOME_VANE_VERTICAL, new DecimalType(code));
             } else {
                 logger.debug("Unknown vane vertical word '{}', skipping channel update", value);
             }

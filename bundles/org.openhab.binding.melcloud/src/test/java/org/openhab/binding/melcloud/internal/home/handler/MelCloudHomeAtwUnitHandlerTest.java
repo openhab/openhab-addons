@@ -18,10 +18,10 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_FORCED_HOTWATERMODE;
+import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_HOME_FORCED_HOTWATERMODE;
+import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_HOME_ROOM_TEMPERATURE_ZONE2;
+import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_HOME_SET_TEMPERATURE_ZONE1;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_POWER;
-import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_ROOM_TEMPERATURE_ZONE2;
-import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_SET_TEMPERATURE_ZONE1;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.THING_TYPE_MELCLOUD_HOME_ACCOUNT;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.THING_TYPE_MELCLOUD_HOME_ATW_UNIT;
 
@@ -124,7 +124,7 @@ class MelCloudHomeAtwUnitHandlerTest {
         // Assert
         callback.waitForOnline();
         assertEquals(OnOffType.ON, callback.getState(CHANNEL_POWER));
-        assertNull(callback.stateMap.get(CHANNEL_ROOM_TEMPERATURE_ZONE2));
+        assertNull(callback.stateMap.get(CHANNEL_HOME_ROOM_TEMPERATURE_ZONE2));
     }
 
     @Test
@@ -140,7 +140,7 @@ class MelCloudHomeAtwUnitHandlerTest {
 
         // Assert
         callback.waitForOnline();
-        assertEquals(new QuantityType<>(19.0, SIUnits.CELSIUS), callback.getState(CHANNEL_ROOM_TEMPERATURE_ZONE2));
+        assertEquals(new QuantityType<>(19.0, SIUnits.CELSIUS), callback.getState(CHANNEL_HOME_ROOM_TEMPERATURE_ZONE2));
     }
 
     @Test
@@ -148,7 +148,7 @@ class MelCloudHomeAtwUnitHandlerTest {
         // Arrange
         MelCloudHomeAtwUnitHandler handler = createHandler();
         handler.initialize();
-        ChannelUID channelUID = new ChannelUID(handler.getThing().getUID(), CHANNEL_SET_TEMPERATURE_ZONE1);
+        ChannelUID channelUID = new ChannelUID(handler.getThing().getUID(), CHANNEL_HOME_SET_TEMPERATURE_ZONE1);
 
         // Act
         handler.handleCommand(channelUID, new QuantityType<>(22.0, SIUnits.CELSIUS));
@@ -165,7 +165,7 @@ class MelCloudHomeAtwUnitHandlerTest {
         // Arrange
         MelCloudHomeAtwUnitHandler handler = createHandler();
         handler.initialize();
-        ChannelUID channelUID = new ChannelUID(handler.getThing().getUID(), CHANNEL_FORCED_HOTWATERMODE);
+        ChannelUID channelUID = new ChannelUID(handler.getThing().getUID(), CHANNEL_HOME_FORCED_HOTWATERMODE);
 
         // Act
         handler.handleCommand(channelUID, OnOffType.ON);

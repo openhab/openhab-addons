@@ -13,26 +13,26 @@
 		<semantic-equipment-tag>HeatPump</semantic-equipment-tag>
 		<channels>
 			<channel id="power" typeId="power-channel"/>
-			<channel id="operationStatus" typeId="operationStatus-channel"/>
-			<channel id="zone1OperationMode" typeId="zoneOperationMode-channel"/>
-			<channel id="setTemperatureZone1" typeId="setTemperatureZone1-channel"/>
-			<channel id="roomTemperatureZone1" typeId="roomTemperatureZone1-channel"/>
-			<channel id="zone2OperationMode" typeId="zoneOperationMode-channel"/>
-			<channel id="setTemperatureZone2" typeId="setTemperatureZone2-channel"/>
-			<channel id="roomTemperatureZone2" typeId="roomTemperatureZone2-channel"/>
-			<channel id="tankWaterTemperature" typeId="tankWaterTemperature-channel"/>
-			<channel id="tankTargetWaterTemperature" typeId="tankTargetWaterTemperature-channel"/>
-			<channel id="forcedHotWaterMode" typeId="forcedHotWaterMode-channel"/>
-			<channel id="outdoorTemperature" typeId="outdoorTemperature-channel"/>
-			<channel id="energyConsumed" typeId="energyConsumed-channel"/>
-			<channel id="energyProduced" typeId="energyProduced-channel"/>
+			<channel id="operation-status" typeId="operationStatus-channel"/>
+			<channel id="zone1-operation-mode" typeId="zoneOperationMode-channel"/>
+			<channel id="set-temperature-zone1" typeId="setTemperatureZone1-channel"/>
+			<channel id="room-temperature-zone1" typeId="roomTemperatureZone1-channel"/>
+			<channel id="zone2-operation-mode" typeId="zoneOperationMode-channel"/>
+			<channel id="set-temperature-zone2" typeId="setTemperatureZone2-channel"/>
+			<channel id="room-temperature-zone2" typeId="roomTemperatureZone2-channel"/>
+			<channel id="tank-water-temperature" typeId="tankWaterTemperature-channel"/>
+			<channel id="tank-target-water-temperature" typeId="tankTargetWaterTemperature-channel"/>
+			<channel id="forced-hot-water-mode" typeId="forcedHotWaterMode-channel"/>
+			<channel id="outdoor-temperature" typeId="system.outdoor-temperature"/>
+			<channel id="energy-consumed" typeId="energyConsumed-channel"/>
+			<channel id="energy-produced" typeId="energyProduced-channel"/>
 			<channel id="cop" typeId="cop-channel"/>
 			<channel id="rssi" typeId="system.signal-strength"/>
-			<channel id="isInError" typeId="isInError-channel"/>
-			<channel id="errorCode" typeId="errorCode-channel"/>
-			<channel id="inStandbyMode" typeId="inStandbyMode-channel"/>
-			<channel id="holidayMode" typeId="holidayMode-channel"/>
-			<channel id="frostProtection" typeId="frostProtection-channel"/>
+			<channel id="is-in-error" typeId="isInError-channel"/>
+			<channel id="error-code" typeId="errorCode-channel"/>
+			<channel id="in-standby-mode" typeId="inStandbyMode-channel"/>
+			<channel id="holiday-mode" typeId="holidayMode-channel"/>
+			<channel id="frost-protection" typeId="frostProtection-channel"/>
 		</channels>
 
 		<representation-property>unitId</representation-property>

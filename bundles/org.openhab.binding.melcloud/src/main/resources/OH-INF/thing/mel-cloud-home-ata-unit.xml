@@ -13,18 +13,18 @@
 		<semantic-equipment-tag>AirConditioner</semantic-equipment-tag>
 		<channels>
 			<channel id="power" typeId="power-channel"/>
-			<channel id="operationMode" typeId="ataOperationMode-channel"/>
-			<channel id="setTemperature" typeId="setTemperature-channel"/>
-			<channel id="roomTemperature" typeId="roomTemperature-channel"/>
-			<channel id="fanSpeed" typeId="ataFanSpeed-channel"/>
-			<channel id="vaneHorizontal" typeId="ataVaneHorizontal-channel"/>
-			<channel id="vaneVertical" typeId="ataVaneVertical-channel"/>
-			<channel id="outdoorTemperature" typeId="outdoorTemperature-channel"/>
-			<channel id="energyConsumed" typeId="energyConsumed-channel"/>
+			<channel id="operation-mode" typeId="ataOperationMode-channel"/>
+			<channel id="set-temperature" typeId="setTemperature-channel"/>
+			<channel id="room-temperature" typeId="system.indoor-temperature"/>
+			<channel id="fan-speed" typeId="ataFanSpeed-channel"/>
+			<channel id="vane-horizontal" typeId="ataVaneHorizontal-channel"/>
+			<channel id="vane-vertical" typeId="ataVaneVertical-channel"/>
+			<channel id="outdoor-temperature" typeId="system.outdoor-temperature"/>
+			<channel id="energy-consumed" typeId="energyConsumed-channel"/>
 			<channel id="rssi" typeId="system.signal-strength"/>
-			<channel id="isInError" typeId="isInError-channel"/>
-			<channel id="errorCode" typeId="errorCode-channel"/>
-			<channel id="inStandbyMode" typeId="inStandbyMode-channel"/>
+			<channel id="is-in-error" typeId="isInError-channel"/>
+			<channel id="error-code" typeId="errorCode-channel"/>
+			<channel id="in-standby-mode" typeId="inStandbyMode-channel"/>
 		</channels>
 
 		<representation-property>unitId</representation-property>

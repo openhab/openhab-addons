@@ -19,12 +19,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_FAN_SPEED;
-import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_OPERATION_MODE;
+import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_HOME_FAN_SPEED;
+import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_HOME_OPERATION_MODE;
+import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_HOME_SET_TEMPERATURE;
+import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_HOME_VANE_HORIZONTAL;
+import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_HOME_VANE_VERTICAL;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_POWER;
-import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_SET_TEMPERATURE;
-import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_VANE_HORIZONTAL;
-import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_VANE_VERTICAL;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.THING_TYPE_MELCLOUD_HOME_ACCOUNT;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.THING_TYPE_MELCLOUD_HOME_ATA_UNIT;
 
@@ -175,9 +175,9 @@ class MelCloudHomeAtaUnitHandlerTest {
         // Assert
         callback.waitForOnline();
         assertEquals(OnOffType.ON, callback.getState(CHANNEL_POWER));
-        assertEquals(new QuantityType<>(21.5, SIUnits.CELSIUS), callback.getState(CHANNEL_SET_TEMPERATURE));
-        assertEquals(new DecimalType(3), callback.getState(CHANNEL_OPERATION_MODE));
-        assertEquals(new DecimalType(2), callback.getState(CHANNEL_FAN_SPEED));
+        assertEquals(new QuantityType<>(21.5, SIUnits.CELSIUS), callback.getState(CHANNEL_HOME_SET_TEMPERATURE));
+        assertEquals(new DecimalType(3), callback.getState(CHANNEL_HOME_OPERATION_MODE));
+        assertEquals(new DecimalType(2), callback.getState(CHANNEL_HOME_FAN_SPEED));
     }
 
     @Test
@@ -191,7 +191,7 @@ class MelCloudHomeAtaUnitHandlerTest {
         handler.onAtaUnitUpdated(unit);
 
         // Assert
-        assertEquals(new DecimalType(4), callback.getState(CHANNEL_FAN_SPEED));
+        assertEquals(new DecimalType(4), callback.getState(CHANNEL_HOME_FAN_SPEED));
     }
 
     @Test
@@ -199,7 +199,7 @@ class MelCloudHomeAtaUnitHandlerTest {
         // Arrange
         MelCloudHomeAtaUnitHandler handler = createHandler(UNIT_ID, true, ThingStatus.ONLINE);
         handler.initialize();
-        ChannelUID channelUID = new ChannelUID(handler.getThing().getUID(), CHANNEL_FAN_SPEED);
+        ChannelUID channelUID = new ChannelUID(handler.getThing().getUID(), CHANNEL_HOME_FAN_SPEED);
 
         // Act
         handler.handleCommand(channelUID, new DecimalType(0));
@@ -222,7 +222,7 @@ class MelCloudHomeAtaUnitHandlerTest {
         handler.onAtaUnitUpdated(unit);
 
         // Assert
-        assertEquals(new DecimalType(8), callback.getState(CHANNEL_OPERATION_MODE));
+        assertEquals(new DecimalType(8), callback.getState(CHANNEL_HOME_OPERATION_MODE));
     }
 
     @Test
@@ -236,7 +236,7 @@ class MelCloudHomeAtaUnitHandlerTest {
         handler.onAtaUnitUpdated(unit);
 
         // Assert
-        assertEquals(new DecimalType(4), callback.getState(CHANNEL_VANE_HORIZONTAL));
+        assertEquals(new DecimalType(4), callback.getState(CHANNEL_HOME_VANE_HORIZONTAL));
     }
 
     @Test
@@ -250,7 +250,7 @@ class MelCloudHomeAtaUnitHandlerTest {
         handler.onAtaUnitUpdated(unit);
 
         // Assert
-        assertEquals(new DecimalType(7), callback.getState(CHANNEL_VANE_VERTICAL));
+        assertEquals(new DecimalType(7), callback.getState(CHANNEL_HOME_VANE_VERTICAL));
     }
 
     @Test
@@ -258,7 +258,7 @@ class MelCloudHomeAtaUnitHandlerTest {
         // Arrange
         MelCloudHomeAtaUnitHandler handler = createHandler(UNIT_ID, true, ThingStatus.ONLINE);
         handler.initialize();
-        ChannelUID channelUID = new ChannelUID(handler.getThing().getUID(), CHANNEL_OPERATION_MODE);
+        ChannelUID channelUID = new ChannelUID(handler.getThing().getUID(), CHANNEL_HOME_OPERATION_MODE);
 
         // Act
         handler.handleCommand(channelUID, new DecimalType(3));
@@ -275,7 +275,7 @@ class MelCloudHomeAtaUnitHandlerTest {
         // Arrange
         MelCloudHomeAtaUnitHandler handler = createHandler(UNIT_ID, true, ThingStatus.ONLINE);
         handler.initialize();
-        ChannelUID channelUID = new ChannelUID(handler.getThing().getUID(), CHANNEL_VANE_HORIZONTAL);
+        ChannelUID channelUID = new ChannelUID(handler.getThing().getUID(), CHANNEL_HOME_VANE_HORIZONTAL);
 
         // Act
         handler.handleCommand(channelUID, new DecimalType(1));
@@ -292,7 +292,7 @@ class MelCloudHomeAtaUnitHandlerTest {
         // Arrange
         MelCloudHomeAtaUnitHandler handler = createHandler(UNIT_ID, true, ThingStatus.ONLINE);
         handler.initialize();
-        ChannelUID channelUID = new ChannelUID(handler.getThing().getUID(), CHANNEL_VANE_VERTICAL);
+        ChannelUID channelUID = new ChannelUID(handler.getThing().getUID(), CHANNEL_HOME_VANE_VERTICAL);
 
         // Act
         handler.handleCommand(channelUID, new DecimalType(7));
@@ -309,7 +309,7 @@ class MelCloudHomeAtaUnitHandlerTest {
         // Arrange
         MelCloudHomeAtaUnitHandler handler = createHandler(UNIT_ID, true, ThingStatus.ONLINE);
         handler.initialize();
-        ChannelUID channelUID = new ChannelUID(handler.getThing().getUID(), CHANNEL_OPERATION_MODE);
+        ChannelUID channelUID = new ChannelUID(handler.getThing().getUID(), CHANNEL_HOME_OPERATION_MODE);
 
         // Act
         handler.handleCommand(channelUID, new DecimalType(99));

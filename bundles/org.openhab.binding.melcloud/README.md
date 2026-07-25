@@ -113,7 +113,7 @@ ATA unit and ATW unit configuration:
 | unitId | x         | The unit's identifier, as returned by the MELCloud Home API.        |
 
 Unlike MELCloud Things, MELCloud Home Things have no `pollingInterval` config parameter.
-The `home-account` bridge centrally polls every registered unit's state every 60 seconds; each unit additionally polls its own energy/outdoor-temperature telemetry (`energyConsumed`/`energyProduced`/`outdoorTemperature` channels) every 30 minutes, since that data changes slowly.
+The `home-account` bridge centrally polls every registered unit's state every 60 seconds; each unit additionally polls its own energy/outdoor-temperature telemetry (`energy-consumed`/`energy-produced`/`outdoor-temperature` channels) every 30 minutes, since that data changes slowly.
 
 ## Channels
 
@@ -164,44 +164,44 @@ The `home-account` bridge centrally polls every registered unit's state every 60
 | Channel             | Type                | Description                                                                          | Read Only |
 |----------------------|--------------------|---------------------------------------------------------------------------------------|-----------|
 | power                | Switch              | Power status of the unit.                                                            | False     |
-| operationMode        | Number              | Operation mode: "1" = Heat, "2" = Dry, "3" = Cool, "7" = Fan, "8" = Automatic.       | False     |
-| setTemperature       | Number:Temperature  | Set temperature: Min = 10, Max = 40.                                                 | False     |
-| roomTemperature      | Number:Temperature  | Room temperature.                                                                    | True      |
-| fanSpeed             | Number              | Fan speed: "0" = Auto, "1" = One, "2" = Two, "3" = Three, "4" = Four, "5" = Five.    | False     |
-| vaneHorizontal       | Number              | Vane Horizontal: "0" = Auto, "1" = Left, "2" = Left Centre, "3" = Centre, "4" = Right Centre, "5" = Right, "12" = Swing. | False |
-| vaneVertical         | Number              | Vane Vertical: "0" = Auto, "1" = One, "2" = Two, "3" = Three, "4" = Four, "5" = Five, "7" = Swing. | False |
-| outdoorTemperature   | Number:Temperature  | Outdoor temperature reported by the unit. Refreshed every 30 minutes.               | True      |
-| energyConsumed       | Number:Energy       | Cumulative energy consumed, in Wh. Refreshed every 30 minutes.                       | True      |
+| operation-mode       | Number              | Operation mode: "1" = Heat, "2" = Dry, "3" = Cool, "7" = Fan, "8" = Automatic.       | False     |
+| set-temperature      | Number:Temperature  | Set temperature: Min = 10, Max = 40.                                                 | False     |
+| room-temperature     | Number:Temperature  | Room temperature.                                                                    | True      |
+| fan-speed            | Number              | Fan speed: "0" = Auto, "1" = One, "2" = Two, "3" = Three, "4" = Four, "5" = Five.    | False     |
+| vane-horizontal      | Number              | Vane Horizontal: "0" = Auto, "1" = Left, "2" = Left Centre, "3" = Centre, "4" = Right Centre, "5" = Right, "12" = Swing. | False |
+| vane-vertical        | Number              | Vane Vertical: "0" = Auto, "1" = One, "2" = Two, "3" = Three, "4" = Four, "5" = Five, "7" = Swing. | False |
+| outdoor-temperature  | Number:Temperature  | Outdoor temperature reported by the unit. Refreshed every 30 minutes.               | True      |
+| energy-consumed      | Number:Energy       | Cumulative energy consumed, in Wh. Refreshed every 30 minutes.                       | True      |
 | rssi                 | Number              | Wi-Fi signal quality (openHAB's built-in `system.signal-strength` channel, 0 = no signal to 4 = excellent). | True |
-| isInError            | Switch              | Whether the unit is currently reporting an error.                                    | True      |
-| errorCode            | String              | The unit's current error code, if any.                                              | True      |
-| inStandbyMode        | Switch              | Whether the unit is currently in standby mode.                                      | True      |
+| is-in-error          | Switch              | Whether the unit is currently reporting an error.                                    | True      |
+| error-code           | String              | The unit's current error code, if any.                                              | True      |
+| in-standby-mode      | Switch              | Whether the unit is currently in standby mode.                                      | True      |
 
 #### Air-to-Water (ATW)
 
-| Channel                    | Type                | Description                                                                          | Read Only |
-|-----------------------------|--------------------|---------------------------------------------------------------------------------------|-----------|
-| power                       | Switch              | Power status of the unit.                                                           | False     |
-| operationStatus             | String              | What the unit is doing right now (e.g. Stop, HotWater, a zone mode).                | True      |
-| zone1OperationMode          | String              | Configured heating/cooling strategy for zone 1: `HeatRoomTemperature`, `HeatFlowTemperature`, `HeatCurve`, `CoolRoomTemperature`, `CoolFlowTemperature`. | False |
-| setTemperatureZone1         | Number:Temperature  | Set temperature Zone 1: Min = 10, Max = 30.                                         | False     |
-| roomTemperatureZone1        | Number:Temperature  | Room temperature Zone 1.                                                             | True      |
-| zone2OperationMode          | String              | Same options as `zone1OperationMode`, for zone 2. Only present if the unit reports a second zone. | False |
-| setTemperatureZone2         | Number:Temperature  | Set temperature Zone 2: Min = 10, Max = 30. Only present if the unit reports a second zone. | False |
-| roomTemperatureZone2        | Number:Temperature  | Room temperature Zone 2. Only present if the unit reports a second zone.            | True      |
-| tankWaterTemperature        | Number:Temperature  | Tank water temperature.                                                             | True      |
-| tankTargetWaterTemperature  | Number:Temperature  | Tank water target temperature: Min = 20, Max = 65.                                  | False     |
-| forcedHotWaterMode          | Switch              | If water mode is Heat Now (true) or Auto (false).                                   | False     |
-| outdoorTemperature          | Number:Temperature  | Outdoor temperature reported by the unit. Refreshed every 30 minutes.               | True      |
-| energyConsumed              | Number:Energy       | Cumulative energy consumed, in Wh. Refreshed every 30 minutes.                       | True      |
-| energyProduced              | Number:Energy       | Cumulative energy produced, in Wh. Refreshed every 30 minutes.                       | True      |
-| cop                         | Number              | Coefficient of performance: ratio of energy produced to energy consumed.            | True      |
-| rssi                        | Number              | Wi-Fi signal quality (openHAB's built-in `system.signal-strength` channel, 0 = no signal to 4 = excellent). | True |
-| isInError                   | Switch              | Whether the unit is currently reporting an error.                                   | True      |
-| errorCode                   | String              | The unit's current error code, if any.                                             | True      |
-| inStandbyMode                | Switch              | Whether the unit is currently in standby mode.                                     | True      |
-| holidayMode                 | Switch              | Whether holiday mode is currently enabled.                                          | True      |
-| frostProtection              | Switch              | Whether frost protection is currently enabled.                                     | True      |
+| Channel                        | Type                | Description                                                                          | Read Only |
+|---------------------------------|--------------------|---------------------------------------------------------------------------------------|-----------|
+| power                           | Switch              | Power status of the unit.                                                           | False     |
+| operation-status                | String              | What the unit is doing right now (e.g. Stop, HotWater, a zone mode).                | True      |
+| zone1-operation-mode            | String              | Configured heating/cooling strategy for zone 1: `HeatRoomTemperature`, `HeatFlowTemperature`, `HeatCurve`, `CoolRoomTemperature`, `CoolFlowTemperature`. | False |
+| set-temperature-zone1           | Number:Temperature  | Set temperature Zone 1: Min = 10, Max = 30.                                         | False     |
+| room-temperature-zone1          | Number:Temperature  | Room temperature Zone 1.                                                             | True      |
+| zone2-operation-mode            | String              | Same options as `zone1-operation-mode`, for zone 2. Only present if the unit reports a second zone. | False |
+| set-temperature-zone2           | Number:Temperature  | Set temperature Zone 2: Min = 10, Max = 30. Only present if the unit reports a second zone. | False |
+| room-temperature-zone2          | Number:Temperature  | Room temperature Zone 2. Only present if the unit reports a second zone.            | True      |
+| tank-water-temperature          | Number:Temperature  | Tank water temperature.                                                             | True      |
+| tank-target-water-temperature   | Number:Temperature  | Tank water target temperature: Min = 20, Max = 65.                                  | False     |
+| forced-hot-water-mode           | Switch              | If water mode is Heat Now (true) or Auto (false).                                   | False     |
+| outdoor-temperature             | Number:Temperature  | Outdoor temperature reported by the unit. Refreshed every 30 minutes.               | True      |
+| energy-consumed                 | Number:Energy       | Cumulative energy consumed, in Wh. Refreshed every 30 minutes.                       | True      |
+| energy-produced                 | Number:Energy       | Cumulative energy produced, in Wh. Refreshed every 30 minutes.                       | True      |
+| cop                             | Number              | Coefficient of performance: ratio of energy produced to energy consumed.            | True      |
+| rssi                            | Number              | Wi-Fi signal quality (openHAB's built-in `system.signal-strength` channel, 0 = no signal to 4 = excellent). | True |
+| is-in-error                     | Switch              | Whether the unit is currently reporting an error.                                   | True      |
+| error-code                      | String              | The unit's current error code, if any.                                             | True      |
+| in-standby-mode                 | Switch              | Whether the unit is currently in standby mode.                                     | True      |
+| holiday-mode                    | Switch              | Whether holiday mode is currently enabled.                                          | True      |
+| frost-protection                | Switch              | Whether frost protection is currently enabled.                                     | True      |
 
 ## Full Example for items configuration
 
@@ -265,35 +265,35 @@ Bridge melcloud:home-account:myhomeaccount "My MELCloud Home account" [ username
 
 ```plaintext
 Switch      homePower                    { channel="melcloud:ata-unit:myhomeaccount:livingroom:power" }
-Number      homeOperationMode            { channel="melcloud:ata-unit:myhomeaccount:livingroom:operationMode" }
-Number      homeSetTemperature           { channel="melcloud:ata-unit:myhomeaccount:livingroom:setTemperature" }
-Number      homeRoomTemperature          { channel="melcloud:ata-unit:myhomeaccount:livingroom:roomTemperature" }
-Number      homeFanSpeed                 { channel="melcloud:ata-unit:myhomeaccount:livingroom:fanSpeed" }
-Number      homeVaneHorizontal           { channel="melcloud:ata-unit:myhomeaccount:livingroom:vaneHorizontal" }
-Number      homeVaneVertical             { channel="melcloud:ata-unit:myhomeaccount:livingroom:vaneVertical" }
-Number      homeOutdoorTemperature       { channel="melcloud:ata-unit:myhomeaccount:livingroom:outdoorTemperature" }
-Number      homeEnergyConsumed           { channel="melcloud:ata-unit:myhomeaccount:livingroom:energyConsumed" }
+Number      homeOperationMode            { channel="melcloud:ata-unit:myhomeaccount:livingroom:operation-mode" }
+Number      homeSetTemperature           { channel="melcloud:ata-unit:myhomeaccount:livingroom:set-temperature" }
+Number      homeRoomTemperature          { channel="melcloud:ata-unit:myhomeaccount:livingroom:room-temperature" }
+Number      homeFanSpeed                 { channel="melcloud:ata-unit:myhomeaccount:livingroom:fan-speed" }
+Number      homeVaneHorizontal           { channel="melcloud:ata-unit:myhomeaccount:livingroom:vane-horizontal" }
+Number      homeVaneVertical             { channel="melcloud:ata-unit:myhomeaccount:livingroom:vane-vertical" }
+Number      homeOutdoorTemperature       { channel="melcloud:ata-unit:myhomeaccount:livingroom:outdoor-temperature" }
+Number      homeEnergyConsumed           { channel="melcloud:ata-unit:myhomeaccount:livingroom:energy-consumed" }
 Number      homeSignalStrength           { channel="melcloud:ata-unit:myhomeaccount:livingroom:rssi" }
-Switch      homeIsInError                { channel="melcloud:ata-unit:myhomeaccount:livingroom:isInError" }
-String      homeErrorCode                { channel="melcloud:ata-unit:myhomeaccount:livingroom:errorCode" }
-Switch      homeInStandbyMode            { channel="melcloud:ata-unit:myhomeaccount:livingroom:inStandbyMode" }
+Switch      homeIsInError                { channel="melcloud:ata-unit:myhomeaccount:livingroom:is-in-error" }
+String      homeErrorCode                { channel="melcloud:ata-unit:myhomeaccount:livingroom:error-code" }
+Switch      homeInStandbyMode            { channel="melcloud:ata-unit:myhomeaccount:livingroom:in-standby-mode" }
 
 Switch      homeHeatpumpPower                      { channel="melcloud:atw-unit:myhomeaccount:attic:power" }
-String      homeHeatpumpOperationStatus            { channel="melcloud:atw-unit:myhomeaccount:attic:operationStatus" }
-String      homeHeatpumpZone1OperationMode         { channel="melcloud:atw-unit:myhomeaccount:attic:zone1OperationMode" }
-Number      homeHeatpumpSetTemperatureZone1        { channel="melcloud:atw-unit:myhomeaccount:attic:setTemperatureZone1" }
-Number      homeHeatpumpRoomTemperatureZone1       { channel="melcloud:atw-unit:myhomeaccount:attic:roomTemperatureZone1" }
-Number      homeHeatpumpTankWaterTemperature       { channel="melcloud:atw-unit:myhomeaccount:attic:tankWaterTemperature" }
-Number      homeHeatpumpTankTargetWaterTemperature { channel="melcloud:atw-unit:myhomeaccount:attic:tankTargetWaterTemperature" }
-Switch      homeHeatpumpForcedHotWaterMode         { channel="melcloud:atw-unit:myhomeaccount:attic:forcedHotWaterMode" }
-Number      homeHeatpumpOutdoorTemperature         { channel="melcloud:atw-unit:myhomeaccount:attic:outdoorTemperature" }
-Number      homeHeatpumpEnergyConsumed             { channel="melcloud:atw-unit:myhomeaccount:attic:energyConsumed" }
-Number      homeHeatpumpEnergyProduced             { channel="melcloud:atw-unit:myhomeaccount:attic:energyProduced" }
+String      homeHeatpumpOperationStatus            { channel="melcloud:atw-unit:myhomeaccount:attic:operation-status" }
+String      homeHeatpumpZone1OperationMode         { channel="melcloud:atw-unit:myhomeaccount:attic:zone1-operation-mode" }
+Number      homeHeatpumpSetTemperatureZone1        { channel="melcloud:atw-unit:myhomeaccount:attic:set-temperature-zone1" }
+Number      homeHeatpumpRoomTemperatureZone1       { channel="melcloud:atw-unit:myhomeaccount:attic:room-temperature-zone1" }
+Number      homeHeatpumpTankWaterTemperature       { channel="melcloud:atw-unit:myhomeaccount:attic:tank-water-temperature" }
+Number      homeHeatpumpTankTargetWaterTemperature { channel="melcloud:atw-unit:myhomeaccount:attic:tank-target-water-temperature" }
+Switch      homeHeatpumpForcedHotWaterMode         { channel="melcloud:atw-unit:myhomeaccount:attic:forced-hot-water-mode" }
+Number      homeHeatpumpOutdoorTemperature         { channel="melcloud:atw-unit:myhomeaccount:attic:outdoor-temperature" }
+Number      homeHeatpumpEnergyConsumed             { channel="melcloud:atw-unit:myhomeaccount:attic:energy-consumed" }
+Number      homeHeatpumpEnergyProduced             { channel="melcloud:atw-unit:myhomeaccount:attic:energy-produced" }
 Number      homeHeatpumpCop                        { channel="melcloud:atw-unit:myhomeaccount:attic:cop" }
 Number      homeHeatpumpSignalStrength             { channel="melcloud:atw-unit:myhomeaccount:attic:rssi" }
-Switch      homeHeatpumpIsInError                  { channel="melcloud:atw-unit:myhomeaccount:attic:isInError" }
-String      homeHeatpumpErrorCode                  { channel="melcloud:atw-unit:myhomeaccount:attic:errorCode" }
-Switch      homeHeatpumpInStandbyMode              { channel="melcloud:atw-unit:myhomeaccount:attic:inStandbyMode" }
-Switch      homeHeatpumpHolidayMode                { channel="melcloud:atw-unit:myhomeaccount:attic:holidayMode" }
-Switch      homeHeatpumpFrostProtection            { channel="melcloud:atw-unit:myhomeaccount:attic:frostProtection" }
+Switch      homeHeatpumpIsInError                  { channel="melcloud:atw-unit:myhomeaccount:attic:is-in-error" }
+String      homeHeatpumpErrorCode                  { channel="melcloud:atw-unit:myhomeaccount:attic:error-code" }
+Switch      homeHeatpumpInStandbyMode              { channel="melcloud:atw-unit:myhomeaccount:attic:in-standby-mode" }
+Switch      homeHeatpumpHolidayMode                { channel="melcloud:atw-unit:myhomeaccount:attic:holiday-mode" }
+Switch      homeHeatpumpFrostProtection            { channel="melcloud:atw-unit:myhomeaccount:attic:frost-protection" }
 ```

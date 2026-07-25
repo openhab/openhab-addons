@@ -74,25 +74,43 @@ public class MelCloudBindingConstants {
     public static final String CHANNEL_HAS_PENDING_COMMAND = "hasPendingCommand";
     public static final String CHANNEL_OFFLINE = "offline";
 
-    // MELCloud Home ATA/ATW unit channels; several channels above (power, setTemperature, roomTemperature,
-    // setTemperatureZone1/2, roomTemperatureZone1/2, forcedHotWaterMode, tankWaterTemperature,
-    // tankTargetWaterTemperature) are reused as-is. operationMode/fanSpeed/vaneHorizontal/vaneVertical reuse the same
-    // channel ids, but the ATA unit binds them to dedicated Number channel-types (ataOperationMode-channel/
-    // ataFanSpeed-channel/ataVaneHorizontal-channel/ataVaneVertical-channel) instead of the legacy A.C. Device's
-    // String-based ones.
-    public static final String CHANNEL_OUTDOOR_TEMPERATURE = "outdoorTemperature";
-    public static final String CHANNEL_ENERGY_CONSUMED = "energyConsumed";
-    public static final String CHANNEL_ENERGY_PRODUCED = "energyProduced";
+    // MELCloud Home ATA/ATW unit channels. These Things use kebab-case channel ids, unlike the legacy A.C./Heatpump
+    // Device Things above. Channel ids that aren't shared with a legacy Thing are renamed in place (e.g.
+    // CHANNEL_OUTDOOR_TEMPERATURE); ids that ARE shared with a legacy Thing (operationMode, setTemperature,
+    // fanSpeed, vaneHorizontal, vaneVertical, roomTemperature, setTemperatureZone1/2, roomTemperatureZone1/2,
+    // tankWaterTemperature, tankTargetWaterTemperature, forcedHotWaterMode) keep their legacy camelCase constant
+    // above and get a dedicated CHANNEL_HOME_* kebab-case constant below, since the same Java constant can't hold
+    // two different id strings. operationMode/fanSpeed/vaneHorizontal/vaneVertical reuse the same channel ids as
+    // the legacy A.C. Device, but the ATA unit binds them to dedicated Number channel-types
+    // (ataOperationMode-channel/ataFanSpeed-channel/ataVaneHorizontal-channel/ataVaneVertical-channel) instead of
+    // the legacy A.C. Device's String-based ones.
+    public static final String CHANNEL_HOME_OPERATION_MODE = "operation-mode";
+    public static final String CHANNEL_HOME_SET_TEMPERATURE = "set-temperature";
+    public static final String CHANNEL_HOME_FAN_SPEED = "fan-speed";
+    public static final String CHANNEL_HOME_VANE_HORIZONTAL = "vane-horizontal";
+    public static final String CHANNEL_HOME_VANE_VERTICAL = "vane-vertical";
+    public static final String CHANNEL_HOME_ROOM_TEMPERATURE = "room-temperature";
+    public static final String CHANNEL_HOME_SET_TEMPERATURE_ZONE1 = "set-temperature-zone1";
+    public static final String CHANNEL_HOME_SET_TEMPERATURE_ZONE2 = "set-temperature-zone2";
+    public static final String CHANNEL_HOME_ROOM_TEMPERATURE_ZONE1 = "room-temperature-zone1";
+    public static final String CHANNEL_HOME_ROOM_TEMPERATURE_ZONE2 = "room-temperature-zone2";
+    public static final String CHANNEL_HOME_TANK_WATER_TEMPERATURE = "tank-water-temperature";
+    public static final String CHANNEL_HOME_TANK_TARGET_WATER_TEMPERATURE = "tank-target-water-temperature";
+    public static final String CHANNEL_HOME_FORCED_HOTWATERMODE = "forced-hot-water-mode";
+
+    public static final String CHANNEL_OUTDOOR_TEMPERATURE = "outdoor-temperature";
+    public static final String CHANNEL_ENERGY_CONSUMED = "energy-consumed";
+    public static final String CHANNEL_ENERGY_PRODUCED = "energy-produced";
     public static final String CHANNEL_COP = "cop";
     public static final String CHANNEL_RSSI = "rssi";
-    public static final String CHANNEL_IS_IN_ERROR = "isInError";
-    public static final String CHANNEL_ERROR_CODE = "errorCode";
-    public static final String CHANNEL_IN_STANDBY_MODE = "inStandbyMode";
-    public static final String CHANNEL_OPERATION_STATUS = "operationStatus";
-    public static final String CHANNEL_ZONE1_OPERATION_MODE = "zone1OperationMode";
-    public static final String CHANNEL_ZONE2_OPERATION_MODE = "zone2OperationMode";
-    public static final String CHANNEL_HOLIDAY_MODE = "holidayMode";
-    public static final String CHANNEL_FROST_PROTECTION = "frostProtection";
+    public static final String CHANNEL_IS_IN_ERROR = "is-in-error";
+    public static final String CHANNEL_ERROR_CODE = "error-code";
+    public static final String CHANNEL_IN_STANDBY_MODE = "in-standby-mode";
+    public static final String CHANNEL_OPERATION_STATUS = "operation-status";
+    public static final String CHANNEL_ZONE1_OPERATION_MODE = "zone1-operation-mode";
+    public static final String CHANNEL_ZONE2_OPERATION_MODE = "zone2-operation-mode";
+    public static final String CHANNEL_HOLIDAY_MODE = "holiday-mode";
+    public static final String CHANNEL_FROST_PROTECTION = "frost-protection";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Collections
             .unmodifiableSet(Stream.of(THING_TYPE_MELCLOUD_ACCOUNT, THING_TYPE_ACDEVICE, THING_TYPE_HEATPUMPDEVICE,
