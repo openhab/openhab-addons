@@ -12,11 +12,11 @@
  */
 package org.openhab.binding.shelly.internal.api2;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static org.openhab.binding.shelly.internal.ShellyDevices.*;
+import static org.openhab.binding.shelly.internal.ShellyDevices.THING_TYPE_SHELLYBLUBUTTON1;
 
 import java.lang.reflect.Field;
 import java.util.Map;
@@ -45,9 +45,8 @@ import org.openhab.core.thing.ThingTypeUID;
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
+@SuppressWarnings({ "null" })
 public class ShellyBluApiTest {
-
-    // ── getStatus() connection guard ─────────────────────────────────────────
 
     @Test
     void getStatusThrowsWhenNotConnected() throws Exception {
@@ -63,8 +62,6 @@ public class ShellyBluApiTest {
         assertDoesNotThrow(api::getStatus);
     }
 
-    // ── getSensorStatus() connection guard ───────────────────────────────────
-
     @Test
     void getSensorStatusThrowsWhenNotConnected() throws Exception {
         ShellyBluApi api = buildBluApi();
@@ -78,8 +75,6 @@ public class ShellyBluApiTest {
         setField(api, "connected", true);
         assertDoesNotThrow(api::getSensorStatus);
     }
-
-    // ── Helpers ──────────────────────────────────────────────────────────────
 
     private ShellyBluApi buildBluApi() {
         ThingTypeUID thingTypeUID = THING_TYPE_SHELLYBLUBUTTON1;

@@ -26,7 +26,7 @@ public class GetConsumables {
 
     public Result[] result;
 
-    public class Result {
+    public static class Result {
         @SerializedName("main_brush_work_time")
         public int mainBrushWorkTime;
 

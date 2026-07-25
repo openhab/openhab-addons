@@ -24,7 +24,7 @@ public class Home {
     public String message = "";
     public HomeData data;
 
-    public class HomeData {
+    public static class HomeData {
         public int id;
         public String name = "";
         public int tuyaHomeId;

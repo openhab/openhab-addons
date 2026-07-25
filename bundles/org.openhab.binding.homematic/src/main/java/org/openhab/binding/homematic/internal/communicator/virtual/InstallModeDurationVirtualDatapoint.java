@@ -16,6 +16,8 @@ import static org.openhab.binding.homematic.internal.misc.HomematicConstants.VIR
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homematic.internal.misc.HomematicClientException;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDatapointConfig;
@@ -27,6 +29,7 @@ import org.openhab.binding.homematic.internal.model.HmValueType;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class InstallModeDurationVirtualDatapoint extends AbstractVirtualDatapointHandler {
     @Override
     public String getName() {
@@ -37,13 +40,15 @@ public class InstallModeDurationVirtualDatapoint extends AbstractVirtualDatapoin
     public void initialize(HmDevice device) {
         if (device.isGatewayExtras()) {
             HmDatapoint dp = addDatapoint(device, 0, getName(), HmValueType.INTEGER, 60, false);
-            dp.setMinValue(10);
-            dp.setMaxValue(300);
+            if (dp != null) {
+                dp.setMinValue(10);
+                dp.setMaxValue(300);
+            }
         }
     }
 
     @Override
-    public boolean canHandleCommand(HmDatapoint dp, Object value) {
+    public boolean canHandleCommand(HmDatapoint dp, @Nullable Object value) {
         return getName().equals(dp.getName());
     }
 

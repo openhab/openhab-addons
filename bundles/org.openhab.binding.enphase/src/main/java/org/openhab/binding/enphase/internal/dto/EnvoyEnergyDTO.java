@@ -18,8 +18,8 @@ package org.openhab.binding.enphase.internal.dto;
  * @author Hilbrand Bouwkamp - Initial contribution
  */
 public class EnvoyEnergyDTO {
-    public int wattHoursToday;
-    public int wattHoursSevenDays;
-    public int wattHoursLifetime;
-    public int wattsNow;
+    public Integer wattHoursToday;
+    public Integer wattHoursSevenDays;
+    public Integer wattHoursLifetime;
+    public Integer wattsNow;
 }

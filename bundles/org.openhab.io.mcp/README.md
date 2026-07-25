@@ -163,6 +163,50 @@ claude mcp add --transport http openhab http://openhab.local:8080/mcp \
 
 Works with both direct LAN URLs and Cloud URLs.
 
+#### Antigravity CLI (agy)
+
+Antigravity CLI configuration is stored in `~/.gemini/config/mcp_config.json`.
+
+**Option A — Direct HTTP/SSE connection:**
+
+Use the native `serverUrl` field. Works with both direct LAN URLs and Cloud URLs.
+
+```json
+{
+  "mcpServers": {
+    "openhab": {
+      "serverUrl": "http://openhab.local:8080/mcp",
+      "headers": {
+        "Authorization": "Bearer oh.YOUR_TOKEN"
+      }
+    }
+  }
+}
+```
+
+**Option B — stdio connection via `mcp-remote` bridge:**
+
+If you prefer to connect using a local stdio-to-HTTP bridge (requires Node.js 18+):
+
+```json
+{
+  "mcpServers": {
+    "openhab": {
+      "command": "npx",
+      "args": [
+        "mcp-remote@latest",
+        "http://openhab.local:8080/mcp",
+        "--allow-http",
+        "--header",
+        "Authorization: Bearer oh.YOUR_TOKEN"
+      ]
+    }
+  }
+}
+```
+
+Verify that the server is connected and view the exposed tools by typing `/mcp` inside the interactive `agy` CLI session.
+
 #### ChatGPT (chatgpt.com, desktop, mobile)
 
 ChatGPT requires a **public HTTPS URL**, so use the **openHAB Cloud** method.
@@ -331,7 +375,7 @@ Setting `enableLoggingAccess=true` exposes two tools:
 
 | Tool               | What it does                                                                                                                                                                                                                                                                                                                                                         |
 | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `get_logs`         | Reads recent log entries from openHAB's in-memory buffer (typically the last 500-5000 entries, with stack traces). Filters: `loggerFilter` (regex), `minLevel`, `sinceMs`, `sinceSequence`, `search`, `limit` (default 100, max 1000).                                                                                                                               |
+| `get_logs`         | Reads recent log entries from the add-on's in-memory buffer (up to the last 5000 entries, with stack traces). Filters: `loggerFilter` (regex), `minLevel`, `sinceMs`, `sinceSequence`, `search`, `limit` (default 100, max 1000).                                                                                                                                    |
 | `manage_log_level` | `action='get'` lists current effective log levels via `GET /rest/logging/` (optional `loggerFilter` substring). `action='set'` changes one logger via `PUT /rest/logging/{name}` (or DELETE when `level="DEFAULT"`). Auto-reverts to the previous level after `revertAfterSeconds` (default **1800** = 30 min). Pass `revertAfterSeconds=0` for a persistent change. |
 
 Things you can ask once this is enabled:

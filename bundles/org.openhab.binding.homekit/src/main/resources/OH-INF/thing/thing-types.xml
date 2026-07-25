@@ -7,7 +7,7 @@
 	<thing-type id="accessory">
 		<label>HomeKit Accessory</label>
 		<description>HomeKit accessory with its own LAN connection</description>
-		<representation-property>uniqueId</representation-property>
+		<representation-property>macAddress</representation-property>
 		<config-description-ref uri="thing-type:homekit:network"/>
 	</thing-type>
 
@@ -15,7 +15,7 @@
 		<label>HomeKit Bridge</label>
 		<description>HomeKit accessory with LAN connection that supports bridged accessories not having an own LAN connection</description>
 		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
-		<representation-property>uniqueId</representation-property>
+		<representation-property>macAddress</representation-property>
 		<config-description-ref uri="thing-type:homekit:network"/>
 	</bridge-type>
 

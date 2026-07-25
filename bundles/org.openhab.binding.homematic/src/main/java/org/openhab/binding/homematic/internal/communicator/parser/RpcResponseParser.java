@@ -15,6 +15,8 @@ package org.openhab.binding.homematic.internal.communicator.parser;
 import java.io.IOException;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homematic.internal.communicator.client.UnknownParameterSetException;
 import org.openhab.binding.homematic.internal.communicator.client.UnknownRpcFailureException;
 import org.openhab.binding.homematic.internal.communicator.message.RpcRequest;
@@ -24,6 +26,7 @@ import org.openhab.binding.homematic.internal.communicator.message.RpcRequest;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class RpcResponseParser extends CommonRpcParser<Object[], Object[]> {
     private RpcRequest<?> request;
 
@@ -33,7 +36,7 @@ public class RpcResponseParser extends CommonRpcParser<Object[], Object[]> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Object[] parse(Object[] message) throws IOException {
+    public Object[] parse(Object @Nullable [] message) throws IOException {
         if (message != null && message.length > 0) {
             Object responseData = message[0];
             if (responseData instanceof Map) {
@@ -42,9 +45,10 @@ public class RpcResponseParser extends CommonRpcParser<Object[], Object[]> {
                     Number faultCode = toNumber(map.get("faultCode"));
                     String faultString = toString(map.get("faultString"));
                     String faultMessage = String.format("%s %s (sending %s)", faultCode, faultString, request);
-                    if (faultCode.intValue() == -1 && "Failure".equals(faultString)) {
+                    if (faultCode != null && faultCode.intValue() == -1 && "Failure".equals(faultString)) {
                         throw new UnknownRpcFailureException(faultMessage);
-                    } else if (faultCode.intValue() == -3 && "Unknown paramset".equals(faultString)) {
+                    } else if (faultCode != null && faultCode.intValue() == -3
+                            && "Unknown paramset".equals(faultString)) {
                         throw new UnknownParameterSetException(faultMessage);
                     }
                     throw new IOException(faultMessage);

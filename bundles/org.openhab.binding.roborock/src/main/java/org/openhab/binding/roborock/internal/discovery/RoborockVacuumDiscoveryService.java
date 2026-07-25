@@ -87,16 +87,13 @@ public class RoborockVacuumDiscoveryService extends AbstractThingHandlerDiscover
         return thingHandler.getHomeData();
     }
 
-    private void findDevice(String name, String id, Devices[] devices) {
+    private void findDevice(@Nullable String name, @Nullable String id, @Nullable Devices[] devices) {
         if (id == null || name == null || devices == null) {
             logger.debug("Skipping device discovery: product id, name, or devices array is null.");
             return;
         }
 
         ThingUID bridgeUID = thingHandler.getThing().getUID();
-        if (bridgeUID == null) {
-            return;
-        }
 
         for (Devices device : devices) {
             if (device == null || device.productId == null || device.duid == null) {

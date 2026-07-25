@@ -17,6 +17,7 @@ import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.ShellyBluJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
+import java.time.Instant;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -49,7 +50,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link ShellyBluApi} implementsBLU interface
+ * {@link ShellyBluApi} handles the Shelly BLU Bluetooth Low Energy device protocol.
+ *
+ * <p>
+ * BLU devices (buttons, motion sensors, door/window sensors, H&amp;T sensors) are
+ * battery-powered and communicate via a Shelly Gen2/3/4 gateway. The gateway forwards
+ * BTHome-encoded advertisements as {@code NotifyBluGW} WebSocket events to the hub, which
+ * dispatches them to the individual per-device thing handlers via {@link ShellyThingTable}.
+ * </p>
+ *
+ * <p>
+ * Sensor data initialization follows a two-pass pattern: {@link #initializeSensorData} creates
+ * the sub-objects (bat, lux, tmp, …) whenever the corresponding BTHome fields are present,
+ * so the event-processing block can dereference them unconditionally.
+ * </p>
  *
  * @author Markus Michels - Initial contribution
  * @author Udo Hartmann - Add support for decoding multi button inputs
@@ -60,7 +74,9 @@ public class ShellyBluApi extends Shelly2ApiRpc {
     private boolean connected; // true = BLU devices has connected
     private ShellySettingsStatus deviceStatus = new ShellySettingsStatus();
     private int lastPid = -1;
-    private static final int PID_CYCLE_TRESHHOLD = 50;
+    private static final int PID_CYCLE_TRESHOLD = 50;
+    private long lastTimeStampPacket = 0;
+    private static final int PACKET_TIMESTAMP_TRESHOLD = 10;
 
     /**
      * Regular constructor - called by Thing handler
@@ -179,16 +195,22 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                     logger.debug("{}: BLU event {} received from address {}, pid={} (JSON={})", thingName, event,
                             getString(e.blu.addr), getInteger(e.blu.pid), eventJSON);
                     if (e.blu.pid != null) {
+                        long epochNow = Instant.now().getEpochSecond();
                         int pid = e.blu.pid;
-                        if (lastPid != -1 && pid < (lastPid - PID_CYCLE_TRESHHOLD)) {
+                        if (lastPid != -1 && pid < (lastPid - PID_CYCLE_TRESHOLD)) {
                             logger.debug(
                                     "{}: Received pid {} is so low that a new cycle has probably begun since lastPID={}",
                                     thingName, pid, lastPid);
+                        } else if (pid <= lastPid && epochNow - lastTimeStampPacket > PACKET_TIMESTAMP_TRESHOLD) {
+                            logger.debug(
+                                    "{}: Received pid {} is too low, but received more than {} sec. after lastPID={}. A new cycle has thus probably begun",
+                                    thingName, pid, PACKET_TIMESTAMP_TRESHOLD, lastPid);
                         } else if (pid <= lastPid) {
                             logger.debug("{}: Duplicate packet for pid {} received, ignore", thingName, pid);
                             break;
                         }
                         lastPid = pid;
+                        lastTimeStampPacket = epochNow;
                     }
                     getThing().getProfile().gateway = message.src;
                 }
@@ -216,6 +238,9 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                         if (e.blu.battery != null) {
                             sensorData.bat.value = (double) e.blu.battery;
                         }
+                        if (e.blu.batteryLow != null) {
+                            sensorData.bat.batteryLow = e.blu.batteryLow == 1;
+                        }
                         if (e.blu.rssi != null) {
                             deviceStatus.wifiSta.rssi = e.blu.rssi;
                         }
@@ -226,6 +251,12 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                         if (e.blu.illuminance != null) {
                             sensorData.lux.isValid = true;
                             sensorData.lux.value = (double) e.blu.illuminance;
+                        }
+                        if (e.blu.lightLevel != null) {
+                            sensorData.lux.isValid = true;
+                            int ll = getInteger(e.blu.lightLevel);
+                            sensorData.lux.illumination = ll == 0 ? "dark"
+                                    : ll == 1 ? "twilight" : ll == 2 ? "bright" : "unknown";
                         }
                         if (e.blu.temperatures != null) {
                             if (e.blu.temperatures.length == 1) {
@@ -316,10 +347,10 @@ public class ShellyBluApi extends Shelly2ApiRpc {
     }
 
     private static void initializeSensorData(ShellyStatusSensor sensorData, Shelly2NotifyBluEventData data) {
-        if (data.battery != null && sensorData.bat == null) {
+        if ((data.battery != null || data.batteryLow != null) && sensorData.bat == null) {
             sensorData.bat = new ShellySensorBat();
         }
-        if (data.illuminance != null && sensorData.lux == null) {
+        if ((data.illuminance != null || data.lightLevel != null) && sensorData.lux == null) {
             sensorData.lux = new ShellySensorLux();
         }
         if (data.temperatures != null && sensorData.tmp == null) {

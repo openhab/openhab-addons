@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<featureMappingFile
+    xmlns="http://www.home-connect.com/schemas/FeatureMapping/20140417"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.home-connect.com/schemas/FeatureMapping/20140417 HC_INT_BSH_FeatureMapping.xsd">
+
+    <xi:include href="HC_INT_PDC_SN658X06TE_1-0_DeviceDescription.xml" parse="xml">
+        <xi:fallback>
+            <error>xinclude error: file "HC_INT_PDC_SN658X06TE_1-0_DeviceDescription.xml" not found</error>
+        </xi:fallback>
+    </xi:include>
+
+	<featureDescription>
+	<feature refUID="0200">BSH.Common.Command.AbortProgram</feature>
+<feature refUID="0006">BSH.Common.Command.AcknowledgeEvent</feature>
+<feature refUID="022B">BSH.Common.Command.DeactivateRemoteControlStart</feature>
+<feature refUID="0001">BSH.Common.Command.DeactivateWiFi</feature>
+<feature refUID="0212">BSH.Common.Command.DepairCustomerEnergyManager</feature>
+<feature refUID="0230">BSH.Common.Command.DisallowCustomerServiceConnection</feature>
+<feature refUID="0010">BSH.Common.Command.RejectEvent</feature>
+<feature refUID="022C">BSH.Common.Command.SetWaterHardness</feature>
+<feature refUID="020D">BSH.Common.Event.AquaStopOccured</feature>
+<feature refUID="022F">BSH.Common.Event.CustomerServiceRequest</feature>
+<feature refUID="021F">BSH.Common.Event.LowWaterPressure</feature>
+<feature refUID="0221">BSH.Common.Event.ProgramAborted</feature>
+<feature refUID="021C">BSH.Common.Event.ProgramFinished</feature>
+<feature refUID="0015">BSH.Common.Event.SoftwareUpdateAvailable</feature>
+<feature refUID="0231">BSH.Common.Option.EnergyForecast</feature>
+<feature refUID="0239">BSH.Common.Option.FlexStartInRelative</feature>
+<feature refUID="021E">BSH.Common.Option.ProgramProgress</feature>
+<feature refUID="0220">BSH.Common.Option.RemainingProgramTime</feature>
+<feature refUID="0225">BSH.Common.Option.RemainingProgramTimeIsEstimated</feature>
+<feature refUID="022E">BSH.Common.Option.StartInRelative</feature>
+<feature refUID="0232">BSH.Common.Option.WaterForecast</feature>
+<feature refUID="0100">BSH.Common.Root.ActiveProgram</feature>
+<feature refUID="0105">BSH.Common.Root.CommandList</feature>
+<feature refUID="0104">BSH.Common.Root.EventList</feature>
+<feature refUID="0106">BSH.Common.Root.OptionList</feature>
+<feature refUID="0107">BSH.Common.Root.ProgramGroup</feature>
+<feature refUID="0101">BSH.Common.Root.SelectedProgram</feature>
+<feature refUID="0103">BSH.Common.Root.SettingList</feature>
+<feature refUID="0102">BSH.Common.Root.StatusList</feature>
+<feature refUID="0003">BSH.Common.Setting.AllowBackendConnection</feature>
+<feature refUID="0206">BSH.Common.Setting.AllowFlexStart</feature>
+<feature refUID="0209">BSH.Common.Setting.ApplianceTime</feature>
+<feature refUID="0215">BSH.Common.Setting.Language</feature>
+<feature refUID="021B">BSH.Common.Setting.PowerState</feature>
+<feature refUID="0223">BSH.Common.Setting.SynchronizeWithTimeServer</feature>
+<feature refUID="0005">BSH.Common.Status.BackendConnected</feature>
+<feature refUID="0211">BSH.Common.Status.CustomerEnergyManagerPaired</feature>
+<feature refUID="022D">BSH.Common.Status.CustomerServiceConnectionAllowed</feature>
+<feature refUID="020F">BSH.Common.Status.DoorState</feature>
+<feature refUID="0238">BSH.Common.Status.FlexStart</feature>
+<feature refUID="0228">BSH.Common.Status.OperationState</feature>
+<feature refUID="020B">BSH.Common.Status.RemoteControlActive</feature>
+<feature refUID="0205">BSH.Common.Status.RemoteControlStartAllowed</feature>
+<feature refUID="001B">BSH.Common.Status.WiFiSignalStrength</feature>
+<feature refUID="1201">Dishcare.Dishwasher.Event.CheckFilterSystem</feature>
+<feature refUID="1203">Dishcare.Dishwasher.Event.DrainPumpBlocked</feature>
+<feature refUID="1202">Dishcare.Dishwasher.Event.DrainingNotPossible</feature>
+<feature refUID="1200">Dishcare.Dishwasher.Event.InternalError</feature>
+<feature refUID="1205">Dishcare.Dishwasher.Event.LowVoltage</feature>
+<feature refUID="1214">Dishcare.Dishwasher.Event.MachineCareReminder</feature>
+<feature refUID="1211">Dishcare.Dishwasher.Event.RinseAidLack</feature>
+<feature refUID="1213">Dishcare.Dishwasher.Event.RinseAidNearlyEmpty</feature>
+<feature refUID="1210">Dishcare.Dishwasher.Event.SaltLack</feature>
+<feature refUID="1212">Dishcare.Dishwasher.Event.SaltNearlyEmpty</feature>
+<feature refUID="1204">Dishcare.Dishwasher.Event.WaterheaterCalcified</feature>
+<feature refUID="1408">Dishcare.Dishwasher.Option.BrillianceDry</feature>
+<feature refUID="1406">Dishcare.Dishwasher.Option.IntensivZone</feature>
+<feature refUID="1407">Dishcare.Dishwasher.Option.VarioSpeedPlus</feature>
+<feature refUID="EFF1">Dishcare.Dishwasher.OptionList.Options</feature>
+<feature refUID="2003">Dishcare.Dishwasher.Program.Auto2</feature>
+<feature refUID="2004">Dishcare.Dishwasher.Program.Eco50</feature>
+<feature refUID="2005">Dishcare.Dishwasher.Program.Glas40</feature>
+<feature refUID="2000">Dishcare.Dishwasher.Program.Intensiv70</feature>
+<feature refUID="2015">Dishcare.Dishwasher.Program.Kurz60</feature>
+<feature refUID="2017">Dishcare.Dishwasher.Program.MachineCare</feature>
+<feature refUID="200A">Dishcare.Dishwasher.Program.NightWash</feature>
+<feature refUID="2008">Dishcare.Dishwasher.Program.PreRinse</feature>
+<feature refUID="2007">Dishcare.Dishwasher.Program.Quick45</feature>
+<feature refUID="1107">Dishcare.Dishwasher.Setting.AutoPowerOff</feature>
+<feature refUID="110E">Dishcare.Dishwasher.Setting.BrandLogo</feature>
+<feature refUID="110B">Dishcare.Dishwasher.Setting.EcoAsDefault</feature>
+<feature refUID="1106">Dishcare.Dishwasher.Setting.EcoPrognosis</feature>
+<feature refUID="1104">Dishcare.Dishwasher.Setting.ExtraDry</feature>
+<feature refUID="1105">Dishcare.Dishwasher.Setting.HotWater</feature>
+<feature refUID="1101">Dishcare.Dishwasher.Setting.RelAbsOperatingTime</feature>
+<feature refUID="1102">Dishcare.Dishwasher.Setting.RinseAid</feature>
+<feature refUID="1103">Dishcare.Dishwasher.Setting.SensitivityTurbidity</feature>
+<feature refUID="110D">Dishcare.Dishwasher.Setting.SoundLevelKey</feature>
+<feature refUID="110C">Dishcare.Dishwasher.Setting.SoundLevelSignal</feature>
+<feature refUID="1100">Dishcare.Dishwasher.Setting.TimeFormat</feature>
+<feature refUID="110A">Dishcare.Dishwasher.Setting.TimeLight</feature>
+<feature refUID="110F">Dishcare.Dishwasher.Setting.WaterHardness</feature>
+<feature refUID="1000">Dishcare.Dishwasher.Status.ProgramPhase</feature>
+
+	</featureDescription>
+
+	<errorDescription>
+	<error refEID="00C8">BSH.Common.Error.200.OK</error>
+<error refEID="00CA">BSH.Common.Error.202.Accepted</error>
+<error refEID="0190">BSH.Common.Error.400.BadRequest</error>
+<error refEID="0193">BSH.Common.Error.403.Forbidden</error>
+<error refEID="0194">BSH.Common.Error.404.NotFound</error>
+<error refEID="0195">BSH.Common.Error.405.MethodNotAllowed</error>
+<error refEID="019D">BSH.Common.Error.413.RequestEntityTooLong</error>
+<error refEID="019C">BSH.Common.Error.414.RequestUriTooLong</error>
+<error refEID="01AD">BSH.Common.Error.429.TooManyRequests</error>
+<error refEID="01F4">BSH.Common.Error.500.InternalServerError</error>
+<error refEID="01F5">BSH.Common.Error.501.NotImplemented</error>
+<error refEID="01F6">BSH.Common.Error.502.BadGateway</error>
+<error refEID="01F7">BSH.Common.Error.503.ServiceUnavailable</error>
+<error refEID="01F8">BSH.Common.Error.504.GatewayTimeout</error>
+<error refEID="01FB">BSH.Common.Error.507.InsufficientMemory</error>
+<error refEID="021E">BSH.Common.Error.BackendNotConnected</error>
+<error refEID="0203">BSH.Common.Error.Busy</error>
+<error refEID="0217">BSH.Common.Error.CmdViolation</error>
+<error refEID="021C">BSH.Common.Error.DeviceStateNotCompliant</error>
+<error refEID="021F">BSH.Common.Error.EnergyManagementNotConnected</error>
+<error refEID="0215">BSH.Common.Error.Incomplete</error>
+<error refEID="0216">BSH.Common.Error.Inconsistent</error>
+<error refEID="0218">BSH.Common.Error.InvalidFormat</error>
+<error refEID="0214">BSH.Common.Error.InvalidUIDValue</error>
+<error refEID="021B">BSH.Common.Error.LockedByLocalControl</error>
+<error refEID="0206">BSH.Common.Error.NoAccess</error>
+<error refEID="0209">BSH.Common.Error.NoAccessByList</error>
+<error refEID="0212">BSH.Common.Error.NoExecution</error>
+<error refEID="020C">BSH.Common.Error.NotAvailable</error>
+<error refEID="020F">BSH.Common.Error.NotAvailableByList</error>
+<error refEID="0220">BSH.Common.Error.NotInLocalWiFi</error>
+<error refEID="021D">BSH.Common.Error.ProcessStateNotCompliant</error>
+<error refEID="0205">BSH.Common.Error.ReadRequest.Busy</error>
+<error refEID="0208">BSH.Common.Error.ReadRequest.NoAccess</error>
+<error refEID="020B">BSH.Common.Error.ReadRequest.NoAccessByList</error>
+<error refEID="020E">BSH.Common.Error.ReadRequest.NotAvailable</error>
+<error refEID="0211">BSH.Common.Error.ReadRequest.NotAvailableByList</error>
+<error refEID="0202">BSH.Common.Error.ReadRequest.UnknownUID</error>
+<error refEID="0219">BSH.Common.Error.RemoteControlNotActive</error>
+<error refEID="021A">BSH.Common.Error.RemoteStartNotActive</error>
+<error refEID="0200">BSH.Common.Error.UnknownUID</error>
+<error refEID="0213">BSH.Common.Error.ValueOutOfRange</error>
+<error refEID="0204">BSH.Common.Error.WriteRequest.Busy</error>
+<error refEID="0207">BSH.Common.Error.WriteRequest.NoAccess</error>
+<error refEID="020A">BSH.Common.Error.WriteRequest.NoAccessByList</error>
+<error refEID="020D">BSH.Common.Error.WriteRequest.NotAvailable</error>
+<error refEID="0210">BSH.Common.Error.WriteRequest.NotAvailableByList</error>
+<error refEID="0201">BSH.Common.Error.WriteRequest.UnknownUID</error>
+
+	</errorDescription>
+
+	<enumDescriptionList>
+	<enumDescription refENID="0201" enumKey="BSH.Common.EnumType.DoorState">
+<enumMember refValue="0">Open</enumMember>
+<enumMember refValue="1">Closed</enumMember>
+</enumDescription>
+
+<enumDescription refENID="0001" enumKey="BSH.Common.EnumType.EventPresentState">
+<enumMember refValue="0">Off</enumMember>
+<enumMember refValue="1">Present</enumMember>
+<enumMember refValue="2">Confirmed</enumMember>
+</enumDescription>
+
+<enumDescription refENID="0205" enumKey="BSH.Common.EnumType.FlexStart">
+<enumMember refValue="0">Disabled</enumMember>
+<enumMember refValue="1">Enabled</enumMember>
+<enumMember refValue="2">Pending</enumMember>
+<enumMember refValue="3">Scheduled</enumMember>
+<enumMember refValue="4">Started</enumMember>
+<enumMember refValue="5">Finished</enumMember>
+</enumDescription>
+
+<enumDescription refENID="0202" enumKey="BSH.Common.EnumType.Language">
+<enumMember refValue="5">Cs</enumMember>
+<enumMember refValue="6">Da</enumMember>
+<enumMember refValue="7">De</enumMember>
+<enumMember refValue="8">El</enumMember>
+<enumMember refValue="9">En</enumMember>
+<enumMember refValue="10">EnUs</enumMember>
+<enumMember refValue="11">Es</enumMember>
+<enumMember refValue="12">EsMx</enumMember>
+<enumMember refValue="14">Fi</enumMember>
+<enumMember refValue="15">Fr</enumMember>
+<enumMember refValue="16">FrCa</enumMember>
+<enumMember refValue="19">Hr</enumMember>
+<enumMember refValue="20">Hu</enumMember>
+<enumMember refValue="23">It</enumMember>
+<enumMember refValue="32">Nl</enumMember>
+<enumMember refValue="33">No</enumMember>
+<enumMember refValue="34">Pl</enumMember>
+<enumMember refValue="35">Pt</enumMember>
+<enumMember refValue="37">Ro</enumMember>
+<enumMember refValue="38">Ru</enumMember>
+<enumMember refValue="39">Sk</enumMember>
+<enumMember refValue="40">Sl</enumMember>
+<enumMember refValue="43">Sv</enumMember>
+<enumMember refValue="45">Tr</enumMember>
+<enumMember refValue="46">Uk</enumMember>
+<enumMember refValue="48">Zh</enumMember>
+</enumDescription>
+
+<enumDescription refENID="0203" enumKey="BSH.Common.EnumType.OperationState">
+<enumMember refValue="0">Inactive</enumMember>
+<enumMember refValue="1">Ready</enumMember>
+<enumMember refValue="2">DelayedStart</enumMember>
+<enumMember refValue="3">Run</enumMember>
+<enumMember refValue="4">Pause</enumMember>
+<enumMember refValue="6">Finished</enumMember>
+<enumMember refValue="8">Aborting</enumMember>
+</enumDescription>
+
+<enumDescription refENID="0204" enumKey="BSH.Common.EnumType.PowerState">
+<enumMember refValue="1">Off</enumMember>
+<enumMember refValue="2">On</enumMember>
+</enumDescription>
+
+<enumDescription refENID="1003" enumKey="Dishcare.Dishwasher.EnumType.AutoPowerOff">
+<enumMember refValue="0">Off</enumMember>
+<enumMember refValue="1">OneMinute</enumMember>
+<enumMember refValue="2">120Minutes</enumMember>
+</enumDescription>
+
+<enumDescription refENID="100B" enumKey="Dishcare.Dishwasher.EnumType.EcoAsDefault">
+<enumMember refValue="0">LastProgram</enumMember>
+<enumMember refValue="1">EcoAsDefault</enumMember>
+</enumDescription>
+
+<enumDescription refENID="100A" enumKey="Dishcare.Dishwasher.EnumType.HotWater">
+<enumMember refValue="0">ColdWater</enumMember>
+<enumMember refValue="1">HotWater</enumMember>
+</enumDescription>
+
+<enumDescription refENID="1002" enumKey="Dishcare.Dishwasher.EnumType.KeySoundLevel">
+<enumMember refValue="0">Off</enumMember>
+<enumMember refValue="1">Low</enumMember>
+<enumMember refValue="2">Medium</enumMember>
+<enumMember refValue="3">High</enumMember>
+</enumDescription>
+
+<enumDescription refENID="1005" enumKey="Dishcare.Dishwasher.EnumType.ProgramPhase">
+<enumMember refValue="0">None</enumMember>
+<enumMember refValue="1">PreRinse</enumMember>
+<enumMember refValue="2">MainWash</enumMember>
+<enumMember refValue="3">FinalRinse</enumMember>
+<enumMember refValue="4">Drying</enumMember>
+</enumDescription>
+
+<enumDescription refENID="1007" enumKey="Dishcare.Dishwasher.EnumType.RelAbsOperatingTime">
+<enumMember refValue="0">Relative</enumMember>
+<enumMember refValue="1">Absolute</enumMember>
+</enumDescription>
+
+<enumDescription refENID="1000" enumKey="Dishcare.Dishwasher.EnumType.RinseAid">
+<enumMember refValue="0">Off</enumMember>
+<enumMember refValue="1">R01</enumMember>
+<enumMember refValue="2">R02</enumMember>
+<enumMember refValue="3">R03</enumMember>
+<enumMember refValue="4">R04</enumMember>
+<enumMember refValue="5">R05</enumMember>
+<enumMember refValue="6">R06</enumMember>
+</enumDescription>
+
+<enumDescription refENID="1004" enumKey="Dishcare.Dishwasher.EnumType.SensitivityTurbidityAdjustement">
+<enumMember refValue="0">Standard</enumMember>
+<enumMember refValue="1">Sensitive</enumMember>
+<enumMember refValue="2">VerySensitive</enumMember>
+</enumDescription>
+
+<enumDescription refENID="1001" enumKey="Dishcare.Dishwasher.EnumType.SignalSoundLevel">
+<enumMember refValue="0">Off</enumMember>
+<enumMember refValue="1">Low</enumMember>
+<enumMember refValue="2">Medium</enumMember>
+<enumMember refValue="3">High</enumMember>
+</enumDescription>
+
+<enumDescription refENID="1006" enumKey="Dishcare.Dishwasher.EnumType.TimeFormat">
+<enumMember refValue="0">24h</enumMember>
+<enumMember refValue="1">12h</enumMember>
+</enumDescription>
+
+<enumDescription refENID="1008" enumKey="Dishcare.Dishwasher.EnumType.TimeLight">
+<enumMember refValue="0">Off</enumMember>
+<enumMember refValue="1">On</enumMember>
+</enumDescription>
+
+<enumDescription refENID="1009" enumKey="Dishcare.Dishwasher.EnumType.WaterHardness">
+<enumMember refValue="0">H00</enumMember>
+<enumMember refValue="1">H01</enumMember>
+<enumMember refValue="2">H02</enumMember>
+<enumMember refValue="3">H03</enumMember>
+<enumMember refValue="4">H04</enumMember>
+<enumMember refValue="5">H05</enumMember>
+<enumMember refValue="6">H06</enumMember>
+<enumMember refValue="7">H07</enumMember>
+</enumDescription>
+
+
+     </enumDescriptionList>
+	
+</featureMappingFile>

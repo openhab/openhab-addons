@@ -33,10 +33,9 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class MqttMessageBuilder {
-    public static @Nullable String brokerAddress;
-    public static @Nullable String userId;
-    public static @Nullable String clientId;
-    public static @Nullable String key;
+    private @Nullable String userId;
+    private volatile @Nullable String appId;
+    private @Nullable String key;
 
     /**
      * @param method The method
@@ -44,9 +43,9 @@ public class MqttMessageBuilder {
      * @param payload The payload
      * @return the message
      */
-    public static byte[] buildMqttMessage(String method, String namespace, @Nullable String destinationDeviceUUID,
+    public byte[] buildMqttMessage(String method, String namespace, @Nullable String destinationDeviceUUID,
             Map<String, Object> payload) {
-        int timestamp = Math.round(Instant.now().getEpochSecond());
+        long timestamp = Instant.now().getEpochSecond();
         String randomString = UUID.randomUUID().toString().replace("-", "").substring(0, 16);
         String messageId = MD5Util.getMD5String(randomString.toLowerCase());
         String signatureToHash = "%s%s%d".formatted(messageId, key, timestamp);
@@ -65,7 +64,7 @@ public class MqttMessageBuilder {
         dataMap.put("header", headerMap);
         dataMap.put("payload", payload);
         String jsonString = new Gson().toJson(dataMap);
-        return StandardCharsets.UTF_8.encode(jsonString).array();
+        return jsonString.getBytes(StandardCharsets.UTF_8);
     }
 
     /**
@@ -74,14 +73,17 @@ public class MqttMessageBuilder {
      *
      * @return The client user topic
      */
-    public static String buildClientUserTopic() {
-        return "/app/" + MqttMessageBuilder.userId + "/subscribe";
+    public String buildClientUserTopic() {
+        return "/app/" + userId + "/subscribe";
     }
 
-    public static String buildAppId() {
-        String randomString = "API" + UUID.randomUUID();
-        String encodedString = StandardCharsets.UTF_8.encode(randomString).toString();
-        return MD5Util.getMD5String(encodedString);
+    public synchronized String getAppId() {
+        String appId = this.appId;
+        if (appId == null) {
+            String randomString = "API" + UUID.randomUUID();
+            this.appId = appId = MD5Util.getMD5String(randomString);
+        }
+        return appId;
     }
 
     /**
@@ -91,12 +93,12 @@ public class MqttMessageBuilder {
      *
      * @return The response topic
      */
-    public static String buildClientResponseTopic() {
-        return "/app/" + MqttMessageBuilder.userId + "-" + buildAppId() + "/subscribe";
+    public String buildClientResponseTopic() {
+        return "/app/" + userId + "-" + getAppId() + "/subscribe";
     }
 
-    public static String buildClientId() {
-        return "app:" + buildAppId();
+    public String getClientId() {
+        return "app:" + getAppId();
     }
 
     /**
@@ -106,23 +108,15 @@ public class MqttMessageBuilder {
      * @return The topic to be published
      */
 
-    public static String buildDeviceRequestTopic(String deviceUUID) {
+    public String buildDeviceRequestTopic(String deviceUUID) {
         return "/appliance/" + deviceUUID + "/subscribe";
     }
 
-    public static void setUserId(String userId) {
-        MqttMessageBuilder.userId = userId;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
-    public static void setClientId(String clientId) {
-        MqttMessageBuilder.clientId = clientId;
-    }
-
-    public static void setBrokerAddress(String brokerAddress) {
-        MqttMessageBuilder.brokerAddress = brokerAddress;
-    }
-
-    public static void setKey(String key) {
-        MqttMessageBuilder.key = key;
+    public void setKey(String key) {
+        this.key = key;
     }
 }

@@ -133,30 +133,37 @@ public class TeslaPowerwallWebTargets {
         logger.debug("Calling url: {}", uri);
         int status = 0;
         String jsonResponse = "";
-        synchronized (this) {
-            try {
-                Request request = httpClient.newRequest(uri).method(method).header(headerKey, headerValue)
-                        .timeout(TIMEOUT_MS, TimeUnit.MILLISECONDS)
-                        .content(new StringContentProvider(params), "application/json");
-                if (logger.isTraceEnabled()) {
-                    logger.trace("{} request for {}", method, uri);
-                }
-                ContentResponse response = request.send();
-                status = response.getStatus();
-                jsonResponse = response.getContentAsString();
-                if (!jsonResponse.isEmpty()) {
-                    logger.trace("JSON response: '{}'", jsonResponse);
-                }
-                if (status == HttpStatus.UNAUTHORIZED_401) {
-                    throw new TeslaPowerwallAuthenticationException("Unauthorized");
-                }
-                if (!HttpStatus.isSuccess(status)) {
-                    throw new TeslaPowerwallCommunicationException(
-                            String.format("Tesla Powerwall returned error <%d> while invoking %s", status, uri));
-                }
-            } catch (TimeoutException | ExecutionException | InterruptedException ex) {
-                throw new TeslaPowerwallCommunicationException(String.format("{}", ex.getLocalizedMessage(), ex));
+        try {
+            Request request = httpClient.newRequest(uri).method(method).header(headerKey, headerValue)
+                    .timeout(TIMEOUT_MS, TimeUnit.MILLISECONDS)
+                    .content(new StringContentProvider(params), "application/json");
+            if (logger.isTraceEnabled()) {
+                logger.trace("{} request for {}", method, uri);
             }
+            ContentResponse response = request.send();
+            status = response.getStatus();
+            jsonResponse = response.getContentAsString();
+            if (!jsonResponse.isEmpty()) {
+                logger.trace("JSON response: '{}'", jsonResponse);
+            }
+            if (status == HttpStatus.UNAUTHORIZED_401) {
+                this.token = ""; // reset token
+                throw new TeslaPowerwallAuthenticationException("Unauthorized");
+            }
+            if (!HttpStatus.isSuccess(status)) {
+                throw new TeslaPowerwallCommunicationException(
+                        String.format("Tesla Powerwall returned error <%d> while invoking %s", status, uri));
+            }
+        } catch (TimeoutException | ExecutionException | InterruptedException ex) {
+            if (ex instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
+            String errorMessage = ex.getMessage();
+            if (errorMessage == null) {
+                errorMessage = "Unknown communication error occurred (" + ex.getClass().getSimpleName() + ")";
+            }
+
+            throw new TeslaPowerwallCommunicationException(errorMessage, ex);
         }
 
         return jsonResponse;

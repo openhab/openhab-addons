@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -81,7 +82,26 @@ public class LightSetHandler extends ColorLightHandler {
         memberReachability.clear();
         memberDeviceIds.forEach(id -> memberReachability.put(id, false));
 
-        updateProperties();
+        // special handling for device set properties - add for each device in set their individual canReceive and
+        // canSend properties
+        receiveCapabilities.clear();
+        sendCapabilities.clear();
+        TreeMap<String, String> handlerProperties = new TreeMap<>(editProperties());
+        memberDeviceIds.forEach(id -> {
+            Map<String, Object> modelProperties = gateway().model().getPropertiesFor(id);
+            String customName = gateway().model().getCustonNameFor(id);
+
+            Object receiveCapabilities = modelProperties.get(CAPABILITIES_KEY_CAN_RECEIVE);
+            handlerProperties.put(customName + " " + CAPABILITIES_KEY_CAN_RECEIVE,
+                    receiveCapabilities != null ? receiveCapabilities.toString() : "[]");
+            Object sendCapabilities = modelProperties.get(CAPABILITIES_KEY_CAN_SEND);
+            handlerProperties.put(customName + " " + CAPABILITIES_KEY_CAN_SEND,
+                    sendCapabilities != null ? sendCapabilities.toString() : "[]");
+            // properties updated and user is able to check all devices in the set and their capabilities, now add the
+            // capabilities to the set itself
+            addCapabilities(id);
+        });
+        updateProperties(handlerProperties);
 
         // 2) Initialize the set's own customName from the model so that subsequent member
         // updates (which carry the member's own customName) cannot overwrite it.

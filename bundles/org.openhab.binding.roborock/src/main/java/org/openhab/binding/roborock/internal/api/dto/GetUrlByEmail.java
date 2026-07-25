@@ -24,7 +24,7 @@ public class GetUrlByEmail {
     public String message = "";
     public GetUrlByEmailData data;
 
-    public class GetUrlByEmailData {
+    public static class GetUrlByEmailData {
         public String url = "";
         public String countrycode = "";
         public String country = "";

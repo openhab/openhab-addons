@@ -15,6 +15,8 @@ package org.openhab.binding.homematic.internal.communicator.parser;
 import java.io.IOException;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmParamsetType;
@@ -25,7 +27,8 @@ import org.openhab.binding.homematic.internal.model.HmValueType;
  *
  * @author Gerhard Riegler - Initial contribution
  */
-public class GetAllSystemVariablesParser extends CommonRpcParser<Object[], Void> {
+@NonNullByDefault
+public class GetAllSystemVariablesParser extends CommonRpcParser<Object[], @Nullable Void> {
     private HmChannel channel;
 
     public GetAllSystemVariablesParser(HmChannel channel) {
@@ -34,7 +37,7 @@ public class GetAllSystemVariablesParser extends CommonRpcParser<Object[], Void>
 
     @Override
     @SuppressWarnings("unchecked")
-    public Void parse(Object[] message) throws IOException {
+    public @Nullable Void parse(Object[] message) throws IOException {
         Map<String, ?> mapMessage = (Map<String, ?>) message[0];
         for (String variableName : mapMessage.keySet()) {
             Object value = mapMessage.get(variableName);
@@ -54,7 +57,7 @@ public class GetAllSystemVariablesParser extends CommonRpcParser<Object[], Void>
     /**
      * Guesses the value type.
      */
-    private HmValueType guessType(Object value) {
+    private HmValueType guessType(@Nullable Object value) {
         if (value == null) {
             return HmValueType.UNKNOWN;
         } else if (value instanceof Boolean) {

@@ -36,7 +36,16 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettings
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortLightStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyADC;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtAnalogInput;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtAnalogInput.ShellyShortAnalogInput;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtDigitalInput;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtDigitalInput.ShellyShortDigitalInput;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtHumidity;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtHumidity.ShellyShortHum;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtTemperature;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtTemperature.ShellyShortTemp;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtVoltage;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtVoltage.ShellyShortVoltage;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyThermnostat;
 import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
 import org.openhab.core.library.types.OnOffType;
@@ -44,6 +53,7 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
 import com.google.gson.Gson;
@@ -125,7 +135,10 @@ public class ShellyComponents {
                 thingHandler.postEvent(ALARM_TYPE_OVERPOWER, false);
             }
 
-            updated |= thingHandler.updateChannel(groupName, CHANNEL_OUTPUT, getOnOff(relay.ison));
+            if (relay.ison != null) {
+                // null means no cycle has reported the output state yet - don't flatten that to OFF
+                updated |= thingHandler.updateChannel(groupName, CHANNEL_OUTPUT, getOnOff(relay.ison));
+            }
             updated |= thingHandler.updateChannel(groupName, CHANNEL_TIMER_ACTIVE, getOnOff(relay.hasTimer));
             if (status.extSwitch != null) {
                 if (status.extSwitch.input0 != null) {
@@ -195,191 +208,341 @@ public class ShellyComponents {
      */
     public static boolean updateMeters(ShellyThingInterface thingHandler, ShellySettingsStatus status) {
         ShellyDeviceProfile profile = thingHandler.getProfile();
+        if (status.meters == null && status.emeters == null) {
+            return false;
+        }
+        if ((profile.isRoller || profile.isRGBW2) && !profile.isGen2) {
+            return updateAggregatedMeter(thingHandler, status, profile);
+        } else if (profile.isEMeter) {
+            return updateEMeters(thingHandler, status, profile);
+        } else {
+            return updateSimpleMeters(thingHandler, status, profile);
+        }
+    }
 
+    private static boolean updateSimpleMeters(ShellyThingInterface thingHandler, ShellySettingsStatus status,
+            ShellyDeviceProfile profile) {
+        if (status.meters == null) {
+            return false;
+        }
         double accumulatedWatts = 0.0;
         double accumulatedTotal = 0.0;
-        double accumulatedReturned = 0.0;
-
+        boolean totalPresent = false;
         boolean updated = false;
-        // Devices without power meters get no updates
-        // We need to differ
-        // Roler+RGBW2 have multiple meters -> aggregate consumption to the functional device
-        // Meter and EMeter have a different set of channels
-        if (status.meters != null || status.emeters != null) {
-            if (!profile.isRoller && !profile.isRGBW2) {
-                // In Relay mode we map eacher meter to the matching channel group
-                int m = 0;
-                if (!profile.isEMeter) {
-                    for (ShellySettingsMeter meter : status.meters) {
-                        if (m >= profile.numMeters) {
-                            // Shelly1: reports status.meters[0].is_valid = true, but even doesn't have a meter
-                            meter.isValid = false;
-                        }
-                        if (getBool(meter.isValid) || profile.isLight) { // RGBW2-white doesn't report valid flag
-                            // correctly in white mode
-                            String groupName = profile.getMeterGroup(m);
-                            if (!thingHandler.areChannelsCreated()) {
-                                // skip for Shelly Bulb: JSON has a meter, but values don't get updated
-                                if (!profile.isBulb) {
-                                    thingHandler.updateChannelDefinitions(ShellyChannelDefinitions
-                                            .createMeterChannels(thingHandler.getThing(), meter, groupName));
-                                }
-                            }
-
-                            updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_CURRENTWATTS,
-                                    toQuantityType(getDouble(meter.power), DIGITS_WATT, Units.WATT));
-                            accumulatedWatts += getDouble(meter.power);
-
-                            // convert Watt/Min to kw/h
-                            if (meter.total != null) {
-                                double kwh = getDouble(meter.total) / 1000 / 60;
-                                updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_TOTALKWH,
-                                        toQuantityType(kwh, DIGITS_KWH, Units.KILOWATT_HOUR));
-                                accumulatedTotal += kwh;
-                            }
-                            if (meter.counters != null) {
-                                updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_LASTMIN1,
-                                        toQuantityType(getDouble(meter.counters[0]), DIGITS_WATT, Units.WATT));
-                            }
-                            if (meter.timestamp != null) {
-                                thingHandler.updateChannel(groupName, CHANNEL_LAST_UPDATE,
-                                        getTimestamp(getString(profile.settings.timezone), meter.timestamp));
-                            }
-                        }
-                        m++;
-                    }
-                } else {
-                    if (status.neutralCurrent != null) {
-                        if (!thingHandler.areChannelsCreated()) {
-                            thingHandler.updateChannelDefinitions(ShellyChannelDefinitions.createEMNCurrentChannels(
-                                    thingHandler.getThing(), profile.settings.neutralCurrent, status.neutralCurrent));
-                        }
-                        if (getBool(status.neutralCurrent.isValid)) {
-                            String ngroup = CHANNEL_GROUP_NMETER;
-                            updated |= thingHandler.updateChannel(ngroup, CHANNEL_NMETER_CURRENT, toQuantityType(
-                                    getDouble(status.neutralCurrent.current), DIGITS_AMPERE, Units.AMPERE));
-                            updated |= thingHandler.updateChannel(ngroup, CHANNEL_NMETER_IXSUM, toQuantityType(
-                                    getDouble(status.neutralCurrent.ixsum), DIGITS_AMPERE, Units.AMPERE));
-                            updated |= thingHandler.updateChannel(ngroup, CHANNEL_NMETER_MTRESHHOLD,
-                                    toQuantityType(getDouble(profile.settings.neutralCurrent.mismatchThreshold),
-                                            DIGITS_AMPERE, Units.AMPERE));
-                            updated |= thingHandler.updateChannel(ngroup, CHANNEL_NMETER_MISMATCH,
-                                    getOnOff(status.neutralCurrent.mismatch));
-                        }
-                    }
-
-                    for (ShellySettingsEMeter emeter : status.emeters) {
-                        if (getBool(emeter.isValid)) {
-                            String groupName = profile.getMeterGroup(m);
-                            if (!thingHandler.areChannelsCreated()) {
-                                thingHandler.updateChannelDefinitions(ShellyChannelDefinitions
-                                        .createEMeterChannels(thingHandler.getThing(), profile, emeter, groupName));
-                            }
-
-                            // convert Watt/h to KW/h
-                            double total = getDouble(emeter.total) / 1000;
-                            double totalReturned = getDouble(emeter.totalReturned) / 1000;
-                            updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_CURRENTWATTS,
-                                    toQuantityType(getDouble(emeter.power), DIGITS_WATT, Units.WATT));
-                            updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_TOTALKWH,
-                                    toQuantityType(total, DIGITS_KWH, Units.KILOWATT_HOUR));
-                            updated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_TOTALRET,
-                                    toQuantityType(totalReturned, DIGITS_KWH, Units.KILOWATT_HOUR));
-                            updated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_REACTWATTS,
-                                    toQuantityType(getDouble(emeter.reactive), DIGITS_WATT, Units.WATT));
-                            updated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_VOLTAGE,
-                                    toQuantityType(getDouble(emeter.voltage), DIGITS_VOLT, Units.VOLT));
-                            updated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_CURRENT,
-                                    toQuantityType(getDouble(emeter.current), DIGITS_AMPERE, Units.AMPERE));
-                            updated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_FREQUENCY,
-                                    toQuantityType(getDouble(emeter.frequency), DIGITS_FREQUENCY, Units.HERTZ));
-                            updated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_PFACTOR,
-                                    toQuantityType(computePF(emeter), Units.PERCENT));
-
-                            accumulatedWatts += getDouble(emeter.power);
-                            accumulatedTotal += total;
-                            accumulatedReturned += totalReturned;
-                            if (updated) {
-                                thingHandler.updateChannel(groupName, CHANNEL_LAST_UPDATE, getTimestamp());
-                            }
-                        }
-                        m++;
+        boolean createChannels = !thingHandler.areChannelsCreated();
+        int m = 0;
+        for (ShellySettingsMeter meter : status.meters) {
+            if (m >= profile.numMeters) {
+                // Shelly1: reports status.meters[0].is_valid = true, but even doesn't have a meter
+                break;
+            }
+            if (getBool(meter.isValid) || profile.isLight) { // RGBW2-white doesn't report valid flag correctly
+                String groupName = profile.getMeterGroup(m);
+                if (createChannels) {
+                    if (!profile.isBulb) { // skip for Shelly Bulb: JSON has a meter, but values don't get updated
+                        thingHandler.updateChannelDefinitions(ShellyChannelDefinitions
+                                .createMeterChannels(thingHandler.getThing(), profile, meter, groupName));
                     }
                 }
-            } else {
-                // In Roller Mode we accumulate all meters to a single set of meters
-                double currentWatts = 0.0;
-                double totalWatts = 0.0;
-                double lastMin1 = 0.0;
-                long timestamp = 0l;
-                String groupName = CHANNEL_GROUP_METER;
-
-                if (!thingHandler.areChannelsCreated()) {
-                    ShellySettingsMeter m = status.meters.get(0);
-                    if (getBool(m.isValid)) {
-                        // Create channels for 1 Meter
-                        thingHandler.updateChannelDefinitions(
-                                ShellyChannelDefinitions.createMeterChannels(thingHandler.getThing(), m, groupName));
-                    }
-                }
-
-                for (ShellySettingsMeter meter : status.meters) {
-                    if (getBool(meter.isValid)) {
-                        currentWatts += getDouble(meter.power);
-                        totalWatts += getDouble(meter.total);
-                        if (meter.counters != null) {
-                            lastMin1 += getDouble(meter.counters[0]);
-                        }
-                        if (getLong(meter.timestamp) > timestamp) {
-                            timestamp = getLong(meter.timestamp); // newest one
-                        }
-                    }
-                }
-
-                updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_LASTMIN1,
-                        toQuantityType(getDouble(lastMin1), DIGITS_WATT, Units.WATT));
-
-                // convert totalWatts into kw/h
-                totalWatts = totalWatts / (60.0 * 1000.0);
                 updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_CURRENTWATTS,
-                        toQuantityType(currentWatts, DIGITS_WATT, Units.WATT));
-                updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_TOTALKWH,
-                        toQuantityType(totalWatts, DIGITS_KWH, Units.KILOWATT_HOUR));
-
-                if (updated && timestamp > 0) {
+                        toQuantityType(getDouble(meter.power), DIGITS_WATT, Units.WATT));
+                accumulatedWatts += getDouble(meter.power);
+                if (meter.total != null) {
+                    double kwh = getDouble(meter.total) / 1000 / 60; // convert Watt/Min to kWh
+                    updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_TOTALKWH,
+                            toQuantityType(kwh, DIGITS_KWH, Units.KILOWATT_HOUR));
+                    accumulatedTotal += kwh;
+                    totalPresent = true;
+                }
+                updated |= updateMinuteCounters(thingHandler, groupName, meter.counters);
+                if (meter.timestamp != null) {
                     thingHandler.updateChannel(groupName, CHANNEL_LAST_UPDATE,
-                            getTimestamp(getString(profile.settings.timezone), timestamp));
+                            getTimestamp(getString(profile.settings.timezone), meter.timestamp));
                 }
             }
-
-            if (!profile.isRoller && !profile.isRGBW2) {
-                thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCUWATTS, toQuantityType(
-                        status.totalPower != null ? status.totalPower : accumulatedWatts, DIGITS_WATT, Units.WATT));
-                thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCUTOTAL,
-                        toQuantityType(status.totalCurrent != null ? status.totalCurrent / 1000 : accumulatedTotal,
-                                DIGITS_KWH, Units.KILOWATT_HOUR));
-                thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCURETURNED,
-                        toQuantityType(status.totalReturned != null ? status.totalReturned / 1000 : accumulatedReturned,
-                                DIGITS_KWH, Units.KILOWATT_HOUR));
-                thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_TOTALKWH, toQuantityType(
-                        status.totalKWH != null ? status.totalKWH / 1000 : 0, DIGITS_KWH, Units.KILOWATT_HOUR));
-
-            }
+            m++;
         }
-
+        updateDeviceStatusTotals(thingHandler, status, accumulatedWatts, accumulatedTotal, totalPresent, 0.0, false,
+                0.0, false);
         return updated;
     }
 
-    private static Double computePF(ShellySettingsEMeter emeter) {
+    private static boolean updateEMeters(ShellyThingInterface thingHandler, ShellySettingsStatus status,
+            ShellyDeviceProfile profile) {
+        if (status.emeters == null) {
+            return false;
+        }
+        double accumulatedWatts = 0.0;
+        double accumulatedTotal = 0.0;
+        double accumulatedReturned = 0.0;
+        double accumulatedApparent = 0.0;
+        boolean totalPresent = false;
+        boolean returnedPresent = false;
+        boolean apparentPresent = false;
+        boolean updated = false;
+        boolean createChannels = !thingHandler.areChannelsCreated();
+
+        if (status.neutralCurrent != null) {
+            if (createChannels) {
+                thingHandler.updateChannelDefinitions(ShellyChannelDefinitions.createEMNCurrentChannels(
+                        thingHandler.getThing(), profile.settings.neutralCurrent, status.neutralCurrent));
+            }
+            if (getBool(status.neutralCurrent.isValid)) {
+                String ngroup = CHANNEL_GROUP_NMETER;
+                updated |= thingHandler.updateChannel(ngroup, CHANNEL_NMETER_CURRENT,
+                        toQuantityType(getDouble(status.neutralCurrent.current), DIGITS_AMPERE, Units.AMPERE));
+                updated |= thingHandler.updateChannel(ngroup, CHANNEL_NMETER_IXSUM,
+                        toQuantityType(getDouble(status.neutralCurrent.ixsum), DIGITS_AMPERE, Units.AMPERE));
+                // mismatchThreshold is only available from Gen1 device settings; Gen2 devices omit it
+                if (profile.settings.neutralCurrent != null) {
+                    updated |= thingHandler.updateChannel(ngroup, CHANNEL_NMETER_MTRESHHOLD, toQuantityType(
+                            getDouble(profile.settings.neutralCurrent.mismatchThreshold), DIGITS_AMPERE, Units.AMPERE));
+                }
+                updated |= thingHandler.updateChannel(ngroup, CHANNEL_NMETER_MISMATCH,
+                        getOnOff(status.neutralCurrent.mismatch));
+            }
+        }
+
+        int m = 0;
+        for (ShellySettingsEMeter emeter : status.emeters) {
+            if (m >= profile.numMeters) {
+                break;
+            }
+
+            String groupName = profile.getMeterGroup(m);
+            boolean meterUpdated = false;
+
+            // Always create channels regardless of data validity — Gen2 first WS push may lack emdata
+            if (createChannels) {
+                thingHandler.updateChannelDefinitions(ShellyChannelDefinitions
+                        .createEMeterChannels(thingHandler.getThing(), profile, emeter, groupName));
+            }
+            if (getBool(emeter.isValid)) {
+                if (emeter.power != null) {
+                    meterUpdated |= thingHandler.updateChannel(groupName, CHANNEL_METER_CURRENTWATTS,
+                            toQuantityType(emeter.power, DIGITS_WATT, Units.WATT));
+                }
+                if (emeter.total != null) {
+                    double total = emeter.total / 1000; // convert Wh to kWh
+                    meterUpdated |= thingHandler.updateChannel(groupName, CHANNEL_METER_TOTALKWH,
+                            toQuantityType(total, DIGITS_KWH, Units.KILOWATT_HOUR));
+                    accumulatedTotal += total;
+                    totalPresent = true;
+                }
+                if (emeter.totalReturned != null) {
+                    double totalReturned = emeter.totalReturned / 1000; // convert Wh to kWh
+                    meterUpdated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_TOTALRET,
+                            toQuantityType(totalReturned, DIGITS_KWH, Units.KILOWATT_HOUR));
+                    accumulatedReturned += totalReturned;
+                    returnedPresent = true;
+                }
+                if (emeter.reactive != null) {
+                    meterUpdated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_REACTWATTS,
+                            toQuantityType(emeter.reactive, DIGITS_VAR, Units.VAR));
+                }
+                if (emeter.apparentPower != null) {
+                    meterUpdated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_APPARENT,
+                            toQuantityType(emeter.apparentPower, DIGITS_WATT, Units.VOLT_AMPERE));
+                    accumulatedApparent += emeter.apparentPower;
+                    apparentPresent = true;
+                }
+                if (emeter.voltage != null) {
+                    meterUpdated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_VOLTAGE,
+                            toQuantityType(emeter.voltage, DIGITS_VOLT, Units.VOLT));
+                }
+                if (emeter.current != null) {
+                    meterUpdated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_CURRENT,
+                            toQuantityType(emeter.current, DIGITS_AMPERE, Units.AMPERE));
+                }
+                if (emeter.frequency != null) {
+                    meterUpdated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_FREQUENCY,
+                            toQuantityType(getDouble(emeter.frequency), DIGITS_FREQUENCY, Units.HERTZ));
+                }
+                Double pf = computePF(emeter);
+                meterUpdated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_PFACTOR,
+                        getDecimal(pf != null ? pf : 0.0));
+
+                // by_minute[N] is the independent Wh sum for minute N+1 minutes ago, not a running average.
+                // lastPower1 (W, deprecated) has no dual-write mapping to energyHistMin1 (Wh incompatible
+                // unit), so both are written explicitly here.
+                @Nullable
+                Double @Nullable [] byMinute = emeter.energyByMinute;
+                if (byMinute != null && byMinute.length > 0) {
+                    Double minute1Wh = byMinute[0];
+                    if (minute1Wh != null) {
+                        thingHandler.updateChannel(groupName, CHANNEL_METER_LASTMIN1,
+                                toQuantityType(minute1Wh * 60.0, DIGITS_WATT, Units.WATT));
+                    }
+                    Double minute2Wh = byMinute.length > 1 ? byMinute[1] : null;
+                    Double minute3Wh = byMinute.length > 2 ? byMinute[2] : null;
+                    meterUpdated |= writeMinuteHistoryChannels(thingHandler, groupName, minute1Wh, minute2Wh,
+                            minute3Wh);
+                }
+
+                if (emeter.power != null) {
+                    accumulatedWatts += emeter.power;
+                }
+                if (meterUpdated) {
+                    thingHandler.updateChannel(groupName, CHANNEL_LAST_UPDATE, getTimestamp());
+                }
+                updated |= meterUpdated;
+            }
+            m++;
+        }
+        updateDeviceStatusTotals(thingHandler, status, accumulatedWatts, accumulatedTotal, totalPresent,
+                accumulatedReturned, returnedPresent, accumulatedApparent, apparentPresent);
+        return updated;
+    }
+
+    private static boolean updateAggregatedMeter(ShellyThingInterface thingHandler, ShellySettingsStatus status,
+            ShellyDeviceProfile profile) {
+        if (status.meters == null || status.meters.isEmpty()) {
+            return false;
+        }
+        double currentWatts = 0.0;
+        double totalWatts = 0.0;
+        @Nullable
+        Double[] lastMinutes = new @Nullable Double[3];
+        long timestamp = 0L;
+        String groupName = CHANNEL_GROUP_METER;
+        boolean updated = false;
+
+        if (!thingHandler.areChannelsCreated()) {
+            // Create channels unconditionally — do not gate on isValid (device may still be booting)
+            thingHandler.updateChannelDefinitions(ShellyChannelDefinitions.createMeterChannels(thingHandler.getThing(),
+                    profile, status.meters.get(0), groupName));
+        }
+
+        boolean anyValid = false;
+        for (ShellySettingsMeter meter : status.meters) {
+            // RGBW2 in white mode doesn't report the valid flag correctly (same workaround as
+            // updateSimpleMeters), so isLight bypasses the isValid gate
+            if (getBool(meter.isValid) || profile.isLight) {
+                anyValid = true;
+                currentWatts += getDouble(meter.power);
+                totalWatts += getDouble(meter.total);
+                Double[] counters = meter.counters;
+                if (counters != null) {
+                    for (int i = 0; i < lastMinutes.length && i < counters.length; i++) {
+                        Double counter = counters[i];
+                        if (counter != null) {
+                            Double sum = lastMinutes[i];
+                            lastMinutes[i] = (sum != null ? sum : 0.0) + counter;
+                        }
+                    }
+                }
+                if (getLong(meter.timestamp) > timestamp) {
+                    timestamp = getLong(meter.timestamp);
+                }
+            }
+        }
+
+        if (!anyValid) {
+            return false;
+        }
+
+        updated |= updateMinuteCounters(thingHandler, groupName, lastMinutes);
+        totalWatts = totalWatts / (60.0 * 1000.0); // convert Watt/Min to kWh
+        updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_CURRENTWATTS,
+                toQuantityType(currentWatts, DIGITS_WATT, Units.WATT));
+        updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_TOTALKWH,
+                toQuantityType(totalWatts, DIGITS_KWH, Units.KILOWATT_HOUR));
+        if (updated) {
+            if (timestamp > 0) {
+                thingHandler.updateChannel(groupName, CHANNEL_LAST_UPDATE,
+                        getTimestamp(getString(profile.settings.timezone), timestamp));
+            } else {
+                thingHandler.updateChannel(groupName, CHANNEL_LAST_UPDATE, getTimestamp());
+            }
+        }
+        return updated;
+    }
+
+    private static void updateDeviceStatusTotals(ShellyThingInterface thingHandler, ShellySettingsStatus status,
+            double accumulatedWatts, double accumulatedTotal, boolean totalPresent, double accumulatedReturned,
+            boolean returnedPresent, double accumulatedApparent, boolean apparentPresent) {
+        thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCUWATTS, toQuantityType(
+                status.totalPower != null ? status.totalPower : accumulatedWatts, DIGITS_WATT, Units.WATT));
+        if (status.totalReturned != null || returnedPresent) {
+            thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCURETURNED,
+                    toQuantityType(status.totalReturned != null ? status.totalReturned / 1000 : accumulatedReturned,
+                            DIGITS_KWH, Units.KILOWATT_HOUR));
+        }
+        if (status.totalApparent != null || apparentPresent) {
+            thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCUAPPARENT,
+                    toQuantityType(status.totalApparent != null ? status.totalApparent : accumulatedApparent,
+                            DIGITS_WATT, Units.VOLT_AMPERE));
+        }
+        // device#totalEnergy: device-reported hardware total (status.totalKWH, from emdata on HTTP poll)
+        // or binding-computed sum of per-meter totals when device does not report its own (Gen1, WS push).
+        // status.totalKWH is reset to null at the start of fillDeviceStatus and is only set when
+        // emdata arrives; WS pushes leave it null so accumulatedTotal is used. Never fall back to 0.
+        if (status.totalKWH != null || totalPresent) {
+            State totalEnergy = toQuantityType(status.totalKWH != null ? status.totalKWH / 1000 : accumulatedTotal,
+                    DIGITS_KWH, Units.KILOWATT_HOUR);
+            // Both deprecated ids forward to device#totalEnergy via the dual-write; writing them keeps
+            // items linked to the pre-5.2 channels (accumulatedWTotal, device#totalKWH) working.
+            thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCUTOTAL, totalEnergy);
+            thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_TOTALKWH, totalEnergy);
+        }
+    }
+
+    /**
+     * Write Gen1 counters[] (W-min, independent per-minute sums like Gen2's by_minute[]) to
+     * lastPower1/energyHistMin1-3, plus their average once all three are present.
+     */
+    private static boolean updateMinuteCounters(ShellyThingInterface thingHandler, String groupName,
+            @Nullable Double @Nullable [] counters) {
+        if (counters == null || counters.length == 0 || counters[0] == null) {
+            return false;
+        }
+        double wattMin = getDouble(counters[0]);
+        Double wh1 = wattMin / 60.0;
+        boolean updated = thingHandler.updateChannel(groupName, CHANNEL_METER_LASTMIN1,
+                toQuantityType(wattMin, DIGITS_WATT, Units.WATT));
+        Double wh2 = counters.length > 1 && counters[1] != null ? getDouble(counters[1]) / 60.0 : null;
+        Double wh3 = counters.length > 2 && counters[2] != null ? getDouble(counters[2]) / 60.0 : null;
+        return updated | writeMinuteHistoryChannels(thingHandler, groupName, wh1, wh2, wh3);
+    }
+
+    /**
+     * Write up to 3 independent per-minute energy sums (Wh) to energyHistMin1-3, plus their
+     * average to energyAvgLast3Min once all three are present. Shared by Gen1's counters[] and
+     * Gen2's by_minute[] handling.
+     */
+    private static boolean writeMinuteHistoryChannels(ShellyThingInterface thingHandler, String groupName,
+            @Nullable Double wh1, @Nullable Double wh2, @Nullable Double wh3) {
+        boolean updated = false;
+        if (wh1 != null) {
+            updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_ENERGYHISTMIN1,
+                    toQuantityType(wh1, DIGITS_KWH, Units.WATT_HOUR));
+        }
+        if (wh2 != null) {
+            updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_ENERGYHISTMIN2,
+                    toQuantityType(wh2, DIGITS_KWH, Units.WATT_HOUR));
+        }
+        if (wh3 != null) {
+            updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_ENERGYHISTMIN3,
+                    toQuantityType(wh3, DIGITS_KWH, Units.WATT_HOUR));
+        }
+        if (wh1 != null && wh2 != null && wh3 != null) {
+            updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_ENERGYAVGLAST3MIN,
+                    toQuantityType((wh1 + wh2 + wh3) / 3.0, DIGITS_KWH, Units.WATT_HOUR));
+        }
+        return updated;
+    }
+
+    private static @Nullable Double computePF(ShellySettingsEMeter emeter) {
         if (emeter.pf != null) { // EM3
             return emeter.pf; // take device value
         }
 
         // EM: compute from provided values
-        if (emeter.reactive != null && Math.abs(emeter.power) + Math.abs(emeter.reactive) > 1.5) {
+        if (emeter.reactive != null && emeter.power != null
+                && Math.abs(emeter.power) + Math.abs(emeter.reactive) > 1.5) {
             return emeter.power / Math.sqrt(emeter.power * emeter.power + emeter.reactive * emeter.reactive);
         }
-        return 0.0;
+        return null;
     }
 
     /**
@@ -434,8 +597,8 @@ public class ShellyComponents {
                             getOnOff(getInteger(t.boostMinutes) > 0));
                     updated |= thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_BTIMER,
                             toQuantityType((double) bminutes, DIGITS_NONE, Units.MINUTE));
-                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_MODE, getStringType(
-                            getBool(t.targetTemp.enabled) ? SHELLY_TRV_MODE_AUTO : SHELLY_TRV_MODE_MANUAL));
+                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_MODE,
+                            getStringType(getBool(t.schedule) ? SHELLY_TRV_MODE_AUTO : SHELLY_TRV_MODE_MANUAL));
 
                     int pid = getBool(t.schedule) ? getInteger(t.profile) : 0;
                     updated |= thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_SCHEDULE,
@@ -466,8 +629,10 @@ public class ShellyComponents {
             }
             if ((sdata.lux != null) && getBool(sdata.lux.isValid)) {
                 // “lux”:{“value”:30, “illumination”: “dark”, “is_valid”:true},
-                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_LUX,
-                        toQuantityType(getDouble(sdata.lux.value), DIGITS_LUX, Units.LUX));
+                if (sdata.lux.value != null) {
+                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_LUX,
+                            toQuantityType(getDouble(sdata.lux.value), DIGITS_LUX, Units.LUX));
+                }
                 if (sdata.lux.illumination != null) {
                     updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ILLUM,
                             getStringType(sdata.lux.illumination));
@@ -542,14 +707,19 @@ public class ShellyComponents {
                         getOnOff(charger));
             }
             if (sdata.bat != null) { // no update for Sense
-                updated |= thingHandler.updateChannel(CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LEVEL,
-                        toQuantityType(getDouble(sdata.bat.value), 0, Units.PERCENT));
+                if (sdata.bat.value != null) {
+                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LEVEL,
+                            toQuantityType(getDouble(sdata.bat.value), 0, Units.PERCENT));
+                }
 
                 int lowBattery = thingHandler.getThingConfig().getLowBattery();
+                Boolean batteryLowFlag = sdata.bat.batteryLow;
+                boolean isLow = batteryLowFlag != null ? batteryLowFlag.booleanValue()
+                        : (sdata.bat.value != null && !charger && getDouble(sdata.bat.value) < lowBattery);
                 boolean changed = thingHandler.updateChannel(CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LOW,
-                        getOnOff(!charger && getDouble(sdata.bat.value) < lowBattery));
+                        getOnOff(isLow));
                 updated |= changed;
-                if (!charger && changed && getDouble(sdata.bat.value) < lowBattery) {
+                if (changed && isLow) {
                     thingHandler.postEvent(ALARM_TYPE_LOW_BATTERY, false);
                 }
             }
@@ -577,31 +747,55 @@ public class ShellyComponents {
             }
         }
 
-        // Update Add-On channeös
-        if (status.extTemperature != null) {
+        // Update Add-On channels (Shelly 1/1PM and Plus 1/1PM with sensor addon)
+        boolean hasAddon = hasAddon(status);
+        ShellyExtTemperature extTemperature = status.extTemperature;
+        if (extTemperature != null) {
             // Shelly 1/1PM support up to 3 external sensors
             // for whatever reason those are not represented as an array, but 3 elements
-            updated |= updateTempChannel(status.extTemperature.sensor1, thingHandler, CHANNEL_ESENSOR_TEMP1);
-            updated |= updateTempChannel(status.extTemperature.sensor2, thingHandler, CHANNEL_ESENSOR_TEMP2);
-            updated |= updateTempChannel(status.extTemperature.sensor3, thingHandler, CHANNEL_ESENSOR_TEMP3);
-            updated |= updateTempChannel(status.extTemperature.sensor4, thingHandler, CHANNEL_ESENSOR_TEMP4);
-            updated |= updateTempChannel(status.extTemperature.sensor5, thingHandler, CHANNEL_ESENSOR_TEMP5);
+            updated |= updateTempChannel(extTemperature.sensor1, thingHandler, CHANNEL_ESENSOR_TEMP1);
+            updated |= updateTempChannel(extTemperature.sensor2, thingHandler, CHANNEL_ESENSOR_TEMP2);
+            updated |= updateTempChannel(extTemperature.sensor3, thingHandler, CHANNEL_ESENSOR_TEMP3);
+            updated |= updateTempChannel(extTemperature.sensor4, thingHandler, CHANNEL_ESENSOR_TEMP4);
+            updated |= updateTempChannel(extTemperature.sensor5, thingHandler, CHANNEL_ESENSOR_TEMP5);
         }
-        if ((status.extHumidity != null) && (status.extHumidity.sensor1 != null)) {
-            updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENSOR_HUMIDITY,
-                    toQuantityType(getDouble(status.extHumidity.sensor1.hum), DIGITS_PERCENT, Units.PERCENT));
+        ShellyExtHumidity extHumidity = status.extHumidity;
+        if (extHumidity != null) {
+            ShellyShortHum humSensor = extHumidity.sensor1;
+            if (humSensor != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENSOR_HUMIDITY,
+                        toQuantityType(getDouble(humSensor.hum), DIGITS_PERCENT, Units.PERCENT));
+            }
         }
-        if ((status.extVoltage != null) && (status.extVoltage.sensor1 != null)) {
-            updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENSOR_VOLTAGE,
-                    toQuantityType(getDouble(status.extVoltage.sensor1.voltage), 4, Units.VOLT));
+        ShellyExtVoltage extVoltage = status.extVoltage;
+        if (extVoltage != null) {
+            ShellyShortVoltage voltSensor = extVoltage.sensor1;
+            if (voltSensor != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENSOR_VOLTAGE,
+                        toQuantityType(getDouble(voltSensor.voltage), 4, Units.VOLT));
+            }
         }
-        if ((status.extDigitalInput != null) && (status.extDigitalInput.sensor1 != null)) {
-            updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENSOR_DIGITALINPUT,
-                    getOnOff(status.extDigitalInput.sensor1.state));
+        ShellyExtDigitalInput extDigitalInput = status.extDigitalInput;
+        if (extDigitalInput != null) {
+            ShellyShortDigitalInput digSensor = extDigitalInput.sensor1;
+            if (digSensor != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENSOR_DIGITALINPUT,
+                        getOnOff(digSensor.state));
+            }
         }
-        if ((status.extAnalogInput != null) && (status.extAnalogInput.sensor1 != null)) {
-            updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENSOR_ANALOGINPUT,
-                    toQuantityType(getDouble(status.extAnalogInput.sensor1.percent), DIGITS_PERCENT, Units.PERCENT));
+        ShellyExtAnalogInput extAnalogInput = status.extAnalogInput;
+        if (extAnalogInput != null) {
+            ShellyShortAnalogInput anaSensor = extAnalogInput.sensor1;
+            if (anaSensor != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENSOR_ANALOGINPUT,
+                        toQuantityType(getDouble(anaSensor.percent), DIGITS_PERCENT, Units.PERCENT));
+            }
+        }
+        if (hasAddon && !(profile.isSensor || profile.hasBattery)) {
+            // Relay devices with addon sensors: always refresh lastUpdate so the channel shows
+            // when sensor data was last received, even when temperature values are unchanged
+            thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_LAST_UPDATE, getTimestamp());
+            updated = true;
         }
 
         return updated;
@@ -672,6 +866,9 @@ public class ShellyComponents {
                                 toQuantityType(0.0, DIGITS_NONE, Units.PERCENT));
                     }
                 }
+                if (dimmer.hasTimer != null) {
+                    updated |= thingHandler.updateChannel(groupName, CHANNEL_TIMER_ACTIVE, getOnOff(dimmer.hasTimer));
+                }
 
                 if (dimmers != null) {
                     ShellySettingsDimmer dsettings = dimmers.get(l);
@@ -687,15 +884,28 @@ public class ShellyComponents {
         return updated;
     }
 
+    public static boolean hasAddon(ShellySettingsStatus status) {
+        return status.extTemperature != null || status.extHumidity != null || status.extVoltage != null
+                || status.extDigitalInput != null || status.extAnalogInput != null;
+    }
+
     public static boolean updateTempChannel(@Nullable ShellyShortTemp sensor, ShellyThingInterface thingHandler,
             String channel) {
-        return sensor != null ? updateTempChannel(thingHandler, CHANNEL_GROUP_SENSOR, channel, sensor.tC, "") : false;
+        if (sensor == null) {
+            return false;
+        }
+        return updateTempChannel(thingHandler, CHANNEL_GROUP_SENSOR, channel, sensor.tC, "");
     }
 
     public static boolean updateTempChannel(ShellyThingInterface thingHandler, String group, String channel,
             @Nullable Double temp, @Nullable String unit) {
-        if (temp == null || temp == SHELLY_API_INVTEMP) {
+        if (temp == null) {
             return false;
+        }
+        if (temp == SHELLY_API_INVTEMP) {
+            // Sensor present but reading invalid (e.g. disconnected wire): publish UNDEF so that
+            // the cache does not block the next valid reading when the sensor recovers.
+            return thingHandler.updateChannel(group, channel, UnDefType.UNDEF);
         }
         return thingHandler.updateChannel(group, channel,
                 toQuantityType(convertToC(temp, unit), DIGITS_TEMP, SIUnits.CELSIUS));

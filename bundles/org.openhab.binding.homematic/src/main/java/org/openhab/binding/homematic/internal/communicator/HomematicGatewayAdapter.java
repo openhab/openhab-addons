@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.homematic.internal.communicator;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDatapointConfig;
 import org.openhab.binding.homematic.internal.model.HmDevice;
@@ -21,6 +22,7 @@ import org.openhab.binding.homematic.internal.model.HmDevice;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public interface HomematicGatewayAdapter {
 
     /**

@@ -13,6 +13,7 @@
 package org.openhab.binding.govee.internal.model;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Govee Message - Device information
@@ -28,8 +29,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Stefan Höhn - Initial contribution
  */
 @NonNullByDefault
-public record DiscoveryData(String ip, String device, String sku, String bleVersionHard, String bleVersionSoft,
-        String wifiVersionHard, String wifiVersionSoft) {
+public record DiscoveryData(@Nullable String ip, @Nullable String device, @Nullable String sku,
+        @Nullable String bleVersionHard, @Nullable String bleVersionSoft, @Nullable String wifiVersionHard,
+        @Nullable String wifiVersionSoft) {
     public DiscoveryData() {
         this("", "", "", "", "", "", "");
     }

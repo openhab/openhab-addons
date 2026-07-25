@@ -102,10 +102,15 @@ public class LinkPlayHandler extends BaseThingHandler
     private final Logger logger = LoggerFactory.getLogger(LinkPlayHandler.class);
 
     private static final int RECONNECT_DELAY = 30;
+    private static final int UPNP_WATCHDOG_INTERVAL_SECONDS = 30;
+    private static final int UPNP_RESUBSCRIBE_INTERVAL_SECONDS = 180;
+    private static final int UPNP_EVENT_GRACE_SECONDS = 60;
     private final HttpClient httpClient;
     private @Nullable ScheduledFuture<?> upnpServiceCheck;
+    private @Nullable ScheduledFuture<?> upnpWatchdogJob;
     private @Nullable ScheduledFuture<?> reconnectJob;
     private @Nullable ScheduledFuture<?> positionJob;
+    private volatile long lastResubscribeNanos = System.nanoTime();
     // Are we currently initializing the device?
     private final AtomicBoolean isInitializing = new AtomicBoolean(false);
     // Have we been disposed, prevent further calls to the device when shutting down
@@ -167,6 +172,11 @@ public class LinkPlayHandler extends BaseThingHandler
          */
         cancelUpnpServiceCheckJob();
         upnpServiceCheck = scheduler.scheduleWithFixedDelay(this::initializationCheck, 0, 15, TimeUnit.SECONDS);
+
+        // Watchdog that detects and recovers dead UPnP subscriptions.
+        cancelUpnpWatchdogJob();
+        upnpWatchdogJob = scheduler.scheduleWithFixedDelay(this::upnpEventWatchdog, UPNP_WATCHDOG_INTERVAL_SECONDS,
+                UPNP_WATCHDOG_INTERVAL_SECONDS, TimeUnit.SECONDS);
     }
 
     @Override
@@ -176,6 +186,7 @@ public class LinkPlayHandler extends BaseThingHandler
         linkPlayGroupService.unregisterParticipant(this);
         cancelReconnectJob();
         cancelUpnpServiceCheckJob();
+        cancelUpnpWatchdogJob();
         cancelPositionJob();
         notificationHandler.dispose();
         upnpClient.dispose();
@@ -581,12 +592,16 @@ public class LinkPlayHandler extends BaseThingHandler
             return;
         }
         if (!allSubscriptionsSuccessful) {
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Waiting for UPnP subscriptions");
+            if (getThing().getStatus() != ThingStatus.ONLINE) {
+                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Waiting for UPnP subscriptions");
+            }
             return;
         }
         if (getThing().getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.ONLINE);
         }
+        cancelReconnectJob();
+        lastResubscribeNanos = System.nanoTime();
     }
 
     @Override
@@ -814,15 +829,47 @@ public class LinkPlayHandler extends BaseThingHandler
 
     public void setOffline(String reason) {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
-        RemoteDevice device = upnpClient.getRemoteDevice();
         upnpClient.clearSubscriptionState();
-        if (device != null) {
-            cancelReconnectJob();
-            if (!disposed) {
-                reconnectJob = scheduler.schedule(() -> initFromUpnp(device), RECONNECT_DELAY, TimeUnit.SECONDS);
-            }
-        }
         upnpClient.sendDeviceSearchRequest();
+        scheduleReconnect();
+    }
+
+    private void scheduleReconnect() {
+        if (disposed) {
+            return;
+        }
+        ScheduledFuture<?> job = reconnectJob;
+        if (job != null && !job.isDone()) {
+            return;
+        }
+        reconnectJob = scheduler.scheduleWithFixedDelay(this::reconnect, RECONNECT_DELAY, RECONNECT_DELAY,
+                TimeUnit.SECONDS);
+    }
+
+    private void reconnect() {
+        if (disposed || getThing().getStatus() == ThingStatus.ONLINE) {
+            cancelReconnectJob();
+            return;
+        }
+        if (isInitializing.get()) {
+            return;
+        }
+        logger.debug("{}: Attempting to reconnect", udn);
+        upnpClient.sendDeviceSearchRequest();
+        Slave slave = linkPlayGroupService.findSlaveByUDN(udn);
+        if (slave != null) {
+            initFromGroup(slave);
+            return;
+        }
+        RemoteDevice device = upnpClient.findRegisteredDevice();
+        if (device == null) {
+            device = upnpClient.getRemoteDevice();
+        }
+        if (device != null) {
+            upnpClient.setRemoteDevice(device);
+            upnpClient.setNeedsUpnpInitialization(true);
+            initFromUpnp(device);
+        }
     }
 
     // Derives the host and port from the Upnp device and attempts to connect to the api
@@ -1407,6 +1454,35 @@ public class LinkPlayHandler extends BaseThingHandler
         }
     }
 
+    private void upnpEventWatchdog() {
+        if (disposed || getThing().getStatus() != ThingStatus.ONLINE) {
+            return;
+        }
+        // non-leader group members intentionally have UPnP turned off, so silence is expected
+        if (inGroup && !isLeader) {
+            return;
+        }
+        // don't tear down the subscription mid-notification as notifications are short-lived
+        if (notificationHandler.isInNotification()) {
+            return;
+        }
+        long staleSeconds = upnpClient.secondsSinceLastValue();
+        long sinceResubscribe = TimeUnit.NANOSECONDS.toSeconds(System.nanoTime() - lastResubscribeNanos);
+
+        if (staleSeconds > sinceResubscribe && sinceResubscribe >= UPNP_EVENT_GRACE_SECONDS) {
+            logger.debug("{}: No UPnP events {}s after resubscribe; reconnecting", udn, sinceResubscribe);
+            setOffline("No UPnP events received " + sinceResubscribe + "s after resubscribing");
+            return;
+        }
+
+        if (sinceResubscribe >= UPNP_RESUBSCRIBE_INTERVAL_SECONDS) {
+            logger.debug("{}: Proactively refreshing UPnP subscription ({}s since last event)", udn, staleSeconds);
+            upnpClient.resubscribe();
+            upnpClient.sendDeviceSearchRequest();
+            lastResubscribeNanos = System.nanoTime();
+        }
+    }
+
     private void cancelReconnectJob() {
         cancelJob(reconnectJob);
         reconnectJob = null;
@@ -1415,6 +1491,11 @@ public class LinkPlayHandler extends BaseThingHandler
     private void cancelUpnpServiceCheckJob() {
         cancelJob(upnpServiceCheck);
         upnpServiceCheck = null;
+    }
+
+    private void cancelUpnpWatchdogJob() {
+        cancelJob(upnpWatchdogJob);
+        upnpWatchdogJob = null;
     }
 
     private void cancelJob(@Nullable ScheduledFuture<?> job) {

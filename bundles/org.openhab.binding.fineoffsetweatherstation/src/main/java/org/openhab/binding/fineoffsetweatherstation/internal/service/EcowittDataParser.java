@@ -21,9 +21,9 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.fineoffsetweatherstation.internal.domain.HttpBinding;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.HttpGroup;
-import org.openhab.binding.fineoffsetweatherstation.internal.domain.Measurand;
-import org.openhab.binding.fineoffsetweatherstation.internal.domain.Measurand.HttpBinding;
+import org.openhab.binding.fineoffsetweatherstation.internal.domain.MeasurandRegistry;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.SensorGatewayBinding;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.BatteryStatus;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.MeasuredValue;
@@ -41,7 +41,8 @@ import com.google.gson.JsonSyntaxException;
 /**
  * Parses the JSON responses of the Ecowitt HTTP API into the same domain objects the TCP parser produces.
  * <p>
- * The measurand/unit knowledge lives in {@link Measurand} and
+ * The measurand/unit knowledge lives in
+ * {@link org.openhab.binding.fineoffsetweatherstation.internal.domain.Measurand} and
  * {@link org.openhab.binding.fineoffsetweatherstation.internal.domain.MeasureType}; this class only walks the JSON
  * structure and dispatches each value to the matching measurand.
  *
@@ -54,6 +55,7 @@ public class EcowittDataParser {
     private static final String REGISTERING_SENSOR = "FFFFFFFF";
 
     private final Logger logger = LoggerFactory.getLogger(EcowittDataParser.class);
+    private final MeasurandRegistry registry = MeasurandRegistry.standard();
 
     /**
      * Parses a {@code get_livedata_info} response into the measured values.
@@ -100,7 +102,7 @@ public class EcowittDataParser {
         @Nullable
         String unit = entry.has("unit") ? entry.get("unit").getAsString() : null;
         @Nullable
-        HttpBinding binding = Measurand.getHttpBinding(group, id);
+        HttpBinding binding = registry.http(group, id);
         if (binding == null) {
             logger.debug("no measurand for id '{}' in group '{}'", id, group.getJsonKey());
             return;
@@ -113,7 +115,7 @@ public class EcowittDataParser {
         String unit = obj.has("unit") ? obj.get("unit").getAsString() : null;
         for (Map.Entry<String, JsonElement> field : obj.entrySet()) {
             @Nullable
-            HttpBinding binding = Measurand.getHttpBinding(group, field.getKey());
+            HttpBinding binding = registry.http(group, field.getKey());
             if (binding == null) {
                 // structural fields like "channel", "name", "unit", "battery" simply have no measurand
                 continue;
@@ -191,7 +193,7 @@ public class EcowittDataParser {
         } catch (NumberFormatException e) {
             return;
         }
-        BatteryStatus batteryStatus = sensorGatewayBinding.getBatteryStatus((byte) parseInt(asString(obj, "batt")));
+        BatteryStatus batteryStatus = sensorGatewayBinding.getHttpBatteryStatus((byte) parseInt(asString(obj, "batt")));
         int signal = parseInt(asString(obj, "signal"));
         result.put(sensorGatewayBinding, new SensorDevice(id, sensorGatewayBinding, batteryStatus, signal));
     }

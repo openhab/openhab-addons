@@ -370,6 +370,8 @@ public class MyRenaultHttpSession {
                 throw new RenaultForbiddenException("@text/error.renault.session.kamereon_request_forbidden");
             case HttpStatus.NOT_FOUND_404:
                 throw new RenaultNotImplementedException("@text/error.renault.session.kamereon_service_not_found");
+            case HttpStatus.TOO_MANY_REQUESTS_429:
+                throw new RenaultAPIGatewayException("@text/error.renault.session.kamereon_quota_limit_exceeded");
             case HttpStatus.NOT_IMPLEMENTED_501:
                 throw new RenaultNotImplementedException(
                         "@text/error.renault.session.kamereon_request_not_implemented");

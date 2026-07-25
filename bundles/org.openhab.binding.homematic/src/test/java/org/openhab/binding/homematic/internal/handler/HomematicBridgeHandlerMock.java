@@ -17,7 +17,6 @@ import static org.mockito.Mockito.doAnswer;
 
 import java.util.concurrent.ScheduledExecutorService;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.mockito.Mockito;
@@ -33,7 +32,7 @@ import org.openhab.core.thing.Bridge;
 @NonNullByDefault
 public class HomematicBridgeHandlerMock extends HomematicBridgeHandler {
 
-    public HomematicBridgeHandlerMock(@NonNull Bridge bridge, HomematicTypeGenerator typeGenerator, String ipv4Address,
+    public HomematicBridgeHandlerMock(Bridge bridge, HomematicTypeGenerator typeGenerator, String ipv4Address,
             HttpClient httpClient) {
         super(bridge, typeGenerator, ipv4Address, httpClient);
         executorService = Mockito.mock(ScheduledExecutorService.class);

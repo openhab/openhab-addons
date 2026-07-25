@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.homematic.internal.converter;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Exception if something goes wrong when converting values between openHAB and the binding.
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class ConverterException extends Exception {
     private static final long serialVersionUID = 78045670450002L;
 

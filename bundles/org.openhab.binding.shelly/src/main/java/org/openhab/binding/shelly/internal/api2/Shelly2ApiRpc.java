@@ -168,7 +168,6 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         boolean firstInit = !profile.initialized;
 
         Shelly2GetConfigResult dc = initProfile(profile, thingTypeUID, devInfo);
-
         if (profile.hasBattery) {
             checkSetWsCallback();
         }
@@ -531,12 +530,15 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 case SHELLY2_EVENT_LPUSH:
                 case SHELLY2_EVENT_SLPUSH:
                 case SHELLY2_EVENT_LSPUSH:
-                    if (e.id < profile.numInputs) {
+                    if (e.id < profile.numInputs && e.id < relayStatus.inputs.size()) {
                         ShellyInputState input = relayStatus.inputs.get(e.id);
                         input.event = getString(MAP_INPUT_EVENT_TYPE.get(e.event));
                         input.eventCount = getInteger(input.eventCount) + 1;
                         relayStatus.inputs.set(e.id, input);
-                        profile.status.inputs.set(e.id, input);
+                        List<@Nullable ShellyInputState> statusInputs = profile.status.inputs;
+                        if (statusInputs != null && e.id < statusInputs.size()) {
+                            statusInputs.set(e.id, input);
+                        }
 
                         String group = getProfile().getInputGroup(e.id);
                         updateChannel(group, CHANNEL_STATUS_EVENTTYPE + profile.getInputSuffix(e.id),
@@ -875,9 +877,17 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     @Override
     public void resetMeterTotal(int id) throws ShellyApiException {
-        apiRequest(new Shelly2RpcRequest()
-                .withMethod(getProfile().is3EM ? SHELLYRPC_METHOD_EMDATARESET : SHELLYRPC_METHOD_EM1DATARESET)
-                .withId(id));
+        apiRequest(new Shelly2RpcRequest().withMethod(resetCountersMethod(getProfile())).withId(id));
+    }
+
+    // Order matters: Pro EM-50 has isEM1 + hasRelays, and roller-mode 2PM has isRoller + hasRelays —
+    // both must be checked before the generic hasRelays fallback.
+    static String resetCountersMethod(ShellyDeviceProfile profile) {
+        return profile.is3EM ? SHELLYRPC_METHOD_EMDATARESET
+                : profile.isEM1 ? SHELLYRPC_METHOD_EM1DATARESET
+                        : profile.isRoller ? SHELLYRPC_METHOD_COVER_RESETCOUNTERS
+                                : profile.hasRelays ? SHELLYRPC_METHOD_SWITCH_RESETCOUNTERS
+                                        : SHELLYRPC_METHOD_PM1_RESETCOUNTERS;
     }
 
     @Override

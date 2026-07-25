@@ -27,16 +27,16 @@ jobs:
     steps:
       - name: Checkout
         if: github.head_ref == ''
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Checkout merge
         if: github.head_ref != ''
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: refs/pull/${{github.event.pull_request.number}}/merge
 
       - name: Set up Cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.m2/repository

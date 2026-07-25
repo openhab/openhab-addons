@@ -14,7 +14,7 @@ package org.openhab.binding.shelly.internal.handler;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 import java.net.InetAddress;
@@ -35,6 +35,7 @@ import org.junit.jupiter.api.Test;
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
+@SuppressWarnings({ "null" })
 public class ShellyThingTableTest {
 
     private static final String GATEWAY_IP = "192.168.1.100";
@@ -51,10 +52,8 @@ public class ShellyThingTableTest {
         return thing;
     }
 
-    // ── findThing(InetSocketAddress) ─────────────────────────────────────────
-
     @Test
-    void findBySocketAddr_exactPortMatch_returnsClientDevice() throws UnknownHostException {
+    void findBySocketAddrExactPortMatchReturnsClientDevice() throws UnknownHostException {
         ShellyThingInterface gateway = stubThing(GATEWAY_IP);
         ShellyThingInterface client = stubThing(CLIENT_KEY);
 
@@ -67,7 +66,7 @@ public class ShellyThingTableTest {
     }
 
     @Test
-    void findBySocketAddr_noPortMatch_fallsBackToIpOnly() throws UnknownHostException {
+    void findBySocketAddrNoPortMatchFallsBackToIpOnly() throws UnknownHostException {
         ShellyThingInterface gateway = stubThing(GATEWAY_IP);
 
         ShellyThingTable table = new ShellyThingTable();
@@ -79,7 +78,7 @@ public class ShellyThingTableTest {
     }
 
     @Test
-    void findBySocketAddr_portZero_usesIpOnlyLookup() throws UnknownHostException {
+    void findBySocketAddrPortZeroUsesIpOnlyLookup() throws UnknownHostException {
         ShellyThingInterface gateway = stubThing(GATEWAY_IP);
 
         ShellyThingTable table = new ShellyThingTable();
@@ -91,17 +90,15 @@ public class ShellyThingTableTest {
     }
 
     @Test
-    void findBySocketAddr_unknownAddress_returnsNull() throws UnknownHostException {
+    void findBySocketAddrUnknownAddressReturnsNull() throws UnknownHostException {
         ShellyThingTable table = new ShellyThingTable();
 
         InetSocketAddress addr = new InetSocketAddress(InetAddress.getByName("10.0.0.99"), 80);
         assertThat(table.findThing(addr), is(nullValue()));
     }
 
-    // ── getThing(InetSocketAddress) ───────────────────────────────────────────
-
     @Test
-    void getBySocketAddr_unknownAddress_throwsIllegalArgument() throws UnknownHostException {
+    void getBySocketAddrUnknownAddressThrowsIllegalArgument() throws UnknownHostException {
         ShellyThingTable table = new ShellyThingTable();
 
         InetSocketAddress addr = new InetSocketAddress(InetAddress.getByName("10.0.0.99"), 80);
@@ -109,7 +106,7 @@ public class ShellyThingTableTest {
     }
 
     @Test
-    void getBySocketAddr_knownAddress_returnsCorrectThing() throws UnknownHostException {
+    void getBySocketAddrKnownAddressReturnsCorrectThing() throws UnknownHostException {
         ShellyThingInterface gateway = stubThing(GATEWAY_IP);
 
         ShellyThingTable table = new ShellyThingTable();
@@ -119,8 +116,6 @@ public class ShellyThingTableTest {
         assertThat(table.getThing(addr), is(gateway));
     }
 
-    // ── Range extender scenario (end-to-end) ─────────────────────────────────
-
     /**
      * Device A (Pro 1PM, gateway) and Device B (Pro 2, range extender client) share the same IP.
      * Device B is identified by IP:CLIENT_PORT. A WebSocket connect from IP:CLIENT_PORT must
@@ -128,7 +123,7 @@ public class ShellyThingTableTest {
      * (numMeters=1) is applied to Device B (numMeters=0).
      */
     @Test
-    void rangeExtender_clientPortRoutedToClientDevice() throws UnknownHostException {
+    void rangeExtenderClientPortRoutedToClientDevice() throws UnknownHostException {
         ShellyThingInterface gateway = stubThing(GATEWAY_IP);
         ShellyThingInterface client = stubThing(CLIENT_KEY);
 
@@ -147,7 +142,7 @@ public class ShellyThingTableTest {
      * The lookup must fall back to the IP-only entry and return Device A.
      */
     @Test
-    void rangeExtender_gatewayPortRoutedToGatewayDevice() throws UnknownHostException {
+    void rangeExtenderGatewayPortRoutedToGatewayDevice() throws UnknownHostException {
         ShellyThingInterface gateway = stubThing(GATEWAY_IP);
         ShellyThingInterface client = stubThing(CLIENT_KEY);
 
@@ -167,7 +162,7 @@ public class ShellyThingTableTest {
      * pre-existing non-range-extender behaviour.
      */
     @Test
-    void noRangeExtender_anyPortRoutedToSingleDevice() throws UnknownHostException {
+    void noRangeExtenderAnyPortRoutedToSingleDevice() throws UnknownHostException {
         ShellyThingInterface gateway = stubThing(GATEWAY_IP);
 
         ShellyThingTable table = new ShellyThingTable();

@@ -12,38 +12,41 @@
  */
 package org.openhab.binding.homematic.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Info object which holds gateway specific informations.
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class HmGatewayInfo {
     public static final String ID_HOMEGEAR = "HOMEGEAR";
     public static final String ID_CCU = "CCU";
     public static final String ID_DEFAULT = "DEFAULT";
 
-    private String id;
-    private String type;
-    private String firmware;
-    private String address;
+    private final String id;
+    private final String type;
+    private final String firmware;
+    private final String address;
     private boolean rfInterface;
     private boolean wiredInterface;
     private boolean cuxdInterface;
     private boolean hmipInterface;
     private boolean groupInterface;
 
+    public HmGatewayInfo(String id, String type, String firmware, String address) {
+        this.id = id;
+        this.type = type;
+        this.firmware = firmware;
+        this.address = address;
+    }
+
     /**
      * Returns the id of the gateway type.
      */
     public String getId() {
         return id;
-    }
-
-    /**
-     * Sets the id of the gateway type.
-     */
-    public void setId(String id) {
-        this.id = id;
     }
 
     /**
@@ -54,13 +57,6 @@ public class HmGatewayInfo {
     }
 
     /**
-     * Sets the type of the server.
-     */
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    /**
      * Returns the firmware version of the gateway.
      */
     public String getFirmware() {
@@ -68,24 +64,10 @@ public class HmGatewayInfo {
     }
 
     /**
-     * Sets the firmware version of the gateway.
-     */
-    public void setFirmware(String firmware) {
-        this.firmware = firmware;
-    }
-
-    /**
      * Returns the address of the Homematic gateway.
      */
     public String getAddress() {
         return address;
-    }
-
-    /**
-     * Sets the address of the Homematic gateway.
-     */
-    public void setAddress(String address) {
-        this.address = address;
     }
 
     /**

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.homematic.internal.converter;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.core.types.State;
 import org.openhab.core.types.Type;
@@ -21,15 +23,18 @@ import org.openhab.core.types.Type;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public interface TypeConverter<T extends State> {
 
     /**
      * Converts an openHAB type to a Homematic value.
      */
+    @Nullable
     Object convertToBinding(Type type, HmDatapoint dp) throws ConverterException;
 
     /**
      * Converts a Homematic value to an openHAB type.
      */
+    @Nullable
     T convertFromBinding(HmDatapoint dp) throws ConverterException;
 }

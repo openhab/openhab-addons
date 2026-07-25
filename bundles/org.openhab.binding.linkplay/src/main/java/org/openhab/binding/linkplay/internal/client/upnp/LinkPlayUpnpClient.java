@@ -23,6 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -68,6 +69,7 @@ public class LinkPlayUpnpClient implements UpnpIOParticipant, LinkPlayUpnpComman
     private @Nullable RemoteDevice remoteDevice;
     private String udn = "";
     private volatile boolean disposed;
+    private volatile long lastValueNanos = System.nanoTime();
 
     public LinkPlayUpnpClient(LinkPlayUpnpClientHandler handler, UpnpIOService upnpIOService, UpnpService upnpService,
             ScheduledExecutorService scheduler) {
@@ -101,6 +103,15 @@ public class LinkPlayUpnpClient implements UpnpIOParticipant, LinkPlayUpnpComman
         return remoteDevice;
     }
 
+    /**
+     * Looks up the current {@link RemoteDevice} for this UDN directly from the jUPnP registry.
+     *
+     * @return the registered device, or {@code null} if the device is not currently in the registry
+     */
+    public @Nullable RemoteDevice findRegisteredDevice() {
+        return upnpService.getRegistry().getRemoteDevice(new UDN(udn), false);
+    }
+
     public boolean needsUpnpInitialization() {
         return needsUpnpInitialization.get();
     }
@@ -120,6 +131,7 @@ public class LinkPlayUpnpClient implements UpnpIOParticipant, LinkPlayUpnpComman
 
     @Override
     public void onValueReceived(@Nullable String variable, @Nullable String value, @Nullable String service) {
+        lastValueNanos = System.nanoTime();
         if (!handler.shouldProcessUpnpEvents()) {
             logger.debug("{}: onValueReceived: handler is not ready to process UPnP events", udn);
             return;
@@ -259,6 +271,22 @@ public class LinkPlayUpnpClient implements UpnpIOParticipant, LinkPlayUpnpComman
 
     public void clearSubscriptionState() {
         subscriptionState.clear();
+    }
+
+    /**
+     * Forces a resubscription by removing the current subscriptions and creating fresh ones. This
+     * works around jUPnP's renewal issues which LinkPlay devices frequently fail to honor
+     */
+    public void resubscribe() {
+        removeSubscriptions();
+        addSubscriptions();
+    }
+
+    /**
+     * @return the number of seconds since the last UPnP value (GENA event) was received
+     */
+    public long secondsSinceLastValue() {
+        return TimeUnit.NANOSECONDS.toSeconds(System.nanoTime() - lastValueNanos);
     }
 
     public boolean isFullySubscribed() {

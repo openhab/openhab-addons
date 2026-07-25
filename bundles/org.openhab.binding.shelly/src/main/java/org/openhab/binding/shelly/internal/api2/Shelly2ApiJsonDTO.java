@@ -50,6 +50,9 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLYRPC_METHOD_SWITCH_STATUS = "Switch.GetStatus";
     public static final String SHELLYRPC_METHOD_SWITCH_SET = "Switch.Set";
     public static final String SHELLYRPC_METHOD_SWITCH_SETCONFIG = "Switch.SetConfig";
+    public static final String SHELLYRPC_METHOD_SWITCH_RESETCOUNTERS = "Switch.ResetCounters";
+    public static final String SHELLYRPC_METHOD_PM1_RESETCOUNTERS = "PM1.ResetCounters";
+    public static final String SHELLYRPC_METHOD_COVER_RESETCOUNTERS = "Cover.ResetCounters";
     public static final String SHELLYRPC_METHOD_CB_SET = "CB.Set";
     public static final String SHELLYRPC_METHOD_COVER_SETPOS = "Cover.GoToPosition";
     public static final String SHELLY2_COVER_CMD_OPEN = "Open";
@@ -71,8 +74,8 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLYRPC_METHOD_CLOUDSET = "Cloud.SetConfig";
     public static final String SHELLYRPC_METHOD_WSGETCONFIG = "WS.GetConfig";
     public static final String SHELLYRPC_METHOD_WSSETCONFIG = "WS.SetConfig";
-    public static final String SHELLYRPC_METHOD_EMDATARESET = "EMData.DeleteAllData";
-    public static final String SHELLYRPC_METHOD_EM1DATARESET = "EM1Data.DeleteAllData";
+    public static final String SHELLYRPC_METHOD_EMDATARESET = "EMData.ResetCounters";
+    public static final String SHELLYRPC_METHOD_EM1DATARESET = "EM1Data.ResetCounters";
     public static final String SHELLYRPC_METHOD_SMOKE_SETCONFIG = "Smoke.SetConfig";
     public static final String SHELLYRPC_METHOD_SMOKE_MUTE = "Smoke.Mute";
     public static final String SHELLYRPC_METHOD_SCRIPT_LIST = "Script.List";
@@ -95,6 +98,8 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLY2_PROFILE_LIGHT = "light";
     public static final String SHELLY2_PROFILE_RGB = "rgb";
     public static final String SHELLY2_PROFILE_RGBW = "rgbw";
+    public static final String SHELLY2_PROFILE_MONOPHASE = "monophase";
+    public static final String SHELLY2_PROFILE_TRIPHASE = "triphase";
 
     // Button types/modes
     public static final String SHELLY2_BTNT_MOMENTARY = "momentary";
@@ -277,7 +282,7 @@ public class Shelly2ApiJsonDTO {
             }
 
             public class Shelly2DeviceConfigUiData {
-                public String cover; // hold comma seperated list of roller favorites
+                public String cover; // hold comma separated list of roller favorites
             }
 
             public class Shelly2DeviceConfigRpcUdp {
@@ -512,11 +517,17 @@ public class Shelly2ApiJsonDTO {
             ShellyDeviceConfigCB cb3;
 
             @SerializedName("em:0")
-            public Shelly2DevConfigEm em0;
+            public Shelly2DevConfigEm em0; // 3-phase config or Gen3 per-phase channel 0
+            @SerializedName("em:1")
+            public @Nullable Shelly2DevConfigEm emCh1; // Gen3: per-phase channel 1
+            @SerializedName("em:2")
+            public @Nullable Shelly2DevConfigEm emCh2; // Gen3: per-phase channel 2
             @SerializedName("em1:0")
-            public Shelly2DevConfigEm em10;
+            public Shelly2DevConfigEm em10; // single-phase clamp 0 config
             @SerializedName("em1:1")
-            public Shelly2DevConfigEm em11;
+            public Shelly2DevConfigEm em11; // single-phase clamp 1 config
+            @SerializedName("em1:2")
+            public @Nullable Shelly2DevConfigEm em12; // Pro 3EM monophase profile: 3rd clamp
             @SerializedName("pm1:0")
             public Shelly2DevConfigPm1 pm10;
 
@@ -598,7 +609,7 @@ public class Shelly2ApiJsonDTO {
             public Integer id;
             public Boolean state;
             public Double percent; // analog input only
-            public ArrayList<String> errors;// shown only if at least one error is present.
+            public @Nullable ArrayList<String> errors;
             public Double xpercent;
             public Shelly2InputCounts counts;
             public Double freq;
@@ -653,8 +664,9 @@ public class Shelly2ApiJsonDTO {
             }
 
             public class Shelly2DeviceStatusHumidity {
-                public Integer id;
-                public Double rh;
+                public @Nullable Integer id;
+                public @Nullable Double rh;
+                public @Nullable ArrayList<String> errors;
             }
 
             public class Shelly2DeviceStatusIlluminance {
@@ -664,12 +676,13 @@ public class Shelly2ApiJsonDTO {
             }
 
             public class Shelly2DeviceStatusVoltage {
-                public Integer id;
-                public Double voltage;
+                public @Nullable Integer id;
+                public @Nullable Double voltage;
+                public @Nullable ArrayList<String> errors;
             }
 
             public class Shelly2DeviceStatusTempId extends Shelly2DeviceStatusTemp {
-                public Integer id;
+                public @Nullable Integer id;
             }
 
             public static class Shelly2DeviceStatusPower {
@@ -689,65 +702,100 @@ public class Shelly2ApiJsonDTO {
             }
 
             public static class Shelly2DeviceStatusEm {
-                public Integer id;
+                public @Nullable Integer id;
 
                 @SerializedName("a_current")
-                public Double aCurrent;
+                public @Nullable Double aCurrent;
                 @SerializedName("a_voltage")
-                public Double aVoltage;
+                public @Nullable Double aVoltage;
                 @SerializedName("a_act_power")
-                public Double aActPower;
+                public @Nullable Double aActPower;
                 @SerializedName("a_aprt_power")
-                public Double aAprtPower;
+                public @Nullable Double aAprtPower;
                 @SerializedName("a_pf")
-                public Double aPF;
+                public @Nullable Double aPF;
 
                 @SerializedName("b_current")
-                public Double bCurrent;
+                public @Nullable Double bCurrent;
                 @SerializedName("b_voltage")
-                public Double bVoltage;
+                public @Nullable Double bVoltage;
                 @SerializedName("b_act_power")
-                public Double bActPower;
+                public @Nullable Double bActPower;
                 @SerializedName("b_aprt_power")
-                public Double bAprtPower;
+                public @Nullable Double bAprtPower;
                 @SerializedName("b_pf")
-                public Double bPF;
+                public @Nullable Double bPF;
 
                 @SerializedName("c_current")
-                public Double cCurrent;
+                public @Nullable Double cCurrent;
                 @SerializedName("c_voltage")
-                public Double cVoltage;
+                public @Nullable Double cVoltage;
                 @SerializedName("c_act_power")
-                public Double cActPower;
+                public @Nullable Double cActPower;
                 @SerializedName("c_aprt_power")
-                public Double cAprtPower;
+                public @Nullable Double cAprtPower;
                 @SerializedName("c_pf")
-                public Double cPF;
+                public @Nullable Double cPF;
 
                 @SerializedName("n_current")
-                public Double nCurrent;
+                public @Nullable Double nCurrent;
 
                 @SerializedName("total_current")
-                public Double totalCurrent;
+                public @Nullable Double totalCurrent;
                 @SerializedName("total_act_power")
-                public Double totalActPower;
+                public @Nullable Double totalActPower;
                 @SerializedName("total_aprt_power")
-                public Double totalAprtPower;
+                public @Nullable Double totalAprtPower;
+
+                @SerializedName("a_freq")
+                public @Nullable Double aFreq;
+                @SerializedName("b_freq")
+                public @Nullable Double bFreq;
+                @SerializedName("c_freq")
+                public @Nullable Double cFreq;
             }
 
             public static class Shelly2DeviceStatusEmData {
-                public Integer id;
+                public @Nullable Integer id;
 
                 @SerializedName("a_total_act_energy")
-                public Double aTotal;
+                public @Nullable Double totalActiveEnergyA; // Total active energy on phase A, Wh
                 @SerializedName("b_total_act_energy")
-                public Double bTotal;
+                public @Nullable Double totalActiveEnergyB; // Total active energy on phase B, Wh
                 @SerializedName("c_total_act_energy")
-                public Double cTotal;
+                public @Nullable Double totalActiveEnergyC; // Total active energy on phase C, Wh
+
+                @SerializedName("a_total_act_ret_energy")
+                public @Nullable Double totalActiveReturnedEnergyA; // Total returned energy on phase A, Wh
+                @SerializedName("b_total_act_ret_energy")
+                public @Nullable Double totalActiveReturnedEnergyB; // Total returned energy on phase B, Wh
+                @SerializedName("c_total_act_ret_energy")
+                public @Nullable Double totalActiveReturnedEnergyC; // Total returned energy on phase C, Wh
 
                 @SerializedName("total_act")
-                public Double totalKWH;
-                public String[] errors;
+                public @Nullable Double totalActiveEnergySum; // Total active energy over all phases, Wh (EMData)
+                @SerializedName("total_act_energy")
+                public @Nullable Double totalActiveEnergy; // Total active energy of the clamp, Wh (EM1Data)
+                @SerializedName("total_act_ret")
+                public @Nullable Double totalActiveReturnedEnergySum; // Total returned energy over all phases, Wh
+                @SerializedName("total_act_ret_energy")
+                public @Nullable Double totalActiveReturnedEnergy; // Total returned energy of the clamp, Wh (EM1Data)
+                public String @Nullable [] errors;
+
+                /**
+                 * Active energy of a single-phase payload, Wh: EMData reports phase A under
+                 * a_total_act_energy, EM1Data reports the clamp total under total_act_energy.
+                 */
+                public @Nullable Double getTotalActiveEnergy() {
+                    return totalActiveEnergyA != null ? totalActiveEnergyA : totalActiveEnergy;
+                }
+
+                /**
+                 * Returned energy of a single-phase payload, Wh — same fallback as {@link #getTotalActiveEnergy()}.
+                 */
+                public @Nullable Double getTotalActiveReturnedEnergy() {
+                    return totalActiveReturnedEnergyA != null ? totalActiveReturnedEnergyA : totalActiveReturnedEnergy;
+                }
             }
 
             public class Shelly2DeviceStatusSmoke {
@@ -814,15 +862,25 @@ public class Shelly2ApiJsonDTO {
             public Shelly2RelayStatus pm10;
 
             @SerializedName("em:0")
-            public Shelly2DeviceStatusEm em0;
+            public Shelly2DeviceStatusEm em0; // 3-phase status (phases A/B/C) or Gen3 per-phase channel 0 (phase A)
+            @SerializedName("em:1")
+            public @Nullable Shelly2DeviceStatusEm emCh1; // Gen3: per-phase channel 1 (phase B)
+            @SerializedName("em:2")
+            public @Nullable Shelly2DeviceStatusEm emCh2; // Gen3: per-phase channel 2 (phase C)
             @SerializedName("emdata:0")
             public Shelly2DeviceStatusEmData emdata0;
             @SerializedName("em1:0")
-            public Shelly2StatusEm1 em10;
+            public Shelly2StatusEm1 em10; // single-phase clamp 0 (EM Mini, Pro EM-50, Pro 3EM monophase)
             @SerializedName("em1:1")
-            public Shelly2StatusEm1 em11;
+            public Shelly2StatusEm1 em11; // single-phase clamp 1
+            @SerializedName("em1:2")
+            public @Nullable Shelly2StatusEm1 em12; // Pro 3EM monophase profile: 3rd clamp
             @SerializedName("em1data:0")
-            public Shelly2DeviceStatusEmData em1data0;
+            public Shelly2DeviceStatusEmData em1data0; // accumulated energy of clamp 0
+            @SerializedName("em1data:1")
+            public @Nullable Shelly2DeviceStatusEmData em1data1; // accumulated energy of clamp 1
+            @SerializedName("em1data:2")
+            public @Nullable Shelly2DeviceStatusEmData em1data2; // Pro 3EM monophase profile: 3rd clamp
 
             @SerializedName("cover:0")
             public Shelly2CoverStatus cover0;
@@ -834,22 +892,22 @@ public class Shelly2ApiJsonDTO {
             public Shelly2DeviceStatusLight light1;
 
             @SerializedName("temperature:0")
-            public Shelly2DeviceStatusTempId temperature0;
+            public @Nullable Shelly2DeviceStatusTempId temperature0;
             @SerializedName("temperature:100")
-            public Shelly2DeviceStatusTempId temperature100;
+            public @Nullable Shelly2DeviceStatusTempId temperature100;
             @SerializedName("temperature:101")
-            public Shelly2DeviceStatusTempId temperature101;
+            public @Nullable Shelly2DeviceStatusTempId temperature101;
             @SerializedName("temperature:102")
-            public Shelly2DeviceStatusTempId temperature102;
+            public @Nullable Shelly2DeviceStatusTempId temperature102;
             @SerializedName("temperature:103")
-            public Shelly2DeviceStatusTempId temperature103;
+            public @Nullable Shelly2DeviceStatusTempId temperature103;
             @SerializedName("temperature:104")
-            public Shelly2DeviceStatusTempId temperature104;
+            public @Nullable Shelly2DeviceStatusTempId temperature104;
 
             @SerializedName("humidity:0")
-            public Shelly2DeviceStatusHumidity humidity0;
+            public @Nullable Shelly2DeviceStatusHumidity humidity0;
             @SerializedName("humidity:100")
-            public Shelly2DeviceStatusHumidity humidity100;
+            public @Nullable Shelly2DeviceStatusHumidity humidity100;
 
             @SerializedName("illuminance:0")
             Shelly2DeviceStatusIlluminance illuminance0;
@@ -858,15 +916,15 @@ public class Shelly2ApiJsonDTO {
             public Shelly2DeviceStatusSmoke smoke0;
 
             @SerializedName("voltmeter:0")
-            public Shelly2DeviceStatusVoltage voltmeter0;
+            public @Nullable Shelly2DeviceStatusVoltage voltmeter0;
             @SerializedName("voltmeter:1")
-            public Shelly2DeviceStatusVoltage voltmeter1;
+            public @Nullable Shelly2DeviceStatusVoltage voltmeter1;
             @SerializedName("voltmeter:2")
-            public Shelly2DeviceStatusVoltage voltmeter2;
+            public @Nullable Shelly2DeviceStatusVoltage voltmeter2;
             @SerializedName("voltmeter:3")
-            public Shelly2DeviceStatusVoltage voltmeter3;
+            public @Nullable Shelly2DeviceStatusVoltage voltmeter3;
             @SerializedName("voltmeter:100")
-            public Shelly2DeviceStatusVoltage voltmeter100;
+            public @Nullable Shelly2DeviceStatusVoltage voltmeter100;
 
             @SerializedName("devicepower:0")
             public Shelly2DeviceStatusPower devicepower0;
@@ -936,15 +994,15 @@ public class Shelly2ApiJsonDTO {
         public Double timerStartetAt;
         @SerializedName("timer_duration")
         public Double timerDuration;
-        public Double apower;
-        public Double voltage;
-        public Double current;
+        public @Nullable Double apower;
+        public @Nullable Double voltage;
+        public @Nullable Double current;
         @SerializedName("freq")
-        public Double frequency;
-        public Double pf;
-        public Shelly2Energy aenergy;
-        public Shelly2DeviceStatusTemp temperature;
-        public String[] errors;
+        public @Nullable Double frequency;
+        public @Nullable Double pf;
+        public @Nullable Shelly2Energy aenergy;
+        public @Nullable Shelly2DeviceStatusTemp temperature;
+        public String @Nullable [] errors;
     }
 
     public class Shelly2CBStatus {
@@ -965,40 +1023,42 @@ public class Shelly2ApiJsonDTO {
         public Double timerStartetAt;
         @SerializedName("timer_duration")
         public Double timerDuration;
-        public Double apower;
-        public Double voltage;
-        public Double current;
-        public Double pf;
-        public Shelly2Energy aenergy;
-        public Shelly2DeviceStatusTemp temperature;
-        public String[] errors;
+        public @Nullable Double apower;
+        public @Nullable Double voltage;
+        public @Nullable Double current;
+        public @Nullable Double pf;
+        public @Nullable Shelly2Energy aenergy;
+        public @Nullable Shelly2DeviceStatusTemp temperature;
+        public String @Nullable [] errors;
     }
 
     public static class Shelly2StatusEm1 {
-        public Integer id;
-        public Double current;
-        public Double voltage;
+        public @Nullable Integer id;
+        public @Nullable Double current;
+        public @Nullable Double voltage;
         @SerializedName("act_power")
-        public Double actPower;
+        public @Nullable Double actPower;
         @SerializedName("aprt_power")
-        public Double aptrPower;
-        public Double pf;
-        public String calibration;
-        public ArrayList<String> errors;
+        public @Nullable Double aptrPower;
+        public @Nullable Double pf;
+        public @Nullable Double freq;
+        public @Nullable String calibration;
+        public @Nullable ArrayList<String> errors;
     }
 
     public static class Shelly2DeviceStatusTemp {
-        public Double tC;
-        public Double tF;
+        public @Nullable Double tC;
+        public @Nullable Double tF;
+        public @Nullable ArrayList<String> errors;
     }
 
     public static class Shelly2Energy {
         // "switch:1":{"id":1,"aenergy":{"total":0.003,"by_minute":[0.000,0.000,0.000],"minute_ts":1619910239}}}}
-        public Double total;
+        public @Nullable Double total;
         @SerializedName("by_minute")
-        public Double[] byMinute;
+        public Double @Nullable [] byMinute;
         @SerializedName("minute_ts")
-        public Long minuteTs;
+        public @Nullable Long minuteTs;
     }
 
     public static class Shelly2ConfigParms {

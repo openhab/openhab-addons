@@ -15,6 +15,7 @@ package org.openhab.automation.jsscripting.internal.threading;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -40,39 +41,60 @@ import org.openhab.core.config.core.Configuration;
 class ThreadsafeSimpleRuleDelegate implements Rule, SimpleRuleActionHandler {
 
     private final Lock lock;
+    private final long lockAcquisitionTimeoutMS;
     private final SimpleRule delegate;
+    /**
+     * Get and store the UID upon wrapping as {@link SimpleRule#getUID()} is overwritten in openhab-js,
+     * which means calling it is a GraalJS context access and needs to be synchronized.
+     */
+    private final String uid;
 
     /**
      * Constructor requires a lock object and delegate to forward invocations to.
      *
      * @param lock rule executions will synchronize on this object
+     * @param lockAcquisitionTimeoutMS the lock acquisition timeout in milliseconds.
      * @param delegate the delegate to forward invocations to
      */
-    ThreadsafeSimpleRuleDelegate(Lock lock, SimpleRule delegate) {
+    ThreadsafeSimpleRuleDelegate(Lock lock, long lockAcquisitionTimeoutMS, SimpleRule delegate) {
         this.lock = lock;
+        this.lockAcquisitionTimeoutMS = lockAcquisitionTimeoutMS;
         this.delegate = delegate;
+        this.uid = delegate.getUID();
     }
 
     @Override
     @NonNullByDefault({})
     public Object execute(Action module, Map<String, ?> inputs) {
-        lock.lock();
+        boolean locked;
         try {
-            return delegate.execute(module, inputs);
-        } finally { // Make sure that Lock is unlocked regardless of an exception is thrown or not to avoid deadlocks
-            lock.unlock();
+            locked = lock.tryLock(lockAcquisitionTimeoutMS, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Interrupted while waiting to acquire the lock for action '" + module.getId()
+                    + "' of rule '" + uid + '\'', e);
+        }
+        if (locked) {
+            try {
+                return delegate.execute(module, inputs);
+            } finally {
+                // Make sure that Lock is unlocked regardless of an exception is thrown or not to avoid deadlocks
+                lock.unlock();
+            }
+        } else {
+            throw new RuntimeException("Failed to acquire the lock for action '" + module.getId() + "' of rule '" + uid
+                    + "' within " + TimeUnit.MILLISECONDS.toSeconds(lockAcquisitionTimeoutMS) + " seconds.");
         }
     }
 
     @Override
     public String getUID() {
-        return delegate.getUID();
+        return uid;
     }
 
     @Override
-    @Nullable
-    public String getTemplateUID() {
-        return delegate.getTemplateUID();
+    public @Nullable String getTemplateUID() {
+        return null;
     }
 
     @Override
@@ -145,13 +167,13 @@ class ThreadsafeSimpleRuleDelegate implements Rule, SimpleRuleActionHandler {
         return delegate.getActions();
     }
 
+    public void setActions(@Nullable List<Action> actions) {
+        delegate.setActions(actions);
+    }
+
     @Override
     public List<Trigger> getTriggers() {
         return delegate.getTriggers();
-    }
-
-    public void setActions(@Nullable List<Action> actions) {
-        delegate.setActions(actions);
     }
 
     public void setTriggers(@Nullable List<Trigger> triggers) {

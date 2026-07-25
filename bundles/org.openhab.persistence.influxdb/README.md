@@ -15,7 +15,7 @@ There are also nice tools on the web for visualizing InfluxDB time series, such 
 
 Some example entries for an item with the name "speedtest" without any further configuration would look like this:
 
-```flux
+```sh
     > Query using InfluxDB 2.0 syntax (syntax for 1.0 is different)
     > from(bucket: "default")
         |> range(start: -30d)
@@ -88,7 +88,7 @@ config: {}
 
 This will end up with one measurement named temperature and four different series inside:
 
-```influx
+```csv
 temperature,item=tempLivingRoom,floor=groundfloor
 temperature,item=tempKitchen,floor=groundfloor
 temperature,item=tempBedRoom,floor=firstfloor

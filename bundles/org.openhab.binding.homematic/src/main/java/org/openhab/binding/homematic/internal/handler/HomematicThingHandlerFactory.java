@@ -66,7 +66,7 @@ public class HomematicThingHandlerFactory extends BaseThingHandlerFactory {
             return new HomematicBridgeHandler((Bridge) thing, typeGenerator,
                     networkAddressService.getPrimaryIpv4HostAddress(), httpClient);
         } else {
-            return new HomematicThingHandler(thing, typeProvider);
+            return new HomematicThingHandler(thing, typeProvider, typeGenerator);
         }
     }
 }

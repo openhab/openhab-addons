@@ -17,6 +17,7 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
 import org.openhab.binding.homematic.internal.communicator.message.BinRpcMessage;
 import org.openhab.binding.homematic.internal.communicator.message.RpcRequest;
@@ -27,6 +28,7 @@ import org.openhab.core.common.ThreadPoolManager;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class BinRpcNetworkService implements Runnable {
     private static final byte[] BIN_EMPTY_STRING = { 'B', 'i', 'n', 1, 0, 0, 0, 8, 0, 0, 0, 3, 0, 0, 0, 0 };
     private static final byte[] BIN_EMPTY_ARRAY = { 'B', 'i', 'n', 1, 0, 0, 0, 8, 0, 0, 1, 0, 0, 0, 0, 0 };

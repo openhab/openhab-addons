@@ -293,4 +293,23 @@
 		<config-description-ref uri="thing-type:openweathermap:onecall-history"/>
 	</thing-type>
 
+	<thing-type id="onecall-forecast">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="weather-api"/>
+		</supported-bridge-type-refs>
+		<label>One Call Forecast</label>
+		<description>Provides a unified 5-day weather forecast TimeSeries by merging the One Call API 3.0 (current + hourly
+			0–48 h) and the Forecast5 API (3-hourly 48–120 h) into a single continuous TimeSeries per channel.</description>
+		<semantic-equipment-tag>WeatherService</semantic-equipment-tag>
+
+		<channel-groups>
+			<channel-group id="current" typeId="oneCallCurrent"/>
+			<channel-group id="forecast" typeId="oneCallForecast"/>
+		</channel-groups>
+
+		<representation-property>location</representation-property>
+
+		<config-description-ref uri="thing-type:openweathermap:onecall-forecast"/>
+	</thing-type>
+
 </thing:thing-descriptions>

@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
 import org.openhab.binding.homematic.internal.model.HmRssiInfo;
 
@@ -25,6 +26,7 @@ import org.openhab.binding.homematic.internal.model.HmRssiInfo;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class RssiInfoParser extends CommonRpcParser<Object[], List<HmRssiInfo>> {
     private HomematicConfig config;
 
@@ -36,16 +38,17 @@ public class RssiInfoParser extends CommonRpcParser<Object[], List<HmRssiInfo>> 
     @SuppressWarnings("unchecked")
     public List<HmRssiInfo> parse(Object[] result) throws IOException {
         List<HmRssiInfo> rssiList = new ArrayList<>();
-        if (result != null && result.length > 0 && result[0] instanceof Map) {
+        if (result.length > 0 && result[0] instanceof Map) {
             Map<String, ?> devices = (Map<String, ?>) result[0];
 
             for (String sourceDevice : devices.keySet()) {
                 Map<String, Object[]> targetDevices = (Map<String, Object[]>) devices.get(sourceDevice);
                 if (targetDevices != null) {
-                    for (String targetDevice : targetDevices.keySet()) {
-                        if (targetDevice.equals(config.getGatewayInfo().getAddress())) {
-                            Integer rssiDevice = getAdjustedRssiValue((Integer) targetDevices.get(targetDevice)[0]);
-                            Integer rssiPeer = getAdjustedRssiValue((Integer) targetDevices.get(targetDevice)[1]);
+                    for (Map.Entry<String, Object[]> entry : targetDevices.entrySet()) {
+                        if (entry.getKey().equals(config.getGatewayInfo().getAddress())) {
+                            Object[] values = entry.getValue();
+                            Integer rssiDevice = getAdjustedRssiValue((Integer) values[0]);
+                            Integer rssiPeer = getAdjustedRssiValue((Integer) values[1]);
                             HmRssiInfo rssiInfo = new HmRssiInfo(sourceDevice, rssiDevice, rssiPeer);
                             rssiList.add(rssiInfo);
                         }

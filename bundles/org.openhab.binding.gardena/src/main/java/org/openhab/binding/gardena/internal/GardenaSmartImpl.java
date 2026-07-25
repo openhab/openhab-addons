@@ -170,15 +170,28 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
             for (LocationDataItem location : locationsResponse.data) {
                 WebSocketCreatedResponse webSocketCreatedResponse = getWebsocketInfo(location.id);
                 Location locationAttributes = location.attributes;
-                WebSocket webSocketAttributes = webSocketCreatedResponse.data.attributes;
-                if (locationAttributes == null || webSocketAttributes == null) {
+                String webSocketUrl = getWebSocketUrl(webSocketCreatedResponse);
+                if (locationAttributes == null || webSocketUrl == null) {
+                    logger.warn("Cannot start Gardena Webservice for location {} ({}): missing websocket data",
+                            location.id, locationAttributes == null ? null : locationAttributes.name);
                     continue;
                 }
                 String socketId = id + "-" + locationAttributes.name;
-                webSockets.put(location.id, new GardenaSmartWebSocket(this, webSocketClient, scheduler,
-                        webSocketAttributes.url, token, socketId, location.id));
+                webSockets.put(location.id, new GardenaSmartWebSocket(this, webSocketClient, scheduler, webSocketUrl,
+                        token, socketId, location.id));
             }
         }
+    }
+
+    private @Nullable String getWebSocketUrl(@Nullable WebSocketCreatedResponse webSocketCreatedResponse) {
+        if (webSocketCreatedResponse == null || webSocketCreatedResponse.data == null) {
+            return null;
+        }
+        WebSocket webSocketAttributes = webSocketCreatedResponse.data.attributes;
+        if (webSocketAttributes == null || webSocketAttributes.url == null || webSocketAttributes.url.isBlank()) {
+            return null;
+        }
+        return webSocketAttributes.url;
     }
 
     /**
@@ -423,14 +436,26 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
             Thread.sleep(3000);
             WebSocketCreatedResponse webSocketCreatedResponse = getWebsocketInfo(socket.getLocationID());
             // only restart single socket, do not restart binding
-            WebSocket webSocketAttributes = webSocketCreatedResponse.data.attributes;
-            if (webSocketAttributes != null) {
-                socket.restart(webSocketAttributes.url);
+            String webSocketUrl = getWebSocketUrl(webSocketCreatedResponse);
+            if (webSocketUrl == null) {
+                throw new GardenaException(
+                        "No websocket URL received for location " + socket.getLocationID() + " during restart");
             }
+            socket.updateToken(token);
+            socket.restart(webSocketUrl);
         } catch (Exception ex) {
             // restart binding on error
-            logger.warn("Restarting GardenaSmart Webservice failed ({}): {}, restarting binding", socket.getSocketID(),
-                    ex.getMessage());
+            String message = ex.getMessage();
+            if (message == null || message.isBlank()) {
+                message = ex.getClass().getSimpleName();
+            }
+            if (logger.isDebugEnabled()) {
+                logger.warn("Restarting GardenaSmart Webservice failed ({}): {}, restarting binding",
+                        socket.getSocketID(), message, ex);
+            } else {
+                logger.warn("Restarting GardenaSmart Webservice failed ({}): {}, restarting binding",
+                        socket.getSocketID(), message);
+            }
             eventListener.onError();
         }
     }

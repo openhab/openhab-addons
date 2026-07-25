@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.lgthinq.internal;
 
+import java.util.Locale;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -56,7 +58,7 @@ public class LGThinQBridgeConfiguration {
 
     public String getCountry() {
         if ("--".equals(country)) {
-            return manualCountry;
+            return manualCountry.toUpperCase(Locale.ROOT);
         }
         return country;
     }

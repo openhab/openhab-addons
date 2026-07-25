@@ -386,13 +386,13 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
     @Override
     public void onServicesResolved(ServicesResolvedEvent event) {
         if (event.isResolved()) {
-            // Populate our service/characteristic list from the now-resolved GATT before notifying
+            // Populate our service/characteristic list from the now-resolved GATT and notify
             // listeners. BlueZ can deliver ServicesResolved=true while our own supportedServices list
             // is still empty (e.g. right after a reconnect, before discoverServices() has run); firing
             // SERVICES_DISCOVERED then makes listeners (e.g. the generic handler's channel builder) run
             // against an empty list and miss every characteristic. discoverServices() populates the
-            // list and fires SERVICES_DISCOVERED itself once it has added services, so it is the
-            // correct trigger here. If the services are already known it is a cheap no-op.
+            // list and fires SERVICES_DISCOVERED once the GATT is resolved with services present -
+            // including on a reconnect where the list is unchanged - so it is the correct trigger here.
             discoverServices();
         }
     }
@@ -505,6 +505,14 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
                 }
                 addService(service);
             }
+        }
+        // Notify whenever the GATT is resolved with services present, not only when our list just
+        // grew. On a reconnect BlueZ re-fires ServicesResolved=true while our supportedServices map
+        // is already fully populated from the previous connection (it is only cleared on object
+        // removal), so the "grew" check above is false. Consumers such as ConnectedBluetoothHandler
+        // re-arm their notifications/polling off SERVICES_DISCOVERED, so swallowing it here leaves the
+        // Thing online but silent after every reconnect. The notification is idempotent for listeners.
+        if (!getServices().isEmpty()) {
             notifyListeners(BluetoothEventType.SERVICES_DISCOVERED);
         }
         return true;

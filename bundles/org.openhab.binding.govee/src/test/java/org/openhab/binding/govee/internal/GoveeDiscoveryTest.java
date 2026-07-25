@@ -48,6 +48,35 @@ public class GoveeDiscoveryTest {
             }
              """;
 
+    // A status update is received on the same port as discovery responses. Its "data" object does not
+    // contain the device information expected by discovery, so Gson leaves those fields null.
+    String statusResponse = """
+             {
+                "msg":{
+                   "cmd":"devStatus",
+                   "data":{
+                      "onOff":1,
+                      "brightness":100,
+                      "color":{ "r":255, "g":255, "b":255 },
+                      "colorTemInKelvin":7200
+                   }
+                }
+            }
+             """;
+
+    // A malformed scan response that is missing the "ip" field.
+    String scanResponseWithoutIp = """
+             {
+                "msg":{
+                   "cmd":"scan",
+                   "data":{
+                      "device":"7D:31:C3:35:33:33:44:15",
+                      "sku":"H6076"
+                   }
+                }
+            }
+             """;
+
     @Test
     public void testProcessScanMessage() {
         GoveeDiscoveryService service = new GoveeDiscoveryService(new CommunicationManager());
@@ -60,5 +89,23 @@ public class GoveeDiscoveryTest {
         assertEquals(deviceProperties.get(GoveeBindingConstants.DEVICE_TYPE), "H6076");
         assertEquals(deviceProperties.get(GoveeBindingConstants.IP_ADDRESS), "192.168.178.171");
         assertEquals(deviceProperties.get(GoveeBindingConstants.MAC_ADDRESS), "7D:31:C3:35:33:33:44:15");
+    }
+
+    @Test
+    public void testStatusMessageIsIgnored() {
+        GoveeDiscoveryService service = new GoveeDiscoveryService(new CommunicationManager());
+        DiscoveryResponse resp = new Gson().fromJson(statusResponse, DiscoveryResponse.class);
+        Objects.requireNonNull(resp);
+        // Must not throw and must not be discovered as a Thing.
+        assertNull(service.responseToResult(resp));
+    }
+
+    @Test
+    public void testScanMessageWithoutIpIsIgnored() {
+        GoveeDiscoveryService service = new GoveeDiscoveryService(new CommunicationManager());
+        DiscoveryResponse resp = new Gson().fromJson(scanResponseWithoutIp, DiscoveryResponse.class);
+        Objects.requireNonNull(resp);
+        // Must not throw a NullPointerException when the IP field is absent.
+        assertNull(service.responseToResult(resp));
     }
 }

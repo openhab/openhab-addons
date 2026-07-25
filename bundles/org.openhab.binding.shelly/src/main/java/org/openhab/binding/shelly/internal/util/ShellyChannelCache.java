@@ -85,8 +85,8 @@ public class ShellyChannelCache {
                 current = channelData.get(channelId);
             }
             if (!enabled || forceUpdate || (current == null) || !current.equals(newValue)) {
-                if ((current != null) && current.getClass().isEnum() && (current.equals(newValue))) {
-                    return false; // special case for OnOffType
+                if (!forceUpdate && (current != null) && current.getClass().isEnum() && (current.equals(newValue))) {
+                    return false; // special case for OnOffType, unless the caller explicitly forces a republish
                 }
                 // For channels that support multiple types (like brightness) a suffix is added
                 // this gets removed to get the channelId for updateState

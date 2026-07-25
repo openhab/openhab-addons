@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.zwavejs.internal.handler;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
@@ -26,6 +28,9 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.openhab.binding.zwavejs.internal.DataUtil;
 import org.openhab.binding.zwavejs.internal.api.dto.Event;
 import org.openhab.binding.zwavejs.internal.api.dto.Node;
@@ -194,6 +199,30 @@ public class ZwaveJSBridgeHandlerTest {
         } finally {
             handler.dispose();
         }
+    }
+
+    @ParameterizedTest
+    @CsvSource({ "true, true", "false, false", "TRUE, true", "False, false", "'  true  ', true" })
+    public void testConvertValueTypeBoolean(String input, boolean expected) {
+        Object result = ZwaveJSBridgeHandler.convertValueType(input);
+        assertInstanceOf(Boolean.class, result);
+        assertEquals(expected, result);
+    }
+
+    @ParameterizedTest
+    @CsvSource({ "42, 42.0", "42.5, 42.5", "-3.14, -3.14", "0, 0.0", "'  7  ', 7.0", "1, 1.0" })
+    public void testConvertValueTypeNumber(String input, double expected) {
+        Object result = ZwaveJSBridgeHandler.convertValueType(input);
+        assertInstanceOf(Double.class, result);
+        assertEquals(expected, result);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "hello", "on", "off", "yes", "no", "3abc", "   trimme   " })
+    public void testConvertValueTypeString(String input) {
+        Object result = ZwaveJSBridgeHandler.convertValueType(input);
+        assertInstanceOf(String.class, result);
+        assertEquals(input.trim(), result);
     }
 
     @Test
