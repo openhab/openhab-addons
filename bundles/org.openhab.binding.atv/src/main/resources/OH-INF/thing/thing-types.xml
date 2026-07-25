@@ -101,10 +101,18 @@
 				<default>50</default>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="refreshInterval" type="integer" unit="s" min="0">
-				<label>Refresh Interval</label>
-				<description>Fallback polling interval in seconds (0 disables; live push updates are used otherwise).</description>
+			<parameter name="healthCheckInterval" type="integer" unit="s" min="0">
+				<label>Health Check Interval</label>
+				<description>How often, in seconds, to actively query the device power state and rebuild the connection if it does
+					not answer or disagrees with the tracked state. 0 disables.</description>
 				<default>30</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="staleTimeout" type="integer" unit="min" min="0">
+				<label>Stale Connection Timeout (Backup)</label>
+				<description>How often, in minutes, to rebuild the connection when no updates of any kind have arrived; a backup for
+					when the health check is off or unavailable. Keep 15 or higher. 0 disables.</description>
+				<default>0</default>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
@@ -185,10 +193,18 @@
 				<default>50</default>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="refreshInterval" type="integer" unit="s" min="0">
-				<label>Refresh Interval</label>
-				<description>Fallback polling interval in seconds (0 disables; live push updates are used otherwise).</description>
+			<parameter name="healthCheckInterval" type="integer" unit="s" min="0">
+				<label>Health Check Interval</label>
+				<description>How often, in seconds, to actively query the device power state and rebuild the connection if it does
+					not answer or disagrees with the tracked state. 0 disables.</description>
 				<default>30</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="staleTimeout" type="integer" unit="min" min="0">
+				<label>Stale Connection Timeout (Backup)</label>
+				<description>How often, in minutes, to rebuild the connection when no updates of any kind have arrived; a backup for
+					when the health check is off or unavailable. Keep 15 or higher. 0 disables.</description>
+				<default>0</default>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>

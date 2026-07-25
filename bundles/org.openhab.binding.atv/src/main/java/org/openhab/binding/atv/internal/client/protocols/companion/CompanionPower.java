@@ -108,6 +108,16 @@ public final class CompanionPower implements Power, CapabilitySource {
         return powerState;
     }
 
+    @Override
+    public CompletableFuture<PowerState> refreshPowerState() {
+        return api.fetchAttentionState().thenApply(systemStatus -> {
+            PowerState oldState = powerState;
+            powerState = systemStatusToPowerState(systemStatus);
+            updatePowerState(oldState, powerState);
+            return powerState;
+        });
+    }
+
     private void handleSystemStatusUpdate(Map<String, Object> data) {
         try {
             Long stateValue = CompanionProtocol.toLong(data.get("state"));
@@ -167,6 +177,7 @@ public final class CompanionPower implements Power, CapabilitySource {
 
     @Override
     public Set<Capability> capabilities() {
-        return Set.of(Capability.POWER_STATE, Capability.POWER_TURN_ON, Capability.POWER_TURN_OFF);
+        return Set.of(Capability.POWER_STATE, Capability.POWER_REFRESH, Capability.POWER_TURN_ON,
+                Capability.POWER_TURN_OFF);
     }
 }

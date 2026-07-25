@@ -41,6 +41,14 @@ public class AtvConfiguration {
     public String password = "";
     /** Default volume (0-100) for audio played to this device as an openHAB audio sink. */
     public int notificationVolume = 50;
-    /** Fallback polling interval in seconds; 0 disables polling. */
-    public int refreshInterval = 30;
+    /**
+     * Seconds between active power-state health checks; each rebuilds the connection if the device does
+     * not answer or its reported state disagrees with the tracked state. 0 disables the health check.
+     */
+    public int healthCheckInterval = 30;
+    /**
+     * Backup: minutes of no updates of any kind after which the connection is transparently rebuilt;
+     * 0 disables it. Recommended 15 or higher.
+     */
+    public int staleTimeout = 0;
 }

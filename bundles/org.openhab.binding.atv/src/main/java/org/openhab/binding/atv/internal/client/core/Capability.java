@@ -90,6 +90,7 @@ public enum Capability {
 
     // Power
     POWER_STATE(Power.class, "powerState"),
+    POWER_REFRESH(Power.class, "refreshPowerState"),
     POWER_TURN_ON(Power.class, "turnOn", boolean.class),
     POWER_TURN_OFF(Power.class, "turnOff", boolean.class),
 

@@ -40,6 +40,18 @@ public interface Power {
     }
 
     /**
+     * Actively queries the device for its current power state, bypassing the cached push state, and
+     * updates the cache. Used as a connection health check: an unanswered query or a result that
+     * disagrees with the cached state indicates a stalled push stream.
+     *
+     * @return future completing with the freshly queried power state
+     * @throws NotSupportedError if not supported
+     */
+    default CompletableFuture<PowerState> refreshPowerState() {
+        return CompletableFuture.failedFuture(new NotSupportedError("refreshPowerState is not supported"));
+    }
+
+    /**
      * Turns the device on.
      *
      * @param awaitNewState if {@code true}, the future completes first when the new state has been reached
