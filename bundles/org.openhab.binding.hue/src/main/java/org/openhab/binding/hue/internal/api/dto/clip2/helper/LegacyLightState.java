@@ -113,6 +113,6 @@ public class LegacyLightState {
     }
 
     private static String toString(@Nullable PairXy xy) {
-        return xy == null ? "null" : "(%.4f,%.4f)".formatted(xy.getXY()[0], xy.getXY()[1]);
+        return xy == null ? "null" : "[%.4f,%.4f]".formatted(xy.getXY()[0], xy.getXY()[1]);
     }
 }

@@ -674,25 +674,27 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * Many channels have 'autoUpdatePolicy == veto' since we normally expect the bridge to immediately send a
      * state update event after a PUT command. However if the bridge returned a "succeeded with error" message
      * (HTTP status code 207) then, depending on the manufacturer, it may not send a state update, so we send
-     * ourself a mock event via loop-back in order to update the channel faster.
+     * ourself a mock event via loop-back in order to update the channel faster. We also add ColorTemperature
+     * or ColorXy elements for commands to the counterpart channel in order to synch both channel sets.
      */
     private void loopBackNotify(Resource resource) {
         scheduler.submit(() -> {
             logger.debug("{} -> loopBackNotify() with resource {}", resourceId, resource);
-            Resource clone = resource.clone().setContentType(ContentType.UPDATE);
 
-            /*
-             * If looping back a color temperature command then add the approximate Planckian locus XY value to
-             * the resource to keep the color channel state XY channels in synch with the color temperature. The
-             * XY value will be more precisely updated by the bridge on the next real SSE event.
-             */
-            if (ResourceType.LIGHT == clone.getType()
-                    && clone.getColorTemperature() instanceof ColorTemperature colorTemp
-                    && colorTemp.getMirek() instanceof Long mirek && clone.getColorXy() == null) {
-                clone.setColorXy(new ColorXy().setXY(ColorUtil.kelvinToXY(1000000.0 / mirek)));
+            if (ResourceType.LIGHT == resource.getType()) {
+                // add elements to synch ColorXy and ColorTemperature for commands to the counterpart channel
+                if (resource.getColorTemperature() instanceof ColorTemperature colorTemp) {
+                    // add a ColorXy element with the XY of the ColorTemperature on the Planckian locus
+                    if (colorTemp.getMirek() instanceof Long mirek && resource.getColorXy() == null) {
+                        resource.setColorXy(new ColorXy().setXY(ColorUtil.kelvinToXY(1000000.0 / mirek)));
+                    }
+                } else if (resource.getColorXy() != null) {
+                    // add a ColorTemperature element with a null (i.e. unknown) mirek value
+                    resource.setColorTemperature(new ColorTemperature().setMirek(null));
+                }
             }
 
-            onResource(clone);
+            onResource(resource.setContentType(ContentType.UPDATE));
         });
     }
 
@@ -1164,7 +1166,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     colorTempState = resource.getColorTemperaturePercentState();
                     colorTempAbsState = resource.getColorTemperatureAbsoluteState();
                     logger.debug(
-                            "{} -> updateChannels() operating mode work-around legacy state {} transformed ({}) to ({}) and {} to {}",
+                            "{} -> updateChannels() operating mode work-around legacy state '{}' transformed [{}]->[{}] and '{}'->'{}'",
                             resourceId, legacyState, colorPrior, colorState, colorTempPrior, colorTempState);
                 }
 

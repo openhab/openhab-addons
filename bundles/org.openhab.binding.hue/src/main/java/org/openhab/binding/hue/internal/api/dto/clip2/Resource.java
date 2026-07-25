@@ -151,15 +151,6 @@ public class Resource {
     }
 
     /**
-     * Deep clone the resource via a JSON round trip.
-     */
-    public Resource clone() {
-        Resource clone = GSON.fromJson(GSON.toJson(this), Resource.class);
-        clone.contentType = this.contentType;
-        return clone;
-    }
-
-    /**
      * Check if <code>light</code> or <code>grouped_light</code> resource contains any
      * relevant fields to process according to its type.
      *
