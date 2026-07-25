@@ -185,8 +185,6 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                 object = new PercentType(100 - percent.intValue());
             } else if (object instanceof OnOffType onOff) {
                 object = onOff == OnOffType.ON ? PercentType.HUNDRED : PercentType.ZERO;
-            } else if (object instanceof OpenClosedType openClosed) {
-                object = openClosed == OpenClosedType.OPEN ? PercentType.HUNDRED : PercentType.ZERO;
             } else if (object instanceof UpDownType upDown) {
                 object = upDown == UpDownType.UP ? PercentType.HUNDRED : PercentType.ZERO;
             }
