@@ -44,7 +44,6 @@ public class AtvBindingConstants {
     public static final String CONFIG_COMPANION_CREDENTIALS = "companionCredentials";
     public static final String CONFIG_RAOP_CREDENTIALS = "raopCredentials";
     public static final String CONFIG_PASSWORD = "password";
-    public static final String CONFIG_REFRESH_INTERVAL = "refreshInterval";
 
     // Thing properties
     public static final String PROPERTY_MODEL = "model";

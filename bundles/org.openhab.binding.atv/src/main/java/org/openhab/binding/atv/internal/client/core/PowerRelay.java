@@ -90,6 +90,16 @@ public final class PowerRelay extends BaseRelay<Power> implements Power, PowerLi
     }
 
     @Override
+    public CompletableFuture<PowerState> refreshPowerState() {
+        guard.requireNotBlocked("refreshPowerState");
+        try {
+            return relayer.relay(Capability.POWER_REFRESH, OVERRIDE_PRIORITIES).refreshPowerState();
+        } catch (NotSupportedError e) {
+            return CompletableFuture.failedFuture(e);
+        }
+    }
+
+    @Override
     public CompletableFuture<Void> turnOn(boolean awaitNewState) {
         guard.requireNotBlocked("turnOn");
         try {

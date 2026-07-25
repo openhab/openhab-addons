@@ -98,6 +98,10 @@ public class AtvHandler extends BaseThingHandler {
     private static final long RECONNECT_SECONDS = 30;
     // Fast retry after a graceful drop (sleep) or to upgrade a partial connection once the device wakes.
     private static final long RECONNECT_NOW_SECONDS = 3;
+    // Cadence for extrapolating the playback position channel while media is playing.
+    private static final long POSITION_INTERVAL_SECONDS = 1;
+    // Cadence for the stale-connection watchdog check.
+    private static final long WATCHDOG_INTERVAL_SECONDS = 60;
 
     /**
      * Maps each channel id to the feature that backs it. Channels absent from this map (e.g.
@@ -132,7 +136,9 @@ public class AtvHandler extends BaseThingHandler {
     private @Nullable AtvRuntime runtime;
     private @Nullable AppleTV appleTV;
     private @Nullable ScheduledFuture<?> reconnectJob;
-    private @Nullable ScheduledFuture<?> pollJob;
+    private @Nullable ScheduledFuture<?> positionJob;
+    private @Nullable ScheduledFuture<?> staleJob;
+    private @Nullable ScheduledFuture<?> healthJob;
     private @Nullable String lastArtworkId;
     // Forces the first artwork evaluation after connect, so restored state is cleared even when the id is null.
     private boolean artworkEvaluated;
@@ -141,6 +147,13 @@ public class AtvHandler extends BaseThingHandler {
     private volatile PowerState lastPowerState = PowerState.Unknown;
     // Set when power ON is commanded while offline; honored once a connection is (re)established.
     private volatile boolean pendingWake;
+    // Time of the last update received from the device; drives the stale-connection watchdog.
+    private volatile long lastEventMillis;
+    // True while the audio sink is streaming, so the watchdog does not reconnect mid-playback.
+    private volatile boolean streaming;
+    // Whether the active power probe has ever answered on the current connection; a probe that never
+    // works (e.g. some tvOS builds) must not trigger a reconnect loop, only a regression from working.
+    private volatile boolean probeSucceeded;
 
     // pairing state kept alive between showing the PIN and the user entering it
     private @Nullable PairingHandler pendingPairing;
@@ -169,8 +182,11 @@ public class AtvHandler extends BaseThingHandler {
     public void dispose() {
         cancel(reconnectJob);
         reconnectJob = null;
-        cancel(pollJob);
-        pollJob = null;
+        stopPositionTicker();
+        cancel(staleJob);
+        staleJob = null;
+        cancel(healthJob);
+        healthJob = null;
         PairingHandler pairing = pendingPairing;
         if (pairing != null) {
             pairing.close();
@@ -284,12 +300,16 @@ public class AtvHandler extends BaseThingHandler {
             logger.debug("Cannot stream audio to {}: not connected", config.macAddress);
             return;
         }
+        streaming = true;
         try {
             await(atv.stream().streamFile(stream, null, Map.<String, Object> of(Stream.OPTION_VOLUME, volumePercent)));
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } catch (ExecutionException | TimeoutException e) {
             logger.debug("Failed to stream audio to {}", config.macAddress, e);
+        } finally {
+            streaming = false;
+            markEvent();
         }
     }
 
@@ -341,13 +361,16 @@ public class AtvHandler extends BaseThingHandler {
 
             AppleTV atv = await(Atv.connect(device, new ConnectOptions(runtime, null, null)));
             appleTV = atv;
+            markEvent();
+            probeSucceeded = false;
             registerListeners(atv);
             pruneUnsupportedChannels(atv);
             updateStatus(ThingStatus.ONLINE);
             clearPins();
             refreshAll();
             refreshDynamicOptions(atv);
-            startPolling();
+            startWatchdog();
+            startHealthCheck();
             if (pendingWake) {
                 pendingWake = false;
                 wake(atv);
@@ -470,6 +493,7 @@ public class AtvHandler extends BaseThingHandler {
             @Override
             public void connectionLost(@Nullable Exception exception) {
                 appleTV = null;
+                stopPositionTicker();
                 setDisconnectedStatus(exception != null ? exception.getMessage() : null);
                 // Reachable moments ago (likely asleep), so retry quickly - Companion usually still answers.
                 reconnectNow();
@@ -478,6 +502,7 @@ public class AtvHandler extends BaseThingHandler {
             @Override
             public void connectionClosed() {
                 appleTV = null;
+                stopPositionTicker();
                 updateStatus(ThingStatus.OFFLINE);
             }
         });
@@ -487,6 +512,7 @@ public class AtvHandler extends BaseThingHandler {
             @Override
             @NonNullByDefault({})
             public void playstatusUpdate(PushUpdater updater, Playing playstatus) {
+                markEvent();
                 updatePlaying(playstatus);
             }
 
@@ -499,6 +525,7 @@ public class AtvHandler extends BaseThingHandler {
         push.start();
 
         atv.power().addListener((oldState, newState) -> {
+            markEvent();
             lastPowerState = newState;
             updateState(CHANNEL_POWER, powerToState(newState));
             // Woke on a partial (Companion-only) connection; reconnect to restore the richer protocols.
@@ -511,6 +538,7 @@ public class AtvHandler extends BaseThingHandler {
         atv.audio().addListener(new org.openhab.binding.atv.internal.client.capability.AudioListener() {
             @Override
             public void volumeUpdate(double oldLevel, double newLevel) {
+                markEvent();
                 updateState(CHANNEL_VOLUME, new PercentType((int) Math.round(newLevel)));
             }
 
@@ -518,12 +546,15 @@ public class AtvHandler extends BaseThingHandler {
             @NonNullByDefault({})
             public void outputDevicesUpdate(List<org.openhab.binding.atv.internal.client.dto.OutputDevice> oldDevices,
                     List<org.openhab.binding.atv.internal.client.dto.OutputDevice> newDevices) {
+                markEvent();
                 updateState(CHANNEL_OUTPUT_DEVICES, new StringType(
                         newDevices.stream().map(d -> d.identifier()).reduce((a, b) -> a + "," + b).orElse("")));
             }
         });
-        atv.keyboard().addListener(
-                (oldState, newState) -> updateState(CHANNEL_KEYBOARD_FOCUS, new StringType(newState.name())));
+        atv.keyboard().addListener((oldState, newState) -> {
+            markEvent();
+            updateState(CHANNEL_KEYBOARD_FOCUS, new StringType(newState.name()));
+        });
     }
 
     private void refreshAll() {
@@ -558,24 +589,21 @@ public class AtvHandler extends BaseThingHandler {
         Optional<RepeatState> repeat = p.repeat();
         updateState(CHANNEL_REPEAT, repeat.isPresent() ? new StringType(repeat.get().name()) : UnDefType.UNDEF);
 
-        Optional<Integer> position = p.position();
         Optional<Integer> total = p.totalTime();
-        updateState(CHANNEL_POSITION,
-                position.isPresent() ? new QuantityType<>(position.get(), Units.SECOND) : UnDefType.UNDEF);
         updateState(CHANNEL_DURATION,
                 total.isPresent() ? new QuantityType<>(total.get(), Units.SECOND) : UnDefType.UNDEF);
-        if (position.isPresent() && total.isPresent() && total.get() > 0) {
-            updateState(CHANNEL_PROGRESS,
-                    new PercentType((int) Math.min(100, Math.round(100.0 * position.get() / total.get()))));
-        } else {
-            updateState(CHANNEL_PROGRESS, UnDefType.UNDEF);
-        }
+        updatePositionChannels(p);
 
         switch (p.deviceState()) {
-            case Playing -> updateState(CHANNEL_MEDIA_CONTROL, PlayPauseType.PLAY);
-            case Paused, Stopped, Idle -> updateState(CHANNEL_MEDIA_CONTROL, PlayPauseType.PAUSE);
-            default -> {
+            case Playing -> {
+                updateState(CHANNEL_MEDIA_CONTROL, PlayPauseType.PLAY);
+                startPositionTicker();
             }
+            case Paused, Stopped, Idle -> {
+                updateState(CHANNEL_MEDIA_CONTROL, PlayPauseType.PAUSE);
+                stopPositionTicker();
+            }
+            default -> stopPositionTicker();
         }
 
         AppleTV atv = appleTV;
@@ -591,6 +619,19 @@ public class AtvHandler extends BaseThingHandler {
         }
 
         updateArtwork();
+    }
+
+    private void updatePositionChannels(Playing p) {
+        Optional<Integer> position = p.position();
+        Optional<Integer> total = p.totalTime();
+        updateState(CHANNEL_POSITION,
+                position.isPresent() ? new QuantityType<>(position.get(), Units.SECOND) : UnDefType.UNDEF);
+        if (position.isPresent() && total.isPresent() && total.get() > 0) {
+            updateState(CHANNEL_PROGRESS,
+                    new PercentType((int) Math.min(100, Math.round(100.0 * position.get() / total.get()))));
+        } else {
+            updateState(CHANNEL_PROGRESS, UnDefType.UNDEF);
+        }
     }
 
     private void sendRemoteKey(AppleTV atv, String key) {
@@ -679,11 +720,92 @@ public class AtvHandler extends BaseThingHandler {
         }
     }
 
-    private void startPolling() {
-        cancel(pollJob);
-        if (config.refreshInterval > 0) {
-            pollJob = scheduler.scheduleWithFixedDelay(this::refreshAll, config.refreshInterval, config.refreshInterval,
-                    TimeUnit.SECONDS);
+    private void startWatchdog() {
+        cancel(staleJob);
+        if (config.staleTimeout > 0) {
+            staleJob = scheduler.scheduleWithFixedDelay(this::checkStaleness, WATCHDOG_INTERVAL_SECONDS,
+                    WATCHDOG_INTERVAL_SECONDS, TimeUnit.SECONDS);
+        }
+    }
+
+    private void startHealthCheck() {
+        cancel(healthJob);
+        if (config.healthCheckInterval > 0) {
+            healthJob = scheduler.scheduleWithFixedDelay(this::runHealthCheck, config.healthCheckInterval,
+                    config.healthCheckInterval, TimeUnit.SECONDS);
+        }
+    }
+
+    private void runHealthCheck() {
+        AppleTV atv = appleTV;
+        if (atv == null || streaming) {
+            return;
+        }
+        PowerState cached = atv.power().powerState();
+        CompletableFuture<PowerState> probe;
+        try {
+            probe = atv.power().refreshPowerState();
+        } catch (RuntimeException e) {
+            // The device offers no active power query (e.g. a speaker); the health check cannot run.
+            logger.debug("Active power probe unsupported on {}; disabling health check", config.macAddress);
+            cancel(healthJob);
+            healthJob = null;
+            return;
+        }
+        probe.whenComplete((fetched, error) -> {
+            if (error != null || fetched == null) {
+                // Only treat a failure as a stall if the probe worked before - some tvOS builds never
+                // answer it, and reconnecting on every such failure would loop.
+                if (probeSucceeded) {
+                    logger.debug("Power probe stopped responding on {}; reconnecting", config.macAddress);
+                    reconnectNow();
+                }
+                return;
+            }
+            probeSucceeded = true;
+            markEvent();
+            if (fetched != cached) {
+                logger.debug("Power probe reports {} but tracked {} on {}; reconnecting to clear stalled push stream",
+                        fetched, cached, config.macAddress);
+                reconnectNow();
+            }
+        });
+    }
+
+    private void markEvent() {
+        lastEventMillis = System.currentTimeMillis();
+    }
+
+    private void checkStaleness() {
+        if (config.staleTimeout <= 0 || appleTV == null || streaming) {
+            return;
+        }
+        if (System.currentTimeMillis() - lastEventMillis >= config.staleTimeout * 60_000L) {
+            logger.debug("No updates from {} for {} min; rebuilding connection to clear a possible stalled push stream",
+                    config.macAddress, config.staleTimeout);
+            markEvent();
+            reconnectNow();
+        }
+    }
+
+    private void startPositionTicker() {
+        ScheduledFuture<?> job = positionJob;
+        if (job != null && !job.isCancelled()) {
+            return;
+        }
+        positionJob = scheduler.scheduleWithFixedDelay(this::tickPosition, POSITION_INTERVAL_SECONDS,
+                POSITION_INTERVAL_SECONDS, TimeUnit.SECONDS);
+    }
+
+    private void stopPositionTicker() {
+        cancel(positionJob);
+        positionJob = null;
+    }
+
+    private void tickPosition() {
+        AppleTV atv = appleTV;
+        if (atv != null) {
+            atv.metadata().playing().thenAccept(this::updatePositionChannels);
         }
     }
 

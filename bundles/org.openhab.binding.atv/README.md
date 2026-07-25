@@ -34,7 +34,8 @@ Apple computers also advertise AirPlay but are not controllable media devices, s
 | airplayCredentials   | text    | Credentials obtained by pairing AirPlay. Populated automatically after pairing.           | N/A     | no       | yes      |
 | companionCredentials | text    | Credentials obtained by pairing Companion. Populated automatically after pairing.         | N/A     | no       | yes      |
 | notificationVolume   | integer | Default volume (0-100) for audio played to this device as an openHAB audio sink.          | 50      | no       | yes      |
-| refreshInterval      | integer | Fallback polling interval in seconds (0 disables; live push updates are used otherwise).  | 30      | no       | yes      |
+| healthCheckInterval  | integer | Seconds between active power-state health checks; rebuilds the connection if the device stops answering or its state disagrees with the tracked state (0 disables). | 30 | no | yes |
+| staleTimeout         | integer | Backup: minutes with no updates of any kind before the connection is rebuilt (0 disables; keep 15 or higher if used). | 0 | no | yes |
 
 ### `speaker`
 
@@ -49,7 +50,8 @@ Apple computers also advertise AirPlay but are not controllable media devices, s
 | airplayCredentials | text    | Credentials obtained by pairing AirPlay. Populated automatically after pairing.              | N/A     | no       | yes      |
 | raopCredentials    | text    | Credentials obtained by pairing RAOP audio. Populated automatically after pairing.           | N/A     | no       | yes      |
 | notificationVolume | integer | Default volume (0-100) for audio played to this device as an openHAB audio sink.             | 50      | no       | yes      |
-| refreshInterval    | integer | Fallback polling interval in seconds (0 disables; live push updates are used otherwise).     | 30      | no       | yes      |
+| healthCheckInterval | integer | Seconds between active power-state health checks; rebuilds the connection if the device stops answering or its state disagrees with the tracked state (0 disables). | 30 | no | yes |
+| staleTimeout       | integer | Backup: minutes with no updates of any kind before the connection is rebuilt (0 disables; keep 15 or higher if used). | 0 | no | yes |
 
 ## Pairing
 
