@@ -15,7 +15,7 @@ package org.openhab.binding.melcloud.internal.home.api.dto;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * One {@code {x, y}} data point in a {@code report/v1/trendsummary} dataset (see ADR-003 and
+ * One {@code {x, y}} data point in a {@code report/v1/trendsummary} dataset (see
  * {@link MelCloudHomeTrendSummaryReport}). {@code x} is an ISO-8601-like timestamp, {@code y} the measured value.
  *
  * @author Bernd Weymann - Initial contribution

@@ -18,7 +18,7 @@ import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * One report in the {@code GET /report/v1/trendsummary} response (see ADR-003). The mobile BFF wraps the response
+ * One report in the {@code GET /report/v1/trendsummary} response. The mobile BFF wraps the response
  * in a top-level JSON array of these, so {@code MelCloudHomeApiClient} deserializes
  * {@code List<MelCloudHomeTrendSummaryReport>}. Used to extract the latest outdoor temperature datapoint for an ATA
  * unit; ATW units report outdoor temperature directly in their {@code settings} array instead

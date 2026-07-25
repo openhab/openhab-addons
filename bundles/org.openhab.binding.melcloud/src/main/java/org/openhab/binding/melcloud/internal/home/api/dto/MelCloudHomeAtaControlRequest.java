@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Request body for {@code PUT /monitor/ataunit/{id}} (see ADR-003).
+ * Request body for {@code PUT /monitor/ataunit/{id}}.
  *
  * <p>
  * The server requires every one of these fields to be present on every call; fields left {@code null} here must be

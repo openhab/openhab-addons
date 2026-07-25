@@ -17,7 +17,7 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * One dataset in a {@code report/v1/trendsummary} report (see ADR-003 and {@link MelCloudHomeTrendSummaryReport}).
+ * One dataset in a {@code report/v1/trendsummary} report (see {@link MelCloudHomeTrendSummaryReport}).
  * {@code label} is a translation-key-like string; the outdoor temperature series contains {@code OUTDOOR_TEMPERATURE}.
  *
  * @author Bernd Weymann - Initial contribution

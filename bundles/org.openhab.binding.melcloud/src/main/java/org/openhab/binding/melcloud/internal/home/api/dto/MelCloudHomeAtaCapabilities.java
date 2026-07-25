@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * Air-to-Air unit capability flags/limits, as returned nested under a unit's {@code capabilities} field by
- * {@code GET /context} (see ADR-003). Field names match the JSON wire format verbatim (Gson's default binding).
+ * {@code GET /context}. Field names match the JSON wire format verbatim (Gson's default binding).
  *
  * @author Bernd Weymann - Initial contribution
  */

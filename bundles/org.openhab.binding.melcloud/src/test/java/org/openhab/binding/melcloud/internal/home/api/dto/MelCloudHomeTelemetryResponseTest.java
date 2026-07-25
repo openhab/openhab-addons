@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 
 /**
- * Unit tests for {@link MelCloudHomeTelemetryResponse} (see ADR-003).
+ * Unit tests for {@link MelCloudHomeTelemetryResponse}.
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -37,7 +37,7 @@ class MelCloudHomeTelemetryResponseTest {
     }
 
     @Test
-    void whenMeasureDataIsEmpty_thenGetLatestValueWhReturnsEmpty() {
+    void whenMeasureDataIsEmptyThenGetLatestValueWhReturnsEmpty() {
         // Arrange
         MelCloudHomeTelemetryResponse response = new MelCloudHomeTelemetryResponse();
 
@@ -49,7 +49,7 @@ class MelCloudHomeTelemetryResponseTest {
     }
 
     @Test
-    void whenValuesArePresent_thenGetLatestValueWhReturnsTheLastOne() {
+    void whenValuesArePresentThenGetLatestValueWhReturnsTheLastOne() {
         // Arrange
         MelCloudHomeMeasureData measureData = new MelCloudHomeMeasureData();
         measureData.values = List.of(valueOf("2026-07-22T00:00:00Z", "100.0"),
@@ -65,7 +65,7 @@ class MelCloudHomeTelemetryResponseTest {
     }
 
     @Test
-    void whenLatestValueIsNotNumeric_thenGetLatestValueWhReturnsEmpty() {
+    void whenLatestValueIsNotNumericThenGetLatestValueWhReturnsEmpty() {
         // Arrange
         MelCloudHomeMeasureData measureData = new MelCloudHomeMeasureData();
         measureData.values = List.of(valueOf("2026-07-23T00:00:00Z", "not-a-number"));

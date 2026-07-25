@@ -42,13 +42,19 @@ import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeUserContex
 import org.openhab.core.io.net.http.HttpUtil;
 
 /**
- * Unit tests for {@link MelCloudHomeApiClient} (see ADR-003). {@link HttpUtil}'s static {@code executeUrl} method is
+ * Unit tests for {@link MelCloudHomeApiClient}. {@link HttpUtil}'s static {@code executeUrl} method is
  * mocked via Mockito's inline mock maker ({@link MockedStatic}) so the wire-level contract can be verified without
  * any real network access.
+ *
+ * <p>
+ * {@code @SuppressWarnings("null")}: Mockito's {@code ArgumentCaptor}/{@code ArgumentMatchers} are not designed with
+ * null type annotations in mind, so combining them with this {@code @NonNullByDefault} test class produces
+ * "unsafe interpretation" compiler advisories with no null-safety benefit.
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
+@SuppressWarnings("null")
 class MelCloudHomeApiClientTest {
 
     private static final String ACCESS_TOKEN = "test-access-token";
@@ -72,7 +78,7 @@ class MelCloudHomeApiClientTest {
     }
 
     @Test
-    void whenContextResponseIsValid_thenFetchUserContextParsesIt() throws MelCloudCommException {
+    void whenContextResponseIsValidThenFetchUserContextParsesIt() throws MelCloudCommException {
         // Arrange
         String json = "{\"buildings\":[{\"id\":\"b1\",\"name\":\"Home\",\"airToAirUnits\":[{\"id\":\"" + UNIT_ID
                 + "\",\"givenDisplayName\":\"Living Room\"}],\"airToWaterUnits\":[]}],\"guestBuildings\":[]}";
@@ -87,7 +93,7 @@ class MelCloudHomeApiClientTest {
     }
 
     @Test
-    void whenContextResponseIsEmptyBody_thenFetchUserContextThrows() {
+    void whenContextResponseIsEmptyBodyThenFetchUserContextThrows() {
         // Arrange
         mockGetResponse("");
 
@@ -96,7 +102,7 @@ class MelCloudHomeApiClientTest {
     }
 
     @Test
-    void whenContextResponseIsMalformedJson_thenFetchUserContextThrows() {
+    void whenContextResponseIsMalformedJsonThenFetchUserContextThrows() {
         // Arrange
         mockGetResponse("{not-json");
 
@@ -105,7 +111,7 @@ class MelCloudHomeApiClientTest {
     }
 
     @Test
-    void whenServerReturnsClientError_thenFetchUserContextThrowsCommException() {
+    void whenServerReturnsClientErrorThenFetchUserContextThrowsCommException() {
         // Arrange
         mockGetError(new IOException("Server returned HTTP response code: 401 for URL"));
 
@@ -114,7 +120,7 @@ class MelCloudHomeApiClientTest {
     }
 
     @Test
-    void whenServerReturnsServerError_thenFetchUserContextThrowsCommException() {
+    void whenServerReturnsServerErrorThenFetchUserContextThrowsCommException() {
         // Arrange
         mockGetError(new IOException("Server returned HTTP response code: 500 for URL"));
 
@@ -123,7 +129,7 @@ class MelCloudHomeApiClientTest {
     }
 
     @Test
-    void whenConnectionTimesOut_thenFetchUserContextThrowsCommException() {
+    void whenConnectionTimesOutThenFetchUserContextThrowsCommException() {
         // Arrange
         mockGetError(new IOException("Read timed out"));
 
@@ -132,7 +138,7 @@ class MelCloudHomeApiClientTest {
     }
 
     @Test
-    void whenEnergyTelemetryResponseIsEmpty_thenFetchLatestEnergyWhReturnsEmpty() throws MelCloudCommException {
+    void whenEnergyTelemetryResponseIsEmptyThenFetchLatestEnergyWhReturnsEmpty() throws MelCloudCommException {
         // Arrange
         mockGetResponse("");
 
@@ -145,7 +151,7 @@ class MelCloudHomeApiClientTest {
     }
 
     @Test
-    void whenControlAtaUnitIsCalled_thenUnsetFieldsAreSerializedAsExplicitNulls()
+    void whenControlAtaUnitIsCalledThenUnsetFieldsAreSerializedAsExplicitNulls()
             throws MelCloudCommException, IOException {
         // Arrange
         ArgumentCaptor<InputStream> bodyCaptor = ArgumentCaptor.forClass(InputStream.class);

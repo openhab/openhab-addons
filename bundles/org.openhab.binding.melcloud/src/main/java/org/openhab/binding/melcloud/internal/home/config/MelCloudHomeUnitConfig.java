@@ -15,8 +15,8 @@ package org.openhab.binding.melcloud.internal.home.config;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Config class shared by the {@code melcloudhomeataunit} and {@code melcloudhomeatwunit} Thing types (see ADR-003):
- * both only need the unit's {@code unitId} to look themselves up in the bridge's shared {@code /context} poll.
+ * Config class shared by the {@code ata-unit} and {@code atw-unit} Thing types: both only need the
+ * unit's {@code unitId} to look themselves up in the bridge's shared {@code /context} poll.
  *
  * @author Bernd Weymann - Initial contribution
  */

@@ -17,8 +17,7 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * A building, as returned nested under {@code buildings}/{@code guestBuildings} by {@code GET /context}
- * (see ADR-003).
+ * A building, as returned nested under {@code buildings}/{@code guestBuildings} by {@code GET /context}.
  *
  * @author Bernd Weymann - Initial contribution
  */

@@ -46,8 +46,8 @@ import org.osgi.service.component.annotations.Reference;
  * @author Luca Calcaterra - Initial contribution
  * @author Wietse van Buitenen - Added heatpump device
  * @author Bernd Weymann - Added MELCloud Home bridge skeleton
- * @author Bernd Weymann - Wired the real MELCloud Home OAuth login flow (ADR-002)
- * @author Bernd Weymann - Wired the MELCloud Home ATA/ATW unit Things (ADR-003)
+ * @author Bernd Weymann - Wired the real MELCloud Home OAuth login flow
+ * @author Bernd Weymann - Wired the MELCloud Home ATA/ATW unit Things
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.melcloud", service = ThingHandlerFactory.class)
@@ -90,7 +90,7 @@ public class MelCloudHandlerFactory extends BaseThingHandlerFactory {
     }
 
     /**
-     * Builds the {@link HttpClient} used for the MELCloud Home OAuth login flow (see ADR-002).
+     * Builds the {@link HttpClient} used for the MELCloud Home OAuth login flow.
      *
      * <p>
      * A cookie handler is required so the session cookie set by {@code auth.melcloudhome.com}/Cognito during the

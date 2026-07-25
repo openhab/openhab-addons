@@ -4,12 +4,12 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="melcloudhomeatwunit">
+	<thing-type id="atw-unit">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="melcloudhomeaccount"/>
+			<bridge-type-ref id="home-account"/>
 		</supported-bridge-type-refs>
-		<label>MELCloud Home Air-to-Water Unit (Experimental)</label>
-		<description>An Air-to-Water (heat pump) unit on the MELCloud Home cloud platform. See ADR-003.</description>
+		<label>MELCloud Home Air-to-Water Unit</label>
+		<description>An Air-to-Water (heat pump) unit on the MELCloud Home cloud platform.</description>
 		<semantic-equipment-tag>HeatPump</semantic-equipment-tag>
 		<channels>
 			<channel id="power" typeId="power-channel"/>
@@ -27,17 +27,13 @@
 			<channel id="energyConsumed" typeId="energyConsumed-channel"/>
 			<channel id="energyProduced" typeId="energyProduced-channel"/>
 			<channel id="cop" typeId="cop-channel"/>
-			<channel id="rssi" typeId="rssi-channel"/>
+			<channel id="rssi" typeId="system.signal-strength"/>
 			<channel id="isInError" typeId="isInError-channel"/>
 			<channel id="errorCode" typeId="errorCode-channel"/>
 			<channel id="inStandbyMode" typeId="inStandbyMode-channel"/>
 			<channel id="holidayMode" typeId="holidayMode-channel"/>
 			<channel id="frostProtection" typeId="frostProtection-channel"/>
 		</channels>
-
-		<properties>
-			<property name="thingTypeVersion">1</property>
-		</properties>
 
 		<representation-property>unitId</representation-property>
 

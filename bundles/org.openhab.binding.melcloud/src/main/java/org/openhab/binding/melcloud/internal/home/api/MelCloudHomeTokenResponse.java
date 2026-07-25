@@ -19,8 +19,7 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * Gson deserialization target for the JSON body returned by {@code POST auth.melcloudhome.com/connect/token}, for
- * both the {@code authorization_code} and {@code refresh_token} grants, used by {@link MelCloudHomeAuthService}
- * (see ADR-002).
+ * both the {@code authorization_code} and {@code refresh_token} grants, used by {@link MelCloudHomeAuthService}.
  *
  * <p>
  * Fields are nullable at the DTO level because Gson populates them via reflection before any validation can run;

@@ -19,7 +19,7 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * Gson deserialization target for the JSON body returned by {@code POST auth.melcloudhome.com/connect/par}
- * (RFC 9126 Pushed Authorization Request), used by {@link MelCloudHomeAuthService} (see ADR-002).
+ * (RFC 9126 Pushed Authorization Request), used by {@link MelCloudHomeAuthService}.
  *
  * @author Bernd Weymann - Initial contribution
  */

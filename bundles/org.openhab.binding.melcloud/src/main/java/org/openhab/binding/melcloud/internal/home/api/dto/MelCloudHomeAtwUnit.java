@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * An Air-to-Water (heat pump) unit, as returned nested under a building's {@code airToWaterUnits} by
- * {@code GET /context} (see ADR-003).
+ * {@code GET /context}.
  *
  * <p>
  * As with {@link MelCloudHomeAtaUnit}, dynamic state is read out of {@link #settings}. {@code operationStatus}

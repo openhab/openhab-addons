@@ -19,7 +19,7 @@ import java.util.stream.Stream;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Root response of {@code GET /context} (see ADR-003): every building the user owns, plus every building shared
+ * Root response of {@code GET /context}: every building the user owns, plus every building shared
  * with them as a guest.
  *
  * @author Bernd Weymann - Initial contribution

@@ -17,7 +17,7 @@ import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeAtwUnit;
 
 /**
  * Receives fresh state for one Air-to-Water unit from {@link MelCloudHomeAccountHandler}'s centralized
- * {@code /context} poll (see ADR-003).
+ * {@code /context} poll.
  *
  * @author Bernd Weymann - Initial contribution
  */

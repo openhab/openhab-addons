@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 
 /**
- * Unit tests for {@link MelCloudHomeUserContext} (see ADR-003), in particular that units are found across both
+ * Unit tests for {@link MelCloudHomeUserContext}, in particular that units are found across both
  * owned and guest buildings.
  *
  * @author Bernd Weymann - Initial contribution
@@ -43,7 +43,7 @@ class MelCloudHomeUserContextTest {
     }
 
     @Test
-    void whenAtaUnitIsInAnOwnedBuilding_thenFindAtaUnitFindsIt() {
+    void whenAtaUnitIsInAnOwnedBuildingThenFindAtaUnitFindsIt() {
         // Arrange
         MelCloudHomeBuilding building = new MelCloudHomeBuilding();
         building.airToAirUnits = List.of(ataUnit("ata-1"));
@@ -58,7 +58,7 @@ class MelCloudHomeUserContextTest {
     }
 
     @Test
-    void whenAtwUnitIsInAGuestBuilding_thenFindAtwUnitFindsIt() {
+    void whenAtwUnitIsInAGuestBuildingThenFindAtwUnitFindsIt() {
         // Arrange
         MelCloudHomeBuilding guestBuilding = new MelCloudHomeBuilding();
         guestBuilding.airToWaterUnits = List.of(atwUnit("atw-1"));
@@ -73,7 +73,7 @@ class MelCloudHomeUserContextTest {
     }
 
     @Test
-    void whenUnitIdIsUnknown_thenFindAtaUnitReturnsEmpty() {
+    void whenUnitIdIsUnknownThenFindAtaUnitReturnsEmpty() {
         // Arrange
         MelCloudHomeUserContext context = new MelCloudHomeUserContext();
 
@@ -85,7 +85,7 @@ class MelCloudHomeUserContextTest {
     }
 
     @Test
-    void whenMultipleBuildingsHaveUnits_thenGetAllAtaUnitsReturnsThemAll() {
+    void whenMultipleBuildingsHaveUnitsThenGetAllAtaUnitsReturnsThemAll() {
         // Arrange
         MelCloudHomeBuilding owned = new MelCloudHomeBuilding();
         owned.airToAirUnits = List.of(ataUnit("ata-1"));

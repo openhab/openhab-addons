@@ -135,7 +135,12 @@ public class MelCloudDeviceHandler extends BaseThingHandler {
         logger.debug("Received command '{}' to channel {}", command, channelUID);
 
         if (command instanceof RefreshType) {
-            logger.debug("Refresh command not supported");
+            DeviceStatus cachedDeviceStatus = this.deviceStatus;
+            if (cachedDeviceStatus != null) {
+                updateChannels(channelUID.getId(), cachedDeviceStatus);
+            } else {
+                logger.debug("No cached data available yet, ignoring refresh command");
+            }
             return;
         }
         MelCloudAccountHandler melCloudHandler = this.melCloudHandler;

@@ -47,10 +47,9 @@ import org.slf4j.LoggerFactory;
  * out to registered unit Thing handlers.
  *
  * <p>
- * Implements the login/refresh strategy decided in ADR-002 (see there for details) plus the unit polling/fan-out
- * strategy decided in ADR-003: one {@code /context} call every {@link #CONTEXT_POLL_INTERVAL_SECONDS} serves every
- * registered unit, rather than each unit Thing polling independently, given the platform's known rate-limit
- * sensitivity.
+ * Implements the login/refresh strategy plus the unit polling/fan-out strategy: one {@code /context} call every
+ * {@link #CONTEXT_POLL_INTERVAL_SECONDS} serves every registered unit, rather than each unit Thing polling
+ * independently, given the platform's known rate-limit sensitivity.
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -86,7 +85,7 @@ public class MelCloudHomeAccountHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Initializing MELCloud Home account handler (ADR-002/ADR-003)");
+        logger.debug("Initializing MELCloud Home account handler");
         config = getConfigAs(MelCloudHomeAccountConfig.class);
         storage = storageService.getStorage(thing.getUID().toString(), MelCloudHomeAuthState.class.getClassLoader());
 

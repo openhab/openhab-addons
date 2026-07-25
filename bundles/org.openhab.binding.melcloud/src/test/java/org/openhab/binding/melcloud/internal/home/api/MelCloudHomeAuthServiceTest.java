@@ -36,13 +36,19 @@ import org.openhab.binding.melcloud.internal.exceptions.MelCloudCommException;
 import org.openhab.binding.melcloud.internal.exceptions.MelCloudHomeAuthException;
 
 /**
- * Unit tests for {@link MelCloudHomeAuthService} (see ADR-002). The underlying {@link HttpClient} is mocked so each
+ * Unit tests for {@link MelCloudHomeAuthService}. The underlying {@link HttpClient} is mocked so each
  * step of the PAR -> authorize -> Cognito -> token-exchange chain can be verified without any real network access.
+ *
+ * <p>
+ * {@code @SuppressWarnings("null")}: Mockito ({@code mock}/{@code when}/{@code ArgumentMatchers}) and the JDK's
+ * {@code HttpClient}/{@code HttpResponse}/{@code Map} are not designed with null type annotations in mind, so
+ * combining them with this {@code @NonNullByDefault} test class produces "unsafe interpretation" compiler advisories
+ * with no null-safety benefit.
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-@SuppressWarnings("unchecked")
+@SuppressWarnings({ "unchecked", "null" })
 class MelCloudHomeAuthServiceTest {
 
     private static final String COGNITO_LOGIN_URL = "https://live-melcloudhome.auth.eu-west-1.amazoncognito.com/login"
@@ -57,7 +63,7 @@ class MelCloudHomeAuthServiceTest {
     }
 
     @Test
-    void whenHttpClientDoesNotDisableRedirects_thenConstructorThrows() {
+    void whenHttpClientDoesNotDisableRedirectsThenConstructorThrows() {
         // Arrange
         HttpClient misconfiguredClient = mock(HttpClient.class);
         when(misconfiguredClient.followRedirects()).thenReturn(HttpClient.Redirect.NORMAL);
@@ -67,7 +73,7 @@ class MelCloudHomeAuthServiceTest {
     }
 
     @Test
-    void whenAuthServerHasExistingSession_thenLoginSkipsCognitoAndReturnsTokens() throws Exception {
+    void whenAuthServerHasExistingSessionThenLoginSkipsCognitoAndReturnsTokens() throws Exception {
         // Arrange
         HttpResponse<String> parResponse = fakeResponse(201, "{\"request_uri\":\"urn:par:abc\"}", Map.of());
         HttpResponse<String> authorizeResponse = fakeResponse(302, "",
@@ -88,7 +94,7 @@ class MelCloudHomeAuthServiceTest {
     }
 
     @Test
-    void whenCognitoLoginPageIsReached_thenLoginSubmitsCredentialsAndReturnsTokens() throws Exception {
+    void whenCognitoLoginPageIsReachedThenLoginSubmitsCredentialsAndReturnsTokens() throws Exception {
         // Arrange
         HttpResponse<String> parResponse = fakeResponse(201, "{\"request_uri\":\"urn:par:abc\"}", Map.of());
         HttpResponse<String> authorizeRedirect = fakeResponse(302, "", Map.of("Location", List.of(COGNITO_LOGIN_URL)));
@@ -114,7 +120,7 @@ class MelCloudHomeAuthServiceTest {
     }
 
     @Test
-    void whenCognitoAcceptanceBouncesThroughSafeRedirectPage_thenLoginFollowsItAndReturnsTokens() throws Exception {
+    void whenCognitoAcceptanceBouncesThroughSafeRedirectPageThenLoginFollowsItAndReturnsTokens() throws Exception {
         // Arrange
         HttpResponse<String> parResponse = fakeResponse(201, "{\"request_uri\":\"urn:par:abc\"}", Map.of());
         HttpResponse<String> authorizeRedirect = fakeResponse(302, "", Map.of("Location", List.of(COGNITO_LOGIN_URL)));
@@ -144,7 +150,7 @@ class MelCloudHomeAuthServiceTest {
     }
 
     @Test
-    void whenCognitoRejectsCredentials_thenLoginThrowsAuthException() throws Exception {
+    void whenCognitoRejectsCredentialsThenLoginThrowsAuthException() throws Exception {
         // Arrange
         HttpResponse<String> parResponse = fakeResponse(201, "{\"request_uri\":\"urn:par:abc\"}", Map.of());
         HttpResponse<String> authorizeRedirect = fakeResponse(302, "", Map.of("Location", List.of(COGNITO_LOGIN_URL)));
@@ -163,7 +169,7 @@ class MelCloudHomeAuthServiceTest {
     }
 
     @Test
-    void whenNetworkFails_thenLoginThrowsCommExceptionNotAuthException() throws Exception {
+    void whenNetworkFailsThenLoginThrowsCommExceptionNotAuthException() throws Exception {
         // Arrange
         when(httpClient.send(any(HttpRequest.class), anyBodyHandler())).thenThrow(new IOException("connection reset"));
         MelCloudHomeAuthService authService = new MelCloudHomeAuthService(httpClient);
@@ -175,7 +181,7 @@ class MelCloudHomeAuthServiceTest {
     }
 
     @Test
-    void whenParResponseIsMalformed_thenLoginThrowsAuthException() throws Exception {
+    void whenParResponseIsMalformedThenLoginThrowsAuthException() throws Exception {
         // Arrange
         HttpResponse<String> parResponse = fakeResponse(201, "{ not valid json", Map.of());
         when(httpClient.send(any(HttpRequest.class), anyBodyHandler())).thenReturn(parResponse);
@@ -186,7 +192,7 @@ class MelCloudHomeAuthServiceTest {
     }
 
     @Test
-    void whenRefreshTokenIsValid_thenRefreshTokenReturnsNewTokens() throws Exception {
+    void whenRefreshTokenIsValidThenRefreshTokenReturnsNewTokens() throws Exception {
         // Arrange
         HttpResponse<String> tokenResponse = fakeResponse(200,
                 "{\"access_token\":\"AT3\",\"refresh_token\":\"RT3\",\"expires_in\":900}", Map.of());
@@ -202,7 +208,7 @@ class MelCloudHomeAuthServiceTest {
     }
 
     @Test
-    void whenRefreshTokenIsRejected_thenRefreshTokenThrowsAuthException() throws Exception {
+    void whenRefreshTokenIsRejectedThenRefreshTokenThrowsAuthException() throws Exception {
         // Arrange
         HttpResponse<String> rejectedResponse = fakeResponse(401, "{\"error\":\"invalid_grant\"}", Map.of());
         when(httpClient.send(any(HttpRequest.class), anyBodyHandler())).thenReturn(rejectedResponse);
@@ -213,7 +219,7 @@ class MelCloudHomeAuthServiceTest {
     }
 
     @Test
-    void whenRefreshTokenIsBlank_thenRefreshTokenThrowsIllegalArgumentException() {
+    void whenRefreshTokenIsBlankThenRefreshTokenThrowsIllegalArgumentException() {
         // Arrange
         MelCloudHomeAuthService authService = new MelCloudHomeAuthService(httpClient);
 

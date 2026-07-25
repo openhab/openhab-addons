@@ -15,13 +15,13 @@ package org.openhab.binding.melcloud.internal.home.config;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Config class for the {@code melcloudhomeaccount} bridge.
+ * Config class for the {@code home-account} bridge.
  *
  * <p>
- * The {@link #username}/{@link #password} pair is used to run the real MELCloud Home login (see ADR-002): the full
+ * The {@link #username}/{@link #password} pair is used to run the real MELCloud Home login: the full
  * OAuth 2.0 Authorization Code + PKCE flow, including the Pushed Authorization Request step and the AWS
  * Cognito-federated credential submission, runs entirely server-side — no interactive browser step is required.
- * This supersedes the developer-only {@code accessToken} stopgap from ADR-001.
+ * This supersedes the developer-only {@code accessToken} stopgap used during early development.
  *
  * @author Bernd Weymann - Initial contribution
  */

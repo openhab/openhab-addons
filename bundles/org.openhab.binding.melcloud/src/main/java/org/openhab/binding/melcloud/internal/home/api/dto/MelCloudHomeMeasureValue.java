@@ -15,7 +15,7 @@ package org.openhab.binding.melcloud.internal.home.api.dto;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * One timestamped value in a {@code telemetry/energy} response's {@code measureData[].values} array (see ADR-003).
+ * One timestamped value in a {@code telemetry/energy} response's {@code measureData[].values} array.
  *
  * @author Bernd Weymann - Initial contribution
  */

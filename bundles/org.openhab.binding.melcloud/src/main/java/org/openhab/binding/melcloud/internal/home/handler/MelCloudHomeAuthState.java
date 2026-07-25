@@ -15,7 +15,7 @@ package org.openhab.binding.melcloud.internal.home.handler;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Persisted MELCloud Home authentication state (see ADR-002).
+ * Persisted MELCloud Home authentication state.
  *
  * <p>
  * Only the refresh token is persisted, via {@code StorageService}; the short-lived access token is kept in memory

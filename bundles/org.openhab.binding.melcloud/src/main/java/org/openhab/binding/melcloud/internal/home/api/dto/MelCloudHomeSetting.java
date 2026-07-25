@@ -15,7 +15,7 @@ package org.openhab.binding.melcloud.internal.home.api.dto;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * One entry of a unit's {@code settings} array, as returned by {@code GET /context} (see ADR-003).
+ * One entry of a unit's {@code settings} array, as returned by {@code GET /context}.
  *
  * <p>
  * Unlike the rest of the mobile BFF's JSON (camelCase), each unit's dynamic state is returned as an array of these

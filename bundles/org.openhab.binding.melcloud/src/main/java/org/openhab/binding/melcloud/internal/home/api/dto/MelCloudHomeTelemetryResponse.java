@@ -18,7 +18,7 @@ import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Root response of {@code GET /telemetry/telemetry/energy/{unitId}} (see ADR-003). Values are in Wh; callers divide
+ * Root response of {@code GET /telemetry/telemetry/energy/{unitId}}. Values are in Wh; callers divide
  * by 1000 for kWh.
  *
  * @author Bernd Weymann - Initial contribution

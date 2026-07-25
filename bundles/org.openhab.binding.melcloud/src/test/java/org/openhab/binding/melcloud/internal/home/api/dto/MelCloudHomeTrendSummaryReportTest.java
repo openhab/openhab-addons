@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 
 /**
- * Unit tests for {@link MelCloudHomeTrendSummaryReport} (see ADR-003).
+ * Unit tests for {@link MelCloudHomeTrendSummaryReport}.
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -37,7 +37,7 @@ class MelCloudHomeTrendSummaryReportTest {
     }
 
     @Test
-    void whenOutdoorTemperatureDatasetIsPresent_thenGetLatestOutdoorTemperatureReturnsItsLastPoint() {
+    void whenOutdoorTemperatureDatasetIsPresentThenGetLatestOutdoorTemperatureReturnsItsLastPoint() {
         // Arrange
         MelCloudHomeTrendDataset dataset = new MelCloudHomeTrendDataset();
         dataset.label = "OUTDOOR_TEMPERATURE";
@@ -53,7 +53,7 @@ class MelCloudHomeTrendSummaryReportTest {
     }
 
     @Test
-    void whenNoDatasetMatchesOutdoorTemperature_thenGetLatestOutdoorTemperatureReturnsEmpty() {
+    void whenNoDatasetMatchesOutdoorTemperatureThenGetLatestOutdoorTemperatureReturnsEmpty() {
         // Arrange
         MelCloudHomeTrendDataset dataset = new MelCloudHomeTrendDataset();
         dataset.label = "ROOM_TEMPERATURE";

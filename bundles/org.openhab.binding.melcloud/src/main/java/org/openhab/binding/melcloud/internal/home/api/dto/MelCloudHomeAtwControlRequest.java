@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Request body for {@code PUT /monitor/atwunit/{id}} (see ADR-003). Same full-payload-with-nulls contract as
+ * Request body for {@code PUT /monitor/atwunit/{id}}. Same full-payload-with-nulls contract as
  * {@link MelCloudHomeAtaControlRequest}.
  *
  * @author Bernd Weymann - Initial contribution

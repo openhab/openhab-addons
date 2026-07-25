@@ -35,8 +35,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link MelCloudHomeUnitDiscoveryService} discovers ATA/ATW units under a {@code melcloudhomeaccount} bridge,
- * via its own one-off {@code /context} fetch (see ADR-003).
+ * The {@link MelCloudHomeUnitDiscoveryService} discovers ATA/ATW units under a {@code home-account} bridge, via its
+ * own one-off {@code /context} fetch.
  *
  * @author Bernd Weymann - Initial contribution
  */

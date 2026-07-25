@@ -16,13 +16,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * Air-to-Water unit capability flags, as returned nested under a unit's {@code capabilities} field by
- * {@code GET /context} (see ADR-003).
+ * {@code GET /context}.
  *
  * <p>
  * Deliberately does <b>not</b> expose the server-reported temperature range fields
  * ({@code minSetTemperature}/{@code maxSetTemperature}/{@code minSetTankTemperature}/{@code maxSetTankTemperature}):
- * the reference implementation this ADR is based on flags these as unreliable and substitutes hardcoded safe
- * defaults instead — see {@code melCloudHomeAtwUnit.xml}'s static channel ranges.
+ * the reference implementation flags these as unreliable and substitutes hardcoded safe defaults instead — see
+ * {@code mel-cloud-home-atw-unit.xml}'s static channel ranges.
  *
  * @author Bernd Weymann - Initial contribution
  */

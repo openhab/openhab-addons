@@ -25,7 +25,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 /**
- * Unit tests for {@link MelCloudHomeSettingsParser} (see ADR-003).
+ * Unit tests for {@link MelCloudHomeSettingsParser}.
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -40,7 +40,7 @@ class MelCloudHomeSettingsParserTest {
     }
 
     @Test
-    void whenSettingIsPresent_thenFindStringReturnsItsValue() {
+    void whenSettingIsPresentThenFindStringReturnsItsValue() {
         // Arrange
         List<MelCloudHomeSetting> settings = settingsOf("Power", "True");
 
@@ -52,7 +52,7 @@ class MelCloudHomeSettingsParserTest {
     }
 
     @Test
-    void whenSettingIsAbsent_thenFindStringReturnsEmpty() {
+    void whenSettingIsAbsentThenFindStringReturnsEmpty() {
         // Arrange
         List<MelCloudHomeSetting> settings = settingsOf("Power", "True");
 
@@ -64,7 +64,7 @@ class MelCloudHomeSettingsParserTest {
     }
 
     @Test
-    void whenSettingValueIsEmpty_thenFindStringReturnsEmpty() {
+    void whenSettingValueIsEmptyThenFindStringReturnsEmpty() {
         // Arrange
         List<MelCloudHomeSetting> settings = settingsOf("Power", "");
 
@@ -77,7 +77,7 @@ class MelCloudHomeSettingsParserTest {
 
     @ParameterizedTest
     @CsvSource({ "True, true", "False, false" })
-    void whenSettingIsBooleanLike_thenFindBooleanParsesIt(String rawValue, boolean expected) {
+    void whenSettingIsBooleanLikeThenFindBooleanParsesIt(String rawValue, boolean expected) {
         // Arrange
         List<MelCloudHomeSetting> settings = settingsOf("Power", rawValue);
 
@@ -89,7 +89,7 @@ class MelCloudHomeSettingsParserTest {
     }
 
     @Test
-    void whenSettingIsAbsent_thenFindBooleanDefaultsToFalse() {
+    void whenSettingIsAbsentThenFindBooleanDefaultsToFalse() {
         // Arrange
         List<MelCloudHomeSetting> settings = List.of();
 
@@ -101,7 +101,7 @@ class MelCloudHomeSettingsParserTest {
     }
 
     @Test
-    void whenSettingIsNumeric_thenFindDoubleParsesIt() {
+    void whenSettingIsNumericThenFindDoubleParsesIt() {
         // Arrange
         List<MelCloudHomeSetting> settings = settingsOf("SetTemperature", "21.5");
 
@@ -113,7 +113,7 @@ class MelCloudHomeSettingsParserTest {
     }
 
     @Test
-    void whenSettingIsNotNumeric_thenFindDoubleReturnsEmpty() {
+    void whenSettingIsNotNumericThenFindDoubleReturnsEmpty() {
         // Arrange
         List<MelCloudHomeSetting> settings = settingsOf("SetTemperature", "not-a-number");
 

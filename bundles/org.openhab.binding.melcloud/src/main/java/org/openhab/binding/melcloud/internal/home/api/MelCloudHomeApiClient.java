@@ -26,6 +26,7 @@ import java.util.Optional;
 import java.util.Properties;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.melcloud.internal.exceptions.MelCloudCommException;
 import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeAtaControlRequest;
 import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeAtwControlRequest;
@@ -42,7 +43,7 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
 /**
- * Client for the authenticated MELCloud Home mobile BFF API (see ADR-003): reading the full account context, and
+ * Client for the authenticated MELCloud Home mobile BFF API: reading the full account context, and
  * reading/writing ATA/ATW unit state.
  *
  * @author Bernd Weymann - Initial contribution
@@ -62,7 +63,7 @@ public class MelCloudHomeApiClient {
     private static final DateTimeFormatter ENERGY_TIMESTAMP_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
             .withZone(ZoneOffset.UTC);
     // The trend summary endpoint expects a literal 7-digit fractional-second suffix; the reference implementation
-    // this ADR is based on always sends ".0000000" rather than the instant's real sub-second precision.
+    // always sends ".0000000" rather than the instant's real sub-second precision.
     private static final DateTimeFormatter TREND_TIMESTAMP_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
             .withZone(ZoneOffset.UTC);
     private static final String TREND_TIMESTAMP_SUFFIX = ".0000000";
@@ -73,7 +74,7 @@ public class MelCloudHomeApiClient {
     private final Logger logger = LoggerFactory.getLogger(MelCloudHomeApiClient.class);
     private final Gson gson = new Gson();
     // A separate instance: control request bodies must serialize unset fields as JSON null rather than omitting
-    // them (the server requires every control field to be present on every call, see ADR-003).
+    // them (the server requires every control field to be present on every call).
     private final Gson controlGson = new GsonBuilder().serializeNulls().create();
 
     /**
@@ -176,6 +177,7 @@ public class MelCloudHomeApiClient {
 
     private <T> T parseJson(String body, Class<T> type, String context) throws MelCloudCommException {
         try {
+            @Nullable
             T parsed = gson.fromJson(body, type);
             if (parsed == null) {
                 throw new MelCloudCommException("Received an empty " + context);

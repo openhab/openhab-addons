@@ -22,12 +22,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Minimal, read-only client for the MELCloud Home platform (see ADR-001).
+ * Minimal, read-only client for the MELCloud Home platform.
  *
  * <p>
  * This is a discovery/logging skeleton, not a full API client: it exposes only the two calls needed to validate the
  * reverse-engineered contract from {@code reversed.md} against the real servers. Real login is now implemented in
- * {@link org.openhab.binding.melcloud.internal.home.api.MelCloudHomeAuthService} (see ADR-002); this class is no
+ * {@link org.openhab.binding.melcloud.internal.home.api.MelCloudHomeAuthService}; this class is no
  * longer invoked by {@code MelCloudHomeAccountHandler} itself, and is kept as scaffolding for the mobile BFF calls a
  * future unit (ATA/ATW) Thing handler will need — {@link #fetchUserMonitor(String)} expects an already-obtained
  * Bearer access token, which such a handler would get from the account bridge.
@@ -65,7 +65,7 @@ public class MelCloudHomeConnection {
      *
      * <p>
      * The exact response shape is documented in {@code reversed.md}; the HTTP verb and path used here are a
-     * best-effort guess pending live traffic confirmation (see ADR-001).
+     * best-effort guess pending live traffic confirmation.
      *
      * @param accessToken a Bearer access token obtained out-of-band; never logged
      * @return the raw JSON response body

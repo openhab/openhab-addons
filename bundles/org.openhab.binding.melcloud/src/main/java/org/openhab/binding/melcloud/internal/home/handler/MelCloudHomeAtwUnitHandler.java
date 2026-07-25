@@ -44,8 +44,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link MelCloudHomeAtwUnitHandler} handles a single MELCloud Home Air-to-Water (heat pump) unit
- * (see ADR-003).
+ * The {@link MelCloudHomeAtwUnitHandler} handles a single MELCloud Home Air-to-Water (heat pump) unit.
  *
  * <p>
  * Its main state comes from the bridge's centralized {@code /context} poll via
@@ -216,8 +215,28 @@ public class MelCloudHomeAtwUnitHandler extends BaseThingHandler implements MelC
         updateState(CHANNEL_FROST_PROTECTION, OnOffType.from(unit.isFrostProtectionEnabled()));
         Integer rssi = unit.rssi;
         if (rssi != null) {
-            updateState(CHANNEL_RSSI, new DecimalType(rssi));
+            updateState(CHANNEL_RSSI, new DecimalType(mapRssiToSignalStrength(rssi)));
         }
+    }
+
+    /**
+     * Maps a Wi-Fi RSSI value in dBm to the 0 (no signal) .. 4 (excellent) scale expected by the
+     * {@code system.signal-strength} channel.
+     *
+     * @param rssi received signal strength indicator, in dBm
+     * @return signal quality on a 0-4 scale
+     */
+    private static int mapRssiToSignalStrength(int rssi) {
+        if (rssi >= -60) {
+            return 4;
+        } else if (rssi >= -70) {
+            return 3;
+        } else if (rssi >= -80) {
+            return 2;
+        } else if (rssi >= -90) {
+            return 1;
+        }
+        return 0;
     }
 
     private void startTelemetryPollIfNeeded() {

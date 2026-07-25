@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * A simple {@code {"enabled": bool}} object, used for an Air-to-Water unit's top-level {@code holidayMode} and
- * {@code frostProtection} fields (see ADR-003) — unlike most unit state, these are not part of the {@code settings}
+ * {@code frostProtection} fields — unlike most unit state, these are not part of the {@code settings}
  * array.
  *
  * @author Bernd Weymann - Initial contribution

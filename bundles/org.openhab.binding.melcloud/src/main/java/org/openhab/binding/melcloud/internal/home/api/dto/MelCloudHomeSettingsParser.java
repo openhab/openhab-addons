@@ -18,7 +18,7 @@ import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Looks up typed values by name in a unit's {@code settings} array (see {@link MelCloudHomeSetting} and ADR-003).
+ * Looks up typed values by name in a unit's {@code settings} array (see {@link MelCloudHomeSetting}).
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -35,7 +35,8 @@ public final class MelCloudHomeSettingsParser {
     }
 
     public static boolean findBoolean(List<MelCloudHomeSetting> settings, String name) {
-        return findString(settings, name).map(Boolean::parseBoolean).orElse(false);
+        Optional<String> value = findString(settings, name);
+        return value.isPresent() && Boolean.parseBoolean(value.get());
     }
 
     public static Optional<Double> findDouble(List<MelCloudHomeSetting> settings, String name) {

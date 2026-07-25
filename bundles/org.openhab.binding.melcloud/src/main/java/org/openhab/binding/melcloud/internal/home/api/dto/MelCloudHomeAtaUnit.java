@@ -20,8 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * An Air-to-Air unit, as returned nested under a building's {@code airToAirUnits} by {@code GET /context}
- * (see ADR-003).
+ * An Air-to-Air unit, as returned nested under a building's {@code airToAirUnits} by {@code GET /context}.
  *
  * <p>
  * {@code id}/{@code givenDisplayName}/{@code rssi}/{@code capabilities} are top-level, camelCase JSON fields; every

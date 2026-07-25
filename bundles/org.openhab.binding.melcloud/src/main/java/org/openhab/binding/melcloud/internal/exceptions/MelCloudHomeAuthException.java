@@ -15,7 +15,7 @@ package org.openhab.binding.melcloud.internal.exceptions;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Signals that the MELCloud Home OAuth login flow (see ADR-002) was rejected or could not be completed, as opposed
+ * Signals that the MELCloud Home OAuth login flow was rejected or could not be completed, as opposed
  * to a generic network/server failure.
  *
  * <p>

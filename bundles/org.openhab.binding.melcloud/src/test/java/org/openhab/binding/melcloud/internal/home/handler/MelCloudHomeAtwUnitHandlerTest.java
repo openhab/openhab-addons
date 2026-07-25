@@ -50,11 +50,17 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 
 /**
- * Unit tests for {@link MelCloudHomeAtwUnitHandler} (see ADR-003), in particular the zone-2 gating behavior.
+ * Unit tests for {@link MelCloudHomeAtwUnitHandler}, in particular the zone-2 gating behavior.
+ *
+ * <p>
+ * {@code @SuppressWarnings("null")}: Mockito ({@code mock}/{@code ArgumentMatchers}/{@code ArgumentCaptor}) is not
+ * designed with null type annotations in mind, so combining it with this {@code @NonNullByDefault} test class
+ * produces "unsafe interpretation" compiler advisories with no null-safety benefit.
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
+@SuppressWarnings("null")
 class MelCloudHomeAtwUnitHandlerTest {
 
     private static final String UNIT_ID = "unit-1";
@@ -105,7 +111,7 @@ class MelCloudHomeAtwUnitHandlerTest {
     }
 
     @Test
-    void whenHasZone2IsFalse_thenZone2ChannelsAreNotUpdated() {
+    void whenHasZone2IsFalseThenZone2ChannelsAreNotUpdated() {
         // Arrange
         MelCloudHomeAtwUnitHandler handler = createHandler();
         handler.initialize();
@@ -122,7 +128,7 @@ class MelCloudHomeAtwUnitHandlerTest {
     }
 
     @Test
-    void whenHasZone2IsTrue_thenZone2ChannelsAreUpdated() {
+    void whenHasZone2IsTrueThenZone2ChannelsAreUpdated() {
         // Arrange
         MelCloudHomeAtwUnitHandler handler = createHandler();
         handler.initialize();
@@ -138,7 +144,7 @@ class MelCloudHomeAtwUnitHandlerTest {
     }
 
     @Test
-    void whenSetTemperatureZone1CommandIsSent_thenControlAtwUnitIsCalledWithZone1Temperature() throws Exception {
+    void whenSetTemperatureZone1CommandIsSentThenControlAtwUnitIsCalledWithZone1Temperature() throws Exception {
         // Arrange
         MelCloudHomeAtwUnitHandler handler = createHandler();
         handler.initialize();
@@ -155,7 +161,7 @@ class MelCloudHomeAtwUnitHandlerTest {
     }
 
     @Test
-    void whenForcedHotWaterModeCommandIsSent_thenControlAtwUnitIsCalledWithForcedHotWaterModeTrue() throws Exception {
+    void whenForcedHotWaterModeCommandIsSentThenControlAtwUnitIsCalledWithForcedHotWaterModeTrue() throws Exception {
         // Arrange
         MelCloudHomeAtwUnitHandler handler = createHandler();
         handler.initialize();

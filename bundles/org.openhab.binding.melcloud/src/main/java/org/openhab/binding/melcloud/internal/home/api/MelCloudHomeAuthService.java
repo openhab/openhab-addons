@@ -32,6 +32,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.melcloud.internal.exceptions.MelCloudCommException;
 import org.openhab.binding.melcloud.internal.exceptions.MelCloudHomeAuthException;
 import org.slf4j.Logger;
@@ -45,7 +46,7 @@ import com.google.gson.JsonSyntaxException;
  * Request (PAR, RFC 9126) and federated to an AWS Cognito Hosted UI for credential entry.
  *
  * <p>
- * See ADR-002 for the full rationale. This class runs the entire flow headlessly, with no interactive browser step:
+ * This class runs the entire flow headlessly, with no interactive browser step:
  * <ol>
  * <li>{@code POST connect/par} with the PKCE challenge, obtaining an opaque {@code request_uri}.
  * <li>{@code GET connect/authorize?client_id=...&request_uri=...}, following redirects manually. If
@@ -180,7 +181,7 @@ public class MelCloudHomeAuthService {
         if (response.statusCode() != 200) {
             throw new MelCloudHomeAuthException("Refresh token rejected: HTTP " + response.statusCode());
         }
-        return toTokenResponse(response.body());
+        return toTokenResponse(bodyOf(response));
     }
 
     private String pushedAuthorizationRequest(String state, String codeChallenge) throws MelCloudCommException {
@@ -199,7 +200,7 @@ public class MelCloudHomeAuthService {
             throw new MelCloudHomeAuthException("Pushed authorization request failed: HTTP " + response.statusCode());
         }
 
-        MelCloudHomeParResponse parResponse = parseJson(response.body(), MelCloudHomeParResponse.class,
+        MelCloudHomeParResponse parResponse = parseJson(bodyOf(response), MelCloudHomeParResponse.class,
                 "pushed authorization response");
         String requestUri = parResponse.requestUri;
         if (requestUri == null || requestUri.isBlank()) {
@@ -251,7 +252,9 @@ public class MelCloudHomeAuthService {
             }
             return switch (followRedirectsToOutcome(resolvedLocation)) {
                 case AuthorizationCode authorizationCode -> authorizationCode.code();
-                case CognitoLoginPage rejected ->
+                // The pattern variable is required by switch syntax but unused in the arrow body — Java 21 has no
+                // unnamed-pattern syntax outside preview (JEP 443/456), so it cannot simply be omitted.
+                case CognitoLoginPage rejected -> // NOPMD - UnusedLocalVariable: binding required, see comment above
                     throw new MelCloudHomeAuthException("MELCloud Home login rejected: invalid username or password");
             };
         }
@@ -273,12 +276,13 @@ public class MelCloudHomeAuthService {
         if (response.statusCode() != 200) {
             throw new MelCloudHomeAuthException("Token exchange failed: HTTP " + response.statusCode());
         }
-        return toTokenResponse(response.body());
+        return toTokenResponse(bodyOf(response));
     }
 
     private MelCloudHomeTokenResponse toTokenResponse(String body) throws MelCloudCommException {
         MelCloudHomeTokenResponse tokenResponse = parseJson(body, MelCloudHomeTokenResponse.class, "token response");
-        if (tokenResponse.accessToken == null || tokenResponse.accessToken.isBlank()) {
+        String accessToken = tokenResponse.accessToken;
+        if (accessToken == null || accessToken.isBlank()) {
             throw new MelCloudHomeAuthException("Token response did not contain an access_token");
         }
         logger.debug("MELCloud Home authentication successful");
@@ -316,7 +320,7 @@ public class MelCloudHomeAuthService {
                     continue;
                 }
 
-                String body = response.body();
+                String body = bodyOf(response);
                 if (isCognitoLoginPage(currentUrl)) {
                     String csrfToken = extractCsrfToken(body).orElseThrow(() -> new MelCloudHomeAuthException(
                             "Failed to extract the CSRF token from the Cognito login page"));
@@ -387,6 +391,7 @@ public class MelCloudHomeAuthService {
 
     private <T> T parseJson(String body, Class<T> type, String context) throws MelCloudHomeAuthException {
         try {
+            @Nullable
             T parsed = gson.fromJson(body, type);
             if (parsed == null) {
                 throw new MelCloudHomeAuthException("Received an empty " + context);
@@ -395,6 +400,22 @@ public class MelCloudHomeAuthService {
         } catch (JsonSyntaxException e) {
             throw new MelCloudHomeAuthException("Failed to parse " + context, e);
         }
+    }
+
+    /**
+     * Reads {@link HttpResponse#body()}. {@link HttpResponse} is not designed with null type annotations in mind
+     * (unlike this class, which is {@code @NonNullByDefault}), so the compiler can only produce an "unsafe
+     * interpretation" advisory here rather than a genuine null-safety guarantee. Centralizing the call in this one
+     * helper — instead of adding a redundant, always-false null check at every call site, which the compiler flags
+     * as dead code once it has made that same "unsafe interpretation" — keeps the advisory confined to a single,
+     * documented spot.
+     *
+     * @param response the HTTP response to read the body from
+     * @return the response body
+     */
+    @SuppressWarnings("null")
+    private static String bodyOf(HttpResponse<String> response) {
+        return response.body();
     }
 
     private HttpResponse<String> sendGet(String url) throws MelCloudCommException {
@@ -465,15 +486,12 @@ public class MelCloudHomeAuthService {
      * directly (an existing {@code auth.melcloudhome.com} session was reused), or a Cognito login page needs
      * credentials submitted to it.
      */
-    @NonNullByDefault
     private sealed interface AuthorizeOutcome permits AuthorizationCode, CognitoLoginPage {
     }
 
-    @NonNullByDefault
     private record AuthorizationCode(String code) implements AuthorizeOutcome {
     }
 
-    @NonNullByDefault
     private record CognitoLoginPage(String loginUrl, String csrfToken) implements AuthorizeOutcome {
     }
 }

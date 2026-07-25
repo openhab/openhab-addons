@@ -25,7 +25,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 /**
- * Unit tests for {@link MelCloudHomeAtaUnit}'s settings-normalization accessors (see ADR-003).
+ * Unit tests for {@link MelCloudHomeAtaUnit}'s settings-normalization accessors.
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -45,7 +45,7 @@ class MelCloudHomeAtaUnitTest {
 
     @ParameterizedTest
     @CsvSource({ "0, Auto", "1, One", "2, Two", "3, Three", "4, Four", "5, Five" })
-    void whenFanSpeedIsNumeric_thenGetFanSpeedNormalizesToWord(String rawValue, String expectedWord) {
+    void whenFanSpeedIsNumericThenGetFanSpeedNormalizesToWord(String rawValue, String expectedWord) {
         // Arrange
         MelCloudHomeAtaUnit unit = unitWithSetting("SetFanSpeed", rawValue);
 
@@ -57,7 +57,7 @@ class MelCloudHomeAtaUnitTest {
     }
 
     @Test
-    void whenFanSpeedIsAlreadyAWord_thenGetFanSpeedPassesItThrough() {
+    void whenFanSpeedIsAlreadyAWordThenGetFanSpeedPassesItThrough() {
         // Arrange
         MelCloudHomeAtaUnit unit = unitWithSetting("SetFanSpeed", "Auto");
 
@@ -70,7 +70,7 @@ class MelCloudHomeAtaUnitTest {
 
     @ParameterizedTest
     @CsvSource({ "0, Auto", "7, Swing" })
-    void whenVaneVerticalIsNumeric_thenGetVaneVerticalDirectionNormalizesToWord(String rawValue, String expectedWord) {
+    void whenVaneVerticalIsNumericThenGetVaneVerticalDirectionNormalizesToWord(String rawValue, String expectedWord) {
         // Arrange
         MelCloudHomeAtaUnit unit = unitWithSetting("VaneVerticalDirection", rawValue);
 
@@ -83,7 +83,7 @@ class MelCloudHomeAtaUnitTest {
 
     @ParameterizedTest
     @CsvSource({ "CenterLeft, LeftCentre", "Center, Centre", "CenterRight, RightCentre" })
-    void whenVaneHorizontalIsAmericanSpelling_thenGetVaneHorizontalDirectionNormalizesToBritish(String rawValue,
+    void whenVaneHorizontalIsAmericanSpellingThenGetVaneHorizontalDirectionNormalizesToBritish(String rawValue,
             String expectedWord) {
         // Arrange
         MelCloudHomeAtaUnit unit = unitWithSetting("VaneHorizontalDirection", rawValue);
@@ -96,7 +96,7 @@ class MelCloudHomeAtaUnitTest {
     }
 
     @Test
-    void whenVaneHorizontalIsAlreadyBritishSpelling_thenGetVaneHorizontalDirectionPassesItThrough() {
+    void whenVaneHorizontalIsAlreadyBritishSpellingThenGetVaneHorizontalDirectionPassesItThrough() {
         // Arrange
         MelCloudHomeAtaUnit unit = unitWithSetting("VaneHorizontalDirection", "Left");
 
@@ -108,7 +108,7 @@ class MelCloudHomeAtaUnitTest {
     }
 
     @Test
-    void whenPowerSettingIsMissing_thenIsPowerDefaultsToFalse() {
+    void whenPowerSettingIsMissingThenIsPowerDefaultsToFalse() {
         // Arrange
         MelCloudHomeAtaUnit unit = new MelCloudHomeAtaUnit();
 
@@ -120,7 +120,7 @@ class MelCloudHomeAtaUnitTest {
     }
 
     @Test
-    void whenOperationModeSettingIsMissing_thenGetOperationModeDefaultsToHeat() {
+    void whenOperationModeSettingIsMissingThenGetOperationModeDefaultsToHeat() {
         // Arrange
         MelCloudHomeAtaUnit unit = new MelCloudHomeAtaUnit();
 
@@ -132,7 +132,7 @@ class MelCloudHomeAtaUnitTest {
     }
 
     @Test
-    void whenIsInErrorSettingIsTrue_thenIsInErrorReturnsTrue() {
+    void whenIsInErrorSettingIsTrueThenIsInErrorReturnsTrue() {
         // Arrange
         MelCloudHomeAtaUnit unit = unitWithSetting("IsInError", "True");
 

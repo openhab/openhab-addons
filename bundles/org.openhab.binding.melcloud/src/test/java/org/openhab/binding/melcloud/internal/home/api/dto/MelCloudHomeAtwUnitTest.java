@@ -24,7 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 
 /**
- * Unit tests for {@link MelCloudHomeAtwUnit} (see ADR-003), in particular the zone-2 gating logic and the
+ * Unit tests for {@link MelCloudHomeAtwUnit}, in particular the zone-2 gating logic and the
  * {@code holidayMode}/{@code frostProtection} top-level toggle fields.
  *
  * @author Bernd Weymann - Initial contribution
@@ -46,7 +46,7 @@ class MelCloudHomeAtwUnitTest {
     }
 
     @Test
-    void whenHasZone2SettingIsFalse_thenZone2AccessorsReturnEmpty() {
+    void whenHasZone2SettingIsFalseThenZone2AccessorsReturnEmpty() {
         // Arrange
         MelCloudHomeAtwUnit unit = unitWithSettings("HasZone2", "False", "OperationModeZone2", "HeatCurve",
                 "SetTemperatureZone2", "21.0", "RoomTemperatureZone2", "20.5");
@@ -59,7 +59,7 @@ class MelCloudHomeAtwUnitTest {
     }
 
     @Test
-    void whenHasZone2SettingIsTrue_thenZone2AccessorsReturnTheirValues() {
+    void whenHasZone2SettingIsTrueThenZone2AccessorsReturnTheirValues() {
         // Arrange
         MelCloudHomeAtwUnit unit = unitWithSettings("HasZone2", "True", "OperationModeZone2", "HeatCurve",
                 "SetTemperatureZone2", "21.0", "RoomTemperatureZone2", "20.5");
@@ -72,7 +72,7 @@ class MelCloudHomeAtwUnitTest {
     }
 
     @Test
-    void whenHolidayModeIsNull_thenIsHolidayModeEnabledReturnsFalse() {
+    void whenHolidayModeIsNullThenIsHolidayModeEnabledReturnsFalse() {
         // Arrange
         MelCloudHomeAtwUnit unit = new MelCloudHomeAtwUnit();
 
@@ -84,7 +84,7 @@ class MelCloudHomeAtwUnitTest {
     }
 
     @Test
-    void whenHolidayModeIsSetAndEnabled_thenIsHolidayModeEnabledReturnsTrue() {
+    void whenHolidayModeIsSetAndEnabledThenIsHolidayModeEnabledReturnsTrue() {
         // Arrange
         MelCloudHomeAtwUnit unit = new MelCloudHomeAtwUnit();
         MelCloudHomeToggleState toggleState = new MelCloudHomeToggleState();
@@ -99,7 +99,7 @@ class MelCloudHomeAtwUnitTest {
     }
 
     @Test
-    void whenFrostProtectionIsNull_thenIsFrostProtectionEnabledReturnsFalse() {
+    void whenFrostProtectionIsNullThenIsFrostProtectionEnabledReturnsFalse() {
         // Arrange
         MelCloudHomeAtwUnit unit = new MelCloudHomeAtwUnit();
 
@@ -111,7 +111,7 @@ class MelCloudHomeAtwUnitTest {
     }
 
     @Test
-    void whenOutdoorTemperatureSettingIsPresent_thenGetOutdoorTemperatureReturnsIt() {
+    void whenOutdoorTemperatureSettingIsPresentThenGetOutdoorTemperatureReturnsIt() {
         // Arrange
         MelCloudHomeAtwUnit unit = unitWithSettings("OutdoorTemperature", "5.5");
 
@@ -123,7 +123,7 @@ class MelCloudHomeAtwUnitTest {
     }
 
     @Test
-    void whenOperationModeSettingIsMissing_thenGetOperationStatusDefaultsToStop() {
+    void whenOperationModeSettingIsMissingThenGetOperationStatusDefaultsToStop() {
         // Arrange
         MelCloudHomeAtwUnit unit = new MelCloudHomeAtwUnit();
 

@@ -17,7 +17,7 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * One entry of a {@code telemetry/energy} response's {@code measureData} array (see ADR-003).
+ * One entry of a {@code telemetry/energy} response's {@code measureData} array.
  *
  * @author Bernd Weymann - Initial contribution
  */
