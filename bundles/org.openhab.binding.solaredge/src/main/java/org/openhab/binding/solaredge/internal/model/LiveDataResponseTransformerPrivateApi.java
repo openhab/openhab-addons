@@ -115,8 +115,7 @@ public class LiveDataResponseTransformerPrivateApi extends AbstractDataResponseT
 
         Grid grid = response.grid;
         if (grid != null) {
-            putStringType(result, channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_GRID_STATUS),
-                    Boolean.TRUE.equals(grid.isActive) ? "active" : "idle");
+            putStringType(result, channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_GRID_STATUS), grid.status);
             if ("import".equalsIgnoreCase(grid.status)) {
                 putPowerType(result, channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_IMPORT),
                         grid.currentPower, "kW");
