@@ -9,8 +9,8 @@
 		<description>@text/thing-type.transitapp.bridge.description</description>
 		<config-description>
 			<parameter name="apiKey" type="text" required="true">
-				<label>API Key</label>
-				<description>Your Transit API key.</description>
+				<label>@text/config.apiKey.label</label>
+				<description>@text/config.apiKey.description</description>
 			</parameter>
 		</config-description>
 	</bridge-type>
@@ -28,12 +28,12 @@
 		</channel-groups>
 		<config-description>
 			<parameter name="globalStopId" type="text" required="true">
-				<label>Global Stop ID</label>
-				<description>The global stop ID for Transit API.</description>
+				<label>@text/config.globalStopId.label</label>
+				<description>@text/config.globalStopId.description</description>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" min="30">
-				<label>Refresh Interval</label>
-				<description>Polling interval in seconds.</description>
+				<label>@text/config.refreshInterval.label</label>
+				<description>@text/config.refreshInterval.description</description>
 				<default>60</default>
 			</parameter>
 		</config-description>
@@ -50,26 +50,26 @@
 		</channel-groups>
 		<config-description>
 			<parameter name="routeId" type="text" required="true">
-				<label>Route ID</label>
-				<description>The unique identifier for the route.</description>
+				<label>@text/config.routeId.label</label>
+				<description>@text/config.routeId.description</description>
 			</parameter>
 			<parameter name="includeNextDeparture" type="boolean" required="false">
-				<label>Include Next Departure</label>
-				<description>If set to true, makes the stop list include the next departure for each stop.</description>
+				<label>@text/config.includeNextDeparture.label</label>
+				<description>@text/config.includeNextDeparture.description</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="stopDetailed" type="boolean" required="false">
-				<label>Stop Detailed</label>
-				<description>When true, stop objects are returned as StopDetailed.</description>
+				<label>@text/config.stopDetailed.label</label>
+				<description>@text/config.stopDetailed.description</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="locale" type="text" required="false">
-				<label>Locale</label>
-				<description>Language locale for names and strings.</description>
+				<label>@text/config.locale.label</label>
+				<description>@text/config.locale.description</description>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" min="30">
-				<label>Refresh Interval</label>
-				<description>Time in seconds between updates.</description>
+				<label>@text/config.refreshInterval.label</label>
+				<description>@text/config.refreshInterval.description</description>
 				<default>300</default>
 			</parameter>
 		</config-description>
@@ -91,32 +91,32 @@
 		</channel-groups>
 		<config-description>
 			<parameter name="tripId" type="text" required="true">
-				<label>Trip ID</label>
-				<description>The unique identifier for the trip.</description>
+				<label>@text/config.tripId.label</label>
+				<description>@text/config.tripId.description</description>
 			</parameter>
 			<parameter name="includeContinuation" type="boolean" required="false">
-				<label>Include Continuation</label>
-				<description>Appends immediate next trip stops if vehicle continues in-seat.</description>
+				<label>@text/config.includeContinuation.label</label>
+				<description>@text/config.includeContinuation.description</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="locale" type="text" required="false">
-				<label>Locale</label>
-				<description>Language locale for translated strings.</description>
+				<label>@text/config.locale.label</label>
+				<description>@text/config.locale.description</description>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" min="30">
-				<label>Refresh Interval</label>
-				<description>Time in seconds between updates.</description>
+				<label>@text/config.refreshInterval.label</label>
+				<description>@text/config.refreshInterval.description</description>
 				<default>60</default>
 			</parameter>
 			<parameter name="targetStopId" type="text" required="false">
-				<label>Target Stop ID</label>
-				<description>Destination stop ID to calculate the timeToTarget countdown.</description>
+				<label>@text/config.targetStopId.label</label>
+				<description>@text/config.targetStopId.description</description>
 			</parameter>
 		</config-description>
 	</thing-type>
 
 	<channel-group-type id="departureGroup">
-		<label>Departure</label>
+		<label>@text/group.departure.label</label>
 		<channels>
 			<channel id="routeLongName" typeId="routeLongName"/>
 			<channel id="routeShortName" typeId="routeShortName"/>
@@ -131,7 +131,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="routeGroup">
-		<label>Route Details</label>
+		<label>@text/group.routeDetails.label</label>
 		<channels>
 			<channel id="routeLongName" typeId="routeLongName"/>
 			<channel id="routeShortName" typeId="routeShortName"/>
@@ -152,7 +152,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="tripGroup">
-		<label>Trip Details</label>
+		<label>@text/group.tripDetails.label</label>
 		<channels>
 			<channel id="tripHeadsign" typeId="tripHeadsign"/>
 			<channel id="tripStatus" typeId="tripStatus"/>
@@ -170,7 +170,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="stopGroup">
-		<label>Upcoming Stop</label>
+		<label>@text/group.upcomingStop.label</label>
 		<channels>
 			<channel id="stopName" typeId="stopName"/>
 			<channel id="scheduledTime" typeId="departureTime"/>
@@ -213,103 +213,103 @@
 
 	<channel-type id="departureTime">
 		<item-type>DateTime</item-type>
-		<label>Departure Time</label>
+		<label>@text/channel.departureTime.label</label>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="isCancelled">
 		<item-type>Switch</item-type>
-		<label>Is Cancelled</label>
+		<label>@text/channel.isCancelled.label</label>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="routeColor">
 		<item-type>String</item-type>
-		<label>Route Color</label>
+		<label>@text/channel.routeColor.label</label>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="routeTextColor">
 		<item-type>String</item-type>
-		<label>Route Text Color</label>
+		<label>@text/channel.routeTextColor.label</label>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="routeNetworkName">
 		<item-type>String</item-type>
-		<label>Route Network Name</label>
+		<label>@text/channel.routeNetworkName.label</label>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="modeName">
 		<item-type>String</item-type>
-		<label>Mode Name</label>
+		<label>@text/channel.modeName.label</label>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="vehicleName">
 		<item-type>String</item-type>
-		<label>Vehicle Name</label>
+		<label>@text/channel.vehicleName.label</label>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="rtTripId">
 		<item-type>String</item-type>
-		<label>Real-Time Trip ID</label>
+		<label>@text/channel.rtTripId.label</label>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="stopName">
 		<item-type>String</item-type>
-		<label>Stop Name</label>
+		<label>@text/channel.stopName.label</label>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="alertTitle">
 		<item-type>String</item-type>
-		<label>Alert Title</label>
+		<label>@text/channel.alertTitle.label</label>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="alertDescription">
 		<item-type>String</item-type>
-		<label>Alert Description</label>
+		<label>@text/channel.alertDescription.label</label>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="alertSeverity">
 		<item-type>String</item-type>
-		<label>Alert Severity</label>
+		<label>@text/channel.alertSeverity.label</label>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="minutesUntilDeparture">
 		<item-type>Number:Time</item-type>
-		<label>Minutes Until Departure</label>
+		<label>@text/channel.minutesUntilDeparture.label</label>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="delayMinutes">
 		<item-type>Number:Time</item-type>
-		<label>Delay</label>
+		<label>@text/channel.delayMinutes.label</label>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="platform">
 		<item-type>String</item-type>
-		<label>Platform / Track</label>
+		<label>@text/channel.platform.label</label>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="activeAlertsCount">
 		<item-type>Number</item-type>
-		<label>Active Alerts Count</label>
+		<label>@text/channel.activeAlertsCount.label</label>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="location">
 		<item-type>Location</item-type>
-		<label>Vehicle Location</label>
+		<label>@text/channel.location.label</label>
 		<state readOnly="true"/>
 	</channel-type>
 
