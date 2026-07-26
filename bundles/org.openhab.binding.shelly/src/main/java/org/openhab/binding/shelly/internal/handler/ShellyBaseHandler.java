@@ -61,7 +61,7 @@ import org.openhab.binding.shelly.internal.handler.ShellyDeviceStats.ShellyDevic
 import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.binding.shelly.internal.util.ShellyChannelCache;
-import org.openhab.binding.shelly.internal.util.ShellyVersionDTO;
+import org.openhab.binding.shelly.internal.util.ShellyVersionComparator;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -1166,7 +1166,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             // no fw version available (e.g. BLU device)
             return;
         }
-        ShellyVersionDTO version = new ShellyVersionDTO();
+        ShellyVersionComparator version = new ShellyVersionComparator();
         if (version.checkBeta(getString(prf.fwVersion))) {
             logger.info("{}: {}", prf.device.hostname, messages.get("versioncheck.beta", prf.fwVersion, prf.fwDate));
         } else {

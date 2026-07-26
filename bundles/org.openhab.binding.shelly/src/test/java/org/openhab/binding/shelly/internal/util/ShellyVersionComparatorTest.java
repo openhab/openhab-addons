@@ -24,18 +24,18 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 /**
- * Tests for {@link ShellyVersionDTO}.
+ * Tests for {@link ShellyVersionComparator}.
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class ShellyVersionDTOTest {
-    private final ShellyVersionDTO dto = new ShellyVersionDTO();
+public class ShellyVersionComparatorTest {
+    private final ShellyVersionComparator versionComparator = new ShellyVersionComparator();
 
     @ParameterizedTest
     @MethodSource("provideTestCasesForStripBuildHash")
     void stripBuildHash(String input, String expected) {
-        assertThat(dto.stripBuildHash(input), is(equalTo(expected)));
+        assertThat(versionComparator.stripBuildHash(input), is(equalTo(expected)));
     }
 
     private static Stream<Arguments> provideTestCasesForStripBuildHash() {
@@ -55,7 +55,7 @@ public class ShellyVersionDTOTest {
     @ParameterizedTest
     @MethodSource("provideTestCasesForCheckBeta")
     void checkBeta(String version, boolean expectedBeta) {
-        assertThat(dto.checkBeta(version), is(equalTo(expectedBeta)));
+        assertThat(versionComparator.checkBeta(version), is(equalTo(expectedBeta)));
     }
 
     private static Stream<Arguments> provideTestCasesForCheckBeta() {
@@ -76,9 +76,7 @@ public class ShellyVersionDTOTest {
     @ParameterizedTest
     @MethodSource("provideTestCasesForUpdateAvailableComparison")
     void updateAvailableComparison(String installed, String available, boolean expectedUpdateNeeded) {
-        String strippedInstalled = dto.stripBuildHash(installed);
-        String strippedAvailable = dto.stripBuildHash(available);
-        boolean updateNeeded = dto.compare(strippedInstalled, strippedAvailable) < 0;
+        boolean updateNeeded = versionComparator.isNewer(available, installed);
         assertThat("installed=" + installed + " available=" + available, updateNeeded,
                 is(equalTo(expectedUpdateNeeded)));
     }

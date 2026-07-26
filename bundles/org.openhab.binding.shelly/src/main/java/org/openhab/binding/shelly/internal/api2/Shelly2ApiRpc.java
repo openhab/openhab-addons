@@ -82,7 +82,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.ShellyScriptRe
 import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
-import org.openhab.binding.shelly.internal.util.ShellyVersionDTO;
+import org.openhab.binding.shelly.internal.util.ShellyVersionComparator;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -671,15 +671,12 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         status.update.hasUpdate = false;
         status.hasUpdate = false;
         if (avlUpdate != null) {
-            ShellyVersionDTO versionDTO = new ShellyVersionDTO();
+            ShellyVersionComparator versionComparator = new ShellyVersionComparator();
             Shelly2DeviceStatusSysAvlUpdate.Shelly2DeviceStatusSysUpdate stableUpdate = avlUpdate.stable;
             if (stableUpdate != null) {
                 String stableVer = ShellyDeviceProfile.extractFwVersion(getString(stableUpdate.version));
                 status.update.newVersion = stableVer;
-                // Compare base versions only — strip build hash so "2.6.2-abc" == "2.6.2"
-                boolean newerStable = !stableVer.isEmpty()
-                        && versionDTO.compare(versionDTO.stripBuildHash(profile.fwVersion),
-                                versionDTO.stripBuildHash(stableVer)) < 0;
+                boolean newerStable = versionComparator.isNewer(stableVer, profile.fwVersion);
                 status.update.hasUpdate = newerStable;
                 status.hasUpdate = newerStable;
             }
