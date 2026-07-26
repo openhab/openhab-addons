@@ -12,6 +12,18 @@
 		<channel-groups>
 			<channel-group id="control" typeId="rgbwpmColorControl"/>
 			<channel-group id="color" typeId="colorSettingsRGBWpm"/>
+			<channel-group id="channel1" typeId="rgbwpmChannel">
+				<label>LED Channel 1</label>
+			</channel-group>
+			<channel-group id="channel2" typeId="rgbwpmChannel">
+				<label>LED Channel 2</label>
+			</channel-group>
+			<channel-group id="channel3" typeId="rgbwpmChannel">
+				<label>LED Channel 3</label>
+			</channel-group>
+			<channel-group id="channel4" typeId="rgbwpmChannel">
+				<label>LED Channel 4</label>
+			</channel-group>
 			<channel-group id="meter" typeId="meter"/>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
@@ -36,6 +48,11 @@
 			<channel id="blue" typeId="colorBlue"/>
 			<channel id="white" typeId="colorWhite"/>
 		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="rgbwpmChannel">
+		<label>LED Channel</label>
+		<description>Control individual LED channel (light profile)</description>
 	</channel-group-type>
 
 </thing:thing-descriptions>
