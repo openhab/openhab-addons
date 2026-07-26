@@ -430,7 +430,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 logger.debug("Adding channel for DP commands, on device {}", getThing().getUID());
                 ThingBuilder thingBuilder = editThing();
                 channel = ChannelBuilder.create(channelUID, CoreItemFactory.STRING).withLabel("Execute DP Command")
-                        .withType(new ChannelTypeUID(BINDING_ID, "DPCommand")).build();
+                        .withType(new ChannelTypeUID(BINDING_ID, "dpcommand")).build();
                 thingBuilder.withChannel(channel);
                 updateThing(thingBuilder.build());
             }
