@@ -570,7 +570,7 @@ public class ShellyComponentsTest {
     }
 
     @Test
-    void updateSensorsWs90UvIndexPublishesDecimalType() throws Exception {
+    void updateSensorsWs90UvIndexPublishesDecimalTypeRoundedToWholeNumber() throws Exception {
         ShellyStatusSensor sdata = new ShellyStatusSensor();
         sdata.uvIndex = 5.3;
         ShellyThingInterface handler = ws90HandlerWith(sdata);
@@ -578,7 +578,7 @@ public class ShellyComponentsTest {
         ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
 
         verify(handler).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_UV),
-                argThat(s -> s instanceof DecimalType && ((DecimalType) s).doubleValue() == 5.3));
+                argThat(s -> s instanceof DecimalType && ((DecimalType) s).doubleValue() == 5.0));
     }
 
     @Test

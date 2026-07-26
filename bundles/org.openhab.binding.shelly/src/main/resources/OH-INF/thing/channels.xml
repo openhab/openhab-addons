@@ -77,7 +77,7 @@
 			<tag>Measurement</tag>
 			<tag>Ultraviolet</tag>
 		</tags>
-		<state readOnly="true" pattern="%.1f">
+		<state readOnly="true" pattern="%.0f">
 		</state>
 	</channel-type>
 
