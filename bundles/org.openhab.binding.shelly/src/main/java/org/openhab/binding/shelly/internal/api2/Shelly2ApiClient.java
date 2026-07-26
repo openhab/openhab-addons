@@ -192,6 +192,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         info.hostname = getString(device.id);
         info.name = getString(device.name);
         info.fw = getString(device.fw);
+        info.ver = getString(device.ver);
         info.type = getString(device.model);
         info.mac = getString(device.mac);
         info.auth = getBool(device.auth);
@@ -273,8 +274,13 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         }
         profile.settings.fw = getString(device.fw);
         profile.fwDate = substringBefore(substringBefore(device.fw, "/"), "-");
-        profile.fwVersion = profile.status.update.oldVersion = ShellyDeviceProfile
-                .extractFwVersion(profile.settings.fw);
+        String fwVersion = ShellyDeviceProfile.extractFwVersion(profile.settings.fw);
+        if (fwVersion.isEmpty()) {
+            // Some newer Gen4 app builds don't embed a semver in fw_id (e.g. "20250819-150404/ga0def2d"),
+            // only in the separate "ver" field (e.g. "1.7.99-powerstripg4prod1")
+            fwVersion = ShellyDeviceProfile.extractAppVersion(getString(device.ver));
+        }
+        profile.fwVersion = profile.status.update.oldVersion = fwVersion;
         // Only default to "no update" the first time; getStatus() is the authoritative source for this flag
         // on every subsequent poll, and a settings-only refresh must not wipe its last known result.
         if (profile.status.hasUpdate == null) {

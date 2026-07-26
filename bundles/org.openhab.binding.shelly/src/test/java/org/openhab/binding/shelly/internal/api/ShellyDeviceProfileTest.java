@@ -374,4 +374,19 @@ public class ShellyDeviceProfileTest {
                 Arguments.of("garbage", ""), //
                 Arguments.of((Object) null, "")); //
     }
+
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForExtractAppVersion")
+    void extractAppVersion(String rawVer, String expectedVersion) {
+        assertThat(ShellyDeviceProfile.extractAppVersion(rawVer), is(equalTo(expectedVersion)));
+    }
+
+    private static Stream<Arguments> provideTestCasesForExtractAppVersion() {
+        return Stream.of( //
+                // suffix contains 'g' as part of a product code, not a git-describe hash - must be kept in full
+                Arguments.of("1.7.99-powerstripg4prod1", "1.7.99-powerstripg4prod1"), //
+                Arguments.of("1.14.0", "1.14.0"), //
+                Arguments.of("", ""), //
+                Arguments.of((Object) null, "")); //
+    }
 }

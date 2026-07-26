@@ -56,6 +56,7 @@ public class ShellyDeviceProfile {
     private final Logger logger = LoggerFactory.getLogger(ShellyDeviceProfile.class);
     private static final Pattern GEN1_VERSION_PATTERN = Pattern.compile("v\\d+\\.\\d+\\.\\d+(-[a-z0-9]*)?");
     private static final Pattern GEN2_VERSION_PATTERN = Pattern.compile("\\d+\\.\\d+\\.\\d+(-[a-fh-z0-9]+)?");
+    private static final Pattern APP_VERSION_PATTERN = Pattern.compile("\\d+\\.\\d+\\.\\d+(-[a-z0-9]+)?");
 
     public boolean initialized; // true when initialized
 
@@ -453,6 +454,22 @@ public class ShellyDeviceProfile {
             // Extract version from string, e.g. 20210226-091047/v1.10.0-rc2-89-g623b41ec0-master
             Matcher matcher = version.startsWith("v") ? GEN1_VERSION_PATTERN.matcher(vers)
                     : GEN2_VERSION_PATTERN.matcher(vers);
+            if (matcher.find()) {
+                return matcher.group(0);
+            }
+        }
+        return "";
+    }
+
+    /**
+     * Extracts a semver from the human-readable "ver" field some Gen2+ devices report (e.g.
+     * "1.7.99-powerstripg4prod1"). Unlike {@link #extractFwVersion}, this doesn't exclude 'g' from the
+     * suffix - that exclusion exists to cut fw_id's trailing git-describe hash (e.g. "-gcb84623"), which
+     * would otherwise wrongly truncate a product-code suffix that happens to contain the letter 'g'.
+     */
+    public static String extractAppVersion(@Nullable String version) {
+        if (version != null) {
+            Matcher matcher = APP_VERSION_PATTERN.matcher(version);
             if (matcher.find()) {
                 return matcher.group(0);
             }

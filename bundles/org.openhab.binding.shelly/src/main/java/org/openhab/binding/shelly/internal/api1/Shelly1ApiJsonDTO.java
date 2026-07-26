@@ -272,6 +272,8 @@ public class Shelly1ApiJsonDTO {
         public String mac;
         public String hostname;
         public String fw;
+        public String ver; // Gen2+: human-readable app version, e.g. "1.7.99-powerstripg4prod1";
+                           // fallback when fw (fw_id) has no embedded semver (newer Gen4 app builds)
         public Boolean auth;
         public Integer gen;
         public String coiot;
