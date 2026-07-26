@@ -163,6 +163,22 @@ public class Shelly2GetDeviceProfileTest {
         return parseConfig(gson, "{\"sys\":{\"device\":{},\"location\":{}},\"wifi\":{}," + "\"cb:0\":{\"id\":0}}");
     }
 
+    /** GetConfig with rgbw:0 present (Plus RGBW PM, color-mode "rgbw" profile) */
+    private static Shelly2GetConfigResult withRgbw0(Gson gson) {
+        return parseConfig(gson, "{\"sys\":{\"device\":{},\"location\":{}},\"wifi\":{}," + "\"rgbw:0\":{\"id\":0}}");
+    }
+
+    /** GetConfig with rgb:0 present (Plus RGBW PM, color-mode "rgb" profile) */
+    private static Shelly2GetConfigResult withRgb0(Gson gson) {
+        return parseConfig(gson, "{\"sys\":{\"device\":{},\"location\":{}},\"wifi\":{}," + "\"rgb:0\":{\"id\":0}}");
+    }
+
+    /** GetConfig with light:0..light:3 present (Plus RGBW PM, "light" profile — 4 independent channels) */
+    private static Shelly2GetConfigResult withLight0To3(Gson gson) {
+        return parseConfig(gson, "{\"sys\":{\"device\":{},\"location\":{}},\"wifi\":{},"
+                + "\"light:0\":{\"id\":0},\"light:1\":{\"id\":1},\"light:2\":{\"id\":2},\"light:3\":{\"id\":3}}");
+    }
+
     private ShellySettingsDevice deviceInfo() {
         ShellySettingsDevice dev = new ShellySettingsDevice();
         dev.type = "SNSW-001P16EU";
@@ -422,6 +438,36 @@ public class Shelly2GetDeviceProfileTest {
         StubApiClient client = new StubApiClient(discoveryConfig(), minimalConfig(gson));
         ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYUNKNOWN, dev);
         assertThat(profile.fwVersion, is("1.14.0"));
+    }
+
+    @Test
+    void plusRgbwPm_rgbwProfile_isRGBW2TrueAndInColorTrue() throws ShellyApiException {
+        Gson gson = new Gson();
+        StubApiClient client = new StubApiClient(discoveryConfig(), withRgbw0(gson));
+        ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYPLUSRGBWPM, deviceInfo());
+        assertThat(profile.isRGBW2, is(true));
+        assertThat(profile.inColor, is(true));
+        assertThat(profile.settings.lights.size(), is(1));
+    }
+
+    @Test
+    void plusRgbwPm_rgbProfile_isRGBW2TrueAndInColorTrue() throws ShellyApiException {
+        Gson gson = new Gson();
+        StubApiClient client = new StubApiClient(discoveryConfig(), withRgb0(gson));
+        ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYPLUSRGBWPM, deviceInfo());
+        assertThat(profile.isRGBW2, is(true));
+        assertThat(profile.inColor, is(true));
+        assertThat(profile.settings.lights.size(), is(1));
+    }
+
+    @Test
+    void plusRgbwPm_lightProfile_isRGBW2TrueAndInColorFalseAndFourChannels() throws ShellyApiException {
+        Gson gson = new Gson();
+        StubApiClient client = new StubApiClient(discoveryConfig(), withLight0To3(gson));
+        ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYPLUSRGBWPM, deviceInfo());
+        assertThat(profile.isRGBW2, is(true));
+        assertThat(profile.inColor, is(false));
+        assertThat(profile.settings.lights.size(), is(4));
     }
 
     @Test
