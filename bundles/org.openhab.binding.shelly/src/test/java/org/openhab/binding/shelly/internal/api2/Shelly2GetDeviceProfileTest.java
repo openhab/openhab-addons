@@ -320,7 +320,6 @@ public class Shelly2GetDeviceProfileTest {
     @Test
     void discovery_proDimmer1pm_emetersInitializedFromCapMap() throws ShellyApiException {
         Gson gson = new Gson();
-        // No pm1:x in config — numMeters must come from the THING_TYPE_CAP_NUM_METERS entry
         StubApiClient client = new StubApiClient(discoveryConfig(), withLight0(gson));
         ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYPRODIMMER1PM, deviceInfo());
         assertThat(profile.numMeters, is(1));
@@ -332,8 +331,7 @@ public class Shelly2GetDeviceProfileTest {
             // Only types present in THING_TYPE_CAP_NUM_METERS — IDs from ShellyDevices ThingTypeUID definitions
             "shellypro3em,       3", "shellyplus3em63,    3", "shellyproem50,      2", "shellyem3,          3",
             "shellypro2,         0", "shellypro3,         0", "shellyplus1l,       0", "shellyplus2l,       0",
-            // Pro Dimmer PM: power readings embedded in light:x, no pm1:x component
-            "shellyprodimmer1pm, 1", "shellyprodimmer2pm, 2", "shellyprodimmer10v, 1" })
+            "shellyprodimmer1pm, 1", "shellyprodm2pm, 2", "shellyprodimmer10v, 1" })
     void discovery_numMetersFromCapabilityMap(String thingTypeId, int expectedNumMeters) throws ShellyApiException {
         ThingTypeUID uid = new ThingTypeUID("shelly", thingTypeId);
         Gson gson = new Gson();
@@ -528,11 +526,8 @@ public class Shelly2GetDeviceProfileTest {
     }
 
     @ParameterizedTest(name = "{0} → isDimmer+hasRelays=true")
-    @CsvSource({
-            // Plus dimmers (single-channel) — reuse shellyplus* thing type → isGen2=true
-            "shellyplusdimmer", "shellypluswdus", "shellyplus10v", "shellyplusdalidimmer",
-            // Pro dimmers
-            "shellyprodimmer1pm", "shellyprodimmer2pm", "shellyprodimmer10v" })
+    @CsvSource({ "shellyplusdimmer", "shellypluswdus", "shellyplus10v", "shellyplusdalidimmer", "shellyprodimmer1pm",
+            "shellyprodm2pm", "shellyprodimmer10v" })
     void discovery_allGen2PlusDimmerTypes_isDimmerAndHasRelays(String thingTypeId) throws ShellyApiException {
         ThingTypeUID uid = new ThingTypeUID("shelly", thingTypeId);
         Gson gson = new Gson();

@@ -145,7 +145,7 @@ See section [Discovery](#discovery) for details.
 | shellypro3em3ct63   | Shelly Pro 3EM-3CT63 - single or three-phase energy meter          | SPEM-003CEBEU63                                |
 | shellypro3em400     | Shelly Pro 3EM-400 - 3-phase energy meter                          | SPEM-003CEBEU400                               |
 | shellyprodimmer1pm  | Shelly Pro Dimmer 1PM - Smart dimmer with power monitoring         | SPDM-001PE01EU                                 |
-| shellyprodimmer2pm  | Shelly Pro Dimmer 2PM - Dual channel smart dimmer with power meter | SPDM-002PE01EU                                 |
+| shellyprodm2pm      | Shelly Pro Dimmer 2PM - Dual channel smart dimmer with power meter | SPDM-002PE01EU                                 |
 | shellyprodimmer10v  | Shelly Pro Dimmer 0/1-10V PM - 0/1-10V dimming driver controller   | SPCC-001PE10EU                                 |
 
 ### Shelly BLU
@@ -1710,7 +1710,7 @@ When a brightness command is rejected the device may still turn on at full brigh
 Use the `brightnessAutoOn` configuration option to control whether brightness > 0 turns the light on.
 totalEnergy might reset on restart depending on device type and firmware version.
 
-### Shelly Pro Dimmer 2PM (thing-type: shellyprodimmer2pm)
+### Shelly Pro Dimmer 2PM (thing-type: shellyprodm2pm)
 
 The Pro Dimmer 2PM is a dual-channel dimmer.
 Each channel uses its own relay group (relay1/relay2) and power meter group (meter1/meter2).

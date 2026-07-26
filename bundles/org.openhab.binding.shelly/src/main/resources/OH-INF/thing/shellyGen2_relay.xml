@@ -595,7 +595,7 @@
 		<config-description-ref uri="thing-type:shelly:dimmer-gen2"/>
 	</thing-type>
 
-	<thing-type id="shellyprodimmer2pm">
+	<thing-type id="shellyprodm2pm">
 		<label>Shelly Pro Dimmer 2PM</label>
 		<description>DIN-rail mountable dual-channel smart dimmer with power monitoring</description>
 		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>

@@ -299,7 +299,7 @@ public class ShellyDevices {
     public static final ThingTypeUID THING_TYPE_SHELLYPRO3EM63 = new ThingTypeUID(BINDING_ID, "shellypro3em63");
     public static final ThingTypeUID THING_TYPE_SHELLYPRO3EM400 = new ThingTypeUID(BINDING_ID, "shellypro3em400");
     public static final ThingTypeUID THING_TYPE_SHELLYPRODIMMER1PM = new ThingTypeUID(BINDING_ID, "shellyprodimmer1pm");
-    public static final ThingTypeUID THING_TYPE_SHELLYPRODIMMER2PM = new ThingTypeUID(BINDING_ID, "shellyprodimmer2pm");
+    public static final ThingTypeUID THING_TYPE_SHELLYPRODIMMER2PM = new ThingTypeUID(BINDING_ID, "shellyprodm2pm");
     public static final ThingTypeUID THING_TYPE_SHELLYPRODIMMER10V = new ThingTypeUID(BINDING_ID, "shellyprodimmer10v");
 
     // Shelly Blu series
