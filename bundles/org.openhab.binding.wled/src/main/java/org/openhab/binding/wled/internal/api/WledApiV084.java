@@ -225,7 +225,7 @@ public class WledApiV084 implements WledApi {
             }
         } else {
             logger.debug(
-                    "Effects in JSON response are empty (either bridge isn't initialized properly (yet) or WLED firmware does not return them)");
+                    "Effects in JSON response are missing (either bridge isn't initialized properly (yet) or WLED firmware does not return them)");
         }
         return fxOptions;
     }
@@ -244,7 +244,7 @@ public class WledApiV084 implements WledApi {
             }
         } else {
             logger.debug(
-                    "Palettes in JSON response are empty (either bridge isn't initialized properly (yet) or WLED firmware does not return them)");
+                    "Palettes in JSON response are missing (either bridge isn't initialized properly (yet) or WLED firmware does not return them)");
         }
         return palleteOptions;
     }
