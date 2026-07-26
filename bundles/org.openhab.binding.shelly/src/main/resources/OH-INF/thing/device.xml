@@ -33,6 +33,8 @@
 				<option value="EXT_POWER">External power supply was connected</option>
 				<option value="BUTTON">Button was pressed</option>
 				<option value="SENSOR">Sensor data updated</option>
+				<option value="FLOOD">Water/flooding detected</option>
+				<option value="SENSOR_ERROR">Sensor error, e.g. cable unplugged</option>
 			</options>
 		</event>
 	</channel-type>
