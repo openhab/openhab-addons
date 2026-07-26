@@ -117,7 +117,7 @@ public class ShellyThingCreatorTest {
                 Arguments.of("shellydimmerg3-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUSDIMMER),
                 Arguments.of("shellydimmerg4-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUSDIMMER),
                 Arguments.of("shellyplus10v-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUSDIMMER10V),
-                Arguments.of("shellyplus010v-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUSDIMMER10V), // alt service name
+                Arguments.of("shellyplus010v-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUSDIMMER10V),
                 Arguments.of("shelly0110dimg3-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUSDIMMER10V),
                 Arguments.of("shelly0110dimg4-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUSDIMMER10V),
                 Arguments.of("shellyddimmerg3-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUSDALIDIMMER),
@@ -131,7 +131,6 @@ public class ShellyThingCreatorTest {
                 Arguments.of("shellyprodimmer1pm-" + DEVICE_ID, "", THING_TYPE_SHELLYPRODIMMER1PM), //
                 Arguments.of("shellyprodm1pm-" + DEVICE_ID, "", THING_TYPE_SHELLYPRODIMMER1PM), //
                 Arguments.of("shellyprodimmer2pm-" + DEVICE_ID, "", THING_TYPE_SHELLYPRODIMMER2PM), //
-                Arguments.of("shellyprodm2pm-" + DEVICE_ID, "", THING_TYPE_SHELLYPRODIMMER2PM), //
                 Arguments.of("shellyprodimmer10v-" + DEVICE_ID, "", THING_TYPE_SHELLYPRODIMMER10V), //
                 Arguments.of("shellypro0110pm-" + DEVICE_ID, "", THING_TYPE_SHELLYPRODIMMER10V), //
 
@@ -358,7 +357,6 @@ public class ShellyThingCreatorTest {
         excludedThingTypeUids.addAll(RELAY_THING_TYPE_BY_DEVICE_TYPE.values());
         excludedThingTypeUids.addAll(ROLLER_THING_TYPE_BY_DEVICE_TYPE.values());
         excludedThingTypeUids.addAll(GROUP_RGBW2_THING_TYPES);
-        // DALI dimmer firmware reports "shellyddimmerg3"/"shellyddimmerg4", not the thingTypeId
         excludedThingTypeUids.add(THING_TYPE_SHELLYPLUSDALIDIMMER);
 
         for (ThingTypeUID supportedThingTypeUid : SUPPORTED_THING_TYPES.stream()

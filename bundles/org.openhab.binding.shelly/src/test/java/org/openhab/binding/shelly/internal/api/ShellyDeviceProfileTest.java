@@ -56,21 +56,18 @@ public class ShellyDeviceProfileTest {
 
     private static Stream<Arguments> provideTestCasesForIsGeneration2ByServiceName() {
         return Stream.of( //
-                // Gen3/Gen4: contains("g3") / contains("g4") → true
                 Arguments.of("shellydimmerg3-aabbcc", true), //
                 Arguments.of("shellydimmerg4-aabbcc", true), //
                 Arguments.of("shelly0110dimg3-aabbcc", true), //
                 Arguments.of("shelly0110dimg4-aabbcc", true), //
                 Arguments.of("shellyddimmerg3-aabbcc", true), //
                 Arguments.of("shellyddimmerg4-aabbcc", true), //
-                // Plus/Pro dimmers: resolved via thingTypeUID (starts with shellyplus/shellypro)
                 Arguments.of("shellyplusdimmer-aabbcc", true), //
                 Arguments.of("shellyplus10v-aabbcc", true), //
                 Arguments.of("shellypluswdus-aabbcc", true), //
                 Arguments.of("shellyprodimmer1pm-aabbcc", true), //
                 Arguments.of("shellyprodimmer2pm-aabbcc", true), //
                 Arguments.of("shellyprodimmer10v-aabbcc", true), //
-                // Gen1 dimmers → false
                 Arguments.of("shellydimmer-aabbcc", false), //
                 Arguments.of("shellydimmer2-aabbcc", false)); //
     }
@@ -452,10 +449,8 @@ public class ShellyDeviceProfileTest {
 
     private static Stream<Arguments> provideTestCasesForDimmerProfileFlags() {
         return Stream.of( //
-                // Gen1 dimmers
                 Arguments.of(THING_TYPE_SHELLYDIMMER), //
                 Arguments.of(THING_TYPE_SHELLYDIMMER2), //
-                // Gen2/3/4 Plus/Pro dimmers
                 Arguments.of(THING_TYPE_SHELLYPLUSDIMMER), //
                 Arguments.of(THING_TYPE_SHELLYPLUSDIMMERUS), //
                 Arguments.of(THING_TYPE_SHELLYPLUSDIMMER10V), //
@@ -485,13 +480,10 @@ public class ShellyDeviceProfileTest {
 
     private static Stream<Arguments> provideTestCasesForDimmerInputGroup() {
         return Stream.of( //
-                // Single-channel dimmers: both inputs map to the same unnumbered group
                 Arguments.of(THING_TYPE_SHELLYDIMMER, 1, 2, 0, CHANNEL_GROUP_RELAY_CONTROL), //
                 Arguments.of(THING_TYPE_SHELLYDIMMER, 1, 2, 1, CHANNEL_GROUP_RELAY_CONTROL), //
-                // Multi-channel dimmers: inputs split evenly across numbered groups
                 Arguments.of(THING_TYPE_SHELLYPRODIMMER2PM, 2, 2, 0, CHANNEL_GROUP_RELAY_CONTROL + "1"), //
                 Arguments.of(THING_TYPE_SHELLYPRODIMMER2PM, 2, 2, 1, CHANNEL_GROUP_RELAY_CONTROL + "2"), //
-                // Guard: numInputs=0 for multi-channel dimmer must not cause divide-by-zero
                 Arguments.of(THING_TYPE_SHELLYPRODIMMER2PM, 2, 0, 0, CHANNEL_GROUP_RELAY_CONTROL)); //
     }
 
@@ -515,10 +507,8 @@ public class ShellyDeviceProfileTest {
 
     private static Stream<Arguments> provideTestCasesForDimmerInputSuffix() {
         return Stream.of( //
-                // Single-channel dimmers: inputs get 1-based numeric suffixes
                 Arguments.of(THING_TYPE_SHELLYDIMMER, 1, 2, 0, "1"), //
                 Arguments.of(THING_TYPE_SHELLYDIMMER, 1, 2, 1, "2"), //
-                // Multi-channel dimmers: suffix cycles within each dimmer's input set
                 Arguments.of(THING_TYPE_SHELLYPRODIMMER2PM, 2, 2, 0, "1"), //
                 Arguments.of(THING_TYPE_SHELLYPRODIMMER2PM, 2, 2, 1, "2")); //
     }
@@ -530,9 +520,9 @@ public class ShellyDeviceProfileTest {
         ShellySettingsDevice settingsDevice = new ShellySettingsDevice();
         settingsGlobal.relays = new ArrayList<>();
         ShellySettingsDimmer d0 = new ShellySettingsDimmer();
-        d0.btnType = "toggle"; // non-button mode
+        d0.btnType = "toggle";
         ShellySettingsDimmer d1 = new ShellySettingsDimmer();
-        d1.btnType = Shelly1ApiJsonDTO.SHELLY_BTNT_MOMENTARY; // button mode
+        d1.btnType = Shelly1ApiJsonDTO.SHELLY_BTNT_MOMENTARY;
         ArrayList<ShellySettingsDimmer> dimmers = new ArrayList<>();
         dimmers.add(d0);
         dimmers.add(d1);

@@ -18,6 +18,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 
+/**
+ * Tests for {@link Shelly1ApiJsonDTO#fixDimmerJson(String)}.
+ *
+ * @author Markus Michels - Initial contribution
+ */
 @NonNullByDefault
 public class Shelly1ApiJsonDTOTest {
 
@@ -45,11 +50,9 @@ public class Shelly1ApiJsonDTOTest {
 
     @Test
     void fixDimmerJsonReplacesFirstOccurrenceOnly() {
-        // Embed a second "lights":[ occurrence inside a nested object to ensure only the first is replaced
         String input = "{\"lights\":[{\"brightness\":50}],\"other\":{\"lights\":[{\"brightness\":80}]}}";
         String result = Shelly1ApiJsonDTO.fixDimmerJson(input);
         assertThat(result, containsString("\"dimmers\":["));
-        // The second occurrence is inside a nested key so it should remain untouched
         assertThat(result, containsString("\"lights\":[{\"brightness\":80}]"));
     }
 }
