@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Dispatches Smart Irrigation Controller webhook events to controller, zone, and schedule handlers.
  *
- * @author openHAB Contributors - Initial contribution
+ * @author Kovacs Istvan - Initial contribution
  */
 @NonNullByDefault
 class RachioIrrigationWebhookEventHandler implements RachioWebhookEventHandler {

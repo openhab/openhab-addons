@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.rachio.internal.api.json.RachioDeviceGsonDTO.RachioCloudDevice;
 import org.openhab.binding.rachio.internal.api.webhook.RachioWebhookResourceType;
@@ -33,6 +34,7 @@ import com.google.gson.JsonParser;
  *
  * @author Markus Michels - Initial contribution
  */
+@NonNullByDefault
 public class RachioApiGsonDTO {
     public static class RachioCloudPersonId {
         public String id = ""; // "id":"xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxx"
@@ -53,9 +55,9 @@ public class RachioApiGsonDTO {
         public long lastUpdateDate = -1;
         public String id = "";
         public String url = "";
-        public String externalId = "";
-        public RachioApiWebHookResourceId resourceId = new RachioApiWebHookResourceId();
-        public List<String> eventTypes = new ArrayList<>();
+        public @Nullable String externalId = "";
+        public @Nullable RachioApiWebHookResourceId resourceId = new RachioApiWebHookResourceId();
+        public @Nullable List<String> eventTypes = new ArrayList<>();
     }
 
     public static class RachioApiWebHookList {
@@ -191,16 +193,13 @@ public class RachioApiGsonDTO {
     }
 
     public static class RachioZoneStatus {
-        public Integer duration = 0;
+        public int duration = 0;
         public String scheduleType = "";
         public @Nullable Integer zoneNumber = 0;
         public String executionType = "";
         public String state = "";
         public String startTime = "";
         public String endTime = "";
-        // public Integer corId = 0; // currently unused
-        // public Integer seqId = 0; // currently unused
-        // public Integer ix = 0; // currently unused
     }
 
     public static class RachioCloudDelta {

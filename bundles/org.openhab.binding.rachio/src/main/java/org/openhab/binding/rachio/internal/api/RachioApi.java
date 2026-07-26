@@ -15,7 +15,6 @@ package org.openhab.binding.rachio.internal.api;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.*;
 import static org.openhab.binding.rachio.internal.RachioUtils.*;
 
-import java.lang.reflect.Field;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
@@ -28,14 +27,12 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -115,7 +112,7 @@ public class RachioApi {
     protected String userName = "";
     protected String fullName = "";
     protected String email = "";
-    protected @Nullable ThingUID bridgeUID = null;
+    protected @Nullable ThingUID bridgeUID;
 
     protected RachioApiResult lastApiResult = new RachioApiResult();
     private static final Map<String, ClientRateLimitManager> RATE_LIMIT_MANAGERS = new ConcurrentHashMap<>();
@@ -707,23 +704,23 @@ public class RachioApi {
         return property != null ? property : new RachioProperty();
     }
 
-    public Optional<RachioProperty> findPropertyByEntity(String entityId, String entityType) throws RachioApiException {
+    public @Nullable RachioProperty findPropertyByEntity(String entityId, String entityType) throws RachioApiException {
         String query = buildPropertyEntityQuery(entityId, entityType);
         logger.debug("Find Rachio property by entity type '{}'.", entityType);
         String json = httpGet(APIURL_CLOUD_REST_BASE + PROPERTY_FIND_BY_ENTITY, query, Priority.LOW).resultString;
         RachioPropertyEntityLookupResponse response = RachioPropertyEntityLookupResponse.fromJson(json);
-        return Optional.ofNullable(response.getProperty());
+        return response.getProperty();
     }
 
-    public Optional<RachioProperty> findPropertyForLocation(String locationId) throws RachioApiException {
+    public @Nullable RachioProperty findPropertyForLocation(String locationId) throws RachioApiException {
         return findPropertyByEntity(locationId, "locationId");
     }
 
-    public Optional<RachioProperty> findPropertyForBaseStation(String baseStationId) throws RachioApiException {
+    public @Nullable RachioProperty findPropertyForBaseStation(String baseStationId) throws RachioApiException {
         return findPropertyByEntity(baseStationId, "baseStationId");
     }
 
-    public Optional<RachioProperty> findPropertyForLightingArea(String lightingAreaId) throws RachioApiException {
+    public @Nullable RachioProperty findPropertyForLightingArea(String lightingAreaId) throws RachioApiException {
         return findPropertyByEntity(lightingAreaId, "lightingAreaId");
     }
 
@@ -1557,10 +1554,14 @@ public class RachioApi {
         List<RachioApiWebHookEntry> webhooks = parseWebHookList(json);
         logger.debug("Registered webhook count for target '{}': {}", target.describe(), webhooks.size());
         for (RachioApiWebHookEntry whe : webhooks) {
+            @Nullable
+            RachioApiWebHookResourceId resourceId = whe.resourceId;
+            @Nullable
+            String externalId = whe.externalId;
             logger.debug("WebHook: id='{}', callbackUrl={}, externalIdPresent={}, resourceId='{}'", whe.id,
-                    callbackUrlLogReference(whe.url), whe.externalId != null && !whe.externalId.isBlank(),
-                    whe.resourceId == null ? null : whe.resourceId.getResourceId(target.getResourceType()));
-            boolean matchesExternalId = externalIds.stream().anyMatch(id -> Objects.equals(whe.externalId, id));
+                    callbackUrlLogReference(whe.url), externalId != null && !externalId.isBlank(),
+                    resourceId == null ? null : resourceId.getResourceId(target.getResourceType()));
+            boolean matchesExternalId = externalIds.stream().anyMatch(id -> Objects.equals(externalId, id));
             boolean matchesExpectedWebhook = target.matches(whe, callbackUrl, expectedExternalId);
             if (deleteAll) {
                 try {
@@ -1639,10 +1640,12 @@ public class RachioApi {
             eventTypes = entry.get("event_types");
         }
         if (eventTypes != null && eventTypes.isJsonArray()) {
+            @Nullable
+            List<String> webhookEventTypes = webhook.eventTypes;
             for (JsonElement eventType : eventTypes.getAsJsonArray()) {
                 String normalizedEventType = parseWebHookEventType(eventType);
-                if (!normalizedEventType.isBlank()) {
-                    webhook.eventTypes.add(normalizedEventType);
+                if (webhookEventTypes != null && !normalizedEventType.isBlank()) {
+                    webhookEventTypes.add(normalizedEventType);
                 }
             }
         }
@@ -1767,7 +1770,6 @@ public class RachioApi {
 
             return digest;
         } catch (RuntimeException | NoSuchAlgorithmException e) {
-            // logger.warn("Unexpected exception while generating MD5: {} ({})", e.getMessage(), e.getClass());
             return "";
         }
     }
@@ -1812,47 +1814,5 @@ public class RachioApi {
             bytes[i / 2] = (byte) ((high << 4) + low);
         }
         return bytes;
-    }
-
-    @SuppressWarnings("rawtypes")
-    public static void copyMatchingFields(Object fromObj, Object toObj) {
-        Class fromClass = fromObj.getClass();
-        Class toClass = toObj.getClass();
-        Class superclass = Objects.requireNonNull(toClass.getSuperclass());
-
-        Field[] fields = fromClass.getFields(); // .getDeclaredFields();
-        for (Field f : fields) {
-            try {
-                String fname = f.getName();
-                Field t = superclass.getDeclaredField(fname);
-
-                if (t.getType() == f.getType()) {
-                    // extend this if to copy more immutable types if interested
-                    if (t.getType() == String.class || t.getType() == int.class || t.getType() == long.class
-                            || t.getType() == double.class || t.getType() == char.class || t.getType() == boolean.class
-                            || t.getType() == Double.class || t.getType() == Integer.class || t.getType() == Long.class
-                            || t.getType() == Character.class || t.getType() == Boolean.class) {
-                        f.setAccessible(true);
-                        t.setAccessible(true);
-                        t.set(toObj, f.get(fromObj));
-                    } else if (t.getType() == Date.class) {
-                        // dates are not immutable, so clone non-null dates into the destination object
-                        Date d = (Date) f.get(fromObj);
-                        f.setAccessible(true);
-                        t.setAccessible(true);
-                        t.set(toObj, d != null ? d.clone() : null);
-                    } else if (List.class.isAssignableFrom(t.getType())) {
-                        List<?> values = (List<?>) f.get(fromObj);
-                        f.setAccessible(true);
-                        t.setAccessible(true);
-                        t.set(toObj, values != null ? new ArrayList<>(values) : null);
-                    }
-                }
-            } catch (NoSuchFieldException ex) {
-                // skip it
-            } catch (IllegalAccessException ex) {
-                // Unable to copy field
-            }
-        }
     }
 }

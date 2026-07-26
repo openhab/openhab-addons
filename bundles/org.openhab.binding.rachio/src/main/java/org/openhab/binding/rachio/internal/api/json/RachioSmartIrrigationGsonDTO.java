@@ -38,7 +38,7 @@ import com.google.gson.JsonParser;
 /**
  * DTOs for Smart Irrigation Controller endpoints whose response schemas may contain undocumented fields.
  *
- * @author openHAB Contributors - Initial contribution
+ * @author Kovacs Istvan - Initial contribution
  */
 @NonNullByDefault
 public class RachioSmartIrrigationGsonDTO {

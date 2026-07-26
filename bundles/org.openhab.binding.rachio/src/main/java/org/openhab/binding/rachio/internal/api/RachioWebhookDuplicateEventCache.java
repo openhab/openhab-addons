@@ -25,7 +25,7 @@ import org.eclipse.jdt.annotation.Nullable;
 /**
  * Small bounded in-memory cache for deduplicating successfully processed Rachio webhook event IDs.
  *
- * @author openHAB Contributors - Initial contribution
+ * @author Kovacs Istvan - Initial contribution
  */
 @NonNullByDefault
 class RachioWebhookDuplicateEventCache {
@@ -33,7 +33,7 @@ class RachioWebhookDuplicateEventCache {
     private static final int DEFAULT_MAX_ENTRIES = 2048;
     private static final long CLEANUP_INTERVAL_MILLIS = Duration.ofMinutes(5).toMillis();
 
-    private final ConcurrentHashMap<String, Long> eventIds = new ConcurrentHashMap<>();
+    private final Map<String, Long> eventIds = new ConcurrentHashMap<>();
     private final AtomicLong lastCleanupMillis = new AtomicLong();
     private final long retentionMillis;
     private final int maxEntries;

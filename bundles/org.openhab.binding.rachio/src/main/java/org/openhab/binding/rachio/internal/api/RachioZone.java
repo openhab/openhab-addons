@@ -48,14 +48,31 @@ public class RachioZone extends RachioCloudZone {
     private String imageDownloadUrl = "";
 
     /**
-     * Use reflection to shallow copy simple type fields with matching names from one object to another
+     * Create a zone from the state returned by the Rachio Cloud API.
      *
-     * @param fromObj the object to copy from
-     * @param toObj the object to copy to
+     * @param zone cloud zone state
+     * @param uniqueId unique controller identifier used by the image servlet
      */
     public RachioZone(RachioCloudZone zone, String uniqueId) {
         try {
-            RachioApi.copyMatchingFields(zone, this);
+            id = zone.id;
+            zoneNumber = zone.zoneNumber;
+            name = zone.name;
+            enabled = zone.enabled;
+            availableWater = zone.availableWater;
+            rootZoneDepth = zone.rootZoneDepth;
+            managementAllowedDepletion = zone.managementAllowedDepletion;
+            efficiency = zone.efficiency;
+            yardAreaSquareFeet = zone.yardAreaSquareFeet;
+            imageUrl = zone.imageUrl;
+            lastWateredDate = zone.lastWateredDate;
+            scheduleDataModified = zone.scheduleDataModified;
+            fixedRuntime = zone.fixedRuntime;
+            saturatedDepthOfWater = zone.saturatedDepthOfWater;
+            depthOfWater = zone.depthOfWater;
+            maxRuntime = zone.maxRuntime;
+            runtimeNoMultiplier = zone.runtimeNoMultiplier;
+            runtime = zone.runtime;
             imageDownloadUrl = zone.imageUrl;
             if (zone.imageUrl.startsWith(SERVLET_IMAGE_URL_BASE)) {
                 // when trying to load the imageUrl Rachio doesn't add a ".png" and doesn't set the mime type. As a

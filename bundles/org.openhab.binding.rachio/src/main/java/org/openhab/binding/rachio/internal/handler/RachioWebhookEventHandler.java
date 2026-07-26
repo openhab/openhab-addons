@@ -19,7 +19,7 @@ import org.openhab.binding.rachio.internal.api.webhook.RachioWebhookResourceType
 /**
  * Handles webhook events for a resource family.
  *
- * @author openHAB Contributors - Initial contribution
+ * @author Kovacs Istvan - Initial contribution
  */
 @NonNullByDefault
 interface RachioWebhookEventHandler {

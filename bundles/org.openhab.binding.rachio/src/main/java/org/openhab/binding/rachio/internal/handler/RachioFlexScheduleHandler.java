@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Handles Rachio FlexScheduleRule Things.
  *
- * @author openHAB Contributors - Initial contribution
+ * @author Kovacs Istvan - Initial contribution
  */
 @NonNullByDefault
 public class RachioFlexScheduleHandler extends AbstractRachioThingHandler {

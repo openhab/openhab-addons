@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Dispatches Smart Hose Timer valve webhook events to Valve handlers.
  *
- * @author openHAB Contributors - Initial contribution
+ * @author Kovacs Istvan - Initial contribution
  */
 @NonNullByDefault
 class RachioValveWebhookEventHandler implements RachioWebhookEventHandler {

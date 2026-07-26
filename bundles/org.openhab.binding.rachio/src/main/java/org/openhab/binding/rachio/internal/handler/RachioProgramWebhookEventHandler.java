@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Dispatches Smart Hose Timer Program webhook events to matching Program Things.
  *
- * @author openHAB Contributors - Initial contribution
+ * @author Kovacs Istvan - Initial contribution
  */
 @NonNullByDefault
 class RachioProgramWebhookEventHandler implements RachioWebhookEventHandler {

@@ -25,11 +25,12 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.rachio.internal.api.json.RachioApiGsonDTO.RachioApiWebHookEntry;
+import org.openhab.binding.rachio.internal.api.json.RachioApiGsonDTO.RachioApiWebHookResourceId;
 
 /**
  * Describes one desired modern webhook registration target.
  *
- * @author openHAB Contributors - Initial contribution
+ * @author Kovacs Istvan - Initial contribution
  */
 @NonNullByDefault
 public class RachioWebhookTarget {
@@ -83,7 +84,9 @@ public class RachioWebhookTarget {
     }
 
     public boolean resourceMatches(RachioApiWebHookEntry webhook) {
-        return webhook.resourceId != null && Objects.equals(webhook.resourceId.getResourceId(resourceType), resourceId);
+        @Nullable
+        RachioApiWebHookResourceId webhookResourceId = webhook.resourceId;
+        return webhookResourceId != null && Objects.equals(webhookResourceId.getResourceId(resourceType), resourceId);
     }
 
     public boolean eventTypesMatch(@Nullable Collection<String> actualEventTypes) {

@@ -5,4 +5,5 @@
 
 	<name>Rachio Binding</name>
 	<description>Integrates Rachio irrigation controllers and Smart Hose Timer resources through the Rachio Cloud APIs.</description>
+	<connection>cloud</connection>
 </binding:binding>

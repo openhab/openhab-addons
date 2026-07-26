@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * Resource categories supported by the modern Rachio webhook API.
  *
- * @author openHAB Contributors - Initial contribution
+ * @author Kovacs Istvan - Initial contribution
  */
 @NonNullByDefault
 public enum RachioWebhookResourceType {

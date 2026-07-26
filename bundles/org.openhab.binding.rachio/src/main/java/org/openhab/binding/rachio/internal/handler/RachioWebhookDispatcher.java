@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Routes validated modern webhook events to resource-family handlers.
  *
- * @author openHAB Contributors - Initial contribution
+ * @author Kovacs Istvan - Initial contribution
  */
 @NonNullByDefault
 public class RachioWebhookDispatcher {

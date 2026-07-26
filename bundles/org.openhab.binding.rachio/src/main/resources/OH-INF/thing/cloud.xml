@@ -19,17 +19,17 @@
 				<description>Visit the Rachio Web App account settings to create an API key.</description>
 				<context>password</context>
 			</parameter>
-			<parameter name="pollingInterval" type="integer" min="30" step="30">
+			<parameter name="pollingInterval" type="integer" min="30" step="30" unit="s">
 				<label>Polling/Refresh Interval</label>
 				<description>Seconds between fetching values from the cloud service</description>
 				<default>120</default>
 			</parameter>
-			<parameter name="defaultRuntime" type="integer" min="30" step="30">
+			<parameter name="defaultRuntime" type="integer" min="30" step="30" unit="s">
 				<label>Default Runtime</label>
 				<description>Number of seconds to run a zone if no runtime is specified (=0)</description>
 				<default>120</default>
 			</parameter>
-			<parameter name="eventHistoryLookbackHours" type="integer" min="0" step="1">
+			<parameter name="eventHistoryLookbackHours" type="integer" min="0" step="1" unit="h">
 				<label>Event History Lookback</label>
 				<description>Hours of recent controller event history to retrieve. Set to 0 to disable event history polling.</description>
 				<default>24</default>
@@ -43,12 +43,12 @@
 					<option value="US">US</option>
 				</options>
 			</parameter>
-			<parameter name="hoseSummaryLookbackDays" type="integer" min="0" max="31" step="1">
+			<parameter name="hoseSummaryLookbackDays" type="integer" min="0" max="31" step="1" unit="d">
 				<label>Hose Timer Summary Lookback</label>
 				<description>Days of recent Smart Hose Timer summary data to retrieve.</description>
 				<default>2</default>
 			</parameter>
-			<parameter name="hoseSummaryLookaheadDays" type="integer" min="0" max="31" step="1">
+			<parameter name="hoseSummaryLookaheadDays" type="integer" min="0" max="31" step="1" unit="d">
 				<label>Hose Timer Summary Lookahead</label>
 				<description>Days of upcoming Smart Hose Timer summary data to retrieve.</description>
 				<default>7</default>

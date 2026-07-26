@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Non-user-facing extension point for future product-family webhook handlers.
  *
- * @author openHAB Contributors - Initial contribution
+ * @author Kovacs Istvan - Initial contribution
  */
 @NonNullByDefault
 class RachioPlaceholderWebhookEventHandler implements RachioWebhookEventHandler {

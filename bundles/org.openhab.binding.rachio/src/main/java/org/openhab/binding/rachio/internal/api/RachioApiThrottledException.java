@@ -22,7 +22,7 @@ import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager.RequestP
 /**
  * Signals that the binding intentionally deferred a Rachio API call due to local client-side rate protection.
  *
- * @author openHAB Contributors - Initial contribution
+ * @author Kovacs Istvan - Initial contribution
  */
 @NonNullByDefault
 public class RachioApiThrottledException extends RachioApiException {

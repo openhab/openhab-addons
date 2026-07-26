@@ -23,8 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.rachio.internal.RachioBindingConstants;
 import org.openhab.core.thing.Thing;
@@ -38,8 +38,9 @@ import com.google.gson.JsonParser;
 /**
  * DTOs for the Rachio Smart Hose Timer ValveService.
  *
- * @author openHAB Contributors - Initial contribution
+ * @author Kovacs Istvan - Initial contribution
  */
+@NonNullByDefault
 public class RachioSmartHoseTimerGsonDTO {
     private static final Gson GSON = new Gson();
 
@@ -401,23 +402,23 @@ public class RachioSmartHoseTimerGsonDTO {
             return runs;
         }
 
-        public Optional<RachioValveDayRun> findNextPlannedRun() {
+        public @Nullable RachioValveDayRun findNextPlannedRun() {
             long now = System.currentTimeMillis();
             return getRuns().stream().filter(run -> run.getStartEpochMillis() >= now)
-                    .min(Comparator.comparingLong(RachioValveDayRun::getStartEpochMillis));
+                    .min(Comparator.comparingLong(RachioValveDayRun::getStartEpochMillis)).orElse(null);
         }
 
-        public Optional<RachioValveDayRun> findNextSkippedRun() {
+        public @Nullable RachioValveDayRun findNextSkippedRun() {
             long now = System.currentTimeMillis();
             return getRuns().stream().filter(RachioValveDayRun::isSkipped)
                     .filter(run -> run.getStartEpochMillis() >= now)
-                    .min(Comparator.comparingLong(RachioValveDayRun::getStartEpochMillis));
+                    .min(Comparator.comparingLong(RachioValveDayRun::getStartEpochMillis)).orElse(null);
         }
 
-        public Optional<RachioValveDayRun> findLastCompletedRun() {
+        public @Nullable RachioValveDayRun findLastCompletedRun() {
             long now = System.currentTimeMillis();
             return getRuns().stream().filter(run -> !run.isSkipped()).filter(run -> run.getStartEpochMillis() <= now)
-                    .max(Comparator.comparingLong(RachioValveDayRun::getStartEpochMillis));
+                    .max(Comparator.comparingLong(RachioValveDayRun::getStartEpochMillis)).orElse(null);
         }
     }
 

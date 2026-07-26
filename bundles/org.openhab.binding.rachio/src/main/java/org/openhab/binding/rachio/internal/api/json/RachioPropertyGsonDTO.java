@@ -28,7 +28,7 @@ import com.google.gson.JsonParser;
  * DTOs for the modern Rachio Property Service. The service may include undocumented fields, so these DTOs keep only
  * stable top-level values and retain room for future entity-specific expansion.
  *
- * @author openHAB Contributors - Initial contribution
+ * @author Kovacs Istvan - Initial contribution
  */
 @NonNullByDefault
 public class RachioPropertyGsonDTO {

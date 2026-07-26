@@ -30,16 +30,18 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.rachio.internal.RachioConfiguration;
 import org.openhab.binding.rachio.internal.api.RachioApi;
 import org.openhab.binding.rachio.internal.api.RachioApiException;
@@ -66,6 +68,7 @@ import org.openhab.binding.rachio.internal.handler.RachioCloudWebhookRegistry.Cl
 import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager.Priority;
 import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager.RequestPurpose;
 import org.openhab.core.config.core.status.ConfigStatusMessage;
+import org.openhab.core.io.rest.WebhookService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -89,7 +92,7 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
     private static final long MIN_CLOUD_WEBHOOK_REFRESH_DELAY_SECONDS = 60;
     private static final long NO_CLOUD_WEBHOOK_GENERATION = -1;
     private static final Duration CLOUD_WEBHOOK_REFRESH_SAFETY_WINDOW = Duration.ofHours(1);
-    private static final String CLOUD_WEBHOOK_SERVICE_UNAVAILABLE = "WebhookServiceUnavailable";
+    private static final String CLOUD_WEBHOOK_SERVICE_UNAVAILABLE = RachioCloudWebhookRegistry.WEBHOOK_SERVICE_UNAVAILABLE;
     private static final String CLOUD_WEBHOOK_SERVICE_UNAVAILABLE_STATE = "cloud WebhookService unavailable";
     private static final String CLOUD_WEBHOOK_SERVICE_UNAVAILABLE_MESSAGE = "RachioCloud: openHAB core WebhookService is not available; automatic openHAB Cloud webhook URL acquisition is disabled on this runtime";
     private static final String MODERN_WEBHOOK_VERIFICATION_DEFERRED_STATE = "registered; verification deferred";
@@ -101,6 +104,7 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
     private RachioConfiguration thingConfig = new RachioConfiguration();
     private String personId = "";
     private final Set<RachioDiscoveryService> discoveryServices = new CopyOnWriteArraySet<>();
+    private final AtomicReference<@Nullable Future<?>> initializationJob = new AtomicReference<>();
     private @Nullable ScheduledFuture<?> cloudWebhookRefreshJob;
     private @Nullable String resolvedModernWebhookUrl;
     private long resolvedCloudWebhookGeneration = NO_CLOUD_WEBHOOK_GENERATION;
@@ -128,7 +132,7 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
         this(bridge, () -> null);
     }
 
-    public RachioBridgeHandler(final Bridge bridge, Supplier<@Nullable Object> webhookServiceSupplier) {
+    public RachioBridgeHandler(final Bridge bridge, Supplier<@Nullable WebhookService> webhookServiceSupplier) {
         this(bridge, new RachioCloudWebhookRegistry(webhookServiceSupplier));
     }
 
@@ -144,15 +148,36 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
      */
     @Override
     public void initialize() {
+        disposed = false;
+        RachioConfiguration.ResolvedConfiguration resolvedConfiguration = resolveEffectiveConfiguration();
+        thingConfig = resolvedConfiguration.configuration();
+        logResolvedConfiguration(resolvedConfiguration);
+
+        @Nullable
+        String configurationError = validateConfiguration();
+        if (configurationError != null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, configurationError);
+            return;
+        }
+
+        cancelInitializationJob();
+        Future<?> job = scheduler.submit(this::initializeBridge);
+        initializationJob.set(job);
+        if (disposed) {
+            cancelInitializationJob();
+        }
+    }
+
+    private void initializeBridge() {
         String errorMessage = "";
+        ThingStatusDetail errorStatusDetail = ThingStatusDetail.COMMUNICATION_ERROR;
 
         try {
-            RachioConfiguration.ResolvedConfiguration resolvedConfiguration = resolveEffectiveConfiguration();
-            thingConfig = resolvedConfiguration.configuration();
-            logResolvedConfiguration(resolvedConfiguration);
-
             logger.debug("RachioCloud: Connecting to Rachio Cloud");
             createCloudConnection(rachioApi, RefreshReason.INITIALIZATION);
+            if (disposed) {
+                return;
+            }
             updateProperties();
 
             // Pass BridgeUID to device, RachioDeviceHandler will fill DeviceUID
@@ -181,6 +206,7 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
             reconcileConfiguredWebhooks(RequestPurpose.INITIALIZATION);
         } catch (RachioApiException e) {
             errorMessage = e.toString();
+            errorStatusDetail = initializationErrorStatusDetail(e);
             if (e.getApiResult().isResponseRateLimit()) {
                 logger.warn("RachioCloud: Account is blocked due to rate limit, wait 24h and retry");
             }
@@ -189,11 +215,26 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
         } catch (RuntimeException e) {
             errorMessage = getString(e.getMessage());
         } finally {
-            if (!errorMessage.isEmpty()) {
+            if (!errorMessage.isEmpty() && !disposed) {
                 logger.debug("RachioCloud: {}", errorMessage);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
+                updateStatus(ThingStatus.OFFLINE, errorStatusDetail, errorMessage);
             }
         }
+    }
+
+    private @Nullable String validateConfiguration() {
+        if (thingConfig.apikey.isBlank()) {
+            return "Rachio API key is not set.";
+        }
+        return null;
+    }
+
+    private ThingStatusDetail initializationErrorStatusDetail(RachioApiException e) {
+        int responseCode = e.getApiResult().responseCode;
+        if (responseCode == HttpStatus.UNAUTHORIZED_401 || responseCode == HttpStatus.FORBIDDEN_403) {
+            return ThingStatusDetail.CONFIGURATION_ERROR;
+        }
+        return ThingStatusDetail.COMMUNICATION_ERROR;
     }
 
     /**
@@ -397,8 +438,16 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
     public void shutdown() {
         logger.info("RachioCloud: Shutting down");
         disposed = true;
+        cancelInitializationJob();
         releaseCloudWebhookUrl("bridge shutdown");
         super.shutdown();
+    }
+
+    private void cancelInitializationJob() {
+        Future<?> job = initializationJob.getAndSet(null);
+        if (job != null) {
+            job.cancel(true);
+        }
     }
 
     /**
@@ -562,19 +611,19 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
         return rachioApi.getProperty(propertyId);
     }
 
-    public Optional<RachioProperty> findPropertyByEntity(String entityId, String entityType) throws RachioApiException {
+    public @Nullable RachioProperty findPropertyByEntity(String entityId, String entityType) throws RachioApiException {
         return rachioApi.findPropertyByEntity(entityId, entityType);
     }
 
-    public Optional<RachioProperty> findPropertyForLocation(String locationId) throws RachioApiException {
+    public @Nullable RachioProperty findPropertyForLocation(String locationId) throws RachioApiException {
         return rachioApi.findPropertyForLocation(locationId);
     }
 
-    public Optional<RachioProperty> findPropertyForBaseStation(String baseStationId) throws RachioApiException {
+    public @Nullable RachioProperty findPropertyForBaseStation(String baseStationId) throws RachioApiException {
         return rachioApi.findPropertyForBaseStation(baseStationId);
     }
 
-    public Optional<RachioProperty> findPropertyForLightingArea(String lightingAreaId) throws RachioApiException {
+    public @Nullable RachioProperty findPropertyForLightingArea(String lightingAreaId) throws RachioApiException {
         return rachioApi.findPropertyForLightingArea(lightingAreaId);
     }
 
@@ -1213,15 +1262,16 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
             logger.warn("Unable to request openHAB Cloud webhook URL for Rachio; polling remains active, cause={}",
                     e.getClass().getSimpleName());
         } catch (CloudWebhookException e) {
-            if (CLOUD_WEBHOOK_SERVICE_UNAVAILABLE.equals(e.diagnosticCause())) {
+            String message = getString(e.getMessage());
+            if (CLOUD_WEBHOOK_SERVICE_UNAVAILABLE.equals(message)) {
                 if (updateWebhookRegistrationState(CLOUD_WEBHOOK_SERVICE_UNAVAILABLE_STATE)) {
                     logger.warn(CLOUD_WEBHOOK_SERVICE_UNAVAILABLE_MESSAGE);
                 }
                 return "";
             }
-            updateWebhookRegistrationState("cloud webhook URL unavailable: " + e.diagnosticCause());
+            updateWebhookRegistrationState("cloud webhook URL unavailable: " + message);
             logger.warn("Unable to request openHAB Cloud webhook URL for Rachio; polling remains active, cause={}",
-                    e.diagnosticCause());
+                    message);
         } catch (RachioApiException e) {
             updateWebhookRegistrationState("cloud webhook URL unavailable: " + e.getClass().getSimpleName());
             logger.warn("Unable to request openHAB Cloud webhook URL for Rachio; polling remains active, cause={}",
@@ -1556,6 +1606,7 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
     public synchronized void dispose() {
         logger.debug("RachioCloud: Disposing handler");
         disposed = true;
+        cancelInitializationJob();
         releaseCloudWebhookUrl("bridge disposal");
         super.dispose();
     }

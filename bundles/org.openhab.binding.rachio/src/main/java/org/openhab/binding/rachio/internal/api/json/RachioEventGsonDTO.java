@@ -155,7 +155,6 @@ public class RachioEventGsonDTO {
 
     public RachioApiResult apiResult = new RachioApiResult();
 
-    // public JsonArray eventDatas;
     public @Nullable Map<String, String> eventParms;
     public @Nullable Map<String, RachioEventProperty> deltaProperties;
 

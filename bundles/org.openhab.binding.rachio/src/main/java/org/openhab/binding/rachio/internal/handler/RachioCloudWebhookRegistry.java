@@ -14,11 +14,10 @@ package org.openhab.binding.rachio.internal.handler;
 
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.SERVLET_WEBHOOK_PATH;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.time.Instant;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -27,34 +26,39 @@ import java.util.function.Supplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.io.rest.Webhook;
+import org.openhab.core.io.rest.WebhookService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Shared owner for the single Rachio servlet path exposed through the openHAB Cloud webhook provider.
+ *
+ * @author Kovacs Istvan - Initial contribution
  */
 @NonNullByDefault
 public final class RachioCloudWebhookRegistry {
     private static final long CLOUD_WEBHOOK_REQUEST_TIMEOUT_SECONDS = 10;
+    static final String WEBHOOK_SERVICE_UNAVAILABLE = "openHAB core WebhookService is not available";
 
     private final Logger logger = LoggerFactory.getLogger(RachioCloudWebhookRegistry.class);
-    private final Supplier<@Nullable Object> webhookServiceSupplier;
+    private final Supplier<@Nullable WebhookService> webhookServiceSupplier;
     private final Set<String> activeConsumers = ConcurrentHashMap.newKeySet();
-    private @Nullable Object cachedWebhook;
-    private @Nullable Object cachedWebhookProvider;
+    private @Nullable Webhook cachedWebhook;
+    private @Nullable WebhookService cachedWebhookProvider;
     private long cachedWebhookGeneration;
 
-    public RachioCloudWebhookRegistry(Supplier<@Nullable Object> webhookServiceSupplier) {
+    public RachioCloudWebhookRegistry(Supplier<@Nullable WebhookService> webhookServiceSupplier) {
         this.webhookServiceSupplier = webhookServiceSupplier;
     }
 
     synchronized CloudWebhookLease acquire(String consumerId) throws CloudWebhookException, InterruptedException {
-        Object webhookService = webhookServiceSupplier.get();
+        WebhookService webhookService = webhookServiceSupplier.get();
         if (webhookService == null) {
-            throw new CloudWebhookException("WebhookServiceUnavailable");
+            throw new CloudWebhookException(WEBHOOK_SERVICE_UNAVAILABLE);
         }
 
-        Object webhook = cachedWebhook;
+        Webhook webhook = cachedWebhook;
         if (webhook != null && webhookService.equals(cachedWebhookProvider)) {
             CloudWebhookLease lease = webhookLease(webhook, cachedWebhookGeneration);
             activeConsumers.add(consumerId);
@@ -64,11 +68,15 @@ public final class RachioCloudWebhookRegistry {
         cachedWebhook = null;
         cachedWebhookProvider = webhookService;
 
-        CompletableFuture<?> webhookFuture = requestWebhook(webhookService);
+        CompletableFuture<Webhook> webhookFuture;
+        try {
+            webhookFuture = webhookService.requestWebhook(SERVLET_WEBHOOK_PATH);
+        } catch (RuntimeException e) {
+            throw new CloudWebhookException("Failed to request openHAB Cloud webhook URL", e);
+        }
         boolean consumerAdded = false;
         try {
-            webhook = requireNonNull(webhookFuture.get(CLOUD_WEBHOOK_REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS),
-                    "requestWebhook");
+            webhook = webhookFuture.get(CLOUD_WEBHOOK_REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
             CloudWebhookLease lease = webhookLease(webhook, cachedWebhookGeneration + 1);
             cachedWebhook = webhook;
             cachedWebhookGeneration++;
@@ -90,7 +98,8 @@ public final class RachioCloudWebhookRegistry {
             if (e instanceof CloudWebhookException cloudWebhookException) {
                 throw cloudWebhookException;
             }
-            throw new CloudWebhookException(webhookFailureCause(e), e);
+            throw new CloudWebhookException("Failed to request openHAB Cloud webhook URL",
+                    unwrapCompletionException(e));
         }
     }
 
@@ -100,21 +109,23 @@ public final class RachioCloudWebhookRegistry {
         }
 
         cachedWebhook = null;
-        Object webhookService = webhookServiceSupplier.get();
+        WebhookService webhookService = webhookServiceSupplier.get();
         cachedWebhookProvider = webhookService;
         if (webhookService == null) {
             return;
         }
 
         try {
-            removeWebhook(webhookService)
-                    .whenComplete((ignored, error) -> logger.debug("RachioCloud: openHAB Cloud webhook URL removal {}",
-                            error == null ? "completed" : "failed: " + webhookFailureCause(error)));
-        } catch (CloudWebhookException | RuntimeException e) {
-            String diagnosticCause = e instanceof CloudWebhookException cloudWebhookException
-                    ? cloudWebhookException.diagnosticCause()
-                    : e.getClass().getSimpleName();
-            logger.debug("RachioCloud: openHAB Cloud webhook URL removal failed: {}", diagnosticCause);
+            webhookService.removeWebhook(SERVLET_WEBHOOK_PATH).whenComplete((ignored, error) -> {
+                if (error == null) {
+                    logger.debug("RachioCloud: openHAB Cloud webhook URL removal completed");
+                } else {
+                    logger.debug("RachioCloud: Failed to remove openHAB Cloud webhook URL",
+                            unwrapCompletionException(error));
+                }
+            });
+        } catch (RuntimeException e) {
+            logger.debug("RachioCloud: Failed to remove openHAB Cloud webhook URL", e);
         }
     }
 
@@ -134,89 +145,25 @@ public final class RachioCloudWebhookRegistry {
         return activeConsumers.size();
     }
 
-    private CompletableFuture<?> requestWebhook(Object webhookService) throws CloudWebhookException {
-        return invokeCompletableFutureMethod(webhookService, "requestWebhook");
+    private CloudWebhookLease webhookLease(Webhook webhook, long generation) throws CloudWebhookException {
+        String urlString = webhook.url().toString();
+        if (urlString.isBlank()) {
+            throw new CloudWebhookException("openHAB Cloud webhook URL is blank");
+        }
+        return new CloudWebhookLease(urlString, webhook.expiresAt(), generation);
     }
 
-    private CompletableFuture<?> removeWebhook(Object webhookService) throws CloudWebhookException {
-        return invokeCompletableFutureMethod(webhookService, "removeWebhook");
-    }
-
-    private CompletableFuture<?> invokeCompletableFutureMethod(Object target, String methodName)
-            throws CloudWebhookException {
-        try {
+    private Throwable unwrapCompletionException(Throwable error) {
+        Throwable cause = error;
+        while (cause instanceof ExecutionException || cause instanceof CompletionException) {
             @Nullable
-            Object result = invokeMethod(target, methodName, SERVLET_WEBHOOK_PATH);
-            if (result instanceof CompletableFuture<?> future) {
-                return future;
+            Throwable nestedCause = cause.getCause();
+            if (nestedCause == null) {
+                break;
             }
-            throw new CloudWebhookException("ClassCastException",
-                    new ClassCastException(methodName + " did not return CompletableFuture"));
-        } catch (NoSuchMethodException | IllegalAccessException e) {
-            throw new CloudWebhookException(webhookFailureCause(e), e);
-        } catch (InvocationTargetException e) {
-            Throwable cause = invocationCause(e);
-            throw new CloudWebhookException(webhookFailureCause(cause), cause);
-        } catch (RuntimeException e) {
-            throw new CloudWebhookException(webhookFailureCause(e), e);
+            cause = nestedCause;
         }
-    }
-
-    private CloudWebhookLease webhookLease(Object webhook, long generation) throws CloudWebhookException {
-        try {
-            Object url = requireNonNull(invokeMethod(webhook, "url"), "url");
-            String urlString = url.toString();
-            if (urlString.isBlank()) {
-                throw new CloudWebhookException("IllegalArgumentException",
-                        new IllegalArgumentException("url().toString() returned blank"));
-            }
-
-            @Nullable
-            Object expiresAt = invokeMethod(webhook, "expiresAt");
-            if (!(expiresAt instanceof Instant expiration)) {
-                throw new CloudWebhookException("ClassCastException",
-                        new ClassCastException("expiresAt() did not return Instant"));
-            }
-            return new CloudWebhookLease(urlString, expiration, generation);
-        } catch (NoSuchMethodException | IllegalAccessException e) {
-            throw new CloudWebhookException(webhookFailureCause(e), e);
-        } catch (InvocationTargetException e) {
-            Throwable cause = invocationCause(e);
-            throw new CloudWebhookException(webhookFailureCause(cause), cause);
-        } catch (RuntimeException e) {
-            throw new CloudWebhookException(webhookFailureCause(e), e);
-        }
-    }
-
-    private Object requireNonNull(@Nullable Object value, String methodName) throws CloudWebhookException {
-        if (value == null) {
-            throw new CloudWebhookException("NullPointerException", new NullPointerException(methodName));
-        }
-        return value;
-    }
-
-    private @Nullable Object invokeMethod(Object target, String methodName, Object... args)
-            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        Method method = target.getClass().getMethod(methodName, parameterTypes(args));
-        return method.invoke(target, args);
-    }
-
-    private Class<?>[] parameterTypes(Object[] args) {
-        Class<?>[] parameterTypes = new Class<?>[args.length];
-        for (int i = 0; i < args.length; i++) {
-            parameterTypes[i] = args[i].getClass();
-        }
-        return parameterTypes;
-    }
-
-    private Throwable invocationCause(InvocationTargetException error) {
-        Throwable cause = error.getCause();
-        return cause != null ? cause : error;
-    }
-
-    private String webhookFailureCause(Throwable error) {
-        Throwable cause = error instanceof ExecutionException && error.getCause() != null ? error.getCause() : error;
-        return cause != null ? cause.getClass().getSimpleName() : error.getClass().getSimpleName();
+        return cause;
     }
 
     record CloudWebhookLease(String url, Instant expiresAt, long generation) {
@@ -225,19 +172,12 @@ public final class RachioCloudWebhookRegistry {
     static final class CloudWebhookException extends Exception {
         private static final long serialVersionUID = 1L;
 
-        private final String diagnosticCause;
-
-        CloudWebhookException(String diagnosticCause) {
-            this(diagnosticCause, null);
+        CloudWebhookException(String message) {
+            super(message);
         }
 
-        CloudWebhookException(String diagnosticCause, @Nullable Throwable cause) {
-            super(diagnosticCause, cause);
-            this.diagnosticCause = diagnosticCause;
-        }
-
-        String diagnosticCause() {
-            return diagnosticCause;
+        CloudWebhookException(String message, Throwable cause) {
+            super(message, cause);
         }
     }
 }

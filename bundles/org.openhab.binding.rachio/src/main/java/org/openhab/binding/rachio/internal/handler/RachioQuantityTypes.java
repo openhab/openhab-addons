@@ -37,7 +37,7 @@ import org.openhab.core.types.UnDefType;
 /**
  * Converts Rachio raw API values and channel commands to typed openHAB quantities.
  *
- * @author openHAB Contributors - Initial contribution
+ * @author Kovacs Istvan - Initial contribution
  */
 @NonNullByDefault
 final class RachioQuantityTypes {

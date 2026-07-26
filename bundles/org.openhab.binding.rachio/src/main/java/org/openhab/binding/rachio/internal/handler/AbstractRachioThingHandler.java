@@ -190,7 +190,8 @@ public abstract class AbstractRachioThingHandler extends BaseThingHandler implem
                 }
                 retryAction.run();
             }, delaySeconds, TimeUnit.SECONDS);
-            updateStatus(ThingStatus.INITIALIZING, ThingStatusDetail.NONE, INITIALIZATION_THROTTLE_STATUS_MESSAGE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    INITIALIZATION_THROTTLE_STATUS_MESSAGE);
             return delaySeconds;
         }
     }
@@ -247,7 +248,7 @@ public abstract class AbstractRachioThingHandler extends BaseThingHandler implem
 
     private synchronized void cancelLocalThrottleRetry() {
         ScheduledFuture<?> retryJob = localThrottleRetryJob;
-        if (retryJob != null && !retryJob.isCancelled()) {
+        if (retryJob != null) {
             retryJob.cancel(true);
         }
         localThrottleRetryJob = null;

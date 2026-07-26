@@ -204,8 +204,7 @@ public class RachioDiscoveryService extends AbstractDiscoveryService implements 
                             zone.getEnabled());
 
                     if (zone.getEnabled() == OnOffType.ON) {
-                        @SuppressWarnings({ "unchecked", "rawtypes" })
-                        Map<String, Object> zproperties = (Map) zone.fillProperties();
+                        Map<String, Object> zproperties = new HashMap<>(zone.fillProperties());
                         DiscoveryResult zoneDiscoveryResult = DiscoveryResultBuilder.create(zoneThingUID)
                                 .withProperties(zproperties).withRepresentationProperty(PROPERTY_ZONE_ID)
                                 .withBridge(bridgeUID).withLabel(dev.name + "[" + zone.zoneNumber + "]: " + zone.name)

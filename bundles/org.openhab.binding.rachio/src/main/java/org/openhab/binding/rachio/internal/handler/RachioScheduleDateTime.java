@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 /**
  * DateTime channel conversion for schedule-like Rachio API responses.
  *
- * @author openHAB Contributors - Initial contribution
+ * @author Kovacs Istvan - Initial contribution
  */
 @NonNullByDefault
 final class RachioScheduleDateTime {

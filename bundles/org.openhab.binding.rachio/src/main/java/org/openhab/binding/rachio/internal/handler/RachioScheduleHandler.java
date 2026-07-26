@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Handles Rachio ScheduleRule Things.
  *
- * @author openHAB Contributors - Initial contribution
+ * @author Kovacs Istvan - Initial contribution
  */
 @NonNullByDefault
 public class RachioScheduleHandler extends AbstractRachioThingHandler {

@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Handler for a Smart Hose Timer Program.
  *
- * @author openHAB Contributors - Initial contribution
+ * @author Kovacs Istvan - Initial contribution
  */
 @NonNullByDefault
 public class RachioValveProgramHandler extends AbstractRachioThingHandler {

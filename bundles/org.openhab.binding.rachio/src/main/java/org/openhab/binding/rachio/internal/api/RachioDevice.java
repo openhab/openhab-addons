@@ -19,6 +19,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -65,7 +66,7 @@ public class RachioDevice extends RachioCloudDevice {
     public @Nullable ThingUID bridgeUID;
     public @Nullable ThingUID devUID;
     private Map<String, RachioZone> zoneList = new HashMap<>();
-    private @Nullable RachioDeviceHandler thingHandler = null;
+    private @Nullable RachioDeviceHandler thingHandler;
     public @Nullable RachioCloudNetworkSettings network;
     public String scheduleName = "";
     public String currentScheduleId = "";
@@ -93,22 +94,34 @@ public class RachioDevice extends RachioCloudDevice {
     public String activeZoneName = "";
     public String activeZoneId = "";
 
-    @SuppressWarnings("unused")
     public RachioDevice(RachioCloudDevice device) {
         try {
-            RachioApi.copyMatchingFields(device, this);
+            createDate = device.createDate;
+            id = device.id;
+            status = device.status;
+            zones = new ArrayList<>(device.zones);
+            latitude = device.latitude;
+            longitude = device.longitude;
+            name = device.name;
+            scheduleRules = new ArrayList<>(device.scheduleRules);
+            serialNumber = device.serialNumber;
+            macAddress = device.macAddress;
+            rainDelayExpirationDate = device.rainDelayExpirationDate;
+            on = device.on;
+            flexScheduleRules = new ArrayList<>(device.flexScheduleRules);
+            model = device.model;
+            scheduleModeType = device.scheduleModeType;
+            deleted = device.deleted;
+            rainSensorTripped = device.rainSensorTripped;
+            homeKitCompatible = device.homeKitCompatible;
+            utcOffset = device.utcOffset;
             updateRainDelayFromExpirationDate();
             logger.trace("Adding device '{}' (id='{}', model='{}', on={}, status={}, deleted={})", device.name,
                     device.id, device.model, device.on, device.status, device.deleted);
             if (!device.deleted) {
-                zoneList = new HashMap<>(); // discard current list
-                for (int i = 0; i < device.zones.size(); i++) {
-                    RachioCloudZone zone = device.zones.get(i);
-                    if (true /* zone.enabled */) {
-                        zoneList.put(zone.id, new RachioZone(zone, getThingID()));
-                    } else {
-                        logger.trace("Zone '{}.{}[{}]' is disabled, skip.", device.name, zone.name, zone.zoneNumber);
-                    }
+                zoneList = new HashMap<>();
+                for (RachioCloudZone zone : device.zones) {
+                    zoneList.put(zone.id, new RachioZone(zone, getThingID()));
                 }
             }
         } catch (RuntimeException e) {

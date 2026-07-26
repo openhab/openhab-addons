@@ -33,6 +33,7 @@ import org.openhab.binding.rachio.internal.handler.RachioScheduleHandler;
 import org.openhab.binding.rachio.internal.handler.RachioValveHandler;
 import org.openhab.binding.rachio.internal.handler.RachioValveProgramHandler;
 import org.openhab.binding.rachio.internal.handler.RachioZoneHandler;
+import org.openhab.core.io.rest.WebhookService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -40,15 +41,13 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.framework.ServiceReference;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
-import org.osgi.util.tracker.ServiceTracker;
-import org.osgi.util.tracker.ServiceTrackerCustomizer;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,41 +60,38 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(service = { ThingHandlerFactory.class, RachioHandlerFactory.class }, immediate = true)
 public class RachioHandlerFactory extends BaseThingHandlerFactory {
-    private static final String WEBHOOK_SERVICE_FILTER = "(objectClass=org.openhab.core.io.rest.WebhookService)";
-
-    public class RachioBridge {
-        protected @Nullable RachioBridgeHandler cloudHandler;
-        protected @Nullable ThingUID uid;
-    }
-
     private final Logger logger = LoggerFactory.getLogger(RachioHandlerFactory.class);
-    private final Map<String, RachioBridge> bridgeList = new ConcurrentHashMap<>();
-    private final Map<ServiceReference<Object>, Object> trackedCloudWebhookProviders = new ConcurrentHashMap<>();
-    private volatile @Nullable Object webhookService;
-    private @Nullable ServiceTracker<Object, @Nullable Object> cloudWebhookProviderTracker;
+    private final Map<String, RachioBridgeHandler> bridgeList = new ConcurrentHashMap<>();
+    private volatile @Nullable WebhookService webhookService;
     private final RachioCloudWebhookRegistry cloudWebhookRegistry = new RachioCloudWebhookRegistry(
             this::getCloudWebhookProvider);
 
-    RachioHandlerFactory() {
+    @Activate
+    @Override
+    protected void activate(ComponentContext componentContext) {
+        super.activate(componentContext);
         logger.debug("RachioHandlerFactory: Initialized Rachio Thing handler.");
     }
 
-    /**
-     * OSGi activation callback.
-     *
-     */
-    @Activate
-    public RachioHandlerFactory(ComponentContext componentContext) {
-        super.activate(componentContext);
-        openCloudWebhookProviderTracker(componentContext.getBundleContext());
-        logger.debug("RachioHandlerFactory: Initialized Rachio Thing handler.");
+    @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
+    void setWebhookService(WebhookService service) {
+        updateCloudWebhookProvider(service);
+    }
+
+    void unsetWebhookService(WebhookService service) {
+        if (Objects.equals(webhookService, service)) {
+            updateCloudWebhookProvider(null);
+        }
     }
 
     @Deactivate
     @Override
     protected void deactivate(ComponentContext componentContext) {
-        closeCloudWebhookProviderTracker();
-        super.deactivate(componentContext);
+        try {
+            super.deactivate(componentContext);
+        } finally {
+            updateCloudWebhookProvider(null);
+        }
     }
 
     @Override
@@ -221,12 +217,7 @@ public class RachioHandlerFactory extends BaseThingHandlerFactory {
     public boolean isValidWebHookSignature(@Nullable String signature, byte[] requestBody) {
         boolean apiKeyAvailable = false;
 
-        for (Map.Entry<String, RachioBridge> be : bridgeList.entrySet()) {
-            RachioBridge bridge = be.getValue();
-            RachioBridgeHandler cloudHandler = bridge.cloudHandler;
-            if (cloudHandler == null) {
-                continue;
-            }
+        for (RachioBridgeHandler cloudHandler : bridgeList.values()) {
             String apikey = cloudHandler.getApiKey();
             if (apikey.isEmpty()) {
                 continue;
@@ -249,11 +240,7 @@ public class RachioHandlerFactory extends BaseThingHandlerFactory {
             return null;
         }
 
-        for (Map.Entry<String, RachioBridge> be : bridgeList.entrySet()) {
-            RachioBridgeHandler cloudHandler = be.getValue().cloudHandler;
-            if (cloudHandler == null) {
-                continue;
-            }
+        for (RachioBridgeHandler cloudHandler : bridgeList.values()) {
             String externalId = cloudHandler.getExternalId();
             if (externalId != null && !externalId.isBlank() && externalId.equals(expectedExternalId)) {
                 return cloudHandler;
@@ -266,29 +253,7 @@ public class RachioHandlerFactory extends BaseThingHandlerFactory {
         return value == null || value.isBlank();
     }
 
-    private void openCloudWebhookProviderTracker(BundleContext bundleContext) {
-        try {
-            ServiceTracker<Object, @Nullable Object> tracker = new ServiceTracker<>(bundleContext,
-                    bundleContext.createFilter(WEBHOOK_SERVICE_FILTER),
-                    new CloudWebhookProviderTrackerCustomizer(bundleContext));
-            cloudWebhookProviderTracker = tracker;
-            tracker.open();
-        } catch (InvalidSyntaxException e) {
-            logger.debug("RachioHandlerFactory: Unable to track openHAB core WebhookService: {}", e.getMessage());
-        }
-    }
-
-    private void closeCloudWebhookProviderTracker() {
-        ServiceTracker<Object, @Nullable Object> tracker = cloudWebhookProviderTracker;
-        cloudWebhookProviderTracker = null;
-        if (tracker != null) {
-            tracker.close();
-        }
-        trackedCloudWebhookProviders.clear();
-        updateCloudWebhookProvider(null);
-    }
-
-    void updateCloudWebhookProvider(@Nullable Object webhookService) {
+    void updateCloudWebhookProvider(@Nullable WebhookService webhookService) {
         if (Objects.equals(webhookService, this.webhookService)) {
             return;
         }
@@ -300,92 +265,20 @@ public class RachioHandlerFactory extends BaseThingHandlerFactory {
     }
 
     private void notifyCloudWebhookProviderChanged() {
-        for (RachioBridge bridge : bridgeList.values()) {
-            RachioBridgeHandler cloudHandler = bridge.cloudHandler;
-            if (cloudHandler != null) {
-                cloudHandler.onCloudWebhookProviderChanged();
-            }
+        for (RachioBridgeHandler cloudHandler : bridgeList.values()) {
+            cloudHandler.onCloudWebhookProviderChanged();
         }
     }
 
-    private @Nullable Object getCloudWebhookProvider() {
+    private @Nullable WebhookService getCloudWebhookProvider() {
         return webhookService;
-    }
-
-    @Nullable
-    Object addCloudWebhookProvider(BundleContext bundleContext, ServiceReference<Object> reference) {
-        @Nullable
-        Object service = getCloudWebhookProviderService(bundleContext, reference);
-        if (service == null) {
-            return null;
-        }
-        trackedCloudWebhookProviders.put(reference, service);
-        updateCloudWebhookProvider(service);
-        return service;
-    }
-
-    @SuppressWarnings("null")
-    private @Nullable Object getCloudWebhookProviderService(BundleContext bundleContext,
-            ServiceReference<Object> reference) {
-        return bundleContext.getService(reference);
-    }
-
-    void modifyCloudWebhookProvider(@Nullable ServiceReference<Object> reference, @Nullable Object service) {
-        if (reference == null || service == null || !trackedCloudWebhookProviders.containsKey(reference)) {
-            return;
-        }
-        trackedCloudWebhookProviders.put(reference, service);
-        updateCloudWebhookProvider(service);
-    }
-
-    void removeCloudWebhookProvider(BundleContext bundleContext, @Nullable ServiceReference<Object> reference) {
-        if (reference == null) {
-            return;
-        }
-        Object trackedService = trackedCloudWebhookProviders.remove(reference);
-        if (trackedService == null) {
-            return;
-        }
-        if (Objects.equals(trackedService, webhookService)) {
-            updateCloudWebhookProvider(trackedCloudWebhookProviders.values().stream().findFirst().orElse(null));
-        }
-        bundleContext.ungetService(reference);
-    }
-
-    private class CloudWebhookProviderTrackerCustomizer implements ServiceTrackerCustomizer<Object, @Nullable Object> {
-        private final BundleContext bundleContext;
-
-        CloudWebhookProviderTrackerCustomizer(BundleContext bundleContext) {
-            this.bundleContext = bundleContext;
-        }
-
-        @Override
-        public @Nullable Object addingService(@Nullable ServiceReference<Object> reference) {
-            if (reference == null) {
-                return null;
-            }
-            return addCloudWebhookProvider(bundleContext, reference);
-        }
-
-        @Override
-        public void modifiedService(@Nullable ServiceReference<Object> reference, @Nullable Object service) {
-            modifyCloudWebhookProvider(reference, service);
-        }
-
-        @Override
-        public void removedService(@Nullable ServiceReference<Object> reference, @Nullable Object service) {
-            removeCloudWebhookProvider(bundleContext, reference);
-        }
     }
 
     private @Nullable RachioBridgeHandler createBridge(Bridge bridgeThing) {
         try {
-            RachioBridge bridge = new RachioBridge();
             ThingUID bridgeUID = bridgeThing.getUID();
             RachioBridgeHandler cloudHandler = new RachioBridgeHandler(bridgeThing, cloudWebhookRegistry);
-            bridge.uid = bridgeUID;
-            bridge.cloudHandler = cloudHandler;
-            bridgeList.put(bridgeUID.toString(), bridge);
+            bridgeList.put(bridgeUID.toString(), cloudHandler);
             return cloudHandler;
         } catch (RuntimeException e) {
             logger.warn("RachioFactory: Unable to create bridge thing: {}: ", e.getMessage());

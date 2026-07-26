@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Handler for an individual Smart Hose Timer Valve.
  *
- * @author openHAB Contributors - Initial contribution
+ * @author Kovacs Istvan - Initial contribution
  */
 @NonNullByDefault
 public class RachioValveHandler extends AbstractRachioThingHandler {
@@ -272,9 +272,9 @@ public class RachioValveHandler extends AbstractRachioThingHandler {
         }
         try {
             RachioValveDayViewsResponse summary = handler.getValveDayViews(valveId);
-            nextPlannedRun = summary.findNextPlannedRun().orElse(null);
-            nextSkippedRun = summary.findNextSkippedRun().orElse(null);
-            lastCompletedRun = summary.findLastCompletedRun().orElse(null);
+            nextPlannedRun = summary.findNextPlannedRun();
+            nextSkippedRun = summary.findNextSkippedRun();
+            lastCompletedRun = summary.findLastCompletedRun();
             logger.debug("{}: Loaded Smart Hose Timer summary for valve '{}': {} day views", thingId, valveId,
                     summary.dayViews.size());
         } catch (RachioApiThrottledException e) {
