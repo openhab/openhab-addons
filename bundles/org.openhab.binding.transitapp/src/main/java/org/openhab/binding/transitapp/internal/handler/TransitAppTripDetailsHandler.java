@@ -56,14 +56,12 @@ public class TransitAppTripDetailsHandler extends BaseThingHandler {
     public void initialize() {
         logger.debug("Initializing TransitAppTripDetailsHandler for thing: {}", getThing().getUID());
 
-        // Read refresh interval configuration with fallback to 60 seconds
         Number refreshIntervalNum = (Number) getThing().getConfiguration().get("refreshInterval");
         long refreshInterval = refreshIntervalNum != null ? refreshIntervalNum.longValue() : 60L;
 
         logger.info("Scheduling trip details refresh job for {} with interval: {} seconds", getThing().getUID(),
                 refreshInterval);
 
-        // Schedule periodic background polling job
         refreshJob = scheduler.scheduleWithFixedDelay(this::pollTransitApi, 1, refreshInterval, TimeUnit.SECONDS);
         updateStatus(ThingStatus.ONLINE);
     }
@@ -118,7 +116,7 @@ public class TransitAppTripDetailsHandler extends BaseThingHandler {
                     logger.debug("DEBUG: Full JSON response for trip {}:\n{}", tripId, jsonBody);
                     updateStatus(ThingStatus.ONLINE);
 
-                    updateState("tripHeadsign", new StringType("Live Trip Data"));
+                    updateState("trip1#tripHeadsign", new StringType("Live Trip Data"));
                 } else {
                     logger.warn("WARN: Transit API returned status code {} for trip {}. Response body: {}", statusCode,
                             tripId, jsonBody);

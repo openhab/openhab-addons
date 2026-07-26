@@ -56,14 +56,12 @@ public class TransitAppStopHandler extends BaseThingHandler {
     public void initialize() {
         logger.debug("Initializing TransitAppStopHandler for thing: {}", getThing().getUID());
 
-        // Read refresh interval configuration with fallback to 60 seconds
         Number refreshIntervalNum = (Number) getThing().getConfiguration().get("refreshInterval");
         long refreshInterval = refreshIntervalNum != null ? refreshIntervalNum.longValue() : 60L;
 
         logger.info("Scheduling stop refresh job for {} with interval: {} seconds", getThing().getUID(),
                 refreshInterval);
 
-        // Schedule periodic background polling job
         refreshJob = scheduler.scheduleWithFixedDelay(this::pollTransitApi, 1, refreshInterval, TimeUnit.SECONDS);
         updateStatus(ThingStatus.ONLINE);
     }
@@ -118,7 +116,7 @@ public class TransitAppStopHandler extends BaseThingHandler {
                     logger.debug("DEBUG: Full JSON response for stop {}:\n{}", globalStopId, jsonBody);
                     updateStatus(ThingStatus.ONLINE);
 
-                    updateState("routeLongName-1", new StringType("Live Stop Data"));
+                    updateState("depart1#routeLongName", new StringType("Live Stop Data"));
                 } else {
                     logger.warn("WARN: Transit API returned status code {} for stop {}. Response body: {}", statusCode,
                             globalStopId, jsonBody);
