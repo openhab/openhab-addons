@@ -34,6 +34,7 @@ jobs:
         uses: actions/checkout@v7
         with:
           ref: refs/pull/${{github.event.pull_request.number}}/merge
+          fetch-depth: 2
 
       - name: Set up Cache
         uses: actions/cache@v6
@@ -57,19 +58,27 @@ jobs:
         run: |
           echo "::add-matcher::.github/openhab-compile-problems.json"
 
-      # pinning to SHA to mitigate possible supply chain attacks
       - name: Get Changed Files
         if: github.head_ref != ''
-        id: files
-        uses: Ana06/get-changed-files@25f79e676e7ea1868813e21465014798211fad8c # v2.3.0
-        with:
-          format: 'csv'
+        shell: bash
+        run: |
+          CHANGED_FILES_FILE="$RUNNER_TEMP/changed-files.txt"
+          echo "CHANGED_FILES_FILE=$CHANGED_FILES_FILE" >> "$GITHUB_ENV"
+          git diff --name-only --no-renames HEAD^1 HEAD > "$CHANGED_FILES_FILE"
+          count=$(wc -l < "$CHANGED_FILES_FILE")
+          echo "Found $count changed files."
+          echo "::group::Changed files"
+          if [[ -s "$CHANGED_FILES_FILE" ]]; then
+            cat "$CHANGED_FILES_FILE"
+          else
+            echo "No changed files found."
+          fi
+          echo "::endgroup::"
 
       - name: Build
         id: build
         run: bash './.github/scripts/maven-build'
         env:
-          CHANGED_FILES: ${{ steps.files.outputs.all }}
           MAVEN_OPTS: >-
             -Xmx8g
             -Dmaven.wagon.http.retryHandler.count=5
