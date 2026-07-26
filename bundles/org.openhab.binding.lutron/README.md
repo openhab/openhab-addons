@@ -94,8 +94,8 @@ If you have a system that supports both protocols, you must decide which you wis
 You should be aware of the following functional differences between the protocols:
 
 - Using LIP on Caseta you can’t receive notifications of occupancy group status changes (occupied/unoccupied/unknown), but using LEAP you can.
-- Conversely, LIP provides notifications of keypad key presses, while LEAP does not (as far as is currently known).
-This means that using ipbridge you can trigger rules and take actions on keypad key presses/releases, but using leapbridge you can’t.
+- Both protocols provide notifications of keypad button presses and releases, so you can trigger rules on button events using either bridge.
+On RadioRA 3 processors, LEAP also reports hold and multi-tap events, which fire the `LONG_PRESSED` and `DOUBLE_PRESSED` channel events.
 - Caseta and RA2 Select device discovery is supported via LEAP, but not via LIP.
 - The leapbridge is a bit more complicated to configure because LEAP uses an SSL connections and authenticates using certificates.
 - LIP is a publicly documented protocol, while LEAP is not. This means that Lutron could make a change that breaks LEAP support at any time.
@@ -272,29 +272,24 @@ Thing ogroup lrgroup [ integrationId=7 ]
 #### seeTouch and Hybrid seeTouch Keypads
 
 seeTouch and Hybrid seeTouch keypads are interfaced with using the **keypad** Thing.
-In addition to the usual `integrationId` parameter, it accepts `model` and `autorelease` parameters.
+In addition to the usual `integrationId` parameter, it accepts a `model` parameter.
 The `model` parameter should be set to the Lutron keypad model number.
 This will cause the handler to create only the appropriate channels for that particular keypad model.
 The default is "Generic", which will cause the handler to create all possible channels, some of which will likely not be appropriate for your model.
 
-The `autorelease` parameter is a boolean.
-Setting it to true will cause each button channel state to transition back to OFF (released) automatically after a going to ON when a button is pressed.
-Normally, a Lutron keypad will send a "pressed" event when a button is pressed, and a "released" event when it is released.
-The handler will set the button channel state to ON when it receives the "pressed" event, and "off" when it receives the "released" event.
-This allows you to take actions on both state changes.
-However, some integration applications such as Lutron Home+ only cause a "pressed" event to be generated when remotely "pressing" a button.
-A "release" is never sent, therefore the button channel would become "stuck" in the ON state.
-To prevent this the `autorelease` parameter defaults to true.
-If you do not use integration applications that exhibit this sort of anti-social behavior and you wish to trigger rules on both button press and release, you should set `autorelease` to false.
+A trigger channel _button[nn]_ is created for each button, and a state channel _led[nn]_ with item type Switch and category Light is created for each button indicator LED.
+Each button channel fires the `PRESSED` and `RELEASED` events as the physical button is pressed and released.
+Buttons programmed for hold or double-tap in the Lutron software additionally fire `LONG_PRESSED` and `DOUBLE_PRESSED` events.
+Because a hold-programmed button reports a hold instead of a release, a `RELEASED` event is fired immediately after `LONG_PRESSED` so that trigger profiles do not get stuck in the pressed state.
+This lets you trigger rules directly on button events without needing an intermediate Item (see the example below).
 
-The `autorelease` parameter also effects behavior when sending an ON command to a button channel to trigger a remote button press.
-If `autorelease` is set, the handler will send action "release" to the device component immediately after sending action "press".
-When the controller responds, the channel state will be transitioned back to OFF.
+If you prefer to drive an Item from a button, link the button channel to an Item using one of the built-in trigger [profiles](https://www.openhab.org/docs/configuration/items.html#profiles), for example `system:rawbutton-toggle-switch` to toggle a Switch on each press, or `system:rawbutton-on-off-switch` to follow the button's pressed/released state.
 
-A channel _button[nn]_ with item type Switch and category Switch is created for each button, and a channel _led[nn]_ with item type Switch and category Light is created for each button indicator LED.
-You can monitor button channels for ON and OFF state changes to indicate button presses and releases, and send ON and OFF commands to remotely press and release buttons.
-Ditto for the indicator LED channels.
+For the LED channels you can monitor ON and OFF state changes and send ON and OFF commands to drive the indicator LEDs.
 Note, however, that version 11.6 or higher of the RadioRA 2 software may be required in order to drive keypad LED states, and then this may only be done on unbound buttons.
+
+Button channels are trigger channels and do not accept commands.
+To invoke keypad programming from openHAB where the Lutron system provides integration (phantom) buttons, use the **virtualkeypad** Thing; this requires assigning the programming to an integration button in the Lutron software.
 
 Component numbering: For button and LED layouts and numbering, see the Lutron Integration Protocol Guide (rev. AA) p.104 (<https://www.lutron.com/TechnicalDocumentLibrary/040249.pdf>).
 If you are having problems determining which channels have been created for a given keypad model, select the appropriate keypad Thing under Settings/Things in the Administration UI and click on the Channels tab.
@@ -305,7 +300,7 @@ Supported settings for `model` parameter: H1RLD, H2RLD, H3BSRL, H3S, H4S, H5BRL,
 Thing configuration file example:
 
 ```java
-Thing keypad entrykeypad [ integrationId=10, model="W7B" autorelease=true ]
+Thing keypad entrykeypad [ integrationId=10, model="W7B" ]
 ```
 
 Example rule triggered by a keypad button press:
@@ -313,7 +308,7 @@ Example rule triggered by a keypad button press:
 ```java
 rule ExampleScene
 when
-  Item entrykeypad_button4 received update ON
+  Channel "lutron:keypad:radiora2:entrykeypad:button4" triggered PRESSED
 then
   Library1_Brightness.sendCommand(OFF)
 end
@@ -322,7 +317,7 @@ end
 #### Tabletop seeTouch Keypads
 
 Tabletop seeTouch keypads use the **ttkeypad** Thing.
-It accepts the same `integrationId`, `model`, and `autorelease` parameters and creates the same channel types as the **keypad** Thing.
+It accepts the same `integrationId` and `model` parameters and creates the same channel types as the **keypad** Thing.
 See the **keypad** section above for a full discussion of configuration and use.
 
 Component numbering: For button and LED layouts and numbering, see the Lutron Integration Protocol Guide (rev. AA) p.110 (<https://www.lutron.com/TechnicalDocumentLibrary/040249.pdf>).
@@ -334,18 +329,18 @@ Supported settings for `model` parameter: T5RL, T10RL, T15RL, T5CRL, T10CRL, T15
 Thing configuration file example:
 
 ```java
-Thing ttkeypad bedroomkeypad [ integrationId=11, model="T10RL" autorelease=true ]
+Thing ttkeypad bedroomkeypad [ integrationId=11, model="T10RL" ]
 ```
 
 #### International seeTouch Keypads (HomeWorks QS)
 
 International seeTouch keypads used in the HomeWorks QS system use the **intlkeypad** Thing.
-It accepts the same `integrationId`, `model`, and `autorelease` parameters and creates the same button and LED channel types as the **keypad** Thing.
+It accepts the same `integrationId` and `model` parameters and creates the same button and LED channel types as the **keypad** Thing.
 See the **keypad** section above for a full discussion of configuration and use.
 
 To support this keypad's contact closure inputs, CCI channels named _cci1_ and _cci2_ are created with item type Contact and category Switch.
 They are marked as Advanced, so you will need to check "Show advanced" in order to see them listed in the Administration UI.
-They present ON/OFF states the same as a keypad button.
+They present OPEN/CLOSED states but do not accept commands since Contact items are read-only in openHAB.
 
 Component numbering: For button and LED layouts and numbering, see the Lutron Integration Protocol Guide (rev. AA) p.107 (<https://www.lutron.com/TechnicalDocumentLibrary/040249.pdf>).
 If you are having problems determining which channels have been created for a given keypad model, select the appropriate intlkeypad Thing under Settings/Things in the Administration UI and click on the Channels tab.
@@ -356,13 +351,13 @@ Supported settings for `model` parameter: 2B, 3B, 4B, 5BRL, 6BRL, 7BRL, 8BRL, 10
 Thing configuration file example:
 
 ```java
-Thing intlkeypad kitchenkeypad [ integrationId=15, model="10BRL" autorelease=true ]
+Thing intlkeypad kitchenkeypad [ integrationId=15, model="10BRL" ]
 ```
 
 #### Palladiom Keypads (HomeWorks QS)
 
 Palladiom keypads used in the HomeWorks QS system use the **palladiomkeypad** Thing.
-It accepts the same `integrationId`, `model`, and `autorelease` parameters and creates the same button and LED channel types as the **keypad** Thing.
+It accepts the same `integrationId` and `model` parameters and creates the same button and LED channel types as the **keypad** Thing.
 See the **keypad** section above for a full discussion of configuration and use.
 
 Component numbering: For button and LED layouts and numbering, see the Lutron Integration Protocol Guide (rev. AA) p.95 (<https://www.lutron.com/TechnicalDocumentLibrary/040249.pdf>).
@@ -374,14 +369,15 @@ Supported settings for `model` parameter: 2W, 3W, 4W, RW, 22W, 24W, 42W, 44W, 2R
 Thing configuration file example:
 
 ```java
-Thing palladiomkeypad kitchenkeypad [ integrationId=16, model="4W" autorelease=true ]
+Thing palladiomkeypad kitchenkeypad [ integrationId=16, model="4W" ]
 ```
 
 #### Pico Keypads
 
 Pico keypads use the **pico** Thing.
-It accepts the same `integrationId`, `model`, and `autorelease` parameters and creates the same channel types as the **keypad** and **ttkeypad** things.
+It accepts the same `integrationId` and `model` parameters and creates the same channel types as the **keypad** and **ttkeypad** things.
 The only difference is that no LED channels will be created, since Pico keypads have no indicator LEDs.
+Note that Pico keypads only report `PRESSED` and `RELEASED` events; they do not support hold or double-tap reporting.
 See the discussion above for a full discussion of configuration and use.
 
 Component numbering: For button layouts and numbering, see the Lutron Integration Protocol Guide (rev. AA) p.113 (<https://www.lutron.com/TechnicalDocumentLibrary/040249.pdf>).
@@ -393,7 +389,7 @@ Supported settings for `model` parameter: 2B, 2BRL, 3B, 3BRL, 4B, Generic (defau
 Thing configuration file example:
 
 ```java
-Thing pico hallpico [ integrationId=12, model="3BRL", autorelease=true ]
+Thing pico hallpico [ integrationId=12, model="3BRL" ]
 ```
 
 #### GRAFIK Eye QS Keypads (in RadioRA 2/HomeWorks QS systems)
@@ -406,13 +402,13 @@ In this configuration, the integrated dimmers will appear to openHAB as separate
 If your GRAFIK Eye is being used as a stand-alone device and is not integrated in to a RadioRA 2 or HomeWorks QS system, then _this is not the Thing you are looking for_.
 You should instead be using the **grafikeye** Thing (see below).
 
-The **grafikeyekeypad** Thing accepts the same `integrationId`, `model`, and `autorelease` parameters and creates the same button, LED, and CCI, channel types as the other keypad things (see above).
+The **grafikeyekeypad** Thing accepts the same `integrationId` and `model` parameters and creates the same button, LED, and CCI, channel types as the other keypad things (see above).
 The model parameter should be set to indicate whether there are zero, one, two, or three columns of buttons on the left side of the panel.
 Note that this count does not include the column of 5 scene buttons always found on the right side of the panel.
 
 To support the GRAFIK Eye's contact closure input, a CCI channel named _cci1_ will be created with item type Contact and category Switch.
 It is marked as Advanced, so you will need to check "Show advanced" in order to see it listed in the Administration UI.
-It presents ON/OFF states the same as a keypad button.
+It presents OPEN/CLOSED states but does not accept commands since Contact items are read-only in openHAB.
 
 Component numbering: The buttons and LEDs on the GRAFIK Eye are numbered top to bottom, starting with the 5 scene buttons in a column on the right side of the panel, and then proceeding with the columns of buttons (if any) on the left side of the panel, working left to right.
 If you are having problems determining which channels have been created for a given model setting, select the appropriate grafikeyekeypad Thing under Settings/Things in the Administration UI and click on the Channels tab.
@@ -423,7 +419,7 @@ Supported settings for `model` parameter: 0COL, 1COL, 2COL, 3COL (default)
 Thing configuration file example:
 
 ```java
-Thing lutron:grafikeyekeypad:theaterkeypad (lutron:ipbridge:radiora2) [ integrationId=12, model="3COL", autorelease="true" ]
+Thing lutron:grafikeyekeypad:theaterkeypad (lutron:ipbridge:radiora2) [ integrationId=12, model="3COL" ]
 ```
 
 #### Virtual Keypads
@@ -437,7 +433,14 @@ This allows you to trigger your defined scenes via the virtual keypad buttons.
 For this to work, the optional `model` parameter must be set to `Caseta`.
 When used with Caseta, no virtual indicator LED channels are created.
 
-The behavior of this binding is the same as the other keypad bindings, with the exception that the button and LED channels created have the Advanced flag set.
+Unlike the physical keypad Things, the button channels of the **virtualkeypad** Thing are Switch state channels rather than trigger channels, because their primary use is sending ON/OFF commands from openHAB to activate the programming assigned to the integration buttons.
+
+The `autorelease` parameter is a boolean that defaults to true.
+When an ON command is sent to a button channel, the handler sends a "press" action to the device, immediately followed by a "release" action if `autorelease` is set, and the channel state then transitions back to OFF.
+This prevents the button channel from becoming stuck in the ON state, since some integration applications only generate a "pressed" event and never send a "release".
+If you wish to control press and release separately, set `autorelease` to false and send an ON command for press and an OFF command for release.
+
+The button and LED channels created have the Advanced flag set.
 This means, among other things, that you will need to check "Show advanced" in order to see them listed in the Administration UI.
 
 In most cases the integrationId parameter should be set to 1.
@@ -456,19 +459,19 @@ The Lutron VCRX appears to openHAB as multiple devices.
 The 6 buttons (which can be activated remotely by HomeLink remote controls), 6 corresponding LEDs, and 4 contact closure inputs (CCIs) are handled by the **vcrx** Thing, which behaves like a keypad.
 The contact closure outputs (CCOs) have their own integration IDs and are handled by the **cco** Thing (see below).
 
-Supported options are `integrationId` and `autorelease`.
+The only supported option is `integrationId`.
 Supplying a model is not required, as there is only one model.
+The 6 buttons are exposed as trigger channels, the same as the **keypad** Thing (see above).
 
 To support the contact closure inputs, CCI channels named _cci[n]_ are created with item type Contact and category Switch.
 The VCRX security (Full/Flash) input controls both the cci1 and cci2 channels, while input connections 1 and 2 map to the cci3 and cci4 channels respectively.
 The cci channels are marked as Advanced, so you will need to check "Show advanced" in order to see them listed in the Administration UI.
 They present OPEN/CLOSED states but do not accept commands since Contact items are read-only in openHAB.
-Note that the `autorelease` option **does not** apply to CCI channels.
 
 Thing configuration file example:
 
 ```java
-Thing vcrx vcrx1 [ integrationId=13, autorelease=true ]
+Thing vcrx vcrx1 [ integrationId=13 ]
 ```
 
 #### QS IO Interface (HomeWorks QS)
@@ -497,15 +500,16 @@ It is handled by the **wci** Thing.
 The 8 button inputs appear to the HomeWorks system as normal keypad buttons.
 There are also 8 LEDs, although they are normally hidden and thus mainly useful for setup and diagnostics.
 
-Supported options are `integrationId` and `autorelease`.
+The only supported option is `integrationId`.
 Supplying a model is not required, as there is only one model.
+The 8 button inputs are exposed as trigger channels, the same as the **keypad** Thing (see above).
 
 See the Lutron documentation for more information.
 
 Thing configuration file example:
 
 ```java
-Thing wci specialkeypad [ integrationId=48, autorelease=true ]
+Thing wci specialkeypad [ integrationId=48 ]
 ```
 
 #### CCO Modules
@@ -685,7 +689,8 @@ The following is a summary of channels for all RadioRA 2 binding things:
 | occupancysensor     | occupancystatus   | Switch        | Occupancy sensor status                      |
 | ogroup              | groupstate        | String        | Occupancy group status                       |
 | cco                 | switchstatus      | Switch        | On/off status of the CCO                     |
-| keypads (all)       | button*           | Switch        | Keypad button                                |
+| keypads (physical)  | button*           | Trigger       | Keypad button events (PRESSED/RELEASED/LONG_PRESSED/DOUBLE_PRESSED) |
+| virtualkeypad       | button*           | Switch        | Virtual keypad button                        |
 | keypads(except pico)| led*              | Switch        | LED indicator for the associated button      |
 | vcrx                | cci*              | Contact       | Contact closure input on/off status          |
 | shade               | shadelevel        | Rollershutter | Level of the shade (100% = full open)        |
@@ -714,8 +719,9 @@ Appropriate channels will be created automatically by the keypad, ttkeypad, intl
 |occ. sensor|occupancystatus|OnOffType     |(_readonly_)                                           |
 |ogroup     |groupstate     |StringType    |"OCCUPIED","UNOCCUPIED","UNKNOWN" (_readonly_)         |
 |cco        |switchstatus   |OnOffType     |OnOffType, RefreshType                                 |
-|keypads    |button*        |OnOffType     |OnOffType                                              |
-|           |led*           |OnOffType     |OnOffType, RefreshType                                 |
+|keypads (physical)|button* |n/a           |(_none - trigger channels do not accept commands_)     |
+|virtualkeypad|button*      |OnOffType     |OnOffType                                              |
+|keypads    |led*           |OnOffType     |OnOffType, RefreshType                                 |
 |           |cci*           |OpenClosedType|(_readonly_)                                           |
 |shade      |shadelevel     |PercentType   |PercentType, UpDownType, StopMoveType.STOP, RefreshType|
 |blind      |blindliftlevel |PercentType   |PercentType, UpDownType, StopMoveType.STOP, RefreshType|
@@ -743,10 +749,10 @@ Bridge lutron:ipbridge:radiora2 [ ipAddress="192.168.1.123", user="lutron", pass
         Thing dimmer lrtorch "Torch Lamp" @ "Living Room" [ integrationId=44, fadeInTime=0.5, fadeOutTime=5 ]
         Thing dimmer lrspot [ integrationId=38, fadeInTime=0.5, fadeOutTime=5 ]
         Thing switch path [ integrationId=61 ]
-        Thing keypad entrykeypad [ integrationId=64, model="W7B", autorelease=true ]
-        Thing ttkeypad bedroomkeypad [ integrationId=28, model="T15RL", autorelease=true ]
-        Thing pico librarypico [ integrationId=71, model="3BRL", autorelease=true ]
-        Thing vcrx vcrx1 [ integrationId=34, autorelease=true ]
+        Thing keypad entrykeypad [ integrationId=64, model="W7B" ]
+        Thing ttkeypad bedroomkeypad [ integrationId=28, model="T15RL" ]
+        Thing pico librarypico [ integrationId=71, model="3BRL" ]
+        Thing vcrx vcrx1 [ integrationId=34 ]
         Thing cco garage1 [ integrationId=75, outputType="Pulsed", pulseLength=0.5 ]
         Thing shade libraryshade1 [ integrationId=66]
         Thing greenmode greenmode [ integrationId=22 ]
@@ -761,7 +767,7 @@ demo.items:
 Dimmer   LivingRm_TableLamp  "Table Lamp"      { channel="lutron:dimmer:radiora2:lrtable:lightlevel" }
 Switch   FrontYard_PathLight "Path Light"      { channel="lutron:switch:radiora2:path:switchstatus" }
 Switch   LaundryRm_Sensor    "Occ Sensor"      { channel="lutron:occupancysensor:radiora2:laundryocc:occupancystatus" }
-Switch   Entryway_Keypad_B1  "Keypad Button 1" { channel="lutron:keypad:radiora2:entrykeypad:button1" }
+Switch   Entryway_Keypad_B1  "Keypad Button 1" { channel="lutron:keypad:radiora2:entrykeypad:button1" [profile="system:rawbutton-toggle-switch"] }
 Switch   Entryway_Keypad_L1  "Keypad LED 1"    { channel="lutron:keypad:radiora2:entrykeypad:led1" }
 Contact  Vcrx1_CCI1          "Input 1"         { channel="lutron:vcrx:radiora2:vcrx1:cci1" }
 Switch   Garage_CCO1         "Garage Door"     { channel="lutron:cco:radiora2:garage1:switchstatus" }
