@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -81,6 +82,7 @@ public class TransitAppRouteDetailsHandler extends BaseThingHandler {
 
         String routeId = (String) getThing().getConfiguration().get("routeId");
         if (routeId == null || routeId.isEmpty()) {
+            logger.debug("Polling route details for route ID");
             logger.error("ERROR: routeId is not configured for thing {}", getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Route ID is missing");
             return;
@@ -88,6 +90,7 @@ public class TransitAppRouteDetailsHandler extends BaseThingHandler {
 
         Bridge bridge = getBridge();
         if (bridge == null) {
+            logger.debug("Polling route details for route ID");
             logger.error("ERROR: Route details thing {} is not attached to a Bridge!", getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Bridge not found");
             return;
@@ -95,6 +98,7 @@ public class TransitAppRouteDetailsHandler extends BaseThingHandler {
 
         String apiKey = (String) bridge.getConfiguration().get("apiKey");
         if (apiKey == null || apiKey.isEmpty()) {
+            logger.debug("Polling route details for route ID");
             logger.error("ERROR: API Key is missing on the TransitApp Bridge!");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "API Key missing on bridge");
             return;
@@ -113,20 +117,23 @@ public class TransitAppRouteDetailsHandler extends BaseThingHandler {
 
                 if (statusCode == 200) {
                     logger.info("INFO: Successfully polled route details for route ID {}", routeId);
-                    logger.debug("DEBUG: Full JSON response for route {}:\n{}", routeId, jsonBody);
+                    logger.debug("DEBUG: Full JSON response for route {}: {}", routeId, jsonBody);
                     updateStatus(ThingStatus.ONLINE);
 
                     updateState("route#routeLongName", new StringType("Live Route Data"));
+                    updateState("route#activeAlertsCount", new DecimalType(0));
                 } else {
                     logger.warn("WARN: Transit API returned status code {} for route {}. Response body: {}", statusCode,
                             routeId, jsonBody);
                 }
             }).exceptionally(ex -> {
+                logger.debug("Polling route details for route ID");
                 logger.error("ERROR: Exception occurred while polling Transit API for route {}: {}", routeId,
                         ex.getMessage(), ex);
                 return null;
             });
         } catch (Exception e) {
+            logger.debug("Polling route details for route ID");
             logger.error("ERROR: Failed to create HTTP request for route {}: {}", routeId, e.getMessage(), e);
         }
     }
@@ -134,8 +141,9 @@ public class TransitAppRouteDetailsHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         logger.debug("Disposing TransitAppRouteDetailsHandler for thing: {}", getThing().getUID());
-        if (refreshJob != null) {
-            refreshJob.cancel(true);
+        ScheduledFuture<?> job = refreshJob;
+        if (job != null) {
+            job.cancel(true);
         }
         super.dispose();
     }

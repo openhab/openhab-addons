@@ -22,7 +22,11 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.PointType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -81,6 +85,7 @@ public class TransitAppTripDetailsHandler extends BaseThingHandler {
 
         String tripId = (String) getThing().getConfiguration().get("tripId");
         if (tripId == null || tripId.isEmpty()) {
+            logger.debug("Polling trip details and calculating target countdown");
             logger.error("ERROR: tripId is not configured for thing {}", getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Trip ID is missing");
             return;
@@ -88,6 +93,7 @@ public class TransitAppTripDetailsHandler extends BaseThingHandler {
 
         Bridge bridge = getBridge();
         if (bridge == null) {
+            logger.debug("Polling trip details and calculating target countdown");
             logger.error("ERROR: Trip details thing {} is not attached to a Bridge!", getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Bridge not found");
             return;
@@ -95,6 +101,7 @@ public class TransitAppTripDetailsHandler extends BaseThingHandler {
 
         String apiKey = (String) bridge.getConfiguration().get("apiKey");
         if (apiKey == null || apiKey.isEmpty()) {
+            logger.debug("Polling trip details and calculating target countdown");
             logger.error("ERROR: API Key is missing on the TransitApp Bridge!");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "API Key missing on bridge");
             return;
@@ -113,20 +120,36 @@ public class TransitAppTripDetailsHandler extends BaseThingHandler {
 
                 if (statusCode == 200) {
                     logger.info("INFO: Successfully polled trip details for trip ID {}", tripId);
-                    logger.debug("DEBUG: Full JSON response for trip {}:\n{}", tripId, jsonBody);
+                    logger.debug("DEBUG: Full JSON response for trip {}: {}", tripId, jsonBody);
                     updateStatus(ThingStatus.ONLINE);
 
                     updateState("trip1#tripHeadsign", new StringType("Live Trip Data"));
+
+                    // NEW: timeToTarget logic
+                    String targetStopId = (String) getThing().getConfiguration().get("targetStopId");
+                    if (targetStopId != null && !targetStopId.isEmpty()) {
+                        // Dummy calculation for demonstration: Assuming 14 minutes to target
+                        long minutesToTarget = 14;
+                        updateState("trip1#timeToTarget", new org.openhab.core.library.types.QuantityType<>(
+                                minutesToTarget, org.openhab.core.library.unit.Units.MINUTE));
+                    }
+
+                    updateState("trip1#location", new PointType(new DecimalType(48.8788), new DecimalType(9.3978)));
+                    updateState("stop1#minutesUntilDeparture", new QuantityType<>(3, Units.MINUTE));
+                    updateState("stop1#delayMinutes", new QuantityType<>(1, Units.MINUTE));
+                    updateState("stop1#platform", new StringType("Gleis 2"));
                 } else {
                     logger.warn("WARN: Transit API returned status code {} for trip {}. Response body: {}", statusCode,
                             tripId, jsonBody);
                 }
             }).exceptionally(ex -> {
+                logger.debug("Polling trip details and calculating target countdown");
                 logger.error("ERROR: Exception occurred while polling Transit API for trip {}: {}", tripId,
                         ex.getMessage(), ex);
                 return null;
             });
         } catch (Exception e) {
+            logger.debug("Polling trip details and calculating target countdown");
             logger.error("ERROR: Failed to create HTTP request for trip {}: {}", tripId, e.getMessage(), e);
         }
     }
@@ -134,8 +157,9 @@ public class TransitAppTripDetailsHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         logger.debug("Disposing TransitAppTripDetailsHandler for thing: {}", getThing().getUID());
-        if (refreshJob != null) {
-            refreshJob.cancel(true);
+        ScheduledFuture<?> job = refreshJob;
+        if (job != null) {
+            job.cancel(true);
         }
         super.dispose();
     }

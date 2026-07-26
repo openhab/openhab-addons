@@ -108,6 +108,10 @@
 				<description>Time in seconds between updates.</description>
 				<default>60</default>
 			</parameter>
+			<parameter name="targetStopId" type="text" required="false">
+				<label>Target Stop ID</label>
+				<description>Destination stop ID to calculate the timeToTarget countdown.</description>
+			</parameter>
 		</config-description>
 	</thing-type>
 
@@ -118,6 +122,11 @@
 			<channel id="routeShortName" typeId="routeShortName"/>
 			<channel id="departureTime" typeId="departureTime"/>
 			<channel id="isCancelled" typeId="isCancelled"/>
+			<channel id="minutesUntilDeparture" typeId="minutesUntilDeparture"/>
+			<channel id="delayMinutes" typeId="delayMinutes"/>
+			<channel id="platform" typeId="platform"/>
+			<channel id="wheelchairAccessible" typeId="isCancelled"/>
+			<channel id="occupancy" typeId="routeShortName"/>
 		</channels>
 	</channel-group-type>
 
@@ -137,6 +146,8 @@
 			<channel id="alertSeverity" typeId="alertSeverity"/>
 			<channel id="startLocation" typeId="stopName"/>
 			<channel id="destinationLocation" typeId="stopName"/>
+			<channel id="activeAlertsCount" typeId="activeAlertsCount"/>
+			<channel id="url" typeId="routeLongName"/>
 		</channels>
 	</channel-group-type>
 
@@ -151,6 +162,10 @@
 			<channel id="routeColor" typeId="routeColor"/>
 			<channel id="modeName" typeId="modeName"/>
 			<channel id="vehicleName" typeId="vehicleName"/>
+			<channel id="location" typeId="location"/>
+			<channel id="occupancy" typeId="routeShortName"/>
+			<channel id="timeToTarget" typeId="timeToTarget"/>
+			<channel id="bikesAllowed" typeId="isCancelled"/>
 		</channels>
 	</channel-group-type>
 
@@ -160,7 +175,9 @@
 			<channel id="stopName" typeId="stopName"/>
 			<channel id="scheduledTime" typeId="departureTime"/>
 			<channel id="realtimeTime" typeId="departureTime"/>
-			<channel id="delayMinutes" typeId="routeShortName"/>
+			<channel id="delayMinutes" typeId="delayMinutes"/>
+			<channel id="minutesUntilDeparture" typeId="minutesUntilDeparture"/>
+			<channel id="platform" typeId="platform"/>
 		</channels>
 	</channel-group-type>
 
@@ -264,6 +281,43 @@
 		<item-type>String</item-type>
 		<label>Alert Severity</label>
 		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="minutesUntilDeparture">
+		<item-type>Number:Time</item-type>
+		<label>Minutes Until Departure</label>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="delayMinutes">
+		<item-type>Number:Time</item-type>
+		<label>Delay</label>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="platform">
+		<item-type>String</item-type>
+		<label>Platform / Track</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="activeAlertsCount">
+		<item-type>Number</item-type>
+		<label>Active Alerts Count</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="location">
+		<item-type>Location</item-type>
+		<label>Vehicle Location</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="timeToTarget">
+		<item-type>Number:Time</item-type>
+		<label>@text/channel.timeToTarget.label</label>
+		<description>@text/channel.timeToTarget.description</description>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 </thing:thing-descriptions>

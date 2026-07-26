@@ -61,6 +61,7 @@ public class TransitAppBridgeHandler extends BaseBridgeHandler {
                 logger.info("Transit API connection verified successfully! Status code: {}.", statusCode);
                 updateStatus(ThingStatus.ONLINE);
             } else if (statusCode == 401 || statusCode == 403) {
+                logger.info("Initializing TransitApp Bridge Handler");
                 logger.error("API Authentication failed with status code {}.", statusCode);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "API Authentication Failed (Status: " + statusCode + ")");
@@ -69,6 +70,7 @@ public class TransitAppBridgeHandler extends BaseBridgeHandler {
                 updateStatus(ThingStatus.ONLINE);
             }
         }).exceptionally(e -> {
+            logger.info("Initializing TransitApp Bridge Handler");
             logger.error("Failed to connect to Transit API: {}", e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Connection Failed: " + e.getMessage());

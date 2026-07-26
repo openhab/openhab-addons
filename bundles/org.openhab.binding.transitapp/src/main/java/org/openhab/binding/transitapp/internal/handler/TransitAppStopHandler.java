@@ -12,17 +12,15 @@
  */
 package org.openhab.binding.transitapp.internal.handler;
 
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.transitapp.internal.net.TransitApiClient;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -34,18 +32,11 @@ import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * The {@link TransitAppStopHandler} is responsible for handling commands and polling
- * real-time stop departures from the Transit API at configured intervals.
- *
- * @author Initial contribution - Initial contribution
- */
 @NonNullByDefault
 public class TransitAppStopHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(TransitAppStopHandler.class);
-    private final HttpClient httpClient = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(10)).build();
-
+    private final TransitApiClient apiClient = new TransitApiClient();
     private @Nullable ScheduledFuture<?> refreshJob;
 
     public TransitAppStopHandler(Thing thing) {
@@ -54,88 +45,58 @@ public class TransitAppStopHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Initializing TransitAppStopHandler for thing: {}", getThing().getUID());
-
         Number refreshIntervalNum = (Number) getThing().getConfiguration().get("refreshInterval");
         long refreshInterval = refreshIntervalNum != null ? refreshIntervalNum.longValue() : 60L;
-
-        logger.info("Scheduling stop refresh job for {} with interval: {} seconds", getThing().getUID(),
-                refreshInterval);
-
         refreshJob = scheduler.scheduleWithFixedDelay(this::pollTransitApi, 1, refreshInterval, TimeUnit.SECONDS);
         updateStatus(ThingStatus.ONLINE);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("Received command {} for channel {}", command, channelUID);
         if (command instanceof RefreshType) {
             pollTransitApi();
-        } else {
-            logger.warn("Unsupported command received: {} for channel {}", command, channelUID);
         }
     }
 
     private void pollTransitApi() {
-        logger.trace("TRACE: Starting background poll for stop thing {}", getThing().getUID());
-
         String globalStopId = (String) getThing().getConfiguration().get("globalStopId");
-        if (globalStopId == null || globalStopId.isEmpty()) {
-            logger.error("ERROR: globalStopId is not configured for thing {}", getThing().getUID());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Global Stop ID is missing");
-            return;
-        }
-
         Bridge bridge = getBridge();
-        if (bridge == null) {
-            logger.error("ERROR: Stop thing {} is not attached to a Bridge!", getThing().getUID());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Bridge not found");
+
+        if (globalStopId == null || globalStopId.isEmpty() || bridge == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Stop ID or Bridge missing");
             return;
         }
 
         String apiKey = (String) bridge.getConfiguration().get("apiKey");
-        if (apiKey == null || apiKey.isEmpty()) {
-            logger.error("ERROR: API Key is missing on the TransitApp Bridge!");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "API Key missing on bridge");
-            return;
-        }
-
         try {
-            String urlStr = "https://external.transitapp.com/v4/public/stop_departures?global_stop_id=" + globalStopId;
-            logger.debug("DEBUG: Building HTTP request for Stop URL: {}", urlStr);
+            String response = apiClient.fetchStopDepartures(apiKey, globalStopId);
+            logger.debug("Polling transit API for stop ID: {}", globalStopId);
+            logger.trace("Received raw JSON response for stop {}: {}", globalStopId, response);
+            updateStatus(ThingStatus.ONLINE);
 
-            HttpRequest request = HttpRequest.newBuilder().uri(URI.create(urlStr)).header("apiKey", apiKey).GET()
-                    .build();
+            // Trigger Event Channel on success as an example
+            triggerChannel(new ChannelUID(getThing().getUID(), "service-alarm"), "UPDATE - API polled successfully");
 
-            httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenAccept(response -> {
-                int statusCode = response.statusCode();
-                String jsonBody = response.body();
-
-                if (statusCode == 200) {
-                    logger.info("INFO: Successfully polled stop departures for stop ID {}", globalStopId);
-                    logger.debug("DEBUG: Full JSON response for stop {}:\n{}", globalStopId, jsonBody);
-                    updateStatus(ThingStatus.ONLINE);
-
-                    updateState("depart1#routeLongName", new StringType("Live Stop Data"));
-                } else {
-                    logger.warn("WARN: Transit API returned status code {} for stop {}. Response body: {}", statusCode,
-                            globalStopId, jsonBody);
-                }
-            }).exceptionally(ex -> {
-                logger.error("ERROR: Exception occurred while polling Transit API for stop {}: {}", globalStopId,
-                        ex.getMessage(), ex);
-                return null;
-            });
+            // Dynamic channels would be updated here based on 'response'
+            updateState("depart1#routeLongName", new StringType("Dynamic Live Data"));
+            updateState("depart1#minutesUntilDeparture", new QuantityType<>(5, Units.MINUTE));
         } catch (Exception e) {
-            logger.error("ERROR: Failed to create HTTP request for stop {}: {}", globalStopId, e.getMessage(), e);
+            logger.warn("Warning/Communication issue while polling stop {}: {}", globalStopId, e.getMessage());
+            logger.error("Detailed API error for stop {}: {}", globalStopId, e.getMessage(), e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
+    }
+
+    public String findNextDepartureByLine(String lineName) {
+        // Mocked for Binding Action
+        return "12:45";
     }
 
     @Override
     public void dispose() {
-        logger.debug("Disposing TransitAppStopHandler for thing: {}", getThing().getUID());
-        if (refreshJob != null) {
-            refreshJob.cancel(true);
+        ScheduledFuture<?> job = refreshJob;
+        if (job != null) {
+            job.cancel(true);
         }
         super.dispose();
     }
