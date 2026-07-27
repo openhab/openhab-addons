@@ -473,8 +473,8 @@ public class ShellyChannelDefinitions {
         addChannel(thing, add, true, CHGR_LORA, CHANNEL_LORA_TXDATARAW);
         addChannel(thing, add, true, CHGR_LORA, CHANNEL_LORA_TXBYTES);
         addChannel(thing, add, true, CHGR_LORA, CHANNEL_LORA_TXERRORS);
-        addChannel(thing, add, true, CHGR_LORA, CHANNEL_LORA_RSSI);
-        addChannel(thing, add, true, CHGR_LORA, CHANNEL_LORA_SNR);
+        addChannel(thing, add, profile.settings.loraRxEnabled, CHGR_LORA, CHANNEL_LORA_RSSI);
+        addChannel(thing, add, profile.settings.loraRxEnabled, CHGR_LORA, CHANNEL_LORA_SNR);
         addChannel(thing, add, true, CHGR_LORA, CHANNEL_LORA_AIRTIME);
 
         return add;

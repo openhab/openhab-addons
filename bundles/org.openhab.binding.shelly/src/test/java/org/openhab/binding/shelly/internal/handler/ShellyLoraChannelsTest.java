@@ -84,10 +84,12 @@ public class ShellyLoraChannelsTest {
         Map<String, Channel> channels = ShellyChannelDefinitions.createLoraChannels(thing(), loraProfile(false),
                 new ShellySettingsStatus());
 
-        assertThat(channels.size(), is(7));
+        assertThat(channels.size(), is(5));
         assertThat(channels.containsKey("lora#" + CHANNEL_LORA_RXDATA), is(false));
         assertThat(channels.containsKey("lora#" + CHANNEL_LORA_RXDATARAW), is(false));
         assertThat(channels.containsKey("lora#" + CHANNEL_LORA_RXBYTES), is(false));
+        assertThat(channels.containsKey("lora#" + CHANNEL_LORA_RSSI), is(false));
+        assertThat(channels.containsKey("lora#" + CHANNEL_LORA_SNR), is(false));
         assertThat(channels.containsKey("lora#" + CHANNEL_LORA_TXDATA), is(true));
     }
 
