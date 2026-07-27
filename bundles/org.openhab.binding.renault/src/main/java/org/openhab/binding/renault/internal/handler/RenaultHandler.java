@@ -170,8 +170,8 @@ public class RenaultHandler extends BaseThingHandler {
                     if (!car.isDisableHvac()) {
                         if (command instanceof DecimalType decimalCommand) {
                             car.setHvacTargetTemperature(decimalCommand.doubleValue());
-                        } else if (command instanceof QuantityType) {
-                            Optional.ofNullable(((QuantityType<?>) command).toUnit(SIUnits.CELSIUS))
+                        } else if (command instanceof QuantityType<?> quantityCommand) {
+                            Optional.ofNullable(quantityCommand.toUnit(SIUnits.CELSIUS))
                                     .ifPresent(celsius -> car.setHvacTargetTemperature(celsius.doubleValue()));
                         }
                     }
@@ -251,8 +251,8 @@ public class RenaultHandler extends BaseThingHandler {
                 final Integer carSocMin = car.getSocMin();
                 final Integer carSocTarget = car.getSocTarget();
                 if (carSocMin == null || carSocTarget == null) {
-                    logger.info(
-                            "Could not set new soc level because not both min and max are known yet, and both are required to set.");
+                    logger.warn(
+                            "Could not set new SoC level because both min and max are not known, and both are required to set.");
                     return;
                 }
                 httpSession.initSesssion();
