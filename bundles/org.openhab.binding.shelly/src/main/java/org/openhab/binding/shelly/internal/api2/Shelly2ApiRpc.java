@@ -881,11 +881,15 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     public void setBrightness(int id, int brightness, boolean autoOn) throws ShellyApiException {
         Shelly2RpcRequestParams params = new Shelly2RpcRequestParams();
         params.id = id;
-        // Gen2 firmware rejects/clamps brightness=0; on=false is used to turn the light off instead
         if (brightness > 0) {
             params.brightness = brightness;
+            if (autoOn) {
+                params.on = true;
+            }
+        } else {
+            // Gen2 firmware rejects/clamps brightness=0; on=false is used to turn the light off instead
+            params.on = false;
         }
-        params.on = brightness > 0;
         apiRequest(SHELLYRPC_METHOD_LIGHT_SET, params, String.class);
     }
 
