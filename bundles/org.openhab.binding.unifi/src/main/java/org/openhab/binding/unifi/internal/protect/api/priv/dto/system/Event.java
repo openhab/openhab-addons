@@ -19,6 +19,8 @@ import org.openhab.binding.unifi.internal.protect.api.priv.dto.base.UniFiProtect
 import org.openhab.binding.unifi.internal.protect.api.priv.dto.types.EventType;
 import org.openhab.binding.unifi.internal.protect.api.priv.dto.types.SmartDetectObjectType;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Event model for UniFi Protect
  *
@@ -30,10 +32,16 @@ public class Event extends UniFiProtectModel {
     public Instant start;
     public Instant end;
     public Integer score;
+    @SerializedName(value = "heatmapId", alternate = { "heatmap" })
     public String heatmapId;
+    // The event payload names the camera "camera" (with "device" repeating it); nothing in it is
+    // called "cameraId", so without this mapping the field stays null and every consumer of it --
+    // the thumbnail/heatmap update and the private-WS camera event routing -- silently does nothing.
+    @SerializedName(value = "camera", alternate = { "cameraId", "device" })
     public String cameraId;
     public List<SmartDetectObjectType> smartDetectTypes;
     public List<String> smartDetectEventIds;
+    @SerializedName(value = "thumbnailId", alternate = { "thumbnail" })
     public String thumbnailId;
     public String userId;
     public Instant timestamp;
