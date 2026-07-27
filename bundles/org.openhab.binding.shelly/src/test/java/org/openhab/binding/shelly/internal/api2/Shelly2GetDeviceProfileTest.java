@@ -28,6 +28,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
@@ -675,20 +676,13 @@ public class Shelly2GetDeviceProfileTest {
         assertThat(profile.settings.loraDetected, is(false));
     }
 
-    @Test
-    void discoveryLoraRxEnabledFlagTrue() throws ShellyApiException {
+    @ParameterizedTest
+    @ValueSource(booleans = { true, false })
+    void discoveryLoraRxEnabledFlagMatchesConfig(boolean rxEnabled) throws ShellyApiException {
         Gson gson = new Gson();
-        StubApiClient client = new StubApiClient(discoveryConfig(), withLora100(gson, true));
+        StubApiClient client = new StubApiClient(discoveryConfig(), withLora100(gson, rxEnabled));
         ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYUNKNOWN, deviceInfo());
-        assertThat(profile.settings.loraRxEnabled, is(true));
-    }
-
-    @Test
-    void discoveryLoraRxDisabledFlagFalse() throws ShellyApiException {
-        Gson gson = new Gson();
-        StubApiClient client = new StubApiClient(discoveryConfig(), withLora100(gson, false));
-        ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYUNKNOWN, deviceInfo());
-        assertThat(profile.settings.loraRxEnabled, is(false));
+        assertThat(profile.settings.loraRxEnabled, is(rxEnabled));
     }
 
     @Test
