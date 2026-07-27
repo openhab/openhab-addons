@@ -35,6 +35,7 @@ import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.unifi.internal.api.UniFiSession;
+import org.openhab.binding.unifi.internal.api.UniFiWebSocketUtil;
 import org.openhab.binding.unifi.internal.protect.api.priv.dto.devices.Camera;
 import org.openhab.binding.unifi.internal.protect.api.priv.dto.devices.Chime;
 import org.openhab.binding.unifi.internal.protect.api.priv.dto.devices.Doorlock;
@@ -77,6 +78,7 @@ public class UniFiProtectPrivateClient {
     private volatile @Nullable UniFiProtectPrivateWebSocket webSocket;
     private volatile @Nullable ScheduledFuture<?> bootstrapRefreshTask;
     private volatile @Nullable CompletableFuture<Bootstrap> inFlightBootstrapRefresh;
+    private @Nullable CompletableFuture<Void> reauthInFlight;
 
     /**
      * Create a new UniFi Protect private-API client using a session supplied by the parent
@@ -196,21 +198,44 @@ public class UniFiProtectPrivateClient {
      */
     public CompletableFuture<Void> enableWebSocket(
             Consumer<UniFiProtectPrivateWebSocket.WebSocketUpdate> updateHandler) {
-        return ensureAuthenticated().thenCompose(v -> {
-            if (webSocket != null) {
-                logger.debug("WebSocket already enabled");
-                return CompletableFuture.completedFuture(null);
-            }
+        return ensureAuthenticated().thenCompose(v -> connectWebSocket(updateHandler, true));
+    }
 
-            String wsUrl = baseUrl.replace("https://", "wss://").replace("http://", "ws://")
-                    + "/proxy/protect/ws/updates";
-            String cookie = authenticator.getAuthCookie();
-            if (cookie == null) {
-                return CompletableFuture.failedFuture(new IllegalStateException("Not authenticated"));
+    // A null cookie is fine: the shared HttpClient's CookieStore supplies it on the upgrade (as for REST), and a
+    // genuine 401 is re-authenticated and retried below.
+    private CompletableFuture<Void> connectWebSocket(
+            Consumer<UniFiProtectPrivateWebSocket.WebSocketUpdate> updateHandler, boolean allowReauth) {
+        if (webSocket != null) {
+            logger.debug("WebSocket already enabled");
+            return CompletableFuture.completedFuture(null);
+        }
+
+        String wsUrl = baseUrl.replace("https://", "wss://").replace("http://", "ws://") + "/proxy/protect/ws/updates";
+        String cookie = authenticator.getAuthCookie();
+        UniFiProtectPrivateWebSocket ws = new UniFiProtectPrivateWebSocket(wsUrl, cookie, updateHandler, this,
+                httpClient);
+        return ws.connect().handle((connected, ex) -> ex).thenCompose(ex -> {
+            if (ex == null) {
+                webSocket = ws;
+                return CompletableFuture.<Void> completedFuture(null);
             }
-            webSocket = new UniFiProtectPrivateWebSocket(wsUrl, cookie, updateHandler, this, httpClient);
-            return webSocket.connect();
+            ws.disconnect();
+            if (allowReauth && UniFiWebSocketUtil.isUnauthorizedUpgrade(ex)) {
+                logger.debug("WebSocket upgrade rejected (401); re-authenticating and retrying");
+                return reauthenticateSession().thenCompose(v -> connectWebSocket(updateHandler, false));
+            }
+            return CompletableFuture.<Void> failedFuture(ex);
         });
+    }
+
+    private synchronized CompletableFuture<Void> reauthenticateSession() {
+        CompletableFuture<Void> existing = reauthInFlight;
+        if (existing != null && !existing.isDone()) {
+            return existing;
+        }
+        CompletableFuture<Void> future = authenticator.reauthenticate();
+        reauthInFlight = future;
+        return future;
     }
 
     /**
@@ -238,6 +263,12 @@ public class UniFiProtectPrivateClient {
      */
     private <T> CompletableFuture<T> makeApiRequest(HttpMethod method, String path, @Nullable Object body,
             Class<T> responseType) {
+        return makeApiRequest(method, path, body, responseType, true);
+    }
+
+    // allowReauth=true: a 401 re-authenticates and retries once (the retry passes false to avoid looping).
+    private <T> CompletableFuture<T> makeApiRequest(HttpMethod method, String path, @Nullable Object body,
+            Class<T> responseType, boolean allowReauth) {
         return ensureAuthenticated().thenCompose(v -> {
             CompletableFuture<T> future = new CompletableFuture<>();
 
@@ -276,10 +307,30 @@ public class UniFiProtectPrivateClient {
                             int status = response.getStatus();
 
                             if (status == HttpStatus.UNAUTHORIZED_401) {
-                                logger.debug("Authentication rejected: {}", status);
-                                authenticator.clearAuth();
-                                future.completeExceptionally(
-                                        new AuthenticationException("Authentication rejected: " + status));
+                                if (allowReauth) {
+                                    logger.debug("Authentication rejected: {}, re-authenticating and retrying", status);
+                                    reauthenticateSession().whenComplete((rv, rex) -> {
+                                        if (rex != null) {
+                                            authenticator.clearAuth();
+                                            future.completeExceptionally(new AuthenticationException(
+                                                    "Re-authentication failed after " + status, rex));
+                                        } else {
+                                            makeApiRequest(method, path, body, responseType, false)
+                                                    .whenComplete((retryResult, retryEx) -> {
+                                                        if (retryEx != null) {
+                                                            future.completeExceptionally(retryEx);
+                                                        } else {
+                                                            future.complete(retryResult);
+                                                        }
+                                                    });
+                                        }
+                                    });
+                                } else {
+                                    logger.debug("Authentication rejected: {}", status);
+                                    authenticator.clearAuth();
+                                    future.completeExceptionally(
+                                            new AuthenticationException("Authentication rejected: " + status));
+                                }
                                 return;
                             }
                             if (status == HttpStatus.FORBIDDEN_403 || status == HttpStatus.TOO_MANY_REQUESTS_429) {

@@ -10,18 +10,19 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.epsonprojector.internal.enums;
+package org.openhab.binding.peblar.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Valid values for Epson switch commands.
- *
- * @author Pauli Anttila - Initial contribution
- * @author Yannick Schaus - Refactoring
+ * @author Hilbrand Bouwkamp - Initial contribution
  */
 @NonNullByDefault
-public enum Switch {
-    ON,
-    OFF
+class PeblarApiAuthenticationException extends PeblarApiException {
+
+    private static final long serialVersionUID = 1L;
+
+    public PeblarApiAuthenticationException(String message) {
+        super(message);
+    }
 }

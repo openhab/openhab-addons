@@ -557,15 +557,19 @@ public class Shelly1ApiJsonDTO {
         @SerializedName("is_valid")
         public Boolean isValid; // Whether the associated meter is functioning properly
         public Double power; // Instantaneous power, Watts
-        public Double reactive; // Instantaneous reactive power, Watts
+        public Double reactive; // Instantaneous reactive power, VAR
         public Double voltage; // RMS voltage, Volts
         public Double total; // Total consumed energy, Wh
         @SerializedName("total_returned")
         public Double totalReturned; // Total returned energy, Wh
 
+        public Double apparentPower; // Instantaneous apparent power, VA (Gen2 only)
         public Double pf; // 3EM
         public Double current; // 3EM
         public Double frequency; // Gen4
+        // Energy per complete minute in Wh, slot 0 = previous minute (Gen2 relay+PM only);
+        // converted from aenergy.by_minute (mWh) in Shelly2ApiClient
+        public @Nullable Double @Nullable [] energyByMinute;
     }
 
     public static class ShellyEMNCurrentSettings {
@@ -789,6 +793,7 @@ public class Shelly1ApiJsonDTO {
 
         public Double totalCurrent;
         public Double totalPower;
+        public Double totalApparent; // Total instantaneous apparent power across all meters, VA (Gen2 only)
         public Double totalKWH;
         public Double totalReturned;
 

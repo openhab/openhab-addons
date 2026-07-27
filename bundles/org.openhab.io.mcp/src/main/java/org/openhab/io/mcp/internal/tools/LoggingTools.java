@@ -23,7 +23,6 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -44,6 +43,7 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
+import org.openhab.io.mcp.internal.util.LogRingBuffer;
 import org.osgi.service.log.LogEntry;
 import org.osgi.service.log.LogLevel;
 import org.osgi.service.log.LogReaderService;
@@ -63,10 +63,12 @@ import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
  * MCP tools for reading openHAB log entries and adjusting logger verbosity for diagnostics.
  *
  * <p>
- * Hybrid pattern: log reads use the in-process {@link LogReaderService} (no auth surface,
- * gated by the {@code enableLoggingAccess} config flag); level reads/writes go through the
- * openHAB REST API at {@code /rest/logging/} with the caller's bearer token, so openHAB's
- * own ADMIN-scope check controls who can change levels.
+ * Log reads come from an in-process {@link LogRingBuffer} fed by the OSGi log. Log level reads
+ * and writes go through the openHAB REST API at {@code /rest/logging/}.
+ *
+ * <p>
+ * The add-on keeps its own log buffer because pax-logging's {@link LogReaderService} only holds
+ * 100 entries — a few seconds of history on a busy installation (see issue #21167).
  *
  * @author Dan Cunningham - Initial contribution
  */
@@ -82,7 +84,7 @@ public class LoggingTools {
     private final Logger logger = LoggerFactory.getLogger(LoggingTools.class);
     private final ObjectMapper jackson = McpToolUtils.jackson();
 
-    private final LogReaderService logReaderService;
+    private final LogRingBuffer logBuffer;
     private final HttpClient httpClient;
     private final String baseUrl;
     private final Function<String, @Nullable String> tokenForSession;
@@ -105,7 +107,7 @@ public class LoggingTools {
     public LoggingTools(LogReaderService logReaderService, HttpClient httpClient, String baseUrl,
             Function<String, @Nullable String> tokenForSession, ScheduledExecutorService scheduler,
             McpJsonMapper jsonMapper) {
-        this.logReaderService = logReaderService;
+        this.logBuffer = new LogRingBuffer(logReaderService);
         this.httpClient = httpClient;
         this.baseUrl = baseUrl.endsWith("/") ? baseUrl.substring(0, baseUrl.length() - 1) : baseUrl;
         this.tokenForSession = tokenForSession;
@@ -135,8 +137,11 @@ public class LoggingTools {
                                 + "the response is returned oldest-first."));
 
         return McpSchema.Tool.builder().name("get_logs").description("""
-                Read recent log entries from openHAB's in-memory log buffer (typically the last 500-5000 entries, \
-                with stack traces when present). Use this to diagnose problems: thing offline reasons, binding \
+                Read recent log entries from an in-memory log buffer kept by this server (up to the last 5000 \
+                entries, \
+                with stack traces when present). High-volume item state update/change events are excluded \
+                from the buffer — use get_item or watch_items for item state; item commands, thing status \
+                and rule events are included. Use this to diagnose problems: thing offline reasons, binding \
                 errors, rule execution traces. Typical diagnostic flow: (1) call get_logs with loggerFilter \
                 narrowed to the affected binding/component; (2) if there isn't enough detail, call \
                 manage_log_level(action='set') on the relevant logger at DEBUG (auto-reverts in 30 min) and ask \
@@ -166,16 +171,14 @@ public class LoggingTools {
         String searchLower = search == null ? null : search.toLowerCase(Locale.ROOT);
         int limit = Math.max(1, Math.min(MAX_LIMIT, getIntArg(args, "limit", DEFAULT_LIMIT)));
 
-        // LogReaderService returns newest-first; iterate, filter, take up to `limit`, then reverse to chronological.
-        Enumeration<LogEntry> entries = logReaderService.getLog();
-        List<LogEntry> collected = new ArrayList<>(limit);
+        // The buffer snapshot is newest-first; iterate, filter, take up to `limit`, then reverse to chronological.
+        List<LogEntry> buffered = logBuffer.snapshotNewestFirst();
+        int bufferSize = buffered.size();
+        List<LogEntry> collected = new ArrayList<>(Math.min(limit, bufferSize));
         long maxSequence = sinceSequence;
-        int bufferSize = 0;
-        while (entries.hasMoreElements()) {
-            LogEntry entry = entries.nextElement();
-            bufferSize++;
+        for (LogEntry entry : buffered) {
             if (collected.size() >= limit) {
-                continue;
+                break;
             }
             if (sinceSequence >= 0 && entry.getSequence() <= sinceSequence) {
                 continue;
@@ -473,6 +476,15 @@ public class LoggingTools {
                 .header("Authorization", "Bearer " + token).header("Accept", "application/json")
                 .content(new StringContentProvider(body.toString(), StandardCharsets.UTF_8), "application/json");
         return req.send().getStatus();
+    }
+
+    /**
+     * Releases resources held by this instance: unregisters the log listener feeding the ring buffer
+     * and cancels any pending auto-revert tasks. Called when the MCP server stops.
+     */
+    public void dispose() {
+        logBuffer.close();
+        cancelPendingReverts();
     }
 
     /**

@@ -18,6 +18,7 @@ import static org.openhab.binding.tapocontrol.internal.constants.TapoErrorCode.*
 import static org.openhab.binding.tapocontrol.internal.helpers.utils.ByteUtils.byteArrayToHex;
 import static org.openhab.binding.tapocontrol.internal.helpers.utils.JsonUtils.isValidJson;
 
+import java.io.IOException;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -43,9 +44,16 @@ import org.slf4j.LoggerFactory;
  * Handler class for TAPO-KLAP-Protocol
  *
  * @author Christian Wild - Initial contribution
+ * @author David Henshaw - Improvements to handle tapo device error states in send
  */
 @NonNullByDefault
 public class KlapProtocol implements org.openhab.binding.tapocontrol.internal.api.protocol.TapoProtocolInterface {
+
+    private enum SuccessState {
+        failed,
+        retry,
+        success
+    };
 
     private final Logger logger = LoggerFactory.getLogger(KlapProtocol.class);
     protected final TapoConnectorInterface httpDelegator;
@@ -149,32 +157,22 @@ public class KlapProtocol implements org.openhab.binding.tapocontrol.internal.ap
         String command = tapoRequest.method();
         logger.trace("({}) sendRequestRetryable unencrypted request: '{}' to '{}' ", uid, tapoRequest, url);
 
-        while (true) {
+        while (attemptCount < maxAttempts) {
             attemptCount++;
-            if (attemptCount > 1) {
-                try {
-                    /* re-login using existing credentials */
-                    session.reset();
-                    if (!session.login()) {
-                        logger.debug("({}) sendRequestRetryable login error", uid);
-                        httpDelegator.handleError(new TapoErrorHandler(ERR_BINDING_LOGIN));
-                        return;
-                    }
-                    logger.trace("({}) sendRequestRetryable re-login successful attempt {}", uid, attemptCount);
-                } catch (TapoErrorHandler e) {
-                    logger.trace("({}) sendRequestRetryable error1 {}", uid, e.getMessage());
-                    if (attemptCount < maxAttempts) {
+
+            // @@DGH
+            // if (attemptCount > 2) { // try to init comms via UDP
+            // sendUdpDiscoveryMessage(); // ignore any errors & retry login
+            // }
+
+            if (attemptCount > 1) { // re-login using existing credentials
+                switch (reLoginExistingCredentials(attemptCount, maxAttempts)) {
+                    case success:
+                        break; // move on to send message
+                    case retry:
                         continue;
-                    }
-                    httpDelegator.handleError(e);
-                    return;
-                } catch (Exception ex) {
-                    logger.trace("({}) sendRequestRetryable error2 {}", uid, ex.getMessage());
-                    if (attemptCount < maxAttempts) {
-                        continue;
-                    }
-                    httpDelegator.handleError(new TapoErrorHandler(ERR_BINDING_LOGIN, ex.getMessage()));
-                    return;
+                    default:
+                        return; // error
                 }
             }
             try {
@@ -236,10 +234,50 @@ public class KlapProtocol implements org.openhab.binding.tapocontrol.internal.ap
             } catch (Exception e) {
                 String errorMessage = e.getMessage();
                 logger.debug("({}) sendRequestRetryable failed'{}'", uid, errorMessage);
-                httpDelegator.handleError(new TapoErrorHandler(new Exception(e), errorMessage));
-                return;
+                session.reset();
+                if (e.getCause() instanceof IOException) {
+                    httpDelegator.handleError(new TapoErrorHandler(ERR_BINDING_SEND_REQUEST));
+                    return;
+                } else {
+                    throw new TapoErrorHandler(ERR_BINDING_SEND_REQUEST, errorMessage);
+                }
             }
         } /* end of loop */
+    }
+
+    /**
+     * Try to re-login using the already-provided credentials
+     *
+     * @param attemptCount - how many times have we tried
+     * @param maxAttempts - how many attempts are allowed
+     * @return
+     */
+    private SuccessState reLoginExistingCredentials(int attemptCount, int maxAttempts) {
+        /* re-login using existing credentials - return false if aborting */
+        try {
+            session.reset();
+            if (!session.login()) {
+                logger.debug("({}) sendRequestRetryable login error", uid);
+                httpDelegator.handleError(new TapoErrorHandler(ERR_BINDING_LOGIN));
+                return SuccessState.failed;
+            }
+            logger.trace("({}) sendRequestRetryable re-login successful attempt {}", uid, attemptCount);
+            return SuccessState.success;
+        } catch (TapoErrorHandler e) {
+            logger.trace("({}) sendRequestRetryable error1 {}", uid, e.getMessage());
+            if (attemptCount < maxAttempts) {
+                return SuccessState.retry;
+            }
+            httpDelegator.handleError(e);
+            return SuccessState.failed;
+        } catch (Exception ex) {
+            logger.trace("({}) sendRequestRetryable error2 {}", uid, ex.getMessage());
+            if (attemptCount < maxAttempts) {
+                return SuccessState.retry;
+            }
+            httpDelegator.handleError(new TapoErrorHandler(ERR_BINDING_LOGIN, ex.getMessage()));
+            return SuccessState.failed;
+        }
     }
 
     /************************

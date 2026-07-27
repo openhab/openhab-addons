@@ -137,6 +137,14 @@ public class ShellyUtils {
         return group + "#" + channel;
     }
 
+    /**
+     * Channel id matching any group starting with groupPrefix (e.g. meter, meter1, meter2, ...).
+     * Used for channel migration rules that must apply to every indexed meter group of a Thing.
+     */
+    public static String mkWildcardChannelId(String groupPrefix, String channel) {
+        return groupPrefix + "*#" + channel;
+    }
+
     public static String getString(@Nullable String value) {
         return value != null ? value : "";
     }

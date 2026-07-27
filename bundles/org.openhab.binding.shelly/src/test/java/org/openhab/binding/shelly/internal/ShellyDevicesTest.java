@@ -76,6 +76,25 @@ public class ShellyDevicesTest {
     }
 
     @ParameterizedTest
+    @MethodSource("provideTestCasesForNumMetersByThingType")
+    void numMetersByThingType(ThingTypeUID thingTypeUid, int expectedMeters) {
+        Integer numMeters = THING_TYPE_CAP_NUM_METERS.get(thingTypeUid);
+        assertThat("THING_TYPE_CAP_NUM_METERS for " + thingTypeUid.getId(), numMeters, is(equalTo(expectedMeters)));
+    }
+
+    private static Stream<Arguments> provideTestCasesForNumMetersByThingType() {
+        return Stream.of( //
+                Arguments.of(THING_TYPE_SHELLYPLUS1L, 0), // no PM — relay-count fallback must be suppressed
+                Arguments.of(THING_TYPE_SHELLYPLUS2L, 0), // no PM — relay-count fallback must be suppressed
+                Arguments.of(THING_TYPE_SHELLYPRO2, 0), //
+                Arguments.of(THING_TYPE_SHELLYPRO3, 0), //
+                Arguments.of(THING_TYPE_SHELLYPROEM50, 2), //
+                Arguments.of(THING_TYPE_SHELLY3EM, 3), //
+                Arguments.of(THING_TYPE_SHELLYPLUS3EM63, 3), //
+                Arguments.of(THING_TYPE_SHELLYPRO3EM, 3)); //
+    }
+
+    @ParameterizedTest
     @MethodSource("provideTestCasesFornNumberInputsByBluThingType")
     void numberInputsByBluThingType(ThingTypeUID thingTypeUid, int expectedInputs) {
         Integer numberInputs = THING_TYPE_CAP_NUM_INPUTS.get(thingTypeUid);

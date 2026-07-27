@@ -135,13 +135,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                 logger.debug("{}: Set Auto-OFF timer to {}", thingName, command);
                 api.setAutoTimer(rIndex, SHELLY_TIMER_AUTOOFF, getNumber(command).doubleValue());
                 break;
-            case CHANNEL_EMETER_RESETTOTAL:
-                String id = substringAfter(groupName, CHANNEL_GROUP_METER);
-                int mIdx = id.isEmpty() ? 0 : Integer.parseInt(id) - 1;
-                logger.debug("{}: Reset Meter Totals for meter {}", thingName, mIdx + 1);
-                api.resetMeterTotal(mIdx); // currently there is only 1 emdata component
-                updateChannel(groupName, CHANNEL_EMETER_RESETTOTAL, OnOffType.OFF);
-                break;
+
         }
         return true;
     }
@@ -188,13 +182,14 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
     }
 
     private void updateBrightnessChannel(int lightId, OnOffType power, int brightness) throws ShellyApiException {
-        updateChannel(CHANNEL_COLOR_WHITE, CHANNEL_BRIGHTNESS + "$Switch", power);
+        String group = profile.getControlGroup(lightId);
+        updateChannel(group, CHANNEL_BRIGHTNESS + "$Switch", power);
         if (brightness > 0) {
             api.setBrightness(lightId, brightness, config.getBrightnessAutoOn());
         } else {
             api.setLightTurn(lightId, power == OnOffType.ON ? SHELLY_API_ON : SHELLY_API_OFF);
             if (brightness >= 0) { // ignore -1
-                updateChannel(CHANNEL_COLOR_WHITE, CHANNEL_BRIGHTNESS + "$Value",
+                updateChannel(group, CHANNEL_BRIGHTNESS + "$Value",
                         toQuantityType((double) (power == OnOffType.ON ? brightness : 0), DIGITS_NONE, Units.PERCENT));
             }
         }

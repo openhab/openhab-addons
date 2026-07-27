@@ -10,17 +10,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.benqprojector.internal.enums;
+package org.openhab.binding.peblar.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Valid values for BenQ switch commands.
- *
- * @author Michael Lobstein - Initial contribution
+ * @author Hilbrand Bouwkamp - Initial contribution
  */
 @NonNullByDefault
-public enum Switch {
-    ON,
-    OFF
+public class PeblarConfiguration {
+
+    public String hostname = "";
+    public String apiToken = "";
+    public int refreshInterval = 30;
 }

@@ -13,7 +13,7 @@
 package org.openhab.binding.tapocontrol.internal.discovery;
 
 import static org.openhab.binding.tapocontrol.internal.constants.TapoBindingSettings.*;
-import static org.openhab.binding.tapocontrol.internal.constants.TapoComConstants.*;
+import static org.openhab.binding.tapocontrol.internal.constants.TapoComConstants.DEVICE_REPRESENTATION_PROPERTY;
 import static org.openhab.binding.tapocontrol.internal.constants.TapoThingConstants.*;
 import static org.openhab.binding.tapocontrol.internal.helpers.utils.TapoUtils.*;
 
@@ -133,7 +133,7 @@ public class TapoDiscoveryService extends AbstractDiscoveryService implements Th
 
     /**
      * Stop scheduler
-     * 
+     *
      * @param scheduler ScheduledFeature which should be stopped
      */
     protected void stopScheduler(@Nullable ScheduledFuture<?> scheduler) {
@@ -211,7 +211,7 @@ public class TapoDiscoveryService extends AbstractDiscoveryService implements Th
 
     /**
      * work with result from get devices from deviceList
-     * 
+     *
      * @param deviceList
      */
     protected void handleDiscoveryList(TapoDiscoveryResultList deviceList) {
@@ -244,7 +244,7 @@ public class TapoDiscoveryService extends AbstractDiscoveryService implements Th
     /**
      * CREATE DISCOVERY RESULT
      * creates discoveryResult (Thing) from JsonObject got from Cloud
-     * 
+     *
      * @param device JsonObject with device information
      * @return DiscoveryResult-Object
      */
@@ -265,8 +265,8 @@ public class TapoDiscoveryService extends AbstractDiscoveryService implements Th
         properties.put(Thing.PROPERTY_SERIAL_NUMBER, device.deviceId());
         if (device.ip().length() >= 7) {
             properties.put(TapoDeviceConfiguration.CONFIG_DEVICE_IP, device.ip());
-            properties.put(TapoDeviceConfiguration.CONFIG_HTTP_PORT, device.encryptionShema().httpPort());
-            properties.put(TapoDeviceConfiguration.CONFIG_PROTOCOL, device.encryptionShema().encryptType());
+            properties.put(TapoDeviceConfiguration.CONFIG_HTTP_PORT, device.encryptionSchema().httpPort());
+            properties.put(TapoDeviceConfiguration.CONFIG_PROTOCOL, device.encryptionSchema().encryptType());
         }
 
         logger.debug("device {} discovered with mac {}", deviceModel, deviceMAC);

@@ -1,7 +1,7 @@
 ---
 name: "✨ Feature request"
 about: You think that your favorite add-on should gain another feature
-labels: enhancement
+type: Feature
 
 ---
 

@@ -24,6 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class YamahaBridgeConfig {
+    public static final int DEFAULT_MAX_PARALLEL_CONNECTIONS = 4;
 
     /**
      * The host name of the Yamaha AVR.
@@ -45,6 +46,10 @@ public class YamahaBridgeConfig {
      * Input source mapping for each command. This is a comma separated list of settings.
      */
     private String inputMapping = "";
+    /**
+     * The maximum number of parallel connections to the AVR.
+     */
+    private int maxParallelConnections = DEFAULT_MAX_PARALLEL_CONNECTIONS;
 
     public @Nullable String getHost() {
         return host;
@@ -72,5 +77,9 @@ public class YamahaBridgeConfig {
 
     public String getInputMapping() {
         return inputMapping;
+    }
+
+    public int getMaxParallelConnections() {
+        return maxParallelConnections;
     }
 }
