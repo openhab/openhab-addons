@@ -243,9 +243,21 @@ public class ControllerHandler extends BaseBridgeHandler implements MatterClient
                 if (props != null) {
                     handlePhysicalProperties(message.nodeId, props);
                 }
-                updateEndpointStatuses(message.nodeId, ThingStatus.UNKNOWN, ThingStatusDetail.NONE,
-                        translationService.getTranslation(THING_STATUS_DETAIL_CONTROLLER_WAITING_FOR_DATA));
-                requestAllNodeDataIfNeeded(message.nodeId);
+                // Skip the expensive requestAllNodeData re-enumeration for sleepy/ICD nodes that have
+                // already been fully enumerated once in this session. Subsequent attribute changes arrive via
+                // matter.js subscriptions, so re-reading every cluster on every reconnect wastes radio time
+                // and is what drove the 2-3 minute offline/online flap on Thread door locks.
+                NodeHandler nodeHandler = linkedNodes.get(message.nodeId);
+                boolean skip = enumeratedNodes.contains(message.nodeId) && nodeHandler != null
+                        && !nodeHandler.shouldRefreshOnReconnect();
+                if (skip) {
+                    logger.debug("Skipping requestAllNodeData for {} (already enumerated, sleepy)", message.nodeId);
+                    updateEndpointStatuses(message.nodeId, ThingStatus.ONLINE, ThingStatusDetail.NONE, "");
+                } else {
+                    updateEndpointStatuses(message.nodeId, ThingStatus.UNKNOWN, ThingStatusDetail.NONE,
+                            translationService.getTranslation(THING_STATUS_DETAIL_CONTROLLER_WAITING_FOR_DATA));
+                    requestAllNodeData(message.nodeId);
+                }
                 break;
             case STRUCTURECHANGED:
                 // A structure change means the node's endpoints/clusters changed, so the channels must be rebuilt
@@ -428,23 +440,6 @@ public class ControllerHandler extends BaseBridgeHandler implements MatterClient
         if (timeout != null) {
             timeout.cancel(false);
         }
-    }
-
-    /**
-     * Skip the expensive {@code requestAllNodeData} re-enumeration for sleepy/ICD nodes that have
-     * already been fully enumerated once in this session. Subsequent attribute changes arrive via
-     * matter.js subscriptions, so re-reading every cluster on every reconnect wastes radio time
-     * and is what drove the 2-3 minute offline/online flap on Thread door locks.
-     */
-    private void requestAllNodeDataIfNeeded(BigInteger nodeId) {
-        NodeHandler handler = linkedNodes.get(nodeId);
-        boolean skip = enumeratedNodes.contains(nodeId) && handler != null && !handler.shouldRefreshOnReconnect();
-        if (skip) {
-            logger.debug("Skipping requestAllNodeData for {} (already enumerated, sleepy)", nodeId);
-            updateEndpointStatuses(nodeId, ThingStatus.ONLINE, ThingStatusDetail.NONE, "");
-            return;
-        }
-        requestAllNodeData(nodeId);
     }
 
     /**
