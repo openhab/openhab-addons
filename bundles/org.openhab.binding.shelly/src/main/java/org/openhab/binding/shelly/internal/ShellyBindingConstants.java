@@ -145,6 +145,7 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_SENSOR_TILT = "tilt";
     public static final String CHANNEL_SENSOR_FLOOD = "flood";
     public static final String CHANNEL_SENSOR_SMOKE = "smoke";
+    public static final String CHANNEL_SENSOR_MUTE = "mute"; // Smoke, Flood Gen4
     public static final String CHANNEL_SENSOR_STATE = "state";
     public static final String CHANNEL_SENSOR_VALVE = "valve";
     public static final String CHANNEL_SENSOR_SSTATE = "status"; // Shelly Gas
@@ -179,7 +180,6 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_CONTROL_BTIMER = "boostTimer"; // TRV
     public static final String CHANNEL_CONTROL_SCHEDULE = "schedule"; // TRV
     public static final String CHANNEL_CONTROL_PROFILE = "selectedProfile"; // TRV
-    public static final String CHANNEL_CONTROL_MUTE = "mute"; // Flood Gen4
     public static final String CHANNEL_CONTROL_ALARM_MODE = "alarmMode"; // Flood Gen4
     public static final String CHANNEL_CONTROL_REPORT_HOLDOFF = "reportHoldoff"; // Flood Gen4
 

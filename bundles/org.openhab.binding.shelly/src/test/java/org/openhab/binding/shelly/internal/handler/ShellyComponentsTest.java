@@ -771,8 +771,8 @@ public class ShellyComponentsTest {
         ShellyThingInterface handler = sensorHandlerFor(THING_TYPE_SHELLYPLUSFLOOD, sdata);
         ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
 
-        verify(handler).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_CONTROL_MUTE), eq(OnOffType.ON));
-        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_CONTROL), eq(CHANNEL_CONTROL_MUTE), any());
+        verify(handler).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_MUTE), eq(OnOffType.ON));
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_CONTROL), eq(CHANNEL_SENSOR_MUTE), any());
     }
 
     @Test
@@ -784,8 +784,8 @@ public class ShellyComponentsTest {
         ShellyThingInterface handler = sensorHandlerFor(THING_TYPE_SHELLYPLUSSMOKE, sdata);
         ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
 
-        verify(handler).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_CONTROL_MUTE), eq(OnOffType.ON));
-        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_CONTROL), eq(CHANNEL_CONTROL_MUTE), any());
+        verify(handler).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_MUTE), eq(OnOffType.ON));
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_CONTROL), eq(CHANNEL_SENSOR_MUTE), any());
     }
 
     private static ShellyThingInterface relayHandlerWith(ShellySettingsStatus profileStatus) {

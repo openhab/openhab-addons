@@ -1649,15 +1649,12 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 
 ### Shelly Plus Smoke (thing-type: shellyplussmoke)
 
-`Note:` The `sensors#mute` channel reflects the mute state reported by the device (read-only). To mute the alarm from openHAB, send `ON` to `control#mute`; it automatically resets to `OFF` once the mute command has been issued.
-
 | Group   | Channel      | Type     | read-only | Description                                             |
 | ------- | ------------ | -------- | --------- | ------------------------------------------------------- |
 | sensors | smoke        | Switch   | yes       | ON: Smoke detected                                      |
-|         | mute         | Switch   | yes       | ON: alarm is currently muted                            |
+|         | mute         | Switch   | no        | ON: Alarm muted                                         |
 |         | lastUpdate   | DateTime | yes       | Timestamp of the last update (any sensor value changed) |
 |         | lastError    | String   | yes       | Last device error.                                      |
-| control | mute         | Switch   | no        | Send ON to mute the smoke alarm                         |
 | battery | batteryLevel | Number   | yes       | Battery Level in %                                      |
 |         | lowBattery   | Switch   | yes       | Low battery alert (< 20%)                               |
 
@@ -1668,7 +1665,7 @@ The sensor probe connects via a cable; if the cable is unplugged, the `lastError
 
 `Note:`
 The `alarmMode` and `reportHoldoff` channels are writable but only take effect while the sensor is online (awake and connected).
-The `sensors#mute` channel reflects the mute state reported by the device; mute is activated via the physical button only — there is no API mute for flood.
+The `sensors#mute` channel reflects the mute state reported by the device; there is no API to mute a flood alarm remotely, only the physical button on the device.
 
 The `alarmMode` channel reflects the Shelly app's Alarm Mode screen:
 
