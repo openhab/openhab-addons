@@ -291,6 +291,7 @@ public class ShellyBindingConstants {
     public static final String ALARM_TYPE_BTH_ENCRYPTED = "BTH_ENCRYPTED";
     public static final String ALARM_TYPE_BTH_UNKNOWN_TYPE = "BTH_UNKNOWN_TYPE";
     public static final String ALARM_TYPE_FLOOD = "FLOOD";
+    public static final String ALARM_TYPE_MUTED = "ALARM_MUTED";
     public static final String EVENT_TYPE_VIBRATION = "VIBRATION";
 
     // Event types

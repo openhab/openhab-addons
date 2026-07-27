@@ -654,7 +654,13 @@ public class ShellyComponents {
                         getOnOff(sdata.smoke));
             }
             if (sdata.mute != null) {
-                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MUTE, getOnOff(sdata.mute));
+                if (profile.isSmoke) {
+                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MUTE,
+                            getOnOff(sdata.mute));
+                } else if (profile.isFlood) {
+                    // Flood Gen4 has no mute channel; report mute/unmute via the device#alarm trigger instead
+                    thingHandler.postEvent(sdata.mute ? ALARM_TYPE_MUTED : ALARM_TYPE_NONE, false);
+                }
             }
             if (sdata.sensor == null && (sdata.sensorError != null || (profile.isFlood && profile.isGen2))) {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ERROR,

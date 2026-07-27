@@ -764,15 +764,27 @@ public class ShellyComponentsTest {
     }
 
     @Test
-    void updateSensorsMutePresentUpdatesSensorsMuteForFlood() throws Exception {
+    void updateSensorsMutePresentPostsAlarmMutedForFlood() throws Exception {
         ShellyStatusSensor sdata = new ShellyStatusSensor();
         sdata.mute = Boolean.TRUE;
 
         ShellyThingInterface handler = sensorHandlerFor(THING_TYPE_SHELLYPLUSFLOOD, sdata);
         ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
 
-        verify(handler).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_MUTE), eq(OnOffType.ON));
-        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_CONTROL), eq(CHANNEL_SENSOR_MUTE), any());
+        verify(handler).postEvent(eq(ALARM_TYPE_MUTED), eq(false));
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_MUTE), any());
+    }
+
+    @Test
+    void updateSensorsMuteAbsentPostsAlarmNoneForFlood() throws Exception {
+        ShellyStatusSensor sdata = new ShellyStatusSensor();
+        sdata.mute = Boolean.FALSE;
+
+        ShellyThingInterface handler = sensorHandlerFor(THING_TYPE_SHELLYPLUSFLOOD, sdata);
+        ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
+
+        verify(handler).postEvent(eq(ALARM_TYPE_NONE), eq(false));
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_MUTE), any());
     }
 
     @Test
@@ -786,6 +798,7 @@ public class ShellyComponentsTest {
 
         verify(handler).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_MUTE), eq(OnOffType.ON));
         verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_CONTROL), eq(CHANNEL_SENSOR_MUTE), any());
+        verify(handler, never()).postEvent(any(), anyBoolean());
     }
 
     private static ShellyThingInterface relayHandlerWith(ShellySettingsStatus profileStatus) {

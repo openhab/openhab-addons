@@ -35,6 +35,7 @@
 				<option value="SENSOR">Sensor data updated</option>
 				<option value="FLOOD">Water/flooding detected</option>
 				<option value="SENSOR_ERROR">Sensor error, e.g. cable unplugged</option>
+				<option value="ALARM_MUTED">Alarm was muted</option>
 			</options>
 		</event>
 	</channel-type>
