@@ -99,7 +99,7 @@ public class ControllerHandlerTest {
      * A structure change must force a full data refresh even for a sleepy node that was already enumerated.
      * matter.js reports a structure change while the node stays connected; the binding reacts by reconnecting
      * (updateNode -> initializeNode), whose resulting Connected event drives the data request. For sleepy nodes
-     * requestAllNodeDataIfNeeded skips that request, so without clearing the "enumerated" marker on the structure
+     * reconnect handling skips that request, so without clearing the "enumerated" marker on the structure
      * change the channels are never rebuilt.
      */
     @Test
