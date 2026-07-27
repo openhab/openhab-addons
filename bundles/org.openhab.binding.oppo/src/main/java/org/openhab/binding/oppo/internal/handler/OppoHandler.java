@@ -140,34 +140,28 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
 
         // Check configuration settings
         if (model == 0) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Player model must be specified");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.player-model");
             return;
         }
 
         String configError = null;
         if ((serialPort == null || serialPort.isEmpty()) && (host == null || host.isEmpty())) {
-            configError = "Undefined serialPort and host configuration settings; please set one of them";
+            configError = "@text/error.port-select";
         } else if (serialPort != null && (host == null || host.isEmpty())) {
             if (serialPort.toLowerCase().startsWith("rfc2217")) {
-                configError = "Use host and port configuration settings for a serial over IP connection";
+                configError = "@text/error.rfc2217";
             }
         } else {
             isBdpIP = false;
             if (port == null) {
-                switch (model) {
-                    case MODEL83:
-                        port = BDP83_PORT;
-                        break;
-                    case MODEL103:
-                    case MODEL105:
-                        port = BDP10X_PORT;
-                        break;
-                    default:
-                        port = UDP20X_PORT;
-                }
+                port = switch (model) {
+                    case MODEL83 -> BDP83_PORT;
+                    case MODEL103, MODEL105 -> BDP10X_PORT;
+                    default -> UDP20X_PORT;
+                };
                 isBdpIP = port != UDP20X_PORT;
             } else if (port <= 0) {
-                configError = "Invalid port configuration setting";
+                configError = "@text/error.invalid-port";
             }
         }
 
@@ -181,8 +175,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
         } else if (port != null) {
             connector = new OppoIpConnector(host, port, isBdpIP, getThing().getUID().getAsString());
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Either Serial port or Host & Port must be specifed");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.port-select");
             return;
         }
 
@@ -383,7 +376,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
         String key = evt.getKey();
         String updateData = evt.getValue().trim();
         if (this.getThing().getStatus() == ThingStatus.OFFLINE) {
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+            updateStatus(ThingStatus.ONLINE);
         }
 
         synchronized (sequenceLock) {
@@ -668,7 +661,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                             Thread.sleep(SLEEP_BETWEEN_CMD_MS);
                             connector.sendCommand(OppoCommand.QUERY_PLAYBACK_STATUS);
 
-                            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+                            updateStatus(ThingStatus.ONLINE);
                             isInitialQuery = false;
                             isVbModeSet = false;
                         } catch (OppoException | InterruptedException e) {
