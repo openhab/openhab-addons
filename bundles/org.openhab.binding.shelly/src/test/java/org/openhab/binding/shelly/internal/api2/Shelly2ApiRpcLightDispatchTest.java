@@ -216,13 +216,23 @@ public class Shelly2ApiRpcLightDispatchTest {
     }
 
     @Test
-    void setBrightness_positive_sendsBrightnessAndOnTrue() throws ShellyApiException {
+    void setBrightness_positiveWithAutoOn_sendsBrightnessAndOnTrue() throws ShellyApiException {
+        StubApiRpc rpc = newRpc(lightModeProfile(1));
+        rpc.setBrightness(0, 42, true);
+
+        Shelly2RpcRequestParams params = rpc.lastParams();
+        assertThat(params.brightness, is(42));
+        assertThat(params.on, is(true));
+    }
+
+    @Test
+    void setBrightness_positiveWithoutAutoOn_sendsBrightnessWithoutTouchingOnState() throws ShellyApiException {
         StubApiRpc rpc = newRpc(lightModeProfile(1));
         rpc.setBrightness(0, 42, false);
 
         Shelly2RpcRequestParams params = rpc.lastParams();
         assertThat(params.brightness, is(42));
-        assertThat(params.on, is(true));
+        assertThat(params.on, is(nullValue()));
     }
 
     @Test
