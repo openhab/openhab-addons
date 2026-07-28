@@ -272,6 +272,8 @@ public class Shelly1ApiJsonDTO {
         public String mac;
         public String hostname;
         public String fw;
+        public String ver; // Gen2+: human-readable app version, e.g. "1.7.99-powerstripg4prod1";
+                           // fallback when fw (fw_id) has no embedded semver (newer Gen4 app builds)
         public Boolean auth;
         public Integer gen;
         public String coiot;
@@ -590,15 +592,15 @@ public class Shelly1ApiJsonDTO {
     }
 
     public static class ShellySettingsUpdate {
-        public String status;
+        public @Nullable String status;
         @SerializedName("has_update")
-        public Boolean hasUpdate;
+        public @Nullable Boolean hasUpdate;
         @SerializedName("new_version")
-        public String newVersion;
+        public @Nullable String newVersion;
         @SerializedName("old_version")
-        public String oldVersion;
+        public @Nullable String oldVersion;
         @SerializedName("beta_version")
-        public String betaVersion;
+        public @Nullable String betaVersion;
     }
 
     public static class ShellySettingsGlobal {
