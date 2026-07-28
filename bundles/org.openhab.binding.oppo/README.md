@@ -50,7 +50,7 @@ Some notes:
 - The UDP-20x series should be fully functional over direct IP connection but this was not able to be tested by the developer.
 - As previously noted, when using verbose mode, the player will send time code messages once per second while playback is ongoing.
 - In non-verbose (the default), the binding will poll the player every 10 seconds to update play time, track and chapter information instead.
-- In order for the direct IP connection to work while the player is turned off, the Standby Mode setting must be set to "Quick Start" or "Network Standby" in the Device Setup menu.
+- In order for the direct IP connection to work while the player is turned off, the Device Setup → Standby Mode setting must be set to "Quick Start" or "Network Standby" in the Device Setup menu.
 - Likewise, if the player is turned off, it may not be discoverable by the Binding's discovery scan.
 - Prior to using the binding, ensure that the player's firmware is up to date with the latest available version.
 - Available HDMI modes for BDP-83 & BDP-9x: AUTO, SRC, 1080P, 1080I, 720P, SDP, SDI
