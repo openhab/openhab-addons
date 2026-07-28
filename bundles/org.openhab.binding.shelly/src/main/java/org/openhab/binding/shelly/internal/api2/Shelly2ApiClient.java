@@ -1195,6 +1195,14 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             if (value.apower != null) {
                 emeter.power = value.apower;
             }
+            Shelly2Energy aenergy = value.aenergy;
+            if (aenergy != null) {
+                Double accumulatedEnergyWh = aenergy.total;
+                if (accumulatedEnergyWh != null) {
+                    emeter.total = accumulatedEnergyWh;
+                }
+                emeter.energyByMinute = byMinuteToWh(aenergy.byMinute);
+            }
             updateMeter(status, dimId, emeter, channelUpdate);
         }
 
