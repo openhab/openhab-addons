@@ -18,12 +18,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * {@link ShellyVersionDTO} compares 2 version strings.
+ * {@link ShellyVersionComparator} compares 2 version strings.
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class ShellyVersionDTO {
+public class ShellyVersionComparator {
     private class VersionTokenizer {
         private final String versionString;
         private final int length;
@@ -168,5 +168,34 @@ public class ShellyVersionDTO {
         return version.isEmpty() || version.contains("???")
                 || (lowVersion = version.toLowerCase(Locale.ROOT)).contains("master")
                 || (lowVersion.contains("-rc") || lowVersion.contains("beta"));
+    }
+
+    /**
+     * Strip trailing build hash from a firmware version string.
+     *
+     * Gen1 hashes start with 'g' (e.g. g9979d16); Gen2 hashes are pure lowercase hex (e.g. 06f6da23).
+     * Both appear after the last '-'. Stripping them enables numeric-only version comparison.
+     * Example: "2.6.2-06f6da23" → "2.6.2", "2.6.2-beta1-06f6da23" → "2.6.2-beta1".
+     */
+    public String stripBuildHash(String version) {
+        int idx = version.lastIndexOf('-');
+        if (idx > 0 && idx < version.length() - 1) {
+            String tail = version.substring(idx + 1);
+            // pure hex (Gen2) or g-prefixed hex (Gen1)
+            String hex = tail.startsWith("g") ? tail.substring(1) : tail;
+            if (!hex.isEmpty() && hex.chars().allMatch(c -> (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f'))) {
+                return version.substring(0, idx);
+            }
+        }
+        return version;
+    }
+
+    /**
+     * Checks whether {@code candidateVersion} is a newer release than {@code installedVersion}, stripping
+     * any trailing build hash from both first so e.g. "2.6.2-abc" and "2.6.2" compare as equal.
+     */
+    public boolean isNewer(String candidateVersion, String installedVersion) {
+        return !candidateVersion.isEmpty()
+                && compare(stripBuildHash(installedVersion), stripBuildHash(candidateVersion)) < 0;
     }
 }
