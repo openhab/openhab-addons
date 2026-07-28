@@ -353,7 +353,11 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_SETTEMP, "targetTemp", ITEMT_TEMP))
                 .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_BCONTROL, "boostControl", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_BTIMER, "boostTimer", ITEMT_TIME))
-                .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_SCHEDULE, "controlSchedule", ITEMT_SWITCH));
+                .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_SCHEDULE, "controlSchedule", ITEMT_SWITCH))
+
+                .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_ALARM_MODE, "floodAlarmMode", ITEMT_STRING))
+                .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_REPORT_HOLDOFF, "floodReportHoldoff",
+                        ITEMT_TIME));
     }
 
     public static @Nullable ShellyChannel getDefinition(String channelName) throws IllegalArgumentException {
@@ -686,7 +690,9 @@ public class ShellyChannelDefinitions {
                 CHANNEL_SENSOR_ILLUM);
         addChannel(thing, newChannels, sdata.flood != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_FLOOD);
         addChannel(thing, newChannels, sdata.smoke != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_SMOKE);
-        addChannel(thing, newChannels, sdata.mute != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MUTE);
+        // Flood Gen4 has no mute channel; a mute/unmute is reported via the device#alarm trigger instead
+        addChannel(thing, newChannels, sdata.mute != null && profile.isSmoke, CHANNEL_GROUP_SENSOR,
+                CHANNEL_SENSOR_MUTE);
         addChannel(thing, newChannels, profile.settings.externalPower != null || sdata.charger != null, CHGR_DEVST,
                 CHANNEL_DEVST_CHARGER);
         addChannel(thing, newChannels, sdata.motion != null || (sdata.sensor != null && sdata.sensor.motion != null),
@@ -769,12 +775,19 @@ public class ShellyChannelDefinitions {
         addChannel(thing, newChannels, ws90 || sdata.precipitation != null, CHANNEL_GROUP_SENSOR,
                 CHANNEL_SENSOR_PRECIPITATION);
 
+        // Flood Gen4
+        if (profile.isFlood && profile.isGen2) {
+            addChannel(thing, newChannels, true, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_ALARM_MODE);
+            addChannel(thing, newChannels, true, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_REPORT_HOLDOFF);
+        }
+
         // Battery
         boolean hasBatteryValue = sdata.bat != null && sdata.bat.value != null;
         addChannel(thing, newChannels, ws90 || hasBatteryValue, CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LEVEL);
         addChannel(thing, newChannels, ws90 || hasBatteryValue, CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LOW);
 
-        addChannel(thing, newChannels, sdata.sensorError != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ERROR);
+        addChannel(thing, newChannels, sdata.sensorError != null || (profile.isFlood && profile.isGen2),
+                CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ERROR);
         addChannel(thing, newChannels, sdata.actReasons != null, CHGR_DEVST, CHANNEL_DEVST_WAKEUP);
         addChannel(thing, newChannels, true, profile.isButton ? CHANNEL_GROUP_STATUS : CHANNEL_GROUP_SENSOR,
                 CHANNEL_LAST_UPDATE);

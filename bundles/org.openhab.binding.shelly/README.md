@@ -111,6 +111,7 @@ See section [Discovery](#discovery) for details.
 | shellyplusuni        | Shelly Plus UNI                                          | SNSN-0043X                                                                |
 | shellyplusht         | Shelly Plus HT with temperature + humidity sensor        | SNSN-0013A, S3SN-0U12A                                                    |
 | shellyplussmoke      | Shelly Plus Smoke sensor                                 | SNSN-0031Z                                                                |
+| shellyplusflood      | Shelly Flood Gen4 water leak sensor                      | S4SN-0071A                                                                |
 | shellypluswdus       | Shelly Plus Wall Dimmer US                               | SNDM-0013US                                                               |
 | shellyplusdimmer     | Shelly Plus Dimmer Gen 3                                 | S3DM-0A101WWL                                                             |
 | shellyprodm2pm       | Shelly Pro Dimmer 2PM                                    | SPDM-002PE01EU                                                            |
@@ -1656,6 +1657,33 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 |         | lastError    | String   | yes       | Last device error.                                      |
 | battery | batteryLevel | Number   | yes       | Battery Level in %                                      |
 |         | lowBattery   | Switch   | yes       | Low battery alert (< 20%)                               |
+
+### Shelly Flood Gen4 (thing-type: shellyplusflood)
+
+The Shelly Flood Gen4 (S4SN-0071A) is a battery-powered water-leak sensor with a configurable alarm mode.
+The sensor probe connects via a cable; if the cable is unplugged, the `lastError` channel is updated and a `SENSOR_ERROR` event is posted to `device#alarm`.
+
+`Note:`
+The `alarmMode` and `reportHoldoff` channels are writable but only take effect while the sensor is online (awake and connected).
+There is no API to mute a flood alarm remotely, only the physical button on the device; the mute state is reported via an `ALARM_MUTED` event on `device#alarm` rather than a dedicated channel.
+
+The `alarmMode` channel reflects the Shelly app's Alarm Mode screen:
+
+- **Rain mode** (`rain`): rain detection only — the flood alarm is inactive.
+- **Flood mode, Intense** (`intense`): loud acoustic alarm triggered by flooding (mute via physical button on device).
+- **Flood mode, Normal** (`normal`): acoustic alarm triggered by flooding (mute via physical button on device).
+- **Flood mode, Silent** (`disabled`): flood detection only, no acoustic alarm.
+
+| Group   | Channel       | Type            | read-only | Description                                                               |
+| ------- | ------------- | --------------- | --------- | ------------------------------------------------------------------------- |
+| sensors | flood         | Switch          | yes       | ON: Water/flooding detected, OFF: dry                                     |
+|         | lastUpdate    | DateTime        | yes       | Timestamp of the last update (any sensor value changed)                   |
+|         | lastError     | String          | yes       | Last device error (e.g. `cable_unplugged`)                                |
+| control | alarmMode     | String          | no        | Alarm mode: `rain`, `intense`, `normal`, `disabled` (see note above)      |
+|         | reportHoldoff | Number:Time     | no        | Minimum time (s) between consecutive flood reports                        |
+| battery | batteryLevel  | Number          | yes       | Battery level in %                                                        |
+|         | lowBattery    | Switch          | yes       | ON: Low battery alert (< 20%)                                             |
+| device  | alarm         | Trigger         | yes       | Trigger: `FLOOD` on flood alarm, `SENSOR_ERROR` on cable fault, `ALARM_MUTED` when muted via the physical button |
 
 ### Shelly Plus Wall Dimmer US (thing-type: shellypluswdus)
 
