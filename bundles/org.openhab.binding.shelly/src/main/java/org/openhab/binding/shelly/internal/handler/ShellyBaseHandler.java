@@ -1395,6 +1395,16 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
     @Override
     public boolean updateChannel(String group, String channel, State value) {
+        if (ThingStatus.ONLINE == getThingStatus() && CHANNEL_DEVST_UPDATE.equals(channel)
+                && value instanceof OnOffType onOff) {
+            boolean updateAvailable = OnOffType.ON == onOff;
+            String statusDescription = thing.getStatusInfo().getDescription();
+            if (updateAvailable && (statusDescription == null)) {
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "@text/message.firmware-update-available");
+            } else if (!updateAvailable && (statusDescription != null)) {
+                updateStatus(ThingStatus.ONLINE);
+            }
+        }
         return updateChannel(mkChannelId(group, channel), value, false);
     }
 
