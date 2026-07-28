@@ -1,5 +1,7 @@
 # TransitApp Binding
 
+![Transit Logo](doc/logo.png)
+
 This binding integrates public transit information and real-time departure details from the Transit API (v4) into openHAB.
 
 ## Supported Things
