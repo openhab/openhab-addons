@@ -526,7 +526,7 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
         }
 
         try {
-            final EcovacsApi api = handler.createApiForDevice(serialNumber);
+            final EcovacsApi api = handler.getApi();
             api.loginAndGetAccessToken();
             Optional<EcovacsDevice> deviceOpt = api.getDevices().stream()
                     .filter(d -> serialNumber.equals(d.getSerialNumber())).findFirst();

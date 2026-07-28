@@ -27,6 +27,7 @@ import javax.net.ssl.TrustManagerFactory;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.ecovacs.internal.api.EcovacsApi.Credentials;
 import org.openhab.binding.ecovacs.internal.api.EcovacsApiConfiguration;
 import org.openhab.binding.ecovacs.internal.api.EcovacsApiException;
 import org.openhab.binding.ecovacs.internal.api.EcovacsDevice;
@@ -35,7 +36,6 @@ import org.openhab.binding.ecovacs.internal.api.commands.GetFirmwareVersionComma
 import org.openhab.binding.ecovacs.internal.api.commands.IotDeviceCommand;
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.Device;
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.PortalCleanLogRecord;
-import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.PortalLoginResponse;
 import org.openhab.binding.ecovacs.internal.api.model.CleanLogRecord;
 import org.openhab.binding.ecovacs.internal.api.model.DeviceCapability;
 import org.openhab.core.io.net.http.TrustAllTrustManager;
@@ -126,8 +126,8 @@ public class EcovacsIotMqDevice implements EcovacsDevice {
     public void connect(final EventListener listener, ScheduledExecutorService scheduler)
             throws EcovacsApiException, InterruptedException {
         EcovacsApiConfiguration config = api.getConfig();
-        PortalLoginResponse loginData = api.getLoginData();
-        if (loginData == null) {
+        Credentials creds = api.getCredentials();
+        if (creds == null) {
             throw new EcovacsApiException("Can not connect when not logged in");
         }
 
@@ -136,11 +136,10 @@ public class EcovacsIotMqDevice implements EcovacsDevice {
             listener.onFirmwareVersionChanged(this, sendCommand(new GetFirmwareVersionCommand()));
         }
 
-        String userName = String.format("%s@%s", loginData.getUserId(), config.getRealm().split("\\.")[0]);
+        String userName = String.format("%s@%s", creds.userId(), config.getRealm().split("\\.")[0]);
         String host = String.format("mq-%s.%s", config.getContinent(), config.getRealm());
 
-        Mqtt3SimpleAuth auth = Mqtt3SimpleAuth.builder().username(userName).password(loginData.getToken().getBytes())
-                .build();
+        Mqtt3SimpleAuth auth = Mqtt3SimpleAuth.builder().username(userName).password(creds.token().getBytes()).build();
 
         MqttClientSslConfig sslConfig = MqttClientSslConfig.builder().trustManagerFactory(createTrustManagerFactory())
                 .build();
@@ -158,7 +157,7 @@ public class EcovacsIotMqDevice implements EcovacsDevice {
         };
 
         final Mqtt3AsyncClient client = MqttClient.builder().useMqttVersion3()
-                .identifier(userName + "/" + loginData.getResource()).simpleAuth(auth).serverHost(host).serverPort(8883)
+                .identifier(userName + "/" + creds.resource()).simpleAuth(auth).serverHost(host).serverPort(8883)
                 .sslConfig(sslConfig).addDisconnectedListener(disconnectListener).buildAsync();
 
         try {

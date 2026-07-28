@@ -27,7 +27,21 @@ public interface EcovacsApi {
         return new EcovacsApiImpl(httpClient, configuration);
     }
 
-    void loginAndGetAccessToken() throws EcovacsApiException, InterruptedException;
+    public record Credentials(String userId, String resource, String token, long expiryTimestampMs) {
+        public boolean isExpired() {
+            return System.currentTimeMillis() > expiryTimestampMs;
+        }
+    }
+
+    Credentials loginAndGetAccessToken() throws EcovacsApiException, InterruptedException;
+
+    void testAndSetCredentials(Credentials creds) throws EcovacsApiException, InterruptedException;
+
+    Credentials refreshCredentials() throws EcovacsApiException, InterruptedException;
+
+    void requestDeviceVerificationCode() throws EcovacsApiException, InterruptedException;
+
+    Credentials verifyDevice(String verificationCode) throws EcovacsApiException, InterruptedException;
 
     List<EcovacsDevice> getDevices() throws EcovacsApiException, InterruptedException;
 }
