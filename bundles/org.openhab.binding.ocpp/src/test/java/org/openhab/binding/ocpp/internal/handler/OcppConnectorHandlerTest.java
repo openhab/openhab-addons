@@ -51,10 +51,16 @@ class OcppConnectorHandlerTest {
     private @NonNullByDefault({}) ThingHandlerCallback callback;
     private @NonNullByDefault({}) OcppConnectorHandler handler;
 
+    private @NonNullByDefault({}) Thing thing;
+
     @BeforeEach
     void setUp() {
-        Thing thing = mock(Thing.class);
+        thing = mock(Thing.class);
         when(thing.getUID()).thenReturn(THING_UID);
+        when(thing.getThingTypeUID()).thenReturn(THING_TYPE_CONNECTOR);
+        when(thing.getChannels()).thenReturn(java.util.List.of());
+        when(thing.getConfiguration()).thenReturn(new org.openhab.core.config.core.Configuration());
+        when(thing.getProperties()).thenReturn(java.util.Map.of());
         callback = mock(ThingHandlerCallback.class);
         handler = new OcppConnectorHandler(thing);
         handler.setCallback(callback);
@@ -119,6 +125,44 @@ class OcppConnectorHandlerTest {
         handler.onStatusNotification(status(ChargePointStatus.Available));
 
         assertChannel(CHANNEL_AVAILABILITY, OnOffType.ON);
+    }
+
+    private static eu.chargetime.ocpp.model.core.MeterValuesRequest meterValues(String measurand,
+            @org.eclipse.jdt.annotation.Nullable String phase, String unit, String value) {
+        eu.chargetime.ocpp.model.core.SampledValue sample = new eu.chargetime.ocpp.model.core.SampledValue(value);
+        sample.setMeasurand(measurand);
+        if (phase != null) {
+            sample.setPhase(phase);
+        }
+        sample.setUnit(unit);
+        eu.chargetime.ocpp.model.core.MeterValuesRequest request = new eu.chargetime.ocpp.model.core.MeterValuesRequest(
+                1);
+        request.setMeterValue(
+                new eu.chargetime.ocpp.model.core.MeterValue[] { new eu.chargetime.ocpp.model.core.MeterValue(
+                        java.time.ZonedDateTime.now(), new eu.chargetime.ocpp.model.core.SampledValue[] { sample }) });
+        return request;
+    }
+
+    @Test
+    void aMeasurandTheChargerReportsGetsAChannelEvenIfItIsNotDeclared() {
+        // Optional telemetry is not declared on every connector: a charger that reports it gets the
+        // channel, one that never does stays free of channels that would only ever be empty.
+        handler.onMeterValues(meterValues("SoC", null, "Percent", "62"));
+
+        org.mockito.ArgumentCaptor<Thing> updated = org.mockito.ArgumentCaptor.forClass(Thing.class);
+        verify(callback).thingUpdated(updated.capture());
+        org.junit.jupiter.api.Assertions.assertNotNull(
+                updated.getValue().getChannel(new ChannelUID(THING_UID, CHANNEL_SOC)),
+                "reporting SoC should have added the soc channel");
+    }
+
+    @Test
+    void aDeclaredMeasurandDoesNotTriggerAThingUpdate() {
+        // Phased current maps to a statically declared channel, so nothing about the thing changes.
+        handler.onMeterValues(meterValues("Current.Import", "L1", "A", "14.2"));
+
+        verify(callback, org.mockito.Mockito.never()).thingUpdated(org.mockito.ArgumentMatchers.any());
+        assertChannel(CHANNEL_CURRENT_L1, new org.openhab.core.library.types.QuantityType<>("14.2 A"));
     }
 
     @Test
