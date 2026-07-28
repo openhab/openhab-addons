@@ -6,79 +6,104 @@ This binding integrates public transit information and real-time departure detai
 
 ## Supported Things
 
-1. **TransitApp Bridge (`bridge`)**
-   - Connects to the Transit API using your personal API key.
-   - Validates the API key upon initialization.
+1. **TransitApp Bridge (`bridge`)**: Connects to the Transit API using your personal API key and validates it upon initialization.
+1. **Transit Stop (`stop`)**: Polls real-time stop departures based on a global stop ID (e.g., `VVSDE:2298`). Models upcoming departures using group channels (`depart1`, `depart2`, `depart3`).
+1. **Transit Route Details (`routedetails`)**: Retrieves comprehensive route details, colors, alerts, and start/destination locations based on a global route ID (e.g., `VVSDE:247174`).
+1. **Transit Trip Details (`tripdetails`)**: Retrieves specific real-time trip details and monitors up to 5 upcoming stops based on a trip search key.
 
-1. **Transit Stop (`stop`)**
-   - Polls real-time stop departures based on a global stop ID (e.g., `VVSDE:2298`).
-   - Models upcoming departures using group channels (`depart1`, `depart2`, `depart3`).
-   - Channels per departure group:
-     - `departX#routeLongName` (String): Full route name / itinerary
-     - `departX#routeShortName` (String): Short route name or line number (e.g., "43", "S1")
-     - `departX#departureTime` (DateTime): Scheduled or live departure time
-     - `departX#minutesUntilDeparture` (Number:Time): Countdown until departure using UoM standard (`min`)
-     - `departX#delayMinutes` (Number:Time): Current delay using UoM standard (`min`)
-     - `departX#platform` (String): Track or platform (e.g., "Gleis 1")
-     - `departX#wheelchairAccessible` (Switch): Wheelchair accessibility (ON/OFF)
-     - `departX#occupancy` (String): Vehicle occupancy status
-     - `departX#isCancelled` (Switch): Indicates if the departure is cancelled (ON/OFF)
+## Thing Configuration
 
-1. **Transit Route Details (`routedetails`)**
-   - Retrieves comprehensive route details, colors, alerts, and start/destination locations based on a global route ID (e.g., `VVSDE:247174`).
-   - Models route attributes using the group channel `route`.
-   - Channels:
-     - `route#routeLongName` / `route#routeShortName` (String): Full and short route names
-     - `route#agencyName` / `route#routeNetworkName` (String): Transit agency and network name (e.g., "VVS|Stuttgart")
-     - `route#modeName` / `route#vehicleName` (String): Transport mode and vehicle type
-     - `route#routeColor` / `route#routeTextColor` (String): Official hex colors for UI badges
-     - `route#startLocation` / `route#destinationLocation` (String): Start and end stop names of the route
-     - `route#activeAlertsCount` (Number): Number of active service alerts and disruptions
-     - `route#alertTitle` / `route#alertDescription` / `route#alertSeverity` (String): Active service alerts details
-     - `route#url` (String): Web link to route schedule or information
+### Bridge (`bridge`)
 
-1. **Transit Trip Details (`tripdetails`)**
-   - Retrieves specific real-time trip details and monitors up to 5 upcoming stops based on a trip search key.
-   - Models general trip details under `trip1` and upcoming stop previews under `stop1` to `stop5`.
-   - General Trip Channels (`trip1`):
-     - `trip1#tripHeadsign` (String): Destination sign on the vehicle
-     - `trip1#tripStatus` (String): Current trip status (e.g., "In Transit", "On Time")
-     - `trip1#rtTripId` (String): Real-time vehicle tracking ID
-     - `trip1#location` (Location): GPS coordinates (latitude, longitude) for UI Map widgets
-     - `trip1#timeToTarget` (Number:Time): Live countdown to the configured target destination stop (`min`)
-     - `trip1#occupancy` (String): Vehicle occupancy status
-     - `trip1#bikesAllowed` (Switch): Indicates if bicycles are allowed on this vehicle (ON/OFF)
-     - `trip1#routeLongName` / `trip1#routeShortName` / `trip1#routeColor` / `trip1#modeName` / `trip1#vehicleName`: Route & vehicle info
-   - Upcoming Stop Channels (`stop1` to `stop5`):
-     - `stopX#stopName` (String): Name of the upcoming stop
-     - `stopX#scheduledTime` / `stopX#realtimeTime` (DateTime): Timetable and real-time departure time
-     - `stopX#minutesUntilDeparture` (Number:Time): Countdown until upcoming departure using UoM standard (`min`)
-     - `stopX#delayMinutes` (Number:Time): Current delay using UoM standard (`min`)
-     - `stopX#platform` (String): Platform or track for the upcoming stop
+| Parameter | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `apiKey` | TEXT | | Your personal Transit API key (required). |
 
-## Configuration
+### Stop (`stop`)
 
-### Bridge Configuration
+| Parameter | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `globalStopId` | TEXT | | Global stop identifier (e.g., `VVSDE:2298`) (required). |
+| `refreshInterval` | INTEGER | `60` | Polling interval in seconds. |
 
-- `apiKey` (text, required): Your personal Transit API key.
+### Route Details (`routedetails`)
 
-### Thing Configurations
+| Parameter | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `routeId` | TEXT | | Global route identifier (e.g., `VVSDE:247174`) (required). |
+| `includeNextDeparture` | BOOLEAN | `false` | Include next departure for each stop. |
+| `stopDetailed` | BOOLEAN | `false` | Return detailed stop objects. |
+| `locale` | TEXT | | Language locale for translated names (optional). |
+| `refreshInterval` | INTEGER | `300` | Polling interval in seconds. |
 
-- **Stop (`stop`)**:
-  - `globalStopId` (text, required): Global stop identifier (e.g., `VVSDE:2298`).
-  - `refreshInterval` (integer, default: `60`): Polling interval in seconds.
-- **Route Details (`routedetails`)**:
-  - `routeId` (text, required): Global route identifier (e.g., `VVSDE:247174`).
-  - `includeNextDeparture` (boolean, default: `false`): Include next departure for each stop.
-  - `stopDetailed` (boolean, default: `false`): Return detailed stop objects.
-  - `locale` (text, optional): Language locale for translated names.
-  - `refreshInterval` (integer, default: `300`): Polling interval in seconds.
-- **Trip Details (`tripdetails`)**:
-  - `tripId` (text, required): Trip search key (e.g., `VVSDE:52245421:47:2:22`).
-  - `targetStopId` (text, optional): Destination stop ID to calculate the `timeToTarget` countdown (e.g., `VVSDE:1234`).
-  - `includeContinuation` (boolean, default: `false`): Append immediate next trip stops if vehicle continues in-seat.
-  - `locale` (text, optional): Language locale for translated strings.
-  - `refreshInterval` (integer, default: `60`): Polling interval in seconds.
+### Trip Details (`tripdetails`)
+
+| Parameter | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `tripId` | TEXT | | Trip search key (e.g., `VVSDE:52245421:47:2:22`) (required). |
+| `targetStopId` | TEXT | | Destination stop ID to calculate the `timeToTarget` countdown (optional). |
+| `includeContinuation` | BOOLEAN | `false` | Append immediate next trip stops if vehicle continues in-seat. |
+| `locale` | TEXT | | Language locale for translated strings (optional). |
+| `refreshInterval` | INTEGER | `60` | Polling interval in seconds. |
+
+## Channels
+
+### Stop Channels (`depart1` to `depart3`)
+
+| Channel | Type | Description |
+| :--- | :--- | :--- |
+| `departX#routeLongName` | String | Full route name / itinerary |
+| `departX#routeShortName` | String | Short route name or line number (e.g., "43", "S1") |
+| `departX#departureTime` | DateTime | Scheduled or live departure time |
+| `departX#minutesUntilDeparture` | Number:Time | Countdown until departure using UoM standard (`min`) |
+| `departX#delayMinutes` | Number:Time | Current delay using UoM standard (`min`) |
+| `departX#platform` | String | Track or platform (e.g., "Gleis 1") |
+| `departX#wheelchairAccessible` | Switch | Wheelchair accessibility status |
+| `departX#occupancy` | String | Vehicle occupancy status |
+| `departX#isCancelled` | Switch | Indicates if the departure is cancelled |
+
+### Route Details Channels (`route`)
+
+| Channel | Type | Description |
+| :--- | :--- | :--- |
+| `route#routeLongName` | String | Full route name |
+| `route#routeShortName` | String | Short route name or line number |
+| `route#agencyName` | String | Transit agency name |
+| `route#routeNetworkName` | String | Transit network name (e.g., "VVS\|Stuttgart") |
+| `route#modeName` | String | Transport mode |
+| `route#vehicleName` | String | Vehicle type |
+| `route#routeColor` | String | Official hex color for UI badges |
+| `route#routeTextColor` | String | Official text hex color |
+| `route#startLocation` | String | Start stop name of the route |
+| `route#destinationLocation` | String | Destination stop name of the route |
+| `route#activeAlertsCount` | Number | Number of active service alerts and disruptions |
+| `route#alertTitle` | String | Title of active service alert |
+| `route#alertDescription` | String | Detailed description of active service alert |
+| `route#alertSeverity` | String | Severity level of active service alert |
+| `route#url` | String | Web link to route schedule or information |
+
+### Trip Details Channels (`trip1` and `stop1` to `stop5`)
+
+| Channel | Type | Description |
+| :--- | :--- | :--- |
+| `trip1#tripHeadsign` | String | Destination sign on the vehicle |
+| `trip1#tripStatus` | String | Current trip status (e.g., "In Transit", "On Time") |
+| `trip1#rtTripId` | String | Real-time vehicle tracking ID |
+| `trip1#location` | Location | GPS coordinates (latitude, longitude) for UI Map widgets |
+| `trip1#timeToTarget` | Number:Time | Live countdown to the configured target destination stop (`min`) |
+| `trip1#occupancy` | String | Vehicle occupancy status |
+| `trip1#bikesAllowed` | Switch | Indicates if bicycles are allowed on this vehicle |
+| `trip1#routeLongName` | String | Route long name |
+| `trip1#routeShortName` | String | Route short name / line number |
+| `trip1#routeColor` | String | Route official hex color |
+| `trip1#modeName` | String | Transport mode |
+| `trip1#vehicleName` | String | Vehicle type |
+| `stopX#stopName` | String | Name of the upcoming stop |
+| `stopX#scheduledTime` | DateTime | Timetable departure time |
+| `stopX#realtimeTime` | DateTime | Real-time departure time |
+| `stopX#minutesUntilDeparture` | Number:Time | Countdown until upcoming departure (`min`) |
+| `stopX#delayMinutes` | Number:Time | Current delay (`min`) |
+| `stopX#platform` | String | Track / platform for the upcoming stop |
 
 ## Finding Parameters (Stop ID, Route ID, Trip ID)
 
@@ -135,9 +160,23 @@ Alternatively, you can execute all queries directly in your browser without term
 1. Select an endpoint such as `/v4/public/nearby_stops` or `/v4/public/stop_departures`.
 1. Enter your query parameters (e.g., latitude/longitude or stop ID) and click **Send / Execute** to inspect the raw JSON response.
 
-## Item Example Configuration
+## Full Example
 
-Using the `#` group channel syntax in your `.items` file or UI:
+### Thing Configuration
+
+Create a `.things` file (e.g., `transit.things`) with the following configuration:
+
+```openhab
+Bridge transitapp:bridge:mybridge [ apiKey="YOUR_API_KEY_HERE" ] {
+    Thing stop mystop [ globalStopId="VVSDE:2298", refreshInterval=60 ]
+    Thing routedetails myroute [ routeId="VVSDE:247174", refreshInterval=300 ]
+    Thing tripdetails mytrip [ tripId="VVSDE:52245421:47:2:22", targetStopId="VVSDE:1234", refreshInterval=60 ]
+}
+```
+
+### Item Configuration
+
+Create an `.items` file (e.g., `transit.items`) and link your items using the `#` group channel syntax:
 
 ```openhab
 String      Stop1_Route         "Linie [%s]"             { channel="transitapp:stop:mybridge:mystop:depart1#routeShortName" }
