@@ -113,6 +113,7 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
             transport = null;
         }
         sessionChargePoints.clear();
+        chargePoints.clear();
     }
 
     public @Nullable OcppTransport getTransport() {
