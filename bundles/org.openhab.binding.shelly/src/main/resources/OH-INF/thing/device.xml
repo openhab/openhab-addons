@@ -33,6 +33,7 @@
 				<option value="EXT_POWER">External power supply was connected</option>
 				<option value="BUTTON">Button was pressed</option>
 				<option value="SENSOR">Sensor data updated</option>
+				<option value="LORA_RECEIVED">LoRa datagram received</option>
 			</options>
 		</event>
 	</channel-type>

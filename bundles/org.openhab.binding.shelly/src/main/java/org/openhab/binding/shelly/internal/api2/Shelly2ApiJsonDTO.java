@@ -18,6 +18,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DevConfigBle.Shelly2DevConfigBleObserver;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DevConfigBle.Shelly2DevConfigBleRpc;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusSysAvlUpdate;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcBaseMessage.Shelly2RpcMessageError;
 import org.openhab.binding.shelly.internal.api2.ShellyBluJsonDTO.Shelly2NotifyBluEventData;
 
@@ -64,6 +65,7 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLYRPC_METHOD_RGBW_STATUS = "RGBW.GetStatus";
     public static final String SHELLYRPC_METHOD_RGBW_SET = "RGBW.Set";
     public static final String SHELLYRPC_METHOD_LED_SETCONFIG = "WD_UI.SetConfig";
+    public static final String SHELLYRPC_METHOD_LORA_SENDDATA = "LoRa.SendBytes";
     public static final String SHELLYRPC_METHOD_WIFIGETCONG = "Wifi.GetConfig";
     public static final String SHELLYRPC_METHOD_WIFISETCONG = "Wifi.SetConfig";
     public static final String SHELLYRPC_METHOD_WIFILISTAPCLIENTS = "WiFi.ListAPClients";
@@ -153,6 +155,9 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLY2_EVENT_RESTART = "scheduled_restart";
     public static final String SHELLY2_EVENT_WIFICONNFAILED = "sta_connect_fail";
     public static final String SHELLY2_EVENT_WIFIDISCONNECTED = "sta_disconnected";
+
+    // LoRa
+    public static final String SHELLY2_EVENT_LORADATA = "lora_received";
 
     // Error Codes
     public static final String SHELLY2_ERROR_OVERPOWER = "overpower";
@@ -459,6 +464,20 @@ public class Shelly2ApiJsonDTO {
             public String powerLed;
         }
 
+        public class Shelly2DeviceConfigLora {
+            public @Nullable Integer id;
+            @SerializedName("band_plan")
+            public @Nullable String bandPlan;
+            public @Nullable Long freq;
+            public @Nullable Integer bw;
+            public @Nullable Integer dr;
+            public @Nullable Integer cr;
+            public @Nullable Integer plen;
+            public @Nullable Integer txp;
+            @SerializedName("rx_enable")
+            public @Nullable Boolean rxEnabled;
+        }
+
         public static class Shelly2GetConfigResult {
 
             public class Shelly2DevConfigCloud {
@@ -545,6 +564,9 @@ public class Shelly2ApiJsonDTO {
 
             @SerializedName("smoke:0")
             public Shelly2ConfigSmoke smoke0;
+
+            @SerializedName("lora:100")
+            public Shelly2DeviceConfigLora lora100;
         }
 
         public class Shelly2DeviceConfigSta {
@@ -594,6 +616,15 @@ public class Shelly2ApiJsonDTO {
     }
 
     public static class Shelly2DeviceStatus {
+        public static class Shelly2DeviceStatusSysAvlUpdate {
+            public static class Shelly2DeviceStatusSysUpdate {
+                public String version;
+            }
+
+            public Shelly2DeviceStatusSysUpdate stable;
+            public Shelly2DeviceStatusSysUpdate beta;
+        }
+
         public class Shelly2InputCounts {
             public Integer total;
             @SerializedName("by_minute")
@@ -928,18 +959,12 @@ public class Shelly2ApiJsonDTO {
 
             @SerializedName("devicepower:0")
             public Shelly2DeviceStatusPower devicepower0;
+
+            @SerializedName("lora:100")
+            public Shelly2DeviceStatusLora lora100;
         }
 
         public class Shelly2DeviceStatusSys {
-            public class Shelly2DeviceStatusSysAvlUpdate {
-                public class Shelly2DeviceStatusSysUpdate {
-                    public @Nullable String version;
-                }
-
-                public @Nullable Shelly2DeviceStatusSysUpdate stable;
-                public @Nullable Shelly2DeviceStatusSysUpdate beta;
-            }
-
             public class Shelly2DeviceStatusWakeup {
                 public String boot;
                 public String cause;
@@ -1126,6 +1151,9 @@ public class Shelly2ApiJsonDTO {
             // Script
             public String name;
 
+            // LoRa.SendBytes
+            public String data;
+
             public Shelly2RpcRequestParams withConfig() {
                 config = new Shelly2ConfigParms();
                 return this;
@@ -1154,6 +1182,11 @@ public class Shelly2ApiJsonDTO {
 
         public Shelly2RpcRequest withName(String name) {
             params.name = name;
+            return this;
+        }
+
+        public Shelly2RpcRequest withData(String data) {
+            params.data = data;
             return this;
         }
     }
@@ -1215,6 +1248,24 @@ public class Shelly2ApiJsonDTO {
         public Shelly2RpcMessageError error;
     }
 
+    public static class Shelly2DeviceStatusLora {
+        public @Nullable Integer id;
+        @SerializedName("bytes_recd")
+        public @Nullable Long rxBytes;
+        @SerializedName("bytes_sent")
+        public @Nullable Long txBytes;
+        @SerializedName("send_fails")
+        public @Nullable Long txErrors;
+        @SerializedName("air_time_hr_ms")
+        public @Nullable Long airtime;
+        @SerializedName("fw_version")
+        public @Nullable String fw;
+        @SerializedName("available_updates")
+        public @Nullable Shelly2DeviceStatusSysAvlUpdate availableUpdates;
+        public @Nullable ArrayList<String> errors;
+        public @Nullable ArrayList<String> flags;
+    }
+
     public static class Shelly2RpcNotifyStatus {
         public static class Shelly2NotifyStatus extends Shelly2DeviceStatusResult {
             public Double ts;
@@ -1268,6 +1319,12 @@ public class Shelly2ApiJsonDTO {
         public @Nullable Integer reason;
         @SerializedName("cfg_rev")
         public @Nullable Integer cfgRev;
+
+        // LoRa
+        public @Nullable String lora;
+        public @Nullable Integer rssi;
+        public @Nullable Integer snr;
+        public @Nullable Long tsu;
     }
 
     public class Shelly2NotifyEventData {

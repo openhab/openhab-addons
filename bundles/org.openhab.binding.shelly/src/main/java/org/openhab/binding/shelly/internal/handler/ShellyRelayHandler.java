@@ -16,6 +16,9 @@ import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
@@ -136,6 +139,31 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                 api.setAutoTimer(rIndex, SHELLY_TIMER_AUTOOFF, getNumber(command).doubleValue());
                 break;
 
+            case CHANNEL_LORA_TXDATA: // Text data -> encode BASE64
+                logger.debug("{}: Send LoRa Data {}", thingName, command);
+                String data = getString(command);
+                if (data.isEmpty()) {
+                    break;
+                }
+                String rawData = Base64.getEncoder().encodeToString(data.getBytes(StandardCharsets.UTF_8));
+                api.loraSendData(0, rawData);
+                updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_TXDATARAW, getStringType(rawData));
+                break;
+            case CHANNEL_LORA_TXDATARAW: // BASE64-encoded data, send transparent
+                logger.debug("{}: Send LoRa Raw Data {}", thingName, command);
+                String txRawData = getString(command);
+                if (txRawData.isEmpty()) {
+                    break;
+                }
+                try {
+                    String txPadded = fixBase64Padding(txRawData);
+                    String txData = new String(Base64.getDecoder().decode(txPadded), StandardCharsets.UTF_8);
+                    api.loraSendData(0, txPadded);
+                    updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_TXDATA, getStringType(txData));
+                } catch (IllegalArgumentException e) {
+                    logger.warn("{}: LoRa data not sent, payload is not valid Base64: {}", thingName, e.getMessage());
+                }
+                break;
         }
         return true;
     }
