@@ -25,6 +25,13 @@
 			<channel-group id="depart1" typeId="departureGroup"/>
 			<channel-group id="depart2" typeId="departureGroup"/>
 			<channel-group id="depart3" typeId="departureGroup"/>
+			<channel-group id="depart4" typeId="departureGroup"/>
+			<channel-group id="depart5" typeId="departureGroup"/>
+			<channel-group id="depart6" typeId="departureGroup"/>
+			<channel-group id="depart7" typeId="departureGroup"/>
+			<channel-group id="depart8" typeId="departureGroup"/>
+			<channel-group id="depart9" typeId="departureGroup"/>
+			<channel-group id="depart10" typeId="departureGroup"/>
 		</channel-groups>
 		<config-description>
 			<parameter name="globalStopId" type="text" required="true">
@@ -82,12 +89,17 @@
 		<label>@text/thing-type.transitapp.tripdetails.label</label>
 		<description>@text/thing-type.transitapp.tripdetails.description</description>
 		<channel-groups>
-			<channel-group id="trip1" typeId="tripGroup"/>
+			<channel-group id="trip" typeId="tripGroup"/>
 			<channel-group id="stop1" typeId="stopGroup"/>
 			<channel-group id="stop2" typeId="stopGroup"/>
 			<channel-group id="stop3" typeId="stopGroup"/>
 			<channel-group id="stop4" typeId="stopGroup"/>
 			<channel-group id="stop5" typeId="stopGroup"/>
+			<channel-group id="stop6" typeId="stopGroup"/>
+			<channel-group id="stop7" typeId="stopGroup"/>
+			<channel-group id="stop8" typeId="stopGroup"/>
+			<channel-group id="stop9" typeId="stopGroup"/>
+			<channel-group id="stop10" typeId="stopGroup"/>
 		</channel-groups>
 		<config-description>
 			<parameter name="tripId" type="text" required="true">

@@ -123,18 +123,18 @@ public class TransitAppTripDetailsHandler extends BaseThingHandler {
                     logger.debug("DEBUG: Full JSON response for trip {}: {}", tripId, jsonBody);
                     updateStatus(ThingStatus.ONLINE);
 
-                    updateState("trip1#tripHeadsign", new StringType("Live Trip Data"));
+                    updateState("trip#tripHeadsign", new StringType("Live Trip Data"));
 
                     // NEW: timeToTarget logic
                     String targetStopId = (String) getThing().getConfiguration().get("targetStopId");
                     if (targetStopId != null && !targetStopId.isEmpty()) {
                         // Dummy calculation for demonstration: Assuming 14 minutes to target
                         long minutesToTarget = 14;
-                        updateState("trip1#timeToTarget", new org.openhab.core.library.types.QuantityType<>(
+                        updateState("trip#timeToTarget", new org.openhab.core.library.types.QuantityType<>(
                                 minutesToTarget, org.openhab.core.library.unit.Units.MINUTE));
                     }
 
-                    updateState("trip1#location", new PointType(new DecimalType(48.8788), new DecimalType(9.3978)));
+                    updateState("trip#location", new PointType(new DecimalType(48.8788), new DecimalType(9.3978)));
                     updateState("stop1#minutesUntilDeparture", new QuantityType<>(3, Units.MINUTE));
                     updateState("stop1#delayMinutes", new QuantityType<>(1, Units.MINUTE));
                     updateState("stop1#platform", new StringType("Gleis 2"));
