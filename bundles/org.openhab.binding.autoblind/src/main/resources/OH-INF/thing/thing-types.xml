@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="autoblind"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Bridge: AutoBlind Hub -->
+	<bridge-type id="hub">
+		<label>AutoBlind Hub</label>
+		<description>Norman ShadeAuto hub connected via local network</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
+
+		<channels>
+			<channel id="forceRefresh" typeId="forceRefresh"/>
+		</channels>
+
+		<properties>
+			<property name="vendor">Norman (Nien Made)</property>
+			<property name="modelId">ShadeAuto Hub</property>
+		</properties>
+
+		<representation-property>host</representation-property>
+
+		<config-description>
+			<parameter name="host" type="text" required="true">
+				<label>Host</label>
+				<description>IP address or hostname of the ShadeAuto hub</description>
+				<context>network-address</context>
+			</parameter>
+			<parameter name="pollingInterval" type="integer" required="false">
+				<label>Polling Interval</label>
+				<description>Interval in seconds between status polls</description>
+				<default>1800</default>
+				<unitLabel>s</unitLabel>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<!-- Thing: Individual Shade -->
+	<thing-type id="shade">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="hub"/>
+		</supported-bridge-type-refs>
+
+		<label>AutoBlind Shade</label>
+		<description>A motorized shade controlled by the ShadeAuto hub</description>
+
+		<channels>
+			<channel id="position" typeId="position"/>
+			<channel id="batteryLevel" typeId="batteryLevel"/>
+			<channel id="lowBattery" typeId="system.low-battery"/>
+		</channels>
+
+		<properties>
+			<property name="vendor">Norman (Nien Made)</property>
+		</properties>
+
+		<representation-property>peripheralUid</representation-property>
+
+		<config-description>
+			<parameter name="peripheralUid" type="integer" required="true">
+				<label>Peripheral UID</label>
+				<description>Unique identifier of the shade on the hub</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Channel Types -->
+	<channel-type id="position">
+		<item-type>Dimmer</item-type>
+		<label>Position</label>
+		<description>Shade position (0% = fully open, 100% = fully closed)</description>
+		<category>Blinds</category>
+		<state min="0" max="100" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="batteryLevel">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Battery Level</label>
+		<description>Battery level of the shade</description>
+		<category>Battery</category>
+		<state readOnly="true" min="0" max="100" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="forceRefresh">
+		<item-type>Switch</item-type>
+		<label>Force Refresh</label>
+		<description>Clear command suppression and poll hub for current shade positions</description>
+		<category>Refresh</category>
+	</channel-type>
+
+</thing:thing-descriptions>
