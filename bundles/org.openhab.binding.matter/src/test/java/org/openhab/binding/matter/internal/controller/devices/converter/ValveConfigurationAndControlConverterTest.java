@@ -149,16 +149,6 @@ class ValveConfigurationAndControlConverterTest extends BaseMatterConverterTest 
     }
 
     @Test
-    void testOnEventTargetStateOpen() {
-        AttributeChangedMessage message = new AttributeChangedMessage();
-        message.path = new Path();
-        message.path.attributeName = ValveConfigurationAndControlCluster.ATTRIBUTE_TARGET_STATE;
-        message.value = ValveStateEnum.OPEN;
-        converter.onEvent(message);
-        verify(mockHandler, times(1)).updateState(eq(1), eq("valve-state"), eq(OnOffType.ON));
-    }
-
-    @Test
     void testOnEventCurrentStateExposesEnumValue() {
         AttributeChangedMessage message = new AttributeChangedMessage();
         message.path = new Path();

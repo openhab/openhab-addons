@@ -52,12 +52,6 @@ import org.openhab.core.types.UnDefType;
 public class ValveConfigurationAndControlConverter extends GenericConverter<ValveConfigurationAndControlCluster> {
 
     private final boolean levelSupported;
-    // Once the device reports a real CurrentState (actual position), that becomes authoritative for the
-    // switch and TargetState is ignored for it. TargetState-driven switch updates are only a fallback
-    // for valves that never report CurrentState — otherwise a transient TargetState=Open (e.g. an open
-    // the device briefly accepts then declines on admission control) latches the switch ON and the
-    // following CurrentState=Closed doesn't reliably flip it back over a coalesced subscription.
-    private boolean currentStateSeen = false;
 
     public ValveConfigurationAndControlConverter(ValveConfigurationAndControlCluster cluster,
             MatterBaseThingHandler handler, int endpointNumber, String labelPrefix) {
@@ -150,17 +144,7 @@ public class ValveConfigurationAndControlConverter extends GenericConverter<Valv
     public void onEvent(AttributeChangedMessage message) {
         switch (message.path.attributeName) {
             case ValveConfigurationAndControlCluster.ATTRIBUTE_CURRENT_STATE:
-                currentStateSeen = true;
                 updateValveState(message.value instanceof ValveStateEnum valveState ? valveState : null);
-                break;
-            case ValveConfigurationAndControlCluster.ATTRIBUTE_TARGET_STATE:
-                // FALLBACK ONLY: some valves report just TargetState and never a continuous CurrentState.
-                // Once this device has reported any real CurrentState, that (actual position) is
-                // authoritative — ignore TargetState for the switch so a transient TargetState=Open on a
-                // declined/failed open can't latch it ON.
-                if (!currentStateSeen && message.value instanceof ValveStateEnum valveState) {
-                    updateValveState(valveState);
-                }
                 break;
             case ValveConfigurationAndControlCluster.ATTRIBUTE_CURRENT_LEVEL:
                 if (levelSupported && message.value instanceof Number number) {
@@ -197,10 +181,7 @@ public class ValveConfigurationAndControlConverter extends GenericConverter<Valv
 
     @Override
     public void initState() {
-        // Prefer CurrentState (actual position); fall back to TargetState for valves that only report the latter.
-        currentStateSeen = initializingCluster.currentState != null;
-        updateValveState(initializingCluster.currentState != null ? initializingCluster.currentState
-                : initializingCluster.targetState);
+        updateValveState(initializingCluster.currentState);
         if (levelSupported && initializingCluster.currentLevel != null) {
             updateState(CHANNEL_ID_VALVE_LEVEL, new PercentType(initializingCluster.currentLevel));
         }
@@ -213,9 +194,9 @@ public class ValveConfigurationAndControlConverter extends GenericConverter<Valv
     }
 
     /**
-     * Maps a valve state (CurrentState or TargetState) to the on/off state channel. A {@code TRANSITIONING} state does
-     * not update the channel, so it keeps its last stable value rather than flipping to a wrong terminal value
-     * mid-move.
+     * Maps CurrentState (the actual valve position) to the switch and the read-only current-state channel. A
+     * {@code TRANSITIONING} state does not update the switch, so it keeps its last stable value rather than flipping to
+     * a wrong terminal value mid-move.
      */
     private void updateValveState(@Nullable ValveStateEnum valveState) {
         if (valveState == null) {
