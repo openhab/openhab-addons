@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public abstract class OppoConnector {
-    private static final Pattern QRY_PATTERN = Pattern.compile("^@(Q[A-Z0-9]{2}|VUP|VDN) OK (.*)$");
+    private static final Pattern QRY_PATTERN = Pattern.compile("^@([QS][A-Z0-9]{2}|VUP|VDN) OK (.*)$");
     private static final Pattern STUS_PATTERN = Pattern.compile("^@(U[A-Z0-9]{2}) (.*)$");
 
     private static final String OK_ON = "@OK ON";
@@ -68,11 +68,9 @@ public abstract class OppoConnector {
      * Called when using direct IP connection for 83/93/95/103/105
      * overrides the command message preamble and removes the CR at the end
      */
-    public void overrideCmdPreamble(boolean override) {
-        if (override) {
-            this.beginCmd = "REMOTE ";
-            this.endCmd = "";
-        }
+    protected void setOverrideCmdPreamble() {
+        this.beginCmd = "REMOTE ";
+        this.endCmd = "";
     }
 
     /**
