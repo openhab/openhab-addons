@@ -346,8 +346,8 @@
 	<channel-type id="valve-duration">
 		<item-type>Number:Time</item-type>
 		<label>Valve Open Duration</label>
-		<description>The default duration the valve remains open before automatically closing. Set to 0 to remain open until
-			closed.</description>
+		<description>The default duration the valve remains open before automatically closing. Set to 0 to clear it, so the
+			valve remains open until it is closed.</description>
 		<category>Time</category>
 		<state pattern="%d %unit%"/>
 	</channel-type>

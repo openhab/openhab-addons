@@ -14,7 +14,9 @@ package org.openhab.binding.matter.internal.controller.devices.converter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -129,6 +131,23 @@ class ValveConfigurationAndControlConverterTest extends BaseMatterConverterTest 
         converter.handleCommand(channelUID, new QuantityType<>(30, Units.SECOND));
         verify(mockHandler, times(1)).writeAttribute(eq(1), eq(ValveConfigurationAndControlCluster.CLUSTER_NAME),
                 eq(ValveConfigurationAndControlCluster.ATTRIBUTE_DEFAULT_OPEN_DURATION), eq("30"));
+    }
+
+    @Test
+    void testHandleCommandDurationZeroWritesNull() {
+        ChannelUID channelUID = new ChannelUID("matter:node:test:12345:1#valve-duration");
+        converter.handleCommand(channelUID, new QuantityType<>(0, Units.SECOND));
+        // DefaultOpenDuration has a minimum of 1; null is what clears it, so 0 must not go on the wire.
+        verify(mockHandler, times(1)).writeAttribute(eq(1), eq(ValveConfigurationAndControlCluster.CLUSTER_NAME),
+                eq(ValveConfigurationAndControlCluster.ATTRIBUTE_DEFAULT_OPEN_DURATION), eq("null"));
+    }
+
+    @Test
+    void testHandleCommandDurationNegativeIsIgnored() {
+        ChannelUID channelUID = new ChannelUID("matter:node:test:12345:1#valve-duration");
+        converter.handleCommand(channelUID, new QuantityType<>(-5, Units.SECOND));
+        verify(mockHandler, never()).writeAttribute(eq(1), eq(ValveConfigurationAndControlCluster.CLUSTER_NAME),
+                eq(ValveConfigurationAndControlCluster.ATTRIBUTE_DEFAULT_OPEN_DURATION), anyString());
     }
 
     @Test

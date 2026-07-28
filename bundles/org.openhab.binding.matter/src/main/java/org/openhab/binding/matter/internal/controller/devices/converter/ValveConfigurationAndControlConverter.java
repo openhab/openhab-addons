@@ -133,10 +133,13 @@ public class ValveConfigurationAndControlConverter extends GenericConverter<Valv
                 break;
             case CHANNEL_ID_VALVE_DURATION:
                 Integer seconds = durationSeconds(command);
-                if (seconds != null) {
+                if (seconds != null && seconds >= 0) {
+                    // DefaultOpenDuration is constrained to a minimum of 1, and null -- not 0 -- is the value that
+                    // means no default duration is set, so the valve stays open until it is closed. Send a 0 command
+                    // as that null write rather than an out-of-constraint 0 the device should reject.
                     handler.writeAttribute(endpointNumber, ValveConfigurationAndControlCluster.CLUSTER_NAME,
                             ValveConfigurationAndControlCluster.ATTRIBUTE_DEFAULT_OPEN_DURATION,
-                            String.valueOf(seconds));
+                            seconds == 0 ? "null" : String.valueOf(seconds));
                 }
                 break;
             default:
