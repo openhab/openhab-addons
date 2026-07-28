@@ -80,11 +80,58 @@ This binding integrates public transit information and real-time departure detai
 
 ## Finding Parameters (Stop ID, Route ID, Trip ID)
 
-To find the correct IDs for your configuration:
+You can find the required IDs for your openHAB configuration either directly in your terminal using `curl` and `jq`, or by testing endpoints interactively online in the [Official Transit API v4 Documentation](https://api-doc.transitapp.com/v4.html#GET/v4).
 
-1. **Global Stop ID (`globalStopId`) & Target Stop ID (`targetStopId`)**: Use the GTFS / operator stop code (e.g., `VVSDE:2298` for Charlottenplatz in Stuttgart).
-1. **Global Route ID (`routeId`)**: Found in the JSON response of a stop under the field `"global_route_id"` (e.g., `VVSDE:247174`).
-1. **Trip Search Key (`tripId`)**: Found in the JSON response of stop departures under the schedule items as `"trip_search_key"` (e.g., `VVSDE:52245421:47:2:22`).
+### Option 1: Terminal Commands (curl & jq)
+
+#### 1. Finding Stop IDs (`globalStopId` / `targetStopId`)
+
+To search for stops and stations around your location, query the `nearby_stops` endpoint with your GPS coordinates (`lat` and `lon`). This command formats the JSON output into a clean table:
+
+```bash
+curl -s 'https://external.transitapp.com/v4/public/nearby_stops?lat=48.8753&lon=9.3958' \
+  --header 'Accept: application/json' \
+  --header 'apiKey: YOUR_API_KEY_HERE' \
+  | jq -r '
+    ["GLOBAL STOP ID", "CITY", "STOP NAME", "TYPE", "DISTANCE", "LAT", "LON"],
+    (.stops[] |
+    [.global_stop_id,
+     (.city_name // "-"),
+     .stop_name,
+     (if .route_type == 1 then "U-/Stadtbahn" elif .route_type == 2 then "Zug/S-Bahn" elif .route_type == 3 then "Bus" else .route_type|tostring end),
+     ("\(.distance) m"),
+     .stop_lat,
+     .stop_lon])
+    | @tsv
+  ' | column -t -s $'\t'
+```
+
+_Tip: To filter for a specific station name (e.g., "Bahnhof" or "Winnenden"), replace `.stops[] |` with `.stops[] | select(.stop_name | test("Bahnhof"; "i")) |` inside the jq query._
+
+#### 2. Finding Route IDs (`routeId`) & Trip IDs (`tripId`)
+
+Once you have your `global_stop_id`, query the `stop_departures` endpoint to list all upcoming departures, lines, and their exact real-time Trip IDs (`trip_search_key`):
+
+```bash
+curl -s 'https://external.transitapp.com/v4/public/stop_departures?global_stop_id=YOUR_STOP_ID_HERE' \
+  --header 'Accept: application/json' \
+  --header 'apiKey: YOUR_API_KEY_HERE' \
+  | jq -r '
+    ["LINE / ROUTE", "HEADSIGN / DESTINATION", "TRIP SEARCH KEY (ID)"],
+    (.route_departures[]? | .route_short_name as $route | .merged_itineraries[]? | .itineraries[]? |
+    [$route, .headsign, .trip_search_key])
+    | @tsv
+  ' | column -t -s $'\t'
+```
+
+### Option 2: Online API Explorer
+
+Alternatively, you can execute all queries directly in your browser without terminal commands:
+
+1. Open the [Transit API v4 Online Documentation](https://api-doc.transitapp.com/v4.html#GET/v4).
+1. Enter your API Key in the request header / authorization block.
+1. Select an endpoint such as `/v4/public/nearby_stops` or `/v4/public/stop_departures`.
+1. Enter your query parameters (e.g., latitude/longitude or stop ID) and click **Send / Execute** to inspect the raw JSON response.
 
 ## Item Example Configuration
 
