@@ -216,6 +216,9 @@ public class MatterBindingConstants {
     public static final String CHANNEL_ID_VALVE_CURRENT_STATE = "valve-current-state";
     public static final ChannelTypeUID CHANNEL_VALVE_CURRENT_STATE = new ChannelTypeUID(BINDING_ID,
             CHANNEL_ID_VALVE_CURRENT_STATE);
+    public static final String CHANNEL_ID_VALVE_TARGET_STATE = "valve-target-state";
+    public static final ChannelTypeUID CHANNEL_VALVE_TARGET_STATE = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_VALVE_TARGET_STATE);
     public static final String CHANNEL_ID_VALVE_LEVEL = "valve-level";
     public static final ChannelTypeUID CHANNEL_VALVE_LEVEL = new ChannelTypeUID(BINDING_ID, CHANNEL_ID_VALVE_LEVEL);
     public static final String CHANNEL_ID_VALVE_DURATION = "valve-duration";

@@ -73,6 +73,11 @@ public class ValveConfigurationAndControlConverter extends GenericConverter<Valv
                 .withType(CHANNEL_VALVE_CURRENT_STATE).build();
         channels.put(currentStateChannel, null);
 
+        Channel targetStateChannel = ChannelBuilder
+                .create(new ChannelUID(channelGroupUID, CHANNEL_ID_VALVE_TARGET_STATE), CoreItemFactory.NUMBER)
+                .withType(CHANNEL_VALVE_TARGET_STATE).build();
+        channels.put(targetStateChannel, null);
+
         if (levelSupported) {
             Channel levelChannel = ChannelBuilder
                     .create(new ChannelUID(channelGroupUID, CHANNEL_ID_VALVE_LEVEL), CoreItemFactory.DIMMER)
@@ -146,6 +151,9 @@ public class ValveConfigurationAndControlConverter extends GenericConverter<Valv
             case ValveConfigurationAndControlCluster.ATTRIBUTE_CURRENT_STATE:
                 updateValveState(message.value instanceof ValveStateEnum valveState ? valveState : null);
                 break;
+            case ValveConfigurationAndControlCluster.ATTRIBUTE_TARGET_STATE:
+                updateTargetState(message.value instanceof ValveStateEnum valveState ? valveState : null);
+                break;
             case ValveConfigurationAndControlCluster.ATTRIBUTE_CURRENT_LEVEL:
                 if (levelSupported && message.value instanceof Number number) {
                     updateState(CHANNEL_ID_VALVE_LEVEL, new PercentType(number.intValue()));
@@ -182,6 +190,7 @@ public class ValveConfigurationAndControlConverter extends GenericConverter<Valv
     @Override
     public void initState() {
         updateValveState(initializingCluster.currentState);
+        updateTargetState(initializingCluster.targetState);
         if (levelSupported && initializingCluster.currentLevel != null) {
             updateState(CHANNEL_ID_VALVE_LEVEL, new PercentType(initializingCluster.currentLevel));
         }
@@ -218,6 +227,18 @@ public class ValveConfigurationAndControlConverter extends GenericConverter<Valv
                 // Keep the switch at its last stable value rather than flipping mid-move.
                 break;
         }
+    }
+
+    /**
+     * Maps TargetState (the state the valve is moving toward) to the read-only target-state channel. Per the cluster
+     * definition the target is a terminal state — {@code OPEN} or {@code CLOSED} — and is null once the change is
+     * either done or failed, which maps to {@code UNDEF}. Combined with CurrentState this gives the direction of a
+     * move that {@code TRANSITIONING} alone does not: current {@code TRANSITIONING} plus target {@code OPEN} is
+     * opening, plus target {@code CLOSED} is closing.
+     */
+    private void updateTargetState(@Nullable ValveStateEnum targetState) {
+        updateState(CHANNEL_ID_VALVE_TARGET_STATE,
+                targetState == null ? UnDefType.UNDEF : new DecimalType(targetState.getValue()));
     }
 
     private void updateDuration(String channelId, @Nullable Object value) {

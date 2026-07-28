@@ -67,12 +67,15 @@ class ValveConfigurationAndControlConverterTest extends BaseMatterConverterTest 
     void testCreateChannels() {
         ChannelGroupUID channelGroupUID = new ChannelGroupUID("matter:node:test:12345:1");
         Map<Channel, @Nullable StateDescription> channels = converter.createChannels(channelGroupUID);
-        // state, current-state, duration, remaining-duration, fault -- no level channel without the Level feature
-        assertEquals(5, channels.size());
+        // state, current-state, target-state, duration, remaining-duration, fault -- no level channel without the
+        // Level feature
+        assertEquals(6, channels.size());
         assertTrue(channels.keySet().stream()
                 .anyMatch(c -> "matter:node:test:12345:1#valve-state".equals(c.getUID().toString())));
         assertTrue(channels.keySet().stream()
                 .anyMatch(c -> "matter:node:test:12345:1#valve-current-state".equals(c.getUID().toString())));
+        assertTrue(channels.keySet().stream()
+                .anyMatch(c -> "matter:node:test:12345:1#valve-target-state".equals(c.getUID().toString())));
         assertTrue(channels.keySet().stream()
                 .anyMatch(c -> "matter:node:test:12345:1#valve-remaining-duration".equals(c.getUID().toString())));
         assertTrue(channels.keySet().stream()
@@ -86,7 +89,7 @@ class ValveConfigurationAndControlConverterTest extends BaseMatterConverterTest 
                 mockHandler, 1, "TestLabel");
         ChannelGroupUID channelGroupUID = new ChannelGroupUID("matter:node:test:12345:1");
         Map<Channel, @Nullable StateDescription> channels = levelConverter.createChannels(channelGroupUID);
-        assertEquals(6, channels.size());
+        assertEquals(7, channels.size());
         Channel levelChannel = channels.keySet().stream()
                 .filter(c -> "matter:node:test:12345:1#valve-level".equals(c.getUID().toString())).findFirst()
                 .orElseThrow();
@@ -146,6 +149,31 @@ class ValveConfigurationAndControlConverterTest extends BaseMatterConverterTest 
         message.value = ValveStateEnum.CLOSED;
         converter.onEvent(message);
         verify(mockHandler, times(1)).updateState(eq(1), eq("valve-state"), eq(OnOffType.OFF));
+    }
+
+    @Test
+    void testOnEventTargetStateUpdatesOnlyTargetChannel() {
+        AttributeChangedMessage message = new AttributeChangedMessage();
+        message.path = new Path();
+        message.path.attributeName = ValveConfigurationAndControlCluster.ATTRIBUTE_TARGET_STATE;
+        message.value = ValveStateEnum.OPEN;
+        converter.onEvent(message);
+        // TargetState is intent, not position: it must not move the switch or the current-state channel, so a
+        // target of Open on an open the device later declines can't latch the switch ON.
+        verify(mockHandler, times(1)).updateState(eq(1), eq("valve-target-state"), eq(new DecimalType(1)));
+        verify(mockHandler, times(0)).updateState(eq(1), eq("valve-state"), eq(OnOffType.ON));
+        verify(mockHandler, times(0)).updateState(eq(1), eq("valve-current-state"), eq(new DecimalType(1)));
+    }
+
+    @Test
+    void testOnEventTargetStateNullMapsToUndef() {
+        AttributeChangedMessage message = new AttributeChangedMessage();
+        message.path = new Path();
+        message.path.attributeName = ValveConfigurationAndControlCluster.ATTRIBUTE_TARGET_STATE;
+        message.value = null;
+        converter.onEvent(message);
+        // Null TargetState means the valve has settled and is no longer moving toward a target.
+        verify(mockHandler, times(1)).updateState(eq(1), eq("valve-target-state"), eq(UnDefType.UNDEF));
     }
 
     @Test

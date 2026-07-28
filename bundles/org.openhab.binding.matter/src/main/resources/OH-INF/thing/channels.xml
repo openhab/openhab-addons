@@ -317,6 +317,20 @@
 		</state>
 	</channel-type>
 
+	<channel-type id="valve-target-state">
+		<item-type>Number</item-type>
+		<label>Valve Target State</label>
+		<description>The state the valve is moving toward while it is opening or closing, undefined once it has
+			settled</description>
+		<category>Flow</category>
+		<state readOnly="true">
+			<options>
+				<option value="0">Closed</option>
+				<option value="1">Open</option>
+			</options>
+		</state>
+	</channel-type>
+
 	<channel-type id="valve-level">
 		<item-type>Dimmer</item-type>
 		<label>Valve Level</label>
