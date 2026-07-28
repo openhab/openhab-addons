@@ -110,8 +110,11 @@ public class ShellyDeviceProfile {
     public boolean isIX; // true for a Shelly IX
     public boolean isTRV; // true for a Shelly TRV
     public boolean isSmoke; // true for Shelly Smoke
+    public boolean isFlood; // true for Shelly Flood (any generation)
     public boolean isWall; // true: Shelly Wall Display
     public boolean is3EM; // true for Shelly 3EM and Pro 3EM
+    public String floodAlarmMode = ""; // Flood Gen4: alarm mode from Flood.GetConfig
+    public int reportHoldoff = 0; // Flood Gen4: report holdoff in seconds
     public boolean isEM50; // true for Shelly Pro EM50
     public boolean isEM1; // true for em1-clamp meter devices (Plus EM, Mini EM, Pro EM50); Pro EM50 also has a relay
     public boolean isWS90; // true for Ecowitt WS90
@@ -216,7 +219,7 @@ public class ShellyDeviceProfile {
             maxTemp = isBulb ? MAX_COLOR_TEMP_BULB : MAX_COLOR_TEMP_DUO;
         }
 
-        boolean isFlood = GROUP_FLOOD_THING_TYPES.contains(thingTypeUID);
+        isFlood = GROUP_FLOOD_THING_TYPES.contains(thingTypeUID);
         boolean isGas = GROUP_GAS_THING_TYPES.contains(thingTypeUID);
         boolean isUNI = GROUP_UNI_THING_TYPES.contains(thingTypeUID);
         isSmoke = GROUP_SMOKE_THING_TYPES.contains(thingTypeUID);

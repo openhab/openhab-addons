@@ -58,6 +58,7 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -762,6 +763,44 @@ public class ShellyComponentsTest {
         return handler;
     }
 
+    @Test
+    void updateSensorsMutePresentPostsAlarmMutedForFlood() throws Exception {
+        ShellyStatusSensor sdata = new ShellyStatusSensor();
+        sdata.mute = Boolean.TRUE;
+
+        ShellyThingInterface handler = sensorHandlerFor(THING_TYPE_SHELLYPLUSFLOOD, sdata);
+        ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
+
+        verify(handler).postEvent(eq(ALARM_TYPE_MUTED), eq(false));
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_MUTE), any());
+    }
+
+    @Test
+    void updateSensorsMuteAbsentPostsAlarmNoneForFlood() throws Exception {
+        ShellyStatusSensor sdata = new ShellyStatusSensor();
+        sdata.mute = Boolean.FALSE;
+
+        ShellyThingInterface handler = sensorHandlerFor(THING_TYPE_SHELLYPLUSFLOOD, sdata);
+        ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
+
+        verify(handler).postEvent(eq(ALARM_TYPE_NONE), eq(false));
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_MUTE), any());
+    }
+
+    @Test
+    void updateSensorsMutePresentUpdatesSensorsMuteForSmoke() throws Exception {
+        ShellyStatusSensor sdata = new ShellyStatusSensor();
+        sdata.mute = Boolean.TRUE;
+        sdata.smoke = Boolean.FALSE;
+
+        ShellyThingInterface handler = sensorHandlerFor(THING_TYPE_SHELLYPLUSSMOKE, sdata);
+        ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
+
+        verify(handler).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_MUTE), eq(OnOffType.ON));
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_CONTROL), eq(CHANNEL_SENSOR_MUTE), any());
+        verify(handler, never()).postEvent(any(), anyBoolean());
+    }
+
     private static ShellyThingInterface relayHandlerWith(ShellySettingsStatus profileStatus) {
         ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUS1PM);
         profile.isSensor = false;
@@ -780,6 +819,22 @@ public class ShellyComponentsTest {
         when(handler.getProfile()).thenReturn(profile);
         when(handler.areChannelsCreated()).thenReturn(true);
         when(handler.updateChannel(anyString(), anyString(), any(State.class))).thenReturn(true);
+        return handler;
+    }
+
+    private static ShellyThingInterface sensorHandlerFor(ThingTypeUID thingTypeUID, ShellyStatusSensor sdata)
+            throws ShellyApiException {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(thingTypeUID);
+
+        ShellyApiInterface api = mock(ShellyApiInterface.class);
+        when(api.getSensorStatus()).thenReturn(sdata);
+
+        ShellyThingInterface handler = mock(ShellyThingInterface.class);
+        when(handler.getProfile()).thenReturn(profile);
+        when(handler.areChannelsCreated()).thenReturn(true);
+        when(handler.getApi()).thenReturn(api);
+        when(handler.updateChannel(anyString(), anyString(), any())).thenReturn(true);
+        when(handler.updateWakeupReason(any())).thenReturn(false);
         return handler;
     }
 
