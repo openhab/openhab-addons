@@ -11,21 +11,86 @@
   </parent>
 
   <artifactId>org.openhab.automation.jrubyscripting</artifactId>
-
   <name>openHAB Add-ons :: Bundles :: Automation :: JRuby Scripting</name>
 
   <properties>
-    <bnd.importpackage>com.sun.nio.*;resolution:=optional,com.sun.security.*;resolution:=optional,org.apache.tools.ant.*;resolution:=optional,org.bouncycastle.*;resolution:=optional,org.joda.*;resolution:=optional,sun.management.*;resolution:=optional,sun.nio.*;resolution:=optional,jakarta.annotation;resolution:=optional,jdk.crac.management;resolution:=optional</bnd.importpackage>
-    <jruby.version>10.0.6.0</jruby.version>
+    <jruby.version>10.1.1.0</jruby.version>
+
+    <bnd.importpackage><![CDATA[!org.jruby.*,\
+  !org.ruby_lang.*,\
+  !com.headius.*,\
+  !ch.randelshofer.*,\
+  !com.jcraft.*,\
+  !com.kenai.jffi.*,\
+  !jnr.*,\
+  !org.objectweb.asm.*,\
+  !org.jcodings.*,\
+  !org.joni.*,\
+  !org.ow2.asm.*,\
+  !org.joda.*,\
+  !me.qmx.jitescript.*,\
+  !org.yaml.snakeyaml.*,\
+  !com.dylibso.chicory.*,\
+  !io.roastedroot.redline.*,\
+  org.crac;resolution:=optional,\
+  com.sun.nio.*;resolution:=optional,\
+  com.sun.security.*;resolution:=optional,\
+  org.apache.tools.ant.*;resolution:=optional,\
+  org.bouncycastle.*;resolution:=optional,\
+  sun.management.*;resolution:=optional,\
+  sun.nio.*;resolution:=optional,\
+  android.os;resolution:=optional,\
+  jakarta.annotation;resolution:=optional,\
+  jdk.crac.management;resolution:=optional]]></bnd.importpackage>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>org.jruby</groupId>
-      <artifactId>jruby-complete</artifactId>
+      <artifactId>jruby</artifactId>
       <version>${jruby.version}</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>embed-jruby-dependencies</id>
+            <goals>
+              <goal>unpack-dependencies</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+              <includeGroupIds>org.jruby,
+                org.ruby-lang,
+                jnr,
+                com.headius,
+                com.jcraft,
+                com.kenai.jffi,
+                com.github.jnr,
+                com.dylibso.chicory,
+                io.roastedroot,
+                org.objectweb.asm,
+                org.jcodings,
+                org.joni,
+                joda-time,
+                me.qmx.jitescript,
+                org.ow2.asm,
+                ch.randelshofer,
+                org.yaml</includeGroupIds>
+              <includeTypes>jar</includeTypes>
+              <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+              <excludes>META-INF/*.SF,META-INF/*.DSA,META-INF/*.RSA,META-INF/MANIFEST.MF,**/module-info.class</excludes>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>
