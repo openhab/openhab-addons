@@ -160,12 +160,12 @@ public class OctoPrintHandler extends AbstractPrinterHandler {
                 String filename = file.name;
                 if (!filename.isBlank()) {
                     if (!filename.equals(lastPreviewFilename)) {
-                        lastPreviewFilename = filename;
                         String encodedName = URLEncoder.encode(filename, StandardCharsets.UTF_8).replace("+", "%20");
                         byte @Nullable [] bytes = httpGetBytes(
                                 baseUrl + "/plugin/prusaslicerthumbnails/thumbnail/" + encodedName, cfg.apiKey);
                         if (bytes != null && bytes.length > 0) {
                             updateState(CHANNEL_JOB_PREVIEW, new RawType(bytes, "image/png"));
+                            lastPreviewFilename = filename;
                         }
                     }
                 } else {

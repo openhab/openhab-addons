@@ -146,7 +146,6 @@ public class KlipperHandler extends AbstractPrinterHandler {
 
             if (!stats.filename.isBlank()) {
                 if (!stats.filename.equals(lastPreviewFilename)) {
-                    lastPreviewFilename = stats.filename;
                     fetchAndUpdatePreview(baseUrl, cfg.apiKey, stats.filename);
                 }
             } else {
@@ -200,13 +199,18 @@ public class KlipperHandler extends AbstractPrinterHandler {
         if (best == null || best.relativePath.isBlank()) {
             return;
         }
+        // relative_path is relative to the gcode file's own directory, not the gcodes root
+        int lastSlash = filename.lastIndexOf('/');
+        String dir = lastSlash >= 0 ? filename.substring(0, lastSlash + 1) : "";
+        String fullPath = dir + best.relativePath;
         // Encode each path segment individually to preserve the directory separator
-        String encodedPath = Arrays.stream(best.relativePath.split("/"))
+        String encodedPath = Arrays.stream(fullPath.split("/"))
                 .map(s -> URLEncoder.encode(s, StandardCharsets.UTF_8).replace("+", "%20"))
                 .collect(Collectors.joining("/"));
         byte @Nullable [] bytes = httpGetBytes(baseUrl + "/server/files/gcodes/" + encodedPath, apiKey);
         if (bytes != null && bytes.length > 0) {
             updateState(CHANNEL_JOB_PREVIEW, new RawType(bytes, "image/png"));
+            lastPreviewFilename = filename;
         }
     }
 

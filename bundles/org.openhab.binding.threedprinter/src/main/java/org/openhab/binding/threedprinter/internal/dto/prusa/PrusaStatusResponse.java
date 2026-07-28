@@ -66,19 +66,5 @@ public class PrusaStatusResponse {
 
         @SerializedName("time_printing")
         public int timePrinting;
-
-        @SerializedName("file")
-        public @Nullable PrusaFileData file;
-
-        public static class PrusaFileData {
-            @SerializedName("display_name")
-            public String displayName = "";
-
-            @SerializedName("name")
-            public String name = "";
-
-            @SerializedName("path")
-            public String path = "";
-        }
     }
 }

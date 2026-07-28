@@ -14,17 +14,14 @@ package org.openhab.binding.threedprinter.internal.handler;
 
 import static org.openhab.binding.threedprinter.internal.ThreedprinterBindingConstants.*;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.stream.Collectors;
-
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.threedprinter.internal.config.PrusaLinkConfiguration;
+import org.openhab.binding.threedprinter.internal.dto.prusa.PrusaJobResponse;
+import org.openhab.binding.threedprinter.internal.dto.prusa.PrusaJobResponse.PrusaJobFile;
 import org.openhab.binding.threedprinter.internal.dto.prusa.PrusaStatusResponse;
 import org.openhab.binding.threedprinter.internal.dto.prusa.PrusaStatusResponse.PrusaJobData;
 import org.openhab.binding.threedprinter.internal.dto.prusa.PrusaStatusResponse.PrusaPrinterData;
@@ -126,29 +123,36 @@ public class PrusaLinkHandler extends AbstractPrinterHandler {
             updateState(CHANNEL_JOB_PROGRESS, new DecimalType(job.progress));
             updateState(CHANNEL_TIME_ELAPSED, new DecimalType(job.timePrinting));
             updateState(CHANNEL_TIME_REMAINING, new DecimalType(job.timeRemaining));
-            PrusaJobData.PrusaFileData file = job.file;
-            if (file != null) {
-                String name = file.displayName.isBlank() ? file.name : file.displayName;
-                updateState(CHANNEL_JOB_NAME, new StringType(name));
-
-                if (!file.name.isBlank() && !file.name.equals(lastPreviewFilename)) {
-                    lastPreviewFilename = file.name;
-                    // Prefer the path from the API (e.g. "/usb/benchy.gcode"); fall back to "usb/{name}"
-                    String thumbPath = file.path.isBlank() ? "usb/" + file.name
-                            : file.path.startsWith("/") ? file.path.substring(1) : file.path;
-                    String encodedPath = Arrays.stream(thumbPath.split("/"))
-                            .map(s -> URLEncoder.encode(s, StandardCharsets.UTF_8).replace("+", "%20"))
-                            .collect(Collectors.joining("/"));
-                    byte[] bytes = httpGetBytes(baseUrl + "/thumb/l/" + encodedPath, cfg.apiKey);
-                    if (bytes != null && bytes.length > 0) {
-                        updateState(CHANNEL_JOB_PREVIEW, new RawType(bytes, "image/png"));
-                    }
-                }
-            }
         } else {
             updateState(CHANNEL_JOB_PROGRESS, new DecimalType(0));
+        }
+
+        // /api/v1/status does not include file name or thumbnail info; fetch /api/v1/job for that
+        updateJobFile(baseUrl, cfg.apiKey);
+    }
+
+    private void updateJobFile(String baseUrl, String apiKey) {
+        String jobJson = httpGet(baseUrl + "/api/v1/job", apiKey);
+        PrusaJobResponse jobResponse = jobJson != null ? fromJson(jobJson, PrusaJobResponse.class) : null;
+        PrusaJobFile file = jobResponse != null ? jobResponse.file : null;
+
+        if (file == null) {
             updateState(CHANNEL_JOB_NAME, new StringType(""));
             lastPreviewFilename = "";
+            return;
+        }
+
+        String name = file.displayName.isBlank() ? file.name : file.displayName;
+        updateState(CHANNEL_JOB_NAME, new StringType(name));
+
+        String thumbnailRef = file.refs != null ? file.refs.thumbnail : "";
+        if (thumbnailRef.isBlank() || thumbnailRef.equals(lastPreviewFilename)) {
+            return;
+        }
+        byte[] bytes = httpGetBytes(baseUrl + thumbnailRef, apiKey);
+        if (bytes != null && bytes.length > 0) {
+            updateState(CHANNEL_JOB_PREVIEW, new RawType(bytes, "image/png"));
+            lastPreviewFilename = thumbnailRef;
         }
     }
 
