@@ -34,8 +34,12 @@ There is no active scan; point your charger at `ws://<openhab-host>:<port>/<char
 | clockAlignedDataInterval    | integer | ClockAlignedDataInterval to configure (-1 = leave unchanged)                | -1      | no       | yes      |
 | disableRemoteTxAuthorization| boolean | Configure AuthorizeRemoteTxRequests=false                                    | false   | no       | yes      |
 | vendorConfig                | text[]  | Extra ChangeConfiguration entries as key=value, applied on boot             | (empty) | no       | yes      |
+| pingInterval                | integer | WebSocket ping interval (s). A charger that does not answer a ping is disconnected, and many never do — leave at 0 unless yours is known to reply | 0 | no | yes |
+| tags                        | text[]  | idTag whitelist. Empty accepts every tag; otherwise unknown tags are rejected | (empty) | no     | yes      |
+| chargers                    | text[]  | Charge point id allow-list. Empty accepts any charger; otherwise unlisted ones are rejected | (empty) | no | yes |
 
-On each BootNotification the charger receives the configured settings above as a ChangeConfiguration burst, `configSettleSeconds` after boot; measurands a charger rejects are dropped one at a time until it accepts them (and the accepted set is remembered).
+These settings are pushed to a charger as ChangeConfiguration requests after it boots, one at a time, and only until the charger has accepted them once — repeating the push on every reconnect can leave a busy charger with an unanswered request, and an unanswered request times out and drops the session.
+Measurands a charger rejects are dropped one at a time until it accepts them, and the accepted set is remembered.
 The binding also runs a heartbeat-derived liveness watchdog and self-heals when a charger reconnects under a new session.
 
 ### `chargepoint`
@@ -43,12 +47,20 @@ The binding also runs a heartbeat-derived liveness watchdog and self-heals when 
 | Name          | Type | Description                                            | Default | Required | Advanced |
 |---------------|------|-------------------------------------------------------|---------|----------|----------|
 | chargePointId | text | The charger's OCPP identity (its WebSocket URL suffix) | N/A     | yes      | no       |
+| configSettleSeconds | integer | Delay after BootNotification before the configuration above is sent. Some chargers are not ready to answer immediately | 0 | no | yes |
+| meterless     | boolean | The charger has no internal meter: skip measurand configuration and disable clock-aligned sampling | false | no | yes |
+| heartbeat     | integer | Per-charger heartbeat interval (s), overriding the server default. Also sizes this charger's liveness window. 0 uses the server default | 0 | no | yes |
 
 ### `connector`
 
 | Name        | Type    | Description                    | Default | Required | Advanced |
 |-------------|---------|--------------------------------|---------|----------|----------|
 | connectorId | integer | OCPP connector number (1..N)   | 1       | no       | no       |
+| forceTxDefaultProfile | boolean | Always send the charge limit as a TxDefaultProfile, even during a transaction. Needed for chargers that reject a TxProfile outside one | false | no | yes |
+| profileMinIntervalMs | integer | Minimum spacing (ms) between SetChargingProfile sends; rapid changes are coalesced. 0 disables | 0 | no | yes |
+| hardwareMaxCurrentKey | text | Vendor ChangeConfiguration key backing the `hardware-max-current` channel. Empty disables that channel | (empty) | no | yes |
+| remoteStartTag | text | idTag used when starting a transaction via the `charging` channel | openhab | no | yes |
+| meterValuesPollSeconds | integer | Poll this connector for MeterValues every N seconds via TriggerMessage. 0 disables polling | 0 | no | yes |
 
 ## Channels
 

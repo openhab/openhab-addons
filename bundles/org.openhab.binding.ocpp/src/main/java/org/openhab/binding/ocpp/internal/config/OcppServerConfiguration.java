@@ -40,8 +40,8 @@ public class OcppServerConfiguration {
     public boolean disableRemoteTxAuthorization = false;
     /** Extra ChangeConfiguration entries as "key=value" strings, sent verbatim on boot. */
     public List<String> vendorConfig = List.of();
-    /** WebSocket ping interval (seconds); negative or zero uses the library default. */
-    public int pingInterval = -1;
+    /** WebSocket ping interval (seconds); 0 disables ping-based connection-loss detection. */
+    public int pingInterval = 0;
     /** idTag whitelist for Authorize / StartTransaction. Empty accepts every tag. */
     public List<String> tags = List.of();
     /** Charge point id allow-list. Empty accepts any charger; otherwise unlisted chargers are closed. */
