@@ -114,6 +114,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     private final Map<String, Long> deprecatedChannelWarnings = new ConcurrentHashMap<>();
     private final int cacheCount = UPDATE_SETTINGS_INTERVAL_SECONDS / UPDATE_STATUS_INTERVAL_SECONDS;
 
+    private static final String FIRMWARE_UPDATE_AVAILABLE = "@text/message.firmware-update-available";
+
     private volatile @Nullable Shelly1CoapHandler coap;
 
     private final boolean gen2;
@@ -1399,9 +1401,9 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 && value instanceof OnOffType onOff) {
             boolean updateAvailable = OnOffType.ON == onOff;
             String statusDescription = thing.getStatusInfo().getDescription();
-            if (updateAvailable && (statusDescription == null)) {
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "@text/message.firmware-update-available");
-            } else if (!updateAvailable && (statusDescription != null)) {
+            if (updateAvailable && statusDescription == null) {
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, FIRMWARE_UPDATE_AVAILABLE);
+            } else if (!updateAvailable && FIRMWARE_UPDATE_AVAILABLE.equals(statusDescription)) {
                 updateStatus(ThingStatus.ONLINE);
             }
         }
