@@ -63,36 +63,17 @@ This binding integrates public transit information and real-time departure detai
 | :-------------------------- | :----- | :------------------------------------------------ |
 | `route#route-long-name`       | String | Full route name                                   |
 | `route#route-short-name`      | String | Short route name or line number                   |
-| `route#agency-name`          | String | Transit agency name                               |
-| `route#route-network-name`    | String | Transit network name (e.g., "VVS\|Stuttgart")     |
-| `route#mode-name`            | String | Transport mode                                    |
-| `route#vehicle-name`         | String | Vehicle type                                      |
 | `route#route-color`          | String | Official hex color for UI badges                  |
-| `route#route-text-color`      | String | Official text hex color                           |
-| `route#start-location`       | String | Start stop name of the route                      |
-| `route#destination-location` | String | Destination stop name of the route                |
 | `route#active-alerts-count`   | Number | Number of active service alerts and disruptions   |
-| `route#alert-title`          | String | Title of active service alert                     |
-| `route#alert-description`    | String | Detailed description of active service alert      |
-| `route#alert-severity`       | String | Severity level of active service alert            |
-| `route#url`                 | String | Web link to route schedule or information         |
 
 ### Trip Details Channels (`trip` and `stop1` to `stop10`)
 
 | Channel                         | Type        | Description                                                  |
 | :------------------------------ | :---------- | :----------------------------------------------------------- |
 | `trip#trip-headsign`             | String      | Destination sign on the vehicle                              |
-| `trip#trip-status`               | String      | Current trip status (e.g., "In Transit", "On Time")          |
-| `trip#rt-trip-id`                 | String      | Real-time vehicle tracking ID                                |
 | `trip#location`                 | Location    | GPS coordinates (latitude, longitude) for UI Map widgets     |
 | `trip#time-to-target`             | Number:Time | Live countdown to the configured target destination stop (`min`) |
-| `trip#occupancy`                | String      | Vehicle occupancy status                                     |
-| `trip#bikes-allowed`             | Switch      | Indicates if bicycles are allowed on this vehicle            |
-| `trip#route-long-name`            | String      | Route long name                                              |
 | `trip#route-short-name`           | String      | Route short name / line number                               |
-| `trip#route-color`               | String      | Route official hex color                                     |
-| `trip#mode-name`                 | String      | Transport mode                                               |
-| `trip#vehicle-name`              | String      | Vehicle type                                                 |
 | `stopX#stop-name`                | String      | Name of the upcoming stop                                    |
 | `stopX#scheduled-time`           | DateTime    | Timetable departure time                                     |
 | `stopX#realtime-time`            | DateTime    | Real-time departure time                                     |
@@ -156,7 +137,6 @@ String      Stop1_Platform      "Gleis [%s]"             { channel="transitapp:s
 Switch      Stop1_Cancelled     "Fällt aus [%s]"         { channel="transitapp:stop:mybridge:mystop:depart1#is-cancelled" }
 
 Number      Route_AlertsCount   "Störungen [%d]"         { channel="transitapp:routedetails:mybridge:myroute:route#active-alerts-count" }
-String      Route_AlertTitle    "Störung [%s]"           { channel="transitapp:routedetails:mybridge:myroute:route#alert-title" }
 
 Location    Trip_LiveLocation   "Fahrzeug Position"      { channel="transitapp:tripdetails:mybridge:mytrip:trip#location" }
 Number:Time Trip_CountdownZiel  "Ankunft am Ziel in [%d %unit%]" { channel="transitapp:tripdetails:mybridge:mytrip:trip#time-to-target" }

@@ -77,19 +77,13 @@ public class TransitAppTripDetailsHandler extends BaseThingHandler {
             return;
         }
 
-        String apiKey = (String) bridge.getConfiguration().get("apiKey");
-        if (apiKey == null || apiKey.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "API Key missing on bridge");
-            return;
-        }
-
         try {
             TransitAppBridgeHandler bridgeHandler = getTransitBridgeHandler();
             if (bridgeHandler == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Bridge handler not initialized");
                 return;
             }
-            TripDetailsResult result = bridgeHandler.getApiClient().getTripDetails(apiKey, tripId);
+            TripDetailsResult result = bridgeHandler.getTripDetails(tripId);
             logger.debug("Successfully polled trip details for trip ID {}", tripId);
             updateStatus(ThingStatus.ONLINE);
 

@@ -43,13 +43,13 @@ public class TransitBridgeActions implements ThingActions {
         return this.handler;
     }
 
-    @RuleAction(label = "Get Nearby Stops", description = "Searches for transit stops near specific coordinates and returns the raw JSON response")
+    @RuleAction(label = "@text/action.getNearbyStops.label", description = "@text/action.getNearbyStops.description")
     public @Nullable String getNearbyStops(@ActionInput(name = "lat") double lat,
             @ActionInput(name = "lon") double lon) {
         ThingHandler currentHandler = this.handler;
         if (currentHandler instanceof TransitAppBridgeHandler bridgeHandler) {
             try {
-                return bridgeHandler.getApiClient().fetchNearbyStops(bridgeHandler.getApiKey(), lat, lon);
+                return bridgeHandler.fetchNearbyStops(lat, lon);
             } catch (Exception e) {
                 logger.error("Failed to fetch nearby stops: {}", e.getMessage());
                 return null;

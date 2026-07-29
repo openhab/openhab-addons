@@ -54,7 +54,7 @@ public class TransitActions implements ThingActions {
         return null;
     }
 
-    @RuleAction(label = "Get All Departures", description = "Gets raw JSON of all upcoming departures for this stop to find route or trip IDs")
+    @RuleAction(label = "@text/action.getDepartures.label", description = "@text/action.getDepartures.description")
     public @Nullable String getDepartures() {
         ThingHandler currentHandler = this.handler;
         if (currentHandler instanceof TransitAppStopHandler stopHandler) {
@@ -64,7 +64,7 @@ public class TransitActions implements ThingActions {
                 if (bridgeHandler != null) {
                     String stopId = (String) stopHandler.getThing().getConfiguration().get("globalStopId");
                     if (stopId != null) {
-                        return bridgeHandler.getApiClient().fetchStopDepartures(bridgeHandler.getApiKey(), stopId);
+                        return bridgeHandler.fetchStopDeparturesRaw(stopId);
                     }
                 }
             } catch (Exception e) {

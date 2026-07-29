@@ -20,6 +20,9 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.transitapp.internal.config.TransitAppBridgeConfiguration;
 import org.openhab.binding.transitapp.internal.net.TransitApiClient;
+import org.openhab.binding.transitapp.internal.net.dto.RouteDetailsResult;
+import org.openhab.binding.transitapp.internal.net.dto.StopDeparturesResult;
+import org.openhab.binding.transitapp.internal.net.dto.TripDetailsResult;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -82,12 +85,43 @@ public class TransitAppBridgeHandler extends BaseBridgeHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
     }
 
-    public TransitApiClient getApiClient() {
-        return apiClient;
+    public StopDeparturesResult getStopDepartures(String globalStopId) throws Exception {
+        TransitAppBridgeConfiguration config = getConfigAs(TransitAppBridgeConfiguration.class);
+        if (config.apiKey.isBlank()) {
+            throw new IllegalStateException("API Key missing");
+        }
+        return apiClient.getStopDepartures(config.apiKey, globalStopId);
     }
 
-    public String getApiKey() {
+    public RouteDetailsResult getRouteDetails(String routeId) throws Exception {
         TransitAppBridgeConfiguration config = getConfigAs(TransitAppBridgeConfiguration.class);
-        return config.apiKey;
+        if (config.apiKey.isBlank()) {
+            throw new IllegalStateException("API Key missing");
+        }
+        return apiClient.getRouteDetails(config.apiKey, routeId);
+    }
+
+    public TripDetailsResult getTripDetails(String tripId) throws Exception {
+        TransitAppBridgeConfiguration config = getConfigAs(TransitAppBridgeConfiguration.class);
+        if (config.apiKey.isBlank()) {
+            throw new IllegalStateException("API Key missing");
+        }
+        return apiClient.getTripDetails(config.apiKey, tripId);
+    }
+
+    public String fetchNearbyStops(double lat, double lon) throws Exception {
+        TransitAppBridgeConfiguration config = getConfigAs(TransitAppBridgeConfiguration.class);
+        if (config.apiKey.isBlank()) {
+            throw new IllegalStateException("API Key missing");
+        }
+        return apiClient.fetchNearbyStops(config.apiKey, lat, lon);
+    }
+
+    public String fetchStopDeparturesRaw(String globalStopId) throws Exception {
+        TransitAppBridgeConfiguration config = getConfigAs(TransitAppBridgeConfiguration.class);
+        if (config.apiKey.isBlank()) {
+            throw new IllegalStateException("API Key missing");
+        }
+        return apiClient.fetchStopDepartures(config.apiKey, globalStopId);
     }
 }

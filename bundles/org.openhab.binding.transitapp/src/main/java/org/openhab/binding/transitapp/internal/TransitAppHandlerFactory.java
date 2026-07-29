@@ -41,7 +41,10 @@ public class TransitAppHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return TransitAppBindingConstants.BINDING_ID.equals(thingTypeUID.getBindingId());
+        return TransitAppBindingConstants.THING_TYPE_BRIDGE.equals(thingTypeUID)
+                || TransitAppBindingConstants.THING_TYPE_STOP.equals(thingTypeUID)
+                || TransitAppBindingConstants.THING_TYPE_ROUTE_DETAILS.equals(thingTypeUID)
+                || TransitAppBindingConstants.THING_TYPE_TRIP_DETAILS.equals(thingTypeUID);
     }
 
     @Override

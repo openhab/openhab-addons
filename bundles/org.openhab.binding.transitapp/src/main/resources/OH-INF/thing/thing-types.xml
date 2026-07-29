@@ -3,7 +3,6 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-
 	<bridge-type id="bridge">
 		<label>TransitApp Bridge</label>
 		<description>Bridge to connect to Transit API</description>
@@ -14,7 +13,6 @@
 			</parameter>
 		</config-description>
 	</bridge-type>
-
 	<thing-type id="stop">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
@@ -45,7 +43,6 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-
 	<thing-type id="routedetails">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
@@ -67,7 +64,6 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-
 	<thing-type id="tripdetails">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
@@ -103,11 +99,9 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-
 	<channel-group-type id="departure-group">
 		<label>Departure</label>
 		<channels>
-			<channel id="route-long-name" typeId="route-long-name"/>
 			<channel id="route-short-name" typeId="route-short-name"/>
 			<channel id="departure-time" typeId="departure-time"/>
 			<channel id="is-cancelled" typeId="is-cancelled"/>
@@ -115,49 +109,24 @@
 			<channel id="delay-minutes" typeId="delay-minutes"/>
 			<channel id="platform" typeId="platform"/>
 			<channel id="wheelchair-accessible" typeId="wheelchair-accessible"/>
-			<channel id="occupancy" typeId="occupancy"/>
 		</channels>
 	</channel-group-type>
-
 	<channel-group-type id="route-group">
 		<label>Route Details</label>
 		<channels>
-			<channel id="route-long-name" typeId="route-long-name"/>
 			<channel id="route-short-name" typeId="route-short-name"/>
-			<channel id="agency-name" typeId="agency-name"/>
-			<channel id="route-color" typeId="route-color"/>
-			<channel id="route-text-color" typeId="route-text-color"/>
-			<channel id="route-network-name" typeId="route-network-name"/>
-			<channel id="mode-name" typeId="mode-name"/>
-			<channel id="vehicle-name" typeId="vehicle-name"/>
-			<channel id="alert-title" typeId="alert-title"/>
-			<channel id="alert-description" typeId="alert-description"/>
-			<channel id="alert-severity" typeId="alert-severity"/>
-			<channel id="start-location" typeId="stop-name"/>
-			<channel id="destination-location" typeId="stop-name"/>
 			<channel id="active-alerts-count" typeId="active-alerts-count"/>
-			<channel id="url" typeId="url"/>
 		</channels>
 	</channel-group-type>
-
 	<channel-group-type id="trip-group">
 		<label>Trip Details</label>
 		<channels>
 			<channel id="trip-headsign" typeId="trip-headsign"/>
-			<channel id="trip-status" typeId="trip-status"/>
-			<channel id="rt-trip-id" typeId="rt-trip-id"/>
-			<channel id="route-long-name" typeId="route-long-name"/>
 			<channel id="route-short-name" typeId="route-short-name"/>
-			<channel id="route-color" typeId="route-color"/>
-			<channel id="mode-name" typeId="mode-name"/>
-			<channel id="vehicle-name" typeId="vehicle-name"/>
 			<channel id="location" typeId="location"/>
-			<channel id="occupancy" typeId="occupancy"/>
 			<channel id="time-to-target" typeId="time-to-target"/>
-			<channel id="bikes-allowed" typeId="bikes-allowed"/>
 		</channels>
 	</channel-group-type>
-
 	<channel-group-type id="stop-group">
 		<label>Upcoming Stop</label>
 		<channels>
@@ -169,146 +138,122 @@
 			<channel id="platform" typeId="platform"/>
 		</channels>
 	</channel-group-type>
-
 	<channel-type id="route-long-name">
 		<item-type>String</item-type>
 		<label>Route Long Name</label>
 		<state readOnly="true"/>
 	</channel-type>
-
 	<channel-type id="route-short-name">
 		<item-type>String</item-type>
 		<label>Route Short Name</label>
 		<state readOnly="true"/>
 	</channel-type>
-
 	<channel-type id="agency-name">
 		<item-type>String</item-type>
 		<label>Agency Name</label>
 		<state readOnly="true"/>
 	</channel-type>
-
 	<channel-type id="trip-headsign">
 		<item-type>String</item-type>
 		<label>Trip Headsign</label>
 		<state readOnly="true"/>
 	</channel-type>
-
 	<channel-type id="trip-status">
 		<item-type>String</item-type>
 		<label>Trip Status</label>
 		<state readOnly="true"/>
 	</channel-type>
-
 	<channel-type id="departure-time">
 		<item-type>DateTime</item-type>
 		<label>Departure Time</label>
 		<state readOnly="true"/>
 	</channel-type>
-
 	<channel-type id="is-cancelled">
 		<item-type>Switch</item-type>
 		<label>Is Cancelled</label>
 		<state readOnly="true"/>
 	</channel-type>
-
 	<channel-type id="route-color">
 		<item-type>String</item-type>
 		<label>Route Color</label>
 		<state readOnly="true"/>
 	</channel-type>
-
 	<channel-type id="route-text-color">
 		<item-type>String</item-type>
 		<label>Route Text Color</label>
 		<state readOnly="true"/>
 	</channel-type>
-
 	<channel-type id="route-network-name">
 		<item-type>String</item-type>
 		<label>Route Network Name</label>
 		<state readOnly="true"/>
 	</channel-type>
-
 	<channel-type id="mode-name">
 		<item-type>String</item-type>
 		<label>Mode Name</label>
 		<state readOnly="true"/>
 	</channel-type>
-
 	<channel-type id="vehicle-name">
 		<item-type>String</item-type>
 		<label>Vehicle Name</label>
 		<state readOnly="true"/>
 	</channel-type>
-
 	<channel-type id="rt-trip-id">
 		<item-type>String</item-type>
 		<label>Real-Time Trip ID</label>
 		<state readOnly="true"/>
 	</channel-type>
-
 	<channel-type id="stop-name">
 		<item-type>String</item-type>
 		<label>Stop Name</label>
 		<state readOnly="true"/>
 	</channel-type>
-
 	<channel-type id="alert-title">
 		<item-type>String</item-type>
 		<label>Alert Title</label>
 		<state readOnly="true"/>
 	</channel-type>
-
 	<channel-type id="alert-description">
 		<item-type>String</item-type>
 		<label>Alert Description</label>
 		<state readOnly="true"/>
 	</channel-type>
-
 	<channel-type id="alert-severity">
 		<item-type>String</item-type>
 		<label>Alert Severity</label>
 		<state readOnly="true"/>
 	</channel-type>
-
 	<channel-type id="minutes-until-departure">
 		<item-type>Number:Time</item-type>
 		<label>Minutes Until Departure</label>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
-
 	<channel-type id="delay-minutes">
 		<item-type>Number:Time</item-type>
 		<label>Delay</label>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
-
 	<channel-type id="platform">
 		<item-type>String</item-type>
 		<label>Platform / Track</label>
 		<state readOnly="true"/>
 	</channel-type>
-
 	<channel-type id="active-alerts-count">
 		<item-type>Number</item-type>
 		<label>Active Alerts Count</label>
 		<state readOnly="true"/>
 	</channel-type>
-
 	<channel-type id="location">
 		<item-type>Location</item-type>
 		<label>Vehicle Location</label>
 		<state readOnly="true"/>
 	</channel-type>
-
 	<channel-type id="time-to-target">
 		<item-type>Number:Time</item-type>
 		<label>Time to Target</label>
 		<description>Live countdown to the configured target destination stop</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
-
 	<channel-type id="url">
 		<item-type>String</item-type>
 		<label>Route Schedule URL</label>
@@ -333,5 +278,4 @@
 		<description>Indicates whether bicycles are allowed on this vehicle</description>
 		<state readOnly="true"/>
 	</channel-type>
-
 </thing:thing-descriptions>
