@@ -143,6 +143,16 @@
 			<channel id="platform" typeId="platform"/>
 		</channels>
 	</channel-group-type>
+	<channel-type id="scheduled-time">
+		<item-type>DateTime</item-type>
+		<label>Scheduled Time</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="realtime-time">
+		<item-type>DateTime</item-type>
+		<label>Real-Time Time</label>
+		<state readOnly="true"/>
+	</channel-type>
 	<channel-type id="route-long-name">
 		<item-type>String</item-type>
 		<label>Route Long Name</label>

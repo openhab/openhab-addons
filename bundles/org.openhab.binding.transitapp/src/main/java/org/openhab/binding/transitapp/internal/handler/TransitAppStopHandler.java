@@ -113,9 +113,15 @@ public class TransitAppStopHandler extends BaseThingHandler {
 
                                     if (shortName != null) {
                                         updateState(prefix + "route-short-name", new StringType(shortName));
+                                    } else {
+                                        updateState(prefix + "route-short-name",
+                                                org.openhab.core.types.UnDefType.UNDEF);
                                     }
+
                                     if (longName != null) {
                                         updateState(prefix + "route-long-name", new StringType(longName));
+                                    } else {
+                                        updateState(prefix + "route-long-name", org.openhab.core.types.UnDefType.UNDEF);
                                     }
 
                                     if (schedule.departureTime == null) {
