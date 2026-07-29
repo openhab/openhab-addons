@@ -17,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.transitapp.internal.net.dto.TripDetailsResult;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
@@ -83,89 +84,72 @@ public class TransitAppTripDetailsHandler extends BaseThingHandler {
         }
 
         try {
-            TransitAppBridgeHandler bridgeHandler = (TransitAppBridgeHandler) bridge;
-            String jsonBody = bridgeHandler.getApiClient().fetchTripDetails(apiKey, tripId);
+            TransitAppBridgeHandler bridgeHandler = getTransitBridgeHandler();
+            if (bridgeHandler == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Bridge handler not initialized");
+                return;
+            }
+            TripDetailsResult result = bridgeHandler.getApiClient().getTripDetails(apiKey, tripId);
+            logger.debug("Successfully polled trip details for trip ID {}", tripId);
+            updateStatus(ThingStatus.ONLINE);
 
-            if (jsonBody != null) {
-                logger.debug("Successfully polled trip details for trip ID {}", tripId);
-                updateStatus(ThingStatus.ONLINE);
-
-                try {
-                    com.google.gson.JsonObject jsonResponse = com.google.gson.JsonParser.parseString(jsonBody)
-                            .getAsJsonObject();
-                    com.google.gson.JsonObject trip = jsonResponse.has("trip") ? jsonResponse.getAsJsonObject("trip")
-                            : jsonResponse;
-
-                    if (trip.has("trip_headsign") && !trip.get("trip_headsign").isJsonNull()) {
-                        updateState("trip#tripHeadsign", new StringType(trip.get("trip_headsign").getAsString()));
-                    }
-                    if (trip.has("route_short_name") && !trip.get("route_short_name").isJsonNull()) {
-                        updateState("trip#routeShortName", new StringType(trip.get("route_short_name").getAsString()));
-                    }
-
-                    if (jsonResponse.has("vehicle") && !jsonResponse.get("vehicle").isJsonNull()) {
-                        com.google.gson.JsonObject vehicle = jsonResponse.getAsJsonObject("vehicle");
-                        if (vehicle.has("location") && !vehicle.get("location").isJsonNull()) {
-                            com.google.gson.JsonObject loc = vehicle.getAsJsonObject("location");
-                            if (loc.has("lat") && loc.has("lon")) {
-                                updateState("trip#location",
-                                        new PointType(new DecimalType(loc.get("lat").getAsDouble()),
-                                                new DecimalType(loc.get("lon").getAsDouble())));
-                            }
-                        }
-                    } else {
-                        updateState("trip#location", org.openhab.core.types.UnDefType.UNDEF);
-                    }
-
-                    String targetStopId = (String) getThing().getConfiguration().get("targetStopId");
-                    long now = System.currentTimeMillis() / 1000;
-
-                    if (jsonResponse.has("stops")) {
-                        com.google.gson.JsonArray stops = jsonResponse.getAsJsonArray("stops");
-                        int stopIdx = 1;
-
-                        for (int i = 0; i < stops.size(); i++) {
-                            com.google.gson.JsonObject stop = stops.get(i).getAsJsonObject();
-
-                            if (targetStopId != null && stop.has("global_stop_id")
-                                    && targetStopId.equals(stop.get("global_stop_id").getAsString())) {
-                                if (stop.has("departure_time")) {
-                                    long depTime = stop.get("departure_time").getAsLong();
-                                    long diff = (depTime - now) / 60;
-                                    updateState("trip#timeToTarget", new QuantityType<>(diff, Units.MINUTE));
-                                }
-                            }
-
-                            if (stopIdx <= 10 && stop.has("departure_time")
-                                    && stop.get("departure_time").getAsLong() > now) {
-                                String prefix = "stop" + stopIdx + "#";
-                                if (stop.has("stop_name")) {
-                                    updateState(prefix + "stopName",
-                                            new StringType(stop.get("stop_name").getAsString()));
-                                }
-                                long depTime = stop.get("departure_time").getAsLong();
-                                long diff = (depTime - now) / 60;
-                                updateState(prefix + "minutesUntilDeparture", new QuantityType<>(diff, Units.MINUTE));
-                                stopIdx++;
-                            }
-                        }
-
-                        for (int i = stopIdx; i <= 10; i++) {
-                            updateState("stop" + i + "#stopName", org.openhab.core.types.UnDefType.UNDEF);
-                            updateState("stop" + i + "#minutesUntilDeparture", org.openhab.core.types.UnDefType.UNDEF);
-                        }
-                    }
-                } catch (Exception ex) {
-                    logger.warn("Failed to parse JSON for trip {}: {}", tripId, ex.getMessage());
+            TripDetailsResult.Trip trip = result.getEffectiveTrip();
+            if (trip != null) {
+                if (trip.tripHeadsign != null) {
+                    updateState("trip#trip-headsign", new StringType(trip.tripHeadsign));
                 }
+                if (trip.routeShortName != null) {
+                    updateState("trip#route-short-name", new StringType(trip.routeShortName));
+                }
+            }
+
+            if (result.vehicle != null && result.vehicle.location != null && result.vehicle.location.lat != null
+                    && result.vehicle.location.lon != null) {
+                updateState("trip#location", new PointType(new DecimalType(result.vehicle.location.lat),
+                        new DecimalType(result.vehicle.location.lon)));
             } else {
-                logger.warn("Transit API request failed for trip.");
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "API Failure");
+                updateState("trip#location", org.openhab.core.types.UnDefType.UNDEF);
+            }
+
+            String targetStopId = (String) getThing().getConfiguration().get("targetStopId");
+            long now = System.currentTimeMillis() / 1000;
+
+            if (result.stops != null) {
+                int stopIdx = 1;
+                for (TripDetailsResult.Stop stop : result.stops) {
+                    if (targetStopId != null && targetStopId.equals(stop.globalStopId) && stop.departureTime != null) {
+                        long diff = (stop.departureTime - now) / 60;
+                        updateState("trip#time-to-target", new QuantityType<>(diff, Units.MINUTE));
+                    }
+
+                    if (stopIdx <= 10 && stop.departureTime != null && stop.departureTime > now) {
+                        String prefix = "stop" + stopIdx + "#";
+                        if (stop.stopName != null) {
+                            updateState(prefix + "stop-name", new StringType(stop.stopName));
+                        }
+                        long diff = (stop.departureTime - now) / 60;
+                        updateState(prefix + "minutes-until-departure", new QuantityType<>(diff, Units.MINUTE));
+                        stopIdx++;
+                    }
+                }
+
+                for (int i = stopIdx; i <= 10; i++) {
+                    updateState("stop" + i + "#stop-name", org.openhab.core.types.UnDefType.UNDEF);
+                    updateState("stop" + i + "#minutes-until-departure", org.openhab.core.types.UnDefType.UNDEF);
+                }
             }
         } catch (Exception e) {
             logger.warn("Communication error while polling trip {}: {}", tripId, e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
+    }
+
+    public @Nullable TransitAppBridgeHandler getTransitBridgeHandler() {
+        Bridge bridge = getBridge();
+        if (bridge != null && bridge.getHandler() instanceof TransitAppBridgeHandler bridgeHandler) {
+            return bridgeHandler;
+        }
+        return null;
     }
 
     @Override

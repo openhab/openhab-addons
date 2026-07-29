@@ -5,12 +5,12 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="bridge">
-		<label>@text/thing-type.transitapp.bridge.label</label>
-		<description>@text/thing-type.transitapp.bridge.description</description>
+		<label>TransitApp Bridge</label>
+		<description>Bridge to connect to Transit API</description>
 		<config-description>
 			<parameter name="apiKey" type="text" required="true">
-				<label>@text/config.apiKey.label</label>
-				<description>@text/config.apiKey.description</description>
+				<label>API Key</label>
+				<description>Your Transit API key.</description>
 			</parameter>
 		</config-description>
 	</bridge-type>
@@ -19,28 +19,28 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
-		<label>@text/thing-type.transitapp.stop.label</label>
-		<description>@text/thing-type.transitapp.stop.description</description>
+		<label>Transit Stop</label>
+		<description>Transit Stop Thing with dynamic departures</description>
 		<channel-groups>
-			<channel-group id="depart1" typeId="departureGroup"/>
-			<channel-group id="depart2" typeId="departureGroup"/>
-			<channel-group id="depart3" typeId="departureGroup"/>
-			<channel-group id="depart4" typeId="departureGroup"/>
-			<channel-group id="depart5" typeId="departureGroup"/>
-			<channel-group id="depart6" typeId="departureGroup"/>
-			<channel-group id="depart7" typeId="departureGroup"/>
-			<channel-group id="depart8" typeId="departureGroup"/>
-			<channel-group id="depart9" typeId="departureGroup"/>
-			<channel-group id="depart10" typeId="departureGroup"/>
+			<channel-group id="depart1" typeId="departure-group"/>
+			<channel-group id="depart2" typeId="departure-group"/>
+			<channel-group id="depart3" typeId="departure-group"/>
+			<channel-group id="depart4" typeId="departure-group"/>
+			<channel-group id="depart5" typeId="departure-group"/>
+			<channel-group id="depart6" typeId="departure-group"/>
+			<channel-group id="depart7" typeId="departure-group"/>
+			<channel-group id="depart8" typeId="departure-group"/>
+			<channel-group id="depart9" typeId="departure-group"/>
+			<channel-group id="depart10" typeId="departure-group"/>
 		</channel-groups>
 		<config-description>
 			<parameter name="globalStopId" type="text" required="true">
-				<label>@text/config.globalStopId.label</label>
-				<description>@text/config.globalStopId.description</description>
+				<label>Global Stop ID</label>
+				<description>The global stop ID for Transit API.</description>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" min="30">
-				<label>@text/config.refreshInterval.label</label>
-				<description>@text/config.refreshInterval.description</description>
+				<label>Refresh Interval</label>
+				<description>Time in seconds between updates.</description>
 				<default>60</default>
 			</parameter>
 		</config-description>
@@ -50,19 +50,19 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
-		<label>@text/thing-type.transitapp.routedetails.label</label>
-		<description>@text/thing-type.transitapp.routedetails.description</description>
+		<label>Transit Route Details</label>
+		<description>Details and information about a specific transit route.</description>
 		<channel-groups>
-			<channel-group id="route" typeId="routeGroup"/>
+			<channel-group id="route" typeId="route-group"/>
 		</channel-groups>
 		<config-description>
 			<parameter name="routeId" type="text" required="true">
-				<label>@text/config.routeId.label</label>
-				<description>@text/config.routeId.description</description>
+				<label>Route ID</label>
+				<description>The unique identifier for the route.</description>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" min="30">
-				<label>@text/config.refreshInterval.label</label>
-				<description>@text/config.refreshInterval.description</description>
+				<label>Refresh Interval</label>
+				<description>Time in seconds between updates.</description>
 				<default>300</default>
 			</parameter>
 		</config-description>
@@ -72,265 +72,265 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
-		<label>@text/thing-type.transitapp.tripdetails.label</label>
-		<description>@text/thing-type.transitapp.tripdetails.description</description>
+		<label>Transit Trip Details</label>
+		<description>Real-time details and schedule for a specific transit trip.</description>
 		<channel-groups>
-			<channel-group id="trip" typeId="tripGroup"/>
-			<channel-group id="stop1" typeId="stopGroup"/>
-			<channel-group id="stop2" typeId="stopGroup"/>
-			<channel-group id="stop3" typeId="stopGroup"/>
-			<channel-group id="stop4" typeId="stopGroup"/>
-			<channel-group id="stop5" typeId="stopGroup"/>
-			<channel-group id="stop6" typeId="stopGroup"/>
-			<channel-group id="stop7" typeId="stopGroup"/>
-			<channel-group id="stop8" typeId="stopGroup"/>
-			<channel-group id="stop9" typeId="stopGroup"/>
-			<channel-group id="stop10" typeId="stopGroup"/>
+			<channel-group id="trip" typeId="trip-group"/>
+			<channel-group id="stop1" typeId="stop-group"/>
+			<channel-group id="stop2" typeId="stop-group"/>
+			<channel-group id="stop3" typeId="stop-group"/>
+			<channel-group id="stop4" typeId="stop-group"/>
+			<channel-group id="stop5" typeId="stop-group"/>
+			<channel-group id="stop6" typeId="stop-group"/>
+			<channel-group id="stop7" typeId="stop-group"/>
+			<channel-group id="stop8" typeId="stop-group"/>
+			<channel-group id="stop9" typeId="stop-group"/>
+			<channel-group id="stop10" typeId="stop-group"/>
 		</channel-groups>
 		<config-description>
 			<parameter name="tripId" type="text" required="true">
-				<label>@text/config.tripId.label</label>
-				<description>@text/config.tripId.description</description>
+				<label>Trip ID</label>
+				<description>The unique identifier for the trip.</description>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" min="30">
-				<label>@text/config.refreshInterval.label</label>
-				<description>@text/config.refreshInterval.description</description>
+				<label>Refresh Interval</label>
+				<description>Time in seconds between updates.</description>
 				<default>60</default>
 			</parameter>
 			<parameter name="targetStopId" type="text" required="false">
-				<label>@text/config.targetStopId.label</label>
-				<description>@text/config.targetStopId.description</description>
+				<label>Target Stop ID</label>
+				<description>Destination stop ID to calculate the time-to-target countdown.</description>
 			</parameter>
 		</config-description>
 	</thing-type>
 
-	<channel-group-type id="departureGroup">
-		<label>@text/group.departure.label</label>
+	<channel-group-type id="departure-group">
+		<label>Departure</label>
 		<channels>
-			<channel id="routeLongName" typeId="routeLongName"/>
-			<channel id="routeShortName" typeId="routeShortName"/>
-			<channel id="departureTime" typeId="departureTime"/>
-			<channel id="isCancelled" typeId="isCancelled"/>
-			<channel id="minutesUntilDeparture" typeId="minutesUntilDeparture"/>
-			<channel id="delayMinutes" typeId="delayMinutes"/>
+			<channel id="route-long-name" typeId="route-long-name"/>
+			<channel id="route-short-name" typeId="route-short-name"/>
+			<channel id="departure-time" typeId="departure-time"/>
+			<channel id="is-cancelled" typeId="is-cancelled"/>
+			<channel id="minutes-until-departure" typeId="minutes-until-departure"/>
+			<channel id="delay-minutes" typeId="delay-minutes"/>
 			<channel id="platform" typeId="platform"/>
-			<channel id="wheelchairAccessible" typeId="wheelchairAccessible"/>
+			<channel id="wheelchair-accessible" typeId="wheelchair-accessible"/>
 			<channel id="occupancy" typeId="occupancy"/>
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="routeGroup">
-		<label>@text/group.routeDetails.label</label>
+	<channel-group-type id="route-group">
+		<label>Route Details</label>
 		<channels>
-			<channel id="routeLongName" typeId="routeLongName"/>
-			<channel id="routeShortName" typeId="routeShortName"/>
-			<channel id="agencyName" typeId="agencyName"/>
-			<channel id="routeColor" typeId="routeColor"/>
-			<channel id="routeTextColor" typeId="routeTextColor"/>
-			<channel id="routeNetworkName" typeId="routeNetworkName"/>
-			<channel id="modeName" typeId="modeName"/>
-			<channel id="vehicleName" typeId="vehicleName"/>
-			<channel id="alertTitle" typeId="alertTitle"/>
-			<channel id="alertDescription" typeId="alertDescription"/>
-			<channel id="alertSeverity" typeId="alertSeverity"/>
-			<channel id="startLocation" typeId="stopName"/>
-			<channel id="destinationLocation" typeId="stopName"/>
-			<channel id="activeAlertsCount" typeId="activeAlertsCount"/>
+			<channel id="route-long-name" typeId="route-long-name"/>
+			<channel id="route-short-name" typeId="route-short-name"/>
+			<channel id="agency-name" typeId="agency-name"/>
+			<channel id="route-color" typeId="route-color"/>
+			<channel id="route-text-color" typeId="route-text-color"/>
+			<channel id="route-network-name" typeId="route-network-name"/>
+			<channel id="mode-name" typeId="mode-name"/>
+			<channel id="vehicle-name" typeId="vehicle-name"/>
+			<channel id="alert-title" typeId="alert-title"/>
+			<channel id="alert-description" typeId="alert-description"/>
+			<channel id="alert-severity" typeId="alert-severity"/>
+			<channel id="start-location" typeId="stop-name"/>
+			<channel id="destination-location" typeId="stop-name"/>
+			<channel id="active-alerts-count" typeId="active-alerts-count"/>
 			<channel id="url" typeId="url"/>
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="tripGroup">
-		<label>@text/group.tripDetails.label</label>
+	<channel-group-type id="trip-group">
+		<label>Trip Details</label>
 		<channels>
-			<channel id="tripHeadsign" typeId="tripHeadsign"/>
-			<channel id="tripStatus" typeId="tripStatus"/>
-			<channel id="rtTripId" typeId="rtTripId"/>
-			<channel id="routeLongName" typeId="routeLongName"/>
-			<channel id="routeShortName" typeId="routeShortName"/>
-			<channel id="routeColor" typeId="routeColor"/>
-			<channel id="modeName" typeId="modeName"/>
-			<channel id="vehicleName" typeId="vehicleName"/>
+			<channel id="trip-headsign" typeId="trip-headsign"/>
+			<channel id="trip-status" typeId="trip-status"/>
+			<channel id="rt-trip-id" typeId="rt-trip-id"/>
+			<channel id="route-long-name" typeId="route-long-name"/>
+			<channel id="route-short-name" typeId="route-short-name"/>
+			<channel id="route-color" typeId="route-color"/>
+			<channel id="mode-name" typeId="mode-name"/>
+			<channel id="vehicle-name" typeId="vehicle-name"/>
 			<channel id="location" typeId="location"/>
 			<channel id="occupancy" typeId="occupancy"/>
-			<channel id="timeToTarget" typeId="timeToTarget"/>
-			<channel id="bikesAllowed" typeId="bikesAllowed"/>
+			<channel id="time-to-target" typeId="time-to-target"/>
+			<channel id="bikes-allowed" typeId="bikes-allowed"/>
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="stopGroup">
-		<label>@text/group.upcomingStop.label</label>
+	<channel-group-type id="stop-group">
+		<label>Upcoming Stop</label>
 		<channels>
-			<channel id="stopName" typeId="stopName"/>
-			<channel id="scheduledTime" typeId="scheduledTime"/>
-			<channel id="realtimeTime" typeId="realtimeTime"/>
-			<channel id="delayMinutes" typeId="delayMinutes"/>
-			<channel id="minutesUntilDeparture" typeId="minutesUntilDeparture"/>
+			<channel id="stop-name" typeId="stop-name"/>
+			<channel id="scheduled-time" typeId="scheduled-time"/>
+			<channel id="realtime-time" typeId="realtime-time"/>
+			<channel id="delay-minutes" typeId="delay-minutes"/>
+			<channel id="minutes-until-departure" typeId="minutes-until-departure"/>
 			<channel id="platform" typeId="platform"/>
 		</channels>
 	</channel-group-type>
 
-	<channel-type id="routeLongName">
+	<channel-type id="route-long-name">
 		<item-type>String</item-type>
-		<label>@text/channel.routeLongName.label</label>
+		<label>Route Long Name</label>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="routeShortName">
+	<channel-type id="route-short-name">
 		<item-type>String</item-type>
-		<label>@text/channel.routeShortName.label</label>
+		<label>Route Short Name</label>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="agencyName">
+	<channel-type id="agency-name">
 		<item-type>String</item-type>
-		<label>@text/channel.agencyName.label</label>
+		<label>Agency Name</label>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="tripHeadsign">
+	<channel-type id="trip-headsign">
 		<item-type>String</item-type>
-		<label>@text/channel.tripHeadsign.label</label>
+		<label>Trip Headsign</label>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="tripStatus">
+	<channel-type id="trip-status">
 		<item-type>String</item-type>
-		<label>@text/channel.tripStatus.label</label>
+		<label>Trip Status</label>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="departureTime">
+	<channel-type id="departure-time">
 		<item-type>DateTime</item-type>
-		<label>@text/channel.departureTime.label</label>
+		<label>Departure Time</label>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="isCancelled">
+	<channel-type id="is-cancelled">
 		<item-type>Switch</item-type>
-		<label>@text/channel.isCancelled.label</label>
+		<label>Is Cancelled</label>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="routeColor">
+	<channel-type id="route-color">
 		<item-type>String</item-type>
-		<label>@text/channel.routeColor.label</label>
+		<label>Route Color</label>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="routeTextColor">
+	<channel-type id="route-text-color">
 		<item-type>String</item-type>
-		<label>@text/channel.routeTextColor.label</label>
+		<label>Route Text Color</label>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="routeNetworkName">
+	<channel-type id="route-network-name">
 		<item-type>String</item-type>
-		<label>@text/channel.routeNetworkName.label</label>
+		<label>Route Network Name</label>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="modeName">
+	<channel-type id="mode-name">
 		<item-type>String</item-type>
-		<label>@text/channel.modeName.label</label>
+		<label>Mode Name</label>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="vehicleName">
+	<channel-type id="vehicle-name">
 		<item-type>String</item-type>
-		<label>@text/channel.vehicleName.label</label>
+		<label>Vehicle Name</label>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="rtTripId">
+	<channel-type id="rt-trip-id">
 		<item-type>String</item-type>
-		<label>@text/channel.rtTripId.label</label>
+		<label>Real-Time Trip ID</label>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="stopName">
+	<channel-type id="stop-name">
 		<item-type>String</item-type>
-		<label>@text/channel.stopName.label</label>
+		<label>Stop Name</label>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="alertTitle">
+	<channel-type id="alert-title">
 		<item-type>String</item-type>
-		<label>@text/channel.alertTitle.label</label>
+		<label>Alert Title</label>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="alertDescription">
+	<channel-type id="alert-description">
 		<item-type>String</item-type>
-		<label>@text/channel.alertDescription.label</label>
+		<label>Alert Description</label>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="alertSeverity">
+	<channel-type id="alert-severity">
 		<item-type>String</item-type>
-		<label>@text/channel.alertSeverity.label</label>
+		<label>Alert Severity</label>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="minutesUntilDeparture">
+	<channel-type id="minutes-until-departure">
 		<item-type>Number:Time</item-type>
-		<label>@text/channel.minutesUntilDeparture.label</label>
+		<label>Minutes Until Departure</label>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
-	<channel-type id="delayMinutes">
+	<channel-type id="delay-minutes">
 		<item-type>Number:Time</item-type>
-		<label>@text/channel.delayMinutes.label</label>
+		<label>Delay</label>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="platform">
 		<item-type>String</item-type>
-		<label>@text/channel.platform.label</label>
+		<label>Platform / Track</label>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="activeAlertsCount">
+	<channel-type id="active-alerts-count">
 		<item-type>Number</item-type>
-		<label>@text/channel.activeAlertsCount.label</label>
+		<label>Active Alerts Count</label>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="location">
 		<item-type>Location</item-type>
-		<label>@text/channel.location.label</label>
+		<label>Vehicle Location</label>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="timeToTarget">
+	<channel-type id="time-to-target">
 		<item-type>Number:Time</item-type>
-		<label>@text/channel.timeToTarget.label</label>
-		<description>@text/channel.timeToTarget.description</description>
+		<label>Time to Target</label>
+		<description>Live countdown to the configured target destination stop</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="url">
 		<item-type>String</item-type>
-		<label>@text/channel.url.label</label>
-		<description>@text/channel.url.description</description>
+		<label>Route Schedule URL</label>
+		<description>Web link to route schedule or information</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="wheelchairAccessible">
+	<channel-type id="wheelchair-accessible">
 		<item-type>Switch</item-type>
-		<label>@text/channel.wheelchairAccessible.label</label>
-		<description>@text/channel.wheelchairAccessible.description</description>
+		<label>Wheelchair Accessible</label>
+		<description>Indicates whether the departure is wheelchair accessible</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="occupancy">
 		<item-type>String</item-type>
-		<label>@text/channel.occupancy.label</label>
-		<description>@text/channel.occupancy.description</description>
+		<label>Occupancy</label>
+		<description>Current occupancy status of the vehicle</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="bikesAllowed">
+	<channel-type id="bikes-allowed">
 		<item-type>Switch</item-type>
-		<label>@text/channel.bikesAllowed.label</label>
-		<description>@text/channel.bikesAllowed.description</description>
+		<label>Bikes Allowed</label>
+		<description>Indicates whether bicycles are allowed on this vehicle</description>
 		<state readOnly="true"/>
 	</channel-type>
 

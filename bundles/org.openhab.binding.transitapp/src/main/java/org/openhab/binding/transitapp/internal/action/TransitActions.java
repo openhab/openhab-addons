@@ -53,4 +53,26 @@ public class TransitActions implements ThingActions {
         logger.warn("Action getNextDepartureForLine called, but handler is not ready or not a Stop handler");
         return null;
     }
+
+    @RuleAction(label = "Get All Departures", description = "Gets raw JSON of all upcoming departures for this stop to find route or trip IDs")
+    public @Nullable String getDepartures() {
+        ThingHandler currentHandler = this.handler;
+        if (currentHandler instanceof TransitAppStopHandler stopHandler) {
+            try {
+                org.openhab.binding.transitapp.internal.handler.TransitAppBridgeHandler bridgeHandler = stopHandler
+                        .getTransitBridgeHandler();
+                if (bridgeHandler != null) {
+                    String stopId = (String) stopHandler.getThing().getConfiguration().get("globalStopId");
+                    if (stopId != null) {
+                        return bridgeHandler.getApiClient().fetchStopDepartures(bridgeHandler.getApiKey(), stopId);
+                    }
+                }
+            } catch (Exception e) {
+                logger.error("Failed to fetch stop departures: {}", e.getMessage());
+                return null;
+            }
+        }
+        logger.warn("Action getDepartures called, but handler is not ready or not a Stop handler");
+        return null;
+    }
 }

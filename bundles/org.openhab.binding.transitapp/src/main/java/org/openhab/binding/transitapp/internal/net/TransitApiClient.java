@@ -24,10 +24,16 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpMethod;
+import org.openhab.binding.transitapp.internal.net.dto.RouteDetailsResult;
+import org.openhab.binding.transitapp.internal.net.dto.StopDeparturesResult;
+import org.openhab.binding.transitapp.internal.net.dto.TripDetailsResult;
+
+import com.google.gson.Gson;
 
 @NonNullByDefault
 public class TransitApiClient {
     private final HttpClient httpClient;
+    private final Gson gson = new Gson();
 
     public TransitApiClient(HttpClient httpClient) {
         this.httpClient = httpClient;
@@ -99,6 +105,44 @@ public class TransitApiClient {
             throw new IOException("Transit API returned HTTP error status: " + response.getStatus());
         }
         return response.getContentAsString();
+    }
+
+    public String fetchNearbyStops(String apiKey, double lat, double lon) throws Exception {
+        String url = "https://external.transitapp.com/v4/public/nearby_stops?lat=" + lat + "&lon=" + lon;
+        ContentResponse response = httpClient.newRequest(url).method(HttpMethod.GET).header("apiKey", apiKey)
+                .timeout(10, TimeUnit.SECONDS).send();
+
+        if (response.getStatus() != 200) {
+            throw new IOException("Transit API returned HTTP error status: " + response.getStatus());
+        }
+        return response.getContentAsString();
+    }
+
+    public StopDeparturesResult getStopDepartures(String apiKey, String globalStopId) throws Exception {
+        String json = fetchStopDepartures(apiKey, globalStopId);
+        StopDeparturesResult result = gson.fromJson(json, StopDeparturesResult.class);
+        if (result == null) {
+            throw new IOException("Parsed JSON for stop departures is null");
+        }
+        return result;
+    }
+
+    public RouteDetailsResult getRouteDetails(String apiKey, String routeId) throws Exception {
+        String json = fetchRouteDetails(apiKey, routeId);
+        RouteDetailsResult result = gson.fromJson(json, RouteDetailsResult.class);
+        if (result == null) {
+            throw new IOException("Parsed JSON for route details is null");
+        }
+        return result;
+    }
+
+    public TripDetailsResult getTripDetails(String apiKey, String tripId) throws Exception {
+        String json = fetchTripDetails(apiKey, tripId);
+        TripDetailsResult result = gson.fromJson(json, TripDetailsResult.class);
+        if (result == null) {
+            throw new IOException("Parsed JSON for trip details is null");
+        }
+        return result;
     }
 
     private static class CachedResponse {

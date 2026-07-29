@@ -17,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.transitapp.internal.net.dto.RouteDetailsResult;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
@@ -80,46 +81,42 @@ public class TransitAppRouteDetailsHandler extends BaseThingHandler {
         }
 
         try {
-            TransitAppBridgeHandler bridgeHandler = (TransitAppBridgeHandler) bridge;
-            String jsonBody = bridgeHandler.getApiClient().fetchRouteDetails(apiKey, routeId);
-            if (jsonBody != null) {
-                logger.debug("Successfully polled route details for route ID {}", routeId);
-                updateStatus(ThingStatus.ONLINE);
-
-                try {
-                    com.google.gson.JsonObject jsonResponse = com.google.gson.JsonParser.parseString(jsonBody)
-                            .getAsJsonObject();
-                    com.google.gson.JsonObject route = jsonResponse.has("route") ? jsonResponse.getAsJsonObject("route")
-                            : jsonResponse;
-
-                    if (route.has("route_long_name") && !route.get("route_long_name").isJsonNull()) {
-                        updateState("route#routeLongName", new StringType(route.get("route_long_name").getAsString()));
-                    }
-                    if (route.has("route_short_name") && !route.get("route_short_name").isJsonNull()) {
-                        updateState("route#routeShortName",
-                                new StringType(route.get("route_short_name").getAsString()));
-                    }
-                    if (route.has("route_color") && !route.get("route_color").isJsonNull()) {
-                        updateState("route#routeColor", new StringType(route.get("route_color").getAsString()));
-                    }
-
-                    if (jsonResponse.has("alerts")) {
-                        com.google.gson.JsonArray alerts = jsonResponse.getAsJsonArray("alerts");
-                        updateState("route#activeAlertsCount", new DecimalType(alerts.size()));
-                    } else {
-                        updateState("route#activeAlertsCount", new DecimalType(0));
-                    }
-                } catch (Exception ex) {
-                    logger.warn("Failed to parse JSON for route {}: {}", routeId, ex.getMessage());
-                }
-            } else {
-                logger.warn("Transit API failed for route.");
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Failed to fetch route");
+            TransitAppBridgeHandler bridgeHandler = getTransitBridgeHandler();
+            if (bridgeHandler == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Bridge handler not initialized");
+                return;
             }
+            RouteDetailsResult result = bridgeHandler.getApiClient().getRouteDetails(apiKey, routeId);
+            logger.debug("Successfully polled route details for route ID {}", routeId);
+            updateStatus(ThingStatus.ONLINE);
+
+            RouteDetailsResult.Route route = result.getEffectiveRoute();
+            if (route != null) {
+                if (route.routeLongName != null) {
+                    updateState("route#route-long-name", new StringType(route.routeLongName));
+                }
+                if (route.routeShortName != null) {
+                    updateState("route#route-short-name", new StringType(route.routeShortName));
+                }
+                if (route.routeColor != null) {
+                    updateState("route#route-color", new StringType(route.routeColor));
+                }
+            }
+
+            int alertsCount = result.alerts != null ? result.alerts.size() : 0;
+            updateState("route#active-alerts-count", new DecimalType(alertsCount));
         } catch (Exception e) {
             logger.warn("Communication error while polling route {}: {}", routeId, e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
+    }
+
+    public @Nullable TransitAppBridgeHandler getTransitBridgeHandler() {
+        Bridge bridge = getBridge();
+        if (bridge != null && bridge.getHandler() instanceof TransitAppBridgeHandler bridgeHandler) {
+            return bridgeHandler;
+        }
+        return null;
     }
 
     @Override
