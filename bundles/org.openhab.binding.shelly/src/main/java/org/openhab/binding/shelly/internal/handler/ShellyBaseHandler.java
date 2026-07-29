@@ -114,7 +114,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     private final Map<String, Long> deprecatedChannelWarnings = new ConcurrentHashMap<>();
     private final int cacheCount = UPDATE_SETTINGS_INTERVAL_SECONDS / UPDATE_STATUS_INTERVAL_SECONDS;
 
-    private static final String FIRMWARE_UPDATE_AVAILABLE = "@text/message.firmware-update-available";
+    private static final String FIRMWARE_UPDATE_AVAILABLE = "@text/message.online.firmware-update-available";
 
     private volatile @Nullable Shelly1CoapHandler coap;
 
