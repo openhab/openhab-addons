@@ -414,7 +414,13 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                                     currentTimeMode = matcher.group(3);
                                     updateChannelState(CHANNEL_TIME_MODE, currentTimeMode);
                                 }
-                                updateChannelState(CHANNEL_TIME_DISPLAY, matcher.group(4));
+
+                                if (isValidTimecode(matcher.group(4))) {
+                                    updateState(CHANNEL_TIME_DISPLAY, new QuantityType<>(
+                                            getSecondsFromTimecode(matcher.group(4)), API_SECONDS_UNIT));
+                                } else {
+                                    logger.debug("Invalid timecode in {} message: {}", key, updateData);
+                                }
                             } else {
                                 logger.debug("no match on message: {}", updateData);
                             }
@@ -425,21 +431,30 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                     case QCE:
                     case QCR:
                         if (!isStopped) {
+                            int timecode = 0;
+
+                            if (!isValidTimecode(updateData)) {
+                                logger.debug("Invalid timecode in {} message: {}", key, updateData);
+                                break;
+                            } else {
+                                timecode = getSecondsFromTimecode(updateData);
+                            }
+
                             // these are used with verbose mode 2 and BDP direct IP
                             if (VERBOSE_2.equals(this.verboseMode) && ((key.equals(QTE) && T.equals(currentTimeMode))
                                     || (key.equals(QTR) && X.equals(currentTimeMode))
                                     || (key.equals(QCE) && C.equals(currentTimeMode))
                                     || (key.equals(QCR) && K.equals(currentTimeMode)))) {
-                                updateChannelState(CHANNEL_TIME_DISPLAY, updateData);
+                                updateState(CHANNEL_TIME_DISPLAY, new QuantityType<>(timecode, API_SECONDS_UNIT));
                             }
 
                             if (key.equals(QTE)) {
-                                titleElapsed = getSecondsFromTimecode(updateData);
-                                updateState(CHANNEL_TITLE_ELAPSED, new QuantityType<>(titleElapsed, API_SECONDS_UNIT));
+                                titleElapsed = timecode;
+                                updateState(CHANNEL_TITLE_ELAPSED, new QuantityType<>(timecode, API_SECONDS_UNIT));
                             }
 
                             if (key.equals(QTR)) {
-                                final int remain = getSecondsFromTimecode(updateData);
+                                final int remain = timecode;
 
                                 updateState(CHANNEL_TITLE_END_TIME, remain > 0
                                         ? new DateTimeType(
@@ -665,18 +680,26 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
     }
 
     /**
+     * Validate if timecode is the proper hh:mm:ss format
+     *
+     * @param timecode the string containing a timecode
+     * @return true if timecode is valid
+     *
+     */
+    private boolean isValidTimecode(String timecode) {
+        return timecode.length() == 8 && timecode.replaceAll(COLON, BLANK).chars().allMatch(Character::isDigit);
+    }
+
+    /**
      * Convert a timecode from hh:mm:ss format into the number of seconds
      *
      * @param timecode the string containing a timecode
-     * @return the number of seconds as int or 0 if timecode was invalid
+     * @return the number of seconds as int
      *
      */
     private int getSecondsFromTimecode(String timecode) {
-        if (timecode.length() == 8 && timecode.replaceAll(COLON, BLANK).chars().allMatch(Character::isDigit)) {
-            return (Integer.parseInt(timecode.substring(0, 2)) * 3600)
-                    + (Integer.parseInt(timecode.substring(3, 5)) * 60) + Integer.parseInt(timecode.substring(6, 8));
-        }
-        return 0;
+        return (Integer.parseInt(timecode.substring(0, 2)) * 3600) + (Integer.parseInt(timecode.substring(3, 5)) * 60)
+                + Integer.parseInt(timecode.substring(6, 8));
     }
 
     /**
@@ -911,9 +934,6 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
         State state = UnDefType.UNDEF;
 
         switch (channel) {
-            case CHANNEL_TIME_DISPLAY:
-                state = new QuantityType<>(getSecondsFromTimecode(value), API_SECONDS_UNIT);
-                break;
             case CHANNEL_POWER:
             case CHANNEL_MUTE:
                 state = OnOffType.from(ON.equals(value));
