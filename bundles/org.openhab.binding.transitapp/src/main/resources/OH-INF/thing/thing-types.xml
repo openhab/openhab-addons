@@ -137,8 +137,8 @@
 			<channel id="minutesUntilDeparture" typeId="minutesUntilDeparture"/>
 			<channel id="delayMinutes" typeId="delayMinutes"/>
 			<channel id="platform" typeId="platform"/>
-			<channel id="wheelchairAccessible" typeId="isCancelled"/>
-			<channel id="occupancy" typeId="routeShortName"/>
+			<channel id="wheelchairAccessible" typeId="wheelchairAccessible"/>
+			<channel id="occupancy" typeId="occupancy"/>
 		</channels>
 	</channel-group-type>
 
@@ -175,9 +175,9 @@
 			<channel id="modeName" typeId="modeName"/>
 			<channel id="vehicleName" typeId="vehicleName"/>
 			<channel id="location" typeId="location"/>
-			<channel id="occupancy" typeId="routeShortName"/>
+			<channel id="occupancy" typeId="occupancy"/>
 			<channel id="timeToTarget" typeId="timeToTarget"/>
-			<channel id="bikesAllowed" typeId="isCancelled"/>
+			<channel id="bikesAllowed" typeId="bikesAllowed"/>
 		</channels>
 	</channel-group-type>
 

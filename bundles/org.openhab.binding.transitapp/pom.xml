@@ -12,10 +12,7 @@
   <artifactId>org.openhab.binding.transitapp</artifactId>
   <name>openHAB Add-ons :: Bundles :: TransitApp Binding</name>
 
-  <properties>
-    <karaf.verify.skip>true</karaf.verify.skip>
-    <karaf.ignoreFailures>true</karaf.ignoreFailures>
-  </properties>
+  <properties/>
 
   <dependencies>
     <dependency>
@@ -43,12 +40,7 @@
       <plugin>
         <groupId>org.apache.karaf.tooling</groupId>
         <artifactId>karaf-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>karaf-feature-verification</id>
-            <phase>none</phase>
-          </execution>
-        </executions>
+        <executions/>
       </plugin>
     </plugins>
   </build>

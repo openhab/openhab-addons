@@ -20,7 +20,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.transitapp.internal.net.TransitApiClient;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -68,6 +67,10 @@ public class TransitAppStopHandler extends BaseThingHandler {
         }
 
         String apiKey = (String) bridge.getConfiguration().get("apiKey");
+        if (apiKey == null || apiKey.isEmpty()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "API Key missing on bridge");
+            return;
+        }
         try {
             String response = apiClient.fetchStopDepartures(apiKey, globalStopId);
             logger.debug("Polling transit API for stop ID: {}", globalStopId);
@@ -75,11 +78,74 @@ public class TransitAppStopHandler extends BaseThingHandler {
             updateStatus(ThingStatus.ONLINE);
 
             // Trigger Event Channel on success as an example
-            triggerChannel(new ChannelUID(getThing().getUID(), "service-alarm"), "UPDATE - API polled successfully");
+            // triggerChannel removed as it was not in XML
 
-            // Dynamic channels would be updated here based on 'response'
-            updateState("depart1#routeLongName", new StringType("Dynamic Live Data"));
-            updateState("depart1#minutesUntilDeparture", new QuantityType<>(5, Units.MINUTE));
+            // Real JSON parsing without dummy data
+            try {
+                com.google.gson.JsonObject jsonResponse = com.google.gson.JsonParser.parseString(response)
+                        .getAsJsonObject();
+                int groupIdx = 1;
+                long now = System.currentTimeMillis() / 1000;
+
+                if (jsonResponse.has("route_departures")) {
+                    com.google.gson.JsonArray departures = jsonResponse.getAsJsonArray("route_departures");
+                    for (int i = 0; i < departures.size() && groupIdx <= 10; i++) {
+                        com.google.gson.JsonObject routeDep = departures.get(i).getAsJsonObject();
+                        String shortName = routeDep.has("route_short_name")
+                                ? routeDep.get("route_short_name").getAsString()
+                                : null;
+                        String longName = routeDep.has("route_long_name")
+                                ? routeDep.get("route_long_name").getAsString()
+                                : null;
+
+                        if (routeDep.has("itineraries")) {
+                            com.google.gson.JsonArray itineraries = routeDep.getAsJsonArray("itineraries");
+                            for (int j = 0; j < itineraries.size() && groupIdx <= 10; j++) {
+                                com.google.gson.JsonObject itinerary = itineraries.get(j).getAsJsonObject();
+                                if (itinerary.has("schedule_items")) {
+                                    com.google.gson.JsonArray schedules = itinerary.getAsJsonArray("schedule_items");
+                                    for (int k = 0; k < schedules.size() && groupIdx <= 10; k++) {
+                                        com.google.gson.JsonObject schedule = schedules.get(k).getAsJsonObject();
+                                        String prefix = "depart" + groupIdx + "#";
+
+                                        if (shortName != null)
+                                            updateState(prefix + "routeShortName", new StringType(shortName));
+                                        if (longName != null)
+                                            updateState(prefix + "routeLongName", new StringType(longName));
+
+                                        if (schedule.has("departure_time")) {
+                                            long depTime = schedule.get("departure_time").getAsLong();
+                                            long diff = (depTime - now) / 60;
+                                            updateState(prefix + "minutesUntilDeparture", new QuantityType<>(diff,
+                                                    org.openhab.core.library.unit.Units.MINUTE));
+                                        }
+
+                                        if (schedule.has("is_cancelled")) {
+                                            updateState(prefix + "isCancelled",
+                                                    schedule.get("is_cancelled").getAsBoolean()
+                                                            ? org.openhab.core.library.types.OnOffType.ON
+                                                            : org.openhab.core.library.types.OnOffType.OFF);
+                                        }
+                                        groupIdx++;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Clear remaining unused channels
+                for (int i = groupIdx; i <= 10; i++) {
+                    String prefix = "depart" + i + "#";
+                    updateState(prefix + "routeShortName", org.openhab.core.types.UnDefType.UNDEF);
+                    updateState(prefix + "routeLongName", org.openhab.core.types.UnDefType.UNDEF);
+                    updateState(prefix + "minutesUntilDeparture", org.openhab.core.types.UnDefType.UNDEF);
+                    updateState(prefix + "isCancelled", org.openhab.core.types.UnDefType.UNDEF);
+                }
+
+            } catch (Exception parseEx) {
+                logger.warn("Failed to parse JSON for stop {}: {}", globalStopId, parseEx.getMessage());
+            }
         } catch (Exception e) {
             logger.warn("Warning/Communication issue while polling stop {}: {}", globalStopId, e.getMessage());
             logger.error("Detailed API error for stop {}: {}", globalStopId, e.getMessage(), e);

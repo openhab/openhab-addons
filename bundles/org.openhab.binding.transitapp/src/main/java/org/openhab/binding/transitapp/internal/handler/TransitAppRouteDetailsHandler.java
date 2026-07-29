@@ -13,9 +13,11 @@
 package org.openhab.binding.transitapp.internal.handler;
 
 import java.net.URI;
+import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -105,7 +107,8 @@ public class TransitAppRouteDetailsHandler extends BaseThingHandler {
         }
 
         try {
-            String urlStr = "https://external.transitapp.com/v4/public/route_details?global_route_id=" + routeId;
+            String urlStr = "https://external.transitapp.com/v4/public/route_details?global_route_id="
+                    + URLEncoder.encode(routeId, StandardCharsets.UTF_8);
             logger.debug("DEBUG: Building HTTP request for Route Details URL: {}", urlStr);
 
             HttpRequest request = HttpRequest.newBuilder().uri(URI.create(urlStr)).header("apiKey", apiKey).GET()

@@ -14,9 +14,11 @@ package org.openhab.binding.transitapp.internal.net;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Map;
@@ -43,7 +45,8 @@ public class TransitApiClient {
             return cached.payload;
         }
 
-        String url = "https://external.transitapp.com/v4/public/stop_departures?global_stop_id=" + globalStopId;
+        String url = "https://external.transitapp.com/v4/public/stop_departures?global_stop_id="
+                + URLEncoder.encode(globalStopId, StandardCharsets.UTF_8);
         HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).header("apiKey", apiKey).GET().build();
 
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
@@ -56,7 +59,11 @@ public class TransitApiClient {
                     retryAfter = val;
                 }
             }
-            rateLimitResetTime = now + (Long.parseLong(retryAfter) * 1000);
+            try {
+                rateLimitResetTime = now + (Long.parseLong(retryAfter) * 1000);
+            } catch (NumberFormatException e) {
+                rateLimitResetTime = now + 60000;
+            }
             throw new IOException(
                     "HTTP 429 Too Many Requests. Backoff until " + Instant.ofEpochMilli(rateLimitResetTime));
         }

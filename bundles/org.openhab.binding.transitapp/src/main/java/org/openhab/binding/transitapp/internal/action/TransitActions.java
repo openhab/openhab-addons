@@ -16,11 +16,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.transitapp.internal.handler.TransitAppStopHandler;
 import org.openhab.core.thing.binding.ThingActions;
+import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 
 @NonNullByDefault
-@Component(service = ThingActions.class, property = "thing.type.uid=transitapp:stop")
+@ThingActionsScope(name = "transitapp")
+@Component(service = ThingActions.class, property = "thing.type.uid=transitapp:stop", scope = ServiceScope.PROTOTYPE)
 public class TransitActions implements ThingActions {
 
     private @Nullable ThingHandler handler;
