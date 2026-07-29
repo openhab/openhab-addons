@@ -12,13 +12,6 @@
  */
 package org.openhab.binding.transitapp.internal.handler;
 
-import java.net.URI;
-import java.net.URLEncoder;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
-import java.time.Duration;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -41,7 +34,7 @@ import org.slf4j.LoggerFactory;
 public class TransitAppRouteDetailsHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(TransitAppRouteDetailsHandler.class);
-    private final HttpClient httpClient = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(10)).build();
+
     private @Nullable ScheduledFuture<?> refreshJob;
 
     public TransitAppRouteDetailsHandler(Thing thing) {
@@ -87,15 +80,9 @@ public class TransitAppRouteDetailsHandler extends BaseThingHandler {
         }
 
         try {
-            String urlStr = "https://external.transitapp.com/v4/public/route_details?global_route_id="
-                    + URLEncoder.encode(routeId, StandardCharsets.UTF_8);
-            HttpRequest request = HttpRequest.newBuilder().uri(URI.create(urlStr)).timeout(Duration.ofSeconds(10))
-                    .header("apiKey", apiKey).GET().build();
-            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            int statusCode = response.statusCode();
-            String jsonBody = response.body();
-
-            if (statusCode == 200) {
+            TransitAppBridgeHandler bridgeHandler = (TransitAppBridgeHandler) bridge;
+            String jsonBody = bridgeHandler.getApiClient().fetchRouteDetails(apiKey, routeId);
+            if (jsonBody != null) {
                 logger.debug("Successfully polled route details for route ID {}", routeId);
                 updateStatus(ThingStatus.ONLINE);
 
@@ -126,8 +113,8 @@ public class TransitAppRouteDetailsHandler extends BaseThingHandler {
                     logger.warn("Failed to parse JSON for route {}: {}", routeId, ex.getMessage());
                 }
             } else {
-                logger.warn("Transit API returned status code {} for route {}.", statusCode, routeId);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "HTTP " + statusCode);
+                logger.warn("Transit API failed for route.");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Failed to fetch route");
             }
         } catch (Exception e) {
             logger.warn("Communication error while polling route {}: {}", routeId, e.getMessage());

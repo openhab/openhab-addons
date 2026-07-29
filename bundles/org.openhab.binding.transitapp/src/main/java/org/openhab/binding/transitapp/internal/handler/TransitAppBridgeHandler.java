@@ -12,14 +12,14 @@
  */
 package org.openhab.binding.transitapp.internal.handler;
 
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.transitapp.internal.config.TransitAppBridgeConfiguration;
+import org.openhab.binding.transitapp.internal.net.TransitApiClient;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -33,10 +33,13 @@ import org.slf4j.LoggerFactory;
 public class TransitAppBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(TransitAppBridgeHandler.class);
-    private final HttpClient httpClient = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(10)).build();
+    private final HttpClient httpClient;
+    private TransitApiClient apiClient;
 
-    public TransitAppBridgeHandler(Bridge bridge) {
+    public TransitAppBridgeHandler(Bridge bridge, HttpClient httpClient) {
         super(bridge);
+        this.httpClient = httpClient;
+        this.apiClient = new TransitApiClient(httpClient);
     }
 
     @Override
@@ -44,7 +47,7 @@ public class TransitAppBridgeHandler extends BaseBridgeHandler {
         TransitAppBridgeConfiguration config = getConfigAs(TransitAppBridgeConfiguration.class);
         String apiKey = config.apiKey;
 
-        if (apiKey.isEmpty()) {
+        if (apiKey.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "API Key is missing");
             return;
         }
@@ -52,16 +55,15 @@ public class TransitAppBridgeHandler extends BaseBridgeHandler {
         logger.debug("API Key loaded successfully. Verifying connection...");
         updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Verifying API Key...");
 
-        String url = "https://external.transitapp.com/v4/public/stop_departures?global_stop_id=test";
-        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).header("apiKey", apiKey).GET().build();
-
-        httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenAccept(response -> {
-            int statusCode = response.statusCode();
+        try {
+            ContentResponse response = httpClient
+                    .newRequest("https://external.transitapp.com/v4/public/stop_departures?global_stop_id=test")
+                    .method(HttpMethod.GET).header("apiKey", apiKey).timeout(10, TimeUnit.SECONDS).send();
+            int statusCode = response.getStatus();
             if (statusCode >= 200 && statusCode < 300) {
                 logger.info("Transit API connection verified successfully! Status code: {}.", statusCode);
                 updateStatus(ThingStatus.ONLINE);
             } else if (statusCode == 401 || statusCode == 403) {
-                logger.info("Initializing TransitApp Bridge Handler");
                 logger.error("API Authentication failed with status code {}.", statusCode);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "API Authentication Failed (Status: " + statusCode + ")");
@@ -69,16 +71,23 @@ public class TransitAppBridgeHandler extends BaseBridgeHandler {
                 logger.warn("Transit API verification returned status {}. Treating bridge as ONLINE.", statusCode);
                 updateStatus(ThingStatus.ONLINE);
             }
-        }).exceptionally(e -> {
-            logger.info("Initializing TransitApp Bridge Handler");
+        } catch (Exception e) {
             logger.error("Failed to connect to Transit API: {}", e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Connection Failed: " + e.getMessage());
-            return null;
-        });
+        }
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+    }
+
+    public TransitApiClient getApiClient() {
+        return apiClient;
+    }
+
+    public String getApiKey() {
+        TransitAppBridgeConfiguration config = getConfigAs(TransitAppBridgeConfiguration.class);
+        return config.apiKey;
     }
 }

@@ -44,11 +44,11 @@ public class TransitActions implements ThingActions {
         return this.handler;
     }
 
-    @RuleAction(label = "Get Next Departure For Line", description = "Gets the next departure time for a specific line")
+    @RuleAction(label = "@text/action.getNextDeparture.label", description = "@text/action.getNextDeparture.description")
     public @Nullable String getNextDepartureForLine(@ActionInput(name = "lineName") String lineName) {
         ThingHandler currentHandler = this.handler;
-        if (currentHandler instanceof TransitAppStopHandler) {
-            return ((TransitAppStopHandler) currentHandler).findNextDepartureByLine(lineName);
+        if (currentHandler instanceof TransitAppStopHandler stopHandler) {
+            return stopHandler.findNextDepartureByLine(lineName);
         }
         logger.warn("Action getNextDepartureForLine called, but handler is not ready or not a Stop handler");
         return null;

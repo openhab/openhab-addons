@@ -15,16 +15,16 @@ This binding integrates public transit information and real-time departure detai
 
 ### Bridge (`bridge`)
 
-| Parameter | Type | Default | Description |
-| :--- | :--- | :--- | :--- |
-| `apiKey` | TEXT | | Your personal Transit API key (required). |
+| Parameter | Type | Default | Description                               |
+| :-------- | :--- | :------ | :---------------------------------------- |
+| `apiKey`  | TEXT |         | Your personal Transit API key (required). |
 
 ### Stop (`stop`)
 
-| Parameter | Type | Default | Description |
-| :--- | :--- | :--- | :--- |
-| `globalStopId` | TEXT | | Global stop identifier (e.g., `VVSDE:2298`) (required). |
-| `refreshInterval` | INTEGER | `60` | Polling interval in seconds. |
+| Parameter         | Type    | Default | Description                                               |
+| :---------------- | :------ | :------ | :-------------------------------------------------------- |
+| `globalStopId`    | TEXT    |         | Global stop identifier (e.g., `VVSDE:2298`) (required). |
+| `refreshInterval` | INTEGER | `60`    | Polling interval in seconds.                              |
 
 ### Route Details (`routedetails`)
 

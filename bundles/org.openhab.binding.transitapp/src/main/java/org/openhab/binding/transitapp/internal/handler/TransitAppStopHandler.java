@@ -17,7 +17,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.transitapp.internal.net.TransitApiClient;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
@@ -35,7 +34,7 @@ import org.slf4j.LoggerFactory;
 public class TransitAppStopHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(TransitAppStopHandler.class);
-    private final TransitApiClient apiClient = new TransitApiClient();
+
     private final java.util.Map<String, String> latestLineDepartures = new java.util.concurrent.ConcurrentHashMap<>();
     private @Nullable ScheduledFuture<?> refreshJob;
 
@@ -82,7 +81,8 @@ public class TransitAppStopHandler extends BaseThingHandler {
         }
 
         try {
-            String response = apiClient.fetchStopDepartures(apiKey, globalStopId);
+            TransitAppBridgeHandler bridgeHandler = (TransitAppBridgeHandler) bridge;
+            String response = bridgeHandler.getApiClient().fetchStopDepartures(apiKey, globalStopId);
             logger.debug("Polling transit API for stop ID: {}", globalStopId);
             logger.trace("Received raw JSON response for stop {}: {}", globalStopId, response);
             updateStatus(ThingStatus.ONLINE);

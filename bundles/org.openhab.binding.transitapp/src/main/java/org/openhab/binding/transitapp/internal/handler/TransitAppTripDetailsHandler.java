@@ -12,13 +12,6 @@
  */
 package org.openhab.binding.transitapp.internal.handler;
 
-import java.net.URI;
-import java.net.URLEncoder;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
-import java.time.Duration;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -44,7 +37,7 @@ import org.slf4j.LoggerFactory;
 public class TransitAppTripDetailsHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(TransitAppTripDetailsHandler.class);
-    private final HttpClient httpClient = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(10)).build();
+
     private @Nullable ScheduledFuture<?> refreshJob;
 
     public TransitAppTripDetailsHandler(Thing thing) {
@@ -90,15 +83,10 @@ public class TransitAppTripDetailsHandler extends BaseThingHandler {
         }
 
         try {
-            String urlStr = "https://external.transitapp.com/v4/public/trip_details?trip_id="
-                    + URLEncoder.encode(tripId, StandardCharsets.UTF_8);
-            HttpRequest request = HttpRequest.newBuilder().uri(URI.create(urlStr)).timeout(Duration.ofSeconds(10))
-                    .header("apiKey", apiKey).GET().build();
-            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            int statusCode = response.statusCode();
-            String jsonBody = response.body();
+            TransitAppBridgeHandler bridgeHandler = (TransitAppBridgeHandler) bridge;
+            String jsonBody = bridgeHandler.getApiClient().fetchTripDetails(apiKey, tripId);
 
-            if (statusCode == 200) {
+            if (jsonBody != null) {
                 logger.debug("Successfully polled trip details for trip ID {}", tripId);
                 updateStatus(ThingStatus.ONLINE);
 
@@ -171,8 +159,8 @@ public class TransitAppTripDetailsHandler extends BaseThingHandler {
                     logger.warn("Failed to parse JSON for trip {}: {}", tripId, ex.getMessage());
                 }
             } else {
-                logger.warn("Transit API returned status code {} for trip {}.", statusCode, tripId);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "HTTP " + statusCode);
+                logger.warn("Transit API request failed for trip.");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "API Failure");
             }
         } catch (Exception e) {
             logger.warn("Communication error while polling trip {}: {}", tripId, e.getMessage());
