@@ -141,6 +141,8 @@ public class TransitAppStopHandler extends BaseThingHandler {
                                         }
                                     } else {
                                         updateState(prefix + "departure-time", org.openhab.core.types.UnDefType.UNDEF);
+                                        updateState(prefix + "minutes-until-departure",
+                                                org.openhab.core.types.UnDefType.UNDEF);
                                     }
 
                                     if (schedule.delay != null) {

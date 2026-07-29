@@ -102,6 +102,7 @@
 	<channel-group-type id="departure-group">
 		<label>Departure</label>
 		<channels>
+			<channel id="route-long-name" typeId="route-long-name"/>
 			<channel id="route-short-name" typeId="route-short-name"/>
 			<channel id="departure-time" typeId="departure-time"/>
 			<channel id="is-cancelled" typeId="is-cancelled"/>
@@ -109,12 +110,15 @@
 			<channel id="delay-minutes" typeId="delay-minutes"/>
 			<channel id="platform" typeId="platform"/>
 			<channel id="wheelchair-accessible" typeId="wheelchair-accessible"/>
+			<channel id="occupancy" typeId="occupancy"/>
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="route-group">
 		<label>Route Details</label>
 		<channels>
+			<channel id="route-long-name" typeId="route-long-name"/>
 			<channel id="route-short-name" typeId="route-short-name"/>
+			<channel id="route-color" typeId="route-color"/>
 			<channel id="active-alerts-count" typeId="active-alerts-count"/>
 		</channels>
 	</channel-group-type>

@@ -4,6 +4,8 @@
 
 This binding integrates public transit information and real-time departure details from the Transit API (v4) into openHAB.
 
+> **Powered by [Transit](https://transit.app)**
+
 ## Supported Things
 
 1. **TransitApp Bridge (`bridge`)**: Connects to the Transit API using your personal API key and validates it upon initialization.
