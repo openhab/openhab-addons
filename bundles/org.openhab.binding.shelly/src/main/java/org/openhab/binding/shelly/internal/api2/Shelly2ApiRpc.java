@@ -21,12 +21,14 @@ import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.io.BufferedReader;
 import java.io.EOFException;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -294,18 +296,31 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 return;
             }
 
-            // get script code from bundle resources
-            String file = BUNDLE_RESOURCE_SCRIPTS + "/" + script;
-            ClassLoader cl = Shelly2ApiRpc.class.getClassLoader();
-            if (cl != null) {
-                try (InputStream inputStream = cl.getResourceAsStream(file)) {
-                    if (inputStream != null) {
-                        code = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8)).lines()
-                                .collect(Collectors.joining("\n"));
+            // a user-supplied file overrides the version bundled in the JAR, e.g. to enable DEBUG/TRACE
+            File userFile = new File(USERDATA_SCRIPT_FOLDER, script);
+            if (userFile.isFile()) {
+                try {
+                    code = Files.readString(userFile.toPath(), StandardCharsets.UTF_8);
+                    logger.info("{}: Using custom script {} from {}", thingName, script, userFile);
+                } catch (IOException e) {
+                    logger.warn("{}: Unable to read custom script {}, falling back to bundled version", thingName,
+                            userFile, e);
+                }
+            }
+
+            if (code.isEmpty()) {
+                String file = BUNDLE_RESOURCE_SCRIPTS + "/" + script;
+                ClassLoader cl = Shelly2ApiRpc.class.getClassLoader();
+                if (cl != null) {
+                    try (InputStream inputStream = cl.getResourceAsStream(file)) {
+                        if (inputStream != null) {
+                            code = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))
+                                    .lines().collect(Collectors.joining("\n"));
+                        }
+                    } catch (IOException | UncheckedIOException e) {
+                        logger.debug("{}: Installation of script {} failed: Unable to read {} from bundle resources!",
+                                thingName, script, file, e);
                     }
-                } catch (IOException | UncheckedIOException e) {
-                    logger.debug("{}: Installation of script {} failed: Unable to read {} from bundle resources!",
-                            thingName, script, file, e);
                 }
             }
 
