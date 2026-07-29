@@ -118,31 +118,26 @@ public class TransitAppStopHandler extends BaseThingHandler {
                                         updateState(prefix + "route-long-name", new StringType(longName));
                                     }
 
-                                    if (schedule.departureTime != null) {
-                                        long depTime = schedule.departureTime;
-                                        long diff = (depTime - now) / 60;
-                                        if (diff < 0) {
-                                            continue;
-                                        }
+                                    if (schedule.departureTime == null) {
+                                        continue;
+                                    }
 
-                                        updateState(prefix + "minutes-until-departure",
-                                                new QuantityType<>(diff, org.openhab.core.library.unit.Units.MINUTE));
-                                        updateState(prefix + "departure-time",
-                                                new org.openhab.core.library.types.DateTimeType(java.time.ZonedDateTime
-                                                        .ofInstant(java.time.Instant.ofEpochSecond(depTime),
-                                                                java.time.ZoneId.systemDefault())));
-                                        if (shortName != null && !latestLineDepartures.containsKey(shortName)) {
-                                            latestLineDepartures
-                                                    .put(shortName,
-                                                            java.time.LocalTime
-                                                                    .ofInstant(java.time.Instant.ofEpochSecond(depTime),
-                                                                            java.time.ZoneId.systemDefault())
-                                                                    .toString());
-                                        }
-                                    } else {
-                                        updateState(prefix + "departure-time", org.openhab.core.types.UnDefType.UNDEF);
-                                        updateState(prefix + "minutes-until-departure",
-                                                org.openhab.core.types.UnDefType.UNDEF);
+                                    long depTime = schedule.departureTime;
+                                    long diff = (depTime - now) / 60;
+                                    if (diff < 0) {
+                                        continue;
+                                    }
+
+                                    updateState(prefix + "minutes-until-departure",
+                                            new QuantityType<>(diff, org.openhab.core.library.unit.Units.MINUTE));
+                                    updateState(prefix + "departure-time",
+                                            new org.openhab.core.library.types.DateTimeType(java.time.ZonedDateTime
+                                                    .ofInstant(java.time.Instant.ofEpochSecond(depTime),
+                                                            java.time.ZoneId.systemDefault())));
+                                    if (shortName != null && !latestLineDepartures.containsKey(shortName)) {
+                                        latestLineDepartures.put(shortName,
+                                                java.time.LocalTime.ofInstant(java.time.Instant.ofEpochSecond(depTime),
+                                                        java.time.ZoneId.systemDefault()).toString());
                                     }
 
                                     if (schedule.delay != null) {
