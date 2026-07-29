@@ -136,23 +136,9 @@
 		<label>Upcoming Stop</label>
 		<channels>
 			<channel id="stop-name" typeId="stop-name"/>
-			<channel id="scheduled-time" typeId="scheduled-time"/>
-			<channel id="realtime-time" typeId="realtime-time"/>
-			<channel id="delay-minutes" typeId="delay-minutes"/>
 			<channel id="minutes-until-departure" typeId="minutes-until-departure"/>
-			<channel id="platform" typeId="platform"/>
 		</channels>
 	</channel-group-type>
-	<channel-type id="scheduled-time">
-		<item-type>DateTime</item-type>
-		<label>Scheduled Time</label>
-		<state readOnly="true"/>
-	</channel-type>
-	<channel-type id="realtime-time">
-		<item-type>DateTime</item-type>
-		<label>Real-Time Time</label>
-		<state readOnly="true"/>
-	</channel-type>
 	<channel-type id="route-long-name">
 		<item-type>String</item-type>
 		<label>Route Long Name</label>

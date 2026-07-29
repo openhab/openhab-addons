@@ -51,7 +51,7 @@ public class TransitBridgeActions implements ThingActions {
             try {
                 return bridgeHandler.fetchNearbyStops(lat, lon);
             } catch (Exception e) {
-                logger.error("Failed to fetch nearby stops: {}", e.getMessage());
+                logger.error("Failed to fetch nearby stops: {}", e.getMessage(), e);
                 return null;
             }
         }

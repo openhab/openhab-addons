@@ -68,7 +68,7 @@ public class TransitActions implements ThingActions {
                     }
                 }
             } catch (Exception e) {
-                logger.error("Failed to fetch stop departures: {}", e.getMessage());
+                logger.error("Failed to fetch stop departures: {}", e.getMessage(), e);
                 return null;
             }
         }

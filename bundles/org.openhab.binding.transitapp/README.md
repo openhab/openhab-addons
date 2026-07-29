@@ -77,11 +77,7 @@ This binding integrates public transit information and real-time departure detai
 | `trip#time-to-target`             | Number:Time | Live countdown to the configured target destination stop (`min`) |
 | `trip#route-short-name`           | String      | Route short name / line number                               |
 | `stopX#stop-name`                | String      | Name of the upcoming stop                                    |
-| `stopX#scheduled-time`           | DateTime    | Timetable departure time                                     |
-| `stopX#realtime-time`            | DateTime    | Real-time departure time                                     |
 | `stopX#minutes-until-departure`   | Number:Time | Countdown until upcoming departure (`min`)                   |
-| `stopX#delay-minutes`            | Number:Time | Current delay (`min`)                                        |
-| `stopX#platform`                | String      | Track / platform for the upcoming stop                       |
 
 ## Finding Parameters (Stop ID, Route ID, Trip ID)
 

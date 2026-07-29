@@ -204,8 +204,7 @@ public class TransitAppStopHandler extends BaseThingHandler {
                 updateState(prefix + "is-cancelled", org.openhab.core.types.UnDefType.UNDEF);
             }
         } catch (Exception e) {
-            logger.warn("Warning/Communication issue while polling stop {}: {}", globalStopId, e.getMessage());
-            logger.error("Detailed API error for stop {}: {}", globalStopId, e.getMessage(), e);
+            logger.error("Communication issue while polling stop {}: {}", globalStopId, e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
