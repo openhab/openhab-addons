@@ -14,7 +14,12 @@ package org.openhab.binding.oppo.internal;
 
 import java.util.Set;
 
+import javax.measure.Unit;
+import javax.measure.quantity.Dimensionless;
+import javax.measure.quantity.Time;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
@@ -29,6 +34,9 @@ public class OppoBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_PLAYER = new ThingTypeUID(BINDING_ID, "player");
+
+    public static final Unit<Time> API_SECONDS_UNIT = Units.SECOND;
+    public static final Unit<Dimensionless> API_PERCENT_UNIT = Units.PERCENT;
 
     public static final int MODEL83 = 83;
     public static final int MODEL103 = 103;
@@ -53,6 +61,10 @@ public class OppoBindingConstants {
     public static final String CHANNEL_TOTAL_TITLE = "total_title";
     public static final String CHANNEL_CURRENT_CHAPTER = "current_chapter";
     public static final String CHANNEL_TOTAL_CHAPTER = "total_chapter";
+    public static final String CHANNEL_TITLE_ELAPSED = "title-elapsed";
+    public static final String CHANNEL_TITLE_LENGTH = "title-length";
+    public static final String CHANNEL_TITLE_END_TIME = "title-end-time";
+    public static final String CHANNEL_TITLE_PROGRESS = "title-progress";
     public static final String CHANNEL_REPEAT_MODE = "repeat_mode";
     public static final String CHANNEL_ZOOM_MODE = "zoom_mode";
     public static final String CHANNEL_DISC_TYPE = "disc_type";
