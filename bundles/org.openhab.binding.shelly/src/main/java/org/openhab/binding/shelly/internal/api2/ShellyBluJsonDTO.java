@@ -82,6 +82,10 @@ public class ShellyBluJsonDTO {
         public @Nullable String packet;
         public @Nullable String addr;
         public @Nullable String name;
+        // Raw BTHome payload forwarded by the script; "ver" guards against a stale/custom script format
+        public @Nullable String raw;
+        @SerializedName("ver")
+        public @Nullable Integer dataVersion;
         public @Nullable Boolean encryption;
         @SerializedName("code") // oh-blu.alarm: BTH_ENCRYPTED, BTH_UNKNOWN_TYPE
         public @Nullable String alarmCode;
