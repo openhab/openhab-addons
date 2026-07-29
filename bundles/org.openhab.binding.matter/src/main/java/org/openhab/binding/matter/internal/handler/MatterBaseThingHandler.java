@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledFuture;
@@ -64,6 +65,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -271,7 +273,11 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
      */
     public void setEndpointStatus(ThingStatus status, ThingStatusDetail detail, String description) {
         logger.debug("setEndpointStatus {} {} {} {}", status, detail, description, getNodeId());
-        updateStatus(status, detail, description);
+        ThingStatusInfo current = getThing().getStatusInfo();
+        if (current.getStatus() != status || current.getStatusDetail() != detail
+                || !Objects.equals(current.getDescription(), description)) {
+            updateStatus(status, detail, description);
+        }
     }
 
     /**
