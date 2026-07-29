@@ -8,6 +8,7 @@
 		<description>Bridge to connect to Transit API</description>
 		<config-description>
 			<parameter name="apiKey" type="text" required="true">
+				<context>password</context>
 				<label>API Key</label>
 				<description>Your Transit API key.</description>
 			</parameter>

@@ -4,7 +4,7 @@
 
 This binding integrates public transit information and real-time departure details from the Transit API (v4) into openHAB.
 
-> **Powered by [Transit](https://transit.app)**
+> **Powered by Transit** (<https://transit.app>)
 
 ## Supported Things
 
