@@ -130,6 +130,6 @@ public interface ShellyThingInterface {
     void startScan();
 
     default @Nullable ShellyLightModel getLightModel(int lightId) {
-        return null;
+        return null; // TODO do we need multiple LightModel instances?
     }
 }

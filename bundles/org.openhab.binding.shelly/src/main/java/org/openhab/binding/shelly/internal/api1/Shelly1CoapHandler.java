@@ -445,7 +445,7 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
         Map<String, State> updates = new TreeMap<>();
         logger.debug("{}: {} CoAP sensor updates received", thingName, sensorUpdates.size());
         int failed = 0;
-        ShellyLightModel col = getLightModel(thingHandler, 0); // TODO
+        ShellyLightModel col = getLightModel(thingHandler, 0); // TODO do we need multiple LightModel instances?
         for (CoIotSensor s : sensorUpdates) {
             CoIotDescrSen sen = sensorMap.get(s.id);
             if (sen == null) {
@@ -496,7 +496,7 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
 
             if (profile.isLight && profile.inColor && col.isRgbValid()) {
                 // Update color picker from single values
-                if (col.isRgbValid()) {
+                if (col.isRgbValid()) { // TODO check logic
                     thingHandler.updateChannel(mkChannelId(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_PICKER),
                             col.getColor() instanceof HSBType hsb ? hsb : UnDefType.NULL, false);
                 }
@@ -684,7 +684,7 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
     }
 
     protected static ShellyLightModel getLightModel(ShellyThingInterface thingHandler, int lightId)
-            throws ShellyApiException {
+            throws ShellyApiException { // TODO do we need multiple LightModel instances?
         if (thingHandler.getLightModel(lightId) instanceof ShellyLightModel col) {
             return col;
         }

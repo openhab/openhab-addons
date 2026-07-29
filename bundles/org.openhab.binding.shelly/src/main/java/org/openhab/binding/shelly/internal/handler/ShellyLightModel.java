@@ -30,6 +30,8 @@ import org.openhab.core.util.LightModel;
 
 /**
  * The {@link ShellyLightModel} extends the OH Core {@link LightModel} with Shelly specific functions.
+ * 
+ * TODO add more java doc
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
@@ -58,6 +60,7 @@ public class ShellyLightModel extends LightModel {
     private boolean onOffDirty;
 
     public ShellyLightModel(ShellyDeviceProfile profile, double stepSize) {
+        // TODO check appropriate light capabilities for all light types
         super(profile.isDuo ? BRIGHTNESS_WITH_COLOR_TEMPERATURE : COLOR_WITH_COLOR_TEMPERATURE, DEFAULT, 0.4,
                 reciprocal(profile.maxTemp), reciprocal(profile.minTemp), stepSize, null, null);
         setLedOperatingMode(profile.isDuo ? WHITE_ONLY : RGB_ONLY);
@@ -108,7 +111,7 @@ public class ShellyLightModel extends LightModel {
     public void handleColor(RGBW index, int value) {
         double[] rgbw = getRGBx();
         rgbw[index.ordinal()] = value;
-        alignMode(rgbw);
+        synchronizeMode(rgbw);
         setRGBx(rgbw);
         colorDirty = true;
     }
@@ -235,7 +238,7 @@ public class ShellyLightModel extends LightModel {
      * Adjust the led operating mode based on the RGB values.
      * If any of the RGB values are non-zero, set the mode to RGB_ONLY, otherwise set it to WHITE_ONLY.
      */
-    private void alignMode(double[] rgbw) {
+    private void synchronizeMode(double[] rgbw) { // TODO check logic for all light types
         if (COLOR_WITH_COLOR_TEMPERATURE == configGetLightCapabilities()) {
             LedOperatingMode mode = rgbw[0] > 0 || rgbw[1] > 0 || rgbw[2] > 0 ? RGB_ONLY : WHITE_ONLY;
             if (mode != getLedOperatingMode()) {
@@ -255,7 +258,7 @@ public class ShellyLightModel extends LightModel {
     /**
      * Check if the RGB values are valid for the current led operating mode.
      */
-    public boolean isRgbValid() {
+    public boolean isRgbValid() { // TODO check logic for all light types
         return WHITE_ONLY != getLedOperatingMode();
     }
 
@@ -287,7 +290,7 @@ public class ShellyLightModel extends LightModel {
      */
     public void handleRGBW(int red, int green, int blue, int white) {
         double[] rgbw = new double[] { red, green, blue, white };
-        alignMode(rgbw);
+        synchronizeMode(rgbw);
         setRGBx(rgbw);
         colorDirty = true;
     }
@@ -297,7 +300,7 @@ public class ShellyLightModel extends LightModel {
      */
     public void handleRGBW(String rgbwStr) {
         double[] rgbw = Arrays.stream(rgbwStr.split(",")).map(String::trim).mapToDouble(Double::parseDouble).toArray();
-        alignMode(rgbw);
+        synchronizeMode(rgbw);
         setRGBx(rgbw);
         colorDirty = true;
     }

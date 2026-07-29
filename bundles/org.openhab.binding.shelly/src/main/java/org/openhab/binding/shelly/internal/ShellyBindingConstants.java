@@ -223,6 +223,8 @@ public class ShellyBindingConstants {
     // Bulb/RGBW2/Dup in White Mode
     public static final String CHANNEL_GROUP_WHITE_CONTROL = "white";
     public static final String CHANNEL_COLOR_TEMP = "temperature";
+    // TODO: add channel description xml for absolute temperature in Kelvin
+    public static final String CHANNEL_COLOR_TEMP_ABS = "temperatureAbsolute";
 
     // Device Status
     public static final String CHANNEL_GROUP_DEV_STATUS = "device";

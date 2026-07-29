@@ -101,6 +101,7 @@ public class Shelly1CoIoTProtocol {
                 switch (sen.desc.toLowerCase(Locale.ROOT)) {
                     case "state": // Relay status +
                     case "output":
+                        // TODO do we need to update the light model on/off state here?
                         updatePower(profile, updates, rIndex, sen, s, sensorUpdates);
                         break;
                     case "input":
@@ -108,6 +109,7 @@ public class Shelly1CoIoTProtocol {
                         break;
                     case "brightness":
                         // already handled by state/output
+                        // TODO are we sure about this? do we need to update the light model?
                         break;
                     case "overtemp": // ++
                         if (s.value == 1) {
@@ -232,10 +234,12 @@ public class Shelly1CoIoTProtocol {
      */
     protected void updatePower(ShellyDeviceProfile profile, Map<String, State> updates, int id, CoIotDescrSen sen,
             CoIotSensor s, List<CoIotSensor> allUpdates) {
+        // TODO check logic for power, brightness for all light types
         String group = "";
         String channel = CHANNEL_BRIGHTNESS;
         String checkL = ""; // RGBW-white uses 4 different Power, Brightness, VSwitch values
         if (profile.isLight || profile.isDimmer) {
+            // TODO update the light model ?
             if (profile.isBulb || profile.inColor) {
                 group = CHANNEL_GROUP_LIGHT_CONTROL;
                 channel = CHANNEL_LIGHT_POWER;
@@ -251,6 +255,7 @@ public class Shelly1CoIoTProtocol {
 
             // We need to update brightness and on/off state at the same time to avoid "flipping brightness slider" in
             // the UI
+            // TODO huh?
             double brightness = -1.0;
             double power = -1.0;
             for (CoIotSensor update : allUpdates) {
@@ -260,15 +265,15 @@ public class Shelly1CoIoTProtocol {
                     continue;
                 }
                 if ("brightness".equalsIgnoreCase(d.desc)) {
-                    brightness = update.value;
+                    brightness = update.value; // TODO update light model
                 } else if ("output".equalsIgnoreCase(d.desc) || "state".equalsIgnoreCase(d.desc)) {
-                    power = update.value;
+                    power = update.value; // TODO update light model
                 }
             }
-            if (power != -1) {
+            if (power != -1) { // TODO use light model on/off
                 updateChannel(updates, group, channel + "$Switch", OnOffType.from(power == 1));
             }
-            if (brightness != -1) {
+            if (brightness != -1) { // TODO use light model brightness
                 updateChannel(updates, group, channel + "$Value",
                         toQuantityType(power == 1 ? brightness : 0, DIGITS_NONE, Units.PERCENT));
             }
@@ -389,6 +394,7 @@ public class Shelly1CoIoTProtocol {
     }
 
     protected ShellyLightModel getLightModelForSensor(CoIotDescrSen sen) {
+        // TODO do we need multiple light models instances?
         int lightId = getIdFromBlk(sen) - 1; // getIdFromBlk() is 1 based
         if (lightId >= 0 && thingHandler.getLightModel(lightId) instanceof ShellyLightModel model) {
             return model;

@@ -204,13 +204,14 @@ public class Shelly1CoIoTVersion1 extends Shelly1CoIoTProtocol implements Shelly
                         break;
                     case "temp": // Shelly Bulb
                     case "colortemperature": // Shelly Duo
-                        ShellyLightModel col = getLightModelForSensor(sen);
+                        // TODO check logic
+                        ShellyLightModel col = getLightModelForSensor(sen); // TODO do we need multiple light models?
                         col.setColorTemp(getDouble(s.value));
                         updateChannel(updates,
                                 profile.inColor ? CHANNEL_GROUP_COLOR_CONTROL : CHANNEL_GROUP_WHITE_CONTROL,
                                 CHANNEL_COLOR_TEMP,
                                 col.getColorTemperaturePercent() instanceof PercentType pct ? pct : UnDefType.NULL);
-                        // TODO CHANNEL_COLOR_TEMP_ABS
+                        // TODO update CHANNEL_COLOR_TEMP_ABS
                         break;
                     case "sensor state": // Shelly Gas
                         updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_SSTATE, getStringType(s.valueStr));
