@@ -12,7 +12,10 @@
   <artifactId>org.openhab.binding.transitapp</artifactId>
   <name>openHAB Add-ons :: Bundles :: TransitApp Binding</name>
 
-  <properties/>
+  <properties>
+    
+    
+  </properties>
 
   <dependencies>
     <dependency>
@@ -28,6 +31,7 @@
       <scope>provided</scope>
     </dependency>
 
+  
     <dependency>
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
@@ -40,7 +44,9 @@
       <plugin>
         <groupId>org.apache.karaf.tooling</groupId>
         <artifactId>karaf-maven-plugin</artifactId>
-        <executions/>
+        <executions>
+          
+        </executions>
       </plugin>
     </plugins>
   </build>

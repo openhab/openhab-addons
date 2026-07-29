@@ -13,23 +13,24 @@
 package org.openhab.binding.transitapp.internal.net;
 
 import java.io.IOException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.time.Instant;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
+import java.net.URI;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpMethod;
+import java.util.concurrent.TimeUnit;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.Iterator;
+import com.google.gson.Gson;
 import org.openhab.binding.transitapp.internal.net.dto.RouteDetailsResult;
 import org.openhab.binding.transitapp.internal.net.dto.StopDeparturesResult;
 import org.openhab.binding.transitapp.internal.net.dto.TripDetailsResult;
 
-import com.google.gson.Gson;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 @NonNullByDefault
 public class TransitApiClient {
@@ -68,7 +69,7 @@ public class TransitApiClient {
                     "HTTP 429 Too Many Requests. Backoff until " + Instant.ofEpochMilli(rateLimitResetTime));
         }
 
-        if (response.getStatus() != 200) {
+        if (response.getStatus() < 200 || response.getStatus() >= 300) {
             throw new IOException("Transit API returned HTTP error status: " + response.getStatus());
         }
     }
@@ -92,10 +93,12 @@ public class TransitApiClient {
             return cached.payload;
         }
 
-        String url = "https://external.transitapp.com/v4/public/stop_departures?global_stop_id="
-                + URLEncoder.encode(globalStopId, StandardCharsets.UTF_8);
-        ContentResponse response = httpClient.newRequest(url).method(HttpMethod.GET).header("apiKey", apiKey)
-                .timeout(10, TimeUnit.SECONDS).send();
+        String url = "https://external.transitapp.com/v4/public/stop_departures?global_stop_id=" + URLEncoder.encode(globalStopId, StandardCharsets.UTF_8);
+        ContentResponse response = httpClient.newRequest(url)
+                .method(HttpMethod.GET)
+                .header("apiKey", apiKey)
+                .timeout(10, TimeUnit.SECONDS)
+                .send();
 
         handleResponseStatus(response);
 
@@ -106,22 +109,26 @@ public class TransitApiClient {
 
     public String fetchRouteDetails(String apiKey, String globalRouteId) throws Exception {
         checkRateLimit();
-        String url = "https://external.transitapp.com/v4/public/route_details?global_route_id="
-                + URLEncoder.encode(globalRouteId, StandardCharsets.UTF_8);
-        ContentResponse response = httpClient.newRequest(url).method(HttpMethod.GET).header("apiKey", apiKey)
-                .timeout(10, TimeUnit.SECONDS).send();
-
+        String url = "https://external.transitapp.com/v4/public/route_details?global_route_id=" + URLEncoder.encode(globalRouteId, StandardCharsets.UTF_8);
+        ContentResponse response = httpClient.newRequest(url)
+                .method(HttpMethod.GET)
+                .header("apiKey", apiKey)
+                .timeout(10, TimeUnit.SECONDS)
+                .send();
+        
         handleResponseStatus(response);
         return response.getContentAsString();
     }
 
     public String fetchTripDetails(String apiKey, String tripId) throws Exception {
         checkRateLimit();
-        String url = "https://external.transitapp.com/v4/public/trip_details?trip_id="
-                + URLEncoder.encode(tripId, StandardCharsets.UTF_8);
-        ContentResponse response = httpClient.newRequest(url).method(HttpMethod.GET).header("apiKey", apiKey)
-                .timeout(10, TimeUnit.SECONDS).send();
-
+        String url = "https://external.transitapp.com/v4/public/trip_details?trip_id=" + URLEncoder.encode(tripId, StandardCharsets.UTF_8);
+        ContentResponse response = httpClient.newRequest(url)
+                .method(HttpMethod.GET)
+                .header("apiKey", apiKey)
+                .timeout(10, TimeUnit.SECONDS)
+                .send();
+        
         handleResponseStatus(response);
         return response.getContentAsString();
     }
@@ -129,9 +136,12 @@ public class TransitApiClient {
     public String fetchNearbyStops(String apiKey, double lat, double lon) throws Exception {
         checkRateLimit();
         String url = "https://external.transitapp.com/v4/public/nearby_stops?lat=" + lat + "&lon=" + lon;
-        ContentResponse response = httpClient.newRequest(url).method(HttpMethod.GET).header("apiKey", apiKey)
-                .timeout(10, TimeUnit.SECONDS).send();
-
+        ContentResponse response = httpClient.newRequest(url)
+                .method(HttpMethod.GET)
+                .header("apiKey", apiKey)
+                .timeout(10, TimeUnit.SECONDS)
+                .send();
+        
         handleResponseStatus(response);
         return response.getContentAsString();
     }

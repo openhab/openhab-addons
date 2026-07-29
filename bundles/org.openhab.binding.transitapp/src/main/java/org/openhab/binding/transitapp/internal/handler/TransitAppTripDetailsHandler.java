@@ -12,13 +12,16 @@
  */
 package org.openhab.binding.transitapp.internal.handler;
 
+import java.net.URI;
+import java.net.URLEncoder;
+
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.transitapp.internal.config.TransitAppTripConfiguration;
-import org.openhab.binding.transitapp.internal.net.dto.TripDetailsResult;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
@@ -34,12 +37,14 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.openhab.binding.transitapp.internal.net.dto.TripDetailsResult;
+import org.openhab.binding.transitapp.internal.config.TransitAppTripConfiguration;
 
 @NonNullByDefault
 public class TransitAppTripDetailsHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(TransitAppTripDetailsHandler.class);
-
+    
     private @Nullable ScheduledFuture<?> refreshJob;
 
     public TransitAppTripDetailsHandler(Thing thing) {
@@ -65,7 +70,7 @@ public class TransitAppTripDetailsHandler extends BaseThingHandler {
         }
     }
 
-    private void pollTransitApi() {
+    private synchronized void pollTransitApi() {
         TransitAppTripConfiguration config = getConfigAs(TransitAppTripConfiguration.class);
         String tripId = config.tripId;
         if (tripId.isBlank()) {
@@ -137,8 +142,7 @@ public class TransitAppTripDetailsHandler extends BaseThingHandler {
                     Long depTime = stop.departureTime;
                     String sName = stop.stopName;
 
-                    if (targetStopId != null && !targetStopId.isBlank() && targetStopId.equals(gStopId)
-                            && depTime != null) {
+                    if (targetStopId != null && !targetStopId.isBlank() && targetStopId.equals(gStopId) && depTime != null) {
                         long diff = (depTime - now) / 60;
                         if (diff >= 0) {
                             updateState("trip#time-to-target", new QuantityType<>(diff, Units.MINUTE));
@@ -169,6 +173,7 @@ public class TransitAppTripDetailsHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
+
 
     public @Nullable TransitAppBridgeHandler getTransitBridgeHandler() {
         Bridge bridge = getBridge();

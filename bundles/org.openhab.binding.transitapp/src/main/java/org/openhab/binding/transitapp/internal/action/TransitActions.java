@@ -15,15 +15,16 @@ package org.openhab.binding.transitapp.internal.action;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.transitapp.internal.handler.TransitAppStopHandler;
-import org.openhab.core.automation.annotation.ActionInput;
-import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.thing.binding.ThingActions;
-import org.openhab.core.thing.binding.ThingActionsScope;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ServiceScope;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.openhab.core.automation.annotation.RuleAction;
+import org.openhab.core.automation.annotation.ActionInput;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.thing.binding.ThingActionsScope;
 
 @NonNullByDefault
 @ThingActionsScope(name = "transitapp")
@@ -44,6 +45,7 @@ public class TransitActions implements ThingActions {
         return this.handler;
     }
 
+    
     @RuleAction(label = "@text/action.getNextDepartureForLine.label", description = "@text/action.getNextDepartureForLine.description")
     public @Nullable String getNextDepartureForLine(@ActionInput(name = "lineName") String lineName) {
         ThingHandler currentHandler = this.handler;
@@ -59,8 +61,7 @@ public class TransitActions implements ThingActions {
         ThingHandler currentHandler = this.handler;
         if (currentHandler instanceof TransitAppStopHandler stopHandler) {
             try {
-                org.openhab.binding.transitapp.internal.handler.TransitAppBridgeHandler bridgeHandler = stopHandler
-                        .getTransitBridgeHandler();
+                org.openhab.binding.transitapp.internal.handler.TransitAppBridgeHandler bridgeHandler = stopHandler.getTransitBridgeHandler();
                 if (bridgeHandler != null) {
                     Object stopIdObj = stopHandler.getThing().getConfiguration().get("globalStopId");
                     if (stopIdObj instanceof String stopId && !stopId.isBlank()) {
@@ -75,4 +76,5 @@ public class TransitActions implements ThingActions {
         logger.warn("Action getDepartures called, but handler is not ready or not a Stop handler");
         return null;
     }
+
 }
