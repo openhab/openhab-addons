@@ -44,7 +44,7 @@ public class TransitActions implements ThingActions {
         return this.handler;
     }
 
-    @RuleAction(label = "Get Next Departure For Line", description = "Gets the next departure time for a specific line")
+    @RuleAction(label = "@text/action.getNextDepartureForLine.label", description = "@text/action.getNextDepartureForLine.description")
     public @Nullable String getNextDepartureForLine(@ActionInput(name = "lineName") String lineName) {
         ThingHandler currentHandler = this.handler;
         if (currentHandler instanceof TransitAppStopHandler stopHandler) {
@@ -54,7 +54,7 @@ public class TransitActions implements ThingActions {
         return null;
     }
 
-    @RuleAction(label = "Get All Departures", description = "Gets raw JSON of all upcoming departures for this stop to find route or trip IDs")
+    @RuleAction(label = "@text/action.getDepartures.label", description = "@text/action.getDepartures.description")
     public @Nullable String getDepartures() {
         ThingHandler currentHandler = this.handler;
         if (currentHandler instanceof TransitAppStopHandler stopHandler) {

@@ -744,7 +744,6 @@
             </configuration>
           </execution>
           <!-- 2. Generate catalog dynamically -->
-          <!-- 2. Generate catalog dynamically -->
           <execution>
             <id>generate-catalog</id>
             <goals>
