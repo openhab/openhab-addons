@@ -195,10 +195,10 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                         boolean bluetooth = getBool(dc.ble.enable);
                         boolean observer = dc.ble.observer != null && getBool(dc.ble.observer.enable);
                         if (!bluetooth) {
-                            logger.warn("{}: Bluetooth will be enabled to activate BLU Gateway mode", thingName);
+                            logger.debug("{}: Bluetooth will be enabled to activate BLU Gateway mode", thingName);
                         }
                         if (observer) {
-                            logger.warn("{}: Shelly Cloud Bluetooth Gateway conflicts with openHAB, disabling it",
+                            logger.debug("{}: Shelly Cloud Bluetooth Gateway conflicts with openHAB, disabling it",
                                     thingName);
                         }
                         if (!bluetooth || observer) {
