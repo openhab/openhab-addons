@@ -17,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.transitapp.internal.config.TransitAppStopConfiguration;
 import org.openhab.binding.transitapp.internal.net.dto.StopDeparturesResult;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -69,8 +70,9 @@ public class TransitAppStopHandler extends BaseThingHandler {
             return;
         }
 
-        String globalStopId = (String) getThing().getConfiguration().get("globalStopId");
-        if (globalStopId == null || globalStopId.isEmpty()) {
+        TransitAppStopConfiguration config = getConfigAs(TransitAppStopConfiguration.class);
+        String globalStopId = config.globalStopId;
+        if (globalStopId.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Stop ID is missing");
             return;
         }

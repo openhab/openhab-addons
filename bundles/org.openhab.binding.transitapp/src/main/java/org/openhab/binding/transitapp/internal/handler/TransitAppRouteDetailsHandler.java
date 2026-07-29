@@ -17,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.transitapp.internal.config.TransitAppRouteConfiguration;
 import org.openhab.binding.transitapp.internal.net.dto.RouteDetailsResult;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.StringType;
@@ -62,8 +63,9 @@ public class TransitAppRouteDetailsHandler extends BaseThingHandler {
     }
 
     private void pollTransitApi() {
-        String routeId = (String) getThing().getConfiguration().get("routeId");
-        if (routeId == null || routeId.isEmpty()) {
+        TransitAppRouteConfiguration config = getConfigAs(TransitAppRouteConfiguration.class);
+        String routeId = config.routeId;
+        if (routeId.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Route ID is missing");
             return;
         }
@@ -88,13 +90,23 @@ public class TransitAppRouteDetailsHandler extends BaseThingHandler {
             if (route != null) {
                 if (route.routeLongName != null) {
                     updateState("route#route-long-name", new StringType(route.routeLongName));
+                } else {
+                    updateState("route#route-long-name", org.openhab.core.types.UnDefType.UNDEF);
                 }
                 if (route.routeShortName != null) {
                     updateState("route#route-short-name", new StringType(route.routeShortName));
+                } else {
+                    updateState("route#route-short-name", org.openhab.core.types.UnDefType.UNDEF);
                 }
                 if (route.routeColor != null) {
                     updateState("route#route-color", new StringType(route.routeColor));
+                } else {
+                    updateState("route#route-color", org.openhab.core.types.UnDefType.UNDEF);
                 }
+            } else {
+                updateState("route#route-long-name", org.openhab.core.types.UnDefType.UNDEF);
+                updateState("route#route-short-name", org.openhab.core.types.UnDefType.UNDEF);
+                updateState("route#route-color", org.openhab.core.types.UnDefType.UNDEF);
             }
 
             int alertsCount = result.alerts != null ? result.alerts.size() : 0;

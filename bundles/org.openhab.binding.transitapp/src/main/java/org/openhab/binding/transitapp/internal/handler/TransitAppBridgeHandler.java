@@ -37,7 +37,7 @@ public class TransitAppBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(TransitAppBridgeHandler.class);
     private final HttpClient httpClient;
-    private TransitApiClient apiClient;
+    private final TransitApiClient apiClient;
 
     public TransitAppBridgeHandler(Bridge bridge, HttpClient httpClient) {
         super(bridge);

@@ -17,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.transitapp.internal.config.TransitAppTripConfiguration;
 import org.openhab.binding.transitapp.internal.net.dto.TripDetailsResult;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PointType;
@@ -65,8 +66,9 @@ public class TransitAppTripDetailsHandler extends BaseThingHandler {
     }
 
     private void pollTransitApi() {
-        String tripId = (String) getThing().getConfiguration().get("tripId");
-        if (tripId == null || tripId.isEmpty()) {
+        TransitAppTripConfiguration config = getConfigAs(TransitAppTripConfiguration.class);
+        String tripId = config.tripId;
+        if (tripId.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Trip ID is missing");
             return;
         }
@@ -91,10 +93,17 @@ public class TransitAppTripDetailsHandler extends BaseThingHandler {
             if (trip != null) {
                 if (trip.tripHeadsign != null) {
                     updateState("trip#trip-headsign", new StringType(trip.tripHeadsign));
+                } else {
+                    updateState("trip#trip-headsign", org.openhab.core.types.UnDefType.UNDEF);
                 }
                 if (trip.routeShortName != null) {
                     updateState("trip#route-short-name", new StringType(trip.routeShortName));
+                } else {
+                    updateState("trip#route-short-name", org.openhab.core.types.UnDefType.UNDEF);
                 }
+            } else {
+                updateState("trip#trip-headsign", org.openhab.core.types.UnDefType.UNDEF);
+                updateState("trip#route-short-name", org.openhab.core.types.UnDefType.UNDEF);
             }
 
             if (result.vehicle != null && result.vehicle.location != null && result.vehicle.location.lat != null
@@ -105,15 +114,20 @@ public class TransitAppTripDetailsHandler extends BaseThingHandler {
                 updateState("trip#location", org.openhab.core.types.UnDefType.UNDEF);
             }
 
-            String targetStopId = (String) getThing().getConfiguration().get("targetStopId");
+            String targetStopId = config.targetStopId;
             long now = System.currentTimeMillis() / 1000;
 
+            updateState("trip#time-to-target", org.openhab.core.types.UnDefType.UNDEF);
+
+            int stopIdx = 1;
             if (result.stops != null) {
-                int stopIdx = 1;
                 for (TripDetailsResult.Stop stop : result.stops) {
-                    if (targetStopId != null && targetStopId.equals(stop.globalStopId) && stop.departureTime != null) {
+                    if (targetStopId != null && !targetStopId.isBlank() && targetStopId.equals(stop.globalStopId)
+                            && stop.departureTime != null) {
                         long diff = (stop.departureTime - now) / 60;
-                        updateState("trip#time-to-target", new QuantityType<>(diff, Units.MINUTE));
+                        if (diff >= 0) {
+                            updateState("trip#time-to-target", new QuantityType<>(diff, Units.MINUTE));
+                        }
                     }
 
                     if (stopIdx <= 10 && stop.departureTime != null && stop.departureTime > now) {
@@ -126,11 +140,12 @@ public class TransitAppTripDetailsHandler extends BaseThingHandler {
                         stopIdx++;
                     }
                 }
+            }
 
-                for (int i = stopIdx; i <= 10; i++) {
-                    updateState("stop" + i + "#stop-name", org.openhab.core.types.UnDefType.UNDEF);
-                    updateState("stop" + i + "#minutes-until-departure", org.openhab.core.types.UnDefType.UNDEF);
-                }
+            for (int i = stopIdx; i <= 10; i++) {
+                String prefix = "stop" + i + "#";
+                updateState(prefix + "stop-name", org.openhab.core.types.UnDefType.UNDEF);
+                updateState(prefix + "minutes-until-departure", org.openhab.core.types.UnDefType.UNDEF);
             }
         } catch (Exception e) {
             logger.warn("Communication error while polling trip {}: {}", tripId, e.getMessage());
