@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 
 @NonNullByDefault
 @ThingActionsScope(name = "transitapp")
-@Component(service = ThingActions.class, property = "thing.type.uid=transitapp:bridge", scope = ServiceScope.PROTOTYPE)
+@Component(service = TransitBridgeActions.class, scope = ServiceScope.PROTOTYPE)
 public class TransitBridgeActions implements ThingActions {
 
     private final Logger logger = LoggerFactory.getLogger(TransitBridgeActions.class);

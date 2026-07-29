@@ -30,7 +30,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 @NonNullByDefault
-@Component(service = ThingHandlerFactory.class, immediate = true, property = "binding.id=transitapp")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.transitapp")
 public class TransitAppHandlerFactory extends BaseThingHandlerFactory {
 
     private final HttpClientFactory httpClientFactory;
