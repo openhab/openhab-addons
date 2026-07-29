@@ -62,8 +62,8 @@ public class TransitActions implements ThingActions {
                 org.openhab.binding.transitapp.internal.handler.TransitAppBridgeHandler bridgeHandler = stopHandler
                         .getTransitBridgeHandler();
                 if (bridgeHandler != null) {
-                    String stopId = (String) stopHandler.getThing().getConfiguration().get("globalStopId");
-                    if (stopId != null) {
+                    Object stopIdObj = stopHandler.getThing().getConfiguration().get("globalStopId");
+                    if (stopIdObj instanceof String stopId && !stopId.isBlank()) {
                         return bridgeHandler.fetchStopDeparturesRaw(stopId);
                     }
                 }

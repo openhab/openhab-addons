@@ -52,8 +52,8 @@ public class TransitAppTripDetailsHandler extends BaseThingHandler {
         if (job != null) {
             job.cancel(true);
         }
-        Object refreshIntervalObj = getThing().getConfiguration().get("refreshInterval");
-        long refreshInterval = refreshIntervalObj instanceof Number ? ((Number) refreshIntervalObj).longValue() : 60L;
+        TransitAppTripConfiguration config = getConfigAs(TransitAppTripConfiguration.class);
+        long refreshInterval = Math.max(30L, config.refreshInterval);
         refreshJob = scheduler.scheduleWithFixedDelay(this::pollTransitApi, 1, refreshInterval, TimeUnit.SECONDS);
         updateStatus(ThingStatus.ONLINE);
     }
