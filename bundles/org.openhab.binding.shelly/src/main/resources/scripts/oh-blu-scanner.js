@@ -16,7 +16,10 @@ let ALLTERCO_MFD_ID = JSON.parse("0x" + ALLTERCO_MFD_ID_STR);
 let BTHOME_SVC_ID = JSON.parse("0x" + BTHOME_SVC_ID_STR);
 let SCAN_DURATION = BLE.Scanner.INFINITE_SCAN;
 
+let DEBUG = false;
+
 // Cache objects for Shelly Blu devices and last packet IDs
+// SHELLY_BLU_CACHE[addr]: device name if Shelly BLU, false if a known non-Shelly BTHome device
 let SHELLY_BLU_CACHE = {};
 let LAST_PID = {};
 
@@ -34,7 +37,7 @@ let BTH_DIMMERSTEPS_INDEX = 0x3c;   // Dimmer (Wheel) Steps object ID
 
 // BTHome object definitions: id => {name, type, optional scale factor}
 // https://bthome.io/format/
-let BTH = [];
+let BTH = {};
 BTH[0x00] = { n: "pid", t: uint8 };                                           // Packet ID
 BTH[0x01] = { n: "Battery", t: uint8, u: "%" };                               // Battery level in percent
 BTH[0x02] = { n: "Temperature", t: int16, f: 0.01 };                          // Temperature in C (scaled by 0.01)
@@ -129,20 +132,6 @@ function getByteSize(type) {
   return 255;
 }
 
-// Helper function: buffer to hex string
-// padStart function not available in Shelly JS engine
-function bufToHex(buffer) {
-  let hex = "";
-  for (let i = 0; i < buffer.length; i++) {
-    let hexValue = buffer.at(i).toString(16);
-    if (hexValue.length === 1) {
-      hex += "0" + hexValue + " ";
-    } else {
-      hex += hexValue + " ";
-    }
-  }
-  return hex.trim();
-}
 let BTHomeDecoder = {
   // Convert unsigned integer to signed based on bit size
   utoi: function (num, bitsz) {
@@ -192,8 +181,6 @@ let BTHomeDecoder = {
     
     buffer = buffer.slice(1); // Remove header byte
 
-    let dimmer = [];
-
     while (buffer.length > 0) {
       let bthIdx = buffer.at(0); // Object ID
       buffer = buffer.slice(1);
@@ -234,7 +221,6 @@ let BTHomeDecoder = {
           steps: stepsByte
         };
 
-        //dimmer.push(dimmerEvent);
         result[_bth.n] = dimmerEvent;
         
         buffer = buffer.slice(valueDimSize);
@@ -253,9 +239,6 @@ let BTHomeDecoder = {
       buffer = buffer.slice(valueSize);
     }
 
-    // Add events as arrays to the result
-    if (dimmer.length > 0) result["Dimmer"] = dimmer;
-
     return result;
   }
 };
@@ -266,14 +249,10 @@ let ShellyBLUParser = {
     let service_data = res.service_data[BTHOME_SVC_ID_STR];
     if (!service_data) return null;
 
-    let hexDump = bufToHex(service_data);
-    // console.log("Received BTHome RAW packet (hex):", hexDump);
-    
     let result = BTHomeDecoder.unpack(service_data);
     if (!result) return null;
     result.addr = res.addr;
     result.rssi = res.rssi;
-    result.packet = hexDump;
     return result;
   }
 };
@@ -283,7 +262,10 @@ function scanCB(ev, res) {
   if (ev !== BLE.Scanner.SCAN_RESULT) return;
   if (typeof res.service_data === 'undefined' || typeof res.service_data[BTHOME_SVC_ID_STR] === 'undefined') return;
 
-  if (typeof SHELLY_BLU_CACHE[res.addr] === 'undefined') {
+  let cached = SHELLY_BLU_CACHE[res.addr];
+  if (cached === false) return;
+
+  if (typeof cached === 'undefined') {
     if (typeof res.local_name !== "string") return;
 
     let found = false;
@@ -291,16 +273,19 @@ function scanCB(ev, res) {
       if (res.local_name.indexOf(prefix) === 0) {
         console.log('New device found: address=', res.addr, ', name=', res.local_name);
         Shelly.emitEvent("oh-blu.scan_result", {"addr":res.addr, "name":res.local_name, "rssi":res.rssi, "tx_power":res.tx_power_level});
-        SHELLY_BLU_CACHE[res.addr] = res.local_name;        
+        SHELLY_BLU_CACHE[res.addr] = res.local_name;
         found = true;
+        break;
       }
     }
     if (!found) {
-        console.log('Unknown device: ', res.local_name);
+      console.log('Unknown device: ', res.local_name);
+      SHELLY_BLU_CACHE[res.addr] = false;
+      return;
     }
   }
- 
-  let BTHparsed = ShellyBLUParser.getData(res); // skip if parsing failed
+
+  let BTHparsed = ShellyBLUParser.getData(res);
   if (BTHparsed === null) {
     console.log("Failed to parse BTH data");
     return;
@@ -311,12 +296,11 @@ function scanCB(ev, res) {
     Shelly.emitEvent("oh-blu.alarm", {"addr":res.addr, "code":BTHparsed.alarmCode});
   }
 
-  // skip, we are deduping results
   if (typeof LAST_PID[res.addr] === 'undefined' || BTHparsed.pid !== LAST_PID[res.addr]) {
-    console.log('Parsed BTH data from device ', res.local_name, ': ', JSON.stringify(BTHparsed));
+    if (DEBUG) console.log('Parsed BTH data from device ', res.local_name, ': ', JSON.stringify(BTHparsed));
     Shelly.emitEvent("oh-blu.data", BTHparsed);
     LAST_PID[res.addr] = BTHparsed.pid;
-  } else {
+  } else if (DEBUG) {
     console.log("Drop redundant packet with pid ", BTHparsed.pid);
   }
 }
