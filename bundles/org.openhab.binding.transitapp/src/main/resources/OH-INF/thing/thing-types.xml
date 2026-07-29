@@ -283,14 +283,4 @@
 		<description>Indicates whether bicycles are allowed on this vehicle</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="scheduled-time">
-		<item-type>DateTime</item-type>
-		<label>Scheduled Time</label>
-		<state readOnly="true"/>
-	</channel-type>
-	<channel-type id="realtime-time">
-		<item-type>DateTime</item-type>
-		<label>Real-Time Time</label>
-		<state readOnly="true"/>
-	</channel-type>
 </thing:thing-descriptions>

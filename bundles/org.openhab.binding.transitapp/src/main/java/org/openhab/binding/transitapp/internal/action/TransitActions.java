@@ -14,7 +14,6 @@ package org.openhab.binding.transitapp.internal.action;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.transitapp.internal.config.TransitAppStopConfiguration;
 import org.openhab.binding.transitapp.internal.handler.TransitAppStopHandler;
 import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.RuleAction;
@@ -45,7 +44,7 @@ public class TransitActions implements ThingActions {
         return this.handler;
     }
 
-    @RuleAction(label = "@text/action.getNextDeparture.label", description = "@text/action.getNextDeparture.description")
+    @RuleAction(label = "Get Next Departure For Line", description = "Gets the next departure time for a specific line")
     public @Nullable String getNextDepartureForLine(@ActionInput(name = "lineName") String lineName) {
         ThingHandler currentHandler = this.handler;
         if (currentHandler instanceof TransitAppStopHandler stopHandler) {
@@ -55,7 +54,7 @@ public class TransitActions implements ThingActions {
         return null;
     }
 
-    @RuleAction(label = "@text/action.getDepartures.label", description = "@text/action.getDepartures.description")
+    @RuleAction(label = "Get All Departures", description = "Gets raw JSON of all upcoming departures for this stop to find route or trip IDs")
     public @Nullable String getDepartures() {
         ThingHandler currentHandler = this.handler;
         if (currentHandler instanceof TransitAppStopHandler stopHandler) {
@@ -63,10 +62,8 @@ public class TransitActions implements ThingActions {
                 org.openhab.binding.transitapp.internal.handler.TransitAppBridgeHandler bridgeHandler = stopHandler
                         .getTransitBridgeHandler();
                 if (bridgeHandler != null) {
-                    TransitAppStopConfiguration config = stopHandler.getThing().getConfiguration()
-                            .as(TransitAppStopConfiguration.class);
-                    String stopId = config.globalStopId;
-                    if (!stopId.isBlank()) {
+                    String stopId = (String) stopHandler.getThing().getConfiguration().get("globalStopId");
+                    if (stopId != null) {
                         return bridgeHandler.fetchStopDeparturesRaw(stopId);
                     }
                 }

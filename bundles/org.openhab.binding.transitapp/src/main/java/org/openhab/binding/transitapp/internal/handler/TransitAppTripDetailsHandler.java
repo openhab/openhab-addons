@@ -17,7 +17,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.transitapp.internal.config.TransitAppTripConfiguration;
 import org.openhab.binding.transitapp.internal.net.dto.TripDetailsResult;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PointType;
@@ -52,8 +51,8 @@ public class TransitAppTripDetailsHandler extends BaseThingHandler {
         if (job != null) {
             job.cancel(true);
         }
-        TransitAppTripConfiguration config = getConfigAs(TransitAppTripConfiguration.class);
-        long refreshInterval = config.refreshInterval;
+        Object refreshIntervalObj = getThing().getConfiguration().get("refreshInterval");
+        long refreshInterval = refreshIntervalObj instanceof Number ? ((Number) refreshIntervalObj).longValue() : 60L;
         refreshJob = scheduler.scheduleWithFixedDelay(this::pollTransitApi, 1, refreshInterval, TimeUnit.SECONDS);
         updateStatus(ThingStatus.ONLINE);
     }
@@ -66,9 +65,8 @@ public class TransitAppTripDetailsHandler extends BaseThingHandler {
     }
 
     private void pollTransitApi() {
-        TransitAppTripConfiguration config = getConfigAs(TransitAppTripConfiguration.class);
-        String tripId = config.tripId;
-        if (tripId.isBlank()) {
+        String tripId = (String) getThing().getConfiguration().get("tripId");
+        if (tripId == null || tripId.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Trip ID is missing");
             return;
         }
@@ -107,7 +105,7 @@ public class TransitAppTripDetailsHandler extends BaseThingHandler {
                 updateState("trip#location", org.openhab.core.types.UnDefType.UNDEF);
             }
 
-            String targetStopId = config.targetStopId;
+            String targetStopId = (String) getThing().getConfiguration().get("targetStopId");
             long now = System.currentTimeMillis() / 1000;
 
             if (result.stops != null) {

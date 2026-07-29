@@ -43,7 +43,7 @@ public class TransitBridgeActions implements ThingActions {
         return this.handler;
     }
 
-    @RuleAction(label = "@text/action.getNearbyStops.label", description = "@text/action.getNearbyStops.description")
+    @RuleAction(label = "Get Nearby Stops", description = "Searches for transit stops near specific coordinates and returns the raw JSON response")
     public @Nullable String getNearbyStops(@ActionInput(name = "lat") double lat,
             @ActionInput(name = "lon") double lon) {
         ThingHandler currentHandler = this.handler;

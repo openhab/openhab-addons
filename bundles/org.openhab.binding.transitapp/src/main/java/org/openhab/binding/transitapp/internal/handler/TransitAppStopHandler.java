@@ -17,7 +17,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.transitapp.internal.config.TransitAppStopConfiguration;
 import org.openhab.binding.transitapp.internal.net.dto.StopDeparturesResult;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -50,8 +49,8 @@ public class TransitAppStopHandler extends BaseThingHandler {
         if (job != null) {
             job.cancel(true);
         }
-        TransitAppStopConfiguration config = getConfigAs(TransitAppStopConfiguration.class);
-        long refreshInterval = config.refreshInterval;
+        Object refreshIntervalObj = getThing().getConfiguration().get("refreshInterval");
+        long refreshInterval = refreshIntervalObj instanceof Number ? ((Number) refreshIntervalObj).longValue() : 60L;
         refreshJob = scheduler.scheduleWithFixedDelay(this::pollTransitApi, 1, refreshInterval, TimeUnit.SECONDS);
         updateStatus(ThingStatus.ONLINE);
     }
@@ -70,9 +69,8 @@ public class TransitAppStopHandler extends BaseThingHandler {
             return;
         }
 
-        TransitAppStopConfiguration config = getConfigAs(TransitAppStopConfiguration.class);
-        String globalStopId = config.globalStopId;
-        if (globalStopId.isBlank()) {
+        String globalStopId = (String) getThing().getConfiguration().get("globalStopId");
+        if (globalStopId == null || globalStopId.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Stop ID is missing");
             return;
         }
