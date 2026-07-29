@@ -426,10 +426,10 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                     case QCR:
                         if (!isStopped) {
                             // these are used with verbose mode 2 and BDP direct IP
-                            if (VERBOSE_2.equals(this.verboseMode) && (key.equals(QTE) && T.equals(currentTimeMode))
+                            if (VERBOSE_2.equals(this.verboseMode) && ((key.equals(QTE) && T.equals(currentTimeMode))
                                     || (key.equals(QTR) && X.equals(currentTimeMode))
                                     || (key.equals(QCE) && C.equals(currentTimeMode))
-                                    || (key.equals(QCR) && K.equals(currentTimeMode))) {
+                                    || (key.equals(QCR) && K.equals(currentTimeMode)))) {
                                 updateChannelState(CHANNEL_TIME_DISPLAY, updateData);
                             }
 
