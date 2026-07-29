@@ -20,8 +20,6 @@ Fragment-Host: org.openhab.io.yamlcomposer
 	ch.qos.logback.core;version='[1.5.32,1.5.33)',\
 	com.fasterxml.jackson.core.jackson-annotations;version='[2.21.0,2.21.1)',\
 	com.google.gson;version='[2.13.2,2.13.3)',\
-	com.google.guava;version='[33.6.0,33.6.1)',\
-	com.google.guava.failureaccess;version='[1.0.3,1.0.4)',\
 	com.sun.jna;version='[5.18.1,5.18.2)',\
 	com.sun.xml.bind.jaxb-osgi;version='[2.3.9,2.3.10)',\
 	io.methvin.directory-watcher;version='[0.19.1,0.19.2)',\
@@ -73,4 +71,12 @@ Fragment-Host: org.openhab.io.yamlcomposer
 	com.fasterxml.jackson.core.jackson-core;version='[2.21.4,2.21.5)',\
 	com.fasterxml.jackson.core.jackson-databind;version='[2.21.4,2.21.5)',\
 	com.fasterxml.jackson.dataformat.jackson-dataformat-yaml;version='[2.21.4,2.21.5)',\
+	ch.obermuhlner.math.big;version='[2.3.2,2.3.3)',\
+	com.fasterxml.jackson.datatype.jackson-datatype-jdk8;version='[2.21.4,2.21.5)',\
+	com.google.re2j.re2j;version='[1.2.0,1.2.1)',\
+	com.hubspot.jinjava.jinjava;version='[2.8.3,2.8.4)',\
+	javassist;version='[3.30.2,3.30.3)',\
+	org.apache.commons.commons-io;version='[2.22.0,2.22.1)',\
+	org.apache.commons.commons-net;version='[3.13.0,3.13.1)',\
+	org.apache.commons.lang3;version='[3.20.0,3.20.1)',\
 	org.osgi.service.cm;version='[1.6.1,1.6.2)'
