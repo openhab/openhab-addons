@@ -144,6 +144,49 @@ public class ShellyBluApiTest {
         verify(thingMock).postEvent("BTH_UNKNOWN_TYPE", false);
     }
 
+    @Test
+    void onNotifyEventDecodesRawBTHomePayloadFromScript() throws Exception {
+        ShellyBluApi api = buildBluApi();
+        String rawDataPacket = """
+                {"src": "shellyblugw-test", "params": {"events": [{"event": "oh-blu.data",
+                 "data": {"addr": "aa:bb:cc:dd:ee:ff", "pid": 5, "ver": 2, "raw": "0005015502660803ae15"}}]}}
+                """;
+
+        api.onNotifyEvent(rawDataPacket);
+
+        ShellyStatusSensor sensorData = api.getSensorStatus();
+        assertThat("battery decoded from raw payload", sensorData.bat.value, is(equalTo(85.0)));
+        assertThat("temperature decoded from raw payload", sensorData.tmp.tC, is(equalTo(21.50)));
+        assertThat("humidity decoded from raw payload", sensorData.hum.value, is(equalTo(55.50)));
+    }
+
+    @Test
+    void onNotifyEventPostsAlarmForUnknownObjectTypeInRawPayload() throws Exception {
+        ShellyBluApi api = buildBluApi();
+        String rawUnknownTypePacket = """
+                {"src": "shellyblugw-test", "params": {"events": [{"event": "oh-blu.data",
+                 "data": {"addr": "aa:bb:cc:dd:ee:ff", "pid": 1, "ver": 2, "raw": "0155fe"}}]}}
+                """;
+
+        api.onNotifyEvent(rawUnknownTypePacket);
+
+        verify(thingMock).postEvent("BTH_UNKNOWN_TYPE", false);
+    }
+
+    @Test
+    void onNotifyEventOverwritesRepeatedScalarObjectInsteadOfThrowing() throws Exception {
+        ShellyBluApi api = buildBluApi();
+        String repeatedBatteryPacket = """
+                {"src": "shellyblugw-test", "params": {"events": [{"event": "oh-blu.data",
+                 "data": {"addr": "aa:bb:cc:dd:ee:ff", "pid": 9, "ver": 2, "raw": "0155014b"}}]}}
+                """;
+
+        assertDoesNotThrow(() -> api.onNotifyEvent(repeatedBatteryPacket));
+
+        ShellyStatusSensor sensorData = api.getSensorStatus();
+        assertThat("last Battery reading wins", sensorData.bat.value, is(equalTo(75.0)));
+    }
+
     private ShellyBluApi buildBluApi() {
         return buildBluApi(THING_TYPE_SHELLYBLUBUTTON1);
     }
