@@ -17,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.transitapp.internal.config.TransitAppRouteConfiguration;
 import org.openhab.binding.transitapp.internal.net.dto.RouteDetailsResult;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.StringType;
@@ -48,8 +49,8 @@ public class TransitAppRouteDetailsHandler extends BaseThingHandler {
         if (job != null) {
             job.cancel(true);
         }
-        Object refreshIntervalObj = getThing().getConfiguration().get("refreshInterval");
-        long refreshInterval = refreshIntervalObj instanceof Number ? ((Number) refreshIntervalObj).longValue() : 300L;
+        TransitAppRouteConfiguration config = getConfigAs(TransitAppRouteConfiguration.class);
+        long refreshInterval = config.refreshInterval;
         refreshJob = scheduler.scheduleWithFixedDelay(this::pollTransitApi, 1, refreshInterval, TimeUnit.SECONDS);
         updateStatus(ThingStatus.ONLINE);
     }
@@ -62,8 +63,9 @@ public class TransitAppRouteDetailsHandler extends BaseThingHandler {
     }
 
     private void pollTransitApi() {
-        String routeId = (String) getThing().getConfiguration().get("routeId");
-        if (routeId == null || routeId.isEmpty()) {
+        TransitAppRouteConfiguration config = getConfigAs(TransitAppRouteConfiguration.class);
+        String routeId = config.routeId;
+        if (routeId.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Route ID is missing");
             return;
         }

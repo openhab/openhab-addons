@@ -14,6 +14,7 @@ package org.openhab.binding.transitapp.internal.action;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.transitapp.internal.config.TransitAppStopConfiguration;
 import org.openhab.binding.transitapp.internal.handler.TransitAppStopHandler;
 import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.RuleAction;
@@ -62,8 +63,10 @@ public class TransitActions implements ThingActions {
                 org.openhab.binding.transitapp.internal.handler.TransitAppBridgeHandler bridgeHandler = stopHandler
                         .getTransitBridgeHandler();
                 if (bridgeHandler != null) {
-                    String stopId = (String) stopHandler.getThing().getConfiguration().get("globalStopId");
-                    if (stopId != null) {
+                    TransitAppStopConfiguration config = stopHandler.getThing().getConfiguration()
+                            .as(TransitAppStopConfiguration.class);
+                    String stopId = config.globalStopId;
+                    if (!stopId.isBlank()) {
                         return bridgeHandler.fetchStopDeparturesRaw(stopId);
                     }
                 }
