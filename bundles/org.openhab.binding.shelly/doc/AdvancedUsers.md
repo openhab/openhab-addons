@@ -96,7 +96,7 @@ To change the level at runtime without editing the script, set the KVS key `oh-b
 
 ### Overriding the Script
 
-The binding re-installs `oh-blu-scanner.js` from the JAR whenever the Thing is initialized (e.g. on openHAB restart, or when the Thing is disabled/re-enabled), which overwrites any edit made directly on the device.
+Whenever the Thing is initialized (e.g. on openHAB restart, or when the Thing is disabled/re-enabled), the binding checks the script version installed on the device and only re-installs `oh-blu-scanner.js` from the JAR if it differs, which overwrites any edit made directly on the device.
 To use a modified version of the script instead, place a file with the same name in `<openHAB userdata>/shelly/oh-blu-scanner.js`. When present, the binding uploads this file to the gateway device instead of the version bundled in the JAR, and it is not touched by the automatic re-sync.
 
 Note: Use this only for specific prototyping or testing your own changes. In general, let the binding manage the script and its installation - this ensures compatibility between the binding and the script.
