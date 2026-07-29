@@ -31,6 +31,7 @@ import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.binding.netatmo.internal.config.NAThingConfiguration;
 import org.openhab.binding.netatmo.internal.handler.capability.Capability;
 import org.openhab.binding.netatmo.internal.handler.capability.CapabilityMap;
+import org.openhab.binding.netatmo.internal.handler.capability.ChannelHelperCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.HomeCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.ParentUpdateCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.RefreshCapability;
@@ -177,20 +178,27 @@ public interface CommonInterface {
     }
 
     default void setNewData(NAObject newData) {
-        if (newData instanceof NAThing thingData) {
-            if (getId().equals(thingData.getBridge())) {
-                getActiveChildren().stream().filter(child -> child.getId().equals(thingData.getId())).findFirst()
-                        .ifPresent(child -> child.setNewData(thingData));
-                return;
-            }
+        if (newData instanceof NAThing thingData && getId().equals(thingData.getBridge())) {
+            getActiveChildren().stream().filter(child -> child.getId().equals(thingData.getId())). //
+                    findFirst().ifPresent(child -> child.setNewData(thingData));
+            return;
         }
 
         String finalReason = null;
+        ChannelHelperCapability channelHelper = null;
         for (Capability cap : getCapabilities().values()) {
-            String statusReason = cap.setNewData(newData);
-            if (statusReason != null) {
-                finalReason = statusReason;
+            if (cap instanceof ChannelHelperCapability) {
+                channelHelper = (ChannelHelperCapability) cap;
+            } else {
+                if (cap.setNewData(newData) instanceof String statusReason) {
+                    finalReason = statusReason;
+                }
             }
+        }
+
+        // Handle channel updates only if no error was raised
+        if (channelHelper != null && finalReason == null) {
+            channelHelper.setNewData(newData);
         }
 
         if (newData.isIgnoredForThingUpdate()) {
