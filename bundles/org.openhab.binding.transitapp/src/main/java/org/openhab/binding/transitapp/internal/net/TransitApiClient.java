@@ -43,7 +43,6 @@ public class TransitApiClient {
     private volatile long rateLimitResetTime = 0;
     private static final long CACHE_TTL_MS = 30_000;
 
-    @SuppressWarnings("null")
     public String fetchStopDepartures(String apiKey, String globalStopId) throws Exception {
         long now = System.currentTimeMillis();
         if (now < rateLimitResetTime) {
@@ -62,8 +61,9 @@ public class TransitApiClient {
 
         if (response.getStatus() == 429) {
             String retryAfter = "60";
-            if (response.getHeaders().get("Retry-After") != null) {
-                retryAfter = response.getHeaders().get("Retry-After");
+            String headerVal = response.getHeaders().get("Retry-After");
+            if (headerVal != null) {
+                retryAfter = headerVal;
             }
             try {
                 rateLimitResetTime = now + (Long.parseLong(retryAfter) * 1000);

@@ -134,6 +134,8 @@ public class TransitAppTripDetailsHandler extends BaseThingHandler {
                         String prefix = "stop" + stopIdx + "#";
                         if (stop.stopName != null) {
                             updateState(prefix + "stop-name", new StringType(stop.stopName));
+                        } else {
+                            updateState(prefix + "stop-name", org.openhab.core.types.UnDefType.UNDEF);
                         }
                         long diff = (stop.departureTime - now) / 60;
                         updateState(prefix + "minutes-until-departure", new QuantityType<>(diff, Units.MINUTE));
