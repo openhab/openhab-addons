@@ -12,21 +12,17 @@
  */
 package org.openhab.binding.transitapp.internal.handler;
 
-import java.net.URI;
+import java.util.concurrent.TimeUnit;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpMethod;
+import org.openhab.binding.transitapp.internal.config.TransitAppBridgeConfiguration;
 import org.openhab.binding.transitapp.internal.net.TransitApiClient;
-import java.time.Duration;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
-import java.util.concurrent.TimeUnit;
-
 import org.openhab.binding.transitapp.internal.net.dto.RouteDetailsResult;
 import org.openhab.binding.transitapp.internal.net.dto.StopDeparturesResult;
 import org.openhab.binding.transitapp.internal.net.dto.TripDetailsResult;
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.transitapp.internal.config.TransitAppBridgeConfiguration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -64,11 +60,9 @@ public class TransitAppBridgeHandler extends BaseBridgeHandler {
 
         scheduler.submit(() -> {
             try {
-                ContentResponse response = httpClient.newRequest("https://external.transitapp.com/v4/public/stop_departures?global_stop_id=test")
-                        .method(HttpMethod.GET)
-                        .header("apiKey", apiKey)
-                        .timeout(10, TimeUnit.SECONDS)
-                        .send();
+                ContentResponse response = httpClient
+                        .newRequest("https://external.transitapp.com/v4/public/stop_departures?global_stop_id=test")
+                        .method(HttpMethod.GET).header("apiKey", apiKey).timeout(10, TimeUnit.SECONDS).send();
                 int statusCode = response.getStatus();
                 if (statusCode >= 200 && statusCode < 300) {
                     logger.info("Transit API connection verified successfully! Status code: {}.", statusCode);

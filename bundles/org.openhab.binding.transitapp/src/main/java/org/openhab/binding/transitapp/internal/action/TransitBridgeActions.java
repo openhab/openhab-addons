@@ -44,7 +44,8 @@ public class TransitBridgeActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/action.getNearbyStops.label", description = "@text/action.getNearbyStops.description")
-    public @Nullable String getNearbyStops(@ActionInput(name = "lat") double lat, @ActionInput(name = "lon") double lon) {
+    public @Nullable String getNearbyStops(@ActionInput(name = "lat") double lat,
+            @ActionInput(name = "lon") double lon) {
         ThingHandler currentHandler = this.handler;
         if (currentHandler instanceof TransitAppBridgeHandler bridgeHandler) {
             try {

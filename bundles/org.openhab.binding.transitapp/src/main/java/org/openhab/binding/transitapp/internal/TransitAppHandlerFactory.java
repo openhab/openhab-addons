@@ -18,6 +18,7 @@ import org.openhab.binding.transitapp.internal.handler.TransitAppBridgeHandler;
 import org.openhab.binding.transitapp.internal.handler.TransitAppRouteDetailsHandler;
 import org.openhab.binding.transitapp.internal.handler.TransitAppStopHandler;
 import org.openhab.binding.transitapp.internal.handler.TransitAppTripDetailsHandler;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -27,8 +28,6 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.openhab.core.io.net.http.HttpClientFactory;
-import org.openhab.core.io.net.http.WebSocketFactory;
 
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.transitapp")
@@ -43,10 +42,10 @@ public class TransitAppHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return TransitAppBindingConstants.THING_TYPE_BRIDGE.equals(thingTypeUID) ||
-               TransitAppBindingConstants.THING_TYPE_STOP.equals(thingTypeUID) ||
-               TransitAppBindingConstants.THING_TYPE_ROUTE_DETAILS.equals(thingTypeUID) ||
-               TransitAppBindingConstants.THING_TYPE_TRIP_DETAILS.equals(thingTypeUID);
+        return TransitAppBindingConstants.THING_TYPE_BRIDGE.equals(thingTypeUID)
+                || TransitAppBindingConstants.THING_TYPE_STOP.equals(thingTypeUID)
+                || TransitAppBindingConstants.THING_TYPE_ROUTE_DETAILS.equals(thingTypeUID)
+                || TransitAppBindingConstants.THING_TYPE_TRIP_DETAILS.equals(thingTypeUID);
     }
 
     @Override

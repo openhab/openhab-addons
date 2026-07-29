@@ -17,10 +17,10 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.transitapp.internal.net.TransitApiClient;
+import org.openhab.binding.transitapp.internal.config.TransitAppStopConfiguration;
+import org.openhab.binding.transitapp.internal.net.dto.StopDeparturesResult;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -31,14 +31,12 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.openhab.binding.transitapp.internal.net.dto.StopDeparturesResult;
-import org.openhab.binding.transitapp.internal.config.TransitAppStopConfiguration;
 
 @NonNullByDefault
 public class TransitAppStopHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(TransitAppStopHandler.class);
-    
+
     private final java.util.Map<String, String> latestLineDepartures = new java.util.concurrent.ConcurrentHashMap<>();
     private @Nullable ScheduledFuture<?> refreshJob;
 
@@ -98,7 +96,7 @@ public class TransitAppStopHandler extends BaseThingHandler {
                     if (groupIdx > 10) {
                         break;
                     }
-                    
+
                     String shortName = routeDep.routeShortName;
                     String longName = routeDep.routeLongName;
 
@@ -128,7 +126,8 @@ public class TransitAppStopHandler extends BaseThingHandler {
                                     if (shortName != null) {
                                         updateState(prefix + "route-short-name", new StringType(shortName));
                                     } else {
-                                        updateState(prefix + "route-short-name", org.openhab.core.types.UnDefType.UNDEF);
+                                        updateState(prefix + "route-short-name",
+                                                org.openhab.core.types.UnDefType.UNDEF);
                                     }
 
                                     if (longName != null) {
@@ -136,16 +135,23 @@ public class TransitAppStopHandler extends BaseThingHandler {
                                     } else {
                                         updateState(prefix + "route-long-name", org.openhab.core.types.UnDefType.UNDEF);
                                     }
-                                    
-                                    updateState(prefix + "minutes-until-departure", new QuantityType<>(diff, org.openhab.core.library.unit.Units.MINUTE));
-                                    updateState(prefix + "departure-time", new org.openhab.core.library.types.DateTimeType(java.time.ZonedDateTime.ofInstant(java.time.Instant.ofEpochSecond(depTime), java.time.ZoneId.systemDefault())));
+
+                                    updateState(prefix + "minutes-until-departure",
+                                            new QuantityType<>(diff, org.openhab.core.library.unit.Units.MINUTE));
+                                    updateState(prefix + "departure-time",
+                                            new org.openhab.core.library.types.DateTimeType(java.time.ZonedDateTime
+                                                    .ofInstant(java.time.Instant.ofEpochSecond(depTime),
+                                                            java.time.ZoneId.systemDefault())));
                                     if (shortName != null && !latestLineDepartures.containsKey(shortName)) {
-                                        latestLineDepartures.put(shortName, java.time.LocalTime.ofInstant(java.time.Instant.ofEpochSecond(depTime), java.time.ZoneId.systemDefault()).toString());
+                                        latestLineDepartures.put(shortName,
+                                                java.time.LocalTime.ofInstant(java.time.Instant.ofEpochSecond(depTime),
+                                                        java.time.ZoneId.systemDefault()).toString());
                                     }
 
                                     Long delay = schedule.delay;
                                     if (delay != null) {
-                                        updateState(prefix + "delay-minutes", new QuantityType<>(delay / 60, org.openhab.core.library.unit.Units.MINUTE));
+                                        updateState(prefix + "delay-minutes", new QuantityType<>(delay / 60,
+                                                org.openhab.core.library.unit.Units.MINUTE));
                                     } else {
                                         updateState(prefix + "delay-minutes", org.openhab.core.types.UnDefType.UNDEF);
                                     }
@@ -159,9 +165,12 @@ public class TransitAppStopHandler extends BaseThingHandler {
 
                                     Boolean wheelchair = schedule.wheelchairAccessible;
                                     if (wheelchair != null) {
-                                        updateState(prefix + "wheelchair-accessible", wheelchair ? org.openhab.core.library.types.OnOffType.ON : org.openhab.core.library.types.OnOffType.OFF);
+                                        updateState(prefix + "wheelchair-accessible",
+                                                wheelchair ? org.openhab.core.library.types.OnOffType.ON
+                                                        : org.openhab.core.library.types.OnOffType.OFF);
                                     } else {
-                                        updateState(prefix + "wheelchair-accessible", org.openhab.core.types.UnDefType.UNDEF);
+                                        updateState(prefix + "wheelchair-accessible",
+                                                org.openhab.core.types.UnDefType.UNDEF);
                                     }
 
                                     String occupancy = schedule.occupancyStatus;
@@ -173,7 +182,9 @@ public class TransitAppStopHandler extends BaseThingHandler {
 
                                     Boolean isCancelled = schedule.isCancelled;
                                     if (isCancelled != null) {
-                                        updateState(prefix + "is-cancelled", isCancelled ? org.openhab.core.library.types.OnOffType.ON : org.openhab.core.library.types.OnOffType.OFF);
+                                        updateState(prefix + "is-cancelled",
+                                                isCancelled ? org.openhab.core.library.types.OnOffType.ON
+                                                        : org.openhab.core.library.types.OnOffType.OFF);
                                     } else {
                                         updateState(prefix + "is-cancelled", org.openhab.core.types.UnDefType.UNDEF);
                                     }
@@ -208,7 +219,6 @@ public class TransitAppStopHandler extends BaseThingHandler {
     public String findNextDepartureByLine(String lineName) {
         return latestLineDepartures.getOrDefault(lineName, "N/A");
     }
-
 
     public @Nullable TransitAppBridgeHandler getTransitBridgeHandler() {
         Bridge bridge = getBridge();
