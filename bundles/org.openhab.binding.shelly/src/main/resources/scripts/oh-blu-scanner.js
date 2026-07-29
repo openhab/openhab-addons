@@ -16,7 +16,24 @@ let ALLTERCO_MFD_ID = JSON.parse("0x" + ALLTERCO_MFD_ID_STR);
 let BTHOME_SVC_ID = JSON.parse("0x" + BTHOME_SVC_ID_STR);
 let SCAN_DURATION = BLE.Scanner.INFINITE_SCAN;
 
-let DEBUG = false;
+// Log levels, each includes everything more severe than itself (TRACE shows DEBUG+INFO+WARN+ERROR too)
+let LVL_ERROR = 0;
+let LVL_WARN = 1;
+let LVL_INFO = 2;
+let LVL_DEBUG = 3;
+let LVL_TRACE = 4;
+let LOG_LEVEL = LVL_INFO;
+
+// LOG_LEVEL persisted in KVS survives the binding's script re-sync (a hardcoded value here would get
+// silently reverted on the next resync since the binding reinstalls whenever the code differs from this file)
+Shelly.call("KVS.GetMany", { match: "oh-blu-scanner.*" }, function (res) {
+  if (!res || !res.items) return;
+  let name = res.items["oh-blu-scanner.log_level"];
+  if (typeof name !== "string") return;
+  let levels = { "ERROR": LVL_ERROR, "WARN": LVL_WARN, "INFO": LVL_INFO, "DEBUG": LVL_DEBUG, "TRACE": LVL_TRACE };
+  let level = levels[name.toUpperCase()];
+  if (typeof level !== "undefined") LOG_LEVEL = level;
+});
 
 // Cache objects for Shelly Blu devices and last packet IDs
 // SHELLY_BLU_CACHE[addr]: device name if Shelly BLU, false if a known non-Shelly BTHome device
@@ -173,7 +190,7 @@ let BTHomeDecoder = {
     result["encryption"] = _dib & 0x1 ? true : false;
     result["BTHome_version"] = _dib >> 5;
     if (result["encryption"]) {
-      console.log("BTH: encrypted payload, cannot decode");
+      if (LOG_LEVEL >= LVL_WARN) console.log("BTH: encrypted payload, cannot decode");
       result["alarmCode"] = "BTH_ENCRYPTED";
       return result; // Can not handle encrypted data
     }
@@ -187,7 +204,7 @@ let BTHomeDecoder = {
 
       let _bth = BTH[bthIdx];
       if (typeof _bth === "undefined") {
-        console.log("BTH: unknown type", bthIdx);
+        if (LOG_LEVEL >= LVL_WARN) console.log("BTH: unknown type", bthIdx);
         result["alarmCode"] = "BTH_UNKNOWN_TYPE";
         break;
       }
@@ -207,7 +224,7 @@ let BTHomeDecoder = {
       if (bthIdx === BTH_DIMMERSTEPS_INDEX) {
         let valueDimSize = 2; // Fixed size for dimmer steps is 2 bytes
         if (buffer.length < valueDimSize) {
-          console.log("BTH: buffer too short for Dimmer event");
+          if (LOG_LEVEL >= LVL_WARN) console.log("BTH: buffer too short for Dimmer event");
           continue;
         }
 
@@ -243,6 +260,16 @@ let BTHomeDecoder = {
   }
 };
 
+// Hex dump helper, only used under TRACE (padStart not available in the Shelly JS engine)
+function bufToHex(buffer) {
+  let hex = "";
+  for (let i = 0; i < buffer.length; i++) {
+    let hexValue = buffer.at(i).toString(16);
+    hex += (hexValue.length === 1 ? "0" + hexValue : hexValue) + " ";
+  }
+  return hex.trim();
+}
+
 // Shelly BLU BLE data parser wrapper
 let ShellyBLUParser = {
   getData: function (res) {
@@ -271,7 +298,7 @@ function scanCB(ev, res) {
     let found = false;
     for (let prefix of ALLTERCO_DEVICE_NAME_PREFIX) {
       if (res.local_name.indexOf(prefix) === 0) {
-        console.log('New device found: address=', res.addr, ', name=', res.local_name);
+        if (LOG_LEVEL >= LVL_INFO) console.log('New device found: address=', res.addr, ', name=', res.local_name);
         Shelly.emitEvent("oh-blu.scan_result", {"addr":res.addr, "name":res.local_name, "rssi":res.rssi, "tx_power":res.tx_power_level});
         SHELLY_BLU_CACHE[res.addr] = res.local_name;
         found = true;
@@ -279,28 +306,30 @@ function scanCB(ev, res) {
       }
     }
     if (!found) {
-      console.log('Unknown device: ', res.local_name);
+      if (LOG_LEVEL >= LVL_INFO) console.log('Unknown device: ', res.local_name);
       SHELLY_BLU_CACHE[res.addr] = false;
       return;
     }
   }
 
+  if (LOG_LEVEL >= LVL_TRACE) console.log('Raw BTHome packet from ', res.addr, ': ', bufToHex(res.service_data[BTHOME_SVC_ID_STR]));
+
   let BTHparsed = ShellyBLUParser.getData(res);
   if (BTHparsed === null) {
-    console.log("Failed to parse BTH data");
+    if (LOG_LEVEL >= LVL_WARN) console.log("Failed to parse BTH data");
     return;
   }
 
   if (BTHparsed.alarmCode) {
-    console.log("BLU alarm:", BTHparsed.alarmCode, "addr=", res.addr);
+    if (LOG_LEVEL >= LVL_WARN) console.log("BLU alarm:", BTHparsed.alarmCode, "addr=", res.addr);
     Shelly.emitEvent("oh-blu.alarm", {"addr":res.addr, "code":BTHparsed.alarmCode});
   }
 
   if (typeof LAST_PID[res.addr] === 'undefined' || BTHparsed.pid !== LAST_PID[res.addr]) {
-    if (DEBUG) console.log('Parsed BTH data from device ', res.local_name, ': ', JSON.stringify(BTHparsed));
+    if (LOG_LEVEL >= LVL_TRACE) console.log('Parsed BTH data from device ', res.local_name, ': ', JSON.stringify(BTHparsed));
     Shelly.emitEvent("oh-blu.data", BTHparsed);
     LAST_PID[res.addr] = BTHparsed.pid;
-  } else if (DEBUG) {
+  } else if (LOG_LEVEL >= LVL_DEBUG) {
     console.log("Drop redundant packet with pid ", BTHparsed.pid);
   }
 }
@@ -310,16 +339,16 @@ function scanCB(ev, res) {
 function startBLEScan() {
     let bleScanSuccess = BLE.Scanner.Start({ duration_ms: SCAN_DURATION, active: true }, scanCB);
     if( bleScanSuccess === null ) {
-        console.log('Unable to start OH-BLU Scanner.');
+        if (LOG_LEVEL >= LVL_WARN) console.log('Unable to start OH-BLU Scanner.');
         Timer.set(3000, false, startBLEScan);
     } else {
-        console.log('Success: OH-BLU Event Gateway running');
+        if (LOG_LEVEL >= LVL_INFO) console.log('Success: OH-BLU Event Gateway running');
     }
  }
- 
+
 let BLEConfig = Shelly.getComponentConfig('ble');
 if(BLEConfig.enable === false) {
-    console.log('Error: BLE not enabled, unable to start OH-BLU Scanner');
+    if (LOG_LEVEL >= LVL_ERROR) console.log('Error: BLE not enabled, unable to start OH-BLU Scanner');
 } else {
     Timer.set(1000, false, startBLEScan);
 }
