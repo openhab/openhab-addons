@@ -58,27 +58,29 @@ public class TransitAppBridgeHandler extends BaseBridgeHandler {
         logger.debug("API Key loaded successfully. Verifying connection...");
         updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Verifying API Key...");
 
-        try {
-            ContentResponse response = httpClient
-                    .newRequest("https://external.transitapp.com/v4/public/stop_departures?global_stop_id=test")
-                    .method(HttpMethod.GET).header("apiKey", apiKey).timeout(10, TimeUnit.SECONDS).send();
-            int statusCode = response.getStatus();
-            if (statusCode >= 200 && statusCode < 300) {
-                logger.info("Transit API connection verified successfully! Status code: {}.", statusCode);
-                updateStatus(ThingStatus.ONLINE);
-            } else if (statusCode == 401 || statusCode == 403) {
-                logger.error("API Authentication failed with status code {}.", statusCode);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "API Authentication Failed (Status: " + statusCode + ")");
-            } else {
-                logger.warn("Transit API verification returned status {}. Treating bridge as ONLINE.", statusCode);
-                updateStatus(ThingStatus.ONLINE);
+        scheduler.submit(() -> {
+            try {
+                ContentResponse response = httpClient
+                        .newRequest("https://external.transitapp.com/v4/public/stop_departures?global_stop_id=test")
+                        .method(HttpMethod.GET).header("apiKey", apiKey).timeout(10, TimeUnit.SECONDS).send();
+                int statusCode = response.getStatus();
+                if (statusCode >= 200 && statusCode < 300) {
+                    logger.info("Transit API connection verified successfully! Status code: {}.", statusCode);
+                    updateStatus(ThingStatus.ONLINE);
+                } else if (statusCode == 401 || statusCode == 403) {
+                    logger.error("API Authentication failed with status code {}.", statusCode);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "API Authentication Failed (Status: " + statusCode + ")");
+                } else {
+                    logger.warn("Transit API verification returned status {}. Treating bridge as ONLINE.", statusCode);
+                    updateStatus(ThingStatus.ONLINE);
+                }
+            } catch (Exception e) {
+                logger.error("Failed to connect to Transit API: {}", e.getMessage(), e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Connection Failed: " + e.getMessage());
             }
-        } catch (Exception e) {
-            logger.error("Failed to connect to Transit API: {}", e.getMessage(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Connection Failed: " + e.getMessage());
-        }
+        });
     }
 
     @Override
