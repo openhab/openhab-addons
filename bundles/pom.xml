@@ -753,7 +753,7 @@
             <configuration>
               <target>
                 <mkdir dir="${maven.multiModuleProjectDirectory}/target/schemas"/>
-<echo file="${maven.multiModuleProjectDirectory}/target/schemas/thing-type-xml-validation-catalog.xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+                <echo file="${maven.multiModuleProjectDirectory}/target/schemas/thing-type-xml-validation-catalog.xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
     <uri name="https://openhab.org/schemas/thing-description-1.0.0.xsd"
          uri="file:///${maven.multiModuleProjectDirectory}/target/schemas/thing-description-1.0.0.xsd"/>
