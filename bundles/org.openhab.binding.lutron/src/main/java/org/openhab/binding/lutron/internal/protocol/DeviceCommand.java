@@ -35,7 +35,9 @@ public class DeviceCommand extends LutronCommandNew {
     public static final Integer ACTION_PRESS = 3;
     public static final Integer ACTION_RELEASE = 4;
     public static final Integer ACTION_HOLD = 5;
+    public static final Integer ACTION_DBLTAP = 6;
     public static final Integer ACTION_LED_STATE = 9;
+    public static final Integer ACTION_HOLDRELEASE = 32;
     public static final Integer LED_OFF = 0;
     public static final Integer LED_ON = 1;
     public static final Integer LED_FLASH = 2; // Same as 1 on RA2 keypads

@@ -14,6 +14,7 @@ package org.openhab.binding.renault.internal.api;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -46,6 +47,7 @@ public class Car {
     private boolean disableCockpit = false;
     private boolean disableHvac = false;
     private boolean disableLockStatus = false;
+    private boolean disableSocLevels = false;
 
     private ChargingStatus chargingStatus = ChargingStatus.UNKNOWN;
     private @Nullable ChargingMode chargingMode;
@@ -64,6 +66,9 @@ public class Car {
     private @Nullable Double gpsLatitude;
     private @Nullable Double gpsLongitude;
     private @Nullable Double externalTemperature;
+    private @Nullable ZonedDateTime socUpdated;
+    private @Nullable Integer socMin;
+    private @Nullable Integer socTarget;
 
     public enum ChargingMode {
         SCHEDULE_MODE,
@@ -234,6 +239,19 @@ public class Car {
         }
     }
 
+    public void setSoc(JsonObject responseJson) {
+        Optional.ofNullable(responseJson.get("lastEnergyUpdateTimestamp")).ifPresent(lastEnergyUpdateTimestamp -> {
+            try {
+                socUpdated = ZonedDateTime.parse(lastEnergyUpdateTimestamp.getAsString());
+            } catch (DateTimeParseException e) {
+                socUpdated = null;
+                logger.debug("Error updating soc status updated timestamp. {}", e.getMessage());
+            }
+        });
+        socMin = Optional.ofNullable(responseJson.get("socMin")).map(JsonElement::getAsInt).orElse(null);
+        socTarget = Optional.ofNullable(responseJson.get("socTarget")).map(JsonElement::getAsInt).orElse(null);
+    }
+
     public boolean isDisableVehicle() {
         return disableVehicle;
     }
@@ -402,5 +420,25 @@ public class Car {
 
     public void setDisableChargeMode(boolean disableChargeMode) {
         this.disableChargeMode = disableChargeMode;
+    }
+
+    public @Nullable ZonedDateTime getSocUpdated() {
+        return socUpdated;
+    }
+
+    public @Nullable Integer getSocMin() {
+        return socMin;
+    }
+
+    public @Nullable Integer getSocTarget() {
+        return socTarget;
+    }
+
+    public boolean isDisableSocLevels() {
+        return disableSocLevels;
+    }
+
+    public void setDisableSocLevels(boolean disableSocLevels) {
+        this.disableSocLevels = disableSocLevels;
     }
 }

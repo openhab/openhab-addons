@@ -85,10 +85,10 @@ See section [Discovery](#discovery) for details.
 
 | thing-type           | Model                                                    | Vendor ID                                                                 |
 | -------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------- |
-| shellyplus1          | Shelly Plus 1 with 1x relay                              | SNSW-001X16EU, S3SW-001X16EU, S3SW-001X16EU, S4SW-001X16EU                |
-| shellyplus1l         | Shelly Plus 1L with 1x relay                             | S3SW-0A1X1EUL                                                             |
+| shellyplus1          | Shelly Plus 1 with 1x relay                              | SNSW-001X16EU, S3SW-001X16EU, S4SW-001X16EU                               |
+| shellyplus1l         | Shelly Plus 1L with 1x relay                             | S3SW-0A1X1EUL, S4SW-0A1X1EUL                                              |
 | shellyplus1pm        | Shelly Plus 1PM with 1x relay + power meter              | SNSW-001P16EU, S3SW-001P16EU, S4SW-001P16EU                               |
-| shellyplus2l         | Shelly Plus 2L with 2x relay                             | S3SW-0A2X4EUL                                                             |
+| shellyplus2l         | Shelly Plus 2L with 2x relay                             | S3SW-0A2X4EUL, S4SW-0A2X4EUL                                              |
 | shellyplus2pm-relay  | Shelly Plus 2PM with 2x relay + power meter, relay mode  | SNSW-002P16EU, SNSW-102P16EU, S3SW-002P16EU, SNSW-002P15UL, S4SW-002P16EU |
 | shellyplus2pm-roller | Shelly Plus 2PM with 2x relay + power meter, roller mode | SNSW-002P16EU, SNSW-102P16EU, S3SW-002P16EU, SNSW-002P15UL, S4SW-002P16EU |
 | shellyplusshutter    | Shelly Plus Shutter for 1x roller                        | S3SH-0A2P4EU                                                              |
@@ -111,6 +111,7 @@ See section [Discovery](#discovery) for details.
 | shellyplusuni        | Shelly Plus UNI                                          | SNSN-0043X                                                                |
 | shellyplusht         | Shelly Plus HT with temperature + humidity sensor        | SNSN-0013A, S3SN-0U12A                                                    |
 | shellyplussmoke      | Shelly Plus Smoke sensor                                 | SNSN-0031Z                                                                |
+| shellyplusflood      | Shelly Flood Gen4 water leak sensor                      | S4SN-0071A                                                                |
 | shellypluswdus       | Shelly Plus Wall Dimmer US                               | SNDM-0013US                                                               |
 | shellyplusdimmer     | Shelly Plus Dimmer Gen 3                                 | S3DM-0A101WWL                                                             |
 | shellyprodm2pm       | Shelly Pro Dimmer 2PM                                    | SPDM-002PE01EU                                                            |
@@ -147,22 +148,23 @@ See section [Discovery](#discovery) for details.
 
 ### Shelly BLU
 
-| thing-type           | Model                                 | Vendor ID   |
-| -------------------- | ------------------------------------- | ----------- |
-| shellyblubutton      | Shelly BLU Button 1, Shelly BLU Tough | SBBT-002C   |
-| shellyblubutton      | Shelly BLU Tough ZB                   | SBBT-102C   |
-| shellybluwallswitch4 | Shelly BLU Wallswitch 4               | SBBT-EU5027 |
-| shellyblurcbutton4   | Shelly BLU RC Button 4                | SBBT-004CUS |
-| shellyblurcbutton4   | Shelly BLU RC Button 4 ZB             | SBBT-104CUS |
-| shellybluht          | Shelly BLU H&T                        | SBHT-003C   |
-| shellybluht          | Shelly BLU H&T ZB                     | SBHT-203C   |
-| shellybluht          | Shelly BLU H&T Display ZB             | SBHT-103C   |
-| shellybludw          | Shelly BLU Door/Windows               | SBDW-002C   |
-| shellybludw          | Shelly BLU Door/Window ZB             | SBDW-103C   |
-| shellyblumotion      | Shelly BLU Motion                     | SBMO-003Z   |
-| shellyblumotion      | Shelly BLU Motion ZB                  | SBMO-103Z   |
-| shellybludistance    | Shelly BLU Distance                   | SBDI-003E   |
-| shellybluremote      | Shelly BLU Remote Control             | SBRC-005B   |
+| thing-type           | Model                                                  | Vendor ID               |
+| -------------------- | ------------------------------------------------------ | ----------------------- |
+| shellyblubutton      | Shelly BLU Button 1, Shelly BLU Tough                  | SBBT-002C               |
+| shellyblubutton      | Shelly BLU Tough ZB                                    | SBBT-102C               |
+| shellybluwallswitch4 | Shelly BLU Wallswitch 4                                | SBBT-EU5027             |
+| shellyblurcbutton4   | Shelly BLU RC Button 4                                 | SBBT-004CUS             |
+| shellyblurcbutton4   | Shelly BLU RC Button 4 ZB                              | SBBT-104CUS             |
+| shellybluht          | Shelly BLU H&T                                         | SBHT-003C               |
+| shellybluht          | Shelly BLU H&T ZB                                      | SBHT-203C               |
+| shellybluht          | Shelly BLU H&T Display ZB                              | SBHT-103C               |
+| shellybludw          | Shelly BLU Door/Windows                                | SBDW-002C               |
+| shellybludw          | Shelly BLU Door/Window ZB                              | SBDW-103C               |
+| shellyblumotion      | Shelly BLU Motion                                      | SBMO-003Z               |
+| shellyblumotion      | Shelly BLU Motion ZB                                   | SBMO-103Z               |
+| shellybludistance    | Shelly BLU Distance                                    | SBDI-003E               |
+| shellybluremote      | Shelly BLU Remote Control                              | SBRC-005B               |
+| shellybluws90        | Ecowitt WS90 Weather Station (Shelly BLU)              | SBWS-90CM               |
 
 ### Special Thing Types
 
@@ -251,6 +253,8 @@ Follow these steps to add the Shelly BLU Device to openHAB:
 
 - During initialization the script 'oh-blu-scanner.js' gets installed and activated on the Shelly Gateway device.
 - Shelly BLU Motion: It may take some time until channels like Lux show up.
+- Ecowitt WS90: The WS90 is solar-powered and broadcasts continuously — no button press is required to add it to the Inbox.
+  It will appear automatically once it is within range of a configured BLU gateway.
 
 Try moving the device to force status updates.
 
@@ -1654,6 +1658,33 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 | battery | batteryLevel | Number   | yes       | Battery Level in %                                      |
 |         | lowBattery   | Switch   | yes       | Low battery alert (< 20%)                               |
 
+### Shelly Flood Gen4 (thing-type: shellyplusflood)
+
+The Shelly Flood Gen4 (S4SN-0071A) is a battery-powered water-leak sensor with a configurable alarm mode.
+The sensor probe connects via a cable; if the cable is unplugged, the `lastError` channel is updated and a `SENSOR_ERROR` event is posted to `device#alarm`.
+
+`Note:`
+The `alarmMode` and `reportHoldoff` channels are writable but only take effect while the sensor is online (awake and connected).
+There is no API to mute a flood alarm remotely, only the physical button on the device; the mute state is reported via an `ALARM_MUTED` event on `device#alarm` rather than a dedicated channel.
+
+The `alarmMode` channel reflects the Shelly app's Alarm Mode screen:
+
+- **Rain mode** (`rain`): rain detection only — the flood alarm is inactive.
+- **Flood mode, Intense** (`intense`): loud acoustic alarm triggered by flooding (mute via physical button on device).
+- **Flood mode, Normal** (`normal`): acoustic alarm triggered by flooding (mute via physical button on device).
+- **Flood mode, Silent** (`disabled`): flood detection only, no acoustic alarm.
+
+| Group   | Channel       | Type            | read-only | Description                                                               |
+| ------- | ------------- | --------------- | --------- | ------------------------------------------------------------------------- |
+| sensors | flood         | Switch          | yes       | ON: Water/flooding detected, OFF: dry                                     |
+|         | lastUpdate    | DateTime        | yes       | Timestamp of the last update (any sensor value changed)                   |
+|         | lastError     | String          | yes       | Last device error (e.g. `cable_unplugged`)                                |
+| control | alarmMode     | String          | no        | Alarm mode: `rain`, `intense`, `normal`, `disabled` (see note above)      |
+|         | reportHoldoff | Number:Time     | no        | Minimum time (s) between consecutive flood reports                        |
+| battery | batteryLevel  | Number          | yes       | Battery level in %                                                        |
+|         | lowBattery    | Switch          | yes       | ON: Low battery alert (< 20%)                                             |
+| device  | alarm         | Trigger         | yes       | Trigger: `FLOOD` on flood alarm, `SENSOR_ERROR` on cable fault, `ALARM_MUTED` when muted via the physical button |
+
 ### Shelly Plus Wall Dimmer US (thing-type: shellypluswdus)
 
 | Group | Channel     | Type   | read-only | Description                                                                       |
@@ -2135,6 +2166,32 @@ See notes on discovery of Shelly BLU devices above.
 | battery | batteryLevel  | Number   | yes       | Battery Level in %                                                                  |
 |         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                                                           |
 | device  | gatewayDevice | String   | yes       | Shelly forwarded last status update (BLU gateway), could vary from packet to packet |
+
+### Ecowitt WS90 Weather Station (Shelly BLU) (thing-type: shellybluws90)
+
+See notes on discovery of Shelly BLU devices above.
+
+| Group   | Channel       | Type                 | read-only | Description                                                                         |
+| ------- | ------------- | -------------------- | --------- | ----------------------------------------------------------------------------------- |
+| sensors | temperature   | Number:Temperature   | yes       | Temperature in degrees Celsius                                                      |
+|         | humidity      | Number:Dimensionless | yes       | Relative humidity in %                                                              |
+|         | uvIndex       | Number               | yes       | UV Index (dimensionless, 0-11+)                                                     |
+|         | lux           | Number:Illuminance   | yes       | Brightness in Lux (created once the device reports a value)                         |
+|         | windSpeed     | Number:Speed         | yes       | Wind speed in m/s                                                                   |
+|         | windDirection | Number:Angle         | yes       | Wind direction in degrees (0-360)                                                   |
+|         | gustSpeed     | Number:Speed         | yes       | Wind gust speed in m/s                                                              |
+|         | gustDirection | Number:Angle         | yes       | Wind gust direction in degrees (0-360)                                              |
+|         | pressure      | Number:Pressure      | yes       | Atmospheric pressure in hPa                                                         |
+|         | dewPoint      | Number:Temperature   | yes       | Dew point in degrees Celsius                                                        |
+|         | rainStatus    | Switch               | yes       | ON: It's raining, OFF: It's not raining                                             |
+|         | precipitation | Number:Length        | yes       | Accumulated rainfall in mm (monotonic total since sensor reset)                     |
+|         | lastUpdate    | DateTime             | yes       | Timestamp of the last update (any sensor value changed)                             |
+| battery | batteryLevel  | Number               | yes       | Battery Level in %                                                                  |
+|         | lowBattery    | Switch               | yes       | Low battery alert (< 20%)                                                           |
+| device  | gatewayDevice | String               | yes       | Shelly forwarded last status update (BLU gateway), could vary from packet to packet |
+|         | firmware      | String               | yes       | Firmware version (may be empty — not all firmware versions report it)               |
+
+The `rainStatus` channel latches ON for a while after it has actually stopped raining, a hardware behavior of the WS90's piezo rain sensor rather than a binding issue.
 
 ## Shelly Wall Displays
 

@@ -399,6 +399,32 @@ public class Shelly2GetDeviceProfileTest {
     }
 
     @Test
+    void fwVersionFallsBackToVerWhenFwIdHasNoSemver() throws ShellyApiException {
+        // Regression test for the Power Strip 4 / EM Mini G4 missing-firmware-channel bug:
+        // newer Gen4 app builds report a date/hash-only fw_id (no embedded semver), so
+        // extractFwVersion(fw) returns "" and initProfile() must fall back to the "ver" field.
+        Gson gson = new Gson();
+        ShellySettingsDevice dev = deviceInfo();
+        dev.fw = "20250819-150404/ga0def2d";
+        dev.ver = "1.7.99-powerstripg4prod1";
+        StubApiClient client = new StubApiClient(discoveryConfig(), minimalConfig(gson));
+        ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYUNKNOWN, dev);
+        assertThat(profile.fwVersion, is("1.7.99-powerstripg4prod1"));
+    }
+
+    @Test
+    void fwVersionUsesFwIdWhenItAlreadyHasSemver() throws ShellyApiException {
+        // Normal Gen2/3 case: fw_id already embeds a parseable semver — "ver" must not be needed
+        Gson gson = new Gson();
+        ShellySettingsDevice dev = deviceInfo();
+        dev.fw = "20230913-112003/v1.14.0-gcb84623";
+        dev.ver = "";
+        StubApiClient client = new StubApiClient(discoveryConfig(), minimalConfig(gson));
+        ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYUNKNOWN, dev);
+        assertThat(profile.fwVersion, is("1.14.0"));
+    }
+
+    @Test
     void emdata0TotalRetKWHDeserializedFromJson() {
         Gson gson = new Gson();
         String json = "{\"a_total_act_ret_energy\":500.0,\"b_total_act_ret_energy\":300.0,\"c_total_act_ret_energy\":200.0,"

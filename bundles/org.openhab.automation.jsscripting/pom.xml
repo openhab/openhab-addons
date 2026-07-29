@@ -16,7 +16,7 @@
 
   <properties>
     <node.version>v22.17.1</node.version>
-    <ohjs.version>v5.20.0</ohjs.version>
+    <ohjs.version>v5.21.0</ohjs.version>
   </properties>
 
   <dependencies>
@@ -78,7 +78,7 @@
       <plugin>
         <groupId>com.github.eirslett</groupId>
         <artifactId>frontend-maven-plugin</artifactId>
-        <version>2.0.1</version>
+        <version>2.0.2</version>
         <configuration>
           <installDirectory>${project.build.directory}/js</installDirectory>
           <nodeVersion>${node.version}</nodeVersion>

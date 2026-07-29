@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Locale;
 
 import javax.measure.MetricPrefix;
+import javax.measure.Unit;
+import javax.measure.quantity.Pressure;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -105,7 +107,8 @@ public class ShellyComponents {
         thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_SLEEPTIME,
                 toQuantityType(getInteger(status.sleepTime), Units.SECOND));
 
-        thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_UPDATE, getOnOff(status.hasUpdate));
+        // Use nested update.hasUpdate (stable-only signal) rather than top-level hasUpdate which can include betas
+        thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_UPDATE, getOnOff(status.update.hasUpdate));
 
         if (profile.settings.calibrated != null) {
             thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_CALIBRATED,
@@ -651,7 +654,26 @@ public class ShellyComponents {
                         getOnOff(sdata.smoke));
             }
             if (sdata.mute != null) {
-                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MUTE, getOnOff(sdata.mute));
+                if (profile.isSmoke) {
+                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MUTE,
+                            getOnOff(sdata.mute));
+                } else if (profile.isFlood) {
+                    // Flood Gen4 has no mute channel; report mute/unmute via the device#alarm trigger instead
+                    thingHandler.postEvent(sdata.mute ? ALARM_TYPE_MUTED : ALARM_TYPE_NONE, false);
+                }
+            }
+            if (sdata.sensor == null && (sdata.sensorError != null || (profile.isFlood && profile.isGen2))) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ERROR,
+                        getStringType(sdata.sensorError));
+            }
+
+            if (profile.isFlood && profile.isGen2) {
+                if (!profile.floodAlarmMode.isEmpty()) {
+                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_ALARM_MODE,
+                            getStringType(profile.floodAlarmMode));
+                }
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_REPORT_HOLDOFF,
+                        toQuantityType((double) profile.reportHoldoff, DIGITS_NONE, Units.SECOND));
             }
 
             if (sdata.gasSensor != null) {
@@ -699,6 +721,46 @@ public class ShellyComponents {
             if (sdata.sensor != null && sdata.sensor.vibration != null) {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VIBRATION,
                         OnOffType.from(sdata.sensor.vibration));
+            }
+
+            // WS90
+            if (sdata.rain != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_RAINST,
+                        OnOffType.from(getBool(sdata.rain)));
+            }
+            if (sdata.windSpeed != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_WINDSP,
+                        toQuantityType(getDouble(sdata.windSpeed), DIGITS_WIND, Units.METRE_PER_SECOND));
+            }
+            if (sdata.windDirection != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_WINDDIR,
+                        toQuantityType(getDouble(sdata.windDirection), DIGITS_NONE, Units.DEGREE_ANGLE));
+            }
+            if (sdata.gustSpeed != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_GUSTSP,
+                        toQuantityType(getDouble(sdata.gustSpeed), DIGITS_WIND, Units.METRE_PER_SECOND));
+            }
+            if (sdata.gustDirection != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_GUSTDIR,
+                        toQuantityType(getDouble(sdata.gustDirection), DIGITS_NONE, Units.DEGREE_ANGLE));
+            }
+            if (sdata.pressure != null) {
+                Unit<Pressure> hpa = MetricPrefix.HECTO(SIUnits.PASCAL).asType(Pressure.class);
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_PRESSURE,
+                        toQuantityType(getDouble(sdata.pressure), DIGITS_PRESSURE, hpa));
+            }
+            if (sdata.precipitation != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_PRECIPITATION,
+                        toQuantityType(getDouble(sdata.precipitation), DIGITS_PRECIPITATION,
+                                MetricPrefix.MILLI(SIUnits.METRE)));
+            }
+            if (sdata.dewPoint != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_DEWPOINT,
+                        toQuantityType(getDouble(sdata.dewPoint), DIGITS_TEMP, SIUnits.CELSIUS));
+            }
+            if (sdata.uvIndex != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_UV,
+                        getDecimal(sdata.uvIndex, DIGITS_UV));
             }
 
             boolean charger = (getInteger(profile.settings.externalPower) == 1) || getBool(sdata.charger);
@@ -865,6 +927,9 @@ public class ShellyComponents {
                         updated |= thingHandler.updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Value",
                                 toQuantityType(0.0, DIGITS_NONE, Units.PERCENT));
                     }
+                }
+                if (dimmer.hasTimer != null) {
+                    updated |= thingHandler.updateChannel(groupName, CHANNEL_TIMER_ACTIVE, getOnOff(dimmer.hasTimer));
                 }
 
                 if (dimmers != null) {

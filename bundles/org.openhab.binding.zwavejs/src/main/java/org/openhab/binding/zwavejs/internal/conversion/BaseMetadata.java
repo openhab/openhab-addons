@@ -71,6 +71,8 @@ public abstract class BaseMetadata {
             Map.entry("Minutes", "min"), //
             Map.entry("seconds", "s"), //
             Map.entry("Seconds", "s"), //
+            Map.entry("kVar", "kvar"), //
+            Map.entry("kVarh", "kvarh"), //
             Map.entry("fahrenheit", "°F"), //
             Map.entry("min/sec", ""), // special case ZUI sends min/sec as unit, but is actually dimensionless
             Map.entry("°(C/F)", ""), // special case where Zwave JS sends °F/C as unit, but is actually dimensionless

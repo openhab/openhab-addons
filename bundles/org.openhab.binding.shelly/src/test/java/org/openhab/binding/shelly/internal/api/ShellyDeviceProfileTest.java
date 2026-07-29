@@ -85,6 +85,7 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYHT, false, false), //
                 Arguments.of(THING_TYPE_SHELLYGAS, false, false), //
                 Arguments.of(THING_TYPE_SHELLYFLOOD, false, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUSFLOOD, true, false), //
                 Arguments.of(THING_TYPE_SHELLYDOORWIN, false, false), //
                 Arguments.of(THING_TYPE_SHELLYDOORWIN2, false, false), //
                 Arguments.of(THING_TYPE_SHELLYSENSE, false, false), //
@@ -129,6 +130,7 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYBLUMOTION, true, true), //
                 Arguments.of(THING_TYPE_SHELLYBLUDISTANCE, true, true), //
                 Arguments.of(THING_TYPE_SHELLYBLUREMOTE, true, true), //
+                Arguments.of(THING_TYPE_SHELLYBLUWS90, true, true), //
 
                 // Shelly Pro series
                 Arguments.of(THING_TYPE_SHELLYPRO1, true, false), //
@@ -191,6 +193,7 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYBLUBUTTON1, "", 0, 0, 0, 5, CHANNEL_GROUP_STATUS),
                 Arguments.of(THING_TYPE_SHELLYHT, "", 0, 0, 0, 5, CHANNEL_GROUP_SENSOR),
                 Arguments.of(THING_TYPE_SHELLYFLOOD, "", 0, 0, 0, 5, CHANNEL_GROUP_SENSOR),
+                Arguments.of(THING_TYPE_SHELLYPLUSFLOOD, "", 0, 0, 0, 5, CHANNEL_GROUP_SENSOR),
                 Arguments.of(THING_TYPE_SHELLYDOORWIN, "", 0, 0, 0, 5, CHANNEL_GROUP_SENSOR),
                 Arguments.of(THING_TYPE_SHELLYSMOKE, "", 0, 0, 0, 5, CHANNEL_GROUP_SENSOR),
                 Arguments.of(THING_TYPE_SHELLYGAS, "", 0, 0, 0, 5, CHANNEL_GROUP_SENSOR),
@@ -198,7 +201,8 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYMOTION, "", 0, 0, 0, 5, CHANNEL_GROUP_SENSOR),
                 Arguments.of(THING_TYPE_SHELLYSENSE, "", 0, 0, 0, 5, CHANNEL_GROUP_SENSOR),
                 Arguments.of(THING_TYPE_SHELLYTRV, "", 0, 0, 0, 5, CHANNEL_GROUP_SENSOR),
-                Arguments.of(THING_TYPE_SHELLYPLUSWALLDISPLAY, "", 0, 0, 0, 5, CHANNEL_GROUP_SENSOR));
+                Arguments.of(THING_TYPE_SHELLYPLUSWALLDISPLAY, "", 0, 0, 0, 5, CHANNEL_GROUP_SENSOR),
+                Arguments.of(THING_TYPE_SHELLYBLUWS90, "", 0, 0, 0, 5, CHANNEL_GROUP_SENSOR));
     }
 
     @ParameterizedTest
@@ -280,8 +284,6 @@ public class ShellyDeviceProfileTest {
         assertThat(deviceProfile.numInputs, is(equalTo(-1)));
     }
 
-    // resolveNumMeters(thingTypeUID, fromDevice, fromDeviceConfig, isLight, inColor, numOutputs,
-    // hasRelays, numRelays, numRollers, isRoller) -> expected
     @ParameterizedTest
     @MethodSource("provideTestCasesForResolveNumMeters")
     void resolveNumMeters(ThingTypeUID thingTypeUID, int fromDevice, int fromDeviceConfig, boolean isLight,
@@ -350,5 +352,83 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYHT, -1, -1, false, false, 0, false, 0, 0, false, 0), //
                 Arguments.of(THING_TYPE_SHELLYBLUBUTTON1, -1, -1, false, false, 0, false, 0, 0, false, 0), //
                 Arguments.of(THING_TYPE_SHELLYBLUHT, -1, -1, false, false, 0, false, 0, 0, false, 0)); //
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForExtractFwVersion")
+    void extractFwVersion(String rawFwId, String expectedVersion) {
+        assertThat(ShellyDeviceProfile.extractFwVersion(rawFwId), is(equalTo(expectedVersion)));
+    }
+
+    private static Stream<Arguments> provideTestCasesForExtractFwVersion() {
+        return Stream.of( //
+                Arguments.of("20210319-122304/v1.7.5-g9979d16", "1.7.5"), //
+                Arguments.of("20210319-122304/v1.10.0-rc2-89-g623b41ec0-master", "1.10.0-rc2"), //
+                Arguments.of("20200911-133751/v1.8.5-beta1-g7e7e3b24", "1.8.5-beta1"), //
+                Arguments.of("20210226-091047/v1.9.0", "1.9.0"), //
+                Arguments.of("20210226-091047/v.1.10-g623b41ec0", "1.10.0"), //
+                Arguments.of("20220809-125346/v1.12-g99f7e0b", "1.12.0"), //
+                Arguments.of("20260520-144343/2.6.2-06f6da23", "2.6.2-06f6da23"), //
+                Arguments.of("20260520-144343/2.6.2-beta1-06f6da23", "2.6.2-beta1"), //
+                Arguments.of("20260520-144343/2.6.2-rc1-06f6da23", "2.6.2-rc1"), //
+                Arguments.of("20240101-101010/1.4.4", "1.4.4"), //
+                Arguments.of("20240315-093012/1.5.1-cabf215a", "1.5.1-cabf215a"), //
+                Arguments.of("2.6.3", "2.6.3"), //
+                Arguments.of("", ""), //
+                Arguments.of("garbage", ""), //
+                Arguments.of((Object) null, "")); //
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForExtractAppVersion")
+    void extractAppVersion(String rawVer, String expectedVersion) {
+        assertThat(ShellyDeviceProfile.extractAppVersion(rawVer), is(equalTo(expectedVersion)));
+    }
+
+    private static Stream<Arguments> provideTestCasesForExtractAppVersion() {
+        return Stream.of( //
+                // suffix contains 'g' as part of a product code, not a git-describe hash - must be kept in full
+                Arguments.of("1.7.99-powerstripg4prod1", "1.7.99-powerstripg4prod1"), //
+                Arguments.of("1.14.0", "1.14.0"), //
+                Arguments.of("", ""), //
+                Arguments.of((Object) null, "")); //
+    }
+
+    @Test
+    void ws90ProfileFlagsSetCorrectly() throws ShellyApiException {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYBLUWS90);
+        profile.initialize(THING_TYPE_SHELLYBLUWS90, "{}", new ShellySettingsDevice());
+
+        assertThat("isWS90", profile.isWS90, is(true));
+        assertThat("isSensor (WS90 contributes to isSensor)", profile.isSensor, is(true));
+        assertThat("hasBattery (all BLU devices)", profile.hasBattery, is(true));
+        assertThat("alwaysOn false for battery-powered BLU", profile.alwaysOn, is(false));
+        assertThat("isBlu", profile.isBlu, is(true));
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForFloodDeviceProfile")
+    void floodDeviceProfile(ThingTypeUID thingTypeUID, boolean expectedIsFlood, boolean expectedIsSensor,
+            boolean expectedHasBattery, boolean expectedAlwaysOn, boolean expectedIsGen2) {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(thingTypeUID);
+        assertThat("isFlood for " + thingTypeUID, profile.isFlood, is(equalTo(expectedIsFlood)));
+        assertThat("isSensor for " + thingTypeUID, profile.isSensor, is(equalTo(expectedIsSensor)));
+        assertThat("hasBattery for " + thingTypeUID, profile.hasBattery, is(equalTo(expectedHasBattery)));
+        assertThat("alwaysOn for " + thingTypeUID, profile.alwaysOn, is(equalTo(expectedAlwaysOn)));
+        assertThat("isGen2 for " + thingTypeUID, profile.isGen2, is(equalTo(expectedIsGen2)));
+    }
+
+    private static Stream<Arguments> provideTestCasesForFloodDeviceProfile() {
+        return Stream.of( //
+                // Gen1 flood: not Gen2, battery-powered, sensor
+                Arguments.of(THING_TYPE_SHELLYFLOOD, true, true, true, false, false), //
+                // Gen4 flood: Gen2, battery-powered, sensor
+                Arguments.of(THING_TYPE_SHELLYPLUSFLOOD, true, true, true, false, true), //
+                // Smoke: not flood, is smoke, battery, sensor
+                Arguments.of(THING_TYPE_SHELLYPLUSSMOKE, false, true, true, false, true), //
+                // HT: not flood, is sensor, battery
+                Arguments.of(THING_TYPE_SHELLYPLUSHT, false, true, true, false, true), //
+                // Relay: not flood, not sensor, always-on
+                Arguments.of(THING_TYPE_SHELLYPLUS1, false, false, false, true, true));
     }
 }
