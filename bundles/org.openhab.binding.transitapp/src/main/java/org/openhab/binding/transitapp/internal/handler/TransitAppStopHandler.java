@@ -111,6 +111,16 @@ public class TransitAppStopHandler extends BaseThingHandler {
                                         break;
                                     }
 
+                                    Long depTime = schedule.departureTime;
+                                    if (depTime == null) {
+                                        continue;
+                                    }
+
+                                    long diff = (depTime - now) / 60;
+                                    if (diff < 0) {
+                                        continue;
+                                    }
+
                                     String prefix = "depart" + groupIdx + "#";
 
                                     if (shortName != null) {
@@ -124,16 +134,6 @@ public class TransitAppStopHandler extends BaseThingHandler {
                                         updateState(prefix + "route-long-name", new StringType(longName));
                                     } else {
                                         updateState(prefix + "route-long-name", org.openhab.core.types.UnDefType.UNDEF);
-                                    }
-
-                                    Long depTime = schedule.departureTime;
-                                    if (depTime == null) {
-                                        continue;
-                                    }
-
-                                    long diff = (depTime - now) / 60;
-                                    if (diff < 0) {
-                                        continue;
                                     }
 
                                     updateState(prefix + "minutes-until-departure",
