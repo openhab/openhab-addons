@@ -241,7 +241,7 @@ public class JRubyScriptEngineConfiguration {
 
     /**
      * Run bundle install or update.
-     * 
+     *
      * This is to be called at start up or configuration change,
      * so that gems are available when user scripts are run.
      *
@@ -249,7 +249,7 @@ public class JRubyScriptEngineConfiguration {
      * @param update when true, run Bundler update, otherwise run Bundler install
      */
     public void bundlerInit(ScriptEngine engine, boolean update) {
-        String operation = update ? "update" : "install";
+        String operation = update ? "update --all" : "install";
         String code = """
                 require "jruby"
                 JRuby.runtime.instance_config.update_native_env_enabled = false
@@ -257,7 +257,8 @@ public class JRubyScriptEngineConfiguration {
                 require "bundler"
                 require "bundler/cli"
 
-                Bundler::CLI.start(["%s"])
+                args = "%s".split
+                Bundler::CLI.start(args)
                 """.formatted(operation);
 
         try {
@@ -302,7 +303,7 @@ public class JRubyScriptEngineConfiguration {
 
     /**
      * Install a gems in ScriptEngine
-     * 
+     *
      * @param engine Engine to install gems
      */
     synchronized void configureGems(ScriptEngine engine, boolean update) {
