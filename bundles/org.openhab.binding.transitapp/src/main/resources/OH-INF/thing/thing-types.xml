@@ -162,8 +162,8 @@
 		<label>@text/group.upcomingStop.label</label>
 		<channels>
 			<channel id="stopName" typeId="stopName"/>
-			<channel id="scheduledTime" typeId="departureTime"/>
-			<channel id="realtimeTime" typeId="departureTime"/>
+			<channel id="scheduledTime" typeId="scheduledTime"/>
+			<channel id="realtimeTime" typeId="realtimeTime"/>
 			<channel id="delayMinutes" typeId="delayMinutes"/>
 			<channel id="minutesUntilDeparture" typeId="minutesUntilDeparture"/>
 			<channel id="platform" typeId="platform"/>
@@ -333,10 +333,5 @@
 		<description>@text/channel.bikesAllowed.description</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="timeToTarget">
-		<item-type>Number:Time</item-type>
-		<label>@text/channel.timeToTarget.label</label>
-		<description>@text/channel.timeToTarget.description</description>
-		<state readOnly="true" pattern="%d %unit%"/>
-	</channel-type>
+
 </thing:thing-descriptions>

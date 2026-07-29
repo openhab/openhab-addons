@@ -30,7 +30,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class TransitApiClient {
     private final HttpClient httpClient = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(10)).build();
     private final Map<String, CachedResponse> cache = new ConcurrentHashMap<>();
-    private long rateLimitResetTime = 0;
+    private volatile long rateLimitResetTime = 0;
     private static final long CACHE_TTL_MS = 30_000;
 
     @SuppressWarnings("null")

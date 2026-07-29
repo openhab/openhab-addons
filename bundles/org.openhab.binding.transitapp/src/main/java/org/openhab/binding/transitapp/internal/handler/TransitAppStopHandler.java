@@ -45,8 +45,12 @@ public class TransitAppStopHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        Number refreshIntervalNum = (Number) getThing().getConfiguration().get("refreshInterval");
-        long refreshInterval = refreshIntervalNum != null ? refreshIntervalNum.longValue() : 60L;
+        ScheduledFuture<?> job = refreshJob;
+        if (job != null) {
+            job.cancel(true);
+        }
+        Object refreshIntervalObj = getThing().getConfiguration().get("refreshInterval");
+        long refreshInterval = refreshIntervalObj instanceof Number ? ((Number) refreshIntervalObj).longValue() : 60L;
         refreshJob = scheduler.scheduleWithFixedDelay(this::pollTransitApi, 1, refreshInterval, TimeUnit.SECONDS);
         updateStatus(ThingStatus.ONLINE);
     }
@@ -59,11 +63,15 @@ public class TransitAppStopHandler extends BaseThingHandler {
     }
 
     private void pollTransitApi() {
-        String globalStopId = (String) getThing().getConfiguration().get("globalStopId");
         Bridge bridge = getBridge();
+        if (bridge == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Bridge not found");
+            return;
+        }
 
-        if (globalStopId == null || globalStopId.isEmpty() || bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Stop ID or Bridge missing");
+        String globalStopId = (String) getThing().getConfiguration().get("globalStopId");
+        if (globalStopId == null || globalStopId.isEmpty()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Stop ID is missing");
             return;
         }
 
@@ -117,6 +125,9 @@ public class TransitAppStopHandler extends BaseThingHandler {
                                         if (schedule.has("departure_time")) {
                                             long depTime = schedule.get("departure_time").getAsLong();
                                             long diff = (depTime - now) / 60;
+                                            if (diff < 0) {
+                                                continue;
+                                            }
                                             updateState(prefix + "minutesUntilDeparture", new QuantityType<>(diff,
                                                     org.openhab.core.library.unit.Units.MINUTE));
                                             updateState(prefix + "departureTime",

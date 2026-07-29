@@ -31,9 +31,6 @@ This binding integrates public transit information and real-time departure detai
 | Parameter | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
 | `routeId` | TEXT | | Global route identifier (e.g., `VVSDE:247174`) (required). |
-| `includeNextDeparture` | BOOLEAN | `false` | Include next departure for each stop. |
-| `stopDetailed` | BOOLEAN | `false` | Return detailed stop objects. |
-| `locale` | TEXT | | Language locale for translated names (optional). |
 | `refreshInterval` | INTEGER | `300` | Polling interval in seconds. |
 
 ### Trip Details (`tripdetails`)
@@ -42,8 +39,6 @@ This binding integrates public transit information and real-time departure detai
 | :--- | :--- | :--- | :--- |
 | `tripId` | TEXT | | Trip search key (e.g., `VVSDE:52245421:47:2:22`) (required). |
 | `targetStopId` | TEXT | | Destination stop ID to calculate the `timeToTarget` countdown (optional). |
-| `includeContinuation` | BOOLEAN | `false` | Append immediate next trip stops if vehicle continues in-seat. |
-| `locale` | TEXT | | Language locale for translated strings (optional). |
 | `refreshInterval` | INTEGER | `60` | Polling interval in seconds. |
 
 ## Channels
