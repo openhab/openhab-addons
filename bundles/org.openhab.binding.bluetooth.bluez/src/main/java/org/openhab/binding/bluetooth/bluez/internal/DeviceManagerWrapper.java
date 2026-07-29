@@ -52,17 +52,8 @@ public class DeviceManagerWrapper {
     public synchronized @Nullable BluetoothAdapter getAdapter(BluetoothAddress address) {
         DeviceManager deviceManager = this.deviceManager;
         if (deviceManager != null) {
-            // we don't use `deviceManager.getAdapter` here since it might perform a scan if the adapter is missing.
             String addr = address.toString();
-            List<BluetoothAdapter> adapters = deviceManager.getAdapters();
-            if (adapters != null) {
-                for (BluetoothAdapter btAdapter : adapters) {
-                    String btAddr = btAdapter.getAddress();
-                    if (addr.equalsIgnoreCase(btAddr)) {
-                        return btAdapter;
-                    }
-                }
-            }
+            return deviceManager.getAdapter(addr);
         }
         return null;
     }
