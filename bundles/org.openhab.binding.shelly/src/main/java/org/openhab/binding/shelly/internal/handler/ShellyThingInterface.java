@@ -128,4 +128,8 @@ public interface ShellyThingInterface {
     void incProtErrors();
 
     void startScan();
+
+    default @Nullable ShellyLightModel getLightModel(int lightId) {
+        return null;
+    }
 }

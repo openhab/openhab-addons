@@ -14,6 +14,7 @@ package org.openhab.binding.shelly.internal.handler;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
+import static org.openhab.binding.shelly.internal.handler.ShellyLightModel.RGBW.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.List;
@@ -50,6 +51,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSe
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtVoltage.ShellyShortVoltage;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyThermnostat;
 import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
+import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
@@ -872,14 +874,14 @@ public class ShellyComponents {
                 return false;
             }
             ShellySettingsLight light = orgStatus.lights.get(0);
-            ShellyColorUtils col = new ShellyColorUtils();
+            ShellyLightModel col = getLightModel(thingHandler, 0);
             col.setRGBW(light.red, light.green, light.blue, light.white);
-            updated |= thingHandler.updateChannel(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_RED, col.percentRed);
-            updated |= thingHandler.updateChannel(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GREEN, col.percentGreen);
-            updated |= thingHandler.updateChannel(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_BLUE, col.percentBlue);
-            updated |= thingHandler.updateChannel(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_WHITE, col.percentWhite);
-            updated |= thingHandler.updateChannel(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_PICKER, col.toHSB());
-
+            updated |= thingHandler.updateChannel(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_RED, col.getColor(R));
+            updated |= thingHandler.updateChannel(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GREEN, col.getColor(G));
+            updated |= thingHandler.updateChannel(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_BLUE, col.getColor(B));
+            updated |= thingHandler.updateChannel(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_WHITE, col.getColor(W));
+            updated |= thingHandler.updateChannel(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_PICKER,
+                    col.getColor() instanceof HSBType hsb ? hsb : UnDefType.NULL);
         }
         return updated;
     }
@@ -982,5 +984,13 @@ public class ShellyComponents {
             return ImperialUnits.FAHRENHEIT.getConverterTo(SIUnits.CELSIUS).convert(temp).doubleValue();
         }
         return temp;
+    }
+
+    protected static ShellyLightModel getLightModel(ShellyThingInterface thingHandler, int lightId)
+            throws ShellyApiException {
+        if (thingHandler.getLightModel(lightId) instanceof ShellyLightModel col) {
+            return col;
+        }
+        throw new ShellyApiException("Unable to resolve light model for index " + lightId);
     }
 }

@@ -14,6 +14,7 @@ package org.openhab.binding.shelly.internal.api1;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
+import static org.openhab.binding.shelly.internal.handler.ShellyLightModel.RGBW.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.List;
@@ -26,7 +27,7 @@ import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.CoIotDescrBlk;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.CoIotDescrSen;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.CoIotSensor;
-import org.openhab.binding.shelly.internal.handler.ShellyColorUtils;
+import org.openhab.binding.shelly.internal.handler.ShellyLightModel;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
@@ -73,7 +74,7 @@ public class Shelly1CoIoTProtocol {
     }
 
     protected boolean handleStatusUpdate(List<CoIotSensor> sensorUpdates, CoIotDescrSen sen, CoIotSensor s,
-            Map<String, State> updates, ShellyColorUtils col) {
+            Map<String, State> updates) {
         // Process status information and convert into channel updates
         int rIndex = getIdFromBlk(sen);
         String rGroup = getProfile().numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL
@@ -96,6 +97,7 @@ public class Shelly1CoIoTProtocol {
                         toQuantityType(s.value, DIGITS_LUX, Units.LUX));
                 break;
             case "s": // CatchAll
+                ShellyLightModel col = getLightModelForSensor(sen);
                 switch (sen.desc.toLowerCase(Locale.ROOT)) {
                     case "state": // Relay status +
                     case "output":
@@ -141,29 +143,24 @@ public class Shelly1CoIoTProtocol {
                         break;
                     // RGBW2/Bulb
                     case "red":
-                        col.setRed((int) s.value);
-                        updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_RED,
-                                ShellyColorUtils.toPercent((int) s.value));
+                        col.setColor(R, (int) s.value);
+                        updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_RED, col.getColor(R));
                         break;
                     case "green":
-                        col.setGreen((int) s.value);
-                        updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GREEN,
-                                ShellyColorUtils.toPercent((int) s.value));
+                        col.setColor(G, (int) s.value);
+                        updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GREEN, col.getColor(G));
                         break;
                     case "blue":
-                        col.setBlue((int) s.value);
-                        updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_BLUE,
-                                ShellyColorUtils.toPercent((int) s.value));
+                        col.setColor(B, (int) s.value);
+                        updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_BLUE, col.getColor(B));
                         break;
                     case "white":
-                        col.setWhite((int) s.value);
-                        updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_WHITE,
-                                ShellyColorUtils.toPercent((int) s.value));
+                        col.setColor(W, (int) s.value);
+                        updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_WHITE, col.getColor(W));
                         break;
                     case "gain":
                         col.setGain((int) s.value);
-                        updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GAIN,
-                                ShellyColorUtils.toPercent((int) s.value, SHELLY_MIN_GAIN, SHELLY_MAX_GAIN));
+                        updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GAIN, col.getGain());
                         break;
                     case "sensorerror":
                         String sensorError = s.valueStr != null ? getString(s.valueStr) : "" + s.value;
@@ -389,5 +386,13 @@ public class Shelly1CoIoTProtocol {
 
     public String getLastWakeup() {
         return lastWakeup;
+    }
+
+    protected ShellyLightModel getLightModelForSensor(CoIotDescrSen sen) {
+        int lightId = getIdFromBlk(sen) - 1; // getIdFromBlk() is 1 based
+        if (lightId >= 0 && thingHandler.getLightModel(lightId) instanceof ShellyLightModel model) {
+            return model;
+        }
+        throw new IllegalArgumentException("Unable to resolve light index for sensor " + sen.id);
     }
 }

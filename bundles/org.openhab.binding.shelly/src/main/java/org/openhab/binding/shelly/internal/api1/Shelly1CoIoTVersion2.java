@@ -30,7 +30,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.CoIotDescrBlk;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.CoIotDescrSen;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.CoIotSensor;
-import org.openhab.binding.shelly.internal.handler.ShellyColorUtils;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
@@ -72,9 +71,9 @@ public class Shelly1CoIoTVersion2 extends Shelly1CoIoTProtocol implements Shelly
      */
     @Override
     public boolean handleStatusUpdate(List<CoIotSensor> sensorUpdates, CoIotDescrSen sen, int serial, CoIotSensor s,
-            Map<String, State> updates, ShellyColorUtils col) {
+            Map<String, State> updates) {
         // first check the base implementation
-        if (super.handleStatusUpdate(sensorUpdates, sen, s, updates, col)) {
+        if (super.handleStatusUpdate(sensorUpdates, sen, s, updates)) {
             // process by the base class
             return true;
         }
