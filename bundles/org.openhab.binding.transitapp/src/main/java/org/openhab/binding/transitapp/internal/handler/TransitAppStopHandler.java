@@ -36,6 +36,7 @@ public class TransitAppStopHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(TransitAppStopHandler.class);
     private final TransitApiClient apiClient = new TransitApiClient();
+    private final java.util.Map<String, String> latestLineDepartures = new java.util.concurrent.ConcurrentHashMap<>();
     private @Nullable ScheduledFuture<?> refreshJob;
 
     public TransitAppStopHandler(Thing thing) {
@@ -71,21 +72,19 @@ public class TransitAppStopHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "API Key missing on bridge");
             return;
         }
+
         try {
             String response = apiClient.fetchStopDepartures(apiKey, globalStopId);
             logger.debug("Polling transit API for stop ID: {}", globalStopId);
             logger.trace("Received raw JSON response for stop {}: {}", globalStopId, response);
             updateStatus(ThingStatus.ONLINE);
 
-            // Trigger Event Channel on success as an example
-            // triggerChannel removed as it was not in XML
-
-            // Real JSON parsing without dummy data
             try {
                 com.google.gson.JsonObject jsonResponse = com.google.gson.JsonParser.parseString(response)
                         .getAsJsonObject();
                 int groupIdx = 1;
                 long now = System.currentTimeMillis() / 1000;
+                latestLineDepartures.clear();
 
                 if (jsonResponse.has("route_departures")) {
                     com.google.gson.JsonArray departures = jsonResponse.getAsJsonArray("route_departures");
@@ -108,16 +107,70 @@ public class TransitAppStopHandler extends BaseThingHandler {
                                         com.google.gson.JsonObject schedule = schedules.get(k).getAsJsonObject();
                                         String prefix = "depart" + groupIdx + "#";
 
-                                        if (shortName != null)
+                                        if (shortName != null) {
                                             updateState(prefix + "routeShortName", new StringType(shortName));
-                                        if (longName != null)
+                                        }
+                                        if (longName != null) {
                                             updateState(prefix + "routeLongName", new StringType(longName));
+                                        }
 
                                         if (schedule.has("departure_time")) {
                                             long depTime = schedule.get("departure_time").getAsLong();
                                             long diff = (depTime - now) / 60;
                                             updateState(prefix + "minutesUntilDeparture", new QuantityType<>(diff,
                                                     org.openhab.core.library.unit.Units.MINUTE));
+                                            updateState(prefix + "departureTime",
+                                                    new org.openhab.core.library.types.DateTimeType(
+                                                            java.time.ZonedDateTime.ofInstant(
+                                                                    java.time.Instant.ofEpochSecond(depTime),
+                                                                    java.time.ZoneId.systemDefault())));
+                                            if (shortName != null && !latestLineDepartures.containsKey(shortName)) {
+                                                latestLineDepartures
+                                                        .put(shortName,
+                                                                java.time.LocalTime
+                                                                        .ofInstant(
+                                                                                java.time.Instant
+                                                                                        .ofEpochSecond(depTime),
+                                                                                java.time.ZoneId.systemDefault())
+                                                                        .toString());
+                                            }
+                                        } else {
+                                            updateState(prefix + "departureTime",
+                                                    org.openhab.core.types.UnDefType.UNDEF);
+                                        }
+
+                                        if (schedule.has("delay")) {
+                                            long delaySec = schedule.get("delay").getAsLong();
+                                            updateState(prefix + "delayMinutes", new QuantityType<>(delaySec / 60,
+                                                    org.openhab.core.library.unit.Units.MINUTE));
+                                        } else {
+                                            updateState(prefix + "delayMinutes",
+                                                    org.openhab.core.types.UnDefType.UNDEF);
+                                        }
+
+                                        if (schedule.has("track") && !schedule.get("track").isJsonNull()) {
+                                            updateState(prefix + "platform",
+                                                    new StringType(schedule.get("track").getAsString()));
+                                        } else {
+                                            updateState(prefix + "platform", org.openhab.core.types.UnDefType.UNDEF);
+                                        }
+
+                                        if (schedule.has("wheelchair_accessible")) {
+                                            updateState(prefix + "wheelchairAccessible",
+                                                    schedule.get("wheelchair_accessible").getAsBoolean()
+                                                            ? org.openhab.core.library.types.OnOffType.ON
+                                                            : org.openhab.core.library.types.OnOffType.OFF);
+                                        } else {
+                                            updateState(prefix + "wheelchairAccessible",
+                                                    org.openhab.core.types.UnDefType.UNDEF);
+                                        }
+
+                                        if (schedule.has("occupancy_status")
+                                                && !schedule.get("occupancy_status").isJsonNull()) {
+                                            updateState(prefix + "occupancy",
+                                                    new StringType(schedule.get("occupancy_status").getAsString()));
+                                        } else {
+                                            updateState(prefix + "occupancy", org.openhab.core.types.UnDefType.UNDEF);
                                         }
 
                                         if (schedule.has("is_cancelled")) {
@@ -125,6 +178,8 @@ public class TransitAppStopHandler extends BaseThingHandler {
                                                     schedule.get("is_cancelled").getAsBoolean()
                                                             ? org.openhab.core.library.types.OnOffType.ON
                                                             : org.openhab.core.library.types.OnOffType.OFF);
+                                        } else {
+                                            updateState(prefix + "isCancelled", org.openhab.core.types.UnDefType.UNDEF);
                                         }
                                         groupIdx++;
                                     }
@@ -134,15 +189,18 @@ public class TransitAppStopHandler extends BaseThingHandler {
                     }
                 }
 
-                // Clear remaining unused channels
                 for (int i = groupIdx; i <= 10; i++) {
                     String prefix = "depart" + i + "#";
                     updateState(prefix + "routeShortName", org.openhab.core.types.UnDefType.UNDEF);
                     updateState(prefix + "routeLongName", org.openhab.core.types.UnDefType.UNDEF);
+                    updateState(prefix + "departureTime", org.openhab.core.types.UnDefType.UNDEF);
                     updateState(prefix + "minutesUntilDeparture", org.openhab.core.types.UnDefType.UNDEF);
+                    updateState(prefix + "delayMinutes", org.openhab.core.types.UnDefType.UNDEF);
+                    updateState(prefix + "platform", org.openhab.core.types.UnDefType.UNDEF);
+                    updateState(prefix + "wheelchairAccessible", org.openhab.core.types.UnDefType.UNDEF);
+                    updateState(prefix + "occupancy", org.openhab.core.types.UnDefType.UNDEF);
                     updateState(prefix + "isCancelled", org.openhab.core.types.UnDefType.UNDEF);
                 }
-
             } catch (Exception parseEx) {
                 logger.warn("Failed to parse JSON for stop {}: {}", globalStopId, parseEx.getMessage());
             }
@@ -154,8 +212,7 @@ public class TransitAppStopHandler extends BaseThingHandler {
     }
 
     public String findNextDepartureByLine(String lineName) {
-        // Mocked for Binding Action
-        return "12:45";
+        return latestLineDepartures.getOrDefault(lineName, "N/A");
     }
 
     @Override

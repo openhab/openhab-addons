@@ -37,18 +37,11 @@ import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * The {@link TransitAppRouteDetailsHandler} is responsible for polling route details
- * and itineraries from the Transit API at configured intervals.
- *
- * @author Initial contribution - Initial contribution
- */
 @NonNullByDefault
 public class TransitAppRouteDetailsHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(TransitAppRouteDetailsHandler.class);
     private final HttpClient httpClient = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(10)).build();
-
     private @Nullable ScheduledFuture<?> refreshJob;
 
     public TransitAppRouteDetailsHandler(Thing thing) {
@@ -57,51 +50,34 @@ public class TransitAppRouteDetailsHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Initializing TransitAppRouteDetailsHandler for thing: {}", getThing().getUID());
-
         Number refreshIntervalNum = (Number) getThing().getConfiguration().get("refreshInterval");
         long refreshInterval = refreshIntervalNum != null ? refreshIntervalNum.longValue() : 300L;
-
-        logger.info("Scheduling route details refresh job for {} with interval: {} seconds", getThing().getUID(),
-                refreshInterval);
-
         refreshJob = scheduler.scheduleWithFixedDelay(this::pollTransitApi, 1, refreshInterval, TimeUnit.SECONDS);
         updateStatus(ThingStatus.ONLINE);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("Received command {} for channel {}", command, channelUID);
         if (command instanceof RefreshType) {
             pollTransitApi();
-        } else {
-            logger.warn("Unsupported command received: {} for channel {}", command, channelUID);
         }
     }
 
     private void pollTransitApi() {
-        logger.trace("TRACE: Starting background poll for route details thing {}", getThing().getUID());
-
         String routeId = (String) getThing().getConfiguration().get("routeId");
         if (routeId == null || routeId.isEmpty()) {
-            logger.debug("Polling route details for route ID");
-            logger.error("ERROR: routeId is not configured for thing {}", getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Route ID is missing");
             return;
         }
 
         Bridge bridge = getBridge();
         if (bridge == null) {
-            logger.debug("Polling route details for route ID");
-            logger.error("ERROR: Route details thing {} is not attached to a Bridge!", getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Bridge not found");
             return;
         }
 
         String apiKey = (String) bridge.getConfiguration().get("apiKey");
         if (apiKey == null || apiKey.isEmpty()) {
-            logger.debug("Polling route details for route ID");
-            logger.error("ERROR: API Key is missing on the TransitApp Bridge!");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "API Key missing on bridge");
             return;
         }
@@ -109,41 +85,54 @@ public class TransitAppRouteDetailsHandler extends BaseThingHandler {
         try {
             String urlStr = "https://external.transitapp.com/v4/public/route_details?global_route_id="
                     + URLEncoder.encode(routeId, StandardCharsets.UTF_8);
-            logger.debug("DEBUG: Building HTTP request for Route Details URL: {}", urlStr);
+            HttpRequest request = HttpRequest.newBuilder().uri(URI.create(urlStr)).timeout(Duration.ofSeconds(10))
+                    .header("apiKey", apiKey).GET().build();
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            int statusCode = response.statusCode();
+            String jsonBody = response.body();
 
-            HttpRequest request = HttpRequest.newBuilder().uri(URI.create(urlStr)).header("apiKey", apiKey).GET()
-                    .build();
+            if (statusCode == 200) {
+                logger.debug("Successfully polled route details for route ID {}", routeId);
+                updateStatus(ThingStatus.ONLINE);
 
-            httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenAccept(response -> {
-                int statusCode = response.statusCode();
-                String jsonBody = response.body();
+                try {
+                    com.google.gson.JsonObject jsonResponse = com.google.gson.JsonParser.parseString(jsonBody)
+                            .getAsJsonObject();
+                    com.google.gson.JsonObject route = jsonResponse.has("route") ? jsonResponse.getAsJsonObject("route")
+                            : jsonResponse;
 
-                if (statusCode == 200) {
-                    logger.info("INFO: Successfully polled route details for route ID {}", routeId);
-                    logger.debug("DEBUG: Full JSON response for route {}: {}", routeId, jsonBody);
-                    updateStatus(ThingStatus.ONLINE);
+                    if (route.has("route_long_name") && !route.get("route_long_name").isJsonNull()) {
+                        updateState("route#routeLongName", new StringType(route.get("route_long_name").getAsString()));
+                    }
+                    if (route.has("route_short_name") && !route.get("route_short_name").isJsonNull()) {
+                        updateState("route#routeShortName",
+                                new StringType(route.get("route_short_name").getAsString()));
+                    }
+                    if (route.has("route_color") && !route.get("route_color").isJsonNull()) {
+                        updateState("route#routeColor", new StringType(route.get("route_color").getAsString()));
+                    }
 
-                    updateState("route#routeLongName", new StringType("Live Route Data"));
-                    updateState("route#activeAlertsCount", new DecimalType(0));
-                } else {
-                    logger.warn("WARN: Transit API returned status code {} for route {}. Response body: {}", statusCode,
-                            routeId, jsonBody);
+                    if (jsonResponse.has("alerts")) {
+                        com.google.gson.JsonArray alerts = jsonResponse.getAsJsonArray("alerts");
+                        updateState("route#activeAlertsCount", new DecimalType(alerts.size()));
+                    } else {
+                        updateState("route#activeAlertsCount", new DecimalType(0));
+                    }
+                } catch (Exception ex) {
+                    logger.warn("Failed to parse JSON for route {}: {}", routeId, ex.getMessage());
                 }
-            }).exceptionally(ex -> {
-                logger.debug("Polling route details for route ID");
-                logger.error("ERROR: Exception occurred while polling Transit API for route {}: {}", routeId,
-                        ex.getMessage(), ex);
-                return null;
-            });
+            } else {
+                logger.warn("Transit API returned status code {} for route {}.", statusCode, routeId);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "HTTP " + statusCode);
+            }
         } catch (Exception e) {
-            logger.debug("Polling route details for route ID");
-            logger.error("ERROR: Failed to create HTTP request for route {}: {}", routeId, e.getMessage(), e);
+            logger.warn("Communication error while polling route {}: {}", routeId, e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
     @Override
     public void dispose() {
-        logger.debug("Disposing TransitAppRouteDetailsHandler for thing: {}", getThing().getUID());
         ScheduledFuture<?> job = refreshJob;
         if (job != null) {
             job.cancel(true);

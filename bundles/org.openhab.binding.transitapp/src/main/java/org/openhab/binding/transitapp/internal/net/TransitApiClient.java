@@ -47,7 +47,8 @@ public class TransitApiClient {
 
         String url = "https://external.transitapp.com/v4/public/stop_departures?global_stop_id="
                 + URLEncoder.encode(globalStopId, StandardCharsets.UTF_8);
-        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).header("apiKey", apiKey).GET().build();
+        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).timeout(java.time.Duration.ofSeconds(10))
+                .header("apiKey", apiKey).GET().build();
 
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 

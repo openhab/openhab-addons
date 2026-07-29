@@ -60,20 +60,6 @@
 				<label>@text/config.routeId.label</label>
 				<description>@text/config.routeId.description</description>
 			</parameter>
-			<parameter name="includeNextDeparture" type="boolean" required="false">
-				<label>@text/config.includeNextDeparture.label</label>
-				<description>@text/config.includeNextDeparture.description</description>
-				<default>false</default>
-			</parameter>
-			<parameter name="stopDetailed" type="boolean" required="false">
-				<label>@text/config.stopDetailed.label</label>
-				<description>@text/config.stopDetailed.description</description>
-				<default>false</default>
-			</parameter>
-			<parameter name="locale" type="text" required="false">
-				<label>@text/config.locale.label</label>
-				<description>@text/config.locale.description</description>
-			</parameter>
 			<parameter name="refreshInterval" type="integer" min="30">
 				<label>@text/config.refreshInterval.label</label>
 				<description>@text/config.refreshInterval.description</description>
@@ -105,15 +91,6 @@
 			<parameter name="tripId" type="text" required="true">
 				<label>@text/config.tripId.label</label>
 				<description>@text/config.tripId.description</description>
-			</parameter>
-			<parameter name="includeContinuation" type="boolean" required="false">
-				<label>@text/config.includeContinuation.label</label>
-				<description>@text/config.includeContinuation.description</description>
-				<default>false</default>
-			</parameter>
-			<parameter name="locale" type="text" required="false">
-				<label>@text/config.locale.label</label>
-				<description>@text/config.locale.description</description>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" min="30">
 				<label>@text/config.refreshInterval.label</label>
@@ -159,7 +136,7 @@
 			<channel id="startLocation" typeId="stopName"/>
 			<channel id="destinationLocation" typeId="stopName"/>
 			<channel id="activeAlertsCount" typeId="activeAlertsCount"/>
-			<channel id="url" typeId="routeLongName"/>
+			<channel id="url" typeId="url"/>
 		</channels>
 	</channel-group-type>
 
@@ -332,4 +309,34 @@
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
+	<channel-type id="url">
+		<item-type>String</item-type>
+		<label>@text/channel.url.label</label>
+		<description>@text/channel.url.description</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="wheelchairAccessible">
+		<item-type>Switch</item-type>
+		<label>@text/channel.wheelchairAccessible.label</label>
+		<description>@text/channel.wheelchairAccessible.description</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="occupancy">
+		<item-type>String</item-type>
+		<label>@text/channel.occupancy.label</label>
+		<description>@text/channel.occupancy.description</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="bikesAllowed">
+		<item-type>Switch</item-type>
+		<label>@text/channel.bikesAllowed.label</label>
+		<description>@text/channel.bikesAllowed.description</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="timeToTarget">
+		<item-type>Number:Time</item-type>
+		<label>@text/channel.timeToTarget.label</label>
+		<description>@text/channel.timeToTarget.description</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
 </thing:thing-descriptions>
