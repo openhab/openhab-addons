@@ -88,18 +88,21 @@ public class TransitAppRouteDetailsHandler extends BaseThingHandler {
 
             RouteDetailsResult.Route route = result.getEffectiveRoute();
             if (route != null) {
-                if (route.routeLongName != null) {
-                    updateState("route#route-long-name", new StringType(route.routeLongName));
+                String longName = route.routeLongName;
+                if (longName != null) {
+                    updateState("route#route-long-name", new StringType(longName));
                 } else {
                     updateState("route#route-long-name", org.openhab.core.types.UnDefType.UNDEF);
                 }
-                if (route.routeShortName != null) {
-                    updateState("route#route-short-name", new StringType(route.routeShortName));
+                String shortName = route.routeShortName;
+                if (shortName != null) {
+                    updateState("route#route-short-name", new StringType(shortName));
                 } else {
                     updateState("route#route-short-name", org.openhab.core.types.UnDefType.UNDEF);
                 }
-                if (route.routeColor != null) {
-                    updateState("route#route-color", new StringType(route.routeColor));
+                String color = route.routeColor;
+                if (color != null) {
+                    updateState("route#route-color", new StringType(color));
                 } else {
                     updateState("route#route-color", org.openhab.core.types.UnDefType.UNDEF);
                 }

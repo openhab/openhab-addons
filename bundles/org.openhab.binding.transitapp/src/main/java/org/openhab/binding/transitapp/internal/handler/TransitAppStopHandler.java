@@ -126,11 +126,11 @@ public class TransitAppStopHandler extends BaseThingHandler {
                                         updateState(prefix + "route-long-name", org.openhab.core.types.UnDefType.UNDEF);
                                     }
 
-                                    if (schedule.departureTime == null) {
+                                    Long depTime = schedule.departureTime;
+                                    if (depTime == null) {
                                         continue;
                                     }
 
-                                    long depTime = schedule.departureTime;
                                     long diff = (depTime - now) / 60;
                                     if (diff < 0) {
                                         continue;
@@ -148,38 +148,42 @@ public class TransitAppStopHandler extends BaseThingHandler {
                                                         java.time.ZoneId.systemDefault()).toString());
                                     }
 
-                                    if (schedule.delay != null) {
-                                        updateState(prefix + "delay-minutes", new QuantityType<>(schedule.delay / 60,
+                                    Long delay = schedule.delay;
+                                    if (delay != null) {
+                                        updateState(prefix + "delay-minutes", new QuantityType<>(delay / 60,
                                                 org.openhab.core.library.unit.Units.MINUTE));
                                     } else {
                                         updateState(prefix + "delay-minutes", org.openhab.core.types.UnDefType.UNDEF);
                                     }
 
-                                    if (schedule.track != null) {
-                                        updateState(prefix + "platform", new StringType(schedule.track));
+                                    String track = schedule.track;
+                                    if (track != null) {
+                                        updateState(prefix + "platform", new StringType(track));
                                     } else {
                                         updateState(prefix + "platform", org.openhab.core.types.UnDefType.UNDEF);
                                     }
 
-                                    if (schedule.wheelchairAccessible != null) {
+                                    Boolean wheelchair = schedule.wheelchairAccessible;
+                                    if (wheelchair != null) {
                                         updateState(prefix + "wheelchair-accessible",
-                                                schedule.wheelchairAccessible
-                                                        ? org.openhab.core.library.types.OnOffType.ON
+                                                wheelchair ? org.openhab.core.library.types.OnOffType.ON
                                                         : org.openhab.core.library.types.OnOffType.OFF);
                                     } else {
                                         updateState(prefix + "wheelchair-accessible",
                                                 org.openhab.core.types.UnDefType.UNDEF);
                                     }
 
-                                    if (schedule.occupancyStatus != null) {
-                                        updateState(prefix + "occupancy", new StringType(schedule.occupancyStatus));
+                                    String occupancy = schedule.occupancyStatus;
+                                    if (occupancy != null) {
+                                        updateState(prefix + "occupancy", new StringType(occupancy));
                                     } else {
                                         updateState(prefix + "occupancy", org.openhab.core.types.UnDefType.UNDEF);
                                     }
 
-                                    if (schedule.isCancelled != null) {
+                                    Boolean isCancelled = schedule.isCancelled;
+                                    if (isCancelled != null) {
                                         updateState(prefix + "is-cancelled",
-                                                schedule.isCancelled ? org.openhab.core.library.types.OnOffType.ON
+                                                isCancelled ? org.openhab.core.library.types.OnOffType.ON
                                                         : org.openhab.core.library.types.OnOffType.OFF);
                                     } else {
                                         updateState(prefix + "is-cancelled", org.openhab.core.types.UnDefType.UNDEF);

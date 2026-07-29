@@ -14,41 +14,43 @@ package org.openhab.binding.transitapp.internal.net.dto;
 
 import java.util.List;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 public class TripDetailsResult {
-    public Trip trip;
-    public Vehicle vehicle;
-    public List<Stop> stops;
+    public @Nullable Trip trip;
+    public @Nullable Vehicle vehicle;
+    public @Nullable List<Stop> stops;
 
     @SerializedName("trip_headsign")
-    public String tripHeadsignFlat;
+    public @Nullable String tripHeadsignFlat;
     @SerializedName("route_short_name")
-    public String routeShortNameFlat;
+    public @Nullable String routeShortNameFlat;
 
     public static class Trip {
         @SerializedName("trip_headsign")
-        public String tripHeadsign;
+        public @Nullable String tripHeadsign;
         @SerializedName("route_short_name")
-        public String routeShortName;
+        public @Nullable String routeShortName;
     }
 
     public static class Vehicle {
-        public Location location;
+        public @Nullable Location location;
     }
 
     public static class Location {
-        public Double lat;
-        public Double lon;
+        public @Nullable Double lat;
+        public @Nullable Double lon;
     }
 
     public static class Stop {
         @SerializedName("global_stop_id")
-        public String globalStopId;
+        public @Nullable String globalStopId;
         @SerializedName("departure_time")
-        public Long departureTime;
+        public @Nullable Long departureTime;
         @SerializedName("stop_name")
-        public String stopName;
+        public @Nullable String stopName;
     }
 
     public Trip getEffectiveTrip() {

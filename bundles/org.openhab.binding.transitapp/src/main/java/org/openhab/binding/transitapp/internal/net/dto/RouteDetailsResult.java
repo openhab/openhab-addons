@@ -14,26 +14,28 @@ package org.openhab.binding.transitapp.internal.net.dto;
 
 import java.util.List;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 public class RouteDetailsResult {
-    public Route route;
-    public List<Object> alerts;
+    public @Nullable Route route;
+    public @Nullable List<Object> alerts;
 
     @SerializedName("route_long_name")
-    public String routeLongNameFlat;
+    public @Nullable String routeLongNameFlat;
     @SerializedName("route_short_name")
-    public String routeShortNameFlat;
+    public @Nullable String routeShortNameFlat;
     @SerializedName("route_color")
-    public String routeColorFlat;
+    public @Nullable String routeColorFlat;
 
     public static class Route {
         @SerializedName("route_long_name")
-        public String routeLongName;
+        public @Nullable String routeLongName;
         @SerializedName("route_short_name")
-        public String routeShortName;
+        public @Nullable String routeShortName;
         @SerializedName("route_color")
-        public String routeColor;
+        public @Nullable String routeColor;
     }
 
     public Route getEffectiveRoute() {

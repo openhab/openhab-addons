@@ -14,35 +14,37 @@ package org.openhab.binding.transitapp.internal.net.dto;
 
 import java.util.List;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 public class StopDeparturesResult {
     @SerializedName("route_departures")
-    public List<RouteDeparture> routeDepartures;
+    public @Nullable List<RouteDeparture> routeDepartures;
 
     public static class RouteDeparture {
         @SerializedName("route_short_name")
-        public String routeShortName;
+        public @Nullable String routeShortName;
         @SerializedName("route_long_name")
-        public String routeLongName;
-        public List<Itinerary> itineraries;
+        public @Nullable String routeLongName;
+        public @Nullable List<Itinerary> itineraries;
     }
 
     public static class Itinerary {
         @SerializedName("schedule_items")
-        public List<ScheduleItem> scheduleItems;
+        public @Nullable List<ScheduleItem> scheduleItems;
     }
 
     public static class ScheduleItem {
         @SerializedName("departure_time")
-        public Long departureTime;
-        public Long delay;
-        public String track;
+        public @Nullable Long departureTime;
+        public @Nullable Long delay;
+        public @Nullable String track;
         @SerializedName("wheelchair_accessible")
-        public Boolean wheelchairAccessible;
+        public @Nullable Boolean wheelchairAccessible;
         @SerializedName("occupancy_status")
-        public String occupancyStatus;
+        public @Nullable String occupancyStatus;
         @SerializedName("is_cancelled")
-        public Boolean isCancelled;
+        public @Nullable Boolean isCancelled;
     }
 }

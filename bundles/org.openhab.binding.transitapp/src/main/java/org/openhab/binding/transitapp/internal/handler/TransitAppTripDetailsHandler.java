@@ -91,13 +91,15 @@ public class TransitAppTripDetailsHandler extends BaseThingHandler {
 
             TripDetailsResult.Trip trip = result.getEffectiveTrip();
             if (trip != null) {
-                if (trip.tripHeadsign != null) {
-                    updateState("trip#trip-headsign", new StringType(trip.tripHeadsign));
+                String headsign = trip.tripHeadsign;
+                if (headsign != null) {
+                    updateState("trip#trip-headsign", new StringType(headsign));
                 } else {
                     updateState("trip#trip-headsign", org.openhab.core.types.UnDefType.UNDEF);
                 }
-                if (trip.routeShortName != null) {
-                    updateState("trip#route-short-name", new StringType(trip.routeShortName));
+                String shortName = trip.routeShortName;
+                if (shortName != null) {
+                    updateState("trip#route-short-name", new StringType(shortName));
                 } else {
                     updateState("trip#route-short-name", org.openhab.core.types.UnDefType.UNDEF);
                 }
@@ -106,10 +108,19 @@ public class TransitAppTripDetailsHandler extends BaseThingHandler {
                 updateState("trip#route-short-name", org.openhab.core.types.UnDefType.UNDEF);
             }
 
-            if (result.vehicle != null && result.vehicle.location != null && result.vehicle.location.lat != null
-                    && result.vehicle.location.lon != null) {
-                updateState("trip#location", new PointType(new DecimalType(result.vehicle.location.lat),
-                        new DecimalType(result.vehicle.location.lon)));
+            Double lat = null;
+            Double lon = null;
+            TripDetailsResult.Vehicle v = result.vehicle;
+            if (v != null) {
+                TripDetailsResult.Location loc = v.location;
+                if (loc != null) {
+                    lat = loc.lat;
+                    lon = loc.lon;
+                }
+            }
+
+            if (lat != null && lon != null) {
+                updateState("trip#location", new PointType(new DecimalType(lat), new DecimalType(lon)));
             } else {
                 updateState("trip#location", org.openhab.core.types.UnDefType.UNDEF);
             }
@@ -122,22 +133,26 @@ public class TransitAppTripDetailsHandler extends BaseThingHandler {
             int stopIdx = 1;
             if (result.stops != null) {
                 for (TripDetailsResult.Stop stop : result.stops) {
-                    if (targetStopId != null && !targetStopId.isBlank() && targetStopId.equals(stop.globalStopId)
-                            && stop.departureTime != null) {
-                        long diff = (stop.departureTime - now) / 60;
+                    String gStopId = stop.globalStopId;
+                    Long depTime = stop.departureTime;
+                    String sName = stop.stopName;
+
+                    if (targetStopId != null && !targetStopId.isBlank() && targetStopId.equals(gStopId)
+                            && depTime != null) {
+                        long diff = (depTime - now) / 60;
                         if (diff >= 0) {
                             updateState("trip#time-to-target", new QuantityType<>(diff, Units.MINUTE));
                         }
                     }
 
-                    if (stopIdx <= 10 && stop.departureTime != null && stop.departureTime > now) {
+                    if (stopIdx <= 10 && depTime != null && depTime > now) {
                         String prefix = "stop" + stopIdx + "#";
-                        if (stop.stopName != null) {
-                            updateState(prefix + "stop-name", new StringType(stop.stopName));
+                        if (sName != null) {
+                            updateState(prefix + "stop-name", new StringType(sName));
                         } else {
                             updateState(prefix + "stop-name", org.openhab.core.types.UnDefType.UNDEF);
                         }
-                        long diff = (stop.departureTime - now) / 60;
+                        long diff = (depTime - now) / 60;
                         updateState(prefix + "minutes-until-departure", new QuantityType<>(diff, Units.MINUTE));
                         stopIdx++;
                     }
