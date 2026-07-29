@@ -37,8 +37,9 @@ public class RouteDetailsResult {
     }
 
     public Route getEffectiveRoute() {
-        if (route != null)
+        if (route != null) {
             return route;
+        }
         Route r = new Route();
         r.routeLongName = routeLongNameFlat;
         r.routeShortName = routeShortNameFlat;

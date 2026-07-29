@@ -91,33 +91,39 @@ public class TransitAppStopHandler extends BaseThingHandler {
 
             if (result.routeDepartures != null) {
                 for (StopDeparturesResult.RouteDeparture routeDep : result.routeDepartures) {
-                    if (groupIdx > 10)
+                    if (groupIdx > 10) {
                         break;
+                    }
 
                     String shortName = routeDep.routeShortName;
                     String longName = routeDep.routeLongName;
 
                     if (routeDep.itineraries != null) {
                         for (StopDeparturesResult.Itinerary itinerary : routeDep.itineraries) {
-                            if (groupIdx > 10)
+                            if (groupIdx > 10) {
                                 break;
+                            }
                             if (itinerary.scheduleItems != null) {
                                 for (StopDeparturesResult.ScheduleItem schedule : itinerary.scheduleItems) {
-                                    if (groupIdx > 10)
+                                    if (groupIdx > 10) {
                                         break;
+                                    }
 
                                     String prefix = "depart" + groupIdx + "#";
 
-                                    if (shortName != null)
+                                    if (shortName != null) {
                                         updateState(prefix + "route-short-name", new StringType(shortName));
-                                    if (longName != null)
+                                    }
+                                    if (longName != null) {
                                         updateState(prefix + "route-long-name", new StringType(longName));
+                                    }
 
                                     if (schedule.departureTime != null) {
                                         long depTime = schedule.departureTime;
                                         long diff = (depTime - now) / 60;
-                                        if (diff < 0)
+                                        if (diff < 0) {
                                             continue;
+                                        }
 
                                         updateState(prefix + "minutes-until-departure",
                                                 new QuantityType<>(diff, org.openhab.core.library.unit.Units.MINUTE));
@@ -137,37 +143,42 @@ public class TransitAppStopHandler extends BaseThingHandler {
                                         updateState(prefix + "departure-time", org.openhab.core.types.UnDefType.UNDEF);
                                     }
 
-                                    if (schedule.delay != null)
+                                    if (schedule.delay != null) {
                                         updateState(prefix + "delay-minutes", new QuantityType<>(schedule.delay / 60,
                                                 org.openhab.core.library.unit.Units.MINUTE));
-                                    else
+                                    } else {
                                         updateState(prefix + "delay-minutes", org.openhab.core.types.UnDefType.UNDEF);
+                                    }
 
-                                    if (schedule.track != null)
+                                    if (schedule.track != null) {
                                         updateState(prefix + "platform", new StringType(schedule.track));
-                                    else
+                                    } else {
                                         updateState(prefix + "platform", org.openhab.core.types.UnDefType.UNDEF);
+                                    }
 
-                                    if (schedule.wheelchairAccessible != null)
+                                    if (schedule.wheelchairAccessible != null) {
                                         updateState(prefix + "wheelchair-accessible",
                                                 schedule.wheelchairAccessible
                                                         ? org.openhab.core.library.types.OnOffType.ON
                                                         : org.openhab.core.library.types.OnOffType.OFF);
-                                    else
+                                    } else {
                                         updateState(prefix + "wheelchair-accessible",
                                                 org.openhab.core.types.UnDefType.UNDEF);
+                                    }
 
-                                    if (schedule.occupancyStatus != null)
+                                    if (schedule.occupancyStatus != null) {
                                         updateState(prefix + "occupancy", new StringType(schedule.occupancyStatus));
-                                    else
+                                    } else {
                                         updateState(prefix + "occupancy", org.openhab.core.types.UnDefType.UNDEF);
+                                    }
 
-                                    if (schedule.isCancelled != null)
+                                    if (schedule.isCancelled != null) {
                                         updateState(prefix + "is-cancelled",
                                                 schedule.isCancelled ? org.openhab.core.library.types.OnOffType.ON
                                                         : org.openhab.core.library.types.OnOffType.OFF);
-                                    else
+                                    } else {
                                         updateState(prefix + "is-cancelled", org.openhab.core.types.UnDefType.UNDEF);
+                                    }
 
                                     groupIdx++;
                                 }

@@ -25,6 +25,7 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -34,7 +35,7 @@ public class TransitAppHandlerFactory extends BaseThingHandlerFactory {
 
     private final HttpClientFactory httpClientFactory;
 
-    @org.osgi.service.component.annotations.Activate
+    @Activate
     public TransitAppHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
         this.httpClientFactory = httpClientFactory;
     }

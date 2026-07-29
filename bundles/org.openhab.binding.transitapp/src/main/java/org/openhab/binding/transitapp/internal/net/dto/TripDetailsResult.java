@@ -52,8 +52,9 @@ public class TripDetailsResult {
     }
 
     public Trip getEffectiveTrip() {
-        if (trip != null)
+        if (trip != null) {
             return trip;
+        }
         Trip t = new Trip();
         t.tripHeadsign = tripHeadsignFlat;
         t.routeShortName = routeShortNameFlat;
