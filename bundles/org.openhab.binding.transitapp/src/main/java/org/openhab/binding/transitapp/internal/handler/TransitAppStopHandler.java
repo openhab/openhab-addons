@@ -210,6 +210,7 @@ public class TransitAppStopHandler extends BaseThingHandler {
                 updateState(prefix + "is-cancelled", org.openhab.core.types.UnDefType.UNDEF);
             }
         } catch (Exception e) {
+            latestLineDepartures.clear();
             logger.error("Communication issue while polling stop {}: {}", globalStopId, e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
