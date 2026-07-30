@@ -91,4 +91,5 @@ public class HDPowerViewBindingConstants {
     // keys for hub/gateway label translation
     public static final String LABEL_KEY_HUB = "discovery.hub.label";
     public static final String LABEL_KEY_GATEWAY = "discovery.gateway.label";
+    public static final String TEXT_ONLINE_BATTERY_LOW = "@text/online.battery-low";
 }
