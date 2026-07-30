@@ -137,17 +137,21 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
 
     @Override
     public void store(Item item) {
-        scheduler.execute(() -> internalStore(item, null, item.getState(), null));
+        store(item, null);
     }
 
     @Override
     public void store(Item item, @Nullable String alias) {
-        scheduler.execute(() -> internalStore(item, null, item.getState(), alias));
+        ZonedDateTime lastStateUpdate = item.getLastStateUpdate();
+        if (lastStateUpdate == null) {
+            lastStateUpdate = ZonedDateTime.now();
+        }
+        store(item, lastStateUpdate, item.getState(), alias);
     }
 
     @Override
     public void store(Item item, ZonedDateTime date, State state) {
-        scheduler.execute(() -> internalStore(item, date, state, null));
+        store(item, date, state, null);
     }
 
     @Override
