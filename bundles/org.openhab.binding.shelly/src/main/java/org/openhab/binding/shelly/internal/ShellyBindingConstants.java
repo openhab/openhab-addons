@@ -12,10 +12,7 @@
  */
 package org.openhab.binding.shelly.internal;
 
-import java.io.File;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.OpenHAB;
 
 /**
  * The {@link ShellyBindingConstants} class defines common constants, which are
@@ -342,10 +339,6 @@ public class ShellyBindingConstants {
 
     public static final String BUNDLE_RESOURCE_SNIPLETS = "sniplets"; // where to find code sniplets in the bundle
     public static final String BUNDLE_RESOURCE_SCRIPTS = "scripts"; // where to find scrips in the bundle
-
-    // A file placed here with the same name as a bundled script (e.g. oh-blu-scanner.js) is uploaded to the
-    // device instead of the version embedded in the JAR, e.g. to raise its log level or test local edits.
-    public static final String USERDATA_SCRIPT_FOLDER = OpenHAB.getUserDataFolder() + File.separator + BINDING_ID;
 
     public static final int DEFAULT_LOCAL_PORT = 8080;
 }
