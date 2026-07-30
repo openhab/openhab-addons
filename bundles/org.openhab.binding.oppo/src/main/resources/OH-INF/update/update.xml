@@ -33,13 +33,13 @@
 				<type>oppo:title-progress</type>
 			</add-channel>
 			<update-channel id="power">
-				<type>system.power</type>
+				<type>system:power</type>
 			</update-channel>
 			<update-channel id="volume">
-				<type>system.volume</type>
+				<type>system:volume</type>
 			</update-channel>
 			<update-channel id="mute">
-				<type>system.mute</type>
+				<type>system:mute</type>
 			</update-channel>
 		</instruction-set>
 	</thing-type>
