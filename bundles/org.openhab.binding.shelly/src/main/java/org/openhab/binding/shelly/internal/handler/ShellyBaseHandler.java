@@ -114,8 +114,6 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     private final Map<String, Long> deprecatedChannelWarnings = new ConcurrentHashMap<>();
     private final int cacheCount = UPDATE_SETTINGS_INTERVAL_SECONDS / UPDATE_STATUS_INTERVAL_SECONDS;
 
-    private static final String FIRMWARE_UPDATE_AVAILABLE = "@text/message.online.firmware-update-available";
-
     private volatile @Nullable Shelly1CoapHandler coap;
 
     private final boolean gen2;
@@ -129,6 +127,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     private volatile boolean stopping = false;
     private int vibrationFilter = 0;
     private String lastWakeupReason = "";
+    private volatile boolean updateMarkerSet;
 
     // Scheduler
     private volatile double watchdog = now();
@@ -647,6 +646,16 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 // but not while firmware update is in progress
                 if (getThingStatusDetail() != ThingStatusDetail.FIRMWARE_UPDATING) {
                     setThingOnline();
+
+                    // set or clear the update available marker
+                    boolean updateAvailable = getBool(status.update.hasUpdate);
+                    if (updateAvailable && !updateMarkerSet) {
+                        updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE,
+                                messages.get("manager.action.checkupd.new", status.update.newVersion));
+                        updateMarkerSet = true; // specifically set update marker flag only in this case
+                    } else if (!updateAvailable && updateMarkerSet) {
+                        updateStatus(ThingStatus.ONLINE);
+                    }
                 }
 
                 // map status to channels
@@ -667,6 +676,13 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 cache.enable();
             }
         }
+    }
+
+    @Override
+    protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
+        // overloaded updateStatus() methods always call this so we clear the update marker flag by default here
+        updateMarkerSet = false;
+        super.updateStatus(status, statusDetail, description);
     }
 
     /**
@@ -1397,16 +1413,6 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
     @Override
     public boolean updateChannel(String group, String channel, State value) {
-        if (ThingStatus.ONLINE == getThingStatus() && CHANNEL_DEVST_UPDATE.equals(channel)
-                && value instanceof OnOffType onOff) {
-            boolean updateAvailable = OnOffType.ON == onOff;
-            String statusDescription = thing.getStatusInfo().getDescription();
-            if (updateAvailable && statusDescription == null) {
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, FIRMWARE_UPDATE_AVAILABLE);
-            } else if (!updateAvailable && FIRMWARE_UPDATE_AVAILABLE.equals(statusDescription)) {
-                updateStatus(ThingStatus.ONLINE);
-            }
-        }
         return updateChannel(mkChannelId(group, channel), value, false);
     }
 
