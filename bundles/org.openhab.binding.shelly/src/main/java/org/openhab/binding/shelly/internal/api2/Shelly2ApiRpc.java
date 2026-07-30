@@ -16,7 +16,7 @@ import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.api.ShellyApiLightUtil.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
-import static org.openhab.binding.shelly.internal.api2.ShellyBluJsonDTO.SHELLY2_BLU_GWSCRIPT;
+import static org.openhab.binding.shelly.internal.api2.ShellyBluJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.io.BufferedReader;
@@ -111,11 +111,6 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     private @Nullable Shelly2AuthChallenge authInfo;
     private final WebSocketClient client;
     private final ScheduledExecutorService scheduler;
-
-    // Plus devices support up to 3 scripts, Pro devices up to 10
-    // We need to find a free script id when uploading our script
-    // We want to limit script ids being checked, so define a max id
-    private static final int MAX_SCRIPT_ID = 15;
 
     // Pro/Plus RGBW(W) PM: RPC method family per settings.lights[i].apiComponent tag - replaces per-call-site
     // profile-string checks (SHELLY2_PROFILE_CCTX2.equals(...)) with a single lookup, correct for hybrid profiles.
@@ -408,7 +403,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 parms.append = false;
                 int length = code.length(), processed = 0, chunk = 1;
                 do {
-                    int nextlen = Math.min(1024, length - processed);
+                    int nextlen = Math.min(SCRIPT_CHUNK_SIZE, length - processed);
                     parms.code = code.substring(processed, processed + nextlen);
                     logger.debug("{}: Uploading chunk {} of script (total {} chars, {} processed)", thingName, chunk,
                             length, processed);

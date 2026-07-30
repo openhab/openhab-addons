@@ -12,9 +12,13 @@
  */
 package org.openhab.binding.shelly.internal.api2;
 
+import static org.openhab.binding.shelly.internal.ShellyBindingConstants.BINDING_ID;
+
+import java.io.File;
 import java.lang.reflect.Type;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.OpenHAB;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -29,8 +33,13 @@ import com.google.gson.annotations.SerializedName;
  */
 public class ShellyBluJsonDTO {
 
-    // BLU events
+    public static final String USERDATA_SCRIPT_FOLDER = OpenHAB.getUserDataFolder() + File.separator + BINDING_ID;
     public static final String SHELLY2_BLU_GWSCRIPT = "oh-blu-scanner.js";
+    // Plus devices support up to 3 scripts, Pro devices up to 10; limit how many script ids we probe for a free slot
+    public static final int MAX_SCRIPT_ID = 15;
+    public static final int SCRIPT_CHUNK_SIZE = 512; // chunk size for upload
+
+    // BLU events
     public static final String SHELLY2_EVENT_BLUPREFIX = "oh-blu.";
     public static final String SHELLY2_EVENT_BLUSCAN = SHELLY2_EVENT_BLUPREFIX + "scan_result";
     public static final String SHELLY2_EVENT_BLUDATA = SHELLY2_EVENT_BLUPREFIX + "data";
