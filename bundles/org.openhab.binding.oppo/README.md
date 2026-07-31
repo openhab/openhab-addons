@@ -47,7 +47,7 @@ Some notes:
 - Using the direct IP connection on the BDP series (83/93/95/103/105) is not recommended; use of serial or serial over IP connections is preferred.
 - If using the direct IP connection on the BDP series any channels besides `remote_button` that sends a parameter (Volume, Source Input, all mode channels, etc.) only works as read-only.
 - Verbose mode is also not supported while using the direct IP connection on the BDP series.
-- The UDP-20x series should be fully functional over direct IP connection but this was not able to be tested by the developer.
+- The UDP-20x series is fully functional over the direct IP connection.
 - As previously noted, when using verbose mode, the player will send time code messages once per second while playback is ongoing.
 - In non-verbose (the default), the binding will poll the player every 10 seconds to update play time, track and chapter information instead.
 - In order for the direct IP connection to work while the player is turned off, the Device Setup → Standby Mode setting must be set to "Quick Start" or "Network Standby" in the Device Setup menu.
