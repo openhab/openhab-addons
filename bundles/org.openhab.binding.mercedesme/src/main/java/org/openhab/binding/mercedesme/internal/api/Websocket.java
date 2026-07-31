@@ -16,12 +16,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -63,31 +60,43 @@ import com.daimler.mbcarkit.proto.VehicleEvents.PushMessage;
 @WebSocket
 @NonNullByDefault
 public class Websocket extends RestApi {
-    // timeout stays unlimited until binding decides to close
-    private static final int CONNECT_TIMEOUT_MS = 0;
-    // standard runtime of Websocket
-    private static final int WS_RUNTIME_MS = 60 * 1000;
+    // WebSocket idle/read timeout - matches Mercedes-Me App (OkHttp readTimeout(6s)): the connection is
+    // considered dead if no frame (incl. pong) is received within this time
+    private static final int WS_IDLE_TIMEOUT_MS = 6 * 1000;
+    // standard runtime of Websocket: randomized between 1 and 3 minutes (anti-bot pattern, avoids a fixed,
+    // easily fingerprinted lifetime - same idea as AccountHandler.nextRefreshSeconds())
+    private static final long WS_RUNTIME_MIN_MS = 60 * 1000L;
+    private static final long WS_RUNTIME_MAX_MS = 3 * 60 * 1000L;
     // addon time of 1 minute for a new send command
     private static final int ADDON_MESSAGE_TIME_MS = 60 * 1000;
-    // check Socket time elapsed each second
-    private static final int CHECK_INTERVAL_MS = 60 * 1000;
+    // ping cadence - matches Mercedes-Me App (OkHttp pingInterval(6s)); also drives the general check loop
+    private static final int PING_INTERVAL_MS = 6 * 1000;
     // additional 5 minutes after keep alive
     private static final int KEEP_ALIVE_ADDON = 5 * 60 * 1000;
+    // max reconnect attempts before falling back to full re-authorization - matches Mercedes-Me App
+    // (ReconnectableSocketConnection maxRetries=5)
+    private static final int MAX_RECONNECT_RETRIES = 5;
+    // delay between reconnect attempts - matches Mercedes-Me App (ReconnectableSocketConnection
+    // retryDelayInMillis=5000)
+    private static final int RECONNECT_DELAY_MS = 5000;
 
     private final Logger logger = LoggerFactory.getLogger(Websocket.class);
     private final AccountHandler accountHandler;
-    private final Map<String, Instant> pingPongMap = new HashMap<>();
     private final ScheduledExecutorService scheduler = ThreadPoolManager
             .getPoolBasedSequentialScheduledExecutorService("mercedesme-websocket", null);
 
     private @Nullable ScheduledFuture<?> refresher;
     private @Nullable WebSocketClient webSocketClient;
     private @Nullable Session session;
+    private @Nullable Instant pingSentAt;
     private List<ClientMessage> commandQueue = new ArrayList<>();
     private Instant runTill = Instant.now();
     private WebsocketState state = WebsocketState.STOPPED;
     private boolean keepAlive = false;
     private boolean disposed = true;
+    // set right before a deliberate (idle-timeout) close so onClosedSession doesn't try to reconnect
+    private boolean intentionalClose = false;
+    private int reconnectAttempts = 0;
 
     public enum WebsocketState {
         STOPPED,
@@ -214,12 +223,12 @@ public class Websocket extends RestApi {
         if (!disposed && webSocketClient == null) {
             WebSocketClient localWebSocketClient = new WebSocketClient(httpClient);
             try {
-                localWebSocketClient.setMaxIdleTimeout(CONNECT_TIMEOUT_MS);
+                localWebSocketClient.setMaxIdleTimeout(WS_IDLE_TIMEOUT_MS);
                 ClientUpgradeRequest request = getClientUpgradeRequest();
                 String websocketURL = Utils.getWebsocketServer(config.region);
                 logger.trace("Websocket start {} max message size {}", websocketURL,
                         localWebSocketClient.getMaxBinaryMessageSize());
-                runTill = Instant.now().plusMillis(WS_RUNTIME_MS);
+                runTill = Instant.now().plusMillis(nextRuntimeMillis());
                 localWebSocketClient.start();
                 localWebSocketClient.connect(this, new URI(websocketURL), request);
                 webSocketClient = localWebSocketClient;
@@ -229,6 +238,16 @@ public class Websocket extends RestApi {
                 accountHandler.handleWebsocketError(e);
             }
         }
+    }
+
+    /**
+     * Don't act like a bot! A fixed WebSocket lifetime would be an easy fingerprint, so the standard runtime
+     * is randomized between WS_RUNTIME_MIN_MS and WS_RUNTIME_MAX_MS (1-3 minutes) for every connect.
+     *
+     * @return randomized runtime in milliseconds
+     */
+    private long nextRuntimeMillis() {
+        return WS_RUNTIME_MIN_MS + (long) (Math.random() * (WS_RUNTIME_MAX_MS - WS_RUNTIME_MIN_MS));
     }
 
     /**
@@ -269,10 +288,12 @@ public class Websocket extends RestApi {
             ScheduledFuture<?> localRefresher = refresher;
             if (localRefresher != null) {
                 localRefresher.cancel(false);
-                refresher = scheduler.schedule(this::doRefresh, CHECK_INTERVAL_MS, TimeUnit.MILLISECONDS);
+                refresher = scheduler.schedule(this::doRefresh, PING_INTERVAL_MS, TimeUnit.MILLISECONDS);
             }
         } else {
             logger.debug("Websocket run time is over - disconnect");
+            // this is a deliberate close (idle timeout reached) - don't let onClosedSession reconnect
+            intentionalClose = true;
             scheduler.execute(this::stop);
         }
     }
@@ -314,14 +335,15 @@ public class Websocket extends RestApi {
 
     /**
      * Ping the server to keep the connection alive and to check if the connection is still valid.
+     * No payload is sent - matches Mercedes-Me App behaviour (OkHttp's automatic pingInterval sends an
+     * empty WebSocket ping control frame, not an application-level payload).
      */
     private void sendPing() {
         Session localSession = session;
         if (localSession != null) {
             try {
-                String pingId = UUID.randomUUID().toString();
-                pingPongMap.put(pingId, Instant.now());
-                localSession.getRemote().sendPing(ByteBuffer.wrap(pingId.getBytes(StandardCharsets.UTF_8)));
+                pingSentAt = Instant.now();
+                localSession.getRemote().sendPing(ByteBuffer.allocate(0));
             } catch (IOException e) {
                 logger.warn("Websocket ping failed {}", e.getMessage());
             }
@@ -329,15 +351,11 @@ public class Websocket extends RestApi {
     }
 
     private void handlePong(Frame frame) {
-        ByteBuffer buffer = frame.getPayload();
-        byte[] bytes = new byte[frame.getPayloadLength()];
-        for (int i = 0; i < frame.getPayloadLength(); i++) {
-            bytes[i] = buffer.get(i);
-        }
-        String payloadString = new String(bytes, StandardCharsets.UTF_8);
-        Instant sent = pingPongMap.remove(payloadString);
+        Instant sent = pingSentAt;
         if (sent == null) {
-            logger.debug("Websocket received pong without ping {}", payloadString);
+            logger.trace("Websocket received pong without matching ping");
+        } else {
+            pingSentAt = null;
         }
     }
 
@@ -418,7 +436,8 @@ public class Websocket extends RestApi {
     public void onConnect(Session session) {
         this.session = session;
         state = WebsocketState.CONNECTED;
-        pingPongMap.clear();
+        pingSentAt = null;
+        reconnectAttempts = 0;
         accountHandler.handleConnected();
         logger.trace("Websocket connected - state {}", state);
         // websocket client is started and connected - time to refresh
@@ -427,8 +446,8 @@ public class Websocket extends RestApi {
 
     @OnWebSocketClose
     public void onDisconnect(Session session, int statusCode, String reason) {
-        onClosedSession(null);
         logger.trace("Disconnected from server. Status {} Reason {}", statusCode, reason);
+        onClosedSession(null);
     }
 
     @OnWebSocketError
@@ -436,16 +455,40 @@ public class Websocket extends RestApi {
         onClosedSession(t);
     }
 
+    /**
+     * Handles both a server-initiated close (onDisconnect) and a transport error (onError). Mirrors the
+     * Mercedes-Me App's ReconnectableSocketConnection: unless this was our own deliberate idle-timeout
+     * close or the binding is disposed, retry up to MAX_RECONNECT_RETRIES times with RECONNECT_DELAY_MS
+     * between attempts before falling back to a full re-authorization.
+     */
     private void onClosedSession(@Nullable Throwable throwable) {
         session = null;
         state = WebsocketState.DISCONNECTED;
-        pingPongMap.clear();
-        if (throwable != null) {
-            logger.debug("Websocket onClosedSession exception: {} - try to resume login", throwable.getMessage());
-            accountHandler.handleWebsocketError(throwable);
-            accountHandler.authorize();
-        }
+        pingSentAt = null;
         // stop web socket client for closed session
         scheduler.execute(this::stop);
+
+        boolean skipReconnect = disposed || intentionalClose;
+        intentionalClose = false;
+        if (skipReconnect) {
+            return;
+        }
+
+        if (throwable != null) {
+            logger.debug("Websocket onClosedSession exception: {}", throwable.getMessage());
+        }
+        if (reconnectAttempts < MAX_RECONNECT_RETRIES) {
+            reconnectAttempts++;
+            logger.trace("Websocket reconnect attempt {}/{} in {} ms", reconnectAttempts, MAX_RECONNECT_RETRIES,
+                    RECONNECT_DELAY_MS);
+            scheduler.schedule(this::start, RECONNECT_DELAY_MS, TimeUnit.MILLISECONDS);
+        } else {
+            logger.debug("Websocket max reconnect attempts exceeded - falling back to re-authorization");
+            reconnectAttempts = 0;
+            if (throwable != null) {
+                accountHandler.handleWebsocketError(throwable);
+            }
+            accountHandler.authorize();
+        }
     }
 }
