@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledFuture;
@@ -274,8 +273,8 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
     public void setEndpointStatus(ThingStatus status, ThingStatusDetail detail, String description) {
         logger.debug("setEndpointStatus {} {} {} {}", status, detail, description, getNodeId());
         ThingStatusInfo current = getThing().getStatusInfo();
-        if (current.getStatus() != status || current.getStatusDetail() != detail
-                || !Objects.equals(current.getDescription(), description)) {
+        String currentDesc = current.getDescription() == null ? "" : current.getDescription();
+        if (current.getStatus() != status || current.getStatusDetail() != detail || !currentDesc.equals(description)) {
             updateStatus(status, detail, description);
         }
     }
