@@ -322,11 +322,15 @@ public class Websocket extends RestApi {
         if (keepAlive || Instant.now().isBefore(runTill)) {
             // doRefresh is called by AccountHandler, websocket endpoint onConnect and addCommand. To avoid
             // multiple future calls cancel the current running or future schedule calls.
+            // NOTE: the reschedule must happen unconditionally, not only when a previous refresher already
+            // existed - otherwise the very first call after onConnect (where refresher is still null) never
+            // schedules a follow-up, so sendPing() is only ever called once per connection and the socket
+            // silently idles out after WS_IDLE_TIMEOUT_MS with no further pings sent.
             ScheduledFuture<?> localRefresher = refresher;
             if (localRefresher != null) {
                 localRefresher.cancel(false);
-                refresher = scheduler.schedule(this::doRefresh, PING_INTERVAL_MS, TimeUnit.MILLISECONDS);
             }
+            refresher = scheduler.schedule(this::doRefresh, PING_INTERVAL_MS, TimeUnit.MILLISECONDS);
         } else {
             logger.debug("Websocket run time is over - disconnect");
             // this is a deliberate close (idle timeout reached) - don't let onClosedSession reconnect
@@ -509,6 +513,13 @@ public class Websocket extends RestApi {
      * between attempts before falling back to a full re-authorization.
      */
     private void onClosedSession(@Nullable Throwable throwable) {
+        if (state == WebsocketState.DISCONNECTED) {
+            // Jetty fires both onError and onClose for the same terminal event (e.g. an idle-timeout
+            // exception is immediately followed by the close callback) - without this guard the second
+            // call would double count reconnectAttempts/reloginAttempts and schedule a second reconnect.
+            logger.trace("Websocket onClosedSession - already handled, ignoring duplicate close/error callback");
+            return;
+        }
         session = null;
         state = WebsocketState.DISCONNECTED;
         pingSentAt = null;
