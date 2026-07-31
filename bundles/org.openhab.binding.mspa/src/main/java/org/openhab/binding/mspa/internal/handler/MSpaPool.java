@@ -43,6 +43,7 @@ import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.Bridge;
@@ -222,6 +223,7 @@ public class MSpaPool extends BaseThingHandler {
                 int status = cr.getStatus();
                 String response = cr.getContentAsString();
                 if (status == 200) {
+                    logger.trace("Device shadow {}", response);
                     distributeData(response);
                 } else {
                     logger.info("Failed to get data - reason {}", response);
@@ -276,11 +278,30 @@ public class MSpaPool extends BaseThingHandler {
         }
     }
 
+    /**
+     * Builds the {@code fault} channel state from the device shadow's {@code fault} code. The {@code warning} field
+     * is deliberately ignored here - it is also set during normal operation and is not a reliable fault indicator.
+     * The device keeps reporting live channel state while a fault is active, so the Thing status itself is not
+     * affected here - only the {@code fault} channel reflects the condition. {@link JSONObject#optString(String,
+     * String)} is used instead of {@code has}/{@code getString} so a missing key or a JSON {@code null} value (both
+     * of which would make {@code getString} throw) is treated the same as a blank code. When the code is blank, the
+     * special value {@link org.openhab.binding.mspa.internal.MSpaConstants#FAULT_STATE_NONE} is reported, which the
+     * channel-type definition in {@code channel-types.xml} maps to a translatable "None" label.
+     *
+     * @param rawData the "data" object of a device shadow response
+     */
+    private void updateFaultState(JSONObject rawData) {
+        String fault = rawData.optString("fault", EMPTY);
+        String faultText = fault.isBlank() ? FAULT_STATE_NONE : fault;
+        updateState(CHANNEL_FAULT, new StringType(faultText));
+    }
+
     public void distributeData(String response) {
         JSONObject data = new JSONObject(response);
         dataCache = data.toString();
         if (data.has("data")) {
             JSONObject rawData = data.getJSONObject("data");
+            updateFaultState(rawData);
             if (rawData.has("heater_state")) {
                 updateState(CHANNEL_HEATER, OnOffType.from(rawData.getInt("heater_state") == 1));
             }
