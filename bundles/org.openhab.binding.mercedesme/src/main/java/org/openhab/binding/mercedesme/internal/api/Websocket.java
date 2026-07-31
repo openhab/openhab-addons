@@ -28,6 +28,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.websocket.api.Session;
+import org.eclipse.jetty.websocket.api.UpgradeException;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
@@ -79,6 +80,14 @@ public class Websocket extends RestApi {
     // delay between reconnect attempts - matches Mercedes-Me App (ReconnectableSocketConnection
     // retryDelayInMillis=5000)
     private static final int RECONNECT_DELAY_MS = 5000;
+    // HTTP status returned by the handshake when we're rate limited
+    private static final int HTTP_TOO_MANY_REQUESTS = 429;
+    // max relogin attempts on HTTP 429 before giving up until the next successful reconnect - matches
+    // mbapi2020's Oauth/Websocket MAX_RELOGIN_ATTEMPTS
+    private static final int MAX_RELOGIN_ATTEMPTS = 3;
+    // quadratic backoff base in seconds between 429 reconnect attempts (10 * retryCounter^2) - matches
+    // mbapi2020's Websocket._start_websocket_handler() retry_in formula for WSServerHandshakeError
+    private static final int RATE_LIMIT_BACKOFF_BASE_SECONDS = 10;
 
     private final Logger logger = LoggerFactory.getLogger(Websocket.class);
     private final AccountHandler accountHandler;
@@ -97,6 +106,12 @@ public class Websocket extends RestApi {
     // set right before a deliberate (idle-timeout) close so onClosedSession doesn't try to reconnect
     private boolean intentionalClose = false;
     private int reconnectAttempts = 0;
+    // number of relogin attempts made for the current 429-blocked episode - mirrors mbapi2020's
+    // _relogin_429_attempts; reset to 0 on the next successful connect (onConnect)
+    private int reloginAttempts = 0;
+    // number of consecutive 429 reconnect attempts - mirrors mbapi2020's ws_connect_retry_counter; reset to
+    // 0 once real vehicle data is received again (onByteArray)
+    private int rateLimitRetryCounter = 0;
 
     public enum WebsocketState {
         STOPPED,
@@ -251,6 +266,28 @@ public class Websocket extends RestApi {
     }
 
     /**
+     * Compute the backoff before the next reconnect attempt after an HTTP 429. Grows quadratically with the
+     * number of consecutive 429s (10 * counter^2 seconds) - matches mbapi2020's
+     * {@code Websocket._start_websocket_handler()} retry_in formula for {@code WSServerHandshakeError}.
+     *
+     * @return backoff in milliseconds
+     */
+    private long nextRateLimitBackoffMillis() {
+        rateLimitRetryCounter++;
+        long seconds = (long) RATE_LIMIT_BACKOFF_BASE_SECONDS * rateLimitRetryCounter * rateLimitRetryCounter;
+        return seconds * 1000L;
+    }
+
+    /**
+     * @return true if the given error is an HTTP 429 (too many requests) returned by the WebSocket
+     *         handshake
+     */
+    private boolean isTooManyRequests(@Nullable Throwable throwable) {
+        return throwable instanceof UpgradeException upgradeException
+                && upgradeException.getResponseStatusCode() == HTTP_TOO_MANY_REQUESTS;
+    }
+
+    /**
      * Performs an update of the web socket connection. If websocket is disposed refresh will not be executed. In case
      * of CONNECTED it will check
      * - if there are commands to be sent
@@ -383,8 +420,10 @@ public class Websocket extends RestApi {
         request.setHeader("Ris-Sdk-Version", Utils.getRisSDKVersion(config.region));
         request.setHeader("X-Locale",
                 localeProvider.getLocale().getLanguage() + "-" + localeProvider.getLocale().getCountry()); // de-DE
-        request.setHeader("User-Agent", Utils.getApplication(config.region));
-        request.setHeader("X-Applicationname", Utils.getUserAgent(config.region));
+        // User-Agent is the full app/OS identifier string, X-Applicationname the short app id - matches
+        // mbapi2020's AppVersionManager.apply_websocket_headers() (was swapped before, checked 2026-07-31)
+        request.setHeader("User-Agent", Utils.getUserAgent(config.region));
+        request.setHeader("X-Applicationname", Utils.getApplication(config.region));
         request.setHeader("Ris-Application-Version", Utils.getRisApplicationVersion(config.region));
         return request;
     }
@@ -403,6 +442,11 @@ public class Websocket extends RestApi {
                 System.arraycopy(blob, offset, message, 0, offsetLength);
             }
             PushMessage pm = VehicleEvents.PushMessage.parseFrom(message);
+            // real vehicle data flowing again is the actual signal that we're no longer blocked - matches
+            // mbapi2020's Client.on_data(), which resets ws_connect_retry_counter on the first message
+            if (rateLimitRetryCounter > 0) {
+                rateLimitRetryCounter = 0;
+            }
             accountHandler.enqueueMessage(pm);
             logger.trace("Websocket Message {} size {}", pm.getMsgCase(), pm.getAllFields().size());
             /**
@@ -438,6 +482,9 @@ public class Websocket extends RestApi {
         state = WebsocketState.CONNECTED;
         pingSentAt = null;
         reconnectAttempts = 0;
+        // a successful connect ends the current relogin episode - mirrors mbapi2020 resetting
+        // _relogin_429_attempts inside _websocket_handler() right after ws_connect() succeeds
+        reloginAttempts = 0;
         accountHandler.handleConnected();
         logger.trace("Websocket connected - state {}", state);
         // websocket client is started and connected - time to refresh
@@ -471,6 +518,32 @@ public class Websocket extends RestApi {
         boolean skipReconnect = disposed || intentionalClose;
         intentionalClose = false;
         if (skipReconnect) {
+            return;
+        }
+
+        if (isTooManyRequests(throwable)) {
+            // Rate limited - matches mbapi2020's Websocket._start_websocket_handler(): actively try a fresh
+            // relogin with the stored credentials (up to MAX_RELOGIN_ATTEMPTS per blocked episode), then back
+            // off quadratically before the next reconnect attempt regardless of relogin outcome.
+            reconnectAttempts = 0;
+            if (reloginAttempts < MAX_RELOGIN_ATTEMPTS) {
+                reloginAttempts++;
+                logger.info("429 detected - trying relogin with stored credentials (attempt {}/{})", reloginAttempts,
+                        MAX_RELOGIN_ATTEMPTS);
+                accountHandler.authorize();
+                if (authTokenIsValid()) {
+                    logger.info("Relogin successful after 429");
+                    reloginAttempts = MAX_RELOGIN_ATTEMPTS;
+                } else {
+                    logger.warn("Relogin after 429 failed (attempt {}/{})", reloginAttempts, MAX_RELOGIN_ATTEMPTS);
+                }
+            } else {
+                logger.debug("429 detected - relogin attempts exhausted, waiting for backoff");
+            }
+            long backoffMillis = nextRateLimitBackoffMillis();
+            logger.debug("Websocket rate limited (HTTP {}) - retry {} in {} ms", HTTP_TOO_MANY_REQUESTS,
+                    rateLimitRetryCounter, backoffMillis);
+            scheduler.schedule(this::start, backoffMillis, TimeUnit.MILLISECONDS);
             return;
         }
 

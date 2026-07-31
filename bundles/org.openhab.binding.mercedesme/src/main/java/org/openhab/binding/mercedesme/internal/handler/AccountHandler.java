@@ -126,15 +126,16 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
         if (api.authTokenIsValid()) {
             /**
              * Pattern of the update strategy
-             * - if all vehicles are in status idle (no keep alive) pull the status updates from the server
-             * - each vehicle is deciding on the new attributes if it needs to be kept alive (driving or charging)
-             * - if any vehicle needs to be kept alive start websocketUpdate to get frequent updates
+             * - every refresh briefly opens (or keeps open) the WebSocket to get a real vehicle status
+             * - the REST "vehicleattributes" endpoint is NOT used here: it only ever returns the small
+             * Widget-tile attribute set (SOC, ranges, tank levels, lock status, sunroof, park brake, hood,
+             * decklid, charging error, timestamp - no ignition/charging state), so it can never trigger
+             * keepAlive() and would leave every other channel stale forever
+             * - each vehicle still decides on the new attributes if it needs to be kept alive (driving or
+             * charging); without that, the socket self-closes again after its randomized 1-3 minute
+             * runtime (see Websocket.WS_RUNTIME_MIN/MAX_MS)
              */
-            if (keepAliveList.isEmpty() && !activeVehicleHandlerMap.isEmpty()) {
-                pullUpdates();
-            } else {
-                api.websocketUpdate();
-            }
+            api.websocketUpdate();
         } else {
             // token is not valid - try to resume login
             authorize();
@@ -400,19 +401,6 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
                 api.websocketKeepAlive(false);
             }
         }
-    }
-
-    private void pullUpdates() {
-        activeVehicleHandlerMap.entrySet().forEach(entry -> {
-            try {
-                VEPUpdate update = api.restGetVehicleAttributes(entry.getKey());
-                entry.getValue().enqueueUpdate(update);
-                logger.trace("Pull update delivered {} updates", update.getAttributesCount());
-                updateStatus(ThingStatus.ONLINE);
-            } catch (MercedesMeApiException e) {
-                handleApiError(e);
-            }
-        });
     }
 
     private void handleAuthError(MercedesMeAuthException e) {

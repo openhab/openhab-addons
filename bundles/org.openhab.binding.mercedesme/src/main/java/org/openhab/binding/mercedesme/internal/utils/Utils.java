@@ -221,6 +221,7 @@ public class Utils {
         return switch (region) {
             case Constants.REGION_APAC -> Constants.WEBSOCKET_USER_AGENT_PA;
             case Constants.REGION_CHINA -> Constants.WEBSOCKET_USER_AGENT_CN;
+            case Constants.REGION_NORAM -> Constants.WEBSOCKET_USER_AGENT_US;
             default -> Constants.WEBSOCKET_USER_AGENT;
         };
     }
