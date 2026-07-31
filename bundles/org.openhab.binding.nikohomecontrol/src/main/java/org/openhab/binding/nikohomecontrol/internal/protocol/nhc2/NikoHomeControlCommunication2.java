@@ -948,8 +948,8 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         String couplingStatus = deviceProperties.stream().map(p -> p.couplingStatus).filter(Objects::nonNull)
                 .findFirst().orElse(null);
         Integer electricalPower = deviceProperties.stream().map(p -> p.electricalPower)
-                .map(s -> (!((s == null) || s.isEmpty())) ? Math.round(Float.parseFloat(s)) : null)
-                .filter(Objects::nonNull).findFirst().orElse(null);
+                .filter(s -> !((s == null) || s.isEmpty())).findFirst().map(s -> Math.round(Float.parseFloat(s)))
+                .orElse(null);
         if (status != null || chargingStatus != null || evStatus != null || couplingStatus != null
                 || electricalPower != null) {
             logger.debug(
@@ -959,17 +959,17 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         }
 
         String chargingMode = deviceProperties.stream().map(p -> p.chargingMode).filter(Objects::nonNull).findFirst()
-                .orElse(carChargerDevice.getChargingMode());
-        Float targetDistance = deviceProperties.stream().map(p -> p.targetDistance).filter(Objects::nonNull).findFirst()
-                .map(Float::parseFloat).orElse(null);
+                .orElse(null);
+        Float targetDistance = deviceProperties.stream().map(p -> p.targetDistance)
+                .filter(s -> !((s == null) || s.isEmpty())).findFirst().map(Float::parseFloat).orElse(null);
         String targetTime = deviceProperties.stream().map(p -> p.targetTime).filter(Objects::nonNull).findFirst()
-                .orElse(carChargerDevice.getTargetTime());
+                .orElse(null);
         Boolean boost = deviceProperties.stream().map(p -> p.boost).filter(Objects::nonNull).findFirst()
                 .map(b -> NHCTRUE.equals(b) ? true : false).orElse(carChargerDevice.isBoost());
-        Float reachableDistance = deviceProperties.stream().map(p -> p.reachableDistance).filter(Objects::nonNull)
-                .findFirst().map(Float::parseFloat).orElse(carChargerDevice.getReachableDistance());
+        Float reachableDistance = deviceProperties.stream().map(p -> p.reachableDistance)
+                .filter(s -> !((s == null) || s.isEmpty())).findFirst().map(Float::parseFloat).orElse(null);
         String nextChargingTime = deviceProperties.stream().map(p -> p.nextChargingTime).filter(Objects::nonNull)
-                .findFirst().orElse(carChargerDevice.getNextChargingTime());
+                .findFirst().orElse(null);
         if (chargingMode != null || targetDistance != null || targetTime != null || boost != null
                 || reachableDistance != null || nextChargingTime != null) {
             logger.debug(
