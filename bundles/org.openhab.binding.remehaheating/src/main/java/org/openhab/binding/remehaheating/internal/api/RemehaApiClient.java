@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.remehaheating.internal.api;
 
-import java.net.CookieStore;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -110,10 +109,7 @@ public class RemehaApiClient {
         this.password = password;
 
         // Clear cookies from any previous session to ensure a clean authentication flow
-        CookieStore cookieStore = httpClient.getCookieStore();
-        if (cookieStore != null) {
-            cookieStore.removeAll();
-        }
+        httpClient.getHttpCookieStore().clear();
 
         try {
             codeVerifier = generateRandomString();
@@ -282,8 +278,10 @@ public class RemehaApiClient {
         }
         try {
             ContentResponse response = httpClient.newRequest(API_BASE_URL + "/homes/dashboard").method(HttpMethod.GET)
-                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).header("Authorization", "Bearer " + accessToken)
-                    .header("Ocp-Apim-Subscription-Key", SUBSCRIPTION_KEY).send();
+                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS)
+                    .headers(h -> h.add("Authorization", "Bearer " + accessToken).add("Ocp-Apim-Subscription-Key",
+                            SUBSCRIPTION_KEY))
+                    .send();
             if (response.getStatus() == 200) {
                 return gson.fromJson(response.getContentAsString(), JsonObject.class);
             }
@@ -316,8 +314,8 @@ public class RemehaApiClient {
 
             Request request = httpClient.newRequest(TOKEN_ENDPOINT).method(HttpMethod.POST)
                     .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS)
-                    .header("Content-Type", "application/x-www-form-urlencoded")
-                    .content(new StringContentProvider(formData));
+                    .headers(h -> h.add("Content-Type", "application/x-www-form-urlencoded"))
+                    .body(new StringRequestContent(formData));
 
             ContentResponse response = request.send();
             if (response.getStatus() == 200) {
@@ -545,10 +543,12 @@ public class RemehaApiClient {
         }
         try {
             Request request = httpClient.newRequest(API_BASE_URL + path).method(HttpMethod.POST)
-                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).header("Authorization", "Bearer " + accessToken)
-                    .header("Ocp-Apim-Subscription-Key", SUBSCRIPTION_KEY).header("Content-Type", "application/json");
+                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS)
+                    .headers(h -> h.add("Authorization", "Bearer " + accessToken)
+                            .add("Ocp-Apim-Subscription-Key", SUBSCRIPTION_KEY)
+                            .add("Content-Type", "application/json"));
             if (jsonData != null) {
-                request.content(new StringContentProvider(jsonData));
+                request.body(new StringRequestContent(jsonData));
             }
             return request.send().getStatus() == 200;
         } catch (InterruptedException e) {
