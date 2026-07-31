@@ -35,7 +35,7 @@ public class Util {
     public static final Pattern FORMAT_REPLACE_PATTERN = Pattern.compile("%\\d\\$[^%]+");
 
     /**
-     * Create a log string from a {@link org.eclipse.jetty.client.api.Request}
+     * Create a log string from a {@link org.eclipse.jetty.client.Request}
      *
      * @param request the request to log
      * @return the string representing the request

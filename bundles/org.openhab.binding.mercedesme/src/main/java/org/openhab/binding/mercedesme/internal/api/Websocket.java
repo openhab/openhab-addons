@@ -320,13 +320,9 @@ public class Websocket extends RestApi {
     private void sendPing() {
         Session localSession = session;
         if (localSession != null) {
-            try {
-                String pingId = UUID.randomUUID().toString();
-                pingPongMap.put(pingId, Instant.now());
-                localSession.getRemote().sendPing(ByteBuffer.wrap(pingId.getBytes(StandardCharsets.UTF_8)), Callback.NOOP);
-            } catch (IOException e) {
-                logger.warn("Websocket ping failed {}", e.getMessage());
-            }
+            String pingId = UUID.randomUUID().toString();
+            pingPongMap.put(pingId, Instant.now());
+            localSession.sendPing(ByteBuffer.wrap(pingId.getBytes(StandardCharsets.UTF_8)), Callback.NOOP);
         }
     }
 

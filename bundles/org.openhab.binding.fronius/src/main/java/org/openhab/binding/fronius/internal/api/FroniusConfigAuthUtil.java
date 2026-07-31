@@ -38,8 +38,8 @@ import org.slf4j.LoggerFactory;
  * available on the <code>/config</code> HTTP endpoints.
  * <br>
  * Due to Fronius not using the standard HTTP authorization header, it is not possible to use
- * {@link org.eclipse.jetty.client.api.AuthenticationStore} together with
- * {@link org.eclipse.jetty.client.util.DigestAuthentication} to authenticate against the Fronius inverter settings.
+ * {@link org.eclipse.jetty.client.AuthenticationStore} together with
+ * {@link org.eclipse.jetty.client.DigestAuthentication} to authenticate against the Fronius inverter settings.
  *
  * @author Florian Hotze - Initial contribution
  */
@@ -56,7 +56,7 @@ public class FroniusConfigAuthUtil {
      * authentication header.
      * This method uses a {@link Response.Listener.Adapter} to intercept the response headers and extract the
      * authentication header, as normal digest authentication using
-     * {@link org.eclipse.jetty.client.util.DigestAuthentication} does not work because Fronius uses a custom
+     * {@link org.eclipse.jetty.client.DigestAuthentication} does not work because Fronius uses a custom
      * authentication header.
      *
      * @param httpClient the {@link HttpClient} to use for the request

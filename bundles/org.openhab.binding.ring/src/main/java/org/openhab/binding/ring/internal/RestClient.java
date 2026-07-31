@@ -18,15 +18,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +35,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.InputStreamResponseListener;
 import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.Response;
 import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
@@ -454,7 +451,7 @@ public class RestClient {
             request.headers(h -> h.add(HttpHeader.AUTHORIZATION.asString(), "Bearer " + tokens.accessToken()));
 
             // Add any custom headers (like hardware_id)
-            additionalHeaders.forEach(request::header);
+            request.headers(h -> additionalHeaders.forEach(h::add));
 
             if (payload != null) {
                 request.body(new StringRequestContent("application/json", payload));
@@ -533,7 +530,7 @@ public class RestClient {
         try {
             ContentResponse response = httpClient.newRequest(uuidUrl).timeout(10000, TimeUnit.MILLISECONDS)
                     .agent(ApiConstants.API_USER_AGENT)
-                    .header(HttpHeader.AUTHORIZATION.asString(), "Bearer " + tokens.accessToken()).send();
+                    .headers(h -> h.add(HttpHeader.AUTHORIZATION, "Bearer " + tokens.accessToken())).send();
 
             if (response.getStatus() == 200) {
                 return response.getContent();
