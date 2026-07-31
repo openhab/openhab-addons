@@ -131,7 +131,9 @@ public class GoveeDiscoveryService extends AbstractDiscoveryService implements G
 
         final String ipAddress = data.ip();
         if (ipAddress == null || ipAddress.isEmpty()) {
-            logger.warn("Missing IP address received during discovery - ignoring {}", response);
+            // Bluetooth-only Govee devices reply to the LAN discovery scan without an IP address; they cannot be
+            // controlled over the LAN API and reappear on every background scan, so log at debug to avoid noise.
+            logger.debug("Ignoring scan response without IP address (device not reachable over LAN) - {}", response);
             return null;
         }
 
