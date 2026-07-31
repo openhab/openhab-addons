@@ -166,8 +166,10 @@ public class ChatGPTApiClient {
                         try {
                             ChatGPTLLMToolCall toolCall = ChatGPTLLMToolCall.fromJson(history.get(j).content());
                             String toolCallId = toolCall.id;
-                            if (toolCallId == null) {
-                                toolCallId = "";
+                            if (toolCallId == null || toolCallId.isEmpty()) {
+                                // Synthesize a unique, deterministic ID if missing, so tool_calls and TOOL_RETURN share
+                                // a valid ID.
+                                toolCallId = "tc_" + j;
                             }
                             String name = toolCall.tool.replaceAll("[^a-zA-Z0-9_-]", "_");
                             pendingToolCalls.add(new PendingToolCall(toolCallId, name));
