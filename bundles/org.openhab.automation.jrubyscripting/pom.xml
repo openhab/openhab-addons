@@ -16,23 +16,9 @@
   <properties>
     <jruby.version>10.1.1.0</jruby.version>
 
-    <bnd.importpackage><![CDATA[!org.jruby.*,\
-  !org.ruby_lang.*,\
-  !com.headius.*,\
-  !ch.randelshofer.*,\
-  !com.jcraft.*,\
-  !com.kenai.jffi.*,\
-  !jnr.*,\
-  !org.objectweb.asm.*,\
-  !org.jcodings.*,\
-  !org.joni.*,\
-  !org.ow2.asm.*,\
-  !org.joda.*,\
-  !me.qmx.jitescript.*,\
-  !org.yaml.snakeyaml.*,\
-  !com.dylibso.chicory.*,\
-  !io.roastedroot.redline.*,\
-  org.crac;resolution:=optional,\
+    <bnd.importpackage><![CDATA[org.crac;resolution:=optional,\
+  com.dylibso.chicory.annotations;resolution:=optional,\
+  org.joda.convert;resolution:=optional,\
   com.sun.nio.*;resolution:=optional,\
   com.sun.security.*;resolution:=optional,\
   org.apache.tools.ant.*;resolution:=optional,\
@@ -42,6 +28,7 @@
   android.os;resolution:=optional,\
   jakarta.annotation;resolution:=optional,\
   jdk.crac.management;resolution:=optional]]></bnd.importpackage>
+
   </properties>
 
   <dependencies>
@@ -60,32 +47,10 @@
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>
           <execution>
-            <id>embed-jruby-dependencies</id>
-            <goals>
-              <goal>unpack-dependencies</goal>
-            </goals>
-            <phase>generate-resources</phase>
+            <id>embed-dependencies</id>
             <configuration>
-              <includeGroupIds>org.jruby,
-                org.ruby-lang,
-                jnr,
-                com.headius,
-                com.jcraft,
-                com.kenai.jffi,
-                com.github.jnr,
-                com.dylibso.chicory,
-                io.roastedroot,
-                org.objectweb.asm,
-                org.jcodings,
-                org.joni,
-                joda-time,
-                me.qmx.jitescript,
-                org.ow2.asm,
-                ch.randelshofer,
-                org.yaml</includeGroupIds>
-              <includeTypes>jar</includeTypes>
-              <outputDirectory>${project.build.outputDirectory}</outputDirectory>
-              <excludes>META-INF/*.SF,META-INF/*.DSA,META-INF/*.RSA,META-INF/MANIFEST.MF,**/module-info.class</excludes>
+              <!-- jruby isn't a flat jar. We want its transitive dependencies -->
+              <excludeTransitive>false</excludeTransitive>
             </configuration>
           </execution>
         </executions>
