@@ -140,6 +140,8 @@ public class ChatGPTApiClient {
             chatMessages.add(systemMessage);
         }
 
+        // Convert internal conversation history into API-compliant ChatMessage objects.
+        // Maintain a queue of pending tool calls so TOOL_RETURN messages can match their assistant tool_calls.
         Queue<PendingToolCall> pendingToolCalls = new LinkedList<>();
 
         for (int i = 0; i < history.size(); i++) {
@@ -160,7 +162,9 @@ public class ChatGPTApiClient {
                     break;
                 }
                 case TOOL_CALL: {
+                    // Aggregate contiguous TOOL_CALL messages into a single assistant message containing tool_calls.
                     List<ChatToolCalls> toolCallsList = new ArrayList<>();
+                    List<PendingToolCall> groupPending = new ArrayList<>();
                     int j = i;
                     while (j < history.size() && history.get(j).role() == ConversationRole.TOOL_CALL) {
                         try {
@@ -172,7 +176,6 @@ public class ChatGPTApiClient {
                                 toolCallId = "tc_" + j;
                             }
                             String name = toolCall.tool.replaceAll("[^a-zA-Z0-9_-]", "_");
-                            pendingToolCalls.add(new PendingToolCall(toolCallId, name));
 
                             ChatFunctionCall cfc = new ChatFunctionCall();
                             cfc.setName(name);
@@ -184,12 +187,35 @@ public class ChatGPTApiClient {
                             ctc.setFunction(cfc);
 
                             toolCallsList.add(ctc);
+                            groupPending.add(new PendingToolCall(toolCallId, name));
                         } catch (Exception e) {
                             logger.warn("Failed to parse TOOL_CALL message content: {}", e.getMessage(), e);
                         }
                         j++;
                     }
                     i = j - 1;
+
+                    // Count matching TOOL_RETURN messages answering this group.
+                    // OpenAI-compatible APIs strictly require every tool_call in an assistant message to be answered by
+                    // a tool message.
+                    // If a previous turn failed mid-execution, trim any unanswered (orphaned) tool calls.
+                    int answered = 0;
+                    for (int k = j; k < history.size() && history.get(k).role() == ConversationRole.TOOL_RETURN; k++) {
+                        answered++;
+                    }
+                    if (answered < toolCallsList.size()) {
+                        logger.debug("Dropping {} orphaned tool call(s) without a matching TOOL_RETURN",
+                                toolCallsList.size() - answered);
+                        toolCallsList.subList(answered, toolCallsList.size()).clear();
+                        groupPending.subList(answered, groupPending.size()).clear();
+                    }
+
+                    // If all tool calls in the group were orphaned, skip emitting an assistant message.
+                    if (toolCallsList.isEmpty()) {
+                        break;
+                    }
+
+                    pendingToolCalls.addAll(groupPending);
 
                     ChatMessage assistantMsg = new ChatMessage();
                     assistantMsg.setRole(ChatMessage.Role.ASSISTANT.value());
@@ -198,6 +224,8 @@ public class ChatGPTApiClient {
                     break;
                 }
                 case TOOL_RETURN: {
+                    // Match each tool return with its corresponding pending tool call from the previous assistant
+                    // message.
                     PendingToolCall pending = pendingToolCalls.poll();
                     if (pending == null) {
                         logger.trace("Skipping orphaned TOOL_RETURN");
