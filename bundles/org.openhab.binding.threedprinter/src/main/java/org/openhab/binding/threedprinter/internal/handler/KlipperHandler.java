@@ -67,6 +67,7 @@ public class KlipperHandler extends AbstractPrinterHandler {
 
     private @Nullable KlipperConfiguration config;
     private String lastPreviewFilename = "";
+    private @Nullable RawType lastPreviewState;
 
     public KlipperHandler(Thing thing, HttpClient httpClient) {
         super(thing, httpClient);
@@ -146,10 +147,19 @@ public class KlipperHandler extends AbstractPrinterHandler {
 
             if (!stats.filename.isBlank()) {
                 if (!stats.filename.equals(lastPreviewFilename)) {
+                    logger.debug("Fetching preview for {} (last was '{}')", stats.filename, lastPreviewFilename);
                     fetchAndUpdatePreview(baseUrl, cfg.apiKey, stats.filename);
+                } else {
+                    // Re-push the cached image every cycle rather than only on filename change, so a channel
+                    // linked to an item after the initial fetch (or a UI reconnecting) still gets the preview.
+                    RawType cached = lastPreviewState;
+                    if (cached != null) {
+                        updateState(CHANNEL_JOB_PREVIEW, cached);
+                    }
                 }
             } else {
                 lastPreviewFilename = "";
+                lastPreviewState = null;
             }
         }
 
@@ -180,23 +190,28 @@ public class KlipperHandler extends AbstractPrinterHandler {
         String encodedFilename = URLEncoder.encode(filename, StandardCharsets.UTF_8);
         String metaJson = httpGet(baseUrl + "/server/files/metadata?filename=" + encodedFilename, apiKey);
         if (metaJson == null) {
+            logger.debug("Preview for {}: metadata request failed (see prior GET log)", filename);
             return;
         }
         KlipperMetadataResponse meta = fromJson(metaJson, KlipperMetadataResponse.class);
         if (meta == null) {
+            logger.debug("Preview for {}: metadata response was not valid JSON", filename);
             return;
         }
         KlipperMetadataResult metaResult = meta.result;
         if (metaResult == null) {
+            logger.debug("Preview for {}: metadata response had no 'result' field", filename);
             return;
         }
         List<KlipperThumbnail> thumbnails = metaResult.thumbnails;
         if (thumbnails == null || thumbnails.isEmpty()) {
+            logger.debug("Preview for {}: metadata has no thumbnails", filename);
             return;
         }
         @Nullable
         KlipperThumbnail best = thumbnails.stream().max(Comparator.comparingInt(t -> t.size)).orElse(null);
         if (best == null || best.relativePath.isBlank()) {
+            logger.debug("Preview for {}: no usable thumbnail entry (relative_path blank)", filename);
             return;
         }
         // relative_path is relative to the gcode file's own directory, not the gcodes root
@@ -207,11 +222,21 @@ public class KlipperHandler extends AbstractPrinterHandler {
         String encodedPath = Arrays.stream(fullPath.split("/"))
                 .map(s -> URLEncoder.encode(s, StandardCharsets.UTF_8).replace("+", "%20"))
                 .collect(Collectors.joining("/"));
-        byte @Nullable [] bytes = httpGetBytes(baseUrl + "/server/files/gcodes/" + encodedPath, apiKey);
-        if (bytes != null && bytes.length > 0) {
-            updateState(CHANNEL_JOB_PREVIEW, new RawType(bytes, "image/png"));
-            lastPreviewFilename = filename;
+        String previewUrl = baseUrl + "/server/files/gcodes/" + encodedPath;
+        byte @Nullable [] bytes = httpGetBytes(previewUrl, apiKey);
+        if (bytes == null) {
+            logger.debug("Preview for {}: image GET {} failed (see prior GET log)", filename, previewUrl);
+            return;
         }
+        if (bytes.length == 0) {
+            logger.debug("Preview for {}: image GET {} returned an empty body", filename, previewUrl);
+            return;
+        }
+        logger.debug("Preview for {}: fetched {} bytes from {}", filename, bytes.length, previewUrl);
+        RawType state = new RawType(bytes, "image/png");
+        updateState(CHANNEL_JOB_PREVIEW, state);
+        lastPreviewFilename = filename;
+        lastPreviewState = state;
     }
 
     @Override
