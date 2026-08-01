@@ -91,4 +91,15 @@ public class OcppBindingConstants {
     // Config parameter names (must match thing-types.xml)
     public static final String CONFIG_CHARGE_POINT_ID = "chargePointId";
     public static final String CONFIG_CONNECTOR_ID = "connectorId";
+
+    /**
+     * Representation property of a connector. A connector id alone repeats across chargers, and the
+     * framework matches a representation property on thing type plus value without considering the
+     * bridge, so it has to carry the charge point id to stay unique.
+     */
+    public static final String PROPERTY_UNIQUE_ID = "uniqueId";
+
+    public static String uniqueConnectorId(String chargePointId, int connectorId) {
+        return chargePointId + ":" + connectorId;
+    }
 }

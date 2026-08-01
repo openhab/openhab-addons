@@ -68,11 +68,12 @@ public class OcppDiscoveryService extends AbstractThingHandlerDiscoveryService<O
                 .withLabel("OCPP Charge Point " + chargePointId).build());
     }
 
-    public void connectorDiscovered(ThingUID chargePointUID, int connectorId) {
+    public void connectorDiscovered(ThingUID chargePointUID, String chargePointId, int connectorId) {
         ThingUID thingUID = new ThingUID(THING_TYPE_CONNECTOR, chargePointUID, "c" + connectorId);
         thingDiscovered(DiscoveryResultBuilder.create(thingUID).withBridge(chargePointUID)
-                .withProperty(CONFIG_CONNECTOR_ID, connectorId).withRepresentationProperty(CONFIG_CONNECTOR_ID)
-                .withLabel("OCPP Connector " + connectorId).build());
+                .withProperty(CONFIG_CONNECTOR_ID, connectorId)
+                .withProperty(PROPERTY_UNIQUE_ID, uniqueConnectorId(chargePointId, connectorId))
+                .withRepresentationProperty(PROPERTY_UNIQUE_ID).withLabel("OCPP Connector " + connectorId).build());
     }
 
     private static String sanitize(String id) {

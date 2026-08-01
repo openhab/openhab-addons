@@ -106,6 +106,10 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
         super(bridge);
     }
 
+    public String getChargePointId() {
+        return chargePointId;
+    }
+
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         // No writable channels on the chargepoint itself.

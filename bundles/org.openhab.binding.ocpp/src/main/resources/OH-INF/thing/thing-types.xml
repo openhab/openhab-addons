@@ -12,6 +12,7 @@
 
 		<config-description>
 			<parameter name="host" type="text">
+				<context>network-address</context>
 				<label>Bind Address</label>
 				<description>Local address to bind the WebSocket server to.</description>
 				<default>0.0.0.0</default>
@@ -92,6 +93,8 @@
 			<channel id="connected" typeId="connected"/>
 			<channel id="last-seen" typeId="last-seen"/>
 		</channels>
+
+		<representation-property>chargePointId</representation-property>
 
 		<config-description>
 			<parameter name="chargePointId" type="text" required="true">
@@ -186,6 +189,8 @@
 			</channel>
 		</channels>
 
+		<representation-property>uniqueId</representation-property>
+
 		<config-description>
 			<parameter name="connectorId" type="integer" min="1">
 				<label>Connector Id</label>
@@ -231,6 +236,9 @@
 		<item-type>Switch</item-type>
 		<label>Connected</label>
 		<description>Whether the charger currently has an open session.</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -239,6 +247,10 @@
 		<label>Last Seen</label>
 		<description>Timestamp of the last message received from the charger.</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -246,6 +258,9 @@
 		<item-type>String</item-type>
 		<label>Status</label>
 		<description>OCPP connector status (Available, Preparing, Charging, SuspendedEV, ...).</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -253,6 +268,10 @@
 		<item-type>Switch</item-type>
 		<label>Cable Connected</label>
 		<description>Whether a vehicle cable is plugged in.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Presence</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -260,6 +279,10 @@
 		<item-type>Switch</item-type>
 		<label>Charging Session</label>
 		<description>ON while a transaction is active; command to start/stop remotely.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="charge-limit">
@@ -267,6 +290,10 @@
 		<label>Charge Current Limit</label>
 		<description>Maximum charging current applied via SetChargingProfile.</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Current</tag>
+		</tags>
 		<state min="0" max="32" step="1" pattern="%.0f A"/>
 	</channel-type>
 
@@ -280,6 +307,9 @@
 		<item-type>Switch</item-type>
 		<label>Available</label>
 		<description>OCPP availability (Operative/Inoperative) via ChangeAvailability.</description>
+		<tags>
+			<tag>Switch</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="lock">
@@ -299,6 +329,10 @@
 		<label>Hardware Max Current</label>
 		<description>Charger hardware current ceiling, written via a vendor ChangeConfiguration key.</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Current</tag>
+		</tags>
 		<state min="0" max="32" step="1" pattern="%.0f A"/>
 	</channel-type>
 
@@ -331,6 +365,10 @@
 		<label>Current Offered</label>
 		<description>Current offered to the vehicle (MeterValues Current.Offered).</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f A"/>
 	</channel-type>
 
@@ -351,6 +389,10 @@
 		<label>Power Offered</label>
 		<description>Power offered to the vehicle (MeterValues Power.Offered).</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f W"/>
 	</channel-type>
 
@@ -404,12 +446,19 @@
 		<item-type>Number:Power</item-type>
 		<label>Reactive Power</label>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f var"/>
 	</channel-type>
 
 	<channel-type id="power-factor">
 		<item-type>Number</item-type>
 		<label>Power Factor</label>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f"/>
 	</channel-type>
 
@@ -427,6 +476,10 @@
 	<channel-type id="frequency">
 		<item-type>Number:Frequency</item-type>
 		<label>Frequency</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Frequency</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f Hz"/>
 	</channel-type>
 
@@ -434,6 +487,10 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>State of Charge</label>
 		<category>Battery</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
 
@@ -471,6 +528,10 @@
 		<item-type>DateTime</item-type>
 		<label>Timestamp</label>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
