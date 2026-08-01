@@ -119,17 +119,17 @@ public class OcppConnectorHandler extends BaseThingHandler {
             Map.entry(CHANNEL_ENERGY_ACTIVE_EXPORT,
                     new DynamicChannel(TYPE_ENERGY, ITEM_ENERGY, "Active Energy Exported")),
             Map.entry(CHANNEL_ENERGY_ACTIVE_IMPORT_INTERVAL,
-                    new DynamicChannel(TYPE_ENERGY, ITEM_ENERGY, "Active Energy Imported (Interval)")),
+                    new DynamicChannel(TYPE_ENERGY, ITEM_ENERGY, "Energy Import Interval")),
             Map.entry(CHANNEL_ENERGY_ACTIVE_EXPORT_INTERVAL,
-                    new DynamicChannel(TYPE_ENERGY, ITEM_ENERGY, "Active Energy Exported (Interval)")),
+                    new DynamicChannel(TYPE_ENERGY, ITEM_ENERGY, "Energy Export Interval")),
             Map.entry(CHANNEL_ENERGY_REACTIVE_IMPORT,
                     new DynamicChannel(TYPE_ENERGY, ITEM_ENERGY, "Reactive Energy Imported")),
             Map.entry(CHANNEL_ENERGY_REACTIVE_EXPORT,
                     new DynamicChannel(TYPE_ENERGY, ITEM_ENERGY, "Reactive Energy Exported")),
             Map.entry(CHANNEL_ENERGY_REACTIVE_IMPORT_INTERVAL,
-                    new DynamicChannel(TYPE_ENERGY, ITEM_ENERGY, "Reactive Energy Imported (Interval)")),
+                    new DynamicChannel(TYPE_ENERGY, ITEM_ENERGY, "Reactive Import Interval")),
             Map.entry(CHANNEL_ENERGY_REACTIVE_EXPORT_INTERVAL,
-                    new DynamicChannel(TYPE_ENERGY, ITEM_ENERGY, "Reactive Energy Exported (Interval)")),
+                    new DynamicChannel(TYPE_ENERGY, ITEM_ENERGY, "Reactive Export Interval")),
             Map.entry(CHANNEL_SOC, new DynamicChannel("soc", "Number:Dimensionless", "State of Charge")),
             Map.entry(CHANNEL_RPM, new DynamicChannel("rpm", "Number", "RPM")),
             Map.entry(CHANNEL_TEMPERATURE, new DynamicChannel("temperature", "Number:Temperature", "Temperature")));
@@ -148,7 +148,12 @@ public class OcppConnectorHandler extends BaseThingHandler {
     private volatile double currentLimitAmps;
     private volatile boolean paused;
 
-    // SetChargingProfile coalescing state (guarded by this).
+    // Guards the coalescing and watchdog state below. A dedicated lock rather than the handler
+    // monitor: the base class synchronizes on the handler for things like status updates, so holding
+    // its monitor while calling back into the framework risks a lock-ordering deadlock.
+    private final Object lock = new Object();
+
+    // SetChargingProfile coalescing state (guarded by lock).
     private double pendingLimitAmps;
     private long lastProfileSentAt;
     private @Nullable ScheduledFuture<?> pendingFlush;
@@ -174,6 +179,9 @@ public class OcppConnectorHandler extends BaseThingHandler {
             return;
         }
         this.chargePoint = parent;
+        // Also set on file-defined things, not just discovered ones, so the framework can match a
+        // later discovery result against an already-configured connector.
+        updateProperty(PROPERTY_UNIQUE_ID, uniqueConnectorId(parent.getChargePointId(), connectorId));
         parent.registerConnector(connectorId, this);
         if (meterValuesPollSeconds > 0) {
             pollTask = scheduler.scheduleWithFixedDelay(this::pollMeterValues, meterValuesPollSeconds,
@@ -266,25 +274,50 @@ public class OcppConnectorHandler extends BaseThingHandler {
         coalesceProfile(paused ? 0.0 : currentLimitAmps);
     }
 
-    private synchronized void coalesceProfile(double amps) {
-        pendingLimitAmps = amps;
-        if (profileMinIntervalMs <= 0) {
-            flushProfile();
-            return;
+    private void coalesceProfile(double amps) {
+        boolean sendNow = false;
+        double claimed = 0;
+        synchronized (lock) {
+            pendingLimitAmps = amps;
+            long elapsed = System.currentTimeMillis() - lastProfileSentAt;
+            if (profileMinIntervalMs <= 0 || elapsed >= profileMinIntervalMs) {
+                claimed = claimSend();
+                sendNow = true;
+            } else if (pendingFlush == null) {
+                pendingFlush = scheduler.schedule(this::flushProfile, profileMinIntervalMs - elapsed,
+                        TimeUnit.MILLISECONDS);
+            }
         }
-        long elapsed = System.currentTimeMillis() - lastProfileSentAt;
-        if (elapsed >= profileMinIntervalMs) {
-            flushProfile();
-        } else if (pendingFlush == null) {
-            pendingFlush = scheduler.schedule(this::flushProfile, profileMinIntervalMs - elapsed,
-                    TimeUnit.MILLISECONDS);
+        if (sendNow) {
+            sendProfile(claimed);
         }
     }
 
-    private synchronized void flushProfile() {
+    private void flushProfile() {
+        double claimed;
+        synchronized (lock) {
+            claimed = claimSend();
+        }
+        sendProfile(claimed);
+    }
+
+    /**
+     * Marks a profile as being sent now and returns the value to send. Claiming the slot under the
+     * lock is what keeps the minimum interval honest when two commands arrive at once: the second
+     * one sees the timestamp already moved and coalesces instead of sending as well. Caller must
+     * hold {@link #lock}.
+     */
+    private double claimSend() {
         pendingFlush = null;
         lastProfileSentAt = System.currentTimeMillis();
-        double amps = pendingLimitAmps;
+        return pendingLimitAmps;
+    }
+
+    /**
+     * Sends outside the lock. This calls back into the framework, and holding a lock across that is
+     * what turns two independently-correct locks into a deadlock.
+     */
+    private void sendProfile(double amps) {
         dispatch(ChargingProfileBuilder.currentLimit(connectorId, amps, forceTxDefaultProfile, transactionId),
                 "SetChargingProfile").whenComplete((confirmation, ex) -> {
                     if (ex == null) {
@@ -491,11 +524,13 @@ public class OcppConnectorHandler extends BaseThingHandler {
 
     // --- stuck-state watchdog ---
 
-    private synchronized void armStuckWatchdog(ChargePointStatus status) {
-        cancel(stuckTask);
-        stuckTask = null;
-        if (TRANSIENT.contains(status)) {
-            stuckTask = scheduler.schedule(() -> onStuck(status), STUCK_STATE_SECONDS, TimeUnit.SECONDS);
+    private void armStuckWatchdog(ChargePointStatus status) {
+        synchronized (lock) {
+            cancel(stuckTask);
+            stuckTask = null;
+            if (TRANSIENT.contains(status)) {
+                stuckTask = scheduler.schedule(() -> onStuck(status), STUCK_STATE_SECONDS, TimeUnit.SECONDS);
+            }
         }
     }
 

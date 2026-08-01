@@ -98,7 +98,6 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
                 this.transport = newTransport;
                 updateStatus(ThingStatus.ONLINE);
             } catch (RuntimeException e) {
-                logger.warn("Failed to start OCPP server on {}:{}", localConfig.host, localConfig.port, e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Could not bind OCPP server: " + e.getMessage());
             }
@@ -141,7 +140,7 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
         OcppDiscoveryService discovery = discoveryService;
         OcppChargePointHandler handler = chargePoints.get(chargePointId);
         if (discovery != null && handler != null) {
-            discovery.connectorDiscovered(handler.getThing().getUID(), connectorId);
+            discovery.connectorDiscovered(handler.getThing().getUID(), chargePointId, connectorId);
         }
     }
 
