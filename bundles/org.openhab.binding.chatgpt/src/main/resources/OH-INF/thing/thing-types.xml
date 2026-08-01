@@ -28,7 +28,7 @@
 			</parameter-group>
 
 			<!-- Authentication & API Settings -->
-			<parameter name="apiKey" type="text" required="true" groupName="authentication">
+			<parameter name="apiKey" type="text" required="false" groupName="authentication">
 				<context>password</context>
 				<label>API Key</label>
 				<description>API key to access the account</description>

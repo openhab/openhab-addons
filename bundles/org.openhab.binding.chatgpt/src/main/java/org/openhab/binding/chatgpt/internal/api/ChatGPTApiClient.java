@@ -317,8 +317,10 @@ public class ChatGPTApiClient {
         Request request = httpClient.newRequest(baseUrl + PATH_CHAT_COMPLETIONS).method(HttpMethod.POST)
                 .timeout(timeoutSeconds != null ? timeoutSeconds : 10, TimeUnit.SECONDS)
                 .header(HttpHeader.CONTENT_TYPE, MimeTypes.Type.APPLICATION_JSON.asString())
-                .header(HttpHeader.AUTHORIZATION, "Bearer " + apiKey)
                 .content(new StringContentProvider(queryJson, StandardCharsets.UTF_8));
+        if (!apiKey.isBlank()) {
+            request.header(HttpHeader.AUTHORIZATION, "Bearer " + apiKey);
+        }
 
         if (logger.isDebugEnabled()) {
             try {
@@ -375,8 +377,10 @@ public class ChatGPTApiClient {
      */
     public List<String> fetchModels(@Nullable Integer timeoutSeconds) throws ChatGPTApiException {
         Request request = httpClient.newRequest(baseUrl + PATH_MODELS)
-                .timeout(timeoutSeconds != null ? timeoutSeconds : 10, TimeUnit.SECONDS).method(HttpMethod.GET)
-                .header(HttpHeader.AUTHORIZATION, "Bearer " + apiKey);
+                .timeout(timeoutSeconds != null ? timeoutSeconds : 10, TimeUnit.SECONDS).method(HttpMethod.GET);
+        if (!apiKey.isBlank()) {
+            request.header(HttpHeader.AUTHORIZATION, "Bearer " + apiKey);
+        }
         logger.debug("Request to {} (GET)", baseUrl + PATH_MODELS);
         try {
             ContentResponse response = request.send();

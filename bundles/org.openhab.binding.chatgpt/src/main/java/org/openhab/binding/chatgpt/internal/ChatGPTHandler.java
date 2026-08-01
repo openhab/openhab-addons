@@ -16,6 +16,7 @@ import static org.openhab.binding.chatgpt.internal.ChatGPTBindingConstants.*;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -178,7 +179,7 @@ public class ChatGPTHandler extends BaseThingHandler {
 
         String apiKey = c.apiKey;
 
-        if (apiKey.isBlank()) {
+        if (apiKey.isBlank() && isTokenRequiredEndpoint(c.baseUrl)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.configuration-error");
             return;
@@ -216,10 +217,19 @@ public class ChatGPTHandler extends BaseThingHandler {
                             "@text/offline.communication-error");
                 }
             } catch (ChatGPTApiException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/offline.communication-error");
                 logger.debug("Fetching models failed: {}", e.getMessage(), e);
             }
         });
+    }
+
+    boolean isTokenRequiredEndpoint(@Nullable String baseUrl) {
+        if (baseUrl == null || baseUrl.isBlank()) {
+            return true;
+        }
+        String lower = baseUrl.toLowerCase(Locale.ROOT);
+        return lower.contains("api.openai.com") || lower.contains("openrouter.ai") || lower.contains("api.mistral.ai");
     }
 
     List<String> getModels() {
