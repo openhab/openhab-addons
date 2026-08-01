@@ -19,25 +19,20 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 
 /**
  * Get a service from the OSGi service registry.
+ * Why should we implement a service instead of exposing the implementation directly to the user?
+ * The implementation requires OSGi-related classes.
+ * As the common package is exposed to the end user, we shouldn't force him to add various OSGi dependencies
+ * in its IDE for its script to show with no errors.
  *
  * @author Gwendal Roulleau - Initial contribution
  */
 @Component
 @NonNullByDefault
-@SuppressWarnings("unused")
 public class ServiceGetterImpl implements ServiceGetter {
-
-    private final BundleContext bundleContext;
-
-    @Activate
-    public ServiceGetterImpl(BundleContext bundleContext) {
-        this.bundleContext = bundleContext;
-    }
 
     @Override
     @Nullable
