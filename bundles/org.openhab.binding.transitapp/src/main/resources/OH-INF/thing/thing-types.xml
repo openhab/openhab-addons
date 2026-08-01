@@ -86,8 +86,8 @@
 		</channel-groups>
 		<config-description>
 			<parameter name="tripId" type="text" required="true">
-				<label>Trip ID</label>
-				<description>The unique identifier for the trip.</description>
+				<label>Trip Search Key</label>
+				<description>The trip search key used by the Transit API.</description>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" min="30">
 				<label>Refresh Interval</label>
