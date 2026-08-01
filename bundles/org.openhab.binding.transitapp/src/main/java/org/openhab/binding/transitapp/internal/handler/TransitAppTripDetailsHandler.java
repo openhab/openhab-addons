@@ -181,8 +181,9 @@ public class TransitAppTripDetailsHandler extends BaseThingHandler {
                 updateState(prefix + "minutes-until-departure", org.openhab.core.types.UnDefType.UNDEF);
             }
         } catch (Exception e) {
-            logger.warn("Communication error while polling trip {}: {}", tripId, e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            String errorMessage = e.getMessage() != null ? e.getMessage() : e.toString();
+            logger.warn("Communication error while polling trip {}: {}", tripId, errorMessage);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
         }
     }
 

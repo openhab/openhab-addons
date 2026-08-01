@@ -229,8 +229,9 @@ public class TransitAppStopHandler extends BaseThingHandler {
             }
         } catch (Exception e) {
             latestLineDepartures.clear();
-            logger.error("Communication issue while polling stop {}: {}", globalStopId, e.getMessage(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            String errorMessage = e.getMessage() != null ? e.getMessage() : e.toString();
+            logger.error("Communication issue while polling stop {}: {}", globalStopId, errorMessage, e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
         }
     }
 

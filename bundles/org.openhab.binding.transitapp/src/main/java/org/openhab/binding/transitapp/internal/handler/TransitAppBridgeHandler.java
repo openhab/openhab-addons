@@ -76,9 +76,10 @@ public class TransitAppBridgeHandler extends BaseBridgeHandler {
                     updateStatus(ThingStatus.ONLINE);
                 }
             } catch (Exception e) {
-                logger.error("Failed to connect to Transit API: {}", e.getMessage(), e);
+                String errorMessage = e.getMessage() != null ? e.getMessage() : e.toString();
+                logger.error("Failed to connect to Transit API: {}", errorMessage, e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Connection Failed: " + e.getMessage());
+                        "Connection Failed: " + errorMessage);
             }
         });
     }

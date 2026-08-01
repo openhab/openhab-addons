@@ -123,8 +123,9 @@ public class TransitAppRouteDetailsHandler extends BaseThingHandler {
             int alertsCount = alerts != null ? alerts.size() : 0;
             updateState("route#active-alerts-count", new DecimalType(alertsCount));
         } catch (Exception e) {
-            logger.warn("Communication error while polling route {}: {}", routeId, e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            String errorMessage = e.getMessage() != null ? e.getMessage() : e.toString();
+            logger.warn("Communication error while polling route {}: {}", routeId, errorMessage);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
         }
     }
 
