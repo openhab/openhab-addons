@@ -83,7 +83,6 @@ public class TransitApiClient {
     }
 
     public String fetchStopDepartures(String apiKey, String globalStopId) throws Exception {
-        checkRateLimit();
         long now = System.currentTimeMillis();
         cleanupCache(now);
 
@@ -91,6 +90,8 @@ public class TransitApiClient {
         if (cached != null && (now - cached.timestamp) < CACHE_TTL_MS) {
             return cached.payload;
         }
+
+        checkRateLimit();
 
         String url = "https://external.transitapp.com/v4/public/stop_departures?global_stop_id="
                 + URLEncoder.encode(globalStopId, StandardCharsets.UTF_8);

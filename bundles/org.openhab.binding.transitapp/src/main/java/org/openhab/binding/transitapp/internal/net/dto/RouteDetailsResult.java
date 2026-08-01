@@ -38,9 +38,12 @@ public class RouteDetailsResult {
         public @Nullable String routeColor;
     }
 
-    public Route getEffectiveRoute() {
+    public @Nullable Route getEffectiveRoute() {
         if (route != null) {
             return route;
+        }
+        if (routeLongNameFlat == null && routeShortNameFlat == null && routeColorFlat == null) {
+            return null;
         }
         Route r = new Route();
         r.routeLongName = routeLongNameFlat;

@@ -53,9 +53,12 @@ public class TripDetailsResult {
         public @Nullable String stopName;
     }
 
-    public Trip getEffectiveTrip() {
+    public @Nullable Trip getEffectiveTrip() {
         if (trip != null) {
             return trip;
+        }
+        if (tripHeadsignFlat == null && routeShortNameFlat == null) {
+            return null;
         }
         Trip t = new Trip();
         t.tripHeadsign = tripHeadsignFlat;
