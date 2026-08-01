@@ -16,6 +16,7 @@ import static org.openhab.binding.gemini.internal.GeminiBindingConstants.BINDING
 import static org.openhab.binding.gemini.internal.GeminiBindingConstants.DEFAULT_MODEL;
 import static org.openhab.binding.gemini.internal.GeminiBindingConstants.DEFAULT_SYSTEM_MESSAGE;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -186,7 +187,7 @@ public class GeminiHLIService implements ThingHandlerService, HumanLanguageInter
         }
 
         Conversation conversation = interpreterContext.conversation();
-        List<LLMTool> tools = interpreterContext.tools();
+        Collection<LLMTool> tools = interpreterContext.tools();
 
         String systemMessage = interpreterContext.systemPrompt();
         if (systemMessage == null || systemMessage.isBlank()) {
@@ -303,7 +304,7 @@ public class GeminiHLIService implements ThingHandlerService, HumanLanguageInter
         }
     }
 
-    private String executeTool(List<LLMTool> tools, @Nullable String toolName, @Nullable Map<String, Object> args,
+    private String executeTool(Collection<LLMTool> tools, @Nullable String toolName, @Nullable Map<String, Object> args,
             Locale locale) {
         if (toolName == null) {
             return "Error: Tool name is null";
