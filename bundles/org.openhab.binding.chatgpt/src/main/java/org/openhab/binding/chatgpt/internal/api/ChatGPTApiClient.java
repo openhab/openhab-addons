@@ -15,6 +15,7 @@ package org.openhab.binding.chatgpt.internal.api;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -128,7 +129,7 @@ public class ChatGPTApiClient {
      * @return deserialized ChatResponse
      * @throws ChatGPTApiException if an error occurs
      */
-    public ChatResponse sendPrompt(String model, List<Conversation.Message> history, List<LLMTool> tools,
+    public ChatResponse sendPrompt(String model, List<Conversation.Message> history, Collection<LLMTool> tools,
             @Nullable String systemMessageStr, @Nullable Double temperature, @Nullable Double topP,
             @Nullable Integer maxTokens, @Nullable Integer timeoutSeconds) throws ChatGPTApiException {
         List<ChatMessage> chatMessages = new ArrayList<>();

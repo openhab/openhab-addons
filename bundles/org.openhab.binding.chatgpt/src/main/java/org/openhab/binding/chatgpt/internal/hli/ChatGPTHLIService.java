@@ -15,6 +15,7 @@ package org.openhab.binding.chatgpt.internal.hli;
 import static org.openhab.binding.chatgpt.internal.ChatGPTBindingConstants.DEFAULT_SYSTEM_MESSAGE;
 import static org.openhab.binding.chatgpt.internal.hli.ChatGPTHLIConstants.SERVICE_ID;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -175,7 +176,7 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
         }
 
         Conversation conversation = interpreterContext.conversation();
-        List<LLMTool> tools = interpreterContext.tools();
+        Collection<LLMTool> tools = interpreterContext.tools();
 
         String systemMessage = interpreterContext.systemPrompt();
         if (systemMessage == null || systemMessage.isBlank()) {
@@ -299,7 +300,7 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
         }
     }
 
-    private String executeTool(List<LLMTool> tools, @Nullable String toolName, @Nullable Map<String, Object> args,
+    private String executeTool(Collection<LLMTool> tools, @Nullable String toolName, @Nullable Map<String, Object> args,
             Locale locale) {
         if (toolName == null) {
             return "Error: Tool name is null";
