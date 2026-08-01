@@ -51,12 +51,15 @@ import org.slf4j.LoggerFactory;
 import com.daimler.mbcarkit.proto.Client.ClientMessage;
 import com.daimler.mbcarkit.proto.Protos.AcknowledgeAssignedVehicles;
 import com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeVEPUpdatesByVIN;
+import com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeVehicleStatusUpdates;
 import com.daimler.mbcarkit.proto.VehicleEvents.PushMessage;
 import com.daimler.mbcarkit.proto.VehicleEvents.VEPUpdate;
+import com.daimler.mbcarkit.proto.VehicleEvents.VehicleStatusUpdates;
 import com.daimler.mbcarkit.proto.Vehicleapi.AcknowledgeAppTwinCommandStatusUpdatesByVIN;
 import com.daimler.mbcarkit.proto.Vehicleapi.AppTwinCommandStatusUpdatesByPID;
 import com.daimler.mbcarkit.proto.Vehicleapi.AppTwinCommandStatusUpdatesByVIN;
 import com.daimler.mbcarkit.proto.Vehicleapi.AppTwinPendingCommandsRequest;
+import com.daimler.mbcarkit.proto.Vehicleapi.AppTwinPendingCommandsResponse;
 
 /**
  * The {@link AccountHandler} acts as Bridge between MercedesMe Account and the associated vehicles
@@ -284,6 +287,10 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     }
 
     private void handleMessage(PushMessage pm) {
+        // DEBUG (not trace) on purpose - if trace logging isn't enabled for this component this is the one
+        // line that still tells us which message types are actually reaching AccountHandler vs. only being
+        // seen at the Websocket layer.
+        logger.debug("AccountHandler handling message type {}", pm.getMsgCase());
         if (pm.hasVepUpdates()) {
             boolean distributed = distributeVepUpdates(pm.getVepUpdates().getUpdatesMap());
             if (distributed) {
@@ -292,6 +299,20 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
                 ClientMessage cm = ClientMessage.newBuilder().setAcknowledgeVepUpdatesByVin(ack).build();
                 api.sendAcknowledgeMessage(cm);
             }
+        } else if (pm.hasVehicleStatusUpdates()) {
+            // vehicle-events.proto: typed alternative to VEPUpdate, added in app version 165-1 (PushMessage
+            // field 24 / ClientMessage field 28). The generated Java classes already support it, but nothing
+            // consumed it yet, so it silently fell into the "not handled" branch below and was never
+            // acknowledged. Mapping its ~275 typed fields onto channels is a separate, bigger follow-up -
+            // for now we only acknowledge it (required, same MUST-be-acknowledged pattern as the other
+            // message types here) and log it so we can confirm the server is actually sending this format.
+            VehicleStatusUpdates vsu = pm.getVehicleStatusUpdates();
+            logger.debug("Received VehicleStatusUpdates seq {} for {} VIN(s) - not yet mapped to channels",
+                    vsu.getSequenceNumber(), vsu.getVehicleStatusUpdatesMap().size());
+            AcknowledgeVehicleStatusUpdates ack = AcknowledgeVehicleStatusUpdates.newBuilder()
+                    .setSequenceNumber(vsu.getSequenceNumber()).build();
+            ClientMessage cm = ClientMessage.newBuilder().setAcknowledgeVehicleStatusUpdates(ack).build();
+            api.sendAcknowledgeMessage(cm);
         } else if (pm.hasAssignedVehicles()) {
             for (int i = 0; i < pm.getAssignedVehicles().getVinsCount(); i++) {
                 String vin = pm.getAssignedVehicles().getVins(i);
@@ -312,6 +333,14 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             if (!pending.getAllFields().isEmpty()) {
                 logger.trace("Pending Command {}", pending.getAllFields());
             }
+            // vehicleapi.proto: "This request MUST eventually be answered with AppTwinPendingCommandsResponse."
+            // We don't track commands across restarts, so we always report an empty pending list. Without
+            // this reply the AppTwin actor on the server side appears to never proceed past this handshake
+            // step to start pushing regular VEPUpdatesByVIN.
+            AppTwinPendingCommandsResponse response = AppTwinPendingCommandsResponse.newBuilder().build();
+            ClientMessage cm = ClientMessage.newBuilder().setApptwinPendingCommandsResponse(response).build();
+            api.sendAcknowledgeMessage(cm);
+            logger.debug("Answered AppTwinPendingCommandsRequest with an empty AppTwinPendingCommandsResponse");
         } else if (pm.hasDebugMessage()) {
             logger.trace("MB Debug Message: {}", pm.getDebugMessage().getMessage());
         } else {

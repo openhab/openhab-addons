@@ -144,9 +144,14 @@ public class Websocket extends RestApi {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 message.writeTo(baos);
                 localSession.getRemote().sendBytes(ByteBuffer.wrap(baos.toByteArray()));
+                logger.trace("Sent acknowledge {}", message.getMsgCase());
             } catch (IOException e) {
                 logger.warn("Error sending acknowledge {} : {}", message.getAllFields(), e.getMessage());
             }
+        } else {
+            // was silent before - a null session here means the ack/response was dropped without any trace,
+            // which would look exactly like the server never receiving it
+            logger.debug("Cannot send acknowledge {} - no active session", message.getMsgCase());
         }
     }
 
