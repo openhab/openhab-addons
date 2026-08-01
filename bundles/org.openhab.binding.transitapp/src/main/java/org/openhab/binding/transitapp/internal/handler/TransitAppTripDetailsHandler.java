@@ -112,9 +112,9 @@ public class TransitAppTripDetailsHandler extends BaseThingHandler {
 
             Double lat = null;
             Double lon = null;
-            TripDetailsResult.Vehicle v = result.vehicle;
+            TripDetailsResult.@Nullable Vehicle v = result.vehicle;
             if (v != null) {
-                TripDetailsResult.Location loc = v.location;
+                TripDetailsResult.@Nullable Location loc = v.location;
                 if (loc != null) {
                     lat = loc.lat;
                     lon = loc.lon;
@@ -127,17 +127,19 @@ public class TransitAppTripDetailsHandler extends BaseThingHandler {
                 updateState("trip#location", org.openhab.core.types.UnDefType.UNDEF);
             }
 
+            @Nullable
             String targetStopId = config.targetStopId;
             long now = System.currentTimeMillis() / 1000;
 
             updateState("trip#time-to-target", org.openhab.core.types.UnDefType.UNDEF);
 
             int stopIdx = 1;
-            java.util.List<TripDetailsResult.Stop> stopsList = result.stops;
+            java.util.@Nullable List<TripDetailsResult.Stop> stopsList = result.stops;
             if (stopsList != null) {
                 for (TripDetailsResult.Stop stop : stopsList) {
                     @Nullable
                     String gStopId = stop.globalStopId;
+                    @Nullable
                     Long depTime = stop.departureTime;
                     @Nullable
                     String sName = stop.stopName;

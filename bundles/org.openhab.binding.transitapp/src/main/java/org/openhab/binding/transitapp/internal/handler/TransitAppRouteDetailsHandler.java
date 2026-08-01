@@ -115,7 +115,7 @@ public class TransitAppRouteDetailsHandler extends BaseThingHandler {
                 updateState("route#route-color", org.openhab.core.types.UnDefType.UNDEF);
             }
 
-            java.util.List<Object> alerts = result.alerts;
+            java.util.@Nullable List<Object> alerts = result.alerts;
             int alertsCount = alerts != null ? alerts.size() : 0;
             updateState("route#active-alerts-count", new DecimalType(alertsCount));
         } catch (Exception e) {

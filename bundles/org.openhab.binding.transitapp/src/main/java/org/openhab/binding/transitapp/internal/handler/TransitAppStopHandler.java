@@ -91,7 +91,7 @@ public class TransitAppStopHandler extends BaseThingHandler {
             long now = System.currentTimeMillis() / 1000;
             latestLineDepartures.clear();
 
-            java.util.List<StopDeparturesResult.RouteDeparture> routeDeps = result.routeDepartures;
+            java.util.@Nullable List<StopDeparturesResult.RouteDeparture> routeDeps = result.routeDepartures;
             if (routeDeps != null) {
                 for (StopDeparturesResult.RouteDeparture routeDep : routeDeps) {
                     if (groupIdx > 10) {
@@ -103,19 +103,20 @@ public class TransitAppStopHandler extends BaseThingHandler {
                     @Nullable
                     String longName = routeDep.routeLongName;
 
-                    java.util.List<StopDeparturesResult.Itinerary> itineraries = routeDep.itineraries;
+                    java.util.@Nullable List<StopDeparturesResult.Itinerary> itineraries = routeDep.itineraries;
                     if (itineraries != null) {
                         for (StopDeparturesResult.Itinerary itinerary : itineraries) {
                             if (groupIdx > 10) {
                                 break;
                             }
-                            java.util.List<StopDeparturesResult.ScheduleItem> schedules = itinerary.scheduleItems;
+                            java.util.@Nullable List<StopDeparturesResult.ScheduleItem> schedules = itinerary.scheduleItems;
                             if (schedules != null) {
                                 for (StopDeparturesResult.ScheduleItem schedule : schedules) {
                                     if (groupIdx > 10) {
                                         break;
                                     }
 
+                                    @Nullable
                                     Long depTime = schedule.departureTime;
                                     if (depTime == null) {
                                         continue;
@@ -153,6 +154,7 @@ public class TransitAppStopHandler extends BaseThingHandler {
                                                         java.time.ZoneId.systemDefault()).toString());
                                     }
 
+                                    @Nullable
                                     Long delay = schedule.delay;
                                     if (delay != null) {
                                         updateState(prefix + "delay-minutes", new QuantityType<>(delay / 60,
@@ -169,6 +171,7 @@ public class TransitAppStopHandler extends BaseThingHandler {
                                         updateState(prefix + "platform", org.openhab.core.types.UnDefType.UNDEF);
                                     }
 
+                                    @Nullable
                                     Boolean wheelchair = schedule.wheelchairAccessible;
                                     if (wheelchair != null) {
                                         updateState(prefix + "wheelchair-accessible",
@@ -187,6 +190,7 @@ public class TransitAppStopHandler extends BaseThingHandler {
                                         updateState(prefix + "occupancy", org.openhab.core.types.UnDefType.UNDEF);
                                     }
 
+                                    @Nullable
                                     Boolean isCancelled = schedule.isCancelled;
                                     if (isCancelled != null) {
                                         updateState(prefix + "is-cancelled",

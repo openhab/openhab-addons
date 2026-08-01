@@ -21,6 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpMethod;
@@ -54,6 +55,7 @@ public class TransitApiClient {
         long now = System.currentTimeMillis();
         if (response.getStatus() == 429) {
             String retryAfter = "60";
+            @Nullable
             String headerVal = response.getHeaders().get("Retry-After");
             if (headerVal != null) {
                 retryAfter = headerVal;
@@ -80,6 +82,7 @@ public class TransitApiClient {
         long now = System.currentTimeMillis();
         cleanupCache(now);
 
+        @Nullable
         CachedResponse cached = cache.get(globalStopId);
         if (cached != null && (now - cached.timestamp) < CACHE_TTL_MS) {
             return cached.payload;
@@ -133,6 +136,7 @@ public class TransitApiClient {
 
     public StopDeparturesResult getStopDepartures(String apiKey, String globalStopId) throws Exception {
         String json = fetchStopDepartures(apiKey, globalStopId);
+        @Nullable
         StopDeparturesResult result = gson.fromJson(json, StopDeparturesResult.class);
         if (result == null) {
             throw new IOException("Parsed JSON for stop departures is null");
@@ -142,6 +146,7 @@ public class TransitApiClient {
 
     public RouteDetailsResult getRouteDetails(String apiKey, String routeId) throws Exception {
         String json = fetchRouteDetails(apiKey, routeId);
+        @Nullable
         RouteDetailsResult result = gson.fromJson(json, RouteDetailsResult.class);
         if (result == null) {
             throw new IOException("Parsed JSON for route details is null");
@@ -151,6 +156,7 @@ public class TransitApiClient {
 
     public TripDetailsResult getTripDetails(String apiKey, String tripId) throws Exception {
         String json = fetchTripDetails(apiKey, tripId);
+        @Nullable
         TripDetailsResult result = gson.fromJson(json, TripDetailsResult.class);
         if (result == null) {
             throw new IOException("Parsed JSON for trip details is null");
