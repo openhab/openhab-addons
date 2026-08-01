@@ -57,6 +57,7 @@ public class OctoPrintHandler extends AbstractPrinterHandler {
 
     private @Nullable OctoPrintConfiguration config;
     private String lastPreviewFilename = "";
+    private @Nullable RawType lastPreviewState;
 
     public OctoPrintHandler(Thing thing, HttpClient httpClient) {
         super(thing, httpClient);
@@ -164,12 +165,22 @@ public class OctoPrintHandler extends AbstractPrinterHandler {
                         byte @Nullable [] bytes = httpGetBytes(
                                 baseUrl + "/plugin/prusaslicerthumbnails/thumbnail/" + encodedName, cfg.apiKey);
                         if (bytes != null && bytes.length > 0) {
-                            updateState(CHANNEL_JOB_PREVIEW, new RawType(bytes, "image/png"));
+                            RawType state = new RawType(bytes, "image/png");
+                            updateState(CHANNEL_JOB_PREVIEW, state);
                             lastPreviewFilename = filename;
+                            lastPreviewState = state;
+                        }
+                    } else {
+                        // Re-push the cached image every cycle rather than only on change, so a channel
+                        // linked to an item after the initial fetch (or a UI reconnecting) still gets it.
+                        RawType cached = lastPreviewState;
+                        if (cached != null) {
+                            updateState(CHANNEL_JOB_PREVIEW, cached);
                         }
                     }
                 } else {
                     lastPreviewFilename = "";
+                    lastPreviewState = null;
                 }
             }
         }

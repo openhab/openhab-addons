@@ -53,6 +53,7 @@ public class PrusaLinkHandler extends AbstractPrinterHandler {
 
     private @Nullable PrusaLinkConfiguration config;
     private String lastPreviewFilename = "";
+    private @Nullable RawType lastPreviewState;
 
     public PrusaLinkHandler(Thing thing, HttpClient httpClient) {
         super(thing, httpClient);
@@ -139,6 +140,7 @@ public class PrusaLinkHandler extends AbstractPrinterHandler {
         if (file == null) {
             updateState(CHANNEL_JOB_NAME, new StringType(""));
             lastPreviewFilename = "";
+            lastPreviewState = null;
             return;
         }
 
@@ -146,13 +148,24 @@ public class PrusaLinkHandler extends AbstractPrinterHandler {
         updateState(CHANNEL_JOB_NAME, new StringType(name));
 
         String thumbnailRef = file.refs != null ? file.refs.thumbnail : "";
-        if (thumbnailRef.isBlank() || thumbnailRef.equals(lastPreviewFilename)) {
+        if (thumbnailRef.isBlank()) {
+            return;
+        }
+        if (thumbnailRef.equals(lastPreviewFilename)) {
+            // Re-push the cached image every cycle rather than only on change, so a channel linked to an
+            // item after the initial fetch (or a UI reconnecting) still gets the preview.
+            RawType cached = lastPreviewState;
+            if (cached != null) {
+                updateState(CHANNEL_JOB_PREVIEW, cached);
+            }
             return;
         }
         byte[] bytes = httpGetBytes(baseUrl + thumbnailRef, apiKey);
         if (bytes != null && bytes.length > 0) {
-            updateState(CHANNEL_JOB_PREVIEW, new RawType(bytes, "image/png"));
+            RawType state = new RawType(bytes, "image/png");
+            updateState(CHANNEL_JOB_PREVIEW, state);
             lastPreviewFilename = thumbnailRef;
+            lastPreviewState = state;
         }
     }
 
