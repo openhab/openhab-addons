@@ -28,11 +28,14 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.transitapp.internal.net.dto.RouteDetailsResult;
 import org.openhab.binding.transitapp.internal.net.dto.StopDeparturesResult;
 import org.openhab.binding.transitapp.internal.net.dto.TripDetailsResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
 @NonNullByDefault
 public class TransitApiClient {
+    private final Logger logger = LoggerFactory.getLogger(TransitApiClient.class);
     private final HttpClient httpClient;
     private final Gson gson = new Gson();
 
@@ -98,6 +101,7 @@ public class TransitApiClient {
         handleResponseStatus(response);
 
         String body = response.getContentAsString();
+        logger.trace("Raw JSON response for stop_departures ({}): {}", globalStopId, body);
         cache.put(globalStopId, new CachedResponse(body, System.currentTimeMillis()));
         return body;
     }
@@ -110,7 +114,9 @@ public class TransitApiClient {
                 .timeout(10, TimeUnit.SECONDS).send();
 
         handleResponseStatus(response);
-        return response.getContentAsString();
+        String body = response.getContentAsString();
+        logger.trace("Raw JSON response for route_details ({}): {}", globalRouteId, body);
+        return body;
     }
 
     public String fetchTripDetails(String apiKey, String tripId) throws Exception {
@@ -121,7 +127,9 @@ public class TransitApiClient {
                 .timeout(10, TimeUnit.SECONDS).send();
 
         handleResponseStatus(response);
-        return response.getContentAsString();
+        String body = response.getContentAsString();
+        logger.trace("Raw JSON response for trip_details ({}): {}", tripId, body);
+        return body;
     }
 
     public String fetchNearbyStops(String apiKey, double lat, double lon) throws Exception {
@@ -131,7 +139,9 @@ public class TransitApiClient {
                 .timeout(10, TimeUnit.SECONDS).send();
 
         handleResponseStatus(response);
-        return response.getContentAsString();
+        String body = response.getContentAsString();
+        logger.trace("Raw JSON response for nearby_stops (lat={}, lon={}): {}", lat, lon, body);
+        return body;
     }
 
     public StopDeparturesResult getStopDepartures(String apiKey, String globalStopId) throws Exception {

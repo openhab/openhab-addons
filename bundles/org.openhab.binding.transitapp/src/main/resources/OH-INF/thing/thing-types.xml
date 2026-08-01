@@ -19,7 +19,7 @@
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 		<label>Transit Stop</label>
-		<description>Transit Stop Thing with dynamic departures</description>
+		<description>Transit Stop Thing with up to 10 departures</description>
 		<channel-groups>
 			<channel-group id="depart1" typeId="departure-group"/>
 			<channel-group id="depart2" typeId="departure-group"/>
