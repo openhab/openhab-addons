@@ -42,7 +42,28 @@ import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.daimler.mbcarkit.proto.VehicleEvents.Auxheatwarning;
+import com.daimler.mbcarkit.proto.VehicleEvents.AuxheatwarningsArrayAttribute;
+import com.daimler.mbcarkit.proto.VehicleEvents.BoolAttribute;
+import com.daimler.mbcarkit.proto.VehicleEvents.ChargeProgramsArrayAttribute;
+import com.daimler.mbcarkit.proto.VehicleEvents.ChargeProgramsValue;
+import com.daimler.mbcarkit.proto.VehicleEvents.DoubleAttribute;
+import com.daimler.mbcarkit.proto.VehicleEvents.DoubleCombustionConsumptionAttribute;
+import com.daimler.mbcarkit.proto.VehicleEvents.DoubleDistanceAttribute;
+import com.daimler.mbcarkit.proto.VehicleEvents.DoubleElectricityConsumptionAttribute;
+import com.daimler.mbcarkit.proto.VehicleEvents.DoublePressureAttribute;
+import com.daimler.mbcarkit.proto.VehicleEvents.DoubleSpeedAttribute;
+import com.daimler.mbcarkit.proto.VehicleEvents.Int64Attribute;
+import com.daimler.mbcarkit.proto.VehicleEvents.Int64ClockHourAttribute;
+import com.daimler.mbcarkit.proto.VehicleEvents.Int64DistanceAttribute;
+import com.daimler.mbcarkit.proto.VehicleEvents.Int64RatioAttribute;
+import com.daimler.mbcarkit.proto.VehicleEvents.TemperaturePointsArrayAttribute;
+import com.daimler.mbcarkit.proto.VehicleEvents.TemperaturePointsValue;
+import com.daimler.mbcarkit.proto.VehicleEvents.VSUMetadata;
 import com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus;
+import com.daimler.mbcarkit.proto.VehicleEvents.VehicleStatusUpdate;
+import com.google.protobuf.BoolValue;
+import com.google.protobuf.Timestamp;
 
 /**
  * {@link Mapper} converts Mercedes keys to channel name and group and converts delivered vehicle data
@@ -333,6 +354,357 @@ public class Mapper {
             }
         }
         return INVALID_MAP;
+    }
+
+    /**
+     * Converts a {@link VehicleStatusUpdate} (the typed push format, added in app version 165-1) into a
+     * {@code Map<String, VehicleAttributeStatus>} keyed by the same {@code MB_KEY_*} constants the old
+     * {@code VEPUpdate} format used, so it feeds directly into
+     * {@link #getChannelStateMap(String, VehicleAttributeStatus)}
+     * without any behavior change there.
+     * <p>
+     * Only the fields with a direct equivalent in the old attribute set are converted (see
+     * {@code docs/ATTRIBUTES_MAPPING.md}); the complex array-typed fields (temperature points, charge programs,
+     * auxiliary warnings) and the fields with no old channel are left out.
+     * <p>
+     * Enum-typed fields are converted via {@code getValueValue()}, the raw number declared for that value in the
+     * {@code .proto} source (e.g. {@code IGNITIONSTATE_ON = 4;}) - not a positional/ordinal guess. Since these
+     * are the same numeric codes the server always sent for {@code int_value} in the old format (verified against
+     * {@code vehicle-events.proto} directly), no extra name-to-code lookup table is needed here.
+     *
+     * @param vsu the typed status update for a single VIN
+     * @return a key-to-attribute map ready for {@link #getChannelStateMap(String, VehicleAttributeStatus)}
+     */
+    public static Map<String, VehicleAttributeStatus> fromVehicleStatusUpdate(VehicleStatusUpdate vsu) {
+        Map<String, VehicleAttributeStatus> attributes = new HashMap<>();
+
+        // bool
+        putBool(attributes, MB_KEY_WARNINGBRAKEFLUID, vsu.getWarningbrakefluid());
+        putBool(attributes, MB_KEY_WARNINGBRAKELININGWEAR, vsu.getWarningbrakeliningwear());
+        putBool(attributes, MB_KEY_WARNINGCOOLANTLEVELLOW, vsu.getWarningcoolantlevellow());
+        putBool(attributes, MB_KEY_WARNINGENGINELIGHT, vsu.getWarningenginelight());
+        putBool(attributes, MB_KEY_CHARGINGACTIVE, vsu.getChargingactive());
+
+        // plain int64 / double (no unit)
+        putInt64(attributes, MB_KEY_SERVICEINTERVALDAYS, vsu.getServiceintervaldays());
+        putInt64(attributes, MB_KEY_TIRE_PRESS_MEAS_TIMESTAMP, vsu.getTirePressMeasTimestamp());
+        putInt64(attributes, MB_KEY_DRIVEN_TIME_RESET, vsu.getDrivenTimeReset());
+        putInt64(attributes, MB_KEY_DRIVEN_TIME_START, vsu.getDrivenTimeStart());
+        putDouble(attributes, MB_KEY_POSITION_HEADING, vsu.getPositionHeading());
+        putDouble(attributes, MB_KEY_CHARGING_POWER, vsu.getChargingPower());
+        putDouble(attributes, MB_KEY_POSITION_LONG, vsu.getPositionLong());
+        putDouble(attributes, MB_KEY_POSITION_LAT, vsu.getPositionLat());
+
+        // enum-typed status attributes -> int_value = proto-declared enum number
+        putEnum(attributes, MB_KEY_TIRE_SENSOR_AVAILABLE, vsu.getTireSensorAvailable().getValueValue(),
+                vsu.getTireSensorAvailable().getMetadata());
+        putEnum(attributes, MB_KEY_CHARGE_COUPLER_DC_LOCK_STATUS, vsu.getChargeCouplerDCLockStatus().getValueValue(),
+                vsu.getChargeCouplerDCLockStatus().getMetadata());
+        putEnum(attributes, MB_KEY_CHARGE_COUPLER_DC_STATUS, vsu.getChargeCouplerDCStatus().getValueValue(),
+                vsu.getChargeCouplerDCStatus().getMetadata());
+        putEnum(attributes, MB_KEY_CHARGE_COUPLER_AC_STATUS, vsu.getChargeCouplerACStatus().getValueValue(),
+                vsu.getChargeCouplerACStatus().getMetadata());
+        putEnum(attributes, MB_KEY_CHARGE_FLAP_DC_STATUS, vsu.getChargeFlapDCStatus().getValueValue(),
+                vsu.getChargeFlapDCStatus().getMetadata());
+        putEnum(attributes, MB_KEY_CHARGE_STATUS, vsu.getChargingstatus().getValueValue(),
+                vsu.getChargingstatus().getMetadata());
+        putEnum(attributes, MB_KEY_CHARGE_ERROR, vsu.getChargingErrorDetails().getValueValue(),
+                vsu.getChargingErrorDetails().getMetadata());
+        putEnum(attributes, MB_KEY_TIREWARNINGSRDK, vsu.getTirewarningsrdk().getValueValue(),
+                vsu.getTirewarningsrdk().getMetadata());
+        putEnum(attributes, MB_KEY_STARTER_BATTERY_STATE, vsu.getStarterBatteryState().getValueValue(),
+                vsu.getStarterBatteryState().getMetadata());
+        putEnum(attributes, MB_KEY_FLIP_WINDOW_STATUS, vsu.getFlipWindowStatus().getValueValue(),
+                vsu.getFlipWindowStatus().getMetadata());
+        putEnum(attributes, MB_KEY_WINDOW_STATUS_REAR_BLIND, vsu.getWindowStatusRearBlind().getValueValue(),
+                vsu.getWindowStatusRearBlind().getMetadata());
+        putEnum(attributes, MB_KEY_WINDOW_STATUS_REAR_LEFT_BLIND, vsu.getWindowStatusRearLeftBlind().getValueValue(),
+                vsu.getWindowStatusRearLeftBlind().getMetadata());
+        putEnum(attributes, MB_KEY_WINDOW_STATUS_REAR_RIGHT_BLIND, vsu.getWindowStatusRearRightBlind().getValueValue(),
+                vsu.getWindowStatusRearRightBlind().getMetadata());
+        putEnum(attributes, MB_KEY_WINDOWSTATUSREARRIGHT, vsu.getWindowstatusrearright().getValueValue(),
+                vsu.getWindowstatusrearright().getMetadata());
+        putEnum(attributes, MB_KEY_WINDOWSTATUSREARLEFT, vsu.getWindowstatusrearleft().getValueValue(),
+                vsu.getWindowstatusrearleft().getMetadata());
+        putEnum(attributes, MB_KEY_WINDOWSTATUSFRONTRIGHT, vsu.getWindowstatusfrontright().getValueValue(),
+                vsu.getWindowstatusfrontright().getMetadata());
+        putEnum(attributes, MB_KEY_WINDOWSTATUSFRONTLEFT, vsu.getWindowstatusfrontleft().getValueValue(),
+                vsu.getWindowstatusfrontleft().getMetadata());
+        putEnum(attributes, MB_KEY_ROOFTOPSTATUS, vsu.getRooftopstatus().getValueValue(),
+                vsu.getRooftopstatus().getMetadata());
+        putEnum(attributes, MB_KEY_SUNROOF_STATUS_REAR_BLIND, vsu.getSunroofStatusRearBlind().getValueValue(),
+                vsu.getSunroofStatusRearBlind().getMetadata());
+        putEnum(attributes, MB_KEY_SUNROOF_STATUS_FRONT_BLIND, vsu.getSunroofStatusFrontBlind().getValueValue(),
+                vsu.getSunroofStatusFrontBlind().getMetadata());
+        putEnum(attributes, MB_KEY_SUNROOFSTATUS, vsu.getSunroofstatus().getValueValue(),
+                vsu.getSunroofstatus().getMetadata());
+        putEnum(attributes, MB_KEY_IGNITIONSTATE, vsu.getIgnitionstate().getValueValue(),
+                vsu.getIgnitionstate().getMetadata());
+        putEnum(attributes, MB_KEY_DOOR_STATUS_OVERALL, vsu.getDoorStatusOverall().getValueValue(),
+                vsu.getDoorStatusOverall().getMetadata());
+        putEnum(attributes, MB_KEY_WINDOW_STATUS_OVERALL, vsu.getWindowStatusOverall().getValueValue(),
+                vsu.getWindowStatusOverall().getMetadata());
+        putEnum(attributes, MB_KEY_DOOR_LOCK_STATUS_OVERALL, vsu.getDoorlockstatusvehicle().getValueValue(),
+                vsu.getDoorlockstatusvehicle().getMetadata());
+        putEnum(attributes, MB_KEY_TIRE_MARKER_FRONT_RIGHT, vsu.getTireMarkerFrontRight().getValueValue(),
+                vsu.getTireMarkerFrontRight().getMetadata());
+        putEnum(attributes, MB_KEY_TIRE_MARKER_FRONT_LEFT, vsu.getTireMarkerFrontLeft().getValueValue(),
+                vsu.getTireMarkerFrontLeft().getMetadata());
+        putEnum(attributes, MB_KEY_TIRE_MARKER_REAR_RIGHT, vsu.getTireMarkerRearRight().getValueValue(),
+                vsu.getTireMarkerRearRight().getMetadata());
+        putEnum(attributes, MB_KEY_TIRE_MARKER_REAR_LEFT, vsu.getTireMarkerRearLeft().getValueValue(),
+                vsu.getTireMarkerRearLeft().getMetadata());
+        putEnum(attributes, MB_KEY_PARKBRAKESTATUS, vsu.getParkbrakestatus().getValueValue(),
+                vsu.getParkbrakestatus().getMetadata());
+        putEnum(attributes, MB_KEY_PRECOND_NOW, vsu.getPrecondNow().getValueValue(), vsu.getPrecondNow().getMetadata());
+        putEnum(attributes, MB_KEY_PRECOND_SEAT_FRONT_RIGHT, vsu.getPrecondSeatFrontRight().getValueValue(),
+                vsu.getPrecondSeatFrontRight().getMetadata());
+        putEnum(attributes, MB_KEY_PRECOND_SEAT_FRONT_LEFT, vsu.getPrecondSeatFrontLeft().getValueValue(),
+                vsu.getPrecondSeatFrontLeft().getMetadata());
+        putEnum(attributes, MB_KEY_PRECOND_SEAT_REAR_RIGHT, vsu.getPrecondSeatRearRight().getValueValue(),
+                vsu.getPrecondSeatRearRight().getMetadata());
+        putEnum(attributes, MB_KEY_PRECOND_SEAT_REAR_LEFT, vsu.getPrecondSeatRearLeft().getValueValue(),
+                vsu.getPrecondSeatRearLeft().getMetadata());
+        putEnum(attributes, MB_KEY_WARNINGWASHWATER, vsu.getWarningwashwater().getValueValue(),
+                vsu.getWarningwashwater().getMetadata());
+        putEnum(attributes, MB_KEY_DOORLOCKSTATUSFRONTRIGHT, vsu.getDoorlockstatusfrontright().getValueValue(),
+                vsu.getDoorlockstatusfrontright().getMetadata());
+        putEnum(attributes, MB_KEY_DOORLOCKSTATUSFRONTLEFT, vsu.getDoorlockstatusfrontleft().getValueValue(),
+                vsu.getDoorlockstatusfrontleft().getMetadata());
+        putEnum(attributes, MB_KEY_DOORLOCKSTATUSREARRIGHT, vsu.getDoorlockstatusrearright().getValueValue(),
+                vsu.getDoorlockstatusrearright().getMetadata());
+        putEnum(attributes, MB_KEY_DOORLOCKSTATUSREARLEFT, vsu.getDoorlockstatusrearleft().getValueValue(),
+                vsu.getDoorlockstatusrearleft().getMetadata());
+        putEnum(attributes, MB_KEY_DOORLOCKSTATUSDECKLID, vsu.getDoorlockstatusdecklid().getValueValue(),
+                vsu.getDoorlockstatusdecklid().getMetadata());
+        putEnum(attributes, MB_KEY_DOORLOCKSTATUSGAS, vsu.getDoorlockstatusgas().getValueValue(),
+                vsu.getDoorlockstatusgas().getMetadata());
+        putEnum(attributes, MB_KEY_ENGINE_HOOD_STATUS, vsu.getEngineHoodStatus().getValueValue(),
+                vsu.getEngineHoodStatus().getMetadata());
+        putEnum(attributes, MB_KEY_DECKLIDSTATUS, vsu.getDecklidstatus().getValueValue(),
+                vsu.getDecklidstatus().getMetadata());
+        putEnum(attributes, MB_KEY_DOORSTATUSREARLEFT, vsu.getDoorstatusrearleft().getValueValue(),
+                vsu.getDoorstatusrearleft().getMetadata());
+        putEnum(attributes, MB_KEY_DOORSTATUSREARRIGHT, vsu.getDoorstatusrearright().getValueValue(),
+                vsu.getDoorstatusrearright().getMetadata());
+        putEnum(attributes, MB_KEY_DOORSTATUSFRONTLEFT, vsu.getDoorstatusfrontleft().getValueValue(),
+                vsu.getDoorstatusfrontleft().getMetadata());
+        putEnum(attributes, MB_KEY_DOORSTATUSFRONTRIGHT, vsu.getDoorstatusfrontright().getValueValue(),
+                vsu.getDoorstatusfrontright().getMetadata());
+        putEnum(attributes, MB_KEY_ENDOFCHARGEDAY, vsu.getEndofChargeTimeWeekday().getValueValue(),
+                vsu.getEndofChargeTimeWeekday().getMetadata());
+        putEnum(attributes, MB_KEY_SELECTED_CHARGE_PROGRAM, vsu.getSelectedChargeProgram().getValueValue(),
+                vsu.getSelectedChargeProgram().getMetadata());
+        putEnum(attributes, MB_KEY_POSITION_ERROR, vsu.getVehiclePositionErrorCode().getValueValue(),
+                vsu.getVehiclePositionErrorCode().getMetadata());
+        putEnum(attributes, MB_KEY_PRECOND_NOW_ERROR, vsu.getPrecondNowError().getValueValue(),
+                vsu.getPrecondNowError().getMetadata());
+
+        // distance (int64 / double, with unit + display value)
+        putInt64Distance(attributes, MB_KEY_RANGELIQUID, vsu.getRangeliquid());
+        putInt64Distance(attributes, MB_KEY_RANGEELECTRIC, vsu.getRangeelectric());
+        putInt64Distance(attributes, MB_KEY_ODO, vsu.getOdo());
+        putDoubleDistance(attributes, MB_KEY_DISTANCE_RESET, vsu.getDistanceReset());
+        putDoubleDistance(attributes, MB_KEY_DISTANCE_START, vsu.getDistanceStart());
+        putDoubleDistance(attributes, MB_KEY_OVERALL_RANGE, vsu.getOverallRange());
+        putDoubleDistance(attributes, MB_KEY_ECOSCORE_BONUS, vsu.getEcoscorebonusrange());
+
+        // pressure
+        putPressure(attributes, MB_KEY_TIREPRESSURE_FRONT_LEFT, vsu.getTirepressureFrontLeft());
+        putPressure(attributes, MB_KEY_TIREPRESSURE_FRONT_RIGHT, vsu.getTirepressureFrontRight());
+        putPressure(attributes, MB_KEY_TIREPRESSURE_REAR_LEFT, vsu.getTirepressureRearLeft());
+        putPressure(attributes, MB_KEY_TIREPRESSURE_REAR_RIGHT, vsu.getTirepressureRearRight());
+
+        // speed
+        putSpeed(attributes, MB_KEY_AVERAGE_SPEED_RESET, vsu.getAverageSpeedReset());
+        putSpeed(attributes, MB_KEY_AVERAGE_SPEED_START, vsu.getAverageSpeedStart());
+
+        // ratio (percent)
+        putRatio(attributes, MB_KEY_TANKLEVELPERCENT, vsu.getTanklevelpercent());
+        putRatio(attributes, MB_KEY_ADBLUELEVELPERCENT, vsu.getTankLevelAdBlue());
+        putRatio(attributes, MB_KEY_SOC, vsu.getSoc());
+        putRatio(attributes, MB_KEY_MAX_SOC, vsu.getMaxSoc());
+        putRatio(attributes, MB_KEY_MAX_SOC_LOWER_LIMIT, vsu.getMaxSocLowerLimit());
+        putRatio(attributes, MB_KEY_MAX_SOC_UPPER_LIMIT, vsu.getMaxSocUpperLimit());
+        putRatio(attributes, MB_KEY_ECOSCORE_ACCEL, vsu.getEcoscoreaccel());
+        putRatio(attributes, MB_KEY_ECOSCORE_CONSTANT, vsu.getEcoscoreconst());
+        putRatio(attributes, MB_KEY_ECOSCORE_COASTING, vsu.getEcoscorefreewhl());
+
+        // clock hour
+        putClockHour(attributes, MB_KEY_ENDOFCHARGETIME, vsu.getEndofchargetime());
+
+        // consumption
+        putCombustionConsumption(attributes, MB_KEY_LIQUIDCONSUMPTIONRESET, vsu.getLiquidconsumptionreset());
+        putCombustionConsumption(attributes, MB_KEY_LIQUIDCONSUMPTIONSTART, vsu.getLiquidconsumptionstart());
+        putElectricityConsumption(attributes, MB_KEY_ELECTRICCONSUMPTIONRESET, vsu.getElectricconsumptionreset());
+        putElectricityConsumption(attributes, MB_KEY_ELECTRICCONSUMPTIONSTART, vsu.getElectricconsumptionstart());
+
+        // complex array-typed fields - analyzed from live debug logs (see docs/ATTRIBUTES_MAPPING.md section 4)
+        putTemperaturePoints(attributes, MB_KEY_TEMPERATURE_POINTS, vsu.getTemperaturePoints());
+        putChargePrograms(attributes, MB_KEY_CHARGE_PROGRAMS, vsu.getChargePrograms());
+        putAuxheatwarnings(attributes, MB_KEY_AUXILIARY_WARNINGS, vsu.getAuxheatwarnings());
+
+        return attributes;
+    }
+
+    private static long toMillis(VSUMetadata metadata) {
+        if (!metadata.hasTimestamp()) {
+            return 0;
+        }
+        Timestamp ts = metadata.getTimestamp();
+        return ts.getSeconds() * 1000 + ts.getNanos() / 1_000_000;
+    }
+
+    private static VehicleAttributeStatus.Builder baseBuilder(VSUMetadata metadata) {
+        return VehicleAttributeStatus.newBuilder().setStatus(metadata.getStatusValue())
+                .setTimestampInMs(toMillis(metadata));
+    }
+
+    private static void putBool(Map<String, VehicleAttributeStatus> map, String key, BoolAttribute a) {
+        map.put(key, baseBuilder(a.getMetadata()).setBoolValue(a.getValue()).build());
+    }
+
+    private static void putInt64(Map<String, VehicleAttributeStatus> map, String key, Int64Attribute a) {
+        map.put(key, baseBuilder(a.getMetadata()).setIntValue(a.getValue()).build());
+    }
+
+    private static void putDouble(Map<String, VehicleAttributeStatus> map, String key, DoubleAttribute a) {
+        map.put(key, baseBuilder(a.getMetadata()).setDoubleValue(a.getValue()).build());
+    }
+
+    private static void putEnum(Map<String, VehicleAttributeStatus> map, String key, int enumValue,
+            VSUMetadata metadata) {
+        map.put(key, baseBuilder(metadata).setIntValue(enumValue).build());
+    }
+
+    private static void putInt64Distance(Map<String, VehicleAttributeStatus> map, String key,
+            Int64DistanceAttribute a) {
+        map.put(key, baseBuilder(a.getMetadata()).setIntValue(a.getValue()).setDistanceUnit(a.getUnit())
+                .setDisplayValue(a.getDisplayValue()).build());
+    }
+
+    private static void putDoubleDistance(Map<String, VehicleAttributeStatus> map, String key,
+            DoubleDistanceAttribute a) {
+        map.put(key, baseBuilder(a.getMetadata()).setDoubleValue(a.getValue()).setDistanceUnit(a.getUnit())
+                .setDisplayValue(a.getDisplayValue()).build());
+    }
+
+    private static void putPressure(Map<String, VehicleAttributeStatus> map, String key, DoublePressureAttribute a) {
+        map.put(key, baseBuilder(a.getMetadata()).setDoubleValue(a.getValue()).setPressureUnit(a.getUnit())
+                .setDisplayValue(a.getDisplayValue()).build());
+    }
+
+    private static void putSpeed(Map<String, VehicleAttributeStatus> map, String key, DoubleSpeedAttribute a) {
+        map.put(key, baseBuilder(a.getMetadata()).setDoubleValue(a.getValue()).setSpeedUnit(a.getUnit())
+                .setDisplayValue(a.getDisplayValue()).build());
+    }
+
+    private static void putRatio(Map<String, VehicleAttributeStatus> map, String key, Int64RatioAttribute a) {
+        map.put(key, baseBuilder(a.getMetadata()).setIntValue(a.getValue()).setRatioUnit(a.getUnit())
+                .setDisplayValue(a.getDisplayValue()).build());
+    }
+
+    private static void putClockHour(Map<String, VehicleAttributeStatus> map, String key, Int64ClockHourAttribute a) {
+        map.put(key, baseBuilder(a.getMetadata()).setIntValue(a.getValue()).setClockHourUnit(a.getUnit())
+                .setDisplayValue(a.getDisplayValue()).build());
+    }
+
+    private static void putCombustionConsumption(Map<String, VehicleAttributeStatus> map, String key,
+            DoubleCombustionConsumptionAttribute a) {
+        map.put(key, baseBuilder(a.getMetadata()).setDoubleValue(a.getValue()).setCombustionConsumptionUnit(a.getUnit())
+                .setDisplayValue(a.getDisplayValue()).build());
+    }
+
+    private static void putElectricityConsumption(Map<String, VehicleAttributeStatus> map, String key,
+            DoubleElectricityConsumptionAttribute a) {
+        map.put(key, baseBuilder(a.getMetadata()).setDoubleValue(a.getValue())
+                .setElectricityConsumptionUnit(a.getUnit()).setDisplayValue(a.getDisplayValue()).build());
+    }
+
+    /**
+     * temperature_points: VehicleHandler reads {@code MB_KEY_TEMPERATURE_POINTS} directly via
+     * {@code value.getTemperaturePointsValue()} (not through
+     * {@link #getChannelStateMap(String, VehicleAttributeStatus)}),
+     * so this builds the old {@link TemperaturePointsValue} oneof case. The new
+     * {@code TemperaturePointsArrayAttribute.TemperaturePoint} entries carry the same information as the old
+     * {@link com.daimler.mbcarkit.proto.VehicleEvents.TemperaturePoint} (zone, temperature, active) but with a
+     * 0-based {@code Zone} enum instead of a string and the temperature wrapped in a
+     * {@code DoubleTemperatureAttribute} instead of a raw double - both confirmed against a live debug dump (see
+     * docs/ATTRIBUTES_MAPPING.md section 4).
+     */
+    private static void putTemperaturePoints(Map<String, VehicleAttributeStatus> map, String key,
+            TemperaturePointsArrayAttribute a) {
+        TemperaturePointsValue.Builder valueBuilder = TemperaturePointsValue.newBuilder();
+        a.getValueList().forEach(point -> {
+            valueBuilder.addTemperaturePoints(com.daimler.mbcarkit.proto.VehicleEvents.TemperaturePoint.newBuilder()
+                    .setZone(zoneToLegacyString(point.getZone())).setTemperature(point.getTemperature().getValue())
+                    .setTemperatureDisplayValue(point.getTemperature().getDisplayValue())
+                    .setActive(BoolValue.newBuilder().setValue(point.getActive()).build()).build());
+        });
+        VehicleAttributeStatus.Builder statusBuilder = baseBuilder(a.getMetadata())
+                .setTemperaturePointsValue(valueBuilder.build());
+        // VehicleHandler reads the unit from the outer VehicleAttributeStatus.temperature_unit (one shared unit
+        // for all zones), while the new format carries a unit per point (DoubleTemperatureAttribute.unit) - take
+        // the first point's unit as the shared one, which is what the old format assumed anyway.
+        if (!a.getValueList().isEmpty()) {
+            statusBuilder.setTemperatureUnit(a.getValueList().get(0).getTemperature().getUnit());
+        }
+        map.put(key, statusBuilder.build());
+    }
+
+    private static String zoneToLegacyString(TemperaturePointsArrayAttribute.TemperaturePoint.Zone zone) {
+        switch (zone) {
+            case FRONT_LEFT:
+                return "frontLeft";
+            case FRONT_CENTER:
+                return "frontCenter";
+            case FRONT_RIGHT:
+                return "frontRight";
+            case REAR_LEFT:
+                return "rearLeft";
+            case REAR_CENTER:
+                return "rearCenter";
+            case REAR_RIGHT:
+                return "rearRight";
+            case REAR_2_LEFT:
+                return "rear2Left";
+            case REAR_2_CENTER:
+                return "rear2Center";
+            case REAR_2_RIGHT:
+                return "rear2Right";
+            default:
+                LOGGER.trace("Unmapped temperature point zone {}", zone);
+                return zone.toString();
+        }
+    }
+
+    /**
+     * charge_programs: VehicleHandler reads {@code MB_KEY_CHARGE_PROGRAMS} directly via
+     * {@code value.getChargeProgramsValue()}. The new {@code ChargeProgramsArrayAttribute} reuses the very same
+     * {@code ChargeProgramParameters} message the old {@link ChargeProgramsValue} wraps (confirmed in
+     * vehicle-events.proto: both declare {@code repeated ChargeProgramParameters}), so this is a direct
+     * passthrough, no field-by-field conversion needed.
+     */
+    private static void putChargePrograms(Map<String, VehicleAttributeStatus> map, String key,
+            ChargeProgramsArrayAttribute a) {
+        ChargeProgramsValue value = ChargeProgramsValue.newBuilder().addAllChargeProgramParameters(a.getValueList())
+                .build();
+        map.put(key, baseBuilder(a.getMetadata()).setChargeProgramsValue(value).build());
+    }
+
+    /**
+     * auxheatwarnings: the old format delivered a single warning code as {@code int_value} (Mapper's
+     * "Number Status" case group). The new {@code Auxheatwarnings} enum (NONE=0, CONFIRMATION=1,
+     * CONFIRMATION_2=2, higher = more severe) is now a repeated field, so several warnings can be active at
+     * once - this takes the most severe (highest) one, or 0 (= NONE) if the list is empty, to keep the single
+     * Number channel meaningful. Not yet confirmed against a live vehicle with an actual warning active (the
+     * live debug dump only showed an empty list with status VALUE_NOT_AVAILABLE) - worth rechecking once a
+     * real auxiliary heater warning occurs.
+     */
+    private static void putAuxheatwarnings(Map<String, VehicleAttributeStatus> map, String key,
+            AuxheatwarningsArrayAttribute a) {
+        int worst = a.getValueList().stream().mapToInt(Auxheatwarning::getNumber).max().orElse(0);
+        map.put(key, baseBuilder(a.getMetadata()).setIntValue(worst).build());
     }
 
     private static State getContact(boolean b) {

@@ -34,6 +34,7 @@ import org.openhab.binding.mercedesme.internal.discovery.MercedesMeDiscoveryServ
 import org.openhab.binding.mercedesme.internal.exception.MercedesMeApiException;
 import org.openhab.binding.mercedesme.internal.exception.MercedesMeAuthException;
 import org.openhab.binding.mercedesme.internal.exception.MercedesMeBindingException;
+import org.openhab.binding.mercedesme.internal.utils.Mapper;
 import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.i18n.LocaleProvider;
@@ -301,14 +302,28 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             }
         } else if (pm.hasVehicleStatusUpdates()) {
             // vehicle-events.proto: typed alternative to VEPUpdate, added in app version 165-1 (PushMessage
-            // field 24 / ClientMessage field 28). The generated Java classes already support it, but nothing
-            // consumed it yet, so it silently fell into the "not handled" branch below and was never
-            // acknowledged. Mapping its ~275 typed fields onto channels is a separate, bigger follow-up -
-            // for now we only acknowledge it (required, same MUST-be-acknowledged pattern as the other
-            // message types here) and log it so we can confirm the server is actually sending this format.
+            // field 24 / ClientMessage field 28). Mapper.fromVehicleStatusUpdate() builds the subset of
+            // MB_KEY_* attributes that has a 1:1 counterpart in the old VehicleAttributeStatus format (see
+            // docs/ATTRIBUTES_MAPPING.md), so it can be distributed through the existing pipeline unchanged.
             VehicleStatusUpdates vsu = pm.getVehicleStatusUpdates();
-            logger.debug("Received VehicleStatusUpdates seq {} for {} VIN(s) - not yet mapped to channels",
-                    vsu.getSequenceNumber(), vsu.getVehicleStatusUpdatesMap().size());
+            logger.debug("Received VehicleStatusUpdates seq {} for {} VIN(s)", vsu.getSequenceNumber(),
+                    vsu.getVehicleStatusUpdatesMap().size());
+            // TRACE-only, deliberately verbose: dumps the raw per-VIN VehicleStatusUpdate in protobuf TextFormat
+            // (via toString(), no extra dependency - protobuf-java-util/JsonFormat is test-scope only in pom.xml
+            // and must stay that way without $Architect + human approval). Meant to be captured from a running
+            // instance and hand-converted into a JsonFormat test fixture under
+            // src/test/resources/proto-json/ - see MapperTest.java for the existing pattern.
+            if (logger.isTraceEnabled()) {
+                vsu.getVehicleStatusUpdatesMap()
+                        .forEach((vin, update) -> logger.trace("Raw VehicleStatusUpdate for {}:\n{}", vin, update));
+            }
+            Map<String, VEPUpdate> converted = new HashMap<>();
+            vsu.getVehicleStatusUpdatesMap().forEach((vin, update) -> {
+                VEPUpdate.Builder builder = VEPUpdate.newBuilder().setVin(vin).setFullUpdate(update.getFullUpdate())
+                        .putAllAttributes(Mapper.fromVehicleStatusUpdate(update));
+                converted.put(vin, builder.build());
+            });
+            distributeVepUpdates(converted);
             AcknowledgeVehicleStatusUpdates ack = AcknowledgeVehicleStatusUpdates.newBuilder()
                     .setSequenceNumber(vsu.getSequenceNumber()).build();
             ClientMessage cm = ClientMessage.newBuilder().setAcknowledgeVehicleStatusUpdates(ack).build();
