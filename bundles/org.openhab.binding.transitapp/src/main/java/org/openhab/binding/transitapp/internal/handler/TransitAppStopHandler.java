@@ -57,7 +57,7 @@ public class TransitAppStopHandler extends BaseThingHandler {
         TransitAppStopConfiguration config = getConfigAs(TransitAppStopConfiguration.class);
         long refreshInterval = Math.max(30L, config.refreshInterval);
         refreshJob = scheduler.scheduleWithFixedDelay(this::pollTransitApi, 1, refreshInterval, TimeUnit.SECONDS);
-        updateStatus(ThingStatus.ONLINE);
+        updateStatus(ThingStatus.UNKNOWN);
     }
 
     @Override

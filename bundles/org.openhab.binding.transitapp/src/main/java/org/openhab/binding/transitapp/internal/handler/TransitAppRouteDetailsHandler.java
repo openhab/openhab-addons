@@ -54,7 +54,7 @@ public class TransitAppRouteDetailsHandler extends BaseThingHandler {
         TransitAppRouteConfiguration config = getConfigAs(TransitAppRouteConfiguration.class);
         long refreshInterval = Math.max(30L, config.refreshInterval);
         refreshJob = scheduler.scheduleWithFixedDelay(this::pollTransitApi, 1, refreshInterval, TimeUnit.SECONDS);
-        updateStatus(ThingStatus.ONLINE);
+        updateStatus(ThingStatus.UNKNOWN);
     }
 
     @Override
