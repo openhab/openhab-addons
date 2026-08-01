@@ -1,5 +1,23 @@
 # EEBus Add-on
 
+> **Status**: early, working prototype, not yet a PR. Builds clean (checkstyle/spotbugs/spotless/i18n all pass,
+> 13/13 unit tests pass) and has been live-tested against a real independent EEBus implementation
+> ([meisel2000/eebus-cbsim](https://github.com/meisel2000/eebus-cbsim), built on the `enbility/eebus-go` stack) -
+> SHIP pairing, mDNS discovery, and SPINE LPC use-case discovery/negotiation (including the dynamic
+> `entity.addUseCase()` registration this add-on relies on instead of registering at device-build time) all
+> verified working end-to-end, correctly reporting the `nominalMax` configured via item metadata. One real bug
+> was found and fixed this way: `Device.build()` also adds an implicit `DEVICE_INFORMATION` entity alongside the
+> requested one, so the entity to register use cases on must be selected by type, not assumed to be the first/only
+> one returned. Not yet verified: a full accepted _active_ limit write from a real CEM, and the resulting command
+> actually landing on the tagged item (blocked on a simulator-side heartbeat quirk in cbsim, not this add-on - see
+> [openhab-addons#21211](https://github.com/openhab/openhab-addons/issues/21211) for details). No EEBus hardware
+> has been used in this development; testing so far is simulator-only.
+>
+> Supersedes an earlier Thing-based binding prototype (mirror kept at
+> [stamateviorel/openhab-eebus-binding](https://github.com/stamateviorel/openhab-eebus-binding) for history) -
+> LPC/LPP are household-wide singleton limits, not per-device Things, so this is shaped as an IO add-on instead
+> (service config + item metadata), per [maintainer feedback](https://github.com/openhab/openhab-addons/issues/21211#issuecomment-5152128940).
+
 This add-on lets openHAB present itself as an [EEBus](https://www.eebus.org/) Controllable System (CS) on the local
 network, backed by the [jEEBus](https://www.openmuc.org/eebus/) SHIP/SPINE implementation from Fraunhofer ISE /
 OpenMUC.
