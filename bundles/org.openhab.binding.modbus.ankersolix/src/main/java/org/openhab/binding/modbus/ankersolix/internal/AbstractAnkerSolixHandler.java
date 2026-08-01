@@ -153,7 +153,7 @@ public abstract class AbstractAnkerSolixHandler extends BaseModbusThingHandler {
 
     private void handleReadFailure(AsyncModbusFailure<ModbusReadRequestBlueprint> failure) {
         String message = String.valueOf(failure.getCause().getMessage());
-        logger.debug("Failed to read Anker Solix registers: {}", message);
+        logger.debug("Failed to read Anker SOLIX registers: {}", message);
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
     }
 
