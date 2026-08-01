@@ -4,7 +4,7 @@ This binding integrates FDM 3D printers into openHAB, allowing you to monitor pr
 
 Three printer firmware/server platforms are supported:
 
-- **PrusaLink** — Prusa printers running PrusaLink firmware (MK4, XL, Mini+, etc.). Verified against a Prusa MK4 running Buddy firmware 6.5.7+12836, which exposes the `/api/v1/*` endpoints used by this handler.
+- **PrusaLink** — Prusa printers with Buddy Board running Buddy firmware (MK4(s), Core ONE, XL, Mini+, etc.)
 - **Klipper** — Klipper firmware printers accessed via the Moonraker REST API
 - **OctoPrint** — Any printer managed by an OctoPrint server
 
