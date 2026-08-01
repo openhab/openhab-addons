@@ -178,7 +178,7 @@ public class RuleAnnotationParser {
             List<Condition> conditions = CONDITION_FROM_ANNOTATION.entrySet().stream()
                     .map(annotationClazz -> getModuleForAnnotation(member, annotationClazz.getKey(),
                             annotationClazz.getValue(), ModuleBuilder::createCondition, ruleName))
-                    .flatMap(Collection::stream).collect(Collectors.toList());
+                    .flatMap(Collection::stream).toList();
             simpleRule.setConditions(conditions);
 
             // log everything
@@ -227,7 +227,7 @@ public class RuleAnnotationParser {
         return Arrays.stream(annotations)
                 .map(annotation -> builder.get().withId(sanitizeTriggerId(ruleName, annotation.hashCode()))
                         .withTypeUID(typeUid).withConfiguration(getAnnotationConfiguration(annotation)).build())
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private static Configuration getAnnotationConfiguration(Annotation annotation) {

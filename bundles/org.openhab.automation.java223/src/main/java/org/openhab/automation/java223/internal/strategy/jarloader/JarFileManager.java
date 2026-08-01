@@ -33,7 +33,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Predicate;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.tools.FileObject;
@@ -173,7 +172,7 @@ public class JarFileManager<M extends JavaFileManager> extends ForwardingJavaFil
                 List<Path> libFiles = libFileStream.filter(JAR_FILTER) //
                         .filter((path) -> !path.getFileName().toString() // exclude convenience lib
                                 .equals(DependencyGenerator.CONVENIENCE_DEPENDENCIES_JAR)) //
-                        .collect(Collectors.toList());
+                        .toList();
 
                 // first check if it's really needed, in case we overwrite a file with the same content
                 for (Path path : libFiles) {

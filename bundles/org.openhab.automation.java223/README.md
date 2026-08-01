@@ -146,7 +146,7 @@ So, a library is located under the `automation\lib\java` subdirectory, and is ei
   - a third party jar
   - or a custom one containing your own classes. Its name MUST start with `java223` to be recognized as a user library (and benefits from auto-instantiation and auto-injection).
 
-The Java223 bundle will monitor this directory and automatically adds everything inside to the compilation unit of your script (although, it's not applied retrospectively).
+The Java223 bundle will monitor this directory and automatically add everything inside to the compilation unit of your script (although, it's not applied retrospectively).
 There is no change to the fact that the script still has its dedicated ClassLoader, but now inside this ClassLoader, all your library classes are also available.
 
 Be careful: it also means that other scripts have their **own** library classes inside their **own** ClassLoader.
@@ -288,7 +288,7 @@ Here are all functionalities of the helper-lib:
 
 - Many different `@Trigger` classes. Check the `helper.rules.annotation` package for a list.
 - You can add (multiple) `@Condition` to a Rule. It exposes a pre-condition for the rule to execute. Check the `helper.rules.annotation` package.
-- `@Trigger`, `@Conditions`, `@Rule` have many parameters. Some parameters add functionality; others can overwrite default behavior (for example, instead of using the method name for the label of a rule, you can override it with a custom label). Javadoc is included in the jar.
+- `@Trigger`, `@Condition`, `@Rule` have many parameters. Some parameters add functionality; others can overwrite default behavior (for example, instead of using the method name for the label of a rule, you can override it with a custom label). Javadoc is included in the jar.
 - Pre-made event objects that you can use as a parameter in a rule are defined in the package `helper.rules.eventinfo`.
 - If you want all the triggering event input parameters in a map for a rule, you can use the parameter `Map<String, ?> bindings` as a rule method parameter.
 - You can set the `@Rule` annotation on a method, but also on many types of field containing code to execute, such as Function, Runnable... Take a look at the class `Java223Rule` for an exhaustive list of what is supported. You can even switch the value of the field containing code at runtime, thus making the code your rule execute even more dynamic.
@@ -555,13 +555,13 @@ String input;
 Is totally equivalent to this:
 
 ```java
-@InjectBinding(mandatory = false) input; // <-- if input is not found, it will be null, and your script will still execute
+@InjectBinding(mandatory = false) String input; // <-- if input is not found, it will be null, and your script will still execute
 ```
 
 And adding a plain, empty, `@InjectBinding` annotation with no parameter is equivalent to adding a mandatory aspect to the injection.
 
 ```java
-@InjectBinding input; // <-- if input not available, your script will fail
+@InjectBinding String input; // <-- if input not available, your script will fail
 ```
 
 ## Advanced topic: Concurrency
@@ -939,8 +939,8 @@ public class M {
     public Object main() {
         automationManager.addRule(new SimpleRule() {
             {
-                name = "abc"; //If not set, openHAB will assign random name
-                description = "When description is not set, openHAB will assign empty string as description";
+                name = "abc"; //If not set, getName() will return null
+                description = "When description is not set, getDescription() will return null";
                 uid = "1-2-3-uid"; //If not set, openHAB will assign random UID
                 triggers = List.of(TriggerBuilder.create().withId("trig1").withTypeUID("core.ItemStateChangeTrigger").withConfiguration(new Configuration(Map.of("itemName", "r"))).build());
             }

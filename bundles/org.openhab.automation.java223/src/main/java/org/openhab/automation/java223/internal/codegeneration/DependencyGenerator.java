@@ -140,7 +140,7 @@ public class DependencyGenerator {
                 // we want to warn about the list of packages we didn't find
                 if (LOGGER.isWarnEnabled()) {
                     Set<String> packagesNotFound = new HashSet<>(dependencies);
-                    packagesSuccessfullyExported.stream().map(s -> s.replaceAll("/", ".")).toList()
+                    packagesSuccessfullyExported.stream().map(s -> s.replace("/", "."))
                             .forEach(packagesNotFound::remove);
                     for (String remainingPackage : packagesNotFound) {
                         LOGGER.warn("Failed to found classes to export in package {}", remainingPackage);
