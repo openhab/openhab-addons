@@ -118,11 +118,11 @@ public class ICloudService {
                 if (ex.getStatusCode() == 500) {
                     logger.debug("Authentication failed.", ex);
                     return false;
-                } else if (session.hasToken() && authenticateWithToken()) {
+                } else if (session.hasToken() && authenticateWithToken() && !requires2fa()) {
                     // We already hold a trust token from a previous 2-FA approval (persisted across
-                    // restarts). It alone is enough to complete accountLogin, so skip requesting a
-                    // new SMS/iMessage code that would never actually be needed or consumed.
-                    logger.debug("Authenticated using existing trust token, no 2-FA code needed.");
+                    // restarts), and accountLogin confirms no further 2-FA challenge is pending.
+                    // Skip requesting a new SMS/iMessage code in this case.
+                    logger.debug("Trust token accepted by accountLogin, skipping SMS 2-FA request.");
                     return true;
                 } else {
                     getMfaAuthOptions();
