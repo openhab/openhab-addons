@@ -126,9 +126,7 @@
 	<channel-group-type id="trip-group">
 		<label>Trip Details</label>
 		<channels>
-			<channel id="trip-headsign" typeId="trip-headsign"/>
 			<channel id="route-short-name" typeId="route-short-name"/>
-			<channel id="location" typeId="location"/>
 			<channel id="time-to-target" typeId="time-to-target"/>
 		</channels>
 	</channel-group-type>

@@ -12,20 +12,12 @@
  */
 package org.openhab.binding.transitapp.internal.handler;
 
-import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.transitapp.internal.config.TransitAppTripConfiguration;
-import org.openhab.binding.transitapp.internal.net.dto.TripDetailsResult;
-import org.openhab.binding.transitapp.internal.net.dto.TripDetailsResult.Location;
-import org.openhab.binding.transitapp.internal.net.dto.TripDetailsResult.Stop;
-import org.openhab.binding.transitapp.internal.net.dto.TripDetailsResult.Trip;
-import org.openhab.binding.transitapp.internal.net.dto.TripDetailsResult.Vehicle;
-import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
@@ -53,11 +45,11 @@ public class TransitAppTripDetailsHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        ScheduledFuture<?> job = refreshJob;
+        var job = refreshJob;
         if (job != null) {
             job.cancel(true);
         }
-        TransitAppTripConfiguration config = getConfigAs(TransitAppTripConfiguration.class);
+        var config = getConfigAs(TransitAppTripConfiguration.class);
         long refreshInterval = Math.max(30L, config.refreshInterval);
         refreshJob = scheduler.scheduleWithFixedDelay(this::pollTransitApi, 1, refreshInterval, TimeUnit.SECONDS);
         updateStatus(ThingStatus.UNKNOWN);
@@ -71,7 +63,7 @@ public class TransitAppTripDetailsHandler extends BaseThingHandler {
     }
 
     private synchronized void pollTransitApi() {
-        TransitAppTripConfiguration config = getConfigAs(TransitAppTripConfiguration.class);
+        var config = getConfigAs(TransitAppTripConfiguration.class);
         String tripId = config.tripId;
         if (tripId.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Trip ID is missing");
@@ -85,73 +77,44 @@ public class TransitAppTripDetailsHandler extends BaseThingHandler {
         }
 
         try {
-            TransitAppBridgeHandler bridgeHandler = getTransitBridgeHandler();
+            var bridgeHandler = getTransitBridgeHandler();
             if (bridgeHandler == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Bridge handler not initialized");
                 return;
             }
-            TripDetailsResult result = bridgeHandler.getTripDetails(tripId);
+            var result = bridgeHandler.getTripDetails(tripId);
             logger.debug("Successfully polled trip details for trip ID {}", tripId);
             updateStatus(ThingStatus.ONLINE);
 
-            @Nullable
-            Trip trip = result.getEffectiveTrip();
-            if (trip != null) {
-                @Nullable
-                String headsign = trip.tripHeadsign;
-                if (headsign != null) {
-                    updateState("trip#trip-headsign", new StringType(headsign));
-                } else {
-                    updateState("trip#trip-headsign", org.openhab.core.types.UnDefType.UNDEF);
-                }
-                @Nullable
-                String shortName = trip.routeShortName;
+            var route = result.route;
+            if (route != null) {
+                var shortName = route.routeShortName;
                 if (shortName != null) {
                     updateState("trip#route-short-name", new StringType(shortName));
                 } else {
                     updateState("trip#route-short-name", org.openhab.core.types.UnDefType.UNDEF);
                 }
             } else {
-                updateState("trip#trip-headsign", org.openhab.core.types.UnDefType.UNDEF);
                 updateState("trip#route-short-name", org.openhab.core.types.UnDefType.UNDEF);
             }
 
-            Double lat = null;
-            Double lon = null;
-            @Nullable
-            Vehicle v = result.vehicle;
-            if (v != null) {
-                @Nullable
-                Location loc = v.location;
-                if (loc != null) {
-                    lat = loc.lat;
-                    lon = loc.lon;
-                }
-            }
-
-            if (lat != null && lon != null) {
-                updateState("trip#location", new PointType(new DecimalType(lat), new DecimalType(lon)));
-            } else {
-                updateState("trip#location", org.openhab.core.types.UnDefType.UNDEF);
-            }
-
-            @Nullable
-            String targetStopId = config.targetStopId;
+            var targetStopId = config.targetStopId;
             long now = System.currentTimeMillis() / 1000;
 
             updateState("trip#time-to-target", org.openhab.core.types.UnDefType.UNDEF);
 
             int stopIdx = 1;
-            @Nullable
-            List<Stop> stopsList = result.stops;
-            if (stopsList != null) {
-                for (Stop stop : stopsList) {
-                    @Nullable
-                    String gStopId = stop.globalStopId;
-                    @Nullable
-                    Long depTime = stop.departureTime;
-                    @Nullable
-                    String sName = stop.stopName;
+            var scheduleItems = result.scheduleItems;
+            if (scheduleItems != null) {
+                for (var schedule : scheduleItems) {
+                    var stop = schedule.stop;
+                    if (stop == null) {
+                        continue;
+                    }
+
+                    var gStopId = stop.globalStopId;
+                    var depTime = schedule.departureTime;
+                    var sName = stop.stopName;
 
                     if (targetStopId != null && !targetStopId.isBlank() && targetStopId.equals(gStopId)
                             && depTime != null) {
@@ -197,7 +160,7 @@ public class TransitAppTripDetailsHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        ScheduledFuture<?> job = refreshJob;
+        var job = refreshJob;
         if (job != null) {
             job.cancel(true);
         }

@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.transitapp.internal.handler;
 
-import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -118,9 +117,10 @@ public class TransitAppRouteDetailsHandler extends BaseThingHandler {
                 updateState("route#route-color", org.openhab.core.types.UnDefType.UNDEF);
             }
 
-            @Nullable
-            List<Object> alerts = result.alerts;
-            int alertsCount = alerts != null ? alerts.size() : 0;
+            int alertsCount = 0;
+            if (route != null && route.alerts != null) {
+                alertsCount = route.alerts.size();
+            }
             updateState("route#active-alerts-count", new DecimalType(alertsCount));
         } catch (Exception e) {
             String errorMessage = e.getMessage() != null ? e.getMessage() : e.toString();

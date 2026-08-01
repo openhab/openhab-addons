@@ -20,7 +20,6 @@ import com.google.gson.annotations.SerializedName;
 
 public class RouteDetailsResult {
     public @Nullable Route route;
-    public @Nullable List<Object> alerts;
 
     @SerializedName("route_long_name")
     public @Nullable String routeLongNameFlat;
@@ -30,6 +29,7 @@ public class RouteDetailsResult {
     public @Nullable String routeColorFlat;
 
     public static class Route {
+        public @Nullable List<Object> alerts;
         @SerializedName("route_long_name")
         public @Nullable String routeLongName;
         @SerializedName("route_short_name")

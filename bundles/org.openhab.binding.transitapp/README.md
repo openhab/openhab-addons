@@ -72,8 +72,6 @@ This binding integrates public transit information and real-time departure detai
 
 | Channel                         | Type        | Description                                                  |
 | :------------------------------ | :---------- | :----------------------------------------------------------- |
-| `trip#trip-headsign`             | String      | Destination sign on the vehicle                              |
-| `trip#location`                 | Location    | GPS coordinates (latitude, longitude) for UI Map widgets     |
 | `trip#time-to-target`             | Number:Time | Live countdown to the configured target destination stop (`min`) |
 | `trip#route-short-name`           | String      | Route short name / line number                               |
 | `stopX#stop-name`                | String      | Name of the upcoming stop                                    |
@@ -136,7 +134,6 @@ Switch      Stop1_Cancelled     "Fällt aus [%s]"         { channel="transitapp:
 
 Number      Route_AlertsCount   "Störungen [%d]"         { channel="transitapp:routedetails:mybridge:myroute:route#active-alerts-count" }
 
-Location    Trip_LiveLocation   "Fahrzeug Position"      { channel="transitapp:tripdetails:mybridge:mytrip:trip#location" }
 Number:Time Trip_CountdownZiel  "Ankunft am Ziel in [%d %unit%]" { channel="transitapp:tripdetails:mybridge:mytrip:trip#time-to-target" }
 String      Trip_NextStop       "Nächster Halt [%s]"     { channel="transitapp:tripdetails:mybridge:mytrip:stop1#stop-name" }
 ```

@@ -19,50 +19,37 @@ import org.eclipse.jdt.annotation.Nullable;
 import com.google.gson.annotations.SerializedName;
 
 public class TripDetailsResult {
-    public @Nullable Trip trip;
-    public @Nullable Vehicle vehicle;
-    public @Nullable List<Stop> stops;
+    public @Nullable Route route;
 
-    @SerializedName("trip_headsign")
-    public @Nullable String tripHeadsignFlat;
-    @SerializedName("route_short_name")
-    public @Nullable String routeShortNameFlat;
+    @SerializedName("rt_trip_id")
+    public @Nullable String rtTripId;
 
-    public static class Trip {
-        @SerializedName("trip_headsign")
-        public @Nullable String tripHeadsign;
+    @SerializedName("schedule_items")
+    public @Nullable List<ScheduleItem> scheduleItems;
+
+    public static class Route {
         @SerializedName("route_short_name")
         public @Nullable String routeShortName;
+
+        @SerializedName("route_long_name")
+        public @Nullable String routeLongName;
+
+        @SerializedName("route_color")
+        public @Nullable String routeColor;
     }
 
-    public static class Vehicle {
-        public @Nullable Location location;
-    }
+    public static class ScheduleItem {
+        @SerializedName("departure_time")
+        public @Nullable Long departureTime;
 
-    public static class Location {
-        public @Nullable Double lat;
-        public @Nullable Double lon;
+        public @Nullable Stop stop;
     }
 
     public static class Stop {
         @SerializedName("global_stop_id")
         public @Nullable String globalStopId;
-        @SerializedName("departure_time")
-        public @Nullable Long departureTime;
+
         @SerializedName("stop_name")
         public @Nullable String stopName;
-    }
-
-    public @Nullable Trip getEffectiveTrip() {
-        if (trip != null) {
-            return trip;
-        }
-        if (tripHeadsignFlat == null && routeShortNameFlat == null) {
-            return null;
-        }
-        Trip t = new Trip();
-        t.tripHeadsign = tripHeadsignFlat;
-        t.routeShortName = routeShortNameFlat;
-        return t;
     }
 }
