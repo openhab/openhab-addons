@@ -91,22 +91,27 @@ public class TransitAppStopHandler extends BaseThingHandler {
             long now = System.currentTimeMillis() / 1000;
             latestLineDepartures.clear();
 
-            if (result.routeDepartures != null) {
-                for (StopDeparturesResult.RouteDeparture routeDep : result.routeDepartures) {
+            java.util.List<StopDeparturesResult.RouteDeparture> routeDeps = result.routeDepartures;
+            if (routeDeps != null) {
+                for (StopDeparturesResult.RouteDeparture routeDep : routeDeps) {
                     if (groupIdx > 10) {
                         break;
                     }
 
+                    @Nullable
                     String shortName = routeDep.routeShortName;
+                    @Nullable
                     String longName = routeDep.routeLongName;
 
-                    if (routeDep.itineraries != null) {
-                        for (StopDeparturesResult.Itinerary itinerary : routeDep.itineraries) {
+                    java.util.List<StopDeparturesResult.Itinerary> itineraries = routeDep.itineraries;
+                    if (itineraries != null) {
+                        for (StopDeparturesResult.Itinerary itinerary : itineraries) {
                             if (groupIdx > 10) {
                                 break;
                             }
-                            if (itinerary.scheduleItems != null) {
-                                for (StopDeparturesResult.ScheduleItem schedule : itinerary.scheduleItems) {
+                            java.util.List<StopDeparturesResult.ScheduleItem> schedules = itinerary.scheduleItems;
+                            if (schedules != null) {
+                                for (StopDeparturesResult.ScheduleItem schedule : schedules) {
                                     if (groupIdx > 10) {
                                         break;
                                     }
@@ -156,6 +161,7 @@ public class TransitAppStopHandler extends BaseThingHandler {
                                         updateState(prefix + "delay-minutes", org.openhab.core.types.UnDefType.UNDEF);
                                     }
 
+                                    @Nullable
                                     String track = schedule.track;
                                     if (track != null) {
                                         updateState(prefix + "platform", new StringType(track));
@@ -173,6 +179,7 @@ public class TransitAppStopHandler extends BaseThingHandler {
                                                 org.openhab.core.types.UnDefType.UNDEF);
                                     }
 
+                                    @Nullable
                                     String occupancy = schedule.occupancyStatus;
                                     if (occupancy != null) {
                                         updateState(prefix + "occupancy", new StringType(occupancy));

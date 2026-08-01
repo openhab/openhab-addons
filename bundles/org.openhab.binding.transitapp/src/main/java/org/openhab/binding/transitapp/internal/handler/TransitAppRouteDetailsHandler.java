@@ -86,20 +86,24 @@ public class TransitAppRouteDetailsHandler extends BaseThingHandler {
             logger.debug("Successfully polled route details for route ID {}", routeId);
             updateStatus(ThingStatus.ONLINE);
 
+            @Nullable
             RouteDetailsResult.Route route = result.getEffectiveRoute();
             if (route != null) {
+                @Nullable
                 String longName = route.routeLongName;
                 if (longName != null) {
                     updateState("route#route-long-name", new StringType(longName));
                 } else {
                     updateState("route#route-long-name", org.openhab.core.types.UnDefType.UNDEF);
                 }
+                @Nullable
                 String shortName = route.routeShortName;
                 if (shortName != null) {
                     updateState("route#route-short-name", new StringType(shortName));
                 } else {
                     updateState("route#route-short-name", org.openhab.core.types.UnDefType.UNDEF);
                 }
+                @Nullable
                 String color = route.routeColor;
                 if (color != null) {
                     updateState("route#route-color", new StringType(color));
@@ -112,7 +116,8 @@ public class TransitAppRouteDetailsHandler extends BaseThingHandler {
                 updateState("route#route-color", org.openhab.core.types.UnDefType.UNDEF);
             }
 
-            int alertsCount = result.alerts != null ? result.alerts.size() : 0;
+            java.util.List<Object> alerts = result.alerts;
+            int alertsCount = alerts != null ? alerts.size() : 0;
             updateState("route#active-alerts-count", new DecimalType(alertsCount));
         } catch (Exception e) {
             logger.warn("Communication error while polling route {}: {}", routeId, e.getMessage());

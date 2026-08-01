@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -74,12 +73,7 @@ public class TransitApiClient {
     }
 
     private void cleanupCache(long now) {
-        Iterator<Map.Entry<String, CachedResponse>> it = cache.entrySet().iterator();
-        while (it.hasNext()) {
-            if ((now - it.next().getValue().timestamp) >= CACHE_TTL_MS) {
-                it.remove();
-            }
-        }
+        cache.entrySet().removeIf(entry -> (now - entry.getValue().timestamp) >= CACHE_TTL_MS);
     }
 
     public String fetchStopDepartures(String apiKey, String globalStopId) throws Exception {

@@ -89,14 +89,17 @@ public class TransitAppTripDetailsHandler extends BaseThingHandler {
             logger.debug("Successfully polled trip details for trip ID {}", tripId);
             updateStatus(ThingStatus.ONLINE);
 
+            @Nullable
             TripDetailsResult.Trip trip = result.getEffectiveTrip();
             if (trip != null) {
+                @Nullable
                 String headsign = trip.tripHeadsign;
                 if (headsign != null) {
                     updateState("trip#trip-headsign", new StringType(headsign));
                 } else {
                     updateState("trip#trip-headsign", org.openhab.core.types.UnDefType.UNDEF);
                 }
+                @Nullable
                 String shortName = trip.routeShortName;
                 if (shortName != null) {
                     updateState("trip#route-short-name", new StringType(shortName));
@@ -131,10 +134,13 @@ public class TransitAppTripDetailsHandler extends BaseThingHandler {
             updateState("trip#time-to-target", org.openhab.core.types.UnDefType.UNDEF);
 
             int stopIdx = 1;
-            if (result.stops != null) {
-                for (TripDetailsResult.Stop stop : result.stops) {
+            java.util.List<TripDetailsResult.Stop> stopsList = result.stops;
+            if (stopsList != null) {
+                for (TripDetailsResult.Stop stop : stopsList) {
+                    @Nullable
                     String gStopId = stop.globalStopId;
                     Long depTime = stop.departureTime;
+                    @Nullable
                     String sName = stop.stopName;
 
                     if (targetStopId != null && !targetStopId.isBlank() && targetStopId.equals(gStopId)
