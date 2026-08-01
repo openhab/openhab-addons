@@ -66,18 +66,18 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
                         "Unsupported forecast type: " + subType);
                 return;
             }
-            JsonObject stateOpt = handler.getCachedEvccState().deepCopy();
+            JsonObject stateOpt = handler.getCachedEvccState();
             if (stateOpt.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 return;
             }
             if (stateOpt.has(JSON_KEY_FORECAST) && stateOpt.getAsJsonObject(JSON_KEY_FORECAST).has(subType)) {
                 JsonObject state = new JsonObject();
+                state.addProperty(subType, 0);
                 if (JSON_KEY_SOLAR.equals(subType)) {
                     state = stateOpt.getAsJsonObject(JSON_KEY_FORECAST).getAsJsonObject(subType).deepCopy();
                     modifyJSON(state);
                     state.addProperty("scaled", 0);
-                    state.addProperty("solar", 0);
                 }
                 commonInitialize(state);
                 isInitialized = true;
