@@ -1,4 +1,4 @@
-# Modbus Anker Solix Binding
+# Modbus Anker SOLIX Binding
 
 This binding adds Anker SOLIX device support as a Modbus sub-binding.
 It currently supports Anker SOLIX devices with officially exposed Modbus profiles.
@@ -106,7 +106,7 @@ The `ankersolix-solarbank4` and `ankersolix-solarbank-ac` things expose the foll
 ### EV Charger Channels
 
 | Channel ID | Item Type | Access | Description |
-|------------|-----------|--------|-------------|
+| ------------ | ----------- | -------- | ------------- |
 | `product-number` | `Number` | read-only | Product number register value. |
 | `device-model` | `String` | read-only | Model name. |
 | `device-serial-number` | `String` | read-only | Serial number. |
@@ -168,7 +168,7 @@ Registers marked as `Reserved for Future Use` are intentionally not bound:
 ### Smart Meter Gen 2 Channels
 
 | Channel ID | Item Type | Access | Description |
-|------------|-----------|--------|-------------|
+| ------------ | ----------- | -------- | ------------- |
 | `device-model` | `String` | read-only | Device model string. |
 | `device-serial-number` | `String` | read-only | Device serial number. |
 | `device-sw-version` | `String` | read-only | Device firmware version. |
@@ -201,7 +201,7 @@ This mirrors the upstream Home Assistant register map and is not a binding defec
 ### Smart Plug Channels
 
 | Channel ID | Item Type | Access | Description |
-|------------|-----------|--------|-------------|
+| ------------ | ----------- | -------- | ------------- |
 | `device-model` | `String` | read-only | Device model string. |
 | `device-serial-number` | `String` | read-only | Device serial number. |
 | `real-time-power` | `Number:Power` | read-only | Real-time power. |
