@@ -89,8 +89,7 @@ public class TransitAppTripDetailsHandler extends BaseThingHandler {
             logger.debug("Successfully polled trip details for trip ID {}", tripId);
             updateStatus(ThingStatus.ONLINE);
 
-            @Nullable
-            TripDetailsResult.Trip trip = result.getEffectiveTrip();
+            TripDetailsResult.@Nullable Trip trip = result.getEffectiveTrip();
             if (trip != null) {
                 @Nullable
                 String headsign = trip.tripHeadsign;

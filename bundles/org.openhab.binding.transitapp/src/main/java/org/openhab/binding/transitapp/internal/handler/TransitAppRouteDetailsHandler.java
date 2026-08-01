@@ -86,8 +86,7 @@ public class TransitAppRouteDetailsHandler extends BaseThingHandler {
             logger.debug("Successfully polled route details for route ID {}", routeId);
             updateStatus(ThingStatus.ONLINE);
 
-            @Nullable
-            RouteDetailsResult.Route route = result.getEffectiveRoute();
+            RouteDetailsResult.@Nullable Route route = result.getEffectiveRoute();
             if (route != null) {
                 @Nullable
                 String longName = route.routeLongName;
