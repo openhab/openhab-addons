@@ -155,7 +155,14 @@ public class EEBusImpl implements EEBus, ReadyService.ReadyTracker {
                     .applyToDevice().build();
             this.device = newDevice;
 
-            Entity entity = newDevice.getEntities().iterator().next();
+            // Device.build() also adds an implicit DEVICE_INFORMATION entity alongside the one
+            // requested above - getEntities() does not guarantee that entity comes first, so it
+            // must be selected by type rather than assumed to be the sole/first entry (confirmed
+            // live: addUseCase() on the DEVICE_INFORMATION entity throws
+            // "Use case LpcCs does not allow entity type DEVICE_INFORMATION").
+            Entity entity = newDevice.getEntities().stream().filter(e -> e.getType() == entityType).findFirst()
+                    .orElseThrow(() -> new IllegalStateException(
+                            "EEBus: no " + entityType + " entity found on the built device"));
             this.changeListener = new EEBusChangeListener(itemRegistry, metadataRegistry, eventPublisher, entity);
 
             logger.info("EEBus: SHIP node started, own SKI: {}", communication.getOwnSki());
