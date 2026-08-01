@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.transitapp.internal.handler;
 
+import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -19,6 +20,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.transitapp.internal.config.TransitAppTripConfiguration;
 import org.openhab.binding.transitapp.internal.net.dto.TripDetailsResult;
+import org.openhab.binding.transitapp.internal.net.dto.TripDetailsResult.Location;
+import org.openhab.binding.transitapp.internal.net.dto.TripDetailsResult.Stop;
+import org.openhab.binding.transitapp.internal.net.dto.TripDetailsResult.Trip;
+import org.openhab.binding.transitapp.internal.net.dto.TripDetailsResult.Vehicle;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
@@ -89,7 +94,8 @@ public class TransitAppTripDetailsHandler extends BaseThingHandler {
             logger.debug("Successfully polled trip details for trip ID {}", tripId);
             updateStatus(ThingStatus.ONLINE);
 
-            TripDetailsResult.@Nullable Trip trip = result.getEffectiveTrip();
+            @Nullable
+            Trip trip = result.getEffectiveTrip();
             if (trip != null) {
                 @Nullable
                 String headsign = trip.tripHeadsign;
@@ -112,9 +118,11 @@ public class TransitAppTripDetailsHandler extends BaseThingHandler {
 
             Double lat = null;
             Double lon = null;
-            TripDetailsResult.@Nullable Vehicle v = result.vehicle;
+            @Nullable
+            Vehicle v = result.vehicle;
             if (v != null) {
-                TripDetailsResult.@Nullable Location loc = v.location;
+                @Nullable
+                Location loc = v.location;
                 if (loc != null) {
                     lat = loc.lat;
                     lon = loc.lon;
@@ -134,9 +142,10 @@ public class TransitAppTripDetailsHandler extends BaseThingHandler {
             updateState("trip#time-to-target", org.openhab.core.types.UnDefType.UNDEF);
 
             int stopIdx = 1;
-            java.util.@Nullable List<TripDetailsResult.Stop> stopsList = result.stops;
+            @Nullable
+            List<Stop> stopsList = result.stops;
             if (stopsList != null) {
-                for (TripDetailsResult.Stop stop : stopsList) {
+                for (Stop stop : stopsList) {
                     @Nullable
                     String gStopId = stop.globalStopId;
                     @Nullable

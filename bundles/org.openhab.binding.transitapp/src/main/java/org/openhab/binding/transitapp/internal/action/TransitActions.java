@@ -36,7 +36,11 @@ public class TransitActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        this.handler = handler;
+        if (handler instanceof TransitAppStopHandler) {
+            this.handler = handler;
+        } else {
+            this.handler = null;
+        }
     }
 
     @Override

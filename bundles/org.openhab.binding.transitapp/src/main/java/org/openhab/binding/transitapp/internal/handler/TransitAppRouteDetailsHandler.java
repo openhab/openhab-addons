@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.transitapp.internal.handler;
 
+import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -19,6 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.transitapp.internal.config.TransitAppRouteConfiguration;
 import org.openhab.binding.transitapp.internal.net.dto.RouteDetailsResult;
+import org.openhab.binding.transitapp.internal.net.dto.RouteDetailsResult.Route;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
@@ -86,7 +88,8 @@ public class TransitAppRouteDetailsHandler extends BaseThingHandler {
             logger.debug("Successfully polled route details for route ID {}", routeId);
             updateStatus(ThingStatus.ONLINE);
 
-            RouteDetailsResult.@Nullable Route route = result.getEffectiveRoute();
+            @Nullable
+            Route route = result.getEffectiveRoute();
             if (route != null) {
                 @Nullable
                 String longName = route.routeLongName;
@@ -115,7 +118,8 @@ public class TransitAppRouteDetailsHandler extends BaseThingHandler {
                 updateState("route#route-color", org.openhab.core.types.UnDefType.UNDEF);
             }
 
-            java.util.@Nullable List<Object> alerts = result.alerts;
+            @Nullable
+            List<Object> alerts = result.alerts;
             int alertsCount = alerts != null ? alerts.size() : 0;
             updateState("route#active-alerts-count", new DecimalType(alertsCount));
         } catch (Exception e) {

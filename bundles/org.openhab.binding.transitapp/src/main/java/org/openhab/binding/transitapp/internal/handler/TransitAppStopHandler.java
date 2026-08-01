@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.transitapp.internal.handler;
 
+import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -19,6 +20,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.transitapp.internal.config.TransitAppStopConfiguration;
 import org.openhab.binding.transitapp.internal.net.dto.StopDeparturesResult;
+import org.openhab.binding.transitapp.internal.net.dto.StopDeparturesResult.Itinerary;
+import org.openhab.binding.transitapp.internal.net.dto.StopDeparturesResult.RouteDeparture;
+import org.openhab.binding.transitapp.internal.net.dto.StopDeparturesResult.ScheduleItem;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
@@ -91,9 +95,10 @@ public class TransitAppStopHandler extends BaseThingHandler {
             long now = System.currentTimeMillis() / 1000;
             latestLineDepartures.clear();
 
-            java.util.@Nullable List<StopDeparturesResult.RouteDeparture> routeDeps = result.routeDepartures;
+            @Nullable
+            List<RouteDeparture> routeDeps = result.routeDepartures;
             if (routeDeps != null) {
-                for (StopDeparturesResult.RouteDeparture routeDep : routeDeps) {
+                for (RouteDeparture routeDep : routeDeps) {
                     if (groupIdx > 10) {
                         break;
                     }
@@ -103,15 +108,17 @@ public class TransitAppStopHandler extends BaseThingHandler {
                     @Nullable
                     String longName = routeDep.routeLongName;
 
-                    java.util.@Nullable List<StopDeparturesResult.Itinerary> itineraries = routeDep.itineraries;
+                    @Nullable
+                    List<Itinerary> itineraries = routeDep.itineraries;
                     if (itineraries != null) {
-                        for (StopDeparturesResult.Itinerary itinerary : itineraries) {
+                        for (Itinerary itinerary : itineraries) {
                             if (groupIdx > 10) {
                                 break;
                             }
-                            java.util.@Nullable List<StopDeparturesResult.ScheduleItem> schedules = itinerary.scheduleItems;
+                            @Nullable
+                            List<ScheduleItem> schedules = itinerary.scheduleItems;
                             if (schedules != null) {
-                                for (StopDeparturesResult.ScheduleItem schedule : schedules) {
+                                for (ScheduleItem schedule : schedules) {
                                     if (groupIdx > 10) {
                                         break;
                                     }
