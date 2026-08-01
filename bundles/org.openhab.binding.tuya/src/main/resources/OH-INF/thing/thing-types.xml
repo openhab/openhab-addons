@@ -40,6 +40,7 @@
 					<option value="smartLife">Smart Life</option>
 				</options>
 				<limitToOptions>true</limitToOptions>
+				<default>smartLife</default>
 			</parameter>
 			<parameter name="dataCenter" type="text" required="true">
 				<label>Data Center</label>
@@ -54,6 +55,50 @@
 					<option value="https://openapi-sg.iotbing.com">Singapore</option>
 				</options>
 				<limitToOptions>true</limitToOptions>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Smart Life cloud connector -->
+	<thing-type id="smartLife">
+		<label>Tuya Smart Life App</label>
+		<description>Gateway to the Tuya cloud using the Smart Life app for authentication.</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
+
+		<properties>
+			<property name="Thing Version">1.0.1</property>
+			<property name="thingTypeVersion">2</property>
+		</properties>
+
+		<config-description>
+			<parameter name="userCode" type="text" required="true">
+				<label>User Code</label>
+				<description>The User code shown in the Smart Life app under "Account and Security".</description>
+			</parameter>
+			<parameter name="schema" type="text" required="true">
+				<label>App Type</label>
+				<description>The app type (Tuya Smart or SmartLife).</description>
+				<options>
+					<option value="tuyaSmart">Tuya Smart</option>
+					<option value="smartLife">Smart Life</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+				<default>smartLife</default>
+			</parameter>
+			<parameter name="dataCenter" type="text" required="true">
+				<label>Data Center</label>
+				<description>The data center for your Tuya account</description>
+				<options>
+					<option value="https://openapi.tuyacn.com">China</option>
+					<option value="https://openapi.tuyaus.com">Western America</option>
+					<option value="https://openapi-ueaz.tuyaus.com">Eastern America (Azure/MS)</option>
+					<option value="https://openapi.tuyaeu.com">Central Europe</option>
+					<option value="https://openapi-weaz.tuyaeu.com">Western Europe (Azure/MS)</option>
+					<option value="https://openapi.tuyain.com">India</option>
+					<option value="https://openapi-sg.iotbing.com">Singapore</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+				<default>Central Europe</default>
 			</parameter>
 		</config-description>
 	</thing-type>

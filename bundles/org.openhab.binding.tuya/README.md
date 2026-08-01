@@ -14,7 +14,10 @@ The other app (and/or tuya-mqtt) must be closed in order for this binding to ope
 
 ## Supported Things
 
-There are two things: `project` and `tuyaDevice`.
+There are three things: `smartLife`, `project` and `tuyaDevice`.
+
+The `smartLife` Thing represents an instance of a Smart Life app on your smartphone (see below).
+`smartLife` things must be configured manually and are needed for discovery only.
 
 The `project` Thing represents a Tuya developer portal cloud project (see below).
 `project` things must be configured manually and are needed for discovery only.
@@ -24,10 +27,34 @@ They can be configured manually or by discovery.
 
 ## Discovery
 
-Discovery is supported for `tuyaDevice` things.
+Discovery is supported for `smartLife` and `tuyaDevice` things.
 By using discovery all necessary settings of the device are retrieved from your cloud account.
 
 ## Thing Configuration
+
+### `smartLife`
+
+This is the preferred method for linking to the Tuya cloud.
+
+First create a `smartLife` Thing.
+
+Your user code can be found in the Smart Life app - look under "Me" (bottom left), settings (the icon at the top right), "Account and Security".
+Depending on the app you use, set `schema` to `tuyaSmart` (for the Tuya Smart app) or `smartLife` (for the Smart Life app).
+The `dataCenter` needs to be set correctly for the region your Tuya account is registered in. This depends not only on where you are but also on when you registered your account - see [Mappings Between OEM App Accounts and Data Centers](https://developer.tuya.com/en/docs/iot/oem-app-data-center-distributed?id=Kafi0ku9l07qb).
+
+Next log in to the Tuya cloud.
+
+Look at the `smartLife` Thing created and under "Actions" click, "Login using the Smart life app". Click the "Execute" button and you will be presented with a QR code. Use the Smart Life app to scan this (go to "Home", tap "+" in the top left and select "Scan") and then confirm the login when prompted. You can then close the action pop-up containing the QR code.
+
+The Thing should be online and all Tuya devices paired in your account should be in your inbox.
+
+If the Thing is not online or is showing "Not Logged In", check
+
+- if you entered your user code correctly
+- if you selected the correct data center
+- the openHAB logs
+
+Note that `smartLife` will attempt to remain logged in (even across openHAB restarts or binding reloads) by automatically renewing its credentials every couple of hours. If it is unable to do so it will become logged out and you will need to login again by scanning a new QR code.
 
 ### `project`
 
