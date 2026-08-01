@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<!-- PrusaLink -->
-	<config-description uri="thing-type:threedprinter:prusaprinter">
+	<config-description uri="thing-type:threedprinter:prusa-link">
 		<parameter name="hostname" type="text" required="true">
 			<label>Hostname / IP</label>
 			<description>Hostname or IP address of the Prusa printer.</description>

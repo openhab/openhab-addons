@@ -58,6 +58,9 @@ public class PrusaStatusResponse {
     }
 
     public static class PrusaJobData {
+        @SerializedName("id")
+        public int id;
+
         @SerializedName("progress")
         public double progress;
 

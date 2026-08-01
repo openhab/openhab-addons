@@ -19,24 +19,26 @@ import javax.measure.quantity.Temperature;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.threedprinter.internal.config.PrusaLinkConfiguration;
 import org.openhab.binding.threedprinter.internal.dto.prusa.PrusaJobResponse;
 import org.openhab.binding.threedprinter.internal.dto.prusa.PrusaJobResponse.PrusaJobFile;
 import org.openhab.binding.threedprinter.internal.dto.prusa.PrusaStatusResponse;
 import org.openhab.binding.threedprinter.internal.dto.prusa.PrusaStatusResponse.PrusaJobData;
 import org.openhab.binding.threedprinter.internal.dto.prusa.PrusaStatusResponse.PrusaPrinterData;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.UnDefType;
 
 /**
  * Handler for Prusa printers using the PrusaLink v1 REST API.
@@ -54,6 +56,7 @@ public class PrusaLinkHandler extends AbstractPrinterHandler {
     private @Nullable PrusaLinkConfiguration config;
     private String lastPreviewFilename = "";
     private @Nullable RawType lastPreviewState;
+    private int lastJobId = -1;
 
     public PrusaLinkHandler(Thing thing, HttpClient httpClient) {
         super(thing, httpClient);
@@ -112,20 +115,22 @@ public class PrusaLinkHandler extends AbstractPrinterHandler {
             updateState(CHANNEL_BED_TEMPERATURE, new QuantityType<Temperature>(printer.tempBed, SIUnits.CELSIUS));
             updateState(CHANNEL_BED_TEMPERATURE_SETPOINT,
                     new QuantityType<Temperature>(printer.targetBed, SIUnits.CELSIUS));
-            updateState(CHANNEL_PRINT_SPEED, new DecimalType(printer.speed));
+            updateState(CHANNEL_PRINT_SPEED, new QuantityType<>(printer.speed, Units.PERCENT));
             // PrusaLink reports fan_print as RPM; normalise to 0-100% (max ~8000 RPM)
             int fanPct = printer.fanPrint > 0 ? Math.min(100, printer.fanPrint / 80) : 0;
-            updateState(CHANNEL_FAN_SPEED, new DecimalType(fanPct));
+            updateState(CHANNEL_FAN_SPEED, new QuantityType<>(fanPct, Units.PERCENT));
             updateState(CHANNEL_PAUSE_RESUME, OnOffType.from("PAUSED".equalsIgnoreCase(printer.state)));
         }
 
         PrusaJobData job = response.job;
         if (job != null) {
-            updateState(CHANNEL_JOB_PROGRESS, new DecimalType(job.progress));
-            updateState(CHANNEL_TIME_ELAPSED, new DecimalType(job.timePrinting));
-            updateState(CHANNEL_TIME_REMAINING, new DecimalType(job.timeRemaining));
+            lastJobId = job.id;
+            updateState(CHANNEL_JOB_PROGRESS, new QuantityType<>(job.progress, Units.PERCENT));
+            updateState(CHANNEL_TIME_ELAPSED, new QuantityType<>(job.timePrinting, Units.SECOND));
+            updateState(CHANNEL_TIME_REMAINING, new QuantityType<>(job.timeRemaining, Units.SECOND));
         } else {
-            updateState(CHANNEL_JOB_PROGRESS, new DecimalType(0));
+            lastJobId = -1;
+            clearJobState();
         }
 
         // /api/v1/status does not include file name or thumbnail info; fetch /api/v1/job for that
@@ -139,6 +144,7 @@ public class PrusaLinkHandler extends AbstractPrinterHandler {
 
         if (file == null) {
             updateState(CHANNEL_JOB_NAME, new StringType(""));
+            updateState(CHANNEL_JOB_PREVIEW, UnDefType.UNDEF);
             lastPreviewFilename = "";
             lastPreviewState = null;
             return;
@@ -176,47 +182,87 @@ public class PrusaLinkHandler extends AbstractPrinterHandler {
             return;
         }
         if (command instanceof RefreshType) {
-            refresh();
+            scheduler.execute(this::refresh);
             return;
         }
+        // Command handling performs blocking HTTP I/O; keep it off the framework callback thread.
+        scheduler.execute(() -> handleCommandAsync(channelUID, command, cfg));
+    }
 
+    private void handleCommandAsync(ChannelUID channelUID, Command command, PrusaLinkConfiguration cfg) {
         String baseUrl = "http://" + cfg.hostname + ":" + cfg.port;
 
         switch (channelUID.getId()) {
             case CHANNEL_PAUSE_RESUME:
                 if (command instanceof OnOffType onOff) {
+                    int jobId = lastJobId;
+                    if (jobId < 0) {
+                        logger.warn("Cannot pause/resume: no active PrusaLink job");
+                        break;
+                    }
                     String action = OnOffType.ON.equals(onOff) ? "pause" : "resume";
-                    httpPut(baseUrl + "/api/v1/job", cfg.apiKey, "{\"action\":\"" + action + "\"}");
+                    int status = httpPut(baseUrl + "/api/v1/job/" + jobId + "/" + action, cfg.apiKey, "");
+                    if (!HttpStatus.isSuccess(status)) {
+                        logger.warn("Failed to {} job {}: HTTP {}", action, jobId, status);
+                    }
                 }
                 break;
 
             case CHANNEL_CANCEL:
                 if (OnOffType.ON.equals(command)) {
-                    httpDelete(baseUrl + "/api/v1/job", cfg.apiKey);
+                    int jobId = lastJobId;
+                    if (jobId < 0) {
+                        logger.warn("Cannot cancel: no active PrusaLink job");
+                    } else {
+                        int status = httpDelete(baseUrl + "/api/v1/job/" + jobId, cfg.apiKey);
+                        if (!HttpStatus.isSuccess(status)) {
+                            logger.warn("Failed to cancel job {}: HTTP {}", jobId, status);
+                        }
+                    }
                     updateState(CHANNEL_CANCEL, OnOffType.OFF);
                 }
                 break;
 
-            case CHANNEL_NOZZLE_TEMPERATURE_SETPOINT:
-                sendGcode(baseUrl, cfg.apiKey, "M104 S" + toGcodeTemp(command));
-                break;
-
-            case CHANNEL_BED_TEMPERATURE_SETPOINT:
-                sendGcode(baseUrl, cfg.apiKey, "M140 S" + toGcodeTemp(command));
-                break;
-
-            case CHANNEL_PRINT_SPEED:
-                if (command instanceof DecimalType dec) {
-                    sendGcode(baseUrl, cfg.apiKey, "M220 S" + dec.intValue());
+            case CHANNEL_NOZZLE_TEMPERATURE_SETPOINT: {
+                Integer temp = toCelsius(command);
+                if (temp != null) {
+                    sendGcode(baseUrl, cfg.apiKey, "M104 S" + temp);
+                } else {
+                    logger.warn("Unsupported command type {} for channel {}", command, channelUID);
                 }
                 break;
+            }
 
-            case CHANNEL_FAN_SPEED:
-                if (command instanceof DecimalType dec) {
-                    int s255 = (int) Math.round(dec.doubleValue() * 2.55);
+            case CHANNEL_BED_TEMPERATURE_SETPOINT: {
+                Integer temp = toCelsius(command);
+                if (temp != null) {
+                    sendGcode(baseUrl, cfg.apiKey, "M140 S" + temp);
+                } else {
+                    logger.warn("Unsupported command type {} for channel {}", command, channelUID);
+                }
+                break;
+            }
+
+            case CHANNEL_PRINT_SPEED: {
+                Integer speed = toPercent(command);
+                if (speed != null) {
+                    sendGcode(baseUrl, cfg.apiKey, "M220 S" + speed);
+                } else {
+                    logger.warn("Unsupported command type {} for channel {}", command, channelUID);
+                }
+                break;
+            }
+
+            case CHANNEL_FAN_SPEED: {
+                Integer speed = toPercent(command);
+                if (speed != null) {
+                    int s255 = (int) Math.round(speed * 2.55);
                     sendGcode(baseUrl, cfg.apiKey, "M106 S" + s255);
+                } else {
+                    logger.warn("Unsupported command type {} for channel {}", command, channelUID);
                 }
                 break;
+            }
 
             default:
                 logger.debug("Unhandled command {} for channel {}", command, channelUID);
@@ -225,18 +271,10 @@ public class PrusaLinkHandler extends AbstractPrinterHandler {
 
     // PrusaLink supports the OctoPrint-compatible gcode endpoint
     private void sendGcode(String baseUrl, String apiKey, String gcode) {
-        httpPost(baseUrl + "/api/printer/command", apiKey, "{\"command\":\"" + gcode + "\"}");
-    }
-
-    private int toGcodeTemp(Command command) {
-        if (command instanceof QuantityType<?> qty) {
-            QuantityType<?> celsius = qty.toUnit(SIUnits.CELSIUS);
-            return celsius != null ? celsius.intValue() : qty.intValue();
+        int status = httpPost(baseUrl + "/api/printer/command", apiKey, "{\"command\":\"" + gcode + "\"}");
+        if (!HttpStatus.isSuccess(status)) {
+            logger.warn("G-code command '{}' failed: HTTP {}", gcode, status);
         }
-        if (command instanceof DecimalType dec) {
-            return dec.intValue();
-        }
-        return 0;
     }
 
     private String mapPrusaState(String prusaState) {

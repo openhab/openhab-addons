@@ -26,6 +26,7 @@ import javax.measure.quantity.Temperature;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.threedprinter.internal.config.KlipperConfiguration;
 import org.openhab.binding.threedprinter.internal.dto.klipper.KlipperMetadataResponse;
 import org.openhab.binding.threedprinter.internal.dto.klipper.KlipperMetadataResponse.KlipperMetadataResult;
@@ -38,12 +39,12 @@ import org.openhab.binding.threedprinter.internal.dto.klipper.KlipperObjectsResp
 import org.openhab.binding.threedprinter.internal.dto.klipper.KlipperObjectsResponse.KlipperPrintStats;
 import org.openhab.binding.threedprinter.internal.dto.klipper.KlipperObjectsResponse.KlipperResult;
 import org.openhab.binding.threedprinter.internal.dto.klipper.KlipperObjectsResponse.KlipperStatus;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -138,14 +139,25 @@ public class KlipperHandler extends AbstractPrinterHandler {
         }
 
         KlipperPrintStats stats = status.printStats;
+        KlipperDisplayStatus display = status.displayStatus;
         if (stats != null) {
             String mappedState = mapKlipperState(stats.state);
             updateState(CHANNEL_PRINTER_STATE, new StringType(mappedState));
             updateState(CHANNEL_PAUSE_RESUME, OnOffType.from(STATE_PAUSED.equals(mappedState)));
-            updateState(CHANNEL_JOB_NAME, new StringType(stats.filename));
-            updateState(CHANNEL_TIME_ELAPSED, new DecimalType((long) stats.printDuration));
 
             if (!stats.filename.isBlank()) {
+                updateState(CHANNEL_JOB_NAME, new StringType(stats.filename));
+                updateState(CHANNEL_TIME_ELAPSED, new QuantityType<>(stats.printDuration, Units.SECOND));
+
+                if (display != null) {
+                    updateState(CHANNEL_JOB_PROGRESS, new QuantityType<>(display.progress * 100.0, Units.PERCENT));
+                    if (display.progress > 0) {
+                        double elapsed = stats.printDuration;
+                        double remaining = display.progress < 1.0 ? (elapsed / display.progress - elapsed) : 0.0;
+                        updateState(CHANNEL_TIME_REMAINING, new QuantityType<>(remaining, Units.SECOND));
+                    }
+                }
+
                 if (!stats.filename.equals(lastPreviewFilename)) {
                     logger.debug("Fetching preview for {} (last was '{}')", stats.filename, lastPreviewFilename);
                     fetchAndUpdatePreview(baseUrl, cfg.apiKey, stats.filename);
@@ -158,31 +170,20 @@ public class KlipperHandler extends AbstractPrinterHandler {
                     }
                 }
             } else {
+                clearJobState();
                 lastPreviewFilename = "";
                 lastPreviewState = null;
             }
         }
 
-        KlipperDisplayStatus display = status.displayStatus;
-        if (display != null) {
-            updateState(CHANNEL_JOB_PROGRESS, new DecimalType(display.progress * 100.0));
-        }
-
         KlipperFan fan = status.fan;
         if (fan != null) {
-            updateState(CHANNEL_FAN_SPEED, new DecimalType(fan.speed * 100.0));
+            updateState(CHANNEL_FAN_SPEED, new QuantityType<>(fan.speed * 100.0, Units.PERCENT));
         }
 
         KlipperGcodeMove gcodeMove = status.gcodeMove;
         if (gcodeMove != null) {
-            updateState(CHANNEL_PRINT_SPEED, new DecimalType(gcodeMove.speedFactor * 100.0));
-        }
-
-        // Estimate time remaining from progress and elapsed if available
-        if (display != null && stats != null && display.progress > 0) {
-            long elapsed = (long) stats.printDuration;
-            long remaining = display.progress < 1.0 ? (long) (elapsed / display.progress - elapsed) : 0L;
-            updateState(CHANNEL_TIME_REMAINING, new DecimalType(remaining));
+            updateState(CHANNEL_PRINT_SPEED, new QuantityType<>(gcodeMove.speedFactor * 100.0, Units.PERCENT));
         }
     }
 
@@ -246,10 +247,14 @@ public class KlipperHandler extends AbstractPrinterHandler {
             return;
         }
         if (command instanceof RefreshType) {
-            refresh();
+            scheduler.execute(this::refresh);
             return;
         }
+        // Command handling performs blocking HTTP I/O; keep it off the framework callback thread.
+        scheduler.execute(() -> handleCommandAsync(channelUID, command, cfg));
+    }
 
+    private void handleCommandAsync(ChannelUID channelUID, Command command, KlipperConfiguration cfg) {
         String baseUrl = "http://" + cfg.hostname + ":" + cfg.port;
 
         switch (channelUID.getId()) {
@@ -262,31 +267,54 @@ public class KlipperHandler extends AbstractPrinterHandler {
 
             case CHANNEL_CANCEL:
                 if (OnOffType.ON.equals(command)) {
-                    httpPost(baseUrl + "/printer/print/cancel", cfg.apiKey, "");
+                    int status = httpPost(baseUrl + "/printer/print/cancel", cfg.apiKey, "");
+                    if (!HttpStatus.isSuccess(status)) {
+                        logger.warn("Failed to cancel print: HTTP {}", status);
+                    }
                     updateState(CHANNEL_CANCEL, OnOffType.OFF);
                 }
                 break;
 
-            case CHANNEL_NOZZLE_TEMPERATURE_SETPOINT:
-                sendGcode(baseUrl, cfg.apiKey, "M104 S" + toGcodeTemp(command));
-                break;
-
-            case CHANNEL_BED_TEMPERATURE_SETPOINT:
-                sendGcode(baseUrl, cfg.apiKey, "M140 S" + toGcodeTemp(command));
-                break;
-
-            case CHANNEL_PRINT_SPEED:
-                if (command instanceof DecimalType dec) {
-                    sendGcode(baseUrl, cfg.apiKey, "M220 S" + dec.intValue());
+            case CHANNEL_NOZZLE_TEMPERATURE_SETPOINT: {
+                Integer temp = toCelsius(command);
+                if (temp != null) {
+                    sendGcode(baseUrl, cfg.apiKey, "M104 S" + temp);
+                } else {
+                    logger.warn("Unsupported command type {} for channel {}", command, channelUID);
                 }
                 break;
+            }
 
-            case CHANNEL_FAN_SPEED:
-                if (command instanceof DecimalType dec) {
-                    int s255 = (int) Math.round(dec.doubleValue() * 2.55);
+            case CHANNEL_BED_TEMPERATURE_SETPOINT: {
+                Integer temp = toCelsius(command);
+                if (temp != null) {
+                    sendGcode(baseUrl, cfg.apiKey, "M140 S" + temp);
+                } else {
+                    logger.warn("Unsupported command type {} for channel {}", command, channelUID);
+                }
+                break;
+            }
+
+            case CHANNEL_PRINT_SPEED: {
+                Integer speed = toPercent(command);
+                if (speed != null) {
+                    sendGcode(baseUrl, cfg.apiKey, "M220 S" + speed);
+                } else {
+                    logger.warn("Unsupported command type {} for channel {}", command, channelUID);
+                }
+                break;
+            }
+
+            case CHANNEL_FAN_SPEED: {
+                Integer speed = toPercent(command);
+                if (speed != null) {
+                    int s255 = (int) Math.round(speed * 2.55);
                     sendGcode(baseUrl, cfg.apiKey, "M106 S" + s255);
+                } else {
+                    logger.warn("Unsupported command type {} for channel {}", command, channelUID);
                 }
                 break;
+            }
 
             default:
                 logger.debug("Unhandled command {} for channel {}", command, channelUID);
@@ -294,18 +322,10 @@ public class KlipperHandler extends AbstractPrinterHandler {
     }
 
     private void sendGcode(String baseUrl, String apiKey, String script) {
-        httpPost(baseUrl + "/printer/gcode/script", apiKey, "{\"script\":\"" + script + "\"}");
-    }
-
-    private int toGcodeTemp(Command command) {
-        if (command instanceof QuantityType<?> qty) {
-            QuantityType<?> celsius = qty.toUnit(SIUnits.CELSIUS);
-            return celsius != null ? celsius.intValue() : qty.intValue();
+        int status = httpPost(baseUrl + "/printer/gcode/script", apiKey, "{\"script\":\"" + script + "\"}");
+        if (!HttpStatus.isSuccess(status)) {
+            logger.warn("G-code script '{}' failed: HTTP {}", script, status);
         }
-        if (command instanceof DecimalType dec) {
-            return dec.intValue();
-        }
-        return 0;
     }
 
     private String mapKlipperState(String klipperState) {

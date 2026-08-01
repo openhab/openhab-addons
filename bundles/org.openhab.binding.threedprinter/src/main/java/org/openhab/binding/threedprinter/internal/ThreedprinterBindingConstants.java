@@ -26,7 +26,7 @@ public class ThreedprinterBindingConstants {
     public static final String BINDING_ID = "threedprinter";
 
     // Thing types
-    public static final ThingTypeUID THING_TYPE_PRUSAPRINTER = new ThingTypeUID(BINDING_ID, "prusaprinter");
+    public static final ThingTypeUID THING_TYPE_PRUSALINK = new ThingTypeUID(BINDING_ID, "prusa-link");
     public static final ThingTypeUID THING_TYPE_KLIPPER = new ThingTypeUID(BINDING_ID, "klipper");
     public static final ThingTypeUID THING_TYPE_OCTOPRINT = new ThingTypeUID(BINDING_ID, "octoprint");
 

@@ -22,6 +22,7 @@ import javax.measure.quantity.Temperature;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.threedprinter.internal.config.OctoPrintConfiguration;
 import org.openhab.binding.threedprinter.internal.dto.octoprint.OctoPrintJobResponse;
 import org.openhab.binding.threedprinter.internal.dto.octoprint.OctoPrintJobResponse.OctoPrintJob;
@@ -29,12 +30,12 @@ import org.openhab.binding.threedprinter.internal.dto.octoprint.OctoPrintJobResp
 import org.openhab.binding.threedprinter.internal.dto.octoprint.OctoPrintPrinterResponse;
 import org.openhab.binding.threedprinter.internal.dto.octoprint.OctoPrintPrinterResponse.OctoPrintState;
 import org.openhab.binding.threedprinter.internal.dto.octoprint.OctoPrintPrinterResponse.OctoPrintTemperature;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -143,45 +144,45 @@ public class OctoPrintHandler extends AbstractPrinterHandler {
             return;
         }
 
-        OctoPrintProgress progress = jobResponse.progress;
-        if (progress != null) {
-            updateState(CHANNEL_JOB_PROGRESS, new DecimalType(progress.completion > 0 ? progress.completion : 0));
-            updateState(CHANNEL_TIME_ELAPSED, new DecimalType(progress.printTime));
-            updateState(CHANNEL_TIME_REMAINING, new DecimalType(progress.printTimeLeft));
+        OctoPrintJob job = jobResponse.job;
+        OctoPrintJob.OctoPrintFile file = job != null ? job.file : null;
+        String filename = file != null ? file.name : "";
+
+        if (file == null || filename.isBlank()) {
+            clearJobState();
+            lastPreviewFilename = "";
+            lastPreviewState = null;
+            return;
         }
 
-        OctoPrintJob job = jobResponse.job;
-        if (job != null) {
-            OctoPrintJob.OctoPrintFile file = job.file;
-            if (file != null) {
-                String name = file.display.isBlank() ? file.name : file.display;
-                updateState(CHANNEL_JOB_NAME, new StringType(name));
+        String name = file.display.isBlank() ? file.name : file.display;
+        updateState(CHANNEL_JOB_NAME, new StringType(name));
 
-                // Use the raw filename (not display name) as the key for the thumbnail URL
-                String filename = file.name;
-                if (!filename.isBlank()) {
-                    if (!filename.equals(lastPreviewFilename)) {
-                        String encodedName = URLEncoder.encode(filename, StandardCharsets.UTF_8).replace("+", "%20");
-                        byte @Nullable [] bytes = httpGetBytes(
-                                baseUrl + "/plugin/prusaslicerthumbnails/thumbnail/" + encodedName, cfg.apiKey);
-                        if (bytes != null && bytes.length > 0) {
-                            RawType state = new RawType(bytes, "image/png");
-                            updateState(CHANNEL_JOB_PREVIEW, state);
-                            lastPreviewFilename = filename;
-                            lastPreviewState = state;
-                        }
-                    } else {
-                        // Re-push the cached image every cycle rather than only on change, so a channel
-                        // linked to an item after the initial fetch (or a UI reconnecting) still gets it.
-                        RawType cached = lastPreviewState;
-                        if (cached != null) {
-                            updateState(CHANNEL_JOB_PREVIEW, cached);
-                        }
-                    }
-                } else {
-                    lastPreviewFilename = "";
-                    lastPreviewState = null;
-                }
+        OctoPrintProgress progress = jobResponse.progress;
+        if (progress != null) {
+            updateState(CHANNEL_JOB_PROGRESS,
+                    new QuantityType<>(progress.completion > 0 ? progress.completion : 0, Units.PERCENT));
+            updateState(CHANNEL_TIME_ELAPSED, new QuantityType<>(progress.printTime, Units.SECOND));
+            updateState(CHANNEL_TIME_REMAINING, new QuantityType<>(progress.printTimeLeft, Units.SECOND));
+        }
+
+        // Use the raw filename (not display name) as the key for the thumbnail URL
+        if (!filename.equals(lastPreviewFilename)) {
+            String encodedName = URLEncoder.encode(filename, StandardCharsets.UTF_8).replace("+", "%20");
+            byte @Nullable [] bytes = httpGetBytes(baseUrl + "/plugin/prusaslicerthumbnails/thumbnail/" + encodedName,
+                    cfg.apiKey);
+            if (bytes != null && bytes.length > 0) {
+                RawType state = new RawType(bytes, "image/png");
+                updateState(CHANNEL_JOB_PREVIEW, state);
+                lastPreviewFilename = filename;
+                lastPreviewState = state;
+            }
+        } else {
+            // Re-push the cached image every cycle rather than only on change, so a channel
+            // linked to an item after the initial fetch (or a UI reconnecting) still gets it.
+            RawType cached = lastPreviewState;
+            if (cached != null) {
+                updateState(CHANNEL_JOB_PREVIEW, cached);
             }
         }
     }
@@ -193,47 +194,78 @@ public class OctoPrintHandler extends AbstractPrinterHandler {
             return;
         }
         if (command instanceof RefreshType) {
-            refresh();
+            scheduler.execute(this::refresh);
             return;
         }
+        // Command handling performs blocking HTTP I/O; keep it off the framework callback thread.
+        scheduler.execute(() -> handleCommandAsync(channelUID, command, cfg));
+    }
 
+    private void handleCommandAsync(ChannelUID channelUID, Command command, OctoPrintConfiguration cfg) {
         String baseUrl = "http://" + cfg.hostname + ":" + cfg.port;
 
         switch (channelUID.getId()) {
             case CHANNEL_PAUSE_RESUME:
                 if (command instanceof OnOffType onOff) {
                     String action = OnOffType.ON.equals(onOff) ? "pause" : "resume";
-                    httpPost(baseUrl + "/api/job", cfg.apiKey, "{\"command\":\"pause\",\"action\":\"" + action + "\"}");
+                    int status = httpPost(baseUrl + "/api/job", cfg.apiKey,
+                            "{\"command\":\"pause\",\"action\":\"" + action + "\"}");
+                    if (!HttpStatus.isSuccess(status)) {
+                        logger.warn("Failed to {} print: HTTP {}", action, status);
+                    }
                 }
                 break;
 
             case CHANNEL_CANCEL:
                 if (OnOffType.ON.equals(command)) {
-                    httpPost(baseUrl + "/api/job", cfg.apiKey, "{\"command\":\"cancel\"}");
+                    int status = httpPost(baseUrl + "/api/job", cfg.apiKey, "{\"command\":\"cancel\"}");
+                    if (!HttpStatus.isSuccess(status)) {
+                        logger.warn("Failed to cancel print: HTTP {}", status);
+                    }
                     updateState(CHANNEL_CANCEL, OnOffType.OFF);
                 }
                 break;
 
-            case CHANNEL_NOZZLE_TEMPERATURE_SETPOINT:
-                sendGcode(baseUrl, cfg.apiKey, "M104 S" + toGcodeTemp(command));
-                break;
-
-            case CHANNEL_BED_TEMPERATURE_SETPOINT:
-                sendGcode(baseUrl, cfg.apiKey, "M140 S" + toGcodeTemp(command));
-                break;
-
-            case CHANNEL_PRINT_SPEED:
-                if (command instanceof DecimalType dec) {
-                    sendGcode(baseUrl, cfg.apiKey, "M220 S" + dec.intValue());
+            case CHANNEL_NOZZLE_TEMPERATURE_SETPOINT: {
+                Integer temp = toCelsius(command);
+                if (temp != null) {
+                    sendGcode(baseUrl, cfg.apiKey, "M104 S" + temp);
+                } else {
+                    logger.warn("Unsupported command type {} for channel {}", command, channelUID);
                 }
                 break;
+            }
 
-            case CHANNEL_FAN_SPEED:
-                if (command instanceof DecimalType dec) {
-                    int s255 = (int) Math.round(dec.doubleValue() * 2.55);
+            case CHANNEL_BED_TEMPERATURE_SETPOINT: {
+                Integer temp = toCelsius(command);
+                if (temp != null) {
+                    sendGcode(baseUrl, cfg.apiKey, "M140 S" + temp);
+                } else {
+                    logger.warn("Unsupported command type {} for channel {}", command, channelUID);
+                }
+                break;
+            }
+
+            case CHANNEL_PRINT_SPEED: {
+                Integer speed = toPercent(command);
+                if (speed != null) {
+                    sendGcode(baseUrl, cfg.apiKey, "M220 S" + speed);
+                } else {
+                    logger.warn("Unsupported command type {} for channel {}", command, channelUID);
+                }
+                break;
+            }
+
+            case CHANNEL_FAN_SPEED: {
+                Integer speed = toPercent(command);
+                if (speed != null) {
+                    int s255 = (int) Math.round(speed * 2.55);
                     sendGcode(baseUrl, cfg.apiKey, "M106 S" + s255);
+                } else {
+                    logger.warn("Unsupported command type {} for channel {}", command, channelUID);
                 }
                 break;
+            }
 
             default:
                 logger.debug("Unhandled command {} for channel {}", command, channelUID);
@@ -241,18 +273,10 @@ public class OctoPrintHandler extends AbstractPrinterHandler {
     }
 
     private void sendGcode(String baseUrl, String apiKey, String gcode) {
-        httpPost(baseUrl + "/api/printer/command", apiKey, "{\"command\":\"" + gcode + "\"}");
-    }
-
-    private int toGcodeTemp(Command command) {
-        if (command instanceof QuantityType<?> qty) {
-            QuantityType<?> celsius = qty.toUnit(SIUnits.CELSIUS);
-            return celsius != null ? celsius.intValue() : qty.intValue();
+        int status = httpPost(baseUrl + "/api/printer/command", apiKey, "{\"command\":\"" + gcode + "\"}");
+        if (!HttpStatus.isSuccess(status)) {
+            logger.warn("G-code command '{}' failed: HTTP {}", gcode, status);
         }
-        if (command instanceof DecimalType dec) {
-            return dec.intValue();
-        }
-        return 0;
     }
 
     private String mapOctoPrintState(OctoPrintState state) {

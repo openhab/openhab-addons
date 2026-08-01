@@ -41,7 +41,7 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.threedprinter", service = ThingHandlerFactory.class)
 public class ThreedprinterHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_PRUSAPRINTER, THING_TYPE_KLIPPER,
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_PRUSALINK, THING_TYPE_KLIPPER,
             THING_TYPE_OCTOPRINT);
 
     private final HttpClient httpClient;
@@ -59,7 +59,7 @@ public class ThreedprinterHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID uid = thing.getThingTypeUID();
-        if (THING_TYPE_PRUSAPRINTER.equals(uid)) {
+        if (THING_TYPE_PRUSALINK.equals(uid)) {
             return new PrusaLinkHandler(thing, httpClient);
         }
         if (THING_TYPE_KLIPPER.equals(uid)) {

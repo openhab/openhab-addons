@@ -12,8 +12,12 @@
  */
 package org.openhab.binding.threedprinter.internal.handler;
 
+import static org.openhab.binding.threedprinter.internal.ThreedprinterBindingConstants.*;
+
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -22,10 +26,17 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.types.Command;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,13 +93,17 @@ public abstract class AbstractPrinterHandler extends BaseThingHandler {
             }
             ContentResponse response = request.send();
             int status = response.getStatus();
-            if (status == 200) {
+            if (status == HttpStatus.OK_200) {
                 return response.getContentAsString();
             }
             logger.debug("GET {} returned HTTP {}", url, status);
             return null;
-        } catch (Exception e) {
+        } catch (TimeoutException | ExecutionException e) {
             logger.debug("GET {} failed: {}", url, e.getMessage());
+            return null;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.debug("GET {} interrupted", url);
             return null;
         }
     }
@@ -106,8 +121,12 @@ public abstract class AbstractPrinterHandler extends BaseThingHandler {
                 request.content(new StringContentProvider(jsonBody), "application/json");
             }
             return request.send().getStatus();
-        } catch (Exception e) {
+        } catch (TimeoutException | ExecutionException e) {
             logger.debug("POST {} failed: {}", url, e.getMessage());
+            return -1;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.debug("POST {} interrupted", url);
             return -1;
         }
     }
@@ -122,8 +141,12 @@ public abstract class AbstractPrinterHandler extends BaseThingHandler {
                 request.header("X-Api-Key", apiKey);
             }
             return request.send().getStatus();
-        } catch (Exception e) {
+        } catch (TimeoutException | ExecutionException e) {
             logger.debug("DELETE {} failed: {}", url, e.getMessage());
+            return -1;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.debug("DELETE {} interrupted", url);
             return -1;
         }
     }
@@ -141,8 +164,12 @@ public abstract class AbstractPrinterHandler extends BaseThingHandler {
                 request.content(new StringContentProvider(jsonBody), "application/json");
             }
             return request.send().getStatus();
-        } catch (Exception e) {
+        } catch (TimeoutException | ExecutionException e) {
             logger.debug("PUT {} failed: {}", url, e.getMessage());
+            return -1;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.debug("PUT {} interrupted", url);
             return -1;
         }
     }
@@ -157,13 +184,17 @@ public abstract class AbstractPrinterHandler extends BaseThingHandler {
                 request.header("X-Api-Key", apiKey);
             }
             ContentResponse response = request.send();
-            if (response.getStatus() == 200) {
+            if (response.getStatus() == HttpStatus.OK_200) {
                 return response.getContent();
             }
             logger.debug("GET bytes {} returned HTTP {}", url, response.getStatus());
             return null;
-        } catch (Exception e) {
+        } catch (TimeoutException | ExecutionException e) {
             logger.debug("GET bytes {} failed: {}", url, e.getMessage());
+            return null;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.debug("GET bytes {} interrupted", url);
             return null;
         }
     }
@@ -187,5 +218,45 @@ public abstract class AbstractPrinterHandler extends BaseThingHandler {
             logger.debug("Failed to parse JSON response: {}", e.getMessage());
             return null;
         }
+    }
+
+    /**
+     * Resets every job-dependent channel to {@link UnDefType#UNDEF}. Handlers should call this when the printer
+     * reports no active job/filename, so stale data from a previous print does not linger.
+     */
+    protected void clearJobState() {
+        updateState(CHANNEL_JOB_NAME, UnDefType.UNDEF);
+        updateState(CHANNEL_JOB_PROGRESS, UnDefType.UNDEF);
+        updateState(CHANNEL_TIME_ELAPSED, UnDefType.UNDEF);
+        updateState(CHANNEL_TIME_REMAINING, UnDefType.UNDEF);
+        updateState(CHANNEL_JOB_PREVIEW, UnDefType.UNDEF);
+    }
+
+    /**
+     * Converts a command to a whole-degree Celsius value, or null if the command type is not supported.
+     */
+    protected @Nullable Integer toCelsius(Command command) {
+        if (command instanceof QuantityType<?> qty) {
+            QuantityType<?> celsius = qty.toUnit(SIUnits.CELSIUS);
+            return celsius != null ? celsius.intValue() : qty.intValue();
+        }
+        if (command instanceof DecimalType dec) {
+            return dec.intValue();
+        }
+        return null;
+    }
+
+    /**
+     * Converts a command to a whole-percent value, or null if the command type is not supported.
+     */
+    protected @Nullable Integer toPercent(Command command) {
+        if (command instanceof QuantityType<?> qty) {
+            QuantityType<?> percent = qty.toUnit(Units.PERCENT);
+            return percent != null ? percent.intValue() : qty.intValue();
+        }
+        if (command instanceof DecimalType dec) {
+            return dec.intValue();
+        }
+        return null;
     }
 }
