@@ -61,7 +61,7 @@ public class TransitAppBridgeHandler extends BaseBridgeHandler {
         scheduler.submit(() -> {
             try {
                 ContentResponse response = httpClient
-                        .newRequest("https://external.transitapp.com/v4/public/stop_departures?global_stop_id=test")
+                        .newRequest("https://external.transitapp.com/v4/public/nearby_stops?lat=0.0&lon=0.0")
                         .method(HttpMethod.GET).header("apiKey", apiKey).timeout(10, TimeUnit.SECONDS).send();
                 int statusCode = response.getStatus();
                 if (statusCode >= 200 && statusCode < 300) {
@@ -72,8 +72,9 @@ public class TransitAppBridgeHandler extends BaseBridgeHandler {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "API Authentication Failed (Status: " + statusCode + ")");
                 } else {
-                    logger.warn("Transit API verification returned status {}. Treating bridge as ONLINE.", statusCode);
-                    updateStatus(ThingStatus.ONLINE);
+                    logger.error("Transit API verification failed with unexpected status {}.", statusCode);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "Unexpected API Response (Status: " + statusCode + ")");
                 }
             } catch (Exception e) {
                 String errorMessage = e.getMessage() != null ? e.getMessage() : e.toString();

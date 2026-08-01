@@ -87,8 +87,8 @@ public class TransitAppStopHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Bridge handler not initialized");
                 return;
             }
-            StopDeparturesResult result = bridgeHandler.getStopDepartures(globalStopId);
             logger.debug("Polling transit API for stop ID: {}", globalStopId);
+            StopDeparturesResult result = bridgeHandler.getStopDepartures(globalStopId);
             updateStatus(ThingStatus.ONLINE);
 
             int groupIdx = 1;
