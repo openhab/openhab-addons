@@ -225,9 +225,11 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
 
     @Override
     public JsonObject getStateFromCachedState(JsonObject state) {
-        return state.has(JSON_KEY_FORECAST) ? state.getAsJsonObject(JSON_KEY_FORECAST).has(subType)
-                ? state.getAsJsonObject(JSON_KEY_FORECAST).getAsJsonObject(subType)
-                : new JsonObject() : new JsonObject();
+        return JSON_KEY_SOLAR.equals(subType) && state.has(JSON_KEY_FORECAST)
+                ? state.getAsJsonObject(JSON_KEY_FORECAST).has(subType)
+                        ? state.getAsJsonObject(JSON_KEY_FORECAST).getAsJsonObject(subType)
+                        : new JsonObject()
+                : new JsonObject();
     }
 
     private record FieldMapping(String valueField, String timestampField) {
