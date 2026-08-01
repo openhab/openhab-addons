@@ -12,20 +12,28 @@
  */
 package org.openhab.binding.shelly.internal.handler;
 
+import static org.openhab.binding.shelly.internal.ShellyDevices.*;
+import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.core.util.LightModel.LedOperatingMode.*;
 import static org.openhab.core.util.LightModel.LightCapabilities.*;
-import static org.openhab.core.util.LightModel.RgbDataType.DEFAULT;
+import static org.openhab.core.util.LightModel.RgbDataType.*;
 
 import java.util.Arrays;
+import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.openhab.core.util.LightModel;
 
 /**
@@ -39,16 +47,40 @@ import org.openhab.core.util.LightModel;
 public class ShellyLightModel extends LightModel {
 
     /**
-     * The RGBW enum is used to indicate which part of an RGBW array to use.
+     * The RGBX enum is used to indicate which part of an RGBX array to use.
      */
-    public enum RGBW {
+    public enum RGBX {
         R,
         G,
         B,
-        W
+        WC,
+        WW
     }
 
-    private int gain = 0;
+    /**
+     * The Mode enum is used to indicate which mode the Shelly light is using.
+     */
+    public enum Mode {
+        WHITE,
+        COLOR,
+        COLOR_TEMP
+    }
+
+    /**
+     * A record that carries the light capabilities, RGB data type, and LED operating mode.
+     */
+    private record Parameters(LightCapabilities lightCapabilities, RgbDataType rgbDataType,
+            LedOperatingMode ledOperatingMode, Mode shellyMode) {
+    }
+
+    /*
+     * The {@link LightModel} class does not round trip RGBX values cleanly (e.g. because [255,155,155,0] is a
+     * functional synonym for [100,0,0,155]) so we cache the input values here to avoid data loss or confusion.
+     */
+    private final int[] cacheRGBX = new int[RGBX.values().length];
+    private final int rgbxLength;
+
+    private Mode shellyMode;
     private int effect = 0;
 
     private boolean modeDirty;
@@ -59,25 +91,121 @@ public class ShellyLightModel extends LightModel {
     private boolean colorTempDirty;
     private boolean onOffDirty;
 
-    public ShellyLightModel(ShellyDeviceProfile profile, double stepSize) {
-        // TODO check appropriate light capabilities for all light types
-        super(profile.isDuo ? BRIGHTNESS_WITH_COLOR_TEMPERATURE : COLOR_WITH_COLOR_TEMPERATURE, DEFAULT, 0.4,
-                reciprocal(profile.maxTemp), reciprocal(profile.minTemp), stepSize, null, null);
-        setLedOperatingMode(profile.isDuo ? WHITE_ONLY : RGB_ONLY);
+    /**
+     * Public static class factory that creates a {@link ShellyLightModel} with the correct parameters based on the
+     * given {@link ThingTypeUID} and {@link ShellyDeviceProfile}.
+     */
+    public static ShellyLightModel create(ThingTypeUID thingTypeUID, ShellyDeviceProfile profile, double stepSize) {
+        Parameters params = getParams(thingTypeUID);
+        ShellyLightModel model = new ShellyLightModel(params.lightCapabilities, params.rgbDataType, 0.4,
+                reciprocal(profile.maxTemp), reciprocal(profile.minTemp), stepSize, null, null,
+                params.ledOperatingMode);
+        model.setLedOperatingMode(params.ledOperatingMode);
+        model.shellyMode = params.shellyMode;
+        return model;
     }
 
     /**
-     * Set the brightness. Do not set the dirty flag.
+     * Get the light capabilities, RGB data type, and LED operating mode for the {@link ShellyLightModel} from the
+     * given {@link ThingTypeUID}. It is assumed that the ThingTypeUID carries the necessary clues to create the
+     * LightModel with the correct parameters.
+     */
+    private static Parameters getParams(ThingTypeUID thingTypeUID) {
+        // GENERATION 1:
+        if (THING_TYPE_SHELLYBULB.equals(thingTypeUID)) {
+            return new Parameters(COLOR_WITH_COLOR_TEMPERATURE, RGB_W_NO_BRIGHTNESS, COMBINED, Mode.COLOR);
+        }
+        if (THING_TYPE_SHELLYDUO.equals(thingTypeUID)) {
+            return new Parameters(BRIGHTNESS_WITH_COLOR_TEMPERATURE, DEFAULT, WHITE_ONLY, Mode.COLOR_TEMP);
+        }
+        if (THING_TYPE_SHELLYVINTAGE.equals(thingTypeUID)) {
+            return new Parameters(BRIGHTNESS, DEFAULT, WHITE_ONLY, Mode.WHITE);
+        }
+        if (THING_TYPE_SHELLYDUORGBW.equals(thingTypeUID)) {
+            return new Parameters(COLOR_WITH_COLOR_TEMPERATURE, RGB_W_NO_BRIGHTNESS, COMBINED, Mode.COLOR);
+        }
+        if (THING_TYPE_SHELLYRGBW2_COLOR.equals(thingTypeUID)) {
+            return new Parameters(COLOR, RGB_W_NO_BRIGHTNESS, COMBINED, Mode.COLOR);
+        }
+        if (THING_TYPE_SHELLYRGBW2_WHITE.equals(thingTypeUID)) {
+            return new Parameters(BRIGHTNESS, DEFAULT, WHITE_ONLY, Mode.COLOR_TEMP);
+        }
+
+        // GENERATION 2 and 3:
+        if (THING_TYPE_SHELLYPLUSRGBWPM.equals(thingTypeUID)) {
+            // TODO || (THING_TYPE_SHELLYPLUSRGBWWPM.equals(thingTypeUID)) { add missing GEN2 plus RGBWWPM
+            // TODO || (THING_TYPE_SHELLYDUOBULBG3.equals(thingTypeUID)) { add missing GEN3 duo bulb
+            // TODO || (THING_TYPE_SHELLYCOLORBLBG3.equals(thingTypeUID)) { add missing GEN3 color bulb
+
+            /*
+             * TODO working assumption is that the thingTypeUID.getId() is a string like "shellyplusrgbwpm-light"
+             * or "shellyplusrgbwpm-rgb" or "shellyplusrgbwpm-rgbw" or "shellyplusrgbwpm-cct" or
+             * "shellycolorblbg3-rgbcct" or "shellyduobulbg3-cct" which can determine the light capabilities
+             * 
+             * THIS CODE MAY CHANGE WHEN THE BINDING IS ACTUALLY UPDATED TO SUPPORT GEN2 AND GEN3 LIGHTS !!
+             */
+            String thingTypeId = thingTypeUID.getId();
+            int pos = thingTypeId.lastIndexOf('-');
+            if (pos != -1) {
+                String thingIdConfigurationModeSuffix = thingTypeId.substring(pos + 1);
+                switch (thingIdConfigurationModeSuffix) {
+                    case "light":
+                        return new Parameters(BRIGHTNESS, DEFAULT, WHITE_ONLY, Mode.WHITE);
+                    case "rgb":
+                        return new Parameters(COLOR, RGB_NO_BRIGHTNESS, RGB_ONLY, Mode.COLOR);
+                    case "rgbw":
+                        return new Parameters(COLOR, RGB_W_NO_BRIGHTNESS, COMBINED, Mode.COLOR);
+                    case "cct":
+                        return new Parameters(BRIGHTNESS_WITH_COLOR_TEMPERATURE, DEFAULT, WHITE_ONLY, Mode.COLOR_TEMP);
+                    case "rgbcct":
+                        return new Parameters(COLOR_WITH_COLOR_TEMPERATURE, RGB_W_NO_BRIGHTNESS, COMBINED, Mode.COLOR);
+                }
+            }
+        }
+        throw new IllegalArgumentException("Error creating Light Model for: " + thingTypeUID.toString());
+    }
+
+    /**
+     * Private constructor to create a ShellyLightModel with the given parameters.
+     * 
+     * @param baseOperatingMode
+     */
+    private ShellyLightModel(LightCapabilities lightCapabilities, RgbDataType rgbDataType,
+            @Nullable Double minimumOnBrightness, @Nullable Double mirekControlCoolest,
+            @Nullable Double mirekControlWarmest, @Nullable Double stepSize, @Nullable Double coolWhiteLedMirek,
+            @Nullable Double warmWhiteLedMirek, LedOperatingMode baseOperatingMode) throws IllegalArgumentException {
+        super(lightCapabilities, rgbDataType, minimumOnBrightness, mirekControlCoolest, mirekControlWarmest, stepSize,
+                coolWhiteLedMirek, warmWhiteLedMirek);
+        rgbxLength = getRGBx().length;
+    }
+
+    /**
+     * Override handleCommand and set the dirty flags accordingly.
+     */
+    @Override
+    public void handleCommand(Command command) {
+        super.handleCommand(command);
+        colorDirty = command instanceof HSBType;
+        gainDirty = colorDirty || command instanceof PercentType || command instanceof IncreaseDecreaseType;
+        onOffDirty = gainDirty || command instanceof OnOffType;
+        if (colorDirty) {
+            refreshCache(Arrays.stream(getRGBx()).mapToInt(d -> (int) Math.round(d)).toArray());
+        }
+    }
+
+    /**
+     * Get the brightness state. This is the brightness when in color temperature mode.
+     */
+    public State getBrightnessState() {
+        return getBrightness(true) instanceof PercentType pct ? pct : UnDefType.UNDEF;
+    }
+
+    /**
+     * Set the brightness. This is the brightness when in color temperature mode. And set the dirty flag.
      */
     public void setBrightness(int brightness) {
         setBrightness((double) brightness);
-    }
-
-    /**
-     * Set the brightness. And set the dirty flag.
-     */
-    public void handleBrightness(int brightness) {
-        setBrightness((double) brightness);
+        setMode(Mode.COLOR_TEMP);
         brightnessDirty = true;
     }
 
@@ -89,30 +217,35 @@ public class ShellyLightModel extends LightModel {
     }
 
     /**
+     * Get the color component at the given RGBW index as an int.
+     */
+    public int getColor(RGBX index) {
+        return cacheRGBX[index.ordinal()];
+    }
+
+    /**
      * Get the color component at the given RGBW index as a PercentType.
      */
-    public PercentType getColor(RGBW index) {
-        double[] rgbw = getRGBx();
-        return new PercentType((int) Math.round(rgbw[index.ordinal()] * 100.0 / 255.0));
+    public PercentType getColorState(RGBX index) {
+        return new PercentType((int) Math.round(getColor(index) * 100.0 / 255.0));
     }
 
     /**
-     * Set the color component at the given RGBW index. Do not set the dirty flag.
+     * Get the color as an HSBType.
      */
-    public void setColor(RGBW index, int value) {
-        double[] rgbw = getRGBx();
-        rgbw[index.ordinal()] = value;
-        setRGBx(rgbw);
+    public State getColorState() {
+        return getColor() instanceof HSBType hsb ? hsb : UnDefType.UNDEF;
     }
 
     /**
-     * Set the color component at the given RGBW index. And set the dirty flag.
+     * Set the color component at the given RGBX index. And set the dirty flag.
      */
-    public void handleColor(RGBW index, int value) {
-        double[] rgbw = getRGBx();
-        rgbw[index.ordinal()] = value;
-        synchronizeMode(rgbw);
-        setRGBx(rgbw);
+    public void setColor(RGBX index, int value) {
+        cacheRGBX[index.ordinal()] = value;
+        double[] rgbx = getRGBx();
+        rgbx[index.ordinal()] = value;
+        setRGBx(rgbx);
+        setMode(Mode.COLOR);
         colorDirty = true;
     }
 
@@ -127,21 +260,40 @@ public class ShellyLightModel extends LightModel {
      * Convert Kelvin to Mirek or vice-versa.
      */
     private static double reciprocal(double value) {
-        return 1000000.0 / value;
+        return Double.NaN == value ? 0 : 1000000.0 / value;
     }
 
     /**
-     * Set the color temperature. Do not set the dirty flag.
+     * Refresh the cache of RGBX values from the LightModel.
      */
-    public void setColorTemp(double kelvin) {
-        setMirek(reciprocal(kelvin));
+    private void refreshCache(int[] rgbx) {
+        for (int i = 0; i < rgbx.length; i++) {
+            cacheRGBX[i] = rgbx[i];
+        }
+    }
+
+    /**
+     * Get the color temperature as a QuantityType.
+     */
+    public State getColorTemperatureAbsoluteState() {
+        return getColorTemperature() instanceof QuantityType<?> qty ? qty : UnDefType.UNDEF;
+    }
+
+    /**
+     * Get the color temperature as a PercentType.
+     */
+    public State getColorTemperaturePercentState() {
+        return getColorTemperaturePercent() instanceof PercentType pct
+                ? new PercentType((int) Math.round(pct.doubleValue()))
+                : UnDefType.UNDEF;
     }
 
     /**
      * Set the color temperature. And set the dirty flag.
      */
-    public void handleColorTemp(int kelvin) {
+    public void setColorTemp(double kelvin) {
         setMirek(reciprocal(kelvin));
+        setMode(Mode.COLOR_TEMP);
         colorTempDirty = true;
     }
 
@@ -155,7 +307,7 @@ public class ShellyLightModel extends LightModel {
     /**
      * Get the effect as a DecimalType.
      */
-    public DecimalType getEffect() {
+    public DecimalType getEffectState() {
         return new DecimalType(effect);
     }
 
@@ -163,13 +315,6 @@ public class ShellyLightModel extends LightModel {
      * Set the effect. And set the dirty flag.
      */
     public void setEffect(int value) {
-        effect = value;
-    }
-
-    /**
-     * Set the effect. Mark it as dirty.
-     */
-    public void handleEffect(int value) {
         effect = value;
         effectDirty = true;
     }
@@ -182,24 +327,18 @@ public class ShellyLightModel extends LightModel {
     }
 
     /**
-     * Get the gain as a DecimalType.
+     * Get the gain state. This is the brightness when in color mode.
      */
-    public DecimalType getGain() {
-        return new DecimalType(gain);
+    public State getGainState() {
+        return getBrightnessState();
     }
 
     /**
-     * Set the gain. And set the dirty flag.
+     * Set the gain. This is the brightness when in color mode. And set the dirty flag.
      */
     public void setGain(int value) {
-        gain = value;
-    }
-
-    /**
-     * Set the gain. Mark it as dirty.
-     */
-    public void handleGain(int value) {
-        gain = value;
+        setBrightness((double) value);
+        setMode(Mode.COLOR);
         gainDirty = true;
     }
 
@@ -211,41 +350,18 @@ public class ShellyLightModel extends LightModel {
     }
 
     /**
-     * Get the led operating mode.
+     * Get the shelly device mode.
      */
-    public LedOperatingMode getMode() {
-        return getLedOperatingMode();
+    public Mode getMode() {
+        return shellyMode;
     }
 
     /**
-     * Set the led operating mode. Do not set the dirty flag.
+     * Set the shelly device mode. And set the dirty flag.
      */
-    public void setMode(LedOperatingMode mode) {
-        setLedOperatingMode(mode);
-    }
-
-    /**
-     * Set the led operating mode. And set the dirty flag.
-     */
-    public void handleMode(LedOperatingMode mode) {
-        if (mode != getLedOperatingMode()) {
-            setLedOperatingMode(mode);
-            modeDirty = true;
-        }
-    }
-
-    /**
-     * Adjust the led operating mode based on the RGB values.
-     * If any of the RGB values are non-zero, set the mode to RGB_ONLY, otherwise set it to WHITE_ONLY.
-     */
-    private void synchronizeMode(double[] rgbw) { // TODO check logic for all light types
-        if (COLOR_WITH_COLOR_TEMPERATURE == configGetLightCapabilities()) {
-            LedOperatingMode mode = rgbw[0] > 0 || rgbw[1] > 0 || rgbw[2] > 0 ? RGB_ONLY : WHITE_ONLY;
-            if (mode != getLedOperatingMode()) {
-                setLedOperatingMode(mode);
-                modeDirty = true;
-            }
-        }
+    public void setMode(Mode shellyMode) {
+        this.shellyMode = shellyMode;
+        modeDirty = true;
     }
 
     /**
@@ -259,14 +375,19 @@ public class ShellyLightModel extends LightModel {
      * Check if the RGB values are valid for the current led operating mode.
      */
     public boolean isRgbValid() { // TODO check logic for all light types
-        return WHITE_ONLY != getLedOperatingMode();
+        return Mode.COLOR == shellyMode;
+    }
+
+    public State getOnOffState() {
+        return getOnOff(true) instanceof OnOffType onOff ? onOff : UnDefType.UNDEF;
     }
 
     /**
      * Set the on/off state. And set the dirty flag.
      */
-    public void handleOnOff(boolean on) {
-        setOnOff(on);
+    @Override
+    public void setOnOff(boolean on) {
+        super.setOnOff(on);
         onOffDirty = true;
     }
 
@@ -278,51 +399,66 @@ public class ShellyLightModel extends LightModel {
     }
 
     /**
-     * Set the RGBW values. Do not set the dirty flag.
+     * Get the RGBX values from cache.
      */
-    public void setRGBW(int red, int green, int blue, int white) {
-        double[] rgbw = new double[] { red, green, blue, white };
-        setRGBx(rgbw);
+    public int[] getRGBX() {
+        return Arrays.copyOf(cacheRGBX, rgbxLength);
+    }
+
+    /**
+     * Set the RGBX values. And set the dirty flag.
+     */
+    public void setRGBX(int[] rgbx) {
+        setRGBx(Arrays.stream(rgbx).mapToDouble(i -> (double) i).toArray());
+        refreshCache(rgbx);
+        setMode(Mode.COLOR);
+        colorDirty = true;
     }
 
     /**
      * Set the RGBW values. And set the dirty flag.
      */
-    public void handleRGBW(int red, int green, int blue, int white) {
-        double[] rgbw = new double[] { red, green, blue, white };
-        synchronizeMode(rgbw);
-        setRGBx(rgbw);
-        colorDirty = true;
+    public void setRGBX(int red, int green, int blue, int white) {
+        setRGBX(new int[] { red, green, blue, white });
     }
 
     /**
      * Set the RGBW values from a comma-separated string. And set the dirty flag.
      */
-    public void handleRGBW(String rgbwStr) {
-        double[] rgbw = Arrays.stream(rgbwStr.split(",")).map(String::trim).mapToDouble(Double::parseDouble).toArray();
-        synchronizeMode(rgbw);
-        setRGBx(rgbw);
-        colorDirty = true;
+    public void setRGBX(String rgbx) {
+        setRGBX(Arrays.stream(rgbx.split(",")).map(String::trim).mapToInt(Integer::parseInt).toArray());
+    }
+
+    /**
+     * Set the full color from a Command. The command can be a comma-separated string of RGBW values, or one of the
+     * predefined color names. And set the dirty flag.
+     */
+    public void setFullColorCommand(Command command) throws IllegalArgumentException {
+        String color = command.toString().toLowerCase(Locale.ROOT);
+        if (color.contains(",")) {
+            setRGBX(color);
+        } else if (color.equals(SHELLY_COLOR_RED)) {
+            setRGBX(SHELLY_MAX_COLOR, 0, 0, 0);
+        } else if (color.equals(SHELLY_COLOR_GREEN)) {
+            setRGBX(0, SHELLY_MAX_COLOR, 0, 0);
+        } else if (color.equals(SHELLY_COLOR_BLUE)) {
+            setRGBX(0, 0, SHELLY_MAX_COLOR, 0);
+        } else if (color.equals(SHELLY_COLOR_YELLOW)) {
+            setRGBX(SHELLY_MAX_COLOR, SHELLY_MAX_COLOR, 0, 0);
+        } else if (color.equals(SHELLY_COLOR_WHITE)) {
+            setRGBX(0, 0, 0, SHELLY_MAX_COLOR);
+        } else {
+            throw new IllegalArgumentException("Invalid full color selection: " + color);
+        }
     }
 
     @Override
     public String toString() {
-        double[] rgbw = getRGBx();
-        return "mode=%s, power=%s, rgbw=(%f,%f,%f,%f), bri=%s, color-temp=%.1f K, min=%.1f K, max=%.1f K, gain=%.1f, effect=%d"
-                .formatted(getMode(), getOnOff(true), rgbw[0], rgbw[1], rgbw[2], rgbw[3], getBrightness(),
-                        reciprocal(getMirek()), reciprocal(configGetMirekControlWarmest()),
-                        reciprocal(configGetMirekControlCoolest()), gain, effect);
-    }
-
-    /**
-     * Override handleCommand and set the dirty flags accordingly.
-     */
-    @Override
-    public void handleCommand(Command command) {
-        super.handleCommand(command);
-        colorDirty = command instanceof HSBType;
-        brightnessDirty = colorDirty || command instanceof PercentType || command instanceof IncreaseDecreaseType;
-        onOffDirty = brightnessDirty || command instanceof OnOffType;
+        return "mode=%s, power=%s, bri=%s, rgbw=%s, color-temp=%s%%, color-temp-abs=%s, min=%.0f K, max=%.0f K, effect=%s"
+                .formatted(getMode(), getOnOffState(), getBrightnessState(), Arrays.toString(getRGBX()),
+                        getColorTemperaturePercentState(), getColorTemperatureAbsoluteState(),
+                        reciprocal(configGetMirekControlWarmest()), reciprocal(configGetMirekControlCoolest()),
+                        getEffectState());
     }
 
     /**

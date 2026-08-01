@@ -14,7 +14,7 @@ package org.openhab.binding.shelly.internal.api1;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
-import static org.openhab.binding.shelly.internal.handler.ShellyLightModel.RGBW.*;
+import static org.openhab.binding.shelly.internal.handler.ShellyLightModel.RGBX.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.List;
@@ -146,23 +146,23 @@ public class Shelly1CoIoTProtocol {
                     // RGBW2/Bulb
                     case "red":
                         col.setColor(R, (int) s.value);
-                        updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_RED, col.getColor(R));
+                        updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_RED, col.getColorState(R));
                         break;
                     case "green":
                         col.setColor(G, (int) s.value);
-                        updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GREEN, col.getColor(G));
+                        updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GREEN, col.getColorState(G));
                         break;
                     case "blue":
                         col.setColor(B, (int) s.value);
-                        updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_BLUE, col.getColor(B));
+                        updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_BLUE, col.getColorState(B));
                         break;
                     case "white":
-                        col.setColor(W, (int) s.value);
-                        updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_WHITE, col.getColor(W));
+                        col.setColor(WC, (int) s.value);
+                        updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_WHITE, col.getColorState(WC));
                         break;
                     case "gain":
                         col.setGain((int) s.value);
-                        updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GAIN, col.getGain());
+                        updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GAIN, col.getGainState());
                         break;
                     case "sensorerror":
                         String sensorError = s.valueStr != null ? getString(s.valueStr) : "" + s.value;

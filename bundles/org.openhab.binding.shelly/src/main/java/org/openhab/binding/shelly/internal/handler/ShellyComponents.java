@@ -14,7 +14,7 @@ package org.openhab.binding.shelly.internal.handler;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
-import static org.openhab.binding.shelly.internal.handler.ShellyLightModel.RGBW.*;
+import static org.openhab.binding.shelly.internal.handler.ShellyLightModel.RGBX.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.List;
@@ -875,11 +875,14 @@ public class ShellyComponents {
             }
             ShellySettingsLight light = orgStatus.lights.get(0);
             ShellyLightModel col = getLightModel(thingHandler, 0);
-            col.setRGBW(light.red, light.green, light.blue, light.white);
-            updated |= thingHandler.updateChannel(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_RED, col.getColor(R));
-            updated |= thingHandler.updateChannel(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GREEN, col.getColor(G));
-            updated |= thingHandler.updateChannel(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_BLUE, col.getColor(B));
-            updated |= thingHandler.updateChannel(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_WHITE, col.getColor(W));
+            col.setRGBX(light.red, light.green, light.blue, light.white);
+            updated |= thingHandler.updateChannel(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_RED, col.getColorState(R));
+            updated |= thingHandler.updateChannel(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GREEN,
+                    col.getColorState(G));
+            updated |= thingHandler.updateChannel(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_BLUE,
+                    col.getColorState(B));
+            updated |= thingHandler.updateChannel(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_WHITE,
+                    col.getColorState(WC));
             updated |= thingHandler.updateChannel(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_PICKER,
                     col.getColor() instanceof HSBType hsb ? hsb : UnDefType.NULL);
         }
