@@ -180,17 +180,30 @@ public class ShellyLightModel extends LightModel {
     }
 
     /**
-     * Override handleCommand and set the dirty flags accordingly.
+     * OpenHAB light control standard main entry point:
+     * Override handleCommand and set the mode and dirty flags accordingly.
      */
     @Override
     public void handleCommand(Command command) {
         super.handleCommand(command);
+        setMode(Mode.COLOR);
         colorDirty = command instanceof HSBType;
         gainDirty = colorDirty || command instanceof PercentType || command instanceof IncreaseDecreaseType;
         onOffDirty = gainDirty || command instanceof OnOffType;
         if (colorDirty) {
             refreshCache(Arrays.stream(getRGBx()).mapToInt(d -> (int) Math.round(d)).toArray());
         }
+    }
+
+    /**
+     * OpenHAB light control standard main entry point:
+     * Override handleColorTemperatureCommand and set the mode and dirty flags accordingly.
+     */
+    @Override
+    public void handleColorTemperatureCommand(Command command) {
+        super.handleColorTemperatureCommand(command);
+        setMode(Mode.COLOR_TEMP);
+        colorTempDirty = true;
     }
 
     /**

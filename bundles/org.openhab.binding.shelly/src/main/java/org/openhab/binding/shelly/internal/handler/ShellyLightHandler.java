@@ -96,10 +96,14 @@ public class ShellyLightHandler extends ShellyBaseHandler {
 
                 case CHANNEL_PRIMARY_COLOR:
                 case CHANNEL_PRIMARY_BRIGHTNESS:
+                    logger.debug("{}: Primary command {}", thingName, command);
+                    col.handleCommand(command);
+                    break;
+
                 case CHANNEL_PRIMARY_COLOR_TEMP:
                 case CHANNEL_PRIMARY_COLOR_TEMP_ABS:
                     logger.debug("{}: Primary command {}", thingName, command);
-                    col.handleCommand(command);
+                    col.handleColorTemperatureCommand(command);
                     break;
 
                 case CHANNEL_LIGHT_POWER:
