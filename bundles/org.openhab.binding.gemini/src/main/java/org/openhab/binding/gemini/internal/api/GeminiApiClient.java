@@ -16,6 +16,7 @@ import static org.openhab.binding.gemini.internal.GeminiBindingConstants.DEFAULT
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -129,7 +130,7 @@ public class GeminiApiClient {
      * @return the deserialized GeminiResponse
      * @throws GeminiApiException if a communication error, timeout, or parsing error occurs
      */
-    public GeminiResponse sendPrompt(String model, List<Conversation.Message> history, List<LLMTool> tools,
+    public GeminiResponse sendPrompt(String model, List<Conversation.Message> history, Collection<LLMTool> tools,
             @Nullable String systemMessage, @Nullable Double temperature, @Nullable Double topP,
             @Nullable Integer maxOutputTokens, @Nullable Integer timeoutSeconds) throws GeminiApiException {
         GeminiContent systemInstruction = createSystemInstruction(systemMessage);
