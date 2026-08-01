@@ -53,8 +53,8 @@ public class ShellyLightModel extends LightModel {
         R,
         G,
         B,
-        WC,
-        WW
+        WC, // white (cold)
+        WW // white (warm)
     }
 
     /**
@@ -80,7 +80,7 @@ public class ShellyLightModel extends LightModel {
     private final int[] cacheRGBX = new int[RGBX.values().length];
     private final int rgbxLength;
 
-    private Mode shellyMode;
+    private Mode shellyMode = Mode.WHITE;
     private int effect = 0;
 
     private boolean modeDirty;
@@ -214,7 +214,7 @@ public class ShellyLightModel extends LightModel {
     }
 
     /**
-     * Set the brightness. This is the brightness when in color temperature mode. And set the dirty flag.
+     * Set the brightness (i.e. the brightness when color temperature mode). And set the dirty flag.
      */
     public void setBrightness(int brightness) {
         setBrightness((double) brightness);
@@ -347,10 +347,10 @@ public class ShellyLightModel extends LightModel {
     }
 
     /**
-     * Set the gain. This is the brightness when in color mode. And set the dirty flag.
+     * Set the gain (color mode brightness). And set the dirty flag.
      */
-    public void setGain(int value) {
-        setBrightness((double) value);
+    public void setGain(double gain) {
+        setBrightness((double) gain);
         setMode(Mode.COLOR);
         gainDirty = true;
     }
@@ -472,6 +472,13 @@ public class ShellyLightModel extends LightModel {
                         getColorTemperaturePercentState(), getColorTemperatureAbsoluteState(),
                         reciprocal(configGetMirekControlWarmest()), reciprocal(configGetMirekControlCoolest()),
                         getEffectState());
+    }
+
+    /**
+     * Check if any of the dirty flags are set.
+     */
+    public boolean isDirty() {
+        return modeDirty || colorDirty || brightnessDirty || gainDirty || effectDirty || colorTempDirty || onOffDirty;
     }
 
     /**

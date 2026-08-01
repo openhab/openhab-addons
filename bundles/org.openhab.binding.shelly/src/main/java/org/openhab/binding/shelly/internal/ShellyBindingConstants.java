@@ -79,6 +79,7 @@ public class ShellyBindingConstants {
      */
 
     // Lighting Channels in the Primary Group for control according to OpenHAB lighting standard
+    public static final String CHANNEL_GROUP_PRIMARY = "primary";
     public static final String CHANNEL_PRIMARY_COLOR = "primary-color";
     public static final String CHANNEL_PRIMARY_BRIGHTNESS = "primary-brightness";
     public static final String CHANNEL_PRIMARY_COLOR_TEMP = "primary-color-temp";
