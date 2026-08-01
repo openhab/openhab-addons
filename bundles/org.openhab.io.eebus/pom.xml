@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.openhab.addons.bundles</groupId>
+    <artifactId>org.openhab.addons.reactor.bundles</artifactId>
+    <version>5.3.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>org.openhab.io.eebus</artifactId>
+
+  <name>openHAB Add-ons :: Bundles :: IO :: EEBus</name>
+
+  <properties>
+    <!-- jEEBus.SHIP 2.3.0 requires Netty 4.2.x at the OSGi Import-Package level
+         (io.netty.*;version="[4.2,5)"). This is intentionally NOT ${netty.version}
+         (which openhab-addons pins to the 4.1.x line elsewhere) - the two Netty
+         major versions are installed as separate OSGi bundles side by side, which
+         the framework resolves independently per importing bundle. -->
+    <eebus.netty.version>4.2.15.Final</eebus.netty.version>
+    <!-- jeebus.ship/spine and BouncyCastle are declared as direct compile deps below, so
+         bnd embeds them into this bundle's own jar (Private-Package) rather than treating
+         them as external Import-Package - see feature.xml for what actually stays external.
+         Netty itself loses its precise version constraint once ship's classes are embedded
+         rather than imported, so it's restated explicitly here to stop the OSGi resolver
+         from accidentally satisfying it against openhab-addons' own (incompatible) 4.1.x
+         Netty bundles. -->
+    <bnd.importpackage>io.netty.*;version="[4.2,5)"</bnd.importpackage>
+  </properties>
+
+  <dependencies>
+    <!-- EEBus SHIP (transport: TLS, mDNS pairing) and SPINE (data model / use cases),
+         both EPL-2.0, from the OpenMUC / Fraunhofer ISE jEEBus project.
+         https://www.openmuc.org/eebus/ -->
+    <dependency>
+      <groupId>org.openmuc.jeebus</groupId>
+      <artifactId>ship</artifactId>
+      <version>2.3.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openmuc.jeebus</groupId>
+      <artifactId>spine</artifactId>
+      <version>4.0.1</version>
+    </dependency>
+
+    <!-- LPC (Limitation of Power Consumption, §14a EnWG) and LPP (Limitation of Power
+         Production, §9 EEG) Controllable System use-case actors. Same project, EPL-2.0. -->
+    <dependency>
+      <groupId>org.openmuc.jeebus.usecase.powerlimitation</groupId>
+      <artifactId>abstract-controllablesystem</artifactId>
+      <version>1.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openmuc.jeebus.usecase.powerlimitation</groupId>
+      <artifactId>lpc-controllablesystem</artifactId>
+      <version>1.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openmuc.jeebus.usecase.powerlimitation</groupId>
+      <artifactId>lpp-controllablesystem</artifactId>
+      <version>1.0.0</version>
+    </dependency>
+
+    <!-- Used directly by this add-on to provision the SHIP node's self-signed
+         identity certificate (see internal.cert.SelfSignedCertificateFactory). -->
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcprov-jdk18on</artifactId>
+      <version>${bouncycastle.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcpkix-jdk18on</artifactId>
+      <version>${bouncycastle.version}</version>
+    </dependency>
+  </dependencies>
+
+</project>

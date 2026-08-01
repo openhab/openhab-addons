@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<features name="org.openhab.io.eebus-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.4.0">
+	<repository>mvn:org.openhab.core.features.karaf/org.openhab.core.features.karaf.openhab-core/${ohc.version}/xml/features</repository>
+
+	<feature name="openhab-io-eebus" description="EEBus Integration" version="${project.version}">
+		<feature>openhab-runtime-base</feature>
+		<feature prerequisite="true">wrap</feature>
+
+		<!-- jEEBus.SHIP + jEEBus.SPINE, the LPC/LPP use-case actors, and BouncyCastle are all
+			declared as direct compile dependencies in pom.xml, so bnd embeds them straight into
+			this bundle's own jar (Private-Package) rather than as separate bundles here - see
+			pom.xml's comment on ${bnd.importpackage}. Everything below is what actually stays an
+			external OSGi Import-Package requirement after that embedding. -->
+
+		<!-- SHIP transitive deps: Gson (message framing), jmDNS (pairing discovery), the
+			remaining BouncyCastle ASN.1 packages not covered by the embedded bcprov/bcpkix
+			classes (from the bcutil-jdk18on transitive dep), and JSR-305 annotations. -->
+		<bundle dependency="true">mvn:com.google.code.gson/gson/2.14.0</bundle>
+		<bundle dependency="true">mvn:org.jmdns/jmdns/3.6.3</bundle>
+		<bundle dependency="true">mvn:org.bouncycastle/bcutil-jdk18on/${bouncycastle.version}</bundle>
+		<bundle dependency="true">mvn:com.google.code.findbugs/jsr305/3.0.2</bundle>
+
+		<!-- SHIP's embedded code still needs real Netty 4.2.x classes at runtime, even though
+			bnd no longer expresses that as strictly in this bundle's own Import-Package - see
+			pom.xml's ${bnd.importpackage} override, which restates the [4.2,5) constraint so the
+			resolver can't accidentally satisfy it against openhab-addons' own 4.1.x Netty. -->
+		<bundle dependency="true">mvn:io.netty/netty-common/${eebus.netty.version}</bundle>
+		<bundle dependency="true">mvn:io.netty/netty-buffer/${eebus.netty.version}</bundle>
+		<bundle dependency="true">mvn:io.netty/netty-transport/${eebus.netty.version}</bundle>
+		<bundle dependency="true">mvn:io.netty/netty-transport-native-unix-common/${eebus.netty.version}</bundle>
+		<bundle dependency="true">mvn:io.netty/netty-resolver/${eebus.netty.version}</bundle>
+		<bundle dependency="true">mvn:io.netty/netty-handler/${eebus.netty.version}</bundle>
+		<bundle dependency="true">mvn:io.netty/netty-codec-base/${eebus.netty.version}</bundle>
+		<bundle dependency="true">mvn:io.netty/netty-codec-http/${eebus.netty.version}</bundle>
+		<bundle dependency="true">mvn:io.netty/netty-codec-compression/${eebus.netty.version}</bundle>
+
+		<!-- SPINE transitive deps: Jackson (SPINE XML/JSON datagram parsing) and the JAXB
+			runtime used to generate/validate the SPINE datagram classes. jaxb-core and its own
+			transitive deps (activation, istack, txw2) aren't reachable from static bytecode
+			analysis (JAXB loads them via SPI), so they don't show up in the generated
+			Import-Package, but are still needed at runtime - kept here defensively. -->
+		<bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/${jackson.version}</bundle>
+		<bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson.version}</bundle>
+		<bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/${jackson.version}</bundle>
+		<bundle dependency="true">mvn:com.fasterxml.jackson.module/jackson-module-jakarta-xmlbind-annotations/${jackson.version}</bundle>
+		<bundle dependency="true">mvn:jakarta.xml.bind/jakarta.xml.bind-api/4.0.5</bundle>
+		<bundle dependency="true">mvn:jakarta.activation/jakarta.activation-api/2.1.0</bundle>
+		<bundle dependency="true">mvn:org.jvnet.jaxb/jaxb-plugins-runtime/4.0.12</bundle>
+		<bundle dependency="true">mvn:org.glassfish.jaxb/jaxb-core/4.0.6</bundle>
+		<bundle dependency="true">mvn:org.eclipse.angus/angus-activation/2.0.3</bundle>
+		<bundle dependency="true">mvn:com.sun.istack/istack-commons-runtime/4.1.2</bundle>
+		<!-- org.glassfish.jaxb:txw2 ships no OSGi manifest at all (plain jar) -->
+		<bundle dependency="true">wrap:mvn:org.glassfish.jaxb/txw2/4.0.6$Bundle-SymbolicName=org.glassfish.jaxb.txw2&amp;Bundle-Version=4.0.6</bundle>
+
+		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.io.eebus/${project.version}</bundle>
+	</feature>
+</features>
