@@ -16,6 +16,7 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -40,7 +41,7 @@ public abstract class AbstractRachioBridgeHandler extends ConfigStatusBridgeHand
     protected final Set<RachioStatusListener> rachioStatusListeners = new CopyOnWriteArraySet<>();
 
     private @Nullable ScheduledFuture<?> pollingJob;
-    private boolean refreshPending = false;
+    private final AtomicBoolean refreshPending = new AtomicBoolean();
     private boolean pollingPreviouslyStarted = false;
 
     protected AbstractRachioBridgeHandler(Bridge bridge) {
@@ -96,17 +97,11 @@ public abstract class AbstractRachioBridgeHandler extends ConfigStatusBridgeHand
     }
 
     protected boolean beginRefresh() {
-        synchronized (this) {
-            if (refreshPending) {
-                return false;
-            }
-            refreshPending = true;
-            return true;
-        }
+        return refreshPending.compareAndSet(false, true);
     }
 
-    protected synchronized void endRefresh() {
-        refreshPending = false;
+    protected void endRefresh() {
+        refreshPending.set(false);
     }
 
     protected void notifyThingStateChanged(@Nullable RachioDevice device, @Nullable RachioZone zone) {

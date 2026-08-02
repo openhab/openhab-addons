@@ -44,7 +44,7 @@ public class RachioZoneGsonDTO {
 
     public static class RachioCustomNozzle {
         public String name = ""; // "name":"FIXED_SPRAY_HEAD",
-        public Double inchesPerHour = 0.0; // "inchesPerHour":1.5
+        public double inchesPerHour = 0.0; // "inchesPerHour":1.5
     }
 
     public static class RachioCustomSoil {
@@ -58,7 +58,7 @@ public class RachioZoneGsonDTO {
 
     public static class RachioCustomCrop {
         public String name = ""; // "name":"Warm Season Grass",
-        public Double coefficient = 0.0; // "coefficient":0.65
+        public double coefficient = 0.0; // "coefficient":0.65
     }
 
     public static class RachioCustomShade {

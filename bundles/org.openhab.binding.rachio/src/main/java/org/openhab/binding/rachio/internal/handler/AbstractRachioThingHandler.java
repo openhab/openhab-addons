@@ -12,9 +12,13 @@
  */
 package org.openhab.binding.rachio.internal.handler;
 
+import static org.openhab.binding.rachio.internal.RachioUtils.isSameInstance;
+
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -44,21 +48,93 @@ public abstract class AbstractRachioThingHandler extends BaseThingHandler implem
     private static final long MAX_INITIALIZATION_THROTTLE_RETRY_DELAY_SECONDS = 30;
     private static final String INITIALIZATION_THROTTLE_STATUS_MESSAGE = "Waiting for local Rachio API bootstrap budget; initialization will retry automatically.";
     private final Logger logger = LoggerFactory.getLogger(AbstractRachioThingHandler.class);
+    private final Object lifecycleLock = new Object();
 
-    protected String thingId = "";
+    protected volatile String thingId = "";
     protected final Map<String, State> channelData = new ConcurrentHashMap<>();
 
-    protected @Nullable Bridge bridge;
+    protected volatile @Nullable Bridge bridge;
 
-    protected @Nullable RachioBridgeHandler cloudHandler;
+    protected volatile @Nullable RachioBridgeHandler cloudHandler;
 
     private @Nullable ScheduledFuture<?> localThrottleRetryJob;
+    private @Nullable Future<?> lifecycleJob;
+    private @Nullable Thread lifecycleTaskThread;
     private @Nullable RachioBridgeHandler registeredStatusListenerHandler;
     private int localThrottleRetryAttempt = 0;
     private boolean localThrottleInitializationDeferred = false;
+    private long lifecycleGeneration;
+    private boolean lifecycleDisposed;
 
     protected AbstractRachioThingHandler(Thing thing) {
         super(thing);
+    }
+
+    protected long beginHandlerInitialization() {
+        cancelLocalThrottleRetry();
+        @Nullable
+        Future<?> previousJob;
+        @Nullable
+        Thread taskThread;
+        long generation;
+        synchronized (lifecycleLock) {
+            lifecycleDisposed = false;
+            generation = ++lifecycleGeneration;
+            previousJob = lifecycleJob;
+            taskThread = lifecycleTaskThread;
+            lifecycleJob = null;
+        }
+        if (previousJob != null && !isSameInstance(taskThread, Thread.currentThread())) {
+            previousJob.cancel(true);
+        }
+        return generation;
+    }
+
+    protected void scheduleHandlerTask(long generation, Runnable task) {
+        synchronized (lifecycleLock) {
+            if (lifecycleDisposed || lifecycleGeneration != generation) {
+                return;
+            }
+            try {
+                Future<?> job = scheduler.submit(() -> {
+                    synchronized (lifecycleLock) {
+                        if (lifecycleDisposed || lifecycleGeneration != generation) {
+                            return;
+                        }
+                        lifecycleTaskThread = Thread.currentThread();
+                    }
+                    try {
+                        task.run();
+                    } finally {
+                        synchronized (lifecycleLock) {
+                            if (isSameInstance(lifecycleTaskThread, Thread.currentThread())) {
+                                lifecycleTaskThread = null;
+                            }
+                        }
+                    }
+                });
+                Future<?> previousJob = lifecycleJob;
+                lifecycleJob = job;
+                if (previousJob != null && !isSameInstance(lifecycleTaskThread, Thread.currentThread())) {
+                    previousJob.cancel(true);
+                }
+            } catch (RejectedExecutionException e) {
+                logger.debug("Unable to schedule lifecycle task for Thing '{}' because the scheduler rejected it",
+                        getThing().getUID());
+            }
+        }
+    }
+
+    protected boolean isHandlerLifecycleCurrent(long generation) {
+        synchronized (lifecycleLock) {
+            return !lifecycleDisposed && lifecycleGeneration == generation;
+        }
+    }
+
+    protected long getHandlerLifecycleGeneration() {
+        synchronized (lifecycleLock) {
+            return lifecycleDisposed ? -1 : lifecycleGeneration;
+        }
     }
 
     protected boolean initializeCloudHandler() {
@@ -159,11 +235,14 @@ public abstract class AbstractRachioThingHandler extends BaseThingHandler implem
             }
 
             long delaySeconds = nextLocalThrottleRetryDelaySeconds();
+            long generation = getHandlerLifecycleGeneration();
             localThrottleRetryJob = scheduler.schedule(() -> {
                 synchronized (this) {
                     localThrottleRetryJob = null;
                 }
-                retryAction.run();
+                if (isHandlerLifecycleCurrent(generation)) {
+                    retryAction.run();
+                }
             }, delaySeconds, TimeUnit.SECONDS);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Local Rachio API throttle hit while " + operation + "; retry scheduled in " + delaySeconds
@@ -184,11 +263,14 @@ public abstract class AbstractRachioThingHandler extends BaseThingHandler implem
             long delaySeconds = Math.max(1,
                     Math.min(MAX_INITIALIZATION_THROTTLE_RETRY_DELAY_SECONDS, suggestedDelaySeconds));
             localThrottleInitializationDeferred = true;
+            long generation = getHandlerLifecycleGeneration();
             localThrottleRetryJob = scheduler.schedule(() -> {
                 synchronized (this) {
                     localThrottleRetryJob = null;
                 }
-                retryAction.run();
+                if (isHandlerLifecycleCurrent(generation)) {
+                    retryAction.run();
+                }
             }, delaySeconds, TimeUnit.SECONDS);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     INITIALIZATION_THROTTLE_STATUS_MESSAGE);
@@ -220,11 +302,16 @@ public abstract class AbstractRachioThingHandler extends BaseThingHandler implem
 
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
             if (initializeCloudHandler()) {
-                onBridgeOnline();
+                long generation = getHandlerLifecycleGeneration();
+                if (generation >= 0) {
+                    scheduleHandlerTask(generation, this::onBridgeOnline);
+                }
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             }
         } else {
+            cancelHandlerLifecycleTasks(false);
+            cancelLocalThrottleRetry();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
@@ -234,6 +321,7 @@ public abstract class AbstractRachioThingHandler extends BaseThingHandler implem
     }
 
     public void shutdown() {
+        cancelHandlerLifecycleTasks(true);
         cancelLocalThrottleRetry();
         unregisterStatusListener();
         updateStatus(ThingStatus.OFFLINE);
@@ -241,6 +329,7 @@ public abstract class AbstractRachioThingHandler extends BaseThingHandler implem
 
     @Override
     public void dispose() {
+        cancelHandlerLifecycleTasks(true);
         cancelLocalThrottleRetry();
         unregisterStatusListener();
         super.dispose();
@@ -261,6 +350,23 @@ public abstract class AbstractRachioThingHandler extends BaseThingHandler implem
             handler.unregisterStatusListener(this);
         }
         registeredStatusListenerHandler = null;
+    }
+
+    private void cancelHandlerLifecycleTasks(boolean disposed) {
+        @Nullable
+        Future<?> job;
+        @Nullable
+        Thread taskThread;
+        synchronized (lifecycleLock) {
+            lifecycleDisposed = disposed;
+            lifecycleGeneration++;
+            job = lifecycleJob;
+            taskThread = lifecycleTaskThread;
+            lifecycleJob = null;
+        }
+        if (job != null && !isSameInstance(taskThread, Thread.currentThread())) {
+            job.cancel(true);
+        }
     }
 
     protected abstract void goOnline();

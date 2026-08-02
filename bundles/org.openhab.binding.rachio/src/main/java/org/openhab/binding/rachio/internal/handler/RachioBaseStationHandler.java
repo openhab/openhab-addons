@@ -14,6 +14,7 @@ package org.openhab.binding.rachio.internal.handler;
 
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.*;
 import static org.openhab.binding.rachio.internal.RachioUtils.getTimestamp;
+import static org.openhab.binding.rachio.internal.RachioUtils.isSameInstance;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -44,7 +45,7 @@ import org.slf4j.LoggerFactory;
 public class RachioBaseStationHandler extends AbstractRachioThingHandler {
     private final Logger logger = LoggerFactory.getLogger(RachioBaseStationHandler.class);
 
-    private @Nullable RachioBaseStation baseStation;
+    private volatile @Nullable RachioBaseStation baseStation;
 
     public RachioBaseStationHandler(Thing thing) {
         super(thing);
@@ -52,6 +53,7 @@ public class RachioBaseStationHandler extends AbstractRachioThingHandler {
 
     @Override
     public void initialize() {
+        long generation = beginHandlerInitialization();
         thingId = getThing().getUID().getAsString();
         String baseStationId = getThingConfigurationOrPropertyString(PROPERTY_BASE_STATION_ID);
         logger.debug("Initializing Rachio BaseStation Thing '{}', configured baseStationId='{}'", getThing().getUID(),
@@ -66,7 +68,7 @@ public class RachioBaseStationHandler extends AbstractRachioThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             return;
         }
-        refreshBaseStation(baseStationId, true);
+        scheduleHandlerTask(generation, () -> refreshBaseStation(baseStationId, true, generation));
     }
 
     @Override
@@ -82,6 +84,13 @@ public class RachioBaseStationHandler extends AbstractRachioThingHandler {
     }
 
     private boolean refreshBaseStation(String baseStationId, boolean initialLoad) {
+        return refreshBaseStation(baseStationId, initialLoad, getHandlerLifecycleGeneration());
+    }
+
+    private boolean refreshBaseStation(String baseStationId, boolean initialLoad, long generation) {
+        if (generation < 0) {
+            return false;
+        }
         RachioBridgeHandler handler = cloudHandler;
         if (handler == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
@@ -89,10 +98,14 @@ public class RachioBaseStationHandler extends AbstractRachioThingHandler {
         }
 
         try {
-            baseStation = initialLoad ? handler.getBaseStationForInitialization(baseStationId)
+            RachioBaseStation loadedBaseStation = initialLoad ? handler.getBaseStationForInitialization(baseStationId)
                     : handler.getBaseStation(baseStationId);
-            RachioBaseStation currentBaseStation = baseStation;
-            if (currentBaseStation == null || currentBaseStation.id.isBlank()) {
+            if (!isHandlerLifecycleCurrent(generation) || !isSameInstance(cloudHandler, handler)) {
+                return false;
+            }
+            baseStation = loadedBaseStation;
+            RachioBaseStation currentBaseStation = loadedBaseStation;
+            if (currentBaseStation.id.isBlank()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Configured Rachio baseStationId was not found in the account.");
                 return false;
@@ -104,15 +117,20 @@ public class RachioBaseStationHandler extends AbstractRachioThingHandler {
                         "{}: Deferred initialization succeeded for Smart Hose Timer BaseStation '{}'; Thing is ONLINE.",
                         thingId, currentBaseStation.id);
             }
-            goOnline();
+            if (isHandlerLifecycleCurrent(generation) && isSameInstance(cloudHandler, handler)) {
+                goOnline();
+            }
             return true;
         } catch (RachioApiThrottledException e) {
+            if (!isHandlerLifecycleCurrent(generation) || !isSameInstance(cloudHandler, handler)) {
+                return false;
+            }
             long delaySeconds = initialLoad
                     ? scheduleInitializationThrottleRetry(
                             "loading Smart Hose Timer BaseStation '" + baseStationId + "'",
-                            () -> refreshBaseStation(baseStationId, true), e)
+                            () -> refreshBaseStation(baseStationId, true, generation), e)
                     : scheduleLocalThrottleRetry("loading Smart Hose Timer BaseStation '" + baseStationId + "'",
-                            () -> refreshBaseStation(baseStationId, false));
+                            () -> refreshBaseStation(baseStationId, false, generation));
             if (delaySeconds > 0) {
                 if (initialLoad) {
                     logger.debug(
@@ -128,14 +146,18 @@ public class RachioBaseStationHandler extends AbstractRachioThingHandler {
         } catch (RachioApiException e) {
             String message = "Unable to load Rachio BaseStation '" + baseStationId + "': " + e.getMessage();
             logger.debug("{}: {}", thingId, message);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+            if (isHandlerLifecycleCurrent(generation) && isSameInstance(cloudHandler, handler)) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+            }
             return false;
         } catch (RuntimeException e) {
             String message = "Unable to initialize Rachio BaseStation '" + baseStationId + "': " + e.getMessage();
             logger.debug("{}: {}", thingId, message, e);
-            updateStatus(ThingStatus.OFFLINE,
-                    initialLoad ? ThingStatusDetail.CONFIGURATION_ERROR : ThingStatusDetail.COMMUNICATION_ERROR,
-                    message);
+            if (isHandlerLifecycleCurrent(generation) && isSameInstance(cloudHandler, handler)) {
+                updateStatus(ThingStatus.OFFLINE,
+                        initialLoad ? ThingStatusDetail.CONFIGURATION_ERROR : ThingStatusDetail.COMMUNICATION_ERROR,
+                        message);
+            }
             return false;
         }
     }

@@ -32,12 +32,12 @@ public class RachioApiResult {
 
     public String requestMethod = "";
     public String url = "";
-    public Integer responseCode = 0;
+    public int responseCode = 0;
     public String resultString = "";
 
-    public Integer apiCalls = 0;
-    public Integer rateLimit = 0;
-    public Integer rateRemaining = 0;
+    public int apiCalls = 0;
+    public int rateLimit = 0;
+    public int rateRemaining = 0;
     public String rateReset = "";
     private transient boolean rateRemainingKnown = false;
 

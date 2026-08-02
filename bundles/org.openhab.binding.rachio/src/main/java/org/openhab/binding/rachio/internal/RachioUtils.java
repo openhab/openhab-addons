@@ -38,6 +38,10 @@ public class RachioUtils {
         return message != null && !message.isBlank() ? message : e.toString();
     }
 
+    public static boolean isSameInstance(@Nullable Object first, @Nullable Object second) {
+        return first == second; // NOPMD - lifecycle guards intentionally require reference identity
+    }
+
     public static String substringBefore(@Nullable String string, String pattern) {
         if (string != null) {
             int pos = string.indexOf(pattern);

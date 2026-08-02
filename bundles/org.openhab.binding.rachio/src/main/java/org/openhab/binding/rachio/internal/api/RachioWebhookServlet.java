@@ -57,8 +57,8 @@ public class RachioWebhookServlet extends HttpServlet {
     private static final long serialVersionUID = -4654253998990066051L;
     private static final String WEBHOOK_SIGNATURE_HEADER = "x-signature";
     private static final int MAX_WEBHOOK_PAYLOAD_BYTES = 256 * 1024;
+    private static final Gson GSON = new Gson();
     private final Logger logger = LoggerFactory.getLogger(RachioWebhookServlet.class);
-    private final Gson gson = new Gson();
     private final RachioWebhookDuplicateEventCache duplicateEventCache = new RachioWebhookDuplicateEventCache();
 
     private final RachioHandlerFactory rachioHandlerFactory;
@@ -188,6 +188,7 @@ public class RachioWebhookServlet extends HttpServlet {
         }
         String data = new String(rawBody, StandardCharsets.UTF_8);
         RachioEventGsonDTO event = null;
+        boolean eventClaimed = false;
         try {
             logger.trace("RachioWebhook: Received {} byte webhook payload", rawBody.length);
             event = parseEvent(data);
@@ -230,19 +231,20 @@ public class RachioWebhookServlet extends HttpServlet {
             logger.trace("RachioEvent {}.{} for device '{}': {}", event.category, event.type, event.deviceId,
                     event.summary);
 
-            event.apiResult.setRateLimit(request.getHeader(RACHIO_JSON_RATE_LIMIT),
+            event.getApiResult().setRateLimit(request.getHeader(RACHIO_JSON_RATE_LIMIT),
                     request.getHeader(RACHIO_JSON_RATE_REMAINING), request.getHeader(RACHIO_JSON_RATE_RESET));
 
-            if (isDuplicateEvent(event)) {
+            eventClaimed = claimEvent(event);
+            if (!eventClaimed) {
                 resp.setStatus(HttpServletResponse.SC_OK);
                 resp.getWriter().write("");
                 return;
             }
 
             logger.trace("RachioWebhook: Processing validated webhook event ({})", describeEvent(event));
-            if (rachioHandlerFactory.webHookEvent(ipAddress, event)) {
-                markEventProcessed(event);
-            } else {
+            if (!rachioHandlerFactory.webHookEvent(ipAddress, event)) {
+                releaseEventClaim(event);
+                eventClaimed = false;
                 logger.debug(
                         "RachioWebhook: Unable to route validated webhook event; acknowledging without processing ({})",
                         describeEvent(event));
@@ -256,6 +258,9 @@ public class RachioWebhookServlet extends HttpServlet {
         } catch (RuntimeException e) {
             RachioEventGsonDTO failedEvent = event;
             if (failedEvent != null) {
+                if (eventClaimed) {
+                    releaseEventClaim(failedEvent);
+                }
                 logger.debug(
                         "RachioWebhook: Exception processing validated webhook event; event remains retryable ({}): {}",
                         describeEvent(failedEvent), e.getMessage(), e);
@@ -288,10 +293,11 @@ public class RachioWebhookServlet extends HttpServlet {
     }
 
     private RachioEventGsonDTO parseEventDirectly(String data) {
-        RachioEventGsonDTO event = gson.fromJson(data, RachioEventGsonDTO.class);
+        RachioEventGsonDTO event = GSON.fromJson(data, RachioEventGsonDTO.class);
         if (event == null) {
             throw new JsonSyntaxException("Webhook payload did not contain an event object");
         }
+        event.normalizeNullValues();
         return event;
     }
 
@@ -332,7 +338,7 @@ public class RachioWebhookServlet extends HttpServlet {
             changed |= replaceStringifiedObject(normalized, "zoneRunStatus");
             changed |= replaceStringifiedObject(normalized, "eventParms");
             changed |= replaceStringifiedObject(normalized, "deltaProperties");
-            return changed ? gson.toJson(normalized) : null;
+            return changed ? GSON.toJson(normalized) : null;
         } catch (JsonSyntaxException e) {
             return null;
         }
@@ -368,27 +374,24 @@ public class RachioWebhookServlet extends HttpServlet {
         return value.startsWith("{") && value.endsWith("}");
     }
 
-    private boolean isDuplicateEvent(RachioEventGsonDTO event) {
+    private boolean claimEvent(RachioEventGsonDTO event) {
         if (isBlank(event.eventId)) {
             logger.trace("RachioWebhook: Validated webhook event has no eventId; duplicate detection skipped ({})",
                     describeEvent(event));
-            return false;
-        }
-        if (duplicateEventCache.isProcessed(event.eventId)) {
-            logger.debug("RachioWebhook: Skipping duplicate processed webhook event ({})", describeEvent(event));
             return true;
         }
-        return false;
+        if (!duplicateEventCache.claim(event.eventId)) {
+            logger.debug("RachioWebhook: Skipping duplicate processed webhook event ({})", describeEvent(event));
+            return false;
+        }
+        return true;
     }
 
-    private void markEventProcessed(RachioEventGsonDTO event) {
-        if (isBlank(event.eventId)) {
-            logger.trace("RachioWebhook: Processed webhook event has no eventId; duplicate cache not updated ({})",
-                    describeEvent(event));
-            return;
+    private void releaseEventClaim(RachioEventGsonDTO event) {
+        if (!isBlank(event.eventId)) {
+            duplicateEventCache.release(event.eventId);
+            logger.trace("RachioWebhook: Released failed webhook event claim ({})", describeEvent(event));
         }
-        duplicateEventCache.markProcessed(event.eventId);
-        logger.trace("RachioWebhook: Marked webhook event as processed ({})", describeEvent(event));
     }
 
     static String describeEvent(RachioEventGsonDTO event) {

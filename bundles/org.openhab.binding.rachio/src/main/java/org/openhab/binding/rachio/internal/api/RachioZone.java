@@ -35,16 +35,16 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class RachioZone extends RachioCloudZone {
     private final Logger logger = LoggerFactory.getLogger(RachioZone.class);
-    private @Nullable ThingUID devUID;
-    private @Nullable ThingUID zoneUID;
-    private @Nullable RachioZoneHandler thingHandler;
-    private String uniqueId = "";
+    private volatile @Nullable ThingUID devUID;
+    private volatile @Nullable ThingUID zoneUID;
+    private volatile @Nullable RachioZoneHandler thingHandler;
+    private final String uniqueId;
 
-    private int startRunTime = 0;
-    private String lastEvent = "";
-    private @Nullable DateTimeType lastEventTime;
-    private double moistureLevel = Double.NaN;
-    private double moisturePercent = Double.NaN;
+    private volatile int startRunTime = 0;
+    private volatile String lastEvent = "";
+    private volatile @Nullable DateTimeType lastEventTime;
+    private volatile double moistureLevel = Double.NaN;
+    private volatile double moisturePercent = Double.NaN;
     private String imageDownloadUrl = "";
 
     /**
@@ -54,44 +54,44 @@ public class RachioZone extends RachioCloudZone {
      * @param uniqueId unique controller identifier used by the image servlet
      */
     public RachioZone(RachioCloudZone zone, String uniqueId) {
-        try {
-            id = zone.id;
-            zoneNumber = zone.zoneNumber;
-            name = zone.name;
-            enabled = zone.enabled;
-            availableWater = zone.availableWater;
-            rootZoneDepth = zone.rootZoneDepth;
-            managementAllowedDepletion = zone.managementAllowedDepletion;
-            efficiency = zone.efficiency;
-            yardAreaSquareFeet = zone.yardAreaSquareFeet;
-            imageUrl = zone.imageUrl;
-            lastWateredDate = zone.lastWateredDate;
-            scheduleDataModified = zone.scheduleDataModified;
-            fixedRuntime = zone.fixedRuntime;
-            saturatedDepthOfWater = zone.saturatedDepthOfWater;
-            depthOfWater = zone.depthOfWater;
-            maxRuntime = zone.maxRuntime;
-            runtimeNoMultiplier = zone.runtimeNoMultiplier;
-            runtime = zone.runtime;
-            imageDownloadUrl = zone.imageUrl;
-            if (zone.imageUrl.startsWith(SERVLET_IMAGE_URL_BASE)) {
-                // when trying to load the imageUrl Rachio doesn't add a ".png" and doesn't set the mime type. As a
-                // result the binding provides a servlet, which acts like a proxy. We redirect the load request to the
-                // local servlet. The servlet loads the provided image and then writes it as binary data to the output
-                // stream with the correct mime type.
-                String uri = zone.imageUrl.substring(zone.imageUrl.lastIndexOf("/"));
-                if (!uri.isEmpty()) {
-                    this.imageUrl = SERVLET_IMAGE_PATH + uri;
-                    logger.trace("Zone image URL rewritten to local image servlet path for zone '{}'", name);
-                }
-            }
-
-            this.uniqueId = uniqueId;
-            logger.trace("Zone '{}' (number={}, id={}, enable={}) initialized.", zone.name, zone.zoneNumber, zone.id,
-                    zone.enabled);
-        } catch (RuntimeException e) {
-            logger.warn("Unable to initialize: {}", e.getMessage());
+        id = safeString(zone.id);
+        if (id.isBlank()) {
+            throw new IllegalArgumentException("Rachio zone ID is missing");
         }
+        zoneNumber = zone.zoneNumber;
+        name = safeString(zone.name);
+        enabled = zone.enabled;
+        availableWater = zone.availableWater;
+        rootZoneDepth = zone.rootZoneDepth;
+        managementAllowedDepletion = zone.managementAllowedDepletion;
+        efficiency = zone.efficiency;
+        yardAreaSquareFeet = zone.yardAreaSquareFeet;
+        imageUrl = safeString(zone.imageUrl);
+        lastWateredDate = zone.lastWateredDate;
+        scheduleDataModified = zone.scheduleDataModified;
+        fixedRuntime = zone.fixedRuntime;
+        saturatedDepthOfWater = zone.saturatedDepthOfWater;
+        depthOfWater = zone.depthOfWater;
+        maxRuntime = zone.maxRuntime;
+        runtimeNoMultiplier = zone.runtimeNoMultiplier;
+        runtime = zone.runtime;
+        imageDownloadUrl = imageUrl;
+        if (imageUrl.startsWith(SERVLET_IMAGE_URL_BASE)) {
+            // Rachio omits both the extension and the media type for these image URLs, so route them through the local
+            // servlet while retaining the original URL for direct channel downloads.
+            String uri = imageUrl.substring(imageUrl.lastIndexOf("/"));
+            if (!uri.isEmpty()) {
+                imageUrl = SERVLET_IMAGE_PATH + uri;
+                logger.trace("Zone image URL rewritten to local image servlet path for zone '{}'", name);
+            }
+        }
+
+        this.uniqueId = uniqueId;
+        logger.trace("Zone '{}' (number={}, id={}, enable={}) initialized.", name, zoneNumber, id, enabled);
+    }
+
+    private static String safeString(@Nullable String value) {
+        return value != null ? value : "";
     }
 
     public void setThingHandler(RachioZoneHandler zoneHandler) {
@@ -140,6 +140,20 @@ public class RachioZone extends RachioCloudZone {
         lastWateredDate = updatedZone.lastWateredDate;
         imageUrl = updatedZone.imageUrl;
         imageDownloadUrl = updatedZone.imageDownloadUrl;
+    }
+
+    public void copyRuntimeStateFrom(RachioZone previousZone) {
+        if (!id.equalsIgnoreCase(previousZone.id)) {
+            throw new IllegalArgumentException("Cannot copy runtime state between different Rachio zones");
+        }
+        devUID = previousZone.devUID;
+        zoneUID = previousZone.zoneUID;
+        thingHandler = previousZone.thingHandler;
+        startRunTime = previousZone.startRunTime;
+        lastEvent = previousZone.lastEvent;
+        lastEventTime = previousZone.lastEventTime;
+        moistureLevel = previousZone.moistureLevel;
+        moisturePercent = previousZone.moisturePercent;
     }
 
     public void setUID(@Nullable ThingUID deviceUID, @Nullable ThingUID zoneUID) {

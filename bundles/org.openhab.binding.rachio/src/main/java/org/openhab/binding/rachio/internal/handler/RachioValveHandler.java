@@ -15,11 +15,13 @@ package org.openhab.binding.rachio.internal.handler;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.*;
 import static org.openhab.binding.rachio.internal.RachioUtils.exceptionMessage;
 import static org.openhab.binding.rachio.internal.RachioUtils.getTimestamp;
+import static org.openhab.binding.rachio.internal.RachioUtils.isSameInstance;
 
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.OptionalInt;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -56,17 +58,18 @@ import org.slf4j.LoggerFactory;
 public class RachioValveHandler extends AbstractRachioThingHandler {
     private final Logger logger = LoggerFactory.getLogger(RachioValveHandler.class);
 
-    private @Nullable RachioValve valve;
-    private int runTime = 0;
-    private OnOffType runState = OnOffType.OFF;
-    private String lastEvent = "";
-    private @Nullable DateTimeType lastEventTime;
-    private @Nullable Boolean lastFlowDetected;
-    private String lastRunType = "";
-    private String lastEndReason = "";
-    private @Nullable RachioValveDayRun nextPlannedRun;
-    private @Nullable RachioValveDayRun nextSkippedRun;
-    private @Nullable RachioValveDayRun lastCompletedRun;
+    private final AtomicBoolean webhookSummaryRefreshPending = new AtomicBoolean();
+    private volatile @Nullable RachioValve valve;
+    private volatile int runTime = 0;
+    private volatile OnOffType runState = OnOffType.OFF;
+    private volatile String lastEvent = "";
+    private volatile @Nullable DateTimeType lastEventTime;
+    private volatile @Nullable Boolean lastFlowDetected;
+    private volatile String lastRunType = "";
+    private volatile String lastEndReason = "";
+    private volatile @Nullable RachioValveDayRun nextPlannedRun;
+    private volatile @Nullable RachioValveDayRun nextSkippedRun;
+    private volatile @Nullable RachioValveDayRun lastCompletedRun;
 
     public RachioValveHandler(Thing thing) {
         super(thing);
@@ -74,6 +77,7 @@ public class RachioValveHandler extends AbstractRachioThingHandler {
 
     @Override
     public void initialize() {
+        long generation = beginHandlerInitialization();
         thingId = getThing().getUID().getAsString();
         String valveId = getThingConfigurationOrPropertyString(PROPERTY_VALVE_ID);
         logger.debug("Initializing Rachio Valve Thing '{}', configured valveId='{}'", getThing().getUID(), valveId);
@@ -87,7 +91,7 @@ public class RachioValveHandler extends AbstractRachioThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             return;
         }
-        refreshValve(valveId, true);
+        scheduleHandlerTask(generation, () -> refreshValve(valveId, true, generation));
     }
 
     @Override
@@ -195,6 +199,13 @@ public class RachioValveHandler extends AbstractRachioThingHandler {
     }
 
     private boolean refreshValve(String valveId, boolean initialLoad) {
+        return refreshValve(valveId, initialLoad, getHandlerLifecycleGeneration());
+    }
+
+    private boolean refreshValve(String valveId, boolean initialLoad, long generation) {
+        if (generation < 0) {
+            return false;
+        }
         RachioBridgeHandler handler = cloudHandler;
         if (handler == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
@@ -202,9 +213,14 @@ public class RachioValveHandler extends AbstractRachioThingHandler {
         }
 
         try {
-            valve = initialLoad ? handler.getValveForInitialization(valveId) : handler.getValve(valveId);
-            RachioValve currentValve = valve;
-            if (currentValve == null || currentValve.id.isBlank()) {
+            RachioValve loadedValve = initialLoad ? handler.getValveForInitialization(valveId)
+                    : handler.getValve(valveId);
+            if (!isHandlerLifecycleCurrent(generation) || !isSameInstance(cloudHandler, handler)) {
+                return false;
+            }
+            valve = loadedValve;
+            RachioValve currentValve = loadedValve;
+            if (currentValve.id.isBlank()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Configured Rachio valveId was not found in the account.");
                 return false;
@@ -216,21 +232,29 @@ public class RachioValveHandler extends AbstractRachioThingHandler {
                 handler.registerValveWebHook(currentValve.id,
                         initialLoad ? RequestPurpose.INITIALIZATION : RequestPurpose.BACKGROUND_REFRESH);
             }
-            refreshSummary(currentValve.id);
+            if (!isHandlerLifecycleCurrent(generation) || !isSameInstance(cloudHandler, handler)) {
+                return false;
+            }
+            refreshSummary(currentValve.id, generation);
             logger.debug("{}: Valve model lookup succeeded: valveId='{}', baseStationId='{}'", thingId, currentValve.id,
                     currentValve.baseStationId);
             if (resetLocalThrottleRetry()) {
                 logger.debug("{}: Deferred initialization succeeded for Smart Hose Timer Valve '{}'; Thing is ONLINE.",
                         thingId, currentValve.id);
             }
-            goOnline();
+            if (isHandlerLifecycleCurrent(generation) && isSameInstance(cloudHandler, handler)) {
+                goOnline();
+            }
             return true;
         } catch (RachioApiThrottledException e) {
+            if (!isHandlerLifecycleCurrent(generation) || !isSameInstance(cloudHandler, handler)) {
+                return false;
+            }
             long delaySeconds = initialLoad
                     ? scheduleInitializationThrottleRetry("loading Smart Hose Timer Valve '" + valveId + "'",
-                            () -> refreshValve(valveId, true), e)
+                            () -> refreshValve(valveId, true, generation), e)
                     : scheduleLocalThrottleRetry("loading Smart Hose Timer Valve '" + valveId + "'",
-                            () -> refreshValve(valveId, false));
+                            () -> refreshValve(valveId, false, generation));
             if (delaySeconds > 0) {
                 if (initialLoad) {
                     logger.debug(
@@ -247,15 +271,19 @@ public class RachioValveHandler extends AbstractRachioThingHandler {
             String reason = exceptionMessage(e);
             String message = "Unable to load Rachio Valve '" + valveId + "': " + reason;
             logger.debug("{}: Unable to load Rachio Valve '{}': {}", thingId, valveId, reason);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+            if (isHandlerLifecycleCurrent(generation) && isSameInstance(cloudHandler, handler)) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+            }
             return false;
         } catch (RuntimeException e) {
             String reason = exceptionMessage(e);
             String message = "Unable to initialize Rachio Valve '" + valveId + "': " + reason;
             logger.debug("{}: Unable to initialize Rachio Valve '{}': {}", thingId, valveId, reason, e);
-            updateStatus(ThingStatus.OFFLINE,
-                    initialLoad ? ThingStatusDetail.CONFIGURATION_ERROR : ThingStatusDetail.COMMUNICATION_ERROR,
-                    message);
+            if (isHandlerLifecycleCurrent(generation) && isSameInstance(cloudHandler, handler)) {
+                updateStatus(ThingStatus.OFFLINE,
+                        initialLoad ? ThingStatusDetail.CONFIGURATION_ERROR : ThingStatusDetail.COMMUNICATION_ERROR,
+                        message);
+            }
             return false;
         }
     }
@@ -266,12 +294,22 @@ public class RachioValveHandler extends AbstractRachioThingHandler {
     }
 
     private void refreshSummary(String valveId) {
+        refreshSummary(valveId, getHandlerLifecycleGeneration());
+    }
+
+    private void refreshSummary(String valveId, long generation) {
+        if (generation < 0) {
+            return;
+        }
         RachioBridgeHandler handler = cloudHandler;
         if (handler == null) {
             return;
         }
         try {
             RachioValveDayViewsResponse summary = handler.getValveDayViews(valveId);
+            if (!isHandlerLifecycleCurrent(generation) || !isSameInstance(cloudHandler, handler)) {
+                return;
+            }
             nextPlannedRun = summary.findNextPlannedRun();
             nextSkippedRun = summary.findNextSkippedRun();
             lastCompletedRun = summary.findLastCompletedRun();
@@ -401,10 +439,40 @@ public class RachioValveHandler extends AbstractRachioThingHandler {
             return false;
         }
 
-        refreshSummary(currentValve.id);
         postChannelData();
         updateChannel(CHANNEL_LAST_UPDATE, getTimestamp());
+        scheduleWebhookSummaryRefresh(currentValve);
         return true;
+    }
+
+    private void scheduleWebhookSummaryRefresh(RachioValve currentValve) {
+        long generation = getHandlerLifecycleGeneration();
+        if (generation < 0 || !webhookSummaryRefreshPending.compareAndSet(false, true)) {
+            return;
+        }
+        try {
+            scheduler.execute(() -> {
+                try {
+                    if (!isCurrentValveContext(generation, currentValve)) {
+                        return;
+                    }
+                    refreshSummary(currentValve.id, generation);
+                    if (isCurrentValveContext(generation, currentValve)) {
+                        postChannelData();
+                        updateChannel(CHANNEL_LAST_UPDATE, getTimestamp());
+                    }
+                } finally {
+                    webhookSummaryRefreshPending.set(false);
+                }
+            });
+        } catch (RuntimeException e) {
+            webhookSummaryRefreshPending.set(false);
+            logger.debug("{}: Unable to schedule Smart Hose Timer summary refresh after webhook event", thingId, e);
+        }
+    }
+
+    private boolean isCurrentValveContext(long generation, RachioValve currentValve) {
+        return isHandlerLifecycleCurrent(generation) && isSameInstance(valve, currentValve);
     }
 
     @Override

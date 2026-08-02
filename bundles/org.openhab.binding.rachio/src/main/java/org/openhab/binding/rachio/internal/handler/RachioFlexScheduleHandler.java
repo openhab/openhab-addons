@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class RachioFlexScheduleHandler extends AbstractRachioThingHandler {
     private final Logger logger = LoggerFactory.getLogger(RachioFlexScheduleHandler.class);
-    protected String flexScheduleRuleId = "";
+    protected volatile String flexScheduleRuleId = "";
     private RachioFlexScheduleRuleResponse scheduleRule = new RachioFlexScheduleRuleResponse();
     private boolean scheduleRuleLoaded = false;
 
@@ -57,12 +57,18 @@ public class RachioFlexScheduleHandler extends AbstractRachioThingHandler {
 
     @Override
     public void initialize() {
+        long generation = beginHandlerInitialization();
         thingId = getThing().getUID().getAsString();
-        flexScheduleRuleId = resolveFlexScheduleRuleId();
+        String resolvedFlexScheduleRuleId = resolveFlexScheduleRuleId();
+        synchronized (this) {
+            flexScheduleRuleId = resolvedFlexScheduleRuleId;
+            scheduleRule = new RachioFlexScheduleRuleResponse();
+            scheduleRuleLoaded = false;
+        }
         logger.debug("Initializing Rachio flex schedule Thing '{}' with flexScheduleRuleId '{}'", thingId,
-                flexScheduleRuleId);
+                resolvedFlexScheduleRuleId);
 
-        if (flexScheduleRuleId.isBlank()) {
+        if (resolvedFlexScheduleRuleId.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Missing Rachio flexScheduleRuleId. Use discovery or configure the Rachio flex schedule rule UUID manually.");
             return;
@@ -74,7 +80,7 @@ public class RachioFlexScheduleHandler extends AbstractRachioThingHandler {
         }
 
         registerStatusListener();
-        goOnline();
+        scheduleHandlerTask(generation, this::goOnline);
     }
 
     @Override
@@ -92,27 +98,36 @@ public class RachioFlexScheduleHandler extends AbstractRachioThingHandler {
             logger.debug("{}: Cloud handler is not initialized", thingId);
             return;
         }
+        String requestedFlexScheduleRuleId = flexScheduleRuleId;
 
         try {
             if (channel.equals(CHANNEL_FLEX_SCHEDULE_START) && command == OnOffType.ON) {
-                handler.startScheduleRule(flexScheduleRuleId);
+                handler.startScheduleRule(requestedFlexScheduleRuleId);
                 updateChannel(CHANNEL_FLEX_SCHEDULE_START, OnOffType.OFF);
             } else if (channel.equals(CHANNEL_FLEX_SCHEDULE_SKIP) && command == OnOffType.ON) {
-                handler.skipScheduleRule(flexScheduleRuleId);
+                handler.skipScheduleRule(requestedFlexScheduleRuleId);
                 updateChannel(CHANNEL_FLEX_SCHEDULE_SKIP, OnOffType.OFF);
             } else if (channel.equals(CHANNEL_FLEX_SCHEDULE_SEASONAL_ADJUSTMENT)) {
                 OptionalDouble adjustment = RachioQuantityTypes.dimensionless(command);
                 if (adjustment.isPresent()) {
                     double value = adjustment.getAsDouble();
-                    handler.setScheduleRuleSeasonalAdjustment(flexScheduleRuleId, value);
-                    scheduleRule.seasonalAdjustment = value;
-                    updateChannel(CHANNEL_FLEX_SCHEDULE_SEASONAL_ADJUSTMENT,
-                            RachioQuantityTypes.fractionOrUndef(value));
+                    handler.setScheduleRuleSeasonalAdjustment(requestedFlexScheduleRuleId, value);
+                    boolean currentRule;
+                    synchronized (this) {
+                        currentRule = flexScheduleRuleId.equals(requestedFlexScheduleRuleId);
+                        if (currentRule) {
+                            scheduleRule.seasonalAdjustment = value;
+                        }
+                    }
+                    if (currentRule) {
+                        updateChannel(CHANNEL_FLEX_SCHEDULE_SEASONAL_ADJUSTMENT,
+                                RachioQuantityTypes.fractionOrUndef(value));
+                    }
                 } else {
                     logger.debug("{}: Seasonal adjustment command value is not dimensionless: {}", thingId, command);
                 }
             } else if (channel.equals(CHANNEL_FLEX_SCHEDULE_SKIP_FORWARD_ZONE_RUN) && command == OnOffType.ON) {
-                handler.skipForwardZoneRun(flexScheduleRuleId);
+                handler.skipForwardZoneRun(requestedFlexScheduleRuleId);
                 updateChannel(CHANNEL_FLEX_SCHEDULE_SKIP_FORWARD_ZONE_RUN, OnOffType.OFF);
             }
         } catch (RachioApiException e) {
@@ -143,12 +158,17 @@ public class RachioFlexScheduleHandler extends AbstractRachioThingHandler {
 
     @Override
     protected void goOnline() {
-        if (refreshFlexScheduleRule()) {
+        long generation = getHandlerLifecycleGeneration();
+        if (refreshFlexScheduleRule() && isHandlerLifecycleCurrent(generation)) {
             updateStatus(ThingStatus.ONLINE);
         }
     }
 
     protected boolean refreshFlexScheduleRule() {
+        long generation = getHandlerLifecycleGeneration();
+        if (generation < 0) {
+            return false;
+        }
         RachioBridgeHandler handler;
         String requestedFlexScheduleRuleId;
         synchronized (this) {
@@ -162,7 +182,7 @@ public class RachioFlexScheduleHandler extends AbstractRachioThingHandler {
         try {
             RachioFlexScheduleRuleResponse loadedScheduleRule = loadFlexScheduleRule(handler,
                     requestedFlexScheduleRuleId);
-            if (!applyLoadedFlexScheduleRule(handler, requestedFlexScheduleRuleId, loadedScheduleRule)) {
+            if (!applyLoadedFlexScheduleRule(handler, requestedFlexScheduleRuleId, loadedScheduleRule, generation)) {
                 logger.debug("{}: Ignoring stale flex schedule rule '{}' refresh after bridge or rule id changed",
                         thingId, requestedFlexScheduleRuleId);
                 return false;
@@ -176,6 +196,9 @@ public class RachioFlexScheduleHandler extends AbstractRachioThingHandler {
             }
             return true;
         } catch (RachioApiThrottledException e) {
+            if (!isHandlerLifecycleCurrent(generation)) {
+                return false;
+            }
             long delaySeconds = scheduleInitializationThrottleRetry(
                     "loading flex schedule rule '" + requestedFlexScheduleRuleId + "'", this::goOnline, e);
             if (delaySeconds > 0) {
@@ -188,14 +211,17 @@ public class RachioFlexScheduleHandler extends AbstractRachioThingHandler {
             String message = exceptionMessage(e);
             logger.debug("{}: Unable to load flex schedule rule '{}': {}", thingId, requestedFlexScheduleRuleId,
                     message);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+            if (isHandlerLifecycleCurrent(generation)) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+            }
             return false;
         }
     }
 
     private synchronized boolean applyLoadedFlexScheduleRule(RachioBridgeHandler handler,
-            String requestedFlexScheduleRuleId, RachioFlexScheduleRuleResponse loadedScheduleRule) {
-        if (!Objects.equals(handler, cloudHandler) || !flexScheduleRuleId.equals(requestedFlexScheduleRuleId)) {
+            String requestedFlexScheduleRuleId, RachioFlexScheduleRuleResponse loadedScheduleRule, long generation) {
+        if (!isHandlerLifecycleCurrent(generation) || !Objects.equals(handler, cloudHandler)
+                || !flexScheduleRuleId.equals(requestedFlexScheduleRuleId)) {
             return false;
         }
         scheduleRule = loadedScheduleRule;
@@ -217,7 +243,7 @@ public class RachioFlexScheduleHandler extends AbstractRachioThingHandler {
     }
 
     @Override
-    protected void postChannelData() {
+    protected synchronized void postChannelData() {
         updateChannel(CHANNEL_FLEX_SCHEDULE_NAME, stringOrUndef(scheduleRule.name));
         updateChannel(CHANNEL_FLEX_SCHEDULE_ENABLED, scheduleRule.enabled ? OnOffType.ON : OnOffType.OFF);
         updateChannel(CHANNEL_FLEX_SCHEDULE_TYPE, stringOrUndef(scheduleRule.type));
@@ -246,11 +272,11 @@ public class RachioFlexScheduleHandler extends AbstractRachioThingHandler {
         return !flexScheduleRuleId.isBlank() && flexScheduleRuleId.equalsIgnoreCase(scheduleId);
     }
 
-    String getScheduleRuleNameForRunSummary() {
+    synchronized String getScheduleRuleNameForRunSummary() {
         return firstNonBlank(scheduleRule.name, scheduleRule.externalName, getThingLabel());
     }
 
-    String getScheduleRuleNameSourceForRunSummary() {
+    synchronized String getScheduleRuleNameSourceForRunSummary() {
         if (!scheduleRule.name.isBlank()) {
             return "flex handler";
         }
@@ -263,7 +289,7 @@ public class RachioFlexScheduleHandler extends AbstractRachioThingHandler {
         return "flex handler";
     }
 
-    String getScheduleRuleTypeForRunSummary() {
+    synchronized String getScheduleRuleTypeForRunSummary() {
         return scheduleRule.type.isBlank() ? "FLEX" : scheduleRule.type;
     }
 

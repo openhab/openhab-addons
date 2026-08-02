@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class RachioScheduleHandler extends AbstractRachioThingHandler {
     private final Logger logger = LoggerFactory.getLogger(RachioScheduleHandler.class);
-    protected String scheduleRuleId = "";
+    protected volatile String scheduleRuleId = "";
     protected RachioScheduleRuleResponse scheduleRule = new RachioScheduleRuleResponse();
     private boolean scheduleRuleLoaded = false;
 
@@ -58,11 +58,18 @@ public class RachioScheduleHandler extends AbstractRachioThingHandler {
 
     @Override
     public void initialize() {
+        long generation = beginHandlerInitialization();
         thingId = getThing().getUID().getAsString();
-        scheduleRuleId = resolveScheduleRuleId();
-        logger.debug("Initializing Rachio schedule Thing '{}' with scheduleRuleId '{}'", thingId, scheduleRuleId);
+        String resolvedScheduleRuleId = resolveScheduleRuleId();
+        synchronized (this) {
+            scheduleRuleId = resolvedScheduleRuleId;
+            scheduleRule = new RachioScheduleRuleResponse();
+            scheduleRuleLoaded = false;
+        }
+        logger.debug("Initializing Rachio schedule Thing '{}' with scheduleRuleId '{}'", thingId,
+                resolvedScheduleRuleId);
 
-        if (scheduleRuleId.isBlank()) {
+        if (resolvedScheduleRuleId.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Missing Rachio scheduleRuleId. Use discovery or configure the Rachio schedule rule UUID manually.");
             return;
@@ -74,7 +81,7 @@ public class RachioScheduleHandler extends AbstractRachioThingHandler {
         }
 
         registerStatusListener();
-        goOnline();
+        scheduleHandlerTask(generation, this::goOnline);
     }
 
     @Override
@@ -92,26 +99,35 @@ public class RachioScheduleHandler extends AbstractRachioThingHandler {
             logger.debug("{}: Cloud handler is not initialized", thingId);
             return;
         }
+        String requestedScheduleRuleId = scheduleRuleId;
 
         try {
             if (channel.equals(CHANNEL_SCHEDULE_START) && command == OnOffType.ON) {
-                handler.startScheduleRule(scheduleRuleId);
+                handler.startScheduleRule(requestedScheduleRuleId);
                 updateChannel(CHANNEL_SCHEDULE_START, OnOffType.OFF);
             } else if (channel.equals(CHANNEL_SCHEDULE_SKIP) && command == OnOffType.ON) {
-                handler.skipScheduleRule(scheduleRuleId);
+                handler.skipScheduleRule(requestedScheduleRuleId);
                 updateChannel(CHANNEL_SCHEDULE_SKIP, OnOffType.OFF);
             } else if (channel.equals(CHANNEL_SCHEDULE_SEASONAL_ADJUSTMENT)) {
                 OptionalDouble adjustment = RachioQuantityTypes.dimensionless(command);
                 if (adjustment.isPresent()) {
                     double value = adjustment.getAsDouble();
-                    handler.setScheduleRuleSeasonalAdjustment(scheduleRuleId, value);
-                    scheduleRule.seasonalAdjustment = value;
-                    updateChannel(CHANNEL_SCHEDULE_SEASONAL_ADJUSTMENT, RachioQuantityTypes.fractionOrUndef(value));
+                    handler.setScheduleRuleSeasonalAdjustment(requestedScheduleRuleId, value);
+                    boolean currentRule;
+                    synchronized (this) {
+                        currentRule = scheduleRuleId.equals(requestedScheduleRuleId);
+                        if (currentRule) {
+                            scheduleRule.seasonalAdjustment = value;
+                        }
+                    }
+                    if (currentRule) {
+                        updateChannel(CHANNEL_SCHEDULE_SEASONAL_ADJUSTMENT, RachioQuantityTypes.fractionOrUndef(value));
+                    }
                 } else {
                     logger.debug("{}: Seasonal adjustment command value is not dimensionless: {}", thingId, command);
                 }
             } else if (channel.equals(CHANNEL_SCHEDULE_SKIP_FORWARD_ZONE_RUN) && command == OnOffType.ON) {
-                handler.skipForwardZoneRun(scheduleRuleId);
+                handler.skipForwardZoneRun(requestedScheduleRuleId);
                 updateChannel(CHANNEL_SCHEDULE_SKIP_FORWARD_ZONE_RUN, OnOffType.OFF);
             }
         } catch (RachioApiException e) {
@@ -142,12 +158,17 @@ public class RachioScheduleHandler extends AbstractRachioThingHandler {
 
     @Override
     protected void goOnline() {
-        if (refreshScheduleRule()) {
+        long generation = getHandlerLifecycleGeneration();
+        if (refreshScheduleRule() && isHandlerLifecycleCurrent(generation)) {
             updateStatus(ThingStatus.ONLINE);
         }
     }
 
     protected boolean refreshScheduleRule() {
+        long generation = getHandlerLifecycleGeneration();
+        if (generation < 0) {
+            return false;
+        }
         RachioBridgeHandler handler;
         String requestedScheduleRuleId;
         synchronized (this) {
@@ -160,7 +181,7 @@ public class RachioScheduleHandler extends AbstractRachioThingHandler {
         }
         try {
             RachioScheduleRuleResponse loadedScheduleRule = loadScheduleRule(handler, requestedScheduleRuleId);
-            if (!applyLoadedScheduleRule(handler, requestedScheduleRuleId, loadedScheduleRule)) {
+            if (!applyLoadedScheduleRule(handler, requestedScheduleRuleId, loadedScheduleRule, generation)) {
                 logger.debug("{}: Ignoring stale schedule rule '{}' refresh after bridge or rule id changed", thingId,
                         requestedScheduleRuleId);
                 return false;
@@ -174,6 +195,9 @@ public class RachioScheduleHandler extends AbstractRachioThingHandler {
             }
             return true;
         } catch (RachioApiThrottledException e) {
+            if (!isHandlerLifecycleCurrent(generation)) {
+                return false;
+            }
             long delaySeconds = scheduleInitializationThrottleRetry(
                     "loading schedule rule '" + requestedScheduleRuleId + "'", this::goOnline, e);
             if (delaySeconds > 0) {
@@ -185,14 +209,17 @@ public class RachioScheduleHandler extends AbstractRachioThingHandler {
         } catch (RachioApiException e) {
             String message = exceptionMessage(e);
             logger.debug("{}: Unable to load schedule rule '{}': {}", thingId, requestedScheduleRuleId, message);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+            if (isHandlerLifecycleCurrent(generation)) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+            }
             return false;
         }
     }
 
     private synchronized boolean applyLoadedScheduleRule(RachioBridgeHandler handler, String requestedScheduleRuleId,
-            RachioScheduleRuleResponse loadedScheduleRule) {
-        if (!Objects.equals(handler, cloudHandler) || !scheduleRuleId.equals(requestedScheduleRuleId)) {
+            RachioScheduleRuleResponse loadedScheduleRule, long generation) {
+        if (!isHandlerLifecycleCurrent(generation) || !Objects.equals(handler, cloudHandler)
+                || !scheduleRuleId.equals(requestedScheduleRuleId)) {
             return false;
         }
         scheduleRule = loadedScheduleRule;
@@ -214,7 +241,7 @@ public class RachioScheduleHandler extends AbstractRachioThingHandler {
     }
 
     @Override
-    protected void postChannelData() {
+    protected synchronized void postChannelData() {
         updateChannel(CHANNEL_SCHEDULE_NAME, stringOrUndef(scheduleRule.name));
         updateChannel(CHANNEL_SCHEDULE_ENABLED, scheduleRule.enabled ? OnOffType.ON : OnOffType.OFF);
         updateChannel(CHANNEL_SCHEDULE_TYPE, stringOrUndef(scheduleRule.type));
@@ -239,7 +266,7 @@ public class RachioScheduleHandler extends AbstractRachioThingHandler {
         return false;
     }
 
-    public boolean webhookEvent(RachioEventGsonDTO event) {
+    public synchronized boolean webhookEvent(RachioEventGsonDTO event) {
         if (!"SCHEDULE_STATUS".equals(event.type) || scheduleRuleId.isBlank()
                 || !scheduleRuleId.equalsIgnoreCase(event.scheduleId)) {
             return false;
@@ -267,11 +294,11 @@ public class RachioScheduleHandler extends AbstractRachioThingHandler {
         return !scheduleRuleId.isBlank() && scheduleRuleId.equalsIgnoreCase(scheduleId);
     }
 
-    String getScheduleRuleNameForRunSummary() {
+    synchronized String getScheduleRuleNameForRunSummary() {
         return firstNonBlank(scheduleRule.name, scheduleRule.externalName, getThingLabel());
     }
 
-    String getScheduleRuleNameSourceForRunSummary() {
+    synchronized String getScheduleRuleNameSourceForRunSummary() {
         if (!scheduleRule.name.isBlank()) {
             return "schedule handler";
         }
@@ -284,7 +311,7 @@ public class RachioScheduleHandler extends AbstractRachioThingHandler {
         return "schedule handler";
     }
 
-    String getScheduleRuleTypeForRunSummary() {
+    synchronized String getScheduleRuleTypeForRunSummary() {
         return scheduleRule.type.isBlank() ? "FIXED" : scheduleRule.type;
     }
 

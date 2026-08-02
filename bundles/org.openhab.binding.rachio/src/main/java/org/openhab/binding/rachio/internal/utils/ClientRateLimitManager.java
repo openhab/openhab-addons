@@ -22,6 +22,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
+import java.util.function.LongSupplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -56,6 +57,7 @@ public class ClientRateLimitManager {
 
     private final int numBuckets;
     private final long bucketSizeMillis;
+    private final LongSupplier clockMillis;
     // Mutable rate limit state is guarded by the synchronized public methods.
     private int rateLimitCap;
     private int rateRemaining;
@@ -67,6 +69,10 @@ public class ClientRateLimitManager {
     private boolean rateLimitKnown = false;
 
     public ClientRateLimitManager(int numBuckets, Duration bucketSize) {
+        this(numBuckets, bucketSize, System::currentTimeMillis);
+    }
+
+    ClientRateLimitManager(int numBuckets, Duration bucketSize, LongSupplier clockMillis) {
         if (numBuckets <= 0) {
             throw new IllegalArgumentException("numBuckets must be positive");
         }
@@ -76,23 +82,36 @@ public class ClientRateLimitManager {
         }
         this.numBuckets = numBuckets;
         this.bucketSizeMillis = bucketSizeMillis;
+        this.clockMillis = clockMillis;
         this.buckets = new int[numBuckets];
     }
 
     public synchronized void updateRateLimit(int rateLimitCap, int rateRemaining, @Nullable String rateReset) {
         if (rateLimitCap > 0 && rateRemaining >= 0) {
-            boolean resetWindowChanged = false;
+            Instant updatedResetTime = rateResetTime;
             if (rateReset != null && !rateReset.isBlank()) {
-                Instant updatedResetTime = parseRateReset(rateReset);
-                resetWindowChanged = !updatedResetTime.equals(rateResetTime);
-                this.rateResetTime = updatedResetTime;
+                Instant parsedResetTime = parseRateReset(rateReset);
+                if (isKnownResetTime(parsedResetTime)) {
+                    updatedResetTime = parsedResetTime;
+                }
             }
-            boolean remainingIncreased = this.rateRemaining >= 0 && rateRemaining > this.rateRemaining;
-            this.rateLimitCap = rateLimitCap;
-            this.rateRemaining = rateRemaining;
-            rateLimitKnown = true;
-            if (resetWindowChanged || remainingIncreased) {
-                initializationBootstrapRemaining = calculateInitializationBootstrapAllowance();
+
+            boolean firstKnownLimit = !rateLimitKnown;
+            boolean currentResetTimeKnown = isKnownResetTime(rateResetTime);
+            boolean updatedResetTimeKnown = isKnownResetTime(updatedResetTime);
+            boolean newerResetWindow = !firstKnownLimit && (!currentResetTimeKnown && updatedResetTimeKnown
+                    || currentResetTimeKnown && updatedResetTime.isAfter(rateResetTime));
+            boolean staleResetWindow = !firstKnownLimit && currentResetTimeKnown && updatedResetTimeKnown
+                    && updatedResetTime.isBefore(rateResetTime);
+            if (!staleResetWindow) {
+                this.rateLimitCap = rateLimitCap;
+                this.rateRemaining = firstKnownLimit || newerResetWindow ? rateRemaining
+                        : Math.min(this.rateRemaining, rateRemaining);
+                this.rateResetTime = updatedResetTime;
+                rateLimitKnown = true;
+                if (firstKnownLimit || newerResetWindow) {
+                    initializationBootstrapRemaining = calculateInitializationBootstrapAllowance();
+                }
             }
         }
         logRequest();
@@ -113,8 +132,9 @@ public class ClientRateLimitManager {
 
     public synchronized void tryThrottle(Priority priority, RequestPurpose requestPurpose)
             throws RateLimitThrottleException {
+        long now = clockMillis.getAsLong();
         if (priority == Priority.HIGH || !rateLimitKnown
-                || (rateResetTime != Instant.MAX && System.currentTimeMillis() >= rateResetTime.toEpochMilli())) {
+                || (isKnownResetTime(rateResetTime) && now >= rateResetTime.toEpochMilli())) {
             return;
         }
 
@@ -133,10 +153,11 @@ public class ClientRateLimitManager {
             }
         }
 
-        if (rateResetTime == Instant.MAX) {
+        if (!isKnownResetTime(rateResetTime)) {
             return;
         }
 
+        advanceBuckets(now);
         double budgetRate = budgetRate();
         double currentRate = currentRate();
 
@@ -173,7 +194,7 @@ public class ClientRateLimitManager {
     }
 
     public synchronized String getRateResetAsString() {
-        return rateResetTime == Instant.MAX ? "" : rateResetTime.toString();
+        return isKnownResetTime(rateResetTime) ? rateResetTime.toString() : "";
     }
 
     public synchronized int getInitializationBootstrapRemaining() {
@@ -199,21 +220,31 @@ public class ClientRateLimitManager {
     }
 
     private void logRequest() {
-        long now = System.currentTimeMillis();
+        long now = clockMillis.getAsLong();
         if (bucket0EndMillis == 0) {
             bucket0EndMillis = now + bucketSizeMillis;
-        }
-
-        if (now >= bucket0EndMillis) {
-            int shiftBuckets = (int) ((now - bucket0EndMillis) / bucketSizeMillis) + 1;
-            shift(shiftBuckets);
-            bucket0EndMillis = bucket0EndMillis + bucketSizeMillis * shiftBuckets;
+        } else {
+            advanceBuckets(now);
         }
 
         buckets[0]++;
         total = 0;
         for (int bucket : buckets) {
             total += bucket;
+        }
+    }
+
+    private void advanceBuckets(long now) {
+        if (bucket0EndMillis != 0 && now >= bucket0EndMillis) {
+            long elapsedBuckets = (now - bucket0EndMillis) / bucketSizeMillis + 1;
+            if (elapsedBuckets >= numBuckets) {
+                shift(numBuckets);
+                bucket0EndMillis = now + bucketSizeMillis;
+            } else {
+                int shiftBuckets = (int) elapsedBuckets;
+                shift(shiftBuckets);
+                bucket0EndMillis += bucketSizeMillis * shiftBuckets;
+            }
         }
     }
 
@@ -249,7 +280,10 @@ public class ClientRateLimitManager {
     }
 
     private double budgetRate() {
-        long remainingMillis = rateResetTime.toEpochMilli() - System.currentTimeMillis();
+        if (!isKnownResetTime(rateResetTime)) {
+            return Double.MAX_VALUE;
+        }
+        long remainingMillis = rateResetTime.toEpochMilli() - clockMillis.getAsLong();
         if (remainingMillis <= 0) {
             return Double.MAX_VALUE;
         }
@@ -282,6 +316,10 @@ public class ClientRateLimitManager {
         } catch (DateTimeParseException e) {
             return Instant.MAX;
         }
+    }
+
+    private boolean isKnownResetTime(Instant resetTime) {
+        return !Instant.MAX.equals(resetTime);
     }
 
     public static class RateLimitThrottleException extends Exception {

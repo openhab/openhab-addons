@@ -15,11 +15,13 @@ package org.openhab.binding.rachio.internal.handler;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.*;
 import static org.openhab.binding.rachio.internal.RachioUtils.exceptionMessage;
 import static org.openhab.binding.rachio.internal.RachioUtils.getTimestamp;
+import static org.openhab.binding.rachio.internal.RachioUtils.isSameInstance;
 
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Comparator;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -56,13 +58,14 @@ import org.slf4j.LoggerFactory;
 public class RachioValveProgramHandler extends AbstractRachioThingHandler {
     private final Logger logger = LoggerFactory.getLogger(RachioValveProgramHandler.class);
 
-    private @Nullable RachioValveProgram program;
-    private @Nullable RachioValveDayRun nextProgramRun;
-    private @Nullable RachioValveDayRun nextSkippedProgramRun;
-    private String lastEvent = "";
-    private @Nullable DateTimeType lastEventTime;
-    private String lastRainSkipPlannedRunStartTime = "";
-    private String lastRainSkipCanceledPlannedRunStartTime = "";
+    private final AtomicBoolean webhookSummaryRefreshPending = new AtomicBoolean();
+    private volatile @Nullable RachioValveProgram program;
+    private volatile @Nullable RachioValveDayRun nextProgramRun;
+    private volatile @Nullable RachioValveDayRun nextSkippedProgramRun;
+    private volatile String lastEvent = "";
+    private volatile @Nullable DateTimeType lastEventTime;
+    private volatile String lastRainSkipPlannedRunStartTime = "";
+    private volatile String lastRainSkipCanceledPlannedRunStartTime = "";
 
     public RachioValveProgramHandler(Thing thing) {
         super(thing);
@@ -70,6 +73,7 @@ public class RachioValveProgramHandler extends AbstractRachioThingHandler {
 
     @Override
     public void initialize() {
+        long generation = beginHandlerInitialization();
         thingId = getThing().getUID().getAsString();
         String programId = getThingConfigurationOrPropertyString(PROPERTY_VALVE_PROGRAM_ID);
         logger.debug("Initializing Rachio Valve Program Thing '{}', configured programId='{}'", getThing().getUID(),
@@ -84,7 +88,7 @@ public class RachioValveProgramHandler extends AbstractRachioThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             return;
         }
-        refreshProgram(programId, true);
+        scheduleHandlerTask(generation, () -> refreshProgram(programId, true, generation));
     }
 
     @Override
@@ -137,6 +141,13 @@ public class RachioValveProgramHandler extends AbstractRachioThingHandler {
     }
 
     private boolean refreshProgram(String programId, boolean initialLoad) {
+        return refreshProgram(programId, initialLoad, getHandlerLifecycleGeneration());
+    }
+
+    private boolean refreshProgram(String programId, boolean initialLoad, long generation) {
+        if (generation < 0) {
+            return false;
+        }
         RachioBridgeHandler handler = cloudHandler;
         if (handler == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
@@ -144,9 +155,14 @@ public class RachioValveProgramHandler extends AbstractRachioThingHandler {
         }
 
         try {
-            program = initialLoad ? loadValveProgramForInitialization(programId) : loadValveProgram(programId);
-            RachioValveProgram currentProgram = program;
-            if (currentProgram == null || currentProgram.id.isBlank()) {
+            RachioValveProgram loadedProgram = initialLoad ? loadValveProgramForInitialization(programId)
+                    : loadValveProgram(programId);
+            if (!isHandlerLifecycleCurrent(generation) || !isSameInstance(cloudHandler, handler)) {
+                return false;
+            }
+            program = loadedProgram;
+            RachioValveProgram currentProgram = loadedProgram;
+            if (currentProgram.id.isBlank()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Configured Rachio programId was not found in the account.");
                 return false;
@@ -158,7 +174,10 @@ public class RachioValveProgramHandler extends AbstractRachioThingHandler {
                 handler.registerValveProgramWebHook(currentProgram.id,
                         initialLoad ? RequestPurpose.INITIALIZATION : RequestPurpose.BACKGROUND_REFRESH);
             }
-            refreshProgramSummary(currentProgram);
+            if (!isHandlerLifecycleCurrent(generation) || !isSameInstance(cloudHandler, handler)) {
+                return false;
+            }
+            refreshProgramSummary(currentProgram, generation);
             logger.debug("{}: Valve Program model lookup succeeded: programId='{}', valveId='{}'", thingId,
                     currentProgram.id, currentProgram.getValveId());
             if (resetLocalThrottleRetry()) {
@@ -166,14 +185,19 @@ public class RachioValveProgramHandler extends AbstractRachioThingHandler {
                         "{}: Deferred initialization succeeded for Smart Hose Timer Program '{}'; Thing is ONLINE.",
                         thingId, currentProgram.id);
             }
-            goOnline();
+            if (isHandlerLifecycleCurrent(generation) && isSameInstance(cloudHandler, handler)) {
+                goOnline();
+            }
             return true;
         } catch (RachioApiThrottledException e) {
+            if (!isHandlerLifecycleCurrent(generation) || !isSameInstance(cloudHandler, handler)) {
+                return false;
+            }
             long delaySeconds = initialLoad
                     ? scheduleInitializationThrottleRetry("loading Smart Hose Timer Program '" + programId + "'",
-                            () -> refreshProgram(programId, true), e)
+                            () -> refreshProgram(programId, true, generation), e)
                     : scheduleLocalThrottleRetry("loading Smart Hose Timer Program '" + programId + "'",
-                            () -> refreshProgram(programId, false));
+                            () -> refreshProgram(programId, false, generation));
             if (delaySeconds > 0) {
                 if (initialLoad) {
                     logger.debug(
@@ -190,15 +214,19 @@ public class RachioValveProgramHandler extends AbstractRachioThingHandler {
             String reason = exceptionMessage(e);
             String message = "Unable to load Rachio Valve Program '" + programId + "': " + reason;
             logger.debug("{}: Unable to load Rachio Valve Program '{}': {}", thingId, programId, reason);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+            if (isHandlerLifecycleCurrent(generation) && isSameInstance(cloudHandler, handler)) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+            }
             return false;
         } catch (RuntimeException e) {
             String reason = exceptionMessage(e);
             String message = "Unable to initialize Rachio Valve Program '" + programId + "': " + reason;
             logger.debug("{}: Unable to initialize Rachio Valve Program '{}': {}", thingId, programId, reason, e);
-            updateStatus(ThingStatus.OFFLINE,
-                    initialLoad ? ThingStatusDetail.CONFIGURATION_ERROR : ThingStatusDetail.COMMUNICATION_ERROR,
-                    message);
+            if (isHandlerLifecycleCurrent(generation) && isSameInstance(cloudHandler, handler)) {
+                updateStatus(ThingStatus.OFFLINE,
+                        initialLoad ? ThingStatusDetail.CONFIGURATION_ERROR : ThingStatusDetail.COMMUNICATION_ERROR,
+                        message);
+            }
             return false;
         }
     }
@@ -220,26 +248,42 @@ public class RachioValveProgramHandler extends AbstractRachioThingHandler {
     }
 
     private void refreshProgramSummary(RachioValveProgram currentProgram) {
+        refreshProgramSummary(currentProgram, getHandlerLifecycleGeneration());
+    }
+
+    private void refreshProgramSummary(RachioValveProgram currentProgram, long generation) {
+        if (generation < 0) {
+            return;
+        }
         RachioBridgeHandler handler = cloudHandler;
         String valveId = firstNonBlank(currentProgram.getValveId(),
                 getThingConfigurationOrPropertyString(PROPERTY_VALVE_ID));
         if (handler == null || valveId.isBlank()) {
-            nextProgramRun = null;
-            nextSkippedProgramRun = null;
+            if (isHandlerLifecycleCurrent(generation) && isSameInstance(cloudHandler, handler)) {
+                nextProgramRun = null;
+                nextSkippedProgramRun = null;
+            }
             return;
         }
 
         try {
             RachioValveDayViewsResponse summary = handler.getValveDayViews(valveId);
+            if (!isHandlerLifecycleCurrent(generation) || !isSameInstance(cloudHandler, handler)) {
+                return;
+            }
             long now = System.currentTimeMillis();
-            nextProgramRun = summary.getRuns().stream()
+            RachioValveDayRun loadedNextProgramRun = summary.getRuns().stream()
                     .filter(run -> currentProgram.id.equalsIgnoreCase(run.getProgramId()))
                     .filter(run -> run.getStartEpochMillis() >= now)
                     .min(Comparator.comparingLong(RachioValveDayRun::getStartEpochMillis)).orElse(null);
-            nextSkippedProgramRun = summary.getRuns().stream()
+            RachioValveDayRun loadedNextSkippedProgramRun = summary.getRuns().stream()
                     .filter(run -> currentProgram.id.equalsIgnoreCase(run.getProgramId()))
                     .filter(RachioValveDayRun::isSkipped).filter(run -> run.getStartEpochMillis() >= now)
                     .min(Comparator.comparingLong(RachioValveDayRun::getStartEpochMillis)).orElse(null);
+            if (isHandlerLifecycleCurrent(generation) && isSameInstance(cloudHandler, handler)) {
+                nextProgramRun = loadedNextProgramRun;
+                nextSkippedProgramRun = loadedNextSkippedProgramRun;
+            }
         } catch (RachioApiThrottledException e) {
             logger.debug(
                     "{}: Skipping Smart Hose Timer Program summary refresh for program '{}' because the local API budget guard is active: {}",
@@ -313,10 +357,41 @@ public class RachioValveProgramHandler extends AbstractRachioThingHandler {
             return false;
         }
 
-        refreshProgramSummary(currentProgram);
         postChannelData();
         updateChannel(CHANNEL_LAST_UPDATE, getTimestamp());
+        scheduleWebhookSummaryRefresh(currentProgram);
         return true;
+    }
+
+    private void scheduleWebhookSummaryRefresh(RachioValveProgram currentProgram) {
+        long generation = getHandlerLifecycleGeneration();
+        if (generation < 0 || !webhookSummaryRefreshPending.compareAndSet(false, true)) {
+            return;
+        }
+        try {
+            scheduler.execute(() -> {
+                try {
+                    if (!isCurrentProgramContext(generation, currentProgram)) {
+                        return;
+                    }
+                    refreshProgramSummary(currentProgram, generation);
+                    if (isCurrentProgramContext(generation, currentProgram)) {
+                        postChannelData();
+                        updateChannel(CHANNEL_LAST_UPDATE, getTimestamp());
+                    }
+                } finally {
+                    webhookSummaryRefreshPending.set(false);
+                }
+            });
+        } catch (RuntimeException e) {
+            webhookSummaryRefreshPending.set(false);
+            logger.debug("{}: Unable to schedule Smart Hose Timer Program summary refresh after webhook event", thingId,
+                    e);
+        }
+    }
+
+    private boolean isCurrentProgramContext(long generation, RachioValveProgram currentProgram) {
+        return isHandlerLifecycleCurrent(generation) && isSameInstance(program, currentProgram);
     }
 
     @Override

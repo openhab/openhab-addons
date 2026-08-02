@@ -50,7 +50,7 @@ public class RachioConfiguration {
     public String callbackUrl = "";
     public String callbackUsername = "";
     public String callbackPassword = "";
-    public Boolean clearAllCallbacks = false;
+    public boolean clearAllCallbacks = false;
     public boolean useCloudWebhook = false;
     public boolean autoConfigureWebhooks = false;
     public boolean autoConfigureHoseTimerWebhooks = false;

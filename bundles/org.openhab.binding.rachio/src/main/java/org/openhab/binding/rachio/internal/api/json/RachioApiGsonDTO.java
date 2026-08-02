@@ -46,7 +46,7 @@ public class RachioApiGsonDTO {
         public String username = ""; // "username":"openhab",
         public String fullName = ""; // "fullName":"openHAB user",
         public String email = ""; // "email":info@openhab.info",
-        public List<RachioCloudDevice> devices = new ArrayList<>(); // "devices":[]
+        public @Nullable List<@Nullable RachioCloudDevice> devices = new ArrayList<>(); // "devices":[]
         public boolean deleted = false; // "deleted":false
     }
 

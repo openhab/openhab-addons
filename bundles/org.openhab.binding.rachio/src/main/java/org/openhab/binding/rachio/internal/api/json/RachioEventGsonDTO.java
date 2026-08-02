@@ -153,12 +153,82 @@ public class RachioEventGsonDTO {
     public @Nullable RachioCloudNetworkSettings network; // "network" : {}
     public String pin = "";
 
-    public RachioApiResult apiResult = new RachioApiResult();
+    public @Nullable RachioApiResult apiResult = new RachioApiResult();
 
     public @Nullable Map<String, String> eventParms;
     public @Nullable Map<String, RachioEventProperty> deltaProperties;
 
     public RachioEventGsonDTO() {
+    }
+
+    public void normalizeNullValues() {
+        eventId = safeString(eventId);
+        resourceId = safeString(resourceId);
+        resourceType = safeString(resourceType);
+        externalId = safeString(externalId);
+        routingId = safeString(routingId);
+        connectId = safeString(connectId);
+        correlationId = safeString(correlationId);
+        scheduleId = safeString(scheduleId);
+        deviceId = safeString(deviceId);
+        zoneId = safeString(zoneId);
+        id = safeString(id);
+        timeZone = safeString(timeZone);
+        timestamp = safeString(timestamp);
+        timeForSummary = safeString(timeForSummary);
+        startTime = safeString(startTime);
+        endTime = safeString(endTime);
+        status = safeString(status);
+        type = safeString(type);
+        subType = safeString(subType);
+        eventType = safeString(eventType);
+        category = safeString(category);
+        topic = safeString(topic);
+        action = safeString(action);
+        summary = safeString(summary);
+        description = safeString(description);
+        title = safeString(title);
+        pushTitle = safeString(pushTitle);
+        icon = safeString(icon);
+        iconUrl = safeString(iconUrl);
+        zoneName = safeString(zoneName);
+        zoneRunState = safeString(zoneRunState);
+        scheduleName = safeString(scheduleName);
+        scheduleType = safeString(scheduleType);
+        deviceName = safeString(deviceName);
+        pin = safeString(pin);
+
+        RachioWebhookPayload eventPayload = payload;
+        if (eventPayload != null) {
+            eventPayload.normalizeNullValues();
+        }
+        RachioZoneStatus runStatus = zoneRunStatus;
+        if (runStatus != null) {
+            runStatus.scheduleType = safeString(runStatus.scheduleType);
+            runStatus.executionType = safeString(runStatus.executionType);
+            runStatus.state = safeString(runStatus.state);
+            runStatus.startTime = safeString(runStatus.startTime);
+            runStatus.endTime = safeString(runStatus.endTime);
+        }
+        RachioCloudNetworkSettings eventNetwork = network;
+        if (eventNetwork != null) {
+            eventNetwork.gw = safeString(eventNetwork.gw);
+            eventNetwork.rssi = safeString(eventNetwork.rssi);
+            eventNetwork.dns2 = safeString(eventNetwork.dns2);
+            eventNetwork.dns1 = safeString(eventNetwork.dns1);
+            eventNetwork.ip = safeString(eventNetwork.ip);
+            eventNetwork.nm = safeString(eventNetwork.nm);
+        }
+        getApiResult();
+    }
+
+    public RachioApiResult getApiResult() {
+        RachioApiResult currentApiResult = apiResult;
+        if (currentApiResult == null) {
+            currentApiResult = new RachioApiResult();
+            apiResult = currentApiResult;
+        }
+        return currentApiResult;
     }
 
     public void normalize() {
@@ -373,6 +443,10 @@ public class RachioEventGsonDTO {
         return value == null || value.isBlank();
     }
 
+    private static String safeString(@Nullable String value) {
+        return value != null ? value : "";
+    }
+
     private void normalizeZoneStatus(@Nullable RachioWebhookPayload eventPayload, String state) {
         type = "ZONE_STATUS";
         subType = state;
@@ -438,6 +512,23 @@ public class RachioEventGsonDTO {
         public String programId = "";
         public String valveId = "";
         public @Nullable Boolean flowDetected;
+
+        private void normalizeNullValues() {
+            durationSeconds = safeString(durationSeconds);
+            endTime = safeString(endTime);
+            flowVolumeG = safeString(flowVolumeG);
+            plannedRunStartTime = safeString(plannedRunStartTime);
+            runType = safeString(runType);
+            scheduleId = safeString(scheduleId);
+            scheduleName = safeString(scheduleName);
+            startTime = safeString(startTime);
+            zoneId = safeString(zoneId);
+            zoneName = safeString(zoneName);
+            zoneNumber = safeString(zoneNumber);
+            endReason = safeString(endReason);
+            programId = safeString(programId);
+            valveId = safeString(valveId);
+        }
 
         public int getDurationSeconds() {
             return parseInt(durationSeconds);

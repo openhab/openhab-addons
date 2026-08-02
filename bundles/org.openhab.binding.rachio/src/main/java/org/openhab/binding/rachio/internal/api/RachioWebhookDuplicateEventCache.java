@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Small bounded in-memory cache for deduplicating successfully processed Rachio webhook event IDs.
+ * Small bounded in-memory cache for atomically claiming and deduplicating Rachio webhook event IDs.
  *
  * @author Kovacs Istvan - Initial contribution
  */
@@ -49,37 +49,33 @@ class RachioWebhookDuplicateEventCache {
         this.clockMillis = clockMillis;
     }
 
-    boolean isProcessed(@Nullable String eventId) {
+    boolean claim(@Nullable String eventId) {
         String normalizedEventId = normalizeEventId(eventId);
         if (normalizedEventId == null) {
-            return false;
+            return true;
         }
 
         long now = clockMillis.getAsLong();
         cleanupIfNeeded(now);
 
-        Long previous = eventIds.get(normalizedEventId);
-        if (previous == null) {
-            return false;
-        }
-
-        if (isExpired(previous.longValue(), now)) {
+        while (true) {
+            Long previous = eventIds.putIfAbsent(normalizedEventId, now);
+            if (previous == null) {
+                trimToMaxEntries();
+                return true;
+            }
+            if (!isExpired(previous.longValue(), now)) {
+                return false;
+            }
             eventIds.remove(normalizedEventId, previous);
-            return false;
         }
-        return true;
     }
 
-    void markProcessed(@Nullable String eventId) {
+    void release(@Nullable String eventId) {
         String normalizedEventId = normalizeEventId(eventId);
-        if (normalizedEventId == null) {
-            return;
+        if (normalizedEventId != null) {
+            eventIds.remove(normalizedEventId);
         }
-
-        long now = clockMillis.getAsLong();
-        cleanupIfNeeded(now);
-        eventIds.put(normalizedEventId, now);
-        trimToMaxEntries();
     }
 
     int size() {

@@ -21,6 +21,7 @@ import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -57,12 +58,14 @@ public class RachioDiscoveryService extends AbstractDiscoveryService implements 
     private static final int DISCOVERY_REFRESH_SEC = 900;
 
     private final Logger logger = LoggerFactory.getLogger(RachioDiscoveryService.class);
+    private final Object jobLock = new Object();
+    private final AtomicBoolean discoveryRunning = new AtomicBoolean();
 
     private @Nullable Future<?> scanTask;
 
     private @Nullable ScheduledFuture<?> discoveryJob;
 
-    private @Nullable RachioBridgeHandler cloudHandler;
+    private volatile @Nullable RachioBridgeHandler cloudHandler;
 
     @Override
     @Activate
@@ -112,11 +115,12 @@ public class RachioDiscoveryService extends AbstractDiscoveryService implements 
     protected void startBackgroundDiscovery() {
         logger.debug("Starting background discovery for new Rachio controllers");
 
-        ScheduledFuture<?> discoveryJob = this.discoveryJob;
-        if (discoveryJob == null || discoveryJob.isCancelled()) {
-            discoveryJob = scheduler.scheduleWithFixedDelay(this::discover, 10, DISCOVERY_REFRESH_SEC,
-                    TimeUnit.SECONDS);
-            this.discoveryJob = discoveryJob;
+        synchronized (jobLock) {
+            ScheduledFuture<?> discoveryJob = this.discoveryJob;
+            if (discoveryJob == null || discoveryJob.isCancelled()) {
+                this.discoveryJob = scheduler.scheduleWithFixedDelay(() -> discover("background", false), 10,
+                        DISCOVERY_REFRESH_SEC, TimeUnit.SECONDS);
+            }
         }
     }
 
@@ -127,33 +131,48 @@ public class RachioDiscoveryService extends AbstractDiscoveryService implements 
     }
 
     @Override
-    protected synchronized void startScan() {
-        Future<?> scanTask = this.scanTask;
-        if (scanTask == null || scanTask.isDone()) {
-            logger.debug("Starting Rachio discovery scan");
-            scanTask = scheduler.submit((Runnable) this::discover);
-            this.scanTask = scanTask;
+    protected void startScan() {
+        boolean scanScheduled = false;
+        synchronized (jobLock) {
+            Future<?> scanTask = this.scanTask;
+            if (scanTask == null || scanTask.isDone()) {
+                logger.debug("Starting Rachio discovery scan");
+                this.scanTask = scheduler.submit((Runnable) () -> discover("scan", true));
+                scanScheduled = true;
+            }
+        }
+        if (!scanScheduled) {
+            logger.debug("Rachio discovery scan skipped; another requested discovery task is active");
+            stopScan();
         }
     }
 
-    protected synchronized void discover() {
-        discover("scan");
+    protected void discover() {
+        discover("background", false);
     }
 
-    public synchronized void discoverFromCurrentCloudState(String reason) {
-        Future<?> scanTask = this.scanTask;
-        if (scanTask == null || scanTask.isDone()) {
-            logger.debug("Starting automatic Rachio discovery from current cloud state ({})", reason);
-            scanTask = scheduler.submit((Runnable) () -> discover("automatic " + reason));
-            this.scanTask = scanTask;
-        } else {
-            logger.debug(
-                    "Automatic Rachio discovery from current cloud state ({}) skipped; discovery is already running",
-                    reason);
+    public void discoverFromCurrentCloudState(String reason) {
+        synchronized (jobLock) {
+            Future<?> scanTask = this.scanTask;
+            if (scanTask == null || scanTask.isDone()) {
+                logger.debug("Starting automatic Rachio discovery from current cloud state ({})", reason);
+                this.scanTask = scheduler.submit((Runnable) () -> discover("automatic " + reason, false));
+            } else {
+                logger.debug(
+                        "Automatic Rachio discovery from current cloud state ({}) skipped; discovery is already running",
+                        reason);
+            }
         }
     }
 
-    private synchronized void discover(String source) {
+    private void discover(String source, boolean completeScan) {
+        if (!discoveryRunning.compareAndSet(false, true)) {
+            logger.debug("RachioDiscovery: {} discovery skipped; another discovery run is active", source);
+            if (completeScan) {
+                stopScan();
+            }
+            return;
+        }
         try {
             RachioBridgeHandler handler = cloudHandler;
             if (handler == null) {
@@ -161,15 +180,8 @@ public class RachioDiscoveryService extends AbstractDiscoveryService implements 
                 return;
             }
 
-            Map<String, RachioDevice> deviceList = null;
-            ThingUID bridgeUID;
-            deviceList = handler.getDevices();
-            bridgeUID = handler.getThing().getUID();
-
-            if (deviceList == null) {
-                logger.debug("Discovery: Rachio Cloud access not initialized yet!");
-                return;
-            }
+            Map<String, RachioDevice> deviceList = Map.copyOf(handler.getDevices());
+            ThingUID bridgeUID = handler.getThing().getUID();
             DiscoveryCounts counts = new DiscoveryCounts();
             logger.debug("RachioDiscovery: {} discovered {} irrigation controller device(s).", source,
                     deviceList.size());
@@ -191,7 +203,7 @@ public class RachioDiscoveryService extends AbstractDiscoveryService implements 
                 thingDiscovered(discoveryResult);
                 counts.controllers++;
 
-                Map<String, RachioZone> zoneList = dev.getZones();
+                Map<String, RachioZone> zoneList = Map.copyOf(dev.getZones());
                 logger.debug("Found {} zones for this device.", zoneList.size());
                 for (Map.Entry<String, RachioZone> ze : zoneList.entrySet()) {
                     RachioZone zone = ze.getValue();
@@ -227,34 +239,40 @@ public class RachioDiscoveryService extends AbstractDiscoveryService implements 
                     source, counts.controllers, counts.zones, counts.schedules, counts.flexSchedules,
                     counts.baseStations, counts.valves, counts.valvePrograms);
 
-            stopScan();
         } catch (RuntimeException e) {
-            logger.warn("Unexpected error while discovering Rachio devices/zones: {}", e.getMessage());
+            logger.warn("Unexpected error while discovering Rachio devices/zones", e);
+        } finally {
+            discoveryRunning.set(false);
+            if (completeScan) {
+                stopScan();
+            }
         }
     }
 
     @Override
-    protected synchronized void stopScan() {
+    protected void stopScan() {
         super.stopScan();
     }
 
-    private synchronized void cancelDiscoveryJobs() {
-        ScheduledFuture<?> discoveryJob = this.discoveryJob;
-        if (discoveryJob != null) {
-            discoveryJob.cancel(true);
-            this.discoveryJob = null;
-        }
+    private void cancelDiscoveryJobs() {
+        synchronized (jobLock) {
+            ScheduledFuture<?> discoveryJob = this.discoveryJob;
+            if (discoveryJob != null) {
+                discoveryJob.cancel(true);
+                this.discoveryJob = null;
+            }
 
-        Future<?> scanTask = this.scanTask;
-        if (scanTask != null) {
-            scanTask.cancel(true);
-            this.scanTask = null;
+            Future<?> scanTask = this.scanTask;
+            if (scanTask != null) {
+                scanTask.cancel(true);
+                this.scanTask = null;
+            }
         }
     }
 
     private int discoverScheduleRules(ThingUID bridgeUID, RachioDevice dev) {
         int count = 0;
-        for (RachioCloudScheduleRule scheduleRule : dev.scheduleRules) {
+        for (RachioCloudScheduleRule scheduleRule : dev.getScheduleRulesSnapshot()) {
             DiscoveryResult discoveryResult = buildScheduleDiscoveryResult(bridgeUID, dev, scheduleRule);
             if (discoveryResult != null) {
                 thingDiscovered(discoveryResult);
@@ -266,7 +284,7 @@ public class RachioDiscoveryService extends AbstractDiscoveryService implements 
 
     private int discoverFlexScheduleRules(ThingUID bridgeUID, RachioDevice dev) {
         int count = 0;
-        for (RachioCloudScheduleRule scheduleRule : dev.flexScheduleRules) {
+        for (RachioCloudScheduleRule scheduleRule : dev.getFlexScheduleRulesSnapshot()) {
             DiscoveryResult discoveryResult = buildFlexScheduleDiscoveryResult(bridgeUID, dev, scheduleRule);
             if (discoveryResult != null) {
                 logger.debug(

@@ -19,9 +19,13 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -44,6 +48,9 @@ import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
 /**
  * {@link RachioDevice} provides device level functions.
  *
@@ -63,11 +70,11 @@ public class RachioDevice extends RachioCloudDevice {
     public int rainDelay = 0;
     private boolean sleepMode = false;
 
-    public @Nullable ThingUID bridgeUID;
-    public @Nullable ThingUID devUID;
-    private Map<String, RachioZone> zoneList = new HashMap<>();
-    private @Nullable RachioDeviceHandler thingHandler;
-    public @Nullable RachioCloudNetworkSettings network;
+    public volatile @Nullable ThingUID bridgeUID;
+    public volatile @Nullable ThingUID devUID;
+    private volatile Map<String, RachioZone> zoneList = Map.of();
+    private volatile @Nullable RachioDeviceHandler thingHandler;
+    public volatile @Nullable RachioCloudNetworkSettings network;
     public String scheduleName = "";
     public String currentScheduleId = "";
     public String currentScheduleName = "";
@@ -95,38 +102,54 @@ public class RachioDevice extends RachioCloudDevice {
     public String activeZoneId = "";
 
     public RachioDevice(RachioCloudDevice device) {
-        try {
-            createDate = device.createDate;
-            id = device.id;
-            status = device.status;
-            zones = new ArrayList<>(device.zones);
-            latitude = device.latitude;
-            longitude = device.longitude;
-            name = device.name;
-            scheduleRules = new ArrayList<>(device.scheduleRules);
-            serialNumber = device.serialNumber;
-            macAddress = device.macAddress;
-            rainDelayExpirationDate = device.rainDelayExpirationDate;
-            on = device.on;
-            flexScheduleRules = new ArrayList<>(device.flexScheduleRules);
-            model = device.model;
-            scheduleModeType = device.scheduleModeType;
-            deleted = device.deleted;
-            rainSensorTripped = device.rainSensorTripped;
-            homeKitCompatible = device.homeKitCompatible;
-            utcOffset = device.utcOffset;
-            updateRainDelayFromExpirationDate();
-            logger.trace("Adding device '{}' (id='{}', model='{}', on={}, status={}, deleted={})", device.name,
-                    device.id, device.model, device.on, device.status, device.deleted);
-            if (!device.deleted) {
-                zoneList = new HashMap<>();
-                for (RachioCloudZone zone : device.zones) {
-                    zoneList.put(zone.id, new RachioZone(zone, getThingID()));
-                }
-            }
-        } catch (RuntimeException e) {
-            logger.warn("Unable to initialize device '{}': {}", device.name, e.getMessage());
+        createDate = device.createDate;
+        id = safeString(device.id);
+        if (id.isBlank()) {
+            throw new IllegalArgumentException("Rachio device ID is missing");
         }
+        status = safeString(device.status);
+        List<RachioCloudZone> cloudZones = copyList(device.zones);
+        zones = cloudZones;
+        latitude = device.latitude;
+        longitude = device.longitude;
+        name = safeString(device.name);
+        scheduleRules = copyList(device.scheduleRules);
+        serialNumber = safeString(device.serialNumber);
+        macAddress = safeString(device.macAddress);
+        rainDelayExpirationDate = device.rainDelayExpirationDate;
+        on = device.on;
+        flexScheduleRules = copyList(device.flexScheduleRules);
+        model = safeString(device.model);
+        scheduleModeType = safeString(device.scheduleModeType);
+        deleted = device.deleted;
+        rainSensorTripped = device.rainSensorTripped;
+        homeKitCompatible = device.homeKitCompatible;
+        utcOffset = device.utcOffset;
+        updateRainDelayFromExpirationDate();
+        logger.trace("Adding device '{}' (id='{}', model='{}', on={}, status={}, deleted={})", name, id, model, on,
+                status, deleted);
+        if (!deleted) {
+            Map<String, RachioZone> initializedZones = new HashMap<>();
+            for (RachioCloudZone zone : cloudZones) {
+                RachioZone initializedZone = new RachioZone(zone, getThingID());
+                initializedZones.put(initializedZone.id, initializedZone);
+            }
+            zoneList = Map.copyOf(initializedZones);
+        }
+    }
+
+    private static <T> List<T> copyList(@Nullable List<T> values) {
+        if (values == null) {
+            return List.of();
+        }
+        if (values.stream().anyMatch(Objects::isNull)) {
+            throw new IllegalArgumentException("Rachio cloud API returned a list containing a null entry");
+        }
+        return List.copyOf(values);
+    }
+
+    private static String safeString(@Nullable String value) {
+        return value != null ? value : "";
     }
 
     /**
@@ -166,14 +189,28 @@ public class RachioDevice extends RachioCloudDevice {
      *
      * @param updatedData new device settings received from cloud call
      */
-    public void update(@Nullable RachioDevice updatedData) {
+    public synchronized void update(@Nullable RachioDevice updatedData) {
         if (updatedData == null || !id.equals(updatedData.id)) {
             return;
         }
 
+        createDate = updatedData.createDate;
         status = updatedData.status;
+        zones = copyList(updatedData.zones);
+        latitude = updatedData.latitude;
+        longitude = updatedData.longitude;
+        name = updatedData.name;
+        scheduleRules = copyList(updatedData.scheduleRules);
+        serialNumber = updatedData.serialNumber;
+        macAddress = updatedData.macAddress;
         on = updatedData.on;
+        flexScheduleRules = copyList(updatedData.flexScheduleRules);
+        model = updatedData.model;
+        scheduleModeType = updatedData.scheduleModeType;
+        deleted = updatedData.deleted;
         rainSensorTripped = updatedData.rainSensorTripped;
+        homeKitCompatible = updatedData.homeKitCompatible;
+        utcOffset = updatedData.utcOffset;
         rainDelayExpirationDate = updatedData.rainDelayExpirationDate;
         updateRainDelayFromExpirationDate();
     }
@@ -214,7 +251,7 @@ public class RachioDevice extends RachioCloudDevice {
         RachioCloudNetworkSettings nw = network;
         if (nw != null) {
             properties.put(PROPERTY_IP_ADDRESS, nw.ip);
-            properties.put(PROPERTY_IP_MASK, nw.ip);
+            properties.put(PROPERTY_IP_MASK, nw.nm);
             properties.put(PROPERTY_IP_GW, nw.gw);
             properties.put(PROPERTY_IP_DNS1, nw.dns1);
             properties.put(PROPERTY_IP_DNS2, nw.dns2);
@@ -229,7 +266,7 @@ public class RachioDevice extends RachioCloudDevice {
      * @return Suffix for the thing name
      */
     public String getThingID() {
-        return macAddress;
+        return !macAddress.isBlank() ? macAddress : id;
     }
 
     /**
@@ -579,7 +616,7 @@ public class RachioDevice extends RachioCloudDevice {
         if (scheduleRule == null) {
             return "";
         }
-        if (scheduleRules.contains(scheduleRule)) {
+        if (getScheduleRulesSnapshot().contains(scheduleRule)) {
             return firstNonBlank(scheduleRule.type, "FIXED");
         }
         return firstNonBlank(scheduleRule.type, "FLEX");
@@ -589,12 +626,12 @@ public class RachioDevice extends RachioCloudDevice {
         if (scheduleId.isBlank()) {
             return null;
         }
-        for (RachioCloudScheduleRule scheduleRule : scheduleRules) {
+        for (RachioCloudScheduleRule scheduleRule : getScheduleRulesSnapshot()) {
             if (scheduleId.equalsIgnoreCase(scheduleRule.id)) {
                 return scheduleRule;
             }
         }
-        for (RachioCloudScheduleRule scheduleRule : flexScheduleRules) {
+        for (RachioCloudScheduleRule scheduleRule : getFlexScheduleRulesSnapshot()) {
             if (scheduleId.equalsIgnoreCase(scheduleRule.id)) {
                 return scheduleRule;
             }
@@ -637,28 +674,48 @@ public class RachioDevice extends RachioCloudDevice {
     }
 
     public String getAllRunZonesJson(int defaultRuntime) {
-        boolean flAll = runList.isEmpty() || "ALL".equalsIgnoreCase(runList);
+        boolean runAllEnabledZones = runList.isBlank() || "ALL".equalsIgnoreCase(runList.trim());
+        Set<Integer> requestedZoneNumbers = parseRequestedZoneNumbers(runList);
         int runtime = getMultiZoneRunTime(defaultRuntime);
         StringBuilder resolvedDurations = new StringBuilder();
+        JsonArray selectedZones = new JsonArray();
 
-        String list = runList + ","; // make sure last entry is terminated by ','
-        String json = "{ \"zones\" : [";
-        for (Map.Entry<String, RachioZone> ze : zoneList.entrySet()) {
-            RachioZone zone = ze.getValue();
-            if (flAll || (list.contains(zone.zoneNumber + ",") && (zone.getEnabled() == OnOffType.ON))) {
+        zoneList.values().stream().sorted(Comparator.comparingInt(zone -> zone.zoneNumber)).forEach(zone -> {
+            if (zone.getEnabled() == OnOffType.ON
+                    && (runAllEnabledZones || requestedZoneNumbers.contains(zone.zoneNumber))) {
                 if (resolvedDurations.length() > 0) {
                     resolvedDurations.append(", ");
                 }
                 resolvedDurations.append("zone ").append(zone.zoneNumber).append(" = ").append(runtime).append(" sec");
-                if (json.contains("\"id\"")) {
-                    json = json + ", ";
+                JsonObject selectedZone = new JsonObject();
+                selectedZone.addProperty("id", zone.id);
+                selectedZone.addProperty("duration", runtime);
+                selectedZone.addProperty("sortOrder", selectedZones.size() + 1);
+                selectedZones.add(selectedZone);
+            }
+        });
+        JsonObject request = new JsonObject();
+        request.add("zones", selectedZones);
+        logger.debug("Resolved multi-zone durations: {}", resolvedDurations);
+        return request.toString();
+    }
+
+    private Set<Integer> parseRequestedZoneNumbers(String requestedZones) {
+        Set<Integer> result = new HashSet<>();
+        if (requestedZones.isBlank() || "ALL".equalsIgnoreCase(requestedZones.trim())) {
+            return result;
+        }
+        for (String token : requestedZones.split(",")) {
+            try {
+                int zoneNumber = Integer.parseInt(token.trim());
+                if (zoneNumber > 0) {
+                    result.add(zoneNumber);
                 }
-                json = json + "{ \"id\" : \"" + zone.id + "\", \"duration\" : " + runtime + ", \"sortOrder\" : 1}";
+            } catch (NumberFormatException e) {
+                logger.debug("Ignoring invalid zone number '{}' in multi-zone run list", token.trim());
             }
         }
-        json = json + "] }";
-        logger.debug("Resolved multi-zone durations: {}", resolvedDurations);
-        return json;
+        return result;
     }
 
     /**
@@ -668,6 +725,18 @@ public class RachioDevice extends RachioCloudDevice {
      */
     public Map<String, RachioZone> getZones() {
         return zoneList;
+    }
+
+    public List<RachioCloudScheduleRule> getScheduleRulesSnapshot() {
+        return copyList(scheduleRules);
+    }
+
+    public List<RachioCloudScheduleRule> getFlexScheduleRulesSnapshot() {
+        return copyList(flexScheduleRules);
+    }
+
+    public void replaceZones(Map<String, RachioZone> zones) {
+        zoneList = Map.copyOf(zones);
     }
 
     public @Nullable RachioZone getZoneByNumber(int zoneNumber) {

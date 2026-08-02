@@ -14,6 +14,7 @@ package org.openhab.binding.rachio.internal.handler;
 
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.*;
 import static org.openhab.binding.rachio.internal.RachioUtils.getTimestamp;
+import static org.openhab.binding.rachio.internal.RachioUtils.isSameInstance;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -23,6 +24,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.OptionalDouble;
+import java.util.concurrent.Future;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -59,14 +61,19 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class RachioZoneHandler extends AbstractRachioThingHandler {
     private static final int MAX_ZONE_IMAGE_SIZE_BYTES = 5_000_000;
+    private static final long ZONE_IMAGE_RETRY_DELAY_MILLIS = 5 * 60 * 1000L;
 
     private final Logger logger = LoggerFactory.getLogger(RachioZoneHandler.class);
-    private OnOffType zoneRunState = OnOffType.OFF;
-    private @Nullable RachioDevice dev;
-    private @Nullable RachioZone zone;
+    private volatile OnOffType zoneRunState = OnOffType.OFF;
+    private volatile @Nullable RachioDevice dev;
+    private volatile @Nullable RachioZone zone;
     private String cachedImageUrl = "";
     private @Nullable RawType cachedImage;
     private String failedImageUrl = "";
+    private long failedImageAtMillis;
+    private String pendingImageUrl = "";
+    private @Nullable Future<?> imageDownloadJob;
+    private long imageRequestGeneration;
 
     public RachioZoneHandler(Thing thing) {
         super(thing);
@@ -74,6 +81,8 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
 
     @Override
     public void initialize() {
+        beginHandlerInitialization();
+        cancelImageDownload();
         thingId = getThing().getUID().getAsString();
         String configuredZoneId = getThingConfigurationString(PROPERTY_ZONE_ID);
         logger.debug("Zone initialize entered: thingUid={}, bridgeUid={}, configured zoneId='{}'", getThing().getUID(),
@@ -134,11 +143,6 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        /*
-         * Note: if communication with thing fails for some reason,
-         * indicate that by setting the status with detail information
-         * updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-         */
         String channel = channelUID.getId();
         logger.debug("Handle command {} for {}", command.toString(), channelUID.getAsString());
         RachioBridgeHandler handler = cloudHandler;
@@ -300,13 +304,22 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
     @Override
     public boolean onThingStateChanged(@Nullable RachioDevice updatedDev, @Nullable RachioZone updatedZone) {
         RachioZone z = zone;
-        if (updatedZone != null && (z == null || !z.id.equals(updatedZone.id)) && handlesZone(updatedZone)) {
-            rebindToCurrentBridgeModel("zone state update");
+        if (updatedZone != null && !isSameInstance(z, updatedZone) && handlesZone(updatedZone)) {
+            RachioDevice currentDev = updatedDev;
+            RachioBridgeHandler handler = cloudHandler;
+            if (currentDev == null && handler != null) {
+                currentDev = handler.getDevForZone(updatedZone);
+            }
+            if (currentDev != null) {
+                bindResolvedModel(currentDev, updatedZone, "zone state update");
+            }
             z = zone;
         }
         if (updatedZone != null && z != null && z.id.equals(updatedZone.id)) {
             logger.debug("{}: Update for zone {} received.", thingId, z.name);
-            z.update(updatedZone);
+            if (!isSameInstance(z, updatedZone)) {
+                z.update(updatedZone);
+            }
             updateChannel(CHANNEL_LAST_UPDATE, getTimestamp());
             postChannelData();
             updateResolvedZoneThingStatusAfterSuccessfulCommunication();
@@ -460,12 +473,14 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
         }
     }
 
-    private void updateZoneImageChannel(RachioZone z) {
+    private synchronized void updateZoneImageChannel(RachioZone z) {
         String imageUrl = z.getImageDownloadUrl();
         if (imageUrl.isBlank()) {
+            cancelImageDownload();
             cachedImageUrl = "";
             cachedImage = null;
             failedImageUrl = "";
+            failedImageAtMillis = 0;
             updateChannel(CHANNEL_ZONE_IMAGE, UnDefType.NULL);
             return;
         }
@@ -475,35 +490,99 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
             updateChannel(CHANNEL_ZONE_IMAGE, image);
             return;
         }
-        if (imageUrl.equals(failedImageUrl)) {
+        Future<?> downloadJob = imageDownloadJob;
+        if (imageUrl.equals(pendingImageUrl) && downloadJob != null && !downloadJob.isDone()) {
+            return;
+        }
+        long now = System.currentTimeMillis();
+        if (imageUrl.equals(failedImageUrl) && now - failedImageAtMillis < ZONE_IMAGE_RETRY_DELAY_MILLIS) {
             return;
         }
 
+        cancelImageDownload();
+        pendingImageUrl = imageUrl;
+        long generation = ++imageRequestGeneration;
         try {
-            image = downloadZoneImage(imageUrl);
-            if (image == null) {
-                failedImageUrl = imageUrl;
-                if (cachedImage == null) {
-                    updateChannel(CHANNEL_ZONE_IMAGE, UnDefType.NULL);
-                }
-                logger.debug("{}: Unable to download image for zone '{}'", thingId, z.name);
-                return;
-            }
-            cachedImageUrl = imageUrl;
-            cachedImage = image;
-            failedImageUrl = "";
-            updateChannel(CHANNEL_ZONE_IMAGE, image);
+            imageDownloadJob = scheduler.submit(() -> downloadZoneImage(imageUrl, z.name, generation));
         } catch (RuntimeException e) {
+            pendingImageUrl = "";
             failedImageUrl = imageUrl;
+            failedImageAtMillis = now;
             if (cachedImage == null) {
                 updateChannel(CHANNEL_ZONE_IMAGE, UnDefType.NULL);
             }
-            logger.debug("{}: Unable to update image for zone '{}': {}", thingId, z.name, e.getMessage());
+            logger.debug("{}: Unable to schedule image download for zone '{}': {}", thingId, z.name, e.getMessage());
         }
+    }
+
+    private void downloadZoneImage(String imageUrl, String zoneName, long generation) {
+        @Nullable
+        RawType image = null;
+        @Nullable
+        RuntimeException failure = null;
+        try {
+            image = downloadZoneImage(imageUrl);
+        } catch (RuntimeException e) {
+            failure = e;
+        }
+
+        boolean publishUndefined = false;
+        synchronized (this) {
+            if (generation != imageRequestGeneration || !imageUrl.equals(pendingImageUrl)) {
+                return;
+            }
+            imageDownloadJob = null;
+            pendingImageUrl = "";
+            if (image != null) {
+                cachedImageUrl = imageUrl;
+                cachedImage = image;
+                failedImageUrl = "";
+                failedImageAtMillis = 0;
+            } else {
+                failedImageUrl = imageUrl;
+                failedImageAtMillis = System.currentTimeMillis();
+                publishUndefined = cachedImage == null;
+            }
+        }
+
+        if (image != null) {
+            updateChannel(CHANNEL_ZONE_IMAGE, image);
+        } else {
+            if (publishUndefined) {
+                updateChannel(CHANNEL_ZONE_IMAGE, UnDefType.NULL);
+            }
+            if (failure == null) {
+                logger.debug("{}: Unable to download image for zone '{}'", thingId, zoneName);
+            } else {
+                logger.debug("{}: Unable to update image for zone '{}': {}", thingId, zoneName, failure.getMessage());
+            }
+        }
+    }
+
+    private synchronized void cancelImageDownload() {
+        imageRequestGeneration++;
+        Future<?> downloadJob = imageDownloadJob;
+        if (downloadJob != null) {
+            downloadJob.cancel(true);
+            imageDownloadJob = null;
+        }
+        pendingImageUrl = "";
     }
 
     protected @Nullable RawType downloadZoneImage(String imageUrl) {
         return HttpUtil.downloadImage(imageUrl, true, MAX_ZONE_IMAGE_SIZE_BYTES);
+    }
+
+    @Override
+    public void shutdown() {
+        cancelImageDownload();
+        super.shutdown();
+    }
+
+    @Override
+    public void dispose() {
+        cancelImageDownload();
+        super.dispose();
     }
 
     static State epochMillisOrNull(long epochMillis) {

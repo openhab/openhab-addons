@@ -102,6 +102,7 @@ import com.google.gson.JsonParser;
 @NonNullByDefault
 public class RachioApi {
     private final Logger logger = LoggerFactory.getLogger(RachioApi.class);
+    private static final Gson GSON = new Gson();
     private static final String MD5_HASH_ALGORITHM = "MD5";
     private static final String HMAC_SHA256_ALGORITHM = "HmacSHA256";
     private static final int WEBHOOK_SIGNATURE_LENGTH_BYTES = 32;
@@ -118,7 +119,7 @@ public class RachioApi {
     private static final Map<String, ClientRateLimitManager> RATE_LIMIT_MANAGERS = new ConcurrentHashMap<>();
     private ClientRateLimitManager rateLimitManager = new ClientRateLimitManager(10, Duration.ofSeconds(30));
 
-    private Map<String, RachioDevice> deviceList = new HashMap<>();
+    private volatile Map<String, RachioDevice> deviceList = Map.of();
     private RachioHttp httpApi = new RachioHttp("");
 
     public RachioApi(String personId) {
@@ -258,12 +259,19 @@ public class RachioApi {
 
     public void initialize(String apikey, ThingUID bridgeUID, Priority priority, RequestPurpose requestPurpose)
             throws RachioApiException {
+        if (!this.apikey.isEmpty() && !this.apikey.equals(apikey)) {
+            personId = "";
+            userName = "";
+            fullName = "";
+            email = "";
+            deviceList = Map.of();
+        }
         this.apikey = apikey;
         this.bridgeUID = bridgeUID;
         this.rateLimitManager = Objects.requireNonNull(RATE_LIMIT_MANAGERS.computeIfAbsent(getMD5Hash(apikey),
                 key -> new ClientRateLimitManager(10, Duration.ofSeconds(30))));
         httpApi = new RachioHttp(this.apikey);
-        if (!initializePersonId(priority, requestPurpose) || !initializeDevices(bridgeUID, priority, requestPurpose)
+        if (!initializePersonId(priority, requestPurpose) || !initializeDevices(priority, requestPurpose)
                 || !initializeZones()) {
             throw new RachioApiException("API initialization failed!");
         }
@@ -271,6 +279,10 @@ public class RachioApi {
 
     public Map<String, RachioDevice> getDevices() {
         return deviceList;
+    }
+
+    public void replaceDevices(Map<String, RachioDevice> devices) {
+        deviceList = Map.copyOf(devices);
     }
 
     public @Nullable RachioDevice bindDeviceByRachioId(ThingUID bridgeUID, ThingUID thingUID, String deviceId) {
@@ -556,17 +568,19 @@ public class RachioApi {
                 || expectedUID.getAsString().equalsIgnoreCase(requestedUID.getAsString());
     }
 
-    private Boolean initializePersonId(Priority priority, RequestPurpose requestPurpose) throws RachioApiException {
+    private boolean initializePersonId(Priority priority, RequestPurpose requestPurpose) throws RachioApiException {
         if (!personId.isEmpty()) {
             logger.trace("Using cached Rachio person ID.");
             return true;
         }
 
         lastApiResult = httpGet(APIURL_BASE + APIURL_GET_PERSON, null, priority, requestPurpose);
-        Gson gson = new Gson();
         RachioCloudPersonId pid = Objects
-                .requireNonNull(gson.fromJson(lastApiResult.resultString, RachioCloudPersonId.class));
-        personId = pid.id;
+                .requireNonNull(GSON.fromJson(lastApiResult.resultString, RachioCloudPersonId.class));
+        personId = getString(pid.id);
+        if (personId.isBlank()) {
+            throw new RachioApiException("Rachio person ID is missing from the cloud API response.");
+        }
         logger.debug("Using Rachio person ID from API response.");
         if (lastApiResult.isRateLimitCritical()) {
             String errorMessage = MessageFormat.format(
@@ -596,7 +610,7 @@ public class RachioApi {
         httpPut(APIURL_BASE + APIURL_DEV_PUT_OFF, "{ \"id\" : \"" + deviceId + "\" }", Priority.HIGH);
     }
 
-    public void rainDelay(String deviceId, Integer delay) throws RachioApiException {
+    public void rainDelay(String deviceId, int delay) throws RachioApiException {
         logger.debug("Start rain delay for device '{}'.", deviceId);
         httpPut(APIURL_BASE + APIURL_DEV_PUT_RAIN_DELAY,
                 "{ \"id\" : \"" + deviceId + "\", \"duration\" : " + delay + " }", Priority.HIGH);
@@ -664,7 +678,7 @@ public class RachioApi {
         String json = httpGet(
                 APIURL_BASE + APIURL_GET_DEVICE + "/" + deviceId + "/" + APIURL_GET_DEVICE_CURRENT_SCHEDULE, null,
                 Priority.MEDIUM, requestPurpose).resultString;
-        RachioCurrentScheduleResponse response = new Gson().fromJson(json, RachioCurrentScheduleResponse.class);
+        RachioCurrentScheduleResponse response = GSON.fromJson(json, RachioCurrentScheduleResponse.class);
         return response != null ? response : new RachioCurrentScheduleResponse();
     }
 
@@ -843,14 +857,14 @@ public class RachioApi {
 
     public RachioValveProgram createValveProgramV2(RachioValveProgram program) throws RachioApiException {
         logger.debug("Create Smart Hose Timer Program V2 '{}'.", program.getThingName());
-        String json = httpPost(APIURL_CLOUD_REST_BASE + PROGRAM_CREATE_PROGRAM_V2, new Gson().toJson(program),
+        String json = httpPost(APIURL_CLOUD_REST_BASE + PROGRAM_CREATE_PROGRAM_V2, GSON.toJson(program),
                 Priority.HIGH).resultString;
         return RachioSmartHoseTimerGsonDTO.parseValveProgram(json);
     }
 
     public RachioValveProgram updateValveProgramV2(RachioValveProgram program) throws RachioApiException {
         logger.debug("Update Smart Hose Timer Program V2 '{}'.", program.id);
-        String json = httpPut(APIURL_CLOUD_REST_BASE + PROGRAM_UPDATE_PROGRAM_V2, new Gson().toJson(program),
+        String json = httpPut(APIURL_CLOUD_REST_BASE + PROGRAM_UPDATE_PROGRAM_V2, GSON.toJson(program),
                 Priority.HIGH).resultString;
         return RachioSmartHoseTimerGsonDTO.parseValveProgram(json);
     }
@@ -917,7 +931,7 @@ public class RachioApi {
         logger.debug("Load schedule rule '{}'.", scheduleRuleId);
         String json = httpGet(APIURL_BASE + APIURL_GET_SCHEDULE_RULE + "/" + scheduleRuleId, null,
                 readPriority(requestPurpose), requestPurpose).resultString;
-        RachioScheduleRuleResponse response = new Gson().fromJson(json, RachioScheduleRuleResponse.class);
+        RachioScheduleRuleResponse response = GSON.fromJson(json, RachioScheduleRuleResponse.class);
         return response != null ? response : new RachioScheduleRuleResponse();
     }
 
@@ -931,7 +945,7 @@ public class RachioApi {
         logger.debug("GET {}{}/{}", APIURL_BASE, APIURL_GET_FLEX_SCHEDULE_RULE, flexScheduleRuleId);
         String json = httpGet(APIURL_BASE + APIURL_GET_FLEX_SCHEDULE_RULE + "/" + flexScheduleRuleId, null,
                 readPriority(requestPurpose), requestPurpose).resultString;
-        RachioFlexScheduleRuleResponse response = new Gson().fromJson(json, RachioFlexScheduleRuleResponse.class);
+        RachioFlexScheduleRuleResponse response = GSON.fromJson(json, RachioFlexScheduleRuleResponse.class);
         return response != null ? response : new RachioFlexScheduleRuleResponse();
     }
 
@@ -960,43 +974,43 @@ public class RachioApi {
     }
 
     static String buildMoistureLevelPayload(String zoneId, double level) {
-        return new Gson().toJson(new RachioMoistureLevelRequest(zoneId, level));
+        return GSON.toJson(new RachioMoistureLevelRequest(zoneId, level));
     }
 
     static String buildMoisturePercentPayload(String zoneId, double percent) {
-        return new Gson().toJson(new RachioMoisturePercentRequest(zoneId, percent));
+        return GSON.toJson(new RachioMoisturePercentRequest(zoneId, percent));
     }
 
     static String buildScheduleRuleCommandPayload(String id) {
-        return new Gson().toJson(new RachioScheduleRuleCommandRequest(id));
+        return GSON.toJson(new RachioScheduleRuleCommandRequest(id));
     }
 
     static String buildSeasonalAdjustmentPayload(String id, double adjustment) {
-        return new Gson().toJson(new RachioSeasonalAdjustmentRequest(id, adjustment));
+        return GSON.toJson(new RachioSeasonalAdjustmentRequest(id, adjustment));
     }
 
     static String buildValveDefaultRuntimePayload(String valveId, int defaultRuntimeSeconds) {
-        return new Gson().toJson(new RachioValveDefaultRuntimeRequest(valveId, defaultRuntimeSeconds));
+        return GSON.toJson(new RachioValveDefaultRuntimeRequest(valveId, defaultRuntimeSeconds));
     }
 
     static String buildValveStartWateringPayload(String valveId, int durationSeconds) {
-        return new Gson().toJson(new RachioValveStartWateringRequest(valveId, durationSeconds));
+        return GSON.toJson(new RachioValveStartWateringRequest(valveId, durationSeconds));
     }
 
     static String buildValveStopWateringPayload(String valveId) {
-        return new Gson().toJson(new RachioValveStopWateringRequest(valveId));
+        return GSON.toJson(new RachioValveStopWateringRequest(valveId));
     }
 
     static String buildValveDayViewsPayload(String valveId, LocalDate start, LocalDate end) {
-        return new Gson().toJson(new RachioValveDayViewsRequest(start, end, valveId));
+        return GSON.toJson(new RachioValveDayViewsRequest(start, end, valveId));
     }
 
     static String buildProgramSkipOverridePayload(String programId, String timestamp) {
-        return new Gson().toJson(new RachioProgramSkipOverrideRequest(programId, timestamp));
+        return GSON.toJson(new RachioProgramSkipOverrideRequest(programId, timestamp));
     }
 
     static String buildPlannedRunSkipOverridePayload(String plannedRunId, String date) {
-        return new Gson().toJson(new RachioPlannedRunSkipOverrideRequest(plannedRunId, date));
+        return GSON.toJson(new RachioPlannedRunSkipOverrideRequest(plannedRunId, date));
     }
 
     static String buildPropertyEntityQuery(String entityId, String entityType) throws RachioApiException {
@@ -1059,11 +1073,10 @@ public class RachioApi {
             return List.of();
         }
 
-        Gson gson = new Gson();
         List<RachioApiLegacyWebHookEventType> eventTypes = new ArrayList<>();
         for (JsonElement entry : entries) {
             if (entry != null && entry.isJsonObject()) {
-                RachioApiLegacyWebHookEventType eventType = gson.fromJson(entry, RachioApiLegacyWebHookEventType.class);
+                RachioApiLegacyWebHookEventType eventType = GSON.fromJson(entry, RachioApiLegacyWebHookEventType.class);
                 if (eventType != null && !eventType.id.isBlank()) {
                     eventTypes.add(eventType);
                 }
@@ -1085,7 +1098,7 @@ public class RachioApi {
     }
 
     public void registerLegacyNotificationWebHook(String deviceId, String callbackUrl, String callbackUsername,
-            String callbackPassword, @Nullable String externalId, Boolean clearAllCallbacks,
+            String callbackPassword, @Nullable String externalId, boolean clearAllCallbacks,
             RequestPurpose requestPurpose) throws RachioApiException {
         String registrationUrl = buildWebhookRegistrationUrl(callbackUrl, callbackUsername, callbackPassword);
         String expectedExternalId = externalId != null ? externalId : "";
@@ -1109,17 +1122,16 @@ public class RachioApi {
         Map<String, Object> createPayload = Map.of("device", Map.of("id", deviceId), "externalId", expectedExternalId,
                 "url", registrationUrl, "eventTypes", eventTypes);
         try {
-            httpPost(APIURL_BASE + APIURL_DEV_POST_WEBHOOK, new Gson().toJson(createPayload), Priority.HIGH,
-                    requestPurpose);
+            httpPost(APIURL_BASE + APIURL_DEV_POST_WEBHOOK, GSON.toJson(createPayload), Priority.HIGH, requestPurpose);
         } catch (RachioApiException e) {
             throw sanitizeWebhookRegistrationException(e, registrationUrl);
         }
     }
 
     private boolean reconcileLegacyNotificationWebHooks(List<RachioApiWebHookEntry> webhooks, String callbackUrl,
-            String expectedExternalId, Collection<String> externalIds, Boolean clearAllCallbacks,
+            String expectedExternalId, Collection<String> externalIds, boolean clearAllCallbacks,
             RequestPurpose requestPurpose) {
-        boolean deleteAll = Boolean.TRUE.equals(clearAllCallbacks);
+        boolean deleteAll = clearAllCallbacks;
         boolean matchingWebhookRetained = false;
         logger.debug("Registered legacy NotificationService webhook count: {}", webhooks.size());
         for (RachioApiWebHookEntry webhook : webhooks) {
@@ -1147,13 +1159,13 @@ public class RachioApi {
     }
 
     public void registerWebHook(String deviceId, String callbackUrl, String callbackUsername, String callbackPassword,
-            @Nullable String externalId, Boolean clearAllCallbacks) throws RachioApiException {
+            @Nullable String externalId, boolean clearAllCallbacks) throws RachioApiException {
         registerWebHook(deviceId, callbackUrl, callbackUsername, callbackPassword, externalId, clearAllCallbacks,
                 RequestPurpose.BACKGROUND_REFRESH);
     }
 
     public void registerWebHook(String deviceId, String callbackUrl, String callbackUsername, String callbackPassword,
-            @Nullable String externalId, Boolean clearAllCallbacks, RequestPurpose requestPurpose)
+            @Nullable String externalId, boolean clearAllCallbacks, RequestPurpose requestPurpose)
             throws RachioApiException {
         logger.debug("Register webhook for device '{}', externalIdPresent={}, clearAllCallbacks={}", deviceId,
                 externalId != null && !externalId.isBlank(), clearAllCallbacks);
@@ -1166,20 +1178,20 @@ public class RachioApi {
     }
 
     public void registerWebHookTarget(RachioWebhookTarget target, String callbackUrl, String callbackUsername,
-            String callbackPassword, @Nullable String externalId, Boolean clearAllCallbacks) throws RachioApiException {
+            String callbackPassword, @Nullable String externalId, boolean clearAllCallbacks) throws RachioApiException {
         registerWebHookTarget(target, callbackUrl, callbackUsername, callbackPassword, externalId, clearAllCallbacks,
                 RequestPurpose.BACKGROUND_REFRESH);
     }
 
     public void registerWebHookTarget(RachioWebhookTarget target, String callbackUrl, String callbackUsername,
-            String callbackPassword, @Nullable String externalId, Boolean clearAllCallbacks,
+            String callbackPassword, @Nullable String externalId, boolean clearAllCallbacks,
             RequestPurpose requestPurpose) throws RachioApiException {
         registerWebHookTarget(target, callbackUrl, callbackUsername, callbackPassword, externalId, clearAllCallbacks,
                 getSupportedWebhookEventTypeMap(requestPurpose), requestPurpose);
     }
 
     private void registerWebHookTarget(RachioWebhookTarget target, String callbackUrl, String callbackUsername,
-            String callbackPassword, @Nullable String externalId, Boolean clearAllCallbacks,
+            String callbackPassword, @Nullable String externalId, boolean clearAllCallbacks,
             Map<RachioWebhookResourceType, Set<String>> supportedEventTypes, RequestPurpose requestPurpose)
             throws RachioApiException {
         if (!target.getResourceType().isKnown() || target.getResourceId().isBlank()) {
@@ -1224,7 +1236,7 @@ public class RachioApi {
                     target.getResourceType().getApiValue(), target.getEventTypes(), target.getResourceId(),
                     !expectedExternalId.isBlank(), webhookUrlContainsUserInfo(payloadUrl),
                     callbackUrlLogReference(payloadUrl));
-            httpPost(APIURL_CLOUD_REST_BASE + WEBHOOK_CREATE, new Gson().toJson(createPayload), Priority.HIGH,
+            httpPost(APIURL_CLOUD_REST_BASE + WEBHOOK_CREATE, GSON.toJson(createPayload), Priority.HIGH,
                     requestPurpose);
         } catch (RachioApiException e) {
             throw sanitizeWebhookRegistrationException(e, registrationUrl);
@@ -1547,9 +1559,9 @@ public class RachioApi {
     }
 
     private boolean reconcileExistingWebHooks(String json, RachioWebhookTarget target, String callbackUrl,
-            String expectedExternalId, Collection<String> externalIds, Boolean clearAllCallbacks,
+            String expectedExternalId, Collection<String> externalIds, boolean clearAllCallbacks,
             RequestPurpose requestPurpose) {
-        boolean deleteAll = Boolean.TRUE.equals(clearAllCallbacks);
+        boolean deleteAll = clearAllCallbacks;
         boolean matchingWebhookRetained = false;
         List<RachioApiWebHookEntry> webhooks = parseWebHookList(json);
         logger.debug("Registered webhook count for target '{}': {}", target.describe(), webhooks.size());
@@ -1710,29 +1722,49 @@ public class RachioApi {
         }
     }
 
-    private Boolean initializeDevices(ThingUID BridgeUID, Priority priority, RequestPurpose requestPurpose)
-            throws RachioApiException {
+    private boolean initializeDevices(Priority priority, RequestPurpose requestPurpose) throws RachioApiException {
         String json = httpGet(APIURL_BASE + APIURL_GET_PERSONID + "/" + personId, null, priority,
                 requestPurpose).resultString;
 
-        Gson gson = new Gson();
-        RachioCloudStatus cloudStatus = Objects.requireNonNull(gson.fromJson(json, RachioCloudStatus.class));
-        userName = cloudStatus.username;
-        fullName = cloudStatus.fullName;
-        email = cloudStatus.email;
+        @Nullable
+        RachioCloudStatus parsedCloudStatus = GSON.fromJson(json, RachioCloudStatus.class);
+        if (parsedCloudStatus == null) {
+            throw new RachioApiException("Rachio cloud API returned an empty account response");
+        }
+        RachioCloudStatus cloudStatus = parsedCloudStatus;
+        userName = getString(cloudStatus.username);
+        fullName = getString(cloudStatus.fullName);
+        email = getString(cloudStatus.email);
 
-        deviceList = new HashMap<>(); // discard current list
-        for (int i = 0; i < cloudStatus.devices.size(); i++) {
-            RachioCloudDevice device = cloudStatus.devices.get(i);
-            if (!device.deleted) {
-                deviceList.put(device.id, new RachioDevice(device));
-                logger.trace("Device '{}' initialized, {} zones.", device.name, device.zones.size());
+        List<@Nullable RachioCloudDevice> cloudDevices = List.of();
+        @Nullable
+        List<@Nullable RachioCloudDevice> parsedDevices = cloudStatus.devices;
+        if (parsedDevices != null) {
+            cloudDevices = new ArrayList<>(parsedDevices);
+        }
+        Map<String, RachioDevice> initializedDevices = new HashMap<>();
+        for (int i = 0; i < cloudDevices.size(); i++) {
+            @Nullable
+            RachioCloudDevice device = cloudDevices.get(i);
+            if (device == null) {
+                throw new RachioApiException("Invalid null Rachio device entry returned by the cloud API");
+            }
+            try {
+                if (!device.deleted) {
+                    RachioDevice initializedDevice = new RachioDevice(device);
+                    initializedDevices.put(initializedDevice.id, initializedDevice);
+                    logger.trace("Device '{}' initialized, {} zones.", initializedDevice.name,
+                            initializedDevice.getZones().size());
+                }
+            } catch (IllegalArgumentException e) {
+                throw new RachioApiException("Invalid Rachio device data returned by the cloud API", e);
             }
         }
+        deviceList = Map.copyOf(initializedDevices);
         return true;
     }
 
-    public Boolean initializeZones() {
+    public boolean initializeZones() {
         return true;
     }
 
