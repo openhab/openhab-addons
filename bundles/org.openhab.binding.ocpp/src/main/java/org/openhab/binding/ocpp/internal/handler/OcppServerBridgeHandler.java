@@ -13,12 +13,14 @@
 package org.openhab.binding.ocpp.internal.handler;
 
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -59,6 +61,12 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
     private final Map<UUID, String> sessionChargePoints = new ConcurrentHashMap<>();
     private final Map<String, OcppChargePointHandler> chargePoints = new ConcurrentHashMap<>();
 
+    // Guards the transport reference and the disposed flag so the asynchronous startup below and
+    // dispose() cannot race into leaving a bound server behind on a disposed handler.
+    private final Object lifecycleLock = new Object();
+    private volatile boolean disposed;
+    private @Nullable Future<?> startupTask;
+
     private @Nullable OcppTransport transport;
     private @Nullable OcppDiscoveryService discoveryService;
     private OcppServerConfiguration config = new OcppServerConfiguration();
@@ -89,27 +97,52 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
     public void initialize() {
         config = getConfigAs(OcppServerConfiguration.class);
         OcppServerConfiguration localConfig = config;
+        disposed = false;
         updateStatus(ThingStatus.UNKNOWN);
 
-        scheduler.execute(() -> {
+        startupTask = scheduler.submit(() -> {
+            OcppTransport newTransport = new ChargeTimeTransport(this, localConfig.pingInterval);
             try {
-                OcppTransport newTransport = new ChargeTimeTransport(this, localConfig.pingInterval);
                 newTransport.start(localConfig.host, localConfig.port);
-                this.transport = newTransport;
-                updateStatus(ThingStatus.ONLINE);
             } catch (RuntimeException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Could not bind OCPP server: " + e.getMessage());
+                if (!disposed) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "Could not bind OCPP server: " + e.getMessage());
+                }
+                return;
+            }
+            boolean adopted;
+            synchronized (lifecycleLock) {
+                adopted = !disposed;
+                if (adopted) {
+                    this.transport = newTransport;
+                }
+            }
+            if (adopted) {
+                updateStatus(ThingStatus.ONLINE);
+            } else {
+                // Lost the race with dispose(): stop the freshly-bound server rather than leaving it
+                // running on an already-disposed handler.
+                newTransport.stop();
             }
         });
     }
 
     @Override
     public void dispose() {
-        OcppTransport localTransport = transport;
+        OcppTransport localTransport;
+        synchronized (lifecycleLock) {
+            disposed = true;
+            localTransport = transport;
+            transport = null;
+        }
+        Future<?> task = startupTask;
+        if (task != null) {
+            task.cancel(true);
+            startupTask = null;
+        }
         if (localTransport != null) {
             localTransport.stop();
-            transport = null;
         }
         sessionChargePoints.clear();
         chargePoints.clear();
@@ -162,12 +195,26 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
             }
             return;
         }
-        // Reconnect self-heal: a charger that reconnects under a fresh session id leaves its old
-        // one behind. Drop any prior session for the same charge point so the stale one can't be
-        // treated as live or, when its close finally arrives, knock the charger offline.
-        sessionChargePoints.entrySet()
-                .removeIf(entry -> chargePointId.equals(entry.getValue()) && !session.equals(entry.getKey()));
+        // Reconnect self-heal: a charger that reconnects under a fresh session id leaves its old one
+        // behind. De-map any prior session for the same charge point (so the stale one can't be
+        // treated as live) and then close its socket (so it can't linger sending ignored traffic).
+        // De-mapping first makes the resulting onSessionClosed a no-op, so it can't offline the
+        // charger we are about to bring online under the new session.
+        List<UUID> staleSessions = new ArrayList<>();
+        sessionChargePoints.entrySet().removeIf(entry -> {
+            if (chargePointId.equals(entry.getValue()) && !session.equals(entry.getKey())) {
+                staleSessions.add(entry.getKey());
+                return true;
+            }
+            return false;
+        });
         sessionChargePoints.put(session, chargePointId);
+        OcppTransport localTransport = transport;
+        if (localTransport != null) {
+            for (UUID stale : staleSessions) {
+                localTransport.closeSession(stale);
+            }
+        }
         logger.debug("Charger connected: id={} session={} from={}", chargePointId, session, remote);
         OcppChargePointHandler handler = chargePoints.get(chargePointId);
         if (handler != null) {

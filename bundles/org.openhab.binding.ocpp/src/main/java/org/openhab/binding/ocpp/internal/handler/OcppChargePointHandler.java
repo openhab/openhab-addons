@@ -39,6 +39,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.types.Command;
@@ -52,6 +53,8 @@ import eu.chargetime.ocpp.model.core.ChangeConfigurationConfirmation;
 import eu.chargetime.ocpp.model.core.ChangeConfigurationRequest;
 import eu.chargetime.ocpp.model.core.ConfigurationStatus;
 import eu.chargetime.ocpp.model.core.MeterValuesRequest;
+import eu.chargetime.ocpp.model.core.ResetRequest;
+import eu.chargetime.ocpp.model.core.ResetType;
 import eu.chargetime.ocpp.model.core.StartTransactionRequest;
 import eu.chargetime.ocpp.model.core.StatusNotificationRequest;
 import eu.chargetime.ocpp.model.core.StopTransactionRequest;
@@ -112,7 +115,17 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // No writable channels on the chargepoint itself.
+        // Reset addresses the whole charge point (ResetRequest carries no connector id), so it lives
+        // here rather than on each connector.
+        if (CHANNEL_RESET.equals(channelUID.getId()) && command == OnOffType.ON) {
+            send(new ResetRequest(ResetType.Soft)).whenComplete((confirmation, ex) -> {
+                if (ex != null) {
+                    logger.warn("Reset of {} failed: {}", chargePointId, ex.getMessage());
+                }
+            });
+            // Momentary: pop the switch back so it does not stick ON.
+            updateState(CHANNEL_RESET, OnOffType.OFF);
+        }
     }
 
     @Override
@@ -133,8 +146,36 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
             return;
         }
         this.server = serverHandler;
-        serverHandler.registerChargePoint(chargePointId, this);
+        // UNKNOWN before registering: registration can find an already-open session and take this
+        // charge point ONLINE synchronously, and a status set afterwards would overwrite that.
         updateStatus(ThingStatus.UNKNOWN);
+        serverHandler.registerChargePoint(chargePointId, this);
+    }
+
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        // Not calling super: besides the status flip, this charge point must re-register with the
+        // server (a bridge that was disposed and re-initialized comes back with an empty charge-point
+        // map, and children are not re-initialized for that) and drop its scheduled work when offline.
+        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
+            OcppServerBridgeHandler serverHandler = serverHandler();
+            if (serverHandler != null && !chargePointId.isBlank()) {
+                this.server = serverHandler;
+                if (getThing().getStatus() != ThingStatus.ONLINE) {
+                    updateStatus(ThingStatus.UNKNOWN);
+                }
+                serverHandler.registerChargePoint(chargePointId, this);
+            }
+        } else {
+            cancel(bootConfigTask);
+            cancel(livenessTask);
+            cancel(statusFallbackTask);
+            bootConfigTask = null;
+            livenessTask = null;
+            statusFallbackTask = null;
+            session = null;
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        }
     }
 
     @Override
@@ -400,9 +441,37 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
                 allSucceeded.set(false);
                 logger.warn("Boot config step {}/{} for {} failed: {}", index + 1, steps.size(), chargePointId,
                         ex.getMessage());
+            } else if (!isConfigApplied(confirmation)) {
+                // A normal completion is not the same as acceptance: a ChangeConfiguration answered
+                // Rejected or NotSupported has not applied, so the burst must not latch on it.
+                allSucceeded.set(false);
+                logger.warn("Boot config step {}/{} for {} not applied: {}", index + 1, steps.size(), chargePointId,
+                        configStatusOf(confirmation));
             }
             return null;
         }).thenRun(() -> runBootConfigStep(steps, index + 1, allSucceeded));
+    }
+
+    /**
+     * Whether a boot ChangeConfiguration response counts as applied. Accepted and RebootRequired both
+     * stored the value (RebootRequired takes effect after a charger reboot, and re-sending will not
+     * change that), so the burst may latch; Rejected and NotSupported did not, so it retries on the
+     * charger's next boot.
+     */
+    private boolean isConfigApplied(@Nullable Confirmation confirmation) {
+        if (confirmation instanceof ChangeConfigurationConfirmation change) {
+            ConfigurationStatus status = change.getStatus();
+            if (status == ConfigurationStatus.RebootRequired) {
+                logger.warn("Boot config for {} accepted but needs a charger reboot to take effect", chargePointId);
+            }
+            return status == ConfigurationStatus.Accepted || status == ConfigurationStatus.RebootRequired;
+        }
+        return true;
+    }
+
+    private static String configStatusOf(@Nullable Confirmation confirmation) {
+        return confirmation instanceof ChangeConfigurationConfirmation change ? String.valueOf(change.getStatus())
+                : String.valueOf(confirmation);
     }
 
     private CompletableFuture<Confirmation> sendConfig(String key, String value) {

@@ -96,11 +96,29 @@ class MeterValueMapperTest {
     }
 
     @Test
-    void unknownUnitDegradesToDecimalRatherThanThrowing() {
-        // A genuinely unmodelled unit (reactive energy) keeps the number rather than throwing.
-        assertInstanceOf(DecimalType.class, MeterValueMapper.toState("42", "varh"));
-        // No unit at all is still a usable number.
-        assertInstanceOf(DecimalType.class, MeterValueMapper.toState("42", null));
+    void reactiveAndApparentUnitsKeepTheirDimension() {
+        // These are routed to dimensioned energy/power channels, so they must carry a unit, not
+        // degrade to a bare number.
+        assertEquals(Units.VAR_HOUR,
+                assertInstanceOf(QuantityType.class, MeterValueMapper.toState("42", "varh")).getUnit());
+        assertEquals(Units.KILOVAR,
+                assertInstanceOf(QuantityType.class, MeterValueMapper.toState("3", "kvar")).getUnit());
+        assertEquals(Units.KILOVOLT_AMPERE,
+                assertInstanceOf(QuantityType.class, MeterValueMapper.toState("7", "kVA")).getUnit());
+    }
+
+    @Test
+    void omittedUnitDefaultsToWattHours() {
+        // OCPP 1.6 defines Wh as the default SampledValue unit (its default measurand is the energy
+        // register), so a value with no unit is energy in Wh, not a dimensionless number.
+        assertEquals(Units.WATT_HOUR,
+                assertInstanceOf(QuantityType.class, MeterValueMapper.toState("42", null)).getUnit());
+    }
+
+    @Test
+    void aTrulyUnknownUnitDegradesToDecimalRatherThanThrowing() {
+        // Not an OCPP unit at all — keep the number rather than dropping the sample or throwing.
+        assertInstanceOf(DecimalType.class, MeterValueMapper.toState("42", "furlong"));
     }
 
     @Test

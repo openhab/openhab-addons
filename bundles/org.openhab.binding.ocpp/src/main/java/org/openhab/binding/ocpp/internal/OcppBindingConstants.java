@@ -35,6 +35,8 @@ public class OcppBindingConstants {
     // Chargepoint channels
     public static final String CHANNEL_CONNECTED = "connected";
     public static final String CHANNEL_LAST_SEEN = "last-seen";
+    // Reset addresses the charge point, not a single outlet, so it lives on the chargepoint.
+    public static final String CHANNEL_RESET = "reset";
 
     // Connector channels — control
     public static final String CHANNEL_STATUS = "charge-point-status";
@@ -43,8 +45,7 @@ public class OcppBindingConstants {
     public static final String CHANNEL_CHARGE_LIMIT = "charge-limit";
     public static final String CHANNEL_PAUSE = "pause";
     public static final String CHANNEL_AVAILABILITY = "availability";
-    public static final String CHANNEL_LOCK = "lock";
-    public static final String CHANNEL_RESET = "reset";
+    public static final String CHANNEL_UNLOCK = "unlock";
     public static final String CHANNEL_HARDWARE_MAX_CURRENT = "hardware-max-current";
 
     // Connector channels — metering (fixed per-phase layout: explicit L1/L2/L3)

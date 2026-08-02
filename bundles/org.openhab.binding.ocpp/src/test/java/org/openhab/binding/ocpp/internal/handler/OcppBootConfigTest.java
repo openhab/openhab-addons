@@ -143,6 +143,23 @@ class OcppBootConfigTest {
     }
 
     @Test
+    void aRejectedConfigurationIsRetriedOnTheNextBoot() {
+        // A ChangeConfiguration answered Rejected completes normally but has not applied, so the
+        // burst must not latch on it — the key is attempted again when the charger next boots.
+        when(transport.send(any(), any())).thenAnswer(invocation -> {
+            record(invocation.getArgument(1));
+            return CompletableFuture.completedFuture(new ChangeConfigurationConfirmation(ConfigurationStatus.Rejected));
+        });
+
+        handler.onBootNotification(new BootNotificationRequest("vendor", "model"));
+        verify(transport, timeout(2000)).send(any(), any());
+        handler.onBootNotification(new BootNotificationRequest("vendor", "model"));
+
+        verify(transport, timeout(2000).times(2)).send(any(),
+                eq(new ChangeConfigurationRequest("AuthorizeRemoteTxRequests", "false")));
+    }
+
+    @Test
     void aChargerThatNeverAnswersIsNotRetriedForever() {
         when(transport.send(any(), any())).thenAnswer(invocation -> {
             record(invocation.getArgument(1));

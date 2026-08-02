@@ -13,12 +13,14 @@
 package org.openhab.binding.ocpp.internal.transport;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 
 import eu.chargetime.ocpp.model.core.ChargingProfile;
+import eu.chargetime.ocpp.model.core.ChargingProfileKindType;
 import eu.chargetime.ocpp.model.core.ChargingProfilePurposeType;
 import eu.chargetime.ocpp.model.core.ChargingRateUnitType;
 import eu.chargetime.ocpp.model.core.ChargingSchedulePeriod;
@@ -38,8 +40,11 @@ class ChargingProfileBuilderTest {
         assertEquals(1, request.getConnectorId().intValue());
 
         ChargingProfile profile = request.getCsChargingProfiles();
-        assertEquals(ChargingProfileBuilder.TX_DEFAULT_PROFILE_ID, profile.getChargingProfileId().intValue());
+        assertEquals(ChargingProfileBuilder.profileId(1, false), profile.getChargingProfileId().intValue());
         assertEquals(ChargingProfilePurposeType.TxDefaultProfile, profile.getChargingProfilePurpose());
+        // Relative, not Absolute: a fixed cap from the start of charging needs no absolute
+        // startSchedule (and an Absolute profile without one is invalid per OCPP 1.6).
+        assertEquals(ChargingProfileKindType.Relative, profile.getChargingProfileKind());
         assertNull(profile.getTransactionId());
         assertEquals(0, profile.getStackLevel().intValue());
 
@@ -54,9 +59,23 @@ class ChargingProfileBuilderTest {
     void activeTransactionGivesATxProfileCarryingTheTransactionId() {
         SetChargingProfileRequest request = ChargingProfileBuilder.currentLimit(2, 10.0, false, 42);
         ChargingProfile profile = request.getCsChargingProfiles();
-        assertEquals(ChargingProfileBuilder.TX_PROFILE_ID, profile.getChargingProfileId().intValue());
+        assertEquals(ChargingProfileBuilder.profileId(2, true), profile.getChargingProfileId().intValue());
         assertEquals(ChargingProfilePurposeType.TxProfile, profile.getChargingProfilePurpose());
         assertEquals(42, profile.getTransactionId().intValue());
+    }
+
+    @Test
+    void distinctConnectorsAndPurposesGetDistinctProfileIds() {
+        // A profile id identifies an installed profile charge-point-wide, and installing one with an
+        // existing id replaces it — so connectors and purposes must not share ids.
+        int c1Default = ChargingProfileBuilder.currentLimit(1, 16.0, false, null).getCsChargingProfiles()
+                .getChargingProfileId();
+        int c2Default = ChargingProfileBuilder.currentLimit(2, 16.0, false, null).getCsChargingProfiles()
+                .getChargingProfileId();
+        int c1Tx = ChargingProfileBuilder.currentLimit(1, 16.0, false, 5).getCsChargingProfiles()
+                .getChargingProfileId();
+        assertNotEquals(c1Default, c2Default);
+        assertNotEquals(c1Default, c1Tx);
     }
 
     @Test

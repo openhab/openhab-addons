@@ -92,6 +92,7 @@
 		<channels>
 			<channel id="connected" typeId="connected"/>
 			<channel id="last-seen" typeId="last-seen"/>
+			<channel id="reset" typeId="reset"/>
 		</channels>
 
 		<representation-property>chargePointId</representation-property>
@@ -141,8 +142,7 @@
 			<channel id="charge-limit" typeId="charge-limit"/>
 			<channel id="pause" typeId="pause"/>
 			<channel id="availability" typeId="availability"/>
-			<channel id="lock" typeId="lock"/>
-			<channel id="reset" typeId="reset"/>
+			<channel id="unlock" typeId="unlock"/>
 			<channel id="hardware-max-current" typeId="hardware-max-current"/>
 			<channel id="current-import-l1" typeId="current-phase">
 				<label>Current L1</label>
@@ -228,6 +228,16 @@
 				<default>0</default>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="stuckStateRecovery" type="boolean">
+				<label>Stuck State Recovery</label>
+				<description>Send an UnlockConnector if the connector stays in a transient state (Preparing/Finishing) too long.
+					Off
+					by default: those are normal states and unlocking is a physical side effect, so enable it only for a
+					charger known
+					to wedge there.</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 	</thing-type>
 
@@ -294,7 +304,7 @@
 			<tag>Setpoint</tag>
 			<tag>Current</tag>
 		</tags>
-		<state min="0" max="32" step="1" pattern="%.0f A"/>
+		<state min="0" step="1" pattern="%.0f A"/>
 	</channel-type>
 
 	<channel-type id="pause">
@@ -312,16 +322,18 @@
 		</tags>
 	</channel-type>
 
-	<channel-type id="lock">
+	<channel-type id="unlock">
 		<item-type>Switch</item-type>
 		<label>Unlock Connector</label>
 		<description>Momentary — unlock the connector (UnlockConnector).</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="reset">
 		<item-type>Switch</item-type>
 		<label>Reset</label>
-		<description>Momentary — soft reset the charger (Reset).</description>
+		<description>Momentary — soft reset the charge point (Reset).</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="hardware-max-current">
@@ -333,7 +345,7 @@
 			<tag>Setpoint</tag>
 			<tag>Current</tag>
 		</tags>
-		<state min="0" max="32" step="1" pattern="%.0f A"/>
+		<state min="0" step="1" pattern="%.0f A"/>
 	</channel-type>
 
 	<channel-type id="current-phase">
