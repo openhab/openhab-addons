@@ -49,6 +49,7 @@ import org.eclipse.jetty.websocket.api.WebSocketAdapter;
 import org.eclipse.jetty.websocket.api.WebSocketPingPongListener;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
+import org.openhab.binding.unifi.internal.protect.UnifiProtectBindingConstants;
 import org.openhab.binding.unifi.internal.protect.api.pub.dto.ApiValueEnum;
 import org.openhab.binding.unifi.internal.protect.api.pub.dto.AssetFileType;
 import org.openhab.binding.unifi.internal.protect.api.pub.dto.Camera;
@@ -532,7 +533,7 @@ public class UniFiProtectPublicClient implements Closeable {
                             return;
                         }
                         long silentMs = System.currentTimeMillis() - lastActivityMs;
-                        if (silentMs > 150_000L) {
+                        if (silentMs > UnifiProtectBindingConstants.WEBSOCKET_IDLE_TIMEOUT_MS) {
                             logger.debug("No WebSocket frames received in {} ms; closing to reconnect", silentMs);
                             s.close(1001, "No data received");
                             return;

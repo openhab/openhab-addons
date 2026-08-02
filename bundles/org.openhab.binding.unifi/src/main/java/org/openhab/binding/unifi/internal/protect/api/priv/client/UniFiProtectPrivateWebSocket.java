@@ -27,6 +27,7 @@ import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketAdapter;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
+import org.openhab.binding.unifi.internal.protect.UnifiProtectBindingConstants;
 import org.openhab.binding.unifi.internal.protect.api.priv.dto.devices.Bridge;
 import org.openhab.binding.unifi.internal.protect.api.priv.dto.devices.Camera;
 import org.openhab.binding.unifi.internal.protect.api.priv.dto.devices.Chime;
@@ -94,7 +95,7 @@ public class UniFiProtectPrivateWebSocket {
         // Detect a silently dead / half-open connection: Jetty closes the session
         // when no frame is read within the window -> onWebSocketClose -> reconnect.
         // Without this a dropped socket stays "ONLINE" and updates stop forever.
-        this.wsClient.setMaxIdleTimeout(150_000L);
+        this.wsClient.setMaxIdleTimeout(UnifiProtectBindingConstants.WEBSOCKET_IDLE_TIMEOUT_MS);
 
         try {
             wsClient.start();
