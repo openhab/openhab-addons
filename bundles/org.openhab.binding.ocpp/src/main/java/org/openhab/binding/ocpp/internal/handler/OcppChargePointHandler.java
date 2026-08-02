@@ -81,8 +81,12 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
         CompletableFuture<Confirmation> send();
     }
 
-    /** One request held back until the charge point is ready to receive it. */
-    private record PendingSend(Request request, CompletableFuture<Confirmation> future) {
+    /**
+     * One request held back until the charge point is ready to receive it. Tagged with the session
+     * it was created for: a request queued on one session must not be transmitted on a successor
+     * session the charger reconnected with.
+     */
+    private record PendingSend(UUID session, Request request, CompletableFuture<Confirmation> future) {
     }
 
     private static final long LIVENESS_FLOOR_SECONDS = 180;
@@ -128,7 +132,13 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
     private volatile @Nullable ScheduledFuture<?> statusFallbackTask;
     private volatile @Nullable ScheduledFuture<?> readyTask;
     private volatile boolean bootAccepted;
-    private volatile boolean bootConfigApplied;
+    // The applied/attempted state is keyed on a fingerprint of everything that shapes the boot
+    // configuration, not latched for the handler's lifetime: editing the configuration (a Thing
+    // update disposes and re-initializes this same instance, and a server-bridge restart does not
+    // recreate it at all) must send the changed values on the next boot, while an unchanged
+    // configuration keeps the send-once behaviour across ordinary reconnects.
+    private volatile @Nullable String appliedConfigFingerprint;
+    private volatile @Nullable String attemptedConfigFingerprint;
     private final AtomicInteger bootConfigAttempts = new AtomicInteger();
 
     public OcppChargePointHandler(Bridge bridge) {
@@ -261,7 +271,8 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
      * answered the boot. The queue drains in order on {@link #becomeReady(UUID)}.
      */
     public CompletionStage<Confirmation> send(Request request) {
-        if (session == null) {
+        UUID localSession = session;
+        if (localSession == null) {
             return CompletableFuture
                     .failedFuture(new IllegalStateException("Charger " + chargePointId + " is offline"));
         }
@@ -271,7 +282,7 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
                         new IllegalStateException("Charger " + chargePointId + " not ready and its queue is full"));
             }
             CompletableFuture<Confirmation> future = new CompletableFuture<>();
-            PendingSend pending = new PendingSend(request, future);
+            PendingSend pending = new PendingSend(localSession, request, future);
             pendingSends.add(pending);
             // Re-check after enqueuing: a disconnect may have just failed-and-drained the queue (then
             // this entry must not sit stranded), or readiness may have just flipped (then it must not
@@ -324,6 +335,14 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
         PendingSend pending;
         while ((pending = pendingSends.poll()) != null) {
             PendingSend current = pending;
+            if (!current.session().equals(session)) {
+                // Queued for a session that has been superseded: the request belonged to that
+                // session's context (e.g. its boot-configuration chain) and must not be replayed
+                // into the successor session, which runs its own.
+                current.future().completeExceptionally(
+                        new IllegalStateException("Charger " + chargePointId + " reconnected; request superseded"));
+                continue;
+            }
             sendDirect(current.request()).whenComplete((confirmation, ex) -> {
                 if (ex != null) {
                     current.future().completeExceptionally(ex);
@@ -350,6 +369,9 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
     }
 
     public void onConnected(UUID session) {
+        // Anything still queued belongs to the previous session's context; fail it deliberately
+        // rather than let it drain into this one.
+        failPendingSends();
         this.session = session;
         bootAccepted = false;
         operational = false;
@@ -507,6 +529,20 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
         return serverHandler != null ? serverHandler.openTransactionFor(chargePointId, connectorId) : null;
     }
 
+    /**
+     * Forget a transaction everywhere it is represented — routing map and persistent store. Called
+     * by a connector when its charger authoritatively reports the transaction gone (an Available
+     * status without a StopTransaction), so a lost stop cannot leave a finished transaction behind
+     * to be recovered after a restart.
+     */
+    public void transactionCompleted(int transactionId) {
+        transactions.remove(transactionId);
+        OcppServerBridgeHandler serverHandler = server;
+        if (serverHandler != null) {
+            serverHandler.forgetTransaction(transactionId);
+        }
+    }
+
     // --- boot-time configuration burst ---
 
     private void scheduleBootConfig() {
@@ -519,12 +555,22 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
         if (serverHandler == null) {
             return;
         }
+        OcppServerConfiguration config = serverHandler.getServerConfig();
         // Do NOT push configuration on every reconnect. A charger that is busy (e.g. flushing an
-        // offline message queue) can leave a ChangeConfiguration unanswered, and an unanswered call
-        // times out and tears down the whole session — turning one reconnect into a permanent
-        // connect/configure/drop loop. So: skip once it has been accepted, and cap the attempts so a
-        // charger that never answers is left alone rather than cycled forever.
-        if (bootConfigApplied) {
+        // offline message queue) can leave a ChangeConfiguration unanswered; before requests were
+        // bounded that turned one reconnect into a permanent connect/configure/drop loop, and it is
+        // still pointless traffic. So: skip while the EFFECTIVE configuration is the one already
+        // applied, and cap the attempts per configuration so a charger that never answers is left
+        // alone rather than cycled forever. A changed configuration resets both.
+        String fingerprint = configFingerprint(config);
+        if (!fingerprint.equals(attemptedConfigFingerprint)) {
+            attemptedConfigFingerprint = fingerprint;
+            bootConfigAttempts.set(0);
+            // A changed measurand configuration must renegotiate from the configured list, not from
+            // what an older configuration was negotiated down to.
+            acceptedMeasurands.clear();
+        }
+        if (fingerprint.equals(appliedConfigFingerprint)) {
             logger.debug("Boot config for {} already applied; skipping", chargePointId);
             requestConnectorStatuses();
             return;
@@ -535,7 +581,6 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
             requestConnectorStatuses();
             return;
         }
-        OcppServerConfiguration config = serverHandler.getServerConfig();
         // Each step is deferred: they are dispatched ONE AT A TIME (see runBootConfigStep). A charger
         // that receives the whole burst at once may leave the queued calls unanswered until they time
         // out, which tears down the session — observed as a permanent connect/boot/drop loop.
@@ -571,7 +616,17 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
                 steps.add(() -> sendConfig(key, value));
             }
         }
-        runBootConfigStep(steps, 0, new AtomicBoolean(true));
+        runBootConfigStep(steps, 0, fingerprint, new AtomicBoolean(true));
+    }
+
+    /**
+     * Everything that shapes the boot-configuration burst, in one comparable string. The heartbeat
+     * settings are excluded — they shape the BootNotification response, not this burst.
+     */
+    private String configFingerprint(OcppServerConfiguration config) {
+        return meterless + "|" + config.meterValueSampleInterval + "|" + config.clockAlignedDataInterval + "|"
+                + config.meterValuesData + "|" + config.disableRemoteTxAuthorization + "|"
+                + String.join(",", config.vendorConfig);
     }
 
     /**
@@ -587,12 +642,14 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
      * Dispatch the boot configuration one request at a time, each waiting for the previous to settle.
      * A failed step is logged and does not abort the rest.
      */
-    private void runBootConfigStep(List<BootConfigStep> steps, int index, AtomicBoolean allSucceeded) {
+    private void runBootConfigStep(List<BootConfigStep> steps, int index, String fingerprint,
+            AtomicBoolean allSucceeded) {
         if (index >= steps.size()) {
             if (allSucceeded.get()) {
-                // Latch on SUCCESS only: a burst that failed is retried on the charger's next boot,
-                // while a successful one is never repeated (see runBootConfig).
-                bootConfigApplied = true;
+                // Latch on SUCCESS only, keyed to the configuration that was sent: a burst that
+                // failed is retried on the charger's next boot, a successful one is never repeated
+                // for the same configuration (see runBootConfig).
+                appliedConfigFingerprint = fingerprint;
                 if (!steps.isEmpty()) {
                     logger.debug("Boot config for {} complete ({} steps)", chargePointId, steps.size());
                 }
@@ -616,7 +673,7 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
                         configStatusOf(confirmation));
             }
             return null;
-        }).thenRun(() -> runBootConfigStep(steps, index + 1, allSucceeded));
+        }).thenRun(() -> runBootConfigStep(steps, index + 1, fingerprint, allSucceeded));
     }
 
     /**

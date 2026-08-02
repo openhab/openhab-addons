@@ -124,7 +124,7 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
         // rejected or duplicate session — so there must be no window in which the server accepts
         // sessions while the field is still null. Stopping a never-started transport is a no-op, so
         // a dispose that wins the race against the startup task below is safe.
-        OcppTransport newTransport = createTransport(localConfig.pingInterval);
+        OcppTransport newTransport = createTransport(localConfig);
         long generation;
         synchronized (lifecycleLock) {
             if (disposed) {
@@ -143,14 +143,18 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
             try {
                 newTransport.start(localConfig.host, localConfig.port);
             } catch (RuntimeException e) {
+                boolean current;
                 synchronized (lifecycleLock) {
+                    current = !disposed && generation == lifecycleGeneration;
                     if (generation == lifecycleGeneration) {
                         transport = null;
                     }
                 }
-                if (!disposed) {
+                // Status only while this startup still belongs to the live lifecycle — an abandoned
+                // generation must not mark a re-initialized handler OFFLINE.
+                if (current) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Could not bind OCPP server: " + e.getMessage());
+                            "Could not start OCPP server: " + e.getMessage());
                 }
                 return;
             }
@@ -195,8 +199,9 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
     }
 
     /** The transport backing this server. A seam so a test can supply one without binding a socket. */
-    protected OcppTransport createTransport(int pingInterval) {
-        return new ChargeTimeTransport(this, pingInterval);
+    protected OcppTransport createTransport(OcppServerConfiguration serverConfig) {
+        return new ChargeTimeTransport(this, serverConfig.pingInterval, serverConfig.requestTimeoutSeconds,
+                serverConfig.authPassword);
     }
 
     // --- charge point registration (called by OcppChargePointHandler) ---

@@ -66,6 +66,22 @@
 				<default>0</default>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="requestTimeoutSeconds" type="integer" min="5" unit="s">
+				<label>Request Timeout</label>
+				<description>Seconds before an unanswered request to a charger fails. The OCPP library itself never times a
+					request
+					out, so this bound is what keeps callers from waiting forever.</description>
+				<default>30</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="authPassword" type="text">
+				<context>password</context>
+				<label>Charger Password</label>
+				<description>HTTP Basic authentication password chargers must present, with their charge point id as the
+					username
+					(OCPP security profile 1). Empty disables authentication — profile 0, for a trusted LAN only.</description>
+				<advanced>true</advanced>
+			</parameter>
 			<parameter name="tags" type="text" multiple="true">
 				<label>Authorized Tags</label>
 				<description>idTag whitelist. Empty accepts every tag; otherwise unknown tags are rejected.</description>

@@ -35,11 +35,14 @@ There is no active scan; point your charger at `ws://<openhab-host>:<port>/<char
 | disableRemoteTxAuthorization| boolean | Configure AuthorizeRemoteTxRequests=false                                    | false   | no       | yes      |
 | vendorConfig                | text[]  | Extra ChangeConfiguration entries as key=value, applied on boot             | (empty) | no       | yes      |
 | pingInterval                | integer | WebSocket ping interval (s). A charger that does not answer a ping is disconnected, and many never do — leave at 0 unless yours is known to reply | 0 | no | yes |
+| requestTimeoutSeconds       | integer | Seconds before an unanswered request to a charger fails                     | 30      | no       | yes      |
+| authPassword                | text    | HTTP Basic password chargers must present (username = charge point id). Empty disables authentication | (empty) | no | yes |
 | tags                        | text[]  | idTag whitelist. Empty accepts every tag; otherwise unknown tags are rejected | (empty) | no     | yes      |
 | chargers                    | text[]  | Charge point id allow-list. Empty accepts any charger; otherwise unlisted ones are rejected | (empty) | no | yes |
 
-These settings are pushed to a charger as ChangeConfiguration requests after it boots, one at a time, and only until the charger has accepted them once — repeating the push on every reconnect can leave a busy charger with an unanswered request, and an unanswered request times out and drops the session.
-Measurands a charger rejects are dropped one at a time until it accepts them, and the accepted set is remembered.
+These settings are pushed to a charger as ChangeConfiguration requests after it boots, one at a time, and only until the charger has accepted them once for the configured values — a changed configuration is sent again on the charger's next boot, an unchanged one is not repeated on every reconnect.
+A request a charger leaves unanswered fails after `requestTimeoutSeconds`; the OCPP library itself would wait on it forever.
+Measurands a charger rejects are dropped one at a time until it accepts them, and the accepted set is remembered per configuration key.
 The binding also runs a heartbeat-derived liveness watchdog and self-heals when a charger reconnects under a new session.
 
 ### `chargepoint`
@@ -118,3 +121,9 @@ Switch  Wallbox_Cable   "Cable connected"         { channel="ocpp:connector:main
 Number:Power  Wallbox_Power "Power [%.0f W]"      { channel="ocpp:connector:main:wallbox:c1:power-active-import" }
 Number:Energy Wallbox_Energy "Energy [%.2f kWh]"  { channel="ocpp:connector:main:wallbox:c1:energy-active-import" }
 ```
+
+## Security
+
+Without `authPassword` the endpoint runs OCPP security profile 0: a plain-text WebSocket that accepts every connection, appropriate only on a trusted LAN.
+Anyone who can reach the port can connect under any charge point id, so restrict exposure by binding a specific interface (`host`) or with firewall rules.
+Setting `authPassword` enables HTTP Basic authentication (security profile 1): a charger must present the password with its charge point id as the username, and other connections are rejected before a session opens.

@@ -62,7 +62,8 @@ class OcppServerBridgeHandlerTest {
         }
 
         @Override
-        protected OcppTransport createTransport(int pingInterval) {
+        protected OcppTransport createTransport(
+                org.openhab.binding.ocpp.internal.config.OcppServerConfiguration serverConfig) {
             return injected;
         }
     }

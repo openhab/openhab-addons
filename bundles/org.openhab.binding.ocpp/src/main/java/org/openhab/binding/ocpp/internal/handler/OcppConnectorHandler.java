@@ -50,6 +50,7 @@ import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -164,10 +165,13 @@ public class OcppConnectorHandler extends BaseThingHandler {
     private final Object lock = new Object();
 
     // SetChargingProfile coalescing state (guarded by lock). profileGeneration counts dispatched
-    // profiles so a confirmation can tell whether it answers the latest request or a stale one.
+    // profiles; lastPublishedGeneration tracks the newest ACCEPTED one, so an older confirmation can
+    // still publish the state the charger genuinely applied (e.g. newer request rejected) while a
+    // stale one can never overwrite a newer accepted result.
     private double pendingLimitAmps;
     private long lastProfileSentAt;
     private long profileGeneration;
+    private long lastPublishedGeneration;
     private @Nullable ScheduledFuture<?> pendingFlush;
     private @Nullable ScheduledFuture<?> pollTask;
     private @Nullable ScheduledFuture<?> stuckTask;
@@ -404,9 +408,19 @@ public class OcppConnectorHandler extends BaseThingHandler {
         return new ProfileClaim(profileGeneration, pendingLimitAmps, currentLimitAmps, paused);
     }
 
-    private boolean isLatestProfile(ProfileClaim claim) {
+    /**
+     * Whether this accepted claim may publish: only if no newer claim has published yet. An older
+     * confirmation still publishes when the newer request was rejected — the charger is then
+     * genuinely running the older accepted state and the channels must say so — but once a newer
+     * claim has published, an out-of-order older confirmation cannot roll it back.
+     */
+    private boolean claimPublication(ProfileClaim claim) {
         synchronized (lock) {
-            return claim.generation() == profileGeneration;
+            if (claim.generation() <= lastPublishedGeneration) {
+                return false;
+            }
+            lastPublishedGeneration = claim.generation();
+            return true;
         }
     }
 
@@ -418,12 +432,11 @@ public class OcppConnectorHandler extends BaseThingHandler {
         dispatch(ChargingProfileBuilder.currentLimit(connectorId, claim.amps(), forceTxDefaultProfile, transactionId),
                 "SetChargingProfile").whenComplete((confirmation, ex) -> {
                     // A non-exceptional completion only means the charger answered; the answer can
-                    // still be Rejected or NotSupported. Publish only what THIS request carried, and
-                    // only while it is still the newest one — a stale confirmation must neither
-                    // publish values from a newer request nor overwrite a newer result.
+                    // still be Rejected or NotSupported. Publish only what THIS request carried —
+                    // never the mutable fields, which may describe a newer request by now.
                     if (ex == null && confirmation instanceof SetChargingProfileConfirmation profile
                             && profile.getStatus() == ChargingProfileStatus.Accepted) {
-                        if (isLatestProfile(claim)) {
+                        if (claimPublication(claim)) {
                             updateState(CHANNEL_CHARGE_LIMIT, new QuantityType<>(claim.limitAmps(), Units.AMPERE));
                             updateState(CHANNEL_PAUSE, OnOffType.from(claim.paused()));
                         } else {
@@ -587,7 +600,19 @@ public class OcppConnectorHandler extends BaseThingHandler {
                 updateState(CHANNEL_CHARGING, OnOffType.from(CHARGING_ACTIVE.contains(status)));
             }
             if (status == ChargePointStatus.Available) {
-                transactionId = null; // Available means no active transaction — drop any stale id
+                // Available is authoritative: no transaction is active. If one is still recorded
+                // (its StopTransaction was lost), clear EVERY representation — the field, the
+                // channel, the parent's routing map and the persistent store — or a restart would
+                // recover a transaction the charger already declared finished.
+                Integer stale = transactionId;
+                if (stale != null) {
+                    transactionId = null;
+                    updateState(CHANNEL_TRANSACTION_ID, UnDefType.UNDEF);
+                    OcppChargePointHandler cp = chargePoint;
+                    if (cp != null) {
+                        cp.transactionCompleted(stale);
+                    }
+                }
             }
             armStuckWatchdog(status);
         }
@@ -663,6 +688,7 @@ public class OcppConnectorHandler extends BaseThingHandler {
     public void onTransactionStopped(StopTransactionRequest request) {
         // charging channel is status-driven; here we only clear the id and record the stop metadata.
         this.transactionId = null;
+        updateState(CHANNEL_TRANSACTION_ID, UnDefType.UNDEF);
         Integer meterStop = request.getMeterStop();
         if (meterStop != null) {
             updateState(CHANNEL_METER_STOP, new QuantityType<>(meterStop, Units.WATT_HOUR));

@@ -42,6 +42,17 @@ public class OcppServerConfiguration {
     public List<String> vendorConfig = List.of();
     /** WebSocket ping interval (seconds); 0 disables ping-based connection-loss detection. */
     public int pingInterval = 0;
+    /**
+     * Seconds before an unanswered outbound request fails. The embedded OCPP library itself never
+     * times a request out, so this bound is what keeps a caller from waiting forever on a charger
+     * that does not answer.
+     */
+    public int requestTimeoutSeconds = 30;
+    /**
+     * HTTP Basic authentication password chargers must present (with their charge point id as the
+     * username). Empty disables authentication — OCPP security profile 0, trusted-LAN operation.
+     */
+    public String authPassword = "";
     /** idTag whitelist for Authorize / StartTransaction. Empty accepts every tag. */
     public List<String> tags = List.of();
     /** Charge point id allow-list. Empty accepts any charger; otherwise unlisted chargers are closed. */

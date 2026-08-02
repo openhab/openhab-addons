@@ -13,6 +13,7 @@
 package org.openhab.binding.ocpp.internal.handler;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -174,6 +175,44 @@ class OcppBootConfigTest {
         synchronized (sent) {
             assertTrue(sent.size() <= 3, "attempts must be capped, but saw " + sent.size());
         }
+    }
+
+    @Test
+    void aRequestQueuedOnOneSessionIsNotSentOnItsSuccessor() {
+        // The charger is connected (session A, from setUp) but not booted, so this request queues.
+        CompletableFuture<eu.chargetime.ocpp.model.Confirmation> queued = handler
+                .send(new ChangeConfigurationRequest("Key", "1")).toCompletableFuture();
+        assertFalse(queued.isDone());
+
+        // The charger reconnects under a fresh session B: A's queued request belongs to A's context
+        // and must fail rather than carry over.
+        handler.onConnected(UUID.randomUUID());
+        assertTrue(queued.isCompletedExceptionally(), "a request queued on a superseded session must fail");
+
+        // And when B becomes ready, the old request must not be transmitted on it.
+        handler.onHeartbeat();
+        verify(transport, org.mockito.Mockito.after(1500).never()).send(any(),
+                eq(new ChangeConfigurationRequest("Key", "1")));
+    }
+
+    @Test
+    void aChangedConfigurationIsSentAgainOnTheNextBoot() {
+        handler.onBootNotification(new BootNotificationRequest("vendor", "model"));
+        verify(transport, timeout(3000)).send(any(),
+                eq(new ChangeConfigurationRequest("AuthorizeRemoteTxRequests", "false")));
+
+        // Unchanged configuration: the next boot sends nothing again.
+        handler.onBootNotification(new BootNotificationRequest("vendor", "model"));
+        verify(transport, org.mockito.Mockito.after(1500).times(1)).send(any(),
+                eq(new ChangeConfigurationRequest("AuthorizeRemoteTxRequests", "false")));
+
+        // Changed configuration: the applied latch is keyed on the effective settings, so the next
+        // boot must send the new value — and the rest of the burst with it.
+        serverConfig.vendorConfig = List.of("VendorKey=42");
+        handler.onBootNotification(new BootNotificationRequest("vendor", "model"));
+        verify(transport, timeout(3000)).send(any(), eq(new ChangeConfigurationRequest("VendorKey", "42")));
+        verify(transport, timeout(3000).times(2)).send(any(),
+                eq(new ChangeConfigurationRequest("AuthorizeRemoteTxRequests", "false")));
     }
 
     @Test
