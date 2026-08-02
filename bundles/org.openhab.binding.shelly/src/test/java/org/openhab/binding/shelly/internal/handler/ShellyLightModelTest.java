@@ -168,7 +168,9 @@ class ShellyLightModelTest {
         model.setBrightness(42);
 
         assertTrue(model.isBrightnessDirty());
-        assertEquals(42, model.getBrightness(true).intValue());
+        PercentType bri = model.getBrightness(true);
+        assertNotNull(bri);
+        assertEquals(42, bri.intValue());
     }
 
     @Test
@@ -179,8 +181,11 @@ class ShellyLightModelTest {
         model.setColorTemp(4000);
 
         assertTrue(model.isColorTempDirty());
-        assertTrue(model.getColorTemperature() instanceof QuantityType<?>);
-        assertEquals(4000, model.getColorTemperature().toUnit(Units.KELVIN).intValue());
+        QuantityType<?> qty = model.getColorTemperature();
+        assertNotNull(qty);
+        qty = qty.toUnit(Units.KELVIN);
+        assertNotNull(qty);
+        assertEquals(4000, qty.toUnit(Units.KELVIN).intValue());
         assertEquals(Mode.COLOR_TEMP, model.getMode());
     }
 
@@ -314,9 +319,17 @@ class ShellyLightModelTest {
         model.setBrightness(100);
 
         model.setColorTemp(3000);
-        assertEquals(3000, model.getColorTemperature().toUnit(Units.KELVIN).intValue());
+        QuantityType<?> qty = model.getColorTemperature();
+        assertNotNull(qty);
+        qty = qty.toUnit(Units.KELVIN);
+        assertNotNull(qty);
+        assertEquals(3000, qty.intValue());
 
         model.setColorTemp(6500);
-        assertEquals(6500, model.getColorTemperature().toUnit(Units.KELVIN).intValue());
+        qty = model.getColorTemperature();
+        assertNotNull(qty);
+        qty = qty.toUnit(Units.KELVIN);
+        assertNotNull(qty);
+        assertEquals(6500, qty.intValue());
     }
 }
