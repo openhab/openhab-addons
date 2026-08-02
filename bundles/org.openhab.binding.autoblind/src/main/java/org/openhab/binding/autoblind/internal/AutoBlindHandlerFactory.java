@@ -13,6 +13,8 @@
 package org.openhab.binding.autoblind.internal;
 
 import java.util.Hashtable;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -25,9 +27,11 @@ import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -43,6 +47,7 @@ import org.osgi.service.component.annotations.Reference;
 public class AutoBlindHandlerFactory extends BaseThingHandlerFactory {
 
     private final HttpClient httpClient;
+    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegistrations = new ConcurrentHashMap<>();
 
     @Activate
     public AutoBlindHandlerFactory(@Reference HttpClientFactory httpClientFactory, ComponentContext componentContext) {
@@ -60,12 +65,22 @@ public class AutoBlindHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (AutoBlindBindingConstants.THING_TYPE_HUB.equals(thingTypeUID)) {
             AutoBlindHubHandler handler = new AutoBlindHubHandler((Bridge) thing, httpClient);
-            bundleContext.registerService(DiscoveryService.class.getName(), new AutoBlindDiscoveryService(handler),
-                    new Hashtable<>());
+            ServiceRegistration<?> registration = bundleContext.registerService(DiscoveryService.class.getName(),
+                    new AutoBlindDiscoveryService(handler), new Hashtable<>());
+            discoveryServiceRegistrations.put(thing.getUID(), registration);
             return handler;
         } else if (AutoBlindBindingConstants.THING_TYPE_SHADE.equals(thingTypeUID)) {
             return new AutoBlindShadeHandler(thing);
         }
         return null;
+    }
+
+    @Override
+    protected void removeHandler(ThingHandler thingHandler) {
+        ServiceRegistration<?> registration = discoveryServiceRegistrations.remove(thingHandler.getThing().getUID());
+        if (registration != null) {
+            registration.unregister();
+        }
+        super.removeHandler(thingHandler);
     }
 }
