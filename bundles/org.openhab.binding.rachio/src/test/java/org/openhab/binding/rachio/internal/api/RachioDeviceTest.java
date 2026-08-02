@@ -75,24 +75,29 @@ public class RachioDeviceTest {
     }
 
     @Test
-    public void zoneSnapshotsRemainStableWhenZonesAreReplaced() {
+    public void zoneSnapshotsRemainStableWhileExistingZonesKeepTheirIdentity() {
         RachioDevice device = createDevice();
         Map<String, RachioZone> originalSnapshot = device.getZones();
         RachioZone originalZone = Objects.requireNonNull(originalSnapshot.get("zone-1"));
+        originalZone.setStartRunTime(42);
+        originalZone.recordLastWateredDate(200);
         Map<String, RachioZone> replacement = new HashMap<>(originalSnapshot);
         replacement.remove("zone-2");
         RachioCloudZone updatedCloudZone = zone("zone-1", 1, true);
         updatedCloudZone.name = "Updated zone";
+        updatedCloudZone.lastWateredDate = 100;
         RachioZone updatedZone = new RachioZone(updatedCloudZone, device.getThingID());
-        updatedZone.copyRuntimeStateFrom(originalZone);
-        replacement.put(updatedZone.id, updatedZone);
+        originalZone.update(updatedZone);
+        replacement.put(originalZone.id, originalZone);
 
         device.replaceZones(replacement);
 
         assertEquals(3, originalSnapshot.size());
         assertEquals(2, device.getZones().size());
-        assertEquals("zone-1", originalZone.name);
-        assertEquals("Updated zone", Objects.requireNonNull(device.getZones().get("zone-1")).name);
+        assertSame(originalZone, Objects.requireNonNull(device.getZones().get("zone-1")));
+        assertEquals("Updated zone", originalZone.name);
+        assertEquals(42, originalZone.getStartRunTime());
+        assertEquals(200, originalZone.lastWateredDate);
         assertThrows(UnsupportedOperationException.class, () -> originalSnapshot.clear());
     }
 

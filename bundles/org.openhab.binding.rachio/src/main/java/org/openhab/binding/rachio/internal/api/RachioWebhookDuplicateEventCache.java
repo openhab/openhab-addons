@@ -33,7 +33,9 @@ class RachioWebhookDuplicateEventCache {
     private static final int DEFAULT_MAX_ENTRIES = 2048;
     private static final long CLEANUP_INTERVAL_MILLIS = Duration.ofMinutes(5).toMillis();
 
-    private final Map<String, Long> eventIds = new ConcurrentHashMap<>();
+    private static final EventClaim UNTRACKED_CLAIM = new EventClaim(null, 0);
+
+    private final Map<String, EventClaim> eventIds = new ConcurrentHashMap<>();
     private final AtomicLong lastCleanupMillis = new AtomicLong();
     private final long retentionMillis;
     private final int maxEntries;
@@ -49,32 +51,35 @@ class RachioWebhookDuplicateEventCache {
         this.clockMillis = clockMillis;
     }
 
-    boolean claim(@Nullable String eventId) {
+    @Nullable
+    EventClaim claim(@Nullable String eventId) {
         String normalizedEventId = normalizeEventId(eventId);
         if (normalizedEventId == null) {
-            return true;
+            return UNTRACKED_CLAIM;
         }
 
         long now = clockMillis.getAsLong();
         cleanupIfNeeded(now);
+        EventClaim claim = new EventClaim(normalizedEventId, now);
 
         while (true) {
-            Long previous = eventIds.putIfAbsent(normalizedEventId, now);
+            EventClaim previous = eventIds.putIfAbsent(normalizedEventId, claim);
             if (previous == null) {
                 trimToMaxEntries();
-                return true;
+                return claim;
             }
-            if (!isExpired(previous.longValue(), now)) {
-                return false;
+            if (!isExpired(previous.claimedAtMillis(), now)) {
+                return null;
             }
             eventIds.remove(normalizedEventId, previous);
         }
     }
 
-    void release(@Nullable String eventId) {
-        String normalizedEventId = normalizeEventId(eventId);
-        if (normalizedEventId != null) {
-            eventIds.remove(normalizedEventId);
+    void release(EventClaim claim) {
+        @Nullable
+        String eventId = claim.eventId();
+        if (eventId != null) {
+            eventIds.remove(eventId, claim);
         }
     }
 
@@ -97,7 +102,7 @@ class RachioWebhookDuplicateEventCache {
         if (!lastCleanupMillis.compareAndSet(previousCleanup, now)) {
             return;
         }
-        eventIds.entrySet().removeIf(entry -> isExpired(entry.getValue().longValue(), now));
+        eventIds.entrySet().removeIf(entry -> isExpired(entry.getValue().claimedAtMillis(), now));
         trimToMaxEntries();
     }
 
@@ -110,7 +115,25 @@ class RachioWebhookDuplicateEventCache {
         if (overflow <= 0) {
             return;
         }
-        eventIds.entrySet().stream().sorted(Comparator.comparingLong(Map.Entry::getValue)).limit(overflow)
-                .forEach(entry -> eventIds.remove(entry.getKey(), entry.getValue()));
+        eventIds.entrySet().stream().sorted(Comparator.comparingLong(entry -> entry.getValue().claimedAtMillis()))
+                .limit(overflow).forEach(entry -> eventIds.remove(entry.getKey(), entry.getValue()));
+    }
+
+    static final class EventClaim {
+        private final @Nullable String eventId;
+        private final long claimedAtMillis;
+
+        private EventClaim(@Nullable String eventId, long claimedAtMillis) {
+            this.eventId = eventId;
+            this.claimedAtMillis = claimedAtMillis;
+        }
+
+        private @Nullable String eventId() {
+            return eventId;
+        }
+
+        private long claimedAtMillis() {
+            return claimedAtMillis;
+        }
     }
 }

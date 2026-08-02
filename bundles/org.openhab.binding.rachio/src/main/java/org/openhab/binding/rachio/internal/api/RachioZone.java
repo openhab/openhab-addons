@@ -102,7 +102,7 @@ public class RachioZone extends RachioCloudZone {
         return thingHandler;
     }
 
-    public boolean compare(@Nullable RachioZone czone) {
+    public synchronized boolean compare(@Nullable RachioZone czone) {
         if (czone == null || !name.equals(czone.name) || zoneNumber != czone.zoneNumber || enabled != czone.enabled
                 || availableWater != czone.availableWater || efficiency != czone.efficiency
                 || lastWateredDate != czone.lastWateredDate || depthOfWater != czone.depthOfWater
@@ -118,7 +118,7 @@ public class RachioZone extends RachioCloudZone {
         return true;
     }
 
-    public void update(RachioZone updatedZone) {
+    public synchronized void update(RachioZone updatedZone) {
         if (!id.equalsIgnoreCase(updatedZone.id)) {
             return;
         }
@@ -137,23 +137,14 @@ public class RachioZone extends RachioCloudZone {
         runtimeNoMultiplier = updatedZone.runtimeNoMultiplier;
         scheduleDataModified = updatedZone.scheduleDataModified;
         runtime = updatedZone.runtime;
-        lastWateredDate = updatedZone.lastWateredDate;
+        // A webhook can be newer than the cloud snapshot that triggered this refresh.
+        lastWateredDate = Math.max(lastWateredDate, updatedZone.lastWateredDate);
         imageUrl = updatedZone.imageUrl;
         imageDownloadUrl = updatedZone.imageDownloadUrl;
     }
 
-    public void copyRuntimeStateFrom(RachioZone previousZone) {
-        if (!id.equalsIgnoreCase(previousZone.id)) {
-            throw new IllegalArgumentException("Cannot copy runtime state between different Rachio zones");
-        }
-        devUID = previousZone.devUID;
-        zoneUID = previousZone.zoneUID;
-        thingHandler = previousZone.thingHandler;
-        startRunTime = previousZone.startRunTime;
-        lastEvent = previousZone.lastEvent;
-        lastEventTime = previousZone.lastEventTime;
-        moistureLevel = previousZone.moistureLevel;
-        moisturePercent = previousZone.moisturePercent;
+    public synchronized void recordLastWateredDate(long wateredDate) {
+        lastWateredDate = Math.max(lastWateredDate, wateredDate);
     }
 
     public void setUID(@Nullable ThingUID deviceUID, @Nullable ThingUID zoneUID) {
@@ -205,7 +196,7 @@ public class RachioZone extends RachioCloudZone {
         return enabled;
     }
 
-    public void setEvent(String event, DateTimeType ts) {
+    public synchronized void setEvent(String event, DateTimeType ts) {
         lastEvent = event;
         lastEventTime = ts;
     }

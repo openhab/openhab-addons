@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -23,7 +24,9 @@ import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.rachio.internal.api.RachioWebhookDuplicateEventCache.EventClaim;
 
 /**
  * Tests atomic webhook event claiming.
@@ -38,7 +41,7 @@ public class RachioWebhookDuplicateEventCacheTest {
         RachioWebhookDuplicateEventCache cache = new RachioWebhookDuplicateEventCache();
         ExecutorService executor = Executors.newFixedThreadPool(16);
         CountDownLatch start = new CountDownLatch(1);
-        List<Future<Boolean>> claims = new ArrayList<>();
+        List<Future<@Nullable EventClaim>> claims = new ArrayList<>();
         try {
             for (int i = 0; i < 32; i++) {
                 claims.add(executor.submit(() -> {
@@ -49,8 +52,8 @@ public class RachioWebhookDuplicateEventCacheTest {
             start.countDown();
 
             int winners = 0;
-            for (Future<Boolean> claim : claims) {
-                if (claim.get()) {
+            for (Future<@Nullable EventClaim> claim : claims) {
+                if (claim.get() != null) {
                     winners++;
                 }
             }
@@ -65,10 +68,10 @@ public class RachioWebhookDuplicateEventCacheTest {
     public void failedClaimCanBeRetried() {
         RachioWebhookDuplicateEventCache cache = new RachioWebhookDuplicateEventCache();
 
-        assertTrue(cache.claim("event-1"));
-        assertFalse(cache.claim("event-1"));
-        cache.release("event-1");
-        assertTrue(cache.claim("event-1"));
+        EventClaim firstClaim = Objects.requireNonNull(cache.claim("event-1"));
+        assertNull(cache.claim("event-1"));
+        cache.release(firstClaim);
+        assertNotNull(cache.claim("event-1"));
     }
 
     @Test
@@ -76,8 +79,21 @@ public class RachioWebhookDuplicateEventCacheTest {
         AtomicLong clock = new AtomicLong(1000);
         RachioWebhookDuplicateEventCache cache = new RachioWebhookDuplicateEventCache(100, 10, clock::get);
 
-        assertTrue(cache.claim("event-1"));
+        assertNotNull(cache.claim("event-1"));
         clock.addAndGet(101);
-        assertTrue(cache.claim("event-1"));
+        assertNotNull(cache.claim("event-1"));
+    }
+
+    @Test
+    public void staleReleaseDoesNotRemoveReplacementClaim() {
+        AtomicLong clock = new AtomicLong(1000);
+        RachioWebhookDuplicateEventCache cache = new RachioWebhookDuplicateEventCache(100, 10, clock::get);
+        EventClaim firstClaim = Objects.requireNonNull(cache.claim("event-1"));
+
+        clock.addAndGet(101);
+        assertNotNull(cache.claim("event-1"));
+        cache.release(firstClaim);
+
+        assertNull(cache.claim("event-1"));
     }
 }

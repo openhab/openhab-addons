@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.rachio.internal.RachioHandlerFactory;
+import org.openhab.binding.rachio.internal.api.RachioWebhookDuplicateEventCache.EventClaim;
 import org.openhab.binding.rachio.internal.api.json.RachioEventGsonDTO;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -188,7 +189,8 @@ public class RachioWebhookServlet extends HttpServlet {
         }
         String data = new String(rawBody, StandardCharsets.UTF_8);
         RachioEventGsonDTO event = null;
-        boolean eventClaimed = false;
+        @Nullable
+        EventClaim eventClaim = null;
         try {
             logger.trace("RachioWebhook: Received {} byte webhook payload", rawBody.length);
             event = parseEvent(data);
@@ -234,8 +236,8 @@ public class RachioWebhookServlet extends HttpServlet {
             event.getApiResult().setRateLimit(request.getHeader(RACHIO_JSON_RATE_LIMIT),
                     request.getHeader(RACHIO_JSON_RATE_REMAINING), request.getHeader(RACHIO_JSON_RATE_RESET));
 
-            eventClaimed = claimEvent(event);
-            if (!eventClaimed) {
+            eventClaim = claimEvent(event);
+            if (eventClaim == null) {
                 resp.setStatus(HttpServletResponse.SC_OK);
                 resp.getWriter().write("");
                 return;
@@ -243,8 +245,8 @@ public class RachioWebhookServlet extends HttpServlet {
 
             logger.trace("RachioWebhook: Processing validated webhook event ({})", describeEvent(event));
             if (!rachioHandlerFactory.webHookEvent(ipAddress, event)) {
-                releaseEventClaim(event);
-                eventClaimed = false;
+                releaseEventClaim(eventClaim, event);
+                eventClaim = null;
                 logger.debug(
                         "RachioWebhook: Unable to route validated webhook event; acknowledging without processing ({})",
                         describeEvent(event));
@@ -258,8 +260,9 @@ public class RachioWebhookServlet extends HttpServlet {
         } catch (RuntimeException e) {
             RachioEventGsonDTO failedEvent = event;
             if (failedEvent != null) {
-                if (eventClaimed) {
-                    releaseEventClaim(failedEvent);
+                EventClaim failedClaim = eventClaim;
+                if (failedClaim != null) {
+                    releaseEventClaim(failedClaim, failedEvent);
                 }
                 logger.debug(
                         "RachioWebhook: Exception processing validated webhook event; event remains retryable ({}): {}",
@@ -374,22 +377,22 @@ public class RachioWebhookServlet extends HttpServlet {
         return value.startsWith("{") && value.endsWith("}");
     }
 
-    private boolean claimEvent(RachioEventGsonDTO event) {
+    private @Nullable EventClaim claimEvent(RachioEventGsonDTO event) {
         if (isBlank(event.eventId)) {
             logger.trace("RachioWebhook: Validated webhook event has no eventId; duplicate detection skipped ({})",
                     describeEvent(event));
-            return true;
         }
-        if (!duplicateEventCache.claim(event.eventId)) {
+        @Nullable
+        EventClaim claim = duplicateEventCache.claim(event.eventId);
+        if (claim == null) {
             logger.debug("RachioWebhook: Skipping duplicate processed webhook event ({})", describeEvent(event));
-            return false;
         }
-        return true;
+        return claim;
     }
 
-    private void releaseEventClaim(RachioEventGsonDTO event) {
+    private void releaseEventClaim(EventClaim claim, RachioEventGsonDTO event) {
+        duplicateEventCache.release(claim);
         if (!isBlank(event.eventId)) {
-            duplicateEventCache.release(event.eventId);
             logger.trace("RachioWebhook: Released failed webhook event claim ({})", describeEvent(event));
         }
     }

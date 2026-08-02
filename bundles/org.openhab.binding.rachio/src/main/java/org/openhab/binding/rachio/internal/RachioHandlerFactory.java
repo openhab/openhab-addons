@@ -257,8 +257,10 @@ public class RachioHandlerFactory extends BaseThingHandlerFactory {
         if (Objects.equals(webhookService, this.webhookService)) {
             return;
         }
+        @Nullable
+        WebhookService previousWebhookService = this.webhookService;
+        cloudWebhookRegistry.onProviderChanged(previousWebhookService, webhookService);
         this.webhookService = webhookService;
-        cloudWebhookRegistry.clearCachedWebhook();
         logger.debug("RachioHandlerFactory: openHAB core WebhookService is {}",
                 webhookService == null ? "unavailable" : "available");
         notifyCloudWebhookProviderChanged();

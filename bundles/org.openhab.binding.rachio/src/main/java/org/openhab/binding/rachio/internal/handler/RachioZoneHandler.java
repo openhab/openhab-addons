@@ -372,7 +372,7 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
                     zoneRunState = OnOffType.OFF;
                     long lastWateredDate = firstTimestampMillis(event.endTime, event.timestamp);
                     if (lastWateredDate >= 0) {
-                        z.lastWateredDate = lastWateredDate;
+                        z.recordLastWateredDate(lastWateredDate);
                     }
                     updateChannel(CHANNEL_ZONE_RUN, zoneRunState);
                 } else {
@@ -436,7 +436,10 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
     @Override
     protected void postChannelData() {
         RachioZone z = zone;
-        if (z != null) {
+        if (z == null) {
+            return;
+        }
+        synchronized (z) {
             updateChannel(CHANNEL_ZONE_NAME, new StringType(z.name));
             updateChannel(CHANNEL_ZONE_NUMBER, new DecimalType(new BigDecimal(z.zoneNumber).toString()));
             updateChannel(CHANNEL_ZONE_ENABLED, z.getEnabled());

@@ -18,6 +18,7 @@ import java.net.URI;
 import java.time.Instant;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -130,6 +131,93 @@ public class RachioCloudWebhookRegistryTest {
 
         registry.release("bridge-1", replacementLease.consumerLease());
         assertTrue(service.removeCalled.await(1, TimeUnit.SECONDS));
+    }
+
+    @Test
+    public void providerReplacementRemovesOldWebhookBeforeRequestingNewOne() throws Exception {
+        TestWebhookService oldService = new TestWebhookService();
+        TestWebhookService newService = new TestWebhookService();
+        AtomicReference<WebhookService> currentService = new AtomicReference<>(oldService);
+        RachioCloudWebhookRegistry registry = new RachioCloudWebhookRegistry(currentService::get);
+        registry.acquire("bridge-1");
+
+        currentService.set(newService);
+        registry.onProviderChanged(oldService, newService);
+        assertTrue(oldService.removeCalled.await(1, TimeUnit.SECONDS));
+
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        try {
+            Future<CloudWebhookLease> acquire = executor.submit(() -> registry.acquire("bridge-2"));
+            assertFalse(newService.firstRequest.await(200, TimeUnit.MILLISECONDS));
+
+            oldService.removalGate.complete(Boolean.TRUE);
+            assertNotNull(acquire.get(2, TimeUnit.SECONDS));
+            assertTrue(newService.firstRequest.await(1, TimeUnit.SECONDS));
+            assertEquals(1, newService.requestCount.get());
+        } finally {
+            oldService.removalGate.complete(Boolean.TRUE);
+            executor.shutdownNow();
+        }
+    }
+
+    @Test
+    public void providerReplacementRemovesWebhookCreatedByAbandonedRequest() throws Exception {
+        TestWebhookService oldService = new TestWebhookService(true);
+        TestWebhookService newService = new TestWebhookService();
+        AtomicReference<WebhookService> currentService = new AtomicReference<>(oldService);
+        RachioCloudWebhookRegistry registry = new RachioCloudWebhookRegistry(currentService::get);
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<CloudWebhookLease> oldAcquire = executor.submit(() -> registry.acquire("bridge-1"));
+
+        try {
+            assertTrue(oldService.firstRequest.await(1, TimeUnit.SECONDS));
+            currentService.set(newService);
+            registry.onProviderChanged(oldService, newService);
+
+            ExecutionException exception = assertThrows(ExecutionException.class,
+                    () -> oldAcquire.get(2, TimeUnit.SECONDS));
+            assertInstanceOf(RachioCloudWebhookRegistry.CloudWebhookException.class, exception.getCause());
+
+            oldService.completeFirstRequest();
+            assertTrue(oldService.removeCalled.await(1, TimeUnit.SECONDS));
+        } finally {
+            oldService.completeFirstRequest();
+            oldService.removalGate.complete(Boolean.TRUE);
+            executor.shutdownNow();
+        }
+    }
+
+    @Test
+    public void timedOutRequestDoesNotPoisonSubsequentAcquire() throws Exception {
+        TestWebhookService service = new TestWebhookService(true);
+        RachioCloudWebhookRegistry registry = new RachioCloudWebhookRegistry(() -> service, 0);
+
+        try {
+            assertThrows(RachioCloudWebhookRegistry.CloudWebhookException.class, () -> registry.acquire("bridge-1"));
+
+            CloudWebhookLease lease = registry.acquire("bridge-2");
+            assertNotNull(lease);
+            assertEquals(2, service.requestCount.get());
+            assertEquals(1, registry.activeConsumerCount());
+        } finally {
+            service.completeFirstRequest();
+        }
+    }
+
+    @Test
+    public void timedOutRequestRemovesLateWebhookWhenUnused() throws Exception {
+        TestWebhookService service = new TestWebhookService(true);
+        RachioCloudWebhookRegistry registry = new RachioCloudWebhookRegistry(() -> service, 0);
+
+        try {
+            assertThrows(RachioCloudWebhookRegistry.CloudWebhookException.class, () -> registry.acquire("bridge-1"));
+            service.completeFirstRequest();
+
+            assertTrue(service.removeCalled.await(1, TimeUnit.SECONDS));
+        } finally {
+            service.completeFirstRequest();
+            service.removalGate.complete(Boolean.TRUE);
+        }
     }
 
     private static class TestWebhookService implements WebhookService {

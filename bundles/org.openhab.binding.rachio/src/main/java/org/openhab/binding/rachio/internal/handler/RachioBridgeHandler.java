@@ -427,12 +427,13 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
                 logger.debug("RachioCloud: New zone detected: {} - {}", checkDev.id, checkZone.name);
                 ThingUID zoneThingUID = new ThingUID(THING_TYPE_ZONE, getThing().getUID(), checkZone.getThingID());
                 checkZone.setUID(dev.getUID(), zoneThingUID);
+                zone = checkZone;
             } else {
                 boolean zoneChanged = !zone.compare(checkZone);
-                checkZone.copyRuntimeStateFrom(zone);
-                changedZones.put(checkZone.id, zoneChanged);
+                zone.update(checkZone);
+                changedZones.put(zone.id, zoneChanged);
             }
-            reconciledZones.put(checkZone.id, checkZone);
+            reconciledZones.put(zone.id, zone);
         }
 
         dev.replaceZones(reconciledZones);
