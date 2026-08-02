@@ -15,6 +15,7 @@ package org.openhab.binding.ocpp.internal.transport;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -46,7 +47,9 @@ public class ChargeTimeTransport implements OcppTransport {
     private final Logger logger = LoggerFactory.getLogger(ChargeTimeTransport.class);
     private final JSONServer server;
     private final OcppServerListener listener;
+    private volatile boolean started;
     private volatile boolean running;
+    private final AtomicBoolean closed = new AtomicBoolean();
 
     public ChargeTimeTransport(OcppServerListener listener, int pingIntervalSeconds) {
         this.listener = listener;
@@ -101,6 +104,7 @@ public class ChargeTimeTransport implements OcppTransport {
                 listener.onSessionClosed(sessionIndex);
             }
         });
+        started = true;
         running = true;
         logger.info("OCPP JSON server listening on {}:{}", host, port);
     }
@@ -117,7 +121,17 @@ public class ChargeTimeTransport implements OcppTransport {
     @Override
     public void stop() {
         running = false;
-        server.close();
+        // The handler publishes this transport before starting it (so session callbacks can always
+        // reach it) — which means a dispose racing the startup task can invoke stop() before start(),
+        // and both the dispose path and the losing startup path can invoke it. Closing the library
+        // server before open() would fail on its unopened listener, and closing twice is not
+        // guaranteed safe either, so: never-started is a no-op and the close runs exactly once.
+        if (!started) {
+            return;
+        }
+        if (closed.compareAndSet(false, true)) {
+            server.close();
+        }
     }
 
     @Override

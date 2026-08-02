@@ -108,11 +108,13 @@ class MeterValueMapperTest {
     }
 
     @Test
-    void omittedUnitDefaultsToWattHours() {
-        // OCPP 1.6 defines Wh as the default SampledValue unit (its default measurand is the energy
-        // register), so a value with no unit is energy in Wh, not a dimensionless number.
-        assertEquals(Units.WATT_HOUR,
-                assertInstanceOf(QuantityType.class, MeterValueMapper.toState("42", null)).getUnit());
+    void omittedUnitDefaultsToWattHoursForEnergyMeasurands() {
+        // OCPP 1.6 defines Wh as the default SampledValue unit — meaningful exactly for the energy
+        // measurands (the default measurand is the energy register). A unitless Power.Factor must NOT
+        // be stamped as Wh: that would fabricate a wrong dimension.
+        assertEquals(Units.WATT_HOUR, assertInstanceOf(QuantityType.class,
+                MeterValueMapper.toState("42", null, "Energy.Active.Import.Register")).getUnit());
+        assertInstanceOf(DecimalType.class, MeterValueMapper.toState("0.98", null, "Power.Factor"));
     }
 
     @Test
@@ -142,6 +144,56 @@ class MeterValueMapperTest {
         assertNull(MeterValueMapper.toState("NaN", null));
         assertNull(MeterValueMapper.toState("Infinity", "V"));
         assertNull(MeterValueMapper.toState("-Infinity", "W"));
+    }
+
+    private static SampledValue sample(String measurand, @org.eclipse.jdt.annotation.Nullable String phase, String unit,
+            String value) {
+        SampledValue sampledValue = new SampledValue(value);
+        sampledValue.setMeasurand(measurand);
+        if (phase != null) {
+            sampledValue.setPhase(phase);
+        }
+        sampledValue.setUnit(unit);
+        return sampledValue;
+    }
+
+    private static MeterValuesRequest requestOf(SampledValue... samples) {
+        MeterValuesRequest request = new MeterValuesRequest(1);
+        request.setMeterValue(new MeterValue[] { new MeterValue(ZonedDateTime.now(), samples) });
+        return request;
+    }
+
+    @Test
+    void phasedPowerSamplesSumIntoTheAggregateChannel() {
+        // Three per-phase Power.Active.Import samples are the phase contributions of ONE total; the
+        // aggregate channel must carry their sum, not whichever phase happened to be listed last.
+        Map<String, State> states = MeterValueMapper.toStates(requestOf(
+                sample("Power.Active.Import", "L1", "W", "1000"), sample("Power.Active.Import", "L2", "W", "1100"),
+                sample("Power.Active.Import", "L3", "W", "1200")));
+
+        QuantityType<?> total = assertInstanceOf(QuantityType.class, states.get("power-active-import"));
+        assertEquals(3300.0, total.doubleValue());
+    }
+
+    @Test
+    void aChargerReportedTotalWinsOverThePhaseSum() {
+        // If the charger reports its own unphased total alongside the phases, that total is
+        // authoritative — the phases must not be double-counted on top of it.
+        Map<String, State> states = MeterValueMapper.toStates(requestOf(
+                sample("Power.Active.Import", "L1", "W", "1000"), sample("Power.Active.Import", "L2", "W", "1100"),
+                sample("Power.Active.Import", "L3", "W", "1200"), sample("Power.Active.Import", null, "W", "3300")));
+
+        assertEquals(3300.0, assertInstanceOf(QuantityType.class, states.get("power-active-import")).doubleValue());
+    }
+
+    @Test
+    void aPhasedPowerFactorIsNotPassedOffAsAnAggregate() {
+        // Per-phase power factors have no meaningful sum or single representative value; publishing
+        // one phase as "the" power factor would be silently wrong, so the sample is skipped.
+        Map<String, State> states = MeterValueMapper.toStates(requestOf(sample("Power.Factor", "L1", "Percent", "98")));
+
+        org.junit.jupiter.api.Assertions.assertFalse(states.containsKey("power-factor"),
+                "a phased power factor must not populate the aggregate channel");
     }
 
     @Test

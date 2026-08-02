@@ -64,21 +64,27 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
     private final Map<UUID, String> sessionChargePoints = new ConcurrentHashMap<>();
     private final Map<String, OcppChargePointHandler> chargePoints = new ConcurrentHashMap<>();
 
-    // Guards the transport reference and the disposed flag so the asynchronous startup below and
-    // dispose() cannot race into leaving a bound server behind on a disposed handler.
+    // Guards the transitions of the transport reference and the disposed flag so the asynchronous
+    // startup below and dispose() cannot race into leaving a bound server behind on a disposed
+    // handler. The transport field itself is additionally volatile: session callbacks and charge
+    // point handlers read it from library and scheduler threads without taking this lock, and the
+    // lock alone would not give those readers visibility.
     private final Object lifecycleLock = new Object();
     private volatile boolean disposed;
-    private @Nullable Future<?> startupTask;
+    // Bumped (under the lock) on every initialize and dispose; an asynchronous startup task carries
+    // the generation it was created for and abandons itself if the handler has moved on.
+    private long lifecycleGeneration;
+    private volatile @Nullable Future<?> startupTask;
 
     private final StorageService storageService;
-    private @Nullable TransactionStore transactionStore;
+    private volatile @Nullable TransactionStore transactionStore;
     // Only used if the store is somehow unavailable; the store is created in initialize() before any
     // charger can start a transaction, so in practice ids always come from the persisted counter.
     private final AtomicInteger fallbackSequence = new AtomicInteger();
 
-    private @Nullable OcppTransport transport;
-    private @Nullable OcppDiscoveryService discoveryService;
-    private OcppServerConfiguration config = new OcppServerConfiguration();
+    private volatile @Nullable OcppTransport transport;
+    private volatile @Nullable OcppDiscoveryService discoveryService;
+    private volatile OcppServerConfiguration config = new OcppServerConfiguration();
 
     public OcppServerBridgeHandler(Bridge bridge, StorageService storageService) {
         super(bridge);
@@ -113,11 +119,35 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
         transactionStore = new TransactionStore(storageService.getStorage(getThing().getUID().getAsString()));
         updateStatus(ThingStatus.UNKNOWN);
 
+        // Published BEFORE it is started: the session callbacks raised during startup (a charger can
+        // connect the moment the socket binds) must be able to reach the transport — to close a
+        // rejected or duplicate session — so there must be no window in which the server accepts
+        // sessions while the field is still null. Stopping a never-started transport is a no-op, so
+        // a dispose that wins the race against the startup task below is safe.
+        OcppTransport newTransport = createTransport(localConfig.pingInterval);
+        long generation;
+        synchronized (lifecycleLock) {
+            if (disposed) {
+                return;
+            }
+            generation = ++lifecycleGeneration;
+            this.transport = newTransport;
+        }
+
         startupTask = scheduler.submit(() -> {
-            OcppTransport newTransport = createTransport(localConfig.pingInterval);
+            synchronized (lifecycleLock) {
+                if (disposed || generation != lifecycleGeneration) {
+                    return; // disposed (or re-initialized) before the server ever started
+                }
+            }
             try {
                 newTransport.start(localConfig.host, localConfig.port);
             } catch (RuntimeException e) {
+                synchronized (lifecycleLock) {
+                    if (generation == lifecycleGeneration) {
+                        transport = null;
+                    }
+                }
                 if (!disposed) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Could not bind OCPP server: " + e.getMessage());
@@ -126,16 +156,14 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
             }
             boolean adopted;
             synchronized (lifecycleLock) {
-                adopted = !disposed;
-                if (adopted) {
-                    this.transport = newTransport;
-                }
+                adopted = !disposed && generation == lifecycleGeneration;
             }
             if (adopted) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
                 // Lost the race with dispose(): stop the freshly-bound server rather than leaving it
-                // running on an already-disposed handler.
+                // running on an already-disposed handler. stop() runs its close exactly once, so this
+                // cannot double-close against the dispose path.
                 newTransport.stop();
             }
         });
@@ -146,6 +174,7 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
         OcppTransport localTransport;
         synchronized (lifecycleLock) {
             disposed = true;
+            lifecycleGeneration++; // invalidate any startup task still in flight
             localTransport = transport;
             transport = null;
         }

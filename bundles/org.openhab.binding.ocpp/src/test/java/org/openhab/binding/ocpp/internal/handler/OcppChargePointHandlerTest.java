@@ -143,32 +143,44 @@ class OcppChargePointHandlerTest {
         verify(connector2, never()).onTransactionStarted(any(), anyInt());
     }
 
+    private void awaitReady() throws InterruptedException {
+        long deadline = System.currentTimeMillis() + 3000;
+        while (!handler.isReady() && System.currentTimeMillis() < deadline) {
+            Thread.sleep(20);
+        }
+        assertTrue(handler.isReady(), "charge point should have become ready");
+    }
+
     @Test
-    void aChargePointIsNotReadyUntilItHasBooted() {
+    void aChargePointIsNotReadyUntilItHasBooted() throws InterruptedException {
         handler.onConnected(UUID.randomUUID());
         assertFalse(handler.isReady(), "a just-connected charger has not booted yet");
 
         handler.onBootNotification(new BootNotificationRequest("vendor", "model"));
-        assertTrue(handler.isReady(), "a booted charger is ready to receive");
+        // Readiness must NOT flip inside the boot handler — the confirmation has not been sent at
+        // that point — it arrives asynchronously afterwards.
+        assertFalse(handler.isReady(), "not ready while the boot notification is still being handled");
+        awaitReady();
     }
 
     @Test
     void becomingReadyReleasesConnectorsThatDeferredASend() {
         handler.onConnected(UUID.randomUUID());
         // A heartbeat is the charger proving it is booted — e.g. after reopening its socket without a
-        // fresh BootNotification — and must release anything the connectors held back.
+        // fresh BootNotification — and must release anything the connectors held back. The release
+        // runs off the library thread, hence the timeout.
         handler.onHeartbeat();
 
-        verify(connector1).onChargePointReady();
-        verify(connector2).onChargePointReady();
+        verify(connector1, org.mockito.Mockito.timeout(2000)).onChargePointReady();
+        verify(connector2, org.mockito.Mockito.timeout(2000)).onChargePointReady();
     }
 
     @Test
-    void aDisconnectMakesItNotReadyAgain() {
+    void aDisconnectMakesItNotReadyAgain() throws InterruptedException {
         UUID session = UUID.randomUUID();
         handler.onConnected(session);
         handler.onHeartbeat();
-        assertTrue(handler.isReady());
+        awaitReady();
 
         handler.onDisconnected(session);
         assertFalse(handler.isReady(), "a disconnected charger is not ready");

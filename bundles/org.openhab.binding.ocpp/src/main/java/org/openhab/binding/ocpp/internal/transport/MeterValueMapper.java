@@ -16,6 +16,9 @@ import static org.openhab.binding.ocpp.internal.OcppBindingConstants.*;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
+
+import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -54,12 +57,28 @@ public final class MeterValueMapper {
     private static final String DEFAULT_MEASURAND = "Energy.Active.Import.Register";
     private static final Logger LOGGER = LoggerFactory.getLogger(MeterValueMapper.class);
 
+    // Channels that carry a single phase's value directly — never an aggregation target.
+    private static final Set<String> PER_PHASE_CHANNELS = Set.of(CHANNEL_CURRENT_L1, CHANNEL_CURRENT_L2,
+            CHANNEL_CURRENT_L3, CHANNEL_VOLTAGE_L1, CHANNEL_VOLTAGE_L2, CHANNEL_VOLTAGE_L3);
+
+    // Measurands whose per-phase samples meaningfully SUM to the charge total. A phased sample of
+    // anything else (power factor, temperature, ...) has no defensible aggregate and is skipped
+    // rather than passed off as one.
+    private static final Set<String> SUMMABLE_MEASURANDS = Set.of("Current.Export", "Current.Offered",
+            "Power.Active.Import", "Power.Active.Export", "Power.Reactive.Import", "Power.Reactive.Export",
+            "Power.Offered", "Energy.Active.Import.Register", "Energy.Active.Export.Register",
+            "Energy.Reactive.Import.Register", "Energy.Reactive.Export.Register", "Energy.Active.Import.Interval",
+            "Energy.Active.Export.Interval", "Energy.Reactive.Import.Interval", "Energy.Reactive.Export.Interval");
+
     private MeterValueMapper() {
     }
 
     /**
-     * Flatten a MeterValues request into channelId -&gt; state. Later samples for the same channel
-     * win (a charger may report the same measurand in more than one MeterValue block).
+     * Flatten a MeterValues request into channelId -&gt; state. Within one MeterValue block (one
+     * timestamp), per-phase samples of a summable measurand are added into the aggregate channel —
+     * three phased Power.Active.Import samples become the total, not whichever phase came last — and
+     * an unphased sample, being the charger's own total, wins over any sum. Later blocks overwrite
+     * earlier ones, as a charger may report the same measurand at several timestamps.
      */
     public static Map<String, State> toStates(MeterValuesRequest request) {
         Map<String, State> states = new LinkedHashMap<>();
@@ -72,15 +91,28 @@ public final class MeterValueMapper {
             if (samples == null) {
                 continue;
             }
+            Map<String, State> direct = new LinkedHashMap<>();
+            Map<String, State> summed = new LinkedHashMap<>();
             for (SampledValue sample : samples) {
                 try {
-                    String channelId = channelFor(measurandOf(sample), sample.getPhase());
+                    String measurand = measurandOf(sample);
+                    String phase = sample.getPhase();
+                    String channelId = channelFor(measurand, phase);
                     if (channelId == null) {
                         continue;
                     }
-                    State state = toState(sample.getValue(), sample.getUnit());
-                    if (state != null) {
-                        states.put(channelId, state);
+                    State state = toState(sample.getValue(), sample.getUnit(), measurand);
+                    if (state == null) {
+                        continue;
+                    }
+                    if (phase == null || PER_PHASE_CHANNELS.contains(channelId)) {
+                        // A charger-reported total, or a channel that carries exactly one phase.
+                        direct.put(channelId, state);
+                    } else if (isPhased(phase) && SUMMABLE_MEASURANDS.contains(measurand)) {
+                        summed.merge(channelId, state, MeterValueMapper::sum);
+                    } else {
+                        LOGGER.debug("Ignoring phase {} sample of {} — no meaningful aggregate for channel {}", phase,
+                                measurand, channelId);
                     }
                 } catch (RuntimeException e) {
                     // A single malformed sample must never drop the rest of the MeterValues request.
@@ -88,8 +120,34 @@ public final class MeterValueMapper {
                             sample.getMeasurand(), sample.getValue(), sample.getUnit(), e.getMessage());
                 }
             }
+            summed.forEach((channelId, state) -> {
+                if (!direct.containsKey(channelId)) {
+                    states.put(channelId, state);
+                }
+            });
+            states.putAll(direct);
         }
         return states;
+    }
+
+    private static State sum(State a, State b) {
+        if (a instanceof QuantityType<?> first && b instanceof QuantityType<?> second) {
+            State total = sumQuantities(first, second);
+            if (total != null) {
+                return total;
+            }
+        } else if (a instanceof DecimalType first && b instanceof DecimalType second) {
+            return new DecimalType(first.doubleValue() + second.doubleValue());
+        }
+        LOGGER.debug("Cannot aggregate {} and {}; keeping the first sample", a, b);
+        return a;
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    private static @Nullable State sumQuantities(QuantityType<?> first, QuantityType<?> second) {
+        Unit<?> unit = first.getUnit();
+        QuantityType converted = second.toUnit(unit);
+        return converted == null ? null : ((QuantityType) first).add(converted);
     }
 
     static String measurandOf(SampledValue sample) {
@@ -164,6 +222,19 @@ public final class MeterValueMapper {
         return l3;
     }
 
+    /**
+     * Parse a sample with the OCPP default unit applied: an omitted unit means Wh — a default that
+     * only carries meaning for the energy measurands (the default measurand itself is the energy
+     * register). Stamping Wh onto a unitless Power.Factor or SoC would fabricate a wrong dimension,
+     * so everything else keeps the plain number.
+     */
+    static @Nullable State toState(@Nullable String value, @Nullable String unit, String measurand) {
+        if ((unit == null || unit.isBlank()) && measurand.startsWith("Energy.")) {
+            return toState(value, "Wh");
+        }
+        return toState(value, unit);
+    }
+
     static @Nullable State toState(@Nullable String value, @Nullable String unit) {
         if (value == null || value.isBlank()) {
             return null;
@@ -181,9 +252,7 @@ public final class MeterValueMapper {
             return null;
         }
         if (unit == null || unit.isBlank()) {
-            // OCPP 1.6 defines Wh as the default unit of a SampledValue, and the default measurand is
-            // Energy.Active.Import.Register — so a minimal sample is energy in Wh, not a bare number.
-            return new QuantityType<>(parsed, Units.WATT_HOUR);
+            return new DecimalType(parsed);
         }
         switch (unit) {
             case "A":
