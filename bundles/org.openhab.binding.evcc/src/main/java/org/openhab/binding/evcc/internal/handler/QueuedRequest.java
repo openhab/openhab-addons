@@ -15,8 +15,8 @@ package org.openhab.binding.evcc.internal.handler;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.ContentResponse;
+import org.eclipse.jetty.client.Request;
 
 /**
  * The {@link QueuedRequest} wraps a Jetty {@link Request} together with its success and error handlers.

@@ -15,8 +15,8 @@ package org.openhab.binding.easee.internal.command.circuit;
 import static org.openhab.binding.easee.internal.EaseeBindingConstants.CIRCUIT_SETTINGS_URL;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.easee.internal.command.AbstractWriteCommand;
 import org.openhab.binding.easee.internal.command.JsonResultProcessor;
@@ -44,8 +44,7 @@ public class SetCircuitSettings extends AbstractWriteCommand {
     @Override
     protected Request prepareWriteRequest(Request requestToPrepare) throws ValidationException {
         requestToPrepare.method(HttpMethod.POST);
-        StringContentProvider cp = new StringContentProvider(getJsonContent());
-        requestToPrepare.content(cp);
+        requestToPrepare.body(new StringRequestContent("application/json", getJsonContent()));
 
         return requestToPrepare;
     }

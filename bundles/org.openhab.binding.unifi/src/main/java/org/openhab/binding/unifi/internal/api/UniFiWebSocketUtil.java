@@ -15,7 +15,7 @@ package org.openhab.binding.unifi.internal.api;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpStatus;
-import org.eclipse.jetty.websocket.api.UpgradeException;
+import org.eclipse.jetty.websocket.api.exceptions.UpgradeException;
 
 /**
  * Helpers shared by the family WebSocket clients (UniFi Protect private API, UniFi Access notifications).

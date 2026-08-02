@@ -41,13 +41,15 @@ import javax.sound.sampled.AudioSystem;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.InputStreamContentProvider;
-import org.eclipse.jetty.client.util.MultiPartContentProvider;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.MultiPartRequestContent;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
+import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.MultiPart;
+import org.eclipse.jetty.io.content.InputStreamContentSource;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioStream;
@@ -630,20 +632,24 @@ public class WhisperSTTService implements STTService {
 
             // prepare HTTP request
             HttpClient commonHttpClient = httpClientFactory.getCommonHttpClient();
-            MultiPartContentProvider multiPartContentProvider = new MultiPartContentProvider();
-            multiPartContentProvider.addFilePart("file", "audio.wav",
-                    new InputStreamContentProvider(byteArrayInputStream), null);
-            multiPartContentProvider.addFieldPart("model", new StringContentProvider(this.config.apiModelName), null);
-            multiPartContentProvider.addFieldPart("response_format", new StringContentProvider("text"), null);
-            multiPartContentProvider.addFieldPart("temperature",
-                    new StringContentProvider(Float.toString(this.config.temperature)), null);
+            MultiPartRequestContent multiPartContentProvider = new MultiPartRequestContent();
+            multiPartContentProvider.addPart(new MultiPart.ContentSourcePart("file", "audio.wav", HttpFields.EMPTY,
+                    new InputStreamContentSource(byteArrayInputStream)));
+            multiPartContentProvider.addPart(new MultiPart.ContentSourcePart("model", null, HttpFields.EMPTY,
+                    new StringRequestContent(this.config.apiModelName)));
+            multiPartContentProvider.addPart(new MultiPart.ContentSourcePart("response_format", null, HttpFields.EMPTY,
+                    new StringRequestContent("text")));
+            multiPartContentProvider.addPart(new MultiPart.ContentSourcePart("temperature", null, HttpFields.EMPTY,
+                    new StringRequestContent(Float.toString(this.config.temperature))));
             if (!language.isBlank()) {
-                multiPartContentProvider.addFieldPart("language", new StringContentProvider(language), null);
+                multiPartContentProvider.addPart(new MultiPart.ContentSourcePart("language", null, HttpFields.EMPTY,
+                        new StringRequestContent(language)));
             }
+            multiPartContentProvider.close();
             Request request = commonHttpClient.newRequest(config.apiUrl).method(HttpMethod.POST)
-                    .content(multiPartContentProvider);
+                    .body(multiPartContentProvider);
             if (!config.apiKey.isBlank()) {
-                request = request.header("Authorization", "Bearer " + config.apiKey);
+                request = request.headers(headers -> headers.put("Authorization", "Bearer " + config.apiKey));
             }
             // execute the request
             ContentResponse response = request.send();

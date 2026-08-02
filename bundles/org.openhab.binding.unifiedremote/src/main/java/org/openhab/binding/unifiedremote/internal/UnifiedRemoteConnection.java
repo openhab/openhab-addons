@@ -19,10 +19,10 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.slf4j.Logger;
@@ -240,13 +240,13 @@ public class UnifiedRemoteConnection {
             throws InterruptedException, ExecutionException, TimeoutException {
         Request request = httpClient.newRequest(getPath("request")).method(HttpMethod.POST).timeout(TIMEOUT_SEC,
                 TimeUnit.SECONDS);
-        request.header(HttpHeader.CONTENT_TYPE, "application/json");
+        request.headers(h -> h.add(HttpHeader.CONTENT_TYPE, "application/json"));
         if (connectionID != null) {
-            request.header(CONNECTION_ID_HEADER, connectionID);
+            request.headers(h -> h.add(CONNECTION_ID_HEADER, connectionID));
         }
         String stringContent = content.toString();
         logger.debug("[Request Payload {} ]", stringContent);
-        request.content(new StringContentProvider(stringContent, "utf-8"));
+        request.body(new StringRequestContent(stringContent));
         return request.send();
     }
 

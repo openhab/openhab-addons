@@ -19,10 +19,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.mcp.internal.McpCloudWebhookService;
@@ -31,6 +27,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Serves the MCP server's OAuth 2.1 discovery documents under the {@code /mcp} prefix
@@ -60,6 +60,7 @@ public class OAuthMetadataServlet extends HttpServlet {
     }
 
     @Override
+    @NonNullByDefault({})
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String path = request.getRequestURI();
         UrlContext ctx = resolveUrlContext(request);

@@ -16,14 +16,6 @@ import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.Set;
 
-import javax.ws.rs.HttpMethod;
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerRequestFilter;
-import javax.ws.rs.container.ContainerResponseContext;
-import javax.ws.rs.container.ContainerResponseFilter;
-import javax.ws.rs.container.PreMatching;
-import javax.ws.rs.core.Application;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpHeader;
@@ -49,10 +41,18 @@ import org.osgi.service.component.annotations.ReferencePolicyOption;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventConstants;
 import org.osgi.service.event.EventHandler;
-import org.osgi.service.jaxrs.whiteboard.JaxrsWhiteboardConstants;
-import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsName;
+import org.osgi.service.jakartars.whiteboard.JakartarsWhiteboardConstants;
+import org.osgi.service.jakartars.whiteboard.propertytypes.JakartarsName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.ws.rs.HttpMethod;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.container.ContainerRequestFilter;
+import jakarta.ws.rs.container.ContainerResponseContext;
+import jakarta.ws.rs.container.ContainerResponseFilter;
+import jakarta.ws.rs.container.PreMatching;
+import jakarta.ws.rs.core.Application;
 
 /**
  * Provides a Hue compatible HTTP REST API on /api.
@@ -113,7 +113,7 @@ public class HueEmulationService implements EventHandler {
      * It registers itself as a Jax-RS Whiteboard service and all Jax-RS resources that are targeting REST_APP_NAME will
      * start up.
      */
-    @JaxrsName(REST_APP_NAME)
+    @JakartarsName(REST_APP_NAME)
     private class RESTapplication extends Application {
         private String root;
 
@@ -130,7 +130,7 @@ public class HueEmulationService implements EventHandler {
 
         Dictionary<String, String> serviceProperties() {
             Dictionary<String, String> dict = new Hashtable<>();
-            dict.put(JaxrsWhiteboardConstants.JAX_RS_APPLICATION_BASE, root);
+            dict.put(JakartarsWhiteboardConstants.JAKARTA_RS_APPLICATION_BASE, root);
             return dict;
         }
     }

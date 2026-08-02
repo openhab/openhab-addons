@@ -28,12 +28,11 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.BufferingResponseListener;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.HttpResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Result;
-import org.eclipse.jetty.client.util.BufferingResponseListener;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.Result;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.elroconnects.internal.devices.ElroConnectsConnector;
@@ -248,14 +247,14 @@ public class ElroConnectsAccountHandler extends BaseBridgeHandler {
         CompletableFuture<@Nullable String> f = new CompletableFuture<>();
         Request request = client.newRequest(URI.create(ELRO_CLOUD_LOGIN_URL));
 
-        request.method(HttpMethod.POST).content(new StringContentProvider(loginJson), "application/json")
+        request.method(HttpMethod.POST).body(new StringRequestContent("application/json", loginJson))
                 .timeout(TIMEOUT_MS, TimeUnit.MILLISECONDS).send(new BufferingResponseListener() {
                     @NonNullByDefault({})
                     @Override
                     public void onComplete(Result result) {
                         if (result.isSucceeded()) {
-                            final HttpResponse response = (HttpResponse) result.getResponse();
-                            if (response.getStatus() == 200) {
+                            final int responseStatus = result.getResponse().getStatus();
+                            if (responseStatus == 200) {
                                 try {
                                     Map<String, String> content = gson.fromJson(getContentAsString(), loginType);
                                     String accessToken = (content != null) ? content.get("access_token") : null;
@@ -266,12 +265,12 @@ public class ElroConnectsAccountHandler extends BaseBridgeHandler {
                                     f.completeExceptionally(
                                             new ElroConnectsAccountException("@text/offline.request-failed"));
                                 }
-                            } else if (response.getStatus() == 401) {
+                            } else if (responseStatus == 401) {
                                 f.completeExceptionally(
                                         new ElroConnectsAccountException("@text/offline.credentials-error"));
                             } else {
-                                logger.warn("Unexpected response on access token request: {} - {}",
-                                        response.getStatus(), getContentAsString());
+                                logger.warn("Unexpected response on access token request: {} - {}", responseStatus,
+                                        getContentAsString());
                                 f.completeExceptionally(
                                         new ElroConnectsAccountException("@text/offline.request-failed"));
                             }
@@ -296,53 +295,50 @@ public class ElroConnectsAccountHandler extends BaseBridgeHandler {
         CompletableFuture<@Nullable String> f = new CompletableFuture<>();
         Request request = client.newRequest(URI.create(ELRO_CLOUD_URL));
 
-        request.method(HttpMethod.GET).header(HttpHeader.AUTHORIZATION, "Bearer " + accessToken)
-                .header(HttpHeader.ACCEPT, "application/json").timeout(TIMEOUT_MS, TimeUnit.MILLISECONDS)
-                .send(new BufferingResponseListener() {
-                    @NonNullByDefault({})
-                    @Override
-                    public void onComplete(Result result) {
-                        if (result.isSucceeded()) {
-                            final HttpResponse response = (HttpResponse) result.getResponse();
-                            if (response.getStatus() == 200) {
-                                f.complete(getContentAsString());
-                            } else if (response.getStatus() == 401) {
-                                // Access token expired, so clear it and do a poll that will now start with a login
-                                accessToken = null;
-                                if (!retry) { // Only retry once to avoid infinite recursive loop if no valid token is
-                                              // received
-                                    retry = true;
-                                    logger.debug("Access token expired, retry");
-                                    poll();
-                                    if (accessToken == null) {
-                                        logger.debug("Request for new token failed");
-                                    }
-                                } else {
-                                    logger.warn("Unexpected response after getting new token : {} - {}",
-                                            response.getStatus(), getContentAsString());
-                                    f.completeExceptionally(
-                                            new ElroConnectsAccountException("@text/offline.request-failed"));
-                                }
-                            } else {
-                                logger.warn("Unexpected response on get controllers request: {} - {}",
-                                        response.getStatus(), getContentAsString());
-                                f.completeExceptionally(
-                                        new ElroConnectsAccountException("@text/offline.request-failed"));
+        request.method(HttpMethod.GET).headers(h -> {
+            h.add(HttpHeader.AUTHORIZATION, "Bearer " + accessToken);
+            h.add(HttpHeader.ACCEPT, "application/json");
+        }).timeout(TIMEOUT_MS, TimeUnit.MILLISECONDS).send(new BufferingResponseListener() {
+            @NonNullByDefault({})
+            @Override
+            public void onComplete(Result result) {
+                if (result.isSucceeded()) {
+                    final int responseStatus = result.getResponse().getStatus();
+                    if (responseStatus == 200) {
+                        f.complete(getContentAsString());
+                    } else if (responseStatus == 401) {
+                        // Access token expired, so clear it and do a poll that will now start with a login
+                        accessToken = null;
+                        if (!retry) { // Only retry once to avoid infinite recursive loop if no valid token is
+                                      // received
+                            retry = true;
+                            logger.debug("Access token expired, retry");
+                            poll();
+                            if (accessToken == null) {
+                                logger.debug("Request for new token failed");
                             }
                         } else {
-                            Throwable e = result.getFailure();
-                            if (e instanceof SocketTimeoutException || e instanceof TimeoutException) {
-                                f.completeExceptionally(
-                                        new ElroConnectsAccountException("@text/offline.request-timeout", e));
-                            } else {
-                                logger.warn("Get controllers request failed", e);
-                                f.completeExceptionally(
-                                        new ElroConnectsAccountException("@text/offline.request-failed", e));
-                            }
+                            logger.warn("Unexpected response after getting new token : {} - {}", responseStatus,
+                                    getContentAsString());
+                            f.completeExceptionally(new ElroConnectsAccountException("@text/offline.request-failed"));
                         }
-                        retry = false;
+                    } else {
+                        logger.warn("Unexpected response on get controllers request: {} - {}", responseStatus,
+                                getContentAsString());
+                        f.completeExceptionally(new ElroConnectsAccountException("@text/offline.request-failed"));
                     }
-                });
+                } else {
+                    Throwable e = result.getFailure();
+                    if (e instanceof SocketTimeoutException || e instanceof TimeoutException) {
+                        f.completeExceptionally(new ElroConnectsAccountException("@text/offline.request-timeout", e));
+                    } else {
+                        logger.warn("Get controllers request failed", e);
+                        f.completeExceptionally(new ElroConnectsAccountException("@text/offline.request-failed", e));
+                    }
+                }
+                retry = false;
+            }
+        });
 
         return f;
     }

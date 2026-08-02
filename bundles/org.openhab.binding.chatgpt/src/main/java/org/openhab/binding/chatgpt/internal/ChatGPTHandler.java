@@ -21,10 +21,10 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.chatgpt.internal.dto.ChatMessage;
@@ -176,8 +176,10 @@ public class ChatGPTHandler extends BaseThingHandler {
     public @Nullable String sendPrompt(String queryJson, @Nullable Integer timeoutSeconds) {
         Request request = httpClient.newRequest(apiUrl).method(HttpMethod.POST)
                 .timeout(timeoutSeconds != null ? timeoutSeconds : DEFAULT_REQUEST_TIMEOUT_S, TimeUnit.SECONDS)
-                .header("Content-Type", "application/json").header("Authorization", "Bearer " + apiKey)
-                .content(new StringContentProvider(queryJson));
+                .headers(h -> {
+                    h.add("Content-Type", "application/json");
+                    h.add("Authorization", "Bearer " + apiKey);
+                }).body(new StringRequestContent(queryJson));
         logger.trace("Query '{}'", queryJson);
         try {
             ContentResponse response = request.send();
@@ -246,7 +248,7 @@ public class ChatGPTHandler extends BaseThingHandler {
         scheduler.execute(() -> {
             try {
                 Request request = httpClient.newRequest(modelUrl).timeout(DEFAULT_REQUEST_TIMEOUT_S, TimeUnit.SECONDS)
-                        .method(HttpMethod.GET).header("Authorization", "Bearer " + apiKey);
+                        .method(HttpMethod.GET).headers(h -> h.add("Authorization", "Bearer " + apiKey));
                 ContentResponse response = request.send();
                 if (response.getStatus() == 200) {
                     updateStatus(ThingStatus.ONLINE);

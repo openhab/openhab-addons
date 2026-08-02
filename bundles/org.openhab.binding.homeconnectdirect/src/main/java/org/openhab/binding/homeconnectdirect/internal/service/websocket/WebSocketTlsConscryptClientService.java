@@ -14,7 +14,6 @@ package org.openhab.binding.homeconnectdirect.internal.service.websocket;
 
 import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.CONSCRYPT_PROVIDER;
 
-import java.io.IOException;
 import java.net.URI;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -29,9 +28,9 @@ import javax.net.ssl.TrustManager;
 
 import org.conscrypt.Conscrypt;
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.client.GZIPContentDecoder;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.eclipse.jetty.websocket.api.Callback;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
@@ -76,8 +75,8 @@ public class WebSocketTlsConscryptClientService extends AbstractWebSocketClientS
             sslContextFactory.setIncludeCipherSuites(TLS_ECDHE_PSK_WITH_CHACHA_20_POLY_1305_SHA_256);
             sslContextFactory.setIncludeProtocols(TLSV_1_2);
 
-            var httpClient = new HttpClient(sslContextFactory);
-            httpClient.getContentDecoderFactories().add(new GZIPContentDecoder.Factory());
+            var httpClient = new HttpClient();
+            httpClient.setSslContextFactory(sslContextFactory);
 
             // websocket
             setWebSocketClient(new WebSocketClient(httpClient));
@@ -88,14 +87,12 @@ public class WebSocketTlsConscryptClientService extends AbstractWebSocketClientS
 
     @Override
     public void send(String message) {
-        try {
-            var session = getSession();
-            if (session != null && session.isOpen()) {
-                logger.debug(">> {} ({})", message, getThingUID());
-                session.getRemote().sendString(message);
-            }
-        } catch (IOException e) {
-            logger.error("Failed to send message! error={} thingUID={}", e.getMessage(), getThingUID());
+        var session = getSession();
+        if (session != null && session.isOpen()) {
+            logger.debug(">> {} ({})", message, getThingUID());
+            session.sendText(message, Callback.from(() -> {
+            }, failure -> logger.error("Failed to send message! error={} thingUID={}", failure.getMessage(),
+                    getThingUID())));
         }
     }
 

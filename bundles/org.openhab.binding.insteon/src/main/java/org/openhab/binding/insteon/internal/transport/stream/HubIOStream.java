@@ -27,9 +27,9 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.insteon.internal.utils.HexUtils;
@@ -241,8 +241,8 @@ public class HubIOStream extends IOStream {
      * @throws IOException
      */
     private String getURL(String path) throws IOException {
-        Request request = httpClient.newRequest(host, port).path(path).header(HttpHeader.AUTHORIZATION, "Basic " + auth)
-                .timeout(REQUEST_TIMEOUT, TimeUnit.SECONDS);
+        Request request = httpClient.newRequest(host, port).path(path).timeout(REQUEST_TIMEOUT, TimeUnit.SECONDS);
+        request.headers(headers -> headers.put(HttpHeader.AUTHORIZATION, "Basic " + auth));
         logger.trace("getting {}", request.getURI());
 
         try {

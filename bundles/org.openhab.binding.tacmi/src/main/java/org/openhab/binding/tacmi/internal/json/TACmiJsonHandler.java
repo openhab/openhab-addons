@@ -22,9 +22,9 @@ import java.util.function.BiFunction;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.tacmi.internal.json.obj.IO;
@@ -131,10 +131,10 @@ public class TACmiJsonHandler extends BaseThingHandler {
         try {
             final Request req = httpClient.newRequest(this.url).method(HttpMethod.GET).timeout(10000,
                     TimeUnit.MILLISECONDS);
-            req.header(HttpHeader.ACCEPT_LANGUAGE, "en");
+            req.headers(h -> h.add(HttpHeader.ACCEPT_LANGUAGE, "en"));
             final String authH = this.authHeader;
             if (authH != null) {
-                req.header(HttpHeader.AUTHORIZATION, authH);
+                req.headers(h -> h.add(HttpHeader.AUTHORIZATION, authH));
             }
 
             final ContentResponse httpResponse = req.send();

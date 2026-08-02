@@ -36,11 +36,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import javax.servlet.Servlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.util.introspection.UberspectImpl;
@@ -63,10 +58,13 @@ import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletName;
-import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletPattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.servlet.Servlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * The {@link AmazonEchoControlServlet} allows to log in to Amazon accounts using a proxy and shows information about
@@ -75,9 +73,10 @@ import org.slf4j.LoggerFactory;
  * @author Michael Geramb - Initial Contribution
  * @author Jan N. Klug - Refactored to whiteboard, merged both servlets, use Velocity templates
  */
-@Component(service = Servlet.class, immediate = true)
-@HttpWhiteboardServletName(SERVLET_PATH)
-@HttpWhiteboardServletPattern({ SERVLET_PATH, SERVLET_PATH + "/*" })
+@Component(service = Servlet.class, immediate = true, property = {
+        "osgi.http.whiteboard.servlet.name=" + AmazonEchoControlServlet.SERVLET_PATH,
+        "osgi.http.whiteboard.servlet.pattern=" + AmazonEchoControlServlet.SERVLET_PATH,
+        "osgi.http.whiteboard.servlet.pattern=" + AmazonEchoControlServlet.SERVLET_PATH + "/*" })
 @NonNullByDefault
 public class AmazonEchoControlServlet extends HttpServlet {
     public static final String SERVLET_PATH = "/" + BINDING_ID;

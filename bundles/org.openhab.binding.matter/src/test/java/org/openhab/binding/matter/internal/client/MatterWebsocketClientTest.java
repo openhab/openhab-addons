@@ -18,7 +18,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.math.BigInteger;
 import java.util.concurrent.CompletableFuture;
@@ -27,9 +26,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.websocket.api.RemoteEndpoint;
 import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.jetty.websocket.api.WebSocketPolicy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.matter.internal.client.dto.Endpoint;
@@ -364,9 +361,6 @@ class MatterWebsocketClientTest {
      */
     private void connectMockSession() {
         Session session = mock(Session.class);
-        when(session.getPolicy()).thenReturn(WebSocketPolicy.newClientPolicy());
-        RemoteEndpoint remote = mock(RemoteEndpoint.class);
-        when(session.getRemote()).thenReturn(remote);
-        client.onWebSocketConnect(session);
+        client.onWebSocketOpen(session);
     }
 }
