@@ -42,7 +42,7 @@ The Thing has the following configuration parameters:
 | Basic Volume Control Enabled      | volumeBasicEnabled      | Enables stateless volume up/down and mute controls in the K apps; cannot be used when `volumeEnabled` is true (see rules example below) | Boolean (default false)                              |
 | Load Highlighted Details          | loadHighlightedDetails  | When enabled the binding will automatically load the metadata channels when the selected item in the UI (Movie or Album) changes        | Boolean (default false)                              |
 | Load Album Details                | loadAlbumDetails        | When enabled the binding will automatically load the metadata channels for the currently playing Album                                  | Boolean (default false) N/A for Alto and Strato      |
-| Parental Control Passcode         | parentalControlPasscode | The passcode to change parental control levels (Alto and Strato only)                                                                   | String (1 to 8 digits)                               |
+| Parental Control Passcode         | parentalControlPasscode | The passcode to change parental control levels (Alto and Strato only)                                                                   | String (1 to 8 digits, optional)                     |
 
 Some notes:
 

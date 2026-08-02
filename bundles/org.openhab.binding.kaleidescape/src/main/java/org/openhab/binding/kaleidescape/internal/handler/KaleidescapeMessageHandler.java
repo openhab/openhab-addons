@@ -290,7 +290,7 @@ public enum KaleidescapeMessageHandler {
             final Matcher matcher = p.matcher(message);
             if (matcher.find()) {
                 handler.updateChannel(KaleidescapeBindingConstants.PARENTAL_CONTROL_LEVEL,
-                        new DecimalType(Integer.parseInt(matcher.group(0))));
+                        new DecimalType(Integer.parseInt(matcher.group(1))));
             } else {
                 logger.debug("PARENTAL_CONTROL_LEVEL - no match on message: {}", message);
             }
