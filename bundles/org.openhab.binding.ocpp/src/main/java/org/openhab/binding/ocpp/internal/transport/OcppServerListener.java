@@ -89,4 +89,10 @@ public interface OcppServerListener {
      * charge point's own override if set, otherwise the server default.
      */
     int heartbeatFor(UUID session);
+
+    /**
+     * The next transaction id to assign in a StartTransaction confirmation. Sourced from a persisted
+     * counter so a restart mid-transaction does not reissue an id a charger still holds.
+     */
+    int nextTransactionId();
 }

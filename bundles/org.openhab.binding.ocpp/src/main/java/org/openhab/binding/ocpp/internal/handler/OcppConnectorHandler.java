@@ -153,6 +153,8 @@ public class OcppConnectorHandler extends BaseThingHandler {
     private volatile @Nullable Integer transactionId;
     private volatile double currentLimitAmps;
     private volatile boolean paused;
+    // A limit/pause set while the charge point was not ready yet, to be sent once it is.
+    private volatile boolean limitDeferred;
 
     // Guards the coalescing and watchdog state below. A dedicated lock rather than the handler
     // monitor: the base class synchronizes on the handler for things like status updates, so holding
@@ -193,7 +195,20 @@ public class OcppConnectorHandler extends BaseThingHandler {
         // connector ONLINE, and a status set afterwards would overwrite that.
         updateStatus(ThingStatus.UNKNOWN);
         parent.registerConnector(connectorId, this);
+        recoverTransaction(parent);
         startPolling();
+    }
+
+    private void recoverTransaction(OcppChargePointHandler parent) {
+        // If openHAB restarted while a transaction was running, the charger still holds its id.
+        // Recover it so RemoteStop and a TxProfile can reference it, and the eventual StopTransaction
+        // matches. The charging channel stays status-driven, so it self-corrects from the next report.
+        Integer open = parent.recoverTransactionId(connectorId);
+        if (open != null) {
+            transactionId = open;
+            updateState(CHANNEL_TRANSACTION_ID, new DecimalType(open));
+            logger.debug("Recovered open transaction {} on connector {} after restart", open, connectorId);
+        }
     }
 
     private void startPolling() {
@@ -292,7 +307,7 @@ public class OcppConnectorHandler extends BaseThingHandler {
                 break;
             case CHANNEL_UNLOCK:
                 if (command == OnOffType.ON) {
-                    dispatch(new UnlockConnectorRequest(connectorId), "UnlockConnector");
+                    dispatchIfReady(new UnlockConnectorRequest(connectorId), "UnlockConnector");
                     // Momentary: pop the switch back so it does not stick ON.
                     updateState(CHANNEL_UNLOCK, OnOffType.OFF);
                 }
@@ -306,7 +321,27 @@ public class OcppConnectorHandler extends BaseThingHandler {
     }
 
     private void applyLimit() {
-        coalesceProfile(paused ? 0.0 : currentLimitAmps);
+        if (isReadyToSend()) {
+            coalesceProfile(paused ? 0.0 : currentLimitAmps);
+        } else {
+            // The charger is not ready yet (just connected, before boot). Hold the intent — the
+            // latest values are already stored — and send it the moment the charger is ready, rather
+            // than transmit before it can accept the profile or drop the setting outright.
+            limitDeferred = true;
+        }
+    }
+
+    /** Called when the charge point becomes ready; sends a limit/pause that was set while it was not. */
+    public void onChargePointReady() {
+        if (limitDeferred) {
+            limitDeferred = false;
+            applyLimit();
+        }
+    }
+
+    private boolean isReadyToSend() {
+        OcppChargePointHandler cp = chargePoint;
+        return cp != null && cp.isReady();
     }
 
     private void coalesceProfile(double amps) {
@@ -368,6 +403,10 @@ public class OcppConnectorHandler extends BaseThingHandler {
     }
 
     private void remoteStart() {
+        if (!isReadyToSend()) {
+            logger.debug("RemoteStart on connector {} skipped — charge point not ready", connectorId);
+            return;
+        }
         RemoteStartTransactionRequest request = new RemoteStartTransactionRequest(remoteStartTag);
         request.setConnectorId(connectorId);
         dispatch(request, "RemoteStart");
@@ -379,10 +418,14 @@ public class OcppConnectorHandler extends BaseThingHandler {
             logger.debug("No active transaction to stop on connector {}", connectorId);
             return;
         }
-        dispatch(new RemoteStopTransactionRequest(transaction), "RemoteStop");
+        dispatchIfReady(new RemoteStopTransactionRequest(transaction), "RemoteStop");
     }
 
     private void changeAvailability(boolean operative) {
+        if (!isReadyToSend()) {
+            logger.debug("ChangeAvailability on connector {} skipped — charge point not ready", connectorId);
+            return;
+        }
         AvailabilityType type = operative ? AvailabilityType.Operative : AvailabilityType.Inoperative;
         dispatch(new ChangeAvailabilityRequest(connectorId, type), "ChangeAvailability")
                 .whenComplete((confirmation, ex) -> {
@@ -400,6 +443,11 @@ public class OcppConnectorHandler extends BaseThingHandler {
             logger.debug("Connector {} has no hardwareMaxCurrentKey configured", connectorId);
             return;
         }
+        if (!isReadyToSend()) {
+            logger.debug("ChangeConfiguration[hardwareMax] on connector {} skipped — charge point not ready",
+                    connectorId);
+            return;
+        }
         Double amps = toAmps(command);
         if (amps == null) {
             return;
@@ -415,6 +463,9 @@ public class OcppConnectorHandler extends BaseThingHandler {
     }
 
     private void pollMeterValues() {
+        if (!isReadyToSend()) {
+            return; // nothing to poll until the charger has booted
+        }
         TriggerMessageRequest request = new TriggerMessageRequest(TriggerMessageRequestType.MeterValues);
         request.setConnectorId(connectorId);
         dispatch(request, "TriggerMessage[MeterValues]");
@@ -423,11 +474,24 @@ public class OcppConnectorHandler extends BaseThingHandler {
     /**
      * Ask the charger to (re)send this connector's StatusNotification now, so status and availability
      * are fresh immediately after a (re)connect instead of waiting for the charger to volunteer one.
+     *
+     * <p>
+     * Deliberately not readiness-gated: this is the probe the charge point uses to recover a charger
+     * that reopened its socket without re-booting, so it must be allowed to send before the charger
+     * is otherwise considered ready.
      */
     public void requestStatus() {
         TriggerMessageRequest request = new TriggerMessageRequest(TriggerMessageRequestType.StatusNotification);
         request.setConnectorId(connectorId);
         dispatch(request, "TriggerMessage[StatusNotification]");
+    }
+
+    private void dispatchIfReady(eu.chargetime.ocpp.model.Request request, String name) {
+        if (isReadyToSend()) {
+            dispatch(request, name);
+        } else {
+            logger.debug("{} on connector {} skipped — charge point not ready", name, connectorId);
+        }
     }
 
     private CompletionStage<eu.chargetime.ocpp.model.Confirmation> dispatch(eu.chargetime.ocpp.model.Request request,

@@ -14,7 +14,6 @@ package org.openhab.binding.ocpp.internal.transport;
 
 import java.time.ZonedDateTime;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
@@ -65,10 +64,6 @@ public class InboundCoreHandler implements ServerCoreEventHandler {
 
     private final Logger logger = LoggerFactory.getLogger(InboundCoreHandler.class);
     private final OcppServerListener listener;
-
-    // A charger-wide transaction id sequence. StartTransaction requires a non-null id in its
-    // confirmation; a monotonic counter is a valid, simple source.
-    private final AtomicInteger transactionSequence = new AtomicInteger(1);
 
     public InboundCoreHandler(OcppServerListener listener) {
         this.listener = listener;
@@ -129,7 +124,7 @@ public class InboundCoreHandler implements ServerCoreEventHandler {
     public StartTransactionConfirmation handleStartTransactionRequest(UUID sessionIndex,
             StartTransactionRequest request) {
         boolean authorized = listener.isTagAuthorized(request.getIdTag());
-        int transactionId = transactionSequence.getAndIncrement();
+        int transactionId = listener.nextTransactionId();
         logger.debug("StartTransaction from session {} connector {} idTag {} -> txId {} ({})", sessionIndex,
                 request.getConnectorId(), request.getIdTag(), transactionId, authorized ? "accepted" : "invalid");
         if (authorized) {

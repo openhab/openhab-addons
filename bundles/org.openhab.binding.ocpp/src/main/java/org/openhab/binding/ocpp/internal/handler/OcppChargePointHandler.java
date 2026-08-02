@@ -97,6 +97,10 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
 
     private @Nullable OcppServerBridgeHandler server;
     private @Nullable UUID session;
+    // True once the charger has proven it is booted on the current session — it sent a
+    // BootNotification, or (after a socket reopen without a fresh boot) any application message.
+    // Gates caller-initiated outbound traffic so nothing is sent before the charger can accept it.
+    private volatile boolean operational;
     private volatile @Nullable String acceptedMeasurands;
     private @Nullable ScheduledFuture<?> bootConfigTask;
     private @Nullable ScheduledFuture<?> livenessTask;
@@ -118,11 +122,15 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
         // Reset addresses the whole charge point (ResetRequest carries no connector id), so it lives
         // here rather than on each connector.
         if (CHANNEL_RESET.equals(channelUID.getId()) && command == OnOffType.ON) {
-            send(new ResetRequest(ResetType.Soft)).whenComplete((confirmation, ex) -> {
-                if (ex != null) {
-                    logger.warn("Reset of {} failed: {}", chargePointId, ex.getMessage());
-                }
-            });
+            if (isReady()) {
+                send(new ResetRequest(ResetType.Soft)).whenComplete((confirmation, ex) -> {
+                    if (ex != null) {
+                        logger.warn("Reset of {} failed: {}", chargePointId, ex.getMessage());
+                    }
+                });
+            } else {
+                logger.debug("Reset of {} skipped — charge point not ready", chargePointId);
+            }
             // Momentary: pop the switch back so it does not stick ON.
             updateState(CHANNEL_RESET, OnOffType.OFF);
         }
@@ -174,6 +182,7 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
             livenessTask = null;
             statusFallbackTask = null;
             session = null;
+            operational = false;
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
@@ -232,13 +241,20 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
 
     // --- routed from the server bridge ---
 
+    /** Whether this charge point can accept outbound traffic: it has a live session and has booted. */
+    public boolean isReady() {
+        return session != null && operational;
+    }
+
     public void onConnected(UUID session) {
         this.session = session;
         bootAccepted = false;
+        operational = false;
         logger.debug("Charge point {} online on session {}", chargePointId, session);
         updateStatus(ThingStatus.ONLINE);
         updateState(CHANNEL_CONNECTED, OnOffType.ON);
-        touch();
+        // Liveness only: the charger has opened a socket but not yet spoken, so it is not ready.
+        recordActivity();
         // OCPP 1.6 forbids the central system from sending ANY request before it has accepted the
         // charge point's BootNotification — a request that arrives first can leave the charger
         // waiting for a boot response it then never processes. So nothing is sent here: status is
@@ -263,6 +279,7 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
             return; // a stale session closing after a reconnect — the charger is still live
         }
         session = null;
+        operational = false;
         cancel(livenessTask);
         livenessTask = null;
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Charger disconnected");
@@ -332,6 +349,10 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
             transactions.values().remove(connector);
             transactions.put(transactionId, connector);
             connector.onTransactionStarted(request, transactionId);
+            OcppServerBridgeHandler serverHandler = server;
+            if (serverHandler != null) {
+                serverHandler.rememberTransaction(transactionId, chargePointId, connectorId);
+            }
         }
     }
 
@@ -341,9 +362,27 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
             return;
         }
         OcppConnectorHandler connector = transactions.remove(transactionId);
+        OcppServerBridgeHandler serverHandler = server;
+        if (connector == null && serverHandler != null) {
+            // Not in memory: openHAB likely restarted mid-transaction. Recover the connector from the
+            // persisted mapping so the stop still reaches it.
+            Integer connectorId = serverHandler.transactionConnector(transactionId, chargePointId);
+            if (connectorId != null) {
+                connector = connectors.get(connectorId);
+            }
+        }
         if (connector != null) {
             connector.onTransactionStopped(request);
         }
+        if (serverHandler != null) {
+            serverHandler.forgetTransaction(transactionId);
+        }
+    }
+
+    /** A connector's open transaction id recovered from persistence after a restart, or {@code null}. */
+    public @Nullable Integer recoverTransactionId(int connectorId) {
+        OcppServerBridgeHandler serverHandler = server;
+        return serverHandler != null ? serverHandler.openTransactionFor(chargePointId, connectorId) : null;
     }
 
     // --- boot-time configuration burst ---
@@ -508,7 +547,22 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
 
     // --- liveness watchdog ---
 
+    /**
+     * Records an application message from the charger. Only these — BootNotification, StatusNotification,
+     * MeterValues, Heartbeat — mark the charge point ready; the bare session open (which also updates
+     * liveness, via {@link #recordActivity}) does not, since the charger has not spoken yet.
+     */
     private void touch() {
+        if (!operational) {
+            operational = true;
+            // First proof the charger is booted and talking on this session: release anything the
+            // connectors deferred while it was not yet ready.
+            connectors.values().forEach(OcppConnectorHandler::onChargePointReady);
+        }
+        recordActivity();
+    }
+
+    private void recordActivity() {
         if (getThing().getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.ONLINE);
         }

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.ocpp.internal.handler;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
@@ -21,6 +23,7 @@ import static org.mockito.Mockito.when;
 import static org.openhab.binding.ocpp.internal.OcppBindingConstants.*;
 
 import java.time.ZonedDateTime;
+import java.util.UUID;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,6 +33,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 
+import eu.chargetime.ocpp.model.core.BootNotificationRequest;
 import eu.chargetime.ocpp.model.core.ChargePointErrorCode;
 import eu.chargetime.ocpp.model.core.ChargePointStatus;
 import eu.chargetime.ocpp.model.core.MeterValuesRequest;
@@ -137,5 +141,36 @@ class OcppChargePointHandlerTest {
 
         verify(connector1, never()).onTransactionStarted(any(), anyInt());
         verify(connector2, never()).onTransactionStarted(any(), anyInt());
+    }
+
+    @Test
+    void aChargePointIsNotReadyUntilItHasBooted() {
+        handler.onConnected(UUID.randomUUID());
+        assertFalse(handler.isReady(), "a just-connected charger has not booted yet");
+
+        handler.onBootNotification(new BootNotificationRequest("vendor", "model"));
+        assertTrue(handler.isReady(), "a booted charger is ready to receive");
+    }
+
+    @Test
+    void becomingReadyReleasesConnectorsThatDeferredASend() {
+        handler.onConnected(UUID.randomUUID());
+        // A heartbeat is the charger proving it is booted — e.g. after reopening its socket without a
+        // fresh BootNotification — and must release anything the connectors held back.
+        handler.onHeartbeat();
+
+        verify(connector1).onChargePointReady();
+        verify(connector2).onChargePointReady();
+    }
+
+    @Test
+    void aDisconnectMakesItNotReadyAgain() {
+        UUID session = UUID.randomUUID();
+        handler.onConnected(session);
+        handler.onHeartbeat();
+        assertTrue(handler.isReady());
+
+        handler.onDisconnected(session);
+        assertFalse(handler.isReady(), "a disconnected charger is not ready");
     }
 }

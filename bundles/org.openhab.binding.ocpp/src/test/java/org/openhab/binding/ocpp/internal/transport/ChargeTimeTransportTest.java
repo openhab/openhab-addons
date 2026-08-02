@@ -94,6 +94,11 @@ class ChargeTimeTransportTest {
             public int heartbeatFor(UUID session) {
                 return 300;
             }
+
+            @Override
+            public int nextTransactionId() {
+                return 1;
+            }
         };
     }
 
