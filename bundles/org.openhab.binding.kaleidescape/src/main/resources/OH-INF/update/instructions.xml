@@ -57,6 +57,27 @@
 				<type>kaleidescape:search</type>
 			</add-channel>
 		</instruction-set>
+
+		<instruction-set targetVersion="6">
+			<add-channel id="progress" groupIds="ui">
+				<type>kaleidescape:progress</type>
+			</add-channel>
+			<update-channel id="power" groupIds="ui">
+				<type>system:power</type>
+				<label>Power</label>
+				<description>Turn the zone On or Off (system standby)</description>
+			</update-channel>
+			<update-channel id="volume" groupIds="ui">
+				<type>system:volume</type>
+				<label>Volume</label>
+				<description>A virtual volume that tracks the volume control from the K app</description>
+			</update-channel>
+			<update-channel id="mute" groupIds="ui">
+				<type>system:mute</type>
+				<label>Mute</label>
+				<description>A virtual mute switch that tracks the mute status from the K app</description>
+			</update-channel>
+		</instruction-set>
 	</thing-type>
 
 	<thing-type uid="kaleidescape:cinemaone">
@@ -159,6 +180,27 @@
 				<type>kaleidescape:search</type>
 			</add-channel>
 		</instruction-set>
+
+		<instruction-set targetVersion="6">
+			<add-channel id="progress" groupIds="ui">
+				<type>kaleidescape:progress</type>
+			</add-channel>
+			<update-channel id="power" groupIds="ui">
+				<type>system:power</type>
+				<label>Power</label>
+				<description>Turn the zone On or Off (system standby)</description>
+			</update-channel>
+			<update-channel id="volume" groupIds="ui">
+				<type>system:volume</type>
+				<label>Volume</label>
+				<description>A virtual volume that tracks the volume control from the K app</description>
+			</update-channel>
+			<update-channel id="mute" groupIds="ui">
+				<type>system:mute</type>
+				<label>Mute</label>
+				<description>A virtual mute switch that tracks the mute status from the K app</description>
+			</update-channel>
+		</instruction-set>
 	</thing-type>
 
 	<thing-type uid="kaleidescape:alto">
@@ -252,6 +294,30 @@
 				<type>kaleidescape:search</type>
 			</add-channel>
 		</instruction-set>
+
+		<instruction-set targetVersion="6">
+			<add-channel id="progress" groupIds="ui">
+				<type>kaleidescape:progress</type>
+			</add-channel>
+			<add-channel id="level" groupIds="parental-control">
+				<type>kaleidescape:parental-control-level</type>
+			</add-channel>
+			<update-channel id="power" groupIds="ui">
+				<type>system:power</type>
+				<label>Power</label>
+				<description>Turn the zone On or Off (system standby)</description>
+			</update-channel>
+			<update-channel id="volume" groupIds="ui">
+				<type>system:volume</type>
+				<label>Volume</label>
+				<description>A virtual volume that tracks the volume control from the K app</description>
+			</update-channel>
+			<update-channel id="mute" groupIds="ui">
+				<type>system:mute</type>
+				<label>Mute</label>
+				<description>A virtual mute switch that tracks the mute status from the K app</description>
+			</update-channel>
+		</instruction-set>
 	</thing-type>
 
 	<thing-type uid="kaleidescape:strato">
@@ -344,6 +410,33 @@
 			<add-channel id="search" groupIds="ui">
 				<type>kaleidescape:search</type>
 			</add-channel>
+		</instruction-set>
+
+		<instruction-set targetVersion="6">
+			<add-channel id="progress" groupIds="ui">
+				<type>kaleidescape:progress</type>
+			</add-channel>
+			<add-channel id="video-mode2" groupIds="ui">
+				<type>kaleidescape:video-mode2</type>
+			</add-channel>
+			<add-channel id="level" groupIds="parental-control">
+				<type>kaleidescape:parental-control-level</type>
+			</add-channel>
+			<update-channel id="power" groupIds="ui">
+				<type>system:power</type>
+				<label>Power</label>
+				<description>Turn the zone On or Off (system standby)</description>
+			</update-channel>
+			<update-channel id="volume" groupIds="ui">
+				<type>system:volume</type>
+				<label>Volume</label>
+				<description>A virtual volume that tracks the volume control from the K app</description>
+			</update-channel>
+			<update-channel id="mute" groupIds="ui">
+				<type>system:mute</type>
+				<label>Mute</label>
+				<description>A virtual mute switch that tracks the mute status from the K app</description>
+			</update-channel>
 		</instruction-set>
 	</thing-type>
 
