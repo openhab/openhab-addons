@@ -55,6 +55,8 @@ class OcppTransactionRecoveryTest {
     @BeforeEach
     void setUp() {
         server = mock(OcppServerBridgeHandler.class);
+        when(server.getServerConfig())
+                .thenReturn(new org.openhab.binding.ocpp.internal.config.OcppServerConfiguration());
 
         Bridge serverThing = mock(Bridge.class);
         when(serverThing.getHandler()).thenReturn(server);

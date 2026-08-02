@@ -13,7 +13,6 @@
 package org.openhab.binding.ocpp.internal.transport;
 
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -43,11 +42,15 @@ public class TransactionStore {
     private static final char SEPARATOR = '\t';
 
     private final Storage<String> storage;
-    private final AtomicInteger sequence;
+    // Guarded by this: the increment and its persistent write must be one atomic step. With separate
+    // atomicity (e.g. an AtomicInteger plus an unsynchronized put) two concurrent allocations can
+    // persist out of order, storing the LOWER id last — and after a restart the sequence would
+    // resume below an id a charger still holds.
+    private int sequence;
 
     public TransactionStore(Storage<String> storage) {
         this.storage = storage;
-        this.sequence = new AtomicInteger(readSequence(storage));
+        this.sequence = readSequence(storage);
     }
 
     private static int readSequence(Storage<String> storage) {
@@ -64,10 +67,12 @@ public class TransactionStore {
 
     /**
      * The next transaction id, resumed across restarts so it never reissues an id a charger may
-     * still hold for a transaction that outlived openHAB.
+     * still hold for a transaction that outlived openHAB. Allocation and the persistent write happen
+     * under one lock so the stored value can only ever increase — with separate atomicity, two
+     * concurrent allocations can persist out of order and store the lower id last.
      */
-    public int nextTransactionId() {
-        int id = sequence.incrementAndGet();
+    public synchronized int nextTransactionId() {
+        int id = ++sequence;
         storage.put(SEQUENCE_KEY, Integer.toString(id));
         return id;
     }
@@ -77,23 +82,23 @@ public class TransactionStore {
      * first — a connector has at most one at a time, and a StopTransaction that never arrived would
      * otherwise leave a stale entry behind.
      */
-    public void begin(int transactionId, String chargePointId, int connectorId) {
+    public synchronized void begin(int transactionId, String chargePointId, int connectorId) {
         clear(chargePointId, connectorId);
         storage.put(TX_PREFIX + transactionId, chargePointId + SEPARATOR + connectorId);
     }
 
     /** Forget a transaction once it has stopped. */
-    public void end(int transactionId) {
+    public synchronized void end(int transactionId) {
         storage.remove(TX_PREFIX + transactionId);
     }
 
     /** Where a transaction is running, or {@code null} if it is not known. */
-    public @Nullable Location locate(int transactionId) {
+    public synchronized @Nullable Location locate(int transactionId) {
         return parse(storage.get(TX_PREFIX + transactionId));
     }
 
     /** The open transaction id on a connector, or {@code null} if none — used to recover after a restart. */
-    public @Nullable Integer openTransaction(String chargePointId, int connectorId) {
+    public synchronized @Nullable Integer openTransaction(String chargePointId, int connectorId) {
         for (String key : storage.getKeys()) {
             if (key.startsWith(TX_PREFIX) && matches(storage.get(key), chargePointId, connectorId)) {
                 try {

@@ -141,15 +141,17 @@ public class OcppConnectorHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(OcppConnectorHandler.class);
 
-    private int connectorId = 1;
-    private boolean forceTxDefaultProfile;
-    private int profileMinIntervalMs;
-    private String hardwareMaxCurrentKey = "";
-    private String remoteStartTag = "openhab";
-    private int meterValuesPollSeconds;
-    private boolean stuckStateRecovery;
+    // Assigned in initialize() and read from library and scheduler threads; volatile so no reader
+    // depends on the registration order for visibility.
+    private volatile int connectorId = 1;
+    private volatile boolean forceTxDefaultProfile;
+    private volatile int profileMinIntervalMs;
+    private volatile String hardwareMaxCurrentKey = "";
+    private volatile String remoteStartTag = "openhab";
+    private volatile int meterValuesPollSeconds;
+    private volatile boolean stuckStateRecovery;
 
-    private @Nullable OcppChargePointHandler chargePoint;
+    private volatile @Nullable OcppChargePointHandler chargePoint;
     private volatile @Nullable Integer transactionId;
     private volatile double currentLimitAmps;
     private volatile boolean paused;
@@ -161,12 +163,23 @@ public class OcppConnectorHandler extends BaseThingHandler {
     // its monitor while calling back into the framework risks a lock-ordering deadlock.
     private final Object lock = new Object();
 
-    // SetChargingProfile coalescing state (guarded by lock).
+    // SetChargingProfile coalescing state (guarded by lock). profileGeneration counts dispatched
+    // profiles so a confirmation can tell whether it answers the latest request or a stale one.
     private double pendingLimitAmps;
     private long lastProfileSentAt;
+    private long profileGeneration;
     private @Nullable ScheduledFuture<?> pendingFlush;
     private @Nullable ScheduledFuture<?> pollTask;
     private @Nullable ScheduledFuture<?> stuckTask;
+
+    /**
+     * The state one SetChargingProfile request stands for, captured when it is dispatched. The
+     * confirmation publishes these captured values — never the mutable fields, which may have moved
+     * on to a newer request by the time the charger answers — and only if this is still the newest
+     * dispatched profile, so an out-of-order or stale confirmation cannot misreport the channels.
+     */
+    private record ProfileClaim(long generation, double amps, double limitAmps, boolean paused) {
+    }
 
     public OcppConnectorHandler(Thing thing) {
         super(thing);
@@ -237,21 +250,30 @@ public class OcppConnectorHandler extends BaseThingHandler {
             }
         } else {
             cancel(pollTask);
-            cancel(stuckTask);
             pollTask = null;
-            stuckTask = null;
+            // stuckTask and pendingFlush are assigned under the lock (from library and scheduler
+            // threads), so they are cancelled under it too — a lock-free cancel here could race a
+            // concurrent re-arm and leak the freshly scheduled task.
+            synchronized (lock) {
+                cancel(stuckTask);
+                cancel(pendingFlush);
+                stuckTask = null;
+                pendingFlush = null;
+            }
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 
     @Override
     public void dispose() {
-        cancel(pendingFlush);
         cancel(pollTask);
-        cancel(stuckTask);
-        pendingFlush = null;
         pollTask = null;
-        stuckTask = null;
+        synchronized (lock) {
+            cancel(stuckTask);
+            cancel(pendingFlush);
+            stuckTask = null;
+            pendingFlush = null;
+        }
         OcppChargePointHandler parent = chargePoint;
         if (parent != null) {
             parent.unregisterConnector(connectorId);
@@ -345,57 +367,68 @@ public class OcppConnectorHandler extends BaseThingHandler {
     }
 
     private void coalesceProfile(double amps) {
-        boolean sendNow = false;
-        double claimed = 0;
+        ProfileClaim claim = null;
         synchronized (lock) {
             pendingLimitAmps = amps;
             long elapsed = System.currentTimeMillis() - lastProfileSentAt;
             if (profileMinIntervalMs <= 0 || elapsed >= profileMinIntervalMs) {
-                claimed = claimSend();
-                sendNow = true;
+                claim = claimSend();
             } else if (pendingFlush == null) {
                 pendingFlush = scheduler.schedule(this::flushProfile, profileMinIntervalMs - elapsed,
                         TimeUnit.MILLISECONDS);
             }
         }
-        if (sendNow) {
-            sendProfile(claimed);
+        if (claim != null) {
+            sendProfile(claim);
         }
     }
 
     private void flushProfile() {
-        double claimed;
+        ProfileClaim claim;
         synchronized (lock) {
-            claimed = claimSend();
+            claim = claimSend();
         }
-        sendProfile(claimed);
+        sendProfile(claim);
     }
 
     /**
-     * Marks a profile as being sent now and returns the value to send. Claiming the slot under the
-     * lock is what keeps the minimum interval honest when two commands arrive at once: the second
-     * one sees the timestamp already moved and coalesces instead of sending as well. Caller must
-     * hold {@link #lock}.
+     * Marks a profile as being sent now and captures the state it stands for. Claiming the slot
+     * under the lock is what keeps the minimum interval honest when two commands arrive at once: the
+     * second one sees the timestamp already moved and coalesces instead of sending as well. Caller
+     * must hold {@link #lock}.
      */
-    private double claimSend() {
+    private ProfileClaim claimSend() {
         pendingFlush = null;
         lastProfileSentAt = System.currentTimeMillis();
-        return pendingLimitAmps;
+        profileGeneration++;
+        return new ProfileClaim(profileGeneration, pendingLimitAmps, currentLimitAmps, paused);
+    }
+
+    private boolean isLatestProfile(ProfileClaim claim) {
+        synchronized (lock) {
+            return claim.generation() == profileGeneration;
+        }
     }
 
     /**
      * Sends outside the lock. This calls back into the framework, and holding a lock across that is
      * what turns two independently-correct locks into a deadlock.
      */
-    private void sendProfile(double amps) {
-        dispatch(ChargingProfileBuilder.currentLimit(connectorId, amps, forceTxDefaultProfile, transactionId),
+    private void sendProfile(ProfileClaim claim) {
+        dispatch(ChargingProfileBuilder.currentLimit(connectorId, claim.amps(), forceTxDefaultProfile, transactionId),
                 "SetChargingProfile").whenComplete((confirmation, ex) -> {
                     // A non-exceptional completion only means the charger answered; the answer can
-                    // still be Rejected or NotSupported. Publish the applied limit only on Accepted.
+                    // still be Rejected or NotSupported. Publish only what THIS request carried, and
+                    // only while it is still the newest one — a stale confirmation must neither
+                    // publish values from a newer request nor overwrite a newer result.
                     if (ex == null && confirmation instanceof SetChargingProfileConfirmation profile
                             && profile.getStatus() == ChargingProfileStatus.Accepted) {
-                        updateState(CHANNEL_CHARGE_LIMIT, new QuantityType<>(currentLimitAmps, Units.AMPERE));
-                        updateState(CHANNEL_PAUSE, OnOffType.from(paused));
+                        if (isLatestProfile(claim)) {
+                            updateState(CHANNEL_CHARGE_LIMIT, new QuantityType<>(claim.limitAmps(), Units.AMPERE));
+                            updateState(CHANNEL_PAUSE, OnOffType.from(claim.paused()));
+                        } else {
+                            logger.debug("Stale SetChargingProfile confirmation on connector {} ignored", connectorId);
+                        }
                     } else if (ex == null) {
                         logger.debug("SetChargingProfile on connector {} not accepted: {}", connectorId, confirmation);
                     }
@@ -476,14 +509,24 @@ public class OcppConnectorHandler extends BaseThingHandler {
      * are fresh immediately after a (re)connect instead of waiting for the charger to volunteer one.
      *
      * <p>
-     * Deliberately not readiness-gated: this is the probe the charge point uses to recover a charger
-     * that reopened its socket without re-booting, so it must be allowed to send before the charger
-     * is otherwise considered ready.
+     * Deliberately bypasses the readiness gate (see {@link OcppChargePointHandler#sendDirect}): this
+     * is the probe that recovers a charger which reopened its socket without re-booting — such a
+     * charger never becomes ready by itself until its next heartbeat, which can be minutes away, and
+     * a gated probe would deadlock on the very readiness it is meant to establish.
      */
     public void requestStatus() {
+        OcppChargePointHandler cp = chargePoint;
+        if (cp == null) {
+            return;
+        }
         TriggerMessageRequest request = new TriggerMessageRequest(TriggerMessageRequestType.StatusNotification);
         request.setConnectorId(connectorId);
-        dispatch(request, "TriggerMessage[StatusNotification]");
+        cp.sendDirect(request).whenComplete((confirmation, ex) -> {
+            if (ex != null) {
+                logger.debug("TriggerMessage[StatusNotification] on connector {} failed: {}", connectorId,
+                        ex.toString());
+            }
+        });
     }
 
     private void dispatchIfReady(eu.chargetime.ocpp.model.Request request, String name) {

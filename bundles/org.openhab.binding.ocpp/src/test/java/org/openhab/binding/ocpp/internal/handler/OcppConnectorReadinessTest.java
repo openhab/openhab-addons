@@ -59,6 +59,7 @@ class OcppConnectorReadinessTest {
     private final AtomicBoolean ready = new AtomicBoolean(false);
     private @NonNullByDefault({}) OcppChargePointHandler parent;
     private @NonNullByDefault({}) OcppConnectorHandler handler;
+    private @NonNullByDefault({}) ThingHandlerCallback callback;
 
     @BeforeEach
     void setUp() {
@@ -79,7 +80,7 @@ class OcppConnectorReadinessTest {
         when(connThing.getChannels()).thenReturn(List.of());
         when(connThing.getProperties()).thenReturn(Map.of());
 
-        ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        callback = mock(ThingHandlerCallback.class);
         when(callback.getBridge(CP_UID)).thenReturn(parentThing);
 
         handler = new OcppConnectorHandler(connThing);
@@ -104,5 +105,54 @@ class OcppConnectorReadinessTest {
         handler.onChargePointReady();
 
         verify(parent).send(argThat(OcppConnectorReadinessTest::isSetChargingProfile));
+    }
+
+    private void assertLimitNeverPublished(double amps) {
+        verify(callback, never()).stateUpdated(
+                org.mockito.ArgumentMatchers.eq(new ChannelUID(CONN_UID, CHANNEL_CHARGE_LIMIT)),
+                argThat(state -> state instanceof QuantityType<?> quantity && quantity.doubleValue() == amps));
+    }
+
+    @Test
+    void aConfirmationPublishesTheValuesOfItsOwnRequestNotTheCurrentFields() {
+        // The charger answers the FIRST request while a newer one is already in flight. Publishing
+        // the mutable fields here would report the newer 20 A as accepted even though only 10 A was —
+        // and if the newer request is then rejected, the channels would be lying for good.
+        ready.set(true);
+        CompletableFuture<eu.chargetime.ocpp.model.Confirmation> first = new CompletableFuture<>();
+        CompletableFuture<eu.chargetime.ocpp.model.Confirmation> second = new CompletableFuture<>();
+        when(parent.send(any())).thenReturn(first, second);
+
+        handler.handleCommand(new ChannelUID(CONN_UID, CHANNEL_CHARGE_LIMIT), new QuantityType<>(10, Units.AMPERE));
+        handler.handleCommand(new ChannelUID(CONN_UID, CHANNEL_CHARGE_LIMIT), new QuantityType<>(20, Units.AMPERE));
+
+        first.complete(new SetChargingProfileConfirmation(ChargingProfileStatus.Accepted));
+        second.complete(new SetChargingProfileConfirmation(ChargingProfileStatus.Rejected));
+
+        // The stale first confirmation must not publish anything (neither its own 10 A — it is no
+        // longer the newest request — nor the 20 A the fields held), and the rejected second must not
+        // publish either.
+        assertLimitNeverPublished(20.0);
+        assertLimitNeverPublished(10.0);
+    }
+
+    @Test
+    void aLateStaleConfirmationCannotOverwriteANewerResult() {
+        ready.set(true);
+        CompletableFuture<eu.chargetime.ocpp.model.Confirmation> first = new CompletableFuture<>();
+        CompletableFuture<eu.chargetime.ocpp.model.Confirmation> second = new CompletableFuture<>();
+        when(parent.send(any())).thenReturn(first, second);
+
+        handler.handleCommand(new ChannelUID(CONN_UID, CHANNEL_CHARGE_LIMIT), new QuantityType<>(10, Units.AMPERE));
+        handler.handleCommand(new ChannelUID(CONN_UID, CHANNEL_CHARGE_LIMIT), new QuantityType<>(20, Units.AMPERE));
+
+        // Out-of-order completion: the newer request is accepted first...
+        second.complete(new SetChargingProfileConfirmation(ChargingProfileStatus.Accepted));
+        verify(callback).stateUpdated(org.mockito.ArgumentMatchers.eq(new ChannelUID(CONN_UID, CHANNEL_CHARGE_LIMIT)),
+                argThat(state -> state instanceof QuantityType<?> quantity && quantity.doubleValue() == 20.0));
+
+        // ...and the older confirmation arriving afterwards must not roll the channel back to 10 A.
+        first.complete(new SetChargingProfileConfirmation(ChargingProfileStatus.Accepted));
+        assertLimitNeverPublished(10.0);
     }
 }

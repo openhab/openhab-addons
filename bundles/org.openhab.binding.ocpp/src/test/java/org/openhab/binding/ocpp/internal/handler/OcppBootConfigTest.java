@@ -177,6 +177,49 @@ class OcppBootConfigTest {
     }
 
     @Test
+    void nothingIsSentWhileTheBootNotificationIsBeingHandled() {
+        // The library sends the BootNotification confirmation only after the event handler returns,
+        // so any outbound request transmitted from inside the handler would reach the charger before
+        // its boot answer. The boot configuration (settle 0 here) and any deferred connector traffic
+        // must therefore be held: nothing on the wire when the handler returns, everything shortly
+        // after.
+        OcppConnectorHandler connector = mock(OcppConnectorHandler.class);
+        handler.registerConnector(1, connector);
+
+        handler.onBootNotification(new BootNotificationRequest("vendor", "model"));
+
+        verify(transport, org.mockito.Mockito.never()).send(any(), any());
+        verify(connector, org.mockito.Mockito.never()).onChargePointReady();
+
+        verify(transport, timeout(3000)).send(any(), any());
+        verify(connector, timeout(3000)).onChargePointReady();
+    }
+
+    @Test
+    void aListReducedForSampledDataDoesNotNarrowAlignedData() {
+        // Sampled and aligned data may support different measurand sets, so a rejection while
+        // negotiating one key must not shrink the starting list of the other.
+        serverConfig.meterValuesData = "Energy.Active.Import.Register,Power.Active.Import,Temperature";
+        serverConfig.disableRemoteTxAuthorization = false;
+        when(transport.send(any(), any())).thenAnswer(invocation -> {
+            Request request = invocation.getArgument(1);
+            record(request);
+            boolean rejected = request instanceof ChangeConfigurationRequest change
+                    && "MeterValuesSampledData".equals(change.getKey()) && change.getValue() != null
+                    && change.getValue().contains("Temperature");
+            return CompletableFuture.completedFuture(new ChangeConfigurationConfirmation(
+                    rejected ? ConfigurationStatus.Rejected : ConfigurationStatus.Accepted));
+        });
+
+        handler.onBootNotification(new BootNotificationRequest("vendor", "model"));
+
+        verify(transport, timeout(3000).atLeast(3)).send(any(), any());
+        List<String> aligned = sentValuesFor("MeterValuesAlignedData");
+        assertEquals("Energy.Active.Import.Register,Power.Active.Import,Temperature", aligned.get(0),
+                "the aligned negotiation must start from the full configured list");
+    }
+
+    @Test
     void aRejectedMeasurandIsDroppedUntilTheChargerAcceptsTheList() {
         serverConfig.meterValuesData = "Energy.Active.Import.Register,Power.Active.Import,Temperature";
         serverConfig.disableRemoteTxAuthorization = false;

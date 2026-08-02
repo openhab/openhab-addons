@@ -21,6 +21,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -80,31 +81,52 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
         CompletableFuture<Confirmation> send();
     }
 
+    /** One request held back until the charge point is ready to receive it. */
+    private record PendingSend(Request request, CompletableFuture<Confirmation> future) {
+    }
+
     private static final long LIVENESS_FLOOR_SECONDS = 180;
     // Only used when a charger reopens its socket without booting again; the normal path requests
     // status after the BootNotification has been accepted and the boot configuration has run.
     private static final long STATUS_FALLBACK_SECONDS = 25;
     private static final int MAX_BOOT_CONFIG_ATTEMPTS = 3;
+    // Delay between handling a BootNotification and treating the charger as ready. The library sends
+    // the boot confirmation right after the event handler returns; this binding cannot hook that
+    // write, so readiness is flipped on a scheduled task that runs comfortably after it. Usually the
+    // flip happens even sooner and provably in order: the charger's first post-boot message (it may
+    // not send one before receiving the confirmation — OCPP-J allows one outstanding call per
+    // direction) marks it ready via touch().
+    private static final long BOOT_READY_GRACE_MILLIS = 1000;
+    private static final int PENDING_SEND_LIMIT = 32;
 
     private final Logger logger = LoggerFactory.getLogger(OcppChargePointHandler.class);
     private final Map<Integer, OcppConnectorHandler> connectors = new ConcurrentHashMap<>();
     private final Map<Integer, OcppConnectorHandler> transactions = new ConcurrentHashMap<>();
+    // Requests accepted while the charge point was connected but not yet ready (see send()).
+    private final ConcurrentLinkedQueue<PendingSend> pendingSends = new ConcurrentLinkedQueue<>();
 
-    private String chargePointId = "";
-    private int configSettleSeconds;
-    private boolean meterless;
-    private int heartbeat;
+    // Assigned in initialize() and read from library and scheduler threads; volatile so no reader
+    // depends on the registration order for visibility.
+    private volatile String chargePointId = "";
+    private volatile int configSettleSeconds;
+    private volatile boolean meterless;
+    private volatile int heartbeat;
 
-    private @Nullable OcppServerBridgeHandler server;
-    private @Nullable UUID session;
-    // True once the charger has proven it is booted on the current session — it sent a
-    // BootNotification, or (after a socket reopen without a fresh boot) any application message.
+    // Written from framework, library and scheduler threads; all volatile — no lock is held while
+    // reading them on the hot inbound paths.
+    private volatile @Nullable OcppServerBridgeHandler server;
+    private volatile @Nullable UUID session;
+    // True once the charger has proven it is booted on the current session — its BootNotification
+    // was answered, or (after a socket reopen without a fresh boot) it sent any application message.
     // Gates caller-initiated outbound traffic so nothing is sent before the charger can accept it.
     private volatile boolean operational;
-    private volatile @Nullable String acceptedMeasurands;
-    private @Nullable ScheduledFuture<?> bootConfigTask;
-    private @Nullable ScheduledFuture<?> livenessTask;
-    private @Nullable ScheduledFuture<?> statusFallbackTask;
+    // Accepted measurand list per configuration key: a list negotiated down for one key must not
+    // narrow the starting point of the other.
+    private final Map<String, String> acceptedMeasurands = new ConcurrentHashMap<>();
+    private volatile @Nullable ScheduledFuture<?> bootConfigTask;
+    private volatile @Nullable ScheduledFuture<?> livenessTask;
+    private volatile @Nullable ScheduledFuture<?> statusFallbackTask;
+    private volatile @Nullable ScheduledFuture<?> readyTask;
     private volatile boolean bootAccepted;
     private volatile boolean bootConfigApplied;
     private final AtomicInteger bootConfigAttempts = new AtomicInteger();
@@ -175,34 +197,38 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
                 serverHandler.registerChargePoint(chargePointId, this);
             }
         } else {
-            cancel(bootConfigTask);
-            cancel(livenessTask);
-            cancel(statusFallbackTask);
-            bootConfigTask = null;
-            livenessTask = null;
-            statusFallbackTask = null;
+            cancelScheduledWork();
             session = null;
             operational = false;
+            failPendingSends();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 
     @Override
     public void dispose() {
-        cancel(bootConfigTask);
-        cancel(livenessTask);
-        cancel(statusFallbackTask);
-        bootConfigTask = null;
-        livenessTask = null;
-        statusFallbackTask = null;
+        cancelScheduledWork();
         OcppServerBridgeHandler serverHandler = server;
         if (serverHandler != null) {
             serverHandler.unregisterChargePoint(chargePointId);
         }
         server = null;
         session = null;
+        operational = false;
+        failPendingSends();
         connectors.clear();
         transactions.clear();
+    }
+
+    private void cancelScheduledWork() {
+        cancel(bootConfigTask);
+        cancel(livenessTask);
+        cancel(statusFallbackTask);
+        cancel(readyTask);
+        bootConfigTask = null;
+        livenessTask = null;
+        statusFallbackTask = null;
+        readyTask = null;
     }
 
     private @Nullable OcppServerBridgeHandler serverHandler() {
@@ -227,8 +253,50 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
     /**
      * Send a request to this charger's live session. The returned stage completes exceptionally if
      * the charger is offline.
+     *
+     * <p>
+     * This is the central outbound gate: while the charger is connected but not yet ready — its
+     * BootNotification confirmation has not gone out — the request is queued and transmitted once it
+     * is, so no caller can violate the OCPP rule that the central system stays quiet until it has
+     * answered the boot. The queue drains in order on {@link #becomeReady(UUID)}.
      */
     public CompletionStage<Confirmation> send(Request request) {
+        if (session == null) {
+            return CompletableFuture
+                    .failedFuture(new IllegalStateException("Charger " + chargePointId + " is offline"));
+        }
+        if (!operational) {
+            if (pendingSends.size() >= PENDING_SEND_LIMIT) {
+                return CompletableFuture.failedFuture(
+                        new IllegalStateException("Charger " + chargePointId + " not ready and its queue is full"));
+            }
+            CompletableFuture<Confirmation> future = new CompletableFuture<>();
+            PendingSend pending = new PendingSend(request, future);
+            pendingSends.add(pending);
+            // Re-check after enqueuing: a disconnect may have just failed-and-drained the queue (then
+            // this entry must not sit stranded), or readiness may have just flipped (then it must not
+            // wait for a drain that already ran).
+            if (session == null) {
+                if (pendingSends.remove(pending)) {
+                    future.completeExceptionally(
+                            new IllegalStateException("Charger " + chargePointId + " disconnected"));
+                }
+            } else if (operational) {
+                drainPendingSends();
+            }
+            return future;
+        }
+        return sendDirect(request);
+    }
+
+    /**
+     * Send bypassing the readiness gate. The single legitimate caller besides the queue drain is the
+     * status-recovery probe for a charger that reopened its socket without booting again: that
+     * charger is already registered from its earlier boot, no BootNotification is pending on the
+     * session (a charger with one outstanding could not have stayed silent past the fallback delay),
+     * and gating it would leave a silent long-heartbeat charger uncontrollable for minutes.
+     */
+    CompletionStage<Confirmation> sendDirect(Request request) {
         UUID localSession = session;
         OcppServerBridgeHandler serverHandler = server;
         OcppTransport transport = serverHandler != null ? serverHandler.getTransport() : null;
@@ -237,6 +305,41 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
                     .failedFuture(new IllegalStateException("Charger " + chargePointId + " is offline"));
         }
         return transport.send(localSession, request);
+    }
+
+    /**
+     * Marks the charge point ready and releases held traffic, provided the session it was armed for
+     * is still the live one. Queued requests go out first, then connectors flush what they deferred.
+     */
+    private void becomeReady(UUID expectedSession) {
+        if (!expectedSession.equals(session)) {
+            return; // the session changed (or dropped) before readiness applied
+        }
+        operational = true;
+        drainPendingSends();
+        connectors.values().forEach(OcppConnectorHandler::onChargePointReady);
+    }
+
+    private void drainPendingSends() {
+        PendingSend pending;
+        while ((pending = pendingSends.poll()) != null) {
+            PendingSend current = pending;
+            sendDirect(current.request()).whenComplete((confirmation, ex) -> {
+                if (ex != null) {
+                    current.future().completeExceptionally(ex);
+                } else {
+                    current.future().complete(confirmation);
+                }
+            });
+        }
+    }
+
+    private void failPendingSends() {
+        PendingSend pending;
+        while ((pending = pendingSends.poll()) != null) {
+            pending.future()
+                    .completeExceptionally(new IllegalStateException("Charger " + chargePointId + " disconnected"));
+        }
     }
 
     // --- routed from the server bridge ---
@@ -250,6 +353,8 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
         this.session = session;
         bootAccepted = false;
         operational = false;
+        cancel(readyTask);
+        readyTask = null;
         logger.debug("Charge point {} online on session {}", chargePointId, session);
         updateStatus(ThingStatus.ONLINE);
         updateState(CHANNEL_CONNECTED, OnOffType.ON);
@@ -281,7 +386,10 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
         session = null;
         operational = false;
         cancel(livenessTask);
+        cancel(readyTask);
         livenessTask = null;
+        readyTask = null;
+        failPendingSends();
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Charger disconnected");
         updateState(CHANNEL_CONNECTED, OnOffType.OFF);
     }
@@ -294,7 +402,19 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
         setProperty(Thing.PROPERTY_MODEL_ID, request.getChargePointModel());
         setProperty(Thing.PROPERTY_FIRMWARE_VERSION, request.getFirmwareVersion());
         setProperty(Thing.PROPERTY_SERIAL_NUMBER, request.getChargePointSerialNumber());
-        touch();
+        // Liveness only — deliberately NOT touch(): this runs inside the library's boot handler,
+        // before the BootNotification confirmation has been sent, and readiness flipping here would
+        // let queued or deferred requests jump ahead of that confirmation on the wire. Readiness
+        // arrives either with the charger's next message (which per OCPP-J it can only send after
+        // receiving the confirmation) or after a grace delay for a charger that boots then stays
+        // silent.
+        recordActivity();
+        UUID bootSession = session;
+        if (bootSession != null) {
+            cancel(readyTask);
+            readyTask = scheduler.schedule(() -> becomeReady(bootSession), BOOT_READY_GRACE_MILLIS,
+                    TimeUnit.MILLISECONDS);
+        }
         scheduleBootConfig();
     }
 
@@ -340,6 +460,7 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
     }
 
     public void onStartTransaction(StartTransactionRequest request, int transactionId) {
+        touch();
         int connectorId = request.getConnectorId() == null ? 0 : request.getConnectorId();
         OcppConnectorHandler connector = connectors.get(connectorId);
         if (connector != null) {
@@ -357,6 +478,7 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
     }
 
     public void onStopTransaction(StopTransactionRequest request) {
+        touch();
         Integer transactionId = request.getTransactionId();
         if (transactionId == null) {
             return;
@@ -428,8 +550,10 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
                         Integer.toString(config.meterValueSampleInterval)));
             }
             if (!config.meterValuesData.isBlank()) {
-                steps.add(() -> negotiateMeasurand("MeterValuesSampledData", startingMeasurands(config)));
-                steps.add(() -> negotiateMeasurand("MeterValuesAlignedData", startingMeasurands(config)));
+                steps.add(() -> negotiateMeasurand("MeterValuesSampledData",
+                        startingMeasurands(config, "MeterValuesSampledData")));
+                steps.add(() -> negotiateMeasurand("MeterValuesAlignedData",
+                        startingMeasurands(config, "MeterValuesAlignedData")));
             }
             if (config.clockAlignedDataInterval >= 0) {
                 steps.add(() -> sendConfig("ClockAlignedDataInterval",
@@ -450,9 +574,13 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
         runBootConfigStep(steps, 0, new AtomicBoolean(true));
     }
 
-    private String startingMeasurands(OcppServerConfiguration config) {
-        String cached = acceptedMeasurands;
-        return cached != null ? cached : config.meterValuesData;
+    /**
+     * The measurand list to open a negotiation with — what this key's negotiation previously
+     * settled on, or the configured list. Cached per key: sampled and aligned data may support
+     * different measurand sets, so one key's reduction must not narrow the other's starting point.
+     */
+    private String startingMeasurands(OcppServerConfiguration config, String key) {
+        return acceptedMeasurands.getOrDefault(key, config.meterValuesData);
     }
 
     /**
@@ -538,7 +666,7 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
                         return;
                     }
                 } else if (change.getStatus() == ConfigurationStatus.Accepted) {
-                    acceptedMeasurands = value;
+                    acceptedMeasurands.put(key, value);
                 }
             }
             result.complete(confirmation);
@@ -548,16 +676,19 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
     // --- liveness watchdog ---
 
     /**
-     * Records an application message from the charger. Only these — BootNotification, StatusNotification,
-     * MeterValues, Heartbeat — mark the charge point ready; the bare session open (which also updates
-     * liveness, via {@link #recordActivity}) does not, since the charger has not spoken yet.
+     * Records an application message from the charger — StatusNotification, MeterValues, Heartbeat,
+     * transactions. Any such message proves the charger is booted AND that no BootNotification
+     * confirmation is pending (OCPP-J permits one outstanding call per direction, so the charger
+     * could not have sent this before receiving the boot answer), which makes it the exact moment
+     * outbound traffic becomes safe. The flip runs on the scheduler, not this library thread, so the
+     * released traffic is not transmitted from inside the message handler.
      */
     private void touch() {
         if (!operational) {
-            operational = true;
-            // First proof the charger is booted and talking on this session: release anything the
-            // connectors deferred while it was not yet ready.
-            connectors.values().forEach(OcppConnectorHandler::onChargePointReady);
+            UUID currentSession = session;
+            if (currentSession != null) {
+                scheduler.execute(() -> becomeReady(currentSession));
+            }
         }
         recordActivity();
     }
@@ -599,6 +730,8 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
         OcppServerBridgeHandler serverHandler = server;
         OcppTransport transport = serverHandler != null ? serverHandler.getTransport() : null;
         session = null;
+        operational = false;
+        failPendingSends();
         if (transport != null) {
             transport.closeSession(localSession);
         }

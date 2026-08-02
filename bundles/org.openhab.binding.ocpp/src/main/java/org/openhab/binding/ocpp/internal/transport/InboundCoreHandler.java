@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.ocpp.internal.transport;
 
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
@@ -85,7 +86,8 @@ public class InboundCoreHandler implements ServerCoreEventHandler {
         logger.debug("BootNotification from session {}: vendor={} model={} fw={}", sessionIndex,
                 request.getChargePointVendor(), request.getChargePointModel(), request.getFirmwareVersion());
         listener.onBootNotification(sessionIndex, request);
-        return new BootNotificationConfirmation(ZonedDateTime.now(), listener.heartbeatFor(sessionIndex),
+        // UTC: this timestamp (like the heartbeat's) is what chargers synchronize their clock to.
+        return new BootNotificationConfirmation(ZonedDateTime.now(ZoneOffset.UTC), listener.heartbeatFor(sessionIndex),
                 RegistrationStatus.Accepted);
     }
 
@@ -102,7 +104,7 @@ public class InboundCoreHandler implements ServerCoreEventHandler {
     public HeartbeatConfirmation handleHeartbeatRequest(UUID sessionIndex, HeartbeatRequest request) {
         logger.trace("Heartbeat from session {}", sessionIndex);
         listener.onHeartbeat(sessionIndex);
-        return new HeartbeatConfirmation(ZonedDateTime.now());
+        return new HeartbeatConfirmation(ZonedDateTime.now(ZoneOffset.UTC));
     }
 
     @Override
