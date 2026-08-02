@@ -114,10 +114,10 @@ class OcppConnectorReadinessTest {
     }
 
     @Test
-    void aConfirmationPublishesTheValuesOfItsOwnRequestNotTheCurrentFields() {
-        // The charger answers the FIRST request while a newer one is already in flight. Publishing
-        // the mutable fields here would report the newer 20 A as accepted even though only 10 A was —
-        // and if the newer request is then rejected, the channels would be lying for good.
+    void anAcceptedOlderRequestPublishesWhenTheNewerOneIsRejected() {
+        // The charger accepts the 10 A request and rejects the newer 20 A one: it is then genuinely
+        // running 10 A, and the channels must say so — publishing the mutable fields would have
+        // reported 20 A, and publishing nothing would hide the applied state.
         ready.set(true);
         CompletableFuture<eu.chargetime.ocpp.model.Confirmation> first = new CompletableFuture<>();
         CompletableFuture<eu.chargetime.ocpp.model.Confirmation> second = new CompletableFuture<>();
@@ -129,11 +129,10 @@ class OcppConnectorReadinessTest {
         first.complete(new SetChargingProfileConfirmation(ChargingProfileStatus.Accepted));
         second.complete(new SetChargingProfileConfirmation(ChargingProfileStatus.Rejected));
 
-        // The stale first confirmation must not publish anything (neither its own 10 A — it is no
-        // longer the newest request — nor the 20 A the fields held), and the rejected second must not
-        // publish either.
+        // The accepted request's own 10 A is published; the rejected 20 A never is.
+        verify(callback).stateUpdated(org.mockito.ArgumentMatchers.eq(new ChannelUID(CONN_UID, CHANNEL_CHARGE_LIMIT)),
+                argThat(state -> state instanceof QuantityType<?> quantity && quantity.doubleValue() == 10.0));
         assertLimitNeverPublished(20.0);
-        assertLimitNeverPublished(10.0);
     }
 
     @Test

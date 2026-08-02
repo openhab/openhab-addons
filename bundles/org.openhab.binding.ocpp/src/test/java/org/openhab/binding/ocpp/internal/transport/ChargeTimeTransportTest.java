@@ -42,8 +42,8 @@ import eu.chargetime.ocpp.model.remotetrigger.TriggerMessageRequestType;
 
 /**
  * Proves the embedded ChargeTime OCA-OCPP library is reachable and functional from inside the
- * bundle: the transport constructs the {@code JSONServer} (which pulls in Java-WebSocket and gson
- * off the bundle class path) and can actually bind and release a socket.
+ * bundle: the transport composes the library server (which pulls in Java-WebSocket and gson off the
+ * bundle class path), verifies its startup with real connections, and surfaces a failed bind.
  *
  * @author Stamate Viorel - Initial contribution
  */
@@ -102,9 +102,20 @@ class ChargeTimeTransportTest {
         };
     }
 
+    private ChargeTimeTransport newTransport() {
+        return new ChargeTimeTransport(noopListener(), 0, 30, "");
+    }
+
+    /** A port that was free a moment ago — the standard local-test approximation. */
+    private static int findFreePort() throws java.io.IOException {
+        try (java.net.ServerSocket socket = new java.net.ServerSocket(0)) {
+            return socket.getLocalPort();
+        }
+    }
+
     @Test
     void constructsTheEmbeddedJsonServer() {
-        ChargeTimeTransport transport = new ChargeTimeTransport(noopListener(), 300);
+        ChargeTimeTransport transport = newTransport();
         assertNotNull(transport);
         assertFalse(transport.isRunning());
     }
@@ -124,9 +135,9 @@ class ChargeTimeTransportTest {
      * "unsupported feature".
      */
     @Test
-    void nonCoreFeatureProfilesAreRegisteredSoTheirRequestsCanBeSent() {
-        ChargeTimeTransport transport = new ChargeTimeTransport(noopListener(), 0);
-        transport.start("127.0.0.1", 0);
+    void nonCoreFeatureProfilesAreRegisteredSoTheirRequestsCanBeSent() throws java.io.IOException {
+        ChargeTimeTransport transport = newTransport();
+        transport.start("127.0.0.1", findFreePort());
         try {
             assertFailsAsNotConnected(transport, ChargingProfileBuilder.currentLimit(1, 16.0, true, null));
             assertFailsAsNotConnected(transport,
@@ -145,14 +156,33 @@ class ChargeTimeTransportTest {
     }
 
     @Test
-    void opensAndClosesOnAnEphemeralPort() {
-        ChargeTimeTransport transport = new ChargeTimeTransport(noopListener(), 300);
-        transport.start("127.0.0.1", 0);
+    void startVerifiesTheServerAcceptsARealConnection() throws java.io.IOException {
+        // start() returning must mean a listening socket, not just a started thread: the embedded
+        // server binds asynchronously and start() probes it with a real TCP connection. The test
+        // repeats that proof with its own connection.
+        int port = findFreePort();
+        ChargeTimeTransport transport = newTransport();
+        transport.start("127.0.0.1", port);
         try {
             assertTrue(transport.isRunning());
+            try (java.net.Socket connection = new java.net.Socket()) {
+                connection.connect(new InetSocketAddress("127.0.0.1", port), 1000);
+                assertTrue(connection.isConnected(), "the started server must accept a TCP connection");
+            }
         } finally {
             transport.stop();
         }
         assertFalse(transport.isRunning());
+    }
+
+    @Test
+    void startFailsWhenThePortIsAlreadyOccupied() throws java.io.IOException {
+        // The embedded server reports a failed bind only to an internal callback and would
+        // otherwise appear to have started; the transport must surface it as a startup failure so
+        // the bridge cannot go ONLINE with no socket listening.
+        try (java.net.ServerSocket occupier = new java.net.ServerSocket(0)) {
+            ChargeTimeTransport transport = newTransport();
+            assertThrows(IllegalStateException.class, () -> transport.start("127.0.0.1", occupier.getLocalPort()));
+        }
     }
 }

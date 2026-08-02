@@ -61,14 +61,15 @@ public final class MeterValueMapper {
     private static final Set<String> PER_PHASE_CHANNELS = Set.of(CHANNEL_CURRENT_L1, CHANNEL_CURRENT_L2,
             CHANNEL_CURRENT_L3, CHANNEL_VOLTAGE_L1, CHANNEL_VOLTAGE_L2, CHANNEL_VOLTAGE_L3);
 
-    // Measurands whose per-phase samples meaningfully SUM to the charge total. A phased sample of
-    // anything else (power factor, temperature, ...) has no defensible aggregate and is skipped
-    // rather than passed off as one.
-    private static final Set<String> SUMMABLE_MEASURANDS = Set.of("Current.Export", "Current.Offered",
-            "Power.Active.Import", "Power.Active.Export", "Power.Reactive.Import", "Power.Reactive.Export",
-            "Power.Offered", "Energy.Active.Import.Register", "Energy.Active.Export.Register",
-            "Energy.Reactive.Import.Register", "Energy.Reactive.Export.Register", "Energy.Active.Import.Interval",
-            "Energy.Active.Export.Interval", "Energy.Reactive.Import.Interval", "Energy.Reactive.Export.Interval");
+    // Measurands whose per-phase samples meaningfully SUM to the charge total: powers and energies.
+    // Currents deliberately do NOT sum — a charger reporting 16 A per phase offers 16 A on each
+    // conductor, not 48 A — and a phased sample of anything else (power factor, temperature, ...)
+    // has no defensible aggregate either; both are skipped rather than passed off as one.
+    private static final Set<String> SUMMABLE_MEASURANDS = Set.of("Power.Active.Import", "Power.Active.Export",
+            "Power.Reactive.Import", "Power.Reactive.Export", "Power.Offered", "Energy.Active.Import.Register",
+            "Energy.Active.Export.Register", "Energy.Reactive.Import.Register", "Energy.Reactive.Export.Register",
+            "Energy.Active.Import.Interval", "Energy.Active.Export.Interval", "Energy.Reactive.Import.Interval",
+            "Energy.Reactive.Export.Interval");
 
     private MeterValueMapper() {
     }
@@ -99,6 +100,8 @@ public final class MeterValueMapper {
                     String phase = sample.getPhase();
                     String channelId = channelFor(measurand, phase);
                     if (channelId == null) {
+                        LOGGER.debug("No channel represents measurand {} with phase {}; sample ignored", measurand,
+                                phase);
                         continue;
                     }
                     State state = toState(sample.getValue(), sample.getUnit(), measurand);
@@ -108,9 +111,11 @@ public final class MeterValueMapper {
                     if (phase == null || PER_PHASE_CHANNELS.contains(channelId)) {
                         // A charger-reported total, or a channel that carries exactly one phase.
                         direct.put(channelId, state);
-                    } else if (isPhased(phase) && SUMMABLE_MEASURANDS.contains(measurand)) {
+                    } else if (basePhase(phase) != null && SUMMABLE_MEASURANDS.contains(measurand)) {
                         summed.merge(channelId, state, MeterValueMapper::sum);
                     } else {
+                        // Phased currents, line-to-line or neutral samples, and phased samples of
+                        // non-summable measurands: no channel represents them truthfully.
                         LOGGER.debug("Ignoring phase {} sample of {} — no meaningful aggregate for channel {}", phase,
                                 measurand, channelId);
                     }
@@ -158,15 +163,15 @@ public final class MeterValueMapper {
     static @Nullable String channelFor(String measurand, @Nullable String phase) {
         switch (measurand) {
             case "Current.Import":
-                return isPhased(phase) ? phaseChannel(phase, CHANNEL_CURRENT_L1, CHANNEL_CURRENT_L2, CHANNEL_CURRENT_L3)
-                        : CHANNEL_CURRENT_IMPORT;
+                return phase == null ? CHANNEL_CURRENT_IMPORT
+                        : phaseChannel(phase, CHANNEL_CURRENT_L1, CHANNEL_CURRENT_L2, CHANNEL_CURRENT_L3);
             case "Current.Export":
                 return CHANNEL_CURRENT_EXPORT;
             case "Current.Offered":
                 return CHANNEL_CURRENT_OFFERED;
             case "Voltage":
-                return isPhased(phase) ? phaseChannel(phase, CHANNEL_VOLTAGE_L1, CHANNEL_VOLTAGE_L2, CHANNEL_VOLTAGE_L3)
-                        : CHANNEL_VOLTAGE;
+                return phase == null ? CHANNEL_VOLTAGE
+                        : phaseChannel(phase, CHANNEL_VOLTAGE_L1, CHANNEL_VOLTAGE_L2, CHANNEL_VOLTAGE_L3);
             case "Frequency":
                 return CHANNEL_FREQUENCY;
             case "Power.Active.Import":
@@ -208,18 +213,41 @@ public final class MeterValueMapper {
         }
     }
 
-    private static boolean isPhased(@Nullable String phase) {
-        return phase != null && (phase.startsWith("L1") || phase.startsWith("L2") || phase.startsWith("L3"));
+    /**
+     * The single conductor a phase identifier denotes, or {@code null} for identifiers that do not
+     * describe one conductor's quantity. OCPP 1.6 also allows line-to-line ({@code L1-L2},
+     * {@code L2-L3}, {@code L3-L1}) and neutral ({@code N}) measurements — those have no per-phase
+     * channel and must not be lumped into one, nor be summed into a total.
+     */
+    private static @Nullable String basePhase(String phase) {
+        switch (phase) {
+            case "L1":
+            case "L1-N":
+                return "L1";
+            case "L2":
+            case "L2-N":
+                return "L2";
+            case "L3":
+            case "L3-N":
+                return "L3";
+            default:
+                return null;
+        }
     }
 
-    private static String phaseChannel(@Nullable String phase, String l1, String l2, String l3) {
-        if (phase == null || phase.startsWith("L1")) {
-            return l1;
+    private static @Nullable String phaseChannel(String phase, String l1, String l2, String l3) {
+        String base = basePhase(phase);
+        if (base == null) {
+            return null;
         }
-        if (phase.startsWith("L2")) {
-            return l2;
+        switch (base) {
+            case "L1":
+                return l1;
+            case "L2":
+                return l2;
+            default:
+                return l3;
         }
-        return l3;
     }
 
     /**

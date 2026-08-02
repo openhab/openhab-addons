@@ -187,6 +187,28 @@ class MeterValueMapperTest {
     }
 
     @Test
+    void phasedCurrentSamplesAreNotSummedIntoATotal() {
+        // A charger offering 16 A on each of three conductors offers 16 A per phase — not 48 A.
+        // Currents have no meaningful phase sum, so these samples are skipped, not aggregated.
+        Map<String, State> states = MeterValueMapper.toStates(requestOf(sample("Current.Offered", "L1", "A", "16"),
+                sample("Current.Offered", "L2", "A", "16"), sample("Current.Offered", "L3", "A", "16")));
+
+        org.junit.jupiter.api.Assertions.assertFalse(states.containsKey("current-offered"),
+                "phased currents must not be summed into the aggregate channel");
+    }
+
+    @Test
+    void lineToLineVoltageDoesNotMasqueradeAsAPhaseVoltage() {
+        // L1-N is conductor L1's voltage; L1-L2 is a line-to-line measurement with no per-phase
+        // channel — it must be ignored, not published into (and overwrite) the L1 channel.
+        Map<String, State> states = MeterValueMapper
+                .toStates(requestOf(sample("Voltage", "L1-N", "V", "230"), sample("Voltage", "L1-L2", "V", "400")));
+
+        assertEquals(230.0, assertInstanceOf(QuantityType.class, states.get("voltage-l1")).doubleValue());
+        assertEquals(1, states.size(), "the line-to-line sample must not appear anywhere");
+    }
+
+    @Test
     void aPhasedPowerFactorIsNotPassedOffAsAnAggregate() {
         // Per-phase power factors have no meaningful sum or single representative value; publishing
         // one phase as "the" power factor would be silently wrong, so the sample is skipped.

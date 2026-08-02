@@ -112,4 +112,45 @@ class OcppTransactionRecoveryTest {
 
         assertEquals(Integer.valueOf(55), handler.recoverTransactionId(1));
     }
+
+    @Test
+    void anAvailableStatusWithoutAStopClearsThePersistedTransaction() {
+        // The StopTransaction for transaction 55 was lost; the connector recovers it at initialize.
+        // The charger then authoritatively reports Available — no transaction is active — so every
+        // representation must be cleared, most importantly the persistent one: otherwise the next
+        // openHAB restart would recover a transaction the charger already declared finished.
+        when(server.openTransactionFor("charger", 1)).thenReturn(55);
+        OcppConnectorHandler connector = realConnector(1);
+
+        connector.onStatusNotification(new eu.chargetime.ocpp.model.core.StatusNotificationRequest(1,
+                eu.chargetime.ocpp.model.core.ChargePointErrorCode.NoError,
+                eu.chargetime.ocpp.model.core.ChargePointStatus.Available));
+
+        verify(server).forgetTransaction(55);
+    }
+
+    /** A real connector handler bridged to the real charge point handler of this test. */
+    private OcppConnectorHandler realConnector(int connectorId) {
+        Bridge cpBridge = mock(Bridge.class);
+        when(cpBridge.getHandler()).thenReturn(handler);
+
+        org.openhab.core.thing.Thing connThing = mock(org.openhab.core.thing.Thing.class);
+        ThingUID connUid = new ThingUID(org.openhab.binding.ocpp.internal.OcppBindingConstants.THING_TYPE_CONNECTOR,
+                "server", "charger", "c" + connectorId);
+        when(connThing.getUID()).thenReturn(connUid);
+        when(connThing.getThingTypeUID())
+                .thenReturn(org.openhab.binding.ocpp.internal.OcppBindingConstants.THING_TYPE_CONNECTOR);
+        when(connThing.getBridgeUID()).thenReturn(CP_UID);
+        when(connThing.getConfiguration()).thenReturn(new Configuration(Map.of("connectorId", connectorId)));
+        when(connThing.getChannels()).thenReturn(java.util.List.of());
+        when(connThing.getProperties()).thenReturn(Map.of());
+
+        ThingHandlerCallback connCallback = mock(ThingHandlerCallback.class);
+        when(connCallback.getBridge(CP_UID)).thenReturn(cpBridge);
+
+        OcppConnectorHandler connector = new OcppConnectorHandler(connThing);
+        connector.setCallback(connCallback);
+        connector.initialize();
+        return connector;
+    }
 }
