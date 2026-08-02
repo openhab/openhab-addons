@@ -73,12 +73,12 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
             }
             if (stateOpt.has(JSON_KEY_FORECAST) && stateOpt.getAsJsonObject(JSON_KEY_FORECAST).has(subType)) {
                 JsonObject state = new JsonObject();
-                state.addProperty(subType, 0);
                 if (JSON_KEY_SOLAR.equals(subType)) {
                     state = stateOpt.getAsJsonObject(JSON_KEY_FORECAST).getAsJsonObject(subType).deepCopy();
                     modifyJSON(state);
                     state.addProperty("scaled", 0);
                 }
+                state.addProperty(subType, 0);
                 commonInitialize(state);
                 isInitialized = true;
                 handler.register(this);
@@ -88,7 +88,6 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Unavailable forecast type: " + subType);
             }
-
         });
     }
 
