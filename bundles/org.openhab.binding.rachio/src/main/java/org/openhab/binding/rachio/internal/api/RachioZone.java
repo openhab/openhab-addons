@@ -105,7 +105,7 @@ public class RachioZone extends RachioCloudZone {
     public synchronized boolean compare(@Nullable RachioZone czone) {
         if (czone == null || !name.equals(czone.name) || zoneNumber != czone.zoneNumber || enabled != czone.enabled
                 || availableWater != czone.availableWater || efficiency != czone.efficiency
-                || lastWateredDate != czone.lastWateredDate || depthOfWater != czone.depthOfWater
+                || lastWateredDate < czone.lastWateredDate || depthOfWater != czone.depthOfWater
                 || saturatedDepthOfWater != czone.saturatedDepthOfWater
                 || managementAllowedDepletion != czone.managementAllowedDepletion
                 || rootZoneDepth != czone.rootZoneDepth || yardAreaSquareFeet != czone.yardAreaSquareFeet

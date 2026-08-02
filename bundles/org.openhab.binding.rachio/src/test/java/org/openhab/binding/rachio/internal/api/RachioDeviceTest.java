@@ -101,6 +101,38 @@ public class RachioDeviceTest {
         assertThrows(UnsupportedOperationException.class, () -> originalSnapshot.clear());
     }
 
+    @Test
+    public void olderCloudLastWateredDateDoesNotMarkZoneChanged() {
+        RachioZone existingZone = createZone(100);
+        existingZone.recordLastWateredDate(200);
+        RachioZone cloudZone = createZone(100);
+
+        assertTrue(existingZone.compare(cloudZone));
+    }
+
+    @Test
+    public void newerCloudLastWateredDateMarksZoneChanged() {
+        RachioZone existingZone = createZone(100);
+        RachioZone cloudZone = createZone(200);
+
+        assertFalse(existingZone.compare(cloudZone));
+
+        existingZone.update(cloudZone);
+
+        assertEquals(200, existingZone.lastWateredDate);
+        assertTrue(existingZone.compare(cloudZone));
+    }
+
+    @Test
+    public void olderCloudLastWateredDateDoesNotOverwriteWebhookValue() {
+        RachioZone existingZone = createZone(100);
+        existingZone.recordLastWateredDate(200);
+
+        existingZone.update(createZone(100));
+
+        assertEquals(200, existingZone.lastWateredDate);
+    }
+
     private RachioDevice createDevice() {
         RachioCloudDevice cloudDevice = new RachioCloudDevice();
         cloudDevice.id = "device-1";
@@ -116,6 +148,12 @@ public class RachioDeviceTest {
         zone.zoneNumber = number;
         zone.enabled = enabled;
         return zone;
+    }
+
+    private RachioZone createZone(long lastWateredDate) {
+        RachioCloudZone cloudZone = zone("zone-1", 1, true);
+        cloudZone.lastWateredDate = lastWateredDate;
+        return new RachioZone(cloudZone, "device-1");
     }
 
     private JsonArray selectedZones(String json) {
