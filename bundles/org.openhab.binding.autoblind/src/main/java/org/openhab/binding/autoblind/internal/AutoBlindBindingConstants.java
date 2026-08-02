@@ -48,12 +48,15 @@ public class AutoBlindBindingConstants {
     public static final int API_PORT = 10123;
     public static final int LOW_BATTERY_THRESHOLD = 20;
     public static final long COMMAND_SPACING_MS = 750;
-    public static final long COMMAND_SUPPRESSION_MS = 30_000;
     public static final int POSITION_TOLERANCE = 5;
 
-    // Notification long-poll
+    // Notification long-poll — unused; hub firmware doesn't deliver real events.
+    // Kept for retesting after a firmware update.
     public static final float NOTIFICATION_TIMEOUT_SEC = 2.0f;
     public static final int NOTIFICATION_HTTP_BUFFER_SEC = 5;
-    public static final long NOTIFICATION_FAILSAFE_MS = 120_000;
+
+    // Motion tracking (periodic poll while any shade is in motion)
+    public static final long MOTION_POLL_INTERVAL_MS = 5_000;
+    public static final long MOTION_FAILSAFE_MS = 120_000;
     public static final int SETTLEMENT_TOLERANCE = 2;
 }
