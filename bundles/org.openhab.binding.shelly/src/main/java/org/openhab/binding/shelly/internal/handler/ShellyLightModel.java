@@ -14,6 +14,7 @@ package org.openhab.binding.shelly.internal.handler;
 
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
+import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
 import static org.openhab.core.util.LightModel.LedOperatingMode.*;
 import static org.openhab.core.util.LightModel.LightCapabilities.*;
 import static org.openhab.core.util.LightModel.RgbDataType.*;
@@ -96,22 +97,26 @@ public class ShellyLightModel extends LightModel {
      * given {@link ThingTypeUID} and {@link ShellyDeviceProfile}.
      */
     public static ShellyLightModel create(ThingTypeUID thingTypeUID, ShellyDeviceProfile profile, double stepSize) {
-        Parameters params = getParams(thingTypeUID);
-        ShellyLightModel model = new ShellyLightModel(params.lightCapabilities, params.rgbDataType, 0.4,
-                reciprocal(profile.maxTemp), reciprocal(profile.minTemp), stepSize, null, null,
-                params.ledOperatingMode);
-        model.setLedOperatingMode(params.ledOperatingMode);
-        model.shellyMode = params.shellyMode;
-        return model;
+        Parameters params = getParams(thingTypeUID, profile.device.profile);
+        return new ShellyLightModel(params.lightCapabilities, params.rgbDataType, null, reciprocal(profile.maxTemp),
+                reciprocal(profile.minTemp), stepSize, null, null, params.ledOperatingMode, params.shellyMode);
     }
 
     /**
      * Get the light capabilities, RGB data type, and LED operating mode for the {@link ShellyLightModel} from the
      * given {@link ThingTypeUID}. It is assumed that the ThingTypeUID carries the necessary clues to create the
      * LightModel with the correct parameters.
+     * 
+     * TODO for generation 2 and generation 3 the working assumption is that profile is a string like "light", "rgb",
+     * "rgbw", "cct", "rgbcct" which determines the light model capabilities
+     * 
+     * !! THIS CODE MAY CHANGE WHEN THE BINDING IS ACTUALLY UPDATED TO SUPPORT GEN2 AND GEN3 LIGHTS !!
+     * 
+     * @param thingTypeUID the ThingTypeUID of the Shelly light
+     * @param gen23Profile the profile of the Shelly gen 2/3 light
      */
-    private static Parameters getParams(ThingTypeUID thingTypeUID) {
-        // GENERATION 1:
+    private static Parameters getParams(ThingTypeUID thingTypeUID, String gen23Profile) {
+        // ==== GENERATION 1 ====
         if (THING_TYPE_SHELLYBULB.equals(thingTypeUID)) {
             return new Parameters(COLOR_WITH_COLOR_TEMPERATURE, RGB_W_NO_BRIGHTNESS, COMBINED, Mode.COLOR);
         }
@@ -131,52 +136,55 @@ public class ShellyLightModel extends LightModel {
             return new Parameters(BRIGHTNESS, DEFAULT, WHITE_ONLY, Mode.COLOR_TEMP);
         }
 
-        // GENERATION 2 and 3:
+        // ==== GENERATION 2 ====
         if (THING_TYPE_SHELLYPLUSRGBWPM.equals(thingTypeUID)) {
-            // TODO || (THING_TYPE_SHELLYPLUSRGBWWPM.equals(thingTypeUID)) { add missing GEN2 plus RGBWWPM
-            // TODO || (THING_TYPE_SHELLYDUOBULBG3.equals(thingTypeUID)) { add missing GEN3 duo bulb
-            // TODO || (THING_TYPE_SHELLYCOLORBLBG3.equals(thingTypeUID)) { add missing GEN3 color bulb
-
-            /*
-             * TODO working assumption is that the thingTypeUID.getId() is a string like "shellyplusrgbwpm-light"
-             * or "shellyplusrgbwpm-rgb" or "shellyplusrgbwpm-rgbw" or "shellyplusrgbwpm-cct" or
-             * "shellycolorblbg3-rgbcct" or "shellyduobulbg3-cct" which can determine the light capabilities
-             * 
-             * THIS CODE MAY CHANGE WHEN THE BINDING IS ACTUALLY UPDATED TO SUPPORT GEN2 AND GEN3 LIGHTS !!
-             */
-            String thingTypeId = thingTypeUID.getId();
-            int pos = thingTypeId.lastIndexOf('-');
-            if (pos != -1) {
-                String thingIdConfigurationModeSuffix = thingTypeId.substring(pos + 1);
-                switch (thingIdConfigurationModeSuffix) {
-                    case "light":
-                        return new Parameters(BRIGHTNESS, DEFAULT, WHITE_ONLY, Mode.WHITE);
-                    case "rgb":
-                        return new Parameters(COLOR, RGB_NO_BRIGHTNESS, RGB_ONLY, Mode.COLOR);
-                    case "rgbw":
-                        return new Parameters(COLOR, RGB_W_NO_BRIGHTNESS, COMBINED, Mode.COLOR);
-                    case "cct":
-                        return new Parameters(BRIGHTNESS_WITH_COLOR_TEMPERATURE, DEFAULT, WHITE_ONLY, Mode.COLOR_TEMP);
-                    case "rgbcct":
-                        return new Parameters(COLOR_WITH_COLOR_TEMPERATURE, RGB_W_NO_BRIGHTNESS, COMBINED, Mode.COLOR);
-                }
+            switch (gen23Profile) {
+                case SHELLY2_PROFILE_RGB:
+                    return new Parameters(COLOR, RGB_NO_BRIGHTNESS, RGB_ONLY, Mode.COLOR);
+                case SHELLY2_PROFILE_RGBW:
+                    return new Parameters(COLOR, RGB_W_NO_BRIGHTNESS, RGB_ONLY, Mode.COLOR);
             }
         }
+
+        // **************** UNCOMMENT FOLLOWING LINES WHEN READY ****************
+
+        // if (THING_TYPE_SHELLYPLUSRGBWWPM.equals(thingTypeUID)) {
+        // switch (profile) {
+        // case SHELLY2_PROFILE_RGBCCT:
+        // return new Parameters(COLOR, RGB_C_W_NO_BRIGHTNESS, COMBINED, Mode.COLOR);
+        // case SHELLY2_PROFILE_RGBX2LIGHT:
+        // return new Parameters(COLOR, RGB_NO_BRIGHTNESS, RGB_ONLY, Mode.COLOR);
+        // }
+        // }
+
+        // ==== GENERATION 3 ====
+        // if (THING_TYPE_SHELLYDUOBULBG3.equals(thingTypeUID)) { check profile SHELLY2_PROFILE_CCT
+        // return new Parameters(BRIGHTNESS_WITH_COLOR_TEMPERATURE, DEFAULT, WHITE_ONLY, Mode.COLOR_TEMP);
+        // }
+
+        // if (THING_TYPE_SHELLYCOLORBLBG3.equals(thingTypeUID)) { check profile SHELLY2_PROFILE_RGBCCT
+        // return new Parameters(COLOR_WITH_COLOR_TEMPERATURE, RGB_NO_BRIGHTNESS, COMBINED, Mode.COLOR);
+        // }
+
         throw new IllegalArgumentException("Error creating Light Model for: " + thingTypeUID.toString());
     }
 
     /**
      * Private constructor to create a ShellyLightModel with the given parameters.
      * 
-     * @param baseOperatingMode
+     * @param ledOperatingMode
+     * @param shellyMode
      */
     private ShellyLightModel(LightCapabilities lightCapabilities, RgbDataType rgbDataType,
             @Nullable Double minimumOnBrightness, @Nullable Double mirekControlCoolest,
             @Nullable Double mirekControlWarmest, @Nullable Double stepSize, @Nullable Double coolWhiteLedMirek,
-            @Nullable Double warmWhiteLedMirek, LedOperatingMode baseOperatingMode) throws IllegalArgumentException {
+            @Nullable Double warmWhiteLedMirek, LedOperatingMode ledOperatingMode, Mode shellyModeParam)
+            throws IllegalArgumentException {
         super(lightCapabilities, rgbDataType, minimumOnBrightness, mirekControlCoolest, mirekControlWarmest, stepSize,
                 coolWhiteLedMirek, warmWhiteLedMirek);
-        rgbxLength = getRGBx().length;
+        shellyMode = shellyModeParam;
+        setLedOperatingMode(ledOperatingMode);
+        rgbxLength = WHITE_ONLY == ledOperatingMode ? 3 : getRGBx().length;
     }
 
     /**
@@ -367,6 +375,10 @@ public class ShellyLightModel extends LightModel {
      */
     public Mode getMode() {
         return shellyMode;
+    }
+
+    public OnOffType getModeState() {
+        return OnOffType.from(shellyMode == Mode.COLOR);
     }
 
     /**
