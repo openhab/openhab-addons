@@ -1214,8 +1214,9 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         int rgbwId = getInteger(value.id);
 
         ShellySettingsLight ds = status.lights.get(rgbwId);
-        if (value.brightness != null) {
-            ds.brightness = value.brightness.intValue();
+        Double brightness = value.brightness;
+        if (brightness != null) {
+            ds.brightness = brightness.intValue();
         }
         if (value.rgb != null) {
             ds.red = value.rgb[0];
