@@ -114,7 +114,7 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
         updateStatus(ThingStatus.UNKNOWN);
 
         startupTask = scheduler.submit(() -> {
-            OcppTransport newTransport = new ChargeTimeTransport(this, localConfig.pingInterval);
+            OcppTransport newTransport = createTransport(localConfig.pingInterval);
             try {
                 newTransport.start(localConfig.host, localConfig.port);
             } catch (RuntimeException e) {
@@ -163,6 +163,11 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
 
     public @Nullable OcppTransport getTransport() {
         return transport;
+    }
+
+    /** The transport backing this server. A seam so a test can supply one without binding a socket. */
+    protected OcppTransport createTransport(int pingInterval) {
+        return new ChargeTimeTransport(this, pingInterval);
     }
 
     // --- charge point registration (called by OcppChargePointHandler) ---
