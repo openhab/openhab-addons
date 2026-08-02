@@ -1036,10 +1036,12 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             return false;
         }
 
-        if (cs.id == null) {
-            cs.id = id;
+        Integer csId = cs.id;
+        if (csId == null) {
+            csId = id;
+            cs.id = csId;
         }
-        int rIdx = getRollerIdx(getProfile(), cs.id);
+        int rIdx = getRollerIdx(getProfile(), csId);
         if (status.rollers == null || rIdx < 0 || rIdx >= status.rollers.size()) {
             return false;
         }
@@ -1047,32 +1049,36 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         boolean haveEmeter = status.emeters != null && rIdx >= 0 && rIdx < status.emeters.size();
         ShellySettingsEMeter emeter = haveEmeter ? status.emeters.get(rIdx) : new ShellySettingsEMeter();
         rs.isValid = emeter.isValid = haveEmeter;
-        if (cs.state != null) {
-            if (!getString(rs.state).equals(cs.state)) {
+        String csState = cs.state;
+        if (csState != null) {
+            if (!getString(rs.state).equals(csState)) {
                 logger.debug("{}: Roller status changed from {} to {}, updateChannels={}", thingName, rs.state,
-                        mapValue(MAP_ROLLER_STATE, cs.state), updateChannels);
+                        mapValue(MAP_ROLLER_STATE, csState), updateChannels);
             }
-            rs.state = mapValue(MAP_ROLLER_STATE, cs.state);
-            rs.calibrating = SHELLY2_RSTATE_CALIB.equals(cs.state);
+            rs.state = mapValue(MAP_ROLLER_STATE, csState);
+            rs.calibrating = SHELLY2_RSTATE_CALIB.equals(csState);
         }
         if (cs.currentPos != null) {
             rs.currentPos = cs.currentPos;
         }
-        if (cs.moveStartedAt != null) {
-            rs.duration = (int) (now() - cs.moveStartedAt.longValue());
+        Double csMoveStartedAt = cs.moveStartedAt;
+        if (csMoveStartedAt != null) {
+            rs.duration = (int) (now() - csMoveStartedAt.longValue());
         }
-        if (cs.temperature != null && getDouble(cs.temperature.tC) > getDouble(status.temperature)) {
+        Shelly2DeviceStatusTemp csTemperature = cs.temperature;
+        if (csTemperature != null && getDouble(csTemperature.tC) > getDouble(status.temperature)) {
             if (status.tmp == null) {
                 status.tmp = new ShellySensorTmp();
             }
-            status.temperature = status.tmp.tC = getDouble(cs.temperature.tC);
+            status.temperature = status.tmp.tC = getDouble(csTemperature.tC);
         }
         if (cs.apower != null) {
             rs.power = emeter.power = cs.apower;
         }
-        if (cs.aenergy != null) {
-            emeter.total = getDouble(cs.aenergy.total);
-            emeter.energyByMinute = byMinuteToWh(cs.aenergy.byMinute);
+        Shelly2Energy csAenergy = cs.aenergy;
+        if (csAenergy != null) {
+            emeter.total = getDouble(csAenergy.total);
+            emeter.energyByMinute = byMinuteToWh(csAenergy.byMinute);
         }
         if (cs.voltage != null) {
             emeter.voltage = cs.voltage;

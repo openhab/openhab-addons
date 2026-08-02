@@ -657,26 +657,26 @@ public class Shelly2ApiJsonDTO {
             }
 
             public class Shelly2CoverStatus {
-                public Integer id;
-                public String source;
-                public String state;
-                public Double apower;
-                public Double voltage;
-                public Double current;
-                public Double pf;
-                public Shelly2Energy aenergy;
+                public @Nullable Integer id;
+                public @Nullable String source;
+                public @Nullable String state;
+                public @Nullable Double apower;
+                public @Nullable Double voltage;
+                public @Nullable Double current;
+                public @Nullable Double pf;
+                public @Nullable Shelly2Energy aenergy;
                 @SerializedName("current_pos")
-                public Integer currentPos;
+                public @Nullable Integer currentPos;
                 @SerializedName("target_pos")
-                public Integer targetPos;
+                public @Nullable Integer targetPos;
                 @SerializedName("move_timeout")
-                public Double moveTimeout;
+                public @Nullable Double moveTimeout;
                 @SerializedName("move_started_at")
-                public Double moveStartedAt;
+                public @Nullable Double moveStartedAt;
                 @SerializedName("pos_control")
-                public Boolean posControl;
-                public Shelly2DeviceStatusTemp temperature;
-                public ArrayList<String> errors;
+                public @Nullable Boolean posControl;
+                public @Nullable Shelly2DeviceStatusTemp temperature;
+                public @Nullable ArrayList<String> errors;
             }
 
             public class Shelly2DeviceStatusHumidity {
