@@ -58,7 +58,7 @@
 			</add-channel>
 		</instruction-set>
 
-		<instruction-set targetVersion="6">
+		<instruction-set targetVersion="5">
 			<add-channel id="progress" groupIds="ui">
 				<type>kaleidescape:progress</type>
 			</add-channel>
