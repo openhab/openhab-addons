@@ -120,7 +120,7 @@ public class PiperTTSService extends AbstractCachedTTSService {
                 logger.debug("Using Piper version {}", piper.getPiperVersion());
                 ready = true;
             } catch (Throwable t) {
-                logger.warn("Piper registration failed, the add-on will not work: {}", t.getMessage(), t);
+                logger.error("Piper registration failed, the add-on will not work: {}", t.getMessage(), t);
             }
         });
         configChange(config);
