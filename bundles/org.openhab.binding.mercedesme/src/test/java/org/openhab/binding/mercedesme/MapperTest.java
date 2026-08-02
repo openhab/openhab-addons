@@ -19,8 +19,13 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.mercedesme.internal.utils.ChannelStateMap;
 import org.openhab.binding.mercedesme.internal.utils.Mapper;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
+import org.openhab.core.types.UnDefType;
 
+import com.daimler.mbcarkit.proto.VehicleEvents.AttributeStatus;
 import com.daimler.mbcarkit.proto.VehicleEvents.ChargeProgram;
 import com.daimler.mbcarkit.proto.VehicleEvents.ChargeProgramsValue;
 import com.daimler.mbcarkit.proto.VehicleEvents.PushMessage;
@@ -138,6 +143,96 @@ class MapperTest {
         assertNotNull(soc);
         assertEquals(82, soc.getIntValue());
         assertEquals(VehicleAttributeStatus.RatioUnit.PERCENT, soc.getRatioUnit());
+    }
+
+    @Test
+    void whenSocStatusNotReceivedThenChannelStateIsUndefNotZeroPercent() {
+        // Arrange - backend sends the default int_value = 0 together with a non-VALID status
+        // instead of setting nil_value; this must not surface as "0 %" on the State of Charge
+        // channel (see docs/changes/fix-soc-zero-spikes)
+        VehicleAttributeStatus soc = VehicleAttributeStatus.newBuilder()
+                .setStatus(AttributeStatus.VALUE_NOT_RECEIVED_VALUE).setIntValue(0).build();
+
+        // Act
+        ChannelStateMap csm = Mapper.getChannelStateMap(MB_KEY_SOC, soc);
+
+        // Assert
+        assertTrue(csm.isValid());
+        assertEquals(UnDefType.UNDEF, csm.getState());
+    }
+
+    @Test
+    void whenSocStatusValidThenChannelStateIsPercentQuantity() {
+        // Arrange
+        VehicleAttributeStatus soc = VehicleAttributeStatus.newBuilder().setStatus(AttributeStatus.VALUE_VALID_VALUE)
+                .setIntValue(74).build();
+
+        // Act
+        ChannelStateMap csm = Mapper.getChannelStateMap(MB_KEY_SOC, soc);
+
+        // Assert
+        assertEquals(QuantityType.valueOf(74, Units.PERCENT), csm.getState());
+    }
+
+    @Test
+    void whenChargingPowerStatusNotReceivedThenChannelStateIsUndefNotZeroKw() {
+        // Arrange - Math.max(0, -1) would otherwise mask an unavailable reading as "0 kW", which
+        // looks identical to "not charging" (see docs/changes/fix-soc-zero-spikes, added after
+        // community.openhab.org/t/mercedes-me/136866/199 reported several attributes reading zero
+        // right after a command)
+        VehicleAttributeStatus chargingPower = VehicleAttributeStatus.newBuilder()
+                .setStatus(AttributeStatus.VALUE_NOT_RECEIVED_VALUE).setDoubleValue(0).build();
+
+        // Act
+        ChannelStateMap csm = Mapper.getChannelStateMap(MB_KEY_CHARGING_POWER, chargingPower);
+
+        // Assert
+        assertEquals(UnDefType.UNDEF, csm.getState());
+    }
+
+    @Test
+    void whenChargingPowerStatusValidThenChannelStateIsKwQuantity() {
+        // Arrange
+        VehicleAttributeStatus chargingPower = VehicleAttributeStatus.newBuilder()
+                .setStatus(AttributeStatus.VALUE_VALID_VALUE).setDoubleValue(11.0).build();
+
+        // Act
+        ChannelStateMap csm = Mapper.getChannelStateMap(MB_KEY_CHARGING_POWER, chargingPower);
+
+        // Assert
+        assertEquals(QuantityType.valueOf(11.0, KILOWATT_UNIT), csm.getState());
+    }
+
+    @Test
+    void whenNilValueAttributeStillCarriesUnitThenObserverIsNotDropped() {
+        // Arrange - a BEV reports liquidconsumptionstart/reset as nil_value=true (no combustion engine)
+        // while still carrying combustion_consumption_unit (real fixture data, see
+        // src/test/resources/proto-json/MB-BEV-EQA.json). The observer/unit lookup must not be nested
+        // inside the Utils.isNil() branch, or VehicleHandler.updateChannel() never calls
+        // handleComplexTripPattern() for this update - the exact regression that made
+        // VehicleHandlerTest's "Trip Update Count" assertions fail after this change was first written.
+        VehicleAttributeStatus liquidConsumption = VehicleAttributeStatus.newBuilder().setNilValue(true)
+                .setCombustionConsumptionUnit(VehicleAttributeStatus.CombustionConsumptionUnit.LITER_PER_100KM).build();
+
+        // Act
+        ChannelStateMap csm = Mapper.getChannelStateMap(MB_KEY_LIQUIDCONSUMPTIONSTART, liquidConsumption);
+
+        // Assert
+        assertEquals(UnDefType.UNDEF, csm.getState());
+        assertTrue(csm.hasUomObserver(), "UOMObserver must still be set even though the value itself is nil");
+    }
+
+    @Test
+    void whenOdoStatusInvalidThenChannelStateIsUndefNotNegativeOneKm() {
+        // Arrange - Utils.getDouble()'s nil sentinel (-1) must not leak through as a literal reading
+        VehicleAttributeStatus odo = VehicleAttributeStatus.newBuilder().setStatus(AttributeStatus.VALUE_INVALID_VALUE)
+                .setIntValue(0).build();
+
+        // Act
+        ChannelStateMap csm = Mapper.getChannelStateMap(MB_KEY_ODO, odo);
+
+        // Assert
+        assertEquals(UnDefType.UNDEF, csm.getState());
     }
 
     @Test

@@ -106,6 +106,9 @@ public class Mapper {
         if (ch != null) {
             State state;
             UOMObserver observer = null;
+            // declared here (not inside the Kilometer-values case below) so it stays in scope for the
+            // Average-speed case further down, which reuses this variable - see the comment there
+            Unit<?> lengthUnit = defaultLengthUnit;
             switch (key) {
                 // Kilometer values
                 case MB_KEY_ODO:
@@ -115,7 +118,11 @@ public class Mapper {
                 case MB_KEY_DISTANCE_START:
                 case MB_KEY_DISTANCE_RESET:
                 case MB_KEY_ECOSCORE_BONUS:
-                    Unit<?> lengthUnit = defaultLengthUnit;
+                    // unit lookup runs unconditionally - the vehicle can report a distance unit for an
+                    // attribute even while the reading itself is currently unavailable (e.g. a BEV's
+                    // liquid-consumption-style attributes still carry their unit while nil) - only the
+                    // numeric value below is gated on Utils.isNil()
+                    lengthUnit = defaultLengthUnit;
                     if (value.hasDistanceUnit()) {
                         observer = new UOMObserver(value.getDistanceUnit().toString());
                         Unit<?> queryUnit = observer.getUnit();
@@ -125,7 +132,11 @@ public class Mapper {
                             LOGGER.trace("No Unit found for {} - take default ", key);
                         }
                     }
-                    state = QuantityType.valueOf(Utils.getDouble(value), lengthUnit);
+                    if (Utils.isNil(value)) {
+                        state = UnDefType.UNDEF;
+                    } else {
+                        state = QuantityType.valueOf(Utils.getDouble(value), lengthUnit);
+                    }
                     return new ChannelStateMap(ch[0], ch[1], state, observer);
 
                 // special String Value
@@ -141,12 +152,19 @@ public class Mapper {
 
                 // KiloWatt values
                 case MB_KEY_CHARGING_POWER:
-                    double power = Utils.getDouble(value);
-                    state = QuantityType.valueOf(Math.max(0, power), KILOWATT_UNIT);
+                    if (Utils.isNil(value)) {
+                        // don't let Math.max(0, -1) below mask an unavailable reading as "0 kW"
+                        // (looks identical to "not charging")
+                        state = UnDefType.UNDEF;
+                    } else {
+                        double power = Utils.getDouble(value);
+                        state = QuantityType.valueOf(Math.max(0, power), KILOWATT_UNIT);
+                    }
                     return new ChannelStateMap(ch[0], ch[1], state);
 
                 case MB_KEY_AVERAGE_SPEED_START:
                 case MB_KEY_AVERAGE_SPEED_RESET:
+                    // unit lookup runs unconditionally, see comment on the Kilometer-values case above
                     Unit<?> speedUnit = defaultSpeedUnit;
                     if (value.hasSpeedUnit()) {
                         observer = new UOMObserver(value.getSpeedUnit().toString());
@@ -157,29 +175,46 @@ public class Mapper {
                             LOGGER.trace("No Unit found for {} - take default ", key);
                         }
                     }
-                    double speed = Utils.getDouble(value);
-                    state = QuantityType.valueOf(Math.max(0, speed), speedUnit);
+                    if (Utils.isNil(value)) {
+                        state = UnDefType.UNDEF;
+                    } else {
+                        double speed = Utils.getDouble(value);
+                        state = QuantityType.valueOf(Math.max(0, speed), speedUnit);
+                    }
                     return new ChannelStateMap(ch[0], ch[1], state, observer);
 
                 // KiloWatt/Hour values
                 case MB_KEY_ELECTRICCONSUMPTIONSTART:
                 case MB_KEY_ELECTRICCONSUMPTIONRESET:
-                    double consumptionEv = Utils.getDouble(value);
-                    state = new DecimalType(consumptionEv);
+                    // unit lookup runs unconditionally, see comment on the Kilometer-values case above
                     if (value.hasElectricityConsumptionUnit()) {
                         observer = new UOMObserver(value.getElectricityConsumptionUnit().toString());
                     } else {
                         LOGGER.trace("Don't have electric consumption unit for {}", key);
+                    }
+                    if (Utils.isNil(value)) {
+                        state = UnDefType.UNDEF;
+                    } else {
+                        double consumptionEv = Utils.getDouble(value);
+                        state = new DecimalType(consumptionEv);
                     }
                     return new ChannelStateMap(ch[0], ch[1], state, observer);
 
                 // Litre values
                 case MB_KEY_LIQUIDCONSUMPTIONSTART:
                 case MB_KEY_LIQUIDCONSUMPTIONRESET:
-                    double consumptionComb = Utils.getDouble(value);
-                    state = new DecimalType(consumptionComb);
+                    // unit lookup runs unconditionally, see comment on the Kilometer-values case above -
+                    // this is also the case that originally surfaced the bug: a BEV reports
+                    // liquidconsumptionstart/reset as nil_value=true (no combustion engine) while still
+                    // carrying combustion_consumption_unit, so the observer must not depend on isNil()
                     if (value.hasCombustionConsumptionUnit()) {
                         observer = new UOMObserver(value.getCombustionConsumptionUnit().toString());
+                    }
+                    if (Utils.isNil(value)) {
+                        state = UnDefType.UNDEF;
+                    } else {
+                        double consumptionComb = Utils.getDouble(value);
+                        state = new DecimalType(consumptionComb);
                     }
                     return new ChannelStateMap(ch[0], ch[1], state, observer);
 
@@ -222,8 +257,15 @@ public class Mapper {
                 case MB_KEY_ECOSCORE_ACCEL:
                 case MB_KEY_ECOSCORE_CONSTANT:
                 case MB_KEY_ECOSCORE_COASTING:
-                    double level = Utils.getDouble(value);
-                    state = QuantityType.valueOf(level, Units.PERCENT);
+                    if (Utils.isNil(value)) {
+                        // status may report NOT_RECEIVED/INVALID/NOT_AVAILABLE with a default
+                        // int_value of 0 - don't forward that as a real percentage (e.g. State of
+                        // Charge briefly showing 0% during charging)
+                        state = UnDefType.UNDEF;
+                    } else {
+                        double level = Utils.getDouble(value);
+                        state = QuantityType.valueOf(level, Units.PERCENT);
+                    }
                     return new ChannelStateMap(ch[0], ch[1], state);
 
                 // Contacts
@@ -336,6 +378,7 @@ public class Mapper {
                 case MB_KEY_TIREPRESSURE_FRONT_RIGHT:
                 case MB_KEY_TIREPRESSURE_REAR_LEFT:
                 case MB_KEY_TIREPRESSURE_REAR_RIGHT:
+                    // unit lookup runs unconditionally, see comment on the Kilometer-values case above
                     Unit<?> pressureUnit = defaultPressureUnit;
                     if (value.hasPressureUnit()) {
                         observer = new UOMObserver(value.getPressureUnit().toString());
@@ -346,8 +389,12 @@ public class Mapper {
                             LOGGER.trace("No Unit found for {} - take default ", key);
                         }
                     }
-                    double pressure = Utils.getDouble(value);
-                    state = QuantityType.valueOf(pressure, pressureUnit);
+                    if (Utils.isNil(value)) {
+                        state = UnDefType.UNDEF;
+                    } else {
+                        double pressure = Utils.getDouble(value);
+                        state = QuantityType.valueOf(pressure, pressureUnit);
+                    }
                     return new ChannelStateMap(ch[0], ch[1], state, observer);
                 default:
                     break;
