@@ -36,9 +36,9 @@ import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.core.types.State;
 
 /**
- * Tests for {@link Shelly1CoIoTVersion2#handleStatusUpdate}, specifically the roller position ("1103") handling
- * that regressed in #14189: the device keeps reporting the pre-move position while the roller is moving, which
- * must not be published as a channel flicker.
+ * Tests for {@link Shelly1CoIoTVersion2#handleStatusUpdate}, specifically the roller position ("1103") handling:
+ * the device keeps reporting the pre-move position while the roller is moving, which must not be published as a
+ * channel flicker.
  *
  * @author Markus Michels - Initial contribution
  */
