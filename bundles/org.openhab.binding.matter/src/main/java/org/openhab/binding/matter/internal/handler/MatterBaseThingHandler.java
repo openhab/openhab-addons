@@ -64,7 +64,6 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -270,13 +269,9 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
      * @param detail The detail of the status.
      * @param description The description of the status.
      */
-    public void setEndpointStatus(ThingStatus status, ThingStatusDetail detail, String description) {
+    public void setEndpointStatus(ThingStatus status, ThingStatusDetail detail, @Nullable String description) {
         logger.debug("setEndpointStatus {} {} {} {}", status, detail, description, getNodeId());
-        ThingStatusInfo current = getThing().getStatusInfo();
-        String currentDesc = current.getDescription() == null ? "" : current.getDescription();
-        if (current.getStatus() != status || current.getStatusDetail() != detail || !currentDesc.equals(description)) {
-            updateStatus(status, detail, description);
-        }
+        updateStatus(status, detail, description);
     }
 
     /**
