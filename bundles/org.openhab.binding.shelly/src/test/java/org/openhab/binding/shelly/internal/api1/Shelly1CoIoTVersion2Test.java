@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.shelly.internal.api.ShellyApiInterface;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
@@ -99,9 +100,12 @@ public class Shelly1CoIoTVersion2Test {
 
         v2.handleStatusUpdate(sensorUpdates, rollerPosDesc(), 0, posSensor, updates, new ShellyColorUtils());
 
-        assertThat(updates.get(mkChannelId(CHANNEL_GROUP_ROL_CONTROL, CHANNEL_ROL_CONTROL_POS)).toString(), is("30 %"));
-        assertThat(updates.get(mkChannelId(CHANNEL_GROUP_ROL_CONTROL, CHANNEL_ROL_CONTROL_CONTROL)).toString(),
-                is("70 %"));
+        State pos = updates.get(mkChannelId(CHANNEL_GROUP_ROL_CONTROL, CHANNEL_ROL_CONTROL_POS));
+        State control = updates.get(mkChannelId(CHANNEL_GROUP_ROL_CONTROL, CHANNEL_ROL_CONTROL_CONTROL));
+        Assertions.assertNotNull(pos);
+        Assertions.assertNotNull(control);
+        assertThat(pos.toString(), is("30 %"));
+        assertThat(control.toString(), is("70 %"));
     }
 
     @Test
