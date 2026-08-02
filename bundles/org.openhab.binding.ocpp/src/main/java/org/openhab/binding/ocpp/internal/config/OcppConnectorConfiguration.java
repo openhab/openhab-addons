@@ -47,4 +47,11 @@ public class OcppConnectorConfiguration {
 
     /** If &gt; 0, poll this connector for MeterValues every N seconds via TriggerMessage. */
     public int meterValuesPollSeconds = 0;
+
+    /**
+     * Opt-in: after this connector sits in a transient state (Preparing/Finishing) too long, send an
+     * UnlockConnector to try to clear it. Off by default because those are normal states and
+     * unlocking is a physical side effect; enable only for a charger known to wedge there.
+     */
+    public boolean stuckStateRecovery = false;
 }

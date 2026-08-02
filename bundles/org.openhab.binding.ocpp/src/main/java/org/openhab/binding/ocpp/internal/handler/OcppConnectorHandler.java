@@ -41,6 +41,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
@@ -52,22 +53,26 @@ import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import eu.chargetime.ocpp.model.core.AvailabilityStatus;
 import eu.chargetime.ocpp.model.core.AvailabilityType;
+import eu.chargetime.ocpp.model.core.ChangeAvailabilityConfirmation;
 import eu.chargetime.ocpp.model.core.ChangeAvailabilityRequest;
+import eu.chargetime.ocpp.model.core.ChangeConfigurationConfirmation;
 import eu.chargetime.ocpp.model.core.ChangeConfigurationRequest;
 import eu.chargetime.ocpp.model.core.ChargePointStatus;
+import eu.chargetime.ocpp.model.core.ConfigurationStatus;
 import eu.chargetime.ocpp.model.core.MeterValue;
 import eu.chargetime.ocpp.model.core.MeterValuesRequest;
 import eu.chargetime.ocpp.model.core.RemoteStartTransactionRequest;
 import eu.chargetime.ocpp.model.core.RemoteStopTransactionRequest;
-import eu.chargetime.ocpp.model.core.ResetRequest;
-import eu.chargetime.ocpp.model.core.ResetType;
 import eu.chargetime.ocpp.model.core.StartTransactionRequest;
 import eu.chargetime.ocpp.model.core.StatusNotificationRequest;
 import eu.chargetime.ocpp.model.core.StopTransactionRequest;
 import eu.chargetime.ocpp.model.core.UnlockConnectorRequest;
 import eu.chargetime.ocpp.model.remotetrigger.TriggerMessageRequest;
 import eu.chargetime.ocpp.model.remotetrigger.TriggerMessageRequestType;
+import eu.chargetime.ocpp.model.smartcharging.ChargingProfileStatus;
+import eu.chargetime.ocpp.model.smartcharging.SetChargingProfileConfirmation;
 
 /**
  * The {@link OcppConnectorHandler} represents one connector (outlet) of a charger. It carries the
@@ -142,6 +147,7 @@ public class OcppConnectorHandler extends BaseThingHandler {
     private String hardwareMaxCurrentKey = "";
     private String remoteStartTag = "openhab";
     private int meterValuesPollSeconds;
+    private boolean stuckStateRecovery;
 
     private @Nullable OcppChargePointHandler chargePoint;
     private volatile @Nullable Integer transactionId;
@@ -173,6 +179,7 @@ public class OcppConnectorHandler extends BaseThingHandler {
         hardwareMaxCurrentKey = config.hardwareMaxCurrentKey;
         remoteStartTag = config.remoteStartTag;
         meterValuesPollSeconds = config.meterValuesPollSeconds;
+        stuckStateRecovery = config.stuckStateRecovery;
         OcppChargePointHandler parent = chargePointHandler();
         if (parent == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
@@ -182,13 +189,44 @@ public class OcppConnectorHandler extends BaseThingHandler {
         // Also set on file-defined things, not just discovered ones, so the framework can match a
         // later discovery result against an already-configured connector.
         updateProperty(PROPERTY_UNIQUE_ID, uniqueConnectorId(parent.getChargePointId(), connectorId));
+        // UNKNOWN before registering: registration can adopt an already-open session and take the
+        // connector ONLINE, and a status set afterwards would overwrite that.
+        updateStatus(ThingStatus.UNKNOWN);
         parent.registerConnector(connectorId, this);
+        startPolling();
+    }
+
+    private void startPolling() {
+        cancel(pollTask);
+        pollTask = null;
         if (meterValuesPollSeconds > 0) {
             pollTask = scheduler.scheduleWithFixedDelay(this::pollMeterValues, meterValuesPollSeconds,
                     meterValuesPollSeconds, TimeUnit.SECONDS);
         }
-        // Real status follows the first StatusNotification.
-        updateStatus(ThingStatus.UNKNOWN);
+    }
+
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        // Not calling super: the default only flips status. This connector also has to re-register
+        // with its charge point (a bridge that was disposed and re-initialized comes back with empty
+        // routing maps) and stop polling a parent that is offline.
+        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
+            OcppChargePointHandler parent = chargePointHandler();
+            if (parent != null) {
+                this.chargePoint = parent;
+                if (getThing().getStatus() != ThingStatus.ONLINE) {
+                    updateStatus(ThingStatus.UNKNOWN);
+                }
+                parent.registerConnector(connectorId, this);
+                startPolling();
+            }
+        } else {
+            cancel(pollTask);
+            cancel(stuckTask);
+            pollTask = null;
+            stuckTask = null;
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        }
     }
 
     @Override
@@ -252,14 +290,11 @@ public class OcppConnectorHandler extends BaseThingHandler {
                     changeAvailability(onOff == OnOffType.ON);
                 }
                 break;
-            case CHANNEL_LOCK:
+            case CHANNEL_UNLOCK:
                 if (command == OnOffType.ON) {
                     dispatch(new UnlockConnectorRequest(connectorId), "UnlockConnector");
-                }
-                break;
-            case CHANNEL_RESET:
-                if (command == OnOffType.ON) {
-                    dispatch(new ResetRequest(ResetType.Soft), "Reset");
+                    // Momentary: pop the switch back so it does not stick ON.
+                    updateState(CHANNEL_UNLOCK, OnOffType.OFF);
                 }
                 break;
             case CHANNEL_HARDWARE_MAX_CURRENT:
@@ -320,9 +355,14 @@ public class OcppConnectorHandler extends BaseThingHandler {
     private void sendProfile(double amps) {
         dispatch(ChargingProfileBuilder.currentLimit(connectorId, amps, forceTxDefaultProfile, transactionId),
                 "SetChargingProfile").whenComplete((confirmation, ex) -> {
-                    if (ex == null) {
+                    // A non-exceptional completion only means the charger answered; the answer can
+                    // still be Rejected or NotSupported. Publish the applied limit only on Accepted.
+                    if (ex == null && confirmation instanceof SetChargingProfileConfirmation profile
+                            && profile.getStatus() == ChargingProfileStatus.Accepted) {
                         updateState(CHANNEL_CHARGE_LIMIT, new QuantityType<>(currentLimitAmps, Units.AMPERE));
                         updateState(CHANNEL_PAUSE, OnOffType.from(paused));
+                    } else if (ex == null) {
+                        logger.debug("SetChargingProfile on connector {} not accepted: {}", connectorId, confirmation);
                     }
                 });
     }
@@ -346,7 +386,10 @@ public class OcppConnectorHandler extends BaseThingHandler {
         AvailabilityType type = operative ? AvailabilityType.Operative : AvailabilityType.Inoperative;
         dispatch(new ChangeAvailabilityRequest(connectorId, type), "ChangeAvailability")
                 .whenComplete((confirmation, ex) -> {
-                    if (ex == null) {
+                    // Only Accepted means it took effect now. Rejected leaves the channel as-is;
+                    // Scheduled applies later, so let the following StatusNotification publish it.
+                    if (ex == null && confirmation instanceof ChangeAvailabilityConfirmation change
+                            && change.getStatus() == AvailabilityStatus.Accepted) {
                         updateState(CHANNEL_AVAILABILITY, OnOffType.from(operative));
                     }
                 });
@@ -364,7 +407,8 @@ public class OcppConnectorHandler extends BaseThingHandler {
         String value = Integer.toString((int) Math.round(amps));
         dispatch(new ChangeConfigurationRequest(hardwareMaxCurrentKey, value), "ChangeConfiguration[hardwareMax]")
                 .whenComplete((confirmation, ex) -> {
-                    if (ex == null) {
+                    if (ex == null && confirmation instanceof ChangeConfigurationConfirmation change
+                            && change.getStatus() == ConfigurationStatus.Accepted) {
                         updateState(CHANNEL_HARDWARE_MAX_CURRENT, new QuantityType<>(amps, Units.AMPERE));
                     }
                 });
@@ -525,6 +569,12 @@ public class OcppConnectorHandler extends BaseThingHandler {
     // --- stuck-state watchdog ---
 
     private void armStuckWatchdog(ChargePointStatus status) {
+        // Off by default: Preparing and Finishing are normal OCPP states (waiting for the vehicle or
+        // for the user to unplug), so treating elapsed time in them as a fault and auto-unlocking is a
+        // physical side effect that must be opted into per charger, not the default.
+        if (!stuckStateRecovery) {
+            return;
+        }
         synchronized (lock) {
             cancel(stuckTask);
             stuckTask = null;
@@ -535,8 +585,8 @@ public class OcppConnectorHandler extends BaseThingHandler {
     }
 
     private void onStuck(ChargePointStatus status) {
-        // Best-effort recovery: a connector stuck in a transient state for too long is nudged with
-        // an UnlockConnector, the OCPP-standard way to clear a wedged connector.
+        // Opt-in recovery (see armStuckWatchdog): nudge a connector wedged in a transient state with
+        // an UnlockConnector, the OCPP-standard way to clear it.
         logger.warn("Connector {} stuck in {} for over {}s; sending UnlockConnector", connectorId, status,
                 STUCK_STATE_SECONDS);
         dispatch(new UnlockConnectorRequest(connectorId), "UnlockConnector[stuck-recovery]");

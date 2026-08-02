@@ -61,6 +61,7 @@ The binding also runs a heartbeat-derived liveness watchdog and self-heals when 
 | hardwareMaxCurrentKey | text | Vendor ChangeConfiguration key backing the `hardware-max-current` channel. Empty disables that channel | (empty) | no | yes |
 | remoteStartTag | text | idTag used when starting a transaction via the `charging` channel | openhab | no | yes |
 | meterValuesPollSeconds | integer | Poll this connector for MeterValues every N seconds via TriggerMessage. 0 disables polling | 0 | no | yes |
+| stuckStateRecovery | boolean | Send an UnlockConnector if the connector stays in a transient state (Preparing/Finishing) too long. Off by default; enable only for a charger known to wedge there | false | no | yes |
 
 ## Channels
 
@@ -70,6 +71,7 @@ The binding also runs a heartbeat-derived liveness watchdog and self-heals when 
 |-----------|----------|------------|--------------------------------------------|
 | connected | Switch   | R          | Whether the charger has an open session    |
 | last-seen  | DateTime | R          | Timestamp of the last message received     |
+| reset      | Switch   | W          | Momentary — soft reset the charge point    |
 
 Vendor, model, firmware version and serial number are published as thing properties from the charger's BootNotification.
 
@@ -89,8 +91,7 @@ Vendor, model, firmware version and serial number are published as thing propert
 | charge-limit        | Number:ElectricCurrent | RW         | Charge current cap via SetChargingProfile              |
 | pause              | Switch                 | RW         | Pause charging (profile limit 0) without ending the transaction |
 | availability       | Switch                 | RW         | OCPP availability (Operative/Inoperative)              |
-| lock               | Switch                 | W          | Momentary — unlock the connector                       |
-| reset              | Switch                 | W          | Momentary — soft reset the charger                     |
+| unlock             | Switch                 | W          | Momentary — unlock the connector                       |
 | hardware-max-current | Number:ElectricCurrent | RW         | Hardware current ceiling via a vendor config key       |
 
 Beyond the channels above, the connector also exposes the full OCPP 1.6 SampledValue set — aggregate and per-phase current/voltage, active/reactive/apparent power, power factor, frequency, active/reactive energy (register and interval, import and export), plus vehicle telemetry (`soc`, `rpm`, `temperature`) — and per-transaction metadata (`id-tag`, `transaction-id`, `meter-start`, `meter-stop`, and the start/stop timestamps).

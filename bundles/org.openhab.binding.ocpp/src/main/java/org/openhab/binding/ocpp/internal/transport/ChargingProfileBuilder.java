@@ -31,16 +31,24 @@ import eu.chargetime.ocpp.model.smartcharging.SetChargingProfileRequest;
  * transaction and must carry its transaction id; a {@code TxDefaultProfile} applies whether or not a
  * transaction is running and must not carry one. A charge point that has no transaction active (or
  * one, like the Phoenix CHARX, that rejects a TxProfile outside a transaction) needs the default
- * profile — hence {@code forceTxDefault}. The two purposes use distinct, stable profile ids so a
- * charger keeps them apart across sessions.
+ * profile — hence {@code forceTxDefault}.
+ *
+ * <p>
+ * The schedule is {@code Relative}: the cap applies from the start of charging for the whole
+ * session, so it needs no absolute {@code startSchedule} (an {@code Absolute} profile without one is
+ * invalid per OCPP 1.6 and a compliant charger may reject it). The profile id is derived from the
+ * connector and the purpose so limits on different connectors of a multi-connector charger stay
+ * independent — a charge point identifies an installed profile by id and installing one with an
+ * existing id replaces it.
  *
  * @author Stamate Viorel - Initial contribution
  */
 @NonNullByDefault
 public final class ChargingProfileBuilder {
 
-    public static final int TX_DEFAULT_PROFILE_ID = 1;
-    public static final int TX_PROFILE_ID = 2;
+    static final int TX_DEFAULT_SUFFIX = 1;
+    static final int TX_PROFILE_SUFFIX = 2;
+    private static final int PROFILE_ID_STRIDE = 10;
     private static final int STACK_LEVEL = 0;
 
     private ChargingProfileBuilder() {
@@ -57,16 +65,22 @@ public final class ChargingProfileBuilder {
         boolean useTxProfile = transactionId != null && !forceTxDefault;
         ChargingProfilePurposeType purpose = useTxProfile ? ChargingProfilePurposeType.TxProfile
                 : ChargingProfilePurposeType.TxDefaultProfile;
-        int profileId = useTxProfile ? TX_PROFILE_ID : TX_DEFAULT_PROFILE_ID;
 
         ChargingSchedulePeriod period = new ChargingSchedulePeriod(0, amps);
         ChargingSchedule schedule = new ChargingSchedule(ChargingRateUnitType.A,
                 new ChargingSchedulePeriod[] { period });
-        ChargingProfile profile = new ChargingProfile(profileId, STACK_LEVEL, purpose, ChargingProfileKindType.Absolute,
-                schedule);
+        ChargingProfile profile = new ChargingProfile(profileId(connectorId, useTxProfile), STACK_LEVEL, purpose,
+                ChargingProfileKindType.Relative, schedule);
         if (useTxProfile) {
             profile.setTransactionId(transactionId);
         }
         return new SetChargingProfileRequest(connectorId, profile);
+    }
+
+    /**
+     * A charge-point-wide id for the installed profile, unique per (connector, purpose).
+     */
+    static int profileId(int connectorId, boolean txProfile) {
+        return connectorId * PROFILE_ID_STRIDE + (txProfile ? TX_PROFILE_SUFFIX : TX_DEFAULT_SUFFIX);
     }
 }

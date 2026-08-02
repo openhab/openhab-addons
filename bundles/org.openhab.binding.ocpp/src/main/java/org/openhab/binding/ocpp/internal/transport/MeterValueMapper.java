@@ -180,8 +180,10 @@ public final class MeterValueMapper {
             // blow up the whole MeterValues request.
             return null;
         }
-        if (unit == null) {
-            return new DecimalType(parsed);
+        if (unit == null || unit.isBlank()) {
+            // OCPP 1.6 defines Wh as the default unit of a SampledValue, and the default measurand is
+            // Energy.Active.Import.Register — so a minimal sample is energy in Wh, not a bare number.
+            return new QuantityType<>(parsed, Units.WATT_HOUR);
         }
         switch (unit) {
             case "A":
@@ -198,8 +200,16 @@ public final class MeterValueMapper {
                 return new QuantityType<>(parsed, Units.KILOWATT_HOUR);
             case "VA":
                 return new QuantityType<>(parsed, Units.VOLT_AMPERE);
+            case "kVA":
+                return new QuantityType<>(parsed, Units.KILOVOLT_AMPERE);
             case "var":
                 return new QuantityType<>(parsed, Units.VAR);
+            case "kvar":
+                return new QuantityType<>(parsed, Units.KILOVAR);
+            case "varh":
+                return new QuantityType<>(parsed, Units.VAR_HOUR);
+            case "kvarh":
+                return new QuantityType<>(parsed, Units.KILOVAR_HOUR);
             case "Percent":
                 return new QuantityType<>(parsed, Units.PERCENT);
             case "Hertz":
@@ -212,8 +222,10 @@ public final class MeterValueMapper {
             case "Fahrenheit":
                 return new QuantityType<>(parsed, ImperialUnits.FAHRENHEIT);
             default:
-                // Any other legal-but-unmodelled unit (varh, kvarh, ...) — keep the number rather
-                // than dropping the sample or raising an error.
+                // A non-standard unit outside the OCPP 1.6 set: keep the number rather than dropping
+                // the sample. Every OCPP-defined unit is mapped above, so this stays dimensionless
+                // only for genuinely unknown input.
+                LOGGER.debug("Unrecognised MeterValues unit '{}'; keeping a dimensionless value", unit);
                 return new DecimalType(parsed);
         }
     }
