@@ -43,7 +43,6 @@ public class AutoBlindShadeHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(AutoBlindShadeHandler.class);
     private int peripheralUid;
     private volatile int lastKnownApiPosition = -1;
-    private volatile long lastCommandTime = 0;
     private volatile int lastCommandedOhPosition = -1;
 
     // Motion state for notification-based tracking
@@ -123,7 +122,6 @@ public class AutoBlindShadeHandler extends BaseThingHandler {
                 logger.debug("Shade {} ON/OFF -> API position {}", peripheralUid, apiPosition);
                 client.controlShade(peripheralUid, apiPosition);
                 updateState(AutoBlindBindingConstants.CHANNEL_POSITION, new PercentType(ohPosition));
-                lastCommandTime = System.currentTimeMillis();
                 lastCommandedOhPosition = ohPosition;
                 registerCommand(ohPosition);
             } else if (command instanceof PercentType percent) {
@@ -131,7 +129,6 @@ public class AutoBlindShadeHandler extends BaseThingHandler {
                 logger.debug("Shade {} percent {} -> API position {}", peripheralUid, percent, apiPosition);
                 client.controlShade(peripheralUid, apiPosition);
                 updateState(AutoBlindBindingConstants.CHANNEL_POSITION, percent);
-                lastCommandTime = System.currentTimeMillis();
                 lastCommandedOhPosition = percent.intValue();
                 registerCommand(percent.intValue());
             } else {
@@ -141,7 +138,7 @@ public class AutoBlindShadeHandler extends BaseThingHandler {
             }
             AutoBlindHubHandler hubHandler = getHubHandler();
             if (hubHandler != null) {
-                hubHandler.startTrackingPoll();
+                hubHandler.startMotionPoll();
             }
         } catch (Exception e) {
             logger.debug("Failed to send command to shade {}: {}", peripheralUid, e.getMessage());
@@ -154,12 +151,11 @@ public class AutoBlindShadeHandler extends BaseThingHandler {
         int ohPosition = 100 - status.bottomRailPosition;
 
         int commanded = lastCommandedOhPosition;
-        long elapsed = System.currentTimeMillis() - lastCommandTime;
         boolean suppressed = false;
-        if (commanded >= 0 && elapsed < AutoBlindBindingConstants.COMMAND_SUPPRESSION_MS) {
+        if (commanded >= 0) {
             if (Math.abs(ohPosition - commanded) > AutoBlindBindingConstants.POSITION_TOLERANCE) {
-                logger.debug("Shade {} suppressing stale hub position {} (commanded {} {}ms ago)", peripheralUid,
-                        ohPosition, commanded, elapsed);
+                logger.debug("Shade {} suppressing stale hub position {} (commanded {})", peripheralUid, ohPosition,
+                        commanded);
                 suppressed = true;
             } else {
                 logger.debug("Shade {} hub confirmed position {} (commanded {})", peripheralUid, ohPosition, commanded);
@@ -241,7 +237,6 @@ public class AutoBlindShadeHandler extends BaseThingHandler {
 
     public void clearSuppression() {
         lastCommandedOhPosition = -1;
-        lastCommandTime = 0;
     }
 
     public int getPeripheralUid() {
