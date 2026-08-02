@@ -93,10 +93,11 @@ Fragment-Host: org.openhab.binding.hue
 	org.eclipse.jetty.websocket.core.client;version='[12.1.10,12.1.11)',\
 	org.eclipse.jetty.websocket.core.common;version='[12.1.10,12.1.11)',\
 	org.glassfish.hk2.osgi-resource-locator;version='[1.0.3,1.0.4)',\
-	org.jupnp;version='[4.0.0,4.0.1)',\
 	org.objectweb.asm;version='[9.10.0,9.10.1)',\
 	org.objectweb.asm.commons;version='[9.10.0,9.10.1)',\
 	org.objectweb.asm.tree;version='[9.10.0,9.10.1)',\
 	org.objectweb.asm.tree.analysis;version='[9.10.0,9.10.1)',\
 	org.objectweb.asm.util;version='[9.10.0,9.10.1)',\
-	org.ops4j.pax.logging.pax-logging-api;version='[2.3.4,2.3.5)'
+	org.ops4j.pax.logging.pax-logging-api;version='[2.3.4,2.3.5)',\
+	org.jupnp;version='[3.0.5,3.0.6)',\
+	org.jupnp.transport.jetty12;version='[3.0.5,3.0.6)'
