@@ -64,7 +64,6 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSe
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2AuthChallenge;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2CBStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2ConfigFlood;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2DevConfigCover;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2DevConfigInput;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2DevConfigPm1;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2DevConfigSwitch;
@@ -75,7 +74,6 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceC
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceSettings;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusLight;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2CoverStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusEm;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusEmData;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusFlood;
@@ -91,6 +89,10 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RelaySt
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcBaseMessage;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcRequest.Shelly2RpcRequestParams;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2StatusEm1;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyCoverJsonDTO.Shelly2CoverStatus;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyCoverJsonDTO.Shelly2DevConfigCover;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyCoverJsonDTO.Shelly2DevConfigCover.Shelly2DeviceConfigCoverObstructionDetection;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyCoverJsonDTO.Shelly2DevConfigCover.Shelly2DeviceConfigCoverSafetySwitch;
 import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyBaseHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyComponents;
@@ -996,20 +998,22 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         settings.id = id;
         settings.isValid = true;
         settings.defaultState = coverConfig.initialState;
-        settings.inputMode = mapValue(MAP_INPUT_MODE, coverConfig.inMode);
+        settings.inputMode = mapValue(MAP_INPUT_MODE, getString(coverConfig.inMode));
         settings.btnReverse = getBool(coverConfig.invertDirections) ? 1 : 0;
         settings.swapInputs = coverConfig.swapInputs;
         settings.maxtime = 0.0; // n/a
         settings.maxtimeOpen = coverConfig.maxtimeOpen;
         settings.maxtimeClose = coverConfig.maxtimeClose;
-        if (coverConfig.safetySwitch != null) {
-            settings.safetySwitch = coverConfig.safetySwitch.enable;
-            settings.safetyAction = coverConfig.safetySwitch.action;
+        Shelly2DeviceConfigCoverSafetySwitch safetySwitch = coverConfig.safetySwitch;
+        if (safetySwitch != null) {
+            settings.safetySwitch = safetySwitch.enable;
+            settings.safetyAction = safetySwitch.action;
         }
-        if (coverConfig.obstructionDetection != null) {
-            settings.obstacleAction = coverConfig.obstructionDetection.action;
-            settings.obstacleDelay = coverConfig.obstructionDetection.holdoff.intValue();
-            settings.obstaclePower = coverConfig.obstructionDetection.powerThr;
+        Shelly2DeviceConfigCoverObstructionDetection obstructionDetection = coverConfig.obstructionDetection;
+        if (obstructionDetection != null) {
+            settings.obstacleAction = obstructionDetection.action;
+            settings.obstacleDelay = getDouble(obstructionDetection.holdoff).intValue();
+            settings.obstaclePower = obstructionDetection.powerThr;
         }
         rollers.add(settings);
     }
