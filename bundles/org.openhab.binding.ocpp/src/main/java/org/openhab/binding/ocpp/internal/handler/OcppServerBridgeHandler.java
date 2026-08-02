@@ -21,6 +21,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -29,6 +30,8 @@ import org.openhab.binding.ocpp.internal.discovery.OcppDiscoveryService;
 import org.openhab.binding.ocpp.internal.transport.ChargeTimeTransport;
 import org.openhab.binding.ocpp.internal.transport.OcppServerListener;
 import org.openhab.binding.ocpp.internal.transport.OcppTransport;
+import org.openhab.binding.ocpp.internal.transport.TransactionStore;
+import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -67,12 +70,19 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
     private volatile boolean disposed;
     private @Nullable Future<?> startupTask;
 
+    private final StorageService storageService;
+    private @Nullable TransactionStore transactionStore;
+    // Only used if the store is somehow unavailable; the store is created in initialize() before any
+    // charger can start a transaction, so in practice ids always come from the persisted counter.
+    private final AtomicInteger fallbackSequence = new AtomicInteger();
+
     private @Nullable OcppTransport transport;
     private @Nullable OcppDiscoveryService discoveryService;
     private OcppServerConfiguration config = new OcppServerConfiguration();
 
-    public OcppServerBridgeHandler(Bridge bridge) {
+    public OcppServerBridgeHandler(Bridge bridge, StorageService storageService) {
         super(bridge);
+        this.storageService = storageService;
     }
 
     @Override
@@ -98,6 +108,9 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
         config = getConfigAs(OcppServerConfiguration.class);
         OcppServerConfiguration localConfig = config;
         disposed = false;
+        // Created synchronously here so a transaction id or lookup is available the moment the
+        // transport (started below) begins accepting chargers. Keyed per server bridge.
+        transactionStore = new TransactionStore(storageService.getStorage(getThing().getUID().getAsString()));
         updateStatus(ThingStatus.UNKNOWN);
 
         startupTask = scheduler.submit(() -> {
@@ -297,6 +310,44 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
         OcppChargePointHandler handler = resolve(session);
         int override = handler != null ? handler.getHeartbeatOverride() : 0;
         return override > 0 ? override : config.heartbeatInterval;
+    }
+
+    @Override
+    public int nextTransactionId() {
+        TransactionStore store = transactionStore;
+        return store != null ? store.nextTransactionId() : fallbackSequence.incrementAndGet();
+    }
+
+    // --- transaction persistence (called by OcppChargePointHandler) ---
+
+    public void rememberTransaction(int transactionId, String chargePointId, int connectorId) {
+        TransactionStore store = transactionStore;
+        if (store != null) {
+            store.begin(transactionId, chargePointId, connectorId);
+        }
+    }
+
+    public void forgetTransaction(int transactionId) {
+        TransactionStore store = transactionStore;
+        if (store != null) {
+            store.end(transactionId);
+        }
+    }
+
+    /** The connector a transaction belongs to on this charge point, or {@code null} if not recorded. */
+    public @Nullable Integer transactionConnector(int transactionId, String chargePointId) {
+        TransactionStore store = transactionStore;
+        if (store == null) {
+            return null;
+        }
+        TransactionStore.Location location = store.locate(transactionId);
+        return location != null && chargePointId.equals(location.chargePointId()) ? location.connectorId() : null;
+    }
+
+    /** A connector's open transaction id recovered after a restart, or {@code null} if none. */
+    public @Nullable Integer openTransactionFor(String chargePointId, int connectorId) {
+        TransactionStore store = transactionStore;
+        return store != null ? store.openTransaction(chargePointId, connectorId) : null;
     }
 
     private @Nullable OcppChargePointHandler resolve(UUID session) {

@@ -60,6 +60,8 @@ class InboundCoreHandlerTest {
         listener = mock(OcppServerListener.class);
         when(listener.isTagAuthorized(any())).thenReturn(true);
         when(listener.heartbeatFor(any())).thenReturn(300);
+        java.util.concurrent.atomic.AtomicInteger sequence = new java.util.concurrent.atomic.AtomicInteger();
+        when(listener.nextTransactionId()).thenAnswer(invocation -> sequence.incrementAndGet());
         handler = new InboundCoreHandler(listener);
     }
 
