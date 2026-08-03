@@ -274,7 +274,7 @@
 	<channel-type id="last-seen">
 		<item-type>DateTime</item-type>
 		<label>Last Seen</label>
-		<description>Timestamp of the last message received from the charger.</description>
+		<description>Timestamp of the last contact from the charger (a message, or the session opening).</description>
 		<category>Time</category>
 		<tags>
 			<tag>Status</tag>

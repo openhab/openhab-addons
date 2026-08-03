@@ -262,7 +262,12 @@ public class ChargeTimeTransport implements OcppTransport {
     public CompletionStage<Confirmation> send(UUID session, Request request) {
         try {
             return server.send(session, request);
-        } catch (OccurenceConstraintException | UnsupportedFeatureException | NotConnectedException e) {
+        } catch (OccurenceConstraintException | UnsupportedFeatureException | NotConnectedException
+                | RuntimeException e) {
+            // The declared checked exceptions plus any unchecked one the underlying WebSocket can
+            // raise — Java-WebSocket throws WebsocketNotConnectedException (a RuntimeException) when a
+            // session drops mid-send. All must become a failed stage: a synchronous throw here would
+            // abort the caller's drain loop and strand its other queued requests.
             CompletableFuture<Confirmation> failed = new CompletableFuture<>();
             failed.completeExceptionally(e);
             return failed;

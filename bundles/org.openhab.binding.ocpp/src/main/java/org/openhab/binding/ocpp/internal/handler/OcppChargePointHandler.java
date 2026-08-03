@@ -343,13 +343,18 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
                         new IllegalStateException("Charger " + chargePointId + " reconnected; request superseded"));
                 continue;
             }
+            // Send one, and only drain the next once it has settled: OCPP-J allows a single
+            // outstanding CALL per direction, so firing the whole backlog at once could have several
+            // in flight and a charger may drop the extras.
             sendDirect(current.request()).whenComplete((confirmation, ex) -> {
                 if (ex != null) {
                     current.future().completeExceptionally(ex);
                 } else {
                     current.future().complete(confirmation);
                 }
+                drainPendingSends();
             });
+            return;
         }
     }
 
@@ -372,9 +377,12 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
         // Anything still queued belongs to the previous session's context; fail it deliberately
         // rather than let it drain into this one.
         failPendingSends();
-        this.session = session;
+        // Clear readiness BEFORE publishing the new session: a reconnect self-heal (no onDisconnected)
+        // could otherwise leave a window where isReady() sees the new session with the old session's
+        // operational=true, letting a caller send before this session has booted.
         bootAccepted = false;
         operational = false;
+        this.session = session;
         cancel(readyTask);
         readyTask = null;
         logger.debug("Charge point {} online on session {}", chargePointId, session);
@@ -432,12 +440,12 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
         // silent.
         recordActivity();
         UUID bootSession = session;
-        if (bootSession != null) {
-            cancel(readyTask);
-            readyTask = scheduler.schedule(() -> becomeReady(bootSession), BOOT_READY_GRACE_MILLIS,
-                    TimeUnit.MILLISECONDS);
+        if (bootSession == null) {
+            return; // disconnected while its own BootNotification was being handled
         }
-        scheduleBootConfig();
+        cancel(readyTask);
+        readyTask = scheduler.schedule(() -> becomeReady(bootSession), BOOT_READY_GRACE_MILLIS, TimeUnit.MILLISECONDS);
+        scheduleBootConfig(bootSession);
     }
 
     public void onStatusNotification(StatusNotificationRequest request) {
@@ -507,18 +515,22 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
         }
         OcppConnectorHandler connector = transactions.remove(transactionId);
         OcppServerBridgeHandler serverHandler = server;
+        boolean ownsTransaction = connector != null;
         if (connector == null && serverHandler != null) {
             // Not in memory: openHAB likely restarted mid-transaction. Recover the connector from the
-            // persisted mapping so the stop still reaches it.
+            // persisted mapping so the stop still reaches it — but only if the id actually belongs to
+            // THIS charge point (transactionConnector already checks that), so a charger cannot clear
+            // another charger's persisted transaction with a forged id.
             Integer connectorId = serverHandler.transactionConnector(transactionId, chargePointId);
             if (connectorId != null) {
+                ownsTransaction = true;
                 connector = connectors.get(connectorId);
             }
         }
         if (connector != null) {
             connector.onTransactionStopped(request);
         }
-        if (serverHandler != null) {
+        if (ownsTransaction && serverHandler != null) {
             serverHandler.forgetTransaction(transactionId);
         }
     }
@@ -545,12 +557,23 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
 
     // --- boot-time configuration burst ---
 
-    private void scheduleBootConfig() {
+    private void scheduleBootConfig(UUID bootSession) {
         cancel(bootConfigTask);
-        bootConfigTask = scheduler.schedule(this::runBootConfig, Math.max(0, configSettleSeconds), TimeUnit.SECONDS);
+        bootConfigTask = scheduler.schedule(() -> runBootConfig(bootSession), Math.max(0, configSettleSeconds),
+                TimeUnit.SECONDS);
     }
 
-    private void runBootConfig() {
+    private void runBootConfig(UUID bootSession) {
+        // The sequence belongs to the session whose boot scheduled it (captured then, not now). If the
+        // charger has reconnected since — even a bare WebSocket reconnect that legitimately sends no
+        // fresh BootNotification — abandon it before anything else, so a brief interruption during the
+        // settle delay neither runs stale configuration against the replacement session nor burns an
+        // attempt against it.
+        if (!bootSession.equals(session)) {
+            logger.debug("Boot config for {} skipped — its session was replaced during the settle delay",
+                    chargePointId);
+            return;
+        }
         OcppServerBridgeHandler serverHandler = server;
         if (serverHandler == null) {
             return;
@@ -581,9 +604,9 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
             requestConnectorStatuses();
             return;
         }
-        // Each step is deferred: they are dispatched ONE AT A TIME (see runBootConfigStep). A charger
-        // that receives the whole burst at once may leave the queued calls unanswered until they time
-        // out, which tears down the session — observed as a permanent connect/boot/drop loop.
+        // Each step is deferred and dispatched ONE AT A TIME (see runBootConfigStep): sending the
+        // whole burst at once can bury a charger that is busy (e.g. flushing an offline queue), and
+        // an OCPP-J peer answers one call at a time regardless.
         List<BootConfigStep> steps = new ArrayList<>();
         if (meterless) {
             // No internal meter: only disable the periodic clock-aligned emission that would
@@ -615,10 +638,6 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
                 String value = pair.substring(equals + 1).trim();
                 steps.add(() -> sendConfig(key, value));
             }
-        }
-        UUID bootSession = session;
-        if (bootSession == null) {
-            return; // disconnected between scheduling and running
         }
         runBootConfigStep(steps, 0, fingerprint, bootSession, new AtomicBoolean(true));
     }
@@ -667,8 +686,13 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
                 if (!steps.isEmpty()) {
                     logger.debug("Boot config for {} complete ({} steps)", chargePointId, steps.size());
                 }
-            } else {
+            } else if (bootConfigAttempts.get() < MAX_BOOT_CONFIG_ATTEMPTS) {
                 logger.warn("Boot config for {} did not fully land; will retry on its next boot", chargePointId);
+            } else {
+                logger.warn(
+                        "Boot config for {} did not fully land after {} attempts; giving up until it is "
+                                + "reconfigured or reconnects with different settings",
+                        chargePointId, MAX_BOOT_CONFIG_ATTEMPTS);
             }
             // Safe to ask now: the charger is booted and its configuration has settled.
             requestConnectorStatuses();

@@ -179,6 +179,38 @@ class OcppBootConfigTest {
     }
 
     @Test
+    void aSettleDelayedBootConfigDoesNotRunAgainstAReplacementSession() {
+        // configSettleSeconds > 0: session A boots and schedules its burst for later. Before the
+        // delay expires the charger reconnects as session B (a bare WebSocket reconnect that sends no
+        // fresh BootNotification). A's delayed task must recognise its originating session is gone —
+        // captured when scheduled, not read when it runs — and not configure B.
+        OcppServerBridgeHandler serverHandler = mock(OcppServerBridgeHandler.class);
+        when(serverHandler.getServerConfig()).thenReturn(serverConfig);
+        when(serverHandler.getTransport()).thenReturn(transport);
+        Bridge serverThing = mock(Bridge.class);
+        when(serverThing.getHandler()).thenReturn(serverHandler);
+        Bridge cpThing = mock(Bridge.class);
+        when(cpThing.getUID()).thenReturn(CP_UID);
+        when(cpThing.getBridgeUID()).thenReturn(SERVER_UID);
+        when(cpThing.getStatus()).thenReturn(ThingStatus.ONLINE);
+        when(cpThing.getConfiguration())
+                .thenReturn(new Configuration(Map.of("chargePointId", "charger", "configSettleSeconds", 1)));
+        ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        when(callback.getBridge(SERVER_UID)).thenReturn(serverThing);
+        OcppChargePointHandler delayed = new OcppChargePointHandler(cpThing);
+        delayed.setCallback(callback);
+        delayed.initialize();
+        delayed.onConnected(UUID.randomUUID());
+
+        delayed.onBootNotification(new BootNotificationRequest("vendor", "model"));
+        delayed.onConnected(UUID.randomUUID()); // reconnect as a new session during the settle delay
+
+        // The 1s-delayed burst must never fire against the replacement session.
+        verify(transport, org.mockito.Mockito.after(2000).never()).send(any(),
+                eq(new ChangeConfigurationRequest("AuthorizeRemoteTxRequests", "false")));
+    }
+
+    @Test
     void anAbandonedBootSequenceDoesNotContinueOnAReplacementSession() {
         // A step of session A's boot-configuration sequence is answered only after the charger has
         // reconnected as session B (a timeout resolves this way too). The old sequence must stop:
