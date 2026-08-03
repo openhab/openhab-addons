@@ -339,12 +339,16 @@ public class Mapper {
                 case MB_KEY_CHARGINGACTIVE:
                     if (Utils.isNil(value)) {
                         state = UnDefType.UNDEF;
+                    } else if (value.hasBoolValue()) {
+                        state = OnOffType.from(value.getBoolValue());
+                    } else if (value.hasIntValue()) {
+                        // Parkbrakestatus, PrecondNow, PrecondSeat and Warningwashwater are binary 0/1
+                        // enums delivered via Mapper.putEnum() (int_value oneof, not bool_value) - proto
+                        // declares 0 as the "off"/inactive/not-engaged member in all four, see
+                        // vehicle-events.proto and docs/changes/fix-enum-switch-mismatch
+                        state = OnOffType.from(value.getIntValue() != 0);
                     } else {
-                        if (value.hasBoolValue()) {
-                            state = OnOffType.from(value.getBoolValue());
-                        } else {
-                            state = UnDefType.UNDEF;
-                        }
+                        state = UnDefType.UNDEF;
                     }
                     return new ChannelStateMap(ch[0], ch[1], state);
 
@@ -425,171 +429,372 @@ public class Mapper {
     public static Map<String, VehicleAttributeStatus> fromVehicleStatusUpdate(VehicleStatusUpdate vsu) {
         Map<String, VehicleAttributeStatus> attributes = new HashMap<>();
 
+        // Every put*() call below is gated on vsu.hasXxx() - a partial (delta) update only ever sets the
+        // handful of fields that actually changed, and every field here is a singular message type, so
+        // proto3 gives each one a real hasXxx() presence check. Without this gate, an absent field's
+        // getter returns its default instance (value 0, unset metadata -> status defaults to
+        // AttributeStatus.VALUE_VALID), which Utils.isNil() cannot distinguish from genuine data - see
+        // docs/changes/fix-vsu-delta-fake-attributes.
+
         // bool
-        putBool(attributes, MB_KEY_WARNINGBRAKEFLUID, vsu.getWarningbrakefluid());
-        putBool(attributes, MB_KEY_WARNINGBRAKELININGWEAR, vsu.getWarningbrakeliningwear());
-        putBool(attributes, MB_KEY_WARNINGCOOLANTLEVELLOW, vsu.getWarningcoolantlevellow());
-        putBool(attributes, MB_KEY_WARNINGENGINELIGHT, vsu.getWarningenginelight());
-        putBool(attributes, MB_KEY_CHARGINGACTIVE, vsu.getChargingactive());
+        if (vsu.hasWarningbrakefluid()) {
+            putBool(attributes, MB_KEY_WARNINGBRAKEFLUID, vsu.getWarningbrakefluid());
+        }
+        if (vsu.hasWarningbrakeliningwear()) {
+            putBool(attributes, MB_KEY_WARNINGBRAKELININGWEAR, vsu.getWarningbrakeliningwear());
+        }
+        if (vsu.hasWarningcoolantlevellow()) {
+            putBool(attributes, MB_KEY_WARNINGCOOLANTLEVELLOW, vsu.getWarningcoolantlevellow());
+        }
+        if (vsu.hasWarningenginelight()) {
+            putBool(attributes, MB_KEY_WARNINGENGINELIGHT, vsu.getWarningenginelight());
+        }
+        if (vsu.hasChargingactive()) {
+            putBool(attributes, MB_KEY_CHARGINGACTIVE, vsu.getChargingactive());
+        }
 
         // plain int64 / double (no unit)
-        putInt64(attributes, MB_KEY_SERVICEINTERVALDAYS, vsu.getServiceintervaldays());
-        putInt64(attributes, MB_KEY_TIRE_PRESS_MEAS_TIMESTAMP, vsu.getTirePressMeasTimestamp());
-        putInt64(attributes, MB_KEY_DRIVEN_TIME_RESET, vsu.getDrivenTimeReset());
-        putInt64(attributes, MB_KEY_DRIVEN_TIME_START, vsu.getDrivenTimeStart());
-        putDouble(attributes, MB_KEY_POSITION_HEADING, vsu.getPositionHeading());
-        putDouble(attributes, MB_KEY_CHARGING_POWER, vsu.getChargingPower());
-        putDouble(attributes, MB_KEY_POSITION_LONG, vsu.getPositionLong());
-        putDouble(attributes, MB_KEY_POSITION_LAT, vsu.getPositionLat());
+        if (vsu.hasServiceintervaldays()) {
+            putInt64(attributes, MB_KEY_SERVICEINTERVALDAYS, vsu.getServiceintervaldays());
+        }
+        if (vsu.hasTirePressMeasTimestamp()) {
+            putInt64(attributes, MB_KEY_TIRE_PRESS_MEAS_TIMESTAMP, vsu.getTirePressMeasTimestamp());
+        }
+        if (vsu.hasDrivenTimeReset()) {
+            putInt64(attributes, MB_KEY_DRIVEN_TIME_RESET, vsu.getDrivenTimeReset());
+        }
+        if (vsu.hasDrivenTimeStart()) {
+            putInt64(attributes, MB_KEY_DRIVEN_TIME_START, vsu.getDrivenTimeStart());
+        }
+        if (vsu.hasPositionHeading()) {
+            putDouble(attributes, MB_KEY_POSITION_HEADING, vsu.getPositionHeading());
+        }
+        if (vsu.hasChargingPower()) {
+            putDouble(attributes, MB_KEY_CHARGING_POWER, vsu.getChargingPower());
+        }
+        if (vsu.hasPositionLong()) {
+            putDouble(attributes, MB_KEY_POSITION_LONG, vsu.getPositionLong());
+        }
+        if (vsu.hasPositionLat()) {
+            putDouble(attributes, MB_KEY_POSITION_LAT, vsu.getPositionLat());
+        }
 
         // enum-typed status attributes -> int_value = proto-declared enum number
-        putEnum(attributes, MB_KEY_TIRE_SENSOR_AVAILABLE, vsu.getTireSensorAvailable().getValueValue(),
-                vsu.getTireSensorAvailable().getMetadata());
-        putEnum(attributes, MB_KEY_CHARGE_COUPLER_DC_LOCK_STATUS, vsu.getChargeCouplerDCLockStatus().getValueValue(),
-                vsu.getChargeCouplerDCLockStatus().getMetadata());
-        putEnum(attributes, MB_KEY_CHARGE_COUPLER_DC_STATUS, vsu.getChargeCouplerDCStatus().getValueValue(),
-                vsu.getChargeCouplerDCStatus().getMetadata());
-        putEnum(attributes, MB_KEY_CHARGE_COUPLER_AC_STATUS, vsu.getChargeCouplerACStatus().getValueValue(),
-                vsu.getChargeCouplerACStatus().getMetadata());
-        putEnum(attributes, MB_KEY_CHARGE_FLAP_DC_STATUS, vsu.getChargeFlapDCStatus().getValueValue(),
-                vsu.getChargeFlapDCStatus().getMetadata());
-        putEnum(attributes, MB_KEY_CHARGE_STATUS, vsu.getChargingstatus().getValueValue(),
-                vsu.getChargingstatus().getMetadata());
-        putEnum(attributes, MB_KEY_CHARGE_ERROR, vsu.getChargingErrorDetails().getValueValue(),
-                vsu.getChargingErrorDetails().getMetadata());
-        putEnum(attributes, MB_KEY_TIREWARNINGSRDK, vsu.getTirewarningsrdk().getValueValue(),
-                vsu.getTirewarningsrdk().getMetadata());
-        putEnum(attributes, MB_KEY_STARTER_BATTERY_STATE, vsu.getStarterBatteryState().getValueValue(),
-                vsu.getStarterBatteryState().getMetadata());
-        putEnum(attributes, MB_KEY_FLIP_WINDOW_STATUS, vsu.getFlipWindowStatus().getValueValue(),
-                vsu.getFlipWindowStatus().getMetadata());
-        putEnum(attributes, MB_KEY_WINDOW_STATUS_REAR_BLIND, vsu.getWindowStatusRearBlind().getValueValue(),
-                vsu.getWindowStatusRearBlind().getMetadata());
-        putEnum(attributes, MB_KEY_WINDOW_STATUS_REAR_LEFT_BLIND, vsu.getWindowStatusRearLeftBlind().getValueValue(),
-                vsu.getWindowStatusRearLeftBlind().getMetadata());
-        putEnum(attributes, MB_KEY_WINDOW_STATUS_REAR_RIGHT_BLIND, vsu.getWindowStatusRearRightBlind().getValueValue(),
-                vsu.getWindowStatusRearRightBlind().getMetadata());
-        putEnum(attributes, MB_KEY_WINDOWSTATUSREARRIGHT, vsu.getWindowstatusrearright().getValueValue(),
-                vsu.getWindowstatusrearright().getMetadata());
-        putEnum(attributes, MB_KEY_WINDOWSTATUSREARLEFT, vsu.getWindowstatusrearleft().getValueValue(),
-                vsu.getWindowstatusrearleft().getMetadata());
-        putEnum(attributes, MB_KEY_WINDOWSTATUSFRONTRIGHT, vsu.getWindowstatusfrontright().getValueValue(),
-                vsu.getWindowstatusfrontright().getMetadata());
-        putEnum(attributes, MB_KEY_WINDOWSTATUSFRONTLEFT, vsu.getWindowstatusfrontleft().getValueValue(),
-                vsu.getWindowstatusfrontleft().getMetadata());
-        putEnum(attributes, MB_KEY_ROOFTOPSTATUS, vsu.getRooftopstatus().getValueValue(),
-                vsu.getRooftopstatus().getMetadata());
-        putEnum(attributes, MB_KEY_SUNROOF_STATUS_REAR_BLIND, vsu.getSunroofStatusRearBlind().getValueValue(),
-                vsu.getSunroofStatusRearBlind().getMetadata());
-        putEnum(attributes, MB_KEY_SUNROOF_STATUS_FRONT_BLIND, vsu.getSunroofStatusFrontBlind().getValueValue(),
-                vsu.getSunroofStatusFrontBlind().getMetadata());
-        putEnum(attributes, MB_KEY_SUNROOFSTATUS, vsu.getSunroofstatus().getValueValue(),
-                vsu.getSunroofstatus().getMetadata());
-        putEnum(attributes, MB_KEY_IGNITIONSTATE, vsu.getIgnitionstate().getValueValue(),
-                vsu.getIgnitionstate().getMetadata());
-        putEnum(attributes, MB_KEY_DOOR_STATUS_OVERALL, vsu.getDoorStatusOverall().getValueValue(),
-                vsu.getDoorStatusOverall().getMetadata());
-        putEnum(attributes, MB_KEY_WINDOW_STATUS_OVERALL, vsu.getWindowStatusOverall().getValueValue(),
-                vsu.getWindowStatusOverall().getMetadata());
-        putEnum(attributes, MB_KEY_DOOR_LOCK_STATUS_OVERALL, vsu.getDoorlockstatusvehicle().getValueValue(),
-                vsu.getDoorlockstatusvehicle().getMetadata());
-        putEnum(attributes, MB_KEY_TIRE_MARKER_FRONT_RIGHT, vsu.getTireMarkerFrontRight().getValueValue(),
-                vsu.getTireMarkerFrontRight().getMetadata());
-        putEnum(attributes, MB_KEY_TIRE_MARKER_FRONT_LEFT, vsu.getTireMarkerFrontLeft().getValueValue(),
-                vsu.getTireMarkerFrontLeft().getMetadata());
-        putEnum(attributes, MB_KEY_TIRE_MARKER_REAR_RIGHT, vsu.getTireMarkerRearRight().getValueValue(),
-                vsu.getTireMarkerRearRight().getMetadata());
-        putEnum(attributes, MB_KEY_TIRE_MARKER_REAR_LEFT, vsu.getTireMarkerRearLeft().getValueValue(),
-                vsu.getTireMarkerRearLeft().getMetadata());
-        putEnum(attributes, MB_KEY_PARKBRAKESTATUS, vsu.getParkbrakestatus().getValueValue(),
-                vsu.getParkbrakestatus().getMetadata());
-        putEnum(attributes, MB_KEY_PRECOND_NOW, vsu.getPrecondNow().getValueValue(), vsu.getPrecondNow().getMetadata());
-        putEnum(attributes, MB_KEY_PRECOND_SEAT_FRONT_RIGHT, vsu.getPrecondSeatFrontRight().getValueValue(),
-                vsu.getPrecondSeatFrontRight().getMetadata());
-        putEnum(attributes, MB_KEY_PRECOND_SEAT_FRONT_LEFT, vsu.getPrecondSeatFrontLeft().getValueValue(),
-                vsu.getPrecondSeatFrontLeft().getMetadata());
-        putEnum(attributes, MB_KEY_PRECOND_SEAT_REAR_RIGHT, vsu.getPrecondSeatRearRight().getValueValue(),
-                vsu.getPrecondSeatRearRight().getMetadata());
-        putEnum(attributes, MB_KEY_PRECOND_SEAT_REAR_LEFT, vsu.getPrecondSeatRearLeft().getValueValue(),
-                vsu.getPrecondSeatRearLeft().getMetadata());
-        putEnum(attributes, MB_KEY_WARNINGWASHWATER, vsu.getWarningwashwater().getValueValue(),
-                vsu.getWarningwashwater().getMetadata());
-        putEnum(attributes, MB_KEY_DOORLOCKSTATUSFRONTRIGHT, vsu.getDoorlockstatusfrontright().getValueValue(),
-                vsu.getDoorlockstatusfrontright().getMetadata());
-        putEnum(attributes, MB_KEY_DOORLOCKSTATUSFRONTLEFT, vsu.getDoorlockstatusfrontleft().getValueValue(),
-                vsu.getDoorlockstatusfrontleft().getMetadata());
-        putEnum(attributes, MB_KEY_DOORLOCKSTATUSREARRIGHT, vsu.getDoorlockstatusrearright().getValueValue(),
-                vsu.getDoorlockstatusrearright().getMetadata());
-        putEnum(attributes, MB_KEY_DOORLOCKSTATUSREARLEFT, vsu.getDoorlockstatusrearleft().getValueValue(),
-                vsu.getDoorlockstatusrearleft().getMetadata());
-        putEnum(attributes, MB_KEY_DOORLOCKSTATUSDECKLID, vsu.getDoorlockstatusdecklid().getValueValue(),
-                vsu.getDoorlockstatusdecklid().getMetadata());
-        putEnum(attributes, MB_KEY_DOORLOCKSTATUSGAS, vsu.getDoorlockstatusgas().getValueValue(),
-                vsu.getDoorlockstatusgas().getMetadata());
-        putEnum(attributes, MB_KEY_ENGINE_HOOD_STATUS, vsu.getEngineHoodStatus().getValueValue(),
-                vsu.getEngineHoodStatus().getMetadata());
-        putEnum(attributes, MB_KEY_DECKLIDSTATUS, vsu.getDecklidstatus().getValueValue(),
-                vsu.getDecklidstatus().getMetadata());
-        putEnum(attributes, MB_KEY_DOORSTATUSREARLEFT, vsu.getDoorstatusrearleft().getValueValue(),
-                vsu.getDoorstatusrearleft().getMetadata());
-        putEnum(attributes, MB_KEY_DOORSTATUSREARRIGHT, vsu.getDoorstatusrearright().getValueValue(),
-                vsu.getDoorstatusrearright().getMetadata());
-        putEnum(attributes, MB_KEY_DOORSTATUSFRONTLEFT, vsu.getDoorstatusfrontleft().getValueValue(),
-                vsu.getDoorstatusfrontleft().getMetadata());
-        putEnum(attributes, MB_KEY_DOORSTATUSFRONTRIGHT, vsu.getDoorstatusfrontright().getValueValue(),
-                vsu.getDoorstatusfrontright().getMetadata());
-        putEnum(attributes, MB_KEY_ENDOFCHARGEDAY, vsu.getEndofChargeTimeWeekday().getValueValue(),
-                vsu.getEndofChargeTimeWeekday().getMetadata());
-        putEnum(attributes, MB_KEY_SELECTED_CHARGE_PROGRAM, vsu.getSelectedChargeProgram().getValueValue(),
-                vsu.getSelectedChargeProgram().getMetadata());
-        putEnum(attributes, MB_KEY_POSITION_ERROR, vsu.getVehiclePositionErrorCode().getValueValue(),
-                vsu.getVehiclePositionErrorCode().getMetadata());
-        putEnum(attributes, MB_KEY_PRECOND_NOW_ERROR, vsu.getPrecondNowError().getValueValue(),
-                vsu.getPrecondNowError().getMetadata());
+        if (vsu.hasTireSensorAvailable()) {
+            putEnum(attributes, MB_KEY_TIRE_SENSOR_AVAILABLE, vsu.getTireSensorAvailable().getValueValue(),
+                    vsu.getTireSensorAvailable().getMetadata());
+        }
+        if (vsu.hasChargeCouplerDCLockStatus()) {
+            putEnum(attributes, MB_KEY_CHARGE_COUPLER_DC_LOCK_STATUS,
+                    vsu.getChargeCouplerDCLockStatus().getValueValue(),
+                    vsu.getChargeCouplerDCLockStatus().getMetadata());
+        }
+        if (vsu.hasChargeCouplerDCStatus()) {
+            putEnum(attributes, MB_KEY_CHARGE_COUPLER_DC_STATUS, vsu.getChargeCouplerDCStatus().getValueValue(),
+                    vsu.getChargeCouplerDCStatus().getMetadata());
+        }
+        if (vsu.hasChargeCouplerACStatus()) {
+            putEnum(attributes, MB_KEY_CHARGE_COUPLER_AC_STATUS, vsu.getChargeCouplerACStatus().getValueValue(),
+                    vsu.getChargeCouplerACStatus().getMetadata());
+        }
+        if (vsu.hasChargeFlapDCStatus()) {
+            putEnum(attributes, MB_KEY_CHARGE_FLAP_DC_STATUS, vsu.getChargeFlapDCStatus().getValueValue(),
+                    vsu.getChargeFlapDCStatus().getMetadata());
+        }
+        if (vsu.hasChargingstatus()) {
+            putEnum(attributes, MB_KEY_CHARGE_STATUS, vsu.getChargingstatus().getValueValue(),
+                    vsu.getChargingstatus().getMetadata());
+        }
+        if (vsu.hasChargingErrorDetails()) {
+            putEnum(attributes, MB_KEY_CHARGE_ERROR, vsu.getChargingErrorDetails().getValueValue(),
+                    vsu.getChargingErrorDetails().getMetadata());
+        }
+        if (vsu.hasTirewarningsrdk()) {
+            putEnum(attributes, MB_KEY_TIREWARNINGSRDK, vsu.getTirewarningsrdk().getValueValue(),
+                    vsu.getTirewarningsrdk().getMetadata());
+        }
+        if (vsu.hasStarterBatteryState()) {
+            putEnum(attributes, MB_KEY_STARTER_BATTERY_STATE, vsu.getStarterBatteryState().getValueValue(),
+                    vsu.getStarterBatteryState().getMetadata());
+        }
+        if (vsu.hasFlipWindowStatus()) {
+            putEnum(attributes, MB_KEY_FLIP_WINDOW_STATUS, vsu.getFlipWindowStatus().getValueValue(),
+                    vsu.getFlipWindowStatus().getMetadata());
+        }
+        if (vsu.hasWindowStatusRearBlind()) {
+            putEnum(attributes, MB_KEY_WINDOW_STATUS_REAR_BLIND, vsu.getWindowStatusRearBlind().getValueValue(),
+                    vsu.getWindowStatusRearBlind().getMetadata());
+        }
+        if (vsu.hasWindowStatusRearLeftBlind()) {
+            putEnum(attributes, MB_KEY_WINDOW_STATUS_REAR_LEFT_BLIND,
+                    vsu.getWindowStatusRearLeftBlind().getValueValue(),
+                    vsu.getWindowStatusRearLeftBlind().getMetadata());
+        }
+        if (vsu.hasWindowStatusRearRightBlind()) {
+            putEnum(attributes, MB_KEY_WINDOW_STATUS_REAR_RIGHT_BLIND,
+                    vsu.getWindowStatusRearRightBlind().getValueValue(),
+                    vsu.getWindowStatusRearRightBlind().getMetadata());
+        }
+        if (vsu.hasWindowstatusrearright()) {
+            putEnum(attributes, MB_KEY_WINDOWSTATUSREARRIGHT, vsu.getWindowstatusrearright().getValueValue(),
+                    vsu.getWindowstatusrearright().getMetadata());
+        }
+        if (vsu.hasWindowstatusrearleft()) {
+            putEnum(attributes, MB_KEY_WINDOWSTATUSREARLEFT, vsu.getWindowstatusrearleft().getValueValue(),
+                    vsu.getWindowstatusrearleft().getMetadata());
+        }
+        if (vsu.hasWindowstatusfrontright()) {
+            putEnum(attributes, MB_KEY_WINDOWSTATUSFRONTRIGHT, vsu.getWindowstatusfrontright().getValueValue(),
+                    vsu.getWindowstatusfrontright().getMetadata());
+        }
+        if (vsu.hasWindowstatusfrontleft()) {
+            putEnum(attributes, MB_KEY_WINDOWSTATUSFRONTLEFT, vsu.getWindowstatusfrontleft().getValueValue(),
+                    vsu.getWindowstatusfrontleft().getMetadata());
+        }
+        if (vsu.hasRooftopstatus()) {
+            putEnum(attributes, MB_KEY_ROOFTOPSTATUS, vsu.getRooftopstatus().getValueValue(),
+                    vsu.getRooftopstatus().getMetadata());
+        }
+        if (vsu.hasSunroofStatusRearBlind()) {
+            putEnum(attributes, MB_KEY_SUNROOF_STATUS_REAR_BLIND, vsu.getSunroofStatusRearBlind().getValueValue(),
+                    vsu.getSunroofStatusRearBlind().getMetadata());
+        }
+        if (vsu.hasSunroofStatusFrontBlind()) {
+            putEnum(attributes, MB_KEY_SUNROOF_STATUS_FRONT_BLIND, vsu.getSunroofStatusFrontBlind().getValueValue(),
+                    vsu.getSunroofStatusFrontBlind().getMetadata());
+        }
+        if (vsu.hasSunroofstatus()) {
+            putEnum(attributes, MB_KEY_SUNROOFSTATUS, vsu.getSunroofstatus().getValueValue(),
+                    vsu.getSunroofstatus().getMetadata());
+        }
+        if (vsu.hasIgnitionstate()) {
+            putEnum(attributes, MB_KEY_IGNITIONSTATE, vsu.getIgnitionstate().getValueValue(),
+                    vsu.getIgnitionstate().getMetadata());
+        }
+        if (vsu.hasDoorStatusOverall()) {
+            putEnum(attributes, MB_KEY_DOOR_STATUS_OVERALL, vsu.getDoorStatusOverall().getValueValue(),
+                    vsu.getDoorStatusOverall().getMetadata());
+        }
+        if (vsu.hasWindowStatusOverall()) {
+            putEnum(attributes, MB_KEY_WINDOW_STATUS_OVERALL, vsu.getWindowStatusOverall().getValueValue(),
+                    vsu.getWindowStatusOverall().getMetadata());
+        }
+        if (vsu.hasDoorlockstatusvehicle()) {
+            putEnum(attributes, MB_KEY_DOOR_LOCK_STATUS_OVERALL, vsu.getDoorlockstatusvehicle().getValueValue(),
+                    vsu.getDoorlockstatusvehicle().getMetadata());
+        }
+        if (vsu.hasTireMarkerFrontRight()) {
+            putEnum(attributes, MB_KEY_TIRE_MARKER_FRONT_RIGHT, vsu.getTireMarkerFrontRight().getValueValue(),
+                    vsu.getTireMarkerFrontRight().getMetadata());
+        }
+        if (vsu.hasTireMarkerFrontLeft()) {
+            putEnum(attributes, MB_KEY_TIRE_MARKER_FRONT_LEFT, vsu.getTireMarkerFrontLeft().getValueValue(),
+                    vsu.getTireMarkerFrontLeft().getMetadata());
+        }
+        if (vsu.hasTireMarkerRearRight()) {
+            putEnum(attributes, MB_KEY_TIRE_MARKER_REAR_RIGHT, vsu.getTireMarkerRearRight().getValueValue(),
+                    vsu.getTireMarkerRearRight().getMetadata());
+        }
+        if (vsu.hasTireMarkerRearLeft()) {
+            putEnum(attributes, MB_KEY_TIRE_MARKER_REAR_LEFT, vsu.getTireMarkerRearLeft().getValueValue(),
+                    vsu.getTireMarkerRearLeft().getMetadata());
+        }
+        if (vsu.hasParkbrakestatus()) {
+            putEnum(attributes, MB_KEY_PARKBRAKESTATUS, vsu.getParkbrakestatus().getValueValue(),
+                    vsu.getParkbrakestatus().getMetadata());
+        }
+        if (vsu.hasPrecondNow()) {
+            putEnum(attributes, MB_KEY_PRECOND_NOW, vsu.getPrecondNow().getValueValue(),
+                    vsu.getPrecondNow().getMetadata());
+        }
+        if (vsu.hasPrecondSeatFrontRight()) {
+            putEnum(attributes, MB_KEY_PRECOND_SEAT_FRONT_RIGHT, vsu.getPrecondSeatFrontRight().getValueValue(),
+                    vsu.getPrecondSeatFrontRight().getMetadata());
+        }
+        if (vsu.hasPrecondSeatFrontLeft()) {
+            putEnum(attributes, MB_KEY_PRECOND_SEAT_FRONT_LEFT, vsu.getPrecondSeatFrontLeft().getValueValue(),
+                    vsu.getPrecondSeatFrontLeft().getMetadata());
+        }
+        if (vsu.hasPrecondSeatRearRight()) {
+            putEnum(attributes, MB_KEY_PRECOND_SEAT_REAR_RIGHT, vsu.getPrecondSeatRearRight().getValueValue(),
+                    vsu.getPrecondSeatRearRight().getMetadata());
+        }
+        if (vsu.hasPrecondSeatRearLeft()) {
+            putEnum(attributes, MB_KEY_PRECOND_SEAT_REAR_LEFT, vsu.getPrecondSeatRearLeft().getValueValue(),
+                    vsu.getPrecondSeatRearLeft().getMetadata());
+        }
+        if (vsu.hasWarningwashwater()) {
+            putEnum(attributes, MB_KEY_WARNINGWASHWATER, vsu.getWarningwashwater().getValueValue(),
+                    vsu.getWarningwashwater().getMetadata());
+        }
+        if (vsu.hasDoorlockstatusfrontright()) {
+            putEnum(attributes, MB_KEY_DOORLOCKSTATUSFRONTRIGHT, vsu.getDoorlockstatusfrontright().getValueValue(),
+                    vsu.getDoorlockstatusfrontright().getMetadata());
+        }
+        if (vsu.hasDoorlockstatusfrontleft()) {
+            putEnum(attributes, MB_KEY_DOORLOCKSTATUSFRONTLEFT, vsu.getDoorlockstatusfrontleft().getValueValue(),
+                    vsu.getDoorlockstatusfrontleft().getMetadata());
+        }
+        if (vsu.hasDoorlockstatusrearright()) {
+            putEnum(attributes, MB_KEY_DOORLOCKSTATUSREARRIGHT, vsu.getDoorlockstatusrearright().getValueValue(),
+                    vsu.getDoorlockstatusrearright().getMetadata());
+        }
+        if (vsu.hasDoorlockstatusrearleft()) {
+            putEnum(attributes, MB_KEY_DOORLOCKSTATUSREARLEFT, vsu.getDoorlockstatusrearleft().getValueValue(),
+                    vsu.getDoorlockstatusrearleft().getMetadata());
+        }
+        if (vsu.hasDoorlockstatusdecklid()) {
+            putEnum(attributes, MB_KEY_DOORLOCKSTATUSDECKLID, vsu.getDoorlockstatusdecklid().getValueValue(),
+                    vsu.getDoorlockstatusdecklid().getMetadata());
+        }
+        if (vsu.hasDoorlockstatusgas()) {
+            putEnum(attributes, MB_KEY_DOORLOCKSTATUSGAS, vsu.getDoorlockstatusgas().getValueValue(),
+                    vsu.getDoorlockstatusgas().getMetadata());
+        }
+        if (vsu.hasEngineHoodStatus()) {
+            putEnum(attributes, MB_KEY_ENGINE_HOOD_STATUS, vsu.getEngineHoodStatus().getValueValue(),
+                    vsu.getEngineHoodStatus().getMetadata());
+        }
+        if (vsu.hasDecklidstatus()) {
+            putEnum(attributes, MB_KEY_DECKLIDSTATUS, vsu.getDecklidstatus().getValueValue(),
+                    vsu.getDecklidstatus().getMetadata());
+        }
+        if (vsu.hasDoorstatusrearleft()) {
+            putEnum(attributes, MB_KEY_DOORSTATUSREARLEFT, vsu.getDoorstatusrearleft().getValueValue(),
+                    vsu.getDoorstatusrearleft().getMetadata());
+        }
+        if (vsu.hasDoorstatusrearright()) {
+            putEnum(attributes, MB_KEY_DOORSTATUSREARRIGHT, vsu.getDoorstatusrearright().getValueValue(),
+                    vsu.getDoorstatusrearright().getMetadata());
+        }
+        if (vsu.hasDoorstatusfrontleft()) {
+            putEnum(attributes, MB_KEY_DOORSTATUSFRONTLEFT, vsu.getDoorstatusfrontleft().getValueValue(),
+                    vsu.getDoorstatusfrontleft().getMetadata());
+        }
+        if (vsu.hasDoorstatusfrontright()) {
+            putEnum(attributes, MB_KEY_DOORSTATUSFRONTRIGHT, vsu.getDoorstatusfrontright().getValueValue(),
+                    vsu.getDoorstatusfrontright().getMetadata());
+        }
+        if (vsu.hasEndofChargeTimeWeekday()) {
+            putEnum(attributes, MB_KEY_ENDOFCHARGEDAY, vsu.getEndofChargeTimeWeekday().getValueValue(),
+                    vsu.getEndofChargeTimeWeekday().getMetadata());
+        }
+        if (vsu.hasSelectedChargeProgram()) {
+            putEnum(attributes, MB_KEY_SELECTED_CHARGE_PROGRAM, vsu.getSelectedChargeProgram().getValueValue(),
+                    vsu.getSelectedChargeProgram().getMetadata());
+        }
+        if (vsu.hasVehiclePositionErrorCode()) {
+            putEnum(attributes, MB_KEY_POSITION_ERROR, vsu.getVehiclePositionErrorCode().getValueValue(),
+                    vsu.getVehiclePositionErrorCode().getMetadata());
+        }
+        if (vsu.hasPrecondNowError()) {
+            putEnum(attributes, MB_KEY_PRECOND_NOW_ERROR, vsu.getPrecondNowError().getValueValue(),
+                    vsu.getPrecondNowError().getMetadata());
+        }
 
         // distance (int64 / double, with unit + display value)
-        putInt64Distance(attributes, MB_KEY_RANGELIQUID, vsu.getRangeliquid());
-        putInt64Distance(attributes, MB_KEY_RANGEELECTRIC, vsu.getRangeelectric());
-        putInt64Distance(attributes, MB_KEY_ODO, vsu.getOdo());
-        putDoubleDistance(attributes, MB_KEY_DISTANCE_RESET, vsu.getDistanceReset());
-        putDoubleDistance(attributes, MB_KEY_DISTANCE_START, vsu.getDistanceStart());
-        putDoubleDistance(attributes, MB_KEY_OVERALL_RANGE, vsu.getOverallRange());
-        putDoubleDistance(attributes, MB_KEY_ECOSCORE_BONUS, vsu.getEcoscorebonusrange());
+        if (vsu.hasRangeliquid()) {
+            putInt64Distance(attributes, MB_KEY_RANGELIQUID, vsu.getRangeliquid());
+        }
+        if (vsu.hasRangeelectric()) {
+            putInt64Distance(attributes, MB_KEY_RANGEELECTRIC, vsu.getRangeelectric());
+        }
+        if (vsu.hasOdo()) {
+            putInt64Distance(attributes, MB_KEY_ODO, vsu.getOdo());
+        }
+        if (vsu.hasDistanceReset()) {
+            putDoubleDistance(attributes, MB_KEY_DISTANCE_RESET, vsu.getDistanceReset());
+        }
+        if (vsu.hasDistanceStart()) {
+            putDoubleDistance(attributes, MB_KEY_DISTANCE_START, vsu.getDistanceStart());
+        }
+        if (vsu.hasOverallRange()) {
+            putDoubleDistance(attributes, MB_KEY_OVERALL_RANGE, vsu.getOverallRange());
+        }
+        if (vsu.hasEcoscorebonusrange()) {
+            putDoubleDistance(attributes, MB_KEY_ECOSCORE_BONUS, vsu.getEcoscorebonusrange());
+        }
 
         // pressure
-        putPressure(attributes, MB_KEY_TIREPRESSURE_FRONT_LEFT, vsu.getTirepressureFrontLeft());
-        putPressure(attributes, MB_KEY_TIREPRESSURE_FRONT_RIGHT, vsu.getTirepressureFrontRight());
-        putPressure(attributes, MB_KEY_TIREPRESSURE_REAR_LEFT, vsu.getTirepressureRearLeft());
-        putPressure(attributes, MB_KEY_TIREPRESSURE_REAR_RIGHT, vsu.getTirepressureRearRight());
+        if (vsu.hasTirepressureFrontLeft()) {
+            putPressure(attributes, MB_KEY_TIREPRESSURE_FRONT_LEFT, vsu.getTirepressureFrontLeft());
+        }
+        if (vsu.hasTirepressureFrontRight()) {
+            putPressure(attributes, MB_KEY_TIREPRESSURE_FRONT_RIGHT, vsu.getTirepressureFrontRight());
+        }
+        if (vsu.hasTirepressureRearLeft()) {
+            putPressure(attributes, MB_KEY_TIREPRESSURE_REAR_LEFT, vsu.getTirepressureRearLeft());
+        }
+        if (vsu.hasTirepressureRearRight()) {
+            putPressure(attributes, MB_KEY_TIREPRESSURE_REAR_RIGHT, vsu.getTirepressureRearRight());
+        }
 
         // speed
-        putSpeed(attributes, MB_KEY_AVERAGE_SPEED_RESET, vsu.getAverageSpeedReset());
-        putSpeed(attributes, MB_KEY_AVERAGE_SPEED_START, vsu.getAverageSpeedStart());
+        if (vsu.hasAverageSpeedReset()) {
+            putSpeed(attributes, MB_KEY_AVERAGE_SPEED_RESET, vsu.getAverageSpeedReset());
+        }
+        if (vsu.hasAverageSpeedStart()) {
+            putSpeed(attributes, MB_KEY_AVERAGE_SPEED_START, vsu.getAverageSpeedStart());
+        }
 
         // ratio (percent)
-        putRatio(attributes, MB_KEY_TANKLEVELPERCENT, vsu.getTanklevelpercent());
-        putRatio(attributes, MB_KEY_ADBLUELEVELPERCENT, vsu.getTankLevelAdBlue());
-        putRatio(attributes, MB_KEY_SOC, vsu.getSoc());
-        putRatio(attributes, MB_KEY_MAX_SOC, vsu.getMaxSoc());
-        putRatio(attributes, MB_KEY_MAX_SOC_LOWER_LIMIT, vsu.getMaxSocLowerLimit());
-        putRatio(attributes, MB_KEY_MAX_SOC_UPPER_LIMIT, vsu.getMaxSocUpperLimit());
-        putRatio(attributes, MB_KEY_ECOSCORE_ACCEL, vsu.getEcoscoreaccel());
-        putRatio(attributes, MB_KEY_ECOSCORE_CONSTANT, vsu.getEcoscoreconst());
-        putRatio(attributes, MB_KEY_ECOSCORE_COASTING, vsu.getEcoscorefreewhl());
+        if (vsu.hasTanklevelpercent()) {
+            putRatio(attributes, MB_KEY_TANKLEVELPERCENT, vsu.getTanklevelpercent());
+        }
+        if (vsu.hasTankLevelAdBlue()) {
+            putRatio(attributes, MB_KEY_ADBLUELEVELPERCENT, vsu.getTankLevelAdBlue());
+        }
+        if (vsu.hasSoc()) {
+            putRatio(attributes, MB_KEY_SOC, vsu.getSoc());
+        }
+        if (vsu.hasMaxSoc()) {
+            putRatio(attributes, MB_KEY_MAX_SOC, vsu.getMaxSoc());
+        }
+        if (vsu.hasMaxSocLowerLimit()) {
+            putRatio(attributes, MB_KEY_MAX_SOC_LOWER_LIMIT, vsu.getMaxSocLowerLimit());
+        }
+        if (vsu.hasMaxSocUpperLimit()) {
+            putRatio(attributes, MB_KEY_MAX_SOC_UPPER_LIMIT, vsu.getMaxSocUpperLimit());
+        }
+        if (vsu.hasEcoscoreaccel()) {
+            putRatio(attributes, MB_KEY_ECOSCORE_ACCEL, vsu.getEcoscoreaccel());
+        }
+        if (vsu.hasEcoscoreconst()) {
+            putRatio(attributes, MB_KEY_ECOSCORE_CONSTANT, vsu.getEcoscoreconst());
+        }
+        if (vsu.hasEcoscorefreewhl()) {
+            putRatio(attributes, MB_KEY_ECOSCORE_COASTING, vsu.getEcoscorefreewhl());
+        }
 
         // clock hour
-        putClockHour(attributes, MB_KEY_ENDOFCHARGETIME, vsu.getEndofchargetime());
+        if (vsu.hasEndofchargetime()) {
+            putClockHour(attributes, MB_KEY_ENDOFCHARGETIME, vsu.getEndofchargetime());
+        }
 
         // consumption
-        putCombustionConsumption(attributes, MB_KEY_LIQUIDCONSUMPTIONRESET, vsu.getLiquidconsumptionreset());
-        putCombustionConsumption(attributes, MB_KEY_LIQUIDCONSUMPTIONSTART, vsu.getLiquidconsumptionstart());
-        putElectricityConsumption(attributes, MB_KEY_ELECTRICCONSUMPTIONRESET, vsu.getElectricconsumptionreset());
-        putElectricityConsumption(attributes, MB_KEY_ELECTRICCONSUMPTIONSTART, vsu.getElectricconsumptionstart());
+        if (vsu.hasLiquidconsumptionreset()) {
+            putCombustionConsumption(attributes, MB_KEY_LIQUIDCONSUMPTIONRESET, vsu.getLiquidconsumptionreset());
+        }
+        if (vsu.hasLiquidconsumptionstart()) {
+            putCombustionConsumption(attributes, MB_KEY_LIQUIDCONSUMPTIONSTART, vsu.getLiquidconsumptionstart());
+        }
+        if (vsu.hasElectricconsumptionreset()) {
+            putElectricityConsumption(attributes, MB_KEY_ELECTRICCONSUMPTIONRESET, vsu.getElectricconsumptionreset());
+        }
+        if (vsu.hasElectricconsumptionstart()) {
+            putElectricityConsumption(attributes, MB_KEY_ELECTRICCONSUMPTIONSTART, vsu.getElectricconsumptionstart());
+        }
 
         // complex array-typed fields - analyzed from live debug logs (see docs/ATTRIBUTES_MAPPING.md section 4)
-        putTemperaturePoints(attributes, MB_KEY_TEMPERATURE_POINTS, vsu.getTemperaturePoints());
-        putChargePrograms(attributes, MB_KEY_CHARGE_PROGRAMS, vsu.getChargePrograms());
-        putAuxheatwarnings(attributes, MB_KEY_AUXILIARY_WARNINGS, vsu.getAuxheatwarnings());
+        if (vsu.hasTemperaturePoints()) {
+            putTemperaturePoints(attributes, MB_KEY_TEMPERATURE_POINTS, vsu.getTemperaturePoints());
+        }
+        if (vsu.hasChargePrograms()) {
+            putChargePrograms(attributes, MB_KEY_CHARGE_PROGRAMS, vsu.getChargePrograms());
+        }
+        if (vsu.hasAuxheatwarnings()) {
+            putAuxheatwarnings(attributes, MB_KEY_AUXILIARY_WARNINGS, vsu.getAuxheatwarnings());
+        }
 
         return attributes;
     }

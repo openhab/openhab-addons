@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mercedesme.internal.utils.ChannelStateMap;
 import org.openhab.binding.mercedesme.internal.utils.Mapper;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.UnDefType;
@@ -28,8 +29,11 @@ import org.openhab.core.types.UnDefType;
 import com.daimler.mbcarkit.proto.VehicleEvents.AttributeStatus;
 import com.daimler.mbcarkit.proto.VehicleEvents.ChargeProgram;
 import com.daimler.mbcarkit.proto.VehicleEvents.ChargeProgramsValue;
+import com.daimler.mbcarkit.proto.VehicleEvents.PrecondNow;
+import com.daimler.mbcarkit.proto.VehicleEvents.PrecondNowEnumAttribute;
 import com.daimler.mbcarkit.proto.VehicleEvents.PushMessage;
 import com.daimler.mbcarkit.proto.VehicleEvents.TemperaturePointsValue;
+import com.daimler.mbcarkit.proto.VehicleEvents.VSUMetadata;
 import com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus;
 import com.daimler.mbcarkit.proto.VehicleEvents.VehicleStatusUpdate;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -236,6 +240,47 @@ class MapperTest {
     }
 
     @Test
+    void whenParkBrakeReportedViaIntValueThenChannelStateIsOn() {
+        // Arrange - parkbrakestatus is delivered as an enum (int_value oneof), not a bool - confirmed
+        // against real captured data in src/test/resources/vehiclestatusupdates/vsu-eqa-1.raw and
+        // vsu-eqa-2.raw (both show "parkbrakestatus { value: PARKBRAKESTATUS_ENGAGED ... }"), see
+        // docs/changes/fix-enum-switch-mismatch
+        VehicleAttributeStatus parkBrake = VehicleAttributeStatus.newBuilder().setIntValue(1).build();
+
+        // Act
+        ChannelStateMap csm = Mapper.getChannelStateMap(MB_KEY_PARKBRAKESTATUS, parkBrake);
+
+        // Assert
+        assertEquals(OnOffType.ON, csm.getState());
+    }
+
+    @Test
+    void whenWashWaterReportedViaIntValueThenChannelStateIsOffNotUndef() {
+        // Arrange - WARNINGWASHWATER_INACTIVE = 0 is the proto3 default, so the raw dumps omit an
+        // explicit "value:" line, but the oneof case is still int_value - must not surface as UNDEF
+        VehicleAttributeStatus washWater = VehicleAttributeStatus.newBuilder().setIntValue(0).build();
+
+        // Act
+        ChannelStateMap csm = Mapper.getChannelStateMap(MB_KEY_WARNINGWASHWATER, washWater);
+
+        // Assert
+        assertEquals(OnOffType.OFF, csm.getState());
+    }
+
+    @Test
+    void whenChargingActiveReportedViaBoolValueThenChannelStateIsOn() {
+        // Arrange - regression guard: genuine bool_value keys sharing the same "Switches" case must
+        // keep working unchanged
+        VehicleAttributeStatus chargingActive = VehicleAttributeStatus.newBuilder().setBoolValue(true).build();
+
+        // Act
+        ChannelStateMap csm = Mapper.getChannelStateMap(MB_KEY_CHARGINGACTIVE, chargingActive);
+
+        // Assert
+        assertEquals(OnOffType.ON, csm.getState());
+    }
+
+    @Test
     void whenTemperaturePointsConvertedThenZoneNameMatchesLegacyLookup() {
         // Arrange - VehicleHandler resolves the zone via Utils.getZoneNumber(String), whose lookup table is
         // built from TemperatureConfigure.TemperaturePoint.Zone.values()[i].name() (vehicle-commands.proto) -
@@ -300,5 +345,45 @@ class MapperTest {
         // Assert
         assertNotNull(auxheatwarnings);
         assertEquals(0, auxheatwarnings.getIntValue());
+    }
+
+    @Test
+    void whenFieldAbsentFromUpdateThenNotIncludedInMap() {
+        // Arrange - VehicleStatusUpdate-EQA.json sets exactly 25 of the ~95 convertible fields (5 bool + 8
+        // plain int64/double + 2 enum + 2 distance + 1 pressure + 1 speed + 1 ratio + 1 clock hour +
+        // 1 consumption + 3 complex array-typed); see docs/changes/fix-vsu-delta-fake-attributes.
+        Map<String, VehicleAttributeStatus> attributes = loadFixture();
+
+        // Act / Assert - a field genuinely absent from the fixture must not appear in the map at all,
+        // not with a fabricated default/zero value (the bug this change fixes)
+        assertNull(attributes.get(MB_KEY_OVERALL_RANGE), "overallRange was never set in the fixture");
+        assertNull(attributes.get(MB_KEY_MAX_SOC), "maxSoc was never set in the fixture");
+        assertNull(attributes.get(MB_KEY_TIREPRESSURE_FRONT_RIGHT), "tirepressureFrontRight was never set");
+        assertNull(attributes.get(MB_KEY_PARKBRAKESTATUS), "parkbrakestatus was never set in the fixture");
+        assertNull(attributes.get(MB_KEY_DOORLOCKSTATUSFRONTRIGHT), "doorlockstatusfrontright was never set");
+        assertEquals(25, attributes.size(), "map must contain exactly the fields actually present, not all ~95");
+    }
+
+    @Test
+    void whenPartialUpdateOnlyTouchesPrecondThenOtherAttributesAreAbsent() {
+        // Arrange - mirrors a real captured trace: a delta VehicleStatusUpdate (full_update = false) whose
+        // raw proto text dump only shows precond_now/precond_state/vtime as populated, yet the previous,
+        // unguarded implementation still emitted map entries for all 95 known fields (see
+        // docs/changes/fix-vsu-delta-fake-attributes/proposal.md).
+        VSUMetadata metadata = VSUMetadata.newBuilder().setStatus(AttributeStatus.VALUE_VALID).build();
+        PrecondNowEnumAttribute precondNow = PrecondNowEnumAttribute.newBuilder()
+                .setValue(PrecondNow.PRECOND_NOW_ACTIVE).setMetadata(metadata).build();
+        VehicleStatusUpdate update = VehicleStatusUpdate.newBuilder().setFinOrVin("UNIT_TEST_VIN").setFullUpdate(false)
+                .setPrecondNow(precondNow).build();
+
+        // Act
+        Map<String, VehicleAttributeStatus> attributes = Mapper.fromVehicleStatusUpdate(update);
+
+        // Assert - only the one field the update actually carried is present
+        assertEquals(1, attributes.size(), "only precondNow was set on this partial update");
+        assertNotNull(attributes.get(MB_KEY_PRECOND_NOW));
+        assertNull(attributes.get(MB_KEY_SOC), "soc was absent from this update, must not appear as 0");
+        assertNull(attributes.get(MB_KEY_OVERALL_RANGE), "overallRange was absent, must not appear as 0");
+        assertNull(attributes.get(MB_KEY_CHARGING_POWER), "chargingPower was absent, must not appear as 0");
     }
 }
