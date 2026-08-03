@@ -68,6 +68,8 @@ class OcppServerBridgeHandlerTest {
         }
     }
 
+    private @NonNullByDefault({}) Bridge thing;
+
     @BeforeEach
     void setUp() {
         transport = mock(OcppTransport.class);
@@ -76,7 +78,7 @@ class OcppServerBridgeHandlerTest {
         StorageService storageService = mock(StorageService.class);
         when(storageService.<String> getStorage(anyString())).thenReturn(storage);
 
-        Bridge thing = mock(Bridge.class);
+        thing = mock(Bridge.class);
         when(thing.getUID()).thenReturn(SERVER_UID);
         when(thing.getConfiguration()).thenReturn(new Configuration());
 
@@ -84,6 +86,22 @@ class OcppServerBridgeHandlerTest {
 
         handler = new TestableBridgeHandler(thing, storageService, transport);
         handler.setCallback(callback);
+    }
+
+    @Test
+    void aPasswordTheLibraryWouldRejectFailsInitializationInstead() {
+        // The embedded library only accepts 16-20 byte Basic-auth passwords and rejects every
+        // charger's handshake otherwise — before the binding's callback runs. A password outside
+        // that range must therefore fail the bridge configuration, not silently lock every charger
+        // out. (The thing-type pattern guards the UI; this guards file-defined things.)
+        when(thing.getConfiguration()).thenReturn(new Configuration(java.util.Map.of("authPassword", "tooshort")));
+
+        handler.initialize();
+
+        verify(callback).statusUpdated(any(), argThat(status -> status.getStatus() == ThingStatus.OFFLINE
+                && status.getStatusDetail() == org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR));
+        verify(transport, org.mockito.Mockito.after(500).never()).start(org.mockito.ArgumentMatchers.anyString(),
+                org.mockito.ArgumentMatchers.anyInt());
     }
 
     @Test
