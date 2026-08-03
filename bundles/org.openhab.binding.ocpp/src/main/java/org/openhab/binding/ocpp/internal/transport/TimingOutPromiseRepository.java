@@ -33,10 +33,17 @@ import eu.chargetime.ocpp.model.Confirmation;
  * only when a CALLRESULT or CALLERROR arrives, and closing a session does not complete or remove
  * its outstanding promises. An unanswered request therefore stays incomplete forever, the caller
  * waits forever, and the abandoned promise is retained. This decorator completes each promise
- * exceptionally after the configured timeout and removes it from the repository, so callers always
- * get an outcome and nothing accumulates at the library boundary. A confirmation that arrives after
- * the timeout finds no promise and is dropped by the library, which is the correct late-answer
+ * exceptionally after the configured timeout and removes it from this repository, so callers always
+ * get an outcome and timed-out promises do not accumulate. A confirmation that arrives after the
+ * timeout finds no promise and is dropped by the library, which is the correct late-answer
  * behaviour.
+ *
+ * <p>
+ * Known limitation: the request entry the session stores separately in the library's queue is only
+ * removed when a CALLRESULT is processed — not on timeout or CALLERROR — so a long-lived session
+ * whose charger repeatedly leaves requests unanswered still grows that queue. Cleaning that up needs
+ * deeper integration with the embedded library and is tracked as a follow-up; the entries are freed
+ * with the session.
  *
  * @author Stamate Viorel - Initial contribution
  */

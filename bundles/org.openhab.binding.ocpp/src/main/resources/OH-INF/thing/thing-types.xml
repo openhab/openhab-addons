@@ -74,12 +74,15 @@
 				<default>30</default>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="authPassword" type="text">
+			<parameter name="authPassword" type="text" pattern="^$|^[\x21-\x7E]{16,20}$">
 				<context>password</context>
 				<label>Charger Password</label>
 				<description>HTTP Basic authentication password chargers must present, with their charge point id as the
 					username
-					(OCPP security profile 1). Empty disables authentication — profile 0, for a trusted LAN only.</description>
+					(OCPP security profile 1). Must be 16–20 visible ASCII characters — the OCPP library rejects
+					other lengths before
+					authentication even runs. Empty disables authentication — profile 0, for a trusted
+					LAN only.</description>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="tags" type="text" multiple="true">

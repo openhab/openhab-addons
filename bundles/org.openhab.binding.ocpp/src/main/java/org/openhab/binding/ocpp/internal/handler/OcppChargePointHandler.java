@@ -616,17 +616,23 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
                 steps.add(() -> sendConfig(key, value));
             }
         }
-        runBootConfigStep(steps, 0, fingerprint, new AtomicBoolean(true));
+        UUID bootSession = session;
+        if (bootSession == null) {
+            return; // disconnected between scheduling and running
+        }
+        runBootConfigStep(steps, 0, fingerprint, bootSession, new AtomicBoolean(true));
     }
 
     /**
-     * Everything that shapes the boot-configuration burst, in one comparable string. The heartbeat
-     * settings are excluded — they shape the BootNotification response, not this burst.
+     * Everything that shapes the boot-configuration burst, in one comparable string. The charge
+     * point id is part of it: correcting the identity must not let a different charger inherit the
+     * applied state of the one that actually accepted the configuration. The heartbeat settings are
+     * excluded — they shape the BootNotification response, not this burst.
      */
     private String configFingerprint(OcppServerConfiguration config) {
-        return meterless + "|" + config.meterValueSampleInterval + "|" + config.clockAlignedDataInterval + "|"
-                + config.meterValuesData + "|" + config.disableRemoteTxAuthorization + "|"
-                + String.join(",", config.vendorConfig);
+        return chargePointId + "|" + meterless + "|" + config.meterValueSampleInterval + "|"
+                + config.clockAlignedDataInterval + "|" + config.meterValuesData + "|"
+                + config.disableRemoteTxAuthorization + "|" + String.join(",", config.vendorConfig);
     }
 
     /**
@@ -642,8 +648,16 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
      * Dispatch the boot configuration one request at a time, each waiting for the previous to settle.
      * A failed step is logged and does not abort the rest.
      */
-    private void runBootConfigStep(List<BootConfigStep> steps, int index, String fingerprint,
+    private void runBootConfigStep(List<BootConfigStep> steps, int index, String fingerprint, UUID bootSession,
             AtomicBoolean allSucceeded) {
+        // The whole sequence belongs to the session whose boot started it. If the charger has
+        // reconnected meanwhile, a step completing late (typically by timeout) must not advance this
+        // sequence — the next send() would go out on the successor session and interleave with the
+        // sequence that session's own boot started — nor latch its fingerprint as applied.
+        if (!bootSession.equals(session)) {
+            logger.debug("Boot config sequence for {} abandoned — its session was replaced", chargePointId);
+            return;
+        }
         if (index >= steps.size()) {
             if (allSucceeded.get()) {
                 // Latch on SUCCESS only, keyed to the configuration that was sent: a burst that
@@ -673,7 +687,7 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
                         configStatusOf(confirmation));
             }
             return null;
-        }).thenRun(() -> runBootConfigStep(steps, index + 1, fingerprint, allSucceeded));
+        }).thenRun(() -> runBootConfigStep(steps, index + 1, fingerprint, bootSession, allSucceeded));
     }
 
     /**

@@ -113,6 +113,15 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
     public void initialize() {
         config = getConfigAs(OcppServerConfiguration.class);
         OcppServerConfiguration localConfig = config;
+        // The embedded OCPP library only accepts Basic-auth passwords of 16-20 bytes and rejects the
+        // handshake of every charger before the binding's authentication callback runs otherwise.
+        // The thing-type pattern enforces this in the UI; this guard covers file-defined things.
+        if (!localConfig.authPassword.isEmpty() && !localConfig.authPassword.matches("[\\x21-\\x7E]{16,20}")) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "authPassword must be 16-20 visible ASCII characters — the OCPP library rejects other lengths "
+                            + "before authentication, so every charger connection would fail");
+            return;
+        }
         disposed = false;
         // Created synchronously here so a transaction id or lookup is available the moment the
         // transport (started below) begins accepting chargers. Keyed per server bridge.
