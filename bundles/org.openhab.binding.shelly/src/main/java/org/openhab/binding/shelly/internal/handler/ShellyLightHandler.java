@@ -175,7 +175,9 @@ public class ShellyLightHandler extends ShellyBaseHandler {
             color = SHELLY_COLOR_GREEN;
         } else if (rgbw[0] == 0 && rgbw[1] == 0 && rgbw[2] == SHELLY_MAX_COLOR) {
             color = SHELLY_COLOR_BLUE;
-        } else if (rgbw[0] == 0 && rgbw[1] == 0 && rgbw[2] == 0 && rgbw[3] == SHELLY_MAX_COLOR) {
+        } else if ((rgbw.length == 4 && rgbw[0] == 0 && rgbw[1] == 0 && rgbw[2] == 0 && rgbw[3] == SHELLY_MAX_COLOR)
+                || (rgbw.length == 3 && rgbw[0] == SHELLY_MAX_COLOR && rgbw[1] == SHELLY_MAX_COLOR
+                        && rgbw[2] == SHELLY_MAX_COLOR)) {
             color = SHELLY_COLOR_WHITE;
         }
         updateChannel(colorGroup, CHANNEL_COLOR_FULL, color != null ? new StringType(color) : UnDefType.UNDEF);
@@ -289,7 +291,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
          * etc.) to change the model's power on/off state in a consistent manner regardless of which channel was used.
          * So therefore we use a single API call to set the power state based on the model's final state.
          */
-        boolean apiCommandSent = true;
+        boolean apiCommandSent = false;
 
         // MODE:
         if (profile.isBulb && model.isModeDirty()) {
@@ -314,7 +316,9 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                 parms.put(SHELLY_COLOR_RED, String.valueOf(rgbw[0]));
                 parms.put(SHELLY_COLOR_GREEN, String.valueOf(rgbw[1]));
                 parms.put(SHELLY_COLOR_BLUE, String.valueOf(rgbw[2]));
-                parms.put(SHELLY_COLOR_WHITE, String.valueOf(rgbw[3]));
+                if (rgbw.length == 4) {
+                    parms.put(SHELLY_COLOR_WHITE, String.valueOf(rgbw[3]));
+                }
             }
             if (model.isGainDirty() && model.getGainState() instanceof PercentType pct) {
                 parms.put(SHELLY_COLOR_GAIN, String.valueOf(pct.intValue()));
@@ -361,12 +365,6 @@ public class ShellyLightHandler extends ShellyBaseHandler {
      * @param light the incoming light status DTO
      */
     private void updateLightModelFromLightStatus(ShellyLightModel model, ShellyStatusLightChannel light) {
-        // MODE:
-        if (profile.isBulb) {
-            Mode mode = SHELLY_MODE_COLOR.equals(profile.device.mode) ? Mode.COLOR : Mode.COLOR_TEMP;
-            model.setMode(mode);
-        }
-
         // ON/OFF:
         model.setOnOff(light.ison);
 
@@ -378,6 +376,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
 
         // COLOR:
         if (profile.inColor) {
+            // note: setters change the model's mode
             if (light.red != null && light.green != null && light.blue != null) {
                 if (light.white != null) {
                     model.setRGBX(new int[] { light.red, light.green, light.blue, light.white });
@@ -391,12 +390,21 @@ public class ShellyLightHandler extends ShellyBaseHandler {
 
         // WHITE:
         if ((!profile.inColor && (!profile.isGen2 || profile.isRGBW2)) || profile.isBulb) {
+            // note: setters change the model's mode
             model.setBrightness(getInteger(light.brightness));
         }
 
         // COLOR TEMP:
         if ((profile.isBulb || profile.isDuo) && (light.temp != null)) {
+            // note: setters change the model's mode
             model.setColorTemp(getInteger(light.temp));
+        }
+
+        // MODE:
+        // note: setters change the model's mode, so do this last to ensure the mode is finally correct
+        if (profile.isBulb) {
+            Mode mode = SHELLY_MODE_COLOR.equals(profile.device.mode) ? Mode.COLOR : Mode.COLOR_TEMP;
+            model.setMode(mode);
         }
     }
 
