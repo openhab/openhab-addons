@@ -53,6 +53,7 @@ import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -496,13 +497,11 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
                 if (thingHandler.getLightModel(0) instanceof ShellyLightModel model) {
                     try {
                         model.lock();
-                        if (model.isRgbValid()) {
-                            // TODO check logic
-                            // Update color picker from single values
-                            thingHandler.updateChannel(mkChannelId(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_PICKER),
-                                    model.getColorState(), false);
-                            // TODO we should also update the PRIMARY channels ??
-                        }
+                        // TODO check logic
+                        // Update color picker from single values
+                        thingHandler.updateChannel(mkChannelId(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_PICKER),
+                                model.isRgbValid() ? model.getColorState() : UnDefType.UNDEF, false);
+                        // TODO update PRIMARY and other linked channels
                     } finally {
                         model.unlock();
                     }

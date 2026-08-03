@@ -202,15 +202,16 @@ public class Shelly1CoIoTVersion1 extends Shelly1CoIoTProtocol implements Shelly
                         break;
                     case "temp": // Shelly Bulb
                     case "colortemperature": // Shelly Duo
-                        // TODO check logic
                         if (getLightModelForSensor(sen) instanceof ShellyLightModel model) {
                             try {
                                 model.lock();
                                 model.setColorTemp(getDouble(s.value));
+                                // TODO check logic
+                                // TODO does color group have a CT channel ??
                                 updateChannel(updates,
                                         profile.inColor ? CHANNEL_GROUP_COLOR_CONTROL : CHANNEL_GROUP_WHITE_CONTROL,
                                         CHANNEL_COLOR_TEMP, model.getColorTemperaturePercentState());
-                                // TODO update the PRIMARY channels
+                                // TODO update PRIMARY CT channels
                             } finally {
                                 model.unlock();
                             }
