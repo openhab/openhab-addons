@@ -223,10 +223,10 @@ public class Shelly1CoIoTProtocol {
      *
      * Handles the combined updated of the brightness channel:
      * brightness$Switch is the OnOffType (power state)
-     * brightness&amp;Value is the brightness value
+     * brightness$Value is the brightness value
      *
      * @param profile Device profile, required to select the channel group and name
-     * @param updates List of updates. updatePower will add brightness$Switch and brightness&amp;Value if changed
+     * @param updates List of updates. updatePower will add brightness$Switch and brightness$Value if changed
      * @param id Sensor id from the update
      * @param sen Sensor description from the update
      * @param s New sensor value
@@ -234,12 +234,10 @@ public class Shelly1CoIoTProtocol {
      */
     protected void updatePower(ShellyDeviceProfile profile, Map<String, State> updates, int id, CoIotDescrSen sen,
             CoIotSensor s, List<CoIotSensor> allUpdates) {
-        // TODO check logic for power, brightness for all light types
         String group = "";
         String channel = CHANNEL_BRIGHTNESS;
         String checkL = ""; // RGBW-white uses 4 different Power, Brightness, VSwitch values
         if (profile.isLight || profile.isDimmer) {
-            // TODO update the light model ?
             if (profile.isBulb || profile.inColor) {
                 group = CHANNEL_GROUP_LIGHT_CONTROL;
                 channel = CHANNEL_LIGHT_POWER;
@@ -255,7 +253,6 @@ public class Shelly1CoIoTProtocol {
 
             // We need to update brightness and on/off state at the same time to avoid "flipping brightness slider" in
             // the UI
-            // TODO huh?
             double brightness = -1.0;
             double power = -1.0;
             for (CoIotSensor update : allUpdates) {
@@ -265,17 +262,28 @@ public class Shelly1CoIoTProtocol {
                     continue;
                 }
                 if ("brightness".equalsIgnoreCase(d.desc)) {
-                    brightness = update.value; // TODO update light model
+                    brightness = update.value;
                 } else if ("output".equalsIgnoreCase(d.desc) || "state".equalsIgnoreCase(d.desc)) {
-                    power = update.value; // TODO update light model
+                    power = update.value;
                 }
             }
-            if (power != -1) { // TODO use light model on/off
-                updateChannel(updates, group, channel + "$Switch", OnOffType.from(power == 1));
-            }
-            if (brightness != -1) { // TODO use light model brightness
-                updateChannel(updates, group, channel + "$Value",
-                        toQuantityType(power == 1 ? brightness : 0, DIGITS_NONE, Units.PERCENT));
+            if (thingHandler.getLightModel(id - 1) instanceof ShellyLightModel model) {
+                try {
+                    model.lock();
+                    // TODO check logic
+                    if (brightness != -1) {
+                        model.setBrightness((int) brightness);
+                    }
+                    if (power != -1) {
+                        model.setOnOff(power == 1);
+                    }
+                    updateChannel(updates, group, channel + "$Switch", model.getOnOffState());
+                    updateChannel(updates, group, channel + "$Value", model.getBrightnessState());
+                } finally {
+                    model.unlock();
+                }
+            } else {
+                logger.warn("{}: updatePower() for id={} but no light model found!", thingName, id);
             }
         } else if (profile.hasRelays) {
             group = profile.numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL : CHANNEL_GROUP_RELAY_CONTROL + id;
