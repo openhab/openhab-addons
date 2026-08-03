@@ -230,6 +230,59 @@ class ValveConfigurationAndControlConverterTest extends BaseMatterConverterTest 
     }
 
     @Test
+    void testOnEventValveFaultOnlyFiresNewlySetBits() {
+        AttributeChangedMessage message = new AttributeChangedMessage();
+        message.path = new Path();
+        message.path.attributeName = ValveConfigurationAndControlCluster.ATTRIBUTE_VALVE_FAULT;
+        message.value = new ValveFaultBitmap(false, true, false, false, false, false);
+        converter.onEvent(message);
+        // A second fault appearing must not re-fire the one that was already reported.
+        message.value = new ValveFaultBitmap(false, true, true, false, false, false);
+        converter.onEvent(message);
+        verify(mockHandler, times(1)).triggerChannel(eq(1), eq("valve-fault"), eq("blocked"));
+        verify(mockHandler, times(1)).triggerChannel(eq(1), eq("valve-fault"), eq("leaking"));
+        // Once cleared, the same fault occurring again is reported.
+        message.value = new ValveFaultBitmap(false, false, false, false, false, false);
+        converter.onEvent(message);
+        message.value = new ValveFaultBitmap(false, true, false, false, false, false);
+        converter.onEvent(message);
+        verify(mockHandler, times(2)).triggerChannel(eq(1), eq("valve-fault"), eq("blocked"));
+    }
+
+    @Test
+    void testHandleCommandLevelOnUsesDeviceDefaultLevel() {
+        mockCluster.featureMap = new FeatureMap(false, true);
+        ValveConfigurationAndControlConverter levelConverter = new ValveConfigurationAndControlConverter(mockCluster,
+                mockHandler, 1, "TestLabel");
+        ChannelUID channelUID = new ChannelUID("matter:node:test:12345:1#valve-level");
+        // A null target level lets the valve open to its own DefaultOpenLevel.
+        levelConverter.handleCommand(channelUID, OnOffType.ON);
+        verify(mockHandler, times(1)).sendClusterCommand(eq(1), eq(ValveConfigurationAndControlCluster.CLUSTER_NAME),
+                eq(ValveConfigurationAndControlCluster.open(null, null)));
+    }
+
+    @Test
+    void testHandleCommandLevelRoundsToSupportedStep() {
+        mockCluster.featureMap = new FeatureMap(false, true);
+        mockCluster.levelStep = 15;
+        ValveConfigurationAndControlConverter levelConverter = new ValveConfigurationAndControlConverter(mockCluster,
+                mockHandler, 1, "TestLabel");
+        ChannelUID channelUID = new ChannelUID("matter:node:test:12345:1#valve-level");
+        // 50 is not a multiple of 15, so it would be rejected with CONSTRAINT_ERROR; 45 is the nearest supported.
+        levelConverter.handleCommand(channelUID, new PercentType(50));
+        verify(mockHandler, times(1)).sendClusterCommand(eq(1), eq(ValveConfigurationAndControlCluster.CLUSTER_NAME),
+                eq(ValveConfigurationAndControlCluster.open(null, 45)));
+        // 100 is always supported regardless of the step, and is nearer than the last full step of 90.
+        levelConverter.handleCommand(channelUID, new PercentType(97));
+        verify(mockHandler, times(1)).sendClusterCommand(eq(1), eq(ValveConfigurationAndControlCluster.CLUSTER_NAME),
+                eq(ValveConfigurationAndControlCluster.open(null, 100)));
+        // A level that rounds down to 0 closes the valve rather than sending an out-of-constraint target.
+        levelConverter.handleCommand(channelUID, new PercentType(5));
+        verify(mockHandler, times(1)).sendClusterCommand(eq(1), eq(ValveConfigurationAndControlCluster.CLUSTER_NAME),
+                eq(ValveConfigurationAndControlCluster.close()));
+    }
+
+    @Test
     void testOnEventRemainingDuration() {
         AttributeChangedMessage message = new AttributeChangedMessage();
         message.path = new Path();

@@ -15,7 +15,9 @@ package org.openhab.binding.matter.internal.controller.devices.converter;
 import static org.openhab.binding.matter.internal.MatterBindingConstants.*;
 
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -52,11 +54,16 @@ import org.openhab.core.types.UnDefType;
 public class ValveConfigurationAndControlConverter extends GenericConverter<ValveConfigurationAndControlCluster> {
 
     private final boolean levelSupported;
+    private final int levelStep;
+    private final Set<String> activeFaults = new LinkedHashSet<>();
 
     public ValveConfigurationAndControlConverter(ValveConfigurationAndControlCluster cluster,
             MatterBaseThingHandler handler, int endpointNumber, String labelPrefix) {
         super(cluster, handler, endpointNumber, labelPrefix);
         this.levelSupported = cluster.featureMap != null && cluster.featureMap.level;
+        // LevelStep is a fixed attribute, so the value read at startup stays valid. It defaults to 1 (every
+        // level supported) when the valve does not have the attribute.
+        this.levelStep = cluster.levelStep == null ? 1 : cluster.levelStep;
     }
 
     @Override
@@ -118,14 +125,15 @@ public class ValveConfigurationAndControlConverter extends GenericConverter<Valv
                 break;
             case CHANNEL_ID_VALVE_LEVEL:
                 if (command instanceof PercentType percentType) {
-                    if (percentType.intValue() == 0) {
+                    int level = supportedLevel(percentType.intValue());
+                    if (level == 0) {
                         sendClusterCommand(ValveConfigurationAndControlCluster.close());
                     } else {
-                        sendClusterCommand(ValveConfigurationAndControlCluster.open(null, percentType.intValue()));
+                        sendClusterCommand(ValveConfigurationAndControlCluster.open(null, level));
                     }
                 } else if (command instanceof OnOffType onOffType) {
                     if (onOffType == OnOffType.ON) {
-                        sendClusterCommand(ValveConfigurationAndControlCluster.open(null, 100));
+                        sendClusterCommand(ValveConfigurationAndControlCluster.open(null, null));
                     } else {
                         sendClusterCommand(ValveConfigurationAndControlCluster.close());
                     }
@@ -250,6 +258,19 @@ public class ValveConfigurationAndControlConverter extends GenericConverter<Valv
         updateState(channelId, state);
     }
 
+    /**
+     * Rounds a level to one the valve actually supports, which is a multiple of LevelStep, or 100, which is always
+     * supported regardless of the step. Sending an unsupported level makes the valve reject the Open command with
+     * CONSTRAINT_ERROR, so a 50% command to a valve with a step of 15 would otherwise do nothing at all.
+     */
+    private int supportedLevel(int level) {
+        if (levelStep <= 1) {
+            return level;
+        }
+        int stepped = Math.min((level + levelStep / 2) / levelStep * levelStep, 100);
+        return 100 - level < Math.abs(level - stepped) ? 100 : stepped;
+    }
+
     private @Nullable Integer durationSeconds(Command command) {
         if (command instanceof QuantityType<?> quantityType) {
             QuantityType<?> seconds = quantityType.toUnit(Units.SECOND);
@@ -262,30 +283,41 @@ public class ValveConfigurationAndControlConverter extends GenericConverter<Valv
     }
 
     /**
-     * Fires one trigger event per set fault bit, so each payload is a single fault name that rules can match
+     * Fires one trigger event per newly set fault bit, so each payload is a single fault name that rules can match
      * directly, rather than a combined comma-separated payload.
+     *
+     * Both the ValveFault attribute and the ValveFault event are optional and independent, so a valve may report a
+     * fault through either or both. Only bits that were not already set are fired, which keeps a valve that reports
+     * both from triggering everything twice, and stops an unrelated change to the bitmap from re-firing faults that
+     * were already reported.
      */
     private void triggerFault(@Nullable ValveFaultBitmap fault) {
-        if (fault == null) {
-            return;
+        Set<String> faults = new LinkedHashSet<>();
+        if (fault != null) {
+            if (fault.generalFault) {
+                faults.add("generalFault");
+            }
+            if (fault.blocked) {
+                faults.add("blocked");
+            }
+            if (fault.leaking) {
+                faults.add("leaking");
+            }
+            if (fault.notConnected) {
+                faults.add("notConnected");
+            }
+            if (fault.shortCircuit) {
+                faults.add("shortCircuit");
+            }
+            if (fault.currentExceeded) {
+                faults.add("currentExceeded");
+            }
         }
-        if (fault.generalFault) {
-            triggerChannel(CHANNEL_ID_VALVE_FAULT, "generalFault");
+        for (String name : faults) {
+            if (activeFaults.add(name)) {
+                triggerChannel(CHANNEL_ID_VALVE_FAULT, name);
+            }
         }
-        if (fault.blocked) {
-            triggerChannel(CHANNEL_ID_VALVE_FAULT, "blocked");
-        }
-        if (fault.leaking) {
-            triggerChannel(CHANNEL_ID_VALVE_FAULT, "leaking");
-        }
-        if (fault.notConnected) {
-            triggerChannel(CHANNEL_ID_VALVE_FAULT, "notConnected");
-        }
-        if (fault.shortCircuit) {
-            triggerChannel(CHANNEL_ID_VALVE_FAULT, "shortCircuit");
-        }
-        if (fault.currentExceeded) {
-            triggerChannel(CHANNEL_ID_VALVE_FAULT, "currentExceeded");
-        }
+        activeFaults.retainAll(faults);
     }
 }
