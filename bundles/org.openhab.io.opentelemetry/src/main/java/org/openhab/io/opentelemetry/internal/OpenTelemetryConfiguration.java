@@ -85,11 +85,10 @@ public class OpenTelemetryConfiguration {
     @Override
     public String toString() {
         return "OpenTelemetryConfiguration{" + "otlpURL='" + otlpURL + '\'' + ", otlpHeaders="
-                + (otlpHeaders == null ? "null" : "***") + ", logsEnabled=" + logsEnabled
-                + ", logsEndpoint='" + logsEndpoint + '\'' + ", metricsEnabled=" + metricsEnabled
-                + ", metricsEndpoint='" + metricsEndpoint + '\'' + ", metricsInterval='" + metricsInterval + '\''
-                + ", metricsAggregationTemporality='" + metricsAggregationTemporality + '\'' + ", tracesEnabled="
-                + tracesEnabled + ", tracesEndpoint='" + tracesEndpoint + '\'' + ", tracesSamplingRatio="
-                + tracesSamplingRatio + '}';
+                + (otlpHeaders == null ? "null" : "***") + ", logsEnabled=" + logsEnabled + ", logsEndpoint='"
+                + logsEndpoint + '\'' + ", metricsEnabled=" + metricsEnabled + ", metricsEndpoint='" + metricsEndpoint
+                + '\'' + ", metricsInterval='" + metricsInterval + '\'' + ", metricsAggregationTemporality='"
+                + metricsAggregationTemporality + '\'' + ", tracesEnabled=" + tracesEnabled + ", tracesEndpoint='"
+                + tracesEndpoint + '\'' + ", tracesSamplingRatio=" + tracesSamplingRatio + '}';
     }
 }

@@ -215,14 +215,11 @@ public class OpenTelemetryServiceTest {
 
     @Test
     public void testTracesSamplingRatioClampHandlesNaN() {
-        // NaN bypasses Math.min/max — must not silently drop all spans
-        double nan = Double.NaN;
-        double result = Double.isNaN(nan) ? 1.0 : Math.max(0.0, Math.min(1.0, nan));
-        assertEquals(1.0, result, 0.0001, "NaN sampling ratio must fall back to 1.0 (sample all)");
-
-        // Negative and above-1 should be clamped
-        assertEquals(0.0, Math.max(0.0, Math.min(1.0, -0.5)), 0.0001);
-        assertEquals(1.0, Math.max(0.0, Math.min(1.0, 1.5)), 0.0001);
+        assertEquals(1.0, OpenTelemetryService.clampSamplingRatio(Double.NaN), 0.0001,
+                "NaN sampling ratio must fall back to 1.0 (sample all)");
+        assertEquals(0.0, OpenTelemetryService.clampSamplingRatio(-0.5), 0.0001);
+        assertEquals(1.0, OpenTelemetryService.clampSamplingRatio(1.5), 0.0001);
+        assertEquals(0.5, OpenTelemetryService.clampSamplingRatio(0.5), 0.0001);
     }
 
     @Test

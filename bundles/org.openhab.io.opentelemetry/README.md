@@ -1,5 +1,6 @@
 ---
 children:
+
   - ["doc/lgtm-stack", "LGTM Stack Example"]
   - ["doc/otel-collector", "OpenTelemetry Collector Example"]
 ---
@@ -120,14 +121,14 @@ The service supports environment variable substitution in all parameters using t
 
 | Parameter | Description | Default |
 |:---|:---|:---|
-| `logsEnabled` | Enable exporting openHAB logs to the OTLP endpoint | `true` |
+| `logsEnabled` | Enable exporting openHAB logs to the OTLP endpoint | `false` |
 | `logsEndpoint` | Endpoint path, resolved against `otlpURL` | `/v1/logs` |
 
 #### Metrics
 
 | Parameter | Description | Default |
 |:---|:---|:---|
-| `metricsEnabled` | Enable exporting openHAB metrics to the OTLP endpoint | `true` |
+| `metricsEnabled` | Enable exporting openHAB metrics to the OTLP endpoint | `false` |
 | `metricsEndpoint` | Endpoint path, resolved against `otlpURL` | `/v1/metrics` |
 | `metricsInterval` | Push interval as an ISO 8601 duration (e.g. `PT60S` for 60 seconds) | `PT60S` |
 | `metricsAggregationTemporality` | Aggregation temporality: `CUMULATIVE` for most backends; `DELTA` when your backend requires delta-encoded metrics | `CUMULATIVE` |
@@ -136,7 +137,7 @@ The service supports environment variable substitution in all parameters using t
 
 | Parameter | Description | Default |
 |:---|:---|:---|
-| `tracesEnabled` | Enable exporting event-bus spans to the OTLP endpoint | `true` |
+| `tracesEnabled` | Enable exporting event-bus spans to the OTLP endpoint | `false` |
 | `tracesEndpoint` | Endpoint path, resolved against `otlpURL` | `/v1/traces` |
 | `tracesSamplingRatio` | Fraction of event-bus spans to export (0.0 = none, 1.0 = all) | `1.0` |
 

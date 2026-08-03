@@ -142,7 +142,8 @@ public class OpenTelemetryService {
             return;
         }
 
-        if (config.otlpURL.startsWith("http://")) {
+        boolean anyPipelineEnabled = config.logsEnabled || config.metricsEnabled || config.tracesEnabled;
+        if (anyPipelineEnabled && config.otlpURL.startsWith("http://")) {
             logger.warn(
                     "OpenTelemetry OTLP endpoint '{}' uses cleartext HTTP. Use HTTPS in production to protect credentials in transit.",
                     config.otlpURL);
@@ -285,8 +286,7 @@ public class OpenTelemetryService {
             }
         }
 
-        double raw = config.tracesSamplingRatio;
-        double ratio = Double.isNaN(raw) ? 1.0 : Math.max(0.0, Math.min(1.0, raw));
+        double ratio = clampSamplingRatio(config.tracesSamplingRatio);
         Sampler sampler = Sampler.parentBased(Sampler.traceIdRatioBased(ratio));
 
         return SdkTracerProvider.builder() //
@@ -294,6 +294,11 @@ public class OpenTelemetryService {
                 .addSpanProcessor(BatchSpanProcessor.builder(spanExporterBuilder.build()).build()) //
                 .setResource(resource) //
                 .build();
+    }
+
+    /** Clamps the sampling ratio to [0.0, 1.0]; NaN falls back to 1.0 (sample all). */
+    static double clampSamplingRatio(double raw) {
+        return Double.isNaN(raw) ? 1.0 : Math.max(0.0, Math.min(1.0, raw));
     }
 
     /** Returns true when the OTel Java agent is running (detected via JVM arguments). */
