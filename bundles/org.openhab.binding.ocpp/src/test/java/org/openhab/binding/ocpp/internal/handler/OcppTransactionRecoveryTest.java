@@ -107,6 +107,18 @@ class OcppTransactionRecoveryTest {
     }
 
     @Test
+    void aStopForAnotherChargersTransactionDoesNotClearItFromTheStore() {
+        // A charger sends StopTransaction with a transaction id that belongs to a DIFFERENT charge
+        // point (transactionConnector returns null because the stored owner is not this one). The
+        // stop must not delete that other charger's persisted transaction.
+        when(server.transactionConnector(500, "charger")).thenReturn(null);
+
+        handler.onStopTransaction(stop(500));
+
+        verify(server, org.mockito.Mockito.never()).forgetTransaction(500);
+    }
+
+    @Test
     void aConnectorRecoversItsOpenTransactionIdFromTheServer() {
         when(server.openTransactionFor("charger", 1)).thenReturn(55);
 

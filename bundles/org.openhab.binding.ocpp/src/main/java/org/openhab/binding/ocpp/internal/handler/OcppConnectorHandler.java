@@ -214,6 +214,12 @@ public class OcppConnectorHandler extends BaseThingHandler {
         parent.registerConnector(connectorId, this);
         recoverTransaction(parent);
         startPolling();
+        // If the charger is already online (this connector thing was added, or re-initialized, mid
+        // session) it will not volunteer a StatusNotification on its own — ask for one so the
+        // connector does not sit at UNKNOWN until the next status change.
+        if (parent.isReady()) {
+            requestStatus();
+        }
     }
 
     private void recoverTransaction(OcppChargePointHandler parent) {

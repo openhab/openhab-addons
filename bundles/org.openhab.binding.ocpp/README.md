@@ -10,7 +10,7 @@ It reports connection state, connector status and metering, and controls chargin
 ## Supported Things
 
 - `server`: the OCPP JSON WebSocket endpoint chargers connect to. Acts as the bridge for all charge points.
-- `chargepoint`: one physical charger, matched to a session by its OCPP charge point id (the last path segment of the URL it dials). Bridge for its connectors.
+- `chargepoint`: one physical charger, matched to a session by its OCPP charge point id (the URL path it dials, without the leading slash). Bridge for its connectors.
 - `connector`: one connector (outlet) of a charger, carrying the live status and metering channels.
 
 ## Discovery
@@ -73,7 +73,7 @@ The binding also runs a heartbeat-derived liveness watchdog and self-heals when 
 | Channel   | Type     | Read/Write | Description                                |
 |-----------|----------|------------|--------------------------------------------|
 | connected | Switch   | R          | Whether the charger has an open session    |
-| last-seen  | DateTime | R          | Timestamp of the last message received     |
+| last-seen  | DateTime | R          | Timestamp of the last contact from the charger |
 | reset      | Switch   | W          | Momentary — soft reset the charge point    |
 
 Vendor, model, firmware version and serial number are published as thing properties from the charger's BootNotification.
@@ -97,7 +97,7 @@ Vendor, model, firmware version and serial number are published as thing propert
 | unlock             | Switch                 | W          | Momentary — unlock the connector                       |
 | hardware-max-current | Number:ElectricCurrent | RW         | Hardware current ceiling via a vendor config key       |
 
-Beyond the channels above, the connector also exposes the full OCPP 1.6 SampledValue set — aggregate and per-phase current/voltage, active/reactive/apparent power, power factor, frequency, active/reactive energy (register and interval, import and export), plus vehicle telemetry (`soc`, `rpm`, `temperature`) — and per-transaction metadata (`id-tag`, `transaction-id`, `meter-start`, `meter-stop`, and the start/stop timestamps).
+Beyond the channels above, the connector also exposes the full OCPP 1.6 SampledValue set — aggregate and per-phase current/voltage, active and reactive power, power factor, frequency, active/reactive energy (register and interval, import and export), plus vehicle telemetry (`soc`, `rpm`, `temperature`) — and per-transaction metadata (`id-tag`, `transaction-id`, `meter-start`, `meter-stop`, and the start/stop timestamps).
 
 For chargers that reject a TxProfile outside a transaction (e.g. Phoenix CHARX), set `forceTxDefaultProfile` on the connector so the charge limit is sent as a TxDefaultProfile.
 
