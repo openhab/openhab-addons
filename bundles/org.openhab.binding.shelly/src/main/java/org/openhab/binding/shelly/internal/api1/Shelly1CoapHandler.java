@@ -496,8 +496,9 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
             if (profile.isLight && profile.inColor) {
                 if (thingHandler.getLightModel(0) instanceof ShellyLightModel model) {
                     try {
-                        model.lock();
+                        model.lock(this.getClass(), "nothing");
                         // TODO check logic
+                        // TODO it looks like the light model is not being updated here ??
                         // Update color picker from single values
                         thingHandler.updateChannel(mkChannelId(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_PICKER),
                                 model.isRgbValid() ? model.getColorState() : UnDefType.UNDEF, false);

@@ -82,13 +82,9 @@ public class ShellyLightHandler extends ShellyBaseHandler {
         int lightId = getLightIdFromGroup(groupName);
         ShellyLightModel model = getOrCreateLightModel(lightId);
 
-        String initialSnapshot = null;
-        String finalSnapshot = null;
         try {
-            model.lock();
-            initialSnapshot = logger.isDebugEnabled() ? model.toString() : null;
+            model.lock(channelUID, command);
             if (updateLightModelFromChannelCommand(model, channelUID, command)) {
-                finalSnapshot = logger.isDebugEnabled() ? model.toString() : null;
                 updateRemoteDeviceFromLightModel(model, lightId);
                 return true;
             }
@@ -101,10 +97,6 @@ public class ShellyLightHandler extends ShellyBaseHandler {
             return false;
         } finally {
             model.unlock();
-            if (initialSnapshot != null && finalSnapshot != null) {
-                logger.debug("{}: lightId {} channel {} handled command {}\nInitial: [{}]\nFinal: [{}]", thingName,
-                        lightId, channelUID, command, initialSnapshot, finalSnapshot);
-            }
         }
     }
 
@@ -112,11 +104,12 @@ public class ShellyLightHandler extends ShellyBaseHandler {
         ShellyLightModel model = lightModels.get(lightId);
         String loggerVerb = "Loaded";
         if (model == null) {
-            model = ShellyLightModel.create(thing.getThingTypeUID(), profile, DIM_STEPSIZE); // create a new entry
+            // create a new entry
+            model = ShellyLightModel.create(thing.getUID(), lightId, thing.getThingTypeUID(), profile, DIM_STEPSIZE);
             lightModels.put(lightId, model);
             loggerVerb = "Created";
         }
-        logger.trace("{}: {} lightId {} light model [{}]", thingName, loggerVerb, lightId, model);
+        logger.debug("{}: {} lightId {} light model [{}]", thingName, loggerVerb, lightId, model);
         return model;
     }
 
@@ -139,20 +132,12 @@ public class ShellyLightHandler extends ShellyBaseHandler {
         int lightId = 0;
         for (ShellyStatusLightChannel light : status.lights) {
             ShellyLightModel model = getOrCreateLightModel(lightId);
-            String initialSnapshot = null;
-            String finalSnapshot = null;
             try {
-                model.lock();
-                initialSnapshot = logger.isDebugEnabled() ? model.toString() : null;
+                model.lock("updateDeviceStatus", genericStatus.json);
                 updateLightModelFromLightStatus(model, light);
-                finalSnapshot = logger.isDebugEnabled() ? model.toString() : null;
                 updated |= updateChannelsFromLightModel(model, light, lightId);
             } finally {
                 model.unlock();
-                if (initialSnapshot != null && finalSnapshot != null) {
-                    logger.debug("{}: lightId {} processed update {}\nInitial: [{}]\nFinal: [{}]", thingName, lightId,
-                            genericStatus.json, initialSnapshot, finalSnapshot);
-                }
             }
             lightId++;
         }

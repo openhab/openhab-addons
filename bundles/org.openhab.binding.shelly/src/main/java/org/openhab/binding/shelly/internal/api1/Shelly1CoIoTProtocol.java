@@ -269,7 +269,7 @@ public class Shelly1CoIoTProtocol {
             }
             if (thingHandler.getLightModel(id - 1) instanceof ShellyLightModel model) {
                 try {
-                    model.lock();
+                    model.lock(this.getClass(), allUpdates);
                     // TODO check logic
                     if (brightness != -1) {
                         model.setBrightness((int) brightness);

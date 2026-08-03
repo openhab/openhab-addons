@@ -877,7 +877,7 @@ public class ShellyComponents {
                 try {
                     // TODO check this
                     String group = CHANNEL_GROUP_COLOR_CONTROL;
-                    model.lock();
+                    model.lock(ShellyComponents.class, "updateRGBW()");
                     model.setRGBX(light.red, light.green, light.blue, light.white);
                     updated |= thingHandler.updateChannel(group, CHANNEL_COLOR_RED, model.getColorState(R));
                     updated |= thingHandler.updateChannel(group, CHANNEL_COLOR_GREEN, model.getColorState(G));

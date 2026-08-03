@@ -204,7 +204,7 @@ public class Shelly1CoIoTVersion1 extends Shelly1CoIoTProtocol implements Shelly
                     case "colortemperature": // Shelly Duo
                         if (getLightModelForSensor(sen) instanceof ShellyLightModel model) {
                             try {
-                                model.lock();
+                                model.lock(this.getClass(), sen.desc);
                                 model.setColorTemp(getDouble(s.value));
                                 // TODO check logic
                                 // TODO does color group have a CT channel ??

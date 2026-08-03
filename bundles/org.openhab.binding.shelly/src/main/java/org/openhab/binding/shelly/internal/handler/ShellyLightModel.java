@@ -33,10 +33,13 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.openhab.core.util.LightModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link ShellyLightModel} extends the OH Core {@link LightModel} with Shelly specific functions.
@@ -47,6 +50,8 @@ import org.openhab.core.util.LightModel;
  */
 @NonNullByDefault
 public class ShellyLightModel extends LightModel {
+
+    private final Logger logger = LoggerFactory.getLogger(ShellyLightModel.class);
 
     /**
      * The RGBX enum is used to indicate which part of an RGBX array to use.
@@ -81,11 +86,12 @@ public class ShellyLightModel extends LightModel {
      */
     private final int[] cacheRGBX = new int[RGBX.values().length];
     private final int rgbxLength;
+    private final int lightId;
+    private final ThingUID owner;
+    private final ReentrantLock lock = new ReentrantLock();
 
     private Mode shellyMode = Mode.WHITE;
     private int effect = 0;
-
-    private final ReentrantLock lock = new ReentrantLock();
 
     // initial values used to determine if the model dirty state changes
     private volatile Mode initialShellyMode;
@@ -94,15 +100,20 @@ public class ShellyLightModel extends LightModel {
     private volatile @Nullable PercentType initialBrightness;
     private volatile @Nullable OnOffType initialOnOff;
     private volatile @Nullable QuantityType<?> initialColorTemperature;
+    private volatile @Nullable String initialSnapshot;
+    private volatile @Nullable Object lockContext;
+    private volatile @Nullable Object dataSource;
 
     /**
      * Public static class factory that creates a {@link ShellyLightModel} with the correct parameters based on the
      * given {@link ThingTypeUID} and {@link ShellyDeviceProfile}.
      */
-    public static ShellyLightModel create(ThingTypeUID thingTypeUID, ShellyDeviceProfile profile, double stepSize) {
+    public static ShellyLightModel create(ThingUID owner, int lightId, ThingTypeUID thingTypeUID,
+            ShellyDeviceProfile profile, double stepSize) {
         Parameters params = getParams(thingTypeUID, profile.device.profile);
-        return new ShellyLightModel(params.lightCapabilities, params.rgbDataType, null, reciprocal(profile.maxTemp),
-                reciprocal(profile.minTemp), stepSize, null, null, params.ledOperatingMode, params.shellyMode);
+        return new ShellyLightModel(owner, lightId, params.lightCapabilities, params.rgbDataType, null,
+                reciprocal(profile.maxTemp), reciprocal(profile.minTemp), stepSize, null, null, params.ledOperatingMode,
+                params.shellyMode);
     }
 
     /**
@@ -178,18 +189,25 @@ public class ShellyLightModel extends LightModel {
      * @param ledOperatingMode
      * @param shellyMode
      */
-    private ShellyLightModel(LightCapabilities lightCapabilities, RgbDataType rgbDataType,
-            @Nullable Double minimumOnBrightness, @Nullable Double mirekControlCoolest,
+    private ShellyLightModel(ThingUID ownerArg, int lightIdArg, LightCapabilities lightCapabilities,
+            RgbDataType rgbDataType, @Nullable Double minimumOnBrightness, @Nullable Double mirekControlCoolest,
             @Nullable Double mirekControlWarmest, @Nullable Double stepSize, @Nullable Double coolWhiteLedMirek,
             @Nullable Double warmWhiteLedMirek, LedOperatingMode ledOperatingMode, Mode shellyModeParam)
             throws IllegalArgumentException {
         super(lightCapabilities, rgbDataType, minimumOnBrightness, mirekControlCoolest, mirekControlWarmest, stepSize,
                 coolWhiteLedMirek, warmWhiteLedMirek);
+
+        owner = ownerArg;
+        lightId = lightIdArg;
         shellyMode = shellyModeParam;
         setLedOperatingMode(ledOperatingMode);
         rgbxLength = WHITE_ONLY == ledOperatingMode ? 3 : getRGBx().length;
         initialRGBx = new int[rgbxLength];
         initialShellyMode = shellyMode;
+
+        logger.debug(
+                "Created ShellyLightModel for {} lightId={} with capabilities={}, rgbDataType={}, ledOperatingMode={}, shellyMode={}",
+                owner, lightId, lightCapabilities, rgbDataType, ledOperatingMode, initialShellyMode);
     }
 
     /**
@@ -500,22 +518,41 @@ public class ShellyLightModel extends LightModel {
     }
 
     /**
-     * Acquire the lock. And save the current model state to allow for dirty flag checking.
+     * Check if any of the dirty flags have been set since lock() was called.
      */
-    public void lock() {
+    public boolean isDirty() {
+        return isOnOffDirty() || isBrightnessDirty() || isColorDirty() || isColorTempDirty() || isEffectDirty()
+                || isModeDirty();
+    }
+
+    /**
+     * Acquire the lock. And save the current model state to allow for dirty flag checking.
+     * 
+     * @param lockContext an object that identifies the context that is acquiring the lock
+     * @param dataSource an object that identifies the source of the data that is acquiring the lock
+     */
+    public void lock(Object lockContext, Object dataSource) {
         lock.lock();
+        this.lockContext = lockContext;
+        this.dataSource = dataSource;
+        initialSnapshot = logger.isDebugEnabled() ? toString() : null;
         initialRGBx = getRGBX();
         initialOnOff = getOnOff(true);
         initialEffect = effect;
         initialShellyMode = shellyMode;
         initialBrightness = getBrightness(true);
         initialColorTemperature = getColorTemperature();
+        logger.debug("Model for thing {} lightId {}: lock acquired by {}", owner, lightId, this.lockContext);
     }
 
     /**
      * Release the lock.
      */
     public void unlock() {
+        if (isDirty()) {
+            logger.debug("Model for thing {} lightId {}: updated by {}\nInitial: [{}]\nFinal: [{}]", owner, lightId,
+                    dataSource, initialSnapshot, this);
+        }
         lock.unlock();
     }
 }
