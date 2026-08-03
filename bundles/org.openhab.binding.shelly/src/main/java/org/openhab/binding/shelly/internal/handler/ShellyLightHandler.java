@@ -27,7 +27,6 @@ import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRgbwLight;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
-import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortLightStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusLight;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusLightChannel;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapServer;
@@ -103,7 +102,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
         } finally {
             model.unlock();
             if (initialSnapshot != null && finalSnapshot != null) {
-                logger.debug("{}: lightId {} channel {} handled command {}/nInitial: [{}]/nFinal: [{}]", thingName,
+                logger.debug("{}: lightId {} channel {} handled command {}\nInitial: [{}]\nFinal: [{}]", thingName,
                         lightId, channelUID, command, initialSnapshot, finalSnapshot);
             }
         }
@@ -151,7 +150,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
             } finally {
                 model.unlock();
                 if (initialSnapshot != null && finalSnapshot != null) {
-                    logger.debug("{}: lightId {} processed update {}/nInitial: [{}]/nFinal: [{}]", thingName, lightId,
+                    logger.debug("{}: lightId {} processed update {}\nInitial: [{}]\nFinal: [{}]", thingName, lightId,
                             genericStatus.json, initialSnapshot, finalSnapshot);
                 }
             }
@@ -191,7 +190,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
             color = SHELLY_COLOR_GREEN;
         } else if (rgbw[0] == 0 && rgbw[1] == 0 && rgbw[2] == SHELLY_MAX_COLOR) {
             color = SHELLY_COLOR_BLUE;
-        } else if (rgbw[0] == 0 && rgbw[1] == 0 && rgbw[2] == 0 && rgbw[2] == SHELLY_MAX_COLOR) {
+        } else if (rgbw[0] == SHELLY_MAX_COLOR && rgbw[1] == SHELLY_MAX_COLOR && rgbw[2] == SHELLY_MAX_COLOR) {
             color = SHELLY_COLOR_WHITE;
         }
         updateChannel(colorGroup, CHANNEL_COLOR_FULL, color != null ? new StringType(color) : UnDefType.UNDEF);
@@ -229,6 +228,10 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                 model.handleColorTemperatureCommand(command);
                 break;
 
+            case CHANNEL_LIGHT_POWER:
+                model.handleCommand(command);
+                break;
+
             case CHANNEL_LIGHT_COLOR_MODE:
                 model.setMode(OnOffType.ON == command ? Mode.COLOR : Mode.COLOR_TEMP);
                 break;
@@ -258,11 +261,11 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                 break;
 
             case CHANNEL_COLOR_GAIN:
-                model.setGain(setColor(command, SHELLY_MIN_GAIN, SHELLY_MAX_GAIN));
+                model.setGain(command);
                 break;
 
             case CHANNEL_BRIGHTNESS:
-                model.setBrightness(setColor(command, SHELLY_MIN_BRIGHTNESS, SHELLY_MAX_BRIGHTNESS));
+                model.setBrightness(command);
                 break;
 
             case CHANNEL_COLOR_TEMP:
@@ -284,33 +287,38 @@ public class ShellyLightHandler extends ShellyBaseHandler {
      * @throws ShellyApiException if the API call fails
      */
     private void updateRemoteDeviceFromLightModel(ShellyLightModel model, int lightId) throws ShellyApiException {
-        String onOffString = OnOffType.ON == model.getOnOff(true) ? SHELLY_API_ON : SHELLY_API_OFF;
-
         // POWER:
-        if (model.isOnOffDirty()) {
-            // TODO the prior code seems to use three different ways to set the light on/off state; RESOLVE THIS
-
-            // TODO ON/OFF A) either this ??
-            ShellyShortLightStatus light = api.setLightTurn(lightId, onOffString);
-            model.setOnOff(light.ison); // fast update light model from API response ??
-            model.setBrightness(light.brightness.intValue()); // fast update light model from API response ??
-
-            // TODO ON/OFF B) or this ??
-            api.setLightParm(lightId, SHELLY_LIGHT_TURN, onOffString);
-            requestUpdates(1, false);
-        }
+        /**
+         * 
+         * TODO: INFORMATION FOR CODE REVIEWER RELATING TO THE PRIOR IMPLEMENTATION OF POWER ON/OFF COMMANDS
+         * 
+         * The prior code used three different API power on/off commands in response to different channel commands
+         * as follows:
+         * 
+         * - CHANNEL_LIGHT_POWER sends api.setLightTurn(lightId, ..)
+         * - CHANNEL_BRIGHTNESS sends api.setLightParm(lightId, SHELLY_LIGHT_TURN, ..)
+         * - CHANNEL_COLOR_PICKER sends parms.put(SHELLY_LIGHT_TURN, ..)
+         * - and .. probably CHANNEL_COLOR_GAIN _should_ send api.setLightParm(lightId, SHELLY_LIGHT_TURN, ..)
+         * 
+         * By contrast the new LightModel allows any channel input (primary, power, brightness, gain, color picker,
+         * etc.) to change the model's power on/off state in a consistent manner regardless of which channel was used.
+         * So therefore we use a single API call to set the power state based on the model's final state.
+         */
+        boolean apiCommandSent = true;
 
         // MODE:
         if (profile.isBulb && model.isModeDirty()) {
             api.setLightMode(Mode.COLOR == model.getMode() ? SHELLY_MODE_COLOR : SHELLY_MODE_WHITE);
+            apiCommandSent = true;
         }
 
-        // send changed light parameters to the device
+        // map of changed light parameters to send to the device
         Map<String, String> parms = new TreeMap<>();
 
-        // ON/OFF:
-        if (config.getBrightnessAutoOn() && model.isOnOffDirty()) {
-            // TODO ON/OFF C) or this ??
+        // POWER:
+        if (model.isOnOffDirty()) { // note: config.getBrightnessAutoOn() is no longer needed
+            // common code to set the power state regardless of which channel caused it to change
+            String onOffString = OnOffType.ON == model.getOnOff(true) ? SHELLY_API_ON : SHELLY_API_OFF;
             parms.put(SHELLY_LIGHT_TURN, onOffString);
         }
 
@@ -349,6 +357,15 @@ public class ShellyLightHandler extends ShellyBaseHandler {
         if (!parms.isEmpty()) {
             logger.debug("{}: lightId {} set new light parameters {}", thingName, lightId, parms);
             api.setLightParms(lightId, parms);
+            apiCommandSent = true;
+        }
+
+        /*
+         * always request a status update after sending a command to ensure the model is in sync with the
+         * device, and to update any related cross linked channels that may need to be changed
+         */
+        if (apiCommandSent) {
+            requestUpdates(1, false);
         }
     }
 

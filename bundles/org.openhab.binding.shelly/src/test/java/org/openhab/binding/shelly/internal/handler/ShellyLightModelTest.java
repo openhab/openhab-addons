@@ -137,7 +137,7 @@ class ShellyLightModelTest {
     }
 
     @Test
-    void modeSynchronizesToRgb() {
+    void modeSynchronizesToColor() {
         ShellyLightModel model = ShellyLightModel.create(THING_TYPE_SHELLYBULB,
                 new ShellyDeviceProfile(THING_TYPE_SHELLYBULB), STEP);
 

@@ -223,7 +223,7 @@ public class ShellyLightModel extends LightModel {
     }
 
     /**
-     * Set the brightness (i.e. the brightness when color temperature mode). And set the dirty flag.
+     * Set the brightness (i.e. the brightness when color temperature mode).
      */
     public void setBrightness(int brightness) {
         setBrightness((double) brightness);
@@ -231,7 +231,17 @@ public class ShellyLightModel extends LightModel {
     }
 
     /**
-     * Check if the brightness has been changed since the dirty flags were last cleared.
+     * Set the brightness (i.e. the brightness when color temperature mode).
+     */
+    public void setBrightness(Command command) {
+        if (!(command instanceof HSBType)) {
+            super.handleCommand(command);
+            setMode(Mode.COLOR_TEMP);
+        }
+    }
+
+    /**
+     * Check if the brightness has been changed since lock() was called.
      */
     public boolean isBrightnessDirty() {
         return !Objects.equals(initialBrightness, getBrightness(true));
@@ -259,7 +269,7 @@ public class ShellyLightModel extends LightModel {
     }
 
     /**
-     * Set the color component at the given RGBX index. And set the dirty flag.
+     * Set the color component at the given RGBX index.
      */
     public void setColor(RGBX index, int value) {
         cacheRGBX[index.ordinal()] = value;
@@ -270,7 +280,7 @@ public class ShellyLightModel extends LightModel {
     }
 
     /**
-     * Check if the color has been changed since the dirty flags were last cleared.
+     * Check if the color has been changed since lock() was called.
      */
     public boolean isColorDirty() {
         return !Arrays.equals(initialRGBx, 0, rgbxLength, cacheRGBX, 0, rgbxLength);
@@ -309,7 +319,7 @@ public class ShellyLightModel extends LightModel {
     }
 
     /**
-     * Set the color temperature. And set the dirty flag.
+     * Set the color temperature.
      */
     public void setColorTemp(double kelvin) {
         setMirek(reciprocal(kelvin));
@@ -317,7 +327,7 @@ public class ShellyLightModel extends LightModel {
     }
 
     /**
-     * Check if the color temperature has been changed since the dirty flags were last cleared.
+     * Check if the color temperature has been changed since lock() was called.
      */
     public boolean isColorTempDirty() {
         return !Objects.equals(initialColorTemperature, getColorTemperature());
@@ -331,14 +341,14 @@ public class ShellyLightModel extends LightModel {
     }
 
     /**
-     * Set the effect. And set the dirty flag.
+     * Set the effect.
      */
     public void setEffect(int value) {
         effect = value;
     }
 
     /**
-     * Check if the effect has been changed since the dirty flags were last cleared.
+     * Check if the effect has been changed since lock() was called.
      */
     public boolean isEffectDirty() {
         return !Objects.equals(initialEffect, effect);
@@ -352,7 +362,7 @@ public class ShellyLightModel extends LightModel {
     }
 
     /**
-     * Set the gain (color mode brightness). And set the dirty flag.
+     * Set gain (i.e. the brightness when color mode).
      */
     public void setGain(double gain) {
         setBrightness((double) gain);
@@ -360,7 +370,17 @@ public class ShellyLightModel extends LightModel {
     }
 
     /**
-     * Check if the gain has been changed since the dirty flags were last cleared.
+     * Set gain (i.e. the brightness when color mode).
+     */
+    public void setGain(Command command) {
+        if (!(command instanceof HSBType)) {
+            super.handleCommand(command);
+            setMode(Mode.COLOR);
+        }
+    }
+
+    /**
+     * Check if the gain has been changed since lock() was called.
      */
     public boolean isGainDirty() {
         return isBrightnessDirty();
@@ -378,14 +398,14 @@ public class ShellyLightModel extends LightModel {
     }
 
     /**
-     * Set the shelly device mode. And set the dirty flag.
+     * Set the shelly device mode.
      */
     public void setMode(Mode shellyMode) {
         this.shellyMode = shellyMode;
     }
 
     /**
-     * Check if the mode has been changed since the dirty flags were last cleared.
+     * Check if the mode has been changed since lock() was called.
      */
     public boolean isModeDirty() {
         return initialShellyMode != shellyMode;
@@ -403,7 +423,7 @@ public class ShellyLightModel extends LightModel {
     }
 
     /**
-     * Set the on/off state. And set the dirty flag.
+     * Set the on/off state.
      */
     @Override
     public void setOnOff(boolean on) {
@@ -411,7 +431,7 @@ public class ShellyLightModel extends LightModel {
     }
 
     /**
-     * Check if the on/off state has been changed since the dirty flags were last cleared.
+     * Check if the on/off state has been changed since lock() was called.
      */
     public boolean isOnOffDirty() {
         return !Objects.equals(initialOnOff, getOnOff(true));
@@ -425,7 +445,7 @@ public class ShellyLightModel extends LightModel {
     }
 
     /**
-     * Set the RGBX values. And set the dirty flag.
+     * Set the RGBX values.
      */
     public void setRGBX(int[] rgbx) {
         setRGBx(Arrays.stream(rgbx).mapToDouble(i -> (double) i).toArray());
@@ -434,14 +454,14 @@ public class ShellyLightModel extends LightModel {
     }
 
     /**
-     * Set the RGBW values. And set the dirty flag.
+     * Set the RGBW values.
      */
     public void setRGBX(int red, int green, int blue, int white) {
         setRGBX(new int[] { red, green, blue, white });
     }
 
     /**
-     * Set the RGBW values from a comma-separated string. And set the dirty flag.
+     * Set the RGBW values from a comma-separated string.
      */
     public void setRGBX(String rgbx) {
         setRGBX(Arrays.stream(rgbx.split(",")).map(String::trim).mapToInt(Integer::parseInt).toArray());
@@ -449,7 +469,7 @@ public class ShellyLightModel extends LightModel {
 
     /**
      * Set the full color from a Command. The command can be a comma-separated string of RGBW values, or one
-     * of the predefined color names. And set the dirty flag.
+     * of the predefined color names.
      */
     public void setRGBX(Command command) throws IllegalArgumentException {
         String color = command.toString().toLowerCase(Locale.ROOT);
@@ -483,13 +503,13 @@ public class ShellyLightModel extends LightModel {
      * Acquire the lock. And save the current model state to allow for dirty flag checking.
      */
     public void lock() {
+        lock.lock();
         initialRGBx = getRGBX();
         initialOnOff = getOnOff(true);
         initialEffect = effect;
         initialShellyMode = shellyMode;
         initialBrightness = getBrightness(true);
         initialColorTemperature = getColorTemperature();
-        lock.lock();
     }
 
     /**
