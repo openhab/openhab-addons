@@ -873,7 +873,8 @@ public class ShellyComponents {
                 return false;
             }
             ShellySettingsLight light = orgStatus.lights.get(0);
-            if (thingHandler.getLightModel(0) instanceof ShellyLightModel model) {
+            try {
+                ShellyLightModel model = thingHandler.getLightModel(0);
                 try {
                     // TODO check this
                     String group = CHANNEL_GROUP_COLOR_CONTROL;
@@ -888,6 +889,9 @@ public class ShellyComponents {
                 } finally {
                     model.unlock();
                 }
+            } catch (UnsupportedOperationException | IllegalArgumentException e) {
+                // TODO log error or re-throw exception
+                return false;
             }
         }
         return updated;

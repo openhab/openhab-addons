@@ -165,8 +165,8 @@ public class ShellyLightHandler extends ShellyBaseHandler {
     }
 
     private boolean setFullColor(String colorGroup, ShellyLightModel model) {
-        double[] rgbw = model.getRGBx();
         String color = null;
+        int[] rgbw = model.getRGBX();
         if (rgbw[0] == SHELLY_MAX_COLOR && rgbw[1] == SHELLY_MAX_COLOR && rgbw[2] == 0) {
             color = SHELLY_COLOR_YELLOW;
         } else if (rgbw[0] == SHELLY_MAX_COLOR && rgbw[1] == 0 && rgbw[2] == 0) {
@@ -175,7 +175,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
             color = SHELLY_COLOR_GREEN;
         } else if (rgbw[0] == 0 && rgbw[1] == 0 && rgbw[2] == SHELLY_MAX_COLOR) {
             color = SHELLY_COLOR_BLUE;
-        } else if (rgbw[0] == SHELLY_MAX_COLOR && rgbw[1] == SHELLY_MAX_COLOR && rgbw[2] == SHELLY_MAX_COLOR) {
+        } else if (rgbw[0] == 0 && rgbw[1] == 0 && rgbw[2] == 0 && rgbw[3] == SHELLY_MAX_COLOR) {
             color = SHELLY_COLOR_WHITE;
         }
         updateChannel(colorGroup, CHANNEL_COLOR_FULL, color != null ? new StringType(color) : UnDefType.UNDEF);

@@ -494,7 +494,8 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
             }
 
             if (profile.isLight && profile.inColor) {
-                if (thingHandler.getLightModel(0) instanceof ShellyLightModel model) {
+                try {
+                    ShellyLightModel model = thingHandler.getLightModel(0);
                     try {
                         model.lock(this.getClass(), "nothing");
                         // TODO check logic
@@ -506,6 +507,8 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
                     } finally {
                         model.unlock();
                     }
+                } catch (UnsupportedOperationException | IllegalArgumentException e) {
+                    logger.debug("{}: Unable to update color picker from CoIoT status: {}", thingName, e.getMessage());
                 }
             }
 

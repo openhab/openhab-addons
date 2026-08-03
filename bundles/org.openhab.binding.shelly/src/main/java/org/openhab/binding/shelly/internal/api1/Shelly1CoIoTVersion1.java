@@ -202,7 +202,8 @@ public class Shelly1CoIoTVersion1 extends Shelly1CoIoTProtocol implements Shelly
                         break;
                     case "temp": // Shelly Bulb
                     case "colortemperature": // Shelly Duo
-                        if (getLightModelForSensor(sen) instanceof ShellyLightModel model) {
+                        try {
+                            ShellyLightModel model = getLightModelForSensor(sen);
                             try {
                                 model.lock(this.getClass(), sen.desc);
                                 model.setColorTemp(getDouble(s.value));
@@ -215,6 +216,9 @@ public class Shelly1CoIoTVersion1 extends Shelly1CoIoTProtocol implements Shelly
                             } finally {
                                 model.unlock();
                             }
+                        } catch (UnsupportedOperationException | IllegalArgumentException e) {
+                            logger.debug("{}: Unable to update color temperature for {}: {}", thingName, sen.desc,
+                                    e.getMessage());
                         }
                         break;
                     case "sensor state": // Shelly Gas

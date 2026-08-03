@@ -97,11 +97,9 @@ public class Shelly1CoIoTProtocol {
                         toQuantityType(s.value, DIGITS_LUX, Units.LUX));
                 break;
             case "s": // CatchAll
-                ShellyLightModel col = getLightModelForSensor(sen);
                 switch (sen.desc.toLowerCase(Locale.ROOT)) {
                     case "state": // Relay status +
                     case "output":
-                        // TODO do we need to update the light model on/off state here?
                         updatePower(profile, updates, rIndex, sen, s, sensorUpdates);
                         break;
                     case "input":
@@ -109,7 +107,7 @@ public class Shelly1CoIoTProtocol {
                         break;
                     case "brightness":
                         // already handled by state/output
-                        // TODO are we sure about this? do we need to update the light model?
+                        // TODO are we sure about this? => do we need to update the light model?
                         break;
                     case "overtemp": // ++
                         if (s.value == 1) {
@@ -145,24 +143,49 @@ public class Shelly1CoIoTProtocol {
                         break;
                     // RGBW2/Bulb
                     case "red":
-                        col.setColor(R, (int) s.value);
-                        updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_RED, col.getColorState(R));
-                        break;
                     case "green":
-                        col.setColor(G, (int) s.value);
-                        updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GREEN, col.getColorState(G));
-                        break;
                     case "blue":
-                        col.setColor(B, (int) s.value);
-                        updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_BLUE, col.getColorState(B));
-                        break;
                     case "white":
-                        col.setColor(CW, (int) s.value);
-                        updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_WHITE, col.getColorState(CW));
-                        break;
                     case "gain":
-                        col.setGain((int) s.value);
-                        updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GAIN, col.getGainState());
+                        try {
+                            ShellyLightModel model = getLightModelForSensor(sen);
+                            try {
+                                model.lock(this.getClass(), sensorUpdates);
+                                // TODO check logic
+                                switch (sen.desc.toLowerCase(Locale.ROOT)) {
+                                    case "red":
+                                        model.setColor(R, (int) s.value);
+                                        updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_RED,
+                                                model.getColorState(R));
+                                        break;
+                                    case "green":
+                                        model.setColor(G, (int) s.value);
+                                        updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GREEN,
+                                                model.getColorState(G));
+                                        break;
+                                    case "blue":
+                                        model.setColor(B, (int) s.value);
+                                        updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_BLUE,
+                                                model.getColorState(B));
+                                        break;
+                                    case "white":
+                                        model.setColor(CW, (int) s.value);
+                                        updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_WHITE,
+                                                model.getColorState(CW));
+                                        break;
+                                    case "gain":
+                                        model.setGain((int) s.value);
+                                        updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GAIN,
+                                                model.getGainState());
+                                        break;
+                                }
+                            } finally {
+                                model.unlock();
+                            }
+                        } catch (UnsupportedOperationException | IllegalArgumentException e) {
+                            logger.debug("{}: Unable to update color channel {} for sensor {}: {}", thingName, sen.desc,
+                                    sen.id, e.getMessage());
+                        }
                         break;
                     case "sensorerror":
                         String sensorError = s.valueStr != null ? getString(s.valueStr) : "" + s.value;
@@ -267,7 +290,8 @@ public class Shelly1CoIoTProtocol {
                     power = update.value;
                 }
             }
-            if (thingHandler.getLightModel(id - 1) instanceof ShellyLightModel model) {
+            try {
+                ShellyLightModel model = thingHandler.getLightModel(id - 1);
                 try {
                     model.lock(this.getClass(), allUpdates);
                     // TODO check logic
@@ -282,7 +306,7 @@ public class Shelly1CoIoTProtocol {
                 } finally {
                     model.unlock();
                 }
-            } else {
+            } catch (UnsupportedOperationException | IllegalArgumentException e) {
                 logger.warn("{}: updatePower() for id={} but no light model found!", thingName, id);
             }
         } else if (profile.hasRelays) {
@@ -401,7 +425,8 @@ public class Shelly1CoIoTProtocol {
         return lastWakeup;
     }
 
-    protected ShellyLightModel getLightModelForSensor(CoIotDescrSen sen) {
+    protected ShellyLightModel getLightModelForSensor(CoIotDescrSen sen)
+            throws UnsupportedOperationException, IllegalArgumentException {
         // TODO check this logic
         return thingHandler.getLightModel(getIdFromBlk(sen) - 1); // getIdFromBlk() is 1 based
     }
