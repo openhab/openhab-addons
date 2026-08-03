@@ -51,7 +51,6 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSe
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtVoltage.ShellyShortVoltage;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyThermnostat;
 import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
-import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
@@ -874,17 +873,22 @@ public class ShellyComponents {
                 return false;
             }
             ShellySettingsLight light = orgStatus.lights.get(0);
-            ShellyLightModel col = getLightModel(thingHandler, 0);
-            col.setRGBX(light.red, light.green, light.blue, light.white);
-            updated |= thingHandler.updateChannel(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_RED, col.getColorState(R));
-            updated |= thingHandler.updateChannel(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GREEN,
-                    col.getColorState(G));
-            updated |= thingHandler.updateChannel(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_BLUE,
-                    col.getColorState(B));
-            updated |= thingHandler.updateChannel(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_WHITE,
-                    col.getColorState(WC));
-            updated |= thingHandler.updateChannel(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_PICKER,
-                    col.getColor() instanceof HSBType hsb ? hsb : UnDefType.NULL);
+            if (thingHandler.getLightModel(0) instanceof ShellyLightModel model) {
+                try {
+                    // TODO check this
+                    String group = CHANNEL_GROUP_COLOR_CONTROL;
+                    model.lock();
+                    model.setRGBX(light.red, light.green, light.blue, light.white);
+                    updated |= thingHandler.updateChannel(group, CHANNEL_COLOR_RED, model.getColorState(R));
+                    updated |= thingHandler.updateChannel(group, CHANNEL_COLOR_GREEN, model.getColorState(G));
+                    updated |= thingHandler.updateChannel(group, CHANNEL_COLOR_BLUE, model.getColorState(B));
+                    updated |= thingHandler.updateChannel(group, CHANNEL_COLOR_WHITE, model.getColorState(CW));
+                    updated |= thingHandler.updateChannel(group, CHANNEL_COLOR_PICKER, model.getColorState());
+                    // TODO we should also update the PRIMARY channels ??
+                } finally {
+                    model.unlock();
+                }
+            }
         }
         return updated;
     }
@@ -990,13 +994,5 @@ public class ShellyComponents {
             return ImperialUnits.FAHRENHEIT.getConverterTo(SIUnits.CELSIUS).convert(temp).doubleValue();
         }
         return temp;
-    }
-
-    protected static ShellyLightModel getLightModel(ShellyThingInterface thingHandler, int lightId)
-            throws ShellyApiException { // TODO do we need multiple light models instances
-        if (thingHandler.getLightModel(lightId) instanceof ShellyLightModel col) {
-            return col;
-        }
-        throw new ShellyApiException("Unable to resolve light model for index " + lightId);
     }
 }

@@ -21,13 +21,14 @@ import static org.openhab.core.util.LightModel.RgbDataType.*;
 
 import java.util.Arrays;
 import java.util.Locale;
+import java.util.Objects;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
-import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
@@ -54,8 +55,8 @@ public class ShellyLightModel extends LightModel {
         R,
         G,
         B,
-        WC, // white (cold)
-        WW // white (warm)
+        CW,
+        WW
     }
 
     /**
@@ -84,13 +85,15 @@ public class ShellyLightModel extends LightModel {
     private Mode shellyMode = Mode.WHITE;
     private int effect = 0;
 
-    private boolean modeDirty;
-    private boolean colorDirty;
-    private boolean brightnessDirty;
-    private boolean gainDirty;
-    private boolean effectDirty;
-    private boolean colorTempDirty;
-    private boolean onOffDirty;
+    private final ReentrantLock lock = new ReentrantLock();
+
+    // initial values used to determine if the model dirty state changes
+    private volatile Mode initialShellyMode;
+    private volatile int initialEffect;
+    private volatile int[] initialRGBx;
+    private volatile @Nullable PercentType initialBrightness;
+    private volatile @Nullable OnOffType initialOnOff;
+    private volatile @Nullable QuantityType<?> initialColorTemperature;
 
     /**
      * Public static class factory that creates a {@link ShellyLightModel} with the correct parameters based on the
@@ -185,6 +188,8 @@ public class ShellyLightModel extends LightModel {
         shellyMode = shellyModeParam;
         setLedOperatingMode(ledOperatingMode);
         rgbxLength = WHITE_ONLY == ledOperatingMode ? 3 : getRGBx().length;
+        initialRGBx = new int[rgbxLength];
+        initialShellyMode = shellyMode;
     }
 
     /**
@@ -195,10 +200,7 @@ public class ShellyLightModel extends LightModel {
     public void handleCommand(Command command) {
         super.handleCommand(command);
         setMode(Mode.COLOR);
-        colorDirty = command instanceof HSBType;
-        gainDirty = colorDirty || command instanceof PercentType || command instanceof IncreaseDecreaseType;
-        onOffDirty = gainDirty || command instanceof OnOffType;
-        if (colorDirty) {
+        if (command instanceof HSBType) {
             refreshCache(Arrays.stream(getRGBx()).mapToInt(d -> (int) Math.round(d)).toArray());
         }
     }
@@ -211,7 +213,6 @@ public class ShellyLightModel extends LightModel {
     public void handleColorTemperatureCommand(Command command) {
         super.handleColorTemperatureCommand(command);
         setMode(Mode.COLOR_TEMP);
-        colorTempDirty = true;
     }
 
     /**
@@ -227,14 +228,13 @@ public class ShellyLightModel extends LightModel {
     public void setBrightness(int brightness) {
         setBrightness((double) brightness);
         setMode(Mode.COLOR_TEMP);
-        brightnessDirty = true;
     }
 
     /**
      * Check if the brightness has been changed since the dirty flags were last cleared.
      */
     public boolean isBrightnessDirty() {
-        return brightnessDirty;
+        return !Objects.equals(initialBrightness, getBrightness(true));
     }
 
     /**
@@ -267,14 +267,13 @@ public class ShellyLightModel extends LightModel {
         rgbx[index.ordinal()] = value;
         setRGBx(rgbx);
         setMode(Mode.COLOR);
-        colorDirty = true;
     }
 
     /**
      * Check if the color has been changed since the dirty flags were last cleared.
      */
     public boolean isColorDirty() {
-        return colorDirty;
+        return !Arrays.equals(initialRGBx, 0, rgbxLength, cacheRGBX, 0, rgbxLength);
     }
 
     /**
@@ -315,14 +314,13 @@ public class ShellyLightModel extends LightModel {
     public void setColorTemp(double kelvin) {
         setMirek(reciprocal(kelvin));
         setMode(Mode.COLOR_TEMP);
-        colorTempDirty = true;
     }
 
     /**
      * Check if the color temperature has been changed since the dirty flags were last cleared.
      */
     public boolean isColorTempDirty() {
-        return colorTempDirty;
+        return !Objects.equals(initialColorTemperature, getColorTemperature());
     }
 
     /**
@@ -337,14 +335,13 @@ public class ShellyLightModel extends LightModel {
      */
     public void setEffect(int value) {
         effect = value;
-        effectDirty = true;
     }
 
     /**
      * Check if the effect has been changed since the dirty flags were last cleared.
      */
     public boolean isEffectDirty() {
-        return effectDirty;
+        return !Objects.equals(initialEffect, effect);
     }
 
     /**
@@ -360,14 +357,13 @@ public class ShellyLightModel extends LightModel {
     public void setGain(double gain) {
         setBrightness((double) gain);
         setMode(Mode.COLOR);
-        gainDirty = true;
     }
 
     /**
      * Check if the gain has been changed since the dirty flags were last cleared.
      */
     public boolean isGainDirty() {
-        return gainDirty;
+        return isBrightnessDirty();
     }
 
     /**
@@ -386,14 +382,13 @@ public class ShellyLightModel extends LightModel {
      */
     public void setMode(Mode shellyMode) {
         this.shellyMode = shellyMode;
-        modeDirty = true;
     }
 
     /**
      * Check if the mode has been changed since the dirty flags were last cleared.
      */
     public boolean isModeDirty() {
-        return modeDirty;
+        return initialShellyMode != shellyMode;
     }
 
     /**
@@ -413,14 +408,13 @@ public class ShellyLightModel extends LightModel {
     @Override
     public void setOnOff(boolean on) {
         super.setOnOff(on);
-        onOffDirty = true;
     }
 
     /**
      * Check if the on/off state has been changed since the dirty flags were last cleared.
      */
     public boolean isOnOffDirty() {
-        return onOffDirty;
+        return !Objects.equals(initialOnOff, getOnOff(true));
     }
 
     /**
@@ -437,7 +431,6 @@ public class ShellyLightModel extends LightModel {
         setRGBx(Arrays.stream(rgbx).mapToDouble(i -> (double) i).toArray());
         refreshCache(rgbx);
         setMode(Mode.COLOR);
-        colorDirty = true;
     }
 
     /**
@@ -455,10 +448,10 @@ public class ShellyLightModel extends LightModel {
     }
 
     /**
-     * Set the full color from a Command. The command can be a comma-separated string of RGBW values, or one of the
-     * predefined color names. And set the dirty flag.
+     * Set the full color from a Command. The command can be a comma-separated string of RGBW values, or one
+     * of the predefined color names. And set the dirty flag.
      */
-    public void setFullColorCommand(Command command) throws IllegalArgumentException {
+    public void setRGBX(Command command) throws IllegalArgumentException {
         String color = command.toString().toLowerCase(Locale.ROOT);
         if (color.contains(",")) {
             setRGBX(color);
@@ -487,22 +480,22 @@ public class ShellyLightModel extends LightModel {
     }
 
     /**
-     * Check if any of the dirty flags are set.
+     * Acquire the lock. And save the current model state to allow for dirty flag checking.
      */
-    public boolean isDirty() {
-        return modeDirty || colorDirty || brightnessDirty || gainDirty || effectDirty || colorTempDirty || onOffDirty;
+    public void lock() {
+        initialRGBx = getRGBX();
+        initialOnOff = getOnOff(true);
+        initialEffect = effect;
+        initialShellyMode = shellyMode;
+        initialBrightness = getBrightness(true);
+        initialColorTemperature = getColorTemperature();
+        lock.lock();
     }
 
     /**
-     * Clear all dirty flags.
+     * Release the lock.
      */
-    public void clearDirtyFlags() {
-        modeDirty = false;
-        colorDirty = false;
-        brightnessDirty = false;
-        gainDirty = false;
-        effectDirty = false;
-        colorTempDirty = false;
-        onOffDirty = false;
+    public void unlock() {
+        lock.unlock();
     }
 }

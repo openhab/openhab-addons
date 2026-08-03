@@ -50,11 +50,9 @@ import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.CoIotSensorTy
 import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyLightModel;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
-import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.State;
-import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -445,7 +443,7 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
         Map<String, State> updates = new TreeMap<>();
         logger.debug("{}: {} CoAP sensor updates received", thingName, sensorUpdates.size());
         int failed = 0;
-        ShellyLightModel col = getLightModel(thingHandler, 0); // TODO do we need multiple LightModel instances?
+
         for (CoIotSensor s : sensorUpdates) {
             CoIotDescrSen sen = sensorMap.get(s.id);
             if (sen == null) {
@@ -494,11 +492,20 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
                 thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_LAST_UPDATE, getTimestamp());
             }
 
-            if (profile.isLight && profile.inColor && col.isRgbValid()) {
-                // Update color picker from single values
-                if (col.isRgbValid()) { // TODO check logic
-                    thingHandler.updateChannel(mkChannelId(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_PICKER),
-                            col.getColor() instanceof HSBType hsb ? hsb : UnDefType.NULL, false);
+            if (profile.isLight && profile.inColor) {
+                if (thingHandler.getLightModel(0) instanceof ShellyLightModel model) {
+                    try {
+                        model.lock();
+                        if (model.isRgbValid()) {
+                            // TODO check logic
+                            // Update color picker from single values
+                            thingHandler.updateChannel(mkChannelId(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_PICKER),
+                                    model.getColorState(), false);
+                            // TODO we should also update the PRIMARY channels ??
+                        }
+                    } finally {
+                        model.unlock();
+                    }
                 }
             }
 
@@ -681,13 +688,5 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
 
     private static String completeUrl(InetAddress ipAddress, int port, String uri) {
         return "coap://" + ipAddress.getHostAddress() + ":" + port + uri;
-    }
-
-    protected static ShellyLightModel getLightModel(ShellyThingInterface thingHandler, int lightId)
-            throws ShellyApiException { // TODO do we need multiple LightModel instances?
-        if (thingHandler.getLightModel(lightId) instanceof ShellyLightModel col) {
-            return col;
-        }
-        throw new ShellyApiException("Unable to resolve light model for index " + lightId);
     }
 }

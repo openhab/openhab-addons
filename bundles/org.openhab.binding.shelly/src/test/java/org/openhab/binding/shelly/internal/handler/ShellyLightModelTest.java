@@ -52,9 +52,14 @@ class ShellyLightModelTest {
         ShellyLightModel model = ShellyLightModel.create(THING_TYPE_SHELLYBULB,
                 new ShellyDeviceProfile(THING_TYPE_SHELLYBULB), STEP);
 
-        model.setMode(Mode.COLOR);
-        model.clearDirtyFlags();
+        model.setMode(Mode.WHITE);
+        model.lock();
 
+        model.setMode(Mode.COLOR);
+        assertTrue(model.isModeDirty());
+        model.unlock();
+
+        model.lock();
         assertFalse(model.isModeDirty());
 
         model.setMode(Mode.COLOR_TEMP);
@@ -63,9 +68,11 @@ class ShellyLightModelTest {
     }
 
     @Test
-    void clearDirtyFlagsResetsAllFlags() {
+    void acquireLockResetsAllFlags() {
         ShellyLightModel model = ShellyLightModel.create(THING_TYPE_SHELLYBULB,
                 new ShellyDeviceProfile(THING_TYPE_SHELLYBULB), STEP);
+
+        model.lock();
 
         model.setMode(Mode.COLOR_TEMP);
         model.setColor(R, 255);
@@ -75,7 +82,8 @@ class ShellyLightModelTest {
         model.setColorTemp(4000);
         model.setOnOff(true);
 
-        model.clearDirtyFlags();
+        model.unlock();
+        model.lock();
 
         assertFalse(model.isModeDirty());
         assertFalse(model.isColorDirty());
@@ -91,15 +99,17 @@ class ShellyLightModelTest {
         ShellyLightModel model = ShellyLightModel.create(THING_TYPE_SHELLYBULB,
                 new ShellyDeviceProfile(THING_TYPE_SHELLYBULB), STEP);
 
+        model.lock();
+
         model.setColor(R, 255);
         model.setColor(G, 128);
         model.setColor(B, 0);
-        model.setColor(WC, 64);
+        model.setColor(CW, 64);
 
         assertEquals(255, model.getColor(R));
         assertEquals(128, model.getColor(G));
         assertEquals(0, model.getColor(B));
-        assertEquals(64, model.getColor(WC));
+        assertEquals(64, model.getColor(CW));
         assertTrue(model.isColorDirty());
     }
 
@@ -108,12 +118,14 @@ class ShellyLightModelTest {
         ShellyLightModel model = ShellyLightModel.create(THING_TYPE_SHELLYBULB,
                 new ShellyDeviceProfile(THING_TYPE_SHELLYBULB), STEP);
 
+        model.lock();
+
         model.setRGBX("255, 128, 0, 64");
 
         assertEquals(255, model.getColor(R));
         assertEquals(128, model.getColor(G));
         assertEquals(0, model.getColor(B));
-        assertEquals(64, model.getColor(WC));
+        assertEquals(64, model.getColor(CW));
         assertTrue(model.isColorDirty());
     }
 
@@ -130,6 +142,8 @@ class ShellyLightModelTest {
                 new ShellyDeviceProfile(THING_TYPE_SHELLYBULB), STEP);
 
         model.setMode(Mode.COLOR_TEMP);
+
+        model.lock();
         model.setRGBX(255, 0, 0, 0);
 
         assertEquals(Mode.COLOR, model.getMode());
@@ -202,21 +216,33 @@ class ShellyLightModelTest {
     }
 
     @Test
-    void handleCommandOnSetsOnOffDirtyOnly() {
+    void handleCommandOnSetsOnlyOnOffDirtyAndBrightnessDirty() {
         ShellyLightModel model = ShellyLightModel.create(THING_TYPE_SHELLYDUO,
                 new ShellyDeviceProfile(THING_TYPE_SHELLYDUO), STEP);
 
+        // Set initial brightness
+        model.setBrightness(50);
+
+        // Turn ON (this sets mode=COLOR)
         model.handleCommand(OnOffType.ON);
 
-        assertTrue(model.isOnOffDirty());
-        assertFalse(model.isColorDirty());
-        assertFalse(model.isBrightnessDirty());
+        // Capture initial state
+        model.lock();
+
+        // Turn OFF (this sets brightness=0)
+        model.handleCommand(OnOffType.OFF);
+
+        assertTrue(model.isOnOffDirty(), "ON/OFF should be dirty");
+        assertTrue(model.isBrightnessDirty(), "Brightness changes when turning OFF");
+        assertFalse(model.isColorDirty(), "Color should not be dirty for a white-only lamp");
     }
 
     @Test
     void handleCommandPercentMarksGainAndOnOffDirty() {
         ShellyLightModel model = ShellyLightModel.create(THING_TYPE_SHELLYDUO,
                 new ShellyDeviceProfile(THING_TYPE_SHELLYDUO), STEP);
+
+        model.lock();
 
         model.handleCommand(new PercentType(60));
 
@@ -230,6 +256,8 @@ class ShellyLightModelTest {
         ShellyLightModel model = ShellyLightModel.create(THING_TYPE_SHELLYDUO,
                 new ShellyDeviceProfile(THING_TYPE_SHELLYDUO), STEP);
 
+        model.lock();
+
         model.handleCommand(IncreaseDecreaseType.INCREASE);
 
         assertTrue(model.isGainDirty());
@@ -241,6 +269,8 @@ class ShellyLightModelTest {
     void handleCommandHsbMarksColorGainAndOnOffDirty() {
         ShellyLightModel model = ShellyLightModel.create(THING_TYPE_SHELLYBULB,
                 new ShellyDeviceProfile(THING_TYPE_SHELLYBULB), STEP);
+
+        model.lock();
 
         model.handleCommand(HSBType.RED);
 

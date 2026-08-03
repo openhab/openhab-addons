@@ -27,12 +27,10 @@ import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.CoIotSensor;
 import org.openhab.binding.shelly.internal.handler.ShellyLightModel;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
-import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -205,13 +203,18 @@ public class Shelly1CoIoTVersion1 extends Shelly1CoIoTProtocol implements Shelly
                     case "temp": // Shelly Bulb
                     case "colortemperature": // Shelly Duo
                         // TODO check logic
-                        ShellyLightModel col = getLightModelForSensor(sen); // TODO do we need multiple light models?
-                        col.setColorTemp(getDouble(s.value));
-                        updateChannel(updates,
-                                profile.inColor ? CHANNEL_GROUP_COLOR_CONTROL : CHANNEL_GROUP_WHITE_CONTROL,
-                                CHANNEL_COLOR_TEMP,
-                                col.getColorTemperaturePercent() instanceof PercentType pct ? pct : UnDefType.NULL);
-                        // TODO update CHANNEL_COLOR_TEMP_ABS
+                        if (getLightModelForSensor(sen) instanceof ShellyLightModel model) {
+                            try {
+                                model.lock();
+                                model.setColorTemp(getDouble(s.value));
+                                updateChannel(updates,
+                                        profile.inColor ? CHANNEL_GROUP_COLOR_CONTROL : CHANNEL_GROUP_WHITE_CONTROL,
+                                        CHANNEL_COLOR_TEMP, model.getColorTemperaturePercentState());
+                                // TODO update the PRIMARY channels
+                            } finally {
+                                model.unlock();
+                            }
+                        }
                         break;
                     case "sensor state": // Shelly Gas
                         updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_SSTATE, getStringType(s.valueStr));

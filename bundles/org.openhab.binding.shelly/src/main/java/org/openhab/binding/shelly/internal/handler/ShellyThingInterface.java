@@ -129,7 +129,7 @@ public interface ShellyThingInterface {
 
     void startScan();
 
-    default @Nullable ShellyLightModel getLightModel(int lightId) {
-        return null; // TODO do we need multiple LightModel instances?
+    default ShellyLightModel getLightModel(int lightId) {
+        throw new UnsupportedOperationException("LightModel is not supported for this device");
     }
 }

@@ -157,8 +157,8 @@ public class Shelly1CoIoTProtocol {
                         updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_BLUE, col.getColorState(B));
                         break;
                     case "white":
-                        col.setColor(WC, (int) s.value);
-                        updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_WHITE, col.getColorState(WC));
+                        col.setColor(CW, (int) s.value);
+                        updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_WHITE, col.getColorState(CW));
                         break;
                     case "gain":
                         col.setGain((int) s.value);
@@ -394,11 +394,7 @@ public class Shelly1CoIoTProtocol {
     }
 
     protected ShellyLightModel getLightModelForSensor(CoIotDescrSen sen) {
-        // TODO do we need multiple light models instances?
-        int lightId = getIdFromBlk(sen) - 1; // getIdFromBlk() is 1 based
-        if (lightId >= 0 && thingHandler.getLightModel(lightId) instanceof ShellyLightModel model) {
-            return model;
-        }
-        throw new IllegalArgumentException("Unable to resolve light index for sensor " + sen.id);
+        // TODO check this logic
+        return thingHandler.getLightModel(getIdFromBlk(sen) - 1); // getIdFromBlk() is 1 based
     }
 }
