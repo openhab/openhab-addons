@@ -81,8 +81,16 @@ public class DimmableLightDevice extends BaseDevice {
                 updateOnOff(OnOffType.from(Boolean.valueOf(data.toString())));
                 break;
             case LevelControlCluster.ATTRIBUTE_CURRENT_LEVEL:
-                if (lastOnOffState == OnOffType.ON) {
-                    updateLevel(ValueUtils.levelToPercent(((Double) data).intValue()));
+                int level = ((Double) data).intValue();
+                PercentType percent = ValueUtils.levelToPercent(level);
+                if (level > 1) {
+                    lastOnOffState = OnOffType.ON;
+                    updateLevel(percent);
+                } else {
+                    if (lastOnOffState == OnOffType.ON) {
+                        lastOnOffState = OnOffType.OFF;
+                        updateOnOff(OnOffType.OFF);
+                    }
                 }
                 break;
             default:

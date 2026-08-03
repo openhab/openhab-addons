@@ -43,8 +43,8 @@ public class ValueUtils {
      * @return the scaled {@link PercentType}
      */
     public static PercentType levelToPercent(int level) {
-        int result = (int) Math.round(level * 100.0 / 254.0);
-        return level == 0 ? PercentType.ZERO : new PercentType(Math.max(result, 1));
+        int result = (int) (level * 100.0 / 254.0);
+        return level <= 0 ? PercentType.ZERO : new PercentType(Math.max(result, 1));
     }
 
     /**

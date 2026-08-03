@@ -144,6 +144,28 @@ class DimmableLightDeviceTest {
     }
 
     @Test
+    void testHandleMatterEventLevelMinWhenOffIgnored() {
+        // Device is OFF. Matter currentLevel=1 (min level when off) should NOT send to item.
+        dimmerDevice.handleMatterEvent("levelControl", "currentLevel", Double.valueOf(1));
+        verify(dimmerItem, Mockito.never()).send(any(PercentType.class), eq(MATTER_SOURCE));
+    }
+
+    @Test
+    void testHandleMatterEventLevelWhenOff() {
+        // Device is OFF. Matter currentLevel=130 (external dimming command) SHOULD send 51% to item.
+        dimmerDevice.handleMatterEvent("levelControl", "currentLevel", Double.valueOf(130));
+        verify(dimmerItem).send(new PercentType(51), MATTER_SOURCE);
+    }
+
+    @Test
+    void testHandleMatterEventLevelTurnsOffWhenMinLevel() {
+        // Device is ON. Matter currentLevel=1 (dimmed to min level) SHOULD turn item OFF.
+        dimmerDevice.handleMatterEvent("onOff", "onOff", true);
+        dimmerDevice.handleMatterEvent("levelControl", "currentLevel", Double.valueOf(1));
+        verify(dimmerItem).send(OnOffType.OFF, MATTER_SOURCE);
+    }
+
+    @Test
     void testUpdateStateWithPercent() {
         dimmerDevice.updateState(dimmerItem, new PercentType(100));
         List<AttributeState> expectedStates = new ArrayList<>();
