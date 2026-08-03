@@ -14,6 +14,8 @@ package org.openhab.binding.matter.internal.controller.devices.converter;
 
 import static org.openhab.binding.matter.internal.MatterBindingConstants.*;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -29,6 +31,7 @@ import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage
 import org.openhab.binding.matter.internal.client.dto.ws.EventTriggeredMessage;
 import org.openhab.binding.matter.internal.handler.MatterBaseThingHandler;
 import org.openhab.core.library.CoreItemFactory;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -53,14 +56,21 @@ import org.openhab.core.types.UnDefType;
 @NonNullByDefault
 public class ValveConfigurationAndControlConverter extends GenericConverter<ValveConfigurationAndControlCluster> {
 
+    // Matter timestamps count from 2000-01-01 UTC, which is the Unix epoch plus 10957 days.
+    private static final long MATTER_EPOCH_OFFSET_SECONDS = 946684800L;
+
     private final boolean levelSupported;
+    private final boolean timeSyncSupported;
     private final int levelStep;
     private final Set<String> activeFaults = new LinkedHashSet<>();
+    private @Nullable Long autoCloseTime;
+    private @Nullable Integer remainingDuration;
 
     public ValveConfigurationAndControlConverter(ValveConfigurationAndControlCluster cluster,
             MatterBaseThingHandler handler, int endpointNumber, String labelPrefix) {
         super(cluster, handler, endpointNumber, labelPrefix);
         this.levelSupported = cluster.featureMap != null && cluster.featureMap.level;
+        this.timeSyncSupported = cluster.featureMap != null && cluster.featureMap.timeSync;
         // LevelStep is a fixed attribute, so the value read at startup stays valid. It defaults to 1 (every
         // level supported) when the valve does not have the attribute.
         this.levelStep = cluster.levelStep == null ? 1 : cluster.levelStep;
@@ -97,11 +107,10 @@ public class ValveConfigurationAndControlConverter extends GenericConverter<Valv
                 .withType(CHANNEL_VALVE_DURATION).build();
         channels.put(durationChannel, null);
 
-        Channel remainingChannel = ChannelBuilder
-                .create(new ChannelUID(channelGroupUID, CHANNEL_ID_VALVE_REMAINING_DURATION),
-                        CoreItemFactory.NUMBER + ":Time")
-                .withType(CHANNEL_VALVE_REMAINING_DURATION).build();
-        channels.put(remainingChannel, null);
+        Channel closeTimeChannel = ChannelBuilder
+                .create(new ChannelUID(channelGroupUID, CHANNEL_ID_VALVE_CLOSE_TIME), CoreItemFactory.DATETIME)
+                .withType(CHANNEL_VALVE_CLOSE_TIME).build();
+        channels.put(closeTimeChannel, null);
 
         Channel faultChannel = ChannelBuilder.create(new ChannelUID(channelGroupUID, CHANNEL_ID_VALVE_FAULT), null)
                 .withType(CHANNEL_VALVE_FAULT).withKind(ChannelKind.TRIGGER).build();
@@ -170,16 +179,16 @@ public class ValveConfigurationAndControlConverter extends GenericConverter<Valv
                     updateState(CHANNEL_ID_VALVE_LEVEL, new PercentType(number.intValue()));
                 }
                 break;
+            case ValveConfigurationAndControlCluster.ATTRIBUTE_AUTO_CLOSE_TIME:
+                autoCloseTime = message.value instanceof Number autoClose ? autoClose.longValue() : null;
+                updateCloseTime();
+                break;
             case ValveConfigurationAndControlCluster.ATTRIBUTE_REMAINING_DURATION:
-                updateDuration(CHANNEL_ID_VALVE_REMAINING_DURATION, message.value);
+                remainingDuration = message.value instanceof Number remaining ? remaining.intValue() : null;
+                updateCloseTime();
                 break;
             case ValveConfigurationAndControlCluster.ATTRIBUTE_DEFAULT_OPEN_DURATION:
                 updateDuration(CHANNEL_ID_VALVE_DURATION, message.value);
-                break;
-            case ValveConfigurationAndControlCluster.ATTRIBUTE_VALVE_FAULT:
-                if (message.value instanceof ValveFaultBitmap faultBitmap) {
-                    triggerFault(faultBitmap);
-                }
                 break;
             default:
                 break;
@@ -205,7 +214,10 @@ public class ValveConfigurationAndControlConverter extends GenericConverter<Valv
         if (levelSupported && initializingCluster.currentLevel != null) {
             updateState(CHANNEL_ID_VALVE_LEVEL, new PercentType(initializingCluster.currentLevel));
         }
-        updateDuration(CHANNEL_ID_VALVE_REMAINING_DURATION, initializingCluster.remainingDuration);
+        autoCloseTime = initializingCluster.autoCloseTime == null ? null
+                : initializingCluster.autoCloseTime.longValue();
+        remainingDuration = initializingCluster.remainingDuration;
+        updateCloseTime();
         updateDuration(CHANNEL_ID_VALVE_DURATION, initializingCluster.defaultOpenDuration);
     }
 
@@ -252,6 +264,30 @@ public class ValveConfigurationAndControlConverter extends GenericConverter<Valv
                 targetState == null ? UnDefType.UNDEF : new DecimalType(targetState.getValue()));
     }
 
+    /**
+     * Publishes the time at which the valve will close.
+     *
+     * A valve with the TimeSync feature reports AutoCloseTime, which is the valve's own answer and is authoritative
+     * including when it is null, so it is the only source used on such a valve. Otherwise the time is derived from
+     * RemainingDuration, which the cluster reports only when it becomes or stops being null, when it reaches 0, when
+     * it increases, or when the closing time changes -- published as a remaining duration it would sit at a stale
+     * value throughout the countdown, whereas a close time stays correct without being reported at all.
+     */
+    private void updateCloseTime() {
+        Long autoClose = autoCloseTime;
+        Integer remaining = remainingDuration;
+        State state = UnDefType.UNDEF;
+        if (timeSyncSupported) {
+            if (autoClose != null) {
+                state = new DateTimeType(
+                        Instant.ofEpochSecond(MATTER_EPOCH_OFFSET_SECONDS).plus(autoClose, ChronoUnit.MICROS));
+            }
+        } else if (remaining != null && remaining > 0) {
+            state = new DateTimeType(Instant.now().plusSeconds(remaining));
+        }
+        updateState(CHANNEL_ID_VALVE_CLOSE_TIME, state);
+    }
+
     private void updateDuration(String channelId, @Nullable Object value) {
         State state = value instanceof Number number ? new QuantityType<>(number.longValue(), Units.SECOND)
                 : UnDefType.UNDEF;
@@ -286,10 +322,9 @@ public class ValveConfigurationAndControlConverter extends GenericConverter<Valv
      * Fires one trigger event per newly set fault bit, so each payload is a single fault name that rules can match
      * directly, rather than a combined comma-separated payload.
      *
-     * Both the ValveFault attribute and the ValveFault event are optional and independent, so a valve may report a
-     * fault through either or both. Only bits that were not already set are fired, which keeps a valve that reports
-     * both from triggering everything twice, and stops an unrelated change to the bitmap from re-firing faults that
-     * were already reported.
+     * The ValveFault event carries the whole fault bitmap rather than just what changed, so only bits that were not
+     * already set are fired. That stops an unrelated fault appearing, or one of several clearing, from re-firing
+     * faults that have already been reported.
      */
     private void triggerFault(@Nullable ValveFaultBitmap fault) {
         Set<String> faults = new LinkedHashSet<>();

@@ -224,9 +224,9 @@ public class MatterBindingConstants {
     public static final String CHANNEL_ID_VALVE_DURATION = "valve-duration";
     public static final ChannelTypeUID CHANNEL_VALVE_DURATION = new ChannelTypeUID(BINDING_ID,
             CHANNEL_ID_VALVE_DURATION);
-    public static final String CHANNEL_ID_VALVE_REMAINING_DURATION = "valve-remaining-duration";
-    public static final ChannelTypeUID CHANNEL_VALVE_REMAINING_DURATION = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_ID_VALVE_REMAINING_DURATION);
+    public static final String CHANNEL_ID_VALVE_CLOSE_TIME = "valve-close-time";
+    public static final ChannelTypeUID CHANNEL_VALVE_CLOSE_TIME = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_VALVE_CLOSE_TIME);
     public static final String CHANNEL_ID_VALVE_FAULT = "valve-fault";
     public static final ChannelTypeUID CHANNEL_VALVE_FAULT = new ChannelTypeUID(BINDING_ID, CHANNEL_ID_VALVE_FAULT);
     public static final String CHANNEL_ID_FANCONTROL_PERCENT = "fancontrol-percent";

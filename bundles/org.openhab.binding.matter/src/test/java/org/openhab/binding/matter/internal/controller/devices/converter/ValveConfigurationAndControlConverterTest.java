@@ -13,6 +13,7 @@
 package org.openhab.binding.matter.internal.controller.devices.converter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -20,19 +21,24 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.time.Instant;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.ValveConfigurationAndControlCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.ValveConfigurationAndControlCluster.FeatureMap;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.ValveConfigurationAndControlCluster.ValveFaultBitmap;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.ValveConfigurationAndControlCluster.ValveStateEnum;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
+import org.openhab.binding.matter.internal.client.dto.ws.EventTriggeredMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.Path;
+import org.openhab.binding.matter.internal.client.dto.ws.TriggerEvent;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -41,6 +47,7 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.types.State;
 import org.openhab.core.types.StateDescription;
 import org.openhab.core.types.UnDefType;
 
@@ -69,7 +76,7 @@ class ValveConfigurationAndControlConverterTest extends BaseMatterConverterTest 
     void testCreateChannels() {
         ChannelGroupUID channelGroupUID = new ChannelGroupUID("matter:node:test:12345:1");
         Map<Channel, @Nullable StateDescription> channels = converter.createChannels(channelGroupUID);
-        // state, current-state, target-state, duration, remaining-duration, fault -- no level channel without the
+        // state, current-state, target-state, duration, close-time, fault -- no level channel without the
         // Level feature
         assertEquals(6, channels.size());
         assertTrue(channels.keySet().stream()
@@ -79,7 +86,7 @@ class ValveConfigurationAndControlConverterTest extends BaseMatterConverterTest 
         assertTrue(channels.keySet().stream()
                 .anyMatch(c -> "matter:node:test:12345:1#valve-target-state".equals(c.getUID().toString())));
         assertTrue(channels.keySet().stream()
-                .anyMatch(c -> "matter:node:test:12345:1#valve-remaining-duration".equals(c.getUID().toString())));
+                .anyMatch(c -> "matter:node:test:12345:1#valve-close-time".equals(c.getUID().toString())));
         assertTrue(channels.keySet().stream()
                 .noneMatch(c -> "matter:node:test:12345:1#valve-level".equals(c.getUID().toString())));
     }
@@ -218,35 +225,45 @@ class ValveConfigurationAndControlConverterTest extends BaseMatterConverterTest 
         verify(mockHandler, times(0)).updateState(eq(1), eq("valve-state"), eq(OnOffType.OFF));
     }
 
+    private EventTriggeredMessage valveFaultEvent(ValveFaultBitmap fault) {
+        EventTriggeredMessage message = new EventTriggeredMessage();
+        message.path = new Path();
+        message.path.eventName = "valveFault";
+        TriggerEvent event = new TriggerEvent();
+        event.data = new ValveConfigurationAndControlCluster.ValveFault(fault);
+        message.events = new TriggerEvent[] { event };
+        return message;
+    }
+
     @Test
     void testOnEventValveFaultFiresOneEventPerBit() {
-        AttributeChangedMessage message = new AttributeChangedMessage();
-        message.path = new Path();
-        message.path.attributeName = ValveConfigurationAndControlCluster.ATTRIBUTE_VALVE_FAULT;
-        message.value = new ValveFaultBitmap(false, true, true, false, false, false);
-        converter.onEvent(message);
+        converter.onEvent(valveFaultEvent(new ValveFaultBitmap(false, true, true, false, false, false)));
         verify(mockHandler, times(1)).triggerChannel(eq(1), eq("valve-fault"), eq("blocked"));
         verify(mockHandler, times(1)).triggerChannel(eq(1), eq("valve-fault"), eq("leaking"));
     }
 
     @Test
     void testOnEventValveFaultOnlyFiresNewlySetBits() {
+        converter.onEvent(valveFaultEvent(new ValveFaultBitmap(false, true, false, false, false, false)));
+        // A second fault appearing must not re-fire the one that was already reported.
+        converter.onEvent(valveFaultEvent(new ValveFaultBitmap(false, true, true, false, false, false)));
+        verify(mockHandler, times(1)).triggerChannel(eq(1), eq("valve-fault"), eq("blocked"));
+        verify(mockHandler, times(1)).triggerChannel(eq(1), eq("valve-fault"), eq("leaking"));
+        // Once cleared, the same fault occurring again is reported.
+        converter.onEvent(valveFaultEvent(new ValveFaultBitmap(false, false, false, false, false, false)));
+        converter.onEvent(valveFaultEvent(new ValveFaultBitmap(false, true, false, false, false, false)));
+        verify(mockHandler, times(2)).triggerChannel(eq(1), eq("valve-fault"), eq("blocked"));
+    }
+
+    @Test
+    void testOnEventValveFaultAttributeDoesNotTrigger() {
         AttributeChangedMessage message = new AttributeChangedMessage();
         message.path = new Path();
         message.path.attributeName = ValveConfigurationAndControlCluster.ATTRIBUTE_VALVE_FAULT;
         message.value = new ValveFaultBitmap(false, true, false, false, false, false);
         converter.onEvent(message);
-        // A second fault appearing must not re-fire the one that was already reported.
-        message.value = new ValveFaultBitmap(false, true, true, false, false, false);
-        converter.onEvent(message);
-        verify(mockHandler, times(1)).triggerChannel(eq(1), eq("valve-fault"), eq("blocked"));
-        verify(mockHandler, times(1)).triggerChannel(eq(1), eq("valve-fault"), eq("leaking"));
-        // Once cleared, the same fault occurring again is reported.
-        message.value = new ValveFaultBitmap(false, false, false, false, false, false);
-        converter.onEvent(message);
-        message.value = new ValveFaultBitmap(false, true, false, false, false, false);
-        converter.onEvent(message);
-        verify(mockHandler, times(2)).triggerChannel(eq(1), eq("valve-fault"), eq("blocked"));
+        // Faults are reported through the ValveFault event only, so the attribute must not trigger a second time.
+        verify(mockHandler, never()).triggerChannel(eq(1), eq("valve-fault"), anyString());
     }
 
     @Test
@@ -283,14 +300,19 @@ class ValveConfigurationAndControlConverterTest extends BaseMatterConverterTest 
     }
 
     @Test
-    void testOnEventRemainingDuration() {
+    void testOnEventRemainingDurationDerivesCloseTime() {
         AttributeChangedMessage message = new AttributeChangedMessage();
         message.path = new Path();
         message.path.attributeName = ValveConfigurationAndControlCluster.ATTRIBUTE_REMAINING_DURATION;
         message.value = 120;
+        Instant before = Instant.now();
         converter.onEvent(message);
-        verify(mockHandler, times(1)).updateState(eq(1), eq("valve-remaining-duration"),
-                eq(new QuantityType<>(120L, Units.SECOND)));
+        Instant after = Instant.now();
+        ArgumentCaptor<State> state = ArgumentCaptor.forClass(State.class);
+        verify(mockHandler, times(1)).updateState(eq(1), eq("valve-close-time"), state.capture());
+        Instant closeTime = ((DateTimeType) state.getValue()).getInstant();
+        assertFalse(closeTime.isBefore(before.plusSeconds(120)));
+        assertFalse(closeTime.isAfter(after.plusSeconds(120)));
     }
 
     @Test
@@ -300,6 +322,28 @@ class ValveConfigurationAndControlConverterTest extends BaseMatterConverterTest 
         message.path.attributeName = ValveConfigurationAndControlCluster.ATTRIBUTE_REMAINING_DURATION;
         message.value = null;
         converter.onEvent(message);
-        verify(mockHandler, times(1)).updateState(eq(1), eq("valve-remaining-duration"), eq(UnDefType.UNDEF));
+        verify(mockHandler, times(1)).updateState(eq(1), eq("valve-close-time"), eq(UnDefType.UNDEF));
+    }
+
+    @Test
+    void testOnEventAutoCloseTimeIsPreferredOnTimeSyncValve() {
+        mockCluster.featureMap = new FeatureMap(true, false);
+        ValveConfigurationAndControlConverter tsConverter = new ValveConfigurationAndControlConverter(mockCluster,
+                mockHandler, 1, "TestLabel");
+        AttributeChangedMessage message = new AttributeChangedMessage();
+        message.path = new Path();
+        // Matter timestamps count from 2000-01-01 UTC, so this is 2026-01-01T00:00:00Z.
+        message.path.attributeName = ValveConfigurationAndControlCluster.ATTRIBUTE_AUTO_CLOSE_TIME;
+        message.value = 820540800000000L;
+        tsConverter.onEvent(message);
+        verify(mockHandler, times(1)).updateState(eq(1), eq("valve-close-time"),
+                eq(new DateTimeType(Instant.parse("2026-01-01T00:00:00Z"))));
+
+        // On a TimeSync valve AutoCloseTime is authoritative, so RemainingDuration must not derive over it.
+        message.path.attributeName = ValveConfigurationAndControlCluster.ATTRIBUTE_REMAINING_DURATION;
+        message.value = 120;
+        tsConverter.onEvent(message);
+        verify(mockHandler, times(2)).updateState(eq(1), eq("valve-close-time"),
+                eq(new DateTimeType(Instant.parse("2026-01-01T00:00:00Z"))));
     }
 }

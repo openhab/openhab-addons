@@ -352,12 +352,13 @@
 		<state pattern="%d %unit%"/>
 	</channel-type>
 
-	<channel-type id="valve-remaining-duration">
-		<item-type>Number:Time</item-type>
-		<label>Valve Remaining Duration</label>
-		<description>The remaining time until the valve automatically closes</description>
+	<channel-type id="valve-close-time">
+		<item-type>DateTime</item-type>
+		<label>Valve Close Time</label>
+		<description>The time at which the valve will automatically close, undefined when no automatic close is
+			pending</description>
 		<category>Time</category>
-		<state readOnly="true" pattern="%d %unit%"/>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="valve-fault">
