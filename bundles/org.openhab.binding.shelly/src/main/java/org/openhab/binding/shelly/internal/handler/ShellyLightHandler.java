@@ -102,14 +102,11 @@ public class ShellyLightHandler extends ShellyBaseHandler {
 
     private ShellyLightModel getOrCreateLightModel(int lightId) {
         ShellyLightModel model = lightModels.get(lightId);
-        String loggerVerb = "Loaded";
         if (model == null) {
             // create a new entry
-            model = ShellyLightModel.create(thing.getUID(), lightId, thing.getThingTypeUID(), profile, DIM_STEPSIZE);
+            model = ShellyLightModel.create(thingName, lightId, thing.getThingTypeUID(), profile, DIM_STEPSIZE);
             lightModels.put(lightId, model);
-            loggerVerb = "Created";
         }
-        logger.debug("{}: {} lightId {} light model [{}]", thingName, loggerVerb, lightId, model);
         return model;
     }
 

@@ -33,7 +33,6 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.thing.ThingUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -87,7 +86,7 @@ public class ShellyLightModel extends LightModel {
     private final int[] cacheRGBX = new int[RGBX.values().length];
     private final int rgbxLength;
     private final int lightId;
-    private final ThingUID owner;
+    private final String thingName;
     private final ReentrantLock lock = new ReentrantLock();
 
     private Mode shellyMode = Mode.WHITE;
@@ -108,10 +107,10 @@ public class ShellyLightModel extends LightModel {
      * Public static class factory that creates a {@link ShellyLightModel} with the correct parameters based on the
      * given {@link ThingTypeUID} and {@link ShellyDeviceProfile}.
      */
-    public static ShellyLightModel create(ThingUID owner, int lightId, ThingTypeUID thingTypeUID,
+    public static ShellyLightModel create(String thingName, int lightId, ThingTypeUID thingTypeUID,
             ShellyDeviceProfile profile, double stepSize) {
         Parameters params = getParams(thingTypeUID, profile.device.profile);
-        return new ShellyLightModel(owner, lightId, params.lightCapabilities, params.rgbDataType, null,
+        return new ShellyLightModel(thingName, lightId, params.lightCapabilities, params.rgbDataType, null,
                 reciprocal(profile.maxTemp), reciprocal(profile.minTemp), stepSize, null, null, params.ledOperatingMode,
                 params.shellyMode);
     }
@@ -189,7 +188,7 @@ public class ShellyLightModel extends LightModel {
      * @param ledOperatingMode
      * @param shellyMode
      */
-    private ShellyLightModel(ThingUID ownerArg, int lightIdArg, LightCapabilities lightCapabilities,
+    private ShellyLightModel(String thingName, int lightId, LightCapabilities lightCapabilities,
             RgbDataType rgbDataType, @Nullable Double minimumOnBrightness, @Nullable Double mirekControlCoolest,
             @Nullable Double mirekControlWarmest, @Nullable Double stepSize, @Nullable Double coolWhiteLedMirek,
             @Nullable Double warmWhiteLedMirek, LedOperatingMode ledOperatingMode, Mode shellyModeParam)
@@ -197,8 +196,8 @@ public class ShellyLightModel extends LightModel {
         super(lightCapabilities, rgbDataType, minimumOnBrightness, mirekControlCoolest, mirekControlWarmest, stepSize,
                 coolWhiteLedMirek, warmWhiteLedMirek);
 
-        owner = ownerArg;
-        lightId = lightIdArg;
+        this.thingName = thingName;
+        this.lightId = lightId;
         shellyMode = shellyModeParam;
         setLedOperatingMode(ledOperatingMode);
         rgbxLength = WHITE_ONLY == ledOperatingMode ? 3 : getRGBx().length;
@@ -206,8 +205,8 @@ public class ShellyLightModel extends LightModel {
         initialShellyMode = shellyMode;
 
         logger.debug(
-                "Created ShellyLightModel for {} lightId={} with capabilities={}, rgbDataType={}, ledOperatingMode={}, shellyMode={}",
-                owner, lightId, lightCapabilities, rgbDataType, ledOperatingMode, initialShellyMode);
+                "{}: Light model for {} lightId={}: Created with capabilities={}, rgbDataType={}, ledOperatingMode={}, shellyMode={}",
+                thingName, lightId, lightCapabilities, rgbDataType, ledOperatingMode, initialShellyMode);
     }
 
     /**
@@ -542,7 +541,7 @@ public class ShellyLightModel extends LightModel {
         initialShellyMode = shellyMode;
         initialBrightness = getBrightness(true);
         initialColorTemperature = getColorTemperature();
-        logger.debug("Model for thing {} lightId {}: lock acquired by {}", owner, lightId, this.lockContext);
+        logger.debug("{}: Light model for lightId {}: Lock acquired by {}", thingName, lightId, lockContext);
     }
 
     /**
@@ -550,8 +549,8 @@ public class ShellyLightModel extends LightModel {
      */
     public void unlock() {
         if (isDirty()) {
-            logger.debug("Model for thing {} lightId {}: updated by {}\nInitial: [{}]\nFinal: [{}]", owner, lightId,
-                    dataSource, initialSnapshot, this);
+            logger.debug("{}: Light model for lightId {}: Updated by {}\n - Old: [{}]\n - New: [{}]", thingName,
+                    lightId, dataSource, initialSnapshot, this);
         }
         lock.unlock();
     }
