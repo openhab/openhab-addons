@@ -428,15 +428,6 @@ class Clip2DtoTest {
         // create resource one
         Resource one = new Resource(ResourceType.LIGHT).setId("AARDVARK");
         assertNotNull(one);
-        // preset the minimum dimming level
-        try {
-            Dimming dimming = new Dimming().setMinimumDimmingLevel(MINIMUM_DIMMING_LEVEL);
-            Field dimming2 = one.getClass().getDeclaredField("dimming");
-            dimming2.setAccessible(true);
-            dimming2.set(one, dimming);
-        } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-            fail();
-        }
         Setters.setColorXy(one, HSBType.RED, null);
         one.setBrightness(PercentType.HUNDRED);
         ColorXy xy = one.getColorXy();
@@ -655,7 +646,7 @@ class Clip2DtoTest {
     void testSetGetPureColors() throws CriticalFieldMissing {
         Resource resource = new Resource(ResourceType.LIGHT);
         assertNotNull(resource);
-        resource.setDimming(new Dimming().setMinimumDimmingLevel(0.0).setBrightness(100.0));
+        resource.setDimming(new Dimming().setBrightness(100.0));
 
         HSBType cyan = new HSBType("180,100,100");
         HSBType yellow = new HSBType("60,100,100");

@@ -36,7 +36,6 @@ import org.openhab.binding.hue.internal.api.dto.clip2.Resource;
 import org.openhab.binding.hue.internal.api.dto.clip2.TimedEffects;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ActionType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.EffectType;
-import org.openhab.binding.hue.internal.api.dto.clip2.enums.ResourceType;
 import org.openhab.binding.hue.internal.exceptions.CriticalFieldMissing;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
@@ -220,15 +219,6 @@ public class Setters {
             targetDimming = target.getDimming();
         }
 
-        // minimum dimming level
-        if (Objects.nonNull(targetDimming) && Objects.nonNull(sourceDimming)) {
-            Double targetMinDimLevel = targetDimming.getMinimumDimmingLevel();
-            Double sourceMinDimLevel = sourceDimming.getMinimumDimmingLevel();
-            if (Objects.isNull(targetMinDimLevel) && Objects.nonNull(sourceMinDimLevel)) {
-                targetDimming.setMinimumDimmingLevel(sourceMinDimLevel);
-            }
-        }
-
         // color
         ColorXy targetColor = target.getColorXy();
         ColorXy sourceColor = source.getColorXy();
@@ -368,8 +358,7 @@ public class Setters {
     /**
      * Create an OnOffType command based on the given brightness or delta value, considering the minimum dimming level
      * from the cache if available. The purpose is to send a "hard" ON if the lamp is definitely ON and a hard "OFF" if
-     * it is definitely OFF, and thus avoiding sending "soft off" commands to the light. Note the minimum dimming level
-     * is applied on lights only and not on grouped lights.
+     * it is definitely OFF, and thus avoiding sending "soft off" commands to the light.
      * 
      * @param brightnessValue the target brightness or the delta to be added to the prior cached value.
      * @param valueIsAbsolute true if the brightnessValue is an absolute value, false if it is a delta.
@@ -387,10 +376,7 @@ public class Setters {
         } else {
             throw new CriticalFieldMissing("Not enough data to create hard on/off command");
         }
-        Double min = target.getMinimumDimmingLevel();
-        min = min != null ? min : source != null ? source.getMinimumDimmingLevel() : null;
-        min = min != null ? min : ResourceType.LIGHT == target.getType() ? Dimming.DEFAULT_MINIMUM_DIMMING_LEVEL : 0.0;
-        return OnOffType.from(bri >= Math.max(0.01, min));
+        return OnOffType.from(bri > 0.0);
     }
 
     /**

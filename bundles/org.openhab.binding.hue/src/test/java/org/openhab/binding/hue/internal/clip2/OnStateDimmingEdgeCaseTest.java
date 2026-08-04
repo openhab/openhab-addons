@@ -14,7 +14,6 @@ package org.openhab.binding.hue.internal.clip2;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -83,43 +82,34 @@ class OnStateDimmingEdgeCaseTest {
 
     @Test
     void getBrightnessStateWhenOnAndDimming0AndCustomMinimumBrightnessReturn0() throws CriticalFieldMissing {
-        assertThat(createLightResource(true, 0.0, 2.0).getBrightnessState(), is(equalTo(PercentType.ZERO)));
+        assertThat(createLightResource(true, 0.0).getBrightnessState(), is(equalTo(PercentType.ZERO)));
     }
 
     @Test
     void getTwoStatesWhenOnAndDimming3AndMinimumBrightness2ReturnOn() throws CriticalFieldMissing {
         // test "soft off": evaluation yields OnOffType.ON state and brightness verbatim
-        Resource res = createLightResource(true, 3.0, 2.0);
+        Resource res = createLightResource(true, 3.0);
         assertThat(res.getBrightnessState(), is(equalTo(new PercentType(3))));
         assertThat(res.getSwitchState(), is(equalTo(OnOffType.ON)));
     }
 
     @Test
-    void getTwoStatesWhenOnAndDimming1AndMinimumBrightness2ReturnOff() throws CriticalFieldMissing {
-        // test "soft off": evaluation yields OnOffType.OFF state and brightness verbatim
-        Resource res = createLightResource(true, 1.0, 2.0);
+    void getTwoStatesWhenOnAndDimming1ReturnOn() throws CriticalFieldMissing {
+        // test "soft off": evaluation yields OnOffType.ON state and brightness verbatim
+        Resource res = createLightResource(true, 1.0);
         assertThat(res.getBrightnessState(), is(equalTo(new PercentType(1))));
+        assertThat(res.getSwitchState(), is(equalTo(OnOffType.ON)));
+    }
+
+    @Test
+    void getTwoStatesWhenOnAndDimming0ReturnOff() throws CriticalFieldMissing {
+        // test "soft off": evaluation yields OnOffType.OFF state and brightness verbatim
+        Resource res = createLightResource(true, 0.0);
+        assertThat(res.getBrightnessState(), is(equalTo(PercentType.ZERO)));
         assertThat(res.getSwitchState(), is(equalTo(OnOffType.OFF)));
     }
 
-    @Test
-    void getSwitchStateWhenOnAndDimming3AndMinimumBrightnessNullThrowsError() {
-        // test "soft off": evaluation lacks critical field, so error is thrown
-        assertThrows(CriticalFieldMissing.class, () -> createLightResource(true, 3.0).getSwitchState());
-    }
-
-    @Test
-    void getSwitchStateWhenOnAndDimming1AndMinimumBrightnessNullThrows() {
-        // test "soft off": evaluation lacks critical field, so error is thrown
-        assertThrows(CriticalFieldMissing.class, () -> createLightResource(true, 1.0).getSwitchState());
-    }
-
     private Resource createLightResource(@Nullable Boolean on, @Nullable Double brightness) {
-        return createLightResource(on, brightness, null);
-    }
-
-    private Resource createLightResource(@Nullable Boolean on, @Nullable Double brightness,
-            @Nullable Double minimumDimmingLevel) {
         Resource resource = new Resource(ResourceType.LIGHT);
 
         if (on != null) {
@@ -131,10 +121,6 @@ class OnStateDimmingEdgeCaseTest {
         if (brightness != null) {
             Dimming dimming = new Dimming();
             dimming.setBrightness(brightness);
-
-            if (minimumDimmingLevel != null) {
-                dimming.setMinimumDimmingLevel(minimumDimmingLevel);
-            }
 
             resource.setDimming(dimming);
         }

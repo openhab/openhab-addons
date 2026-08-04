@@ -571,11 +571,6 @@ public class Resource {
         return metadata;
     }
 
-    public @Nullable Double getMinimumDimmingLevel() {
-        Dimming dimming = this.dimming;
-        return Objects.nonNull(dimming) ? dimming.getMinimumDimmingLevel() : null;
-    }
-
     public @Nullable MirekSchema getMirekSchema() {
         ColorTemperature colorTemp = this.colorTemperature;
         return Objects.nonNull(colorTemp) ? colorTemp.getMirekSchema() : null;
@@ -654,11 +649,10 @@ public class Resource {
         }
         // we have dimming so handle "soft off" by comparing brightness to minimum dimming level
         Double brightness = dimming.getBrightness();
-        Double minDimLevel = dimming.getMinimumDimmingLevel();
-        if (brightness == null || minDimLevel == null) {
-            throw new CriticalFieldMissing("'brightness' or 'minimum_dimming_level' missing");
+        if (brightness == null) {
+            throw new CriticalFieldMissing("'brightness' missing");
         }
-        return OnOffType.from(brightness >= minDimLevel);
+        return OnOffType.from(brightness > 0.0);
     }
 
     /**

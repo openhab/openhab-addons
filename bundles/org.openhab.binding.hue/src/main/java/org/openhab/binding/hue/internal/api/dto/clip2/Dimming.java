@@ -29,23 +29,12 @@ public class Dimming {
     private @Nullable Double brightness;
     private @Nullable @SerializedName("min_dim_level") Double minimumDimmingLevel;
 
-    public static final double DEFAULT_MINIMUM_DIMMING_LEVEL = 100.0 / 255.0;
-
     public @Nullable Double getBrightness() {
         return brightness;
     }
 
-    public @Nullable Double getMinimumDimmingLevel() {
-        return minimumDimmingLevel;
-    }
-
     public Dimming setBrightness(double brightness) {
         this.brightness = brightness;
-        return this;
-    }
-
-    public Dimming setMinimumDimmingLevel(Double minimumDimmingLevel) {
-        this.minimumDimmingLevel = minimumDimmingLevel;
         return this;
     }
 

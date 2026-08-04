@@ -1827,14 +1827,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
         if (!disposing && !updateLightCacheRequiredFieldsDone && LIGHT_TYPES.contains(type)) {
             logger.debug("{} -> updateLightCacheRequiredFields()", resourceId);
 
-            if (resource.getDimming() instanceof Dimming dim) {
-                Double minDimLevel = dim.getMinimumDimmingLevel();
-                if (minDimLevel == null) {
-                    Double minDimming = ResourceType.LIGHT == type ? Dimming.DEFAULT_MINIMUM_DIMMING_LEVEL : 0.01;
-                    dim.setMinimumDimmingLevel(minDimming);
-                }
-            }
-
             if (resource.getColorTemperature() instanceof ColorTemperature ct) {
                 MirekSchema mirekSchema = ct.getMirekSchema();
                 if (mirekSchema == null) {
