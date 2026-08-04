@@ -96,7 +96,6 @@
 		<category>Lightbulb</category>
 		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 		<channel-groups>
-			<channel-group id="primary" typeId="primary-group-white"/>
 			<channel-group id="control" typeId="rgbw2WhiteControl"/>
 			<channel-group id="channel1" typeId="rgbw2Channel">
 				<label>Channel 1</label>
