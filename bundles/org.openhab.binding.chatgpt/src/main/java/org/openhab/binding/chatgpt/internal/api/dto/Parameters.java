@@ -10,12 +10,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.chatgpt.internal.dto;
+package org.openhab.binding.chatgpt.internal.api.dto;
 
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @author Artur Fedjukevits - Initial contribution
@@ -55,6 +58,9 @@ public class Parameters {
 
         private String type;
         private String description;
+        @JsonProperty("enum")
+        private @Nullable List<String> enumValues;
+        private @Nullable Property items;
 
         public String getType() {
             return type;
@@ -64,12 +70,28 @@ public class Parameters {
             return description;
         }
 
+        public @Nullable List<String> getEnumValues() {
+            return enumValues;
+        }
+
+        public @Nullable Property getItems() {
+            return items;
+        }
+
         public void setType(String type) {
             this.type = type;
         }
 
         public void setDescription(String description) {
             this.description = description;
+        }
+
+        public void setEnumValues(@Nullable List<String> enumValues) {
+            this.enumValues = enumValues;
+        }
+
+        public void setItems(@Nullable Property items) {
+            this.items = items;
         }
     }
 }
