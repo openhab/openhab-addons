@@ -65,9 +65,11 @@ public class SolarEdgeBindingConstants {
     // URLs
     public static final String PRIVATE_DATA_API_URL = "https://monitoring.solaredge.com/services/dashboard/power-flow/v2/sites/";
     public static final String PRIVATE_DATA_API_URL_AGGREGATE = "https://monitoring.solaredge.com/services/dashboard/energy/sites/";
-    public static final String PRIVATE_DATA_API_URL_AGGREGATE_DATA_DAY_WEEK_SUFFIX = "?chart-time-unit=days&measurement-types=production&measurement-types=yield&measurement-types=average-power-factor&measurement-types=performance-ratio&measurement-types=site-availability&measurement-types=consumption&measurement-types=production-distribution-with-storage&measurement-types=consumption-distribution-with-storage&measurement-types=import&measurement-types=export&isCniViewer=true";
-    public static final String PRIVATE_DATA_API_URL_AGGREGATE_DATA_MONTH_YEAR_SUFFIX = "?chart-time-unit=months&measurement-types=production&measurement-types=yield&measurement-types=average-power-factor&measurement-types=performance-ratio&measurement-types=site-availability&measurement-types=consumption&measurement-types=production-distribution-with-storage&measurement-types=consumption-distribution-with-storage&measurement-types=import&measurement-types=export&isCniViewer=true";
+    public static final String PRIVATE_DATA_API_URL_AGGREGATE_DATA_DAY_WEEK_MONTH_SUFFIX = "?chart-time-unit=days&measurement-types=production&measurement-types=yield&measurement-types=average-power-factor&measurement-types=performance-ratio&measurement-types=site-availability&measurement-types=consumption&measurement-types=production-distribution-with-storage&measurement-types=consumption-distribution-with-storage&measurement-types=import&measurement-types=export&isCniViewer=true";
+    public static final String PRIVATE_DATA_API_URL_AGGREGATE_DATA_YEAR_SUFFIX = "?chart-time-unit=months&measurement-types=production&measurement-types=yield&measurement-types=average-power-factor&measurement-types=performance-ratio&measurement-types=site-availability&measurement-types=consumption&measurement-types=production-distribution-with-storage&measurement-types=consumption-distribution-with-storage&measurement-types=import&measurement-types=export&isCniViewer=true";
     public static final String PRIVATE_DATA_API_URL_LIVE_DATA_SUFFIX = "?components=grid&components=consumption&components=dc-storage";
+    public static final String PRIVATE_DATA_API_PARAM_START_DATE = "&start-date=";
+    public static final String PRIVATE_DATA_API_PARAM_END_DATE = "&end-date=";
 
     // field names
     public static final String PRIVATE_API_TOKEN_COOKIE_NAME = "SPRING_SECURITY_REMEMBER_ME_COOKIE";

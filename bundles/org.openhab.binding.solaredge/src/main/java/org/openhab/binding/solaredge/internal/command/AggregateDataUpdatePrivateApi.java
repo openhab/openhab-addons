@@ -69,31 +69,31 @@ public class AggregateDataUpdatePrivateApi extends AbstractCommand implements So
         switch (period) {
             case DAY: {
                 String today = LocalDate.now().toString();
-                this.urlSuffix = PRIVATE_DATA_API_URL_AGGREGATE_DATA_DAY_WEEK_SUFFIX + "&start-date=" + today
-                        + "&end-date=" + today;
+                this.urlSuffix = PRIVATE_DATA_API_URL_AGGREGATE_DATA_DAY_WEEK_MONTH_SUFFIX
+                        + PRIVATE_DATA_API_PARAM_START_DATE + today + PRIVATE_DATA_API_PARAM_END_DATE + today;
                 break;
             }
             case WEEK: {
                 String startDate = LocalDate.now().minusDays(6).toString();
                 String endDate = LocalDate.now().toString();
-                this.urlSuffix = PRIVATE_DATA_API_URL_AGGREGATE_DATA_DAY_WEEK_SUFFIX + "&start-date=" + startDate
-                        + "&end-date=" + endDate;
+                this.urlSuffix = PRIVATE_DATA_API_URL_AGGREGATE_DATA_DAY_WEEK_MONTH_SUFFIX
+                        + PRIVATE_DATA_API_PARAM_START_DATE + startDate + PRIVATE_DATA_API_PARAM_END_DATE + endDate;
                 break;
             }
             case MONTH: {
                 LocalDate today = LocalDate.now();
                 String startDate = today.withDayOfMonth(1).toString();
                 String endDate = today.toString();
-                this.urlSuffix = PRIVATE_DATA_API_URL_AGGREGATE_DATA_DAY_WEEK_SUFFIX + "&start-date=" + startDate
-                        + "&end-date=" + endDate;
+                this.urlSuffix = PRIVATE_DATA_API_URL_AGGREGATE_DATA_DAY_WEEK_MONTH_SUFFIX
+                        + PRIVATE_DATA_API_PARAM_START_DATE + startDate + PRIVATE_DATA_API_PARAM_END_DATE + endDate;
                 break;
             }
             case YEAR: {
                 LocalDate today = LocalDate.now();
                 String startDate = today.minusYears(1).plusDays(1).toString();
                 String endDate = today.toString();
-                this.urlSuffix = PRIVATE_DATA_API_URL_AGGREGATE_DATA_MONTH_YEAR_SUFFIX + "&start-date=" + startDate
-                        + "&end-date=" + endDate;
+                this.urlSuffix = PRIVATE_DATA_API_URL_AGGREGATE_DATA_YEAR_SUFFIX + PRIVATE_DATA_API_PARAM_START_DATE
+                        + startDate + PRIVATE_DATA_API_PARAM_END_DATE + endDate;
                 break;
             }
             default:
