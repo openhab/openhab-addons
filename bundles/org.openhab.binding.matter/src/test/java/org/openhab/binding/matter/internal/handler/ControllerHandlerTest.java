@@ -162,7 +162,7 @@ public class ControllerHandlerTest {
         handler.onEvent(nodeState(NODE_ID, NodeState.CONNECTED));
 
         verify(nodeHandler, never()).setEndpointStatus(eq(ThingStatus.UNKNOWN), any(), any());
-        verify(nodeHandler).setEndpointStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "");
+        verify(nodeHandler).setEndpointStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
     }
 
     private void linkEnumeratedNode(BigInteger nodeId, boolean sleepy) throws Exception {
