@@ -14,6 +14,7 @@ package org.openhab.persistence.rrd4j.internal;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.when;
 
@@ -241,7 +242,7 @@ class RRD4jPersistenceServiceTest {
         assertNotNull(results);
 
         // Verify we got at least one result
-        assertNotNull(results.iterator().hasNext());
+        assertTrue(results.iterator().hasNext());
     }
 
     @Test
