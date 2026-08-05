@@ -12,37 +12,38 @@
  */
 package org.openhab.binding.hue.internal.api.dto.clip2;
 
-import java.util.Objects;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.ActionDeltaType;
+import org.openhab.core.library.types.IncreaseDecreaseType;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * DTO for dimming brightness of a light.
+ * DTO for color temperature delta of a light.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class Dimming {
-    private @Nullable Double brightness;
-    private @Nullable @SerializedName("min_dim_level") Double minimumDimmingLevel;
+public class ColorTemperatureDelta {
+    private @Nullable String action;
+    private @SerializedName("mirek_delta") int mirekDelta;
 
-    public @Nullable Double getBrightness() {
-        return brightness;
+    public @Nullable String getAction() {
+        return action;
     }
 
-    public Dimming setBrightness(double brightness) {
-        this.brightness = brightness;
+    public int getMirekDelta() {
+        return mirekDelta;
+    }
+
+    public ColorTemperatureDelta setAction(IncreaseDecreaseType action) {
+        this.action = ActionDeltaType.of(action).name().toLowerCase();
         return this;
     }
 
-    public @Nullable String toPropertyValue() {
-        Double minimumDimmingLevel = this.minimumDimmingLevel;
-        if (Objects.nonNull(minimumDimmingLevel)) {
-            return String.format("%.1f %% .. 100 %%", minimumDimmingLevel.doubleValue());
-        }
-        return null;
+    public ColorTemperatureDelta setDelta(int mirekDelta) {
+        this.mirekDelta = mirekDelta;
+        return this;
     }
 }

@@ -15,20 +15,18 @@ package org.openhab.binding.hue.internal.exceptions;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Thrown when a DTO is present but empty. In some circumstances the API v2 returns an empty DTO ("dtoName":{}) rather
- * than null ("dtoName":null). This indicates that the DTO is in principle supported by the containing resource, but
- * currently the DTO contains no actual state fields.
+ * Thrown when a DTO is missing a critical field needed for it to produce a useful result.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class DTOPresentButEmptyException extends Exception {
+public class CriticalFieldMissing extends Exception {
     private static final long serialVersionUID = -1;
 
-    public DTOPresentButEmptyException() {
+    public CriticalFieldMissing() {
     }
 
-    public DTOPresentButEmptyException(String message) {
+    public CriticalFieldMissing(String message) {
         super(message);
     }
 }
