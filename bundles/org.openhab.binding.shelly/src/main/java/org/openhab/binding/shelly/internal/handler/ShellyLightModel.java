@@ -35,7 +35,6 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
-import org.openhab.core.types.UnDefType;
 import org.openhab.core.util.LightModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -236,7 +235,7 @@ public class ShellyLightModel extends LightModel {
      * Get the brightness state. This is the brightness when in color temperature mode.
      */
     public State getBrightnessState() {
-        return getBrightness(true) instanceof PercentType pct ? pct : UnDefType.UNDEF;
+        return toNonNull(getBrightness(true));
     }
 
     /**
@@ -282,7 +281,7 @@ public class ShellyLightModel extends LightModel {
      * Get the color as an HSBType.
      */
     public State getColorState() {
-        return getColor() instanceof HSBType hsb ? hsb : UnDefType.UNDEF;
+        return toNonNull(getColor());
     }
 
     /**
@@ -323,16 +322,14 @@ public class ShellyLightModel extends LightModel {
      * Get the color temperature as a QuantityType.
      */
     public State getColorTemperatureAbsoluteState() {
-        return getColorTemperature() instanceof QuantityType<?> qty ? qty : UnDefType.UNDEF;
+        return toNonNull(getColorTemperature());
     }
 
     /**
      * Get the color temperature as a PercentType.
      */
     public State getColorTemperaturePercentState() {
-        return getColorTemperaturePercent() instanceof PercentType pct
-                ? new PercentType((int) Math.round(pct.doubleValue()))
-                : UnDefType.UNDEF;
+        return toNonNull(getColorTemperaturePercent());
     }
 
     /**
@@ -436,7 +433,7 @@ public class ShellyLightModel extends LightModel {
     }
 
     public State getOnOffState() {
-        return getOnOff(true) instanceof OnOffType onOff ? onOff : UnDefType.UNDEF;
+        return toNonNull(getOnOff(true));
     }
 
     /**
