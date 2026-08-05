@@ -931,7 +931,7 @@ public class ShellyComponents {
                 // and send an OFF status to the same channel.
                 // When the device's brightness is > 0 we send the new value to the channel and an ON command
                 if (dimmer.ison != null) {
-                    // TODO what is the purpose of these $Switch and $Value suffixes ??
+                    // TODO should this apply to lights i.e. updating the light model as well?
                     if (dimmer.ison) {
                         updated |= thingHandler.updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Switch", OnOffType.ON);
                         updated |= thingHandler.updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Value",

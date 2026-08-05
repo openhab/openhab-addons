@@ -458,7 +458,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
         // WHITE:
         if ((!profile.inColor && (!profile.isGen2 || profile.isRGBW2)) || profile.isBulb) {
             group = buildWhiteGroupName(profile, channelId);
-            // TODO what is the purpose of these $Switch and $Value suffixes ??
+            // TODO light model synchs onOff, brightness; maybe $Switch, $Value not needed
             updated |= updateChannel(group, CHANNEL_BRIGHTNESS + "$Switch", model.getOnOffState());
             updated |= updateChannel(group, CHANNEL_BRIGHTNESS + "$Value", model.getBrightnessState());
         }

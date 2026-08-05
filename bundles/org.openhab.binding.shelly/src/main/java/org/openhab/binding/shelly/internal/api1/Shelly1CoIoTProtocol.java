@@ -245,7 +245,6 @@ public class Shelly1CoIoTProtocol {
     /**
      *
      * Handles the combined updated of the brightness channel:
-     * TODO what is the purpose of these $Switch and $Value suffixes ??
      * brightness$Switch is the OnOffType (power state)
      * brightness$Value is the brightness value
      *
@@ -302,7 +301,7 @@ public class Shelly1CoIoTProtocol {
                     if (power != -1) {
                         model.setOnOff(power == 1);
                     }
-                    // TODO what is the purpose of these $Switch and $Value suffixes ??
+                    // TODO light model synchs onOff, brightness; maybe $Switch, $Value not needed
                     updateChannel(updates, group, channel + "$Switch", model.getOnOffState());
                     updateChannel(updates, group, channel + "$Value", model.getBrightnessState());
                 } finally {
