@@ -54,7 +54,7 @@ public class ChromecastDiscoveryParticipant implements MDNSDiscoveryParticipant 
     private static final String PROPERTY_DEVICE_ID = "id";
     private static final String SERVICE_TYPE = "_googlecast._tcp.local.";
 
-    private boolean isAutoDiscoveryEnabled = true;
+    private volatile boolean isAutoDiscoveryEnabled = true;
 
     @Activate
     protected void activate(ComponentContext componentContext) {
@@ -68,10 +68,17 @@ public class ChromecastDiscoveryParticipant implements MDNSDiscoveryParticipant 
 
     private void activateOrModifyService(ComponentContext componentContext) {
         Dictionary<String, @Nullable Object> properties = componentContext.getProperties();
-        String autoDiscoveryPropertyValue = (String) properties
-                .get(DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY);
-        if (autoDiscoveryPropertyValue != null && !autoDiscoveryPropertyValue.isBlank()) {
-            isAutoDiscoveryEnabled = Boolean.valueOf(autoDiscoveryPropertyValue);
+        Object autoDiscoveryPropertyValue = properties.get(DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY);
+        // Do not cast to String: the value arrives as a Boolean when the setting is written through
+        // the REST API (or any JSON-typed config source), and a ClassCastException thrown out of
+        // @Modified is swallowed by SCR - leaving background discovery silently still enabled.
+        if (autoDiscoveryPropertyValue instanceof Boolean booleanValue) {
+            isAutoDiscoveryEnabled = booleanValue;
+        } else if (autoDiscoveryPropertyValue != null) {
+            String value = autoDiscoveryPropertyValue.toString();
+            if (!value.isBlank()) {
+                isAutoDiscoveryEnabled = Boolean.parseBoolean(value);
+            }
         }
     }
 
