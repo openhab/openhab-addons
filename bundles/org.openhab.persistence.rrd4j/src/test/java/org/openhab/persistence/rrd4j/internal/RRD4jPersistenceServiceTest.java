@@ -17,6 +17,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.when;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Map;
@@ -124,6 +126,11 @@ class RRD4jPersistenceServiceTest {
         when(itemRegistry.getItem("TestSwitch" + suffix)).thenReturn(switchItem);
     }
 
+    private void deleteDatabaseFile(String itemName) throws Exception {
+        Path dbFile = RRD4jPersistenceService.getDatabasePath(itemName);
+        Files.deleteIfExists(dbFile);
+    }
+
     @AfterEach
     void tearDown() throws Exception {
         if (service != null) {
@@ -135,6 +142,7 @@ class RRD4jPersistenceServiceTest {
     @ValueSource(booleans = { true, false })
     void storeAndRetrieveNumberValue(boolean reloadAfterStore) throws Exception {
         configureNumberItem(reloadAfterStore ? "_PERSISTED" : "_MEMORY");
+        deleteDatabaseFile(numberItem.getName());
 
         // Store a value
         service.store(numberItem);
@@ -168,6 +176,7 @@ class RRD4jPersistenceServiceTest {
     @ValueSource(booleans = { true, false })
     void storeAndRetrieveSwitchValue(boolean reloadAfterStore) throws Exception {
         configureSwitchItem(reloadAfterStore ? "_PERSISTED" : "_MEMORY");
+        deleteDatabaseFile(switchItem.getName());
 
         // Store a value
         service.store(switchItem);
@@ -206,6 +215,7 @@ class RRD4jPersistenceServiceTest {
     @ValueSource(booleans = { true, false })
     void queryWithTimeRange(boolean reloadAfterStore) throws Exception {
         configureNumberItem(reloadAfterStore ? "_PERSISTED" : "_MEMORY");
+        deleteDatabaseFile(numberItem.getName());
 
         // Store a value
         service.store(numberItem);
@@ -259,6 +269,7 @@ class RRD4jPersistenceServiceTest {
         service = new RRD4jPersistenceService(itemRegistry, Map.of("something.invalid", "invalid/path/to/db"));
 
         configureNumberItem(reloadAfterStore ? "_PERSISTED" : "_MEMORY");
+        deleteDatabaseFile(numberItem.getName());
 
         // Store a value
         service.store(numberItem);
