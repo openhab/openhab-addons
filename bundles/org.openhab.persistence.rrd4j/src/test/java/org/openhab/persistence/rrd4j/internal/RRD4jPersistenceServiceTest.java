@@ -136,6 +136,8 @@ class RRD4jPersistenceServiceTest {
         if (service != null) {
             service.deactivate();
         }
+        deleteDatabaseFile(numberItem.getName());
+        deleteDatabaseFile(switchItem.getName());
     }
 
     @ParameterizedTest
