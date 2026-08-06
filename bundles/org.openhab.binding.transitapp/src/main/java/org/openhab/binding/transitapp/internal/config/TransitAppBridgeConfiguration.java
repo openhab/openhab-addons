@@ -21,5 +21,5 @@ public class TransitAppBridgeConfiguration {
     // API Performance & Caching Parameters
     public long cacheTimeMs = 30_000; // Cache API responses for 30 seconds
     public int retryAfterSeconds = 60; // Default retry-after value on rate limiting
-    public int maxDepartures = 10; // Maximum number of departures to fetch per stop
+    public int maxDepartures = 10; // Maximum number of departures to display per stop (does not affect API requests)
 }

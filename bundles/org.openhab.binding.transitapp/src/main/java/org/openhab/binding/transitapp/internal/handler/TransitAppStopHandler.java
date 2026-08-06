@@ -215,16 +215,11 @@ public class TransitAppStopHandler extends BaseThingHandler {
     }
 
     private void clearRemainingDepartures(int startIdx) {
-        TransitAppBridgeHandler bridgeHandler = getTransitBridgeHandler();
-        int maxDepartures = bridgeHandler != null ? bridgeHandler.getMaxDepartures()
-                : TransitAppBindingConstants.DEFAULT_MAX_DEPARTURES;
+        // Always clear up to depart10 to ensure stale values are removed
+        // even if maxDepartures was reduced or fewer departures are returned
+        final int TOTAL_DEPARTURE_GROUPS = 10;
 
-        // Cap maxDepartures to 10, matching the number of channel groups in the thing-type
-        if (maxDepartures > 10) {
-            maxDepartures = 10;
-        }
-
-        for (int i = startIdx; i <= maxDepartures; i++) {
+        for (int i = startIdx; i <= TOTAL_DEPARTURE_GROUPS; i++) {
             String prefix = "depart" + i + "#";
             updateState(prefix + "route-short-name", UnDefType.UNDEF);
             updateState(prefix + "route-long-name", UnDefType.UNDEF);
