@@ -15,10 +15,13 @@ package org.openhab.binding.ddwrt.internal.api;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -33,11 +36,13 @@ import org.slf4j.Logger;
 @NonNullByDefault
 public class DDWRTBroadcomDevice extends DDWRTBaseDevice {
 
-    // Candidate interfaces to probe on first enumeration
-    private static final String[] BROADCOM_IFACES = { "eth1", "eth2", "wl0", "wl1" };
+    // Candidate physical interfaces to probe on first enumeration
+    private static final List<String> BROADCOM_IFACES = List.of("eth1", "eth2", "eth3", "wl0", "wl1", "wl2");
+    private static final String GET_VIFS_COMMAND = "nvram get wl0_vifs; nvram get wl1_vifs; nvram get wl2_vifs";
+    private static final Pattern IFACE_PATTERN = Objects.requireNonNull(Pattern.compile("[\\w.-]+"));
 
-    // After first successful enumeration, only probe these interfaces
-    private volatile String @Nullable [] discoveredIfaces;
+    // Physical interfaces found during the initial enumeration
+    private volatile String @Nullable [] discoveredPhysicalIfaces;
 
     // Per-radio noise floor cache (cleared each refresh cycle)
     private final Map<String, Integer> noiseCache = new HashMap<>();
@@ -113,11 +118,20 @@ public class DDWRTBroadcomDevice extends DDWRTBaseDevice {
     @Override
     protected List<DDWRTRadio> enumerateRadios(SshRunner runner) {
         List<DDWRTRadio> radios = new ArrayList<>();
-        // Use cached interfaces if available, otherwise probe all candidates
-        String[] ifaces = discoveredIfaces;
+        Set<String> candidates = new LinkedHashSet<>();
+        String[] ifaces = discoveredPhysicalIfaces;
         if (ifaces == null) {
-            ifaces = BROADCOM_IFACES;
+            candidates.addAll(BROADCOM_IFACES);
+        } else {
+            candidates.addAll(List.of(ifaces));
         }
+        String vifs = safeTrim(runner.execStdout(GET_VIFS_COMMAND));
+        for (String vif : vifs.split("\\s+")) {
+            if (IFACE_PATTERN.matcher(vif).matches()) {
+                candidates.add(vif);
+            }
+        }
+        ifaces = candidates.toArray(new String[0]);
         List<String> foundIfaces = new ArrayList<>();
         for (String iface : ifaces) {
             String ssid = safeTrim(runner.execStdout("wl -i " + iface + " ssid | awk -F'\"' '{print $2}'"));
@@ -141,10 +155,13 @@ public class DDWRTBroadcomDevice extends DDWRTBaseDevice {
                 logger.debug("Found Broadcom radio: {}", radio);
             }
         }
-        // Cache discovered interfaces to avoid probing non-existent ones on subsequent refreshes
-        if (!foundIfaces.isEmpty() && discoveredIfaces == null) {
-            discoveredIfaces = foundIfaces.toArray(new String[0]);
-            logger.debug("Cached Broadcom interfaces: {}", foundIfaces);
+        // Keep known physical interfaces across transient failures while reading VAPs from NVRAM each time.
+        if (discoveredPhysicalIfaces == null) {
+            List<String> foundPhysicalIfaces = foundIfaces.stream().filter(BROADCOM_IFACES::contains).toList();
+            if (!foundPhysicalIfaces.isEmpty()) {
+                discoveredPhysicalIfaces = foundPhysicalIfaces.toArray(new String[0]);
+                logger.debug("Cached Broadcom physical interfaces: {}", foundPhysicalIfaces);
+            }
         }
         return radios;
     }
