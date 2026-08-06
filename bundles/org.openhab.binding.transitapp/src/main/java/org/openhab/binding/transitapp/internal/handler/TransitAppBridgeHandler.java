@@ -82,6 +82,10 @@ public class TransitAppBridgeHandler extends BaseBridgeHandler {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Unexpected API Response (Status: " + statusCode + ")");
                 }
+            } catch (InterruptedException e) {
+                // Preserve interrupt status for proper task cancellation
+                Thread.currentThread().interrupt();
+                logger.debug("API verification task interrupted");
             } catch (Exception e) {
                 String errorMessage = e.getMessage() != null ? e.getMessage() : e.toString();
                 logger.error("Failed to connect to Transit API: {}", errorMessage, e);
@@ -111,12 +115,12 @@ public class TransitAppBridgeHandler extends BaseBridgeHandler {
         return apiClient.getRouteDetails(config.apiKey, routeId);
     }
 
-    public TripDetailsResult getTripDetails(String tripId) throws Exception {
+    public TripDetailsResult getTripDetails(String tripSearchKey) throws Exception {
         TransitAppBridgeConfiguration config = getConfigAs(TransitAppBridgeConfiguration.class);
         if (config.apiKey.isBlank()) {
             throw new IllegalStateException("API Key missing");
         }
-        return apiClient.getTripDetails(config.apiKey, tripId);
+        return apiClient.getTripDetails(config.apiKey, tripSearchKey);
     }
 
     public String fetchNearbyStops(double lat, double lon) throws Exception {

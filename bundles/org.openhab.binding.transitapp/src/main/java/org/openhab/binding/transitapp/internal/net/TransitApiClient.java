@@ -133,16 +133,16 @@ public class TransitApiClient {
         return body;
     }
 
-    public String fetchTripDetails(String apiKey, String tripId) throws Exception {
+    public String fetchTripDetails(String apiKey, String tripSearchKey) throws Exception {
         checkRateLimit();
-        String url = "https://external.transitapp.com/v4/public/trip_details?trip_id="
-                + URLEncoder.encode(tripId, StandardCharsets.UTF_8);
+        String url = "https://external.transitapp.com/v4/public/trip_details?trip_search_key="
+                + URLEncoder.encode(tripSearchKey, StandardCharsets.UTF_8);
         ContentResponse response = httpClient.newRequest(url).method(HttpMethod.GET).header("apiKey", apiKey)
                 .timeout(10, TimeUnit.SECONDS).send();
 
         handleResponseStatus(response);
         String body = response.getContentAsString();
-        logger.trace("Raw JSON response for trip_details ({}): {}", tripId, body);
+        logger.trace("Raw JSON response for trip_details ({}): {}", tripSearchKey, body);
         return body;
     }
 
@@ -178,8 +178,8 @@ public class TransitApiClient {
         return result;
     }
 
-    public TripDetailsResult getTripDetails(String apiKey, String tripId) throws Exception {
-        String json = fetchTripDetails(apiKey, tripId);
+    public TripDetailsResult getTripDetails(String apiKey, String tripSearchKey) throws Exception {
+        String json = fetchTripDetails(apiKey, tripSearchKey);
         @Nullable
         TripDetailsResult result = gson.fromJson(json, TripDetailsResult.class);
         if (result == null) {

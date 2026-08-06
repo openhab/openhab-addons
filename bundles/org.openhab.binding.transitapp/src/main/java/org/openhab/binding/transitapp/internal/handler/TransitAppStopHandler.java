@@ -108,6 +108,10 @@ public class TransitAppStopHandler extends BaseThingHandler {
 
             int groupIdx = processDepartures(result.routeDepartures, now);
             clearRemainingDepartures(groupIdx);
+        } catch (InterruptedException e) {
+            // Preserve interrupt status for proper task cancellation
+            Thread.currentThread().interrupt();
+            logger.debug("Stop polling task interrupted");
         } catch (Exception e) {
             latestLineDepartures.clear();
             String errorMessage = e.getMessage() != null ? e.getMessage() : e.toString();
@@ -136,8 +140,9 @@ public class TransitAppStopHandler extends BaseThingHandler {
                 break;
             }
 
-            String shortName = routeDep.routeShortName != null ? routeDep.routeShortName : "";
-            String longName = routeDep.routeLongName != null ? routeDep.routeLongName : "";
+            // Normalize to non-null strings for JDT analysis
+            final String shortName = routeDep.routeShortName != null ? routeDep.routeShortName : "";
+            final String longName = routeDep.routeLongName != null ? routeDep.routeLongName : "";
             List<Itinerary> itineraries = routeDep.itineraries;
 
             if (itineraries == null) {
@@ -169,9 +174,7 @@ public class TransitAppStopHandler extends BaseThingHandler {
                         continue;
                     }
 
-                    // Inline null-safe ternary to ensure non-null strings for JDT analysis
-                    updateDepartureState(groupIdx, shortName != null ? shortName : "", longName != null ? longName : "",
-                            depTime, minutesUntilDeparture, schedule);
+                    updateDepartureState(groupIdx, shortName, longName, depTime, minutesUntilDeparture, schedule);
                     groupIdx++;
                 }
             }
@@ -180,18 +183,24 @@ public class TransitAppStopHandler extends BaseThingHandler {
         return groupIdx;
     }
 
-    private void updateDepartureState(int groupIdx, String shortName, String longName, long depTime,
+    private void updateDepartureState(int groupIdx, @Nullable String shortName, @Nullable String longName, long depTime,
             long minutesUntilDeparture, ScheduleItem schedule) {
         String prefix = "depart" + groupIdx + "#";
 
-        updateState(prefix + "route-short-name", shortName.isEmpty() ? UnDefType.UNDEF : new StringType(shortName));
-        updateState(prefix + "route-long-name", longName.isEmpty() ? UnDefType.UNDEF : new StringType(longName));
+        // Normalize null values to empty string
+        String safeShortName = shortName != null ? shortName : "";
+        String safeLongName = longName != null ? longName : "";
+
+        updateState(prefix + "route-short-name",
+                safeShortName.isEmpty() ? UnDefType.UNDEF : new StringType(safeShortName));
+        updateState(prefix + "route-long-name",
+                safeLongName.isEmpty() ? UnDefType.UNDEF : new StringType(safeLongName));
         updateState(prefix + "minutes-until-departure", new QuantityType<>(minutesUntilDeparture, Units.MINUTE));
         updateState(prefix + "departure-time",
                 new DateTimeType(ZonedDateTime.ofInstant(Instant.ofEpochSecond(depTime), ZoneId.systemDefault())));
 
-        if (!shortName.isEmpty() && !latestLineDepartures.containsKey(shortName)) {
-            latestLineDepartures.put(shortName,
+        if (!safeShortName.isEmpty() && !latestLineDepartures.containsKey(safeShortName)) {
+            latestLineDepartures.put(safeShortName,
                     LocalTime.ofInstant(Instant.ofEpochSecond(depTime), ZoneId.systemDefault()).toString());
         }
 

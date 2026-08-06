@@ -17,7 +17,7 @@ import org.eclipse.jdt.annotation.Nullable;
 
 @NonNullByDefault
 public class TransitAppTripConfiguration {
-    public String tripId = "";
+    public String tripSearchKey = "";
     public @Nullable String targetStopId;
     public int refreshInterval = 60;
 }

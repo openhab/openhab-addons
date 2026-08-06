@@ -64,9 +64,9 @@ public class TransitAppTripDetailsHandler extends BaseThingHandler {
 
     private synchronized void pollTransitApi() {
         var config = getConfigAs(TransitAppTripConfiguration.class);
-        String tripId = config.tripId;
-        if (tripId.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Trip ID is missing");
+        String tripSearchKey = config.tripSearchKey;
+        if (tripSearchKey.isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Trip Search Key is missing");
             return;
         }
 
@@ -82,8 +82,8 @@ public class TransitAppTripDetailsHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Bridge handler not initialized");
                 return;
             }
-            var result = bridgeHandler.getTripDetails(tripId);
-            logger.debug("Successfully polled trip details for trip ID {}", tripId);
+            var result = bridgeHandler.getTripDetails(tripSearchKey);
+            logger.debug("Successfully polled trip details for trip search key {}", tripSearchKey);
             updateStatus(ThingStatus.ONLINE);
 
             var route = result.route;
@@ -143,9 +143,13 @@ public class TransitAppTripDetailsHandler extends BaseThingHandler {
                 updateState(prefix + "stop-name", org.openhab.core.types.UnDefType.UNDEF);
                 updateState(prefix + "minutes-until-departure", org.openhab.core.types.UnDefType.UNDEF);
             }
+        } catch (InterruptedException e) {
+            // Preserve interrupt status for proper task cancellation
+            Thread.currentThread().interrupt();
+            logger.debug("Trip details polling task interrupted");
         } catch (Exception e) {
             String errorMessage = e.getMessage() != null ? e.getMessage() : e.toString();
-            logger.warn("Communication error while polling trip {}: {}", tripId, errorMessage);
+            logger.warn("Communication error while polling trip {}: {}", tripSearchKey, errorMessage);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
         }
     }
