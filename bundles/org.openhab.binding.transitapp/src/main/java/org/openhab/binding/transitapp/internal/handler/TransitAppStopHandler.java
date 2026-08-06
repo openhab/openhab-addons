@@ -122,6 +122,11 @@ public class TransitAppStopHandler extends BaseThingHandler {
         int maxDepartures = bridgeHandler != null ? bridgeHandler.getMaxDepartures()
                 : TransitAppBindingConstants.DEFAULT_MAX_DEPARTURES;
 
+        // Cap maxDepartures to 10, matching the number of channel groups in the thing-type
+        if (maxDepartures > 10) {
+            maxDepartures = 10;
+        }
+
         if (routeDepartures == null) {
             return groupIdx;
         }
@@ -164,7 +169,9 @@ public class TransitAppStopHandler extends BaseThingHandler {
                         continue;
                     }
 
-                    updateDepartureState(groupIdx, shortName, longName, depTime, minutesUntilDeparture, schedule);
+                    // Inline null-safe ternary to ensure non-null strings for JDT analysis
+                    updateDepartureState(groupIdx, shortName != null ? shortName : "", longName != null ? longName : "",
+                            depTime, minutesUntilDeparture, schedule);
                     groupIdx++;
                 }
             }
@@ -173,7 +180,7 @@ public class TransitAppStopHandler extends BaseThingHandler {
         return groupIdx;
     }
 
-    private void updateDepartureState(int groupIdx, @Nullable String shortName, @Nullable String longName, long depTime,
+    private void updateDepartureState(int groupIdx, String shortName, String longName, long depTime,
             long minutesUntilDeparture, ScheduleItem schedule) {
         String prefix = "depart" + groupIdx + "#";
 
@@ -211,6 +218,11 @@ public class TransitAppStopHandler extends BaseThingHandler {
         TransitAppBridgeHandler bridgeHandler = getTransitBridgeHandler();
         int maxDepartures = bridgeHandler != null ? bridgeHandler.getMaxDepartures()
                 : TransitAppBindingConstants.DEFAULT_MAX_DEPARTURES;
+
+        // Cap maxDepartures to 10, matching the number of channel groups in the thing-type
+        if (maxDepartures > 10) {
+            maxDepartures = 10;
+        }
 
         for (int i = startIdx; i <= maxDepartures; i++) {
             String prefix = "depart" + i + "#";
