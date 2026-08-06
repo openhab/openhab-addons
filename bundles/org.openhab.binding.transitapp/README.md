@@ -42,7 +42,7 @@ This binding integrates public transit information and real-time departure detai
 
 | Parameter         | Type    | Default | Description                                                               |
 | :---------------- | :------ | :------ | :------------------------------------------------------------------------ |
-| `tripId`          | TEXT    |         | Trip search key (e.g., `VVSDE:52245421:47:2:22`) (required).              |
+| `tripSearchKey`   | TEXT    |         | Trip search key (e.g., `VVSDE:52245421:47:2:22`) (required).              |
 | `targetStopId`    | TEXT    |         | Destination stop ID to calculate the `time-to-target` countdown (optional). |
 | `refreshInterval` | INTEGER | `60`    | Polling interval in seconds.                                              |
 
@@ -95,7 +95,7 @@ Use the `getNearbyStops` action on your `transitapp:bridge` Thing.
 - **Input:** Provide your latitude (`lat`) and longitude (`lon`).
 - **Result:** Returns a JSON array of all nearby stations. Look for the `global_stop_id` and `stop_name` fields.
 
-#### 2. Finding Route IDs (`routeId`) & Trip IDs (`tripId`)
+#### 2. Finding Route IDs (`routeId`) & Trip Search Keys (`tripSearchKey`)
 
 Once you have your `globalStopId`, create a `transitapp:stop` Thing with it. Then use the `getDepartures` action on this newly created Stop Thing.
 
@@ -120,7 +120,7 @@ Create a `.things` file (e.g., `transit.things`) with the following configuratio
 Bridge transitapp:bridge:mybridge [ apiKey="YOUR_API_KEY_HERE" ] {
     Thing stop mystop [ globalStopId="VVSDE:2298", refreshInterval=60 ]
     Thing routedetails myroute [ routeId="VVSDE:247174", refreshInterval=300 ]
-    Thing tripdetails mytrip [ tripId="VVSDE:52245421:47:2:22", targetStopId="VVSDE:1234", refreshInterval=60 ]
+    Thing tripdetails mytrip [ tripSearchKey="VVSDE:52245421:47:2:22", targetStopId="VVSDE:1234", refreshInterval=60 ]
 }
 ```
 

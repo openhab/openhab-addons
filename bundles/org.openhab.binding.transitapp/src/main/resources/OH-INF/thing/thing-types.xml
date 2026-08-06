@@ -4,29 +4,29 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<bridge-type id="bridge">
-		<label>TransitApp Bridge</label>
-		<description>Bridge to connect to Transit API</description>
+		<label>@text/thing-type.transitapp.bridge.label</label>
+		<description>@text/thing-type.transitapp.bridge.description</description>
 		<config-description>
 			<parameter name="apiKey" type="text" required="true">
 				<context>password</context>
-				<label>API Key</label>
-				<description>Your Transit API key.</description>
+				<label>@text/thing-type.config.transitapp.bridge.apiKey.label</label>
+				<description>@text/thing-type.config.transitapp.bridge.apiKey.description</description>
 			</parameter>
 			<parameter name="cacheTimeMs" type="integer" min="5000" max="300000">
-				<label>Cache Time (ms)</label>
-				<description>How long to cache API responses in milliseconds.</description>
+				<label>@text/thing-type.config.transitapp.bridge.cacheTimeMs.label</label>
+				<description>@text/thing-type.config.transitapp.bridge.cacheTimeMs.description</description>
 				<default>30000</default>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="retryAfterSeconds" type="integer" min="1" max="600">
-				<label>Retry After (seconds)</label>
-				<description>Default retry-after value when API rate limit is hit (can be overridden by server response).</description>
+				<label>@text/thing-type.config.transitapp.bridge.retryAfterSeconds.label</label>
+				<description>@text/thing-type.config.transitapp.bridge.retryAfterSeconds.description</description>
 				<default>60</default>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="maxDepartures" type="integer" min="1" max="10">
-				<label>Max Departures</label>
-				<description>Maximum number of departures to display per stop.</description>
+				<label>@text/thing-type.config.transitapp.bridge.maxDepartures.label</label>
+				<description>@text/thing-type.config.transitapp.bridge.maxDepartures.description</description>
 				<default>10</default>
 				<advanced>true</advanced>
 			</parameter>
@@ -36,8 +36,8 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
-		<label>Transit Stop</label>
-		<description>Transit Stop Thing with up to 10 departures</description>
+		<label>@text/thing-type.transitapp.stop.label</label>
+		<description>@text/thing-type.transitapp.stop.description</description>
 		<channel-groups>
 			<channel-group id="depart1" typeId="departure-group"/>
 			<channel-group id="depart2" typeId="departure-group"/>
@@ -52,12 +52,12 @@
 		</channel-groups>
 		<config-description>
 			<parameter name="globalStopId" type="text" required="true">
-				<label>Global Stop ID</label>
-				<description>The global stop ID for Transit API.</description>
+				<label>@text/thing-type.config.transitapp.stop.globalStopId.label</label>
+				<description>@text/thing-type.config.transitapp.stop.globalStopId.description</description>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" min="30">
-				<label>Refresh Interval</label>
-				<description>Time in seconds between updates.</description>
+				<label>@text/thing-type.config.transitapp.stop.refreshInterval.label</label>
+				<description>@text/thing-type.config.transitapp.stop.refreshInterval.description</description>
 				<default>60</default>
 			</parameter>
 		</config-description>
@@ -66,19 +66,19 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
-		<label>Transit Route Details</label>
-		<description>Details and information about a specific transit route.</description>
+		<label>@text/thing-type.transitapp.routedetails.label</label>
+		<description>@text/thing-type.transitapp.routedetails.description</description>
 		<channel-groups>
 			<channel-group id="route" typeId="route-group"/>
 		</channel-groups>
 		<config-description>
 			<parameter name="routeId" type="text" required="true">
-				<label>Route ID</label>
-				<description>The unique identifier for the route.</description>
+				<label>@text/thing-type.config.transitapp.routedetails.routeId.label</label>
+				<description>@text/thing-type.config.transitapp.routedetails.routeId.description</description>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" min="30">
-				<label>Refresh Interval</label>
-				<description>Time in seconds between updates.</description>
+				<label>@text/thing-type.config.transitapp.routedetails.refreshInterval.label</label>
+				<description>@text/thing-type.config.transitapp.routedetails.refreshInterval.description</description>
 				<default>300</default>
 			</parameter>
 		</config-description>
@@ -87,8 +87,8 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
-		<label>Transit Trip Details</label>
-		<description>Real-time details and schedule for a specific transit trip.</description>
+		<label>@text/thing-type.transitapp.tripdetails.label</label>
+		<description>@text/thing-type.transitapp.tripdetails.description</description>
 		<channel-groups>
 			<channel-group id="trip" typeId="trip-group"/>
 			<channel-group id="stop1" typeId="stop-group"/>
@@ -104,22 +104,22 @@
 		</channel-groups>
 		<config-description>
 			<parameter name="tripSearchKey" type="text" required="true">
-				<label>Trip Search Key</label>
-				<description>The trip search key used by the Transit API. This value changes as transit feeds are updated.</description>
+				<label>@text/thing-type.config.transitapp.tripdetails.tripSearchKey.label</label>
+				<description>@text/thing-type.config.transitapp.tripdetails.tripSearchKey.description</description>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" min="30">
-				<label>Refresh Interval</label>
-				<description>Time in seconds between updates.</description>
+				<label>@text/thing-type.config.transitapp.tripdetails.refreshInterval.label</label>
+				<description>@text/thing-type.config.transitapp.tripdetails.refreshInterval.description</description>
 				<default>60</default>
 			</parameter>
 			<parameter name="targetStopId" type="text" required="false">
-				<label>Target Stop ID</label>
-				<description>Destination stop ID to calculate the time-to-target countdown.</description>
+				<label>@text/thing-type.config.transitapp.tripdetails.targetStopId.label</label>
+				<description>@text/thing-type.config.transitapp.tripdetails.targetStopId.description</description>
 			</parameter>
 		</config-description>
 	</thing-type>
 	<channel-group-type id="departure-group">
-		<label>Departure</label>
+		<label>@text/channel-group-type.transitapp.departure-group.label</label>
 		<channels>
 			<channel id="route-long-name" typeId="route-long-name"/>
 			<channel id="route-short-name" typeId="route-short-name"/>
@@ -157,17 +157,17 @@
 	</channel-group-type>
 	<channel-type id="route-long-name">
 		<item-type>String</item-type>
-		<label>Route Long Name</label>
+		<label>@text/channel-type.transitapp.route-long-name.label</label>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="route-short-name">
 		<item-type>String</item-type>
-		<label>Route Short Name</label>
+		<label>@text/channel-type.transitapp.route-short-name.label</label>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="departure-time">
 		<item-type>DateTime</item-type>
-		<label>Departure Time</label>
+		<label>@text/channel-type.transitapp.departure-time.label</label>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="is-cancelled">
@@ -177,22 +177,22 @@
 	</channel-type>
 	<channel-type id="route-color">
 		<item-type>String</item-type>
-		<label>Route Color</label>
+		<label>@text/channel-type.transitapp.route-color.label</label>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="stop-name">
 		<item-type>String</item-type>
-		<label>Stop Name</label>
+		<label>@text/channel-type.transitapp.stop-name.label</label>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="minutes-until-departure">
 		<item-type>Number:Time</item-type>
-		<label>Minutes Until Departure</label>
+		<label>@text/channel-type.transitapp.minutes-until-departure.label</label>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="delay-minutes">
 		<item-type>Number:Time</item-type>
-		<label>Delay</label>
+		<label>@text/channel-type.transitapp.delay-minutes.label</label>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="platform">
@@ -207,19 +207,19 @@
 	</channel-type>
 	<channel-type id="time-to-target">
 		<item-type>Number:Time</item-type>
-		<label>Time to Target</label>
+		<label>@text/channel-type.transitapp.time-to-target.label</label>
 		<description>Live countdown to the configured target destination stop</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="wheelchair-accessible">
 		<item-type>Switch</item-type>
-		<label>Wheelchair Accessible</label>
+		<label>@text/channel-type.transitapp.wheelchair-accessible.label</label>
 		<description>Indicates whether the departure is wheelchair accessible</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="occupancy">
 		<item-type>String</item-type>
-		<label>Occupancy</label>
+		<label>@text/channel-type.transitapp.occupancy.label</label>
 		<description>Current occupancy status of the vehicle</description>
 		<state readOnly="true"/>
 	</channel-type>
