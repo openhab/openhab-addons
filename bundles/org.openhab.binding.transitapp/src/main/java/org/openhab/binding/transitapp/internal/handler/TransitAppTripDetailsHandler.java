@@ -58,7 +58,7 @@ public class TransitAppTripDetailsHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            pollTransitApi();
+            scheduler.submit(this::pollTransitApi);
         }
     }
 
