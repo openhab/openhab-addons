@@ -20,6 +20,9 @@ This binding integrates public transit information and real-time departure detai
 | Parameter | Type | Default | Description                               |
 | :-------- | :--- | :------ | :---------------------------------------- |
 | `apiKey`  | TEXT |         | Your personal Transit API key (required). |
+| `cacheTimeMs` | INTEGER | `30000` | How long to cache API responses in milliseconds (5000–300000). |
+| `retryAfterSeconds` | INTEGER | `60` | Default retry-after value when API rate limit is hit (1–600 seconds). |
+| `maxDepartures` | INTEGER | `10` | Maximum number of departures to display per stop (1–10). |
 
 ### Stop (`stop`)
 
