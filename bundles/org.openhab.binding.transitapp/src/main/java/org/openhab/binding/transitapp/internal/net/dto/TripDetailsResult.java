@@ -14,10 +14,12 @@ package org.openhab.binding.transitapp.internal.net.dto;
 
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
+@NonNullByDefault
 public class TripDetailsResult {
     public @Nullable Route route;
 

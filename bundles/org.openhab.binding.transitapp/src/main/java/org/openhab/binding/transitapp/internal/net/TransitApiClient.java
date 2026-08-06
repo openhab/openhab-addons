@@ -25,6 +25,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpMethod;
+import org.openhab.binding.transitapp.internal.TransitAppBindingConstants;
 import org.openhab.binding.transitapp.internal.net.dto.RouteDetailsResult;
 import org.openhab.binding.transitapp.internal.net.dto.StopDeparturesResult;
 import org.openhab.binding.transitapp.internal.net.dto.TripDetailsResult;
@@ -39,12 +40,24 @@ public class TransitApiClient {
     private final HttpClient httpClient;
     private final Gson gson = new Gson();
 
+    // Configurable parameters from bridge config
+    private final long cacheTimeMs;
+    private final int retryAfterSeconds;
+
     private final Map<String, CachedResponse> cache = new ConcurrentHashMap<>();
     private volatile long rateLimitResetTime = 0;
-    private static final long CACHE_TTL_MS = 30_000;
 
     public TransitApiClient(HttpClient httpClient) {
+        this(httpClient, TransitAppBindingConstants.DEFAULT_CACHE_TIME_MS,
+                TransitAppBindingConstants.DEFAULT_RETRY_AFTER_SECONDS);
+    }
+
+    public TransitApiClient(HttpClient httpClient, long cacheTimeMs, int retryAfterSeconds) {
         this.httpClient = httpClient;
+        this.cacheTimeMs = cacheTimeMs;
+        this.retryAfterSeconds = retryAfterSeconds;
+        logger.debug("TransitApiClient initialized with cacheTimeMs={}, retryAfterSeconds={}", cacheTimeMs,
+                retryAfterSeconds);
     }
 
     private void checkRateLimit() throws IOException {
@@ -57,17 +70,18 @@ public class TransitApiClient {
     private void handleResponseStatus(ContentResponse response) throws IOException {
         long now = System.currentTimeMillis();
         if (response.getStatus() == 429) {
-            String retryAfter = "60";
+            long delaySeconds = retryAfterSeconds;
             @Nullable
             String headerVal = response.getHeaders().get("Retry-After");
             if (headerVal != null) {
-                retryAfter = headerVal;
+                try {
+                    delaySeconds = Long.parseLong(headerVal);
+                } catch (NumberFormatException e) {
+                    logger.debug("Invalid Retry-After header value: {}, using configured default: {}", headerVal,
+                            retryAfterSeconds);
+                }
             }
-            try {
-                rateLimitResetTime = now + (Long.parseLong(retryAfter) * 1000);
-            } catch (NumberFormatException e) {
-                rateLimitResetTime = now + 60000;
-            }
+            rateLimitResetTime = now + (delaySeconds * 1000);
             throw new IOException(
                     "HTTP 429 Too Many Requests. Backoff until " + Instant.ofEpochMilli(rateLimitResetTime));
         }
@@ -78,7 +92,7 @@ public class TransitApiClient {
     }
 
     private void cleanupCache(long now) {
-        cache.entrySet().removeIf(entry -> (now - entry.getValue().timestamp) >= CACHE_TTL_MS);
+        cache.entrySet().removeIf(entry -> (now - entry.getValue().timestamp) >= cacheTimeMs);
     }
 
     public String fetchStopDepartures(String apiKey, String globalStopId) throws Exception {
@@ -87,7 +101,7 @@ public class TransitApiClient {
 
         @Nullable
         CachedResponse cached = cache.get(globalStopId);
-        if (cached != null && (now - cached.timestamp) < CACHE_TTL_MS) {
+        if (cached != null && (now - cached.timestamp) < cacheTimeMs) {
             return cached.payload;
         }
 

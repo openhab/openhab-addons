@@ -23,4 +23,9 @@ public class TransitAppBindingConstants {
     public static final ThingTypeUID THING_TYPE_STOP = new ThingTypeUID(BINDING_ID, "stop");
     public static final ThingTypeUID THING_TYPE_ROUTE_DETAILS = new ThingTypeUID(BINDING_ID, "routedetails");
     public static final ThingTypeUID THING_TYPE_TRIP_DETAILS = new ThingTypeUID(BINDING_ID, "tripdetails");
+
+    // Default API Performance & Caching Parameters (can be overridden via bridge config)
+    public static final int DEFAULT_MAX_DEPARTURES = 10;
+    public static final long DEFAULT_CACHE_TIME_MS = 30_000;
+    public static final int DEFAULT_RETRY_AFTER_SECONDS = 60;
 }

@@ -12,6 +12,24 @@
 				<label>API Key</label>
 				<description>Your Transit API key.</description>
 			</parameter>
+			<parameter name="cacheTimeMs" type="integer" min="5000" max="300000">
+				<label>Cache Time (ms)</label>
+				<description>How long to cache API responses in milliseconds.</description>
+				<default>30000</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="retryAfterSeconds" type="integer" min="1" max="600">
+				<label>Retry After (seconds)</label>
+				<description>Default retry-after value when API rate limit is hit (can be overridden by server response).</description>
+				<default>60</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="maxDepartures" type="integer" min="1" max="50">
+				<label>Max Departures</label>
+				<description>Maximum number of departures to display per stop.</description>
+				<default>10</default>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 	</bridge-type>
 	<thing-type id="stop">

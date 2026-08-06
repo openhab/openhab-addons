@@ -12,19 +12,29 @@
  */
 package org.openhab.binding.transitapp.internal.handler;
 
+import java.time.Instant;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.transitapp.internal.TransitAppBindingConstants;
 import org.openhab.binding.transitapp.internal.config.TransitAppStopConfiguration;
 import org.openhab.binding.transitapp.internal.net.dto.StopDeparturesResult;
 import org.openhab.binding.transitapp.internal.net.dto.StopDeparturesResult.Itinerary;
 import org.openhab.binding.transitapp.internal.net.dto.StopDeparturesResult.RouteDeparture;
 import org.openhab.binding.transitapp.internal.net.dto.StopDeparturesResult.ScheduleItem;
+import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -33,6 +43,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +52,7 @@ public class TransitAppStopHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(TransitAppStopHandler.class);
 
-    private final java.util.Map<String, String> latestLineDepartures = new java.util.concurrent.ConcurrentHashMap<>();
+    private final Map<String, String> latestLineDepartures = new ConcurrentHashMap<>();
     private @Nullable ScheduledFuture<?> refreshJob;
 
     public TransitAppStopHandler(Thing thing) {
@@ -58,6 +69,7 @@ public class TransitAppStopHandler extends BaseThingHandler {
         long refreshInterval = Math.max(30L, config.refreshInterval);
         refreshJob = scheduler.scheduleWithFixedDelay(this::pollTransitApi, 1, refreshInterval, TimeUnit.SECONDS);
         updateStatus(ThingStatus.UNKNOWN);
+        logger.debug("Initialized Transit Stop with refresh interval: {} seconds", refreshInterval);
     }
 
     @Override
@@ -91,147 +103,126 @@ public class TransitAppStopHandler extends BaseThingHandler {
             StopDeparturesResult result = bridgeHandler.getStopDepartures(globalStopId);
             updateStatus(ThingStatus.ONLINE);
 
-            int groupIdx = 1;
             long now = System.currentTimeMillis() / 1000;
             latestLineDepartures.clear();
 
-            @Nullable
-            List<RouteDeparture> routeDeps = result.routeDepartures;
-            if (routeDeps != null) {
-                for (RouteDeparture routeDep : routeDeps) {
-                    if (groupIdx > 10) {
-                        break;
-                    }
-
-                    @Nullable
-                    String shortName = routeDep.routeShortName;
-                    @Nullable
-                    String longName = routeDep.routeLongName;
-
-                    @Nullable
-                    List<Itinerary> itineraries = routeDep.itineraries;
-                    if (itineraries != null) {
-                        for (Itinerary itinerary : itineraries) {
-                            if (groupIdx > 10) {
-                                break;
-                            }
-                            @Nullable
-                            List<ScheduleItem> schedules = itinerary.scheduleItems;
-                            if (schedules != null) {
-                                for (ScheduleItem schedule : schedules) {
-                                    if (groupIdx > 10) {
-                                        break;
-                                    }
-
-                                    @Nullable
-                                    Long depTime = schedule.departureTime;
-                                    if (depTime == null) {
-                                        continue;
-                                    }
-
-                                    long diff = (depTime - now) / 60;
-                                    if (diff < 0) {
-                                        continue;
-                                    }
-
-                                    String prefix = "depart" + groupIdx + "#";
-
-                                    if (shortName != null) {
-                                        updateState(prefix + "route-short-name", new StringType(shortName));
-                                    } else {
-                                        updateState(prefix + "route-short-name",
-                                                org.openhab.core.types.UnDefType.UNDEF);
-                                    }
-
-                                    if (longName != null) {
-                                        updateState(prefix + "route-long-name", new StringType(longName));
-                                    } else {
-                                        updateState(prefix + "route-long-name", org.openhab.core.types.UnDefType.UNDEF);
-                                    }
-
-                                    updateState(prefix + "minutes-until-departure",
-                                            new QuantityType<>(diff, org.openhab.core.library.unit.Units.MINUTE));
-                                    updateState(prefix + "departure-time",
-                                            new org.openhab.core.library.types.DateTimeType(java.time.ZonedDateTime
-                                                    .ofInstant(java.time.Instant.ofEpochSecond(depTime),
-                                                            java.time.ZoneId.systemDefault())));
-                                    if (shortName != null && !latestLineDepartures.containsKey(shortName)) {
-                                        latestLineDepartures.put(shortName,
-                                                java.time.LocalTime.ofInstant(java.time.Instant.ofEpochSecond(depTime),
-                                                        java.time.ZoneId.systemDefault()).toString());
-                                    }
-
-                                    @Nullable
-                                    Long delay = schedule.delay;
-                                    if (delay != null) {
-                                        updateState(prefix + "delay-minutes", new QuantityType<>(delay / 60,
-                                                org.openhab.core.library.unit.Units.MINUTE));
-                                    } else {
-                                        updateState(prefix + "delay-minutes", org.openhab.core.types.UnDefType.UNDEF);
-                                    }
-
-                                    @Nullable
-                                    String track = schedule.track;
-                                    if (track != null) {
-                                        updateState(prefix + "platform", new StringType(track));
-                                    } else {
-                                        updateState(prefix + "platform", org.openhab.core.types.UnDefType.UNDEF);
-                                    }
-
-                                    @Nullable
-                                    Boolean wheelchair = schedule.wheelchairAccessible;
-                                    if (wheelchair != null) {
-                                        updateState(prefix + "wheelchair-accessible",
-                                                wheelchair ? org.openhab.core.library.types.OnOffType.ON
-                                                        : org.openhab.core.library.types.OnOffType.OFF);
-                                    } else {
-                                        updateState(prefix + "wheelchair-accessible",
-                                                org.openhab.core.types.UnDefType.UNDEF);
-                                    }
-
-                                    @Nullable
-                                    String occupancy = schedule.occupancyStatus;
-                                    if (occupancy != null) {
-                                        updateState(prefix + "occupancy", new StringType(occupancy));
-                                    } else {
-                                        updateState(prefix + "occupancy", org.openhab.core.types.UnDefType.UNDEF);
-                                    }
-
-                                    @Nullable
-                                    Boolean isCancelled = schedule.isCancelled;
-                                    if (isCancelled != null) {
-                                        updateState(prefix + "is-cancelled",
-                                                isCancelled ? org.openhab.core.library.types.OnOffType.ON
-                                                        : org.openhab.core.library.types.OnOffType.OFF);
-                                    } else {
-                                        updateState(prefix + "is-cancelled", org.openhab.core.types.UnDefType.UNDEF);
-                                    }
-
-                                    groupIdx++;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            for (int i = groupIdx; i <= 10; i++) {
-                String prefix = "depart" + i + "#";
-                updateState(prefix + "route-short-name", org.openhab.core.types.UnDefType.UNDEF);
-                updateState(prefix + "route-long-name", org.openhab.core.types.UnDefType.UNDEF);
-                updateState(prefix + "departure-time", org.openhab.core.types.UnDefType.UNDEF);
-                updateState(prefix + "minutes-until-departure", org.openhab.core.types.UnDefType.UNDEF);
-                updateState(prefix + "delay-minutes", org.openhab.core.types.UnDefType.UNDEF);
-                updateState(prefix + "platform", org.openhab.core.types.UnDefType.UNDEF);
-                updateState(prefix + "wheelchair-accessible", org.openhab.core.types.UnDefType.UNDEF);
-                updateState(prefix + "occupancy", org.openhab.core.types.UnDefType.UNDEF);
-                updateState(prefix + "is-cancelled", org.openhab.core.types.UnDefType.UNDEF);
-            }
+            int groupIdx = processDepartures(result.routeDepartures, now);
+            clearRemainingDepartures(groupIdx);
         } catch (Exception e) {
             latestLineDepartures.clear();
             String errorMessage = e.getMessage() != null ? e.getMessage() : e.toString();
-            logger.error("Communication issue while polling stop {}: {}", globalStopId, errorMessage, e);
+            logger.error("Communication issue while polling stop: {}", errorMessage, e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
+        }
+    }
+
+    private int processDepartures(@Nullable List<RouteDeparture> routeDepartures, long currentTimeSeconds) {
+        int groupIdx = 1;
+        TransitAppBridgeHandler bridgeHandler = getTransitBridgeHandler();
+        int maxDepartures = bridgeHandler != null ? bridgeHandler.getMaxDepartures()
+                : TransitAppBindingConstants.DEFAULT_MAX_DEPARTURES;
+
+        if (routeDepartures == null) {
+            return groupIdx;
+        }
+
+        for (RouteDeparture routeDep : routeDepartures) {
+            if (groupIdx > maxDepartures) {
+                break;
+            }
+
+            String shortName = routeDep.routeShortName != null ? routeDep.routeShortName : "";
+            String longName = routeDep.routeLongName != null ? routeDep.routeLongName : "";
+            List<Itinerary> itineraries = routeDep.itineraries;
+
+            if (itineraries == null) {
+                continue;
+            }
+
+            for (Itinerary itinerary : itineraries) {
+                if (groupIdx > maxDepartures) {
+                    break;
+                }
+
+                List<ScheduleItem> schedules = itinerary.scheduleItems;
+                if (schedules == null) {
+                    continue;
+                }
+
+                for (ScheduleItem schedule : schedules) {
+                    if (groupIdx > maxDepartures) {
+                        break;
+                    }
+
+                    Long depTime = schedule.departureTime;
+                    if (depTime == null || depTime < currentTimeSeconds) {
+                        continue;
+                    }
+
+                    long minutesUntilDeparture = (depTime - currentTimeSeconds) / 60;
+                    if (minutesUntilDeparture < 0) {
+                        continue;
+                    }
+
+                    updateDepartureState(groupIdx, shortName, longName, depTime, minutesUntilDeparture, schedule);
+                    groupIdx++;
+                }
+            }
+        }
+
+        return groupIdx;
+    }
+
+    private void updateDepartureState(int groupIdx, @Nullable String shortName, @Nullable String longName, long depTime,
+            long minutesUntilDeparture, ScheduleItem schedule) {
+        String prefix = "depart" + groupIdx + "#";
+
+        updateState(prefix + "route-short-name", shortName.isEmpty() ? UnDefType.UNDEF : new StringType(shortName));
+        updateState(prefix + "route-long-name", longName.isEmpty() ? UnDefType.UNDEF : new StringType(longName));
+        updateState(prefix + "minutes-until-departure", new QuantityType<>(minutesUntilDeparture, Units.MINUTE));
+        updateState(prefix + "departure-time",
+                new DateTimeType(ZonedDateTime.ofInstant(Instant.ofEpochSecond(depTime), ZoneId.systemDefault())));
+
+        if (!shortName.isEmpty() && !latestLineDepartures.containsKey(shortName)) {
+            latestLineDepartures.put(shortName,
+                    LocalTime.ofInstant(Instant.ofEpochSecond(depTime), ZoneId.systemDefault()).toString());
+        }
+
+        Long delay = schedule.delay;
+        updateState(prefix + "delay-minutes",
+                delay != null ? new QuantityType<>(delay / 60, Units.MINUTE) : UnDefType.UNDEF);
+
+        String track = schedule.track;
+        updateState(prefix + "platform", track != null ? new StringType(track) : UnDefType.UNDEF);
+
+        Boolean wheelchair = schedule.wheelchairAccessible;
+        updateState(prefix + "wheelchair-accessible",
+                wheelchair != null ? (wheelchair ? OnOffType.ON : OnOffType.OFF) : UnDefType.UNDEF);
+
+        String occupancy = schedule.occupancyStatus;
+        updateState(prefix + "occupancy", occupancy != null ? new StringType(occupancy) : UnDefType.UNDEF);
+
+        Boolean isCancelled = schedule.isCancelled;
+        updateState(prefix + "is-cancelled",
+                isCancelled != null ? (isCancelled ? OnOffType.ON : OnOffType.OFF) : UnDefType.UNDEF);
+    }
+
+    private void clearRemainingDepartures(int startIdx) {
+        TransitAppBridgeHandler bridgeHandler = getTransitBridgeHandler();
+        int maxDepartures = bridgeHandler != null ? bridgeHandler.getMaxDepartures()
+                : TransitAppBindingConstants.DEFAULT_MAX_DEPARTURES;
+
+        for (int i = startIdx; i <= maxDepartures; i++) {
+            String prefix = "depart" + i + "#";
+            updateState(prefix + "route-short-name", UnDefType.UNDEF);
+            updateState(prefix + "route-long-name", UnDefType.UNDEF);
+            updateState(prefix + "departure-time", UnDefType.UNDEF);
+            updateState(prefix + "minutes-until-departure", UnDefType.UNDEF);
+            updateState(prefix + "delay-minutes", UnDefType.UNDEF);
+            updateState(prefix + "platform", UnDefType.UNDEF);
+            updateState(prefix + "wheelchair-accessible", UnDefType.UNDEF);
+            updateState(prefix + "occupancy", UnDefType.UNDEF);
+            updateState(prefix + "is-cancelled", UnDefType.UNDEF);
         }
     }
 

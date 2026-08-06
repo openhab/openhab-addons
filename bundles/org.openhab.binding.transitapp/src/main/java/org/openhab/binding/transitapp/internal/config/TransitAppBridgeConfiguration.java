@@ -17,4 +17,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class TransitAppBridgeConfiguration {
     public String apiKey = "";
+
+    // API Performance & Caching Parameters
+    public long cacheTimeMs = 30_000; // Cache API responses for 30 seconds
+    public int retryAfterSeconds = 60; // Default retry-after value on rate limiting
+    public int maxDepartures = 10; // Maximum number of departures to fetch per stop
 }

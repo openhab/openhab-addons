@@ -37,7 +37,7 @@ public class TransitAppBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(TransitAppBridgeHandler.class);
     private final HttpClient httpClient;
-    private final TransitApiClient apiClient;
+    private TransitApiClient apiClient;
 
     public TransitAppBridgeHandler(Bridge bridge, HttpClient httpClient) {
         super(bridge);
@@ -55,6 +55,12 @@ public class TransitAppBridgeHandler extends BaseBridgeHandler {
             return;
         }
 
+        // Reinitialize API client with configured parameters
+        TransitApiClient newApiClient = new TransitApiClient(httpClient, config.cacheTimeMs, config.retryAfterSeconds);
+        this.apiClient = newApiClient;
+
+        logger.debug("Transit API client initialized with cacheTimeMs={}, retryAfterSeconds={}, maxDepartures={}",
+                config.cacheTimeMs, config.retryAfterSeconds, config.maxDepartures);
         logger.debug("API Key loaded successfully. Verifying connection...");
         updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Verifying API Key...");
 
@@ -127,5 +133,15 @@ public class TransitAppBridgeHandler extends BaseBridgeHandler {
             throw new IllegalStateException("API Key missing");
         }
         return apiClient.fetchStopDepartures(config.apiKey, globalStopId);
+    }
+
+    /**
+     * Get the maximum number of departures to display from bridge configuration.
+     *
+     * @return Maximum departures configured for this bridge
+     */
+    public int getMaxDepartures() {
+        TransitAppBridgeConfiguration config = getConfigAs(TransitAppBridgeConfiguration.class);
+        return config.maxDepartures;
     }
 }
