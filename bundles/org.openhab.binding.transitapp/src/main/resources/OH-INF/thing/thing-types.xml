@@ -103,9 +103,9 @@
 			<channel-group id="stop10" typeId="stop-group"/>
 		</channel-groups>
 		<config-description>
-			<parameter name="tripId" type="text" required="true">
+			<parameter name="tripSearchKey" type="text" required="true">
 				<label>Trip Search Key</label>
-				<description>The trip search key used by the Transit API.</description>
+				<description>The trip search key used by the Transit API. This value changes as transit feeds are updated.</description>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" min="30">
 				<label>Refresh Interval</label>
