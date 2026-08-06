@@ -35,7 +35,6 @@ import org.openhab.binding.ecovacs.internal.action.EcovacsApiActions;
 import org.openhab.binding.ecovacs.internal.api.EcovacsApi;
 import org.openhab.binding.ecovacs.internal.api.EcovacsApi.Credentials;
 import org.openhab.binding.ecovacs.internal.api.EcovacsApiException;
-import org.openhab.binding.ecovacs.internal.api.EcovacsDeviceVerificationRequiredException;
 import org.openhab.binding.ecovacs.internal.api.util.SchedulerTask;
 import org.openhab.binding.ecovacs.internal.config.EcovacsApiConfiguration;
 import org.openhab.binding.ecovacs.internal.discovery.EcovacsDeviceDiscoveryService;
@@ -49,7 +48,6 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,10 +62,9 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class EcovacsApiHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(EcovacsApiHandler.class);
-    private static final long RETRY_INTERVAL_SECONDS = 120;
 
     private Optional<EcovacsDeviceDiscoveryService> discoveryService = Optional.empty();
-    private SchedulerTask loginTask;
+    private SchedulerTask credentialsCheckTask;
     private SchedulerTask tokenRefreshTask;
     private final HttpClient httpClient;
     private final LocaleProvider localeProvider;
@@ -77,7 +74,7 @@ public class EcovacsApiHandler extends BaseBridgeHandler {
         super(bridge);
         this.httpClient = httpClient;
         this.localeProvider = localeProvider;
-        this.loginTask = new SchedulerTask(scheduler, logger, "API Login", this::loginToApi);
+        this.credentialsCheckTask = new SchedulerTask(scheduler, logger, "Credentials Check", this::checkCredentials);
         this.tokenRefreshTask = new SchedulerTask(scheduler, logger, "Token Refresh", this::refreshToken);
     }
 
@@ -108,14 +105,13 @@ public class EcovacsApiHandler extends BaseBridgeHandler {
             return;
         }
         this.api = createApi(country);
-
-        loginTask.submit();
+        credentialsCheckTask.submit();
     }
 
     @Override
     public void dispose() {
         super.dispose();
-        loginTask.cancel();
+        credentialsCheckTask.cancel();
         tokenRefreshTask.cancel();
         discoveryService.ifPresent(ds -> ds.stopScan());
     }
@@ -127,17 +123,12 @@ public class EcovacsApiHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (RefreshType.REFRESH == command) {
-            logger.debug("Refreshing Ecovacs API account '{}'", getThing().getUID().getId());
-            scheduleLogin(0);
-        }
     }
 
-    public boolean requestDeviceVerificationCode() {
+    public boolean requestVerificationCode() {
         try {
-            logger.debug("Requesting device verification code for Ecovacs API account '{}'",
-                    getThing().getUID().getId());
-            getApi().requestDeviceVerificationCode();
+            logger.debug("Requesting verification code for Ecovacs API account '{}'", getThing().getUID().getId());
+            getApi().startLoginAndRequestVerificationCode();
             return true;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -147,10 +138,10 @@ public class EcovacsApiHandler extends BaseBridgeHandler {
         return false;
     }
 
-    public boolean enterDeviceVerificationCode(String verificationCode) {
+    public boolean enterVerificationCode(String verificationCode) {
         try {
-            logger.debug("Entering device verification code for Ecovacs API account '{}'", getThing().getUID().getId());
-            Credentials creds = getApi().verifyDevice(verificationCode);
+            logger.debug("Entering verification code for Ecovacs API account '{}'", getThing().getUID().getId());
+            Credentials creds = getApi().finishLogin(verificationCode);
             cacheCredentials(creds);
             scheduleTokenRefresh(creds);
             updateStatus(ThingStatus.ONLINE);
@@ -164,52 +155,42 @@ public class EcovacsApiHandler extends BaseBridgeHandler {
     }
 
     public void onLoginExpired() {
-        logger.debug("Ecovacs API login for account '{}' expired, logging in again", getThing().getUID().getId());
-        scheduleLogin(0);
-    }
-
-    private void scheduleLogin(long delaySeconds) {
-        loginTask.cancel();
-        loginTask.schedule(delaySeconds);
+        logger.debug("Ecovacs API login for account '{}' expired", getThing().getUID().getId());
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                "@text/offline.config-error-login-required");
     }
 
     private EcovacsApi createApi(String country) {
         EcovacsApiConfiguration config = getConfigAs(EcovacsApiConfiguration.class);
-        org.openhab.binding.ecovacs.internal.api.EcovacsApiConfiguration apiConfig = new org.openhab.binding.ecovacs.internal.api.EcovacsApiConfiguration(
-                config.installId, config.email, config.password, config.continent, country, "EN", CLIENT_KEY,
-                CLIENT_SECRET, AUTH_CLIENT_KEY, AUTH_CLIENT_SECRET, APP_KEY);
+        var apiConfig = new org.openhab.binding.ecovacs.internal.api.EcovacsApiConfiguration(config.installId,
+                config.email, config.password, config.continent, country, "EN", CLIENT_KEY, CLIENT_SECRET,
+                AUTH_CLIENT_KEY, AUTH_CLIENT_SECRET, APP_KEY);
 
         return EcovacsApi.create(httpClient, apiConfig);
     }
 
-    private void loginToApi() {
+    private void checkCredentials() {
+        Credentials creds = restoreCachedCredentials();
+        if (creds == null || creds.isExpired()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.config-error-login-required");
+            return;
+        }
+
         try {
             EcovacsApi api = getApi();
-            Credentials creds = restoreCachedCredentials();
-            if (creds != null && !creds.isExpired()) {
-                logger.debug("Restoring cached credentials for Ecovacs API account '{}'", getThing().getUID().getId());
-                api.testAndSetCredentials(creds);
-            } else {
-                logger.debug("Logging in to Ecovacs API account '{}'", getThing().getUID().getId());
-                creds = api.loginAndGetAccessToken();
-                cacheCredentials(creds);
-            }
+            logger.debug("Restoring cached credentials for Ecovacs API account '{}'", getThing().getUID().getId());
+            api.testAndSetCredentials(creds);
             scheduleTokenRefresh(creds);
             updateStatus(ThingStatus.ONLINE);
             discoveryService.ifPresent(ds -> ds.startScanningWithApi(api));
-
             logger.debug("Ecovacs API initialized");
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             updateStatus(ThingStatus.OFFLINE);
-        } catch (EcovacsDeviceVerificationRequiredException e) {
-            logger.debug("Ecovacs API login requires device verification");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.config-error-verification-required");
         } catch (EcovacsApiException e) {
             logger.debug("Ecovacs API login failed", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            scheduleLogin(RETRY_INTERVAL_SECONDS);
         }
     }
 
@@ -221,10 +202,6 @@ public class EcovacsApiHandler extends BaseBridgeHandler {
             scheduleTokenRefresh(creds);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-        } catch (EcovacsDeviceVerificationRequiredException e) {
-            logger.debug("Ecovacs API login requires device verification");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.config-error-verification-required");
         } catch (EcovacsApiException e) {
             logger.debug("Token refresh failed", e);
         }

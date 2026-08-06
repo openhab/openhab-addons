@@ -33,15 +33,13 @@ public interface EcovacsApi {
         }
     }
 
-    Credentials loginAndGetAccessToken() throws EcovacsApiException, InterruptedException;
-
     void testAndSetCredentials(Credentials creds) throws EcovacsApiException, InterruptedException;
 
     Credentials refreshCredentials() throws EcovacsApiException, InterruptedException;
 
-    void requestDeviceVerificationCode() throws EcovacsApiException, InterruptedException;
+    void startLoginAndRequestVerificationCode() throws EcovacsApiException, InterruptedException;
 
-    Credentials verifyDevice(String verificationCode) throws EcovacsApiException, InterruptedException;
+    Credentials finishLogin(String verificationCode) throws EcovacsApiException, InterruptedException;
 
     List<EcovacsDevice> getDevices() throws EcovacsApiException, InterruptedException;
 }

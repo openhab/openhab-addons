@@ -58,7 +58,6 @@ import org.openhab.binding.ecovacs.internal.api.EcovacsApi;
 import org.openhab.binding.ecovacs.internal.api.EcovacsApiConfiguration;
 import org.openhab.binding.ecovacs.internal.api.EcovacsApiException;
 import org.openhab.binding.ecovacs.internal.api.EcovacsDevice;
-import org.openhab.binding.ecovacs.internal.api.EcovacsDeviceVerificationRequiredException;
 import org.openhab.binding.ecovacs.internal.api.commands.IotDeviceCommand;
 import org.openhab.binding.ecovacs.internal.api.impl.dto.request.portal.PortalAuthRequest;
 import org.openhab.binding.ecovacs.internal.api.impl.dto.request.portal.PortalAuthRequestParameter;
@@ -128,21 +127,7 @@ public final class EcovacsApiImpl implements EcovacsApi {
     }
 
     @Override
-    public Credentials loginAndGetAccessToken() throws EcovacsApiException, InterruptedException {
-        try {
-            AccessData accessData = login();
-            AuthCode authCode = getAuthCode(accessData.getUid(), accessData.getAccessToken());
-            return portalLogin(authCode, accessData.getUid());
-        } catch (EcovacsApiErrorResponseException e) {
-            if ("1013".equals(e.responseCode)) {
-                throw new EcovacsDeviceVerificationRequiredException(configuration.getDeviceId());
-            }
-            throw e;
-        }
-    }
-
-    @Override
-    public void requestDeviceVerificationCode() throws EcovacsApiException, InterruptedException {
+    public void startLoginAndRequestVerificationCode() throws EcovacsApiException, InterruptedException {
         String encryptedAccount = encryptAccount();
         Map<String, String> params = getBaseLoginRequestParameters();
         params.put("encryptEmail", encryptedAccount);
@@ -160,10 +145,12 @@ public final class EcovacsApiImpl implements EcovacsApi {
     }
 
     @Override
-    public Credentials verifyDevice(String verificationCode) throws EcovacsApiException, InterruptedException {
+    public Credentials finishLogin(String verificationCode) throws EcovacsApiException, InterruptedException {
         AccessData accessData = verifyDeviceAndLogin(verificationCode);
         AuthCode authCode = getAuthCode(accessData.getUid(), accessData.getAccessToken());
-        return portalLogin(authCode, accessData.getUid());
+        Credentials creds = portalLogin(authCode, accessData.getUid());
+        this.credentials = creds;
+        return creds;
     }
 
     @Override
@@ -173,7 +160,9 @@ public final class EcovacsApiImpl implements EcovacsApi {
             throw new EcovacsApiException("Can not refresh token while not logged in");
         }
         AuthCode authCode = getAuthCode(creds.userId(), creds.token());
-        return portalLogin(authCode, creds.userId());
+        Credentials refreshedCreds = portalLogin(authCode, creds.userId());
+        this.credentials = refreshedCreds;
+        return refreshedCreds;
     }
 
     EcovacsApiConfiguration getConfig() {
@@ -256,19 +245,6 @@ public final class EcovacsApiImpl implements EcovacsApi {
         } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
             throw new EcovacsApiException("Failed to parse public key", e);
         }
-    }
-
-    private AccessData login() throws EcovacsApiException, InterruptedException {
-        Map<String, String> loginParameters = getBaseLoginRequestParameters();
-        loginParameters.put("account", configuration.getUsername());
-        loginParameters.put("password", HashUtil.getMD5Hash(configuration.getPassword()));
-
-        Request loginRequest = createAuthRequest(EcovacsApiUrlFactory.getPrivateApiUrl("user/login", configuration),
-                configuration.getClientKey(), configuration.getClientSecret(), loginParameters);
-        ContentResponse loginResponse = executeRequest(loginRequest);
-        Type responseType = new TypeToken<ResponseWrapper<AccessData>>() {
-        }.getType();
-        return handleResponseWrapper(gson.fromJson(loginResponse.getContentAsString(), responseType));
     }
 
     private AccessData verifyDeviceAndLogin(String verificationCode) throws EcovacsApiException, InterruptedException {

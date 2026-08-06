@@ -47,7 +47,7 @@ public class EcovacsApiActions implements ThingActions {
     public @ActionOutput(label = "@text/actionOutputSuccessLabel", type = "java.lang.Boolean") boolean requestVerificationCode() {
         EcovacsApiHandler handler = this.handler;
         if (handler != null) {
-            return handler.requestDeviceVerificationCode();
+            return handler.requestVerificationCode();
         }
         return false;
     }
@@ -57,7 +57,7 @@ public class EcovacsApiActions implements ThingActions {
             @ActionInput(name = "verificationCode", label = "@text/actionInputVerificationCodeLabel", description = "@text/actionInputVerificationCodeDesc", required = true) String verificationCode) {
         EcovacsApiHandler handler = this.handler;
         if (handler != null) {
-            return handler.enterDeviceVerificationCode(verificationCode);
+            return handler.enterVerificationCode(verificationCode);
         }
         return false;
     }
