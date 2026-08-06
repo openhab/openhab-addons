@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -49,7 +50,7 @@ public class ShellyChannelMigration {
         }
     }
 
-    private static final List<ChannelMigrationRule> CHANNEL_MIGRATION_RULES = List.of(
+    private static final List<ChannelMigrationRule> METER_AND_DEVICE_MIGRATION_RULES = List.of(
             new ChannelMigrationRule(5, mkWildcardChannelId(CHANNEL_GROUP_METER, CHANNEL_METER_CURRENTWATTS),
                     CHANNEL_METER_CURRENTPOWER, true),
             new ChannelMigrationRule(5, mkWildcardChannelId(CHANNEL_GROUP_METER, CHANNEL_METER_TOTALKWH),
@@ -84,6 +85,29 @@ public class ShellyChannelMigration {
                     CHANNEL_EMETER_RESETTOTAL, false, ShellyChannelMigration::supportsPerMeterReset),
             new ChannelMigrationRule(6, mkChannelId(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCUMULATEDPOWER),
                     CHANNEL_DEVST_RESETTOTAL, false, profile -> profile.is3EM));
+
+    // Schema 7: Gen1 RGBW2 white-mode channel1..4 groups are renamed to light1..4 (Gen2 RGBW PM ships
+    // on light1..4 natively and never had channel1..4). The replacement id here is a full "group#name"
+    // (it contains the group separator), unlike the plain channel-name replacements above.
+    private static final List<ChannelMigrationRule> LIGHT_GROUP_MIGRATION_RULES = buildLightGroupMigrationRules();
+
+    private static List<ChannelMigrationRule> buildLightGroupMigrationRules() {
+        List<ChannelMigrationRule> rules = new ArrayList<>();
+        String[] channelNames = { CHANNEL_BRIGHTNESS, CHANNEL_TIMER_AUTOON, CHANNEL_TIMER_AUTOOFF,
+                CHANNEL_TIMER_ACTIVE };
+        for (int i = 1; i <= 4; i++) {
+            String oldGroup = CHANNEL_GROUP_LIGHT_CHANNEL + i;
+            String newGroup = CHANNEL_GROUP_LIGHT_INDEX + i;
+            for (String channelName : channelNames) {
+                rules.add(new ChannelMigrationRule(7, mkChannelId(oldGroup, channelName),
+                        mkChannelId(newGroup, channelName), false, profile -> profile.isRGBW2 && !profile.isGen2));
+            }
+        }
+        return rules;
+    }
+
+    private static final List<ChannelMigrationRule> CHANNEL_MIGRATION_RULES = Stream
+            .concat(METER_AND_DEVICE_MIGRATION_RULES.stream(), LIGHT_GROUP_MIGRATION_RULES.stream()).toList();
 
     // Gen2 switch/cover/pm1 report aenergy.by_minute; Gen1 /meter devices report counters[].
     // EM/EM1/3EM (Gen2) and /emeter EM/3EM (Gen1) report neither.
@@ -165,9 +189,15 @@ public class ShellyChannelMigration {
             }
 
             if (!groupPrefix.isEmpty()) {
-                String newChannelId = (replacementChannelName != null && !replacementChannelName.isEmpty())
-                        ? groupPrefix + replacementChannelName
-                        : fullExistingId;
+                String newChannelId;
+                if (replacementChannelName == null || replacementChannelName.isEmpty()) {
+                    newChannelId = fullExistingId;
+                } else if (replacementChannelName.indexOf(ChannelUID.CHANNEL_GROUP_SEPARATOR) >= 0) {
+                    // Replacement id is already a full "group#name" id (e.g. a group-level rename); use as-is.
+                    newChannelId = replacementChannelName;
+                } else {
+                    newChannelId = groupPrefix + replacementChannelName;
+                }
                 if (findChannel(existingChannels, newChannelId) == null) {
                     try {
                         Channel newChannel = ShellyChannelDefinitions.createChannel(thing.getThing(), newChannelId);

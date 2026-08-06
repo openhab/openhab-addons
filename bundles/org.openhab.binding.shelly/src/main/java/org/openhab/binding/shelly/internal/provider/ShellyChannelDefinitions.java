@@ -22,6 +22,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -91,7 +93,8 @@ public class ShellyChannelDefinitions {
     private static final String CHGR_RELAY = CHANNEL_GROUP_RELAY_CONTROL;
     private static final String CHGR_ROLLER = CHANNEL_GROUP_ROL_CONTROL;
     private static final String CHGR_LIGHT = CHANNEL_GROUP_LIGHT_CONTROL;
-    private static final String CHGR_LIGHTCH = CHANNEL_GROUP_LIGHT_CHANNEL;
+    private static final String CHGR_LIGHTCH = CHANNEL_GROUP_LIGHT_CHANNEL; // deprecated, see CHGR_LIGHT_IDX
+    private static final String CHGR_LIGHT_IDX = CHANNEL_GROUP_LIGHT_INDEX;
     private static final String CHGR_STATUS = CHANNEL_GROUP_STATUS;
     private static final String CHGR_METER = CHANNEL_GROUP_METER;
     private static final String CHGR_EMN = CHANNEL_GROUP_NMETER;
@@ -236,11 +239,16 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_LIGHT, CHANNEL_TIMER_AUTOON, "timerAutoOn", ITEMT_TIME))
                 .add(new ShellyChannel(m, CHGR_LIGHT, CHANNEL_TIMER_AUTOOFF, "timerAutoOff", ITEMT_TIME))
                 .add(new ShellyChannel(m, CHGR_LIGHT, CHANNEL_TIMER_ACTIVE, "timerActive", ITEMT_SWITCH))
-                // RGBW2-white
+                // RGBW2-white (deprecated group naming, kept for already-discovered Things; see light1..n below)
                 .add(new ShellyChannel(m, CHGR_LIGHTCH, CHANNEL_BRIGHTNESS, "whiteBrightness", ITEMT_DIMMER))
                 .add(new ShellyChannel(m, CHGR_LIGHTCH, CHANNEL_TIMER_AUTOON, "timerAutoOn", ITEMT_TIME))
                 .add(new ShellyChannel(m, CHGR_LIGHTCH, CHANNEL_TIMER_AUTOOFF, "timerAutoOff", ITEMT_TIME))
                 .add(new ShellyChannel(m, CHGR_LIGHTCH, CHANNEL_TIMER_ACTIVE, "timerActive", ITEMT_SWITCH))
+                // RGBW2-white / RGBW PM-white (current group naming, replaces channel1..n)
+                .add(new ShellyChannel(m, CHGR_LIGHT_IDX, CHANNEL_BRIGHTNESS, "whiteBrightness", ITEMT_DIMMER))
+                .add(new ShellyChannel(m, CHGR_LIGHT_IDX, CHANNEL_TIMER_AUTOON, "timerAutoOn", ITEMT_TIME))
+                .add(new ShellyChannel(m, CHGR_LIGHT_IDX, CHANNEL_TIMER_AUTOOFF, "timerAutoOff", ITEMT_TIME))
+                .add(new ShellyChannel(m, CHGR_LIGHT_IDX, CHANNEL_TIMER_ACTIVE, "timerActive", ITEMT_SWITCH))
 
                 // Power Meter
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_METER_CURRENTWATTS, "meterWatts", ITEMT_POWER))
@@ -365,7 +373,9 @@ public class ShellyChannelDefinitions {
         } else if (group.startsWith(CHANNEL_GROUP_RELAY_CONTROL)) {
             group = CHANNEL_GROUP_RELAY_CONTROL; // map meter1..n to meter
         } else if (group.startsWith(CHANNEL_GROUP_LIGHT_CHANNEL)) {
-            group = CHANNEL_GROUP_LIGHT_CHANNEL;
+            group = CHANNEL_GROUP_LIGHT_CHANNEL; // deprecated, see light1..n below
+        } else if (group.startsWith(CHANNEL_GROUP_LIGHT_INDEX)) {
+            group = CHANNEL_GROUP_LIGHT_INDEX; // map light1..n to light
         } else if (group.startsWith(CHANNEL_GROUP_STATUS)) {
             group = CHANNEL_GROUP_STATUS; // map status1..n to meter
         }
@@ -815,6 +825,27 @@ public class ShellyChannelDefinitions {
             case CHANNEL_DEVST_ACCURETURNED -> CHANNEL_DEVST_ACCURETURNEDENERGY;
             default -> null;
         };
+    }
+
+    private static final Pattern LIGHT_CHANNEL_GROUP_PATTERN = Pattern
+            .compile("^" + CHANNEL_GROUP_LIGHT_CHANNEL + "(\\d+)$");
+
+    /**
+     * Group-level counterpart to {@link #getReplacementChannelId(String)}: detects the deprecated
+     * channel1..n group naming (Gen1 RGBW2) and returns the same channel under the current light1..n
+     * group naming, e.g. {@code channel1#brightness} -> {@code light1#brightness}.
+     */
+    public static @Nullable String getReplacementGroupId(String channelId) {
+        int groupSeparator = channelId.indexOf(ChannelUID.CHANNEL_GROUP_SEPARATOR);
+        if (groupSeparator < 0) {
+            return null;
+        }
+        String group = channelId.substring(0, groupSeparator);
+        Matcher matcher = LIGHT_CHANNEL_GROUP_PATTERN.matcher(group);
+        if (!matcher.matches()) {
+            return null;
+        }
+        return CHANNEL_GROUP_LIGHT_INDEX + matcher.group(1) + channelId.substring(groupSeparator);
     }
 
     public static @Nullable Channel createChannel(Thing thing, String channelId) throws IllegalArgumentException {
