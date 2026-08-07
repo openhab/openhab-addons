@@ -52,19 +52,9 @@ Logs emitted by the OpenTelemetry service itself and the OTLP exporter are inten
 ## Exported Metrics
 
 The service attaches an OTLP push registry to openHAB's internal [Micrometer](https://micrometer.io/) composite registry.
-All meters registered by openHAB core are automatically included; meters from unrelated add-ons are excluded by a name-prefix filter.
-
-Exported meter prefixes:
-
-| Prefix | Coverage |
-|:---|:---|
-| `openhab.*` | openHAB domain meters: thing state, rule executions, item events, … |
-| `jvm.*` | JVM memory, garbage collection, threads |
-| `process.*` | Process CPU, file descriptors |
-| `system.*` | System CPU usage |
-| `executor.*` | Thread pool metrics |
-| `logback.*` | Log event counts by level |
-| `http.*` | HTTP server request metrics |
+Meters are included when they carry the `openhab_core_metric=true` tag, which openHAB core's `DefaultMetricsRegistration` attaches to every core meter binder.
+This covers openHAB domain meters (thing state, rule executions, item events), JVM metrics, processor and thread-pool metrics.
+Meters from unrelated add-ons or third-party libraries are excluded regardless of their name.
 
 :::note
 The metrics pipeline uses Micrometer's naming conventions (snake_case with `.` separators), not the OTel semantic conventions for metrics.

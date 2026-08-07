@@ -43,6 +43,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.micrometer.core.instrument.Clock;
+import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import io.micrometer.core.instrument.config.MeterFilter;
 import io.micrometer.registry.otlp.AggregationTemporality;
@@ -255,7 +256,8 @@ public class OpenTelemetryService {
                 .addLogRecordProcessor(BatchLogRecordProcessor.builder(logExporterBuilder.build()).build());
     }
 
-    private @Nullable SdkTracerProvider createSdkTracerProvider(OpenTelemetryConfiguration config, Resource resource) {
+    @Nullable
+    SdkTracerProvider createSdkTracerProvider(OpenTelemetryConfiguration config, Resource resource) {
         if (!config.tracesEnabled) {
             return null;
         }
@@ -264,15 +266,13 @@ public class OpenTelemetryService {
             return null;
         }
 
-        String tracesUrl;
+        OtlpHttpSpanExporterBuilder spanExporterBuilder;
         try {
-            tracesUrl = config.getTracesURL();
+            spanExporterBuilder = OtlpHttpSpanExporter.builder().setEndpoint(config.getTracesURL());
         } catch (IllegalArgumentException e) {
             logger.warn("Invalid OTLP traces endpoint: {}", e.getMessage());
             return null;
         }
-
-        OtlpHttpSpanExporterBuilder spanExporterBuilder = OtlpHttpSpanExporter.builder().setEndpoint(tracesUrl);
         Map<String, String> headers;
         try {
             headers = parseOtlpHeaders(config.otlpHeaders);
@@ -429,19 +429,14 @@ public class OpenTelemetryService {
     // -------------------------------------------------------------------------
 
     /**
-     * MeterFilter prefixes: only openHAB's own meters and standard JVM/process metrics
-     * are exported to avoid leaking unrelated add-on meters or host-monitoring data.
+     * Tag attached by openHAB core's DefaultMetricsRegistration to every core meter binder.
+     * The constant lives in a non-exported core package, so the literal is duplicated here.
      */
-    static final String[] ALLOWED_METER_PREFIXES = { "openhab.", "jvm.", "process.", "system.", "executor.", "logback.",
-            "http." };
+    static final String CORE_METRIC_TAG_KEY = "openhab_core_metric";
+    static final String CORE_METRIC_TAG_VALUE = "true";
 
-    static boolean isAllowedMeterName(String name) {
-        for (String prefix : ALLOWED_METER_PREFIXES) {
-            if (name.startsWith(prefix)) {
-                return true;
-            }
-        }
-        return false;
+    static boolean isCoreMeter(Meter.Id id) {
+        return CORE_METRIC_TAG_VALUE.equals(id.getTag(CORE_METRIC_TAG_KEY));
     }
 
     @SuppressWarnings("null") // implementing unannotated Micrometer OtlpConfig interface
@@ -523,7 +518,7 @@ public class OpenTelemetryService {
         };
 
         OtlpMeterRegistry registry = new OtlpMeterRegistry(otlpConfig, Clock.SYSTEM);
-        registry.config().meterFilter(MeterFilter.denyUnless(id -> isAllowedMeterName(id.getName())));
+        registry.config().meterFilter(MeterFilter.denyUnless(OpenTelemetryService::isCoreMeter));
 
         MeterRegistryProvider provider = this.meterRegistryProvider;
         if (provider != null) {

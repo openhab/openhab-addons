@@ -19,6 +19,10 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 
+import io.micrometer.core.instrument.Meter;
+import io.micrometer.core.instrument.Tags;
+import io.opentelemetry.sdk.resources.Resource;
+
 /**
  * The {@link OpenTelemetryServiceTest} class contains tests for header parsing,
  * URL resolution, meter filtering, and service attribute consistency.
@@ -167,30 +171,27 @@ public class OpenTelemetryServiceTest {
         assertThrows(IllegalArgumentException.class, () -> config.getTracesURL());
     }
 
-    @Test
-    public void testMeterNameFilterAcceptsOpenHabPrefixes() {
-        // openHAB-specific meters
-        assertTrue(OpenTelemetryService.isAllowedMeterName("openhab.thing.count"));
-        assertTrue(OpenTelemetryService.isAllowedMeterName("openhab.item.state.changed"));
-        assertTrue(OpenTelemetryService.isAllowedMeterName("openhab.rule.execution.time"));
-
-        // Standard JVM and process metrics (openHAB process telemetry)
-        assertTrue(OpenTelemetryService.isAllowedMeterName("jvm.memory.used"));
-        assertTrue(OpenTelemetryService.isAllowedMeterName("jvm.gc.pause"));
-        assertTrue(OpenTelemetryService.isAllowedMeterName("process.cpu.usage"));
-        assertTrue(OpenTelemetryService.isAllowedMeterName("system.cpu.usage"));
-        assertTrue(OpenTelemetryService.isAllowedMeterName("executor.pool.size"));
-        assertTrue(OpenTelemetryService.isAllowedMeterName("logback.events"));
-        assertTrue(OpenTelemetryService.isAllowedMeterName("http.server.requests"));
+    private static Meter.Id meterId(String name, Tags tags) {
+        return new Meter.Id(name, tags, null, null, Meter.Type.GAUGE);
     }
 
     @Test
-    public void testMeterNameFilterDeniesNonOpenHabMeters() {
-        assertFalse(OpenTelemetryService.isAllowedMeterName("kafka.consumer.records"));
-        assertFalse(OpenTelemetryService.isAllowedMeterName("db.pool.active"));
-        assertFalse(OpenTelemetryService.isAllowedMeterName("host.disk.usage"));
-        assertFalse(OpenTelemetryService.isAllowedMeterName("custom.addon.metric"));
-        assertFalse(OpenTelemetryService.isAllowedMeterName(""));
+    public void testCoreMetricTagFilterAcceptsTaggedMeters() {
+        Tags coreTag = Tags.of(OpenTelemetryService.CORE_METRIC_TAG_KEY, OpenTelemetryService.CORE_METRIC_TAG_VALUE);
+        assertTrue(OpenTelemetryService.isCoreMeter(meterId("openhab.thing.count", coreTag)));
+        assertTrue(OpenTelemetryService.isCoreMeter(meterId("jvm.memory.used", coreTag)));
+        assertTrue(OpenTelemetryService.isCoreMeter(meterId("process.cpu.usage", coreTag)));
+        assertTrue(OpenTelemetryService.isCoreMeter(meterId("system.cpu.usage", coreTag)));
+        assertTrue(OpenTelemetryService.isCoreMeter(meterId("executor.pool.size", coreTag)));
+    }
+
+    @Test
+    public void testCoreMetricTagFilterDeniesMetersByNameAlone() {
+        // A third-party meter using an openHAB-style prefix must still be denied if untagged
+        assertFalse(OpenTelemetryService.isCoreMeter(meterId("executor.pool.size", Tags.empty())));
+        assertFalse(OpenTelemetryService.isCoreMeter(meterId("jvm.memory.used", Tags.empty())));
+        assertFalse(OpenTelemetryService.isCoreMeter(meterId("kafka.consumer.records", Tags.empty())));
+        assertFalse(OpenTelemetryService.isCoreMeter(meterId("", Tags.empty())));
     }
 
     @Test
@@ -220,6 +221,17 @@ public class OpenTelemetryServiceTest {
         assertEquals(0.0, OpenTelemetryService.clampSamplingRatio(-0.5), 0.0001);
         assertEquals(1.0, OpenTelemetryService.clampSamplingRatio(1.5), 0.0001);
         assertEquals(0.5, OpenTelemetryService.clampSamplingRatio(0.5), 0.0001);
+    }
+
+    @Test
+    public void testInvalidTracesSchemeReturnsNull() {
+        // setEndpoint() in OtlpHttpSpanExporter rejects non-http(s) schemes;
+        // the method must return null rather than propagating an IllegalArgumentException
+        OpenTelemetryConfiguration config = new OpenTelemetryConfiguration();
+        config.tracesEnabled = true;
+        config.otlpURL = "ftp://host";
+        config.tracesEndpoint = "/v1/traces";
+        assertNull(new OpenTelemetryService().createSdkTracerProvider(config, Resource.empty()));
     }
 
     @Test

@@ -44,11 +44,14 @@ public class OpenTelemetryLogListener implements LogListener {
 
     @Override
     public void logged(@NonNullByDefault({}) LogEntry logEntry) {
-        // Suppress our own bundle and OTel exporter logs to break the export-failure feedback loop
-        // (e.g. a 403 from the OTLP endpoint would be re-ingested and re-exported indefinitely).
+        // Suppress our own bundle and all OTel SDK/exporter logs to break the export-failure
+        // feedback loop. SDK batch processors (e.g. BatchLogRecordProcessor) log under
+        // io.opentelemetry.sdk.*, not just io.opentelemetry.exporter.*, so the full namespace
+        // must be suppressed (e.g. a 403 from the OTLP endpoint would otherwise be re-ingested
+        // and re-exported indefinitely).
         String loggerName = logEntry.getLoggerName();
         if (loggerName != null && (loggerName.startsWith("org.openhab.io.opentelemetry")
-                || loggerName.startsWith("io.opentelemetry.exporter"))) {
+                || loggerName.startsWith("io.opentelemetry."))) {
             return;
         }
 

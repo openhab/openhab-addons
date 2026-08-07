@@ -203,4 +203,21 @@ public class OpenTelemetryLogListenerTest {
         // Verify that the listener returns early and does not call any methods on the OTel Logger
         verifyNoInteractions(otelLogger);
     }
+
+    @Test
+    public void testOpenTelemetrySdkLoggingIgnored() {
+        // SDK batch processors (e.g. BatchLogRecordProcessor) log under io.opentelemetry.sdk.*
+        // and must be suppressed to prevent re-ingesting export-failure log lines
+        OpenTelemetryLogListener listener = new OpenTelemetryLogListener(otelLogger);
+
+        LogEntry logEntry = mock(LogEntry.class);
+        when(logEntry.getLoggerName()).thenReturn("io.opentelemetry.sdk.logs.export.BatchLogRecordProcessor");
+        when(logEntry.getLogLevel()).thenReturn(LogLevel.WARN);
+        when(logEntry.getMessage()).thenReturn("Timeout when waiting for signals to be sent to the exporter");
+        when(logEntry.getTime()).thenReturn(System.currentTimeMillis());
+
+        listener.logged(logEntry);
+
+        verifyNoInteractions(otelLogger);
+    }
 }
