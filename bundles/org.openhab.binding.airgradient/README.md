@@ -101,6 +101,26 @@ These configuration settings needs AirGradient firmware on the sensor of version
 | model                 | String               | Read/Write | The model of the device (can be changed e.g. if you change sensors)              |
 | led-bar-test          | String               | Write      | Trigger test of LED bar                                                          |
 
+The following additional measurement channels are available for firmware version 3.1.21 or later.
+
+| Channel          | Type                 | Read/Write | Description                                                   |
+|------------------|----------------------|------------|---------------------------------------------------------------|
+| pm01-standard    | Number:Density       | Read       | PM1 value according to selected PM standard                   |
+| pm02-standard    | Number:Density       | Read       | PM2 value according to selected PM standard                   |
+| pm10-standard    | Number:Density       | Read       | PM10 value according to selected PM standard                  |
+| pm005-count      | Number:Dimensionless | Read       | Particle count for particles >= 0.5 microns per deciliter air |
+| pm01-count       | Number:Dimensionless | Read       | Particle count for particles >= 1.0 microns per deciliter air |
+| pm02-count       | Number:Dimensionless | Read       | Particle count for particles >= 2.5 microns per deciliter air |
+| pm50-count       | Number:Dimensionless | Read       | Particle count for particles >= 5.0 microns per deciliter air |
+| pm10-count       | Number:Dimensionless | Read       | Particle count for particles >= 10 microns per deciliter air  |
+| pm02-compensated | Number:Density       | Read       | PM2 value with humidity compensation                          |
+| atmp-compensated | Number:Temperature   | Read       | Ambient temperature with compensation                         |
+| rhum-compensated | Number:Dimensionless | Read       | Relative humidity with compensation                           |
+| tvoc-index       | Number:Dimensionless | Read       | TVOC index value                                              |
+| tvoc-raw         | Number:Dimensionless | Read       | Raw TVOC value                                                |
+| nox-index        | Number:Dimensionless | Read       | NOx index value                                               |
+| nox-raw          | Number:Dimensionless | Read       | Raw NOx value                                                 |
+
 ## Full Example
 
 ### Things Configuration
