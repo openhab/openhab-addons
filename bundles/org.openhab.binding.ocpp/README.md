@@ -9,8 +9,8 @@ It reports connection state, connector status and metering, and controls chargin
 
 ## Supported Things
 
-- `server`: the OCPP JSON WebSocket endpoint chargers connect to. Acts as the bridge for all charge points.
-- `chargepoint`: one physical charger, matched to a session by its OCPP charge point id (the URL path it dials, without the leading slash). Bridge for its connectors.
+- `server`: the OCPP JSON WebSocket endpoint chargers connect to, and the bridge for all charge points.
+- `chargepoint`: one physical charger matched to a session by its OCPP charge point id (the URL path it dials, without the leading slash), and the bridge for its connectors.
 - `connector`: one connector (outlet) of a charger, carrying the live status and metering channels.
 
 ## Discovery
@@ -97,7 +97,7 @@ Vendor, model, firmware version and serial number are published as thing propert
 | unlock             | Switch                 | W          | Momentary — unlock the connector                       |
 | hardware-max-current | Number:ElectricCurrent | RW         | Hardware current ceiling via a vendor config key       |
 
-Beyond the channels above, the connector also exposes the full OCPP 1.6 SampledValue set — aggregate and per-phase current/voltage, active and reactive power, power factor, frequency, active/reactive energy (register and interval, import and export), plus vehicle telemetry (`soc`, `rpm`, `temperature`) — and per-transaction metadata (`id-tag`, `transaction-id`, `meter-start`, `meter-stop`, and the start/stop timestamps).
+Beyond the channels above, the connector also exposes the full OCPP 1.6 SampledValue set — aggregate and per-phase current/voltage, active and reactive power, power factor, frequency, active/reactive energy (register and interval, import and export), plus vehicle telemetry (`soc`, `rpm`, `temperature`) — and per-transaction metadata (`id-tag`, `transaction-id`, `meter-start`, `meter-stop`) and the metering timestamps (`timestamp`, `timestamp-start`, `timestamp-stop`).
 
 For chargers that reject a TxProfile outside a transaction (e.g. Phoenix CHARX), set `forceTxDefaultProfile` on the connector so the charge limit is sent as a TxDefaultProfile.
 

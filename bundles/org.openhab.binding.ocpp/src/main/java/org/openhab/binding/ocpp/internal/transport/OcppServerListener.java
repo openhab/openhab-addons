@@ -35,9 +35,9 @@ import eu.chargetime.ocpp.model.core.StopTransactionRequest;
 public interface OcppServerListener {
 
     /**
-     * A charger opened a WebSocket session. {@code chargePointId} is the last path segment of the
-     * URL it dialled (the OCPP charge point identity); it is used to match the session to a
-     * chargepoint thing.
+     * A charger opened a WebSocket session. {@code chargePointId} is the URL path it dialled with the
+     * leading slash removed (e.g. {@code charger}, or {@code site/charger}) — the OCPP charge point
+     * identity; it is used to match the session to a chargepoint thing.
      */
     void onSessionOpened(UUID session, @Nullable String chargePointId, @Nullable InetSocketAddress remote);
 

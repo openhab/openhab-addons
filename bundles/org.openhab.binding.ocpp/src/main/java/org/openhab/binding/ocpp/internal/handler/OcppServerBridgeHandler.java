@@ -333,7 +333,17 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
 
     @Override
     public void onStartTransaction(UUID session, StartTransactionRequest request, int transactionId) {
-        OcppChargePointHandler handler = resolve(session);
+        String chargePointId = sessionChargePoints.get(session);
+        Integer connectorId = request.getConnectorId();
+        if (chargePointId != null && connectorId != null) {
+            // Persist as soon as the start is accepted, from the session's charge point identity and
+            // the request's connector id — even if no charge-point or connector Thing exists yet (the
+            // charger may still be in the discovery inbox). Otherwise the charger holds an accepted
+            // transaction id the binding could never associate, recover, or route its stop to. When a
+            // handler is present it does the in-memory routing; the persistence lives here, once.
+            rememberTransaction(transactionId, chargePointId, connectorId);
+        }
+        OcppChargePointHandler handler = chargePointId != null ? chargePoints.get(chargePointId) : null;
         if (handler != null) {
             handler.onStartTransaction(request, transactionId);
         }

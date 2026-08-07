@@ -29,15 +29,23 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 
 import eu.chargetime.ocpp.model.Request;
+import eu.chargetime.ocpp.model.core.ChargePointErrorCode;
+import eu.chargetime.ocpp.model.core.ChargePointStatus;
+import eu.chargetime.ocpp.model.core.StatusNotificationRequest;
+import eu.chargetime.ocpp.model.core.UnlockConnectorRequest;
 import eu.chargetime.ocpp.model.smartcharging.ChargingProfileStatus;
 import eu.chargetime.ocpp.model.smartcharging.SetChargingProfileConfirmation;
 import eu.chargetime.ocpp.model.smartcharging.SetChargingProfileRequest;
@@ -153,5 +161,85 @@ class OcppConnectorReadinessTest {
         // ...and the older confirmation arriving afterwards must not roll the channel back to 10 A.
         first.complete(new SetChargingProfileConfirmation(ChargingProfileStatus.Accepted));
         assertLimitNeverPublished(10.0);
+    }
+
+    @Test
+    void aLimitCaughtMidCoalesceWindowIsReappliedAfterAnOfflineBlip() {
+        // With coalescing enabled, a limit can be sitting in a scheduled flush when the charge point
+        // drops offline. Cancelling that flush must not silently lose the setpoint — the latest value
+        // is re-applied when the charge point comes back, rather than dropped until the next command.
+        OcppConnectorHandler coalescing = newConnector(Map.of("connectorId", 1, "profileMinIntervalMs", 100));
+
+        ready.set(true);
+        // The first command sends immediately (nothing to coalesce against yet) and opens the interval.
+        coalescing.handleCommand(new ChannelUID(CONN_UID, CHANNEL_CHARGE_LIMIT), new QuantityType<>(10, Units.AMPERE));
+        verify(parent, org.mockito.Mockito.timeout(1000).times(1))
+                .send(argThat(OcppConnectorReadinessTest::isSetChargingProfile));
+        // A second command within the interval only schedules a flush — nothing on the wire yet.
+        coalescing.handleCommand(new ChannelUID(CONN_UID, CHANNEL_CHARGE_LIMIT), new QuantityType<>(16, Units.AMPERE));
+
+        // The charge point drops before the flush fires: the scheduled 16 A flush is cancelled and
+        // must not sneak out afterwards — still exactly one send through the whole offline window.
+        coalescing
+                .bridgeStatusChanged(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, null));
+        ready.set(false);
+        verify(parent, org.mockito.Mockito.after(400).times(1))
+                .send(argThat(OcppConnectorReadinessTest::isSetChargingProfile));
+
+        // Back ready: the 16 A the cancelled flush would have carried is re-applied, not lost.
+        ready.set(true);
+        coalescing.onChargePointReady();
+        verify(parent, org.mockito.Mockito.timeout(1000).times(2))
+                .send(argThat(OcppConnectorReadinessTest::isSetChargingProfile));
+    }
+
+    @Test
+    void pausingSendsZeroAmpsAndUnpausingRestoresTheLimit() {
+        // PAUSE ON sends a 0 A charging profile (limit 0, transaction kept); PAUSE OFF restores the
+        // last commanded limit. The stored fields, not the wire, carry the setpoint across the pause.
+        ready.set(true);
+        List<Request> sent = new java.util.ArrayList<>();
+        when(parent.send(any())).thenAnswer(inv -> {
+            sent.add(inv.getArgument(0));
+            return CompletableFuture
+                    .completedFuture(new SetChargingProfileConfirmation(ChargingProfileStatus.Accepted));
+        });
+
+        handler.handleCommand(new ChannelUID(CONN_UID, CHANNEL_CHARGE_LIMIT), new QuantityType<>(16, Units.AMPERE));
+        handler.handleCommand(new ChannelUID(CONN_UID, CHANNEL_PAUSE), OnOffType.ON);
+        handler.handleCommand(new ChannelUID(CONN_UID, CHANNEL_PAUSE), OnOffType.OFF);
+
+        List<Double> limits = sent.stream().filter(OcppConnectorReadinessTest::isSetChargingProfile)
+                .map(r -> ((SetChargingProfileRequest) r).getCsChargingProfiles().getChargingSchedule()
+                        .getChargingSchedulePeriod()[0].getLimit().doubleValue())
+                .toList();
+        org.junit.jupiter.api.Assertions.assertEquals(List.of(16.0, 0.0, 16.0), limits,
+                "pause should send 0 A and unpause should restore 16 A");
+    }
+
+    @Test
+    void aTransientStateDoesNotAutoUnlockWhenStuckRecoveryIsOff() {
+        // stuckStateRecovery defaults to false: a connector sitting in a transient OCPP state
+        // (Preparing/Finishing) must never be auto-unlocked — that physical action is opt-in per
+        // charger, not triggered by elapsed time in an otherwise normal state.
+        ready.set(true);
+        handler.onStatusNotification(
+                new StatusNotificationRequest(1, ChargePointErrorCode.NoError, ChargePointStatus.Preparing));
+
+        verify(parent, org.mockito.Mockito.after(300).never()).send(argThat(r -> r instanceof UnlockConnectorRequest));
+    }
+
+    private OcppConnectorHandler newConnector(Map<String, Object> config) {
+        Thing connThing = mock(Thing.class);
+        when(connThing.getUID()).thenReturn(CONN_UID);
+        when(connThing.getThingTypeUID()).thenReturn(THING_TYPE_CONNECTOR);
+        when(connThing.getBridgeUID()).thenReturn(CP_UID);
+        when(connThing.getConfiguration()).thenReturn(new Configuration(config));
+        when(connThing.getChannels()).thenReturn(List.of());
+        when(connThing.getProperties()).thenReturn(Map.of());
+        OcppConnectorHandler connector = new OcppConnectorHandler(connThing);
+        connector.setCallback(callback);
+        connector.initialize();
+        return connector;
     }
 }

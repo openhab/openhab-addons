@@ -165,7 +165,7 @@ public class ChargeTimeTransport implements OcppTransport {
         }
         started = true;
         running = true;
-        logger.info("OCPP JSON server listening on {}:{}", host, port);
+        logger.debug("OCPP JSON server listening on {}:{}", host, port);
     }
 
     /**

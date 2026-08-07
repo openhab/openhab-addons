@@ -31,8 +31,9 @@ import eu.chargetime.ocpp.model.Request;
 public interface OcppTransport {
 
     /**
-     * Bind the WebSocket endpoint and start accepting charger connections. Returns immediately; the
-     * server runs on its own threads.
+     * Bind the WebSocket endpoint and confirm it is accepting connections before returning; the served
+     * sessions then run on their own threads. Because the underlying server binds asynchronously, this
+     * may block briefly while startup is verified, and throws if the endpoint does not come up.
      */
     void start(String host, int port);
 
