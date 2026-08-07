@@ -127,6 +127,12 @@
 				<option value="PARTY">Party</option>
 			</options>
 		</state>
+		<command>
+			<options>
+				<option value="1">Normal</option>
+				<option value="2">Party</option>
+			</options>
+		</command>
 	</channel-type>
 
 	<channel-type id="schedule-duration-type">
