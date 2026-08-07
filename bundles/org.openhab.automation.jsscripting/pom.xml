@@ -106,22 +106,22 @@
           </execution>
           <!-- bundle openhab-js -->
           <execution>
-            <id>npx webpack (openhab-js globals injection)</id>
+            <id>npm run webpack (openhab-js)</id>
             <goals>
-              <goal>npx</goal>
+              <goal>npm</goal>
             </goals>
             <configuration>
-              <!--suppress UnresolvedMavenProperty -->
-              <arguments>webpack -c ./build/@globals-webpack.config.js --entry-reset --entry ./build/@openhab-globals.js -o ../dist</arguments>
+              <arguments>run webpack</arguments>
             </configuration>
           </execution>
+          <!-- bundle openhab-js type definitions -->
           <execution>
-            <id>npx webpack (openhab-js)</id>
+            <id>npm run types:bundle (openhab-js)</id>
             <goals>
-              <goal>npx</goal>
+              <goal>npm</goal>
             </goals>
             <configuration>
-              <arguments>webpack -c ./build/webpack.config.js --entry-reset --entry ./ -o ../dist</arguments>
+              <arguments>run types:bundle</arguments>
             </configuration>
           </execution>
         </executions>
@@ -140,7 +140,7 @@
             <configuration>
               <resources>
                 <resource>
-                  <directory>${project.build.directory}/js/dist</directory>
+                  <directory>${project.build.directory}/js/openhab-js/dist</directory>
                   <targetPath>node_modules</targetPath>
                 </resource>
               </resources>
