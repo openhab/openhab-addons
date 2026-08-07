@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="threedprinter"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="printer-state">
+		<item-type>String</item-type>
+		<label>Printer State</label>
+		<description>Current operational state of the printer.</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="IDLE">Idle</option>
+				<option value="PRINTING">Printing</option>
+				<option value="PAUSED">Paused</option>
+				<option value="FINISHED">Finished</option>
+				<option value="ERROR">Error</option>
+				<option value="BUSY">Busy</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="job-name">
+		<item-type>String</item-type>
+		<label>Job Name</label>
+		<description>Name of the currently loaded or active print job file.</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="job-progress">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Print Progress</label>
+		<description>Percentage of the current print job completed.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Progress</tag>
+		</tags>
+		<state readOnly="true" min="0" max="100" pattern="%.1f %%"/>
+	</channel-type>
+
+	<channel-type id="time-elapsed">
+		<item-type>Number:Time</item-type>
+		<label>Time Elapsed</label>
+		<description>Time elapsed since the current print job started.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state readOnly="true" pattern="%d s"/>
+	</channel-type>
+
+	<channel-type id="time-remaining">
+		<item-type>Number:Time</item-type>
+		<label>Time Remaining</label>
+		<description>Estimated time remaining for the current print job.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state readOnly="true" pattern="%d s"/>
+	</channel-type>
+
+	<channel-type id="nozzle-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Nozzle Temperature</label>
+		<description>Current nozzle (hotend) temperature.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="nozzle-temperature-setpoint">
+		<item-type>Number:Temperature</item-type>
+		<label>Nozzle Temperature Setpoint</label>
+		<description>Target nozzle temperature. Send a value to change the setpoint.</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state min="0" max="350" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="bed-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Bed Temperature</label>
+		<description>Current heated bed temperature.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="bed-temperature-setpoint">
+		<item-type>Number:Temperature</item-type>
+		<label>Bed Temperature Setpoint</label>
+		<description>Target bed temperature. Send a value to change the setpoint.</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state min="0" max="120" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="print-speed">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Print Speed</label>
+		<description>Print speed as a percentage of the nominal speed (100 = normal speed).</description>
+		<tags>
+			<tag>Setpoint</tag>
+		</tags>
+		<state min="1" max="200" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="fan-speed">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Fan Speed</label>
+		<description>Part-cooling fan speed as a percentage (0 = off, 100 = full speed).</description>
+		<tags>
+			<tag>Setpoint</tag>
+		</tags>
+		<state min="0" max="100" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="pause-resume">
+		<item-type>Switch</item-type>
+		<label>Pause / Resume</label>
+		<description>ON pauses the current print; OFF resumes a paused print.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Control</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="cancel">
+		<item-type>Switch</item-type>
+		<label>Cancel Print</label>
+		<description>Send ON to cancel the current print job. Resets to OFF automatically.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Control</tag>
+		</tags>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="job-preview">
+		<item-type>Image</item-type>
+		<label>Print Preview</label>
+		<description>Thumbnail image of the object being printed. Populated when the sliced file contains embedded thumbnails.</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>
