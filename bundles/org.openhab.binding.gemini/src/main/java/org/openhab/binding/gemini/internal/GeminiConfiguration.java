@@ -16,6 +16,7 @@ import static org.openhab.binding.gemini.internal.GeminiBindingConstants.DEFAULT
 import static org.openhab.binding.gemini.internal.GeminiBindingConstants.DEFAULT_MODEL;
 import static org.openhab.binding.gemini.internal.GeminiBindingConstants.DEFAULT_REQUEST_TIMEOUT;
 import static org.openhab.binding.gemini.internal.GeminiBindingConstants.DEFAULT_TEMPERATURE;
+import static org.openhab.binding.gemini.internal.GeminiBindingConstants.DEFAULT_TOOL_LOOP_LIMIT;
 import static org.openhab.binding.gemini.internal.GeminiBindingConstants.DEFAULT_TOP_P;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -36,4 +37,5 @@ public class GeminiConfiguration {
     public double temperature = DEFAULT_TEMPERATURE;
     public double topP = DEFAULT_TOP_P;
     public int maxOutputTokens = DEFAULT_MAX_OUTPUT_TOKENS;
+    public int toolLoopLimit = DEFAULT_TOOL_LOOP_LIMIT;
 }

@@ -65,6 +65,12 @@
 				<default>2048</default>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="toolLoopLimit" type="integer" groupName="hli" min="1">
+				<label>Tool Loop Limit</label>
+				<description>The maximum number of tool execution loops allowed during a single interpretation.</description>
+				<default>15</default>
+				<advanced>true</advanced>
+			</parameter>
 			<!-- Connection Settings -->
 			<parameter name="requestTimeout" type="integer" min="1" unit="s" groupName="connection">
 				<label>Request Timeout</label>
