@@ -367,12 +367,33 @@ public class PlivoPhoneHandler extends BaseThingHandler {
 
         callbackServlet.registerHandler(thing.getUID().getAsString(), this);
         updateWebhookProperties();
-        configureWebhooksOnPlivo();
+        try {
+            configureWebhooksOnPlivo();
+        } catch (PlivoApiException e) {
+            ThingStatusDetail detail = e.isConfigurationError() ? ThingStatusDetail.CONFIGURATION_ERROR
+                    : ThingStatusDetail.COMMUNICATION_ERROR;
+            updateStatus(ThingStatus.OFFLINE, detail, e.getMessage());
+            logger.debug("Failed to auto-configure Plivo application for {}: {}", phoneNumber, e.getMessage());
+            return;
+        }
 
         updateStatus(ThingStatus.ONLINE);
     }
 
-    private void configureWebhooksOnPlivo() {
+    /**
+     * Called by the account handler when the openHAB Cloud webhook URL becomes available after this
+     * phone thing already initialized. Re-runs initialization so the webhook properties refresh and
+     * automatic application configuration is retried against the now-available URL.
+     */
+    public void onWebhookUrlAvailable() {
+        Future<?> initTask = initializeTask;
+        if (initTask != null) {
+            initTask.cancel(true);
+        }
+        initializeTask = scheduler.submit(this::asyncInitialize);
+    }
+
+    private void configureWebhooksOnPlivo() throws PlivoApiException {
         PlivoAccountHandler accountHandler = getAccountHandler();
         if (accountHandler == null) {
             return;
@@ -388,17 +409,14 @@ public class PlivoPhoneHandler extends BaseThingHandler {
         String answerUrl = getWebhookUrl(WEBHOOK_VOICE);
         String messageUrl = getWebhookUrl(WEBHOOK_SMS);
         String statusUrl = getWebhookUrl(WEBHOOK_STATUS);
-        if (answerUrl != null && messageUrl != null && statusUrl != null) {
-            try {
-                String appName = "openHAB-" + thing.getUID().getAsString();
-                String appId = client.createOrUpdateApplication(appName, answerUrl, messageUrl, statusUrl);
-                client.assignApplicationToNumber(phoneNumber, appId);
-                logger.debug("Auto-configured Plivo application {} for phone number {}", appId, phoneNumber);
-            } catch (PlivoApiException e) {
-                logger.debug("Failed to auto-configure webhooks: {}", e.getMessage());
-            }
-        } else {
-            logger.debug("Cannot auto-configure webhooks: no webhook URLs available");
+        if (answerUrl == null || messageUrl == null || statusUrl == null) {
+            throw new PlivoApiException("@text/offline.configuration-error.webhook-url-unavailable", true);
         }
+        // Plivo application names accept only alphanumerics, hyphens, and underscores, so the Thing
+        // UID (which contains colons) must be sanitized before it can be used as a stable app name.
+        String appName = "openHAB-" + thing.getUID().getAsString().replaceAll("[^A-Za-z0-9_-]", "-");
+        String appId = client.createOrUpdateApplication(appName, answerUrl, messageUrl, statusUrl);
+        client.assignApplicationToNumber(phoneNumber, appId);
+        logger.debug("Auto-configured Plivo application {} ({}) for phone number {}", appId, appName, phoneNumber);
     }
 }

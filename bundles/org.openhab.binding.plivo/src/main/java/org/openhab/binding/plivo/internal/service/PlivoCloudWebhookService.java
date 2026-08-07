@@ -17,6 +17,7 @@ import static org.openhab.binding.plivo.internal.PlivoBindingConstants.SERVLET_P
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -61,6 +62,7 @@ public class PlivoCloudWebhookService {
             .getScheduledPool(BINDING_ID + "-cloud-webhook");
     private final Object lock = new Object();
     private final Set<String> requestors = new HashSet<>();
+    private final Set<Runnable> availabilityListeners = ConcurrentHashMap.newKeySet();
 
     private volatile @Nullable WebhookService webhookService;
     private @Nullable String baseUrl;
@@ -166,6 +168,26 @@ public class PlivoCloudWebhookService {
         return baseUrl;
     }
 
+    /**
+     * Registers a listener that is notified once the cloud webhook base URL first becomes available.
+     * This lets handlers that already initialized (before the {@link WebhookService} bound) refresh
+     * their webhook configuration.
+     *
+     * @param listener the callback to invoke when the base URL becomes available
+     */
+    public void addAvailabilityListener(Runnable listener) {
+        availabilityListeners.add(listener);
+    }
+
+    /**
+     * Removes a previously registered availability listener.
+     *
+     * @param listener the callback to remove
+     */
+    public void removeAvailabilityListener(Runnable listener) {
+        availabilityListeners.remove(listener);
+    }
+
     private @Nullable String doRegister() {
         synchronized (lock) {
             if (baseUrl != null) {
@@ -180,6 +202,7 @@ public class PlivoCloudWebhookService {
             return null;
         }
         WebhookService orphanedService = null;
+        boolean newlyRegistered = false;
         synchronized (lock) {
             if (baseUrl != null) {
                 return baseUrl;
@@ -188,13 +211,17 @@ public class PlivoCloudWebhookService {
                 orphanedService = webhookService;
             } else {
                 baseUrl = url;
+                newlyRegistered = true;
                 logger.debug("Cloud webhook base URL: {}", url);
                 if (refreshTask == null) {
                     refreshTask = scheduler.scheduleWithFixedDelay(this::refresh, REFRESH_INTERVAL_HOURS,
                             REFRESH_INTERVAL_HOURS, TimeUnit.HOURS);
                 }
-                return url;
             }
+        }
+        if (newlyRegistered) {
+            notifyAvailabilityListeners();
+            return url;
         }
         if (orphanedService != null) {
             try {
@@ -207,6 +234,16 @@ public class PlivoCloudWebhookService {
             }
         }
         return null;
+    }
+
+    private void notifyAvailabilityListeners() {
+        for (Runnable listener : availabilityListeners) {
+            try {
+                listener.run();
+            } catch (RuntimeException e) {
+                logger.debug("Cloud webhook availability listener failed: {}", e.getMessage());
+            }
+        }
     }
 
     private void refresh() {

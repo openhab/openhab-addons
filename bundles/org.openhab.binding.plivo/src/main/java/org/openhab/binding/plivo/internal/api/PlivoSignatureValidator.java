@@ -27,15 +27,23 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Validates Plivo webhook request signatures using the X-Plivo-Signature-V3 scheme.
+ * Validates Plivo webhook request signatures using the V3 signing scheme.
  * <p>
- * Plivo signs each webhook with the {@code X-Plivo-Signature-V3} and
- * {@code X-Plivo-Signature-V3-Nonce} headers. For a POST callback the signed
- * string is the callback URL up to (and including) a literal {@code ?}, followed
- * by the POST body parameters as a key+value concatenation in ascending key
- * order with no separators, followed by {@code .} and the nonce. The signature
- * is {@code Base64(HMAC-SHA256(authToken, signedString))}. The header may carry
- * several comma-separated signatures; the request is valid if any of them match.
+ * Plivo signs each webhook with an {@code X-Plivo-Signature-V3-Nonce} header plus one or more
+ * signature headers: {@code X-Plivo-Signature-V3} is generated with the (sub)account Auth Token
+ * that owns the request, while {@code X-Plivo-Signature-Ma-V3} is always generated with the main
+ * account Auth Token. Voice callbacks carry the {@code V3} signature and messaging callbacks
+ * (SMS/MMS/WhatsApp/status) carry the {@code Ma-V3} signature, but both are computed identically,
+ * so this validator can check a request against any of the signatures supplied.
+ * <p>
+ * For a POST callback the signed string is built as follows. Take the request URL, drop its query
+ * string, and append a literal {@code ?}. When the URL originally had a query string, append its
+ * parameters sorted by key in ascending order and rendered as {@code key=value} pairs joined by
+ * {@code &}, then a {@code .} separator. Next append the POST body parameters sorted by key in
+ * ascending order as a {@code key}+{@code value} concatenation with no separators. Finally append
+ * a {@code .} and the nonce. The signature is {@code Base64(HMAC-SHA256(authToken, signedString))}.
+ * A signature header may carry several comma-separated signatures; the request is valid if any of
+ * them matches.
  *
  * @author Sarvesh Patil - Initial contribution
  */
@@ -49,7 +57,9 @@ public class PlivoSignatureValidator {
      *
      * @param url the full URL that Plivo requested
      * @param params the POST parameters from the request
-     * @param signatureHeader the X-Plivo-Signature-V3 header value (may be comma-separated)
+     * @param signatureHeader a V3-family signature header value ({@code X-Plivo-Signature-V3} and/or
+     *            {@code X-Plivo-Signature-Ma-V3}); a single value may itself be comma-separated and
+     *            several headers may be joined with commas by the caller
      * @param nonce the X-Plivo-Signature-V3-Nonce header value
      * @param authToken the Plivo Auth Token
      * @return true if the signature is valid
@@ -71,7 +81,13 @@ public class PlivoSignatureValidator {
     }
 
     /**
-     * Computes the expected X-Plivo-Signature-V3 for a POST callback.
+     * Computes the expected V3 signature for a POST callback.
+     * <p>
+     * The signed string is the request URL with its query string removed, followed by a literal
+     * {@code ?}. When the URL had a query string, its parameters are appended sorted by key as
+     * {@code key=value} pairs joined by {@code &}, followed by a {@code .} separator. The POST body
+     * parameters are then appended sorted by key as a {@code key}+{@code value} concatenation with
+     * no separators, and finally a {@code .} and the nonce are appended.
      *
      * @param url the full URL Plivo requested
      * @param params the POST parameters

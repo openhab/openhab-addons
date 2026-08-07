@@ -29,6 +29,7 @@ import org.openhab.binding.plivo.internal.discovery.PlivoPhoneDiscoveryService;
 import org.openhab.binding.plivo.internal.service.PlivoCloudWebhookService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
@@ -50,6 +51,7 @@ public class PlivoAccountHandler extends BaseBridgeHandler {
 
     private final HttpClient httpClient;
     private final PlivoCloudWebhookService cloudWebhookService;
+    private final Runnable webhookAvailabilityListener = this::onCloudWebhookAvailable;
     private @Nullable PlivoApiClient apiClient;
     private PlivoAccountConfiguration config = new PlivoAccountConfiguration();
     private @Nullable Future<?> validateTask;
@@ -93,6 +95,7 @@ public class PlivoAccountHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
+        cloudWebhookService.removeAvailabilityListener(webhookAvailabilityListener);
         Future<?> task = validateTask;
         if (task != null) {
             task.cancel(true);
@@ -104,6 +107,7 @@ public class PlivoAccountHandler extends BaseBridgeHandler {
 
     @Override
     public void handleRemoval() {
+        cloudWebhookService.removeAvailabilityListener(webhookAvailabilityListener);
         cloudWebhookService.unregister(getThing().getUID().getAsString());
         super.handleRemoval();
     }
@@ -189,6 +193,15 @@ public class PlivoAccountHandler extends BaseBridgeHandler {
         return publicUrl;
     }
 
+    private void onCloudWebhookAvailable() {
+        logger.debug("Cloud webhook URL now available; refreshing phone thing webhook configuration");
+        for (Thing child : getThing().getThings()) {
+            if (child.getHandler() instanceof PlivoPhoneHandler phoneHandler) {
+                phoneHandler.onWebhookUrlAvailable();
+            }
+        }
+    }
+
     private void asyncValidateAccount() {
         PlivoApiClient client = apiClient;
         if (client == null) {
@@ -200,6 +213,10 @@ public class PlivoAccountHandler extends BaseBridgeHandler {
         try {
             if (client.validateAccount()) {
                 if (config.useCloudWebhook) {
+                    // Listen for a deferred cloud webhook URL: if the openHAB Cloud WebhookService
+                    // only binds after the phone Things initialized, the phones need to refresh
+                    // their webhook properties and retry automatic application configuration.
+                    cloudWebhookService.addAvailabilityListener(webhookAvailabilityListener);
                     cloudWebhookService.register(getThing().getUID().getAsString());
                 }
                 updateStatus(ThingStatus.ONLINE);

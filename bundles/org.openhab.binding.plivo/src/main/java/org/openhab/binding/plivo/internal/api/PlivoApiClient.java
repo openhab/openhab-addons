@@ -50,6 +50,7 @@ import com.google.gson.JsonParser;
 public class PlivoApiClient {
 
     private static final int TIMEOUT_SECONDS = 30;
+    private static final int PAGE_LIMIT = 20;
     private static final String CONTENT_TYPE_JSON = "application/json";
     private static final String ANSWER_METHOD_POST = "POST";
 
@@ -180,15 +181,11 @@ public class PlivoApiClient {
      * @throws PlivoApiException if the API call fails
      */
     public List<PlivoPhoneNumberInfo> listPhoneNumbers() throws PlivoApiException {
-        String response = get(baseUrl + "Number/");
-        JsonObject json = JsonParser.parseString(response).getAsJsonObject();
-        JsonArray objects = json.getAsJsonArray("objects");
+        JsonArray objects = getAllObjects("Number/");
         List<PlivoPhoneNumberInfo> result = new ArrayList<>();
-        if (objects != null) {
-            for (int i = 0; i < objects.size(); i++) {
-                JsonObject entry = objects.get(i).getAsJsonObject();
-                result.add(new PlivoPhoneNumberInfo(getJsonString(entry, "number"), getJsonString(entry, "alias")));
-            }
+        for (int i = 0; i < objects.size(); i++) {
+            JsonObject entry = objects.get(i).getAsJsonObject();
+            result.add(new PlivoPhoneNumberInfo(getJsonString(entry, "number"), getJsonString(entry, "alias")));
         }
         return result;
     }
@@ -250,18 +247,45 @@ public class PlivoApiClient {
     }
 
     private @Nullable String findApplicationId(String appName) throws PlivoApiException {
-        String response = get(baseUrl + "Application/");
-        JsonObject json = JsonParser.parseString(response).getAsJsonObject();
-        JsonArray objects = json.getAsJsonArray("objects");
-        if (objects != null) {
-            for (int i = 0; i < objects.size(); i++) {
-                JsonObject entry = objects.get(i).getAsJsonObject();
-                if (appName.equals(getJsonString(entry, "app_name"))) {
-                    return getJsonString(entry, "app_id");
-                }
+        JsonArray objects = getAllObjects("Application/");
+        for (int i = 0; i < objects.size(); i++) {
+            JsonObject entry = objects.get(i).getAsJsonObject();
+            if (appName.equals(getJsonString(entry, "app_name"))) {
+                return getJsonString(entry, "app_id");
             }
         }
         return null;
+    }
+
+    /**
+     * Fetches all pages of a Plivo list resource and returns the concatenated {@code objects} array.
+     * Plivo paginates list responses, so following the {@code meta.next} link (and stopping when a
+     * page returns fewer than {@code limit} entries) avoids missing existing numbers or applications,
+     * which in turn prevents duplicate applications being created.
+     *
+     * @param resourcePath the list resource path relative to the account base (e.g. {@code Number/})
+     * @return every object across all pages
+     * @throws PlivoApiException if any page request fails
+     */
+    private JsonArray getAllObjects(String resourcePath) throws PlivoApiException {
+        JsonArray all = new JsonArray();
+        int offset = 0;
+        while (true) {
+            String url = baseUrl + resourcePath + "?limit=" + PAGE_LIMIT + "&offset=" + offset;
+            JsonObject json = JsonParser.parseString(get(url)).getAsJsonObject();
+            JsonArray objects = json.getAsJsonArray("objects");
+            int fetched = objects != null ? objects.size() : 0;
+            if (objects != null) {
+                all.addAll(objects);
+            }
+            JsonObject meta = json.getAsJsonObject("meta");
+            boolean hasNext = meta != null && meta.get("next") != null && !meta.get("next").isJsonNull();
+            if (fetched == 0 || fetched < PAGE_LIMIT || !hasNext) {
+                break;
+            }
+            offset += fetched;
+        }
+        return all;
     }
 
     private String firstMessageUuid(String response) {

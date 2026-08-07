@@ -49,12 +49,19 @@ public class PlivoPhoneDiscoveryService extends AbstractThingHandlerDiscoverySer
     private final Logger logger = LoggerFactory.getLogger(PlivoPhoneDiscoveryService.class);
 
     public PlivoPhoneDiscoveryService() {
-        super(PlivoAccountHandler.class, Set.of(THING_TYPE_PHONE), TIMEOUT_SECONDS, false);
+        super(PlivoAccountHandler.class, Set.of(THING_TYPE_PHONE), TIMEOUT_SECONDS, true);
     }
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypes() {
         return Set.of(THING_TYPE_PHONE);
+    }
+
+    @Override
+    protected void startBackgroundDiscovery() {
+        // The README documents that phone numbers are discovered automatically once the account
+        // bridge comes online, so scan once as soon as the handler is available.
+        startScan();
     }
 
     @Override
