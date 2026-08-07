@@ -25,4 +25,9 @@ import org.openhab.core.library.types.QuantityType;
 public class TemHumDTO {
     public QuantityType<@NonNull Temperature> temperature;
     public QuantityType<@NonNull Dimensionless> humidity;
+
+    @Override
+    public String toString() {
+        return "TemHumDTO{" + "temperature=" + temperature + ", humidity=" + humidity + '}';
+    }
 }
