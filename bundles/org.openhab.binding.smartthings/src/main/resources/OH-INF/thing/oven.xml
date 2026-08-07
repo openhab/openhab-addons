@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="smartthings"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="Samsung_Oven">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+		<label>Samsung Oven</label>
+		<description>A Samsung oven connected via SmartThings Cloud.</description>
+
+		<channel-groups>
+			<channel-group typeId="oven-status-group" id="status"/>
+		</channel-groups>
+
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device ID</label>
+				<description>SmartThings device UUID. Find it via GET https://api.smartthings.com/v1/devices.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-group-type id="oven-status-group">
+		<label>Status</label>
+		<channels>
+			<channel id="completion-time" typeId="oven-completion-time">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">samsungce.ovenOperatingState</property>
+					<property name="attribute">completionTime</property>
+				</properties>
+			</channel>
+			<channel id="operating-state" typeId="oven-operating-state">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">samsungce.ovenOperatingState</property>
+					<property name="attribute">operatingState</property>
+				</properties>
+			</channel>
+			<channel id="progress" typeId="oven-progress">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">samsungce.ovenOperatingState</property>
+					<property name="attribute">progress</property>
+				</properties>
+			</channel>
+			<channel id="oven-job-state" typeId="oven-job-state">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">samsungce.ovenOperatingState</property>
+					<property name="attribute">ovenJobState</property>
+				</properties>
+			</channel>
+			<channel id="operation-time" typeId="oven-operation-time">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">samsungce.ovenOperatingState</property>
+					<property name="attribute">operationTime</property>
+				</properties>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="oven-completion-time">
+		<item-type>DateTime</item-type>
+		<label>Completion Time</label>
+		<description>Current completion time of the oven.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="oven-operating-state" advanced="true">
+		<item-type>String</item-type>
+		<label>Operating State</label>
+		<description>Current operating state of the oven.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="oven-progress">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Progress</label>
+		<description>Current progress of the oven operation.</description>
+		<state readOnly="true" pattern="%.0f %%" min="0" max="100"/>
+	</channel-type>
+
+	<channel-type id="oven-job-state">
+		<item-type>String</item-type>
+		<label>Oven Job State</label>
+		<description>Current job state of the oven.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="oven-operation-time">
+		<item-type>DateTime</item-type>
+		<label>Operation Time</label>
+		<description>Current operation time of the oven.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>
