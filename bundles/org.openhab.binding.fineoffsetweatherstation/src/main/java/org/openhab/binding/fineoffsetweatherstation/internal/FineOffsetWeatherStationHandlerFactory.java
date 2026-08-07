@@ -73,7 +73,7 @@ public class FineOffsetWeatherStationHandlerFactory extends BaseThingHandlerFact
                     translationProvider, localeProvider);
         }
         if (THING_TYPE_SENSOR.equals(thingTypeUID)) {
-            return new FineOffsetSensorHandler(thing);
+            return new FineOffsetSensorHandler(thing, channelTypeRegistry);
         }
 
         return null;

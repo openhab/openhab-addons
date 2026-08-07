@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.Command;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.DebugDetails;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.Protocol;
+import org.openhab.binding.fineoffsetweatherstation.internal.domain.Sensor;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.MeasuredValue;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.util.HexUtils;
@@ -224,5 +225,25 @@ class FineOffsetDataParserTest {
         byte[] data = HexUtils.hexToBytes("FFFF501511456173795765617468657256312E362E3400");
         String firmware = new FineOffsetDataParser(Protocol.ELV).getFirmwareVersion(data);
         Assertions.assertThat(firmware).isEqualTo("EasyWeatherV1.6.4");
+    }
+
+    @Test
+    void tcpMeasurandsCarrySensorTag() {
+        // 0xff 0xff : header
+        // 0x27 : CMD_GW1000_LIVEDATA
+        // 0x00 0x0A : size = 10 (loop runs while idx < 10; items at 5..9, checksum at 10)
+        // 0x2C 0x32 : soil moisture channel 1 = 50 % (PERCENTAGE = 1 byte)
+        // 0x02 0x00 0xD2 : outdoor temperature = 21.0 °C (TEMPERATURE = 2 bytes, signed: 0x00D2 = 210 → /10)
+        // 0x00 : checksum slot
+        byte[] bytes = new byte[] { (byte) 0xff, (byte) 0xff, 0x27, 0x00, 0x0A, //
+                0x2C, 0x32, // soil moisture channel 1 = 50 %
+                0x02, 0x00, (byte) 0xD2, // outdoor temperature = 21.0 °C
+                0x00 };
+        List<MeasuredValue> data = new FineOffsetDataParser(Protocol.DEFAULT).getMeasuredValues(bytes,
+                new DebugDetails(bytes, Command.CMD_GW1000_LIVEDATA, Protocol.DEFAULT));
+
+        Assertions.assertThat(data).extracting(MeasuredValue::getChannelId, MeasuredValue::getSensor).containsExactly( //
+                Assertions.tuple("moisture-soil-channel-1", Sensor.WH51), //
+                Assertions.tuple("temperature-outdoor", null));
     }
 }
