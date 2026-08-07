@@ -123,6 +123,134 @@ class OcppBootConfigTest {
         }
     }
 
+    private void awaitReady() throws InterruptedException {
+        long deadline = System.currentTimeMillis() + 3000;
+        while (!handler.isReady() && System.currentTimeMillis() < deadline) {
+            Thread.sleep(20);
+        }
+        assertTrue(handler.isReady(), "charge point should have become ready");
+    }
+
+    @Test
+    void outboundRequestsAreSerializedToOneCallInFlight() throws InterruptedException {
+        // A heartbeat makes the charge point ready (nothing queued). Two sends then follow: only the
+        // first may reach the transport until it has settled — OCPP-J keeps one CALL outstanding.
+        handler.onHeartbeat();
+        awaitReady();
+
+        ChangeConfigurationRequest first = new ChangeConfigurationRequest("First", "1");
+        ChangeConfigurationRequest second = new ChangeConfigurationRequest("Second", "2");
+        CompletableFuture<eu.chargetime.ocpp.model.Confirmation> firstResult = new CompletableFuture<>();
+        when(transport.send(any(), eq(first))).thenReturn(firstResult);
+
+        handler.send(first);
+        handler.send(second);
+
+        verify(transport, timeout(1000)).send(any(), eq(first));
+        verify(transport, org.mockito.Mockito.after(500).never()).send(any(), eq(second));
+
+        // Only once the first CALL settles is the second one transmitted.
+        firstResult.complete(new ChangeConfigurationConfirmation(ConfigurationStatus.Accepted));
+        verify(transport, timeout(1000)).send(any(), eq(second));
+    }
+
+    @Test
+    void theStatusProbePathIsSerializedToo() {
+        // The status-recovery probe (sendNow) bypasses the readiness gate but must still queue behind
+        // any in-flight CALL — two probes, as requestConnectorStatuses issues for a two-connector
+        // charger, do not go out together.
+        CompletableFuture<eu.chargetime.ocpp.model.Confirmation> firstProbe = new CompletableFuture<>();
+        when(transport.send(any(), any())).thenReturn(firstProbe);
+
+        handler.sendNow(new eu.chargetime.ocpp.model.remotetrigger.TriggerMessageRequest(
+                eu.chargetime.ocpp.model.remotetrigger.TriggerMessageRequestType.StatusNotification));
+        handler.sendNow(new eu.chargetime.ocpp.model.remotetrigger.TriggerMessageRequest(
+                eu.chargetime.ocpp.model.remotetrigger.TriggerMessageRequestType.StatusNotification));
+
+        verify(transport, timeout(1000).times(1)).send(any(), any());
+        verify(transport, org.mockito.Mockito.after(400).times(1)).send(any(), any());
+        firstProbe.complete(new ChangeConfigurationConfirmation(ConfigurationStatus.Accepted));
+        verify(transport, timeout(1000).times(2)).send(any(), any());
+    }
+
+    @Test
+    void aReconnectDoesNotWedgeTheDispatcherBehindAnInFlightRequestFromTheOldSession() throws InterruptedException {
+        // Regression: a request still in flight when the charger reconnects must not stall every
+        // request to the NEW session until the old one times out. The embedded library never completes
+        // the old promise when its session closes, so the dispatcher itself has to abandon the
+        // in-flight request on the session change and keep draining — rather than sit with a single
+        // CALL slot latched for the whole request timeout.
+        handler.onHeartbeat(); // ready on session A (from setUp)
+        awaitReady();
+
+        // The first request goes in flight and the transport never answers it — the charger vanished
+        // mid-request, the same fault that drops the socket.
+        CompletableFuture<eu.chargetime.ocpp.model.Confirmation> firstNeverAnswers = new CompletableFuture<>();
+        ChangeConfigurationRequest first = new ChangeConfigurationRequest("First", "1");
+        when(transport.send(any(), eq(first))).thenReturn(firstNeverAnswers);
+        CompletableFuture<eu.chargetime.ocpp.model.Confirmation> firstResult = handler.send(first)
+                .toCompletableFuture();
+        verify(transport, timeout(1000)).send(any(), eq(first)); // it is in flight
+
+        // The charger reconnects under a fresh session. The in-flight request must fail at once, not
+        // hang until its timeout.
+        handler.onConnected(UUID.randomUUID());
+        assertTrue(firstResult.isCompletedExceptionally(),
+                "the in-flight request must be abandoned on the session change");
+
+        // The new session boots; a request on it must go out immediately, not wait behind the old
+        // (never-arriving) answer.
+        handler.onHeartbeat();
+        awaitReady();
+        ChangeConfigurationRequest second = new ChangeConfigurationRequest("Second", "2");
+        handler.send(second);
+        verify(transport, timeout(1000)).send(any(), eq(second));
+
+        // The old request's transport future was never completed — proof the successor's drain never
+        // depended on it.
+        assertFalse(firstNeverAnswers.isDone());
+    }
+
+    @Test
+    void aLateCompletionOfAnAbandonedRequestDoesNotDisturbTheNewSessionChain() throws InterruptedException {
+        // After a reconnect abandons an in-flight request, that request's transport future can still
+        // complete later — the request-timeout reaper fires on a scheduler thread regardless of the
+        // socket. That late completion must be inert: it must neither complete anything on, nor start a
+        // second drain against, the NEW session's chain (which by then has its own request in flight).
+        // The drain-chain epoch is what makes it a no-op.
+        handler.onHeartbeat(); // ready on session A
+        awaitReady();
+
+        CompletableFuture<eu.chargetime.ocpp.model.Confirmation> f1 = new CompletableFuture<>();
+        ChangeConfigurationRequest r1 = new ChangeConfigurationRequest("R1", "1");
+        when(transport.send(any(), eq(r1))).thenReturn(f1);
+        handler.send(r1);
+        verify(transport, timeout(1000)).send(any(), eq(r1)); // R1 in flight on A
+
+        // Reconnect: R1 is abandoned; the new session boots and becomes ready.
+        handler.onConnected(UUID.randomUUID());
+        handler.onHeartbeat();
+        awaitReady();
+
+        // A request goes in flight on the NEW session.
+        CompletableFuture<eu.chargetime.ocpp.model.Confirmation> f2 = new CompletableFuture<>();
+        ChangeConfigurationRequest r2 = new ChangeConfigurationRequest("R2", "2");
+        when(transport.send(any(), eq(r2))).thenReturn(f2);
+        handler.send(r2);
+        verify(transport, timeout(1000)).send(any(), eq(r2)); // R2 in flight on the new session
+
+        // The abandoned R1's transport future completes late (the reaper). It must be a no-op: it must
+        // not release R3 (that would be a second, concurrent CALL alongside R2).
+        f1.complete(new ChangeConfigurationConfirmation(ConfigurationStatus.Accepted));
+        ChangeConfigurationRequest r3 = new ChangeConfigurationRequest("R3", "3");
+        handler.send(r3);
+        verify(transport, org.mockito.Mockito.after(500).never()).send(any(), eq(r3)); // still behind R2
+
+        // Only when R2 settles does R3 go — the one-CALL-at-a-time chain was never forked.
+        f2.complete(new ChangeConfigurationConfirmation(ConfigurationStatus.Accepted));
+        verify(transport, timeout(1000)).send(any(), eq(r3));
+    }
+
     @Test
     void configurationIsSentWhenAChargerBoots() {
         handler.onBootNotification(new BootNotificationRequest("vendor", "model"));

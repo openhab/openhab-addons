@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.ocpp.internal.handler;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -22,9 +23,16 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.openhab.binding.ocpp.internal.OcppBindingConstants.*;
 
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.UUID;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.ocpp.internal.transport.OcppTransport;
@@ -35,6 +43,8 @@ import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
+
+import eu.chargetime.ocpp.model.core.StartTransactionRequest;
 
 /**
  * Tests session routing in {@link OcppServerBridgeHandler}, in particular that a charger reconnecting
@@ -51,6 +61,41 @@ class OcppServerBridgeHandlerTest {
     private @NonNullByDefault({}) OcppTransport transport;
     private @NonNullByDefault({}) ThingHandlerCallback callback;
     private @NonNullByDefault({}) TestableBridgeHandler handler;
+
+    /** A minimal in-memory Storage so transaction persistence can be exercised. */
+    private static final class MemoryStorage implements Storage<String> {
+        private final Map<String, String> map = new HashMap<>();
+
+        @Override
+        public @Nullable String put(String key, @Nullable String value) {
+            return value == null ? map.remove(key) : map.put(key, value);
+        }
+
+        @Override
+        public @Nullable String remove(String key) {
+            return map.remove(key);
+        }
+
+        @Override
+        public boolean containsKey(String key) {
+            return map.containsKey(key);
+        }
+
+        @Override
+        public @Nullable String get(String key) {
+            return map.get(key);
+        }
+
+        @Override
+        public Collection<String> getKeys() {
+            return new HashSet<>(map.keySet());
+        }
+
+        @Override
+        public Collection<@Nullable String> getValues() {
+            return new ArrayList<>(map.values());
+        }
+    }
 
     /** Supplies a mock transport instead of binding a real socket. */
     private static final class TestableBridgeHandler extends OcppServerBridgeHandler {
@@ -74,9 +119,8 @@ class OcppServerBridgeHandlerTest {
     void setUp() {
         transport = mock(OcppTransport.class);
 
-        Storage<String> storage = mock(Storage.class);
         StorageService storageService = mock(StorageService.class);
-        when(storageService.<String> getStorage(anyString())).thenReturn(storage);
+        when(storageService.<String> getStorage(anyString())).thenReturn(new MemoryStorage());
 
         thing = mock(Bridge.class);
         when(thing.getUID()).thenReturn(SERVER_UID);
@@ -102,6 +146,24 @@ class OcppServerBridgeHandlerTest {
                 && status.getStatusDetail() == org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR));
         verify(transport, org.mockito.Mockito.after(500).never()).start(org.mockito.ArgumentMatchers.anyString(),
                 org.mockito.ArgumentMatchers.anyInt());
+    }
+
+    @Test
+    void aTransactionAcceptedBeforeItsHandlerExistsIsStillPersisted() {
+        // Passive-discovery race: a charger's session is mapped (it is in the inbox) but no
+        // charge-point/connector Thing exists yet, and it starts an authorized transaction. The
+        // mapping must be persisted at the bridge from the session identity and the request, so the
+        // charger does not hold an id openHAB can never recover, route a stop to, or remote-stop.
+        handler.initialize();
+        verify(callback, timeout(2000)).statusUpdated(any(),
+                argThat(status -> status.getStatus() == ThingStatus.ONLINE));
+
+        UUID session = UUID.randomUUID();
+        handler.onSessionOpened(session, "charx", null); // maps session -> charx; no handler registered
+        handler.onStartTransaction(session, new StartTransactionRequest(2, "tag", 0, ZonedDateTime.now()), 77);
+
+        assertEquals(Integer.valueOf(77), handler.openTransactionFor("charx", 2),
+                "the transaction must be recoverable even though no handler existed at accept time");
     }
 
     @Test

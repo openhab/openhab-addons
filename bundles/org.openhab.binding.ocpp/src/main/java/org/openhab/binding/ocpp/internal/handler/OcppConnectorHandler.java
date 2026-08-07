@@ -266,6 +266,13 @@ public class OcppConnectorHandler extends BaseThingHandler {
             // concurrent re-arm and leak the freshly scheduled task.
             synchronized (lock) {
                 cancel(stuckTask);
+                // A coalesced limit/pause still waiting to flush would be silently dropped by this
+                // cancel. The latest values are already stored, so mark the intent deferred and let
+                // onChargePointReady re-apply it once the charge point is back, rather than lose the
+                // setpoint until the next command.
+                if (pendingFlush != null) {
+                    limitDeferred = true;
+                }
                 cancel(pendingFlush);
                 stuckTask = null;
                 pendingFlush = null;
@@ -408,6 +415,11 @@ public class OcppConnectorHandler extends BaseThingHandler {
      * must hold {@link #lock}.
      */
     private ProfileClaim claimSend() {
+        // Cancel any scheduled flush before dropping the reference: an immediate send that supersedes
+        // a still-pending coalesced flush must stop that flush from firing too, or it would put a
+        // second, redundant SetChargingProfile on the wire at the interval boundary. When claimSend
+        // itself runs FROM the flush task, cancelling the already-running task is a harmless no-op.
+        cancel(pendingFlush);
         pendingFlush = null;
         lastProfileSentAt = System.currentTimeMillis();
         profileGeneration++;
@@ -450,6 +462,13 @@ public class OcppConnectorHandler extends BaseThingHandler {
                         }
                     } else if (ex == null) {
                         logger.debug("SetChargingProfile on connector {} not accepted: {}", connectorId, confirmation);
+                    } else {
+                        // The send never reached the charger (offline / disconnected / superseded on a
+                        // reconnect). The latest limit/pause is still stored in the fields, so re-arm it
+                        // to be re-applied when the charge point next becomes ready. This is what covers
+                        // a coalesced flush that FIRED into a dropping session — the OFFLINE re-arm only
+                        // catches a flush still pending (pendingFlush != null), not one already sent.
+                        limitDeferred = true;
                     }
                 });
     }
@@ -528,10 +547,10 @@ public class OcppConnectorHandler extends BaseThingHandler {
      * are fresh immediately after a (re)connect instead of waiting for the charger to volunteer one.
      *
      * <p>
-     * Deliberately bypasses the readiness gate (see {@link OcppChargePointHandler#sendDirect}): this
-     * is the probe that recovers a charger which reopened its socket without re-booting — such a
-     * charger never becomes ready by itself until its next heartbeat, which can be minutes away, and
-     * a gated probe would deadlock on the very readiness it is meant to establish.
+     * Uses {@link OcppChargePointHandler#sendNow}: this probe bypasses the readiness gate — it is how
+     * a charger that reopened its socket without re-booting is recovered, and such a charger would
+     * not otherwise become ready until its next heartbeat, minutes away — but it still goes through
+     * the outbound serializer, so it waits behind any request already in flight.
      */
     public void requestStatus() {
         OcppChargePointHandler cp = chargePoint;
@@ -540,7 +559,7 @@ public class OcppConnectorHandler extends BaseThingHandler {
         }
         TriggerMessageRequest request = new TriggerMessageRequest(TriggerMessageRequestType.StatusNotification);
         request.setConnectorId(connectorId);
-        cp.sendDirect(request).whenComplete((confirmation, ex) -> {
+        cp.sendNow(request).whenComplete((confirmation, ex) -> {
             if (ex != null) {
                 logger.debug("TriggerMessage[StatusNotification] on connector {} failed: {}", connectorId,
                         ex.toString());

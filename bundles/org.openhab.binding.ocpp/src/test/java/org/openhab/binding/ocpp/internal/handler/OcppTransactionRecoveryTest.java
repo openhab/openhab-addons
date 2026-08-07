@@ -84,13 +84,17 @@ class OcppTransactionRecoveryTest {
     }
 
     @Test
-    void aStartedTransactionIsPersisted() {
+    void aStartedTransactionIsRoutedToItsConnector() {
         OcppConnectorHandler connector = mock(OcppConnectorHandler.class);
         handler.registerConnector(1, connector);
 
         handler.onStartTransaction(start(1), 100);
 
-        verify(server).rememberTransaction(100, "charger", 1);
+        verify(connector).onTransactionStarted(any(), org.mockito.ArgumentMatchers.eq(100));
+        // Persistence is the server bridge's responsibility now (it happens even without a handler);
+        // the charge-point handler only does in-memory routing.
+        verify(server, org.mockito.Mockito.never()).rememberTransaction(org.mockito.ArgumentMatchers.anyInt(), any(),
+                org.mockito.ArgumentMatchers.anyInt());
     }
 
     @Test

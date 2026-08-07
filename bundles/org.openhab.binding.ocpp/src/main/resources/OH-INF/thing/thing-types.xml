@@ -119,7 +119,9 @@
 		<config-description>
 			<parameter name="chargePointId" type="text" required="true">
 				<label>Charge Point Id</label>
-				<description>The charger's OCPP identity — the last path segment of the WebSocket URL it dials.</description>
+				<description>The charger's OCPP identity — the path of the WebSocket URL it dials, without the leading
+					slash (e.g.
+					charger, or site/charger).</description>
 			</parameter>
 			<parameter name="configSettleSeconds" type="integer" min="0" unit="s">
 				<label>Config Settle Seconds</label>
@@ -330,6 +332,10 @@
 		<item-type>Switch</item-type>
 		<label>Pause</label>
 		<description>Pause charging (charging profile limit 0) without ending the transaction.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="availability">

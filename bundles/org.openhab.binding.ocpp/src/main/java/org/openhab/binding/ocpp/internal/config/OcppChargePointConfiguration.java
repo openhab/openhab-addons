@@ -23,8 +23,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class OcppChargePointConfiguration {
 
     /**
-     * The OCPP charge point identity — the last path segment of the WebSocket URL the charger dials
-     * (e.g. {@code ws://host:8887/<chargePointId>}). Immutable per charger.
+     * The OCPP charge point identity — the path of the WebSocket URL the charger dials, without the
+     * leading slash (e.g. {@code ws://host:8887/<chargePointId>}, so {@code charger} or
+     * {@code site/charger}). Immutable per charger.
      */
     public String chargePointId = "";
 

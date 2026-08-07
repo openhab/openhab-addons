@@ -14,7 +14,9 @@ package org.openhab.binding.ocpp.internal.handler;
 
 import static org.openhab.binding.ocpp.internal.OcppBindingConstants.*;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -106,8 +108,35 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(OcppChargePointHandler.class);
     private final Map<Integer, OcppConnectorHandler> connectors = new ConcurrentHashMap<>();
     private final Map<Integer, OcppConnectorHandler> transactions = new ConcurrentHashMap<>();
-    // Requests accepted while the charge point was connected but not yet ready (see send()).
+    // Requests accepted while the charge point was connected but not yet ready (readiness gate).
     private final ConcurrentLinkedQueue<PendingSend> pendingSends = new ConcurrentLinkedQueue<>();
+    // The single-CALL-at-a-time outbound dispatcher: every request for this session, once past the
+    // readiness gate, waits here so only one CALL is outstanding at a time (OCPP-J). Guarded by
+    // dispatchLock; the transport send itself happens outside the lock.
+    private final Object dispatchLock = new Object();
+    private final Deque<PendingSend> outbound = new ArrayDeque<>();
+    private boolean dispatching;
+    // The request currently handed to the transport (one at a time). Guarded by dispatchLock, and
+    // held HERE rather than in either queue, so a session change can complete its future promptly
+    // and reset the dispatcher: the embedded library does not complete an outstanding promise when
+    // its session closes, so without this the future — and the whole single-CALL dispatcher behind
+    // it — would stall until the request-timeout reaper fires, withholding every command to the
+    // reconnected charger for that whole window.
+    private @Nullable PendingSend inFlight;
+    // Drain-chain generation, guarded by dispatchLock. enqueue starts a chain and captures the epoch;
+    // failPendingSends BUMPS it (unconditionally) to kill the active chain. Every drainOutbound pass
+    // and every transmit completion carries the epoch its chain started under and stops the instant the
+    // epoch moves on — so a chain caught mid-drain when a session change reset the dispatcher can
+    // neither keep draining beside the fresh chain the new session starts (two CALLs on the wire), nor
+    // complete a request the reset already failed. A primitive: compared by value, not object identity.
+    private long dispatchEpoch;
+    // Guards the coupled transition of (session, operational): a reconnect that swaps the session
+    // must not interleave with becomeReady flipping readiness, or readiness could latch onto a
+    // session already replaced. The fields stay volatile for lock-free reads on the hot inbound
+    // paths; only their coupled WRITES take this lock. Its critical sections do only field writes —
+    // never a transport send, a future completion, or a call that takes dispatchLock — so it cannot
+    // participate in a lock cycle.
+    private final Object stateLock = new Object();
 
     // Assigned in initialize() and read from library and scheduler threads; volatile so no reader
     // depends on the registration order for visibility.
@@ -208,8 +237,10 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
             }
         } else {
             cancelScheduledWork();
-            session = null;
-            operational = false;
+            synchronized (stateLock) {
+                session = null;
+                operational = false;
+            }
             failPendingSends();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
@@ -223,8 +254,10 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
             serverHandler.unregisterChargePoint(chargePointId);
         }
         server = null;
-        session = null;
-        operational = false;
+        synchronized (stateLock) {
+            session = null;
+            operational = false;
+        }
         failPendingSends();
         connectors.clear();
         transactions.clear();
@@ -265,10 +298,11 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
      * the charger is offline.
      *
      * <p>
-     * This is the central outbound gate: while the charger is connected but not yet ready — its
-     * BootNotification confirmation has not gone out — the request is queued and transmitted once it
-     * is, so no caller can violate the OCPP rule that the central system stays quiet until it has
-     * answered the boot. The queue drains in order on {@link #becomeReady(UUID)}.
+     * Two concerns are layered here. Readiness: while the charger is connected but not yet ready (its
+     * BootNotification confirmation has not gone out), the request is held and released once it is,
+     * so nothing is sent before the boot is answered. Serialization: every request then passes
+     * through {@link #enqueue}, a single per-session dispatcher that keeps one CALL outstanding at a
+     * time, since an OCPP-J peer need not accept a second CALL before answering the first.
      */
     public CompletionStage<Confirmation> send(Request request) {
         UUID localSession = session;
@@ -276,42 +310,127 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
             return CompletableFuture
                     .failedFuture(new IllegalStateException("Charger " + chargePointId + " is offline"));
         }
+        CompletableFuture<Confirmation> future = new CompletableFuture<>();
+        PendingSend pending = new PendingSend(localSession, request, future);
         if (!operational) {
             if (pendingSends.size() >= PENDING_SEND_LIMIT) {
                 return CompletableFuture.failedFuture(
                         new IllegalStateException("Charger " + chargePointId + " not ready and its queue is full"));
             }
-            CompletableFuture<Confirmation> future = new CompletableFuture<>();
-            PendingSend pending = new PendingSend(localSession, request, future);
             pendingSends.add(pending);
-            // Re-check after enqueuing: a disconnect may have just failed-and-drained the queue (then
-            // this entry must not sit stranded), or readiness may have just flipped (then it must not
-            // wait for a drain that already ran).
+            // Re-check after enqueuing: a disconnect may have failed-and-drained the readiness queue
+            // (then this entry must not sit stranded), or readiness may have just flipped (then it
+            // must be released, exactly once — the removal guards against a double-release racing
+            // becomeReady).
             if (session == null) {
                 if (pendingSends.remove(pending)) {
                     future.completeExceptionally(
                             new IllegalStateException("Charger " + chargePointId + " disconnected"));
                 }
-            } else if (operational) {
-                drainPendingSends();
+            } else if (operational && pendingSends.remove(pending)) {
+                enqueue(pending);
             }
             return future;
         }
-        return sendDirect(request);
+        enqueue(pending);
+        return future;
     }
 
     /**
-     * Send bypassing the readiness gate. The single legitimate caller besides the queue drain is the
-     * status-recovery probe for a charger that reopened its socket without booting again: that
-     * charger is already registered from its earlier boot, no BootNotification is pending on the
-     * session (a charger with one outstanding could not have stayed silent past the fallback delay),
-     * and gating it would leave a silent long-heartbeat charger uncontrollable for minutes.
+     * Send bypassing the readiness gate but NOT the serializer. The one caller is the status-recovery
+     * probe for a charger that reopened its socket without booting again: it must be allowed to send
+     * before readiness is established (that charger is already registered and has no boot pending),
+     * yet it still waits behind any request already in flight.
      */
-    CompletionStage<Confirmation> sendDirect(Request request) {
+    CompletionStage<Confirmation> sendNow(Request request) {
         UUID localSession = session;
+        if (localSession == null) {
+            return CompletableFuture
+                    .failedFuture(new IllegalStateException("Charger " + chargePointId + " is offline"));
+        }
+        CompletableFuture<Confirmation> future = new CompletableFuture<>();
+        enqueue(new PendingSend(localSession, request, future));
+        return future;
+    }
+
+    // --- single-CALL-at-a-time outbound dispatcher ---
+
+    private void enqueue(PendingSend pending) {
+        long epoch;
+        synchronized (dispatchLock) {
+            outbound.add(pending);
+            if (dispatching) {
+                return; // a drain is already running; it will pick this up
+            }
+            dispatching = true;
+            epoch = dispatchEpoch; // this pass owns the chain until the epoch moves on
+        }
+        drainOutbound(epoch);
+    }
+
+    private void drainOutbound(long epoch) {
+        while (true) {
+            PendingSend next;
+            boolean superseded;
+            synchronized (dispatchLock) {
+                if (epoch != dispatchEpoch) {
+                    // A session change (failPendingSends) killed this chain and handed the dispatcher
+                    // to the fresh chain the new session starts. Stop WITHOUT touching dispatching —
+                    // this is what prevents a second concurrent drain putting two CALLs on the wire.
+                    return;
+                }
+                next = outbound.poll();
+                if (next == null) {
+                    dispatching = false;
+                    return;
+                }
+                // Poll, the session check, and marking it in-flight are one atomic step, so a
+                // concurrent failPendingSends always sees the request in exactly one place — still
+                // queued, or in-flight — never in a gap where it is missed by the fail-drain yet
+                // still gets transmitted.
+                UUID localSession = session;
+                superseded = localSession == null || !next.session().equals(localSession);
+                if (!superseded) {
+                    inFlight = next;
+                }
+            }
+            if (superseded) {
+                // The session it was queued for is gone or replaced; it must not run on another.
+                next.future().completeExceptionally(
+                        new IllegalStateException("Charger " + chargePointId + " reconnected; request superseded"));
+                continue;
+            }
+            PendingSend current = next;
+            transmit(current.session(), current.request()).whenComplete((confirmation, ex) -> {
+                boolean live;
+                synchronized (dispatchLock) {
+                    // Act only if this chain still owns the dispatcher. A session change bumps the epoch
+                    // and fails this request itself, so a completion arriving afterwards — the
+                    // request-timeout reaper included — must neither complete the future again nor
+                    // continue draining beside the new session's chain.
+                    live = epoch == dispatchEpoch;
+                    if (live) {
+                        inFlight = null;
+                    }
+                }
+                if (!live) {
+                    return;
+                }
+                if (ex != null) {
+                    current.future().completeExceptionally(ex);
+                } else {
+                    current.future().complete(confirmation);
+                }
+                drainOutbound(epoch); // only now is the next CALL sent — one outstanding at a time
+            });
+            return;
+        }
+    }
+
+    private CompletionStage<Confirmation> transmit(UUID localSession, Request request) {
         OcppServerBridgeHandler serverHandler = server;
         OcppTransport transport = serverHandler != null ? serverHandler.getTransport() : null;
-        if (localSession == null || transport == null) {
+        if (transport == null) {
             return CompletableFuture
                     .failedFuture(new IllegalStateException("Charger " + chargePointId + " is offline"));
         }
@@ -320,49 +439,63 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
 
     /**
      * Marks the charge point ready and releases held traffic, provided the session it was armed for
-     * is still the live one. Queued requests go out first, then connectors flush what they deferred.
+     * is still the live one. Readiness-held requests enter the dispatcher first, in order, then
+     * connectors flush what they deferred (also through the dispatcher), so nothing jumps the queue.
      */
     private void becomeReady(UUID expectedSession) {
-        if (!expectedSession.equals(session)) {
-            return; // the session changed (or dropped) before readiness applied
-        }
-        operational = true;
-        drainPendingSends();
-        connectors.values().forEach(OcppConnectorHandler::onChargePointReady);
-    }
-
-    private void drainPendingSends() {
-        PendingSend pending;
-        while ((pending = pendingSends.poll()) != null) {
-            PendingSend current = pending;
-            if (!current.session().equals(session)) {
-                // Queued for a session that has been superseded: the request belonged to that
-                // session's context (e.g. its boot-configuration chain) and must not be replayed
-                // into the successor session, which runs its own.
-                current.future().completeExceptionally(
-                        new IllegalStateException("Charger " + chargePointId + " reconnected; request superseded"));
-                continue;
+        synchronized (stateLock) {
+            if (!expectedSession.equals(session)) {
+                return; // the session changed (or dropped) before readiness applied
             }
-            // Send one, and only drain the next once it has settled: OCPP-J allows a single
-            // outstanding CALL per direction, so firing the whole backlog at once could have several
-            // in flight and a charger may drop the extras.
-            sendDirect(current.request()).whenComplete((confirmation, ex) -> {
-                if (ex != null) {
-                    current.future().completeExceptionally(ex);
-                } else {
-                    current.future().complete(confirmation);
-                }
-                drainPendingSends();
-            });
-            return;
+            // Check and flip together: were this not atomic with onConnected's session swap, a
+            // reconnect landing here could leave operational=true on the successor session before it
+            // has even booted — the readiness gate this method exists to honour.
+            operational = true;
+        }
+        // Release only while the armed session is still the live one. If it was replaced between the
+        // flip and here, stop — the successor's own boot releases its traffic, and anything left
+        // queued for the old session is superseded when the dispatcher reaches it.
+        PendingSend pending;
+        while (expectedSession.equals(session) && (pending = pendingSends.poll()) != null) {
+            enqueue(pending);
+        }
+        if (expectedSession.equals(session)) {
+            connectors.values().forEach(OcppConnectorHandler::onChargePointReady);
         }
     }
 
     private void failPendingSends() {
+        List<PendingSend> toFail = new ArrayList<>();
         PendingSend pending;
         while ((pending = pendingSends.poll()) != null) {
-            pending.future()
-                    .completeExceptionally(new IllegalStateException("Charger " + chargePointId + " disconnected"));
+            toFail.add(pending);
+        }
+        synchronized (dispatchLock) {
+            // Kill the active drain chain FIRST, unconditionally: any pass or completion still running
+            // under the old epoch will see the bump and stop, so it can neither keep draining (a second
+            // CALL) nor complete a request this reset is about to fail. It must be unconditional — even
+            // when a completion mid-drain has already cleared the in-flight slot, its pending
+            // drainOutbound continuation is still out there and has to be stopped.
+            dispatchEpoch++;
+            // Abandon the in-flight request too: it will never be answered on a session that is going
+            // away, and the embedded library does not complete its promise when the session closes.
+            // Resetting dispatching here is what lets the successor session's queue drain at once
+            // instead of waiting for that request's timeout reaper — the reconnect-stall bug.
+            PendingSend current = inFlight;
+            if (current != null) {
+                toFail.add(current);
+                inFlight = null;
+            }
+            PendingSend queued;
+            while ((queued = outbound.poll()) != null) {
+                toFail.add(queued);
+            }
+            dispatching = false;
+        }
+        // Complete outside the lock: a future's dependent stages run synchronously here and can
+        // re-enter the dispatcher.
+        for (PendingSend p : toFail) {
+            p.future().completeExceptionally(new IllegalStateException("Charger " + chargePointId + " disconnected"));
         }
     }
 
@@ -374,15 +507,23 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
     }
 
     public void onConnected(UUID session) {
-        // Anything still queued belongs to the previous session's context; fail it deliberately
-        // rather than let it drain into this one.
+        // Publish the new session (and clear readiness) BEFORE abandoning the previous session's work.
+        // Two reasons, both coupled under stateLock so a concurrent becomeReady cannot interleave and
+        // re-raise readiness on the successor: (1) clearing operational before the session is visible
+        // closes the reconnect-self-heal window where isReady() would see the new session with the old
+        // operational=true; (2) failPendingSends below completes the in-flight request's future
+        // synchronously, and a boot-config continuation released by that must observe the new session
+        // so its own session guard abandons it — otherwise it would advance the old session's sequence
+        // and send its next step against a session that is already gone.
+        synchronized (stateLock) {
+            bootAccepted = false;
+            operational = false;
+            this.session = session;
+        }
+        // Anything still queued or in flight belongs to the previous session's context; fail it
+        // deliberately (it is tagged with that session, so the dispatcher would supersede it anyway)
+        // rather than let it stall this one.
         failPendingSends();
-        // Clear readiness BEFORE publishing the new session: a reconnect self-heal (no onDisconnected)
-        // could otherwise leave a window where isReady() sees the new session with the old session's
-        // operational=true, letting a caller send before this session has booted.
-        bootAccepted = false;
-        operational = false;
-        this.session = session;
         cancel(readyTask);
         readyTask = null;
         logger.debug("Charge point {} online on session {}", chargePointId, session);
@@ -410,15 +551,16 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
     }
 
     public void onDisconnected(UUID closedSession) {
-        if (!closedSession.equals(session)) {
-            return; // a stale session closing after a reconnect — the charger is still live
+        synchronized (stateLock) {
+            if (!closedSession.equals(session)) {
+                return; // a stale session closing after a reconnect — the charger is still live
+            }
+            session = null;
+            operational = false;
         }
-        session = null;
-        operational = false;
-        cancel(livenessTask);
-        cancel(readyTask);
-        livenessTask = null;
-        readyTask = null;
+        // Drop ALL scheduled work for the closed session — not just liveness/ready but also the
+        // boot-config burst and the status-recovery fallback — so nothing fires against a dead session.
+        cancelScheduledWork();
         failPendingSends();
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Charger disconnected");
         updateState(CHANNEL_CONNECTED, OnOffType.OFF);
@@ -496,14 +638,11 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
         if (connector != null) {
             // A connector has at most one transaction at a time, so drop any earlier one it still
             // maps to: a StopTransaction that never arrived would otherwise leave the entry behind
-            // for good. This keeps the map bounded by the number of connectors.
+            // for good. This keeps the map bounded by the number of connectors. Persistence is done
+            // by the server bridge at accept time (so it happens even without this handler).
             transactions.values().remove(connector);
             transactions.put(transactionId, connector);
             connector.onTransactionStarted(request, transactionId);
-            OcppServerBridgeHandler serverHandler = server;
-            if (serverHandler != null) {
-                serverHandler.rememberTransaction(transactionId, chargePointId, connectorId);
-            }
         }
     }
 
@@ -820,12 +959,19 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
         if (localSession == null) {
             return;
         }
-        logger.warn("Charge point {} silent beyond {}s; forcing a reconnect", chargePointId,
+        // debug, not warn: the OFFLINE reason string below is logged by the framework, and a silent
+        // charger past its window is a normal runtime event, not a binding bug or misconfiguration.
+        logger.debug("Charge point {} silent beyond {}s; forcing a reconnect", chargePointId,
                 livenessThresholdSeconds());
         OcppServerBridgeHandler serverHandler = server;
         OcppTransport transport = serverHandler != null ? serverHandler.getTransport() : null;
-        session = null;
-        operational = false;
+        synchronized (stateLock) {
+            if (!localSession.equals(session)) {
+                return; // the charger already reconnected on a newer session — leave it live
+            }
+            session = null;
+            operational = false;
+        }
         failPendingSends();
         if (transport != null) {
             transport.closeSession(localSession);
