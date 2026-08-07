@@ -49,7 +49,7 @@
             </goals>
             <configuration>
               <workingDirectory>matter-server</workingDirectory>
-              <arguments>install</arguments>
+              <arguments>ci</arguments>
             </configuration>
           </execution>
 
@@ -124,7 +124,7 @@
                 <phase>generate-sources</phase>
                 <configuration>
                   <workingDirectory>code-gen</workingDirectory>
-                  <arguments>install</arguments>
+                  <arguments>ci</arguments>
                 </configuration>
               </execution>
 
