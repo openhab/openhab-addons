@@ -155,9 +155,17 @@ public class EcovacsApiHandler extends BaseBridgeHandler {
     }
 
     public void onLoginExpired() {
+        if (getThing().getStatus() == ThingStatus.OFFLINE) {
+            return;
+        }
         logger.debug("Ecovacs API login for account '{}' expired", getThing().getUID().getId());
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                 "@text/offline.config-error-login-required");
+        try {
+            Files.deleteIfExists(getCredentialsCacheFile());
+        } catch (IOException e) {
+            logger.debug("Could not delete credentials cache file", e);
+        }
     }
 
     private EcovacsApi createApi(String country) {

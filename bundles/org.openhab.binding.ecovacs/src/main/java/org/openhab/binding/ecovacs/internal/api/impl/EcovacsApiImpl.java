@@ -103,6 +103,7 @@ public final class EcovacsApiImpl implements EcovacsApi {
 
     private final HttpClient httpClient;
     private final Gson gson = new Gson();
+    private final MqttConnection mqttConnection = new MqttConnection();
 
     private final EcovacsApiConfiguration configuration;
     private @Nullable PublicKey publicKey;
@@ -120,10 +121,6 @@ public final class EcovacsApiImpl implements EcovacsApi {
         String userUrl = EcovacsApiUrlFactory.getPortalUsersUrl(configuration);
         executeRequest(createJsonRequest(userUrl, data));
         this.credentials = creds;
-    }
-
-    public @Nullable Credentials getCredentials() {
-        return this.credentials;
     }
 
     @Override
@@ -167,6 +164,22 @@ public final class EcovacsApiImpl implements EcovacsApi {
 
     EcovacsApiConfiguration getConfig() {
         return configuration;
+    }
+
+    public @Nullable Credentials getCredentials() {
+        return this.credentials;
+    }
+
+    MqttSubscriptionHandle subscribeForMqttEvents(Device device, MqttEventReceiver receiver)
+            throws EcovacsApiException, InterruptedException {
+        Credentials creds = this.credentials;
+        if (creds == null) {
+            throw new EcovacsApiException("Can not subscribe while not logged in");
+        }
+
+        mqttConnection.connectIfNeeded(configuration, creds);
+        mqttConnection.subscribeDevice(device, receiver);
+        return new MqttSubscriptionHandle(mqttConnection, device);
     }
 
     private Map<String, String> getBaseLoginRequestParameters() {
@@ -284,7 +297,7 @@ public final class EcovacsApiImpl implements EcovacsApi {
 
     private Credentials portalLogin(AuthCode authCode, String uid) throws EcovacsApiException, InterruptedException {
         PortalLoginRequest loginRequestData = new PortalLoginRequest(PortalTodo.LOGIN_BY_TOKEN,
-                configuration.getCountry().toUpperCase(), "", configuration.getOrg(), configuration.getResource(),
+                configuration.getCountry().toUpperCase(), "", configuration.getOrg(), configuration.getDeviceId(),
                 configuration.getRealm(), authCode.getAuthCode(), uid, configuration.getEdition());
         long now = System.currentTimeMillis();
         String userUrl = EcovacsApiUrlFactory.getPortalUsersUrl(configuration);
@@ -493,7 +506,7 @@ public final class EcovacsApiImpl implements EcovacsApi {
             throw new IllegalStateException("Not logged in");
         }
         return new PortalAuthRequestParameter(configuration.getPortalAuthRequestWith(), creds.userId(),
-                configuration.getRealm(), creds.token(), configuration.getResource());
+                configuration.getRealm(), creds.token(), configuration.getDeviceId());
     }
 
     private <T> T handleResponseWrapper(@Nullable ResponseWrapper<T> response) throws EcovacsApiException {
@@ -576,6 +589,20 @@ public final class EcovacsApiImpl implements EcovacsApi {
             return response;
         } catch (TimeoutException | ExecutionException e) {
             throw new EcovacsApiException(e);
+        }
+    }
+
+    static class MqttSubscriptionHandle {
+        private final MqttConnection mqttConnection;
+        private final Device device;
+
+        private MqttSubscriptionHandle(MqttConnection mqttConnection, Device device) {
+            this.mqttConnection = mqttConnection;
+            this.device = device;
+        }
+
+        public void unsubscribe() throws EcovacsApiException, InterruptedException {
+            mqttConnection.unsubscribe(device);
         }
     }
 }

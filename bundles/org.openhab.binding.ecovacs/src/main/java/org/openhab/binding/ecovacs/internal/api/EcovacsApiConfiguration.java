@@ -77,10 +77,6 @@ public final class EcovacsApiConfiguration {
         return language;
     }
 
-    public String getResource() {
-        return deviceId.substring(0, 8);
-    }
-
     public String getAuthOpenId() {
         return "global";
     }

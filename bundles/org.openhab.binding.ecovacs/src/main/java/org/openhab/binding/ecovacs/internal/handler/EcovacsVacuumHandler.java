@@ -232,7 +232,11 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
             initTask.setNamePrefix(serialNumber);
             reconnectTask.setNamePrefix(serialNumber);
             pollTask.setNamePrefix(serialNumber);
-            initTask.submit();
+
+            Bridge bridge = getBridge();
+            if (bridge != null && bridge.getStatus() == ThingStatus.ONLINE) {
+                initTask.submit();
+            }
         }
     }
 
@@ -822,19 +826,18 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } catch (EcovacsApiException e) {
-            logger.debug("{}: Failed communicating to device, reconnecting", serialNumber, e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             if (e.isAuthFailure) {
                 EcovacsApiHandler apiHandler = getApiHandler();
                 if (apiHandler != null) {
                     apiHandler.onLoginExpired();
                 }
-                // Drop our device instance to make sure we run a full init cycle,
-                // including an API re-login, on reconnection
-                device.disconnect(scheduler);
-                this.device = null;
+                // Drop our device instance to make sure we run a full init cycle on reconnection
+                teardown(false);
+            } else {
+                logger.debug("{}: Failed communicating to device, reconnecting", serialNumber, e);
+                teardownAndScheduleReconnection();
             }
-            teardownAndScheduleReconnection();
         }
     }
 
