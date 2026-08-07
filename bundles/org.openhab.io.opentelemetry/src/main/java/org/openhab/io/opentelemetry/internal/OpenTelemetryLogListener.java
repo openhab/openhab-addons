@@ -32,6 +32,7 @@ import io.opentelemetry.api.logs.Severity;
  * and forwards logs to OpenTelemetry.
  *
  * @author Florian Hotze - Initial contribution
+ * @author Florian Lettner - Add own-logger suppression
  */
 @NonNullByDefault
 public class OpenTelemetryLogListener implements LogListener {
@@ -43,10 +44,14 @@ public class OpenTelemetryLogListener implements LogListener {
 
     @Override
     public void logged(@NonNullByDefault({}) LogEntry logEntry) {
+        // Suppress our own bundle and all OTel SDK/exporter logs to break the export-failure
+        // feedback loop. SDK batch processors (e.g. BatchLogRecordProcessor) log under
+        // io.opentelemetry.sdk.*, not just io.opentelemetry.exporter.*, so the full namespace
+        // must be suppressed (e.g. a 403 from the OTLP endpoint would otherwise be re-ingested
+        // and re-exported indefinitely).
         String loggerName = logEntry.getLoggerName();
-
-        // Prevent logging loop
-        if (loggerName.startsWith("io.opentelemetry.")) {
+        if (loggerName != null && (loggerName.startsWith("org.openhab.io.opentelemetry")
+                || loggerName.startsWith("io.opentelemetry."))) {
             return;
         }
 
@@ -59,7 +64,7 @@ public class OpenTelemetryLogListener implements LogListener {
                 .setBody(logEntry.getMessage());
 
         AttributesBuilder attributesBuilder = Attributes.builder() //
-                .put("log.logger.name", loggerName) //
+                .put("log.logger.name", loggerName != null ? loggerName : "") //
                 .put("thread.name", logEntry.getThreadInfo());
 
         @Nullable
